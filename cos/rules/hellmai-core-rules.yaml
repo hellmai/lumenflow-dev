@@ -1,0 +1,94 @@
+rules:
+  - id: TRUTH-01
+    kind: guardrail
+    statement: "All incidents require public postmortems"
+    evidence:
+      required:
+        - "link:postmortem"
+      future:
+        - "metric:mttr"
+    gate: "cos:narrative"
+    notes: |
+      Postmortem must be published within 72h of incident resolution.
+      Location: docs/operations/postmortems/{YYYY-MM-DD-slug}.md
+
+      Phased rollout: v1.3 requires only postmortem link.
+      v1.4 will add MTTR metric when telemetry ready.
+
+  - id: UPAIN-01
+    kind: guardrail
+    statement: "All features must address documented user pain"
+    evidence:
+      required:
+        - "link:voc_doc"
+      future:
+        - "metric:user_satisfaction"
+    gate: "cos:narrative"
+    notes: |
+      Voice of Customer (VoC) documentation must include:
+      - User interviews or support ticket analysis
+      - Quantified pain points (frequency, impact)
+      Location: docs/product/voc/{feature}-{insight}.md
+
+      Phased rollout: v1.3 requires only VoC link.
+      v1.4 will add user satisfaction metrics when available.
+
+  - id: FAIR-01
+    kind: guardrail
+    statement: "No dark patterns in pricing, cancellation, or consent flows"
+    evidence:
+      required:
+        - "screenshot:pricing"
+        - "screenshot:cancellation"
+      future: []
+    gate: "cos:narrative"
+    notes: |
+      Screenshots must show:
+      - Transparent pricing (no hidden fees)
+      - Clear cancellation link (no obstacles)
+      - Consent flows (no pre-checked boxes)
+      Location: docs/evidence/screenshots/{subject}_{date}.png
+
+      This rule has no future evidence planned (screenshots sufficient).
+
+  - id: CASH-03
+    kind: guardrail
+    statement: "Commitments >£{SPEND_THRESHOLD}/month require spend review and approval"
+    evidence:
+      required:
+        - "link:spend_review"
+        - "approval:{OWNER_EMAIL}"
+      future:
+        - "metric:cohort_retention"
+    gate: "cos:finance"
+    parameters:
+      SPEND_THRESHOLD: 500
+      OWNER_EMAIL: "tom@hellm.ai"
+    notes: |
+      Spend review must include:
+      - ROI analysis (expected return vs cost)
+      - Alternatives considered (why this choice?)
+      - Budget impact (monthly/annual commitment)
+      Location: docs/finance/spend-reviews/{YYYY-MM-slug}.md
+
+      Approval required from OWNER_EMAIL before commitment.
+
+      Phased rollout: v1.3 requires spend review + approval.
+      v1.4 will add cohort retention metrics to validate ROI.
+
+  - id: GOV-WEEKLY
+    kind: ritual
+    statement: "Weekly operating review (30min, scoreboard-based)"
+    evidence:
+      required: []
+      future: []
+    gate: null
+    notes: |
+      Weekly operating review ritual (not a deliverable).
+
+      Participants: Product owner, eng lead, lane representatives.
+      Agenda: Metrics review, governance compliance, risks, priorities.
+      Output: Filled scoreboard committed to docs/operations/scoreboard-{YYYY-WW}.md
+
+      Evidence is the ritual happening, not artifacts produced.
+      No gate enforcement (calendar-based, not WU-based).
