@@ -24,7 +24,7 @@ import path from 'node:path';
 import { SpawnRegistryStore } from './spawn-registry-store.mjs';
 import { SpawnStatus } from './spawn-registry-schema.mjs';
 import { RECOVERY_DIR_NAME } from './spawn-recovery.mjs';
-import { createSignal } from './mem-signal-core.mjs';
+import { createSignal } from '@lumenflow/memory/lib/mem-signal-core.mjs';
 
 /**
  * Log prefix for spawn-escalation messages

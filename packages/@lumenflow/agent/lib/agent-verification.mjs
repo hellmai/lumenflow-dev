@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createError, ErrorCodes } from './error-handler.mjs';
+import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.mjs';
 import {
   PATTERNS,
   BRANCHES,
@@ -10,7 +10,7 @@ import {
   FILE_SYSTEM,
   STRING_LITERALS,
   EXIT_CODES,
-} from './wu-constants.mjs';
+} from '@lumenflow/core/lib/wu-constants.mjs';
 
 function run(cmd) {
   try {

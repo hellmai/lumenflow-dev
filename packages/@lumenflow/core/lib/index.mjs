@@ -3,6 +3,9 @@
  * @module @lumenflow/core
  */
 
+// Package version
+export const VERSION = '0.0.0';
+
 // Core utilities
 export * from './arg-parser.mjs';
 export * from './date-utils.mjs';

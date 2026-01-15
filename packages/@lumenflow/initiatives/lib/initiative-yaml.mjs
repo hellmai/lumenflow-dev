@@ -2,13 +2,13 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
-import { createError, ErrorCodes } from './error-handler.mjs';
+import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.mjs';
 import { validateInitiative } from './initiative-schema.mjs';
 import { INIT_PATHS } from './initiative-paths.mjs';
 import { INIT_PATTERNS } from './initiative-constants.mjs';
-import { readWU } from './wu-yaml.mjs';
-import { WU_PATHS } from './wu-paths.mjs';
-import { FILE_SYSTEM } from './wu-constants.mjs';
+import { readWU } from '@lumenflow/core/lib/wu-yaml.mjs';
+import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.mjs';
+import { FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.mjs';
 
 /**
  * Initiative YAML I/O module.

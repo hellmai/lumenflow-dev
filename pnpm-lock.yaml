@@ -44,12 +44,57 @@ importers:
 
   packages/@lumenflow/agent:
     dependencies:
+      '@lumenflow/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lumenflow/memory':
+        specifier: workspace:*
+        version: link:../memory
+      simple-git:
+        specifier: ^3.30.0
+        version: 3.30.0
       zod:
         specifier: ^3.25.0
         version: 3.25.76
 
+  packages/@lumenflow/cli:
+    dependencies:
+      '@lumenflow/agent':
+        specifier: workspace:*
+        version: link:../agent
+      '@lumenflow/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lumenflow/initiatives':
+        specifier: workspace:*
+        version: link:../initiatives
+      '@lumenflow/memory':
+        specifier: workspace:*
+        version: link:../memory
+      cli-table3:
+        specifier: ^0.6.5
+        version: 0.6.5
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.1
+      minimatch:
+        specifier: ^10.1.1
+        version: 10.1.1
+      ms:
+        specifier: ^2.1.3
+        version: 2.1.3
+      pretty-ms:
+        specifier: ^9.2.0
+        version: 9.3.0
+
   packages/@lumenflow/core:
     dependencies:
+      '@lumenflow/memory':
+        specifier: workspace:*
+        version: link:../memory
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
@@ -77,6 +122,9 @@ importers:
       minimatch:
         specifier: ^10.1.1
         version: 10.1.1
+      picocolors:
+        specifier: ^1.1.1
+        version: 1.1.1
       pretty-ms:
         specifier: ^9.2.0
         version: 9.3.0
@@ -113,6 +161,9 @@ importers:
 
   packages/@lumenflow/memory:
     dependencies:
+      '@lumenflow/core':
+        specifier: workspace:*
+        version: link:../core
       ms:
         specifier: ^2.1.3
         version: 2.1.3
@@ -169,6 +220,10 @@ packages:
   '@boundaries/elements@1.1.2':
     resolution: {integrity: sha512-DnGHL+v36YVMoWhWZqyJYVZ9dapNm7h4N3/P0lDPirJj0CHVPkjChMCCotj74cg6LW7iPJZFGrdEfh0X0g2bmQ==}
     engines: {node: '>=18.18'}
+
+  '@colors/colors@1.5.0':
+    resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
+    engines: {node: '>=0.1.90'}
 
   '@esbuild/aix-ppc64@0.27.2':
     resolution: {integrity: sha512-GZMB+a0mOMZs4MpDbj8RJp4cw+w1WV5NYD6xzgvzUJ5Ek2jerwfO2eADyI6ExDSUED+1X8aMbegahsJi+8mgpw==}
@@ -741,6 +796,10 @@ packages:
 
   change-case@5.4.4:
     resolution: {integrity: sha512-HRQyTk2/YPEkt9TnUPbOpr64Uw3KOicFWPVBb+xiHvd6eBx/qPr9xqfBFDT8P2vWsvvz4jbEkfDe71W3VyNu2w==}
+
+  cli-table3@0.6.5:
+    resolution: {integrity: sha512-+W/5efTR7y5HRD7gACw9yQjqMVvEMLBHmboM/kPWam+H+Hmyrgjh6YncVKK122YZkXrLudzTuAukUw9FnMf7IQ==}
+    engines: {node: 10.* || >= 12.*}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -1590,6 +1649,9 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
+  '@colors/colors@1.5.0':
+    optional: true
+
   '@esbuild/aix-ppc64@0.27.2':
     optional: true
 
@@ -2073,6 +2135,12 @@ snapshots:
       supports-color: 7.2.0
 
   change-case@5.4.4: {}
+
+  cli-table3@0.6.5:
+    dependencies:
+      string-width: 4.2.3
+    optionalDependencies:
+      '@colors/colors': 1.5.0
 
   color-convert@2.0.1:
     dependencies:
