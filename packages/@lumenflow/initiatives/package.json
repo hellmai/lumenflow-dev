@@ -29,7 +29,7 @@
     "./schema": "./lib/initiative-schema.mjs",
     "./constants": "./lib/initiative-constants.mjs",
     "./paths": "./lib/initiative-paths.mjs",
-    "./lib/*": "./lib/*.mjs"
+    "./lib/*": "./lib/*"
   },
   "main": "./lib/index.mjs",
   "files": [

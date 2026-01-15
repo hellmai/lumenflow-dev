@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { VALIDATION_LIMITS, INCIDENT_CATEGORIES } from './wu-validation-constants.mjs';
+import { VALIDATION_LIMITS, INCIDENT_CATEGORIES } from '@lumenflow/core/lib/wu-validation-constants.mjs';
 import {
   BEACON_PATHS,
   FILE_EXTENSIONS,
   INCIDENT_SEVERITY,
   FILE_SYSTEM,
   STRING_LITERALS,
-} from './wu-constants.mjs';
+} from '@lumenflow/core/lib/wu-constants.mjs';
 
 /**
  * IncidentLog schema for structured issue tracking

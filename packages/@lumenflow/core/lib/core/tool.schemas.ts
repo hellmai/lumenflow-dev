@@ -1,0 +1,392 @@
+/**
+ * @file tool.schemas.ts
+ * @description Zod schemas for tool abstraction layer (WU-1394)
+ *
+ * Provides runtime validation and TypeScript type inference for tool inputs,
+ * outputs, and metadata. Supports JSON Schema export for provider adapters
+ * (MCP, OpenAI, Gemini).
+ *
+ * Reference: tools/lib/arg-parser.mjs for current argument handling patterns
+ */
+
+import { z, type ZodTypeAny } from 'zod';
+import {
+  TOOL_DOMAINS,
+  PERMISSION_LEVELS,
+  TOOL_STATUS,
+  type ToolDomain,
+  type PermissionLevel,
+  type ToolStatus,
+} from './tool.constants.js';
+
+/**
+ * Schema for tool input
+ *
+ * Represents the standardized input format for all tools in the system.
+ * Maps command names to their arguments and optional context.
+ */
+export const ToolInputSchema = z.object({
+  /** Tool command name (e.g., 'wu:claim', 'git:commit') */
+  command: z.string().min(1).describe('Tool command name'),
+
+  /** Tool-specific arguments (validated by tool's inputSchema) */
+  arguments: z.record(z.unknown()).default({}),
+
+  /** Optional execution context (session ID, user, etc.) */
+  context: z.record(z.unknown()).optional().describe('Execution context (session_id, user, etc.)'),
+});
+
+export type ToolInput = z.infer<typeof ToolInputSchema>;
+
+/**
+ * Schema for tool error details
+ */
+export const ToolErrorSchema = z.object({
+  /** Error code from TOOL_ERROR_CODES or ErrorCodes */
+  code: z.string(),
+
+  /** Human-readable error message */
+  message: z.string(),
+
+  /** Optional additional error details */
+  details: z.record(z.unknown()).optional(),
+
+  /** Optional stack trace (for debugging) */
+  stack: z.string().optional(),
+
+  /** Optional suggestions for resolution (WU-1339: Agent-friendly errors) */
+  tryNext: z.array(z.string()).optional().describe('Suggested next actions'),
+});
+
+export type ToolError = z.infer<typeof ToolErrorSchema>;
+
+/**
+ * Schema for tool output
+ *
+ * Standardized response format for all tools. Success/failure indicated by
+ * the `success` field, with data/error fields providing details.
+ */
+export const ToolOutputSchema = z.object({
+  /** Operation success status */
+  success: z.boolean(),
+
+  /** Output data (present when success=true) */
+  data: z.unknown().optional(),
+
+  /** Error details (present when success=false) */
+  error: ToolErrorSchema.optional(),
+
+  /** Optional warning messages */
+  warnings: z.array(z.string()).optional(),
+
+  /** Optional execution metadata (duration, timestamp, etc.) */
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export type ToolOutput = z.infer<typeof ToolOutputSchema>;
+
+/**
+ * Schema for tool metadata
+ *
+ * Describes a tool's capabilities, domain, permissions, and usage examples.
+ */
+export const ToolMetadataSchema = z.object({
+  /** Tool name (unique identifier) */
+  name: z.string().min(1),
+
+  /** Human-readable description */
+  description: z.string().min(1),
+
+  /** Tool domain classification */
+  domain: z.enum([
+    TOOL_DOMAINS.WU,
+    TOOL_DOMAINS.GIT,
+    TOOL_DOMAINS.FILE,
+    TOOL_DOMAINS.EXPLORE,
+    TOOL_DOMAINS.TEST,
+    TOOL_DOMAINS.DB,
+    TOOL_DOMAINS.SECURITY,
+    TOOL_DOMAINS.INITIATIVE,
+    TOOL_DOMAINS.METRICS,
+    TOOL_DOMAINS.ORCHESTRATION,
+    TOOL_DOMAINS.DOCS,
+    TOOL_DOMAINS.UTIL,
+  ] as const),
+
+  /** Required permission level */
+  permission: z.enum([
+    PERMISSION_LEVELS.READ,
+    PERMISSION_LEVELS.WRITE,
+    PERMISSION_LEVELS.ADMIN,
+  ] as const),
+
+  /** Tool version (semantic versioning) */
+  version: z.string().regex(/^\d+\.\d+\.\d+$/, 'Must be semantic version (x.y.z)'),
+
+  /** Optional tags for categorization */
+  tags: z.array(z.string()).optional(),
+
+  /** Optional usage examples */
+  examples: z
+    .array(
+      z.object({
+        description: z.string(),
+        input: z.record(z.unknown()),
+        output: z.record(z.unknown()).optional(),
+      })
+    )
+    .optional(),
+
+  /** Optional deprecation notice */
+  deprecated: z.boolean().optional(),
+
+  /** Optional replacement tool (if deprecated) */
+  replacedBy: z.string().optional(),
+});
+
+export type ToolMetadata = z.infer<typeof ToolMetadataSchema>;
+
+/**
+ * Schema for tool definition
+ *
+ * Complete tool specification including metadata, schemas, and execution function.
+ */
+export const ToolDefinitionSchema = z.object({
+  /** Tool metadata */
+  metadata: ToolMetadataSchema,
+
+  /** Input schema (Zod schema for argument validation) */
+  inputSchema: z.custom<ZodTypeAny>((val) => val instanceof z.ZodType),
+
+  /** Optional output schema (Zod schema for response validation) */
+  outputSchema: z.custom<ZodTypeAny>((val) => val instanceof z.ZodType).optional(),
+
+  /** Tool execution function */
+  execute: z.custom<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (input: any, context?: Record<string, unknown>) => Promise<ToolOutput>
+  >((val) => typeof val === 'function'),
+});
+
+export type ToolDefinition = z.infer<typeof ToolDefinitionSchema>;
+
+/**
+ * Schema for tool execution result (audit logging)
+ */
+export const ToolExecutionResultSchema = z.object({
+  /** Tool name */
+  tool: z.string(),
+
+  /** Execution status */
+  status: z.enum([
+    TOOL_STATUS.PENDING,
+    TOOL_STATUS.RUNNING,
+    TOOL_STATUS.SUCCESS,
+    TOOL_STATUS.FAILED,
+    TOOL_STATUS.TIMEOUT,
+    TOOL_STATUS.CANCELLED,
+  ] as const),
+
+  /** Start timestamp */
+  startedAt: z.string().datetime(),
+
+  /** End timestamp */
+  completedAt: z.string().datetime().optional(),
+
+  /** Execution duration in milliseconds */
+  durationMs: z.number().int().nonnegative().optional(),
+
+  /** Tool input (sanitized, no sensitive data) */
+  input: z.record(z.unknown()),
+
+  /** Tool output (sanitized) */
+  output: ToolOutputSchema.optional(),
+
+  /** Error details (if failed) */
+  error: ToolErrorSchema.optional(),
+
+  /** Execution context (session, user, etc.) */
+  context: z.record(z.unknown()).optional(),
+});
+
+export type ToolExecutionResult = z.infer<typeof ToolExecutionResultSchema>;
+
+/**
+ * Convert Zod schema to JSON Schema for provider adapters
+ *
+ * Uses Zod's built-in JSON Schema generation with proper type handling.
+ * Supports MCP, OpenAI Functions, and Gemini Tools formats.
+ *
+ * @param schema - Zod schema to convert
+ * @param options - Conversion options
+ * @returns JSON Schema object
+ *
+ * @example
+ * const inputSchema = z.object({ id: z.string() });
+ * const jsonSchema = toJSONSchema(inputSchema);
+ * // Returns: { type: 'object', properties: { id: { type: 'string' } }, ... }
+ */
+export function toJSONSchema(
+  schema: ZodTypeAny,
+  options?: {
+    /** Schema name (for $id field) */
+    name?: string;
+    /** Base URI for schema references */
+    baseUri?: string;
+  }
+): Record<string, unknown> {
+  // Use zod-to-json-schema for robust conversion
+  // This is a placeholder - actual implementation will use zodToJsonSchema
+  // once zod-to-json-schema package is added (WU-1395)
+
+  // For now, implement basic conversion for core types
+  const def = schema._def;
+
+  // Handle object schemas
+  if (def.typeName === 'ZodObject') {
+    const shape = def.shape();
+    const properties: Record<string, unknown> = {};
+    const required: string[] = [];
+
+    for (const [key, value] of Object.entries(shape)) {
+      properties[key] = toJSONSchema(value as ZodTypeAny);
+
+      // Check if field is required (not optional)
+      if (!(value as ZodTypeAny).isOptional()) {
+        required.push(key);
+      }
+    }
+
+    return {
+      type: 'object',
+      properties,
+      required: required.length > 0 ? required : undefined,
+      ...(def.description ? { description: def.description } : {}),
+      ...(options?.name ? { $id: `${options.baseUri || ''}#/${options.name}` } : {}),
+    };
+  }
+
+  // Handle string schemas
+  if (def.typeName === 'ZodString') {
+    return {
+      type: 'string',
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle number schemas
+  if (def.typeName === 'ZodNumber') {
+    return {
+      type: 'number',
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle boolean schemas
+  if (def.typeName === 'ZodBoolean') {
+    return {
+      type: 'boolean',
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle array schemas
+  if (def.typeName === 'ZodArray') {
+    return {
+      type: 'array',
+      items: toJSONSchema(def.type),
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle optional schemas
+  if (def.typeName === 'ZodOptional') {
+    return toJSONSchema(def.innerType);
+  }
+
+  // Handle record/dictionary schemas
+  if (def.typeName === 'ZodRecord') {
+    return {
+      type: 'object',
+      additionalProperties: toJSONSchema(def.valueType),
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle enum schemas
+  if (def.typeName === 'ZodEnum') {
+    return {
+      type: 'string',
+      enum: def.values,
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Handle literal schemas
+  if (def.typeName === 'ZodLiteral') {
+    return {
+      type: typeof def.value,
+      const: def.value,
+      ...(def.description ? { description: def.description } : {}),
+    };
+  }
+
+  // Fallback for unknown types
+  return {
+    type: 'object',
+    description: def.description || 'Unknown schema type',
+  };
+}
+
+/**
+ * Validate tool input against schema
+ *
+ * @param input - Tool input to validate
+ * @param schema - Zod schema to validate against
+ * @returns Validation result with parsed data or errors
+ */
+export function validateToolInput<T>(
+  input: unknown,
+  schema: z.ZodType<T>
+): { success: true; data: T } | { success: false; error: z.ZodError } {
+  const result = schema.safeParse(input);
+
+  if (result.success) {
+    return { success: true, data: result.data };
+  } else {
+    return { success: false, error: result.error };
+  }
+}
+
+/**
+ * Create standardized tool output for success case
+ *
+ * @param data - Output data
+ * @param metadata - Optional execution metadata
+ * @returns Standardized ToolOutput
+ */
+export function createSuccessOutput(data: unknown, metadata?: Record<string, unknown>): ToolOutput {
+  return {
+    success: true,
+    data,
+    metadata,
+  };
+}
+
+/**
+ * Create standardized tool output for error case
+ *
+ * @param error - Error details
+ * @param metadata - Optional execution metadata
+ * @returns Standardized ToolOutput
+ */
+export function createErrorOutput(
+  error: ToolError,
+  metadata?: Record<string, unknown>
+): ToolOutput {
+  return {
+    success: false,
+    error,
+    metadata,
+  };
+}

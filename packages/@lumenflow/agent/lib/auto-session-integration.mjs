@@ -15,8 +15,8 @@
 import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { FILE_SYSTEM } from './wu-constants.mjs';
-import { startSession as startMemorySession } from './mem-start-core.mjs';
+import { FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.mjs';
+import { startSession as startMemorySession } from '@lumenflow/memory/lib/mem-start-core.mjs';
 
 // Default session directory (same as agent-session.mjs)
 const DEFAULT_SESSION_DIR = '.beacon/sessions';

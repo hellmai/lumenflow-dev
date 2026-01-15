@@ -1,0 +1,110 @@
+import path from 'node:path';
+import { existsSync, unlinkSync, symlinkSync } from 'node:fs';
+
+/**
+ * Determine whether gates should run in low-noise "agent mode".
+ *
+ * Agent mode is intended for Claude Code sessions, where tool output is injected into the
+ * conversation context and can trigger "prompt too long".
+ *
+ * Detection strategy (WU-1827):
+ * 1. --verbose flag always forces full output (returns false)
+ * 2. CLAUDE_PROJECT_DIR env var is a strong hint (returns true if set)
+ * 3. TTY check: non-TTY + non-CI = likely agent mode (returns true)
+ * 4. Interactive TTY = human user (returns false)
+ *
+ * @param {Object} options
+ * @param {string[]} [options.argv] - Command line arguments
+ * @param {Object} [options.env] - Environment variables
+ * @param {Object} [options.stdout] - stdout stream (defaults to process.stdout)
+ * @returns {boolean} True if gates should run in agent mode
+ */
+export function shouldUseGatesAgentMode({ argv, env, stdout } = {}) {
+  // --verbose flag always forces full output
+  const isVerbose = Array.isArray(argv) && argv.includes('--verbose');
+  if (isVerbose) {
+    return false;
+  }
+
+  // CLAUDE_PROJECT_DIR is a strong hint that we're in Claude Code
+  const hasClaudeProjectDir = Boolean(env?.CLAUDE_PROJECT_DIR);
+  if (hasClaudeProjectDir) {
+    return true;
+  }
+
+  // CI environments should get full output for debugging
+  const isCI = Boolean(env?.CI);
+  if (isCI) {
+    return false;
+  }
+
+  // Use provided stdout or fall back to process.stdout
+  const stdoutStream = stdout ?? process.stdout;
+
+  // TTY check: non-TTY = likely agent mode (Claude Code Bash tool doesn't have TTY)
+  // If stdout is undefined or isTTY is falsy, assume agent mode (safer default)
+  const isTTY = stdoutStream?.isTTY ?? false;
+
+  // Non-TTY + non-CI = likely agent mode
+  return !isTTY;
+}
+
+export function getGatesLogDir({ cwd, env }) {
+  const configured = env?.LUMENFLOW_LOG_DIR;
+  return path.resolve(cwd, configured || '.logs');
+}
+
+export function buildGatesLogPath({ cwd, env, wuId, lane, now = new Date() }) {
+  const logDir = getGatesLogDir({ cwd, env });
+  const safeLane = (lane || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const safeWu = (wuId || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const stamp = now.toISOString().replace(/[:.]/g, '-');
+  return path.join(logDir, `gates-${safeLane}-${safeWu}-${stamp}.log`);
+}
+
+/**
+ * Get the path to the gates-latest.log symlink (WU-2064)
+ *
+ * @param {Object} options
+ * @param {string} options.cwd - Working directory
+ * @param {Object} [options.env] - Environment variables
+ * @returns {string} Path to the symlink
+ */
+export function getGatesLatestSymlinkPath({ cwd, env }) {
+  const logDir = getGatesLogDir({ cwd, env });
+  return path.join(logDir, 'gates-latest.log');
+}
+
+/**
+ * Create or update the gates-latest.log symlink to point to the most recent gate run (WU-2064)
+ *
+ * This provides a stable path for agents to access the most recent gate log
+ * without needing to know the timestamp-based filename.
+ *
+ * @param {Object} options
+ * @param {string} options.logPath - Path to the actual gate log file
+ * @param {string} options.cwd - Working directory
+ * @param {Object} [options.env] - Environment variables
+ * @returns {boolean} True if symlink was created/updated successfully
+ */
+export function updateGatesLatestSymlink({ logPath, cwd, env }) {
+  const symlinkPath = getGatesLatestSymlinkPath({ cwd, env });
+
+  try {
+    // Remove existing symlink if present
+    if (existsSync(symlinkPath)) {
+      unlinkSync(symlinkPath);
+    }
+
+    // Create relative symlink (so it works regardless of absolute path)
+    const logDir = path.dirname(symlinkPath);
+    const relativePath = path.relative(logDir, logPath);
+    symlinkSync(relativePath, symlinkPath);
+
+    return true;
+  } catch {
+    // Symlink creation is best-effort, don't fail gates
+    return false;
+  }
+}
+

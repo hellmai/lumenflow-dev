@@ -35,7 +35,7 @@
     "./triage": "./lib/mem-triage-core.mjs",
     "./schema": "./lib/memory-schema.mjs",
     "./store": "./lib/memory-store.mjs",
-    "./lib/*": "./lib/*.mjs"
+    "./lib/*": "./lib/*"
   },
   "main": "./lib/index.mjs",
   "files": [
@@ -47,6 +47,7 @@
     "test": "node --test lib/__tests__/*.test.mjs 2>/dev/null || echo 'No tests yet'"
   },
   "dependencies": {
+    "@lumenflow/core": "workspace:*",
     "ms": "^2.1.3",
     "yaml": "^2.8.0",
     "zod": "^3.25.0"

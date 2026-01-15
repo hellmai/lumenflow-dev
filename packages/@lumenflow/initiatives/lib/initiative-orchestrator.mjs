@@ -24,12 +24,12 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from 
 import { join } from 'node:path';
 import { findInitiative, getInitiativeWUs } from './initiative-yaml.mjs';
 import { buildDependencyGraph, validateGraph } from './dependency-graph.mjs';
-import { createError, ErrorCodes } from './error-handler.mjs';
-import { WU_STATUS, STRING_LITERALS } from './wu-constants.mjs';
-import { WU_PATHS } from './wu-paths.mjs';
-import { parseYAML } from './wu-yaml.mjs';
+import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.mjs';
+import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/lib/wu-constants.mjs';
+import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.mjs';
+import { parseYAML } from '@lumenflow/core/lib/wu-yaml.mjs';
 // WU-2027: Import spawn generation for embedding in orchestration output
-import { generateTaskInvocation } from '@lumenflow/core/wu-spawn';
+import { generateTaskInvocation } from '../wu-spawn.mjs';
 
 /**
  * Wave manifest directory path (gitignored).
