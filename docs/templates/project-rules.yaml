@@ -1,0 +1,99 @@
+# Project-Specific COS Governance Rules Template
+#
+# This file extends hellmai-core-rules.yaml with product-specific rules.
+# Company-wide rules (TRUTH-01, UPAIN-01, FAIR-01, CASH-03, GOV-WEEKLY) are inherited.
+#
+# Guidelines for adding project rules:
+# - Use PROJECT-NN naming convention (e.g., PATIENT-01, ACME-01)
+# - Add rules when enforcement is needed (not for guidance)
+# - Start with minimal evidence, add metrics later (phased rollout)
+# - Document the "why" in notes (business context, regulatory, risk mitigation)
+
+extends: "_frameworks/cos/rules/hellmai-core-rules.yaml"
+
+rules:
+  # Example 1: Healthcare-specific compliance rule
+  - id: PROJECT-01
+    kind: guardrail
+    statement: "All patient-facing features require GDPR privacy impact assessment"
+    evidence:
+      required:
+        - "link:pia_doc"  # Privacy Impact Assessment document
+        - "approval:dpo@example.com"  # Data Protection Officer approval
+      future:
+        - "metric:data_retention_compliance"  # Automated compliance tracking
+    gate: "cos:narrative"
+    notes: |
+      Required for GDPR Article 35 (Data Protection Impact Assessment).
+      PIA must document:
+      - Data processing activities
+      - Privacy risks identified
+      - Mitigation measures implemented
+      Location: docs/compliance/privacy-impact-assessments/{feature}-{date}.md
+
+      Approval from DPO required before feature launch.
+
+      Phased rollout: v1.0 requires PIA doc + DPO approval.
+      v2.0 will add automated compliance metric when available.
+
+  # Example 2: API rate limiting rule
+  - id: PROJECT-02
+    kind: guardrail
+    statement: "External API integrations require rate limit configuration and circuit breaker"
+    evidence:
+      required:
+        - "link:api_config"  # API configuration with rate limits
+        - "screenshot:circuit_breaker_dashboard"  # Circuit breaker setup
+      future:
+        - "metric:api_error_rate"  # Error rate < 1%
+        - "metric:circuit_breaker_trips"  # Circuit breaker activation count
+    gate: "cos:narrative"
+    parameters:
+      MAX_API_ERROR_RATE: 0.01  # 1% error rate threshold
+      CIRCUIT_BREAKER_THRESHOLD: 5  # Trip after 5 consecutive failures
+    notes: |
+      Prevents cascading failures from external API outages.
+      Config must include:
+      - Rate limit (requests/second)
+      - Timeout (milliseconds)
+      - Retry strategy (exponential backoff)
+      - Circuit breaker configuration
+
+      Dashboard should show:
+      - Current circuit breaker state (CLOSED/OPEN/HALF_OPEN)
+      - Error rate trend (last 24h)
+      - Rate limit utilization
+
+      Phased rollout: v1.0 requires config + dashboard screenshot.
+      v2.0 will add automated metrics when telemetry ready.
+
+  # Example 3: Security review ritual
+  - id: PROJECT-WEEKLY-SEC
+    kind: ritual
+    statement: "Weekly security review (30min) covering recent changes and vulnerabilities"
+    evidence:
+      required: []  # Ritual, no artifacts required
+      future: []
+    gate: null  # Calendar-based, not WU-based
+    notes: |
+      Weekly security review ritual (not a deliverable).
+
+      Participants: Security lead, engineering leads, DevOps
+      Agenda:
+        - Review dependency vulnerabilities (npm audit, snyk)
+        - Review recent code changes with security implications
+        - Update security runbook if needed
+        - Plan remediation for any findings
+
+      Output: Security review notes committed to docs/security/reviews/security-{YYYY-WW}.md
+
+      Evidence is the ritual happening, not artifacts produced.
+      No gate enforcement (calendar-based).
+
+# Template instructions:
+# 1. Replace PROJECT with your project name (e.g., PATIENT for PatientPath)
+# 2. Remove or modify example rules above based on your needs
+# 3. Add rules when you need enforcement, not guidance
+# 4. Use phased rollout (minimal evidence now, metrics later)
+# 5. Document business context in notes (why this rule exists)
+# 6. Test rules with: node tools/cos-gates.mjs --dry-run

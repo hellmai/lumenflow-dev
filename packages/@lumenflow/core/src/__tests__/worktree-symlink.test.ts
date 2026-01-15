@@ -17,7 +17,7 @@ import {
   symlinkNestedNodeModules,
   NESTED_PACKAGE_PATHS,
   hasWorktreePathSymlinks,
-} from '../worktree-symlink.mjs';
+} from '../worktree-symlink.js';
 
 describe('worktree-symlink', () => {
   let tempDir;

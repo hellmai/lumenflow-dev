@@ -22,7 +22,7 @@ import {
   createToolConfig,
   ToolRunner,
   RUNNER_DEFAULTS,
-} from '../tool-runner.mjs';
+} from '../tool-runner.js';
 
 import { TOOL_DOMAINS, PERMISSION_LEVELS, TOOL_ERROR_CODES } from '../tool.constants.js';
 
@@ -65,7 +65,7 @@ function createMockDependencies() {
     })),
     getActiveScope: mock.fn(() => ({
       wuId: 'WU-1398',
-      code_paths: ['tools/lib/core/**/*.mjs'],
+      code_paths: ['tools/lib/core/**/*.js'],
     })),
     isPathInScope: mock.fn(() => true),
     assertWorktreeRequired: mock.fn(() => Promise.resolve()),
@@ -262,7 +262,7 @@ describe('tool-runner', () => {
       });
       const deps = createMockDependencies();
 
-      await runTool(tool, { path: 'tools/lib/core/test.mjs', content: 'test' }, {
+      await runTool(tool, { path: 'tools/lib/core/test.js', content: 'test' }, {
         dependencies: deps,
         config: { requiresScope: true },
       });
@@ -599,7 +599,7 @@ describe('integration scenarios', () => {
 
       const result = await runTool(
         fileWriteTool,
-        { path: 'tools/lib/core/new-file.mjs', content: 'test content' },
+        { path: 'tools/lib/core/new-file.js', content: 'test content' },
         { dependencies: deps }
       );
 

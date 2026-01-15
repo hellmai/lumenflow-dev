@@ -18,13 +18,13 @@ import os from 'node:os';
 import {
   SpawnRegistryStore,
   SPAWN_REGISTRY_FILE_NAME,
-} from '../spawn-registry-store.mjs';
+} from '../spawn-registry-store.js';
 import {
   SpawnEventSchema,
   SpawnStatus,
   validateSpawnEvent,
   generateSpawnId,
-} from '../spawn-registry-schema.mjs';
+} from '../spawn-registry-schema.js';
 
 /**
  * Test fixtures for spawn events

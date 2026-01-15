@@ -16,7 +16,7 @@ import {
   clearRecoveryAttempts,
   shouldEscalateToManualIntervention,
   getRecoveryMarkerPath,
-} from '../wu-recovery.mjs';
+} from '../wu-recovery.js';
 
 describe('wu-recovery attempt tracking (WU-1335)', () => {
   let testDir;

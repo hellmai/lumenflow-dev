@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateLaneFormat, extractParent, getSubLanesForParent } from '../lane-checker.mjs';
-import { ErrorCodes } from '../error-handler.mjs';
+import { validateLaneFormat, extractParent, getSubLanesForParent } from '../lane-checker.js';
+import { ErrorCodes } from '../error-handler.js';
 
 describe('validateLaneFormat', () => {
   describe('sub-lane validation', () => {

@@ -14,7 +14,7 @@ import {
   DEFAULT_RETRY_CONFIG,
   RETRY_PRESETS,
   RETRYABLE_ERROR_PATTERNS,
-} from '../retry-strategy.mjs';
+} from '../retry-strategy.js';
 
 describe('retry-strategy', () => {
   describe('DEFAULT_RETRY_CONFIG', () => {

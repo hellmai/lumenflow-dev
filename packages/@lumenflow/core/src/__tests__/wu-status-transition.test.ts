@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { transitionWUStatus } from '../wu-status-transition.mjs';
-import { readWU } from '../wu-yaml.mjs';
+import { transitionWUStatus } from '../wu-status-transition.js';
+import { readWU } from '../wu-yaml.js';
 
 describe('wu-status-transition', () => {
   let testDir;

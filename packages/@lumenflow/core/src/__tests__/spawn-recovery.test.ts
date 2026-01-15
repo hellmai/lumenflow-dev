@@ -24,9 +24,9 @@ import {
   RecoveryAction,
   RECOVERY_DIR_NAME,
   NO_CHECKPOINT_THRESHOLD_MS,
-} from '../spawn-recovery.mjs';
-import { SpawnRegistryStore } from '../spawn-registry-store.mjs';
-import { SpawnStatus } from '../spawn-registry-schema.mjs';
+} from '../spawn-recovery.js';
+import { SpawnRegistryStore } from '../spawn-registry-store.js';
+import { SpawnStatus } from '../spawn-registry-schema.js';
 
 /**
  * Creates a lock file with given metadata

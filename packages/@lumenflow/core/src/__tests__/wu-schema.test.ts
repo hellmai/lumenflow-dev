@@ -19,7 +19,7 @@ import {
   BaseWUSchema,
   ReadyWUSchema,
   PLACEHOLDER_SENTINEL,
-} from '../wu-schema.mjs';
+} from '../wu-schema.js';
 
 describe('wu-schema defaults', () => {
   describe('priority defaults', () => {
@@ -172,7 +172,7 @@ describe('wu-schema defaults', () => {
         acceptance: ['Criterion 1'],
         code_paths: [],
         tests: {
-          unit: ['tools/lib/__tests__/wu-schema.test.mjs'],
+          unit: ['tools/lib/__tests__/wu-schema.test.js'],
           manual: ['Run pnpm gates'],
         },
       };
@@ -180,7 +180,7 @@ describe('wu-schema defaults', () => {
       const result = validateWU(data);
       assert.ok(result.success);
       assert.deepEqual(result.data.tests, {
-        unit: ['tools/lib/__tests__/wu-schema.test.mjs'],
+        unit: ['tools/lib/__tests__/wu-schema.test.js'],
         manual: ['Run pnpm gates'],
       });
     });
@@ -538,7 +538,7 @@ describe('validateReadyWU (WU-1539)', () => {
     description:
       'A valid description that is at least fifty characters long for validation purposes.',
     acceptance: ['Criterion 1', 'Criterion 2'],
-    code_paths: ['tools/lib/wu-schema.mjs'],
+    code_paths: ['tools/lib/wu-schema.js'],
     ...overrides,
   });
 
@@ -749,7 +749,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
     description:
       'A valid description that is at least fifty characters long for validation purposes.',
     acceptance: ['Criterion 1', 'Criterion 2'],
-    code_paths: ['tools/lib/wu-schema.mjs'],
+    code_paths: ['tools/lib/wu-schema.js'],
     ...overrides,
   });
 

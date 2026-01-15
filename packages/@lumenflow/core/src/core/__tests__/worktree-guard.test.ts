@@ -17,7 +17,7 @@ import {
   getWUContext,
   assertWorktreeRequired,
   isMainBranch,
-} from '../worktree-guard.mjs';
+} from '../worktree-guard.js';
 
 describe('isMainBranch', () => {
   it('should return true when on main branch', async () => {

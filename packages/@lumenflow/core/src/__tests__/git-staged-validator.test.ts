@@ -20,7 +20,7 @@ const errorHandlerMock = {
 // Import with mocked dependencies
 async function createMockedModule() {
   // Clear module cache to ensure fresh import with mocks
-  const modulePath = new URL('../git-staged-validator.mjs', import.meta.url).pathname;
+  const modulePath = new URL('../git-staged-validator.js', import.meta.url).pathname;
 
   // Re-import the module (Node.js test runner handles module isolation)
   const { ensureStaged } = await import(modulePath);
@@ -38,7 +38,7 @@ describe('ensureStaged', () => {
 
   it('should validate all files are staged (basic case)', () => {
     // Test the logic directly without module mocking
-    const stagedFiles = 'docs/file1.md\ndocs/file2.md\ntools/script.mjs';
+    const stagedFiles = 'docs/file1.md\ndocs/file2.md\ntools/script.js';
     const paths = ['docs/file1.md', 'docs/file2.md'];
 
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
@@ -49,12 +49,12 @@ describe('ensureStaged', () => {
 
   it('should detect missing files', () => {
     const stagedFiles = 'docs/file1.md';
-    const paths = ['docs/file1.md', 'docs/file2.md', 'tools/script.mjs'];
+    const paths = ['docs/file1.md', 'docs/file2.md', 'tools/script.js'];
 
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.deepEqual(missing, ['docs/file2.md', 'tools/script.mjs']);
+    assert.deepEqual(missing, ['docs/file2.md', 'tools/script.js']);
   });
 
   it('should handle empty staged list', () => {
@@ -103,7 +103,7 @@ describe('ensureStaged', () => {
   });
 
   it('should handle Windows line endings (CRLF)', () => {
-    const stagedFiles = 'docs/file1.md\r\ndocs/file2.md\r\ntools/script.mjs';
+    const stagedFiles = 'docs/file1.md\r\ndocs/file2.md\r\ntools/script.js';
     const paths = ['docs/file1.md', 'docs/file2.md'];
 
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
@@ -113,14 +113,14 @@ describe('ensureStaged', () => {
   });
 
   it('should return staged files list when all paths are staged', () => {
-    const stagedFiles = 'docs/file1.md\ndocs/file2.md\ntools/script.mjs';
+    const stagedFiles = 'docs/file1.md\ndocs/file2.md\ntools/script.js';
     const paths = ['docs/file1.md', 'docs/file2.md'];
 
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
     if (missing.length === 0) {
-      assert.deepEqual(staged, ['docs/file1.md', 'docs/file2.md', 'tools/script.mjs']);
+      assert.deepEqual(staged, ['docs/file1.md', 'docs/file2.md', 'tools/script.js']);
     }
   });
 
@@ -136,7 +136,7 @@ describe('ensureStaged', () => {
   });
 
   it('should handle mixed exact and prefix paths', () => {
-    const stagedFiles = 'docs/file.md\ntools/wu-done.mjs\ntools/lib/helper.mjs';
+    const stagedFiles = 'docs/file.md\ntools/wu-done.mjs\ntools/lib/helper.js';
     const paths = ['docs/file.md', 'tools/'];
 
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);

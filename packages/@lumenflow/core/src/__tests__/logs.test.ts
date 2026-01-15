@@ -63,7 +63,7 @@ describe('logs tool', () => {
     let parseLogLine;
 
     beforeEach(async () => {
-      const mod = await import('../logs-lib.mjs');
+      const mod = await import('../logs-lib.js');
       parseLogLine = mod.parseLogLine;
     });
 
@@ -90,7 +90,7 @@ describe('logs tool', () => {
     let filterLogs;
 
     beforeEach(async () => {
-      const mod = await import('../logs-lib.mjs');
+      const mod = await import('../logs-lib.js');
       filterLogs = mod.filterLogs;
     });
 
@@ -145,7 +145,7 @@ describe('logs tool', () => {
     let aggregateLogs;
 
     beforeEach(async () => {
-      const mod = await import('../logs-lib.mjs');
+      const mod = await import('../logs-lib.js');
       aggregateLogs = mod.aggregateLogs;
 
       // Create test log files
@@ -192,7 +192,7 @@ describe('logs tool', () => {
     let parseLogsArgs;
 
     beforeEach(async () => {
-      const mod = await import('../logs-lib.mjs');
+      const mod = await import('../logs-lib.js');
       parseLogsArgs = mod.parseLogsArgs;
     });
 

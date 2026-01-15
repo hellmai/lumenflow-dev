@@ -26,7 +26,7 @@ import {
   COVERAGE_GATE_MODES,
   HEX_CORE_PATTERNS,
   COVERAGE_THRESHOLD,
-} from '../coverage-gate.mjs';
+} from '../coverage-gate.js';
 
 describe('coverage-gate constants', () => {
   it('defines COVERAGE_GATE_MODES with warn and block', () => {
@@ -81,8 +81,8 @@ describe('isHexCoreFile', () => {
   });
 
   it('returns false for tooling files', () => {
-    assert.strictEqual(isHexCoreFile('tools/gates.mjs'), false);
-    assert.strictEqual(isHexCoreFile('tools/lib/coverage-gate.mjs'), false);
+    assert.strictEqual(isHexCoreFile('tools/gates.js'), false);
+    assert.strictEqual(isHexCoreFile('tools/lib/coverage-gate.js'), false);
   });
 
   it('returns false for null/undefined', () => {
@@ -265,12 +265,12 @@ describe('formatCoverageDelta', () => {
 
 describe('coverage gate integration', () => {
   it('exports runCoverageGate function', async () => {
-    const { runCoverageGate } = await import('../coverage-gate.mjs');
+    const { runCoverageGate } = await import('../coverage-gate.js');
     assert.ok(typeof runCoverageGate === 'function');
   });
 
   it('runCoverageGate accepts mode parameter', async () => {
-    const { runCoverageGate, COVERAGE_GATE_MODES } = await import('../coverage-gate.mjs');
+    const { runCoverageGate, COVERAGE_GATE_MODES } = await import('../coverage-gate.js');
 
     // Function should accept mode as option and return result object
     // Note: This will need actual coverage file to run properly
@@ -291,7 +291,7 @@ describe('coverage gate integration', () => {
     mkdirSync(TEST_DIR, { recursive: true });
 
     try {
-      const { runCoverageGate, COVERAGE_GATE_MODES } = await import('../coverage-gate.mjs');
+      const { runCoverageGate, COVERAGE_GATE_MODES } = await import('../coverage-gate.js');
 
       // Coverage data with hex core file below 90% threshold (using absolute path as reporters do)
       const coverageData = {

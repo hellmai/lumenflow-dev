@@ -19,7 +19,7 @@ import {
   isCleanupLockZombie,
   withCleanupLock,
   CLEANUP_LOCK_STALE_MS,
-} from '../cleanup-lock.mjs';
+} from '../cleanup-lock.js';
 
 describe('cleanup-lock', () => {
   let testDir;

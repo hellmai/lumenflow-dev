@@ -14,7 +14,7 @@ import {
   getGatesLatestSymlinkPath,
   updateGatesLatestSymlink,
   getGatesLogDir,
-} from '../gates-agent-mode.mjs';
+} from '../gates-agent-mode.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEST_FIXTURE_DIR = path.join(__dirname, '.test-fixtures-symlink');

@@ -13,9 +13,9 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { BacklogManager } from '../wu-backlog-manager.mjs';
-import { TEST_WU_IDS } from '../../__fixtures__/wu-fixtures.mjs';
-import { BACKLOG_BULLET_FORMAT } from '../wu-constants.mjs';
+import { BacklogManager } from '../wu-backlog-manager.js';
+import { TEST_WU_IDS } from '../../__fixtures__/wu-fixtures.js';
+import { BACKLOG_BULLET_FORMAT } from '../wu-constants.js';
 
 // Test WU IDs - use fixtures for consistent naming
 const WU_IDS = {

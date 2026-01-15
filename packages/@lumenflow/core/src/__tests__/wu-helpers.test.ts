@@ -9,7 +9,7 @@ import {
   extractWUFromBranch,
   validateBranchName,
   extractWUFromCommitMessage,
-} from '../wu-helpers.mjs';
+} from '../wu-helpers.js';
 
 describe('validateWUIDFormat', () => {
   let consoleErrorSpy;

@@ -10,7 +10,7 @@ import {
   inferDefaultDomain,
   isValidEmail,
   DEFAULT_DOMAIN,
-} from '../user-normalizer.mjs';
+} from '../user-normalizer.js';
 
 describe('user-normalizer (WU-1333)', () => {
   describe('isValidEmail', () => {

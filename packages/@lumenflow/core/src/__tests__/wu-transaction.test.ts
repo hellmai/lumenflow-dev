@@ -12,7 +12,7 @@ import {
   WUTransaction,
   createTransactionSnapshot,
   restoreFromSnapshot,
-} from '../wu-transaction.mjs';
+} from '../wu-transaction.js';
 
 // Test constants - mock paths for unit tests (no actual I/O)
 const TEST_DIR = path.join(os.tmpdir(), 'wu-transaction-test');

@@ -24,7 +24,7 @@ import {
   repairBacklogInvariants,
   validateBacklogFromContent,
   BacklogRepairError,
-} from '../backlog-invariants.mjs';
+} from '../backlog-invariants.js';
 
 const TEST_DIR = '.test-backlog-invariants';
 const TEST_BACKLOG = path.join(TEST_DIR, 'backlog.md');
@@ -376,7 +376,7 @@ describe('backlog-invariants (WU-1506)', () => {
     // Import from backlog-sync-validator (existing location)
     it('should return content without writing when returnContent=true', async () => {
       // Dynamically import to test updated function
-      const { fixBacklogDuplicates } = await import('../backlog-sync-validator.mjs');
+      const { fixBacklogDuplicates } = await import('../backlog-sync-validator.js');
 
       const backlog = `${FRONTMATTER}
 
@@ -408,7 +408,7 @@ describe('backlog-invariants (WU-1506)', () => {
     });
 
     it('should maintain backwards compatibility - default writes to file', async () => {
-      const { fixBacklogDuplicates } = await import('../backlog-sync-validator.mjs');
+      const { fixBacklogDuplicates } = await import('../backlog-sync-validator.js');
 
       const backlog = `${FRONTMATTER}
 

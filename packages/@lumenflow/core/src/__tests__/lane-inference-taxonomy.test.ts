@@ -318,7 +318,7 @@ describe('Lane Inference Integration (WU-2439)', () => {
    */
 
   it('should infer correctly for Intelligence: Orchestrator with expanded keywords', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     // Test with streaming-related description
     const result = inferSubLane(
@@ -331,7 +331,7 @@ describe('Lane Inference Integration (WU-2439)', () => {
   });
 
   it('should infer correctly for Intelligence: Evaluation with expanded keywords', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     const result = inferSubLane(
       ['tools/prompts-eval/harness.ts'],
@@ -343,7 +343,7 @@ describe('Lane Inference Integration (WU-2439)', () => {
   });
 
   it('should infer correctly for Experience: Mobile with expanded keywords', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     const result = inferSubLane(['apps/mobile/App.tsx'], 'Fix mobile app navigation on iOS');
 
@@ -352,7 +352,7 @@ describe('Lane Inference Integration (WU-2439)', () => {
   });
 
   it('should distinguish between CI/CD workflow and Governance workflow', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     // CI/CD workflow (GitHub Actions)
     const cicdResult = inferSubLane(
@@ -371,7 +371,7 @@ describe('Lane Inference Integration (WU-2439)', () => {
   });
 
   it('should distinguish between Data schema and Workflow Engine schema', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     // Data schema (database)
     const dataResult = inferSubLane(
@@ -380,14 +380,14 @@ describe('Lane Inference Integration (WU-2439)', () => {
     );
 
     // Workflow Engine schema (WU validation)
-    const wfResult = inferSubLane(['tools/lib/wu-schema.mjs'], 'Update WU schema validation');
+    const wfResult = inferSubLane(['tools/lib/wu-schema.js'], 'Update WU schema validation');
 
     expect(dataResult.lane).toBe('Core Systems: Data');
     expect(wfResult.lane).toBe('Operations: Workflow Engine');
   });
 
   it('should not infer from stale paths after removal', async () => {
-    const { inferSubLane } = await import('../lane-inference.mjs');
+    const { inferSubLane } = await import('../lane-inference.js');
 
     // These paths don't exist, so they shouldn't strongly influence inference
     // The inference should fall back to description/other patterns

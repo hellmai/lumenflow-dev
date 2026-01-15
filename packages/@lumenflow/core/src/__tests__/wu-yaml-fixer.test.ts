@@ -7,7 +7,7 @@
  */
 
 import assert from 'node:assert';
-import { detectFixableIssues, applyFixes, FIXABLE_ISSUES } from '../wu-yaml-fixer.mjs';
+import { detectFixableIssues, applyFixes, FIXABLE_ISSUES } from '../wu-yaml-fixer.js';
 
 // Test 1: Detect ISO timestamp in created field
 function testDetectISOTimestamp() {

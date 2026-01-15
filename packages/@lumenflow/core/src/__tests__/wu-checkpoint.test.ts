@@ -15,7 +15,7 @@ import {
   clearCheckpoint,
   canSkipGates,
   CHECKPOINT_SCHEMA_VERSION,
-} from '../wu-checkpoint.mjs';
+} from '../wu-checkpoint.js';
 
 describe('wu-checkpoint', () => {
   let testDir;

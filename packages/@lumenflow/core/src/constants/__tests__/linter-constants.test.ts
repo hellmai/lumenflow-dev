@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { LINTER_CONFIG } from '../linter-constants.mjs';
+import { LINTER_CONFIG } from '../linter-constants.js';
 
 describe('linter-constants', () => {
   describe('LINTER_CONFIG', () => {

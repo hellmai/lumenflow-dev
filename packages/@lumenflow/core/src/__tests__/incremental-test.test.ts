@@ -10,8 +10,8 @@ import {
   CODE_FILE_EXTENSIONS,
   isCodeFilePath,
   VITEST_CHANGED_EXCLUDES,
-} from '../incremental-test.mjs';
-import { GIT_REFS } from '../wu-constants.mjs';
+} from '../incremental-test.js';
+import { GIT_REFS } from '../wu-constants.js';
 
 describe('VITEST_CHANGED_EXCLUDES', () => {
   it('should include integration and golden test exclusions', () => {
@@ -33,7 +33,7 @@ describe('isCodeFilePath', () => {
   it('should return true for code file extensions', () => {
     assert.equal(isCodeFilePath('apps/web/src/app/page.tsx'), true);
     assert.equal(isCodeFilePath('packages/@patientpath/shared/src/index.ts'), true);
-    assert.equal(isCodeFilePath('tools/scripts/build.mjs'), true);
+    assert.equal(isCodeFilePath('tools/scripts/build.js'), true);
   });
 
   it('should return false for non-code files', () => {

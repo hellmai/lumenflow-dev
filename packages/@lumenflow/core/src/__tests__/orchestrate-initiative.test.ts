@@ -116,7 +116,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // This function should exist and create a manifest
@@ -138,7 +138,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-003', { initiative: 'INIT-001', status: 'done' });
       createWU('WU-004', { initiative: 'INIT-001', status: 'blocked' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -158,7 +158,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
       createStamp('WU-001'); // WU-001 already done
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -176,7 +176,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready', lane: 'Operations' });
       createWU('WU-003', { initiative: 'INIT-001', status: 'ready', lane: 'Intelligence' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -202,7 +202,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         'utf8'
       );
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -216,7 +216,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'done' });
       createStamp('WU-001');
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -234,7 +234,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // Call with dryRun option
@@ -257,7 +257,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-002');
       createWU('WU-010', { initiative: 'INIT-002', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // Call without dryRun (default behavior)
@@ -277,7 +277,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready', lane: 'Intelligence' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { formatCheckpointOutput } = mod;
 
       const output = formatCheckpointOutput({
@@ -298,7 +298,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     });
 
     it('should include resume instructions', async () => {
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { formatCheckpointOutput } = mod;
 
       const output = formatCheckpointOutput({
@@ -322,7 +322,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // This tests CLI argument validation
       // The actual CLI behavior - we test the validation logic
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { validateCheckpointFlags } = mod;
 
       // The function should exist and throw for invalid combinations
@@ -334,7 +334,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     });
 
     it('should allow -c without --dry-run', async () => {
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { validateCheckpointFlags } = mod;
 
       // Should not throw
@@ -363,7 +363,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         'utf8'
       );
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -384,7 +384,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createStamp('WU-001');
 
       // Even if manifest doesn't have it, stamp should win
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -402,7 +402,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -419,7 +419,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready', lane: 'Operations' });
 
-      const mod = await import('../initiative-orchestrator.mjs');
+      const mod = await import('../initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');

@@ -14,7 +14,7 @@ import {
   detectOrphanRefs,
   validateInitiativeRefs,
   validateDependencyGraph,
-} from '../initiative-validator.mjs';
+} from '../initiative-validator.js';
 
 describe('initiative-validator', () => {
   describe('detectCycles', () => {

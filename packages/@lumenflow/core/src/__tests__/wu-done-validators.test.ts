@@ -14,8 +14,8 @@ import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 // Import the functions to test
-import { isSkipWebTestsPath } from '../path-classifiers.mjs';
-import { rollbackFiles, RollbackResult } from '../rollback-utils.mjs';
+import { isSkipWebTestsPath } from '../path-classifiers.js';
+import { rollbackFiles, RollbackResult } from '../rollback-utils.js';
 
 describe('isSkipWebTestsPath', () => {
   describe('documentation paths', () => {
@@ -46,17 +46,17 @@ describe('isSkipWebTestsPath', () => {
 
   describe('tooling paths (WU-1255)', () => {
     it('returns true for tools/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('tools/wu-done.mjs'), true);
-      assert.strictEqual(isSkipWebTestsPath('tools/lib/wu-constants.mjs'), true);
+      assert.strictEqual(isSkipWebTestsPath('tools/wu-done.js'), true);
+      assert.strictEqual(isSkipWebTestsPath('tools/lib/wu-constants.js'), true);
       assert.strictEqual(
-        isSkipWebTestsPath('tools/lib/__tests__/wu-done-validators.test.mjs'),
+        isSkipWebTestsPath('tools/lib/__tests__/wu-done-validators.test.js'),
         true
       );
     });
 
     it('returns true for scripts/ paths', () => {
       assert.strictEqual(isSkipWebTestsPath('scripts/deploy.sh'), true);
-      assert.strictEqual(isSkipWebTestsPath('scripts/setup/init.mjs'), true);
+      assert.strictEqual(isSkipWebTestsPath('scripts/setup/init.js'), true);
     });
   });
 
@@ -101,32 +101,32 @@ describe('isSkipWebTestsPath', () => {
 describe('shouldSkipWebTests', () => {
   // This is the aggregate function that checks ALL code_paths
   it('returns true when ALL paths are skip-tests paths', async () => {
-    const { shouldSkipWebTests } = await import('../path-classifiers.mjs');
+    const { shouldSkipWebTests } = await import('../path-classifiers.js');
 
     const docsOnly = ['docs/README.md', 'ai/onboarding/guide.md'];
     assert.strictEqual(shouldSkipWebTests(docsOnly), true);
 
-    const toolsOnly = ['tools/wu-done.mjs', 'tools/lib/helpers.mjs'];
+    const toolsOnly = ['tools/wu-done.js', 'tools/lib/helpers.js'];
     assert.strictEqual(shouldSkipWebTests(toolsOnly), true);
 
-    const mixed = ['docs/README.md', 'tools/wu-done.mjs'];
+    const mixed = ['docs/README.md', 'tools/wu-done.js'];
     assert.strictEqual(shouldSkipWebTests(mixed), true);
   });
 
   it('returns false when ANY path requires tests', async () => {
-    const { shouldSkipWebTests } = await import('../path-classifiers.mjs');
+    const { shouldSkipWebTests } = await import('../path-classifiers.js');
 
     const mixedWithApp = ['docs/README.md', 'apps/web/src/page.tsx'];
     assert.strictEqual(shouldSkipWebTests(mixedWithApp), false);
   });
 
   it('returns false for empty array', async () => {
-    const { shouldSkipWebTests } = await import('../path-classifiers.mjs');
+    const { shouldSkipWebTests } = await import('../path-classifiers.js');
     assert.strictEqual(shouldSkipWebTests([]), false);
   });
 
   it('returns false for null/undefined', async () => {
-    const { shouldSkipWebTests } = await import('../path-classifiers.mjs');
+    const { shouldSkipWebTests } = await import('../path-classifiers.js');
     assert.strictEqual(shouldSkipWebTests(null), false);
     assert.strictEqual(shouldSkipWebTests(undefined), false);
   });
@@ -275,7 +275,7 @@ describe('validateCodePathsExist (WU-1351)', () => {
   });
 
   it('should pass validation when code_paths is empty', async () => {
-    const { validateCodePathsExist } = await import('../wu-done-validators.mjs');
+    const { validateCodePathsExist } = await import('../wu-done-validators.js');
 
     const doc = { id: 'WU-1351', code_paths: [] };
     const result = await validateCodePathsExist(doc, 'WU-1351');
@@ -286,7 +286,7 @@ describe('validateCodePathsExist (WU-1351)', () => {
   });
 
   it('should pass validation when code_paths is undefined', async () => {
-    const { validateCodePathsExist } = await import('../wu-done-validators.mjs');
+    const { validateCodePathsExist } = await import('../wu-done-validators.js');
 
     const doc = { id: 'WU-1351' };
     const result = await validateCodePathsExist(doc, 'WU-1351');
@@ -295,17 +295,17 @@ describe('validateCodePathsExist (WU-1351)', () => {
   });
 
   it('should pass when all files exist in worktree', async () => {
-    const { validateCodePathsExist } = await import('../wu-done-validators.mjs');
+    const { validateCodePathsExist } = await import('../wu-done-validators.js');
 
     // Create test files
-    const file1 = join(testDir, 'file1.mjs');
-    const file2 = join(testDir, 'file2.mjs');
+    const file1 = join(testDir, 'file1.js');
+    const file2 = join(testDir, 'file2.js');
     writeFileSync(file1, 'content1');
     writeFileSync(file2, 'content2');
 
     const doc = {
       id: 'WU-1351',
-      code_paths: ['file1.mjs', 'file2.mjs'],
+      code_paths: ['file1.js', 'file2.js'],
     };
 
     const result = await validateCodePathsExist(doc, 'WU-1351', {
@@ -317,15 +317,15 @@ describe('validateCodePathsExist (WU-1351)', () => {
   });
 
   it('should fail when files are missing from worktree', async () => {
-    const { validateCodePathsExist } = await import('../wu-done-validators.mjs');
+    const { validateCodePathsExist } = await import('../wu-done-validators.js');
 
     // Create only one file
-    const file1 = join(testDir, 'existing-file.mjs');
+    const file1 = join(testDir, 'existing-file.js');
     writeFileSync(file1, 'content');
 
     const doc = {
       id: 'WU-1351',
-      code_paths: ['existing-file.mjs', 'missing-file.mjs'],
+      code_paths: ['existing-file.js', 'missing-file.js'],
     };
 
     const result = await validateCodePathsExist(doc, 'WU-1351', {
@@ -333,16 +333,16 @@ describe('validateCodePathsExist (WU-1351)', () => {
     });
 
     assert.strictEqual(result.valid, false);
-    assert.ok(result.missing.includes('missing-file.mjs'));
+    assert.ok(result.missing.includes('missing-file.js'));
     assert.ok(result.errors[0].includes('code_paths validation failed'));
   });
 
   it('should report all missing files in error', async () => {
-    const { validateCodePathsExist } = await import('../wu-done-validators.mjs');
+    const { validateCodePathsExist } = await import('../wu-done-validators.js');
 
     const doc = {
       id: 'WU-1351',
-      code_paths: ['missing1.mjs', 'missing2.mjs', 'missing3.mjs'],
+      code_paths: ['missing1.js', 'missing2.js', 'missing3.js'],
     };
 
     const result = await validateCodePathsExist(doc, 'WU-1351', {
@@ -351,9 +351,9 @@ describe('validateCodePathsExist (WU-1351)', () => {
 
     assert.strictEqual(result.valid, false);
     assert.strictEqual(result.missing.length, 3);
-    assert.ok(result.errors[0].includes('missing1.mjs'));
-    assert.ok(result.errors[0].includes('missing2.mjs'));
-    assert.ok(result.errors[0].includes('missing3.mjs'));
+    assert.ok(result.errors[0].includes('missing1.js'));
+    assert.ok(result.errors[0].includes('missing2.js'));
+    assert.ok(result.errors[0].includes('missing3.js'));
   });
 });
 
@@ -376,7 +376,7 @@ describe('validatePostMutation (WU-1617)', () => {
   });
 
   it('should pass validation when all required fields are present', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create valid WU YAML with all required done fields
     const validYAML = `id: WU-1617
@@ -397,7 +397,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when completed_at is missing', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML WITHOUT completed_at
     const yamlMissingCompletedAt = `id: WU-1617
@@ -415,7 +415,7 @@ locked: true
   });
 
   it('should fail when locked is missing', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML WITHOUT locked
     const yamlMissingLocked = `id: WU-1617
@@ -433,7 +433,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when locked is false', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML with locked: false
     const yamlLockedFalse = `id: WU-1617
@@ -452,7 +452,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when stamp file is missing', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create valid WU YAML but no stamp file
     const validYAML = `id: WU-1617
@@ -471,7 +471,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when WU YAML file is missing', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create stamp file but no WU YAML
     writeFileSync(stampPath, 'WU WU-1617 — Test WU\nCompleted: 2025-01-01\n');
@@ -484,7 +484,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when status is not done', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML with status: in_progress (wrong status after tx.commit)
     const yamlWrongStatus = `id: WU-1617
@@ -503,7 +503,7 @@ completed_at: ${new Date().toISOString()}
   });
 
   it('should fail when completed_at is invalid datetime', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML with invalid completed_at
     const yamlInvalidDate = `id: WU-1617
@@ -522,7 +522,7 @@ completed_at: "not-a-date"
   });
 
   it('should report multiple validation errors at once', async () => {
-    const { validatePostMutation } = await import('../wu-done-validators.mjs');
+    const { validatePostMutation } = await import('../wu-done-validators.js');
 
     // Create WU YAML missing multiple fields
     const yamlMultipleMissing = `id: WU-1617

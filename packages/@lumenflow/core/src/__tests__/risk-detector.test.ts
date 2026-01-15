@@ -23,7 +23,7 @@ import {
   isSafetyCriticalTest,
   isHighRiskPath,
   isHighRiskMigration,
-} from '../risk-detector.mjs';
+} from '../risk-detector.js';
 
 describe('RISK_TIERS', () => {
   it('should define all risk tier constants', () => {
@@ -168,7 +168,7 @@ describe('isHighRiskPath', () => {
   it('should return false for non-high-risk paths', () => {
     assert.equal(isHighRiskPath('src/lib/utils.ts'), false);
     assert.equal(isHighRiskPath('src/components/Button.tsx'), false);
-    assert.equal(isHighRiskPath('tools/lib/gates.mjs'), false);
+    assert.equal(isHighRiskPath('tools/lib/gates.js'), false);
   });
 });
 

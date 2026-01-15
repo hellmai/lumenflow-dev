@@ -4,7 +4,7 @@ import {
   PATH_TYPES,
   getRemediation,
   findHardcodedPathViolations,
-} from '../hardcoded-strings.mjs';
+} from '../hardcoded-strings.js';
 
 describe('hardcoded-strings', () => {
   describe('PATH_TYPES', () => {

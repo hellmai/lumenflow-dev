@@ -12,7 +12,7 @@ import {
   InitiativeSchema,
   InitiativePhaseSchema,
   validateInitiative,
-} from '../initiative-schema.mjs';
+} from '../initiative-schema.js';
 
 describe('initiative-schema', () => {
   describe('InitiativePhaseSchema', () => {

@@ -11,7 +11,7 @@ import {
   stringifyYAML,
   readWURaw,
   YAML_STRINGIFY_OPTIONS,
-} from '../wu-yaml.mjs';
+} from '../wu-yaml.js';
 
 describe('wu-yaml', () => {
   let testDir;
@@ -86,7 +86,7 @@ code_paths:
       const result = readWU(wuPath, 'WU-789');
       assert.equal(result.id, 'WU-789');
       assert.deepEqual(result.acceptance, ['First criteria', 'Second criteria']);
-      assert.deepEqual(result.code_paths, ['tools/lib/wu-paths.mjs', 'tools/wu-claim.mjs']);
+      assert.deepEqual(result.code_paths, ['tools/lib/wu-paths.js', 'tools/wu-claim.js']);
     });
   });
 
@@ -116,7 +116,7 @@ code_paths:
         id: 'WU-456',
         title: 'Complex WU',
         acceptance: ['First', 'Second'],
-        code_paths: ['file1.mjs', 'file2.mjs'],
+        code_paths: ['file1.js', 'file2.js'],
         dependencies: [],
         notes: 'Some notes here',
       };
@@ -127,7 +127,7 @@ code_paths:
       const result = readWU(wuPath, 'WU-456');
       assert.equal(result.id, 'WU-456');
       assert.deepEqual(result.acceptance, ['First', 'Second']);
-      assert.deepEqual(result.code_paths, ['file1.mjs', 'file2.mjs']);
+      assert.deepEqual(result.code_paths, ['file1.js', 'file2.js']);
       assert.deepEqual(result.dependencies, []);
       assert.equal(result.notes, 'Some notes here');
     });

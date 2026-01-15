@@ -23,7 +23,7 @@ import {
   generateHazardMatrix,
   generateValidationReport,
   validateCrossReferences,
-} from '../generate-traceability.mjs';
+} from '../generate-traceability.js';
 
 describe('generate-traceability', () => {
   describe('parseHazardLog', () => {

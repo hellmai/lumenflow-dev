@@ -6,7 +6,7 @@ import {
   defaultWorktreeFrom,
   resolveRepoRoot,
   getStateStoreDirFromBacklog,
-} from '../wu-paths.mjs';
+} from '../wu-paths.js';
 
 describe('WU_PATHS', () => {
   describe('WU', () => {

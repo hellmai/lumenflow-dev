@@ -13,7 +13,7 @@ import {
   getChangedLintableFiles,
   isLintableFile,
   LINTABLE_EXTENSIONS,
-} from '../incremental-lint.mjs';
+} from '../incremental-lint.js';
 
 describe('isLintableFile', () => {
   it('should return true for TypeScript files', () => {
@@ -24,7 +24,7 @@ describe('isLintableFile', () => {
   it('should return true for JavaScript files', () => {
     assert.equal(isLintableFile('src/utils.js'), true);
     assert.equal(isLintableFile('src/helper.jsx'), true);
-    assert.equal(isLintableFile('tools/script.mjs'), true);
+    assert.equal(isLintableFile('tools/script.js'), true);
   });
 
   it('should return false for non-lintable files', () => {
@@ -48,7 +48,7 @@ describe('LINTABLE_EXTENSIONS', () => {
     assert.ok(LINTABLE_EXTENSIONS.includes('.tsx'));
     assert.ok(LINTABLE_EXTENSIONS.includes('.js'));
     assert.ok(LINTABLE_EXTENSIONS.includes('.jsx'));
-    assert.ok(LINTABLE_EXTENSIONS.includes('.mjs'));
+    assert.ok(LINTABLE_EXTENSIONS.includes('.js'));
   });
 });
 
@@ -215,14 +215,14 @@ describe('getChangedLintableFiles', () => {
       raw: mock.fn(async (args) => {
         if (args[0] === 'diff' && args.length === 2 && args[1] === '--name-only') {
           // git diff --name-only (unstaged changes)
-          return 'apps/web/src/unstaged.ts\ntools/unstaged.mjs';
+          return 'apps/web/src/unstaged.ts\ntools/unstaged.js';
         }
         if (args[0] === 'ls-files') {
           // git ls-files --others --exclude-standard (untracked)
-          return 'apps/web/src/untracked.ts\ntools/untracked.mjs';
+          return 'apps/web/src/untracked.ts\ntools/untracked.js';
         }
         // git diff --name-only <merge-base>...HEAD (committed changes)
-        return 'apps/web/src/committed.ts\ntools/committed.mjs';
+        return 'apps/web/src/committed.ts\ntools/committed.js';
       }),
     };
 
@@ -236,8 +236,8 @@ describe('getChangedLintableFiles', () => {
     assert.ok(result.includes('apps/web/src/committed.ts'));
     assert.ok(result.includes('apps/web/src/unstaged.ts'));
     assert.ok(result.includes('apps/web/src/untracked.ts'));
-    assert.ok(!result.includes('tools/unstaged.mjs'), 'Should not include tools/ files');
-    assert.ok(!result.includes('tools/untracked.mjs'), 'Should not include tools/ files');
+    assert.ok(!result.includes('tools/unstaged.js'), 'Should not include tools/ files');
+    assert.ok(!result.includes('tools/untracked.js'), 'Should not include tools/ files');
   });
 
   it('should call git commands for unstaged and untracked files', async () => {
@@ -274,7 +274,7 @@ describe('convertToPackageRelativePaths', () => {
   let convertToPackageRelativePaths;
 
   before(async () => {
-    const module = await import('../incremental-lint.mjs');
+    const module = await import('../incremental-lint.js');
     convertToPackageRelativePaths = module.convertToPackageRelativePaths;
   });
 
@@ -288,7 +288,7 @@ describe('convertToPackageRelativePaths', () => {
   });
 
   it('should handle paths that do not start with the package prefix', () => {
-    const repoRelativePaths = ['apps/web/src/app.ts', 'tools/script.mjs'];
+    const repoRelativePaths = ['apps/web/src/app.ts', 'tools/script.js'];
     const packagePrefix = 'apps/web/';
 
     const result = convertToPackageRelativePaths(repoRelativePaths, packagePrefix);

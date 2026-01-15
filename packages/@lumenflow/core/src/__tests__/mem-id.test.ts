@@ -14,7 +14,7 @@ import {
   generateHierarchicalId,
   validateMemId,
   MEM_ID_PATTERNS,
-} from '../mem-id.mjs';
+} from '../mem-id.js';
 
 describe('mem-id', () => {
   describe('MEM_ID_PATTERNS', () => {
@@ -240,7 +240,7 @@ describe('mem-id', () => {
 
     it('should be compatible with MEMORY_PATTERNS.MEMORY_ID from schema', async () => {
       // Import the schema pattern for compatibility check
-      const { MEMORY_PATTERNS } = await import('../memory-schema.mjs');
+      const { MEMORY_PATTERNS } = await import('../memory-schema.js');
 
       // Base IDs from generateMemId should match the schema pattern
       const generatedId = generateMemId('test content');

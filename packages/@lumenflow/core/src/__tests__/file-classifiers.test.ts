@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isTestFile, isMarkdownFile, isDocumentationPath } from '../file-classifiers.mjs';
+import { isTestFile, isMarkdownFile, isDocumentationPath } from '../file-classifiers.js';
 
 describe('isTestFile', () => {
   describe('test file extensions', () => {
@@ -24,7 +24,7 @@ describe('isTestFile', () => {
 
     it('should detect .test.js and .test.mjs files', () => {
       expect(isTestFile('src/utils.test.js')).toBe(true);
-      expect(isTestFile('tools/lib/utils.test.mjs')).toBe(true);
+      expect(isTestFile('tools/lib/utils.test.js')).toBe(true);
     });
 
     it('should detect files in __tests__ directories', () => {
@@ -46,7 +46,7 @@ describe('isTestFile', () => {
     it('should return false for regular source files', () => {
       expect(isTestFile('src/utils.ts')).toBe(false);
       expect(isTestFile('src/component.tsx')).toBe(false);
-      expect(isTestFile('tools/lib/validator.mjs')).toBe(false);
+      expect(isTestFile('tools/lib/validator.js')).toBe(false);
     });
 
     it('should return false for configuration files', () => {
@@ -116,6 +116,6 @@ describe('isDocumentationPath', () => {
   it('should return false for code files', () => {
     expect(isDocumentationPath('src/utils.ts')).toBe(false);
     expect(isDocumentationPath('apps/web/src/lib/helper.ts')).toBe(false);
-    expect(isDocumentationPath('tools/lib/validator.mjs')).toBe(false);
+    expect(isDocumentationPath('tools/lib/validator.js')).toBe(false);
   });
 });

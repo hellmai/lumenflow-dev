@@ -20,7 +20,7 @@ import {
   criticalPath,
   impactScore,
   bottlenecks,
-} from '../dependency-graph.mjs';
+} from '../dependency-graph.js';
 
 describe('dependency-graph', () => {
   describe('getUpstreamDependencies', () => {

@@ -15,7 +15,7 @@ import {
   readLockMetadata,
   auditedUnlock,
   getStaleThresholdMs,
-} from '../lane-lock.mjs';
+} from '../lane-lock.js';
 
 /**
  * Unit tests for lane-lock.mjs

@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
-import { validateBacklogSync, fixBacklogDuplicates } from '../backlog-sync-validator.mjs';
+import { validateBacklogSync, fixBacklogDuplicates } from '../backlog-sync-validator.js';
 
 const TEST_DIR = '.test-backlog-validator';
 const TEST_BACKLOG = path.join(TEST_DIR, 'backlog.md');

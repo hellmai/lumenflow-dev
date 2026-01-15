@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { IN_PROGRESS_HEADERS, WU_LINK_PATTERN, isInProgressHeader } from '../backlog-patterns.mjs';
+import { IN_PROGRESS_HEADERS, WU_LINK_PATTERN, isInProgressHeader } from '../backlog-patterns.js';
 
 describe('backlog-patterns', () => {
   describe('IN_PROGRESS_HEADERS', () => {

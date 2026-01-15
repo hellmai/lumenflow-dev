@@ -10,7 +10,7 @@ import {
   removeBulletFromSection,
   addBulletToSection,
   moveBullet,
-} from '../backlog-editor.mjs';
+} from '../backlog-editor.js';
 
 describe('backlog-editor', () => {
   let testDir;

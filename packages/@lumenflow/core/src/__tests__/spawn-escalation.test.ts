@@ -24,8 +24,8 @@ import {
   SPAWN_FAILURE_SIGNAL_TYPE,
   SignalSeverity,
   SuggestedAction,
-} from '../spawn-escalation.mjs';
-import { SpawnStatus } from '../spawn-registry-schema.mjs';
+} from '../spawn-escalation.js';
+import { SpawnStatus } from '../spawn-registry-schema.js';
 
 /**
  * Creates spawn events in the registry

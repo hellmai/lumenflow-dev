@@ -66,7 +66,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
      */
     it('should filter out WUs with unstamped dependencies (linear chain)', async () => {
       // Import the function that does dependency filtering
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       // Mock WUs: A -> B -> C (B depends on A, C depends on B)
       const candidates = [
@@ -87,7 +87,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
     });
 
     it('should include WU-B after WU-A gets a stamp', async () => {
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       const candidates = [
         { id: 'WU-TEST-A', doc: { lane: 'Test Lane', status: 'ready', blocked_by: [] } },
@@ -105,7 +105,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
     });
 
     it('should require ALL dependencies to have stamps, not just some', async () => {
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       // WU-TEST-D depends on both WU-TEST-X and WU-TEST-Y
       const candidates = [
@@ -129,7 +129,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
     });
 
     it('should handle 7-WU sequential chain (INIT-032 scenario)', async () => {
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       // 7 sequential WUs all in the same lane (like INIT-032)
       const candidates = [];
@@ -154,7 +154,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
 
   describe('AC3: When no WUs can spawn, return blocking info', () => {
     it('should identify blocking dependencies when all candidates are blocked', async () => {
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       // All WUs have unmet dependencies
       const candidates = [
@@ -173,7 +173,7 @@ describe('WU-2040: Dependency stamp checking logic', () => {
     });
 
     it('should provide actionable waiting message', async () => {
-      const { filterByDependencyStamps } = await import('../initiative-orchestrator.mjs');
+      const { filterByDependencyStamps } = await import('../initiative-orchestrator.js');
 
       const candidates = [
         {
@@ -256,7 +256,7 @@ acceptance:
     it('should NOT output raw antml XML tags that could be interpreted as tool calls', async () => {
       createTestWUFile('WU-TEST-2280A', { lane: 'Test Lane A', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -281,7 +281,7 @@ acceptance:
     it('should wrap XML content in markdown code blocks', async () => {
       createTestWUFile('WU-TEST-2280B', { lane: 'Test Lane B', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -302,7 +302,7 @@ acceptance:
     it('should include ACTION REQUIRED banner at the top of spawn output', async () => {
       createTestWUFile('WU-TEST-2280C', { lane: 'Test Lane C', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -320,7 +320,7 @@ acceptance:
     it('should instruct agent to copy and invoke Task tool', async () => {
       createTestWUFile('WU-TEST-2280D', { lane: 'Test Lane D', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -339,7 +339,7 @@ acceptance:
     it('should clarify that nothing was spawned yet', async () => {
       createTestWUFile('WU-TEST-2280E', { lane: 'Test Lane E', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -449,7 +449,7 @@ acceptance:
     it('should indicate dry-run status via formatCheckpointOutput when dryRun flag is set', async () => {
       createTestWUFile('WU-TEST-2430A', { lane: 'Test Lane A', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       // Simulate wave data with dryRun flag
       const waveData = {
@@ -470,7 +470,7 @@ acceptance:
     it('should not include "wave spawned" messaging in dry-run output', async () => {
       createTestWUFile('WU-TEST-2430B', { lane: 'Test Lane B', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST-2430',
@@ -492,7 +492,7 @@ acceptance:
     it('should indicate dry-run mode in checkpoint output when dryRun is true', async () => {
       createTestWUFile('WU-TEST-2430C', { lane: 'Test Lane C', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST-2430',
@@ -512,7 +512,7 @@ acceptance:
     it('should indicate checkpoint mode is suppressed in dry-run preview', async () => {
       // When auto-checkpoint mode would have been enabled but we're in dry-run,
       // output should indicate checkpoint mode is suppressed
-      const { resolveCheckpointMode } = await import('../initiative-orchestrator.mjs');
+      const { resolveCheckpointMode } = await import('../initiative-orchestrator.js');
 
       // Simulate WUs that would trigger auto-checkpoint (>3 pending)
       const wus = [
@@ -532,7 +532,7 @@ acceptance:
 
   describe('AC3: Execution plans only schedule status: ready WUs', () => {
     it('should only include ready WUs in execution plan', async () => {
-      const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const wus = [
         { id: 'WU-TEST-READY', doc: { status: 'ready', lane: 'Lane A', blocked_by: [] } },
@@ -557,7 +557,7 @@ acceptance:
     });
 
     it('should report skipped WUs with reasons in plan', async () => {
-      const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const wus = [
         { id: 'WU-TEST-READY', doc: { status: 'ready', lane: 'Lane A', blocked_by: [] } },
@@ -576,7 +576,7 @@ acceptance:
     });
 
     it('should include status reason in skipped array for non-ready WUs', async () => {
-      const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const wus = [
         { id: 'WU-TEST-BLOCKED', doc: { status: 'blocked', lane: 'Lane B', blocked_by: [] } },
@@ -602,7 +602,7 @@ acceptance:
 
   describe('AC4: Polling-mode planning defers WUs with unstamped blocked_by dependencies', () => {
     it('should defer WUs whose blocked_by dependencies lack stamps (external blockers)', async () => {
-      const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
       // WU-EXT-BLOCKER is not in the initiative but is a blocked_by dependency
       const wus = [
@@ -626,7 +626,7 @@ acceptance:
     });
 
     it('should include external blockers without stamps in deferred reasons', async () => {
-      const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const wus = [
         {
@@ -648,7 +648,7 @@ acceptance:
 
   describe('AC5: formatExecutionPlan shows skipped and deferred WUs with reasons', () => {
     it('should include skipped WUs in formatted output', async () => {
-      const { formatExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { formatExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
       const plan = {
@@ -670,7 +670,7 @@ acceptance:
     });
 
     it('should include deferred WUs with blocking reasons in formatted output', async () => {
-      const { formatExecutionPlan } = await import('../initiative-orchestrator.mjs');
+      const { formatExecutionPlan } = await import('../initiative-orchestrator.js');
 
       const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
       const plan = {
@@ -701,7 +701,7 @@ acceptance:
  */
 describe('WU-2432: internal blockers and dry-run output alignment', () => {
   it('should defer ready WUs blocked by internal non-ready WUs', async () => {
-    const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+    const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
     const wus = [
       { id: 'WU-TEST-INT-BLOCKER', doc: { status: 'blocked', lane: 'Lane A', blocked_by: [] } },
@@ -719,7 +719,7 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
   });
 
   it('should cascade deferral when internal blockers are deferred', async () => {
-    const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+    const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
     const wus = [
       {
@@ -739,7 +739,7 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
   });
 
   it('should report waiting status as skippedWithReasons', async () => {
-    const { buildExecutionPlan } = await import('../initiative-orchestrator.mjs');
+    const { buildExecutionPlan } = await import('../initiative-orchestrator.js');
 
     const wus = [
       { id: 'WU-TEST-WAITING', doc: { status: 'waiting', lane: 'Lane A', blocked_by: [] } },
@@ -754,7 +754,7 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
 
   it('should output Task XML blocks for execution plan previews', async () => {
     const { formatExecutionPlanWithEmbeddedSpawns } = await import(
-      '../initiative-orchestrator.mjs'
+      '../initiative-orchestrator.js'
     );
 
     const plan = {
@@ -839,7 +839,7 @@ acceptance:
 
   describe('AC2: formatCheckpointOutput outputs full Task invocation blocks', () => {
     it('should NOT output pnpm wu:spawn meta-prompt commands', async () => {
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       // Mock waveData as would be returned by buildCheckpointWave
       const waveData = {
@@ -861,7 +861,7 @@ acceptance:
       // Create a real WU file for this test
       createTestWUFile('WU-TEST-TASK1', { lane: 'Task Test Lane', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',
@@ -883,7 +883,7 @@ acceptance:
     it('should output function_calls wrapper for Task invocations', async () => {
       createTestWUFile('WU-TEST-TASK2', { lane: 'Task Test Lane 2', status: 'ready' });
 
-      const { formatCheckpointOutput } = await import('../initiative-orchestrator.mjs');
+      const { formatCheckpointOutput } = await import('../initiative-orchestrator.js');
 
       const waveData = {
         initiative: 'INIT-TEST',

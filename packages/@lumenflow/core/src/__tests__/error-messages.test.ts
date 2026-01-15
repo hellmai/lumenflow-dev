@@ -10,7 +10,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { createAgentFriendlyError, ErrorCodes } from '../error-handler.mjs';
+import { createAgentFriendlyError, ErrorCodes } from '../error-handler.js';
 
 describe('createAgentFriendlyError', () => {
   it('creates error with tryNext command suggestions', () => {

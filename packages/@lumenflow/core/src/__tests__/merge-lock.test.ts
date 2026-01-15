@@ -17,7 +17,7 @@ import {
   getMergeLockInfo,
   MERGE_LOCK_TIMEOUT_MS,
   MERGE_LOCK_STALE_MS,
-} from '../merge-lock.mjs';
+} from '../merge-lock.js';
 
 describe('merge-lock', () => {
   let testDir;

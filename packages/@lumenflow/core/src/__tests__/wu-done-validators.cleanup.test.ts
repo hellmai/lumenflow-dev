@@ -7,13 +7,13 @@ vi.mock('node:child_process', () => ({
   exec: vi.fn(),
 }));
 
-vi.mock('../git-adapter.mjs', () => ({
+vi.mock('../git-adapter.js', () => ({
   getGitForCwd: vi.fn(),
 }));
 
 import { exec } from 'node:child_process';
-import { getGitForCwd } from '../git-adapter.mjs';
-import { CLAIMED_MODES, PKG_COMMANDS, PKG_FLAGS, PKG_MANAGER } from '../wu-constants.mjs';
+import { getGitForCwd } from '../git-adapter.js';
+import { CLAIMED_MODES, PKG_COMMANDS, PKG_FLAGS, PKG_MANAGER } from '../wu-constants.js';
 
 describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
   const originalCwd = process.cwd();
@@ -49,7 +49,7 @@ describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
   });
 
   it('runs pnpm install with --frozen-lockfile', async () => {
-    const { runCleanup } = await import('../wu-done-validators.mjs');
+    const { runCleanup } = await import('../wu-done-validators.js');
 
     await runCleanup(
       { claimed_mode: CLAIMED_MODES.WORKTREE },

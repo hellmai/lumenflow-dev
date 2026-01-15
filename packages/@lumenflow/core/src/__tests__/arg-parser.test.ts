@@ -1,120 +1,120 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseWUArgs } from '../arg-parser.mjs';
+import { parseWUArgs } from '../arg-parser.js';
 
 describe('parseWUArgs', () => {
   describe('common flags', () => {
     it('should parse --id flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--id', 'WU-123']);
+      const result = parseWUArgs(['node', 'script.js', '--id', 'WU-123']);
       assert.equal(result.id, 'WU-123');
     });
 
     it('should parse --lane flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--lane', 'Operations']);
+      const result = parseWUArgs(['node', 'script.js', '--lane', 'Operations']);
       assert.equal(result.lane, 'Operations');
     });
 
     it('should parse --reason flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--reason', 'Waiting for review']);
+      const result = parseWUArgs(['node', 'script.js', '--reason', 'Waiting for review']);
       assert.equal(result.reason, 'Waiting for review');
     });
 
     it('should parse --worktree flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--worktree', 'worktrees/ops-wu-123']);
+      const result = parseWUArgs(['node', 'script.js', '--worktree', 'worktrees/ops-wu-123']);
       assert.equal(result.worktree, 'worktrees/ops-wu-123');
     });
 
     it('should parse --branch flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--branch', 'lane/ops/wu-123']);
+      const result = parseWUArgs(['node', 'script.js', '--branch', 'lane/ops/wu-123']);
       assert.equal(result.branch, 'lane/ops/wu-123');
     });
   });
 
   describe('boolean flags', () => {
     it('should parse --no-auto as noAuto boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--no-auto']);
+      const result = parseWUArgs(['node', 'script.js', '--no-auto']);
       assert.equal(result.noAuto, true);
     });
 
     it('should parse --force as force boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--force']);
+      const result = parseWUArgs(['node', 'script.js', '--force']);
       assert.equal(result.force, true);
     });
 
     it('should parse --branch-only as branchOnly boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--branch-only']);
+      const result = parseWUArgs(['node', 'script.js', '--branch-only']);
       assert.equal(result.branchOnly, true);
     });
 
     it('should parse --pr-mode as prMode boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--pr-mode']);
+      const result = parseWUArgs(['node', 'script.js', '--pr-mode']);
       assert.equal(result.prMode, true);
     });
 
     it('should parse --remove-worktree as removeWorktree boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--remove-worktree']);
+      const result = parseWUArgs(['node', 'script.js', '--remove-worktree']);
       assert.equal(result.removeWorktree, true);
     });
 
     it('should parse --create-worktree as createWorktree boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--create-worktree']);
+      const result = parseWUArgs(['node', 'script.js', '--create-worktree']);
       assert.equal(result.createWorktree, true);
     });
 
     it('should parse --delete-branch as deleteBranch boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--delete-branch']);
+      const result = parseWUArgs(['node', 'script.js', '--delete-branch']);
       assert.equal(result.deleteBranch, true);
     });
 
     it('should parse --no-remove as noRemove boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--no-remove']);
+      const result = parseWUArgs(['node', 'script.js', '--no-remove']);
       assert.equal(result.noRemove, true);
     });
 
     it('should parse --no-merge as noMerge boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--no-merge']);
+      const result = parseWUArgs(['node', 'script.js', '--no-merge']);
       assert.equal(result.noMerge, true);
     });
 
     it('should parse --help as help boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--help']);
+      const result = parseWUArgs(['node', 'script.js', '--help']);
       assert.equal(result.help, true);
     });
 
     it('should parse -h as help boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '-h']);
+      const result = parseWUArgs(['node', 'script.js', '-h']);
       assert.equal(result.help, true);
     });
   });
 
   describe('special flags', () => {
     it('should parse --skip-gates with skipGates boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--skip-gates']);
+      const result = parseWUArgs(['node', 'script.js', '--skip-gates']);
       assert.equal(result.skipGates, true);
     });
 
     it('should parse --allow-todo as allowTodo boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--allow-todo']);
+      const result = parseWUArgs(['node', 'script.js', '--allow-todo']);
       assert.equal(result.allowTodo, true);
     });
 
     it('should parse --fix-wu flag', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--fix-wu', 'WU-456']);
+      const result = parseWUArgs(['node', 'script.js', '--fix-wu', 'WU-456']);
       assert.equal(result.fixWu, 'WU-456');
     });
 
     it('should parse --force-overlap as forceOverlap boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--force-overlap']);
+      const result = parseWUArgs(['node', 'script.js', '--force-overlap']);
       assert.equal(result.forceOverlap, true);
     });
 
     it('should parse --create-pr as createPr boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--create-pr']);
+      const result = parseWUArgs(['node', 'script.js', '--create-pr']);
       assert.equal(result.createPr, true);
     });
 
     it('should parse --override-owner as overrideOwner boolean', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--override-owner']);
+      const result = parseWUArgs(['node', 'script.js', '--override-owner']);
       assert.equal(result.overrideOwner, true);
     });
   });
@@ -123,7 +123,7 @@ describe('parseWUArgs', () => {
     it('should parse multiple flags together', () => {
       const result = parseWUArgs([
         'node',
-        'script.mjs',
+        'script.js',
         '--id',
         'WU-123',
         '--lane',
@@ -138,7 +138,7 @@ describe('parseWUArgs', () => {
     it('should parse all common flags together', () => {
       const result = parseWUArgs([
         'node',
-        'script.mjs',
+        'script.js',
         '--id',
         'WU-999',
         '--lane',
@@ -164,14 +164,14 @@ describe('parseWUArgs', () => {
 
   describe('pnpm compatibility', () => {
     it('should skip pnpm separator --', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--', '--id', 'WU-123']);
+      const result = parseWUArgs(['node', 'script.js', '--', '--id', 'WU-123']);
       assert.equal(result.id, 'WU-123');
     });
 
     it('should handle multiple -- separators', () => {
       const result = parseWUArgs([
         'node',
-        'script.mjs',
+        'script.js',
         '--',
         '--id',
         'WU-123',
@@ -186,17 +186,17 @@ describe('parseWUArgs', () => {
 
   describe('positional arguments', () => {
     it('should support WU ID as positional argument', () => {
-      const result = parseWUArgs(['node', 'script.mjs', 'WU-123']);
+      const result = parseWUArgs(['node', 'script.js', 'WU-123']);
       assert.equal(result.id, 'WU-123');
     });
 
     it('should prefer --id flag over positional', () => {
-      const result = parseWUArgs(['node', 'script.mjs', 'WU-999', '--id', 'WU-123']);
+      const result = parseWUArgs(['node', 'script.js', 'WU-999', '--id', 'WU-123']);
       assert.equal(result.id, 'WU-123');
     });
 
     it('should use positional if no --id flag provided', () => {
-      const result = parseWUArgs(['node', 'script.mjs', 'WU-456', '--lane', 'Operations']);
+      const result = parseWUArgs(['node', 'script.js', 'WU-456', '--lane', 'Operations']);
       assert.equal(result.id, 'WU-456');
       assert.equal(result.lane, 'Operations');
     });
@@ -205,14 +205,14 @@ describe('parseWUArgs', () => {
   describe('error handling', () => {
     it('should throw on unknown flag', () => {
       assert.throws(
-        () => parseWUArgs(['node', 'script.mjs', '--unknown-flag']),
+        () => parseWUArgs(['node', 'script.js', '--unknown-flag']),
         /Unknown option '--unknown-flag'/
       );
     });
 
     it('should throw on flag missing required value', () => {
       assert.throws(
-        () => parseWUArgs(['node', 'script.mjs', '--id']),
+        () => parseWUArgs(['node', 'script.js', '--id']),
         /Option '--id <value>' argument missing/
       );
     });
@@ -220,12 +220,12 @@ describe('parseWUArgs', () => {
 
   describe('default values', () => {
     it('should return empty object when no args provided', () => {
-      const result = parseWUArgs(['node', 'script.mjs']);
+      const result = parseWUArgs(['node', 'script.js']);
       assert.deepEqual(result, {});
     });
 
     it('should not set undefined values for missing flags', () => {
-      const result = parseWUArgs(['node', 'script.mjs', '--id', 'WU-123']);
+      const result = parseWUArgs(['node', 'script.js', '--id', 'WU-123']);
       assert.equal(result.id, 'WU-123');
       assert.equal(result.lane, undefined);
       assert.equal(result.force, undefined);

@@ -18,7 +18,7 @@ import {
   isExemptFromAutomatedTests,
   HEX_CORE_CODE_PATTERNS,
   isCodeFile,
-} from '../manual-test-validator.mjs';
+} from '../manual-test-validator.js';
 
 describe('manual-test-validator constants', () => {
   it('defines HEX_CORE_CODE_PATTERNS for application layer', () => {
@@ -61,7 +61,7 @@ describe('containsHexCoreCode', () => {
   });
 
   it('returns false when only tooling files', () => {
-    const codePaths = ['tools/gates.mjs', 'tools/lib/wu-done-validators.mjs'];
+    const codePaths = ['tools/gates.js', 'tools/lib/wu-done-validators.js'];
 
     assert.strictEqual(containsHexCoreCode(codePaths), false);
   });
@@ -84,7 +84,7 @@ describe('containsHexCoreCode', () => {
 
 describe('isCodeFile', () => {
   it('returns true for common code file extensions', () => {
-    assert.strictEqual(isCodeFile('tools/wu-create.mjs'), true);
+    assert.strictEqual(isCodeFile('tools/wu-create.js'), true);
     assert.strictEqual(isCodeFile('packages/@patientpath/application/src/usecase.ts'), true);
     assert.strictEqual(isCodeFile('apps/web/src/app/page.tsx'), true);
     assert.strictEqual(isCodeFile('scripts/release.js'), true);
@@ -310,7 +310,7 @@ describe('validateAutomatedTestRequirement', () => {
         id: 'WU-1433',
         lane: 'Core Systems',
         type: 'feature',
-        code_paths: ['tools/some-script.mjs'],
+        code_paths: ['tools/some-script.js'],
         tests: {
           unit: [],
           manual: ['Manual verification: run script'],

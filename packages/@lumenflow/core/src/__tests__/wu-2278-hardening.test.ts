@@ -15,7 +15,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 describe('WU-2278 H1: Worktree ownership validation', () => {
   describe('validateWorktreeOwnership', () => {
     it('blocks deletion when worktree belongs to different WU', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       // Worktree path contains WU-100, but we're trying to clean up WU-200
       const result = validateWorktreeOwnership({
@@ -28,7 +28,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
     });
 
     it('allows deletion when worktree belongs to same WU', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       const result = validateWorktreeOwnership({
         worktreePath: 'worktrees/operations-wu-100',
@@ -39,7 +39,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
     });
 
     it('allows deletion when worktree path uses lowercase', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       const result = validateWorktreeOwnership({
         worktreePath: 'worktrees/operations-tooling-wu-2278',
@@ -50,7 +50,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
     });
 
     it('handles worktree path with lane prefix correctly', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       const result = validateWorktreeOwnership({
         worktreePath: 'worktrees/experience-chat-wu-500',
@@ -61,7 +61,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
     });
 
     it('blocks when WU ID is not found in worktree path', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       const result = validateWorktreeOwnership({
         worktreePath: 'worktrees/some-random-branch',
@@ -73,7 +73,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
     });
 
     it('handles null/undefined worktree path gracefully', async () => {
-      const { validateWorktreeOwnership } = await import('../worktree-ownership.mjs');
+      const { validateWorktreeOwnership } = await import('../worktree-ownership.js');
 
       expect(validateWorktreeOwnership({ worktreePath: null, wuId: 'WU-100' }).valid).toBe(true);
       expect(validateWorktreeOwnership({ worktreePath: undefined, wuId: 'WU-100' }).valid).toBe(
@@ -87,21 +87,21 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
 describe('WU-2278 H2: Piped pnpm command detection', () => {
   describe('isPipedPnpmCommand', () => {
     it('detects piped pnpm add command', async () => {
-      const { isPipedPnpmCommand } = await import('../piped-command-detector.mjs');
+      const { isPipedPnpmCommand } = await import('../piped-command-detector.js');
 
       expect(isPipedPnpmCommand('echo "y" | pnpm add foo')).toBe(true);
       expect(isPipedPnpmCommand('yes | pnpm install')).toBe(true);
     });
 
     it('detects pnpm command with redirection', async () => {
-      const { isPipedPnpmCommand } = await import('../piped-command-detector.mjs');
+      const { isPipedPnpmCommand } = await import('../piped-command-detector.js');
 
       expect(isPipedPnpmCommand('pnpm add foo < /dev/null')).toBe(true);
       expect(isPipedPnpmCommand('pnpm install < input.txt')).toBe(true);
     });
 
     it('does not flag non-piped pnpm commands', async () => {
-      const { isPipedPnpmCommand } = await import('../piped-command-detector.mjs');
+      const { isPipedPnpmCommand } = await import('../piped-command-detector.js');
 
       expect(isPipedPnpmCommand('pnpm add foo')).toBe(false);
       expect(isPipedPnpmCommand('pnpm install')).toBe(false);
@@ -109,13 +109,13 @@ describe('WU-2278 H2: Piped pnpm command detection', () => {
     });
 
     it('detects heredoc with pnpm', async () => {
-      const { isPipedPnpmCommand } = await import('../piped-command-detector.mjs');
+      const { isPipedPnpmCommand } = await import('../piped-command-detector.js');
 
       expect(isPipedPnpmCommand('pnpm add foo <<< "y"')).toBe(true);
     });
 
     it('handles complex pipe chains', async () => {
-      const { isPipedPnpmCommand } = await import('../piped-command-detector.mjs');
+      const { isPipedPnpmCommand } = await import('../piped-command-detector.js');
 
       // Only care if pnpm is receiving piped input
       expect(isPipedPnpmCommand('pnpm test | grep foo')).toBe(false); // pnpm is NOT receiving input
@@ -139,7 +139,7 @@ describe('WU-2278 H3: Cleanup install configuration', () => {
 
   describe('getCleanupInstallConfig', () => {
     it('returns command with CI=true for non-interactive mode', async () => {
-      const { getCleanupInstallConfig } = await import('../cleanup-install-config.mjs');
+      const { getCleanupInstallConfig } = await import('../cleanup-install-config.js');
 
       const config = getCleanupInstallConfig();
 
@@ -148,7 +148,7 @@ describe('WU-2278 H3: Cleanup install configuration', () => {
 
     it('returns 60 second timeout', async () => {
       const { getCleanupInstallConfig, CLEANUP_INSTALL_TIMEOUT_MS } = await import(
-        '../cleanup-install-config.mjs'
+        '../cleanup-install-config.js'
       );
 
       const config = getCleanupInstallConfig();
@@ -158,7 +158,7 @@ describe('WU-2278 H3: Cleanup install configuration', () => {
     });
 
     it('includes frozen-lockfile flag', async () => {
-      const { getCleanupInstallConfig } = await import('../cleanup-install-config.mjs');
+      const { getCleanupInstallConfig } = await import('../cleanup-install-config.js');
 
       const config = getCleanupInstallConfig();
 
@@ -171,7 +171,7 @@ describe('WU-2278 H3: Cleanup install configuration', () => {
 describe('WU-2278 L2: Commit message lowercasing', () => {
   describe('lowercaseCommitSubject', () => {
     it('lowercases entire subject, not just first character', async () => {
-      const { lowercaseCommitSubject } = await import('../commit-message-utils.mjs');
+      const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       // "Supabase" should become "supabase"
       const result = lowercaseCommitSubject('feat(wu-100): Add Supabase integration');
@@ -180,7 +180,7 @@ describe('WU-2278 L2: Commit message lowercasing', () => {
     });
 
     it('preserves type and scope', async () => {
-      const { lowercaseCommitSubject } = await import('../commit-message-utils.mjs');
+      const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       const result = lowercaseCommitSubject('fix(WU-200): Fix OpenAI API call');
 
@@ -189,7 +189,7 @@ describe('WU-2278 L2: Commit message lowercasing', () => {
     });
 
     it('handles message without conventional prefix', async () => {
-      const { lowercaseCommitSubject } = await import('../commit-message-utils.mjs');
+      const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       const result = lowercaseCommitSubject('Update README for Vercel deployment');
 
@@ -197,7 +197,7 @@ describe('WU-2278 L2: Commit message lowercasing', () => {
     });
 
     it('handles message that is already lowercase', async () => {
-      const { lowercaseCommitSubject } = await import('../commit-message-utils.mjs');
+      const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       const result = lowercaseCommitSubject('feat(wu-100): add feature');
 
@@ -205,7 +205,7 @@ describe('WU-2278 L2: Commit message lowercasing', () => {
     });
 
     it('lowercases proper nouns like Supabase, Vercel, OpenAI', async () => {
-      const { lowercaseCommitSubject } = await import('../commit-message-utils.mjs');
+      const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       expect(lowercaseCommitSubject('docs: Update Supabase config')).toBe(
         'docs: update supabase config'

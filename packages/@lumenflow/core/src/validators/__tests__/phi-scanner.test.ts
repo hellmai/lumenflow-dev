@@ -10,8 +10,8 @@
 
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { scanForPHI, isPathExcluded } from '../phi-scanner.mjs';
-import { PHI_TYPES } from '../phi-constants.mjs';
+import { scanForPHI, isPathExcluded } from '../phi-scanner.js';
+import { PHI_TYPES } from '../phi-constants.js';
 
 describe('PHI Scanner', () => {
   describe('scanForPHI', () => {
@@ -264,7 +264,7 @@ describe('PHI Scanner', () => {
 
   describe('isPathExcluded', () => {
     it('should exclude __tests__ directories', () => {
-      assert.equal(isPathExcluded('tools/lib/__tests__/file.mjs'), true);
+      assert.equal(isPathExcluded('tools/lib/__tests__/file.js'), true);
     });
 
     it('should exclude test directories', () => {
@@ -300,7 +300,7 @@ describe('PHI Scanner', () => {
     });
 
     it('should NOT exclude tool files', () => {
-      assert.equal(isPathExcluded('tools/file-write.mjs'), false);
+      assert.equal(isPathExcluded('tools/file-write.js'), false);
     });
 
     it('should handle empty path', () => {

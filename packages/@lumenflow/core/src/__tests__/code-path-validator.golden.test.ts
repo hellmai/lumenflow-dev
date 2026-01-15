@@ -30,9 +30,9 @@ import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 // Import the three validators we are consolidating (ORIGINAL sources)
-import { validateCodePathsExist } from '../wu-done-validators.mjs';
-import { validateLaneCodePaths } from '../lane-validator.mjs';
-import { validateWUCodePaths } from '../wu-validator.mjs';
+import { validateCodePathsExist } from '../wu-done-validators.js';
+import { validateLaneCodePaths } from '../lane-validator.js';
+import { validateWUCodePaths } from '../wu-validator.js';
 
 // Import the UNIFIED validator's backward-compatible exports
 import {
@@ -41,7 +41,7 @@ import {
   validateWUCodePaths as unifiedValidateWUCodePaths,
   validate,
   VALIDATION_MODES,
-} from '../code-path-validator.mjs';
+} from '../code-path-validator.js';
 
 // ============================================================================
 // GOLDEN FIXTURES: validateCodePathsExist (wu-done-validators.mjs)
@@ -88,15 +88,15 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
   describe('worktree mode - file existence check', () => {
     it('returns valid=true when all files exist in worktree', async () => {
       // Create test files
-      const file1 = join(testDir, 'src', 'file1.mjs');
-      const file2 = join(testDir, 'src', 'file2.mjs');
+      const file1 = join(testDir, 'src', 'file1.js');
+      const file2 = join(testDir, 'src', 'file2.js');
       mkdirSync(join(testDir, 'src'), { recursive: true });
       writeFileSync(file1, 'export const x = 1;');
       writeFileSync(file2, 'export const y = 2;');
 
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['src/file1.mjs', 'src/file2.mjs'],
+        code_paths: ['src/file1.js', 'src/file2.js'],
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
@@ -109,12 +109,12 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
 
     it('returns valid=false with missing files listed', async () => {
       // Create only one file
-      const file1 = join(testDir, 'existing.mjs');
+      const file1 = join(testDir, 'existing.js');
       writeFileSync(file1, 'content');
 
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['existing.mjs', 'missing.mjs', 'also-missing.mjs'],
+        code_paths: ['existing.js', 'missing.js', 'also-missing.js'],
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
@@ -122,15 +122,15 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
       });
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.missing.includes('missing.mjs'));
-      assert.ok(result.missing.includes('also-missing.mjs'));
+      assert.ok(result.missing.includes('missing.js'));
+      assert.ok(result.missing.includes('also-missing.js'));
       assert.strictEqual(result.missing.length, 2);
     });
 
     it('includes contextual error message about worktree', async () => {
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['nonexistent.mjs'],
+        code_paths: ['nonexistent.js'],
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
@@ -146,7 +146,7 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
     it('error message includes count of missing files', async () => {
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['a.mjs', 'b.mjs', 'c.mjs'],
+        code_paths: ['a.js', 'b.js', 'c.js'],
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
@@ -160,14 +160,14 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
     it('error message lists each missing file with bullet point', async () => {
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['missing-file.mjs'],
+        code_paths: ['missing-file.js'],
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('- missing-file.mjs'));
+      assert.ok(result.errors[0].includes('- missing-file.js'));
     });
   });
 });
@@ -215,7 +215,7 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
 
     it('returns hasWarnings=false when paths match lane expectations', () => {
       // Operations lane with tools/ paths - should be valid
-      const doc = { code_paths: ['tools/lib/wu-helpers.mjs'] };
+      const doc = { code_paths: ['tools/lib/wu-helpers.js'] };
       const result = validateLaneCodePaths(doc, 'Operations: Tooling');
 
       assert.strictEqual(result.hasWarnings, false);
@@ -261,7 +261,7 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
 
   describe('result structure', () => {
     it('returns correct shape for valid result', () => {
-      const doc = { code_paths: ['tools/helper.mjs'] };
+      const doc = { code_paths: ['tools/helper.js'] };
       const result = validateLaneCodePaths(doc, 'Operations');
 
       assert.ok('hasWarnings' in result);
@@ -313,7 +313,7 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
 
   describe('file existence validation', () => {
     it('returns valid=false when file does not exist', () => {
-      const result = validateWUCodePaths(['nonexistent-file.mjs'], {
+      const result = validateWUCodePaths(['nonexistent-file.js'], {
         worktreePath: testDir,
       });
 
@@ -322,18 +322,18 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     });
 
     it('error message includes file path that does not exist', () => {
-      const result = validateWUCodePaths(['specific-missing-file.mjs'], {
+      const result = validateWUCodePaths(['specific-missing-file.js'], {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('specific-missing-file.mjs'));
+      assert.ok(result.errors[0].includes('specific-missing-file.js'));
     });
 
     it('returns valid=true when all files exist and have no issues', () => {
-      const file = join(testDir, 'clean-file.mjs');
+      const file = join(testDir, 'clean-file.js');
       writeFileSync(file, 'export const clean = true;');
 
-      const result = validateWUCodePaths(['clean-file.mjs'], {
+      const result = validateWUCodePaths(['clean-file.js'], {
         worktreePath: testDir,
       });
 
@@ -344,10 +344,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
 
   describe('TODO/FIXME/HACK/XXX detection', () => {
     it('returns valid=false when TODO comment found in code', () => {
-      const file = join(testDir, 'todo-file.mjs');
+      const file = join(testDir, 'todo-file.js');
       writeFileSync(file, '// TODO: implement this\nexport const x = 1;');
 
-      const result = validateWUCodePaths(['todo-file.mjs'], {
+      const result = validateWUCodePaths(['todo-file.js'], {
         worktreePath: testDir,
         allowTodos: false,
       });
@@ -357,10 +357,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     });
 
     it('returns valid=true with warning when allowTodos=true', () => {
-      const file = join(testDir, 'todo-allowed.mjs');
+      const file = join(testDir, 'todo-allowed.js');
       writeFileSync(file, '// TODO: this is allowed\nexport const x = 1;');
 
-      const result = validateWUCodePaths(['todo-allowed.mjs'], {
+      const result = validateWUCodePaths(['todo-allowed.js'], {
         worktreePath: testDir,
         allowTodos: true,
       });
@@ -370,10 +370,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     });
 
     it('detects FIXME comments', () => {
-      const file = join(testDir, 'fixme-file.mjs');
+      const file = join(testDir, 'fixme-file.js');
       writeFileSync(file, '// FIXME: broken thing\nexport const x = 1;');
 
-      const result = validateWUCodePaths(['fixme-file.mjs'], {
+      const result = validateWUCodePaths(['fixme-file.js'], {
         worktreePath: testDir,
         allowTodos: false,
       });
@@ -383,10 +383,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     });
 
     it('skips test files for TODO detection', () => {
-      const testFile = join(testDir, 'component.test.mjs');
+      const testFile = join(testDir, 'component.test.js');
       writeFileSync(testFile, '// TODO: add more tests\nexport const test = true;');
 
-      const result = validateWUCodePaths(['component.test.mjs'], {
+      const result = validateWUCodePaths(['component.test.js'], {
         worktreePath: testDir,
         allowTodos: false,
       });
@@ -411,10 +411,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
 
   describe('Mock/Stub/Fake detection', () => {
     it('returns warning (not error) when Mock class found', () => {
-      const file = join(testDir, 'mock-class.mjs');
+      const file = join(testDir, 'mock-class.js');
       writeFileSync(file, 'export class MockService { }');
 
-      const result = validateWUCodePaths(['mock-class.mjs'], {
+      const result = validateWUCodePaths(['mock-class.js'], {
         worktreePath: testDir,
       });
 
@@ -425,10 +425,10 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     });
 
     it('skips test files for Mock detection', () => {
-      const testFile = join(testDir, 'service.test.mjs');
+      const testFile = join(testDir, 'service.test.js');
       writeFileSync(testFile, 'export class MockService { }');
 
-      const result = validateWUCodePaths(['service.test.mjs'], {
+      const result = validateWUCodePaths(['service.test.js'], {
         worktreePath: testDir,
       });
 
@@ -490,13 +490,13 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
     it('validateCodePathsExist and validateWUCodePaths both check file existence', async () => {
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['nonexistent.mjs'],
+        code_paths: ['nonexistent.js'],
       };
 
       const existResult = await validateCodePathsExist(doc, 'WU-TEST', {
         worktreePath: testDir,
       });
-      const wuResult = validateWUCodePaths(['nonexistent.mjs'], {
+      const wuResult = validateWUCodePaths(['nonexistent.js'], {
         worktreePath: testDir,
       });
 
@@ -507,7 +507,7 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
 
     it('validateLaneCodePaths does NOT check file existence (pattern-only)', () => {
       const doc = {
-        code_paths: ['nonexistent-but-matches-pattern.mjs'],
+        code_paths: ['nonexistent-but-matches-pattern.js'],
       };
 
       const laneResult = validateLaneCodePaths(doc, 'Operations');
@@ -560,11 +560,11 @@ describe('GOLDEN: Glob pattern handling', () => {
     // This test documents current behaviour
     it('handles literal paths (not expanded globs)', async () => {
       // Create a file
-      writeFileSync(join(testDir, 'src', 'file.mjs'), 'content');
+      writeFileSync(join(testDir, 'src', 'file.js'), 'content');
 
       const doc = {
         id: 'WU-TEST',
-        code_paths: ['src/*.mjs'], // Glob pattern
+        code_paths: ['src/*.js'], // Glob pattern
       };
 
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
@@ -574,7 +574,7 @@ describe('GOLDEN: Glob pattern handling', () => {
       // Document current behaviour: does it expand globs or treat as literal?
       // If it treats as literal, the glob path won't be found
       // This captures current behaviour for golden test
-      if (!existsSync(join(testDir, 'src/*.mjs'))) {
+      if (!existsSync(join(testDir, 'src/*.js'))) {
         // Glob is NOT expanded - treated as literal path
         assert.strictEqual(result.valid, false);
       }
@@ -614,7 +614,7 @@ describe('GOLDEN: Error message formats', () => {
 
   describe('validateCodePathsExist error format', () => {
     it('error message includes "code_paths validation failed"', async () => {
-      const doc = { id: 'WU-TEST', code_paths: ['missing.mjs'] };
+      const doc = { id: 'WU-TEST', code_paths: ['missing.js'] };
       const result = await validateCodePathsExist(doc, 'WU-TEST', {
         worktreePath: testDir,
       });
@@ -625,7 +625,7 @@ describe('GOLDEN: Error message formats', () => {
 
   describe('validateWUCodePaths error format', () => {
     it('error message includes emoji prefix for missing file', () => {
-      const result = validateWUCodePaths(['missing.mjs'], {
+      const result = validateWUCodePaths(['missing.js'], {
         worktreePath: testDir,
       });
 
@@ -634,7 +634,7 @@ describe('GOLDEN: Error message formats', () => {
     });
 
     it('error message includes guidance text', () => {
-      const result = validateWUCodePaths(['missing.mjs'], {
+      const result = validateWUCodePaths(['missing.js'], {
         worktreePath: testDir,
       });
 
@@ -683,10 +683,10 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
     });
 
     it('unified export produces same result for existing files', async () => {
-      const file = join(testDir, 'existing.mjs');
+      const file = join(testDir, 'existing.js');
       writeFileSync(file, 'content');
 
-      const doc = { id: 'WU-TEST', code_paths: ['existing.mjs'] };
+      const doc = { id: 'WU-TEST', code_paths: ['existing.js'] };
       const opts = { worktreePath: testDir };
 
       const originalResult = await validateCodePathsExist(doc, 'WU-TEST', opts);
@@ -696,7 +696,7 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
     });
 
     it('unified export produces same result for missing files', async () => {
-      const doc = { id: 'WU-TEST', code_paths: ['missing.mjs'] };
+      const doc = { id: 'WU-TEST', code_paths: ['missing.js'] };
       const opts = { worktreePath: testDir };
 
       const originalResult = await validateCodePathsExist(doc, 'WU-TEST', opts);
@@ -721,7 +721,7 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
     });
 
     it('unified export produces same result for valid paths', () => {
-      const doc = { code_paths: ['tools/lib/helper.mjs'] };
+      const doc = { code_paths: ['tools/lib/helper.js'] };
 
       const originalResult = validateLaneCodePaths(doc, 'Operations');
       const unifiedResult = unifiedValidateLaneCodePaths(doc, 'Operations');
@@ -754,8 +754,8 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
     it('unified export produces same result for missing files', () => {
       const opts = { worktreePath: testDir };
 
-      const originalResult = validateWUCodePaths(['missing.mjs'], opts);
-      const unifiedResult = unifiedValidateWUCodePaths(['missing.mjs'], opts);
+      const originalResult = validateWUCodePaths(['missing.js'], opts);
+      const unifiedResult = unifiedValidateWUCodePaths(['missing.js'], opts);
 
       assert.strictEqual(originalResult.valid, unifiedResult.valid);
       // Both should have errors
@@ -764,25 +764,25 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
     });
 
     it('unified export produces same result for clean files', () => {
-      const file = join(testDir, 'clean.mjs');
+      const file = join(testDir, 'clean.js');
       writeFileSync(file, 'export const x = 1;');
 
       const opts = { worktreePath: testDir };
 
-      const originalResult = validateWUCodePaths(['clean.mjs'], opts);
-      const unifiedResult = unifiedValidateWUCodePaths(['clean.mjs'], opts);
+      const originalResult = validateWUCodePaths(['clean.js'], opts);
+      const unifiedResult = unifiedValidateWUCodePaths(['clean.js'], opts);
 
       assert.strictEqual(originalResult.valid, unifiedResult.valid);
     });
 
     it('unified export produces same result for files with TODOs', () => {
-      const file = join(testDir, 'todo.mjs');
+      const file = join(testDir, 'todo.js');
       writeFileSync(file, '// TODO: fix this\nexport const x = 1;');
 
       const opts = { worktreePath: testDir, allowTodos: false };
 
-      const originalResult = validateWUCodePaths(['todo.mjs'], opts);
-      const unifiedResult = unifiedValidateWUCodePaths(['todo.mjs'], opts);
+      const originalResult = validateWUCodePaths(['todo.js'], opts);
+      const unifiedResult = unifiedValidateWUCodePaths(['todo.js'], opts);
 
       assert.strictEqual(originalResult.valid, unifiedResult.valid);
       // Both should fail due to TODO
@@ -808,10 +808,10 @@ describe('UNIFIED: validate() API with mode flag', () => {
 
   describe('mode: exist', () => {
     it('validates file existence in worktree', async () => {
-      const file = join(testDir, 'file.mjs');
+      const file = join(testDir, 'file.js');
       writeFileSync(file, 'content');
 
-      const result = await validate(['file.mjs'], {
+      const result = await validate(['file.js'], {
         mode: VALIDATION_MODES.EXIST,
         worktreePath: testDir,
       });
@@ -821,20 +821,20 @@ describe('UNIFIED: validate() API with mode flag', () => {
     });
 
     it('reports missing files', async () => {
-      const result = await validate(['missing.mjs'], {
+      const result = await validate(['missing.js'], {
         mode: VALIDATION_MODES.EXIST,
         worktreePath: testDir,
       });
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.missing.includes('missing.mjs'));
+      assert.ok(result.missing.includes('missing.js'));
     });
   });
 
   describe('mode: lane', () => {
     it('requires lane option', async () => {
       await assert.rejects(
-        async () => validate(['path.mjs'], { mode: VALIDATION_MODES.LANE }),
+        async () => validate(['path.js'], { mode: VALIDATION_MODES.LANE }),
         /Lane name is required/
       );
     });
@@ -849,7 +849,7 @@ describe('UNIFIED: validate() API with mode flag', () => {
     });
 
     it('validates paths against lane patterns', async () => {
-      const result = await validate(['tools/helper.mjs'], {
+      const result = await validate(['tools/helper.js'], {
         mode: VALIDATION_MODES.LANE,
         lane: 'Operations',
       });
@@ -861,10 +861,10 @@ describe('UNIFIED: validate() API with mode flag', () => {
 
   describe('mode: quality', () => {
     it('validates code quality for clean files', async () => {
-      const file = join(testDir, 'clean.mjs');
+      const file = join(testDir, 'clean.js');
       writeFileSync(file, 'export const x = 1;');
 
-      const result = await validate(['clean.mjs'], {
+      const result = await validate(['clean.js'], {
         mode: VALIDATION_MODES.QUALITY,
         worktreePath: testDir,
       });
@@ -873,10 +873,10 @@ describe('UNIFIED: validate() API with mode flag', () => {
     });
 
     it('reports TODO comments as errors by default', async () => {
-      const file = join(testDir, 'todo.mjs');
+      const file = join(testDir, 'todo.js');
       writeFileSync(file, '// TODO: fix this');
 
-      const result = await validate(['todo.mjs'], {
+      const result = await validate(['todo.js'], {
         mode: VALIDATION_MODES.QUALITY,
         worktreePath: testDir,
         allowTodos: false,
@@ -886,10 +886,10 @@ describe('UNIFIED: validate() API with mode flag', () => {
     });
 
     it('reports TODO comments as warnings when allowTodos=true', async () => {
-      const file = join(testDir, 'todo.mjs');
+      const file = join(testDir, 'todo.js');
       writeFileSync(file, '// TODO: fix this');
 
-      const result = await validate(['todo.mjs'], {
+      const result = await validate(['todo.js'], {
         mode: VALIDATION_MODES.QUALITY,
         worktreePath: testDir,
         allowTodos: true,

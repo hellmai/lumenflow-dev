@@ -15,7 +15,7 @@ import os from 'node:os';
 import {
   WUStateStore,
   WU_EVENTS_FILE_NAME,
-} from '../wu-state-store.mjs';
+} from '../wu-state-store.js';
 
 /**
  * Test fixtures for event sourcing

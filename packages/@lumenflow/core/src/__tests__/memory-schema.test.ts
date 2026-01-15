@@ -18,7 +18,7 @@ import {
   MEMORY_LIFECYCLES,
   RELATIONSHIP_TYPES,
   MEMORY_PATTERNS,
-} from '../memory-schema.mjs';
+} from '../memory-schema.js';
 
 describe('memory-schema', () => {
   describe('constants exports', () => {
@@ -87,7 +87,7 @@ describe('memory-schema', () => {
       id: 'mem-abc1',
       type: 'discovery',
       lifecycle: 'session',
-      content: 'Found relevant file at src/utils.mjs',
+      content: 'Found relevant file at src/utils.js',
       created_at: '2025-12-08T10:30:00Z',
     };
 

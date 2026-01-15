@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { updateStatusRemoveInProgress, addToStatusCompleted } from '../wu-status-updater.mjs';
-import { WUError, ErrorCodes } from '../error-handler.mjs';
+import { updateStatusRemoveInProgress, addToStatusCompleted } from '../wu-status-updater.js';
+import { WUError, ErrorCodes } from '../error-handler.js';
 
 describe('wu-status-updater', () => {
   let testDir;

@@ -18,7 +18,7 @@ import {
   queryReady,
   queryByWu,
   MEMORY_FILE_NAME,
-} from '../memory-store.mjs';
+} from '../memory-store.js';
 
 /**
  * Test fixtures for deterministic ordering validation

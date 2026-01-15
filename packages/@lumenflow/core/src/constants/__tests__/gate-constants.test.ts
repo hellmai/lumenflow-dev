@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { GATE_CONFIG } from '../gate-constants.mjs';
+import { GATE_CONFIG } from '../gate-constants.js';
 
 describe('gate-constants', () => {
   describe('GATE_CONFIG', () => {

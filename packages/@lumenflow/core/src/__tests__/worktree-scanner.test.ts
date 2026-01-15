@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 
 // Import will fail initially (TDD - write test first)
-// import { scanWorktrees, getWorktreeStatus, parseWorktreeList } from '../worktree-scanner.mjs';
+// import { scanWorktrees, getWorktreeStatus, parseWorktreeList } from '../worktree-scanner.js';
 
 /**
  * Test fixtures for worktree scanning
@@ -36,7 +36,7 @@ describe('worktree-scanner', () => {
   describe('parseWorktreeList', () => {
     it('should parse git worktree list output into structured data', async () => {
       // Dynamic import to allow test to run even before module exists
-      const { parseWorktreeList } = await import('../worktree-scanner.mjs');
+      const { parseWorktreeList } = await import('../worktree-scanner.js');
 
       const result = parseWorktreeList(FIXTURES.worktreeListOutput);
 
@@ -57,7 +57,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should extract WU ID from lane branch name', async () => {
-      const { parseWorktreeList } = await import('../worktree-scanner.mjs');
+      const { parseWorktreeList } = await import('../worktree-scanner.js');
 
       const result = parseWorktreeList(FIXTURES.worktreeListOutput);
 
@@ -66,7 +66,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should handle main worktree without WU ID', async () => {
-      const { parseWorktreeList } = await import('../worktree-scanner.mjs');
+      const { parseWorktreeList } = await import('../worktree-scanner.js');
 
       const result = parseWorktreeList(FIXTURES.worktreeListOutput);
 
@@ -76,7 +76,7 @@ describe('worktree-scanner', () => {
 
   describe('getWorktreeStatus', () => {
     it('should detect uncommitted changes in worktree', async () => {
-      const { getWorktreeStatus } = await import('../worktree-scanner.mjs');
+      const { getWorktreeStatus } = await import('../worktree-scanner.js');
 
       // Create mock execAsync function
       const mockExecAsync = async (cmd) => {
@@ -101,7 +101,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should report clean worktree with no uncommitted changes', async () => {
-      const { getWorktreeStatus } = await import('../worktree-scanner.mjs');
+      const { getWorktreeStatus } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async (cmd) => {
         if (cmd.includes('status --porcelain')) {
@@ -121,7 +121,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should include last activity timestamp from git log', async () => {
-      const { getWorktreeStatus } = await import('../worktree-scanner.mjs');
+      const { getWorktreeStatus } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async (cmd) => {
         if (cmd.includes('status --porcelain')) {
@@ -141,7 +141,7 @@ describe('worktree-scanner', () => {
 
   describe('scanWorktrees', () => {
     it('should return all worktrees with their status', async () => {
-      const { scanWorktrees } = await import('../worktree-scanner.mjs');
+      const { scanWorktrees } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async (cmd) => {
         if (cmd.includes('worktree list')) {
@@ -165,7 +165,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should identify abandoned WUs with uncommitted changes', async () => {
-      const { scanWorktrees } = await import('../worktree-scanner.mjs');
+      const { scanWorktrees } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async (cmd) => {
         if (cmd.includes('worktree list')) {
@@ -189,7 +189,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should calculate summary statistics', async () => {
-      const { scanWorktrees } = await import('../worktree-scanner.mjs');
+      const { scanWorktrees } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async (cmd) => {
         if (cmd.includes('worktree list')) {
@@ -214,7 +214,7 @@ describe('worktree-scanner', () => {
 
   describe('edge cases', () => {
     it('should handle empty worktree list', async () => {
-      const { parseWorktreeList } = await import('../worktree-scanner.mjs');
+      const { parseWorktreeList } = await import('../worktree-scanner.js');
 
       const result = parseWorktreeList('');
 
@@ -222,7 +222,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should handle worktree with detached HEAD', async () => {
-      const { parseWorktreeList } = await import('../worktree-scanner.mjs');
+      const { parseWorktreeList } = await import('../worktree-scanner.js');
 
       const detachedOutput = `/home/user/project  abc1234 (detached HEAD)
 `;
@@ -234,7 +234,7 @@ describe('worktree-scanner', () => {
     });
 
     it('should handle git command failures gracefully', async () => {
-      const { getWorktreeStatus } = await import('../worktree-scanner.mjs');
+      const { getWorktreeStatus } = await import('../worktree-scanner.js');
 
       const mockExecAsync = async () => {
         throw new Error('git command failed');

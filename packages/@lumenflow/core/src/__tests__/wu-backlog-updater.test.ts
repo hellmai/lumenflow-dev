@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { moveWUToDoneBacklog } from '../wu-backlog-updater.mjs';
-import { WUError, ErrorCodes } from '../error-handler.mjs';
+import { moveWUToDoneBacklog } from '../wu-backlog-updater.js';
+import { WUError, ErrorCodes } from '../error-handler.js';
 
 describe('wu-backlog-updater', () => {
   let testDir;

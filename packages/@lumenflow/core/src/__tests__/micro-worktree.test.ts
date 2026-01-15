@@ -26,7 +26,7 @@ const mockGit = {
 };
 
 // We'll need to mock the module - for now test the constants and helpers
-import { getTempBranchName, MAX_MERGE_RETRIES } from '../micro-worktree.mjs';
+import { getTempBranchName, MAX_MERGE_RETRIES } from '../micro-worktree.js';
 
 describe('micro-worktree', () => {
   describe('getTempBranchName', () => {
@@ -52,7 +52,7 @@ describe('micro-worktree', () => {
 describe('pre-claim repair isolation (WU-1437)', () => {
   describe('ORPHAN_REPAIR operation', () => {
     it('should export ORPHAN_REPAIR operation constant', async () => {
-      const { MICRO_WORKTREE_OPERATIONS } = await import('../wu-constants.mjs');
+      const { MICRO_WORKTREE_OPERATIONS } = await import('../wu-constants.js');
       assert.ok(MICRO_WORKTREE_OPERATIONS.ORPHAN_REPAIR);
       assert.equal(typeof MICRO_WORKTREE_OPERATIONS.ORPHAN_REPAIR, 'string');
     });
@@ -60,7 +60,7 @@ describe('pre-claim repair isolation (WU-1437)', () => {
 
   describe('repairWUInconsistency with projectRoot', () => {
     it('should accept projectRoot option for micro-worktree path', async () => {
-      const { repairWUInconsistency } = await import('../wu-consistency-checker.mjs');
+      const { repairWUInconsistency } = await import('../wu-consistency-checker.js');
       // Function should accept projectRoot option
       // When valid=true, should return early without touching any files
       const result = await repairWUInconsistency({ valid: true }, { projectRoot: '/tmp/test' });
@@ -74,7 +74,7 @@ describe('pushOnly pattern (WU-1435)', () => {
     it('should support refspec push syntax', async () => {
       // This test verifies the git-adapter has pushRefspec method
       // Imports will fail until implementation is done
-      const { GitAdapter } = await import('../git-adapter.mjs');
+      const { GitAdapter } = await import('../git-adapter.js');
       const adapter = new GitAdapter({ git: mockGit });
 
       // pushRefspec should exist
@@ -82,7 +82,7 @@ describe('pushOnly pattern (WU-1435)', () => {
     });
 
     it('should push local ref to different remote ref', async () => {
-      const { GitAdapter } = await import('../git-adapter.mjs');
+      const { GitAdapter } = await import('../git-adapter.js');
 
       // Create mock that tracks calls
       const pushMock = mock.fn(async () => {});
@@ -102,7 +102,7 @@ describe('pushOnly pattern (WU-1435)', () => {
 
   describe('formatFiles helper', () => {
     it('should export formatFiles function', async () => {
-      const { formatFiles } = await import('../micro-worktree.mjs');
+      const { formatFiles } = await import('../micro-worktree.js');
       assert.equal(typeof formatFiles, 'function');
     });
   });
@@ -110,7 +110,7 @@ describe('pushOnly pattern (WU-1435)', () => {
   describe('withMicroWorktree pushOnly option', () => {
     it('should accept pushOnly option', async () => {
       // This test verifies the function signature accepts pushOnly
-      const { withMicroWorktree } = await import('../micro-worktree.mjs');
+      const { withMicroWorktree } = await import('../micro-worktree.js');
 
       // The function should not throw on valid options with pushOnly
       // We can't fully test without mocking the git operations
@@ -122,12 +122,12 @@ describe('pushOnly pattern (WU-1435)', () => {
 describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
   describe('findWorktreeByBranch', () => {
     it('should export findWorktreeByBranch function', async () => {
-      const { findWorktreeByBranch } = await import('../micro-worktree.mjs');
+      const { findWorktreeByBranch } = await import('../micro-worktree.js');
       assert.equal(typeof findWorktreeByBranch, 'function');
     });
 
     it('should find worktree path for matching branch', async () => {
-      const { findWorktreeByBranch } = await import('../micro-worktree.mjs');
+      const { findWorktreeByBranch } = await import('../micro-worktree.js');
 
       const worktreeListOutput =
         'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n' +
@@ -138,7 +138,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     });
 
     it('should return null when branch not found', async () => {
-      const { findWorktreeByBranch } = await import('../micro-worktree.mjs');
+      const { findWorktreeByBranch } = await import('../micro-worktree.js');
 
       const worktreeListOutput =
         'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n';
@@ -148,7 +148,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     });
 
     it('should handle main project worktree correctly', async () => {
-      const { findWorktreeByBranch } = await import('../micro-worktree.mjs');
+      const { findWorktreeByBranch } = await import('../micro-worktree.js');
 
       const worktreeListOutput =
         'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n' +
@@ -164,12 +164,12 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 
   describe('cleanupOrphanedMicroWorktree', () => {
     it('should export cleanupOrphanedMicroWorktree function', async () => {
-      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.js');
       assert.equal(typeof cleanupOrphanedMicroWorktree, 'function');
     });
 
     it('should detect and clean orphaned worktree from git worktree list', async () => {
-      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.js');
 
       // Create mock git adapter that simulates orphaned worktree
       const worktreeListMock = mock.fn(
@@ -202,7 +202,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     });
 
     it('should remove temp branch after worktree removal', async () => {
-      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.js');
 
       const worktreeListMock = mock.fn(
         async () =>
@@ -228,7 +228,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     });
 
     it('should return cleanedWorktree=false when no orphan exists', async () => {
-      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.js');
 
       // Worktree list with no matching temp branches
       const worktreeListMock = mock.fn(
@@ -257,7 +257,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     });
 
     it('should clean branch even when no worktree exists', async () => {
-      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupOrphanedMicroWorktree } = await import('../micro-worktree.js');
 
       // No worktree matches, but branch exists (stale branch scenario)
       const worktreeListMock = mock.fn(
@@ -289,7 +289,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 
   describe('cleanupMicroWorktree handles registered worktrees', () => {
     it('should check git worktree list for registered worktrees', async () => {
-      const { cleanupMicroWorktree } = await import('../micro-worktree.mjs');
+      const { cleanupMicroWorktree } = await import('../micro-worktree.js');
 
       // This test verifies cleanupMicroWorktree also cleans up registered worktrees
       // by checking git worktree list for the temp branch
@@ -301,7 +301,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
     it('should call cleanupOrphanedMicroWorktree before creating new micro-worktree', async () => {
       // This test ensures withMicroWorktree is idempotent
       // by cleaning up any prior orphans before creating new resources
-      const { withMicroWorktree } = await import('../micro-worktree.mjs');
+      const { withMicroWorktree } = await import('../micro-worktree.js');
       assert.equal(typeof withMicroWorktree, 'function');
       // Full integration test would require mocking git operations
     });
@@ -311,7 +311,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 describe('deletion staging (WU-1813)', () => {
   describe('git-adapter addWithDeletions', () => {
     it('should export addWithDeletions method', async () => {
-      const { GitAdapter } = await import('../git-adapter.mjs');
+      const { GitAdapter } = await import('../git-adapter.js');
       const adapter = new GitAdapter({ git: mockGit });
 
       // addWithDeletions should exist
@@ -319,7 +319,7 @@ describe('deletion staging (WU-1813)', () => {
     });
 
     it('should use git add -A flag to stage deletions when files provided', async () => {
-      const { GitAdapter } = await import('../git-adapter.mjs');
+      const { GitAdapter } = await import('../git-adapter.js');
 
       // Create mock that tracks raw git calls
       const rawMock = mock.fn(async () => '');
@@ -336,7 +336,7 @@ describe('deletion staging (WU-1813)', () => {
     });
 
     it('should stage all changes when empty files list provided', async () => {
-      const { GitAdapter } = await import('../git-adapter.mjs');
+      const { GitAdapter } = await import('../git-adapter.js');
 
       // Create mock that tracks raw git calls
       const rawMock = mock.fn(async () => '');
@@ -355,12 +355,12 @@ describe('deletion staging (WU-1813)', () => {
 
   describe('stageChangesWithDeletions helper', () => {
     it('should export stageChangesWithDeletions function', async () => {
-      const { stageChangesWithDeletions } = await import('../micro-worktree.mjs');
+      const { stageChangesWithDeletions } = await import('../micro-worktree.js');
       assert.equal(typeof stageChangesWithDeletions, 'function');
     });
 
     it('should call addWithDeletions on gitWorktree with files list', async () => {
-      const { stageChangesWithDeletions } = await import('../micro-worktree.mjs');
+      const { stageChangesWithDeletions } = await import('../micro-worktree.js');
 
       // Create mock gitWorktree
       const addWithDeletionsMock = mock.fn(async () => {});
@@ -377,7 +377,7 @@ describe('deletion staging (WU-1813)', () => {
     });
 
     it('should call addWithDeletions with empty array when files is undefined', async () => {
-      const { stageChangesWithDeletions } = await import('../micro-worktree.mjs');
+      const { stageChangesWithDeletions } = await import('../micro-worktree.js');
 
       // Create mock gitWorktree
       const addWithDeletionsMock = mock.fn(async () => {});

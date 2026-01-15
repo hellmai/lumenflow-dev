@@ -16,10 +16,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Module under test
-import { checkAutomatedTestsInvariant } from '../check-automated-tests.mjs';
+import { checkAutomatedTestsInvariant } from '../check-automated-tests.js';
 
 // Also verify registry contains the invariant
-import { loadInvariants } from '../../invariants-runner.mjs';
+import { loadInvariants } from '../../invariants-runner.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../../../../');

@@ -17,7 +17,7 @@ import {
   shouldUseGatesAgentMode,
   getGatesLogDir,
   buildGatesLogPath,
-} from '../gates-agent-mode.mjs';
+} from '../gates-agent-mode.js';
 
 describe('shouldUseGatesAgentMode', () => {
   describe('TTY detection (primary mechanism)', () => {

@@ -8,7 +8,7 @@
 
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { isPathInScope, assertPathInScope, getActiveScope } from '../scope-checker.mjs';
+import { isPathInScope, assertPathInScope, getActiveScope } from '../scope-checker.js';
 
 describe('scope-checker', () => {
   describe('getActiveScope', () => {
@@ -34,7 +34,7 @@ describe('scope-checker', () => {
       }));
       const mockLoadWUYaml = mock.fn(() => ({
         id: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs', 'tools/lib/core/__tests__/*.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js', 'tools/lib/core/__tests__/*.js'],
       }));
 
       const scope = await getActiveScope({
@@ -44,7 +44,7 @@ describe('scope-checker', () => {
 
       assert.deepEqual(scope, {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs', 'tools/lib/core/__tests__/*.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js', 'tools/lib/core/__tests__/*.js'],
       });
       assert.strictEqual(mockGetWUContext.mock.calls.length, 1);
       assert.strictEqual(mockLoadWUYaml.mock.calls.length, 1);
@@ -77,33 +77,33 @@ describe('scope-checker', () => {
     it('should return true for exact path match', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs', 'tools/lib/wu-schema.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js', 'tools/lib/wu-schema.js'],
       };
 
-      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.mjs', scope), true);
-      assert.strictEqual(isPathInScope('tools/lib/wu-schema.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.js', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/wu-schema.js', scope), true);
     });
 
     it('should return false for path not in scope', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js'],
       };
 
       assert.strictEqual(isPathInScope('apps/web/src/components/Header.tsx', scope), false);
-      assert.strictEqual(isPathInScope('tools/wu-done.mjs', scope), false);
+      assert.strictEqual(isPathInScope('tools/wu-done.js', scope), false);
     });
 
     it('should handle glob patterns correctly', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/**/*.mjs', 'apps/web/src/**/*.tsx'],
+        code_paths: ['tools/lib/core/**/*.js', 'apps/web/src/**/*.tsx'],
       };
 
       // Should match glob patterns
-      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.js', scope), true);
       assert.strictEqual(
-        isPathInScope('tools/lib/core/__tests__/scope-checker.test.mjs', scope),
+        isPathInScope('tools/lib/core/__tests__/scope-checker.test.js', scope),
         true
       );
       assert.strictEqual(isPathInScope('apps/web/src/components/Header.tsx', scope), true);
@@ -113,21 +113,21 @@ describe('scope-checker', () => {
       );
 
       // Should not match outside glob scope
-      assert.strictEqual(isPathInScope('tools/wu-done.mjs', scope), false);
+      assert.strictEqual(isPathInScope('tools/wu-done.js', scope), false);
       assert.strictEqual(isPathInScope('apps/web/README.md', scope), false);
     });
 
     it('should handle wildcard patterns', () => {
       const scope = {
         wuId: 'WU-999',
-        code_paths: ['tools/lib/*.mjs'],
+        code_paths: ['tools/lib/*.js'],
       };
 
-      assert.strictEqual(isPathInScope('tools/lib/wu-schema.mjs', scope), true);
-      assert.strictEqual(isPathInScope('tools/lib/wu-constants.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/wu-schema.js', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/wu-constants.js', scope), true);
 
       // Should not match nested paths
-      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.mjs', scope), false);
+      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.js', scope), false);
     });
 
     it('should return true for empty code_paths (no restrictions)', () => {
@@ -148,11 +148,11 @@ describe('scope-checker', () => {
     it('should normalize path separators', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js'],
       };
 
       // Windows-style path should match Unix-style pattern
-      assert.strictEqual(isPathInScope('tools\\lib\\core\\scope-checker.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools\\lib\\core\\scope-checker.js', scope), true);
     });
   });
 
@@ -160,18 +160,18 @@ describe('scope-checker', () => {
     it('should not throw for path in scope', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js'],
       };
 
       assert.doesNotThrow(() => {
-        assertPathInScope('tools/lib/core/scope-checker.mjs', scope);
+        assertPathInScope('tools/lib/core/scope-checker.js', scope);
       });
     });
 
     it('should throw with clear message for path out of scope', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs', 'tools/lib/core/__tests__/*.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js', 'tools/lib/core/__tests__/*.js'],
       };
 
       assert.throws(
@@ -217,7 +217,7 @@ describe('scope-checker', () => {
     it('should include operation context in error message when provided', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/core/scope-checker.mjs'],
+        code_paths: ['tools/lib/core/scope-checker.js'],
       };
 
       assert.throws(
@@ -237,17 +237,17 @@ describe('scope-checker', () => {
     it('should handle mixed path separators', () => {
       const scope = {
         wuId: 'WU-1397',
-        code_paths: ['tools/lib/**/*.mjs'],
+        code_paths: ['tools/lib/**/*.js'],
       };
 
       // Unix paths
-      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.js', scope), true);
 
       // Windows paths
-      assert.strictEqual(isPathInScope('tools\\lib\\core\\scope-checker.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools\\lib\\core\\scope-checker.js', scope), true);
 
       // Mixed (shouldn't happen but be defensive)
-      assert.strictEqual(isPathInScope('tools/lib\\core/scope-checker.mjs', scope), true);
+      assert.strictEqual(isPathInScope('tools/lib\\core/scope-checker.js', scope), true);
     });
   });
 

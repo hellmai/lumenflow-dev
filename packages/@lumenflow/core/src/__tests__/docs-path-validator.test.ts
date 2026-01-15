@@ -8,9 +8,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import { validateDocsOnly, getAllowedPathsDescription } from '../docs-path-validator.mjs';
-import { BEACON_PATHS, DIRECTORIES } from '../wu-constants.mjs';
-import { WU_EVENTS_FILE_NAME } from '../wu-state-store.mjs';
+import { validateDocsOnly, getAllowedPathsDescription } from '../docs-path-validator.js';
+import { BEACON_PATHS, DIRECTORIES } from '../wu-constants.js';
+import { WU_EVENTS_FILE_NAME } from '../wu-state-store.js';
 
 describe('docs-path-validator', () => {
   it('allows documentation prefixes and markdown files', () => {
@@ -44,7 +44,7 @@ describe('docs-path-validator', () => {
 
   it('allows test files under tools/__tests__ and packages/**/__tests__', () => {
     const result = validateDocsOnly([
-      path.posix.join(DIRECTORIES.TOOLS, '__tests__', 'example.test.mjs'),
+      path.posix.join(DIRECTORIES.TOOLS, '__tests__', 'example.test.js'),
       path.posix.join(DIRECTORIES.PACKAGES, 'pkg', '__tests__', 'example.test.ts'),
     ]);
 

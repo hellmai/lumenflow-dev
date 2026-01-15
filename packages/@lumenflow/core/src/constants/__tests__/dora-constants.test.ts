@@ -5,7 +5,7 @@ import {
   CFR_PERCENT,
   MTTR_HOURS,
   STATISTICS,
-} from '../dora-constants.mjs';
+} from '../dora-constants.js';
 
 describe('dora-constants', () => {
   describe('DEPLOYMENT_FREQUENCY', () => {

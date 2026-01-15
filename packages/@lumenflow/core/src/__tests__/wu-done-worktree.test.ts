@@ -14,15 +14,15 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { checkEmptyMerge, isBranchAlreadyMerged } from '../wu-done-worktree.mjs';
-import { ErrorCodes } from '../error-handler.mjs';
+import { checkEmptyMerge, isBranchAlreadyMerged } from '../wu-done-worktree.js';
+import { ErrorCodes } from '../error-handler.js';
 
 // Mock git-adapter
-vi.mock('../git-adapter.mjs', () => ({
+vi.mock('../git-adapter.js', () => ({
   getGitForCwd: vi.fn(),
 }));
 
-import { getGitForCwd } from '../git-adapter.mjs';
+import { getGitForCwd } from '../git-adapter.js';
 
 describe('checkEmptyMerge', () => {
   let mockGitAdapter;
@@ -50,7 +50,7 @@ describe('checkEmptyMerge', () => {
         .mockResolvedValueOnce(''); // diff --name-only: no files changed
 
       const doc = {
-        code_paths: ['tools/lib/core/some-file.mjs'],
+        code_paths: ['tools/lib/core/some-file.js'],
       };
 
       // Act & Assert: Should throw with VALIDATION_ERROR
@@ -62,7 +62,7 @@ describe('checkEmptyMerge', () => {
       } catch (error) {
         expect(error.code).toBe(ErrorCodes.VALIDATION_ERROR);
         expect(error.message).toContain('code_paths');
-        expect(error.message).toContain('tools/lib/core/some-file.mjs');
+        expect(error.message).toContain('tools/lib/core/some-file.js');
       }
     });
 
@@ -73,8 +73,8 @@ describe('checkEmptyMerge', () => {
 
       const doc = {
         code_paths: [
-          'tools/lib/core/file-a.mjs',
-          'tools/lib/core/file-b.mjs',
+          'tools/lib/core/file-a.js',
+          'tools/lib/core/file-b.js',
         ],
       };
 
@@ -86,10 +86,10 @@ describe('checkEmptyMerge', () => {
     it('should PASS (no error) when code_paths files were modified', async () => {
       mockGitAdapter.raw
         .mockResolvedValueOnce('2') // 2 commits (claim + work)
-        .mockResolvedValueOnce('tools/lib/core/some-file.mjs\ntools/lib/core/other.mjs');
+        .mockResolvedValueOnce('tools/lib/core/some-file.mjs\ntools/lib/core/other.js');
 
       const doc = {
-        code_paths: ['tools/lib/core/some-file.mjs'],
+        code_paths: ['tools/lib/core/some-file.js'],
       };
 
       // Should not throw
@@ -198,7 +198,7 @@ describe('isBranchAlreadyMerged', () => {
   });
 });
 
-import { validateAndNormalizeWUYAML } from '../wu-schema.mjs';
+import { validateAndNormalizeWUYAML } from '../wu-schema.js';
 
 /**
  * WU-1811: Tests for validateAndNormalizeWUYAML - pre-gates YAML validation
@@ -218,7 +218,7 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
     created: '2025-12-18',
     description: 'This is a test description that meets the minimum length requirement for WU descriptions.',
     acceptance: ['Acceptance criterion 1', 'Acceptance criterion 2'],
-    code_paths: ['tools/test.mjs'],
+    code_paths: ['tools/test.js'],
     tests: { manual: ['Test manually'] },
   };
 
@@ -275,7 +275,7 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
     it('should detect when code_paths has embedded newlines split', () => {
       const dataWithEmbeddedNewlines = {
         ...validWUData,
-        code_paths: ['tools/a.mjs\ntools/b.mjs'], // Single string with newline
+        code_paths: ['tools/a.mjs\ntools/b.js'], // Single string with newline
       };
 
       const result = validateAndNormalizeWUYAML(dataWithEmbeddedNewlines);
@@ -283,8 +283,8 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
       expect(result.valid).toBe(true);
       expect(result.wasNormalized).toBe(true);
       expect(result.normalized.code_paths).toHaveLength(2);
-      expect(result.normalized.code_paths).toContain('tools/a.mjs');
-      expect(result.normalized.code_paths).toContain('tools/b.mjs');
+      expect(result.normalized.code_paths).toContain('tools/a.js');
+      expect(result.normalized.code_paths).toContain('tools/b.js');
     });
 
     it('should return wasNormalized=false when no changes needed', () => {
@@ -418,10 +418,10 @@ describe('actionable failure output (WU-1811)', () => {
 });
 
 // Import BOX for error message format tests
-import { BOX } from '../wu-constants.mjs';
+import { BOX } from '../wu-constants.js';
 
 // WU-1943: Import for checkpoint warning tests
-import { hasSessionCheckpoints } from '../wu-done-worktree.mjs';
+import { hasSessionCheckpoints } from '../wu-done-worktree.js';
 
 /**
  * WU-1943: Tests for branch rollback on merge failure
@@ -481,7 +481,7 @@ describe('branch rollback on merge failure (WU-1943)', () => {
 
       // This test verifies rollbackBranchOnMergeFailure calls git reset --hard
       // The function should be exported from wu-done-worktree.mjs
-      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.mjs');
+      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.js');
 
       await rollbackBranchOnMergeFailure(mockGitAdapter, preCommitSha, 'WU-1943');
 
@@ -494,7 +494,7 @@ describe('branch rollback on merge failure (WU-1943)', () => {
       const preCommitSha = 'abc123def456';
       mockGitAdapter.reset.mockResolvedValueOnce(undefined);
 
-      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.mjs');
+      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.js');
 
       await rollbackBranchOnMergeFailure(mockGitAdapter, preCommitSha, 'WU-1943');
 
@@ -510,7 +510,7 @@ describe('branch rollback on merge failure (WU-1943)', () => {
       const preCommitSha = 'abc123def456';
       mockGitAdapter.reset.mockRejectedValueOnce(new Error('reset failed'));
 
-      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.mjs');
+      const { rollbackBranchOnMergeFailure } = await import('../wu-done-worktree.js');
 
       // Should not throw - rollback failure is logged but not fatal
       await expect(

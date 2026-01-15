@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TOKENIZER } from '../tokenizer-constants.mjs';
+import { TOKENIZER } from '../tokenizer-constants.js';
 
 describe('tokenizer-constants', () => {
   describe('TOKENIZER', () => {

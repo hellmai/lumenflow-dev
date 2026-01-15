@@ -25,13 +25,13 @@ import {
   processSpawnFailureSignals,
   SignalResponseAction,
   SIGNAL_HANDLER_LOG_PREFIX,
-} from '../spawn-monitor.mjs';
+} from '../spawn-monitor.js';
 
 import {
   SPAWN_FAILURE_SIGNAL_TYPE,
   SignalSeverity,
   SuggestedAction,
-} from '../spawn-escalation.mjs';
+} from '../spawn-escalation.js';
 
 /**
  * Creates a spawn_failure signal in the signals file

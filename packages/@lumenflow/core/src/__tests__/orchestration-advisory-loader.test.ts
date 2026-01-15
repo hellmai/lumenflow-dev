@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   emitMandatoryAgentAdvisory,
   checkMandatoryAgentsCompliance,
-} from '../orchestration-advisory-loader.mjs';
+} from '../orchestration-advisory-loader.js';
 
 describe('orchestration-advisory-loader', () => {
   let consoleLogSpy;

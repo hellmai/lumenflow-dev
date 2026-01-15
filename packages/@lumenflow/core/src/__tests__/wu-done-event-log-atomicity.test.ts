@@ -3,8 +3,8 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
-import { WUTransaction } from '../wu-transaction.mjs';
-import { collectMetadataToTransaction } from '../wu-done-validators.mjs';
+import { WUTransaction } from '../wu-transaction.js';
+import { collectMetadataToTransaction } from '../wu-done-validators.js';
 
 async function writeFile(filePath, content) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
