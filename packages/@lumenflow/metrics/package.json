@@ -1,0 +1,71 @@
+{
+  "name": "@lumenflow/metrics",
+  "version": "0.0.0",
+  "description": "DORA/SPACE analytics and flow metrics for LumenFlow workflow framework",
+  "keywords": [
+    "lumenflow",
+    "metrics",
+    "dora",
+    "space",
+    "devops",
+    "analytics",
+    "workflow"
+  ],
+  "homepage": "https://github.com/hellmai/os",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/os.git",
+    "directory": "packages/@lumenflow/metrics"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./telemetry": {
+      "types": "./dist/telemetry/index.d.ts",
+      "import": "./dist/telemetry/index.js"
+    },
+    "./dora": {
+      "types": "./dist/dora/index.d.ts",
+      "import": "./dist/dora/index.js"
+    },
+    "./flow": {
+      "types": "./dist/flow/index.d.ts",
+      "import": "./dist/flow/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "simple-statistics": "^7.8.8"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
