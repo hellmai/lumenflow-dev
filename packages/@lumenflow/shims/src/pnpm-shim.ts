@@ -61,7 +61,6 @@ export function findRealPnpm(
 
   // Fallback: use which to find pnpm (exclude our shim)
   try {
-    const shimsDir = path.resolve(new URL('.', import.meta.url).pathname);
     const pathWithoutShims = (process.env['PATH'] || '')
       .split(':')
       .filter((p) => !p.includes('tools/shims') && !p.includes('@lumenflow/shims'))
@@ -72,7 +71,6 @@ export function findRealPnpm(
       env: { ...process.env, PATH: pathWithoutShims },
       stdio: ['pipe', 'pipe', 'pipe'],
     });
-    void shimsDir;
     return result.trim();
   } catch {
     return 'pnpm';

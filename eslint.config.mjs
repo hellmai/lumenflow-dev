@@ -122,4 +122,16 @@ export default tseslint.config(
       'security/detect-object-injection': 'off',
     },
   },
+
+  // Shims package needs dynamic OS commands for git/pnpm interception
+  {
+    files: ['packages/@lumenflow/shims/src/**/*.ts'],
+    rules: {
+      'security/detect-object-injection': 'off',
+      'sonarjs/os-command': 'off',
+      'sonarjs/no-os-command-from-path': 'off',
+      'no-console': 'off', // Shims need to output errors
+    },
+  },
 );
+
