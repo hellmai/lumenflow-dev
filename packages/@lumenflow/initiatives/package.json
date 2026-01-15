@@ -1,0 +1,62 @@
+{
+  "name": "@lumenflow/initiatives",
+  "version": "0.0.0",
+  "description": "Initiative tracking for LumenFlow workflow framework - multi-phase project coordination",
+  "keywords": [
+    "lumenflow",
+    "workflow",
+    "initiative",
+    "project",
+    "coordination"
+  ],
+  "homepage": "https://github.com/hellmai/os",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/os.git",
+    "directory": "packages/@lumenflow/initiatives"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "yaml": "^2.8.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
