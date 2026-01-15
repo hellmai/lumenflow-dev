@@ -11,6 +11,7 @@ import path from 'node:path';
 
 const STDIO_PIPE: StdioOptions = ['pipe', 'pipe', 'pipe'];
 const ENCODING = 'utf8' as const;
+const DEFAULT_GIT_PATH = '/usr/bin/git';
 
 /**
  * Execute a shell command and return the output.
@@ -32,7 +33,7 @@ export function run(cmd: string): string {
  * @param gitPath - Path to git executable (default: '/usr/bin/git')
  * @returns Branch name or null if not in a git repo
  */
-export function getCurrentBranch(gitPath: string = '/usr/bin/git'): string | null {
+export function getCurrentBranch(gitPath: string = DEFAULT_GIT_PATH): string | null {
   return run(`${gitPath} rev-parse --abbrev-ref HEAD`) || null;
 }
 
@@ -45,7 +46,7 @@ export function getCurrentBranch(gitPath: string = '/usr/bin/git'): string | nul
  * @param gitPath - Path to git executable (default: '/usr/bin/git')
  * @returns True if in main worktree
  */
-export function isMainWorktree(gitPath: string = '/usr/bin/git'): boolean {
+export function isMainWorktree(gitPath: string = DEFAULT_GIT_PATH): boolean {
   const gitDir = run(`${gitPath} rev-parse --git-dir`);
   if (!gitDir) return true;
   const normalized = gitDir.replace(/\\/g, '/');
@@ -58,7 +59,7 @@ export function isMainWorktree(gitPath: string = '/usr/bin/git'): boolean {
  * @param gitPath - Path to git executable (default: '/usr/bin/git')
  * @returns True if in a worktree
  */
-export function isInWorktree(gitPath: string = '/usr/bin/git'): boolean {
+export function isInWorktree(gitPath: string = DEFAULT_GIT_PATH): boolean {
   const gitDir = run(`${gitPath} rev-parse --git-dir`);
   if (!gitDir) return false;
   return gitDir.includes('/worktrees/');

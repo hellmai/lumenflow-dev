@@ -35,6 +35,30 @@ import { getCurrentBranch, isMainWorktree } from './worktree.js';
 const DEFAULT_CONFIG: GitShimConfig = GitShimConfigSchema.parse({});
 
 /**
+ * Build context string for protected/unprotected state.
+ *
+ * @param isProtected - Whether context is protected
+ * @param inMainWorktree - Whether in main worktree
+ * @param protectedBranch - Name of protected branch
+ * @param branch - Current branch name
+ * @returns Context description string
+ */
+function buildContextString(
+  isProtected: boolean,
+  inMainWorktree: boolean,
+  protectedBranch: string,
+  branch: string | null,
+): string {
+  if (isProtected) {
+    if (inMainWorktree) {
+      return 'main worktree';
+    }
+    return `${protectedBranch} branch`;
+  }
+  return `${branch} branch in lane worktree`;
+}
+
+/**
  * Detect user type based on environment variables.
  *
  * @param config - Git shim configuration
@@ -115,11 +139,12 @@ export function checkProtectedContext(
     const inMainWorktree = process.env['TEST_IS_MAIN_WORKTREE'] === 'true';
     const isProtectedBranch = branch === config.protectedBranch;
     const isProtected = isProtectedBranch || inMainWorktree;
-    const context = isProtected
-      ? inMainWorktree
-        ? 'main worktree'
-        : `${config.protectedBranch} branch`
-      : `${branch} branch in lane worktree`;
+    const context = buildContextString(
+      isProtected,
+      inMainWorktree,
+      config.protectedBranch,
+      branch,
+    );
     return { protected: isProtected, context };
   }
 
@@ -131,11 +156,12 @@ export function checkProtectedContext(
   // 2. OR in main worktree (even if on a lane branch)
   const isProtected =
     branch === config.protectedBranch || inMainWorktree;
-  const context = isProtected
-    ? inMainWorktree
-      ? 'main worktree'
-      : `${config.protectedBranch} branch`
-    : `${branch} branch in lane worktree`;
+  const context = buildContextString(
+    isProtected,
+    inMainWorktree,
+    config.protectedBranch,
+    branch,
+  );
 
   return { protected: isProtected, context };
 }
@@ -207,6 +233,22 @@ export function findRealGit(preferredPath: string = '/usr/bin/git'): string {
 }
 
 /**
+ * Log command execution for audit trail.
+ *
+ * @param _user - User type (agent/human)
+ * @param _outcome - Command outcome (allowed/blocked)
+ * @param _config - Git shim configuration
+ */
+function logCommand(
+  _user: string,
+  _outcome: string,
+  _config: GitShimConfig,
+): void {
+  // Logging would go here - simplified for extraction
+  // Future: write to config.logPath
+}
+
+/**
  * Run the git shim with given configuration.
  *
  * @param args - Git command arguments
@@ -241,6 +283,11 @@ export function runGitShim(
     if (banned && reason) {
       outcome = CommandOutcome.BLOCKED;
 
+      // Log blocked command if logging enabled
+      if (config.enableLogging && config.logPath) {
+        logCommand(user, outcome, config);
+      }
+
       // Block the command
       const command = args.join(' ');
       const errorMsg = formatBlockedError(command, reason, context);
@@ -249,11 +296,9 @@ export function runGitShim(
     }
   }
 
-  // Log command if logging enabled
+  // Log allowed command if logging enabled
   if (config.enableLogging && config.logPath) {
-    // Logging would go here - simplified for extraction
-    void user;
-    void outcome;
+    logCommand(user, outcome, config);
   }
 
   // Pass through to real git
@@ -276,6 +321,8 @@ export function main(): void {
 }
 
 // Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+const currentUrl = import.meta.url;
+const scriptPath = `file://${process.argv[1]}`;
+if (currentUrl === scriptPath) {
   main();
 }
