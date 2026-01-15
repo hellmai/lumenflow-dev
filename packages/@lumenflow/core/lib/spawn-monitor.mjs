@@ -31,7 +31,7 @@ import {
   SPAWN_FAILURE_SIGNAL_TYPE,
   SuggestedAction,
 } from './spawn-escalation.mjs';
-import { loadSignals, markSignalsAsRead } from './mem-signal-core.mjs';
+import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/lib/mem-signal-core.mjs';
 
 /**
  * Default threshold for stuck spawn detection (in minutes)

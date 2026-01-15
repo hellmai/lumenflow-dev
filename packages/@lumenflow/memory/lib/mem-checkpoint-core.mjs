@@ -21,7 +21,7 @@ import path from 'node:path';
 import { generateMemId } from './mem-id.mjs';
 import { appendNode } from './memory-store.mjs';
 import { MEMORY_PATTERNS } from './memory-schema.mjs';
-import { WUStateStore } from './wu-state-store.mjs';
+import { WUStateStore } from '@lumenflow/core/lib/wu-state-store.mjs';
 
 /**
  * Memory directory path relative to base directory

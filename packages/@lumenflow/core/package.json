@@ -51,7 +51,7 @@
     "./dependency-guard": "./lib/dependency-guard.mjs",
     "./worktree-scanner": "./lib/worktree-scanner.mjs",
     "./worktree-ownership": "./lib/worktree-ownership.mjs",
-    "./lib/*": "./lib/*.mjs"
+    "./lib/*": "./lib/*"
   },
   "main": "./lib/index.mjs",
   "files": [
@@ -63,6 +63,7 @@
     "test": "node --test lib/__tests__/*.test.mjs 2>/dev/null || echo 'No tests yet'"
   },
   "dependencies": {
+    "@lumenflow/memory": "workspace:*",
     "change-case": "^5.4.4",
     "commander": "^12.1.0",
     "date-fns": "^4.1.0",
@@ -72,6 +73,7 @@
     "js-yaml": "^4.1.0",
     "micromatch": "^4.0.8",
     "minimatch": "^10.1.1",
+    "picocolors": "^1.1.1",
     "pretty-ms": "^9.2.0",
     "ps-list": "^8.1.1",
     "simple-git": "^3.30.0",

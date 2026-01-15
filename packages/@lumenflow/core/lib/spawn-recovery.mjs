@@ -32,7 +32,7 @@ import {
   releaseLaneLock,
 } from './lane-lock.mjs';
 import { toKebab } from './wu-constants.mjs';
-import { loadMemory } from './memory-store.mjs';
+import { loadMemory } from '@lumenflow/memory/lib/memory-store.mjs';
 
 /**
  * Recovery action constants
