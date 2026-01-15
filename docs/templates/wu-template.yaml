@@ -1,0 +1,226 @@
+# Work Unit Template (WU Schema v2.0)
+#
+# Copy this template when creating new WUs. Fill in all required fields and
+# remove optional fields if not needed.
+
+# Required: Unique work unit identifier (format: WU-NNN)
+id: WU-XXX
+
+# Required: Short, descriptive title (max 80 chars)
+title: "Your WU title here"
+
+# Required: Engineering lane (Discovery, Intelligence, Main, Operations)
+lane: "Main"
+
+# Required: Type of work (feature, bugfix, refactor, documentation, chore, infrastructure, spike)
+type: "feature"
+
+# Required: Current status (ready, in_progress, done, blocked, cancelled)
+status: "ready"
+
+# Required: Priority (P0=critical, P1=high, P2=medium, P3=low)
+priority: P2
+
+# Required: Creation date (ISO 8601 format)
+created: 2025-10-23T00:00:00.000Z
+
+# Required: Owner (email or "unassigned")
+owner: "unassigned"
+
+# Required: Brief summary of what this WU delivers (2-3 sentences)
+summary: |
+  Brief description of the work unit deliverable.
+  Include the problem being solved and expected outcome.
+  Keep it concise and user-focused.
+
+# Required: Context explaining why this work is needed
+context: |
+  Business or technical context for this WU.
+  Why is this important? What problem does it solve?
+  Link to related user stories, incidents, or strategic initiatives.
+
+# Required: Acceptance criteria (testable, binary pass/fail)
+acceptance:
+  - Criterion 1 (specific, measurable, testable)
+  - Criterion 2 (binary pass/fail)
+  - Criterion 3 (linked to deliverable)
+  - All tests pass
+  - Documentation updated
+  - Code reviewed
+
+# Required: References to plans, design docs, specs (for traceability)
+# For feature WUs created from plans, link the plan file here.
+# Plans should be stored in docs/04-operations/plans/ for version control.
+# See: ai/onboarding/workspace-modes.md §Plan Linking
+spec_refs:
+  - docs/04-operations/plans/WU-XXX-plan.md  # Plan file (copy from .claude/plans/)
+  - docs/design/feature-spec.md              # Design specification
+  - ADR-XXX                                  # Architecture decision record
+
+# Required: Code files changed or created (for test coverage tracking)
+code_paths:
+  - path/to/main/file.ts
+  - path/to/secondary/file.ts
+
+# Required: Test files (unit and manual tests)
+test_paths:
+  unit:
+    - path/to/test.test.ts
+  manual:
+    - Manual test: Verify feature works in browser
+    - Manual test: Check accessibility with screen reader
+
+# Required: Hexagonal architecture ports (empty list if none)
+ports:
+  - port: "IUserRepository"
+    path: "packages/core/ports/IUserRepository.ts"
+  # Leave empty list [] if no ports are modified
+
+# Required: Deliverable artifacts (files, docs, deployed services)
+artifacts:
+  - path/to/deliverable/file
+  - URL to deployed service (if applicable)
+  - Link to documentation
+
+# Required: Risk assessment and mitigation strategy
+risks: |
+  Identify technical and business risks.
+  For each risk, state the mitigation strategy.
+  Examples: "Breaking change - mitigation: feature flag + gradual rollout"
+
+# Required: Additional notes, decisions, and context
+notes: |
+  Any important notes about implementation approach.
+  Design decisions made during development.
+  Links to related WUs or external resources.
+  Known limitations or future improvements.
+
+# Required: Dependencies (other WUs that must complete first)
+dependencies:
+  - WU-XXX  # Required dependency
+# Use empty list [] if no dependencies
+
+# Required: Blockers (WUs or external factors blocking this work)
+blocked_by:
+  - WU-YYY  # Blocking WU
+  - "External API not ready"  # External blocker
+# Use empty list [] if not blocked
+
+# ============================================================================
+# EXPOSURE BLOCK (WU Schema v2.2 - WU-1998, WU-2022)
+# ============================================================================
+# Required: How this WU exposes functionality to users.
+# Ensures backend features have corresponding UI coverage.
+# WU-2022: wu:done validates UI accessibility for exposure=ui WUs.
+
+# Required: Exposure level (ui, api, backend-only, documentation)
+#   - ui: User-facing UI changes (pages, components, widgets)
+#   - api: API endpoints called by UI or external clients
+#   - backend-only: Backend-only changes (no user visibility)
+#   - documentation: Documentation changes only
+exposure: "ui"
+
+# WU-2022: Navigation path for exposure=ui WUs
+# Specifies the route where the UI feature is accessible.
+# Required if exposure=ui and code_paths doesn't include a page.tsx file.
+# wu:done will BLOCK if exposure=ui and no accessibility proof is provided.
+# Accessibility is verified by ANY of:
+#   1. navigation_path is specified (this field)
+#   2. code_paths includes a page.tsx file (Next.js page)
+#   3. tests.manual includes navigation/accessibility verification
+navigation_path: "/settings"
+
+# Recommended for exposure: ui, api
+# Describes the end-user interaction flow affected by this WU.
+# user_journey: |
+#   User navigates to /settings page.
+#   User clicks "Update profile" button.
+#   User sees confirmation message.
+
+# Recommended for exposure: api
+# Lists UI WUs that consume this API, ensuring UI coverage.
+# ui_pairing_wus:
+#   - WU-1234  # Frontend form that calls this API
+#   - WU-5678  # Dashboard widget that displays API data
+
+# ============================================================================
+
+# Optional: Claimed mode (worktree or branch-only)
+# Automatically set by wu:claim, usually don't need to specify
+# claimed_mode: worktree
+
+# Optional: Assigned to (email of current claimant)
+# Automatically set by wu:claim
+# assigned_to: engineer@example.com
+
+# Optional: Locked status (prevents concurrent edits)
+# Automatically set by wu:claim and wu:done
+# locked: false
+
+# Optional: Completion date (ISO 8601 format)
+# Automatically set by wu:done
+# completed: 2025-10-23
+
+# Optional: Completion notes (added by wu:done)
+# completion_notes: |
+#   Additional notes added during wu:done.
+#   Any deviations from original plan.
+#   Lessons learned.
+
+# ============================================================================
+# GOVERNANCE BLOCK (WU Schema v2.0)
+# ============================================================================
+# Optional: COS governance rules that apply to this WU
+# Only include if this WU needs specific governance enforcement
+
+# governance:
+#   # Rules that apply to this WU (evaluated during cos:gates)
+#   rules:
+#     - rule_id: UPAIN-01
+#       satisfied: false  # Initially false, set true when evidence provided
+#       evidence:
+#         - type: link
+#           value: docs/product/voc/feature-user-pain.md
+#           description: "Voice of Customer analysis showing user pain"
+#       notes: |
+#         VOC analysis shows 40% of support tickets request this feature.
+#         Average time wasted: 15min/user/week.
+#
+#     - rule_id: CASH-03
+#       satisfied: false
+#       evidence:
+#         - type: link
+#           value: docs/finance/spend-reviews/2025-10-cloud-infra.md
+#           description: "Spend review for £1200/month cloud infrastructure"
+#         - type: approval
+#           value: owner@example.com
+#           description: "Owner approval for spend commitment"
+#       notes: |
+#         New cloud infrastructure commitment: £1200/month for 12 months.
+#         ROI: Reduces latency by 50%, improves user retention.
+#
+#   # Gate checks (enforced by cos-gates.mjs)
+#   gates:
+#     narrative: "pending"  # Status: pending, passed, skipped, failed
+#     finance: "pending"
+#
+#   # Exemptions (only if rule doesn't apply)
+#   exemptions:
+#     - rule_id: FAIR-01
+#       reason: "No user-facing pricing changes in this WU"
+#       approved_by: product-owner@example.com
+#       approved_at: 2025-10-23
+
+# ============================================================================
+# USAGE NOTES
+# ============================================================================
+#
+# 1. Remove this entire governance block if no COS rules apply to your WU
+# 2. Only include rules that require enforcement (not all rules apply to all WUs)
+# 3. Evidence types: link:, metric:, screenshot:, approval:
+# 4. Gates are checked during wu:done (before merge)
+# 5. Exemptions require approval from rule owner
+#
+# For more details, see:
+# - docs/04-operations/_frameworks/cos/system-prompt-v1.3.md
+# - docs/04-operations/_frameworks/cos/evidence-format.md

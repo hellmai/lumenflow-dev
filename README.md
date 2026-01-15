@@ -8,7 +8,23 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 
 ## Packages
 
-- `@lumenflow/core` - Core WU lifecycle tools (wu:claim, wu:done, etc.)
+| Package | Description |
+|---------|-------------|
+| `@lumenflow/core` | Core WU lifecycle: state machine, validators, spawn management, memory |
+| `@lumenflow/memory` | Session tracking, context recovery, agent coordination |
+| `@lumenflow/initiatives` | Multi-phase project orchestration across WUs |
+| `@lumenflow/agent` | Agent definitions, skill loading, verification |
+| `@lumenflow/cli` | Command-line tools for wu:claim, wu:done, wu:spawn |
+| `@lumenflow/metrics` | DORA metrics, flow analysis, telemetry |
+| `@lumenflow/shims` | Git and pnpm safety shims |
+
+## Documentation
+
+- [LumenFlow Complete Guide](docs/lumenflow/lumenflow-complete.md) - Comprehensive framework reference
+- [WU Overview](docs/lumenflow/wu-overview.md) - Work Unit concepts
+- [WU Sizing Guide](docs/lumenflow/wu-sizing-guide.md) - Scoping work appropriately
+- [Invariants](docs/lumenflow/invariants.md) - Non-negotiable system rules
+- [Templates](docs/templates/) - WU and config templates
 
 ## Requirements
 
