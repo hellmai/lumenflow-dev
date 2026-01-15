@@ -1,0 +1,511 @@
+#!/usr/bin/env node
+/**
+ * Initiative Edit Helper
+ *
+ * Race-safe Initiative editing using micro-worktree isolation (WU-1451).
+ *
+ * Enables editing Initiative YAML files with atomic commits, perfect for:
+ * - Updating initiative status
+ * - Setting blocked_by and blocked_reason
+ * - Unblocking initiatives
+ * - Adding lanes
+ * - Appending notes
+ * - Fixing malformed created dates (WU-2547)
+ *
+ * Uses the micro-worktree pattern with pushOnly mode (WU-1435):
+ * 1) Validate inputs (Initiative exists, status is valid enum)
+ * 2) Ensure main is clean and up-to-date with origin
+ * 3) Create temp branch WITHOUT switching (main checkout stays on main)
+ * 4) Create micro-worktree in /tmp pointing to temp branch
+ * 5) Apply edits in micro-worktree
+ * 6) Commit, push directly to origin/main
+ * 7) Cleanup temp branch and micro-worktree
+ *
+ * Usage:
+ *   pnpm initiative:edit --id INIT-001 --status in_progress
+ *   pnpm initiative:edit --id INIT-001 --blocked-by INIT-002 --blocked-reason "Waiting for Phase 1"
+ *   pnpm initiative:edit --id INIT-001 --unblock
+ *   pnpm initiative:edit --id INIT-001 --add-lane "Operations: Tooling"
+ *   pnpm initiative:edit --id INIT-001 --notes "Phase 2 started"
+ *
+ * Part of WU-1451: Add initiative:edit command for updating initiative status and blockers
+ * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
+ */
+
+import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { die } from '@lumenflow/core/dist/error-handler.js';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import yaml from 'js-yaml';
+import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
+import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
+import {
+  INIT_STATUSES,
+  PHASE_STATUSES,
+  INIT_PATTERNS,
+  INIT_LOG_PREFIX,
+  INIT_COMMIT_FORMATS,
+} from '@lumenflow/initiatives/dist/initiative-constants.js';
+import { EXIT_CODES, FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-constants.js';
+import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
+import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+
+const PREFIX = INIT_LOG_PREFIX.EDIT;
+
+/**
+ * Custom options for initiative-edit
+ */
+const EDIT_OPTIONS = {
+  id: {
+    name: 'id',
+    flags: '-i, --id <initId>',
+    description: 'Initiative ID (e.g., INIT-001)',
+  },
+  status: {
+    name: 'status',
+    flags: '--status <status>',
+    description: `New status (${INIT_STATUSES.join(', ')})`,
+  },
+  blockedBy: {
+    name: 'blockedBy',
+    flags: '--blocked-by <initId>',
+    description: 'Initiative ID that blocks this initiative',
+  },
+  blockedReason: {
+    name: 'blockedReason',
+    flags: '--blocked-reason <text>',
+    description: 'Reason for blocking (required with --blocked-by)',
+  },
+  unblock: {
+    name: 'unblock',
+    flags: '--unblock',
+    description: 'Remove blocked_by and blocked_reason fields',
+  },
+  addLane: {
+    name: 'addLane',
+    flags: '--add-lane <lane>',
+    description: 'Lane to add (repeatable)',
+    isRepeatable: true,
+  },
+  removeLane: {
+    name: 'removeLane',
+    flags: '--remove-lane <lane>',
+    description: 'Lane to remove (repeatable)',
+    isRepeatable: true,
+  },
+  notes: {
+    name: 'notes',
+    flags: '--notes <text>',
+    description: 'Note to append to notes array',
+  },
+  // WU-1475: New planning field options
+  description: {
+    name: 'description',
+    flags: '--description <text>',
+    description: 'Replace the initiative description field',
+  },
+  addPhase: {
+    name: 'addPhase',
+    flags: '--add-phase <title>',
+    description: 'Append a new phase with auto-incremented id and pending status (repeatable)',
+    isRepeatable: true,
+  },
+  addSuccessMetric: {
+    name: 'addSuccessMetric',
+    flags: '--add-success-metric <text>',
+    description: 'Append to success_metrics array, avoiding duplicates (repeatable)',
+    isRepeatable: true,
+  },
+  // WU-1836: Phase status update options
+  phaseId: {
+    name: 'phaseId',
+    flags: '--phase-id <id>',
+    description: 'Phase ID to update (use with --phase-status)',
+  },
+  phaseStatus: {
+    name: 'phaseStatus',
+    flags: '--phase-status <status>',
+    description: `Update phase status (${PHASE_STATUSES.join(', ')})`,
+  },
+  // WU-2547: Created date field
+  created: {
+    name: 'created',
+    flags: '--created <date>',
+    description: 'Set created date (YYYY-MM-DD format)',
+  },
+};
+
+/**
+ * Parse command line arguments
+ */
+function parseArgs() {
+  const opts = createWUParser({
+    name: 'initiative-edit',
+    description: 'Edit Initiative YAML files with micro-worktree isolation',
+    options: [
+      EDIT_OPTIONS.id,
+      EDIT_OPTIONS.status,
+      EDIT_OPTIONS.blockedBy,
+      EDIT_OPTIONS.blockedReason,
+      EDIT_OPTIONS.unblock,
+      EDIT_OPTIONS.addLane,
+      EDIT_OPTIONS.removeLane,
+      EDIT_OPTIONS.notes,
+      // WU-1475: New planning field options
+      EDIT_OPTIONS.description,
+      EDIT_OPTIONS.addPhase,
+      EDIT_OPTIONS.addSuccessMetric,
+      // WU-1836: Phase status update options
+      EDIT_OPTIONS.phaseId,
+      EDIT_OPTIONS.phaseStatus,
+      // WU-2547: Created date field
+      EDIT_OPTIONS.created,
+    ],
+    required: [], // Don't mark id as required - we handle it manually to support positional args
+    allowPositionalId: true,
+  });
+
+  // Validate id is provided (either via --id or positional argument)
+  if (!opts.id) {
+    die(
+      'Missing required option: --id <initId>\n\n' +
+        'Usage:\n' +
+        '  pnpm initiative:edit --id INIT-001 --status in_progress\n' +
+        '  pnpm initiative:edit INIT-001 --status in_progress'
+    );
+  }
+
+  return opts;
+}
+
+/**
+ * Validate Initiative ID format
+ */
+function validateInitIdFormat(id) {
+  if (!INIT_PATTERNS.INIT_ID.test(id)) {
+    die(
+      `Invalid Initiative ID format: "${id}"\n\n` +
+        `Expected format: INIT-<number> (e.g., INIT-001) or INIT-<NAME> (e.g., INIT-SAFETY)`
+    );
+  }
+}
+
+/**
+ * Validate status is a valid enum value
+ */
+function validateStatus(status) {
+  if (!INIT_STATUSES.includes(status)) {
+    die(`Invalid status: "${status}"\n\n` + `Valid statuses: ${INIT_STATUSES.join(', ')}`);
+  }
+}
+
+/**
+ * Validate phase status is a valid enum value (WU-1836)
+ */
+function validatePhaseStatus(status) {
+  if (!PHASE_STATUSES.includes(status)) {
+    die(
+      `Invalid phase status: "${status}"\n\n` + `Valid phase statuses: ${PHASE_STATUSES.join(', ')}`
+    );
+  }
+}
+
+/**
+ * Validate phase ID exists in initiative (WU-1836)
+ */
+function validatePhaseExists(initiative, phaseId) {
+  const numericId = Number(phaseId);
+  if (Number.isNaN(numericId)) {
+    die(`Invalid phase ID: "${phaseId}"\n\nPhase ID must be a number.`);
+  }
+
+  const phases = initiative.phases || [];
+  const phase = phases.find((p) => p.id === numericId);
+  if (!phase) {
+    const existingIds = phases.map((p) => p.id).join(', ') || 'none';
+    die(
+      `Phase ${phaseId} not found in ${initiative.id}.\n\n` + `Existing phase IDs: ${existingIds}`
+    );
+  }
+  return numericId;
+}
+
+/**
+ * Validate created date is in YYYY-MM-DD format (WU-2547)
+ *
+ * @param {string} date - Date string to validate
+ */
+function validateCreatedDate(date) {
+  if (!INIT_PATTERNS.DATE.test(date)) {
+    die(`Invalid date format: "${date}"\n\n` + `Expected format: YYYY-MM-DD (e.g., 2026-01-14)`);
+  }
+}
+
+/**
+ * Check Initiative exists and load it
+ *
+ * @param {string} id - Initiative ID
+ * @returns {object} Initiative object
+ */
+function loadInitiative(id) {
+  const initPath = INIT_PATHS.INITIATIVE(id);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
+  if (!existsSync(initPath)) {
+    die(
+      `Initiative ${id} not found at ${initPath}\n\n` +
+        `Ensure the Initiative exists and you're in the repo root.`
+    );
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
+  const content = readFileSync(initPath, FILE_SYSTEM.ENCODING);
+  return yaml.load(content);
+}
+
+/**
+ * Ensure working tree is clean
+ */
+async function ensureCleanWorkingTree() {
+  const status = await getGitForCwd().getStatus();
+  if (status.trim()) {
+    die(
+      `Working tree is not clean. Cannot edit Initiative.\n\n` +
+        `Uncommitted changes:\n${status}\n\n` +
+        `Commit or stash changes before editing:\n  git add . && git commit -m "..."\n`
+    );
+  }
+}
+
+/**
+ * Apply blocking edits to Initiative
+ */
+function applyBlockingEdits(updated, opts) {
+  if (opts.blockedBy) {
+    if (!opts.blockedReason) {
+      die(
+        `--blocked-reason is required when using --blocked-by.\n\n` +
+          `Usage: pnpm initiative:edit --id ${updated.id} --blocked-by ${opts.blockedBy} --blocked-reason "Reason text"`
+      );
+    }
+    if (!INIT_PATTERNS.INIT_ID.test(opts.blockedBy)) {
+      die(
+        `Invalid blocked-by Initiative ID format: "${opts.blockedBy}"\n\n` +
+          `Expected format: INIT-<number> (e.g., INIT-001)`
+      );
+    }
+    updated.blocked_by = opts.blockedBy;
+    updated.blocked_reason = opts.blockedReason;
+  }
+  if (opts.unblock) {
+    delete updated.blocked_by;
+    delete updated.blocked_reason;
+  }
+}
+
+/**
+ * Apply lane edits (add and remove)
+ * Adds first, then removes (WU-2276)
+ */
+function applyLaneEdits(updated, opts) {
+  if (opts.addLane && opts.addLane.length > 0) {
+    updated.lanes = updated.lanes || [];
+    for (const lane of opts.addLane) {
+      if (!updated.lanes.includes(lane)) {
+        updated.lanes.push(lane);
+      }
+    }
+  }
+  if (opts.removeLane && opts.removeLane.length > 0) {
+    updated.lanes = updated.lanes || [];
+    updated.lanes = updated.lanes.filter((lane) => !opts.removeLane.includes(lane));
+  }
+}
+
+/**
+ * Apply array append edits (notes, success metrics)
+ */
+function applyArrayEdits(updated, opts) {
+  applyLaneEdits(updated, opts);
+  if (opts.notes) {
+    updated.notes = updated.notes || [];
+    updated.notes.push(opts.notes);
+  }
+  if (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) {
+    updated.success_metrics = updated.success_metrics || [];
+    for (const metric of opts.addSuccessMetric) {
+      if (!updated.success_metrics.includes(metric)) {
+        updated.success_metrics.push(metric);
+      }
+    }
+  }
+}
+
+/**
+ * Apply phase edits with auto-incremented IDs
+ */
+function applyPhaseEdits(updated, opts) {
+  if (!opts.addPhase || opts.addPhase.length === 0) {
+    return;
+  }
+  updated.phases = updated.phases || [];
+  for (const title of opts.addPhase) {
+    const existingIds = updated.phases.map((p) => (typeof p.id === 'number' ? p.id : 0));
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+    updated.phases.push({
+      id: maxId + 1,
+      title: title,
+      status: 'pending',
+    });
+  }
+}
+
+/**
+ * Apply phase status update (WU-1836)
+ */
+function applyPhaseStatusEdit(updated, phaseId, phaseStatus) {
+  const numericId = Number(phaseId);
+  const phase = updated.phases.find((p) => p.id === numericId);
+  if (phase) {
+    phase.status = phaseStatus;
+  }
+}
+
+/**
+ * Apply edits to Initiative YAML
+ * Returns the updated Initiative object
+ */
+function applyEdits(initiative, opts) {
+  const updated = { ...initiative };
+
+  if (opts.status) {
+    validateStatus(opts.status);
+    updated.status = opts.status;
+  }
+
+  applyBlockingEdits(updated, opts);
+  applyArrayEdits(updated, opts);
+
+  if (opts.description) {
+    updated.description = opts.description;
+  }
+
+  applyPhaseEdits(updated, opts);
+
+  // WU-1836: Phase status update
+  if (opts.phaseId && opts.phaseStatus) {
+    applyPhaseStatusEdit(updated, opts.phaseId, opts.phaseStatus);
+  }
+
+  // WU-2547: Created date update
+  if (opts.created) {
+    validateCreatedDate(opts.created);
+    updated.created = opts.created;
+  }
+
+  return updated;
+}
+
+/**
+ * Main entry point
+ */
+async function main() {
+  const opts = parseArgs();
+  const { id } = opts;
+
+  console.log(`${PREFIX} Starting Initiative edit for ${id}`);
+
+  // Validate inputs
+  validateInitIdFormat(id);
+  const originalInit = loadInitiative(id);
+
+  // WU-1836: Validate --phase-id and --phase-status are used together
+  if (opts.phaseId && !opts.phaseStatus) {
+    die(
+      `--phase-status is required when using --phase-id.\n\n` +
+        `Usage: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-status done`
+    );
+  }
+  if (opts.phaseStatus && !opts.phaseId) {
+    die(
+      `--phase-id is required when using --phase-status.\n\n` +
+        `Usage: pnpm initiative:edit --id ${id} --phase-id 1 --phase-status ${opts.phaseStatus}`
+    );
+  }
+
+  // WU-1836: Validate phase exists and status is valid enum before proceeding
+  if (opts.phaseId && opts.phaseStatus) {
+    validatePhaseExists(originalInit, opts.phaseId);
+    validatePhaseStatus(opts.phaseStatus);
+  }
+
+  // Check we have something to edit
+  const hasEdits =
+    opts.status ||
+    opts.blockedBy ||
+    opts.unblock ||
+    (opts.addLane && opts.addLane.length > 0) ||
+    (opts.removeLane && opts.removeLane.length > 0) ||
+    opts.notes ||
+    opts.description ||
+    (opts.addPhase && opts.addPhase.length > 0) ||
+    (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
+    (opts.phaseId && opts.phaseStatus) ||
+    opts.created;
+
+  if (!hasEdits) {
+    die(
+      'No edits specified.\n\n' +
+        'Provide one of:\n' +
+        '  --status <status>           Update initiative status\n' +
+        '  --blocked-by <INIT-ID>      Set blocking initiative (requires --blocked-reason)\n' +
+        '  --unblock                   Remove blocked_by and blocked_reason\n' +
+        '  --add-lane <lane>           Add lane (repeatable)\n' +
+        '  --remove-lane <lane>        Remove lane (repeatable)\n' +
+        '  --notes <text>              Append note\n' +
+        '  --description <text>        Replace description field\n' +
+        '  --add-phase <title>         Add phase with auto-incremented id (repeatable)\n' +
+        '  --add-success-metric <text> Add success metric (repeatable, deduplicated)\n' +
+        '  --phase-id <id> --phase-status <status>  Update specific phase status\n' +
+        '  --created <YYYY-MM-DD>      Set created date'
+    );
+  }
+
+  // Apply edits to get updated Initiative
+  const updatedInit = applyEdits(originalInit, opts);
+
+  // Pre-flight checks for micro-worktree mode
+  await ensureOnMain(getGitForCwd());
+  await ensureCleanWorkingTree();
+  await ensureMainUpToDate(getGitForCwd(), 'initiative:edit');
+
+  console.log(`${PREFIX} Applying edits via micro-worktree...`);
+
+  await withMicroWorktree({
+    operation: MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT,
+    id: id,
+    logPrefix: PREFIX,
+    pushOnly: true, // WU-1435: Push directly to origin/main without touching local main
+    execute: async ({ worktreePath }) => {
+      // Write updated Initiative to micro-worktree
+      const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
+      const yamlContent = yaml.dump(updatedInit, { lineWidth: 100 });
+
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
+      writeFileSync(initPath, yamlContent, FILE_SYSTEM.ENCODING);
+      console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
+
+      return {
+        commitMessage: INIT_COMMIT_FORMATS.EDIT(id),
+        files: [INIT_PATHS.INITIATIVE(id)],
+      };
+    },
+  });
+
+  console.log(`${PREFIX} Successfully edited ${id}`);
+  console.log(`${PREFIX} Changes pushed to origin/main`);
+}
+
+main().catch((err) => {
+  console.error(`${PREFIX} ${err.message}`);
+  process.exit(EXIT_CODES.ERROR);
+});

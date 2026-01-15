@@ -1,0 +1,261 @@
+#!/usr/bin/env node
+/**
+ * WU State Repair Tool (Unified - WU-1826, WU-2240)
+ *
+ * Layer 2 defense-in-depth: detect and repair WU state inconsistencies.
+ *
+ * This unified tool consolidates four repair modes:
+ * - Consistency mode (default): detect/repair state inconsistencies
+ * - Claim mode (--claim): repair missing claim metadata in worktrees
+ * - Admin mode (--admin): administrative fixes for done WUs
+ * - State mode (--repair-state): repair corrupted wu-events.jsonl (WU-2240)
+ *
+ * Usage:
+ *   # Consistency mode (default)
+ *   pnpm wu:repair --id WU-123           # Repair single WU
+ *   pnpm wu:repair --id WU-123 --check   # Audit only, no changes
+ *   pnpm wu:repair --all                 # Batch repair all WUs
+ *   pnpm wu:repair --all --check         # Audit all WUs
+ *
+ *   # Claim mode
+ *   pnpm wu:repair --claim --id WU-123           # Repair claim metadata
+ *   pnpm wu:repair --claim --id WU-123 --check   # Check only
+ *   pnpm wu:repair --claim --id WU-123 --worktree /path/to/worktree
+ *
+ *   # Admin mode
+ *   pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"
+ *   pnpm wu:repair --admin --id WU-123 --status cancelled
+ *   pnpm wu:repair --admin --id WU-123 --notes "Administrative fix"
+ *   pnpm wu:repair --admin --id WU-123 --initiative INIT-001
+ *
+ *   # State mode (WU-2240)
+ *   pnpm wu:repair --repair-state                    # Repair default state file
+ *   pnpm wu:repair --repair-state --path /path/to/wu-events.jsonl  # Repair specific file
+ *
+ * Exit codes:
+ *   0: Success (no issues or all repaired)
+ *   1: Issues detected (--check mode)
+ *   2: Repair failed
+ *
+ * DEPRECATION NOTICE:
+ *   - pnpm wu:repair-claim is deprecated. Use: pnpm wu:repair --claim
+ *   - pnpm wu:admin-repair is deprecated. Use: pnpm wu:repair --admin
+ *
+ * @see {@link tools/lib/wu-repair-core.mjs} - Core repair logic
+ * @see {@link tools/lib/wu-consistency-checker.mjs} - Consistency detection/repair
+ * @see {@link tools/lib/wu-state-store.mjs} - State file repair (repairStateFile)
+ */
+
+import { Command } from 'commander';
+import path from 'node:path';
+import { EXIT_CODES, LOG_PREFIX, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  runConsistencyRepairMode,
+  runClaimRepairMode,
+  runAdminRepairMode,
+} from '@lumenflow/core/dist/wu-repair-core.js';
+import { repairStateFile, WU_EVENTS_FILE_NAME } from '@lumenflow/core/dist/wu-state-store.js';
+
+const PREFIX = LOG_PREFIX.REPAIR;
+
+/**
+ * Normalise WU ID to uppercase with WU- prefix
+ * @param {string} id - Raw WU ID
+ * @returns {string} Normalised WU ID
+ */
+function normaliseWUId(id) {
+  if (!id) return id;
+  let normalised = id.toUpperCase();
+  if (!normalised.startsWith('WU-')) {
+    normalised = `WU-${normalised}`;
+  }
+  return normalised;
+}
+
+/**
+ * Validate WU ID format
+ * @param {string} id - WU ID to validate
+ * @returns {boolean} True if valid
+ */
+function isValidWUId(id) {
+  return PATTERNS.WU_ID.test(id);
+}
+
+/**
+ * Create and configure the CLI program
+ */
+function createProgram() {
+  const program = new Command();
+
+  program
+    .name('wu-repair')
+    .description(
+      'Unified WU repair tool - detect and fix WU state issues\n\n' +
+        'Modes:\n' +
+        '  (default)       Consistency repair - detect/repair state inconsistencies\n' +
+        '  --claim         Claim repair - fix missing claim metadata in worktrees\n' +
+        '  --admin         Admin repair - fix done WUs (lane, status, notes, initiative)\n' +
+        '  --repair-state  State repair - fix corrupted wu-events.jsonl (WU-2240)'
+    )
+    // Mode selection flags
+    .option('--claim', 'Claim repair mode: fix missing claim metadata in worktrees')
+    .option('--admin', 'Admin repair mode: fix done WUs (lane, status, notes, initiative)')
+    .option('--repair-state', 'State repair mode: fix corrupted wu-events.jsonl (WU-2240)')
+    // Common flags
+    .option('--id <wuId>', 'WU ID to check/repair (e.g., WU-123)')
+    .option('--check', 'Audit only, no changes (exits 1 if issues found)')
+    // Consistency mode flags
+    .option('--all', 'Check/repair all WUs (consistency mode only)')
+    // Claim mode flags
+    .option('--worktree <path>', 'Override worktree path (claim mode only)')
+    // Admin mode flags
+    .option('--lane <lane>', 'New lane assignment (admin mode only)')
+    .option('--status <status>', 'New status value (admin mode only)')
+    .option('--notes <text>', 'Add/update notes (admin mode only)')
+    .option('--initiative <ref>', 'New initiative reference (admin mode only)')
+    // State repair mode flags
+    .option('--path <path>', 'Path to state file to repair (state mode only)')
+    .parse(process.argv);
+
+  return program.opts();
+}
+
+/**
+ * Validate options and exit with error if invalid
+ */
+function validateOptions(options) {
+  // Validate mode selection - only one mode at a time
+  const modes = [options.claim, options.admin, options.repairState].filter(Boolean);
+  if (modes.length > 1) {
+    console.error(
+      `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state are mutually exclusive)`
+    );
+    process.exit(EXIT_CODES.FAILURE);
+  }
+
+  // Normalise and validate WU ID if provided
+  if (options.id) {
+    options.id = normaliseWUId(options.id);
+    if (!isValidWUId(options.id)) {
+      console.error(`${PREFIX} Error: Invalid WU ID format '${options.id}'`);
+      console.error(`${PREFIX} Expected format: WU-123`);
+      process.exit(EXIT_CODES.FAILURE);
+    }
+  }
+}
+
+/**
+ * Validate mode-specific requirements
+ */
+function validateModeRequirements(options) {
+  if (options.claim && !options.id) {
+    console.error(`${PREFIX} Error: --id is required for claim mode`);
+    console.error(`${PREFIX} Usage: pnpm wu:repair --claim --id WU-123`);
+    process.exit(EXIT_CODES.FAILURE);
+  }
+
+  if (options.admin && !options.id) {
+    console.error(`${PREFIX} Error: --id is required for admin mode`);
+    console.error(
+      `${PREFIX} Usage: pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"`
+    );
+    process.exit(EXIT_CODES.FAILURE);
+  }
+
+  // State repair mode has no required options (uses default path if not specified)
+  if (options.repairState) {
+    return; // No additional validation needed
+  }
+
+  if (!options.claim && !options.admin) {
+    // Consistency mode requirements
+    if (!options.id && !options.all) {
+      console.error(`${PREFIX} Error: Must specify either --id <WU-ID> or --all`);
+      process.exit(EXIT_CODES.FAILURE);
+    }
+    if (options.id && options.all) {
+      console.error(`${PREFIX} Error: Cannot specify both --id and --all`);
+      process.exit(EXIT_CODES.FAILURE);
+    }
+  }
+}
+
+/**
+ * Run state file repair mode (WU-2240)
+ *
+ * @param {object} options - CLI options
+ * @param {string} [options.path] - Path to state file (defaults to .beacon/state/wu-events.jsonl)
+ * @returns {Promise<{success: boolean, exitCode: number}>}
+ */
+async function runStateRepairMode(options) {
+  // Default path is .beacon/state/wu-events.jsonl relative to cwd
+  const defaultPath = path.join(process.cwd(), '.beacon', 'state', WU_EVENTS_FILE_NAME);
+  const filePath = options.path || defaultPath;
+
+  console.log(`${PREFIX} Repairing state file: ${filePath}`);
+
+  try {
+    const result = await repairStateFile(filePath);
+
+    if (result.linesRemoved === 0 && result.linesKept === 0 && result.backupPath === null) {
+      // File didn't exist
+      console.log(`${PREFIX} File does not exist, nothing to repair`);
+      return { success: true, exitCode: EXIT_CODES.SUCCESS };
+    }
+
+    console.log(`${PREFIX} Repair complete:`);
+    console.log(`${PREFIX}   Lines kept: ${result.linesKept}`);
+    console.log(`${PREFIX}   Lines removed: ${result.linesRemoved}`);
+
+    if (result.backupPath) {
+      console.log(`${PREFIX}   Backup created: ${result.backupPath}`);
+    }
+
+    if (result.warnings.length > 0) {
+      console.log(`${PREFIX} Warnings:`);
+      for (const warning of result.warnings) {
+        console.log(`${PREFIX}   - ${warning}`);
+      }
+    }
+
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  } catch (error) {
+    console.error(`${PREFIX} Error repairing state file: ${error.message}`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+}
+
+/**
+ * Route to appropriate repair mode
+ */
+async function routeToRepairMode(options) {
+  if (options.claim) {
+    return runClaimRepairMode(options);
+  }
+  if (options.admin) {
+    return runAdminRepairMode(options);
+  }
+  if (options.repairState) {
+    return runStateRepairMode(options);
+  }
+  return runConsistencyRepairMode(options);
+}
+
+async function main() {
+  const options = createProgram();
+
+  validateOptions(options);
+  validateModeRequirements(options);
+
+  const result = await routeToRepairMode(options);
+  process.exit(result.exitCode);
+}
+
+// Guard main() for testability (WU-1366)
+import { fileURLToPath } from 'node:url';
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}
+
+// Export for testing
+export { normaliseWUId, isValidWUId };

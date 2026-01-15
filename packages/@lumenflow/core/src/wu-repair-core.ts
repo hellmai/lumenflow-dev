@@ -1,0 +1,796 @@
+/**
+ * WU Repair Core Module (WU-1826)
+ *
+ * Unified repair logic for all WU repair operations:
+ * - Consistency repair (default mode): detect/repair state inconsistencies
+ * - Claim repair (--claim mode): repair missing claim metadata in worktrees
+ * - Admin repair (--admin mode): administrative fixes for done WUs
+ *
+ * This module consolidates logic from:
+ * - wu-consistency-checker.mjs (consistency checks)
+ * - wu-repair-claim.mjs (claim metadata repair)
+ * - wu-admin-repair.mjs (admin fixes)
+ * - wu-recovery.mjs (zombie state recovery)
+ *
+ * @see {@link ../wu-repair.mjs} - Unified CLI interface
+ */
+
+import path from 'node:path';
+import { existsSync, writeFileSync, appendFileSync, mkdirSync, readFileSync } from 'node:fs';
+import {
+  checkWUConsistency,
+  checkAllWUConsistency,
+  repairWUInconsistency,
+} from './wu-consistency-checker.js';
+import { readWU, writeWU, parseYAML, stringifyYAML } from './wu-yaml.js';
+import { WU_PATHS } from './wu-paths.js';
+import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
+import { getGitForCwd, createGitForPath } from './git-adapter.js';
+import {
+  EXIT_CODES,
+  LOG_PREFIX,
+  EMOJI,
+  WU_STATUS,
+  FILE_SYSTEM,
+} from './wu-constants.js';
+import { die } from './error-handler.js';
+import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from './wu-helpers.js';
+import { withMicroWorktree } from './micro-worktree.js';
+import { validateLaneFormat } from './lane-checker.js';
+import { normalizeToDateString } from './date-utils.js';
+
+// Re-export for backwards compatibility
+export {
+  checkWUConsistency,
+  checkAllWUConsistency,
+  repairWUInconsistency,
+};
+
+// Re-export recovery utilities from wu-recovery.mjs
+export {
+  detectZombieState,
+  recoverZombieState,
+  resetWorktreeYAMLForRecovery,
+  getRecoveryMarkerPath,
+  getRecoveryAttemptCount,
+  incrementRecoveryAttempt,
+  clearRecoveryAttempts,
+  shouldEscalateToManualIntervention,
+  MAX_RECOVERY_ATTEMPTS,
+} from './wu-recovery.js';
+
+const PREFIX = LOG_PREFIX.REPAIR;
+
+// ============================================================================
+// CLAIM REPAIR MODE
+// ============================================================================
+
+/**
+ * Detect worktree path from WU ID using git worktree list
+ *
+ * @param {string} id - WU ID (e.g., 'WU-1804')
+ * @returns {Promise<string|null>} Worktree path or null if not found
+ */
+export async function findWorktreePathForWU(id) {
+  try {
+    const git = getGitForCwd();
+    const worktreeOutput = await git.worktreeList();
+    const lines = worktreeOutput.split('\n');
+
+    // Look for worktree with matching WU ID in branch name
+    const idLower = id.toLowerCase();
+    for (const line of lines) {
+      // Line format: "worktree <path>" followed by "branch refs/heads/lane/<lane>/<id>"
+      if (line.includes(idLower)) {
+        const worktreeMatch = line.match(/^worktree\s+(.+)$/);
+        if (worktreeMatch) {
+          return worktreeMatch[1].trim();
+        }
+      }
+    }
+
+    // Try porcelain format
+    const porcelainOutput = await git.raw(['worktree', 'list', '--porcelain']);
+    const entries = porcelainOutput.split('\n\n');
+    for (const entry of entries) {
+      if (entry.toLowerCase().includes(idLower)) {
+        const pathMatch = entry.match(/^worktree\s+(.+)$/m);
+        if (pathMatch) {
+          return pathMatch[1].trim();
+        }
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check claim metadata state for a WU worktree
+ *
+ * @param {string} id - WU ID
+ * @param {string} worktreePath - Path to the worktree
+ * @returns {Promise<{valid: boolean, errors: string[], yamlStatus: string|null, stateStoreHasClaim: boolean}>}
+ */
+export async function checkClaimMetadata(id, worktreePath) {
+  const errors = [];
+  let yamlStatus = null;
+  let stateStoreHasClaim = false;
+
+  // Check worktree YAML status
+  const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
+  if (existsSync(wuPath)) {
+    try {
+      const doc = readWU(wuPath, id);
+      yamlStatus = doc.status;
+      if (yamlStatus !== WU_STATUS.IN_PROGRESS) {
+        errors.push(
+          `WU YAML status is '${yamlStatus}', expected '${WU_STATUS.IN_PROGRESS}'`
+        );
+      }
+    } catch (err) {
+      errors.push(`Failed to read WU YAML: ${err.message}`);
+    }
+  } else {
+    errors.push(`WU YAML not found at: ${wuPath}`);
+  }
+
+  // Check state store
+  const stateDir = path.join(worktreePath, '.beacon', 'state');
+  const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
+  if (existsSync(eventsPath)) {
+    try {
+      const store = new WUStateStore(stateDir);
+      await store.load();
+      const inProgress = store.getByStatus(WU_STATUS.IN_PROGRESS);
+      stateStoreHasClaim = inProgress.has(id);
+      if (!stateStoreHasClaim) {
+        errors.push(`State store does not show ${id} as in_progress`);
+      }
+    } catch (err) {
+      errors.push(`Failed to read state store: ${err.message}`);
+    }
+  } else {
+    errors.push(`State store not found at: ${eventsPath}`);
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    yamlStatus,
+    stateStoreHasClaim,
+  };
+}
+
+/**
+ * Repair claim metadata in worktree
+ *
+ * SAFETY: Only modifies files inside the worktree, never main.
+ *
+ * @param {string} id - WU ID
+ * @param {string} worktreePath - Path to the worktree
+ * @param {object} checkResult - Result from checkClaimMetadata
+ * @returns {Promise<{success: boolean, repaired: string[], errors: string[]}>}
+ */
+export async function repairClaimMetadata(id, worktreePath, checkResult) {
+  const repaired = [];
+  const errors = [];
+
+  // Read current WU YAML to get lane and title
+  const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
+  let doc;
+  try {
+    doc = readWU(wuPath, id);
+  } catch (err) {
+    return {
+      success: false,
+      repaired: [],
+      errors: [`Cannot read WU YAML to repair: ${err.message}`],
+    };
+  }
+
+  const lane = doc.lane || '';
+  const title = doc.title || `WU ${id}`;
+
+  // Repair 1: Fix YAML status if needed
+  if (checkResult.yamlStatus !== WU_STATUS.IN_PROGRESS) {
+    try {
+      doc.status = WU_STATUS.IN_PROGRESS;
+      // Remove done-state fields that shouldn't be present
+      delete doc.locked;
+      delete doc.completed_at;
+      writeWU(wuPath, doc);
+      repaired.push(`WU YAML status set to '${WU_STATUS.IN_PROGRESS}'`);
+    } catch (err) {
+      errors.push(`Failed to update WU YAML status: ${err.message}`);
+    }
+  }
+
+  // Repair 2: Add claim event to state store if missing
+  if (!checkResult.stateStoreHasClaim) {
+    try {
+      const stateDir = path.join(worktreePath, '.beacon', 'state');
+      const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
+
+      // Ensure directory exists
+      mkdirSync(stateDir, { recursive: true });
+
+      // Create claim event
+      const claimEvent = {
+        type: 'claim',
+        wuId: id,
+        lane: lane,
+        title: title,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Append to events file
+      const line = `${JSON.stringify(claimEvent)}\n`;
+      appendFileSync(eventsPath, line, 'utf-8');
+      repaired.push(`Claim event added to state store`);
+    } catch (err) {
+      errors.push(`Failed to add claim event to state store: ${err.message}`);
+    }
+  }
+
+  // Stage and commit the repairs
+  if (repaired.length > 0) {
+    try {
+      const gitWorktree = createGitForPath(worktreePath);
+
+      // Stage repaired files
+      const filesToStage = [wuPath];
+      const stateDir = path.join(worktreePath, '.beacon', 'state');
+      const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
+      if (existsSync(eventsPath)) {
+        filesToStage.push(eventsPath);
+      }
+
+      await gitWorktree.add(filesToStage);
+
+      // Commit with repair message
+      const commitMsg = `wu(${id.toLowerCase()}): repair-claim - restore missing claim metadata`;
+      await gitWorktree.commit(commitMsg);
+      repaired.push(`Committed repair: ${commitMsg}`);
+
+      // Push to remote
+      const currentBranch = await gitWorktree.getCurrentBranch();
+      await gitWorktree.push('origin', currentBranch);
+      repaired.push(`Pushed to origin/${currentBranch}`);
+    } catch (err) {
+      // Don't fail the entire repair if commit/push fails
+      errors.push(`Git operations failed: ${err.message}. Manual commit may be required.`);
+    }
+  }
+
+  return {
+    success: errors.length === 0,
+    repaired,
+    errors,
+  };
+}
+
+/**
+ * Run claim repair mode
+ *
+ * @param {object} options - CLI options
+ * @param {string} options.id - WU ID
+ * @param {boolean} [options.check] - Check only, no repair
+ * @param {string} [options.worktree] - Override worktree path
+ * @returns {Promise<{success: boolean, exitCode: number}>}
+ */
+export async function runClaimRepairMode(options) {
+  const { id, check, worktree } = options;
+
+  console.log(`${PREFIX} Checking claim metadata for ${id}...`);
+
+  // Find worktree path
+  let worktreePath = worktree;
+  if (!worktreePath) {
+    worktreePath = await findWorktreePathForWU(id);
+  }
+
+  if (!worktreePath) {
+    console.error(`${PREFIX} Error: Could not find worktree for ${id}`);
+    console.error(`${PREFIX} Ensure the worktree exists, or specify with --worktree <path>`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+
+  if (!existsSync(worktreePath)) {
+    console.error(`${PREFIX} Error: Worktree path does not exist: ${worktreePath}`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+
+  console.log(`${PREFIX} Found worktree: ${worktreePath}`);
+
+  // Check claim metadata state
+  const checkResult = await checkClaimMetadata(id, worktreePath);
+
+  if (checkResult.valid) {
+    console.log(`${PREFIX} ${EMOJI.SUCCESS} Claim metadata is valid for ${id}`);
+    console.log(`${PREFIX}   - YAML status: ${checkResult.yamlStatus}`);
+    console.log(`${PREFIX}   - State store: has claim event`);
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  }
+
+  // Report issues
+  console.log(`${PREFIX} ${EMOJI.WARNING} Found ${checkResult.errors.length} issue(s):`);
+  for (const error of checkResult.errors) {
+    console.log(`${PREFIX}   - ${error}`);
+  }
+
+  // Check-only mode
+  if (check) {
+    console.log(`${PREFIX} --check mode: no changes made`);
+    return { success: false, exitCode: EXIT_CODES.ERROR };
+  }
+
+  // Repair
+  console.log(`${PREFIX} Repairing claim metadata...`);
+  const repairResult = await repairClaimMetadata(id, worktreePath, checkResult);
+
+  // Report repairs
+  if (repairResult.repaired.length > 0) {
+    console.log(`${PREFIX} ${EMOJI.SUCCESS} Repairs applied:`);
+    for (const repair of repairResult.repaired) {
+      console.log(`${PREFIX}   - ${repair}`);
+    }
+  }
+
+  // Report repair errors
+  if (repairResult.errors.length > 0) {
+    console.log(`${PREFIX} ${EMOJI.WARNING} Repair warnings:`);
+    for (const error of repairResult.errors) {
+      console.log(`${PREFIX}   - ${error}`);
+    }
+  }
+
+  if (repairResult.success) {
+    console.log(`\n${PREFIX} ${EMOJI.SUCCESS} Repair complete!`);
+    console.log(`${PREFIX} You can now retry: pnpm wu:done --id ${id}`);
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  } else {
+    console.error(`\n${PREFIX} ${EMOJI.FAILURE} Repair failed. Manual intervention required.`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+}
+
+// ============================================================================
+// ADMIN REPAIR MODE
+// ============================================================================
+
+const ADMIN_PREFIX = '[wu:admin-repair]';
+const OPERATION_NAME = 'wu-admin-repair';
+const VALID_STATUSES = Object.values(WU_STATUS);
+
+/**
+ * Validate status value against WU_STATUS enum
+ *
+ * @param {string} status - Status value to validate
+ */
+function validateStatus(status) {
+  if (!VALID_STATUSES.includes(status)) {
+    die(
+      `Invalid status: '${status}'\n\n` +
+        `Valid statuses: ${VALID_STATUSES.join(', ')}`
+    );
+  }
+}
+
+/**
+ * Check WU exists (does NOT block on done status unlike wu:edit)
+ *
+ * @param {string} id - WU ID
+ * @returns {object} WU object
+ */
+function validateWUExists(id) {
+  const wuPath = WU_PATHS.WU(id);
+  if (!existsSync(wuPath)) {
+    die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
+  }
+
+  const content = readFileSync(wuPath, FILE_SYSTEM.ENCODING);
+  const wu = parseYAML(content);
+
+  // Admin repair ALLOWS editing done WUs (key difference from wu:edit)
+  return wu;
+}
+
+/**
+ * Ensure working tree is clean
+ */
+async function ensureCleanWorkingTree() {
+  const status = await getGitForCwd().getStatus();
+  if (status.trim()) {
+    die(
+      `Working tree is not clean. Cannot run admin-repair.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before running admin-repair:\n  git add . && git commit -m "..."\n`
+    );
+  }
+}
+
+/**
+ * Generate audit trail entry for repairs
+ *
+ * @param {string[]} changes - List of changes made
+ * @returns {string} Audit trail entry
+ */
+function generateAuditEntry(changes) {
+  const date = new Date().toISOString().split('T')[0];
+  return `\n\n[ADMIN-REPAIR ${date}]: ${changes.join('; ')}`;
+}
+
+/**
+ * Normalize date fields in WU object to prevent date corruption
+ *
+ * @param {object} wu - WU object from yaml.load()
+ * @returns {object} WU object with normalized date fields
+ */
+function normalizeWUDates(wu) {
+  if (wu.created !== undefined) {
+    wu.created = normalizeToDateString(wu.created);
+  }
+  if (wu.completed !== undefined) {
+    wu.completed = normalizeToDateString(wu.completed);
+  }
+  return wu;
+}
+
+/**
+ * Apply lane repair and return changes
+ */
+function applyLaneRepair(wu, updated, opts, changes) {
+  if (!opts.lane) return;
+  validateLaneFormat(opts.lane);
+  if (wu.lane === opts.lane) return;
+  changes.push(`lane changed from '${wu.lane}' to '${opts.lane}'`);
+  updated.lane = opts.lane;
+}
+
+/**
+ * Apply status repair and return changes
+ */
+function applyStatusRepair(wu, updated, opts, changes) {
+  if (!opts.status) return;
+  validateStatus(opts.status);
+  if (wu.status === opts.status) return;
+
+  changes.push(`status changed from '${wu.status}' to '${opts.status}'`);
+  updated.status = opts.status;
+
+  // Update locked flag based on status
+  if (opts.status === WU_STATUS.DONE) {
+    updated.locked = true;
+  } else if (wu.locked === true) {
+    // Unlock if moving away from done
+    updated.locked = false;
+    changes.push('locked changed from true to false');
+  }
+}
+
+/**
+ * Apply initiative repair and return changes
+ */
+function applyInitiativeRepair(wu, updated, opts, changes) {
+  if (!opts.initiative || wu.initiative === opts.initiative) return;
+  const oldVal = wu.initiative || '(none)';
+  changes.push(`initiative changed from '${oldVal}' to '${opts.initiative}'`);
+  updated.initiative = opts.initiative;
+}
+
+/**
+ * Apply notes update and return changes
+ */
+function applyNotesUpdate(wu, updated, opts, changes) {
+  if (!opts.notes) return;
+  const existingNotes = wu.notes || '';
+  changes.push(`notes updated`);
+  updated.notes = `${existingNotes}\n\n${opts.notes}`;
+}
+
+/**
+ * Append audit trail to notes based on changes made
+ */
+function appendAuditTrail(updated, opts, changes) {
+  if (changes.length === 0) return;
+
+  if (opts.notes) {
+    // If notes were explicitly provided, add audit for non-notes changes only
+    const nonNotesChanges = changes.filter(c => c !== 'notes updated');
+    if (nonNotesChanges.length > 0) {
+      updated.notes = `${updated.notes}${generateAuditEntry(nonNotesChanges)}`;
+    }
+  } else {
+    // All changes get audit trail
+    const existingNotes = updated.notes || '';
+    updated.notes = `${existingNotes}${generateAuditEntry(changes)}`;
+  }
+}
+
+/**
+ * Apply repairs to WU and track changes for audit
+ *
+ * @param {object} wu - Original WU object
+ * @param {object} opts - CLI options
+ * @returns {{ updated: object, changes: string[] }} Updated WU and list of changes
+ */
+export function applyAdminRepairs(wu, opts) {
+  const updated = { ...wu };
+  const changes = [];
+
+  applyLaneRepair(wu, updated, opts, changes);
+  applyStatusRepair(wu, updated, opts, changes);
+  applyInitiativeRepair(wu, updated, opts, changes);
+  applyNotesUpdate(wu, updated, opts, changes);
+  appendAuditTrail(updated, opts, changes);
+
+  return { updated, changes };
+}
+
+/**
+ * Generate commit message for admin repair
+ *
+ * @param {string} id - WU ID
+ * @param {string[]} changes - List of changes made
+ * @returns {string} Commit message
+ */
+function generateAdminCommitMessage(id, changes) {
+  // Extract field names from changes
+  const fields = changes.map(c => c.split(' ')[0]).filter(f => f !== 'notes');
+  const uniqueFields = [...new Set(fields)];
+  const fieldSummary = uniqueFields.length > 0 ? uniqueFields.join(', ') : 'notes';
+  return `fix(${id.toLowerCase()}): admin-repair ${fieldSummary}`;
+}
+
+/**
+ * Run admin repair mode
+ *
+ * @param {object} options - CLI options
+ * @param {string} options.id - WU ID
+ * @param {string} [options.lane] - New lane assignment
+ * @param {string} [options.status] - New status value
+ * @param {string} [options.notes] - Notes to add
+ * @param {string} [options.initiative] - New initiative reference
+ * @returns {Promise<{success: boolean, exitCode: number}>}
+ */
+export async function runAdminRepairMode(options) {
+  const { id } = options;
+
+  console.log(`${ADMIN_PREFIX} Starting admin repair for ${id}`);
+
+  // Validate inputs
+  validateWUIDFormat(id);
+
+  // Check we have at least one field to repair BEFORE checking WU existence
+  // (no point in looking up the WU if no repair fields are provided)
+  const hasRepairs = options.lane || options.status || options.notes || options.initiative;
+  if (!hasRepairs) {
+    die(
+      'No repairs specified.\n\n' +
+        'Provide at least one of:\n' +
+        '  --lane <lane>           Fix lane assignment (e.g., "Operations: Tooling")\n' +
+        '  --status <status>       Fix status value (ready, in_progress, blocked, done, cancelled)\n' +
+        '  --notes <text>          Add repair notes (appends with audit trail)\n' +
+        '  --initiative <ref>      Fix initiative reference (e.g., INIT-001)\n\n' +
+        'Example:\n' +
+        '  pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"'
+    );
+  }
+
+  // Now validate WU exists
+  const originalWU = validateWUExists(id);
+
+  // Apply repairs
+  const { updated: updatedWU, changes } = applyAdminRepairs(originalWU, options);
+
+  // Check if any actual changes were made
+  if (changes.length === 0) {
+    console.log(`${ADMIN_PREFIX} No changes needed - WU already has specified values`);
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  }
+
+  console.log(`${ADMIN_PREFIX} Changes to apply:`);
+  for (const change of changes) {
+    console.log(`${ADMIN_PREFIX}   • ${change}`);
+  }
+
+  // Pre-flight checks for micro-worktree operation
+  await ensureOnMain(getGitForCwd());
+  await ensureCleanWorkingTree();
+  await ensureMainUpToDate(getGitForCwd(), 'wu:repair --admin');
+
+  console.log(`${ADMIN_PREFIX} Applying repairs via micro-worktree...`);
+
+  try {
+    await withMicroWorktree({
+      operation: OPERATION_NAME,
+      id: id,
+      logPrefix: ADMIN_PREFIX,
+      execute: async ({ worktreePath }) => {
+        // Write updated WU to micro-worktree
+        const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
+        // Normalize dates before dumping to prevent ISO timestamp corruption
+        normalizeWUDates(updatedWU);
+        const yamlContent = stringifyYAML(updatedWU);
+
+        writeFileSync(wuPath, yamlContent, FILE_SYSTEM.ENCODING);
+        console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Updated ${id}.yaml in micro-worktree`);
+
+        return {
+          commitMessage: generateAdminCommitMessage(id, changes),
+          files: [WU_PATHS.WU(id)],
+        };
+      },
+    });
+
+    console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Successfully repaired ${id}`);
+    console.log(`${ADMIN_PREFIX} Changes pushed to origin/main`);
+    console.log(`${ADMIN_PREFIX} Audit trail logged to WU notes`);
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  } catch (err) {
+    console.error(`${ADMIN_PREFIX} ${EMOJI.FAILURE} ${err.message}`);
+    return { success: false, exitCode: EXIT_CODES.ERROR };
+  }
+}
+
+// ============================================================================
+// CONSISTENCY REPAIR MODE (default)
+// ============================================================================
+
+/**
+ * Format error for display
+ * @param {object} error - Error object
+ * @returns {string} Formatted error string
+ */
+function formatError(error) {
+  return `  - ${error.type}: ${error.description}`;
+}
+
+/**
+ * Print consistency report
+ * @param {object} report - Consistency report
+ */
+function printReport(report) {
+  if (report.valid) {
+    console.log(`${PREFIX} ${report.id}: No inconsistencies detected`);
+    return;
+  }
+
+  console.log(`${PREFIX} ${report.id}: ${report.errors.length} inconsistency(ies) found`);
+  for (const error of report.errors) {
+    console.log(formatError(error));
+  }
+}
+
+/**
+ * Repair a single WU for consistency issues
+ *
+ * @param {string} id - WU ID
+ * @param {object} options - CLI options
+ * @returns {Promise<{success: boolean, repaired: number, failed: number}>}
+ */
+export async function repairSingleWU(id, options) {
+  console.log(`${PREFIX} Checking ${id}...`);
+  const report = await checkWUConsistency(id);
+
+  if (report.valid) {
+    console.log(`${PREFIX} ${id}: No inconsistencies detected`);
+    return { success: true, repaired: 0, failed: 0 };
+  }
+
+  printReport(report);
+
+  if (options.check) {
+    return { success: false, repaired: 0, failed: report.errors.length };
+  }
+
+  console.log(`${PREFIX} Repairing ${id}...`);
+  const result = await repairWUInconsistency(report);
+
+  if (result.failed > 0) {
+    console.error(
+      `${PREFIX} Repair partially failed: ${result.repaired} repaired, ${result.failed} failed`
+    );
+    for (const failure of result.failures || []) {
+      console.error(`  - ${failure.type}: ${failure.reason}`);
+    }
+    return { success: false, repaired: result.repaired, failed: result.failed };
+  }
+
+  console.log(`${PREFIX} Successfully repaired ${result.repaired} issue(s)`);
+  return { success: true, repaired: result.repaired, failed: 0 };
+}
+
+/**
+ * Repair all WUs for consistency issues
+ *
+ * @param {object} options - CLI options
+ * @returns {Promise<{success: boolean, repaired: number, failed: number}>}
+ */
+export async function repairAllWUs(options) {
+  console.log(`${PREFIX} Checking all WUs...`);
+  const reports = await checkAllWUConsistency();
+  const invalidReports = reports.filter((r) => !r.valid);
+
+  if (invalidReports.length === 0) {
+    console.log(`${PREFIX} All ${reports.length} WUs are consistent`);
+    return { success: true, repaired: 0, failed: 0 };
+  }
+
+  console.log(
+    `${PREFIX} Found ${invalidReports.length} inconsistent WU(s) out of ${reports.length} total`
+  );
+  console.log();
+
+  for (const report of invalidReports) {
+    printReport(report);
+    console.log();
+  }
+
+  if (options.check) {
+    const totalErrors = invalidReports.reduce((sum, r) => sum + r.errors.length, 0);
+    return { success: false, repaired: 0, failed: totalErrors };
+  }
+
+  let totalRepaired = 0;
+  let totalFailed = 0;
+
+  for (const report of invalidReports) {
+    console.log(`${PREFIX} Repairing ${report.id}...`);
+    const result = await repairWUInconsistency(report);
+    totalRepaired += result.repaired;
+    totalFailed += result.failed;
+
+    if (result.failed > 0) {
+      console.error(
+        `${PREFIX} ${report.id}: Partial failure - ${result.repaired} repaired, ${result.failed} failed`
+      );
+      for (const failure of result.failures || []) {
+        console.error(`  - ${failure.type}: ${failure.reason}`);
+      }
+    } else {
+      console.log(`${PREFIX} ${report.id}: Repaired ${result.repaired} issue(s)`);
+    }
+    console.log();
+  }
+
+  console.log(`${PREFIX} Summary: ${totalRepaired} repaired, ${totalFailed} failed`);
+  return { success: totalFailed === 0, repaired: totalRepaired, failed: totalFailed };
+}
+
+/**
+ * Run consistency repair mode (default)
+ *
+ * @param {object} options - CLI options
+ * @param {string} [options.id] - WU ID to check/repair
+ * @param {boolean} [options.all] - Check/repair all WUs
+ * @param {boolean} [options.check] - Audit only, no changes
+ * @returns {Promise<{success: boolean, exitCode: number}>}
+ */
+export async function runConsistencyRepairMode(options) {
+  let result;
+  try {
+    if (options.all) {
+      result = await repairAllWUs(options);
+    } else {
+      result = await repairSingleWU(options.id, options);
+    }
+  } catch (error) {
+    console.error(`${PREFIX} Fatal error: ${error.message}`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+
+  // Exit codes:
+  // 0: Success (no issues or all repaired)
+  // 1: Issues detected (--check mode)
+  // 2: Repair failed
+  if (!result.success) {
+    return {
+      success: false,
+      exitCode: options.check ? EXIT_CODES.ERROR : EXIT_CODES.FAILURE,
+    };
+  }
+
+  return { success: true, exitCode: EXIT_CODES.SUCCESS };
+}

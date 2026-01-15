@@ -1,0 +1,411 @@
+/**
+ * Worktree Symlink Utilities
+ *
+ * WU-1443: Auto-symlink node_modules in new worktrees
+ * WU-1579: Extend to symlink nested package node_modules
+ * WU-2238: Detect and refuse symlinks when target contains worktree-path symlinks
+ *
+ * After wu:claim creates a worktree, running pnpm commands fails with
+ * 'node_modules missing'. This module provides the symlink helper to
+ * auto-create the node_modules symlink pointing to the main repo's
+ * node_modules directory, including nested package node_modules.
+ *
+ * @module tools/lib/worktree-symlink.mjs
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { LOG_PREFIX } from './wu-constants.js';
+
+/**
+ * Relative path from worktree to main repo's node_modules
+ *
+ * Worktrees are at: worktrees/<lane>-wu-<id>/
+ * node_modules is at: ./node_modules (project root)
+ *
+ * So from worktree: ../../node_modules
+ */
+const RELATIVE_NODE_MODULES_PATH = '../../node_modules';
+
+/**
+ * node_modules directory name
+ */
+const NODE_MODULES_DIR = 'node_modules';
+
+/**
+ * Pattern to detect paths that are inside a worktrees directory.
+ * Used to identify symlinks that may break when worktrees are removed.
+ */
+const WORKTREES_PATH_SEGMENT = '/worktrees/';
+
+/**
+ * pnpm store directory name (contains package symlinks)
+ */
+const PNPM_DIR = '.pnpm';
+
+/**
+ * List of nested package/app paths that have their own node_modules
+ *
+ * pnpm monorepos create node_modules in each package with symlinks
+ * to the .pnpm store. turbo typecheck and tests need these to resolve imports.
+ *
+ * @type {string[]}
+ */
+export const NESTED_PACKAGE_PATHS = [
+  // Packages - supabase
+  'packages/supabase',
+  // Packages - @exampleapp/*
+  'packages/@exampleapp/prompts',
+  'packages/@exampleapp/shared',
+  'packages/@exampleapp/application',
+  'packages/@exampleapp/ports',
+  'packages/@exampleapp/infrastructure',
+  // Packages - @lumenflow/* (WU-2427: added for typecheck resolution)
+  'packages/@lumenflow/api',
+  'packages/@lumenflow/application',
+  'packages/@lumenflow/infrastructure',
+  // Packages - lumenflow-*
+  'packages/lumenflow-cli',
+  'packages/lumenflow-tools',
+  // Packages - beacon-explainer (WU-2427: added for typecheck resolution)
+  'packages/beacon-explainer',
+  // Apps
+  'apps/web',
+  'apps/mobile',
+  'apps/hellm-ai', // WU-2427: added for typecheck resolution
+];
+
+/**
+ * Check if a symlink target points into a worktrees directory
+ *
+ * @param {string} linkTarget - The symlink target path (relative or absolute)
+ * @param {string} basePath - Base path to resolve relative targets against
+ * @returns {{isWorktreePath: boolean, absoluteTarget: string, isBroken: boolean}}
+ */
+function checkSymlinkTarget(linkTarget, basePath) {
+  const absoluteTarget = path.isAbsolute(linkTarget)
+    ? linkTarget
+    : path.resolve(basePath, linkTarget);
+
+  const isWorktreePath = absoluteTarget.includes(WORKTREES_PATH_SEGMENT);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path from symlink
+  const isBroken = isWorktreePath && !fs.existsSync(absoluteTarget);
+
+  return { isWorktreePath, absoluteTarget, isBroken };
+}
+
+/**
+ * Process a single symlink entry to check for worktree-path references
+ *
+ * @param {string} entryPath - Full path to the symlink
+ * @param {string} basePath - Base path to resolve relative targets
+ * @param {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}} result - Result object to mutate
+ */
+function processSymlinkEntry(entryPath, basePath, result) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path from directory scan
+  const linkTarget = fs.readlinkSync(entryPath);
+  const check = checkSymlinkTarget(linkTarget, basePath);
+
+  if (check.isWorktreePath) {
+    result.hasWorktreeSymlinks = true;
+    if (check.isBroken) {
+      result.brokenSymlinks.push(entryPath);
+    }
+  }
+}
+
+/**
+ * Scan .pnpm directory for symlinks pointing into worktrees
+ * Only scans top-level entries to avoid deep recursion (performance)
+ *
+ * @param {string} pnpmPath - Absolute path to node_modules/.pnpm directory
+ * @returns {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}}
+ */
+function scanPnpmForWorktreeSymlinks(pnpmPath) {
+  const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+  const entries = fs.readdirSync(pnpmPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isSymbolicLink()) {
+      const entryPath = path.join(pnpmPath, entry.name);
+      processSymlinkEntry(entryPath, pnpmPath, result);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Check if a node_modules directory contains symlinks pointing into worktrees
+ *
+ * WU-2238: When pnpm install runs inside a worktree, it can create symlinks
+ * that point to the worktree's .pnpm store. When that worktree is removed,
+ * these symlinks become broken and cause ERR_MODULE_NOT_FOUND.
+ *
+ * @param {string} nodeModulesPath - Absolute path to node_modules directory
+ * @returns {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}}
+ */
+export function hasWorktreePathSymlinks(nodeModulesPath) {
+  const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+  if (!fs.existsSync(nodeModulesPath)) {
+    return result;
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+  const entries = fs.readdirSync(nodeModulesPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const entryPath = path.join(nodeModulesPath, entry.name);
+
+    if (entry.isSymbolicLink()) {
+      processSymlinkEntry(entryPath, nodeModulesPath, result);
+    } else if (entry.name === PNPM_DIR && entry.isDirectory()) {
+      const pnpmResult = scanPnpmForWorktreeSymlinks(entryPath);
+      if (pnpmResult.hasWorktreeSymlinks) {
+        result.hasWorktreeSymlinks = true;
+        result.brokenSymlinks.push(...pnpmResult.brokenSymlinks);
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Check if node_modules already exists at the target path
+ *
+ * @param {string} targetPath - Path to check
+ * @returns {boolean} True if exists (should skip)
+ */
+function nodeModulesExists(targetPath) {
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated worktree path
+    fs.lstatSync(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check if main repo node_modules has worktree-path symlinks
+ *
+ * @param {string} mainRepoPath - Path to main repo
+ * @param {object} logger - Logger with warn method
+ * @returns {{refused: boolean, reason?: string}}
+ */
+function checkMainNodeModulesHealth(mainRepoPath, logger) {
+  const mainNodeModulesPath = path.join(mainRepoPath, NODE_MODULES_DIR);
+  const check = hasWorktreePathSymlinks(mainNodeModulesPath);
+
+  if (!check.hasWorktreeSymlinks) {
+    return { refused: false };
+  }
+
+  const reason =
+    check.brokenSymlinks.length > 0
+      ? `Main node_modules contains broken worktree-path symlinks: ${check.brokenSymlinks.slice(0, 3).join(', ')}${check.brokenSymlinks.length > 3 ? ` (+${check.brokenSymlinks.length - 3} more)` : ''}`
+      : 'Main node_modules contains symlinks pointing into worktrees directory';
+
+  if (logger.warn) {
+    logger.warn(`${LOG_PREFIX.CLAIM} Refusing to symlink node_modules: ${reason}`);
+    logger.warn(
+      `${LOG_PREFIX.CLAIM} Run 'pnpm install' in the worktree instead, or heal main with 'pnpm install --force'`
+    );
+  }
+
+  return { refused: true, reason };
+}
+
+/**
+ * Create symlink to node_modules in a newly created worktree
+ *
+ * This enables immediate pnpm command execution without manual symlink creation.
+ * The symlink is relative for portability across different project locations.
+ *
+ * WU-2238: When mainRepoPath is provided, checks if the target node_modules
+ * contains symlinks pointing into worktrees. If so, refuses to create the
+ * symlink to prevent inheriting broken module resolution.
+ *
+ * @param {string} worktreePath - Absolute path to the worktree directory
+ * @param {object} [logger] - Logger object with info/warn methods (defaults to console)
+ * @param {string} [mainRepoPath] - Optional: Absolute path to main repo for worktree-path check
+ * @returns {{created: boolean, skipped: boolean, refused?: boolean, reason?: string, error?: Error}}
+ *
+ * @example
+ * // In wu-claim.mjs after worktree creation:
+ * symlinkNodeModules('/path/to/worktrees/operations-tooling-wu-1443');
+ */
+export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath = null) {
+  const targetPath = path.join(worktreePath, NODE_MODULES_DIR);
+
+  // Check if node_modules already exists (idempotent)
+  if (nodeModulesExists(targetPath)) {
+    return { created: false, skipped: true };
+  }
+
+  // WU-2238: Check if main repo's node_modules contains worktree-path symlinks
+  if (mainRepoPath) {
+    const healthCheck = checkMainNodeModulesHealth(mainRepoPath, logger);
+    if (healthCheck.refused) {
+      return { created: false, skipped: false, refused: true, reason: healthCheck.reason };
+    }
+  }
+
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated worktree path
+    fs.symlinkSync(RELATIVE_NODE_MODULES_PATH, targetPath);
+
+    if (logger.info) {
+      logger.info(
+        `${LOG_PREFIX.CLAIM} node_modules symlink created -> ${RELATIVE_NODE_MODULES_PATH}`
+      );
+    }
+
+    return { created: true, skipped: false };
+  } catch (error) {
+    if (logger.warn) {
+      logger.warn(`${LOG_PREFIX.CLAIM} Failed to create node_modules symlink: ${error.message}`);
+    }
+    return { created: false, skipped: false, error };
+  }
+}
+
+/**
+ * Check if a directory should be skipped for symlink creation
+ *
+ * @param {string} targetDir - Target directory path
+ * @param {string} sourceNodeModules - Source node_modules path
+ * @returns {boolean} True if should skip
+ */
+function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+  if (!fs.existsSync(targetDir)) {
+    return true;
+  }
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+  if (!fs.existsSync(sourceNodeModules)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Handle existing node_modules in nested package
+ *
+ * @param {string} targetNodeModules - Target node_modules path
+ * @param {string} pkgPath - Package path for logging
+ * @param {object|null} logger - Logger object
+ * @param {Error[]} errors - Errors array to mutate
+ * @returns {'skip'|'replace'|'create'} Action to take
+ */
+function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, errors) {
+  let targetStat;
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+    targetStat = fs.lstatSync(targetNodeModules);
+  } catch {
+    return 'create'; // Doesn't exist, create symlink
+  }
+
+  // If already a symlink, skip (idempotent)
+  if (targetStat.isSymbolicLink()) {
+    return 'skip';
+  }
+
+  // If not a directory, skip
+  if (!targetStat.isDirectory()) {
+    return 'skip';
+  }
+
+  // Check if directory has meaningful content
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+  const contents = fs.readdirSync(targetNodeModules);
+  const hasMeaningfulContent = contents.some(
+    (item) => !item.startsWith('.') && item !== '.vite' && item !== '.turbo'
+  );
+
+  if (hasMeaningfulContent) {
+    return 'skip';
+  }
+
+  // Only cache files - remove and replace with symlink
+  try {
+    fs.rmSync(targetNodeModules, { recursive: true, force: true });
+    return 'replace';
+  } catch (rmError) {
+    errors.push(rmError);
+    if (logger?.warn) {
+      logger.warn(
+        `${LOG_PREFIX.CLAIM} Failed to remove stale ${pkgPath}/node_modules: ${rmError.message}`
+      );
+    }
+    return 'skip';
+  }
+}
+
+/**
+ * Create symlinks for nested package node_modules in a worktree
+ *
+ * WU-1579: pnpm monorepos have node_modules in each package containing
+ * symlinks to the .pnpm store. turbo typecheck needs these to resolve
+ * package imports correctly.
+ *
+ * @param {string} worktreePath - Absolute path to the worktree directory
+ * @param {string} mainRepoPath - Absolute path to the main repository root
+ * @param {object} [logger] - Logger object with info/warn methods (defaults to silent)
+ * @returns {{created: number, skipped: number, errors: Error[]}}
+ *
+ * @example
+ * // In wu-claim.mjs after worktree creation:
+ * symlinkNestedNodeModules(
+ *   '/path/to/worktrees/operations-tooling-wu-1579',
+ *   '/path/to/main-repo'
+ * );
+ */
+export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = null) {
+  let created = 0;
+  let skipped = 0;
+  const errors = [];
+
+  for (const pkgPath of NESTED_PACKAGE_PATHS) {
+    const targetDir = path.join(worktreePath, pkgPath);
+    const targetNodeModules = path.join(targetDir, NODE_MODULES_DIR);
+    const sourceNodeModules = path.join(mainRepoPath, pkgPath, NODE_MODULES_DIR);
+
+    if (shouldSkipNestedPackage(targetDir, sourceNodeModules)) {
+      skipped++;
+      continue;
+    }
+
+    const action = handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, errors);
+    if (action === 'skip') {
+      skipped++;
+      continue;
+    }
+
+    try {
+      const relativePath = path.relative(targetDir, sourceNodeModules);
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+      fs.symlinkSync(relativePath, targetNodeModules);
+      created++;
+
+      if (logger?.info) {
+        logger.info(`${LOG_PREFIX.CLAIM} ${pkgPath}/node_modules symlink created`);
+      }
+    } catch (error) {
+      errors.push(error);
+      if (logger?.warn) {
+        logger.warn(
+          `${LOG_PREFIX.CLAIM} Failed to create ${pkgPath}/node_modules symlink: ${error.message}`
+        );
+      }
+    }
+  }
+
+  return { created, skipped, errors };
+}

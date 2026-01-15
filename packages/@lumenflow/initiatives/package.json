@@ -22,29 +22,34 @@
   },
   "type": "module",
   "exports": {
-    ".": "./lib/index.mjs",
-    "./orchestrator": "./lib/initiative-orchestrator.mjs",
-    "./validator": "./lib/initiative-validator.mjs",
-    "./yaml": "./lib/initiative-yaml.mjs",
-    "./schema": "./lib/initiative-schema.mjs",
-    "./constants": "./lib/initiative-constants.mjs",
-    "./paths": "./lib/initiative-paths.mjs",
-    "./lib/*": "./lib/*"
+    ".": "./dist/index.js",
+    "./orchestrator": "./dist/initiative-orchestrator.js",
+    "./validator": "./dist/initiative-validator.js",
+    "./yaml": "./dist/initiative-yaml.js",
+    "./schema": "./dist/initiative-schema.js",
+    "./constants": "./dist/initiative-constants.js",
+    "./paths": "./dist/initiative-paths.js",
+    "./dist/*": "./dist/*"
   },
-  "main": "./lib/index.mjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "lib",
+    "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "test": "node --test lib/__tests__/*.test.mjs 2>/dev/null || echo 'No tests yet'"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "@lumenflow/core": "workspace:*",
     "js-yaml": "^4.1.0",
     "yaml": "^2.8.0",
     "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=22"

@@ -1,0 +1,263 @@
+/**
+ * Stamp File Utilities
+ *
+ * Centralized stamp file operations (create, validate)
+ * Eliminates magic string for stamp body template
+ *
+ * WU-2242: Added format validation for corrupted stamp detection
+ *
+ * Stamp files (.beacon/stamps/WU-{id}.done) serve as completion markers
+ * Used by wu:done, wu:recovery, and validation tools
+ */
+
+/* eslint-disable security/detect-non-literal-fs-filename */
+import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFile, access } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import path from 'node:path';
+import { WU_PATHS } from './wu-paths.js';
+import { todayISO } from './date-utils.js';
+import { FILE_SYSTEM } from './wu-constants.js';
+
+/**
+ * Stamp format error types (WU-2242)
+ * @readonly
+ * @enum {string}
+ */
+export const STAMP_FORMAT_ERRORS = Object.freeze({
+  /** Stamp file is empty or contains only whitespace */
+  EMPTY_FILE: 'EMPTY_FILE',
+  /** Missing WU identifier line (format: WU WU-123 (em dash) Title) */
+  MISSING_WU_LINE: 'MISSING_WU_LINE',
+  /** Missing Completed: YYYY-MM-DD line */
+  MISSING_COMPLETED_LINE: 'MISSING_COMPLETED_LINE',
+  /** Date is not in valid YYYY-MM-DD format or is invalid */
+  INVALID_DATE_FORMAT: 'INVALID_DATE_FORMAT',
+  /** WU ID in stamp does not match expected ID */
+  WU_ID_MISMATCH: 'WU_ID_MISMATCH',
+});
+
+/**
+ * Valid date regex: YYYY-MM-DD format
+ * @type {RegExp}
+ */
+const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/**
+ * Validate that a date string is a valid ISO date
+ * @param {string} dateStr - Date string in YYYY-MM-DD format
+ * @returns {boolean} True if date is valid
+ */
+function isValidDate(dateStr) {
+  const match = dateStr.match(DATE_PATTERN);
+  if (!match) {
+    return false;
+  }
+
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+  const day = parseInt(match[3], 10);
+
+  // Basic validation
+  if (month < 1 || month > 12) {
+    return false;
+  }
+
+  // Check day validity for the month
+  const daysInMonth = new Date(year, month, 0).getDate();
+  if (day < 1 || day > daysInMonth) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Stamp file body template (eliminates magic string)
+ * Single source of truth for stamp format
+ */
+const STAMP_TEMPLATE = (id, title, timestamp) => `WU ${id} — ${title}\nCompleted: ${timestamp}\n`;
+
+/**
+ * Create stamp file (idempotent - safe to call multiple times)
+ *
+ * @param {object} params - Parameters
+ * @param {string} params.id - WU ID (e.g., 'WU-123')
+ * @param {string} params.title - WU title
+ * @returns {object} Result { created: boolean, path: string, reason?: string }
+ */
+export function createStamp({ id, title }) {
+  const stampsDir = WU_PATHS.STAMPS_DIR();
+  const stampPath = WU_PATHS.STAMP(id);
+
+  // Ensure stamps directory exists
+  if (!existsSync(stampsDir)) {
+    mkdirSync(stampsDir, { recursive: true });
+  }
+
+  // Idempotent: skip if stamp already exists
+  if (existsSync(stampPath)) {
+    return { created: false, path: stampPath, reason: 'already_exists' };
+  }
+
+  // Create stamp file
+  const body = STAMP_TEMPLATE(id, title, todayISO());
+  writeFileSync(stampPath, body, FILE_SYSTEM.UTF8);
+
+  return { created: true, path: stampPath };
+}
+
+/**
+ * Validate stamp exists
+ *
+ * @param {string} stampPath - Path to stamp file
+ * @returns {boolean} True if stamp exists
+ */
+export function validateStamp(stampPath) {
+  return existsSync(stampPath);
+}
+
+/**
+ * Get stamp path using WU_PATHS (consistent with codebase)
+ *
+ * @param {string} id - WU ID
+ * @returns {string} Absolute path to stamp file
+ */
+export function getStampPath(id) {
+  return WU_PATHS.STAMP(id);
+}
+
+/**
+ * Validate WU line in stamp content
+ * Checks for format: "WU WU-123 (em dash) Title"
+ * @param {string[]} lines - Stamp file lines
+ * @param {string} expectedWuId - Expected WU ID
+ * @returns {string|null} Error type or null if valid
+ */
+function validateWuLine(lines, expectedWuId) {
+  const wuLine = lines.find((line) => line.startsWith('WU '));
+  if (!wuLine) {
+    return STAMP_FORMAT_ERRORS.MISSING_WU_LINE;
+  }
+
+  const wuIdMatch = wuLine.match(/^WU (WU-\d+)/);
+  if (!wuIdMatch) {
+    return STAMP_FORMAT_ERRORS.MISSING_WU_LINE;
+  }
+
+  if (wuIdMatch[1] !== expectedWuId) {
+    return STAMP_FORMAT_ERRORS.WU_ID_MISMATCH;
+  }
+
+  return null;
+}
+
+/**
+ * Validate Completed line in stamp content
+ * @param {string[]} lines - Stamp file lines
+ * @returns {string|null} Error type or null if valid
+ */
+function validateCompletedLine(lines) {
+  const completedLine = lines.find((line) => line.startsWith('Completed:'));
+  if (!completedLine) {
+    return STAMP_FORMAT_ERRORS.MISSING_COMPLETED_LINE;
+  }
+
+  const dateMatch = completedLine.match(/^Completed:\s*(.+)/);
+  if (!dateMatch) {
+    return STAMP_FORMAT_ERRORS.MISSING_COMPLETED_LINE;
+  }
+
+  const dateStr = dateMatch[1].trim();
+  if (!isValidDate(dateStr)) {
+    return STAMP_FORMAT_ERRORS.INVALID_DATE_FORMAT;
+  }
+
+  return null;
+}
+
+/**
+ * Validate stamp file format (WU-2242)
+ *
+ * Expected format:
+ * ```
+ * WU WU-123 (em dash) Title here
+ * Completed: 2025-12-31
+ * ```
+ *
+ * @param {string} wuId - WU ID (e.g., 'WU-123')
+ * @param {string} [projectRoot=process.cwd()] - Project root directory
+ * @returns {Promise<{valid: boolean, errors: string[], missing?: boolean}>}
+ */
+export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
+  const stampPath = path.join(projectRoot, WU_PATHS.STAMP(wuId));
+
+  // Check if stamp file exists
+  try {
+    await access(stampPath, constants.R_OK);
+  } catch {
+    return { valid: false, errors: [], missing: true };
+  }
+
+  // Read stamp content
+  let content;
+  try {
+    content = await readFile(stampPath, FILE_SYSTEM.UTF8);
+  } catch (err) {
+    return { valid: false, errors: [`Failed to read stamp: ${err.message}`] };
+  }
+
+  // Check for empty file
+  if (content.trim() === '') {
+    return { valid: false, errors: [STAMP_FORMAT_ERRORS.EMPTY_FILE] };
+  }
+
+  const lines = content.split('\n');
+  const errors = [];
+
+  // Validate WU line
+  const wuLineError = validateWuLine(lines, wuId);
+  if (wuLineError) {
+    errors.push(wuLineError);
+  }
+
+  // Validate Completed line
+  const completedError = validateCompletedLine(lines);
+  if (completedError) {
+    errors.push(completedError);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Parse stamp content to extract metadata
+ *
+ * @param {string} content - Stamp file content
+ * @returns {{wuId?: string, title?: string, completedDate?: string}}
+ */
+export function parseStampContent(content) {
+  const result = {};
+  const lines = content.split('\n');
+
+  // Parse WU line
+  const wuLine = lines.find((line) => line.startsWith('WU '));
+  if (wuLine) {
+    const match = wuLine.match(/^WU (WU-\d+)\s*[—-]\s*(.+)/);
+    if (match) {
+      result.wuId = match[1];
+      result.title = match[2].trim();
+    }
+  }
+
+  // Parse Completed line
+  const completedLine = lines.find((line) => line.startsWith('Completed:'));
+  if (completedLine) {
+    const match = completedLine.match(/^Completed:\s*(.+)/);
+    if (match) {
+      result.completedDate = match[1].trim();
+    }
+  }
+
+  return result;
+}
