@@ -1,0 +1,73 @@
+/**
+ * Docs Path Validator tests
+ *
+ * Validates docs-only staged-file allow/deny rules, including tooling-managed metadata.
+ */
+
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
+import path from 'node:path';
+
+import { validateDocsOnly, getAllowedPathsDescription } from '../docs-path-validator.mjs';
+import { BEACON_PATHS, DIRECTORIES } from '../wu-constants.mjs';
+import { WU_EVENTS_FILE_NAME } from '../wu-state-store.mjs';
+
+describe('docs-path-validator', () => {
+  it('allows documentation prefixes and markdown files', () => {
+    const result = validateDocsOnly([
+      `${DIRECTORIES.DOCS}04-operations/tasks/status.md`,
+      `${DIRECTORIES.AI}onboarding/starting-prompt.md`,
+      `${DIRECTORIES.CLAUDE}plans/example.md`,
+      `${DIRECTORIES.MEMORY_BANK}README.md`,
+      'README.md',
+    ]);
+
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.violations, []);
+  });
+
+  it('allows tooling-managed WU lifecycle event log', () => {
+    const wuEventsPath = path.posix.join(BEACON_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+    const result = validateDocsOnly([wuEventsPath]);
+
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.violations, []);
+  });
+
+  it('allows stamp files', () => {
+    const stampPath = path.posix.join(BEACON_PATHS.STAMPS_DIR, 'WU-123.done');
+    const result = validateDocsOnly([stampPath]);
+
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.violations, []);
+  });
+
+  it('allows test files under tools/__tests__ and packages/**/__tests__', () => {
+    const result = validateDocsOnly([
+      path.posix.join(DIRECTORIES.TOOLS, '__tests__', 'example.test.mjs'),
+      path.posix.join(DIRECTORIES.PACKAGES, 'pkg', '__tests__', 'example.test.ts'),
+    ]);
+
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.violations, []);
+  });
+
+  it('rejects application and non-test package paths', () => {
+    const result = validateDocsOnly([
+      path.posix.join('apps', 'web', 'src', 'app', 'page.tsx'),
+      path.posix.join(DIRECTORIES.PACKAGES, 'pkg', 'src', 'index.ts'),
+    ]);
+
+    assert.equal(result.valid, false);
+    assert.deepEqual(result.violations, [
+      path.posix.join('apps', 'web', 'src', 'app', 'page.tsx'),
+      path.posix.join(DIRECTORIES.PACKAGES, 'pkg', 'src', 'index.ts'),
+    ]);
+  });
+
+  it('describes the allowed event log path', () => {
+    const description = getAllowedPathsDescription();
+    assert.ok(description.includes(`${BEACON_PATHS.STATE_DIR}/${WU_EVENTS_FILE_NAME}`));
+  });
+});
+
