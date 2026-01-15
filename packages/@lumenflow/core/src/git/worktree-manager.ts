@@ -134,7 +134,7 @@ export class WorktreeManager {
     }
 
     // Check if path exists - worktreePath is validated above (non-empty string)
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path is validated CLI input
+
     if (!existsSync(worktreePath)) {
       return; // Already removed
     }
@@ -152,7 +152,7 @@ export class WorktreeManager {
     }
 
     // Layer 1 defense: Clean up orphan directory if it still exists
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path is validated CLI input
+
     if (existsSync(worktreePath)) {
       rmSync(worktreePath, { recursive: true, force: true });
     }

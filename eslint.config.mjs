@@ -109,4 +109,17 @@ export default tseslint.config(
       'security/detect-non-literal-fs-filename': 'off',
     },
   },
+
+  // Workflow framework needs dynamic file operations (spawn registry, state, worktree management)
+  {
+    files: [
+      'packages/@lumenflow/*/src/spawn/**/*.ts',
+      'packages/@lumenflow/*/src/state/**/*.ts',
+      'packages/@lumenflow/*/src/git/**/*.ts',
+    ],
+    rules: {
+      'security/detect-non-literal-fs-filename': 'off',
+      'security/detect-object-injection': 'off',
+    },
+  },
 );
