@@ -22,29 +22,34 @@
   },
   "type": "module",
   "exports": {
-    ".": "./lib/index.mjs",
-    "./session": "./lib/agent-session.mjs",
-    "./incidents": "./lib/agent-incidents.mjs",
-    "./verification": "./lib/agent-verification.mjs",
-    "./auto-session": "./lib/auto-session-integration.mjs",
-    "./feedback-promote": "./lib/feedback-promote-core.mjs",
-    "./feedback-review": "./lib/feedback-review-core.mjs",
-    "./lib/*": "./lib/*"
+    ".": "./dist/index.js",
+    "./session": "./dist/agent-session.js",
+    "./incidents": "./dist/agent-incidents.js",
+    "./verification": "./dist/agent-verification.js",
+    "./auto-session": "./dist/auto-session-integration.js",
+    "./feedback-promote": "./dist/feedback-promote-core.js",
+    "./feedback-review": "./dist/feedback-review-core.js",
+    "./dist/*": "./dist/*"
   },
-  "main": "./lib/index.mjs",
+  "main": "./dist/index.js",
   "files": [
-    "lib",
+    "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "test": "node --test lib/__tests__/*.test.mjs 2>/dev/null || echo 'No tests yet'"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "@lumenflow/core": "workspace:*",
     "@lumenflow/memory": "workspace:*",
     "simple-git": "^3.30.0",
     "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=22"

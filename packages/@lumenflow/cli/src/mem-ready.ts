@@ -1,0 +1,247 @@
+#!/usr/bin/env node
+/**
+ * Memory Ready CLI (WU-1468)
+ *
+ * Deterministic ready-work query for "what next?" oracle.
+ * Returns unblocked open nodes, ordered by priority then createdAt.
+ *
+ * Usage:
+ *   pnpm mem:ready --wu WU-1234 [--type <type>] [--format <json|human>] [--quiet]
+ *
+ * Includes audit logging to .beacon/telemetry/tools.ndjson.
+ *
+ * @see {@link tools/lib/mem-ready-core.mjs} - Core logic
+ * @see {@link tools/__tests__/mem-ready.test.mjs} - Tests
+ */
+
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { queryReadyNodes } from '@lumenflow/memory/dist/mem-ready-core.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { MEMORY_NODE_TYPES } from '@lumenflow/memory/dist/memory-schema.js';
+
+/**
+ * Log prefix for mem:ready output
+ */
+const LOG_PREFIX = '[mem:ready]';
+
+/**
+ * Tool name for audit logging
+ */
+const TOOL_NAME = 'mem:ready';
+
+/**
+ * Audit log file path
+ */
+const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
+
+/**
+ * CLI argument options specific to mem:ready
+ */
+const CLI_OPTIONS = {
+  type: {
+    name: 'type',
+    flags: '-t, --type <type>',
+    description: `Filter by node type (${MEMORY_NODE_TYPES.join(', ')})`,
+  },
+  format: {
+    name: 'format',
+    flags: '-f, --format <format>',
+    description: 'Output format (json, human). Default: human',
+  },
+  baseDir: {
+    name: 'baseDir',
+    flags: '-d, --base-dir <path>',
+    description: 'Base directory (defaults to current directory)',
+  },
+  quiet: {
+    name: 'quiet',
+    flags: '-q, --quiet',
+    description: 'Suppress header/footer output, only show nodes',
+  },
+};
+
+/**
+ * Write audit log entry for tool execution
+ *
+ * @param {string} baseDir - Base directory
+ * @param {object} entry - Audit log entry
+ */
+async function writeAuditLog(baseDir, entry) {
+  try {
+    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logDir = path.dirname(logPath);
+
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory
+    await fs.mkdir(logDir, { recursive: true });
+
+    const line = `${JSON.stringify(entry)}\n`;
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes audit log
+    await fs.appendFile(logPath, line, 'utf-8');
+  } catch {
+    // Audit logging is non-fatal - silently ignore errors
+  }
+}
+
+/**
+ * Format a single node for human-readable output
+ *
+ * @param {object} node - Memory node
+ * @param {number} index - Position in list (0-indexed)
+ * @returns {string} Formatted output
+ */
+function formatNodeHuman(node, index) {
+  const priority = node.metadata?.priority || '-';
+  const lines = [
+    `${index + 1}. [${node.id}] (${node.type})`,
+    `   Priority:   ${priority}`,
+    `   Lifecycle:  ${node.lifecycle}`,
+    `   Created:    ${node.created_at}`,
+  ];
+
+  if (node.wu_id) {
+    lines.push(`   WU:         ${node.wu_id}`);
+  }
+
+  // Truncate content for display
+  const maxContentLen = 60;
+  const content =
+    node.content.length > maxContentLen
+      ? `${node.content.slice(0, maxContentLen)}...`
+      : node.content;
+  lines.push(`   Content:    ${content}`);
+
+  return lines.join('\n');
+}
+
+/**
+ * Print nodes in human-readable format
+ *
+ * @param {object[]} nodes - Ready nodes
+ * @param {object} opts - CLI options
+ */
+function printHumanFormat(nodes, opts) {
+  if (!opts.quiet) {
+    console.log(`${LOG_PREFIX} Ready nodes for ${opts.wu}:`);
+    console.log('');
+  }
+
+  if (nodes.length === 0) {
+    if (!opts.quiet) {
+      console.log('  (no ready nodes)');
+      console.log('');
+    }
+    return;
+  }
+
+  for (const [i, node] of nodes.entries()) {
+    console.log(formatNodeHuman(node, i));
+    console.log('');
+  }
+
+  if (!opts.quiet) {
+    console.log(`${LOG_PREFIX} ${nodes.length} node(s) ready for processing`);
+  }
+}
+
+/**
+ * Print nodes in JSON format
+ *
+ * @param {object[]} nodes - Ready nodes
+ * @param {object} opts - CLI options
+ */
+function printJsonFormat(nodes, opts) {
+  const output = {
+    wuId: opts.wu,
+    type: opts.type || null,
+    count: nodes.length,
+    nodes,
+  };
+
+  console.log(JSON.stringify(output, null, 2));
+}
+
+/**
+ * Main CLI entry point
+ */
+async function main() {
+  const args = createWUParser({
+    name: 'mem-ready',
+    description: 'Query ready nodes for a WU (deterministic ordering)',
+    options: [WU_OPTIONS.wu, CLI_OPTIONS.type, CLI_OPTIONS.format, CLI_OPTIONS.baseDir, CLI_OPTIONS.quiet],
+    required: ['wu'],
+  });
+
+  const baseDir = args.baseDir || process.cwd();
+  const format = args.format || 'human';
+  const startedAt = new Date().toISOString();
+  const startTime = Date.now();
+
+  // Validate format option
+  if (!['json', 'human'].includes(format)) {
+    console.error(`${LOG_PREFIX} Error: Invalid format "${format}". Use "json" or "human".`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  // Validate type option if provided
+  if (args.type && !MEMORY_NODE_TYPES.includes(args.type)) {
+    console.error(
+      `${LOG_PREFIX} Error: Invalid type "${args.type}". Valid types: ${MEMORY_NODE_TYPES.join(', ')}`
+    );
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  let nodes;
+  let error = null;
+
+  try {
+    nodes = await queryReadyNodes(baseDir, {
+      wuId: args.wu,
+      type: args.type,
+    });
+  } catch (err) {
+    error = err.message;
+  }
+
+  const durationMs = Date.now() - startTime;
+
+  // Write audit log entry
+  await writeAuditLog(baseDir, {
+    tool: TOOL_NAME,
+    status: error ? 'failed' : 'success',
+    startedAt,
+    completedAt: new Date().toISOString(),
+    durationMs,
+    input: {
+      baseDir,
+      wuId: args.wu,
+      type: args.type,
+      format,
+    },
+    output: nodes
+      ? {
+          count: nodes.length,
+          nodeIds: nodes.map((n) => n.id),
+        }
+      : null,
+    error: error ? { message: error } : null,
+  });
+
+  if (error) {
+    console.error(`${LOG_PREFIX} Error: ${error}`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  // Print output based on format
+  if (format === 'json') {
+    printJsonFormat(nodes, args);
+  } else {
+    printHumanFormat(nodes, args);
+  }
+}
+
+main().catch((e) => {
+  console.error(`${LOG_PREFIX} ${e.message}`);
+  process.exit(EXIT_CODES.ERROR);
+});

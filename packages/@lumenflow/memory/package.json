@@ -23,34 +23,39 @@
   },
   "type": "module",
   "exports": {
-    ".": "./lib/index.mjs",
-    "./checkpoint": "./lib/mem-checkpoint-core.mjs",
-    "./init": "./lib/mem-init-core.mjs",
-    "./start": "./lib/mem-start-core.mjs",
-    "./ready": "./lib/mem-ready-core.mjs",
-    "./signal": "./lib/mem-signal-core.mjs",
-    "./cleanup": "./lib/mem-cleanup-core.mjs",
-    "./create": "./lib/mem-create-core.mjs",
-    "./summarize": "./lib/mem-summarize-core.mjs",
-    "./triage": "./lib/mem-triage-core.mjs",
-    "./schema": "./lib/memory-schema.mjs",
-    "./store": "./lib/memory-store.mjs",
-    "./lib/*": "./lib/*"
+    ".": "./dist/index.js",
+    "./checkpoint": "./dist/mem-checkpoint-core.js",
+    "./init": "./dist/mem-init-core.js",
+    "./start": "./dist/mem-start-core.js",
+    "./ready": "./dist/mem-ready-core.js",
+    "./signal": "./dist/mem-signal-core.js",
+    "./cleanup": "./dist/mem-cleanup-core.js",
+    "./create": "./dist/mem-create-core.js",
+    "./summarize": "./dist/mem-summarize-core.js",
+    "./triage": "./dist/mem-triage-core.js",
+    "./schema": "./dist/memory-schema.js",
+    "./store": "./dist/memory-store.js",
+    "./dist/*": "./dist/*"
   },
-  "main": "./lib/index.mjs",
+  "main": "./dist/index.js",
   "files": [
-    "lib",
+    "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "test": "node --test lib/__tests__/*.test.mjs 2>/dev/null || echo 'No tests yet'"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "@lumenflow/core": "workspace:*",
     "ms": "^2.1.3",
     "yaml": "^2.8.0",
     "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=22"
