@@ -1,0 +1,70 @@
+{
+  "name": "@lumenflow/shims",
+  "version": "0.0.0",
+  "description": "Git and pnpm safety shims for LumenFlow worktree discipline",
+  "keywords": [
+    "lumenflow",
+    "git",
+    "pnpm",
+    "shim",
+    "worktree",
+    "safety"
+  ],
+  "homepage": "https://github.com/hellmai/os",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/os.git",
+    "directory": "packages/@lumenflow/shims"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./git": {
+      "types": "./dist/git-shim.d.ts",
+      "import": "./dist/git-shim.js"
+    },
+    "./pnpm": {
+      "types": "./dist/pnpm-shim.d.ts",
+      "import": "./dist/pnpm-shim.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "lumenflow-git": "./dist/git-shim.js",
+    "lumenflow-pnpm": "./dist/pnpm-shim.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
