@@ -42,7 +42,7 @@ function validateSingleWU(wuPath, { strict = false } = {}) {
   // Read and parse YAML
   let doc;
   try {
-    const text = readFileSync(wuPath, FILE_SYSTEM.UTF8);
+    const text = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
     doc = parseYAML(text);
   } catch (e) {
     errors.push(`Failed to parse YAML: ${e.message}`);
@@ -90,7 +90,7 @@ function validateSingleWU(wuPath, { strict = false } = {}) {
  * @returns {{totalValid: number, totalInvalid: number, totalWarnings: number, results: object[]}}
  */
 function validateAllWUs({ strict = false } = {}) {
-  const wuDir = WU_PATHS.WU_DIR;
+  const wuDir = WU_PATHS.WU_DIR();
 
   if (!existsSync(wuDir)) {
     die(`WU directory not found: ${wuDir}`);
@@ -165,7 +165,7 @@ async function main() {
     // Print results
     for (const result of results) {
       if (result.errors.length > 0) {
-        console.log(`${EMOJI.CROSS} ${result.wuId}:`);
+        console.log(`${EMOJI.FAILURE} ${result.wuId}:`);
         result.errors.forEach((e) => console.log(`    ${e}`));
       } else if (result.warnings.length > 0) {
         console.log(`${EMOJI.WARNING} ${result.wuId}: ${result.warnings.length} warning(s)`);
@@ -175,8 +175,8 @@ async function main() {
 
     console.log('');
     console.log(`${LOG_PREFIX} Summary:`);
-    console.log(`  ${EMOJI.CHECK} Valid: ${totalValid}`);
-    console.log(`  ${EMOJI.CROSS} Invalid: ${totalInvalid}`);
+    console.log(`  ${EMOJI.SUCCESS} Valid: ${totalValid}`);
+    console.log(`  ${EMOJI.FAILURE} Invalid: ${totalInvalid}`);
     console.log(`  ${EMOJI.WARNING} Warnings: ${totalWarnings}`);
 
     if (totalInvalid > 0) {
@@ -198,7 +198,7 @@ async function main() {
     const result = validateSingleWU(wuPath, { strict });
 
     if (result.errors.length > 0) {
-      console.log(`${EMOJI.CROSS} Validation failed:`);
+      console.log(`${EMOJI.FAILURE} Validation failed:`);
       result.errors.forEach((e) => console.log(`  ${e}`));
       process.exit(1);
     }
@@ -207,7 +207,7 @@ async function main() {
       console.log(`${EMOJI.WARNING} Validation passed with warnings:`);
       result.warnings.forEach((w) => console.log(`  ${w}`));
     } else {
-      console.log(`${EMOJI.CHECK} ${wuId} is valid`);
+      console.log(`${EMOJI.SUCCESS} ${wuId} is valid`);
     }
   }
 }

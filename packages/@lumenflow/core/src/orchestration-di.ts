@@ -12,11 +12,11 @@
  * @see {@link ./adapters/terminal-renderer.adapter.mjs} - Output adapter
  */
 
-import { FileSystemMetricsCollector } from './adapters/filesystem-metrics.adapter';
-import { TerminalDashboardRenderer } from './adapters/terminal-renderer.adapter';
-import { GetDashboardDataUseCase } from './usecases/get-dashboard-data.usecase';
-import { GetSuggestionsUseCase } from './usecases/get-suggestions.usecase';
-import type { IDashboardRenderer } from './ports/dashboard-renderer.port';
+import { FileSystemMetricsCollector } from './adapters/filesystem-metrics.adapter.js';
+import { TerminalDashboardRenderer } from './adapters/terminal-renderer.adapter.js';
+import { GetDashboardDataUseCase } from './usecases/get-dashboard-data.usecase.js';
+import { GetSuggestionsUseCase } from './usecases/get-suggestions.usecase.js';
+import type { IDashboardRenderer } from './ports/dashboard-renderer.port.js';
 
 /**
  * Create a GetDashboardDataUseCase with FileSystemMetricsCollector.

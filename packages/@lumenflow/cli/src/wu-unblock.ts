@@ -233,10 +233,10 @@ async function main() {
 
         // Generate backlog.md and status.md from state store
         const backlogContent = await generateBacklog(store);
-        writeFileSync(microBacklogPath, backlogContent, FILE_SYSTEM.UTF8);
+        writeFileSync(microBacklogPath, backlogContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 
         const statusContent = await generateStatus(store);
-        writeFileSync(microStatusPath, statusContent, FILE_SYSTEM.UTF8);
+        writeFileSync(microStatusPath, statusContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 
         return {
           commitMessage: commitMsg,

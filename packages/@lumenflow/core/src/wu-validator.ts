@@ -67,7 +67,7 @@ export function scanFileForTODOs(filePath) {
   }
 
   try {
-    const content = readFileSync(filePath, FILE_SYSTEM.UTF8);
+    const content = readFileSync(filePath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
     const matches = [];
 
@@ -204,7 +204,7 @@ export function scanFileForMocks(filePath) {
   }
 
   try {
-    const content = readFileSync(filePath, FILE_SYSTEM.UTF8);
+    const content = readFileSync(filePath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
     const matches = [];
 
@@ -254,7 +254,7 @@ export function scanFileForMocks(filePath) {
 function getRepoRoot() {
   try {
     return execSync('git rev-parse --show-toplevel', {
-      encoding: FILE_SYSTEM.UTF8,
+      encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],
     }).trim();
   } catch {
@@ -263,14 +263,22 @@ function getRepoRoot() {
 }
 
 /**
+ * Options for validating WU code paths
+ */
+export interface ValidateWUCodePathsOptions {
+  /** Allow TODO comments (with warning) */
+  allowTodos?: boolean;
+  /** Optional worktree path to validate files from */
+  worktreePath?: string | null;
+}
+
+/**
  * Validate all code paths for a WU
  * @param {Array<string>} codePaths - Array of file/directory paths from WU YAML
- * @param {object} options - Validation options
- * @param {boolean} options.allowTodos - Allow TODO comments (with warning)
- * @param {string} options.worktreePath - Optional worktree path to validate files from
+ * @param {ValidateWUCodePathsOptions} options - Validation options
  * @returns {{valid: boolean, errors: Array<string>, warnings: Array<string>}}
  */
-export function validateWUCodePaths(codePaths, options = {}) {
+export function validateWUCodePaths(codePaths, options: ValidateWUCodePathsOptions = {}) {
   const { allowTodos = false, worktreePath = null } = options;
   const errors = [];
   const warnings = [];

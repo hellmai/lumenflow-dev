@@ -47,7 +47,7 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/dist/wu-spawn-helpers.js';
-import { parseAgentSkills } from '@lumenflow/agent/dist/agent-skill-loader.js';
+
 import { validateSpawnDependencies, formatDependencyError } from '@lumenflow/core/dist/dependency-validator.js';
 
 /**
@@ -78,8 +78,8 @@ function loadAgentConfiguredSkills(agentName) {
   }
 
   try {
-    const content = readFileSync(agentPath, FILE_SYSTEM.UTF8);
-    return parseAgentSkills(content);
+    const content = readFileSync(agentPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+    return []; // Skills loading removed - vendor agnostic
   } catch {
     return [];
   }
@@ -1287,7 +1287,11 @@ export function checkLaneOccupation(lane) {
  * @param {boolean} [options.isStale] - Whether the lock is stale (>24h old)
  * @returns {string} Warning message
  */
-export function generateLaneOccupationWarning(lockMetadata, targetWuId, options = {}) {
+interface LaneOccupationOptions {
+  isStale?: boolean;
+}
+
+export function generateLaneOccupationWarning(lockMetadata: { lane: string; wuId: string }, targetWuId: string, options: LaneOccupationOptions = {}) {
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
@@ -1361,7 +1365,7 @@ async function main() {
   let doc;
   let text;
   try {
-    text = readFileSync(WU_PATH, FILE_SYSTEM.UTF8);
+    text = readFileSync(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   } catch (e) {
     die(
       `Failed to read WU file: ${WU_PATH}\n\n` +

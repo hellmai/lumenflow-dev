@@ -391,7 +391,7 @@ function validateWUExists(id) {
     die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
   }
 
-  const content = readFileSync(wuPath, FILE_SYSTEM.ENCODING);
+  const content = readFileSync(wuPath, { encoding: 'utf-8' });
   const wu = parseYAML(content);
 
   // Admin repair ALLOWS editing done WUs (key difference from wu:edit)
@@ -614,7 +614,7 @@ export async function runAdminRepairMode(options) {
         normalizeWUDates(updatedWU);
         const yamlContent = stringifyYAML(updatedWU);
 
-        writeFileSync(wuPath, yamlContent, FILE_SYSTEM.ENCODING);
+        writeFileSync(wuPath, yamlContent, { encoding: 'utf-8' });
         console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Updated ${id}.yaml in micro-worktree`);
 
         return {
@@ -692,9 +692,6 @@ export async function repairSingleWU(id, options) {
     console.error(
       `${PREFIX} Repair partially failed: ${result.repaired} repaired, ${result.failed} failed`
     );
-    for (const failure of result.failures || []) {
-      console.error(`  - ${failure.type}: ${failure.reason}`);
-    }
     return { success: false, repaired: result.repaired, failed: result.failed };
   }
 
@@ -708,55 +705,45 @@ export async function repairSingleWU(id, options) {
  * @param {object} options - CLI options
  * @returns {Promise<{success: boolean, repaired: number, failed: number}>}
  */
-export async function repairAllWUs(options) {
+export async function repairAllWUs(options: { dryRun?: boolean } = {}) {
   console.log(`${PREFIX} Checking all WUs...`);
-  const reports = await checkAllWUConsistency();
-  const invalidReports = reports.filter((r) => !r.valid);
+  const report = await checkAllWUConsistency();
 
-  if (invalidReports.length === 0) {
-    console.log(`${PREFIX} All ${reports.length} WUs are consistent`);
+  if (report.valid) {
+    console.log(`${PREFIX} All ${report.checked} WUs are consistent`);
     return { success: true, repaired: 0, failed: 0 };
   }
 
   console.log(
-    `${PREFIX} Found ${invalidReports.length} inconsistent WU(s) out of ${reports.length} total`
+    `${PREFIX} Found ${report.errors.length} inconsistency issue(s) out of ${report.checked} WUs checked`
   );
   console.log();
 
-  for (const report of invalidReports) {
-    printReport(report);
-    console.log();
+  // Print all errors
+  for (const error of report.errors) {
+    console.log(`  - ${error.type}: ${error.description}`);
+  }
+  console.log();
+
+  if (options.dryRun) {
+    return { success: false, repaired: 0, failed: report.errors.length };
   }
 
-  if (options.check) {
-    const totalErrors = invalidReports.reduce((sum, r) => sum + r.errors.length, 0);
-    return { success: false, repaired: 0, failed: totalErrors };
+  // Repair the inconsistencies
+  console.log(`${PREFIX} Repairing inconsistencies...`);
+  const result = await repairWUInconsistency(report);
+
+  if (result.failed > 0) {
+    console.error(
+      `${PREFIX} Partial failure - ${result.repaired} repaired, ${result.failed} failed`
+    );
+  } else {
+    console.log(`${PREFIX} Repaired ${result.repaired} issue(s)`);
   }
+  console.log();
 
-  let totalRepaired = 0;
-  let totalFailed = 0;
-
-  for (const report of invalidReports) {
-    console.log(`${PREFIX} Repairing ${report.id}...`);
-    const result = await repairWUInconsistency(report);
-    totalRepaired += result.repaired;
-    totalFailed += result.failed;
-
-    if (result.failed > 0) {
-      console.error(
-        `${PREFIX} ${report.id}: Partial failure - ${result.repaired} repaired, ${result.failed} failed`
-      );
-      for (const failure of result.failures || []) {
-        console.error(`  - ${failure.type}: ${failure.reason}`);
-      }
-    } else {
-      console.log(`${PREFIX} ${report.id}: Repaired ${result.repaired} issue(s)`);
-    }
-    console.log();
-  }
-
-  console.log(`${PREFIX} Summary: ${totalRepaired} repaired, ${totalFailed} failed`);
-  return { success: totalFailed === 0, repaired: totalRepaired, failed: totalFailed };
+  console.log(`${PREFIX} Summary: ${result.repaired} repaired, ${result.failed} failed`);
+  return { success: result.failed === 0, repaired: result.repaired, failed: result.failed };
 }
 
 /**

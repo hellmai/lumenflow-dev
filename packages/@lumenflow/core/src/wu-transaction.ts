@@ -16,17 +16,22 @@
  */
 
 import { existsSync, writeFileSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
+import type { WriteFileOptions } from 'node:fs';
 import path from 'node:path';
 import { LOG_PREFIX, EMOJI, FILE_SYSTEM } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Represents a pending file write operation
- * @typedef {Object} PendingWrite
- * @property {string} path - Absolute or relative file path
- * @property {string} content - File content to write
- * @property {string} description - Human-readable description (e.g., "WU YAML", "status.md")
  */
+interface PendingWrite {
+  /** Absolute or relative file path */
+  path: string;
+  /** File content to write */
+  content: string;
+  /** Human-readable description (e.g., "WU YAML", "status.md") */
+  description: string;
+}
 
 /**
  * Transaction for atomic metadata updates
@@ -51,24 +56,21 @@ import { createError, ErrorCodes } from './error-handler.js';
  * ```
  */
 export class WUTransaction {
+  private readonly wuId: string;
+  private readonly pendingWrites: Map<string, PendingWrite>;
+  private committed: boolean;
+  private aborted: boolean;
+  private readonly createdAt: Date;
+
   /**
    * Create a new transaction
    * @param {string} wuId - WU ID for logging context
    */
-  constructor(wuId) {
-    /** @type {string} */
+  constructor(wuId: string) {
     this.wuId = wuId;
-
-    /** @type {Map<string, PendingWrite>} */
     this.pendingWrites = new Map();
-
-    /** @type {boolean} */
     this.committed = false;
-
-    /** @type {boolean} */
     this.aborted = false;
-
-    /** @type {Date} */
     this.createdAt = new Date();
   }
 
@@ -80,7 +82,7 @@ export class WUTransaction {
    * @param {string} description - Human-readable description
    * @throws {Error} If transaction already committed or aborted
    */
-  addWrite(filePath, content, description) {
+  addWrite(filePath: string, content: string, description: string): void {
     if (this.committed) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
@@ -107,7 +109,7 @@ export class WUTransaction {
    * Get pending writes for inspection
    * @returns {PendingWrite[]}
    */
-  getPendingWrites() {
+  getPendingWrites(): PendingWrite[] {
     return Array.from(this.pendingWrites.values());
   }
 
@@ -115,8 +117,24 @@ export class WUTransaction {
    * Get count of pending writes
    * @returns {number}
    */
-  get size() {
+  get size(): number {
     return this.pendingWrites.size;
+  }
+
+  /**
+   * Check if transaction has been committed
+   * @returns {boolean}
+   */
+  get isCommitted(): boolean {
+    return this.committed;
+  }
+
+  /**
+   * Check if transaction has been aborted
+   * @returns {boolean}
+   */
+  get isAborted(): boolean {
+    return this.aborted;
   }
 
   /**
@@ -129,8 +147,8 @@ export class WUTransaction {
    *
    * @returns {{ valid: boolean, errors: string[] }}
    */
-  validate() {
-    const errors = [];
+  validate(): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
 
     if (this.pendingWrites.size === 0) {
       errors.push('No pending writes in transaction');
@@ -164,7 +182,7 @@ export class WUTransaction {
    * @returns {{ success: boolean, written: string[], failed: { path: string, error: string }[] }}
    * @throws {Error} If transaction already committed or aborted
    */
-  commit() {
+  commit(): { success: boolean; written: string[]; failed: { path: string; error: string }[] } {
     if (this.committed) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
@@ -180,8 +198,8 @@ export class WUTransaction {
       );
     }
 
-    const written = [];
-    const failed = [];
+    const written: string[] = [];
+    const failed: { path: string; error: string }[] = [];
 
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - writing ${this.pendingWrites.size} files atomically`
@@ -196,12 +214,13 @@ export class WUTransaction {
         }
 
         // Write file
-        writeFileSync(filePath, write.content, FILE_SYSTEM.UTF8);
+        writeFileSync(filePath, write.content, { encoding: 'utf-8' });
         written.push(filePath);
         console.log(`${LOG_PREFIX.DONE}   ${EMOJI.SUCCESS} ${write.description}`);
       } catch (err) {
-        failed.push({ path: filePath, error: err.message });
-        console.error(`${LOG_PREFIX.DONE}   ${EMOJI.FAILURE} ${write.description}: ${err.message}`);
+        const errMessage = err instanceof Error ? err.message : String(err);
+        failed.push({ path: filePath, error: errMessage });
+        console.error(`${LOG_PREFIX.DONE}   ${EMOJI.FAILURE} ${write.description}: ${errMessage}`);
       }
     }
 
@@ -225,7 +244,7 @@ export class WUTransaction {
    * Since no writes have been made, this just clears pending changes.
    * This is the key benefit of the transactional pattern.
    */
-  abort() {
+  abort(): void {
     if (this.committed) {
       console.warn(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Aborting already-committed transaction`);
       return;
@@ -242,9 +261,15 @@ export class WUTransaction {
 
   /**
    * Get transaction state for debugging
-   * @returns {object}
    */
-  getState() {
+  getState(): {
+    wuId: string;
+    committed: boolean;
+    aborted: boolean;
+    pendingCount: number;
+    files: string[];
+    createdAt: string;
+  } {
     return {
       wuId: this.wuId,
       committed: this.committed,
@@ -262,11 +287,11 @@ export class WUTransaction {
  * @param {string} filePath - File to read
  * @returns {string|null} - File content or null if doesn't exist
  */
-export function readFileForTransaction(filePath) {
+export function readFileForTransaction(filePath: string): string | null {
   if (!existsSync(filePath)) {
     return null;
   }
-  return readFileSync(filePath, FILE_SYSTEM.UTF8);
+  return readFileSync(filePath, { encoding: 'utf-8' });
 }
 
 /**
@@ -278,8 +303,8 @@ export function readFileForTransaction(filePath) {
  * @param {string[]} filePaths - Paths to snapshot
  * @returns {Map<string, string|null>} - Map of path to content (null = didn't exist)
  */
-export function createTransactionSnapshot(filePaths) {
-  const snapshot = new Map();
+export function createTransactionSnapshot(filePaths: string[]): Map<string, string | null> {
+  const snapshot = new Map<string, string | null>();
 
   for (const filePath of filePaths) {
     snapshot.set(filePath, readFileForTransaction(filePath));
@@ -294,9 +319,11 @@ export function createTransactionSnapshot(filePaths) {
  * @param {Map<string, string|null>} snapshot - Snapshot from createTransactionSnapshot
  * @returns {{ restored: string[], errors: { path: string, error: string }[] }}
  */
-export function restoreFromSnapshot(snapshot) {
-  const restored = [];
-  const errors = [];
+export function restoreFromSnapshot(
+  snapshot: Map<string, string | null>
+): { restored: string[]; errors: { path: string; error: string }[] } {
+  const restored: string[] = [];
+  const errors: { path: string; error: string }[] = [];
 
   for (const [filePath, content] of snapshot) {
     try {
@@ -308,11 +335,12 @@ export function restoreFromSnapshot(snapshot) {
         }
       } else {
         // Restore original content
-        writeFileSync(filePath, content, FILE_SYSTEM.UTF8);
+        writeFileSync(filePath, content, { encoding: 'utf-8' });
         restored.push(filePath);
       }
     } catch (err) {
-      errors.push({ path: filePath, error: err.message });
+      const errMessage = err instanceof Error ? err.message : String(err);
+      errors.push({ path: filePath, error: errMessage });
     }
   }
 

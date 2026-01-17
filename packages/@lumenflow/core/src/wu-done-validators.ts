@@ -202,7 +202,7 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
     const wtWUPath = path.join(worktreePath, WU_PATHS.WU(id));
     if (existsSync(wtWUPath)) {
       try {
-        const text = readFileSync(wtWUPath, FILE_SYSTEM.ENCODING);
+        const text = readFileSync(wtWUPath, { encoding: 'utf-8' });
         const doc = parseYAML(text);
         if (doc && doc.id === id) {
           // WU-1584: Log source file for validation debugging
@@ -256,7 +256,7 @@ export function detectCurrentWorktree() {
     const stats = statSync(gitPath);
     if (stats.isFile()) {
       // Parse .git file to verify it points to main repo's worktrees
-      const gitContent = readFileSync(gitPath, FILE_SYSTEM.ENCODING);
+      const gitContent = readFileSync(gitPath, { encoding: 'utf-8' });
       const match = gitContent.match(/^gitdir:\s*(.+)$/m);
       if (match && match[1].includes('.git/worktrees/')) {
         console.log(
@@ -460,7 +460,7 @@ export function generateCommitMessage(id, title, maxLength = DEFAULTS.MAX_COMMIT
   const msg = `${prefix}${short}`;
 
   if (msg.length > maxLength) {
-    const error = new Error(
+    const error: Error & { code?: string; data?: Record<string, unknown> } = new Error(
       `Commit message too long (${msg.length}/${maxLength}).\n` +
         `Fix: Shorten WU title\n` +
         `Current title: "${title}" (${title.length} chars)\n` +
@@ -801,12 +801,17 @@ async function deleteBranchWithCleanup(laneBranch) {
  *
  * @param {object} doc - WU YAML document
  * @param {string} id - WU ID
- * @param {object} options - Options
- * @param {string} options.targetBranch - Branch to check files against (default: 'main')
- * @param {string} options.worktreePath - Worktree path for worktree mode
+ * @param {ValidateCodePathsExistOptions} options - Options
  * @returns {Promise<{ valid: boolean, errors: string[], missing: string[] }>} Validation result
  */
-export async function validateCodePathsExist(doc, id, options = {}) {
+export interface ValidateCodePathsExistOptions {
+  /** Branch to check files against (default: 'main') */
+  targetBranch?: string;
+  /** Worktree path for worktree mode */
+  worktreePath?: string | null;
+}
+
+export async function validateCodePathsExist(doc, id, options: ValidateCodePathsExistOptions = {}) {
   const { targetBranch = BRANCHES.MAIN, worktreePath = null } = options;
   const errors = [];
   const missing = [];
@@ -1009,7 +1014,7 @@ export function validatePostMutation({ id, wuPath, stampPath }) {
   }
 
   try {
-    const content = readFileSync(wuPath, FILE_SYSTEM.ENCODING);
+    const content = readFileSync(wuPath, { encoding: 'utf-8' });
     const doc = parseYAML(content);
 
     // Verify completed_at exists and is valid ISO datetime
@@ -1101,11 +1106,15 @@ where husky pre-push would block all further operations.
  * @param {object} paths - Path options
  * @param {string} paths.rootDir - Root directory for YAML lookup
  * @param {string} paths.worktreePath - Worktree path for file existence checks
- * @param {object} options - Options for testing
- * @param {function} options.validatePreflightFn - Override validatePreflight for testing
+ * @param {ExecutePreflightCodePathValidationOptions} options - Options for testing
  * @returns {Promise<{ valid: boolean, errors: string[], missingCodePaths: string[], missingTestPaths: string[], abortedBeforeGates: boolean }>}
  */
-export async function executePreflightCodePathValidation(id, paths, options = {}) {
+interface ExecutePreflightCodePathValidationOptions {
+  /** Override validatePreflight for testing */
+  validatePreflightFn?: typeof validatePreflight;
+}
+
+export async function executePreflightCodePathValidation(id, paths, options: ExecutePreflightCodePathValidationOptions = {}) {
   // Use injected validator for testability, default to actual implementation
   const validatePreflightFn = options.validatePreflightFn || validatePreflight;
 
@@ -1203,11 +1212,15 @@ See: ai/onboarding/troubleshooting-wu-done.md for more recovery options.
  * fails on tasks:validate, leaving local main ahead of origin.
  *
  * @param {string} id - WU ID being completed
- * @param {object} options - Options for testing
- * @param {function} options.execSyncFn - Override execSync for testing (default: child_process.execSync)
+ * @param {ExecSyncOverrideOptions} options - Options for testing
  * @returns {{ valid: boolean, errors: string[], abortedBeforeMerge: boolean, localMainModified: boolean, hasStampStatusError: boolean }}
  */
-export function runPreflightTasksValidation(id, options = {}) {
+interface ExecSyncOverrideOptions {
+  /** Override execSync for testing (default: child_process.execSync) */
+  execSyncFn?: typeof execSyncImport;
+}
+
+export function runPreflightTasksValidation(id, options: ExecSyncOverrideOptions = {}) {
   // Use injected execSync for testability, default to node's child_process
   const execSyncFn = options.execSyncFn || execSyncImport;
 
@@ -1217,7 +1230,7 @@ export function runPreflightTasksValidation(id, options = {}) {
     // Run tasks:validate with WU_ID context (single-WU validation mode)
     execSyncFn('node tools/validate.js', {
       stdio: STDIO.PIPE,
-      encoding: FILE_SYSTEM.ENCODING,
+      encoding: 'utf-8',
       env: { ...process.env, WU_ID: id },
     });
 
@@ -1260,11 +1273,10 @@ export function runPreflightTasksValidation(id, options = {}) {
  *
  * @param {string} id - WU ID being completed
  * @param {string|null} worktreePath - Path to worktree (null = run from current dir)
- * @param {object} options - Options for testing
- * @param {function} options.execSyncFn - Override execSync for testing
+ * @param {ExecSyncOverrideOptions} options - Options for testing
  * @returns {{ valid: boolean, errors: string[] }}
  */
-export function validateAllPreCommitHooks(id, worktreePath = null, options = {}) {
+export function validateAllPreCommitHooks(id, worktreePath = null, options: ExecSyncOverrideOptions = {}) {
   const execSyncFn = options.execSyncFn || execSyncImport;
 
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Pre-flight: validating all pre-commit hooks...`);
@@ -1274,9 +1286,9 @@ export function validateAllPreCommitHooks(id, worktreePath = null, options = {})
   try {
     // WU-2308: Run from worktree context when provided to ensure audit checks
     // the worktree's dependencies (with fixes) not main's stale dependencies
-    const execOptions = {
-      stdio: STDIO.INHERIT,
-      encoding: FILE_SYSTEM.ENCODING,
+    const execOptions: { stdio: 'inherit' | 'pipe' | 'ignore'; encoding: 'utf-8'; cwd?: string } = {
+      stdio: STDIO.INHERIT as 'inherit',
+      encoding: 'utf-8' as const,
     };
 
     // Only set cwd when worktreePath is provided

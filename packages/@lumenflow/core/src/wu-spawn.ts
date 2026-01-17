@@ -30,25 +30,25 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { createWUParser, WU_OPTIONS } from './lib/arg-parser.js';
-import { WU_PATHS } from './lib/wu-paths.js';
-import { parseYAML } from './lib/wu-yaml.js';
-import { die } from './lib/error-handler.js';
-import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from './lib/wu-constants.js';
+import { createWUParser, WU_OPTIONS } from './arg-parser.js';
+import { WU_PATHS } from './wu-paths.js';
+import { parseYAML } from './wu-yaml.js';
+import { die } from './error-handler.js';
+import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from './wu-constants.js';
 // WU-1603: Check lane lock status before spawning
-import { checkLaneLock } from './lib/lane-lock.js';
+import { checkLaneLock } from './lane-lock.js';
 import { minimatch } from 'minimatch';
 // WU-2252: Import invariants loader for spawn output injection
-import { loadInvariants, INVARIANT_TYPES } from './lib/invariants-runner.js';
+import { loadInvariants, INVARIANT_TYPES } from './invariants-runner.js';
 import {
   validateSpawnArgs,
   generateExecutionModeSection,
   generateThinkToolGuidance,
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
-} from './lib/wu-spawn-helpers.js';
-import { parseAgentSkills } from './lib/agent-skill-loader.js';
-import { validateSpawnDependencies, formatDependencyError } from './lib/dependency-validator.js';
+} from './wu-spawn-helpers.js';
+// Agent skills loading removed for vendor-agnostic design
+import { validateSpawnDependencies, formatDependencyError } from './dependency-validator.js';
 
 /**
  * Mandatory agent trigger patterns.
@@ -78,8 +78,8 @@ function loadAgentConfiguredSkills(agentName) {
   }
 
   try {
-    const content = readFileSync(agentPath, FILE_SYSTEM.UTF8);
-    return parseAgentSkills(content);
+    const content = readFileSync(agentPath, { encoding: 'utf-8' });
+    return []; // Removed: vendor-specific skill loading
   } catch {
     return [];
   }
@@ -1279,15 +1279,22 @@ export function checkLaneOccupation(lane) {
 }
 
 /**
+ * Options for lane occupation warning
+ */
+interface LaneOccupationWarningOptions {
+  /** Whether the lock is stale (>24h old) */
+  isStale?: boolean;
+}
+
+/**
  * WU-1603: Generate a warning message when lane is occupied
  *
  * @param {import('./lib/lane-lock.js').LockMetadata} lockMetadata - Lock metadata
  * @param {string} targetWuId - WU ID being spawned
- * @param {Object} [options={}] - Options
- * @param {boolean} [options.isStale] - Whether the lock is stale (>24h old)
+ * @param {LaneOccupationWarningOptions} [options={}] - Options
  * @returns {string} Warning message
  */
-export function generateLaneOccupationWarning(lockMetadata, targetWuId, options = {}) {
+export function generateLaneOccupationWarning(lockMetadata, targetWuId, options: LaneOccupationWarningOptions = {}) {
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
@@ -1361,7 +1368,7 @@ async function main() {
   let doc;
   let text;
   try {
-    text = readFileSync(WU_PATH, FILE_SYSTEM.UTF8);
+    text = readFileSync(WU_PATH, { encoding: 'utf-8' });
   } catch (e) {
     die(
       `Failed to read WU file: ${WU_PATH}\n\n` +
@@ -1399,7 +1406,7 @@ async function main() {
     const existingLock = checkLaneOccupation(lane);
     if (existingLock && existingLock.wuId !== id) {
       // Lane is occupied by a different WU
-      const { isLockStale } = await import('./lib/lane-lock.js');
+      const { isLockStale } = await import('./lane-lock.js');
       const isStale = isLockStale(existingLock);
       const warning = generateLaneOccupationWarning(existingLock, id, { isStale });
       console.warn(`${LOG_PREFIX} ${EMOJI.WARNING}\n${warning}\n`);

@@ -22,8 +22,8 @@ import { tmpdir } from 'node:os';
 import yaml from 'js-yaml';
 
 describe('orchestrate-initiative checkpoint-per-wave', () => {
-  let testDir;
-  let originalCwd;
+  let testDir: string;
+  let originalCwd: string;
 
   beforeEach(() => {
     originalCwd = process.cwd();
@@ -47,15 +47,15 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
   /**
    * Helper to create a valid initiative YAML
    */
-  function createInitiative(id, overrides = {}) {
+  function createInitiative(id: string, overrides: Record<string, unknown> = {}) {
     const initiative = {
       id,
-      slug: overrides.slug || id.toLowerCase().replace('init-', 'test-'),
-      title: overrides.title || `Test Initiative ${id}`,
-      status: overrides.status || 'open',
-      owner: overrides.owner || 'test-owner',
-      created: overrides.created || '2025-01-01',
-      description: overrides.description || 'Test description',
+      slug: (overrides.slug as string) || id.toLowerCase().replace('init-', 'test-'),
+      title: (overrides.title as string) || `Test Initiative ${id}`,
+      status: (overrides.status as string) || 'open',
+      owner: (overrides.owner as string) || 'test-owner',
+      created: (overrides.created as string) || '2025-01-01',
+      description: (overrides.description as string) || 'Test description',
       ...overrides,
     };
 
@@ -67,12 +67,12 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
   /**
    * Helper to create a WU YAML
    */
-  function createWU(id, overrides = {}) {
+  function createWU(id: string, overrides: Record<string, unknown> = {}) {
     const wu = {
       id,
       title: `Test WU ${id}`,
-      lane: overrides.lane || 'Operations',
-      status: overrides.status || 'ready',
+      lane: (overrides.lane as string) || 'Operations',
+      status: (overrides.status as string) || 'ready',
       type: 'feature',
       priority: 'P2',
       created: '2025-01-01',
@@ -96,7 +96,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
   /**
    * Helper to create a stamp file
    */
-  function createStamp(wuId) {
+  function createStamp(wuId: string) {
     const stampPath = join(testDir, '.beacon/stamps', `${wuId}.done`);
     writeFileSync(stampPath, `${wuId} completed\n`, 'utf8');
   }
@@ -104,7 +104,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
   /**
    * Helper to read wave manifest
    */
-  function readWaveManifest(initId, waveNum) {
+  function readWaveManifest(initId: string, waveNum: number) {
     const manifestPath = join(testDir, '.beacon/artifacts/waves', `${initId}-wave-${waveNum}.json`);
     if (!existsSync(manifestPath)) return null;
     return JSON.parse(readFileSync(manifestPath, 'utf8'));
@@ -116,7 +116,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // This function should exist and create a manifest
@@ -138,14 +138,14 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-003', { initiative: 'INIT-001', status: 'done' });
       createWU('WU-004', { initiative: 'INIT-001', status: 'blocked' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
       const manifest = readWaveManifest('INIT-001', result.wave);
 
       // Should only have WU-001 (status: ready)
-      const wuIds = manifest.wus.map((w) => w.id);
+      const wuIds = manifest.wus.map((w: { id: string }) => w.id);
       assert.ok(wuIds.includes('WU-001'), 'ready WU should be included');
       assert.ok(!wuIds.includes('WU-002'), 'in_progress WU should be excluded');
       assert.ok(!wuIds.includes('WU-003'), 'done WU should be excluded');
@@ -158,14 +158,14 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
       createStamp('WU-001'); // WU-001 already done
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
       const manifest = readWaveManifest('INIT-001', result.wave);
 
       // Should only have WU-002 (WU-001 has stamp)
-      const wuIds = manifest.wus.map((w) => w.id);
+      const wuIds = manifest.wus.map((w: { id: string }) => w.id);
       assert.ok(!wuIds.includes('WU-001'), 'WU with stamp should be skipped');
       assert.ok(wuIds.includes('WU-002'), 'WU without stamp should be included');
     });
@@ -176,15 +176,15 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready', lane: 'Operations' });
       createWU('WU-003', { initiative: 'INIT-001', status: 'ready', lane: 'Intelligence' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
       const manifest = readWaveManifest('INIT-001', result.wave);
 
       // Should only have 1 Operations WU and 1 Intelligence WU per wave
-      const operationsWUs = manifest.wus.filter((w) => w.lane === 'Operations');
-      const intelligenceWUs = manifest.wus.filter((w) => w.lane === 'Intelligence');
+      const operationsWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Operations');
+      const intelligenceWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Intelligence');
 
       assert.ok(operationsWUs.length <= 1, 'max 1 Operations WU per wave');
       assert.ok(intelligenceWUs.length <= 1, 'max 1 Intelligence WU per wave');
@@ -202,7 +202,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         'utf8'
       );
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -216,7 +216,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'done' });
       createStamp('WU-001');
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -234,7 +234,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // Call with dryRun option
@@ -257,7 +257,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-002');
       createWU('WU-010', { initiative: 'INIT-002', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       // Call without dryRun (default behavior)
@@ -277,7 +277,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready', lane: 'Intelligence' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { formatCheckpointOutput } = mod;
 
       const output = formatCheckpointOutput({
@@ -298,7 +298,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     });
 
     it('should include resume instructions', async () => {
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { formatCheckpointOutput } = mod;
 
       const output = formatCheckpointOutput({
@@ -322,7 +322,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // This tests CLI argument validation
       // The actual CLI behavior - we test the validation logic
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { validateCheckpointFlags } = mod;
 
       // The function should exist and throw for invalid combinations
@@ -334,7 +334,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     });
 
     it('should allow -c without --dry-run', async () => {
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { validateCheckpointFlags } = mod;
 
       // Should not throw
@@ -363,7 +363,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         'utf8'
       );
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -371,7 +371,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // WU-001 was in wave 0, so should not appear again
       // Only WU-002 should be in wave 1
       if (result && result.wus) {
-        const wuIds = result.wus.map((w) => w.id);
+        const wuIds = result.wus.map((w: { id: string }) => w.id);
         assert.ok(!wuIds.includes('WU-001'), 'WU already in manifest should be skipped');
       }
     });
@@ -384,14 +384,14 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createStamp('WU-001');
 
       // Even if manifest doesn't have it, stamp should win
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
 
       // Should not spawn WU-001 because stamp exists
       if (result && result.wus) {
-        const wuIds = result.wus.map((w) => w.id);
+        const wuIds = result.wus.map((w: { id: string }) => w.id);
         assert.ok(!wuIds.includes('WU-001'), 'stamp takes precedence');
       }
     });
@@ -402,7 +402,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
@@ -419,13 +419,13 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready', lane: 'Operations' });
 
-      const mod = await import('../initiative-orchestrator.js');
+      const mod = await import('../src/initiative-orchestrator.js');
       const { buildCheckpointWave } = mod;
 
       const result = buildCheckpointWave('INIT-001');
       const manifest = readWaveManifest('INIT-001', result.wave);
 
-      const wu = manifest.wus.find((w) => w.id === 'WU-001');
+      const wu = manifest.wus.find((w: { id: string }) => w.id === 'WU-001');
       assert.ok(wu, 'WU should be in manifest');
       assert.equal(wu.lane, 'Operations', 'WU should have lane');
       assert.equal(wu.status, 'spawned', 'WU status in manifest should be spawned');

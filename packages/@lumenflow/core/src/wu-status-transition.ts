@@ -83,11 +83,11 @@ export async function transitionWUStatus({
 }) {
   // Validate inputs
   if (!id) {
-    throw createError(ErrorCodes.INVALID_INPUT, 'WU ID is required');
+    throw createError(ErrorCodes.VALIDATION_ERROR, 'WU ID is required');
   }
   if (!direction || !['block', 'unblock'].includes(direction)) {
     throw createError(
-      ErrorCodes.INVALID_INPUT,
+      ErrorCodes.VALIDATION_ERROR,
       `Invalid direction: ${direction}. Must be 'block' or 'unblock'`
     );
   }
@@ -248,7 +248,7 @@ async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, di
  */
 function updateStatusFile(statusPath, id, title, direction, reason) {
   const rel = `wu/${id}.yaml`;
-  const lines = readFileSync(statusPath, FILE_SYSTEM.UTF8).split(/\r?\n/);
+  const lines = readFileSync(statusPath, { encoding: 'utf-8' }).split(/\r?\n/);
 
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader('## in progress');
@@ -298,7 +298,7 @@ function updateStatusFile(statusPath, id, title, direction, reason) {
     }
   }
 
-  writeFileSync(statusPath, lines.join(STRING_LITERALS.NEWLINE), FILE_SYSTEM.UTF8);
+  writeFileSync(statusPath, lines.join(STRING_LITERALS.NEWLINE), { encoding: 'utf-8' });
 }
 
 /**

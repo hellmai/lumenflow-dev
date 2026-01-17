@@ -42,10 +42,40 @@ const WORKTREE_PATH_PATTERN = /worktrees\/([\w-]+)-wu-(\d+)/;
 const LANE_BRANCH_PATTERN = /^lane\/([\w-]+)\/wu-(\d+)$/;
 
 /**
+ * Git adapter interface for worktree operations
+ */
+interface GitAdapter {
+  getCurrentBranch(): Promise<string>;
+}
+
+/**
+ * Options with git adapter
+ */
+interface GitOptions {
+  /** GitAdapter instance (for testing) */
+  git?: GitAdapter;
+}
+
+/**
+ * Options for isInWorktree
+ */
+interface CwdOptions {
+  /** Current working directory (defaults to process.cwd()) */
+  cwd?: string;
+}
+
+/**
+ * Combined options for context functions
+ */
+interface WorktreeContextOptions extends GitOptions, CwdOptions {
+  /** Operation name for error message */
+  operation?: string;
+}
+
+/**
  * Check if on main or master branch
  *
- * @param {Object} [options] - Options
- * @param {Object} [options.git] - GitAdapter instance (for testing)
+ * @param {GitOptions} [options] - Options
  * @returns {Promise<boolean>} True if on main/master branch
  *
  * @example
@@ -53,7 +83,7 @@ const LANE_BRANCH_PATTERN = /^lane\/([\w-]+)\/wu-(\d+)$/;
  *   console.log('On main branch');
  * }
  */
-export async function isMainBranch(options = {}) {
+export async function isMainBranch(options: GitOptions = {}) {
   const git = options.git || createGitForPath(process.cwd());
   const branch = await git.getCurrentBranch();
 
@@ -93,7 +123,7 @@ function normalizePath(p) {
  * // From nested directory
  * isInWorktree({ cwd: '/project/worktrees/operations-wu-123/tools/lib' }); // true
  */
-export function isInWorktree(options = {}) {
+export function isInWorktree(options: CwdOptions = {}) {
   const cwd = options.cwd || process.cwd();
 
   // Normalize path separators for cross-platform compatibility
@@ -181,7 +211,7 @@ async function extractFromBranch(git) {
  * const ctx = await getWUContext();
  * // null
  */
-export async function getWUContext(options = {}) {
+export async function getWUContext(options: WorktreeContextOptions = {}) {
   const cwd = options.cwd || process.cwd();
 
   // Fast path: Try worktree path first (no git operations needed)
@@ -225,7 +255,7 @@ export async function getWUContext(options = {}) {
  * //        You are on 'main' branch in main checkout.
  * //        ...
  */
-export async function assertWorktreeRequired(options = {}) {
+export async function assertWorktreeRequired(options: WorktreeContextOptions = {}) {
   const cwd = options.cwd || process.cwd();
   const operation = options.operation || 'this operation';
 

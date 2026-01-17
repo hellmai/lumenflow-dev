@@ -16,7 +16,7 @@ export const INIT_PATHS = {
    * @param {string} id - Initiative ID (e.g., 'INIT-001')
    * @returns {string} Path to Initiative YAML file
    */
-  INITIATIVE: (id) => path.join('docs', '04-operations', 'tasks', 'initiatives', `${id}.yaml`),
+  INITIATIVE: (id: string) => path.join('docs', '04-operations', 'tasks', 'initiatives', `${id}.yaml`),
 
   /**
    * Get path to initiatives directory

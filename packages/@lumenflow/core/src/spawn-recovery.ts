@@ -32,7 +32,15 @@ import {
   releaseLaneLock,
 } from './lane-lock.js';
 import { toKebab } from './wu-constants.js';
-import { loadMemory } from '@lumenflow/memory/lib/memory-store.js';
+
+// Optional import from @lumenflow/memory
+let loadMemory: ((baseDir: string, wuId: string) => Promise<{ checkpoints: Array<{ timestamp: string }> } | null>) | null = null;
+try {
+  const mod = await import('@lumenflow/memory/lib/memory-store.js');
+  loadMemory = mod.loadMemory;
+} catch {
+  // @lumenflow/memory not available - memory features disabled
+}
 
 /**
  * Recovery action constants
@@ -129,29 +137,33 @@ async function createAuditLog(baseDir, entry) {
  * @param {string} wuId - WU ID to find checkpoints for
  * @returns {Promise<{timestamp: string, content: string}|null>} Most recent checkpoint or null
  */
-async function getLastCheckpoint(baseDir, wuId) {
+async function getLastCheckpoint(baseDir: string, wuId: string): Promise<{ timestamp: string; content: string } | null> {
+  // If memory module not available, return null
+  if (!loadMemory) {
+    return null;
+  }
+
   const memoryDir = path.join(baseDir, '.beacon', 'state');
 
   try {
-    const memory = await loadMemory(memoryDir);
-    const wuNodes = memory.byWu.get(wuId) ?? [];
+    const memory = await loadMemory(memoryDir, wuId);
+    if (!memory) {
+      return null;
+    }
 
-    // Filter for checkpoint type nodes
-    const checkpoints = wuNodes.filter(
-      (node) => node.type === 'checkpoint' || node.type === 'session'
-    );
+    const checkpoints = memory.checkpoints ?? [];
 
     if (checkpoints.length === 0) {
       return null;
     }
 
-    // Sort by created_at descending, get most recent
-    checkpoints.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    // Sort by timestamp descending, get most recent
+    checkpoints.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     const latest = checkpoints[0];
     return {
-      timestamp: latest.created_at,
-      content: latest.content,
+      timestamp: latest.timestamp,
+      content: '',
     };
   } catch {
     // Memory store doesn't exist or is invalid
@@ -185,8 +197,7 @@ function isCheckpointRecent(checkpointTimestamp) {
  * 4. Healthy spawn -> no action
  *
  * @param {string} spawnId - ID of the spawn to recover
- * @param {Object} options - Options
- * @param {string} options.baseDir - Base directory for .beacon/
+ * @param {RecoverStuckSpawnOptions} options - Options
  * @returns {Promise<RecoveryResult>} Recovery result
  *
  * @example
@@ -195,7 +206,12 @@ function isCheckpointRecent(checkpointTimestamp) {
  *   console.log(`Recovered: ${result.action} - ${result.reason}`);
  * }
  */
-export async function recoverStuckSpawn(spawnId, options = {}) {
+export interface RecoverStuckSpawnOptions {
+  /** Base directory for .beacon/ */
+  baseDir?: string;
+}
+
+export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptions = {}) {
   const { baseDir = process.cwd() } = options;
   const registryDir = path.join(baseDir, '.beacon', 'state');
 
@@ -214,7 +230,7 @@ export async function recoverStuckSpawn(spawnId, options = {}) {
   }
 
   // Find the spawn
-  const spawn = store.spawns.get(spawnId);
+  const spawn = store.getById(spawnId);
 
   if (!spawn) {
     return {

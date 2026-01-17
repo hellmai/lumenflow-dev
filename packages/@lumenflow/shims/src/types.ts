@@ -45,8 +45,8 @@ enableDebug: z.boolean().default(false),
 export type PnpmShimConfig = z.infer<typeof PnpmShimConfigSchema>;
 
 export const ShimConfigSchema = z.object({
-git: GitShimConfigSchema.default({}),
-pnpm: PnpmShimConfigSchema.default({}),
+git: GitShimConfigSchema.default(() => GitShimConfigSchema.parse({})),
+pnpm: PnpmShimConfigSchema.default(() => PnpmShimConfigSchema.parse({})),
 });
 
 export type ShimConfig = z.infer<typeof ShimConfigSchema>;

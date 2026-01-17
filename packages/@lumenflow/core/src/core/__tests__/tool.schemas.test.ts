@@ -262,8 +262,8 @@ describe('Schema validation error messages', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(z.ZodError);
       const zodError = error as z.ZodError;
-      expect(zodError.errors[0].path).toContain('command');
-      expect(zodError.errors[0].message).toContain('string');
+      expect(zodError.issues[0].path).toContain('command');
+      expect(zodError.issues[0].message).toContain('string');
     }
   });
 
@@ -279,7 +279,7 @@ describe('Schema validation error messages', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(z.ZodError);
       const zodError = error as z.ZodError;
-      expect(zodError.errors.length).toBeGreaterThan(0);
+      expect(zodError.issues.length).toBeGreaterThan(0);
     }
   });
 });

@@ -13,17 +13,17 @@
 /**
  * Initiative lifecycle statuses (matches InitiativeSchema)
  */
-export const INIT_STATUSES = ['draft', 'open', 'in_progress', 'done', 'archived'];
+export const INIT_STATUSES = ['draft', 'open', 'in_progress', 'done', 'archived'] as const;
 
 /**
  * Phase statuses (matches InitiativePhaseSchema)
  */
-export const PHASE_STATUSES = ['pending', 'in_progress', 'done', 'blocked'];
+export const PHASE_STATUSES = ['pending', 'in_progress', 'done', 'blocked'] as const;
 
 /**
  * Priority levels (matches WU priority)
  */
-export const PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
+export const PRIORITIES = ['P0', 'P1', 'P2', 'P3'] as const;
 
 /**
  * Regex patterns for initiative validation
@@ -57,36 +57,36 @@ export const INIT_COMMIT_PATTERNS = {
 export const INIT_COMMIT_FORMATS = {
   /**
    * Create initiative commit message
-   * @param {string} id - Initiative ID
-   * @param {string} title - Initiative title
-   * @returns {string} Commit message
+   * @param id - Initiative ID
+   * @param title - Initiative title
+   * @returns Commit message
    */
-  CREATE: (id, title) => {
+  CREATE: (id: string, title: string): string => {
     const shortTitle = title.length > 50 ? `${title.substring(0, 47)}...` : title;
     return `docs: create ${id.toLowerCase()} for ${shortTitle.toLowerCase()}`;
   },
 
   /**
    * Update initiative commit message
-   * @param {string} id - Initiative ID
-   * @returns {string} Commit message
+   * @param id - Initiative ID
+   * @returns Commit message
    */
-  UPDATE: (id) => `docs: update ${id.toLowerCase()}`,
+  UPDATE: (id: string): string => `docs: update ${id.toLowerCase()}`,
 
   /**
    * Link WU to initiative commit message
-   * @param {string} wuId - WU ID
-   * @param {string} initId - Initiative ID
-   * @returns {string} Commit message
+   * @param wuId - WU ID
+   * @param initId - Initiative ID
+   * @returns Commit message
    */
-  LINK_WU: (wuId, initId) => `docs: link ${wuId.toLowerCase()} to ${initId.toLowerCase()}`,
+  LINK_WU: (wuId: string, initId: string): string => `docs: link ${wuId.toLowerCase()} to ${initId.toLowerCase()}`,
 
   /**
    * Edit initiative commit message (WU-1451)
-   * @param {string} id - Initiative ID
-   * @returns {string} Commit message
+   * @param id - Initiative ID
+   * @returns Commit message
    */
-  EDIT: (id) => `docs: edit ${id.toLowerCase()}`,
+  EDIT: (id: string): string => `docs: edit ${id.toLowerCase()}`,
 };
 
 /**

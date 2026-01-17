@@ -42,7 +42,7 @@ async function loadYesterdayMetrics() {
       .then(() => true)
       .catch(() => false);
     if (exists) {
-      const data = await readFile(YESTERDAY_METRICS_PATH, FILE_SYSTEM.UTF8);
+      const data = await readFile(YESTERDAY_METRICS_PATH, { encoding: 'utf-8' });
       return JSON.parse(data);
     }
   } catch (error) {
@@ -199,7 +199,7 @@ async function monitor() {
     .catch(() => false);
   if (todayExists) {
     try {
-      const todayData = await readFile(TODAY_METRICS_PATH, FILE_SYSTEM.UTF8);
+      const todayData = await readFile(TODAY_METRICS_PATH, { encoding: 'utf-8' });
       await writeFile(YESTERDAY_METRICS_PATH, todayData);
     } catch (error) {
       console.error('Failed to rotate metrics:', error);

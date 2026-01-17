@@ -31,8 +31,10 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import ms from 'ms';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ms = require('ms') as (value: string) => number;
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
+import type { MemoryNode } from './memory-schema.js';
 
 /**
  * Memory directory path relative to base directory
@@ -40,11 +42,25 @@ import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
 const MEMORY_DIR = '.beacon/memory';
 
 /**
+ * Lifecycle policy definition
+ */
+interface LifecyclePolicyEntry {
+  alwaysRemove: boolean;
+  requiresSummarized: boolean;
+  protected?: boolean;
+}
+
+/**
+ * Lifecycle policy type for indexed access
+ */
+type LifecycleType = 'ephemeral' | 'session' | 'wu' | 'project';
+
+/**
  * Lifecycle policy definitions
  *
  * Determines which nodes are eligible for cleanup based on lifecycle.
  */
-export const LIFECYCLE_POLICY = {
+export const LIFECYCLE_POLICY: Record<LifecycleType, LifecyclePolicyEntry> = {
   /** Ephemeral nodes are always removed - scratch pad data */
   ephemeral: { alwaysRemove: true, requiresSummarized: false },
 
@@ -69,51 +85,70 @@ export const SENSITIVE_FLAG = 'sensitive';
 const ACTIVE_SESSION_STATUS = 'active';
 
 /**
- * @typedef {import('./memory-schema.mjs').MemoryNode} MemoryNode
+ * Cleanup options for memory pruning
  */
+export interface CleanupOptions {
+  /** If true, preview without modifications */
+  dryRun?: boolean;
+  /** Session ID to consider closed (removes session lifecycle nodes) */
+  sessionId?: string;
+  /** TTL duration string (e.g., '30d', '7d', '24h') for age-based cleanup */
+  ttl?: string;
+  /** TTL in milliseconds (alternative to ttl string) */
+  ttlMs?: number;
+  /** Current timestamp for testing (defaults to Date.now()) */
+  now?: number;
+}
 
 /**
- * @typedef {object} CleanupOptions
- * @property {boolean} [dryRun=false] - If true, preview without modifications
- * @property {string} [sessionId] - Session ID to consider closed (removes session lifecycle nodes)
- * @property {string} [ttl] - TTL duration string (e.g., '30d', '7d', '24h') for age-based cleanup (WU-1554)
- * @property {number} [ttlMs] - TTL in milliseconds (alternative to ttl string) (WU-1554)
- * @property {number} [now] - Current timestamp for testing (defaults to Date.now()) (WU-1554)
+ * Breakdown of cleanup by lifecycle type
  */
+interface CleanupBreakdown {
+  ephemeral: number;
+  session: number;
+  wu: number;
+  sensitive: number;
+  ttlExpired: number;
+  activeSessionProtected: number;
+}
 
 /**
- * @typedef {object} CleanupResult
- * @property {boolean} success - Whether cleanup succeeded
- * @property {string[]} removedIds - IDs of removed nodes
- * @property {string[]} retainedIds - IDs of retained nodes
- * @property {number} bytesFreed - Approximate bytes freed (0 if dry-run)
- * @property {number} compactionRatio - Ratio of removed to total nodes
- * @property {boolean} [dryRun] - True if in dry-run mode
- * @property {number} [ttlMs] - TTL in milliseconds if TTL was provided (WU-1554)
- * @property {object} breakdown - Breakdown by lifecycle
- * @property {number} breakdown.ephemeral - Ephemeral nodes removed
- * @property {number} breakdown.session - Session nodes removed
- * @property {number} breakdown.wu - WU nodes removed (summarized)
- * @property {number} breakdown.sensitive - Sensitive nodes retained
- * @property {number} breakdown.ttlExpired - Nodes removed due to TTL expiration (WU-1554)
- * @property {number} breakdown.activeSessionProtected - Active sessions protected from removal (WU-1554)
+ * Result of cleanup operation
  */
+export interface CleanupResult {
+  /** Whether cleanup succeeded */
+  success: boolean;
+  /** IDs of removed nodes */
+  removedIds: string[];
+  /** IDs of retained nodes */
+  retainedIds: string[];
+  /** Approximate bytes freed (0 if dry-run) */
+  bytesFreed: number;
+  /** Ratio of removed to total nodes */
+  compactionRatio: number;
+  /** True if in dry-run mode */
+  dryRun?: boolean;
+  /** TTL in milliseconds if TTL was provided */
+  ttlMs?: number;
+  /** Breakdown by lifecycle */
+  breakdown: CleanupBreakdown;
+}
 
 /**
  * Parse a TTL duration string into milliseconds (WU-1554).
  *
  * Uses the `ms` package to parse human-readable duration strings.
  *
- * @param {string} ttlString - TTL string (e.g., '30d', '7d', '24h', '60m')
- * @returns {number} TTL in milliseconds
- * @throws {Error} If TTL format is invalid
+ * @param ttlString - TTL string (e.g., '30d', '7d', '24h', '60m')
+ * @returns TTL in milliseconds
+ * @throws If TTL format is invalid
  *
  * @example
  * parseTtl('30d'); // 2592000000 (30 days in ms)
  * parseTtl('7d');  // 604800000 (7 days in ms)
  * parseTtl('24h'); // 86400000 (24 hours in ms)
  */
-export function parseTtl(ttlString) {
+export function parseTtl(ttlString: string): number {
   if (!ttlString || typeof ttlString !== 'string') {
     throw new Error('Invalid TTL format: TTL string is required');
   }
@@ -136,16 +171,16 @@ export function parseTtl(ttlString) {
 /**
  * Check if a node has expired based on TTL (WU-1554).
  *
- * @param {MemoryNode} node - Memory node to check
- * @param {number} ttlMs - TTL in milliseconds
- * @param {number} [now] - Current timestamp (defaults to Date.now())
- * @returns {boolean} True if node is older than TTL
+ * @param node - Memory node to check
+ * @param ttlMs - TTL in milliseconds
+ * @param now - Current timestamp (defaults to Date.now())
+ * @returns True if node is older than TTL
  *
  * @example
  * // Check if node is older than 30 days
  * const expired = isNodeExpired(node, 30 * 24 * 60 * 60 * 1000);
  */
-export function isNodeExpired(node, ttlMs, now = Date.now()) {
+export function isNodeExpired(node: MemoryNode, ttlMs: number, now: number = Date.now()): boolean {
   if (!node.created_at) {
     return false; // No timestamp means we can't determine age - safer to retain
   }
@@ -166,10 +201,10 @@ export function isNodeExpired(node, ttlMs, now = Date.now()) {
  *
  * Active sessions are protected from all cleanup including TTL.
  *
- * @param {MemoryNode} node - Memory node to check
- * @returns {boolean} True if node is an active session
+ * @param node - Memory node to check
+ * @returns True if node is an active session
  */
-function isActiveSession(node) {
+function isActiveSession(node: MemoryNode): boolean {
   if (node.type !== 'session') {
     return false;
   }
@@ -184,10 +219,10 @@ function isActiveSession(node) {
 /**
  * Check if a node has the sensitive flag set in metadata.
  *
- * @param {MemoryNode} node - Memory node to check
- * @returns {boolean} True if sensitive flag is set
+ * @param node - Memory node to check
+ * @returns True if sensitive flag is set
  */
-function hasSensitiveFlag(node) {
+function hasSensitiveFlag(node: MemoryNode): boolean {
   if (!node.metadata) {
     return false;
   }
@@ -197,14 +232,14 @@ function hasSensitiveFlag(node) {
 /**
  * Get the lifecycle policy for a node's lifecycle.
  *
- * @param {string} lifecycle - Lifecycle name
- * @returns {object|undefined} Policy object or undefined if not found
+ * @param lifecycle - Lifecycle name
+ * @returns Policy object or undefined if not found
  */
-function getLifecyclePolicy(lifecycle) {
+function getLifecyclePolicy(lifecycle: string): LifecyclePolicyEntry | undefined {
   if (!Object.hasOwn(LIFECYCLE_POLICY, lifecycle)) {
     return undefined;
   }
-  return LIFECYCLE_POLICY[lifecycle];
+  return LIFECYCLE_POLICY[lifecycle as LifecycleType];
 }
 
 /**
@@ -223,7 +258,7 @@ function getLifecyclePolicy(lifecycle) {
  * @param {CleanupOptions} options - Cleanup options
  * @returns {{remove: boolean, reason: string}} Removal decision with reason
  */
-export function shouldRemoveNode(node, options = {}) {
+export function shouldRemoveNode(node: MemoryNode, options: CleanupOptions = {}): { remove: boolean; reason: string } {
   const { sessionId, ttlMs, now = Date.now() } = options;
 
   // WU-1554: Active sessions are always protected first
@@ -275,10 +310,10 @@ export function shouldRemoveNode(node, options = {}) {
 /**
  * Calculate approximate byte size of a node when serialized.
  *
- * @param {MemoryNode} node - Memory node
- * @returns {number} Approximate byte size
+ * @param node - Memory node
+ * @returns Approximate byte size
  */
-export function estimateNodeBytes(node) {
+export function estimateNodeBytes(node: MemoryNode): number {
   // JSON.stringify + newline character
   return JSON.stringify(node).length + 1;
 }
@@ -286,11 +321,11 @@ export function estimateNodeBytes(node) {
 /**
  * Calculate compaction ratio (removed / total).
  *
- * @param {number} removedCount - Number of removed nodes
- * @param {number} totalCount - Total number of nodes
- * @returns {number} Compaction ratio (0 to 1, or 0 if no nodes)
+ * @param removedCount - Number of removed nodes
+ * @param totalCount - Total number of nodes
+ * @returns Compaction ratio (0 to 1, or 0 if no nodes)
  */
-export function getCompactionRatio(removedCount, totalCount) {
+export function getCompactionRatio(removedCount: number, totalCount: number): number {
   if (totalCount === 0) {
     return 0;
   }
@@ -298,9 +333,17 @@ export function getCompactionRatio(removedCount, totalCount) {
 }
 
 /**
+ * Cleanup decision with reason
+ */
+interface CleanupDecision {
+  remove: boolean;
+  reason: string;
+}
+
+/**
  * Reason-to-breakdown-key mapping for tracking cleanup statistics.
  */
-const REASON_TO_BREAKDOWN_KEY = {
+const REASON_TO_BREAKDOWN_KEY: Record<string, keyof CleanupBreakdown | undefined> = {
   'ephemeral-cleanup': 'ephemeral',
   'session-closed': 'session',
   'summarized-archived': 'wu',
@@ -312,10 +355,10 @@ const REASON_TO_BREAKDOWN_KEY = {
 /**
  * Update breakdown statistics based on removal decision.
  *
- * @param {object} breakdown - Breakdown object to update
- * @param {object} decision - Removal decision with reason
+ * @param breakdown - Breakdown object to update
+ * @param decision - Removal decision with reason
  */
-function updateBreakdown(breakdown, decision) {
+function updateBreakdown(breakdown: CleanupBreakdown, decision: CleanupDecision): void {
   const key = REASON_TO_BREAKDOWN_KEY[decision.reason];
   if (key && Object.hasOwn(breakdown, key)) {
     breakdown[key]++;
@@ -325,15 +368,15 @@ function updateBreakdown(breakdown, decision) {
 /**
  * Write retained nodes to memory file.
  *
- * @param {string} memoryDir - Memory directory path
- * @param {MemoryNode[]} retainedNodes - Nodes to write
+ * @param memoryDir - Memory directory path
+ * @param retainedNodes - Nodes to write
  */
-async function writeRetainedNodes(memoryDir, retainedNodes) {
+async function writeRetainedNodes(memoryDir: string, retainedNodes: MemoryNode[]): Promise<void> {
   const filePath = path.join(memoryDir, MEMORY_FILE_NAME);
   const content =
     retainedNodes.map((n) => JSON.stringify(n)).join('\n') + (retainedNodes.length > 0 ? '\n' : '');
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes known path
-  await fs.writeFile(filePath, content, 'utf-8');
+  await fs.writeFile(filePath, content, { encoding: 'utf-8' as BufferEncoding });
 }
 
 /**
@@ -373,7 +416,7 @@ async function writeRetainedNodes(memoryDir, retainedNodes) {
  * const result = await cleanupMemory(baseDir, { ttl: '30d' });
  * console.log(`Removed ${result.breakdown.ttlExpired} expired nodes`);
  */
-export async function cleanupMemory(baseDir, options = {}) {
+export async function cleanupMemory(baseDir: string, options: CleanupOptions = {}): Promise<CleanupResult> {
   const { dryRun = false, sessionId, ttl, ttlMs: providedTtlMs, now = Date.now() } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
@@ -387,9 +430,9 @@ export async function cleanupMemory(baseDir, options = {}) {
   const memory = await loadMemory(memoryDir);
 
   // Track cleanup decisions
-  const removedIds = [];
-  const retainedIds = [];
-  const retainedNodes = [];
+  const removedIds: string[] = [];
+  const retainedIds: string[] = [];
+  const retainedNodes: MemoryNode[] = [];
   let bytesFreed = 0;
   const breakdown = {
     ephemeral: 0,
@@ -416,7 +459,7 @@ export async function cleanupMemory(baseDir, options = {}) {
   }
 
   const compactionRatio = getCompactionRatio(removedIds.length, memory.nodes.length);
-  const baseResult = {
+  const baseResult: CleanupResult = {
     success: true,
     removedIds,
     retainedIds,

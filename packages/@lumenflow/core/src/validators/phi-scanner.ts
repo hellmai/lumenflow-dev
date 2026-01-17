@@ -164,6 +164,14 @@ function extractPostcodeCandidates(content) {
 }
 
 /**
+ * Options for PHI scanning
+ */
+export interface ScanForPHIOptions {
+  /** File path for exclusion check */
+  filePath?: string;
+}
+
+/**
  * Scan content for PHI (Protected Health Information)
  *
  * Detects:
@@ -171,12 +179,19 @@ function extractPostcodeCandidates(content) {
  * - UK postcodes in medical context
  *
  * @param {string|null|undefined} content - Content to scan
- * @param {object} [options] - Scan options
- * @param {string} [options.filePath] - File path for exclusion check
+ * @param {ScanForPHIOptions} [options] - Scan options
  * @returns {{hasPHI: boolean, matches: Array, warnings: string[]}} Scan result
  */
-export function scanForPHI(content, options = {}) {
-  const result = {
+interface PHIMatch {
+  type: string;
+  value: string;
+  startIndex: number;
+  endIndex: number;
+  medicalKeyword?: string;
+}
+
+export function scanForPHI(content: string, options: ScanForPHIOptions = {}) {
+  const result: { hasPHI: boolean; matches: PHIMatch[]; warnings: string[]; filePath?: string } = {
     hasPHI: false,
     matches: [],
     warnings: [],

@@ -17,8 +17,8 @@ import yaml from 'js-yaml';
 // These tests use manual file creation to avoid circular dependencies
 
 describe('initiative-yaml', () => {
-  let testDir;
-  let originalCwd;
+  let testDir: string;
+  let originalCwd: string;
 
   beforeEach(() => {
     originalCwd = process.cwd();
@@ -40,15 +40,15 @@ describe('initiative-yaml', () => {
   /**
    * Helper to create a valid initiative YAML
    */
-  function createInitiative(id, overrides = {}) {
+  function createInitiative(id: string, overrides: Record<string, unknown> = {}) {
     const initiative = {
       id,
-      slug: overrides.slug || id.toLowerCase().replace('init-', 'test-'),
-      title: overrides.title || `Test Initiative ${id}`,
-      status: overrides.status || 'open',
-      owner: overrides.owner || 'test-owner',
-      created: overrides.created || '2025-01-01',
-      description: overrides.description || 'Test description',
+      slug: (overrides.slug as string) || id.toLowerCase().replace('init-', 'test-'),
+      title: (overrides.title as string) || `Test Initiative ${id}`,
+      status: (overrides.status as string) || 'open',
+      owner: (overrides.owner as string) || 'test-owner',
+      created: (overrides.created as string) || '2025-01-01',
+      description: (overrides.description as string) || 'Test description',
       ...overrides,
     };
 
@@ -60,12 +60,12 @@ describe('initiative-yaml', () => {
   /**
    * Helper to create a WU YAML
    */
-  function createWU(id, overrides = {}) {
+  function createWU(id: string, overrides: Record<string, unknown> = {}) {
     const wu = {
       id,
       title: `Test WU ${id}`,
       lane: 'Operations',
-      status: overrides.status || 'ready',
+      status: (overrides.status as string) || 'ready',
       type: 'feature',
       priority: 'P2',
       created: '2025-01-01',
@@ -81,13 +81,13 @@ describe('initiative-yaml', () => {
 
   describe('readInitiative', async () => {
     // Dynamic import to ensure cwd is set first
-    let readInitiative;
+    let readInitiative: typeof import('../src/initiative-yaml.js').readInitiative;
 
     it('should read and parse valid Initiative YAML', async () => {
       createInitiative('INIT-001', { slug: 'test-init', title: 'Test Initiative' });
 
       // Dynamic import after directory setup
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-001.yaml');
@@ -99,7 +99,7 @@ describe('initiative-yaml', () => {
     });
 
     it('should throw error if file does not exist', async () => {
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/nonexistent.yaml');
@@ -110,7 +110,7 @@ describe('initiative-yaml', () => {
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-001.yaml');
       writeFileSync(filePath, 'invalid: yaml: content:', 'utf8');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
       assert.throws(() => readInitiative(filePath, 'INIT-001'), /Failed to parse YAML/);
@@ -119,7 +119,7 @@ describe('initiative-yaml', () => {
     it('should throw error if Initiative ID does not match', async () => {
       createInitiative('INIT-002');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-002.yaml');
@@ -131,7 +131,7 @@ describe('initiative-yaml', () => {
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-003.yaml');
       writeFileSync(filePath, yaml.dump({ id: 'INIT-003' }), 'utf8');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
       assert.throws(() => readInitiative(filePath, 'INIT-003'), /validation failed/);
@@ -140,7 +140,7 @@ describe('initiative-yaml', () => {
 
   describe('writeInitiative', async () => {
     it('should write Initiative YAML with consistent formatting', async () => {
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { writeInitiative, readInitiative } = mod;
 
       const doc = {
@@ -174,7 +174,7 @@ describe('initiative-yaml', () => {
         force: true,
       });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
@@ -185,7 +185,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001', { slug: 'first' });
       createInitiative('INIT-002', { slug: 'second' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
@@ -203,7 +203,7 @@ describe('initiative-yaml', () => {
       const invalidPath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-BAD.yaml');
       writeFileSync(invalidPath, 'invalid: yaml: content:', 'utf8');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
@@ -218,7 +218,7 @@ describe('initiative-yaml', () => {
       const wrongPath = join(testDir, 'docs/04-operations/tasks/initiatives/not-an-init.yaml');
       writeFileSync(wrongPath, yaml.dump({ id: 'not-an-init', slug: 'test' }), 'utf8');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
@@ -230,7 +230,7 @@ describe('initiative-yaml', () => {
     it('should find initiative by ID', async () => {
       createInitiative('INIT-001', { slug: 'find-test' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-001');
@@ -241,7 +241,7 @@ describe('initiative-yaml', () => {
     it('should find initiative by slug', async () => {
       createInitiative('INIT-001', { slug: 'my-slug' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { findInitiative } = mod;
 
       const result = findInitiative('my-slug');
@@ -251,7 +251,7 @@ describe('initiative-yaml', () => {
     });
 
     it('should return null if not found', async () => {
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-999');
@@ -262,7 +262,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001', { slug: 'INIT-002' }); // Unusual case
       createInitiative('INIT-002', { slug: 'other-slug' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-002');
@@ -276,7 +276,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001');
       createWU('WU-001'); // No initiative field
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
@@ -288,7 +288,7 @@ describe('initiative-yaml', () => {
       createWU('WU-001', { initiative: 'INIT-001' });
       createWU('WU-002'); // No initiative
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
@@ -300,7 +300,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001', { slug: 'my-initiative' });
       createWU('WU-001', { initiative: 'my-initiative' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
@@ -312,7 +312,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001', { slug: 'my-init' });
       createWU('WU-001', { initiative: 'INIT-001' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeWUs } = mod;
 
       // Search using slug instead of ID
@@ -323,7 +323,7 @@ describe('initiative-yaml', () => {
     it('should return empty if WU directory does not exist', async () => {
       rmSync(join(testDir, 'docs/04-operations/tasks/wu'), { recursive: true, force: true });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
@@ -335,7 +335,7 @@ describe('initiative-yaml', () => {
     it('should return zero progress for empty initiative', async () => {
       createInitiative('INIT-001');
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
@@ -351,7 +351,7 @@ describe('initiative-yaml', () => {
       createWU('WU-003', { initiative: 'INIT-001', status: 'in_progress' });
       createWU('WU-004', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
@@ -366,7 +366,7 @@ describe('initiative-yaml', () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001', status: 'blocked' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
@@ -379,7 +379,7 @@ describe('initiative-yaml', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready' });
       createWU('WU-003', { initiative: 'INIT-001', status: 'ready' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
@@ -394,24 +394,24 @@ describe('initiative-yaml', () => {
       createWU('WU-002', { initiative: 'INIT-001', phase: 1 });
       createWU('WU-003', { initiative: 'INIT-001', phase: 2 });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativePhases } = mod;
 
       const result = getInitiativePhases('INIT-001');
-      assert.equal(result.get(1).length, 2);
-      assert.equal(result.get(2).length, 1);
+      assert.equal(result.get(1)!.length, 2);
+      assert.equal(result.get(2)!.length, 1);
     });
 
     it('should put unphased WUs under null key', async () => {
       createInitiative('INIT-001');
       createWU('WU-001', { initiative: 'INIT-001' }); // No phase
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { getInitiativePhases } = mod;
 
       const result = getInitiativePhases('INIT-001');
       assert.ok(result.has(null));
-      assert.equal(result.get(null).length, 1);
+      assert.equal(result.get(null)!.length, 1);
     });
   });
 
@@ -423,7 +423,7 @@ describe('initiative-yaml', () => {
       });
       mkdirSync(join(testDir, 'docs/04-operations/tasks/initiatives'), { recursive: true });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();
@@ -433,14 +433,14 @@ describe('initiative-yaml', () => {
     it('should index by both ID and slug', async () => {
       createInitiative('INIT-001', { slug: 'my-slug', title: 'Test' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();
       assert.ok(result.has('INIT-001'));
       assert.ok(result.has('my-slug'));
-      assert.equal(result.get('INIT-001').title, 'Test');
-      assert.equal(result.get('my-slug').title, 'Test');
+      assert.equal(result.get('INIT-001')!.title, 'Test');
+      assert.equal(result.get('my-slug')!.title, 'Test');
     });
 
     it('should handle initiative without slug', async () => {
@@ -448,7 +448,7 @@ describe('initiative-yaml', () => {
       // This tests defensive behavior
       createInitiative('INIT-001', { slug: 'has-slug' });
 
-      const mod = await import('../initiative-yaml.js');
+      const mod = await import('../src/initiative-yaml.js');
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();

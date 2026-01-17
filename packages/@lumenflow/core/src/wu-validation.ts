@@ -125,11 +125,15 @@ function hasUIVerificationInAcceptance(acceptance) {
  * @param {string[]} [wu.ui_pairing_wus] - Related UI WU IDs for API exposure
  * @param {string} [wu.user_journey] - User journey description for UI exposure
  * @param {string[]|object} [wu.acceptance] - Acceptance criteria
- * @param {object} [options] - Validation options
- * @param {boolean} [options.skipExposureCheck=false] - Skip all exposure validation
+ * @param {ValidateExposureOptions} [options] - Validation options
  * @returns {{valid: boolean, warnings: string[]}} Validation result
  */
-export function validateExposure(wu, options = {}) {
+interface ValidateExposureOptions {
+  /** Skip all exposure validation */
+  skipExposureCheck?: boolean;
+}
+
+export function validateExposure(wu, options: ValidateExposureOptions = {}) {
   const warnings = [];
 
   // Early return if skip flag is set
@@ -295,11 +299,15 @@ function hasNavigationInManualTests(tests) {
  * @param {string} [wu.navigation_path] - Route where UI is accessible
  * @param {string[]} [wu.code_paths] - Files modified by this WU
  * @param {object} [wu.tests] - Test specifications
- * @param {object} [options] - Validation options
- * @param {boolean} [options.skipAccessibilityCheck=false] - Skip all accessibility validation
+ * @param {ValidateFeatureAccessibilityOptions} [options] - Validation options
  * @returns {{valid: boolean, errors: string[]}} Validation result
  */
-export function validateFeatureAccessibility(wu, options = {}) {
+interface ValidateFeatureAccessibilityOptions {
+  /** Skip all accessibility validation */
+  skipAccessibilityCheck?: boolean;
+}
+
+export function validateFeatureAccessibility(wu, options: ValidateFeatureAccessibilityOptions = {}) {
   const errors = [];
 
   // Early return if skip flag is set

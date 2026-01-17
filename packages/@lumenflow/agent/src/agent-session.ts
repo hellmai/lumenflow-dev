@@ -1,29 +1,44 @@
 import { randomUUID } from 'crypto';
 import { readFile, writeFile, mkdir, unlink, access } from 'node:fs/promises';
 import { join } from 'path';
-import simpleGit from 'simple-git';
+import { simpleGit } from 'simple-git';
 import { appendIncident } from './agent-incidents.js';
-import { PATTERNS, INCIDENT_SEVERITY, BEACON_PATHS, FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.js';
+import { PATTERNS, INCIDENT_SEVERITY, BEACON_PATHS } from '@lumenflow/core/lib/wu-constants.js';
 
 const SESSION_DIR = BEACON_PATHS.SESSIONS;
 const SESSION_FILE = join(SESSION_DIR, 'current.json');
 
 /**
+ * Session data structure
+ */
+interface SessionData {
+  session_id: string;
+  wu_id: string;
+  lane: string;
+  started: string;
+  completed?: string;
+  agent_type: string;
+  context_tier: number;
+  incidents_logged: number;
+  incidents_major: number;
+}
+
+/**
  * Start a new agent session
- * @param {string} wuId - WU ID (e.g., "WU-1234")
- * @param {1|2|3} tier - Context tier from bootloader
- * @param {string} agentType - Agent type (default: "claude-code")
- * @returns {Promise<string>} session_id
+ * @param wuId - WU ID (e.g., "WU-1234")
+ * @param tier - Context tier from bootloader
+ * @param agentType - Agent type (default: "claude-code")
+ * @returns session_id
  * @throws {Error} if session already active or WU format invalid
  */
-export async function startSession(wuId, tier, agentType = 'claude-code') {
+export async function startSession(wuId: string, tier: 1 | 2 | 3, agentType: string = 'claude-code'): Promise<string> {
   // Check for existing session
   const sessionExists = await access(SESSION_FILE)
     .then(() => true)
     .catch(() => false);
   if (sessionExists) {
-    const content = await readFile(SESSION_FILE, FILE_SYSTEM.UTF8);
-    const existing = JSON.parse(content);
+    const content = await readFile(SESSION_FILE, { encoding: 'utf-8' });
+    const existing = JSON.parse(content) as SessionData;
     throw new Error(
       `Session ${existing.session_id} already active for ${existing.wu_id}. ` +
         `Run 'pnpm agent:session:end' first.`
@@ -50,7 +65,7 @@ export async function startSession(wuId, tier, agentType = 'claude-code') {
     if (match) {
       lane = match[1]
         .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(': ');
     }
   } catch {
@@ -58,7 +73,7 @@ export async function startSession(wuId, tier, agentType = 'claude-code') {
   }
 
   const sessionId = randomUUID();
-  const session = {
+  const session: SessionData = {
     session_id: sessionId,
     wu_id: wuId,
     lane,
@@ -83,24 +98,35 @@ export async function startSession(wuId, tier, agentType = 'claude-code') {
 
 /**
  * Get the current active session
- * @returns {Promise<object|null>} Session state or null if no active session
+ * @returns Session state or null if no active session
  */
-export async function getCurrentSession() {
+export async function getCurrentSession(): Promise<SessionData | null> {
   const sessionExists = await access(SESSION_FILE)
     .then(() => true)
     .catch(() => false);
   if (!sessionExists) return null;
-  const content = await readFile(SESSION_FILE, FILE_SYSTEM.UTF8);
-  return JSON.parse(content);
+  const content = await readFile(SESSION_FILE, { encoding: 'utf-8' });
+  return JSON.parse(content) as SessionData;
+}
+
+/**
+ * Incident data input type
+ */
+interface IncidentDataInput {
+  category: string;
+  severity: string;
+  title: string;
+  description: string;
+  context?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 /**
  * Log an incident and update session counters
- * @param {object} incidentData - Incident data (category, severity, title, description, etc.)
- * @returns {Promise<void>}
+ * @param incidentData - Incident data (category, severity, title, description, etc.)
  * @throws {Error} if no active session
  */
-export async function logIncident(incidentData) {
+export async function logIncident(incidentData: IncidentDataInput): Promise<void> {
   const session = await getCurrentSession();
   if (!session) {
     throw new Error('No active session. Run: pnpm agent:session start --wu WU-XXX --tier N');
@@ -124,7 +150,7 @@ export async function logIncident(incidentData) {
     ...incidentData,
     context: {
       git_branch: gitBranch,
-      ...(incidentData.context || {}),
+      ...(incidentData.context ?? {}),
     },
   };
 
@@ -143,11 +169,26 @@ export async function logIncident(incidentData) {
 }
 
 /**
+ * Session summary returned after ending a session
+ */
+interface SessionSummary {
+  wu_id: string;
+  lane: string;
+  session_id: string;
+  started: string;
+  completed: string;
+  agent_type: string;
+  context_tier: number;
+  incidents_logged: number;
+  incidents_major: number;
+}
+
+/**
  * End the current session and return summary
- * @returns {Promise<object>} Session summary for appending to WU YAML
+ * @returns Session summary for appending to WU YAML
  * @throws {Error} if no active session
  */
-export async function endSession() {
+export async function endSession(): Promise<SessionSummary> {
   const session = await getCurrentSession();
   if (!session) {
     throw new Error('No active session to end.');

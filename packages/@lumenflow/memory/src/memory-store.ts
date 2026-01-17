@@ -15,7 +15,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { validateMemoryNode } from './memory-schema.js';
+import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 
 /**
  * Memory file name constant
@@ -23,11 +23,16 @@ import { validateMemoryNode } from './memory-schema.js';
 export const MEMORY_FILE_NAME = 'memory.jsonl';
 
 /**
+ * Priority levels for memory nodes
+ */
+type PriorityLevel = 'P0' | 'P1' | 'P2' | 'P3';
+
+/**
  * Priority ranking for deterministic ordering.
  * Lower rank = higher priority.
  * P0 is highest priority, nodes without priority are lowest.
  */
-const PRIORITY_RANK = {
+const PRIORITY_RANK: Record<PriorityLevel, number> = {
   P0: 0,
   P1: 1,
   P2: 2,
@@ -38,27 +43,33 @@ const PRIORITY_RANK = {
 const DEFAULT_PRIORITY_RANK = 999;
 
 /**
- * @typedef {import('./memory-schema.mjs').MemoryNode} MemoryNode
+ * Node.js file system error with code
  */
+interface NodeFsError extends Error {
+  code?: string;
+}
 
 /**
  * Indexed memory result from loadMemory
- *
- * @typedef {object} IndexedMemory
- * @property {MemoryNode[]} nodes - All loaded nodes in file order
- * @property {Map<string, MemoryNode>} byId - Nodes indexed by ID
- * @property {Map<string, MemoryNode[]>} byWu - Nodes indexed by WU ID
  */
+export interface IndexedMemory {
+  /** All loaded nodes in file order */
+  nodes: MemoryNode[];
+  /** Nodes indexed by ID */
+  byId: Map<string, MemoryNode>;
+  /** Nodes indexed by WU ID */
+  byWu: Map<string, MemoryNode[]>;
+}
 
 /**
  * Gets the priority rank for a node.
  * Lower rank = higher priority.
  *
- * @param {MemoryNode} node - Memory node
- * @returns {number} Priority rank
+ * @param node - Memory node
+ * @returns Priority rank
  */
-function getPriorityRank(node) {
-  const priority = node.metadata?.priority;
+function getPriorityRank(node: MemoryNode): number {
+  const priority = node.metadata?.priority as PriorityLevel | undefined;
   if (!priority) {
     return DEFAULT_PRIORITY_RANK;
   }
@@ -68,11 +79,11 @@ function getPriorityRank(node) {
 /**
  * Comparator for deterministic ordering: priority first, then createdAt.
  *
- * @param {MemoryNode} a - First node
- * @param {MemoryNode} b - Second node
- * @returns {number} Comparison result (-1, 0, 1)
+ * @param a - First node
+ * @param b - Second node
+ * @returns Comparison result (-1, 0, 1)
  */
-function compareNodes(a, b) {
+function compareNodes(a: MemoryNode, b: MemoryNode): number {
   // Primary: sort by priority (lower rank first)
   const priorityDiff = getPriorityRank(a) - getPriorityRank(b);
   if (priorityDiff !== 0) {
@@ -100,28 +111,29 @@ function compareNodes(a, b) {
  * - Malformed JSON: throws error with line info
  * - Invalid nodes: throws validation error
  *
- * @param {string} baseDir - Directory containing memory.jsonl
- * @returns {Promise<IndexedMemory>} Indexed memory nodes
- * @throws {Error} If file contains malformed JSON or invalid nodes
+ * @param baseDir - Directory containing memory.jsonl
+ * @returns Indexed memory nodes
+ * @throws If file contains malformed JSON or invalid nodes
  *
  * @example
  * const memory = await loadMemory('/path/to/project');
  * const node = memory.byId.get('mem-abc1');
  * const wuNodes = memory.byWu.get('WU-1463') ?? [];
  */
-export async function loadMemory(baseDir) {
+export async function loadMemory(baseDir: string): Promise<IndexedMemory> {
   const filePath = path.join(baseDir, MEMORY_FILE_NAME);
-  const result = {
+  const result: IndexedMemory = {
     nodes: [],
-    byId: new Map(),
-    byWu: new Map(),
+    byId: new Map<string, MemoryNode>(),
+    byWu: new Map<string, MemoryNode[]>(),
   };
 
   // Check if file exists
-  let content;
+  let content: string;
   try {
-    content = await fs.readFile(filePath, 'utf-8');
-  } catch (error) {
+    content = await fs.readFile(filePath, { encoding: 'utf-8' as BufferEncoding });
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
       // File doesn't exist - return empty result
       return result;
@@ -132,7 +144,8 @@ export async function loadMemory(baseDir) {
   // Parse JSONL content
   const lines = content.split('\n');
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const rawLine = lines[i];
+    const line = rawLine ? rawLine.trim() : '';
 
     // Skip empty lines
     if (!line) {
@@ -140,11 +153,12 @@ export async function loadMemory(baseDir) {
     }
 
     // Parse JSON line
-    let parsed;
+    let parsed: unknown;
     try {
       parsed = JSON.parse(line);
-    } catch (error) {
-      throw new Error(`Malformed JSON on line ${i + 1}: ${error.message}`);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      throw new Error(`Malformed JSON on line ${i + 1}: ${errMsg}`);
     }
 
     // Validate against schema
@@ -169,7 +183,10 @@ export async function loadMemory(baseDir) {
       if (!result.byWu.has(node.wu_id)) {
         result.byWu.set(node.wu_id, []);
       }
-      result.byWu.get(node.wu_id).push(node);
+      const wuNodes = result.byWu.get(node.wu_id);
+      if (wuNodes) {
+        wuNodes.push(node);
+      }
     }
   }
 
@@ -183,10 +200,10 @@ export async function loadMemory(baseDir) {
  * Creates file if it doesn't exist.
  * Validates node before appending.
  *
- * @param {string} baseDir - Directory containing memory.jsonl
- * @param {MemoryNode} node - Node to append
- * @returns {Promise<MemoryNode>} The appended node
- * @throws {Error} If node fails validation
+ * @param baseDir - Directory containing memory.jsonl
+ * @param node - Node to append
+ * @returns The appended node
+ * @throws If node fails validation
  *
  * @example
  * const node = await appendNode('/path/to/project', {
@@ -198,7 +215,7 @@ export async function loadMemory(baseDir) {
  *   wu_id: 'WU-1463',
  * });
  */
-export async function appendNode(baseDir, node) {
+export async function appendNode(baseDir: string, node: MemoryNode): Promise<MemoryNode> {
   // Validate node before appending
   const validation = validateMemoryNode(node);
   if (!validation.success) {
@@ -212,7 +229,7 @@ export async function appendNode(baseDir, node) {
   const line = JSON.stringify(node) + '\n';
 
   // Use append flag to avoid rewriting the file
-  await fs.appendFile(filePath, line, 'utf-8');
+  await fs.appendFile(filePath, line, { encoding: 'utf-8' as BufferEncoding });
 
   return node;
 }
@@ -225,9 +242,9 @@ export async function appendNode(baseDir, node) {
  * 2. Created timestamp (oldest first for same priority)
  * 3. ID (for stable sort when priority and timestamp match)
  *
- * @param {string} baseDir - Directory containing memory.jsonl
- * @param {string} wuId - WU ID to query (e.g., 'WU-1463')
- * @returns {Promise<MemoryNode[]>} Deterministically ordered nodes for WU
+ * @param baseDir - Directory containing memory.jsonl
+ * @param wuId - WU ID to query (e.g., 'WU-1463')
+ * @returns Deterministically ordered nodes for WU
  *
  * @example
  * const ready = await queryReady('/path/to/project', 'WU-1463');
@@ -236,7 +253,7 @@ export async function appendNode(baseDir, node) {
  *   await processNode(node);
  * }
  */
-export async function queryReady(baseDir, wuId) {
+export async function queryReady(baseDir: string, wuId: string): Promise<MemoryNode[]> {
   const memory = await loadMemory(baseDir);
 
   // Get nodes for this WU
@@ -252,15 +269,15 @@ export async function queryReady(baseDir, wuId) {
  * Returns nodes in file order (insertion order).
  * Use queryReady() instead if you need deterministic priority ordering.
  *
- * @param {string} baseDir - Directory containing memory.jsonl
- * @param {string} wuId - WU ID to query (e.g., 'WU-1463')
- * @returns {Promise<MemoryNode[]>} All nodes for WU in file order
+ * @param baseDir - Directory containing memory.jsonl
+ * @param wuId - WU ID to query (e.g., 'WU-1463')
+ * @returns All nodes for WU in file order
  *
  * @example
  * const nodes = await queryByWu('/path/to/project', 'WU-1463');
  * console.log(`Found ${nodes.length} nodes for WU-1463`);
  */
-export async function queryByWu(baseDir, wuId) {
+export async function queryByWu(baseDir: string, wuId: string): Promise<MemoryNode[]> {
   const memory = await loadMemory(baseDir);
   return memory.byWu.get(wuId) ?? [];
 }

@@ -226,7 +226,11 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
  * @param {boolean} [options.skipExposureCheck=false] - Skip all exposure validation
  * @returns {void}
  */
-export function printExposureWarnings(wu, options = {}) {
+interface ExposureOptions {
+  skipExposureCheck?: boolean;
+}
+
+export function printExposureWarnings(wu: Record<string, unknown>, options: ExposureOptions = {}) {
   // Validate exposure
   const result = validateExposure(wu, { skipExposureCheck: options.skipExposureCheck });
 
@@ -259,7 +263,11 @@ export function printExposureWarnings(wu, options = {}) {
  * @param {boolean} [options.skipAccessibilityCheck=false] - Skip accessibility validation
  * @returns {void} Calls die() if validation fails
  */
-export function validateAccessibilityOrDie(wu, options = {}) {
+interface AccessibilityOptions {
+  skipAccessibilityCheck?: boolean;
+}
+
+export function validateAccessibilityOrDie(wu: Record<string, unknown>, options: AccessibilityOptions = {}) {
   const result = validateFeatureAccessibility(wu, {
     skipAccessibilityCheck: options.skipAccessibilityCheck,
   });
@@ -563,7 +571,7 @@ function getCommitHeaderLimit() {
   try {
     const configPath = path.join(process.cwd(), '.commitlintrc.json');
     if (!existsSync(configPath)) return DEFAULTS.MAX_COMMIT_SUBJECT;
-    const cfg = JSON.parse(readFileSync(configPath, FILE_SYSTEM.UTF8));
+    const cfg = JSON.parse(readFileSync(configPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }));
     return cfg?.rules?.['header-max-length']?.[2] ?? DEFAULTS.MAX_COMMIT_SUBJECT;
   } catch {
     return DEFAULTS.MAX_COMMIT_SUBJECT; // Fallback if config is malformed or missing
@@ -895,7 +903,7 @@ export function emitTelemetry(event) {
   const logDir = path.dirname(logPath);
   if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
   const line = JSON.stringify({ timestamp: new Date().toISOString(), ...event });
-  appendFileSync(logPath, `${line}\n`, FILE_SYSTEM.UTF8);
+  appendFileSync(logPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 }
 
 async function auditSkipGates(id, reason, fixWU, worktreePath) {
@@ -916,7 +924,7 @@ async function auditSkipGates(id, reason, fixWU, worktreePath) {
     git_commit: commitHash.trim(),
   };
   const line = JSON.stringify(entry);
-  appendFileSync(auditPath, `${line}\n`, FILE_SYSTEM.UTF8);
+  appendFileSync(auditPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Skip-gates event logged to ${auditPath}`);
 }
 
@@ -939,7 +947,7 @@ async function auditSkipCosGates(id, reason) {
     git_commit: commitHash.trim(),
   };
   const line = JSON.stringify(entry);
-  appendFileSync(auditPath, `${line}\n`, FILE_SYSTEM.UTF8);
+  appendFileSync(auditPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Skip-COS-gates event logged to ${auditPath}`);
 }
 
@@ -963,8 +971,8 @@ function checkNodeModulesStaleness(worktreePath) {
       return;
     }
 
-    const mainContent = readFileSync(mainPackageJson, FILE_SYSTEM.UTF8);
-    const worktreeContent = readFileSync(worktreePackageJson, FILE_SYSTEM.UTF8);
+    const mainContent = readFileSync(mainPackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+    const worktreeContent = readFileSync(worktreePackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 
     // Compare package.json files
     if (mainContent !== worktreeContent) {
@@ -1026,7 +1034,7 @@ function runGatesInWorktree(worktreePath, id, isDocsOnly = false) {
     // WU-1230: Pass WU_ID to validator for context-aware validation
     execSync(gatesCmd, {
       cwd: worktreePath,
-      stdio: STDIO.INHERIT,
+      stdio: 'inherit',
       env: { ...process.env, WU_ID: id },
     });
     const duration = Date.now() - startTime;
@@ -1159,10 +1167,10 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
   return {
     id,
     timestamp: new Date().toISOString(),
-    wuYamlContent: existsSync(wuPath) ? readFileSync(wuPath, FILE_SYSTEM.UTF8) : null,
+    wuYamlContent: existsSync(wuPath) ? readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
     stampExisted: existsSync(stampPath),
-    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, FILE_SYSTEM.UTF8) : null,
-    statusContent: existsSync(statusPath) ? readFileSync(statusPath, FILE_SYSTEM.UTF8) : null,
+    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
+    statusContent: existsSync(statusPath) ? readFileSync(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
     mainSHA: gitAdapter.getCommitHash(),
     laneBranch: gitAdapter.getCurrentBranch(),
   };
@@ -1347,7 +1355,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
   }
 
   // Validate from worktree if available (ensures we check the lane branch code)
-  const validateOptions = { allowTodos: allowTodo };
+  const validateOptions: { allowTodos: boolean; worktreePath?: string } = { allowTodos: allowTodo };
   if (worktreePath && existsSync(worktreePath)) {
     validateOptions.worktreePath = worktreePath;
     console.log(`${LOG_PREFIX.DONE} Validating code paths from worktree: ${worktreePath}`);
@@ -1411,7 +1419,7 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
     const wtWUPath = path.join(worktreePath, WU_PATHS.WU(id));
     if (existsSync(wtWUPath)) {
       try {
-        const text = readFileSync(wtWUPath, FILE_SYSTEM.UTF8);
+        const text = readFileSync(wtWUPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
         const wtDoc = parseYAML(text);
         assignedTo = wtDoc?.assigned_to || null;
         if (assignedTo) {
@@ -1532,7 +1540,7 @@ function auditOwnershipOverride(auditEntry) {
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const line = JSON.stringify(auditEntry);
-  appendFileSync(auditPath, `${line}\n`, FILE_SYSTEM.UTF8);
+  appendFileSync(auditPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Ownership override logged to ${auditPath}`);
 }
 
@@ -1843,9 +1851,11 @@ async function executePreFlightChecks({
     worktreePath: derivedWorktree,
     targetBranch: isBranchOnly ? 'HEAD' : BRANCHES.MAIN,
   });
-  if (!codePathsResult.valid) {
+  if ('valid' in codePathsResult && !codePathsResult.valid) {
     console.error(`\n❌ code_paths validation failed for ${id}:\n`);
-    codePathsResult.errors.forEach((err) => console.error(err));
+    if ('errors' in codePathsResult) {
+      codePathsResult.errors.forEach((err: string) => console.error(err));
+    }
     die(`Cannot mark ${id} as done - code_paths missing from target branch`);
   }
 
@@ -1909,7 +1919,16 @@ async function executePreFlightChecks({
  * @param {string} [params.branchName] - Lane branch name for checkpoint
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, branchName }) {
+interface ExecuteGatesParams {
+  id: string;
+  args: Record<string, unknown>;
+  isBranchOnly: boolean;
+  isDocsOnly: boolean;
+  worktreePath: string | null;
+  branchName?: string;
+}
+
+async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, branchName }: ExecuteGatesParams) {
   // WU-1747: Check if gates can be skipped based on valid checkpoint
   // This allows resuming wu:done without re-running gates if nothing changed
   const skipResult = canSkipGates(id, { currentHeadSha: undefined });
@@ -2019,7 +2038,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
     }
     const startTime = Date.now();
     try {
-      execSync(gatesCmd, { stdio: STDIO.INHERIT });
+      execSync(gatesCmd, { stdio: 'inherit' });
       const duration = Date.now() - startTime;
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
       emitTelemetry({
@@ -2066,7 +2085,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
     const startTime = Date.now();
     try {
       execSync(`${PKG_MANAGER} ${SCRIPTS.COS_GATES} ${CLI_FLAGS.WU} ${id}`, {
-        stdio: STDIO.INHERIT,
+        stdio: 'inherit',
       });
       const duration = Date.now() - startTime;
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} COS gates passed in ${prettyMs(duration)}`);
@@ -2226,13 +2245,21 @@ async function main() {
   // Worktree mode: Update metadata in worktree → commit → merge to main
   // Branch-Only mode: Merge to main → update metadata on main → commit
   // WU-1811: Track cleanupSafe flag to conditionally skip worktree removal on failure
-  let completionResult = { cleanupSafe: true }; // Default to safe for no-auto mode
+  let completionResult: {
+    cleanupSafe?: boolean;
+    success?: boolean;
+    committed?: boolean;
+    pushed?: boolean;
+    merged?: boolean;
+    recovered?: boolean;
+    prUrl?: string | null;
+  } = { cleanupSafe: true }; // Default to safe for no-auto mode
 
   if (!args.noAuto) {
     // Build context for mode-specific execution
     // WU-1369: Worktree mode uses atomic transaction pattern (no recordTransactionState/rollbackTransaction)
     // Branch-only mode still uses the old rollback mechanism
-    const modeContext = {
+    const baseContext = {
       id,
       args,
       docMain,
@@ -2246,18 +2273,24 @@ async function main() {
       if (isBranchOnly) {
         // Branch-Only mode: merge first, then update metadata on main
         // NOTE: Branch-only still uses old rollback mechanism
-        modeContext.recordTransactionState = recordTransactionState;
-        modeContext.rollbackTransaction = rollbackTransaction;
-        completionResult = await executeBranchOnlyCompletion(modeContext);
+        const branchOnlyContext = {
+          ...baseContext,
+          recordTransactionState,
+          rollbackTransaction,
+        };
+        completionResult = await executeBranchOnlyCompletion(branchOnlyContext);
       } else {
         // Worktree mode: update in worktree, commit, then merge or create PR
         // WU-1369: Uses atomic transaction pattern
-        modeContext.worktreePath = worktreePath;
-        completionResult = await executeWorktreeCompletion(modeContext);
+        const worktreeContext = {
+          ...baseContext,
+          worktreePath,
+        };
+        completionResult = await executeWorktreeCompletion(worktreeContext);
       }
 
       // Handle recovery mode (zombie state cleanup completed)
-      if (completionResult.recovered) {
+      if ('recovered' in completionResult && completionResult.recovered) {
         // P0 FIX: Release lane lock before early exit
         try {
           const lane = docMain.lane;
@@ -2470,11 +2503,11 @@ async function loadDiscoveriesForWU(baseDir, wuId) {
  * @param {string} baseBranch - Base branch to compare against
  * @returns {Promise<string[]>} List of changed documentation paths
  */
-async function detectChangedDocPaths(worktreePath, baseBranch) {
+async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
   try {
-    const git = getGitForCwd(worktreePath);
+    const git = getGitForCwd();
     // Get files changed in this branch vs base
-    const diff = await git.diffNameOnly(baseBranch);
+    const diff = await git.raw(['diff', '--name-only', baseBranch]);
     const changedFiles = diff.split('\n').filter(Boolean);
     // Filter to docs: ai/onboarding/, docs/, CLAUDE.md, README.md, *.md in root
     const docPatterns = [

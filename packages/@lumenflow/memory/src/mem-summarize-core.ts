@@ -16,7 +16,7 @@
 
 import { loadMemory, appendNode } from './memory-store.js';
 import { generateMemId } from './mem-id.js';
-import { validateMemoryNode } from './memory-schema.js';
+import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 import path from 'node:path';
 
 /**
@@ -36,23 +36,47 @@ const SUMMARIZABLE_TYPES = ['discovery', 'checkpoint', 'note', 'session'];
 const PROTECTED_LIFECYCLES = ['project'];
 
 /**
- * @typedef {import('./memory-schema.mjs').MemoryNode} MemoryNode
+ * Summarize options
  */
+export interface SummarizeOptions {
+  /** WU ID to summarize (e.g., 'WU-1234') */
+  wuId: string;
+  /** If true, preview without modifications */
+  dryRun?: boolean;
+}
 
 /**
- * @typedef {object} SummarizeOptions
- * @property {string} wuId - WU ID to summarize (e.g., 'WU-1234')
- * @property {boolean} [dryRun=false] - If true, preview without modifications
+ * Summary node structure
  */
+interface SummaryNode {
+  id: string;
+  type: 'summary';
+  lifecycle: 'project';
+  content: string;
+  created_at: string;
+  wu_id: string;
+  metadata: {
+    source_nodes: string[];
+    source_count: number;
+    summarized_at: string;
+  };
+}
 
 /**
- * @typedef {object} SummarizeResult
- * @property {boolean} success - Whether summarization succeeded
- * @property {MemoryNode} summary - Created summary node
- * @property {string[]} markedForCleanup - Node IDs marked for cleanup
- * @property {boolean} [dryRun] - True if in dry-run mode
- * @property {number} compactionRatio - Ratio of source nodes to summary
+ * Summarize result
  */
+export interface SummarizeResult {
+  /** Whether summarization succeeded */
+  success: boolean;
+  /** Created summary node */
+  summary: SummaryNode;
+  /** Node IDs marked for cleanup */
+  markedForCleanup: string[];
+  /** True if in dry-run mode */
+  dryRun?: boolean;
+  /** Ratio of source nodes to summary */
+  compactionRatio: number;
+}
 
 /**
  * Filter nodes that can be summarized for a given WU.
@@ -63,12 +87,12 @@ const PROTECTED_LIFECYCLES = ['project'];
  * - Already-summarized nodes (have summarized_into metadata)
  * - Summary nodes themselves
  *
- * @param {MemoryNode[]} nodes - All memory nodes
- * @param {string} wuId - WU ID to filter by
- * @returns {MemoryNode[]} Summarizable nodes
+ * @param nodes - All memory nodes
+ * @param wuId - WU ID to filter by
+ * @returns Summarizable nodes
  */
-export function filterSummarizableNodes(nodes, wuId) {
-  return nodes.filter((node) => {
+export function filterSummarizableNodes(nodes: MemoryNode[], wuId: string): MemoryNode[] {
+  return nodes.filter((node: MemoryNode) => {
     // Must belong to the specified WU
     if (node.wu_id !== wuId) {
       return false;
@@ -97,11 +121,11 @@ export function filterSummarizableNodes(nodes, wuId) {
 /**
  * Calculate compaction ratio (source nodes / summary nodes).
  *
- * @param {number} sourceCount - Number of source nodes
- * @param {number} summaryCount - Number of summary nodes created
- * @returns {number} Compaction ratio (0 if invalid input)
+ * @param sourceCount - Number of source nodes
+ * @param summaryCount - Number of summary nodes created
+ * @returns Compaction ratio (0 if invalid input)
  */
-export function getCompactionRatio(sourceCount, summaryCount) {
+export function getCompactionRatio(sourceCount: number, summaryCount: number): number {
   if (sourceCount === 0 || summaryCount === 0) {
     return 0;
   }
@@ -111,17 +135,20 @@ export function getCompactionRatio(sourceCount, summaryCount) {
 /**
  * Group nodes by type for organized summary content.
  *
- * @param {MemoryNode[]} nodes - Nodes to group
- * @returns {Map<string, MemoryNode[]>} Nodes grouped by type
+ * @param nodes - Nodes to group
+ * @returns Nodes grouped by type
  */
-function groupNodesByType(nodes) {
-  const groups = new Map();
+function groupNodesByType(nodes: MemoryNode[]): Map<string, MemoryNode[]> {
+  const groups = new Map<string, MemoryNode[]>();
 
   for (const node of nodes) {
     if (!groups.has(node.type)) {
       groups.set(node.type, []);
     }
-    groups.get(node.type).push(node);
+    const typeGroup = groups.get(node.type);
+    if (typeGroup) {
+      typeGroup.push(node);
+    }
   }
 
   return groups;
@@ -132,11 +159,11 @@ function groupNodesByType(nodes) {
  *
  * Organizes content by node type with clear sections.
  *
- * @param {MemoryNode[]} nodes - Source nodes to aggregate
- * @param {string} wuId - WU ID for the summary
- * @returns {string} Aggregated content
+ * @param nodes - Source nodes to aggregate
+ * @param wuId - WU ID for the summary
+ * @returns Aggregated content
  */
-function generateSummaryContent(nodes, wuId) {
+function generateSummaryContent(nodes: MemoryNode[], wuId: string): string {
   const groups = groupNodesByType(nodes);
   const sections = [];
 
@@ -170,26 +197,26 @@ function generateSummaryContent(nodes, wuId) {
  * Project-lifecycle nodes are protected from cleanup as they
  * contain architectural knowledge that should persist.
  *
- * @param {MemoryNode[]} nodes - Source nodes
- * @returns {MemoryNode[]} Nodes to mark for cleanup
+ * @param nodes - Source nodes
+ * @returns Nodes to mark for cleanup
  */
-function filterNodesForCleanup(nodes) {
-  return nodes.filter((node) => !PROTECTED_LIFECYCLES.includes(node.lifecycle));
+function filterNodesForCleanup(nodes: MemoryNode[]): MemoryNode[] {
+  return nodes.filter((node: MemoryNode) => !PROTECTED_LIFECYCLES.includes(node.lifecycle));
 }
 
 /**
  * Create a summary node from source nodes.
  *
- * @param {MemoryNode[]} sourceNodes - Source nodes to summarize
- * @param {string} wuId - WU ID for the summary
- * @returns {MemoryNode} Summary node (not yet persisted)
+ * @param sourceNodes - Source nodes to summarize
+ * @param wuId - WU ID for the summary
+ * @returns Summary node (not yet persisted)
  */
-function createSummaryNode(sourceNodes, wuId) {
+function createSummaryNode(sourceNodes: MemoryNode[], wuId: string): SummaryNode {
   const timestamp = new Date().toISOString();
   const content = generateSummaryContent(sourceNodes, wuId);
   const id = generateMemId(`summary-${wuId}-${timestamp}`);
 
-  const summary = {
+  const summary: SummaryNode = {
     id,
     type: 'summary',
     lifecycle: 'project', // Summaries persist across WUs
@@ -197,7 +224,7 @@ function createSummaryNode(sourceNodes, wuId) {
     created_at: timestamp,
     wu_id: wuId,
     metadata: {
-      source_nodes: sourceNodes.map((n) => n.id),
+      source_nodes: sourceNodes.map((n: MemoryNode) => n.id),
       source_count: sourceNodes.length,
       summarized_at: timestamp,
     },
@@ -221,14 +248,14 @@ function createSummaryNode(sourceNodes, wuId) {
  * Adds summarized_into metadata to mark nodes as incorporated
  * into a summary, making them eligible for cleanup.
  *
- * @param {MemoryNode[]} nodes - Nodes to mark
- * @param {string} summaryId - ID of the summary node
- * @returns {MemoryNode[]} Updated nodes with cleanup markers
+ * @param nodes - Nodes to mark
+ * @param summaryId - ID of the summary node
+ * @returns Updated nodes with cleanup markers
  */
-function createCleanupMarkers(nodes, summaryId) {
+function createCleanupMarkers(nodes: MemoryNode[], summaryId: string): MemoryNode[] {
   const timestamp = new Date().toISOString();
 
-  return nodes.map((node) => ({
+  return nodes.map((node: MemoryNode) => ({
     ...node,
     updated_at: timestamp,
     metadata: {
@@ -246,10 +273,10 @@ function createCleanupMarkers(nodes, summaryId) {
  * summary node. Original nodes are marked for cleanup (unless
  * they have project lifecycle).
  *
- * @param {string} baseDir - Base directory containing .beacon/memory/
- * @param {SummarizeOptions} options - Summarization options
- * @returns {Promise<SummarizeResult>} Result with summary and cleanup info
- * @throws {Error} If no summarizable nodes found for WU
+ * @param baseDir - Base directory containing .beacon/memory/
+ * @param options - Summarization options
+ * @returns Result with summary and cleanup info
+ * @throws If no summarizable nodes found for WU
  *
  * @example
  * // Summarize nodes for a completed WU
@@ -264,7 +291,7 @@ function createCleanupMarkers(nodes, summaryId) {
  *   dryRun: true,
  * });
  */
-export async function summarizeWu(baseDir, options) {
+export async function summarizeWu(baseDir: string, options: SummarizeOptions): Promise<SummarizeResult> {
   const { wuId, dryRun = false } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
@@ -283,7 +310,7 @@ export async function summarizeWu(baseDir, options) {
 
   // Determine which nodes to mark for cleanup
   const cleanupNodes = filterNodesForCleanup(summarizable);
-  const markedForCleanup = cleanupNodes.map((n) => n.id);
+  const markedForCleanup = cleanupNodes.map((n: MemoryNode) => n.id);
 
   // Calculate compaction ratio
   const compactionRatio = getCompactionRatio(summarizable.length, 1);
@@ -299,13 +326,13 @@ export async function summarizeWu(baseDir, options) {
     };
   }
 
-  // Persist summary node
-  await appendNode(memoryDir, summary);
+  // Persist summary node - cast is safe as summary conforms to MemoryNode schema
+  await appendNode(memoryDir, summary as unknown as MemoryNode);
 
   // Mark original nodes for cleanup
   const cleanupMarkers = createCleanupMarkers(cleanupNodes, summary.id);
   for (const marker of cleanupMarkers) {
-    await appendNode(memoryDir, marker);
+    await appendNode(memoryDir, marker as unknown as MemoryNode);
   }
 
   return {

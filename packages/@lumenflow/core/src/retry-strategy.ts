@@ -51,7 +51,7 @@ export const DEFAULT_RETRY_CONFIG = Object.freeze({
   maxDelayMs: 30000,
   multiplier: 2,
   jitter: 0.1,
-  shouldRetry: () => true,
+  shouldRetry: (_error?: unknown) => true,
   onRetry: null,
 });
 

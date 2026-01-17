@@ -1,0 +1,49 @@
+/**
+ * Type declarations for optional peer dependencies and modules
+ */
+
+// @lumenflow/memory optional peer dependency
+declare module '@lumenflow/memory/lib/mem-signal-core.js' {
+  export function createSignal(
+    baseDir: string,
+    options: { message: string; wuId: string; lane: string }
+  ): Promise<{ signal: { id: string } }>;
+
+  export function loadSignals(
+    baseDir: string,
+    options: { unreadOnly?: boolean }
+  ): Promise<Array<{ id: string; message: string }>>;
+
+  export function markSignalsAsRead(
+    baseDir: string,
+    signalIds: string[]
+  ): Promise<void>;
+}
+
+declare module '@lumenflow/memory/lib/memory-store.js' {
+  export function loadMemory(
+    memoryDir: string,
+    wuId: string
+  ): Promise<{ checkpoints: Array<{ timestamp: string }> } | null>;
+}
+
+declare module '@lumenflow/memory/lib/mem-checkpoint-core.js' {
+  export function createCheckpoint(options: unknown): Promise<{ success: boolean; checkpointId: string }>;
+}
+
+// @lumenflow/initiatives optional peer dependency
+declare module '@lumenflow/initiatives' {
+  export function detectCycles(
+    wuMap: Map<string, unknown>
+  ): { hasCycle: boolean; cycles: string[][] };
+}
+
+// External dependencies that may need type declarations
+declare module 'nhs-number-validator' {
+  export function validate(nhsNumber: string): boolean;
+}
+
+declare module 'postcode' {
+  export function isValid(postcode: string): boolean;
+  export function parse(postcode: string): { valid: boolean; postcode: string } | null;
+}

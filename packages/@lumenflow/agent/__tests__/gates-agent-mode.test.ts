@@ -13,11 +13,12 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { join } from 'node:path';
 
+// Import from @lumenflow/core where the source lives
 import {
   shouldUseGatesAgentMode,
   getGatesLogDir,
   buildGatesLogPath,
-} from '../gates-agent-mode.js';
+} from '@lumenflow/core/dist/gates-agent-mode.js';
 
 describe('shouldUseGatesAgentMode', () => {
   describe('TTY detection (primary mechanism)', () => {
@@ -105,7 +106,7 @@ describe('shouldUseGatesAgentMode', () => {
 
     it('handles null argv gracefully', () => {
       const result = shouldUseGatesAgentMode({
-        argv: null,
+        argv: null as any,
         env: {},
         stdout: { isTTY: false },
       });

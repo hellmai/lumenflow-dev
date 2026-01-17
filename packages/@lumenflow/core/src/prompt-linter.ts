@@ -61,7 +61,7 @@ export function loadConfig(configPath = DEFAULT_CONFIG_PATH) {
       return defaults;
     }
 
-    const content = readFileSync(configPath, FILE_SYSTEM.UTF8);
+    const content = readFileSync(configPath, { encoding: 'utf-8' });
     const parsed = yaml.parse(content);
 
     // Merge parsed config with defaults (handles incomplete configs)
@@ -103,7 +103,7 @@ async function loadPreviousMetrics() {
       .then(() => true)
       .catch(() => false);
     if (fileExists) {
-      const data = await readFile(METRICS_CACHE_PATH, FILE_SYSTEM.UTF8);
+      const data = await readFile(METRICS_CACHE_PATH, { encoding: 'utf-8' });
       return JSON.parse(data);
     }
   } catch {
@@ -133,15 +133,25 @@ async function savemetrics(metrics) {
 }
 
 /**
+ * Output mode options for logging
+ */
+interface LogOutputOptions {
+  /** Suppress non-essential output */
+  quiet?: boolean;
+  /** Enable verbose output */
+  verbose?: boolean;
+}
+
+/**
  * Log via proper telemetry (simulated getLogger for CLI context)
  * In production, this would use apps/web/src/lib/logger.ts
  * @param {string} level - Log level (info, warn, error)
  * @param {string} event - Event name
  * @param {Object} data - Structured data
- * @param {{quiet?: boolean, verbose?: boolean}} [output] - Output mode
+ * @param {LogOutputOptions} [output] - Output mode
  * @returns {Promise<void>}
  */
-async function log(level, event, data, output = {}) {
+async function log(level, event, data, output: LogOutputOptions = {}) {
   const timestamp = new Date().toISOString();
   const entry = {
     timestamp,
@@ -277,18 +287,28 @@ async function lintPromptFile(filePath, previousMetrics, mode, config, output) {
 }
 
 /**
+ * Options for linting prompts
+ */
+export interface LintPromptsOptions {
+  /** Suppress non-essential output */
+  quiet?: boolean;
+  /** Enable verbose output */
+  verbose?: boolean;
+}
+
+/**
  * Main linter function
  * @param {string[]} filePaths - Prompt files to lint (optional, finds all if empty)
  * @param {string} mode - Mode (pre-commit, pre-push, ci, local)
  * @param {string} configPath - Optional config file path
- * @param {{quiet?: boolean, verbose?: boolean}} [options] - Output options
+ * @param {LintPromptsOptions} [options] - Output options
  * @returns {Promise<{passed: boolean, results: Array, config: Object}>}
  */
 export async function lintPrompts(
   filePaths = [],
   mode = 'local',
   configPath = undefined,
-  options = {}
+  options: LintPromptsOptions = {}
 ) {
   // Load configuration
   const config = loadConfig(configPath);

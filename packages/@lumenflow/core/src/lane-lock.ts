@@ -16,9 +16,59 @@
  */
 
 import { openSync, closeSync, writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync } from 'node:fs';
+import type { WriteFileOptions } from 'node:fs';
 import path from 'node:path';
 import { toKebab, FILE_SYSTEM } from './wu-constants.js';
 import { getProjectRoot } from './wu-constants.js';
+
+// Type definitions
+interface LockMetadata {
+  wuId: string;
+  timestamp: string;
+  agentSession: string | null;
+  pid: number;
+  lane: string;
+}
+
+interface LockResult {
+  acquired: boolean;
+  error: string | null;
+  existingLock: LockMetadata | null;
+  isStale: boolean;
+}
+
+interface UnlockResult {
+  released: boolean;
+  error: string | null;
+  notFound: boolean;
+}
+
+interface AuditedUnlockResult extends UnlockResult {
+  reason?: string;
+  forced?: boolean;
+  previousLock?: LockMetadata | null;
+}
+
+interface AcquireLockOptions {
+  agentSession?: string | null;
+  baseDir?: string | null;
+}
+
+interface ReleaseLockOptions {
+  wuId?: string | null;
+  baseDir?: string | null;
+  force?: boolean;
+}
+
+interface CheckLockOptions {
+  baseDir?: string | null;
+}
+
+interface AuditedUnlockOptions {
+  reason: string;
+  baseDir?: string | null;
+  force?: boolean;
+}
 
 /** Log prefix for lane-lock messages */
 const LOG_PREFIX = '[lane-lock]';
@@ -36,7 +86,7 @@ const DEFAULT_STALE_LOCK_THRESHOLD_HOURS = 2;
  *
  * @returns {number} Threshold in milliseconds
  */
-export function getStaleThresholdMs() {
+export function getStaleThresholdMs(): number {
   const envValue = process.env.STALE_LOCK_THRESHOLD_HOURS;
   if (envValue) {
     const hours = parseFloat(envValue);
@@ -76,7 +126,7 @@ export function getStaleThresholdMs() {
  * @param {string} [baseDir] - Optional base directory (defaults to project root)
  * @returns {string} Absolute path to locks directory
  */
-export function getLocksDir(baseDir = null) {
+export function getLocksDir(baseDir: string | null = null): string {
   const projectRoot = baseDir || getProjectRoot(import.meta.url);
   return path.join(projectRoot, LOCKS_DIR);
 }
@@ -87,7 +137,7 @@ export function getLocksDir(baseDir = null) {
  * @param {string} [baseDir] - Optional base directory
  * @returns {string} Absolute path to lock file
  */
-export function getLockFilePath(lane, baseDir = null) {
+export function getLockFilePath(lane: string, baseDir: string | null = null): string {
   const laneKebab = toKebab(lane);
   const locksDir = getLocksDir(baseDir);
   return path.join(locksDir, `${laneKebab}.lock`);
@@ -97,7 +147,7 @@ export function getLockFilePath(lane, baseDir = null) {
  * Ensure the locks directory exists
  * @param {string} [baseDir] - Optional base directory
  */
-function ensureLocksDir(baseDir = null) {
+function ensureLocksDir(baseDir: string | null = null): void {
   const locksDir = getLocksDir(baseDir);
   if (!existsSync(locksDir)) {
     mkdirSync(locksDir, { recursive: true });
@@ -113,7 +163,7 @@ function ensureLocksDir(baseDir = null) {
  * @param {LockMetadata} metadata - Lock metadata
  * @returns {boolean} True if lock is stale
  */
-export function isLockStale(metadata) {
+export function isLockStale(metadata: LockMetadata | null): boolean {
   if (!metadata || !metadata.timestamp) {
     return true; // Invalid metadata is considered stale
   }
@@ -133,7 +183,7 @@ export function isLockStale(metadata) {
  * @param {LockMetadata} metadata - Lock metadata
  * @returns {boolean} True if lock is a zombie (PID not running)
  */
-export function isZombieLock(metadata) {
+export function isZombieLock(metadata: LockMetadata | null): boolean {
   if (!metadata || typeof metadata.pid !== 'number') {
     return true; // Invalid metadata is considered zombie
   }
@@ -155,13 +205,13 @@ export function isZombieLock(metadata) {
  * @param {string} lockPath - Path to lock file
  * @returns {LockMetadata|null} Lock metadata or null if file doesn't exist/is invalid
  */
-export function readLockMetadata(lockPath) {
+export function readLockMetadata(lockPath: string): LockMetadata | null {
   try {
     if (!existsSync(lockPath)) {
       return null;
     }
-    const content = readFileSync(lockPath, FILE_SYSTEM.UTF8);
-    return JSON.parse(content);
+    const content = readFileSync(lockPath, { encoding: 'utf-8' });
+    return JSON.parse(content) as LockMetadata;
   } catch {
     // Invalid JSON or read error - treat as no lock
     return null;
@@ -183,7 +233,7 @@ export function readLockMetadata(lockPath) {
  * @returns {LockResult} Result of lock acquisition attempt
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- WU-1808: Added zombie lock detection increases complexity but all paths are necessary
-export function acquireLaneLock(lane, wuId, options = {}) {
+export function acquireLaneLock(lane: string, wuId: string, options: AcquireLockOptions = {}): LockResult {
   const { agentSession = null, baseDir = null } = options;
 
   try {
@@ -205,7 +255,7 @@ export function acquireLaneLock(lane, wuId, options = {}) {
       const fd = openSync(lockPath, 'wx');
 
       // Write metadata and close
-      writeFileSync(lockPath, JSON.stringify(metadata, null, 2), FILE_SYSTEM.UTF8);
+      writeFileSync(lockPath, JSON.stringify(metadata, null, 2), { encoding: 'utf-8' });
       closeSync(fd);
 
       console.log(`${LOG_PREFIX} Acquired lane lock for "${lane}" (${wuId})`);
@@ -217,7 +267,7 @@ export function acquireLaneLock(lane, wuId, options = {}) {
       };
     } catch (err) {
       // File already exists - check if it's our lock or another agent's
-      if (err.code === 'EEXIST') {
+      if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
         const existingLock = readLockMetadata(lockPath);
         const stale = existingLock ? isLockStale(existingLock) : true;
         const zombie = existingLock ? isZombieLock(existingLock) : true;
@@ -266,9 +316,10 @@ export function acquireLaneLock(lane, wuId, options = {}) {
       throw err;
     }
   } catch (err) {
+    const errMessage = err instanceof Error ? err.message : String(err);
     return {
       acquired: false,
-      error: `Failed to acquire lane lock: ${err.message}`,
+      error: `Failed to acquire lane lock: ${errMessage}`,
       existingLock: null,
       isStale: false,
     };
@@ -285,7 +336,7 @@ export function acquireLaneLock(lane, wuId, options = {}) {
  * @param {boolean} [options.force] - Force release even if not owner
  * @returns {UnlockResult} Result of lock release attempt
  */
-export function releaseLaneLock(lane, options = {}) {
+export function releaseLaneLock(lane: string, options: ReleaseLockOptions = {}): UnlockResult {
   const { wuId = null, baseDir = null, force = false } = options;
 
   try {
@@ -322,9 +373,10 @@ export function releaseLaneLock(lane, options = {}) {
       notFound: false,
     };
   } catch (err) {
+    const errMessage = err instanceof Error ? err.message : String(err);
     return {
       released: false,
-      error: `Failed to release lane lock: ${err.message}`,
+      error: `Failed to release lane lock: ${errMessage}`,
       notFound: false,
     };
   }
@@ -338,7 +390,7 @@ export function releaseLaneLock(lane, options = {}) {
  * @param {string} [options.baseDir] - Base directory for lock files
  * @returns {{ locked: boolean, metadata: LockMetadata|null, isStale: boolean }}
  */
-export function checkLaneLock(lane, options = {}) {
+export function checkLaneLock(lane: string, options: CheckLockOptions = {}): { locked: boolean; metadata: LockMetadata | null; isStale: boolean } {
   const { baseDir = null } = options;
 
   const lockPath = getLockFilePath(lane, baseDir);
@@ -367,7 +419,7 @@ export function checkLaneLock(lane, options = {}) {
  * @param {string} [options.baseDir] - Base directory for lock files
  * @returns {UnlockResult} Result of forced removal
  */
-export function forceRemoveStaleLock(lane, options = {}) {
+export function forceRemoveStaleLock(lane: string, options: CheckLockOptions = {}): UnlockResult {
   const { baseDir = null } = options;
 
   const lockPath = getLockFilePath(lane, baseDir);
@@ -403,10 +455,10 @@ export function forceRemoveStaleLock(lane, options = {}) {
  * @param {string} [options.baseDir] - Base directory for lock files
  * @returns {Map<string, LockMetadata>} Map of lane name to lock metadata
  */
-export function getAllLaneLocks(options = {}) {
+export function getAllLaneLocks(options: CheckLockOptions = {}): Map<string, LockMetadata> {
   const { baseDir = null } = options;
   const locksDir = getLocksDir(baseDir);
-  const locks = new Map();
+  const locks = new Map<string, LockMetadata>();
 
   if (!existsSync(locksDir)) {
     return locks;
@@ -460,7 +512,7 @@ export function getAllLaneLocks(options = {}) {
  * @param {boolean} [options.force] - Force unlock even if lock is active
  * @returns {AuditedUnlockResult} Result of audited unlock attempt
  */
-export function auditedUnlock(lane, options = {}) {
+export function auditedUnlock(lane: string, options: AuditedUnlockOptions): AuditedUnlockResult {
   const { reason, baseDir = null, force = false } = options;
 
   // Require reason for audit trail

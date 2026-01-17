@@ -336,7 +336,7 @@ export async function formatFiles(files, worktreePath, logPrefix = DEFAULT_LOG_P
 
   try {
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} ${pathArgs}`, {
-      encoding: FILE_SYSTEM.ENCODING,
+      encoding: 'utf-8',
       stdio: STDIO_MODES.PIPE,
       cwd: worktreePath,
     });

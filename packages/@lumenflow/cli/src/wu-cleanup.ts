@@ -42,7 +42,7 @@ async function verifyPRMerged(laneBranch) {
   try {
     ghResult = execSync(
       `gh api repos/:owner/:repo/pulls -q '.[] | select(.head.ref == "${laneBranch}") | .merged'`,
-      { encoding: FILE_SYSTEM.UTF8 }
+      { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }
     ).trim();
   } catch {
     ghResult = '';
@@ -73,7 +73,7 @@ async function verifyPRMerged(laneBranch) {
       return { merged: true, method: 'branch_deleted' };
     }
     // Branch exists remotely but not locally - need to fetch
-    await getGitForCwd().fetch(REMOTES.ORIGIN);
+    await getGitForCwd().fetch(REMOTES.ORIGIN, laneBranch);
   }
 
   let isAncestor;

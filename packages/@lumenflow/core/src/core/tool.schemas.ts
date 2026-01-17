@@ -30,10 +30,10 @@ export const ToolInputSchema = z.object({
   command: z.string().min(1).describe('Tool command name'),
 
   /** Tool-specific arguments (validated by tool's inputSchema) */
-  arguments: z.record(z.unknown()).default({}),
+  arguments: z.record(z.string(), z.unknown()).default({}),
 
   /** Optional execution context (session ID, user, etc.) */
-  context: z.record(z.unknown()).optional().describe('Execution context (session_id, user, etc.)'),
+  context: z.record(z.string(), z.unknown()).optional().describe('Execution context (session_id, user, etc.)'),
 });
 
 export type ToolInput = z.infer<typeof ToolInputSchema>;
@@ -49,7 +49,7 @@ export const ToolErrorSchema = z.object({
   message: z.string(),
 
   /** Optional additional error details */
-  details: z.record(z.unknown()).optional(),
+  details: z.record(z.string(), z.unknown()).optional(),
 
   /** Optional stack trace (for debugging) */
   stack: z.string().optional(),
@@ -80,7 +80,7 @@ export const ToolOutputSchema = z.object({
   warnings: z.array(z.string()).optional(),
 
   /** Optional execution metadata (duration, timestamp, etc.) */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type ToolOutput = z.infer<typeof ToolOutputSchema>;
@@ -131,8 +131,8 @@ export const ToolMetadataSchema = z.object({
     .array(
       z.object({
         description: z.string(),
-        input: z.record(z.unknown()),
-        output: z.record(z.unknown()).optional(),
+        input: z.record(z.string(), z.unknown()),
+        output: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .optional(),
@@ -197,7 +197,7 @@ export const ToolExecutionResultSchema = z.object({
   durationMs: z.number().int().nonnegative().optional(),
 
   /** Tool input (sanitized, no sensitive data) */
-  input: z.record(z.unknown()),
+  input: z.record(z.string(), z.unknown()),
 
   /** Tool output (sanitized) */
   output: ToolOutputSchema.optional(),
@@ -206,7 +206,7 @@ export const ToolExecutionResultSchema = z.object({
   error: ToolErrorSchema.optional(),
 
   /** Execution context (session, user, etc.) */
-  context: z.record(z.unknown()).optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type ToolExecutionResult = z.infer<typeof ToolExecutionResultSchema>;
@@ -214,7 +214,7 @@ export type ToolExecutionResult = z.infer<typeof ToolExecutionResultSchema>;
 /**
  * Convert Zod schema to JSON Schema for provider adapters
  *
- * Uses Zod's built-in JSON Schema generation with proper type handling.
+ * Uses Zod 4's native z.toJSONSchema() for robust conversion.
  * Supports MCP, OpenAI Functions, and Gemini Tools formats.
  *
  * @param schema - Zod schema to convert
@@ -235,107 +235,18 @@ export function toJSONSchema(
     baseUri?: string;
   }
 ): Record<string, unknown> {
-  // Use zod-to-json-schema for robust conversion
-  // This is a placeholder - actual implementation will use zodToJsonSchema
-  // once zod-to-json-schema package is added (WU-1395)
+  // Use Zod 4's native JSON Schema conversion
+  const jsonSchema = z.toJSONSchema(schema) as Record<string, unknown>;
 
-  // For now, implement basic conversion for core types
-  const def = schema._def;
-
-  // Handle object schemas
-  if (def.typeName === 'ZodObject') {
-    const shape = def.shape();
-    const properties: Record<string, unknown> = {};
-    const required: string[] = [];
-
-    for (const [key, value] of Object.entries(shape)) {
-      properties[key] = toJSONSchema(value as ZodTypeAny);
-
-      // Check if field is required (not optional)
-      if (!(value as ZodTypeAny).isOptional()) {
-        required.push(key);
-      }
-    }
-
+  // Add $id if name is provided
+  if (options?.name) {
     return {
-      type: 'object',
-      properties,
-      required: required.length > 0 ? required : undefined,
-      ...(def.description ? { description: def.description } : {}),
-      ...(options?.name ? { $id: `${options.baseUri || ''}#/${options.name}` } : {}),
+      ...jsonSchema,
+      $id: `${options.baseUri || ''}#/${options.name}`,
     };
   }
 
-  // Handle string schemas
-  if (def.typeName === 'ZodString') {
-    return {
-      type: 'string',
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle number schemas
-  if (def.typeName === 'ZodNumber') {
-    return {
-      type: 'number',
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle boolean schemas
-  if (def.typeName === 'ZodBoolean') {
-    return {
-      type: 'boolean',
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle array schemas
-  if (def.typeName === 'ZodArray') {
-    return {
-      type: 'array',
-      items: toJSONSchema(def.type),
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle optional schemas
-  if (def.typeName === 'ZodOptional') {
-    return toJSONSchema(def.innerType);
-  }
-
-  // Handle record/dictionary schemas
-  if (def.typeName === 'ZodRecord') {
-    return {
-      type: 'object',
-      additionalProperties: toJSONSchema(def.valueType),
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle enum schemas
-  if (def.typeName === 'ZodEnum') {
-    return {
-      type: 'string',
-      enum: def.values,
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Handle literal schemas
-  if (def.typeName === 'ZodLiteral') {
-    return {
-      type: typeof def.value,
-      const: def.value,
-      ...(def.description ? { description: def.description } : {}),
-    };
-  }
-
-  // Fallback for unknown types
-  return {
-    type: 'object',
-    description: def.description || 'Unknown schema type',
-  };
+  return jsonSchema;
 }
 
 /**

@@ -57,13 +57,20 @@ const LOCK_POLL_INTERVAL_MS = 500;
  */
 
 /**
+ * Options for lock file operations
+ */
+interface MergeLockBaseDirOptions {
+  /** Base directory (defaults to cwd) */
+  baseDir?: string;
+}
+
+/**
  * Get the path to the merge lock file
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory (defaults to cwd)
+ * @param {MergeLockBaseDirOptions} [options]
  * @returns {string} Path to lock file
  */
-function getLockPath(options = {}) {
+function getLockPath(options: MergeLockBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
   return path.join(baseDir, '.beacon', LOCK_FILE_NAME);
 }
@@ -71,11 +78,10 @@ function getLockPath(options = {}) {
 /**
  * Read lock file contents
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  * @returns {LockInfo|null} Lock info or null if no lock
  */
-function readLockFile(options = {}) {
+function readLockFile(options: MergeLockBaseDirOptions = {}) {
   const lockPath = getLockPath(options);
   if (!existsSync(lockPath)) {
     return null;
@@ -93,10 +99,9 @@ function readLockFile(options = {}) {
  * Write lock file
  *
  * @param {LockInfo} lockInfo - Lock information to write
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  */
-function writeLockFile(lockInfo, options = {}) {
+function writeLockFile(lockInfo, options: MergeLockBaseDirOptions = {}) {
   const lockPath = getLockPath(options);
   const beaconDir = path.dirname(lockPath);
 
@@ -111,10 +116,9 @@ function writeLockFile(lockInfo, options = {}) {
 /**
  * Delete lock file
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  */
-function deleteLockFile(options = {}) {
+function deleteLockFile(options: MergeLockBaseDirOptions = {}) {
   const lockPath = getLockPath(options);
   if (existsSync(lockPath)) {
     unlinkSync(lockPath);
@@ -158,11 +162,10 @@ function sleep(ms) {
 /**
  * Check if merge lock is currently held
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  * @returns {boolean} True if lock is held (and not stale)
  */
-export function isMergeLocked(options = {}) {
+export function isMergeLocked(options: MergeLockBaseDirOptions = {}) {
   const lockInfo = readLockFile(options);
   if (!lockInfo) {
     return false;
@@ -174,16 +177,23 @@ export function isMergeLocked(options = {}) {
 /**
  * Get information about current merge lock
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  * @returns {LockInfo|null} Lock info or null if unlocked
  */
-export function getMergeLockInfo(options = {}) {
+export function getMergeLockInfo(options: MergeLockBaseDirOptions = {}) {
   const lockInfo = readLockFile(options);
   if (!lockInfo || isLockStale(lockInfo)) {
     return null;
   }
   return lockInfo;
+}
+
+/**
+ * Options for acquiring merge lock
+ */
+export interface AcquireMergeLockOptions extends MergeLockBaseDirOptions {
+  /** Max time to wait for lock (default: MERGE_LOCK_TIMEOUT_MS) */
+  waitMs?: number;
 }
 
 /**
@@ -194,12 +204,10 @@ export function getMergeLockInfo(options = {}) {
  * Stale locks are automatically cleaned up.
  *
  * @param {string} wuId - WU ID requesting the lock
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {number} [options.waitMs] - Max time to wait for lock (default: MERGE_LOCK_TIMEOUT_MS)
+ * @param {AcquireMergeLockOptions} [options]
  * @returns {Promise<AcquireResult>} Acquisition result
  */
-export async function acquireMergeLock(wuId, options = {}) {
+export async function acquireMergeLock(wuId, options: AcquireMergeLockOptions = {}) {
   const { baseDir, waitMs = MERGE_LOCK_TIMEOUT_MS } = options;
   const startTime = Date.now();
 
@@ -263,11 +271,10 @@ export async function acquireMergeLock(wuId, options = {}) {
  * This prevents accidentally releasing another WU's lock.
  *
  * @param {string} lockId - Lock ID to release
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {MergeLockBaseDirOptions} [options]
  * @returns {boolean} True if lock was released
  */
-export function releaseMergeLock(lockId, options = {}) {
+export function releaseMergeLock(lockId, options: MergeLockBaseDirOptions = {}) {
   const existingLock = readLockFile(options);
 
   if (!existingLock) {
@@ -296,13 +303,11 @@ export function releaseMergeLock(lockId, options = {}) {
  * @template T
  * @param {string} wuId - WU ID requesting the lock
  * @param {function(): Promise<T>} fn - Async function to execute
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {number} [options.waitMs] - Max time to wait for lock
+ * @param {AcquireMergeLockOptions} [options]
  * @returns {Promise<T>} Result of function execution
  * @throws {Error} If lock cannot be acquired or function throws
  */
-export async function withMergeLock(wuId, fn, options = {}) {
+export async function withMergeLock<T>(wuId: string, fn: () => Promise<T>, options: AcquireMergeLockOptions = {}): Promise<T> {
   const result = await acquireMergeLock(wuId, options);
 
   if (!result.acquired) {

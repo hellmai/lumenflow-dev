@@ -286,7 +286,12 @@ function findHighRiskPaths(changedFiles) {
  * // result.tier === 'docs-only'
  * // result.isDocsOnly === true
  */
-export function detectRiskTier(options = {}) {
+export interface DetectRiskTierOptions {
+  /** Array of changed file paths to analyze */
+  changedFiles?: string[];
+}
+
+export function detectRiskTier(options: DetectRiskTierOptions = {}) {
   const { changedFiles = [] } = options;
 
   // Normalise all paths

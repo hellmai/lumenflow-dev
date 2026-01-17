@@ -129,14 +129,14 @@ const coverageMode = opts.coverageMode || COVERAGE_GATE_MODES.BLOCK;
 /**
  * Build a pnpm command string
  */
-function pnpmCmd(...parts) {
+function pnpmCmd(...parts: string[]) {
   return `${PKG_MANAGER} ${parts.join(' ')}`;
 }
 
 /**
  * Build a pnpm run command string
  */
-function pnpmRun(script, ...args) {
+function pnpmRun(script: string, ...args: string[]) {
   const argsStr = args.length > 0 ? ` ${args.join(' ')}` : '';
   return `${PKG_MANAGER} ${SCRIPTS.RUN} ${script}${argsStr}`;
 }
@@ -144,11 +144,11 @@ function pnpmRun(script, ...args) {
 /**
  * Build a pnpm --filter command string
  */
-function pnpmFilter(pkg, script) {
+function pnpmFilter(pkg: string, script: string) {
   return `${PKG_MANAGER} ${PKG_FLAGS.FILTER} ${pkg} ${script}`;
 }
 
-function readLogTail(logPath, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
+function readLogTail(logPath: string, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
   try {
     const stats = statSync(logPath);
     const startPos = Math.max(0, stats.size - maxBytes);
@@ -157,7 +157,7 @@ function readLogTail(logPath, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
     try {
       const buffer = Buffer.alloc(bytesToRead);
       readSync(fd, buffer, 0, bytesToRead, startPos);
-      const text = buffer.toString(FILE_SYSTEM.ENCODING);
+      const text = buffer.toString(FILE_SYSTEM.ENCODING as BufferEncoding);
       const lines = text.split(/\r?\n/).filter(Boolean);
       return lines.slice(-maxLines).join('\n');
     } finally {
@@ -168,7 +168,7 @@ function readLogTail(logPath, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
   }
 }
 
-function createAgentLogContext({ wuId, lane }) {
+function createAgentLogContext({ wuId, lane }: { wuId: string | null; lane: string | null }) {
   const cwd = process.cwd();
   const logPath = buildGatesLogPath({ cwd, env: process.env, wuId, lane });
   mkdirSync(path.dirname(logPath), { recursive: true });
@@ -189,13 +189,13 @@ function createAgentLogContext({ wuId, lane }) {
   return { logPath, logFd };
 }
 
-function run(cmd, { agentLog } = {}) {
+function run(cmd: string, { agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
 
   if (!agentLog) {
     console.log(`\n> ${cmd}\n`);
     try {
-      execSync(cmd, { stdio: STDIO_MODES.INHERIT, encoding: FILE_SYSTEM.ENCODING });
+      execSync(cmd, { stdio: 'inherit', encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
       return { ok: true, duration: Date.now() - start };
     } catch {
       return { ok: false, duration: Date.now() - start };
@@ -207,7 +207,7 @@ function run(cmd, { agentLog } = {}) {
     shell: true,
     stdio: ['ignore', agentLog.logFd, agentLog.logFd],
     cwd: process.cwd(),
-    encoding: FILE_SYSTEM.ENCODING,
+    encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
   });
 
   return { ok: result.status === EXIT_CODES.SUCCESS, duration: Date.now() - start };
@@ -218,9 +218,9 @@ function run(cmd, { agentLog } = {}) {
  * Falls back to full lint if on main branch or if incremental fails
  * @returns {{ ok: boolean, duration: number, fileCount: number }}
  */
-async function runIncrementalLint({ agentLog } = {}) {
+async function runIncrementalLint({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
-  const logLine = (line) => {
+  const logLine = (line: string) => {
     if (!agentLog) {
       console.log(line);
       return;
@@ -297,11 +297,11 @@ async function runIncrementalLint({ agentLog } = {}) {
       ],
       agentLog
         ? {
-            stdio: ['ignore', agentLog.logFd, agentLog.logFd],
-            encoding: FILE_SYSTEM.ENCODING,
+            stdio: ['ignore', agentLog.logFd, agentLog.logFd] as const,
+            encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
             cwd: webDir,
           }
-        : { stdio: STDIO_MODES.INHERIT, encoding: FILE_SYSTEM.ENCODING, cwd: webDir }
+        : { stdio: 'inherit' as const, encoding: FILE_SYSTEM.ENCODING as BufferEncoding, cwd: webDir }
     );
 
     const duration = Date.now() - start;
@@ -323,10 +323,10 @@ async function runIncrementalLint({ agentLog } = {}) {
  *
  * @returns {{ ok: boolean, duration: number, isIncremental: boolean }}
  */
-async function runChangedTests({ agentLog } = {}) {
+async function runChangedTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
-  const logLine = (line) => {
+  const logLine = (line: string) => {
     if (!agentLog) {
       console.log(line);
       return;
@@ -415,10 +415,10 @@ const SAFETY_CRITICAL_TEST_FILES = [
  * @param {object} [options.agentLog] - Agent log context
  * @returns {Promise<{ ok: boolean, duration: number, testCount: number }>}
  */
-async function runSafetyCriticalTests({ agentLog } = {}) {
+async function runSafetyCriticalTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
-  const logLine = (line) => {
+  const logLine = (line: string) => {
     if (!agentLog) {
       console.log(line);
       return;
@@ -445,11 +445,11 @@ async function runSafetyCriticalTests({ agentLog } = {}) {
       ],
       agentLog
         ? {
-            stdio: ['ignore', agentLog.logFd, agentLog.logFd],
-            encoding: FILE_SYSTEM.ENCODING,
+            stdio: ['ignore', agentLog.logFd, agentLog.logFd] as const,
+            encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
             cwd: process.cwd(),
           }
-        : { stdio: STDIO_MODES.INHERIT, encoding: FILE_SYSTEM.ENCODING, cwd: process.cwd() }
+        : { stdio: 'inherit' as const, encoding: FILE_SYSTEM.ENCODING as BufferEncoding, cwd: process.cwd() }
     );
 
     const duration = Date.now() - start;
@@ -472,10 +472,10 @@ async function runSafetyCriticalTests({ agentLog } = {}) {
  * @param {object} [options.agentLog] - Agent log context
  * @returns {Promise<{ ok: boolean, duration: number }>}
  */
-async function runIntegrationTests({ agentLog } = {}) {
+async function runIntegrationTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
-  const logLine = (line) => {
+  const logLine = (line: string) => {
     if (!agentLog) {
       console.log(line);
       return;
@@ -515,7 +515,11 @@ async function runIntegrationTests({ agentLog } = {}) {
  * @param {object} [options.git] - Git adapter instance
  * @returns {Promise<string[]>} List of all changed files
  */
-async function getAllChangedFiles(options = {}) {
+interface GetAllChangedFilesOptions {
+  git?: ReturnType<typeof getGitForCwd>;
+}
+
+async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
   const { git = getGitForCwd() } = options;
 
   try {

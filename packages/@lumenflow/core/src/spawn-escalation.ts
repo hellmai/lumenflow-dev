@@ -24,7 +24,17 @@ import path from 'node:path';
 import { SpawnRegistryStore } from './spawn-registry-store.js';
 import { SpawnStatus } from './spawn-registry-schema.js';
 import { RECOVERY_DIR_NAME } from './spawn-recovery.js';
-import { createSignal } from '@lumenflow/memory/lib/mem-signal-core.js';
+
+// Optional import from @lumenflow/memory
+type SignalResult = { signal: { id: string } };
+type CreateSignalFn = (baseDir: string, options: { message: string; wuId: string; lane: string }) => Promise<SignalResult>;
+let createSignal: CreateSignalFn | null = null;
+try {
+  const mod = await import('@lumenflow/memory/lib/mem-signal-core.js');
+  createSignal = mod.createSignal;
+} catch {
+  // @lumenflow/memory not available - signal features disabled
+}
 
 /**
  * Log prefix for spawn-escalation messages
@@ -222,7 +232,14 @@ function buildSpawnFailureSignal(spawn, auditLog, attempts) {
  * const result = await escalateStuckSpawn('spawn-1234', { baseDir: '/path/to/project' });
  * console.log(`Signal sent: ${result.signalId}, action: ${result.signal.suggested_action}`);
  */
-export async function escalateStuckSpawn(spawnId, options = {}) {
+export interface EscalateStuckSpawnOptions {
+  /** Base directory for .beacon/ */
+  baseDir?: string;
+  /** If true, return spec only without sending signal */
+  dryRun?: boolean;
+}
+
+export async function escalateStuckSpawn(spawnId, options: EscalateStuckSpawnOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
   const registryDir = path.join(baseDir, '.beacon', 'state');
 
@@ -236,10 +253,15 @@ export async function escalateStuckSpawn(spawnId, options = {}) {
   }
 
   // Find the spawn
-  const spawn = store.spawns.get(spawnId);
+  const spawn = store.getById(spawnId);
 
   if (!spawn) {
     throw new Error(`Spawn ${spawnId} not found in registry`);
+  }
+
+  // Check if signal module is available
+  if (!createSignal) {
+    throw new Error('Signal module (@lumenflow/memory) not available - cannot escalate');
   }
 
   // WU-1967: Check if already escalated (prevents duplicate signals)

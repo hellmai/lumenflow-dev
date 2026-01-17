@@ -44,7 +44,7 @@ function loadConfig(configPath = null) {
   }
 
   try {
-    const configContent = readFileSync(configPath, FILE_SYSTEM.UTF8);
+    const configContent = readFileSync(configPath, { encoding: 'utf-8' });
     return YAML.parse(configContent);
   } catch (err) {
     throw createError(

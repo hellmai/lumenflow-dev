@@ -34,6 +34,18 @@ export type {
   MandatoryAgentName,
 } from './orchestration.constants.js';
 
+// Re-export const values as well
+export {
+  LANES,
+  AGENT_NAMES,
+  SEVERITY_LEVELS,
+  AGENT_RESULT_STATUSES,
+  TIMELINE_EVENT_TYPES,
+  EVENT_SEVERITY_LEVELS,
+  USER_CHOICE_OPTIONS,
+  MANDATORY_AGENT_NAMES,
+} from './orchestration.constants.js';
+
 /**
  * Global orchestration status.
  * Shows high-level dashboard metrics at a glance.

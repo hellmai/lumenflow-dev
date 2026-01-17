@@ -80,7 +80,7 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
 
   const rel = `wu/${id}.yaml`;
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
-  const content = await readFile(statusPath, FILE_SYSTEM.UTF8);
+  const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
@@ -97,7 +97,7 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   lines.splice(sectionStart, 0, '', bullet);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
-  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), FILE_SYSTEM.UTF8);
+  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 }
 
 // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager manipulation)
@@ -107,7 +107,7 @@ async function regenerateBacklogFromState(backlogPath) {
   const store = new WUStateStore(stateDir);
   await store.load();
   const content = await generateBacklog(store);
-  await writeFile(backlogPath, content, FILE_SYSTEM.UTF8);
+  await writeFile(backlogPath, content, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 }
 
 /**

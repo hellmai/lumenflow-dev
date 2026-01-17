@@ -338,7 +338,7 @@ export const STDIO = {
   INHERIT: 'inherit',
   /** Ignore stdio (silent execution) */
   IGNORE: 'ignore',
-};
+} as const;
 
 /**
  * Configuration file paths
@@ -649,12 +649,13 @@ export const WU_EXPOSURE = {
 
   /** Documentation changes only */
   DOCUMENTATION: 'documentation',
-};
+} as const;
 
 /**
  * Array of valid exposure values for schema validation
+ * Note: Defined as tuple for Zod enum compatibility
  */
-export const WU_EXPOSURE_VALUES = Object.values(WU_EXPOSURE);
+export const WU_EXPOSURE_VALUES = ['ui', 'api', 'backend-only', 'documentation'] as const;
 
 /**
  * Test type keys
@@ -1049,7 +1050,7 @@ export const STDIO_MODES = {
   PIPE: 'pipe',
   /** Ignore stdio (discard output) */
   IGNORE: 'ignore',
-};
+} as const;
 
 /**
  * Process exit codes
@@ -1504,16 +1505,23 @@ export function getProjectRoot(moduleUrl) {
 }
 
 /**
+ * Options for discovering safety tests
+ */
+export interface DiscoverSafetyTestsOptions {
+  /** Project root directory */
+  projectRoot?: string;
+}
+
+/**
  * Discover safety-critical test files
  *
  * WU-2242: Scans for test files matching safety-critical patterns.
  * Uses glob to find all matching files.
  *
- * @param {object} options - Discovery options
- * @param {string} [options.projectRoot=process.cwd()] - Project root directory
+ * @param {DiscoverSafetyTestsOptions} options - Discovery options
  * @returns {Promise<string[]>} List of discovered test file paths
  */
-export async function discoverSafetyTests(options = {}) {
+export async function discoverSafetyTests(options: DiscoverSafetyTestsOptions = {}) {
   const { projectRoot = process.cwd() } = options;
   const { glob } = await import('glob');
   const foundFiles = [];
@@ -1539,11 +1547,10 @@ export async function discoverSafetyTests(options = {}) {
  * WU-2242: Checks that each pattern category has at least one matching test file.
  * Returns a validation result with missing patterns and found files.
  *
- * @param {object} options - Validation options
- * @param {string} [options.projectRoot=process.cwd()] - Project root directory
+ * @param {DiscoverSafetyTestsOptions} options - Validation options
  * @returns {Promise<{valid: boolean, missingTests: string[], foundTests: string[], error?: string}>}
  */
-export async function validateSafetyTestsExist(options = {}) {
+export async function validateSafetyTestsExist(options: DiscoverSafetyTestsOptions = {}) {
   const { projectRoot = process.cwd() } = options;
   const { glob } = await import('glob');
 

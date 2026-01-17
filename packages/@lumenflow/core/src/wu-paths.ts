@@ -1,12 +1,18 @@
-import path from 'node:path';
-import { getWorktreePath, getProjectRoot } from './wu-constants.js';
+/**
+ * WU Paths - Centralized path management for Work Units
+ *
+ * All paths are configurable via .lumenflow.config.yaml
+ *
+ * @module wu-paths
+ */
+
+import * as path from 'node:path';
+import { getWorktreePath, getProjectRoot as getProjectRootFromConstants } from './wu-constants.js';
+import { getConfig, getProjectRoot as getProjectRootFromConfig } from './lumenflow-config.js';
 
 /**
  * Directory depth constants for path resolution.
  * These define how many levels deep each standard file is from repo root.
- *
- * Structure: {repoRoot}/docs/04-operations/tasks/{file}
- *            └── 0 ──┘└─ 1 ─┘└──── 2 ─────┘└─ 3 ─┘
  */
 const PATH_DEPTHS = {
   /** backlog.md is 4 levels deep: docs/04-operations/tasks/backlog.md */
@@ -22,15 +28,11 @@ const PATH_DEPTHS = {
 /**
  * Resolve repo root from an absolute file path by traversing up N directory levels.
  *
- * @param {string} absolutePath - Absolute path to a file within the repo
- * @param {number} depth - Number of directory levels to traverse up
- * @returns {string} Absolute path to repo root
- *
- * @example
- * // From backlog.md (4 levels deep), returns repo root
- * const root = resolveRepoRoot(backlogPath, PATH_DEPTHS.BACKLOG);
+ * @param absolutePath - Absolute path to a file within the repo
+ * @param depth - Number of directory levels to traverse up
+ * @returns Absolute path to repo root
  */
-export function resolveRepoRoot(absolutePath, depth) {
+export function resolveRepoRoot(absolutePath: string, depth: number): string {
   let result = absolutePath;
   for (let i = 0; i < depth; i++) {
     result = path.dirname(result);
@@ -41,92 +43,97 @@ export function resolveRepoRoot(absolutePath, depth) {
 /**
  * Get the state store directory path from backlog.md path.
  *
- * WU-1593: Correctly resolves repo root from backlog path (4 levels up),
- * then appends .beacon/state for the state store location.
- *
- * @param {string} backlogPath - Absolute path to backlog.md
- * @returns {string} Absolute path to state store directory
- *
- * @example
- * // Returns state store directory path from backlog path
- * const stateDir = getStateStoreDirFromBacklog(backlogPath);
+ * @param backlogPath - Absolute path to backlog.md
+ * @returns Absolute path to state store directory
  */
-export function getStateStoreDirFromBacklog(backlogPath) {
+export function getStateStoreDirFromBacklog(backlogPath: string): string {
+  const config = getConfig();
   const repoRoot = resolveRepoRoot(backlogPath, PATH_DEPTHS.BACKLOG);
-  return path.join(repoRoot, '.beacon', 'state');
+  return path.join(repoRoot, config.beacon.stateDir);
 }
 
 /**
- * Centralized path constants for WU (Work Unit) management scripts.
+ * Create WU paths object with configurable base paths
  *
- * Eliminates hardcoded path strings scattered across wu-claim, wu-done, wu-block, etc.
- * Single source of truth for all WU-related file paths.
- *
- * @example
- * import { WU_PATHS } from './lib/wu-paths.js';
- * const wuPath = WU_PATHS.WU('WU-123'); // 'docs/04-operations/tasks/wu/WU-123.yaml'
- * const stampPath = WU_PATHS.STAMP('WU-123'); // '.beacon/stamps/WU-123.done'
+ * @param options - Options for path generation
+ * @param options.projectRoot - Override project root
+ * @returns WU paths object
  */
-export const WU_PATHS = {
-  /**
-   * Get path to WU YAML file
-   * @param {string} id - WU ID (e.g., 'WU-123')
-   * @returns {string} Path to WU YAML file
-   */
-  WU: (id) => path.join('docs', '04-operations', 'tasks', 'wu', `${id}.yaml`),
+export function createWuPaths(options: { projectRoot?: string } = {}) {
+  const config = getConfig({ projectRoot: options.projectRoot });
 
-  /**
-   * Get path to WU directory
-   * @returns {string} Path to WU directory
-   */
-  WU_DIR: () => path.join('docs', '04-operations', 'tasks', 'wu'),
+  return {
+    /**
+     * Get path to WU YAML file
+     * @param id - WU ID (e.g., 'WU-123')
+     * @returns Path to WU YAML file
+     */
+    WU: (id: string) => path.join(config.directories.wuDir, `${id}.yaml`),
 
-  /**
-   * Get path to status.md
-   * @returns {string} Path to status.md
-   */
-  STATUS: () => path.join('docs', '04-operations', 'tasks', 'status.md'),
+    /**
+     * Get path to WU directory
+     * @returns Path to WU directory
+     */
+    WU_DIR: () => config.directories.wuDir,
 
-  /**
-   * Get path to backlog.md
-   * @returns {string} Path to backlog.md
-   */
-  BACKLOG: () => path.join('docs', '04-operations', 'tasks', 'backlog.md'),
+    /**
+     * Get path to status.md
+     * @returns Path to status.md
+     */
+    STATUS: () => config.directories.statusPath,
 
-  /**
-   * Get path to stamps directory
-   * @returns {string} Path to stamps directory
-   */
-  STAMPS_DIR: () => path.join('.beacon', 'stamps'),
+    /**
+     * Get path to backlog.md
+     * @returns Path to backlog.md
+     */
+    BACKLOG: () => config.directories.backlogPath,
 
-  /**
-   * Get path to WU done stamp file
-   * @param {string} id - WU ID (e.g., 'WU-123')
-   * @returns {string} Path to stamp file
-   */
-  STAMP: (id) => path.join('.beacon', 'stamps', `${id}.done`),
-};
+    /**
+     * Get path to stamps directory
+     * @returns Path to stamps directory
+     */
+    STAMPS_DIR: () => config.beacon.stampsDir,
+
+    /**
+     * Get path to WU done stamp file
+     * @param id - WU ID (e.g., 'WU-123')
+     * @returns Path to stamp file
+     */
+    STAMP: (id: string) => path.join(config.beacon.stampsDir, `${id}.done`),
+
+    /**
+     * Get path to state directory
+     * @returns Path to state directory
+     */
+    STATE_DIR: () => config.beacon.stateDir,
+
+    /**
+     * Get path to initiatives directory
+     * @returns Path to initiatives directory
+     */
+    INITIATIVES_DIR: () => config.directories.initiativesDir,
+
+    /**
+     * Get path to worktrees directory
+     * @returns Path to worktrees directory
+     */
+    WORKTREES_DIR: () => config.directories.worktrees,
+  };
+}
+
+/**
+ * Default WU paths using default config
+ * For backwards compatibility with existing code
+ */
+export const WU_PATHS = createWuPaths();
 
 /**
  * Generate default worktree path from WU document
  *
- * Extracted from duplicate implementations in wu-block, wu-unblock, wu-claim (WU-1341).
- * Uses centralized getWorktreePath() from wu-constants.mjs for consistent path generation.
- *
- * @param {object|null|undefined} doc - WU document with lane and id fields
- * @returns {string|null} Worktree path or null if inputs are invalid
- *
- * @example
- * defaultWorktreeFrom({ lane: 'Operations: Tooling', id: 'WU-123' })
- * // => 'worktrees/operations-tooling-wu-123'
- *
- * defaultWorktreeFrom({ lane: 'Intelligence', id: 'WU-456' })
- * // => 'worktrees/intelligence-wu-456'
- *
- * defaultWorktreeFrom(null)
- * // => null
+ * @param doc - WU document with lane and id fields
+ * @returns Worktree path or null if inputs are invalid
  */
-export function defaultWorktreeFrom(doc) {
+export function defaultWorktreeFrom(doc: { lane?: string; id?: string } | null | undefined): string | null {
   if (!doc) return null;
   const lane = doc.lane;
   const id = doc.id;
@@ -141,30 +148,50 @@ export function defaultWorktreeFrom(doc) {
   // Check for empty strings after trimming
   if (laneStr === '' || idStr === '') return null;
 
-  // Use centralized getWorktreePath from wu-constants.mjs
+  // Use centralized getWorktreePath from wu-constants
   return getWorktreePath(laneStr, idStr);
 }
 
 /**
  * Resolve a repo-root-relative path to an absolute path using project root.
  *
- * WU-1806: When running from inside a worktree, resolve() uses process.cwd()
- * as the base, which creates bogus nested paths like:
- *   worktrees/operations-wu-123/worktrees/operations-wu-123
- *
- * This function resolves paths relative to the project root (main checkout),
- * regardless of where the script is executed from.
- *
- * @param {string} relativePath - Path relative to project root (e.g., 'worktrees/ops-wu-123')
- * @param {string} moduleUrl - import.meta.url of the calling module (for project root resolution)
- * @returns {string} Absolute path resolved from project root
- *
- * @example
- * // From inside a worktree, this works correctly:
- * const absolutePath = resolveFromProjectRoot('worktrees/ops-wu-123', import.meta.url);
- * // => '/path/to/repo/worktrees/ops-wu-123' (NOT nested)
+ * @param relativePath - Path relative to project root
+ * @param moduleUrl - import.meta.url of the calling module (for backwards compat)
+ * @returns Absolute path resolved from project root
  */
-export function resolveFromProjectRoot(relativePath, moduleUrl) {
-  const projectRoot = getProjectRoot(moduleUrl);
+export function resolveFromProjectRoot(relativePath: string, moduleUrl?: string): string {
+  // Try config-based project root first, fall back to constants-based
+  let projectRoot: string;
+  try {
+    projectRoot = getProjectRootFromConfig();
+  } catch {
+    projectRoot = moduleUrl ? getProjectRootFromConstants(moduleUrl) : process.cwd();
+  }
   return path.join(projectRoot, relativePath);
+}
+
+/**
+ * Get absolute path to WU YAML file
+ *
+ * @param id - WU ID (e.g., 'WU-123')
+ * @param options - Options
+ * @returns Absolute path to WU YAML file
+ */
+export function getAbsoluteWuPath(id: string, options: { projectRoot?: string } = {}): string {
+  const projectRoot = options.projectRoot || getProjectRootFromConfig();
+  const paths = createWuPaths({ projectRoot });
+  return path.join(projectRoot, paths.WU(id));
+}
+
+/**
+ * Get absolute path to stamp file
+ *
+ * @param id - WU ID (e.g., 'WU-123')
+ * @param options - Options
+ * @returns Absolute path to stamp file
+ */
+export function getAbsoluteStampPath(id: string, options: { projectRoot?: string } = {}): string {
+  const projectRoot = options.projectRoot || getProjectRootFromConfig();
+  const paths = createWuPaths({ projectRoot });
+  return path.join(projectRoot, paths.STAMP(id));
 }

@@ -9,7 +9,7 @@
  * @see {@link ../domain/orchestration.types.ts} - Domain types
  */
 
-import type { IMetricsCollector } from '../ports/metrics-collector.port';
+import type { IMetricsCollector } from '../ports/metrics-collector.port.js';
 import type { DashboardData } from '../domain/orchestration.types.js';
 import { TIMELINE_WINDOW_HOURS } from '../domain/orchestration.constants.js';
 

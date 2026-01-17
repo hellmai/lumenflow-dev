@@ -19,8 +19,8 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { generateMemId } from './mem-id.js';
-import { appendNode, MEMORY_FILE_NAME } from './memory-store.js';
-import { MEMORY_PATTERNS } from './memory-schema.js';
+import { appendNode } from './memory-store.js';
+import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 
 /**
  * Memory directory path relative to base directory
@@ -44,32 +44,22 @@ const ERROR_MESSAGES = {
 };
 
 /**
- * Session node type constant
- */
-const NODE_TYPE_SESSION = 'session';
-
-/**
- * WU lifecycle constant
- */
-const LIFECYCLE_WU = 'wu';
-
-/**
  * Validates WU ID format
  *
- * @param {string} wuId - WU ID to validate
- * @returns {boolean} True if valid
+ * @param wuId - WU ID to validate
+ * @returns True if valid
  */
-function isValidWuId(wuId) {
+function isValidWuId(wuId: string): boolean {
   return MEMORY_PATTERNS.WU_ID.test(wuId);
 }
 
 /**
  * Ensures the memory directory exists
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<string>} Memory directory path
+ * @param baseDir - Base directory
+ * @returns Memory directory path
  */
-async function ensureMemoryDir(baseDir) {
+async function ensureMemoryDir(baseDir: string): Promise<string> {
   const memoryDir = path.join(baseDir, MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
@@ -79,31 +69,53 @@ async function ensureMemoryDir(baseDir) {
 /**
  * Generates content description for session node
  *
- * @param {string} wuId - WU ID
- * @param {string} agentType - Agent type
- * @param {string} contextTier - Context tier
- * @returns {string} Content description
+ * @param wuId - WU ID
+ * @param agentType - Agent type
+ * @param contextTier - Context tier
+ * @returns Content description
  */
-function generateSessionContent(wuId, agentType, contextTier) {
+function generateSessionContent(wuId: string, agentType: string, contextTier: string): string {
   return `Session started for ${wuId}. Agent: ${agentType}, Context: ${contextTier}`;
 }
 
 /**
  * Session start options
- *
- * @typedef {object} StartSessionOptions
- * @property {string} wuId - Work Unit ID (required)
- * @property {string} [agentType] - Agent type (defaults to 'unknown')
- * @property {string} [contextTier] - Context tier (defaults to 'full')
  */
+export interface StartSessionOptions {
+  /** Work Unit ID (required) */
+  wuId: string;
+  /** Agent type (defaults to 'unknown') */
+  agentType?: string;
+  /** Context tier (defaults to 'full') */
+  contextTier?: string;
+}
+
+/**
+ * Session node structure
+ */
+interface SessionNode {
+  id: string;
+  type: 'session';
+  lifecycle: 'wu';
+  content: string;
+  created_at: string;
+  wu_id: string;
+  session_id: string;
+  metadata: {
+    agentType: string;
+    contextTier: string;
+  };
+}
 
 /**
  * Session start result
- *
- * @typedef {object} StartSessionResult
- * @property {boolean} success - Whether the operation succeeded
- * @property {import('./memory-schema.mjs').MemoryNode} session - Created session node
  */
+export interface StartSessionResult {
+  /** Whether the operation succeeded */
+  success: boolean;
+  /** Created session node */
+  session: SessionNode;
+}
 
 /**
  * Creates a new session node linked to a WU.
@@ -114,10 +126,10 @@ function generateSessionContent(wuId, agentType, contextTier) {
  * - Agent type and context tier in metadata
  * - UUID session_id for unique identification
  *
- * @param {string} baseDir - Base directory containing .beacon/memory/
- * @param {StartSessionOptions} options - Session options
- * @returns {Promise<StartSessionResult>} Result with created session node
- * @throws {Error} If wuId is missing or invalid
+ * @param baseDir - Base directory containing .beacon/memory/
+ * @param options - Session options
+ * @returns Result with created session node
+ * @throws If wuId is missing or invalid
  *
  * @example
  * const result = await startSession('/path/to/project', {
@@ -127,7 +139,7 @@ function generateSessionContent(wuId, agentType, contextTier) {
  * });
  * console.log(result.session.id); // 'mem-a1b2'
  */
-export async function startSession(baseDir, options) {
+export async function startSession(baseDir: string, options: StartSessionOptions): Promise<StartSessionResult> {
   const { wuId, agentType = DEFAULTS.AGENT_TYPE, contextTier = DEFAULTS.CONTEXT_TIER } = options;
 
   // Validate required fields
@@ -152,11 +164,10 @@ export async function startSession(baseDir, options) {
   const idContent = `${content}-${timestamp}-${sessionId}`;
   const id = generateMemId(idContent);
 
-  /** @type {import('./memory-schema.mjs').MemoryNode} */
-  const sessionNode = {
+  const sessionNode: SessionNode = {
     id,
-    type: NODE_TYPE_SESSION,
-    lifecycle: LIFECYCLE_WU,
+    type: 'session',
+    lifecycle: 'wu',
     content,
     created_at: timestamp,
     wu_id: wuId,
@@ -168,7 +179,7 @@ export async function startSession(baseDir, options) {
   };
 
   // Persist to memory store
-  await appendNode(memoryDir, sessionNode);
+  await appendNode(memoryDir, sessionNode as unknown as MemoryNode);
 
   return {
     success: true,

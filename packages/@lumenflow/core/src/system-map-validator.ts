@@ -167,7 +167,8 @@ export async function findOrphanDocs(systemMap, deps) {
     // Check if this doc falls under an indexed directory
     let isUnderIndexedDir = false;
     for (const indexedPath of indexedPaths) {
-      if (indexedPath.endsWith('/') && docPath.startsWith(indexedPath)) {
+      const indexedPathStr = String(indexedPath);
+      if (indexedPathStr.endsWith('/') && docPath.startsWith(indexedPathStr)) {
         isUnderIndexedDir = true;
         break;
       }
@@ -227,7 +228,8 @@ export function validateQuickQueries(systemMap) {
 
   const validIds = buildIdSet(systemMap);
 
-  for (const [queryKey, query] of Object.entries(systemMap.quick_queries)) {
+  for (const [queryKey, queryValue] of Object.entries(systemMap.quick_queries)) {
+    const query = queryValue as { primary?: string; related?: string[] };
     // Check primary reference
     if (query.primary && !validIds.has(query.primary)) {
       errors.push(

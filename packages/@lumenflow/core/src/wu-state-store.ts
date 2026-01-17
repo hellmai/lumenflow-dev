@@ -30,11 +30,10 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { validateWUEvent } from './wu-state-schema.js';
+import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 
 /**
  * Lock timeout in milliseconds (5 minutes)
- * @type {number}
  */
 const LOCK_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -50,30 +49,68 @@ const LOCK_MAX_RETRIES = 100; // 5 seconds total
 export const WU_EVENTS_FILE_NAME = 'wu-events.jsonl';
 
 /**
+ * WU state entry in the in-memory store
+ */
+export interface WUStateEntry {
+  status: string;
+  lane: string;
+  title: string;
+  completedAt?: string;
+  lastCheckpoint?: string;
+  lastCheckpointNote?: string;
+}
+
+/**
+ * Lock file data structure
+ */
+export interface LockData {
+  pid: number;
+  timestamp: number;
+  hostname: string;
+}
+
+/**
+ * Checkpoint options
+ */
+export interface CheckpointOptions {
+  sessionId?: string;
+  progress?: string;
+  nextSteps?: string;
+}
+
+/**
+ * Repair result
+ */
+export interface RepairResult {
+  success: boolean;
+  linesKept: number;
+  linesRemoved: number;
+  backupPath: string | null;
+  warnings: string[];
+}
+
+/**
  * WU State Store class
  *
  * Manages WU lifecycle state via event sourcing pattern.
  * Events are appended to JSONL file, state is rebuilt by replaying events.
  */
 export class WUStateStore {
-  /**
-   * @param {string} baseDir - Directory containing .beacon/state/
-   */
-  constructor(baseDir) {
+  private readonly baseDir: string;
+  private readonly eventsFilePath: string;
+  private wuState: Map<string, WUStateEntry>;
+  private byStatus: Map<string, Set<string>>;
+  private byLane: Map<string, Set<string>>;
+  private byParent: Map<string, Set<string>>;
+
+  constructor(baseDir: string) {
     this.baseDir = baseDir;
     this.eventsFilePath = path.join(baseDir, WU_EVENTS_FILE_NAME);
 
     // In-memory state (rebuilt from events)
-    /** @type {Map<string, { status: string; lane: string; title: string }>} */
     this.wuState = new Map();
-
-    /** @type {Map<string, Set<string>>} - Index: status -> Set<wuId> */
     this.byStatus = new Map();
-
-    /** @type {Map<string, Set<string>>} - Index: lane -> Set<wuId> */
     this.byLane = new Map();
-
-    /** @type {Map<string, Set<string>>} - Index: parentWuId -> Set<childWuId> (WU-1947) */
     this.byParent = new Map();
   }
 
@@ -87,15 +124,14 @@ export class WUStateStore {
    * - Malformed JSON: throws error with line info
    * - Invalid events: throws validation error
    *
-   * @returns {Promise<void>}
-   * @throws {Error} If file contains malformed JSON or invalid events
+   * @throws Error If file contains malformed JSON or invalid events
    *
    * @example
    * const store = new WUStateStore('/path/to/project');
    * await store.load();
    * const inProgress = store.getByStatus('in_progress');
    */
-  async load() {
+  async load(): Promise<void> {
     // Reset state
     this.wuState.clear();
     this.byStatus.clear();
@@ -103,11 +139,11 @@ export class WUStateStore {
     this.byParent.clear();
 
     // Check if file exists
-    let content;
+    let content: string;
     try {
       content = await fs.readFile(this.eventsFilePath, 'utf-8');
     } catch (error) {
-      if (error.code === 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         // File doesn't exist - return empty state
         return;
       }
@@ -125,11 +161,11 @@ export class WUStateStore {
       }
 
       // Parse JSON line
-      let parsed;
+      let parsed: unknown;
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw new Error(`Malformed JSON on line ${i + 1}: ${error.message}`);
+        throw new Error(`Malformed JSON on line ${i + 1}: ${(error as Error).message}`);
       }
 
       // Validate against schema
@@ -150,12 +186,8 @@ export class WUStateStore {
 
   /**
    * Transition WU to a new status if it exists.
-   *
-   * @private
-   * @param {string} wuId - WU ID
-   * @param {string} newStatus - New status to set
    */
-  _transitionToStatus(wuId, newStatus) {
+  private _transitionToStatus(wuId: string, newStatus: string): void {
     const current = this.wuState.get(wuId);
     if (current) {
       this._setState(wuId, newStatus, current.lane, current.title);
@@ -164,15 +196,13 @@ export class WUStateStore {
 
   /**
    * Applies an event to the in-memory state.
-   *
-   * @private
-   * @param {import('./wu-state-schema.js').WUEvent} event - Event to apply
    */
-  _applyEvent(event) {
+  private _applyEvent(event: WUEvent): void {
     const { wuId, type } = event;
 
     if (type === 'create' || type === 'claim') {
-      this._setState(wuId, 'in_progress', event.lane, event.title);
+      const claimEvent = event as WUEvent & { lane: string; title: string };
+      this._setState(wuId, 'in_progress', claimEvent.lane, claimEvent.title);
       return;
     }
 
@@ -197,33 +227,29 @@ export class WUStateStore {
     }
 
     if (type === 'checkpoint') {
+      const checkpointEvent = event as WUEvent & { note?: string };
       const currentCheckpoint = this.wuState.get(wuId);
       if (currentCheckpoint) {
         currentCheckpoint.lastCheckpoint = event.timestamp;
-        currentCheckpoint.lastCheckpointNote = event.note;
+        currentCheckpoint.lastCheckpointNote = checkpointEvent.note;
       }
       return;
     }
 
     if (type === 'spawn') {
-      const { parentWuId } = event;
+      const spawnEvent = event as WUEvent & { parentWuId: string };
+      const { parentWuId } = spawnEvent;
       if (!this.byParent.has(parentWuId)) {
         this.byParent.set(parentWuId, new Set());
       }
-      this.byParent.get(parentWuId).add(wuId);
+      this.byParent.get(parentWuId)!.add(wuId);
     }
   }
 
   /**
    * Sets WU state and updates indexes.
-   *
-   * @private
-   * @param {string} wuId - WU ID
-   * @param {string} status - New status
-   * @param {string} lane - Lane name
-   * @param {string} title - WU title
    */
-  _setState(wuId, status, lane, title) {
+  private _setState(wuId: string, status: string, lane: string, title: string): void {
     // Remove from old status index
     const oldState = this.wuState.get(wuId);
     if (oldState) {
@@ -246,13 +272,13 @@ export class WUStateStore {
     if (!this.byStatus.has(status)) {
       this.byStatus.set(status, new Set());
     }
-    this.byStatus.get(status).add(wuId);
+    this.byStatus.get(status)!.add(wuId);
 
     // Add to new lane index
     if (!this.byLane.has(lane)) {
       this.byLane.set(lane, new Set());
     }
-    this.byLane.get(lane).add(wuId);
+    this.byLane.get(lane)!.add(wuId);
   }
 
   /**
@@ -262,12 +288,9 @@ export class WUStateStore {
    * Creates file and parent directories if they don't exist.
    * Validates event before appending.
    *
-   * @private
-   * @param {import('./wu-state-schema.js').WUEvent} event - Event to append
-   * @returns {Promise<void>}
-   * @throws {Error} If event fails validation
+   * @throws Error If event fails validation
    */
-  async _appendEvent(event) {
+  private async _appendEvent(event: WUEvent): Promise<void> {
     // Validate event before appending
     const validation = validateWUEvent(event);
     if (!validation.success) {
@@ -290,16 +313,12 @@ export class WUStateStore {
   /**
    * Claims a WU (transitions to in_progress).
    *
-   * @param {string} wuId - WU ID
-   * @param {string} lane - Lane name
-   * @param {string} title - WU title
-   * @returns {Promise<void>}
-   * @throws {Error} If WU is already in_progress
+   * @throws Error If WU is already in_progress
    *
    * @example
    * await store.claim('WU-1570', 'Operations: Tooling', 'Test WU');
    */
-  async claim(wuId, lane, title) {
+  async claim(wuId: string, lane: string, title: string): Promise<void> {
     // Check state machine: can't claim if already in_progress
     const currentState = this.wuState.get(wuId);
     if (currentState && currentState.status === 'in_progress') {
@@ -307,28 +326,26 @@ export class WUStateStore {
     }
 
     const event = {
-      type: 'claim',
+      type: 'claim' as const,
       wuId,
       lane,
       title,
       timestamp: new Date().toISOString(),
     };
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 
   /**
    * Completes a WU (transitions to done).
    *
-   * @param {string} wuId - WU ID
-   * @returns {Promise<void>}
-   * @throws {Error} If WU is not in_progress
+   * @throws Error If WU is not in_progress
    *
    * @example
    * await store.complete('WU-1570');
    */
-  async complete(wuId) {
+  async complete(wuId: string): Promise<void> {
     // Check state machine: can only complete if in_progress
     const currentState = this.wuState.get(wuId);
     if (!currentState || currentState.status !== 'in_progress') {
@@ -336,22 +353,19 @@ export class WUStateStore {
     }
 
     const event = {
-      type: 'complete',
+      type: 'complete' as const,
       wuId,
       timestamp: new Date().toISOString(),
     };
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 
   /**
    * Get current in-memory state for a WU.
-   *
-   * @param {string} wuId - WU ID
-   * @returns {{ status: string; lane: string; title: string } | undefined}
    */
-  getWUState(wuId) {
+  getWUState(wuId: string): WUStateEntry | undefined {
     return this.wuState.get(wuId);
   }
 
@@ -360,18 +374,15 @@ export class WUStateStore {
    *
    * Used by transactional flows where event log writes are staged and committed atomically.
    *
-   * @param {string} wuId - WU ID
-   * @param {string} [timestamp] - ISO-8601 timestamp override
-   * @returns {import('./wu-state-schema.js').WUEvent}
-   * @throws {Error} If WU is not in_progress or event fails validation
+   * @throws Error If WU is not in_progress or event fails validation
    */
-  createCompleteEvent(wuId, timestamp = new Date().toISOString()) {
+  createCompleteEvent(wuId: string, timestamp: string = new Date().toISOString()): WUEvent {
     const currentState = this.wuState.get(wuId);
     if (!currentState || currentState.status !== 'in_progress') {
       throw new Error(`WU ${wuId} is not in_progress`);
     }
 
-    const event = { type: 'complete', wuId, timestamp };
+    const event = { type: 'complete' as const, wuId, timestamp };
     const validation = validateWUEvent(event);
     if (!validation.success) {
       const issues = validation.error.issues
@@ -385,11 +396,9 @@ export class WUStateStore {
   /**
    * Apply a validated event to in-memory state without writing to disk.
    *
-   * @param {import('./wu-state-schema.js').WUEvent} event - Event to apply
-   * @returns {void}
-   * @throws {Error} If event fails validation
+   * @throws Error If event fails validation
    */
-  applyEvent(event) {
+  applyEvent(event: WUEvent): void {
     const validation = validateWUEvent(event);
     if (!validation.success) {
       const issues = validation.error.issues
@@ -403,15 +412,12 @@ export class WUStateStore {
   /**
    * Blocks a WU (transitions to blocked).
    *
-   * @param {string} wuId - WU ID
-   * @param {string} reason - Blocking reason
-   * @returns {Promise<void>}
-   * @throws {Error} If WU is not in_progress
+   * @throws Error If WU is not in_progress
    *
    * @example
    * await store.block('WU-1570', 'Blocked by dependency');
    */
-  async block(wuId, reason) {
+  async block(wuId: string, reason: string): Promise<void> {
     // Check state machine: can only block if in_progress
     const currentState = this.wuState.get(wuId);
     if (!currentState || currentState.status !== 'in_progress') {
@@ -419,27 +425,25 @@ export class WUStateStore {
     }
 
     const event = {
-      type: 'block',
+      type: 'block' as const,
       wuId,
       reason,
       timestamp: new Date().toISOString(),
     };
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 
   /**
    * Unblocks a WU (transitions back to in_progress).
    *
-   * @param {string} wuId - WU ID
-   * @returns {Promise<void>}
-   * @throws {Error} If WU is not blocked
+   * @throws Error If WU is not blocked
    *
    * @example
    * await store.unblock('WU-1570');
    */
-  async unblock(wuId) {
+  async unblock(wuId: string): Promise<void> {
     // Check state machine: can only unblock if blocked
     const currentState = this.wuState.get(wuId);
     if (!currentState || currentState.status !== 'blocked') {
@@ -447,13 +451,13 @@ export class WUStateStore {
     }
 
     const event = {
-      type: 'unblock',
+      type: 'unblock' as const,
       wuId,
       timestamp: new Date().toISOString(),
     };
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 
   /**
@@ -462,25 +466,17 @@ export class WUStateStore {
    * Checkpoints are recorded for visibility but don't change WU state.
    * Used to track progress and detect abandoned WUs.
    *
-   * @param {string} wuId - WU ID
-   * @param {string} note - Checkpoint note/description
-   * @param {object} [options] - Optional fields
-   * @param {string} [options.sessionId] - Session ID
-   * @param {string} [options.progress] - Progress summary
-   * @param {string} [options.nextSteps] - Next steps description
-   * @returns {Promise<void>}
-   *
    * @example
    * await store.checkpoint('WU-1748', 'Completed worktree scanner', {
    *   progress: 'Scanner implemented and tests passing',
    *   nextSteps: 'Integrate into orchestrate:status'
    * });
    */
-  async checkpoint(wuId, note, options = {}) {
+  async checkpoint(wuId: string, note: string, options: CheckpointOptions = {}): Promise<void> {
     const { sessionId, progress, nextSteps } = options;
 
-    const event = {
-      type: 'checkpoint',
+    const event: Record<string, unknown> = {
+      type: 'checkpoint' as const,
       wuId,
       note,
       timestamp: new Date().toISOString(),
@@ -490,15 +486,12 @@ export class WUStateStore {
     if (progress) event.progress = progress;
     if (nextSteps) event.nextSteps = nextSteps;
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 
   /**
    * Gets WU IDs by status (O(1) lookup).
-   *
-   * @param {string} status - Status to query (ready, in_progress, blocked, waiting, done)
-   * @returns {Set<string>} Set of WU IDs with this status
    *
    * @example
    * const inProgress = store.getByStatus('in_progress');
@@ -506,15 +499,12 @@ export class WUStateStore {
    *   console.log(wuId);
    * }
    */
-  getByStatus(status) {
+  getByStatus(status: string): Set<string> {
     return this.byStatus.get(status) ?? new Set();
   }
 
   /**
    * Gets WU IDs by lane (O(1) lookup).
-   *
-   * @param {string} lane - Lane name to query
-   * @returns {Set<string>} Set of WU IDs in this lane
    *
    * @example
    * const tooling = store.getByLane('Operations: Tooling');
@@ -522,7 +512,7 @@ export class WUStateStore {
    *   console.log(wuId);
    * }
    */
-  getByLane(lane) {
+  getByLane(lane: string): Set<string> {
     return this.byLane.get(lane) ?? new Set();
   }
 
@@ -530,16 +520,13 @@ export class WUStateStore {
    * Gets child WU IDs spawned from a parent WU (O(1) lookup).
    * WU-1947: Parent-child relationship tracking.
    *
-   * @param {string} parentWuId - Parent WU ID to query
-   * @returns {Set<string>} Set of child WU IDs spawned from this parent
-   *
    * @example
    * const children = store.getChildWUs('WU-100');
    * for (const childId of children) {
    *   console.log(`Child WU: ${childId}`);
    * }
    */
-  getChildWUs(parentWuId) {
+  getChildWUs(parentWuId: string): Set<string> {
     return this.byParent.get(parentWuId) ?? new Set();
   }
 
@@ -547,35 +534,27 @@ export class WUStateStore {
    * Records a spawn relationship between parent and child WUs.
    * WU-1947: Parent-child relationship tracking.
    *
-   * @param {string} childWuId - Child WU ID being spawned
-   * @param {string} parentWuId - Parent WU ID spawning the child
-   * @param {string} spawnId - Unique spawn identifier
-   * @returns {Promise<void>}
-   *
    * @example
    * await store.spawn('WU-200', 'WU-100', 'spawn-abc123');
    */
-  async spawn(childWuId, parentWuId, spawnId) {
+  async spawn(childWuId: string, parentWuId: string, spawnId: string): Promise<void> {
     const event = {
-      type: 'spawn',
+      type: 'spawn' as const,
       wuId: childWuId,
       parentWuId,
       spawnId,
       timestamp: new Date().toISOString(),
     };
 
-    await this._appendEvent(event);
-    this._applyEvent(event);
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
   }
 }
 
 /**
  * Check if a process with given PID is running
- *
- * @param {number} pid - Process ID to check
- * @returns {boolean} True if process is running
  */
-function isProcessRunning(pid) {
+function isProcessRunning(pid: number): boolean {
   try {
     // Sending signal 0 checks if process exists without affecting it
     process.kill(pid, 0);
@@ -589,14 +568,8 @@ function isProcessRunning(pid) {
  * Check if a lock is stale (expired or dead process)
  *
  * WU-2240: Prepared for proper-lockfile integration
- *
- * @param {object} lockData - Lock file data
- * @param {number} lockData.pid - Process ID that holds the lock
- * @param {number} lockData.timestamp - Lock acquisition timestamp
- * @param {string} lockData.hostname - Hostname of lock holder
- * @returns {boolean} True if lock is stale
  */
-export function isLockStale(lockData) {
+export function isLockStale(lockData: LockData): boolean {
   const now = Date.now();
   const lockAge = now - lockData.timestamp;
 
@@ -617,9 +590,8 @@ export function isLockStale(lockData) {
 
 /**
  * Safely remove a lock file, ignoring errors
- * @param {string} lockPath - Path to lock file
  */
-function safeUnlink(lockPath) {
+function safeUnlink(lockPath: string): void {
   try {
     unlinkSync(lockPath);
   } catch {
@@ -629,13 +601,11 @@ function safeUnlink(lockPath) {
 
 /**
  * Read and parse existing lock file
- * @param {string} lockPath - Path to lock file
- * @returns {object|null} Lock data or null if corrupted
  */
-function readLockFile(lockPath) {
+function readLockFile(lockPath: string): LockData | null {
   try {
     const content = readFileSync(lockPath, 'utf-8');
-    return JSON.parse(content);
+    return JSON.parse(content) as LockData;
   } catch {
     return null;
   }
@@ -643,10 +613,8 @@ function readLockFile(lockPath) {
 
 /**
  * Handle existing lock file - returns true if should retry
- * @param {string} lockPath - Path to lock file
- * @returns {Promise<boolean>} True if should retry loop
  */
-async function handleExistingLock(lockPath) {
+async function handleExistingLock(lockPath: string): Promise<boolean> {
   const existingLock = readLockFile(lockPath);
   if (!existingLock) {
     // Corrupted lock file - remove and retry
@@ -666,11 +634,8 @@ async function handleExistingLock(lockPath) {
 
 /**
  * Try to create a lock file atomically
- * @param {string} lockPath - Path to lock file
- * @param {object} lockData - Lock data to write
- * @returns {Promise<boolean>} True if lock acquired
  */
-async function tryCreateLock(lockPath, lockData) {
+async function tryCreateLock(lockPath: string, lockData: LockData): Promise<boolean> {
   try {
     mkdirSync(path.dirname(lockPath), { recursive: true });
     const fd = openSync(lockPath, 'wx');
@@ -680,7 +645,7 @@ async function tryCreateLock(lockPath, lockData) {
     closeSync(fd);
     return true;
   } catch (error) {
-    if (error.code === 'EEXIST') {
+    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
       await new Promise((resolve) => setTimeout(resolve, LOCK_RETRY_DELAY_MS));
       return false;
     }
@@ -698,12 +663,10 @@ async function tryCreateLock(lockPath, lockData) {
  *
  * WU-2240: Prepared for proper-lockfile integration
  *
- * @param {string} lockPath - Path to lock file
- * @returns {Promise<void>}
- * @throws {Error} If lock cannot be acquired after retries
+ * @throws Error If lock cannot be acquired after retries
  */
-export async function acquireLock(lockPath) {
-  const lockData = {
+export async function acquireLock(lockPath: string): Promise<void> {
+  const lockData: LockData = {
     pid: process.pid,
     timestamp: Date.now(),
     hostname: os.hostname(),
@@ -726,10 +689,8 @@ export async function acquireLock(lockPath) {
  * Release a file lock
  *
  * WU-2240: Prepared for proper-lockfile integration
- *
- * @param {string} lockPath - Path to lock file
  */
-export function releaseLock(lockPath) {
+export function releaseLock(lockPath: string): void {
   safeUnlink(lockPath);
 }
 
@@ -744,9 +705,6 @@ export function releaseLock(lockPath) {
  * - Removes lines that fail schema validation
  * - Returns detailed repair statistics
  *
- * @param {string} filePath - Path to the state file to repair
- * @returns {Promise<{success: boolean, linesKept: number, linesRemoved: number, backupPath: string, warnings: string[]}>}
- *
  * @example
  * const stateFilePath = path.join(process.cwd(), '.beacon', 'state', 'wu-events.jsonl');
  * const result = await repairStateFile(stateFilePath);
@@ -754,8 +712,8 @@ export function releaseLock(lockPath) {
  *   console.log(`Repaired: kept ${result.linesKept}, removed ${result.linesRemoved}`);
  * }
  */
-export async function repairStateFile(filePath) {
-  const warnings = [];
+export async function repairStateFile(filePath: string): Promise<RepairResult> {
+  const warnings: string[] = [];
   let linesKept = 0;
   let linesRemoved = 0;
 
@@ -780,7 +738,7 @@ export async function repairStateFile(filePath) {
   writeFileSync(backupPath, originalContent, 'utf-8');
 
   // Process each line
-  const validLines = [];
+  const validLines: string[] = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
@@ -790,7 +748,7 @@ export async function repairStateFile(filePath) {
     }
 
     // Try to parse JSON
-    let parsed;
+    let parsed: unknown;
     try {
       parsed = JSON.parse(line);
     } catch {

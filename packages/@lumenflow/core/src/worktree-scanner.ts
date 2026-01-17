@@ -88,7 +88,7 @@ export function parseWorktreeList(output) {
     const isMain = branch === 'main' || branch === 'master';
 
     /** @type {WorktreeInfo} */
-    const info = {
+    const info: { path: string; sha: string; branch: string; isMain: boolean; wuId?: string } = {
       path,
       sha,
       branch,
@@ -112,7 +112,7 @@ export function parseWorktreeList(output) {
  *
  * @param {string} worktreePath - Path to the worktree
  * @param {object} [options] - Options
- * @param {Function} [options.execAsync] - Custom exec function for testing
+ * @param {WorktreeScannerOptions} [options] - Options
  * @returns {Promise<WorktreeStatus>} Worktree status
  *
  * @example
@@ -121,11 +121,16 @@ export function parseWorktreeList(output) {
  *   console.log(`Found ${status.uncommittedFileCount} uncommitted files`);
  * }
  */
-export async function getWorktreeStatus(worktreePath, options = {}) {
+interface WorktreeScannerOptions {
+  /** Custom exec function for testing */
+  execAsync?: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
+}
+
+export async function getWorktreeStatus(worktreePath, options: WorktreeScannerOptions = {}) {
   const runCmd = options.execAsync || execAsync;
 
   /** @type {WorktreeStatus} */
-  const status = {
+  const status: { hasUncommittedChanges: boolean; uncommittedFileCount: number; uncommittedFiles: string[]; lastActivityTimestamp: string; error?: string } = {
     hasUncommittedChanges: false,
     uncommittedFileCount: 0,
     uncommittedFiles: [],
@@ -155,7 +160,7 @@ export async function getWorktreeStatus(worktreePath, options = {}) {
     );
     status.lastActivityTimestamp = logResult.stdout.trim();
   } catch (error) {
-    status.error = error.message;
+    status.error = error instanceof Error ? error.message : String(error);
   }
 
   return status;
@@ -167,8 +172,7 @@ export async function getWorktreeStatus(worktreePath, options = {}) {
  * Excludes the main worktree and focuses on WU worktrees (lane branches).
  *
  * @param {string} basePath - Path to main repository
- * @param {object} [options] - Options
- * @param {Function} [options.execAsync] - Custom exec function for testing
+ * @param {WorktreeScannerOptions} [options] - Options
  * @returns {Promise<WorktreeScanResult>} Scan results with all worktrees and summary
  *
  * @example
@@ -177,7 +181,7 @@ export async function getWorktreeStatus(worktreePath, options = {}) {
  *   console.log(`${wt.wuId}: ${wt.uncommittedFileCount} uncommitted files`);
  * }
  */
-export async function scanWorktrees(basePath, options = {}) {
+export async function scanWorktrees(basePath, options: WorktreeScannerOptions = {}) {
   const runCmd = options.execAsync || execAsync;
 
   // Get worktree list

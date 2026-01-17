@@ -82,7 +82,7 @@ async function getDomainFromLumenflowConfig(cwd = process.cwd()) {
   }
 
   try {
-    const content = await readFile(configPath, FILE_SYSTEM.UTF8);
+    const content = await readFile(configPath, { encoding: 'utf-8' });
     // Simple pattern match for OWNER_EMAIL (avoid full YAML parse for performance)
     // Looking for: OWNER_EMAIL: "email@domain"
     const match = content.match(/OWNER_EMAIL:\s*["']?([^"'\s]+)["']?/i);

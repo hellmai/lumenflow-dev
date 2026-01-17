@@ -10,7 +10,7 @@
  */
 
 import picocolors from 'picocolors';
-import { detectMandatoryAgents } from './orchestration-rules';
+import { detectMandatoryAgents } from './orchestration-rules.js';
 import type { MandatoryAgentName } from './domain/orchestration.types.js';
 
 /**

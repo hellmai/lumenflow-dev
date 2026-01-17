@@ -58,14 +58,22 @@ export const COMMAND_LOG = {
 };
 
 /**
+ * Options for logging git commands (WU-1552)
+ */
+export interface LogGitCommandOptions {
+  /** User type: 'agent' | 'human' | 'unknown' */
+  user?: string;
+  /** Command outcome: 'allowed' | 'blocked' */
+  outcome?: string;
+}
+
+/**
  * Log a git command to the commands log
  * @param {string[]} args - Git command arguments (e.g., ['status'], ['add', '.'])
  * @param {string} logPath - Path to log file (defaults to .beacon/commands.log)
- * @param {Object} options - Additional logging options (WU-1552)
- * @param {string} [options.user] - User type: 'agent' | 'human' | 'unknown'
- * @param {string} [options.outcome] - Command outcome: 'allowed' | 'blocked'
+ * @param {LogGitCommandOptions} options - Additional logging options (WU-1552)
  */
-export function logGitCommand(args, logPath = DEFAULT_LOG_PATH, options = {}) {
+export function logGitCommand(args, logPath = DEFAULT_LOG_PATH, options: LogGitCommandOptions = {}) {
   try {
     const timestamp = new Date().toISOString();
     const command = `git ${args.join(' ')}`;
@@ -94,7 +102,7 @@ export function logGitCommand(args, logPath = DEFAULT_LOG_PATH, options = {}) {
     }
 
     // Append to log file
-    fs.appendFileSync(logPath, logEntry, FILE_SYSTEM.UTF8);
+    fs.appendFileSync(logPath, logEntry, { encoding: 'utf-8' });
   } catch (error) {
     // Don't fail git commands if logging fails
     console.error(`[commands-logger] Warning: Failed to log command: ${error.message}`);
@@ -224,7 +232,7 @@ export function scanLogForViolations(logPath = DEFAULT_LOG_PATH, windowMinutes =
   }
 
   try {
-    const content = fs.readFileSync(logPath, FILE_SYSTEM.UTF8);
+    const content = fs.readFileSync(logPath, { encoding: 'utf-8' });
     const lines = content.trim().split(STRING_LITERALS.NEWLINE).filter(Boolean);
 
     const now = new Date();
@@ -266,7 +274,7 @@ export function rotateLog(logPath = DEFAULT_LOG_PATH, retentionDays = 7) {
   }
 
   try {
-    const content = fs.readFileSync(logPath, FILE_SYSTEM.UTF8);
+    const content = fs.readFileSync(logPath, { encoding: 'utf-8' });
     const lines = content.trim().split(STRING_LITERALS.NEWLINE).filter(Boolean);
 
     const now = new Date();
@@ -285,7 +293,7 @@ export function rotateLog(logPath = DEFAULT_LOG_PATH, retentionDays = 7) {
       logPath,
       recentLines.join(STRING_LITERALS.NEWLINE) +
         (recentLines.length > 0 ? STRING_LITERALS.NEWLINE : ''),
-      FILE_SYSTEM.UTF8
+      { encoding: 'utf-8' }
     );
   } catch (error) {
     console.error(`[commands-logger] Warning: Failed to rotate log: ${error.message}`);

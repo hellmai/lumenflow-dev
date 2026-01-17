@@ -132,7 +132,7 @@ function preflightValidateWU(WU_PATH, id) {
 
   // Parse and validate YAML structure
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const text = readFileSync(WU_PATH, FILE_SYSTEM.UTF8);
+  const text = readFileSync(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   let doc;
   try {
     doc = parseYAML(text);
@@ -253,7 +253,7 @@ async function updateWUYaml(
   let text;
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-    text = await readFile(WU_PATH, FILE_SYSTEM.UTF8);
+    text = await readFile(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   } catch (e) {
     die(
       `Failed to read WU file: ${WU_PATH}\n\n` +
@@ -338,7 +338,7 @@ async function updateWUYaml(
   const out = stringifyYAML(doc);
   // Write file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
-  await writeFile(WU_PATH, out, FILE_SYSTEM.UTF8);
+  await writeFile(WU_PATH, out, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   return doc.title || '';
 }
 
@@ -355,7 +355,7 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   const bullet = `- [${id} — ${title}](${rel})`;
   // Read file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
-  const content = await readFile(statusPath, FILE_SYSTEM.UTF8);
+  const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(STRING_LITERALS.NEWLINE);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const startIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
@@ -379,7 +379,7 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   lines.splice(startIdx + 1, 0, '', bullet);
   // Write file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
-  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), FILE_SYSTEM.UTF8);
+  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 }
 
 async function removeFromReadyAndAddToInProgressBacklog(backlogPath, id, title, lane) {
@@ -395,13 +395,13 @@ async function removeFromReadyAndAddToInProgressBacklog(backlogPath, id, title, 
 
   // Regenerate backlog.md from state store
   const backlogContent = await generateBacklog(store);
-  await writeFile(backlogPath, backlogContent, FILE_SYSTEM.UTF8);
+  await writeFile(backlogPath, backlogContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${PREFIX} backlog.md regenerated from state store`);
 
   // Regenerate status.md from state store
   const statusPath = path.join(path.dirname(backlogPath), 'status.md');
   const statusContent = await generateStatus(store);
-  await writeFile(statusPath, statusContent, FILE_SYSTEM.UTF8);
+  await writeFile(statusPath, statusContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${PREFIX} status.md regenerated from state store`);
 }
 
@@ -453,7 +453,7 @@ async function readWUTitle(id) {
   }
   // Read file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const text = await readFile(p, FILE_SYSTEM.UTF8);
+  const text = await readFile(p, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const m = text.match(/^title:\s*"?(.+?)"?$/m);
   return m ? m[1] : null;
 }
@@ -478,7 +478,7 @@ async function checkExistingBranchOnlyWU(statusPath, currentWU) {
 
   // Read file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
-  const content = await readFile(statusPath, FILE_SYSTEM.UTF8);
+  const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(STRING_LITERALS.NEWLINE);
 
   // Find "In Progress" section
@@ -514,7 +514,7 @@ async function checkExistingBranchOnlyWU(statusPath, currentWU) {
     try {
       // Read file
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-      const text = await readFile(wuPath, FILE_SYSTEM.UTF8);
+      const text = await readFile(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
       const doc = parseYAML(text);
       if (doc && doc.claimed_mode === CLAIMED_MODES.BRANCH_ONLY) {
         return { hasBranchOnly: true, existingWU: wuid };
@@ -648,7 +648,7 @@ function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
   if (!existsSync(WU_PATH)) return;
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const wuContent = readFileSync(WU_PATH, FILE_SYSTEM.UTF8);
+  const wuContent = readFileSync(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
 
@@ -802,7 +802,7 @@ async function claimBranchOnlyMode(ctx) {
 
   // Emit mandatory agent advisory based on code_paths (WU-1324)
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const wuContent = await readFile(WU_PATH, FILE_SYSTEM.UTF8);
+  const wuContent = await readFile(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
   emitMandatoryAgentAdvisory(codePaths, id);
@@ -972,7 +972,7 @@ async function claimWorktreeMode(ctx) {
   // Read from worktree since that's where the updated YAML is
   const wtWUPathForAdvisory = path.join(worktreePath, WU_PATH);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const wuContent = await readFile(wtWUPathForAdvisory, FILE_SYSTEM.UTF8);
+  const wuContent = await readFile(wtWUPathForAdvisory, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
   emitMandatoryAgentAdvisory(codePaths, id);
@@ -1260,7 +1260,7 @@ async function main() {
     // Layer 3 defense (WU-1476): Pre-flight orphan check
     // Clean up orphan directory if it exists at target worktree path
     const absoluteWorktreePath = path.resolve(worktree);
-    if (await isOrphanWorktree(absoluteWorktreePath)) {
+    if (await isOrphanWorktree(absoluteWorktreePath, process.cwd())) {
       console.log(`${PREFIX} Detected orphan directory at ${worktree}, cleaning up...`);
       try {
         rmSync(absoluteWorktreePath, { recursive: true, force: true });

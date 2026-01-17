@@ -187,7 +187,7 @@ export async function getSpawnsByWU(wuId, baseDir) {
   }
 
   // Get all spawns
-  const allSpawns = Array.from(store.spawns.values());
+  const allSpawns = store.getAllSpawns();
 
   if (allSpawns.length === 0) {
     return [];
@@ -252,7 +252,7 @@ export async function getSpawnsByInitiative(initiativeId, registryDir, wuDir) {
   }
 
   // Filter spawns where parent belongs to initiative
-  const allSpawns = Array.from(store.spawns.values());
+  const allSpawns = store.getAllSpawns();
   return allSpawns.filter((spawn) => initiativeWuIds.has(spawn.parentWuId));
 }
 
