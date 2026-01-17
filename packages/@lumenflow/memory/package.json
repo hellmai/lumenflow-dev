@@ -45,6 +45,9 @@
   ],
   "scripts": {
     "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
     "test": "vitest run"
   },
   "dependencies": {

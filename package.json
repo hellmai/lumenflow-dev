@@ -6,12 +6,15 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
+    "build:dist": "turbo build:dist",
     "dev": "turbo dev",
     "test": "turbo test",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "pack:all": "turbo pack:dist",
+    "clean": "turbo clean && rm -rf node_modules/.cache"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

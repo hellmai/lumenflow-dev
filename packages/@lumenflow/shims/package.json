@@ -49,6 +49,9 @@
   ],
   "scripts": {
     "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
