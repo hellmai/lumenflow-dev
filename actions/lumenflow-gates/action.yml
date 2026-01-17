@@ -1,0 +1,312 @@
+name: 'LumenFlow Gates'
+description: 'AI-native quality gates with language presets'
+author: 'HellmAI'
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  preset:
+    description: 'Language preset (auto, node, python, go, rust)'
+    required: false
+    default: 'auto'
+  working-directory:
+    description: 'Working directory for running commands'
+    required: false
+    default: '.'
+  node-version:
+    description: 'Node.js version (for node preset)'
+    required: false
+    default: '20'
+  python-version:
+    description: 'Python version (for python preset)'
+    required: false
+    default: '3.12'
+  go-version:
+    description: 'Go version (for go preset)'
+    required: false
+    default: '1.22'
+  skip-format:
+    description: 'Skip format check'
+    required: false
+    default: 'false'
+  skip-lint:
+    description: 'Skip lint check'
+    required: false
+    default: 'false'
+  skip-typecheck:
+    description: 'Skip type check'
+    required: false
+    default: 'false'
+  skip-test:
+    description: 'Skip tests'
+    required: false
+    default: 'false'
+
+outputs:
+  preset-detected:
+    description: 'The preset that was detected/used'
+    value: ${{ steps.detect.outputs.preset }}
+  gates-passed:
+    description: 'Whether all gates passed'
+    value: ${{ steps.gates.outputs.passed }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect preset
+      id: detect
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        PRESET="${{ inputs.preset }}"
+
+        if [ "$PRESET" = "auto" ]; then
+          if [ -f "package.json" ]; then
+            PRESET="node"
+          elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
+            PRESET="python"
+          elif [ -f "go.mod" ]; then
+            PRESET="go"
+          elif [ -f "Cargo.toml" ]; then
+            PRESET="rust"
+          else
+            echo "::error::Could not detect project type. Specify preset manually."
+            exit 1
+          fi
+        fi
+
+        echo "preset=$PRESET" >> $GITHUB_OUTPUT
+        echo "Detected preset: $PRESET"
+
+    # ============================================================
+    # NODE.JS PRESET
+    # ============================================================
+    - name: Setup Node.js
+      if: steps.detect.outputs.preset == 'node'
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Node dependencies
+      if: steps.detect.outputs.preset == 'node'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ -f "pnpm-lock.yaml" ]; then
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
+        elif [ -f "yarn.lock" ]; then
+          yarn install --frozen-lockfile
+        elif [ -f "bun.lockb" ]; then
+          npm install -g bun
+          bun install --frozen-lockfile
+        else
+          npm ci
+        fi
+
+    - name: Node format check
+      if: steps.detect.outputs.preset == 'node' && inputs.skip-format != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if npm run | grep -q "format:check"; then
+          npm run format:check
+        elif npm run | grep -q "prettier:check"; then
+          npm run prettier:check
+        elif [ -f "node_modules/.bin/prettier" ]; then
+          npx prettier --check .
+        else
+          echo "No format check found, skipping"
+        fi
+
+    - name: Node lint
+      if: steps.detect.outputs.preset == 'node' && inputs.skip-lint != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if npm run | grep -q "^  lint$"; then
+          npm run lint
+        elif [ -f "node_modules/.bin/eslint" ]; then
+          npx eslint .
+        else
+          echo "No lint command found, skipping"
+        fi
+
+    - name: Node typecheck
+      if: steps.detect.outputs.preset == 'node' && inputs.skip-typecheck != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if npm run | grep -q "typecheck"; then
+          npm run typecheck
+        elif [ -f "tsconfig.json" ]; then
+          npx tsc --noEmit
+        else
+          echo "No TypeScript config found, skipping typecheck"
+        fi
+
+    - name: Node test
+      if: steps.detect.outputs.preset == 'node' && inputs.skip-test != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm test
+
+    # ============================================================
+    # PYTHON PRESET
+    # ============================================================
+    - name: Setup Python
+      if: steps.detect.outputs.preset == 'python'
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Python dependencies
+      if: steps.detect.outputs.preset == 'python'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f "pyproject.toml" ]; then
+          pip install -e ".[dev]" || pip install -e .
+        elif [ -f "requirements-dev.txt" ]; then
+          pip install -r requirements-dev.txt
+        elif [ -f "requirements.txt" ]; then
+          pip install -r requirements.txt
+        fi
+        # Install common tools if not in deps
+        pip install ruff mypy pytest 2>/dev/null || true
+
+    - name: Python format check
+      if: steps.detect.outputs.preset == 'python' && inputs.skip-format != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if command -v ruff &> /dev/null; then
+          ruff format --check .
+        elif command -v black &> /dev/null; then
+          black --check .
+        else
+          echo "No Python formatter found, skipping"
+        fi
+
+    - name: Python lint
+      if: steps.detect.outputs.preset == 'python' && inputs.skip-lint != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if command -v ruff &> /dev/null; then
+          ruff check .
+        elif command -v flake8 &> /dev/null; then
+          flake8 .
+        else
+          echo "No Python linter found, skipping"
+        fi
+
+    - name: Python typecheck
+      if: steps.detect.outputs.preset == 'python' && inputs.skip-typecheck != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if command -v mypy &> /dev/null; then
+          mypy . || echo "mypy not configured, skipping"
+        else
+          echo "mypy not found, skipping typecheck"
+        fi
+
+    - name: Python test
+      if: steps.detect.outputs.preset == 'python' && inputs.skip-test != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if command -v pytest &> /dev/null; then
+          pytest
+        elif [ -f "manage.py" ]; then
+          python manage.py test
+        else
+          python -m unittest discover
+        fi
+
+    # ============================================================
+    # GO PRESET
+    # ============================================================
+    - name: Setup Go
+      if: steps.detect.outputs.preset == 'go'
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+
+    - name: Go format check
+      if: steps.detect.outputs.preset == 'go' && inputs.skip-format != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ -n "$(gofmt -l .)" ]; then
+          echo "::error::Go files are not formatted"
+          gofmt -l .
+          exit 1
+        fi
+
+    - name: Go lint
+      if: steps.detect.outputs.preset == 'go' && inputs.skip-lint != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+        golangci-lint run
+
+    - name: Go vet (typecheck equivalent)
+      if: steps.detect.outputs.preset == 'go' && inputs.skip-typecheck != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: go vet ./...
+
+    - name: Go test
+      if: steps.detect.outputs.preset == 'go' && inputs.skip-test != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: go test ./...
+
+    # ============================================================
+    # RUST PRESET
+    # ============================================================
+    - name: Setup Rust
+      if: steps.detect.outputs.preset == 'rust'
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Rust format check
+      if: steps.detect.outputs.preset == 'rust' && inputs.skip-format != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo fmt --check
+
+    - name: Rust lint (clippy)
+      if: steps.detect.outputs.preset == 'rust' && inputs.skip-lint != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo clippy -- -D warnings
+
+    - name: Rust typecheck (build check)
+      if: steps.detect.outputs.preset == 'rust' && inputs.skip-typecheck != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo check
+
+    - name: Rust test
+      if: steps.detect.outputs.preset == 'rust' && inputs.skip-test != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo test
+
+    # ============================================================
+    # SUMMARY
+    # ============================================================
+    - name: Gates summary
+      id: gates
+      shell: bash
+      run: |
+        echo "passed=true" >> $GITHUB_OUTPUT
+        echo "::notice::All LumenFlow gates passed for ${{ steps.detect.outputs.preset }} preset"

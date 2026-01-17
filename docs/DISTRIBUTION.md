@@ -175,26 +175,11 @@ Added `apps/github-app/` with cloud-native workflow enforcement:
 - Automatic stamp creation on PR merge
 - Subscription tier checking (free: 10 WUs/month)
 
----
+### 3. lumenflow-gates Action ✅
 
-## Remaining Work
+**Commit:** (2026-01-17)
 
-### 3. GitHub App Manifest ⏳
-
-**Priority:** Medium
-**Effort:** 30 minutes
-
-Create `app.yml` manifest for one-click GitHub App registration:
-- Webhook events: `pull_request`, `check_run`
-- Permissions: `checks:write`, `contents:write`, `pull_requests:read`
-- Callback URLs for OAuth
-
-### 4. lumenflow-gates Action ⏳
-
-**Priority:** High
-**Effort:** 2-4 hours
-
-Create reusable GitHub Action with language presets:
+Added `actions/lumenflow-gates/` with polyglot language presets:
 
 ```yaml
 # Client usage
@@ -203,7 +188,7 @@ Create reusable GitHub Action with language presets:
     preset: auto  # Detects from package.json, pyproject.toml, go.mod
 ```
 
-**Presets to implement:**
+**Presets implemented:**
 
 | Preset | Detection | Gates |
 |--------|-----------|-------|
@@ -213,19 +198,28 @@ Create reusable GitHub Action with language presets:
 | `rust` | Cargo.toml | cargo fmt, cargo clippy, cargo test |
 | `auto` | All above | Detect and run appropriate preset |
 
-**Location options:**
-- `actions/lumenflow-gates/` in this repo
-- Separate repo `hellmai/lumenflow-gates`
+### 4. GitHub App Manifest ✅
 
-### 5. Vercel Deployment Config ⏳
+**Commit:** (2026-01-17)
 
-**Priority:** Medium
-**Effort:** 1 hour
+Added `apps/github-app/app.yml` for one-click GitHub App registration:
+- Webhook events: `pull_request`, `check_run`, `check_suite`
+- Permissions: `checks:write`, `contents:write`, `pull_requests:read`, `issues:write`
+- Marketplace categories: continuous-integration, code-quality, project-management
 
-Add Vercel configuration for GitHub App deployment:
-- `vercel.json` in `apps/github-app/`
-- Environment variables template
-- Edge function configuration
+### 5. Vercel Deployment Config ✅
+
+**Commit:** (2026-01-17)
+
+Added deployment configuration:
+- `apps/github-app/vercel.json` - Vercel project config
+- `apps/github-app/api/webhook.ts` - Vercel API route
+- `apps/github-app/api/health.ts` - Health check endpoint
+- `apps/github-app/.env.example` - Environment variables template
+
+---
+
+## Remaining Work
 
 ### 6. GitHub Marketplace Listing ⏳
 
@@ -241,7 +235,15 @@ Create Marketplace listing with pricing tiers:
 | Business | $99/mo | 500 | Priority support, custom lanes |
 | Enterprise | Custom | Unlimited | SSO, SLA, dedicated support |
 
-### 7. Landing Page & Docs ⏳
+### 7. Register GitHub App ⏳
+
+**Priority:** High (blocks deployment)
+**Effort:** 30 minutes
+
+Register app at https://github.com/settings/apps/new using the manifest.
+Required before Vercel deployment can receive webhooks.
+
+### 8. Landing Page & Docs ⏳
 
 **Priority:** Low (marketing)
 **Effort:** 2-3 days
@@ -328,6 +330,8 @@ This is unaffected by distribution packaging. The `file:` links point to source,
 
 ## References
 
-- [Original planning conversation](../PLANNING-NOTES.md) (if exists)
-- [tsconfig.build.json](../tsconfig.build.json)
-- [GitHub App README](../apps/github-app/README.md)
+- [tsconfig.build.json](../tsconfig.build.json) - Distribution build config
+- [GitHub App README](../apps/github-app/README.md) - SaaS webhook handler
+- [GitHub App Manifest](../apps/github-app/app.yml) - One-click registration
+- [lumenflow-gates Action](../actions/lumenflow-gates/README.md) - Language presets
+- [Vercel Config](../apps/github-app/vercel.json) - Deployment config
