@@ -1,5 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, rmSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -46,25 +45,25 @@ describe('lane-lock', () => {
   describe('getLocksDir', () => {
     it('returns correct locks directory path', () => {
       const locksDir = getLocksDir(testDir);
-      assert.ok(locksDir.endsWith('.beacon/locks'));
-      assert.ok(locksDir.startsWith(testDir));
+      expect(locksDir.endsWith('.beacon/locks')).toBeTruthy();
+      expect(locksDir.startsWith(testDir)).toBeTruthy();
     });
   });
 
   describe('getLockFilePath', () => {
     it('converts lane name to kebab-case lock file', () => {
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
-      assert.ok(lockPath.endsWith('operations-tooling.lock'));
+      expect(lockPath.endsWith('operations-tooling.lock')).toBeTruthy();
     });
 
     it('handles parent-only lane names', () => {
       const lockPath = getLockFilePath('Intelligence', testDir);
-      assert.ok(lockPath.endsWith('intelligence.lock'));
+      expect(lockPath.endsWith('intelligence.lock')).toBeTruthy();
     });
 
     it('handles multi-word parent with sub-lane', () => {
       const lockPath = getLockFilePath('Core Systems: API', testDir);
-      assert.ok(lockPath.endsWith('core-systems-api.lock'));
+      expect(lockPath.endsWith('core-systems-api.lock')).toBeTruthy();
     });
   });
 
@@ -72,10 +71,10 @@ describe('lane-lock', () => {
     it('acquires lock successfully when no existing lock', () => {
       const result = acquireLaneLock('Operations: Tooling', 'WU-123', { baseDir: testDir });
 
-      assert.equal(result.acquired, true);
-      assert.equal(result.error, null);
-      assert.equal(result.existingLock, null);
-      assert.equal(result.isStale, false);
+      expect(result.acquired).toBe(true);
+      expect(result.error).toBe(null);
+      expect(result.existingLock).toBe(null);
+      expect(result.isStale).toBe(false);
 
       // Verify lock file was created
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
@@ -91,9 +90,9 @@ describe('lane-lock', () => {
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
       const content = JSON.parse(readFileSync(lockPath, 'utf8'));
 
-      assert.equal(content.wuId, 'WU-456');
-      assert.equal(content.agentSession, 'session-abc');
-      assert.equal(content.lane, 'Operations: Tooling');
+      expect(content.wuId).toBe('WU-456');
+      expect(content.agentSession).toBe('session-abc');
+      expect(content.lane).toBe('Operations: Tooling');
       assert.ok(content.timestamp, 'Should have timestamp');
       assert.ok(content.pid, 'Should have pid');
     });
@@ -105,10 +104,10 @@ describe('lane-lock', () => {
       // Second attempt by different WU
       const result = acquireLaneLock('Operations: Tooling', 'WU-200', { baseDir: testDir });
 
-      assert.equal(result.acquired, false);
-      assert.ok(result.error.includes('WU-100'));
-      assert.ok(result.existingLock);
-      assert.equal(result.existingLock.wuId, 'WU-100');
+      expect(result.acquired).toBe(false);
+      expect(result.error.includes('WU-100')).toBe(true);
+      expect(result.existingLock).toBeTruthy();
+      expect(result.existingLock.wuId).toBe('WU-100');
     });
 
     it('allows re-acquisition by same WU', () => {
@@ -118,16 +117,16 @@ describe('lane-lock', () => {
       // Re-acquisition by same WU
       const result = acquireLaneLock('Operations: Tooling', 'WU-100', { baseDir: testDir });
 
-      assert.equal(result.acquired, true, 'Should allow same WU to re-acquire');
-      assert.equal(result.error, null);
+      expect(result.acquired).toBe(true, 'Should allow same WU to re-acquire');
+      expect(result.error).toBe(null);
     });
 
     it('allows different lanes to be locked independently', () => {
       const result1 = acquireLaneLock('Operations: Tooling', 'WU-100', { baseDir: testDir });
       const result2 = acquireLaneLock('Intelligence: Prompts', 'WU-200', { baseDir: testDir });
 
-      assert.equal(result1.acquired, true);
-      assert.equal(result2.acquired, true);
+      expect(result1.acquired).toBe(true);
+      expect(result2.acquired).toBe(true);
     });
 
     it('creates locks directory if it does not exist', () => {
@@ -148,17 +147,17 @@ describe('lane-lock', () => {
 
       const result = releaseLaneLock('Operations: Tooling', { baseDir: testDir });
 
-      assert.equal(result.released, true);
-      assert.equal(result.error, null);
-      assert.equal(result.notFound, false);
+      expect(result.released).toBe(true);
+      expect(result.error).toBe(null);
+      expect(result.notFound).toBe(false);
       assert.ok(!existsSync(lockPath), 'Lock should be removed after release');
     });
 
     it('returns notFound=true when lock does not exist', () => {
       const result = releaseLaneLock('NonExistent: Lane', { baseDir: testDir });
 
-      assert.equal(result.released, true);
-      assert.equal(result.notFound, true);
+      expect(result.released).toBe(true);
+      expect(result.notFound).toBe(true);
     });
 
     it('validates ownership when wuId provided', () => {
@@ -170,8 +169,8 @@ describe('lane-lock', () => {
         wuId: 'WU-999',
       });
 
-      assert.equal(result.released, false);
-      assert.ok(result.error.includes('WU-100'));
+      expect(result.released).toBe(false);
+      expect(result.error.includes('WU-100')).toBe(true);
     });
 
     it('allows release with correct wuId', () => {
@@ -182,7 +181,7 @@ describe('lane-lock', () => {
         wuId: 'WU-100',
       });
 
-      assert.equal(result.released, true);
+      expect(result.released).toBe(true);
     });
 
     it('force=true bypasses ownership check', () => {
@@ -194,7 +193,7 @@ describe('lane-lock', () => {
         force: true,
       });
 
-      assert.equal(result.released, true);
+      expect(result.released).toBe(true);
     });
   });
 
@@ -202,9 +201,9 @@ describe('lane-lock', () => {
     it('returns locked=false when no lock exists', () => {
       const result = checkLaneLock('Operations: Tooling', { baseDir: testDir });
 
-      assert.equal(result.locked, false);
-      assert.equal(result.metadata, null);
-      assert.equal(result.isStale, false);
+      expect(result.locked).toBe(false);
+      expect(result.metadata).toBe(null);
+      expect(result.isStale).toBe(false);
     });
 
     it('returns locked=true with metadata when lock exists', () => {
@@ -212,10 +211,10 @@ describe('lane-lock', () => {
 
       const result = checkLaneLock('Operations: Tooling', { baseDir: testDir });
 
-      assert.equal(result.locked, true);
-      assert.ok(result.metadata);
-      assert.equal(result.metadata.wuId, 'WU-100');
-      assert.equal(result.isStale, false);
+      expect(result.locked).toBe(true);
+      expect(result.metadata).toBeTruthy();
+      expect(result.metadata.wuId).toBe('WU-100');
+      expect(result.isStale).toBe(false);
     });
   });
 
@@ -228,7 +227,7 @@ describe('lane-lock', () => {
         lane: 'Test',
       };
 
-      assert.equal(isLockStale(metadata), false);
+      expect(isLockStale(metadata)).toBe(false);
     });
 
     it('returns false for lock just under 2 hours old', () => {
@@ -241,7 +240,7 @@ describe('lane-lock', () => {
         lane: 'Test',
       };
 
-      assert.equal(isLockStale(metadata), false, 'Lock under 2h should not be stale');
+      expect(isLockStale(metadata)).toBe(false, 'Lock under 2h should not be stale');
     });
 
     it('returns true for lock older than 2 hours (WU-1949)', () => {
@@ -254,7 +253,7 @@ describe('lane-lock', () => {
         lane: 'Test',
       };
 
-      assert.equal(isLockStale(metadata), true, 'Lock over 2h should be stale');
+      expect(isLockStale(metadata)).toBe(true, 'Lock over 2h should be stale');
     });
 
     it('returns true for lock older than 24 hours', () => {
@@ -266,13 +265,13 @@ describe('lane-lock', () => {
         lane: 'Test',
       };
 
-      assert.equal(isLockStale(metadata), true);
+      expect(isLockStale(metadata)).toBe(true);
     });
 
     it('returns true for invalid metadata', () => {
-      assert.equal(isLockStale(null), true);
-      assert.equal(isLockStale({}), true);
-      assert.equal(isLockStale({ wuId: 'WU-100' }), true);
+      expect(isLockStale(null)).toBe(true);
+      expect(isLockStale({})).toBe(true);
+      expect(isLockStale({ wuId: 'WU-100' })).toBe(true);
     });
   });
 
@@ -297,25 +296,25 @@ describe('lane-lock', () => {
     it('respects STALE_LOCK_THRESHOLD_HOURS env var override', () => {
       process.env.STALE_LOCK_THRESHOLD_HOURS = '6';
       const threshold = getStaleThresholdMs();
-      assert.equal(threshold, 6 * 60 * 60 * 1000, 'Should respect env var override');
+      expect(threshold).toBe(6 * 60 * 60 * 1000, 'Should respect env var override');
     });
 
     it('falls back to default for invalid env var value', () => {
       process.env.STALE_LOCK_THRESHOLD_HOURS = 'not-a-number';
       const threshold = getStaleThresholdMs();
-      assert.equal(threshold, 2 * 60 * 60 * 1000, 'Should fall back to default for invalid value');
+      expect(threshold).toBe(2 * 60 * 60 * 1000, 'Should fall back to default for invalid value');
     });
 
     it('falls back to default for zero value', () => {
       process.env.STALE_LOCK_THRESHOLD_HOURS = '0';
       const threshold = getStaleThresholdMs();
-      assert.equal(threshold, 2 * 60 * 60 * 1000, 'Should fall back to default for zero');
+      expect(threshold).toBe(2 * 60 * 60 * 1000, 'Should fall back to default for zero');
     });
 
     it('falls back to default for negative value', () => {
       process.env.STALE_LOCK_THRESHOLD_HOURS = '-5';
       const threshold = getStaleThresholdMs();
-      assert.equal(threshold, 2 * 60 * 60 * 1000, 'Should fall back to default for negative');
+      expect(threshold).toBe(2 * 60 * 60 * 1000, 'Should fall back to default for negative');
     });
   });
 
@@ -338,7 +337,7 @@ describe('lane-lock', () => {
 
       const result = forceRemoveStaleLock('Operations: Tooling', { baseDir: testDir });
 
-      assert.equal(result.released, true);
+      expect(result.released).toBe(true);
       assert.ok(!existsSync(lockPath), 'Stale lock should be removed');
     });
 
@@ -347,8 +346,8 @@ describe('lane-lock', () => {
 
       const result = forceRemoveStaleLock('Operations: Tooling', { baseDir: testDir });
 
-      assert.equal(result.released, false);
-      assert.ok(result.error.includes('not stale'));
+      expect(result.released).toBe(false);
+      expect(result.error.includes('not stale')).toBe(true);
 
       // Lock should still exist
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
@@ -358,15 +357,15 @@ describe('lane-lock', () => {
     it('returns notFound=true when no lock exists', () => {
       const result = forceRemoveStaleLock('NonExistent: Lane', { baseDir: testDir });
 
-      assert.equal(result.released, true);
-      assert.equal(result.notFound, true);
+      expect(result.released).toBe(true);
+      expect(result.notFound).toBe(true);
     });
   });
 
   describe('readLockMetadata', () => {
     it('returns null for non-existent file', () => {
       const result = readLockMetadata('/nonexistent/path/file.lock');
-      assert.equal(result, null);
+      expect(result).toBe(null);
     });
 
     it('returns null for invalid JSON', () => {
@@ -376,7 +375,7 @@ describe('lane-lock', () => {
       writeFileSync(lockPath, 'not valid json');
 
       const result = readLockMetadata(lockPath);
-      assert.equal(result, null);
+      expect(result).toBe(null);
     });
 
     it('returns parsed metadata for valid lock file', () => {
@@ -387,7 +386,7 @@ describe('lane-lock', () => {
       writeFileSync(lockPath, JSON.stringify(metadata));
 
       const result = readLockMetadata(lockPath);
-      assert.equal(result.wuId, 'WU-100');
+      expect(result.wuId).toBe('WU-100');
     });
   });
 
@@ -401,15 +400,15 @@ describe('lane-lock', () => {
 
       // Exactly one should succeed
       const successCount = [result1.acquired, result2.acquired].filter(Boolean).length;
-      assert.equal(successCount, 1, 'Exactly one agent should acquire the lock');
+      expect(successCount).toBe(1, 'Exactly one agent should acquire the lock');
 
       // The one that failed should report the winner
       const failed = result1.acquired ? result2 : result1;
       const winner = result1.acquired ? result1 : result2;
 
-      assert.equal(failed.acquired, false);
-      assert.ok(failed.existingLock);
-      assert.equal(failed.existingLock.wuId, winner.acquired ? 'WU-AGENT-1' : 'WU-AGENT-2');
+      expect(failed.acquired).toBe(false);
+      expect(failed.existingLock).toBeTruthy();
+      expect(failed.existingLock.wuId).toBe(winner.acquired ? 'WU-AGENT-1' : 'WU-AGENT-2');
     });
   });
 
@@ -432,8 +431,8 @@ describe('lane-lock', () => {
 
       const result = acquireLaneLock('Operations: Tooling', 'WU-200', { baseDir: testDir });
 
-      assert.equal(result.acquired, true);
-      assert.equal(result.error, null);
+      expect(result.acquired).toBe(true);
+      expect(result.error).toBe(null);
     });
   });
 
@@ -452,14 +451,14 @@ describe('lane-lock', () => {
           agentSession: null, // wu-claim passes null initially
         });
 
-        assert.equal(result.acquired, true);
+        expect(result.acquired).toBe(true);
 
         // Verify lock file contains expected metadata structure
         const lockPath = getLockFilePath('Operations: Tooling', testDir);
         const metadata = readLockMetadata(lockPath);
 
-        assert.equal(metadata.wuId, 'WU-CLAIM-TEST');
-        assert.equal(metadata.lane, 'Operations: Tooling');
+        expect(metadata.wuId).toBe('WU-CLAIM-TEST');
+        expect(metadata.lane).toBe('Operations: Tooling');
         assert.ok(metadata.timestamp, 'Should have timestamp');
         assert.ok(metadata.pid, 'Should have pid');
       });
@@ -471,9 +470,9 @@ describe('lane-lock', () => {
         // Second claim on same lane fails
         const result = acquireLaneLock('Operations: Tooling', 'WU-SECOND', { baseDir: testDir });
 
-        assert.equal(result.acquired, false);
-        assert.ok(result.error.includes('WU-FIRST'));
-        assert.equal(result.existingLock.wuId, 'WU-FIRST');
+        expect(result.acquired).toBe(false);
+        expect(result.error.includes('WU-FIRST')).toBe(true);
+        expect(result.existingLock.wuId).toBe('WU-FIRST');
       });
     });
 
@@ -488,8 +487,8 @@ describe('lane-lock', () => {
           wuId: 'WU-DONE-TEST',
         });
 
-        assert.equal(result.released, true);
-        assert.equal(result.notFound, false);
+        expect(result.released).toBe(true);
+        expect(result.notFound).toBe(false);
 
         // Lock should be gone
         const lockPath = getLockFilePath('Operations: Tooling', testDir);
@@ -503,8 +502,8 @@ describe('lane-lock', () => {
           wuId: 'WU-OLD',
         });
 
-        assert.equal(result.released, true);
-        assert.equal(result.notFound, true);
+        expect(result.released).toBe(true);
+        expect(result.notFound).toBe(true);
       });
     });
 
@@ -519,8 +518,8 @@ describe('lane-lock', () => {
           wuId: 'WU-BLOCK-TEST',
         });
 
-        assert.equal(result.released, true);
-        assert.equal(result.notFound, false);
+        expect(result.released).toBe(true);
+        expect(result.notFound).toBe(false);
 
         // Lock should be gone - lane now free for another WU
         const lockPath = getLockFilePath('Intelligence: Prompts', testDir);
@@ -535,7 +534,7 @@ describe('lane-lock', () => {
         // New WU can claim the lane
         const result = acquireLaneLock('Core Systems: API', 'WU-NEW', { baseDir: testDir });
 
-        assert.equal(result.acquired, true);
+        expect(result.acquired).toBe(true);
       });
     });
 
@@ -558,16 +557,16 @@ describe('lane-lock', () => {
 
         // Contract: wu-claim checks isStale and calls forceRemoveStaleLock
         const lockStatus = checkLaneLock('Operations: Tooling', { baseDir: testDir });
-        assert.equal(lockStatus.locked, true);
-        assert.equal(lockStatus.isStale, true);
+        expect(lockStatus.locked).toBe(true);
+        expect(lockStatus.isStale).toBe(true);
 
         // Force remove stale lock
         const removeResult = forceRemoveStaleLock('Operations: Tooling', { baseDir: testDir });
-        assert.equal(removeResult.released, true);
+        expect(removeResult.released).toBe(true);
 
         // Now new claim should succeed
         const claimResult = acquireLaneLock('Operations: Tooling', 'WU-NEW-CLAIM', { baseDir: testDir });
-        assert.equal(claimResult.acquired, true);
+        expect(claimResult.acquired).toBe(true);
       });
     });
   });
@@ -590,7 +589,7 @@ describe('lane-lock', () => {
           lane: 'Test',
         };
 
-        assert.equal(isZombieLock(metadata), false);
+        expect(isZombieLock(metadata)).toBe(false);
       });
 
       it('returns true for lock held by non-existent process', () => {
@@ -602,13 +601,13 @@ describe('lane-lock', () => {
           lane: 'Test',
         };
 
-        assert.equal(isZombieLock(metadata), true);
+        expect(isZombieLock(metadata)).toBe(true);
       });
 
       it('returns true for invalid metadata (missing pid)', () => {
-        assert.equal(isZombieLock(null), true);
-        assert.equal(isZombieLock({}), true);
-        assert.equal(isZombieLock({ wuId: 'WU-100' }), true);
+        expect(isZombieLock(null)).toBe(true);
+        expect(isZombieLock({})).toBe(true);
+        expect(isZombieLock({ wuId: 'WU-100' })).toBe(true);
       });
 
       it('returns true for non-numeric pid', () => {
@@ -619,7 +618,7 @@ describe('lane-lock', () => {
           lane: 'Test',
         };
 
-        assert.equal(isZombieLock(metadata), true);
+        expect(isZombieLock(metadata)).toBe(true);
       });
     });
 
@@ -641,13 +640,13 @@ describe('lane-lock', () => {
         // acquireLaneLock should detect zombie and auto-clear
         const result = acquireLaneLock('Operations: Tooling', 'WU-NEW', { baseDir: testDir });
 
-        assert.equal(result.acquired, true);
-        assert.equal(result.error, null);
+        expect(result.acquired).toBe(true);
+        expect(result.error).toBe(null);
 
         // Verify new lock metadata
         const newMetadata = readLockMetadata(lockPath);
-        assert.equal(newMetadata.wuId, 'WU-NEW');
-        assert.equal(newMetadata.pid, process.pid);
+        expect(newMetadata.wuId).toBe('WU-NEW');
+        expect(newMetadata.pid).toBe(process.pid);
       });
 
       it('does not auto-clear lock held by running process', () => {
@@ -657,8 +656,8 @@ describe('lane-lock', () => {
         // Attempt to acquire by different WU should fail
         const result = acquireLaneLock('Operations: Tooling', 'WU-NEW', { baseDir: testDir });
 
-        assert.equal(result.acquired, false);
-        assert.ok(result.error.includes('WU-ACTIVE'));
+        expect(result.acquired).toBe(false);
+        expect(result.error.includes('WU-ACTIVE')).toBe(true);
       });
     });
   });
@@ -683,9 +682,9 @@ describe('lane-lock', () => {
         reason: 'Process crashed',
       });
 
-      assert.equal(result.released, true);
-      assert.equal(result.reason, 'Process crashed');
-      assert.ok(!existsSync(lockPath));
+      expect(result.released).toBe(true);
+      expect(result.reason).toBe('Process crashed');
+      expect(!existsSync(lockPath)).toBeTruthy();
     });
 
     it('unlocks stale lock without --force', () => {
@@ -709,8 +708,8 @@ describe('lane-lock', () => {
         reason: 'Agent abandoned',
       });
 
-      assert.equal(result.released, true);
-      assert.ok(!existsSync(lockPath));
+      expect(result.released).toBe(true);
+      expect(!existsSync(lockPath)).toBeTruthy();
     });
 
     it('refuses to unlock active lock without --force', () => {
@@ -722,13 +721,13 @@ describe('lane-lock', () => {
         reason: 'Testing',
       });
 
-      assert.equal(result.released, false);
-      assert.ok(result.error.includes('active'));
-      assert.ok(result.error.includes('--force'));
+      expect(result.released).toBe(false);
+      expect(result.error.includes('active')).toBe(true);
+      expect(result.error.includes('--force')).toBe(true);
 
       // Lock should still exist
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
-      assert.ok(existsSync(lockPath));
+      expect(existsSync(lockPath)).toBeTruthy();
     });
 
     it('unlocks active lock with --force', () => {
@@ -741,13 +740,13 @@ describe('lane-lock', () => {
         force: true,
       });
 
-      assert.equal(result.released, true);
-      assert.equal(result.forced, true);
-      assert.equal(result.reason, 'Emergency override');
+      expect(result.released).toBe(true);
+      expect(result.forced).toBe(true);
+      expect(result.reason).toBe('Emergency override');
 
       // Lock should be gone
       const lockPath = getLockFilePath('Operations: Tooling', testDir);
-      assert.ok(!existsSync(lockPath));
+      expect(!existsSync(lockPath)).toBeTruthy();
     });
 
     it('requires reason parameter', () => {
@@ -769,8 +768,8 @@ describe('lane-lock', () => {
         // No reason provided
       });
 
-      assert.equal(result.released, false);
-      assert.ok(result.error.includes('reason'));
+      expect(result.released).toBe(false);
+      expect(result.error.includes('reason')).toBe(true);
     });
 
     it('handles non-existent lock gracefully', () => {
@@ -779,8 +778,8 @@ describe('lane-lock', () => {
         reason: 'Cleanup attempt',
       });
 
-      assert.equal(result.released, true);
-      assert.equal(result.notFound, true);
+      expect(result.released).toBe(true);
+      expect(result.notFound).toBe(true);
     });
   });
 });

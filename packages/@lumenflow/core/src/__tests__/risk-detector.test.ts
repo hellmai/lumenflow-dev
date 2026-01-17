@@ -13,8 +13,7 @@
  * - high-risk: Auth, PHI, RLS code changes (run integration tests)
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   detectRiskTier,
   RISK_TIERS,
@@ -27,10 +26,10 @@ import {
 
 describe('RISK_TIERS', () => {
   it('should define all risk tier constants', () => {
-    assert.equal(RISK_TIERS.DOCS_ONLY, 'docs-only');
-    assert.equal(RISK_TIERS.STANDARD, 'standard');
-    assert.equal(RISK_TIERS.SAFETY_CRITICAL, 'safety-critical');
-    assert.equal(RISK_TIERS.HIGH_RISK, 'high-risk');
+    expect(RISK_TIERS.DOCS_ONLY).toBe('docs-only');
+    expect(RISK_TIERS.STANDARD).toBe('standard');
+    expect(RISK_TIERS.SAFETY_CRITICAL).toBe('safety-critical');
+    expect(RISK_TIERS.HIGH_RISK).toBe('high-risk');
   });
 });
 
@@ -90,7 +89,7 @@ describe('HIGH_RISK_PATH_PATTERNS', () => {
     const hasGenericMigration = HIGH_RISK_PATH_PATTERNS.some(
       (p) => p.includes('/migrations/')
     );
-    assert.equal(hasGenericMigration, false);
+    expect(hasGenericMigration).toBe(false);
   });
 
   it('should include RLS paths', () => {
@@ -103,72 +102,72 @@ describe('HIGH_RISK_PATH_PATTERNS', () => {
 
 describe('isSafetyCriticalTest', () => {
   it('should identify red-flag tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/__tests__/red-flag.test.ts'), true);
-    assert.equal(isSafetyCriticalTest('src/components/__tests__/RedFlagAlert.test.tsx'), true);
+    expect(isSafetyCriticalTest('src/lib/__tests__/red-flag.test.ts')).toBe(true);
+    expect(isSafetyCriticalTest('src/components/__tests__/RedFlagAlert.test.tsx')).toBe(true);
   });
 
   it('should identify PHI tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/phi/__tests__/patterns.test.ts'), true);
-    assert.equal(isSafetyCriticalTest('src/components/ui/__tests__/PHIGuard.test.tsx'), true);
-    assert.equal(isSafetyCriticalTest('src/components/ui/__tests__/Composer.phi.test.tsx'), true);
+    expect(isSafetyCriticalTest('src/lib/phi/__tests__/patterns.test.ts')).toBe(true);
+    expect(isSafetyCriticalTest('src/components/ui/__tests__/PHIGuard.test.tsx')).toBe(true);
+    expect(isSafetyCriticalTest('src/components/ui/__tests__/Composer.phi.test.tsx')).toBe(true);
   });
 
   it('should identify escalation tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/escalationTrigger.test.ts'), true);
-    assert.equal(isSafetyCriticalTest('src/components/escalation/__tests__/EscalationHistory.test.tsx'), true);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/escalationTrigger.test.ts')).toBe(true);
+    expect(isSafetyCriticalTest('src/components/escalation/__tests__/EscalationHistory.test.tsx')).toBe(true);
   });
 
   it('should identify privacy detector tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/privacyDetector.test.ts'), true);
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/privacyDetector.golden.test.ts'), true);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/privacyDetector.test.ts')).toBe(true);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/privacyDetector.golden.test.ts')).toBe(true);
   });
 
   it('should identify constitutional enforcer tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/constitutionalEnforcer.test.ts'), true);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/constitutionalEnforcer.test.ts')).toBe(true);
   });
 
   it('should identify safe prompt wrapper tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/safePromptWrapper.test.ts'), true);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/safePromptWrapper.test.ts')).toBe(true);
   });
 
   it('should return false for non-safety-critical tests', () => {
-    assert.equal(isSafetyCriticalTest('src/lib/__tests__/utils.test.ts'), false);
-    assert.equal(isSafetyCriticalTest('src/components/__tests__/Button.test.tsx'), false);
-    assert.equal(isSafetyCriticalTest('src/lib/llm/__tests__/orchestrator.test.ts'), false);
+    expect(isSafetyCriticalTest('src/lib/__tests__/utils.test.ts')).toBe(false);
+    expect(isSafetyCriticalTest('src/components/__tests__/Button.test.tsx')).toBe(false);
+    expect(isSafetyCriticalTest('src/lib/llm/__tests__/orchestrator.test.ts')).toBe(false);
   });
 });
 
 describe('isHighRiskPath', () => {
   it('should identify auth paths', () => {
-    assert.equal(isHighRiskPath('src/lib/auth/getUser.ts'), true);
-    assert.equal(isHighRiskPath('src/lib/auth/__tests__/getUser.test.ts'), true);
-    assert.equal(isHighRiskPath('apps/web/src/lib/auth/session.ts'), true);
+    expect(isHighRiskPath('src/lib/auth/getUser.ts')).toBe(true);
+    expect(isHighRiskPath('src/lib/auth/__tests__/getUser.test.ts')).toBe(true);
+    expect(isHighRiskPath('apps/web/src/lib/auth/session.ts')).toBe(true);
   });
 
   it('should identify PHI paths', () => {
-    assert.equal(isHighRiskPath('src/lib/phi/patterns.ts'), true);
-    assert.equal(isHighRiskPath('packages/@exampleapp/infrastructure/src/phi/detector.ts'), true);
+    expect(isHighRiskPath('src/lib/phi/patterns.ts')).toBe(true);
+    expect(isHighRiskPath('packages/@exampleapp/infrastructure/src/phi/detector.ts')).toBe(true);
   });
 
   it('should not treat migrations as high-risk by path alone', () => {
-    assert.equal(isHighRiskPath('supabase/supabase/migrations/20240101_init.sql'), false);
-    assert.equal(isHighRiskPath('supabase/supabase/migrations/20240102_add_rls.sql'), false);
+    expect(isHighRiskPath('supabase/supabase/migrations/20240101_init.sql')).toBe(false);
+    expect(isHighRiskPath('supabase/supabase/migrations/20240102_add_rls.sql')).toBe(false);
   });
 
   it('should identify RLS paths', () => {
-    assert.equal(isHighRiskPath('supabase/rls/policies.sql'), true);
-    assert.equal(isHighRiskPath('src/lib/rls/helpers.ts'), true);
+    expect(isHighRiskPath('supabase/rls/policies.sql')).toBe(true);
+    expect(isHighRiskPath('src/lib/rls/helpers.ts')).toBe(true);
   });
 
   it('should identify policy paths', () => {
-    assert.equal(isHighRiskPath('src/lib/policy/engine.ts'), true);
-    assert.equal(isHighRiskPath('apps/web/src/lib/policy/referee.ts'), true);
+    expect(isHighRiskPath('src/lib/policy/engine.ts')).toBe(true);
+    expect(isHighRiskPath('apps/web/src/lib/policy/referee.ts')).toBe(true);
   });
 
   it('should return false for non-high-risk paths', () => {
-    assert.equal(isHighRiskPath('src/lib/utils.ts'), false);
-    assert.equal(isHighRiskPath('src/components/Button.tsx'), false);
-    assert.equal(isHighRiskPath('tools/lib/gates.js'), false);
+    expect(isHighRiskPath('src/lib/utils.ts')).toBe(false);
+    expect(isHighRiskPath('src/components/Button.tsx')).toBe(false);
+    expect(isHighRiskPath('tools/lib/gates.js')).toBe(false);
   });
 });
 
@@ -196,7 +195,7 @@ describe('isHighRiskMigration', () => {
   });
 
   it('should return false for non-migration paths', () => {
-    assert.equal(isHighRiskMigration('supabase/supabase/tests/001-rls.sql'), false);
+    expect(isHighRiskMigration('supabase/supabase/tests/001-rls.sql')).toBe(false);
   });
 });
 
@@ -205,7 +204,7 @@ describe('detectRiskTier', () => {
     it('should detect docs-only when all files are markdown', () => {
       const changedFiles = ['README.md', 'docs/guide.md', 'CLAUDE.md'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
 
     it('should detect docs-only when all files are in docs/ directory', () => {
@@ -214,19 +213,19 @@ describe('detectRiskTier', () => {
         'docs/README.md',
       ];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
 
     it('should detect docs-only for ai/ directory changes', () => {
       const changedFiles = ['ai/onboarding/guide.md', 'ai/prompts/safety.txt'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
 
     it('should detect docs-only for .claude/ directory changes', () => {
       const changedFiles = ['.claude/skills/SKILL.md', '.claude/rules/git-safety.md'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
   });
 
@@ -234,32 +233,32 @@ describe('detectRiskTier', () => {
     it('should detect high-risk when auth files are changed', () => {
       const changedFiles = ['src/lib/auth/getUser.ts', 'src/lib/utils.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.HIGH_RISK);
-      assert.ok(result.highRiskPaths.length > 0);
+      expect(result.tier).toBe(RISK_TIERS.HIGH_RISK);
+      expect(result.highRiskPaths.length > 0).toBeTruthy();
     });
 
     it('should detect high-risk when PHI files are changed', () => {
       const changedFiles = ['src/lib/phi/detector.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.HIGH_RISK);
+      expect(result.tier).toBe(RISK_TIERS.HIGH_RISK);
     });
 
     it('should detect high-risk when migrations include policy keywords', () => {
       const changedFiles = ['supabase/supabase/migrations/20240101_policy.sql'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.HIGH_RISK);
+      expect(result.tier).toBe(RISK_TIERS.HIGH_RISK);
     });
 
     it('should keep schema-only migrations in the standard tier', () => {
       const changedFiles = ['supabase/supabase/migrations/20240101_init.sql'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.STANDARD);
+      expect(result.tier).toBe(RISK_TIERS.STANDARD);
     });
 
     it('should detect high-risk when RLS files are changed', () => {
       const changedFiles = ['src/lib/rls/policies.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.HIGH_RISK);
+      expect(result.tier).toBe(RISK_TIERS.HIGH_RISK);
     });
   });
 
@@ -267,13 +266,13 @@ describe('detectRiskTier', () => {
     it('should detect standard for regular code changes', () => {
       const changedFiles = ['src/lib/utils.ts', 'src/components/Button.tsx'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.STANDARD);
+      expect(result.tier).toBe(RISK_TIERS.STANDARD);
     });
 
     it('should detect standard when code and docs are mixed but no high-risk', () => {
       const changedFiles = ['src/lib/utils.ts', 'docs/guide.md'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.STANDARD);
+      expect(result.tier).toBe(RISK_TIERS.STANDARD);
     });
   });
 
@@ -281,15 +280,15 @@ describe('detectRiskTier', () => {
     it('should always include safety-critical test patterns regardless of tier', () => {
       const changedFiles = ['src/lib/utils.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.ok(Array.isArray(result.safetyCriticalPatterns));
-      assert.ok(result.safetyCriticalPatterns.length > 0);
+      expect(Array.isArray(result.safetyCriticalPatterns)).toBeTruthy();
+      expect(result.safetyCriticalPatterns.length > 0).toBeTruthy();
     });
 
     it('should include the safety-critical patterns for filtering tests', () => {
       const result = detectRiskTier({ changedFiles: ['src/lib/utils.ts'] });
       // Should have patterns that can be used to filter tests
-      assert.ok(result.safetyCriticalPatterns.some((p) => p.includes('phi') || p.includes('PHI')));
-      assert.ok(result.safetyCriticalPatterns.some((p) => p.includes('escalation')));
+      expect(result.safetyCriticalPatterns.some((p) => p.includes('phi') || p.includes('PHI'))).toBeTruthy();
+      expect(result.safetyCriticalPatterns.some((p) => p.includes('escalation'))).toBeTruthy();
     });
   });
 
@@ -298,53 +297,53 @@ describe('detectRiskTier', () => {
       const changedFiles = ['src/lib/auth/getUser.ts'];
       const result = detectRiskTier({ changedFiles });
 
-      assert.ok('tier' in result);
-      assert.ok('safetyCriticalPatterns' in result);
-      assert.ok('highRiskPaths' in result);
-      assert.ok('isDocsOnly' in result);
-      assert.ok('shouldRunIntegration' in result);
+      expect('tier' in result).toBeTruthy();
+      expect('safetyCriticalPatterns' in result).toBeTruthy();
+      expect('highRiskPaths' in result).toBeTruthy();
+      expect('isDocsOnly' in result).toBeTruthy();
+      expect('shouldRunIntegration' in result).toBeTruthy();
     });
 
     it('should set shouldRunIntegration true for high-risk tier', () => {
       const changedFiles = ['src/lib/auth/getUser.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.shouldRunIntegration, true);
+      expect(result.shouldRunIntegration).toBe(true);
     });
 
     it('should set shouldRunIntegration false for standard tier', () => {
       const changedFiles = ['src/lib/utils.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.shouldRunIntegration, false);
+      expect(result.shouldRunIntegration).toBe(false);
     });
 
     it('should set isDocsOnly true for docs-only tier', () => {
       const changedFiles = ['docs/guide.md'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.isDocsOnly, true);
+      expect(result.isDocsOnly).toBe(true);
     });
 
     it('should set isDocsOnly false for code changes', () => {
       const changedFiles = ['src/lib/utils.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.isDocsOnly, false);
+      expect(result.isDocsOnly).toBe(false);
     });
   });
 
   describe('edge cases', () => {
     it('should handle empty file list as docs-only', () => {
       const result = detectRiskTier({ changedFiles: [] });
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
 
     it('should handle undefined changedFiles as docs-only', () => {
       const result = detectRiskTier({});
-      assert.equal(result.tier, RISK_TIERS.DOCS_ONLY);
+      expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
 
     it('should normalise Windows paths', () => {
       const changedFiles = ['src\\lib\\auth\\getUser.ts'];
       const result = detectRiskTier({ changedFiles });
-      assert.equal(result.tier, RISK_TIERS.HIGH_RISK);
+      expect(result.tier).toBe(RISK_TIERS.HIGH_RISK);
     });
   });
 });

@@ -3,8 +3,7 @@
  * Test email normalization and domain inference functionality.
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   normalizeToEmail,
   inferDefaultDomain,
@@ -15,79 +14,79 @@ import {
 describe('user-normalizer (WU-1333)', () => {
   describe('isValidEmail', () => {
     it('should return true for valid email addresses', () => {
-      assert.equal(isValidEmail('tom@hellm.ai'), true);
-      assert.equal(isValidEmail('alice@example.com'), true);
-      assert.equal(isValidEmail('user.name@domain.co.uk'), true);
+      expect(isValidEmail('tom@hellm.ai')).toBe(true);
+      expect(isValidEmail('alice@example.com')).toBe(true);
+      expect(isValidEmail('user.name@domain.co.uk')).toBe(true);
     });
 
     it('should return false for usernames without @', () => {
-      assert.equal(isValidEmail('tom'), false);
-      assert.equal(isValidEmail('alice'), false);
+      expect(isValidEmail('tom')).toBe(false);
+      expect(isValidEmail('alice')).toBe(false);
     });
 
     it('should return false for empty/null values', () => {
-      assert.equal(isValidEmail(''), false);
-      assert.equal(isValidEmail(null), false);
-      assert.equal(isValidEmail(undefined), false);
+      expect(isValidEmail('')).toBe(false);
+      expect(isValidEmail(null)).toBe(false);
+      expect(isValidEmail(undefined)).toBe(false);
     });
   });
 
   describe('inferDefaultDomain', () => {
     it('should export DEFAULT_DOMAIN constant', () => {
-      assert.ok(typeof DEFAULT_DOMAIN === 'string');
-      assert.ok(DEFAULT_DOMAIN.length > 0);
+      expect(typeof DEFAULT_DOMAIN === 'string').toBeTruthy();
+      expect(DEFAULT_DOMAIN.length > 0).toBeTruthy();
     });
 
     it('should return a domain string', async () => {
       const domain = await inferDefaultDomain();
-      assert.ok(typeof domain === 'string');
-      assert.ok(domain.length > 0);
+      expect(typeof domain === 'string').toBeTruthy();
+      expect(domain.length > 0).toBeTruthy();
       // Domain should not have @ prefix
-      assert.ok(!domain.startsWith('@'));
+      expect(!domain.startsWith('@')).toBeTruthy();
     });
   });
 
   describe('normalizeToEmail', () => {
     it('should return email unchanged if already valid', async () => {
-      assert.equal(await normalizeToEmail('tom@hellm.ai'), 'tom@hellm.ai');
-      assert.equal(await normalizeToEmail('alice@example.com'), 'alice@example.com');
+      expect(await normalizeToEmail('tom@hellm.ai')).toBe('tom@hellm.ai');
+      expect(await normalizeToEmail('alice@example.com')).toBe('alice@example.com');
     });
 
     it('should append default domain to plain username', async () => {
       const result = await normalizeToEmail('tom');
-      assert.ok(result.includes('@'), 'Result should contain @');
-      assert.ok(result.startsWith('tom@'), 'Result should start with tom@');
+      expect(result.includes('@')).toBe(true);
+      expect(result.startsWith('tom@')).toBe(true);
     });
 
     it('should handle usernames with dots', async () => {
       const result = await normalizeToEmail('user.name');
-      assert.ok(result.includes('@'));
-      assert.ok(result.startsWith('user.name@'));
+      expect(result).toContain('@');
+      expect(result.startsWith('user.name@')).toBeTruthy();
     });
 
     it('should normalize case to lowercase', async () => {
       const result = await normalizeToEmail('TOM');
-      assert.ok(result.startsWith('tom@'));
+      expect(result.startsWith('tom@')).toBeTruthy();
     });
 
     it('should trim whitespace', async () => {
       const result = await normalizeToEmail('  tom  ');
-      assert.ok(result.startsWith('tom@'));
-      assert.ok(!result.includes(' '));
+      expect(result.startsWith('tom@')).toBeTruthy();
+      expect(result).not.toContain(' ');
     });
 
     it('should return empty string for null/undefined', async () => {
-      assert.equal(await normalizeToEmail(null), '');
-      assert.equal(await normalizeToEmail(undefined), '');
+      expect(await normalizeToEmail(null)).toBe('');
+      expect(await normalizeToEmail(undefined)).toBe('');
     });
 
     it('should return empty string for empty string', async () => {
-      assert.equal(await normalizeToEmail(''), '');
+      expect(await normalizeToEmail('')).toBe('');
     });
 
     it('should allow custom domain override', async () => {
       const result = await normalizeToEmail('tom', 'custom.org');
-      assert.equal(result, 'tom@custom.org');
+      expect(result).toBe('tom@custom.org');
     });
 
     it('should roundtrip with normalizeUsername logic', async () => {
@@ -96,7 +95,7 @@ describe('user-normalizer (WU-1333)', () => {
       const email = await normalizeToEmail('tom');
       // Extract username part for comparison
       const username = email.split('@')[0];
-      assert.equal(username, 'tom');
+      expect(username).toBe('tom');
     });
   });
 });

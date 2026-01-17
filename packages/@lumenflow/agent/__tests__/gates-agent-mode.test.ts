@@ -1,17 +1,12 @@
-#!/usr/bin/env node
 /**
  * Tests for gates-agent-mode.mjs
  *
  * WU-1827: Gates verbosity fix - reduce output from 50K+ to <500 chars in agent mode
  *
  * Tests for agent mode detection using TTY check instead of CLAUDE_PROJECT_DIR
- *
- * Run: node --test tools/lib/__tests__/gates-agent-mode.test.mjs
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
-import { join } from 'node:path';
+import { describe, it, expect } from 'vitest';
 
 // Import from @lumenflow/core where the source lives
 import {
@@ -29,7 +24,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it('returns false when stdout IS a TTY (interactive terminal)', () => {
@@ -39,7 +34,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
         stdout: { isTTY: true },
       });
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
 
     it('returns false when in CI environment', () => {
@@ -49,7 +44,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: { CI: 'true' },
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
 
     it('returns false when CI is set to any truthy value', () => {
@@ -58,7 +53,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: { CI: '1' },
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
   });
 
@@ -69,7 +64,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
 
     it('respects --verbose even when CLAUDE_PROJECT_DIR is set', () => {
@@ -78,7 +73,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: { CLAUDE_PROJECT_DIR: '/some/path' },
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
   });
 
@@ -90,7 +85,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: { CLAUDE_PROJECT_DIR: '/some/path' },
         stdout: { isTTY: true }, // Even with TTY, CLAUDE_PROJECT_DIR takes precedence
       });
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
   });
 
@@ -101,7 +96,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it('handles null argv gracefully', () => {
@@ -110,7 +105,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it('handles missing env gracefully', () => {
@@ -119,7 +114,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: undefined,
         stdout: { isTTY: false },
       });
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it('handles missing stdout gracefully (defaults to non-TTY)', () => {
@@ -130,7 +125,7 @@ describe('shouldUseGatesAgentMode', () => {
       });
       // When stdout is undefined, we cannot determine TTY status
       // Should default to agent mode (safer, avoids flooding context)
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
 
     it('handles stdout without isTTY property', () => {
@@ -140,7 +135,7 @@ describe('shouldUseGatesAgentMode', () => {
         stdout: {},
       });
       // Missing isTTY property means non-TTY (or unknown) - assume agent mode
-      assert.strictEqual(result, true);
+      expect(result).toBe(true);
     });
   });
 
@@ -153,7 +148,7 @@ describe('shouldUseGatesAgentMode', () => {
         env: {},
       });
       // --verbose should always return false regardless of TTY
-      assert.strictEqual(result, false);
+      expect(result).toBe(false);
     });
   });
 });
@@ -164,7 +159,7 @@ describe('getGatesLogDir', () => {
       cwd: '/project',
       env: { LUMENFLOW_LOG_DIR: 'custom-logs' },
     });
-    assert.strictEqual(result, '/project/custom-logs');
+    expect(result).toBe('/project/custom-logs');
   });
 
   it('defaults to .logs when LUMENFLOW_LOG_DIR not set', () => {
@@ -172,7 +167,7 @@ describe('getGatesLogDir', () => {
       cwd: '/project',
       env: {},
     });
-    assert.strictEqual(result, '/project/.logs');
+    expect(result).toBe('/project/.logs');
   });
 
   it('handles undefined env', () => {
@@ -180,7 +175,7 @@ describe('getGatesLogDir', () => {
       cwd: '/project',
       env: undefined,
     });
-    assert.strictEqual(result, '/project/.logs');
+    expect(result).toBe('/project/.logs');
   });
 });
 
@@ -195,11 +190,11 @@ describe('buildGatesLogPath', () => {
       now,
     });
 
-    assert.ok(result.includes('.logs'));
-    assert.ok(result.includes('gates-'));
-    assert.ok(result.includes('operations-tooling'));
-    assert.ok(result.includes('wu-1827'));
-    assert.ok(result.includes('.log'));
+    expect(result).toContain('.logs');
+    expect(result).toContain('gates-');
+    expect(result).toContain('operations-tooling');
+    expect(result).toContain('wu-1827');
+    expect(result).toContain('.log');
   });
 
   it('sanitizes lane name for file path', () => {
@@ -212,9 +207,9 @@ describe('buildGatesLogPath', () => {
     });
 
     // Should not contain special characters
-    assert.ok(!result.includes(':'));
-    assert.ok(!result.includes('&'));
-    assert.ok(!result.includes(' '));
+    expect(result).not.toContain(':');
+    expect(result).not.toContain('&');
+    expect(result).not.toContain(' ');
   });
 
   it('handles missing lane and wu gracefully', () => {
@@ -226,7 +221,7 @@ describe('buildGatesLogPath', () => {
       now: new Date('2025-12-18T10:30:00.000Z'),
     });
 
-    assert.ok(result.includes('unknown'));
-    assert.ok(result.includes('.log'));
+    expect(result).toContain('unknown');
+    expect(result).toContain('.log');
   });
 });

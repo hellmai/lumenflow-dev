@@ -7,8 +7,7 @@
  * @see {@link tools/lib/memory-store.mjs} - Implementation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -169,7 +168,7 @@ describe('memory-store', () => {
 
   describe('MEMORY_FILE_NAME constant', () => {
     it('should export the memory file name', () => {
-      assert.equal(MEMORY_FILE_NAME, 'memory.jsonl');
+      expect(MEMORY_FILE_NAME).toBe('memory.jsonl');
     });
   });
 
@@ -177,13 +176,13 @@ describe('memory-store', () => {
     it('should return empty indexed result for missing file', async () => {
       const result = await loadMemory(tempDir);
 
-      assert.ok(result, 'Should return result object');
-      assert.ok(Array.isArray(result.nodes), 'Should have nodes array');
-      assert.equal(result.nodes.length, 0, 'Should have no nodes');
-      assert.ok(result.byId instanceof Map, 'Should have byId Map');
-      assert.equal(result.byId.size, 0, 'byId should be empty');
-      assert.ok(result.byWu instanceof Map, 'Should have byWu Map');
-      assert.equal(result.byWu.size, 0, 'byWu should be empty');
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.nodes)).toBe(true);
+      expect(result.nodes.length).toBe(0);
+      expect(result.byId instanceof Map).toBe(true);
+      expect(result.byId.size).toBe(0);
+      expect(result.byWu instanceof Map).toBe(true);
+      expect(result.byWu.size).toBe(0);
     });
 
     it('should return empty indexed result for empty file', async () => {
@@ -191,8 +190,8 @@ describe('memory-store', () => {
 
       const result = await loadMemory(tempDir);
 
-      assert.equal(result.nodes.length, 0, 'Should have no nodes');
-      assert.equal(result.byId.size, 0, 'byId should be empty');
+      expect(result.nodes.length).toBe(0);
+      expect(result.byId.size).toBe(0);
     });
 
     it('should load and index nodes from JSONL file', async () => {
@@ -201,9 +200,9 @@ describe('memory-store', () => {
 
       const result = await loadMemory(tempDir);
 
-      assert.equal(result.nodes.length, 2, 'Should load 2 nodes');
-      assert.ok(result.byId.has('mem-abc1'), 'Should index by id');
-      assert.ok(result.byId.has('mem-def2'), 'Should index by id');
+      expect(result.nodes.length).toBe(2);
+      expect(result.byId.has('mem-abc1')).toBe(true);
+      expect(result.byId.has('mem-def2')).toBe(true);
     });
 
     it('should index nodes by wu_id', async () => {
@@ -216,10 +215,10 @@ describe('memory-store', () => {
 
       const result = await loadMemory(tempDir);
 
-      assert.ok(result.byWu.has('WU-1463'), 'Should index WU-1463');
-      assert.ok(result.byWu.has('WU-1464'), 'Should index WU-1464');
-      assert.equal(result.byWu.get('WU-1463')!.length, 2, 'WU-1463 should have 2 nodes');
-      assert.equal(result.byWu.get('WU-1464')!.length, 1, 'WU-1464 should have 1 node');
+      expect(result.byWu.has('WU-1463')).toBe(true);
+      expect(result.byWu.has('WU-1464')).toBe(true);
+      expect(result.byWu.get('WU-1463')!.length).toBe(2);
+      expect(result.byWu.get('WU-1464')!.length).toBe(1);
     });
 
     it('should skip empty lines gracefully', async () => {
@@ -228,21 +227,21 @@ describe('memory-store', () => {
 
       const result = await loadMemory(tempDir);
 
-      assert.equal(result.nodes.length, 2, 'Should load 2 nodes, skipping empty line');
+      expect(result.nodes.length).toBe(2);
     });
 
     it('should throw on malformed JSON lines', async () => {
       const content = `${JSON.stringify(FIXTURES.createNode({ id: 'mem-abc1' }))}\n{invalid json}\n`;
       await fs.writeFile(memoryFilePath, content, 'utf-8');
 
-      await assert.rejects(async () => loadMemory(tempDir), /JSON/i, 'Should throw on malformed JSON');
+      await expect(loadMemory(tempDir)).rejects.toThrow(/JSON/i);
     });
 
     it('should validate nodes against schema', async () => {
       const invalidNode = { id: 'invalid-id', type: 'unknown' };
       await writeJsonlFile(memoryFilePath, [invalidNode]);
 
-      await assert.rejects(async () => loadMemory(tempDir), /validation/i, 'Should throw on invalid node');
+      await expect(loadMemory(tempDir)).rejects.toThrow(/validation/i);
     });
   });
 
@@ -254,8 +253,8 @@ describe('memory-store', () => {
 
       const content = await fs.readFile(memoryFilePath, 'utf-8');
       const lines = content.trim().split('\n');
-      assert.equal(lines.length, 1, 'Should have 1 line');
-      assert.deepEqual(JSON.parse(lines[0]), node, 'Should match appended node');
+      expect(lines.length).toBe(1);
+      expect(JSON.parse(lines[0])).toEqual(node);
     });
 
     it('should append a node to existing file without rewriting', async () => {
@@ -267,22 +266,18 @@ describe('memory-store', () => {
 
       const content = await fs.readFile(memoryFilePath, 'utf-8');
       const lines = content.trim().split('\n');
-      assert.equal(lines.length, 2, 'Should have 2 lines');
-      assert.deepEqual(JSON.parse(lines[0]), existingNode, 'First line should be original');
-      assert.deepEqual(JSON.parse(lines[1]), newNode, 'Second line should be new node');
+      expect(lines.length).toBe(2);
+      expect(JSON.parse(lines[0])).toEqual(existingNode);
+      expect(JSON.parse(lines[1])).toEqual(newNode);
     });
 
     it('should validate node before appending', async () => {
       const invalidNode = { id: 'invalid', type: 'bad' };
 
-      await assert.rejects(
-        async () => appendNode(tempDir, invalidNode as any),
-        /validation/i,
-        'Should throw on invalid node'
-      );
+      await expect(appendNode(tempDir, invalidNode as any)).rejects.toThrow(/validation/i);
 
       // File should not exist if append failed
-      await assert.rejects(async () => fs.access(memoryFilePath), 'File should not exist after failed append');
+      await expect(fs.access(memoryFilePath)).rejects.toThrow();
     });
 
     it('should use append mode (not rewrite file)', async () => {
@@ -299,7 +294,7 @@ describe('memory-store', () => {
 
       const afterStats = await fs.stat(memoryFilePath);
       // File should grow, not be rewritten (would have similar size if rewritten)
-      assert.ok(afterStats.size > beforeStats.size, 'File should grow by append');
+      expect(afterStats.size).toBeGreaterThan(beforeStats.size);
     });
 
     it('should return the appended node', async () => {
@@ -307,7 +302,7 @@ describe('memory-store', () => {
 
       const result = await appendNode(tempDir, node);
 
-      assert.deepEqual(result, node, 'Should return the appended node');
+      expect(result).toEqual(node);
     });
   });
 
@@ -315,8 +310,8 @@ describe('memory-store', () => {
     it('should return empty array for missing file', async () => {
       const result = await queryReady(tempDir, 'WU-1463');
 
-      assert.ok(Array.isArray(result), 'Should return array');
-      assert.equal(result.length, 0, 'Should be empty');
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(0);
     });
 
     it('should return empty array for WU with no matching nodes', async () => {
@@ -324,7 +319,7 @@ describe('memory-store', () => {
 
       const result = await queryReady(tempDir, 'WU-9999');
 
-      assert.equal(result.length, 0, 'Should return no nodes for unknown WU');
+      expect(result.length).toBe(0);
     });
 
     it('should return nodes for specific WU only', async () => {
@@ -332,11 +327,8 @@ describe('memory-store', () => {
 
       const result = await queryReady(tempDir, 'WU-1463');
 
-      assert.equal(result.length, 2, 'Should return only WU-1463 nodes');
-      assert.ok(
-        result.every((n) => n.wu_id === 'WU-1463'),
-        'All nodes should belong to WU-1463'
-      );
+      expect(result.length).toBe(2);
+      expect(result.every((n) => n.wu_id === 'WU-1463')).toBe(true);
     });
 
     describe('deterministic ordering', () => {
@@ -345,10 +337,10 @@ describe('memory-store', () => {
 
         const result = await queryReady(tempDir, 'WU-1463');
 
-        assert.equal(result.length, 3, 'Should return all 3 nodes');
-        assert.equal(result[0].id, 'mem-pri0', 'First should be P0');
-        assert.equal(result[1].id, 'mem-pri1', 'Second should be P1');
-        assert.equal(result[2].id, 'mem-pri2', 'Third should be P2');
+        expect(result.length).toBe(3);
+        expect(result[0].id).toBe('mem-pri0');
+        expect(result[1].id).toBe('mem-pri1');
+        expect(result[2].id).toBe('mem-pri2');
       });
 
       it('should order by created_at within same priority (oldest first)', async () => {
@@ -356,10 +348,10 @@ describe('memory-store', () => {
 
         const result = await queryReady(tempDir, 'WU-1463');
 
-        assert.equal(result.length, 3, 'Should return all 3 nodes');
-        assert.equal(result[0].id, 'mem-old1', 'First should be oldest');
-        assert.equal(result[1].id, 'mem-mid1', 'Second should be middle');
-        assert.equal(result[2].id, 'mem-new1', 'Third should be newest');
+        expect(result.length).toBe(3);
+        expect(result[0].id).toBe('mem-old1');
+        expect(result[1].id).toBe('mem-mid1');
+        expect(result[2].id).toBe('mem-new1');
       });
 
       it('should produce consistent ordering on repeated calls', async () => {
@@ -374,8 +366,8 @@ describe('memory-store', () => {
         const ids2 = result2.map((n) => n.id);
         const ids3 = result3.map((n) => n.id);
 
-        assert.deepEqual(ids1, ids2, 'Results should be consistent (1 vs 2)');
-        assert.deepEqual(ids2, ids3, 'Results should be consistent (2 vs 3)');
+        expect(ids1).toEqual(ids2);
+        expect(ids2).toEqual(ids3);
       });
 
       it('should handle nodes without priority (treated as lowest)', async () => {
@@ -395,7 +387,7 @@ describe('memory-store', () => {
         const result = await queryReady(tempDir, 'WU-1463');
 
         // Nodes without priority should come last
-        assert.equal(result[result.length - 1].id, 'mem-nop1', 'No-priority node should be last');
+        expect(result[result.length - 1].id).toBe('mem-nop1');
       });
 
       it('should use stable sort for equal priority and created_at', async () => {
@@ -429,10 +421,7 @@ describe('memory-store', () => {
         ]);
 
         const orderings = results.map((r) => r.map((n) => n.id).join(','));
-        assert.ok(
-          orderings.every((o) => o === orderings[0]),
-          'All orderings should be identical'
-        );
+        expect(orderings.every((o) => o === orderings[0])).toBe(true);
       });
     });
   });
@@ -441,8 +430,8 @@ describe('memory-store', () => {
     it('should return empty array for missing file', async () => {
       const result = await queryByWu(tempDir, 'WU-1463');
 
-      assert.ok(Array.isArray(result), 'Should return array');
-      assert.equal(result.length, 0, 'Should be empty');
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(0);
     });
 
     it('should return empty array for WU with no matching nodes', async () => {
@@ -450,7 +439,7 @@ describe('memory-store', () => {
 
       const result = await queryByWu(tempDir, 'WU-9999');
 
-      assert.equal(result.length, 0, 'Should return no nodes for unknown WU');
+      expect(result.length).toBe(0);
     });
 
     it('should return all nodes for specific WU', async () => {
@@ -458,9 +447,9 @@ describe('memory-store', () => {
 
       const result = await queryByWu(tempDir, 'WU-1463');
 
-      assert.equal(result.length, 2, 'Should return 2 nodes for WU-1463');
+      expect(result.length).toBe(2);
       const ids = result.map((n) => n.id).sort();
-      assert.deepEqual(ids, ['mem-wu01', 'mem-wu03'], 'Should return correct node IDs');
+      expect(ids).toEqual(['mem-wu01', 'mem-wu03']);
     });
 
     it('should not include nodes without wu_id', async () => {
@@ -468,10 +457,7 @@ describe('memory-store', () => {
 
       const result = await queryByWu(tempDir, 'WU-1463');
 
-      assert.ok(
-        result.every((n) => n.wu_id !== undefined),
-        'All nodes should have wu_id'
-      );
+      expect(result.every((n) => n.wu_id !== undefined)).toBe(true);
     });
 
     it('should return nodes in insertion order (file order)', async () => {
@@ -480,8 +466,8 @@ describe('memory-store', () => {
       const result = await queryByWu(tempDir, 'WU-1463');
 
       // WU-1463 nodes appear at positions 0 and 2 in the file
-      assert.equal(result[0].id, 'mem-wu01', 'First should be first in file');
-      assert.equal(result[1].id, 'mem-wu03', 'Second should be second occurrence in file');
+      expect(result[0].id).toBe('mem-wu01');
+      expect(result[1].id).toBe('mem-wu03');
     });
   });
 });

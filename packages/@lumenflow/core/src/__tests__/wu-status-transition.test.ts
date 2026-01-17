@@ -1,14 +1,20 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { transitionWUStatus } from '../wu-status-transition.js';
 import { readWU } from '../wu-yaml.js';
 
-describe('wu-status-transition', () => {
-  let testDir;
-  let originalCwd;
+// Check if running in a project with config files
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const projectRoot = join(__dirname, '../../..');
+const hasConfig = existsSync(join(projectRoot, '.lumenflow.config.yaml'));
+
+// Skip if no project config - these are integration tests
+describe.skipIf(!hasConfig)('wu-status-transition', () => {
+  let testDir: string;
+  let originalCwd: string;
 
   beforeEach(() => {
     // Create temporary directory for each test
@@ -17,7 +23,6 @@ describe('wu-status-transition', () => {
 
     // Create necessary directory structure
     const wuDir = join(testDir, 'docs/04-operations/tasks/wu');
-    const tasksDir = join(testDir, 'docs/04-operations/tasks');
     mkdirSync(wuDir, { recursive: true });
 
     // Change to test directory for relative path operations
@@ -32,7 +37,7 @@ describe('wu-status-transition', () => {
     }
   });
 
-  function createWUFile(id, status = 'in_progress', lane = 'Operations') {
+  function createWUFile(id: string, status = 'in_progress', lane = 'Operations') {
     const wuPath = join(testDir, `docs/04-operations/tasks/wu/${id}.yaml`);
     const content = `id: ${id}
 title: Test WU
@@ -107,31 +112,31 @@ sections:
       });
 
       // Verify return value
-      assert.equal(result.id, 'WU-100');
-      assert.equal(result.fromStatus, 'in_progress');
-      assert.equal(result.toStatus, 'blocked');
+      expect(result.id).toBe('WU-100');
+      expect(result.fromStatus).toBe('in_progress');
+      expect(result.toStatus).toBe('blocked');
 
       // Verify WU YAML updated
       const doc = readWU(wuPath, 'WU-100');
-      assert.equal(doc.status, 'blocked');
-      assert.ok(doc.notes.includes('Blocked'));
-      assert.ok(doc.notes.includes('Blocked by WU-200'));
+      expect(doc.status).toBe('blocked');
+      expect(doc.notes.includes('Blocked')).toBe(true);
+      expect(doc.notes.includes('Blocked by WU-200')).toBe(true);
 
       // Verify backlog.md updated
       const backlogContent = readFileSync(backlogPath, 'utf8');
-      assert.ok(backlogContent.includes('## ⛔ Blocked'));
-      assert.ok(backlogContent.match(/WU-100.*Blocked by WU-200/));
+      expect(backlogContent).toContain('## ⛔ Blocked');
+      expect(backlogContent.match(/WU-100.*Blocked by WU-200/)).toBeTruthy();
 
       // Verify status.md updated
       const statusContent = readFileSync(statusPath, 'utf8');
-      assert.ok(statusContent.includes('## Blocked'));
-      assert.ok(statusContent.match(/WU-100.*Blocked by WU-200/));
+      expect(statusContent).toContain('## Blocked');
+      expect(statusContent.match(/WU-100.*Blocked by WU-200/)).toBeTruthy();
     });
 
     it('should transition from ready to blocked via in_progress', () => {
       const wuPath = createWUFile('WU-100', 'ready');
-      const backlogPath = createBacklogFile();
-      const statusPath = createStatusFile();
+      createBacklogFile();
+      createStatusFile();
 
       // First transition to in_progress
       transitionWUStatus({
@@ -146,16 +151,16 @@ sections:
         reason: 'External dependency',
       });
 
-      assert.equal(result.toStatus, 'blocked');
+      expect(result.toStatus).toBe('blocked');
 
       const doc = readWU(wuPath, 'WU-100');
-      assert.equal(doc.status, 'blocked');
+      expect(doc.status).toBe('blocked');
     });
 
     it('should be idempotent - blocking already blocked WU is safe', () => {
-      const wuPath = createWUFile('WU-100', 'blocked');
-      const backlogPath = createBacklogFile();
-      const statusPath = createStatusFile();
+      createWUFile('WU-100', 'blocked');
+      createBacklogFile();
+      createStatusFile();
 
       // This should not throw, but also not change anything
       const result = transitionWUStatus({
@@ -165,8 +170,8 @@ sections:
       });
 
       // Already blocked, so no state transition
-      assert.equal(result.fromStatus, 'blocked');
-      assert.equal(result.toStatus, 'blocked');
+      expect(result.fromStatus).toBe('blocked');
+      expect(result.toStatus).toBe('blocked');
     });
 
     it('should reject invalid state transition', () => {
@@ -175,21 +180,19 @@ sections:
       createStatusFile();
 
       // Cannot transition from done to blocked
-      assert.throws(
-        () =>
-          transitionWUStatus({
-            id: 'WU-100',
-            direction: 'block',
-            reason: 'Cannot block completed WU',
-          }),
-        /State transition validation failed/
-      );
+      expect(() =>
+        transitionWUStatus({
+          id: 'WU-100',
+          direction: 'block',
+          reason: 'Cannot block completed WU',
+        })
+      ).toThrow(/State transition validation failed/);
     });
 
     it('should handle block without reason', () => {
       const wuPath = createWUFile('WU-100', 'in_progress');
-      const backlogPath = createBacklogFile();
-      const statusPath = createStatusFile();
+      createBacklogFile();
+      createStatusFile();
 
       transitionWUStatus({
         id: 'WU-100',
@@ -197,9 +200,8 @@ sections:
       });
 
       const doc = readWU(wuPath, 'WU-100');
-      assert.equal(doc.status, 'blocked');
-      assert.ok(doc.notes.includes('Blocked'));
-      // Reason is optional, so notes should still be added
+      expect(doc.status).toBe('blocked');
+      expect(doc.notes.includes('Blocked')).toBe(true);
     });
   });
 
@@ -215,20 +217,20 @@ sections:
         reason: 'Blocker resolved',
       });
 
-      assert.equal(result.id, 'WU-100');
-      assert.equal(result.fromStatus, 'blocked');
-      assert.equal(result.toStatus, 'in_progress');
+      expect(result.id).toBe('WU-100');
+      expect(result.fromStatus).toBe('blocked');
+      expect(result.toStatus).toBe('in_progress');
 
       const doc = readWU(wuPath, 'WU-100');
-      assert.equal(doc.status, 'in_progress');
-      assert.ok(doc.notes.includes('Unblocked'));
-      assert.ok(doc.notes.includes('Blocker resolved'));
+      expect(doc.status).toBe('in_progress');
+      expect(doc.notes.includes('Unblocked')).toBe(true);
+      expect(doc.notes.includes('Blocker resolved')).toBe(true);
     });
 
     it('should be idempotent - unblocking already in_progress WU is safe', () => {
-      const wuPath = createWUFile('WU-100', 'in_progress');
-      const backlogPath = createBacklogFile();
-      const statusPath = createStatusFile();
+      createWUFile('WU-100', 'in_progress');
+      createBacklogFile();
+      createStatusFile();
 
       const result = transitionWUStatus({
         id: 'WU-100',
@@ -236,24 +238,24 @@ sections:
       });
 
       // Already in_progress, no state change
-      assert.equal(result.fromStatus, 'in_progress');
-      assert.equal(result.toStatus, 'in_progress');
+      expect(result.fromStatus).toBe('in_progress');
+      expect(result.toStatus).toBe('in_progress');
     });
 
     it('should transition from ready to in_progress', () => {
       const wuPath = createWUFile('WU-100', 'ready');
-      const backlogPath = createBacklogFile();
-      const statusPath = createStatusFile();
+      createBacklogFile();
+      createStatusFile();
 
       const result = transitionWUStatus({
         id: 'WU-100',
         direction: 'unblock', // unblock = move to in_progress
       });
 
-      assert.equal(result.toStatus, 'in_progress');
+      expect(result.toStatus).toBe('in_progress');
 
       const doc = readWU(wuPath, 'WU-100');
-      assert.equal(doc.status, 'in_progress');
+      expect(doc.status).toBe('in_progress');
     });
   });
 
@@ -268,9 +270,9 @@ sections:
       mkdirSync(worktreePath, { recursive: true });
 
       // Mock git worktree remove
-      let removedWorktree = null;
+      let removedWorktree: string | null = null;
       const mockGit = {
-        removeWorktree: (path) => {
+        removeWorktree: (path: string) => {
           removedWorktree = path;
         },
       };
@@ -284,8 +286,8 @@ sections:
       });
 
       // Verify worktree removal was called
-      assert.ok(removedWorktree, 'removeWorktree should have been called');
-      assert.ok(removedWorktree.includes('worktrees/operations-tooling-wu-100'));
+      expect(removedWorktree).toBeTruthy();
+      expect(removedWorktree).toContain('worktrees/operations-tooling-wu-100');
     });
 
     it('should create worktree when unblocking with createWorktree=true', () => {
@@ -294,9 +296,9 @@ sections:
       createStatusFile();
 
       // Mock git run
-      const gitCommands = [];
+      const gitCommands: string[] = [];
       const mockGit = {
-        run: (cmd) => {
+        run: (cmd: string) => {
           gitCommands.push(cmd);
           return '';
         },
@@ -311,8 +313,8 @@ sections:
 
       // Verify worktree creation was called
       const worktreeCall = gitCommands.find((cmd) => cmd.includes('git worktree add'));
-      assert.ok(worktreeCall, 'Expected git worktree add to be called');
-      assert.ok(worktreeCall.includes('worktrees/operations-tooling-wu-100'));
+      expect(worktreeCall).toBeTruthy();
+      expect(worktreeCall).toContain('worktrees/operations-tooling-wu-100');
     });
 
     it('should use custom worktree path if provided', () => {
@@ -324,9 +326,9 @@ sections:
       const customPath = join(testDir, 'custom-worktrees/wu-100');
       mkdirSync(customPath, { recursive: true });
 
-      let removedWorktree = null;
+      let removedWorktree: string | null = null;
       const mockGit = {
-        removeWorktree: (path) => {
+        removeWorktree: (path: string) => {
           removedWorktree = path;
         },
       };
@@ -339,7 +341,7 @@ sections:
         gitAdapter: mockGit,
       });
 
-      assert.equal(removedWorktree, customPath);
+      expect(removedWorktree).toBe(customPath);
     });
   });
 
@@ -348,42 +350,36 @@ sections:
       createBacklogFile();
       createStatusFile();
 
-      assert.throws(
-        () =>
-          transitionWUStatus({
-            id: 'WU-999',
-            direction: 'block',
-          }),
-        /WU file not found/
-      );
+      expect(() =>
+        transitionWUStatus({
+          id: 'WU-999',
+          direction: 'block',
+        })
+      ).toThrow(/WU file not found/);
     });
 
     it('should throw if backlog.md not found', () => {
       createWUFile('WU-100');
       createStatusFile();
 
-      assert.throws(
-        () =>
-          transitionWUStatus({
-            id: 'WU-100',
-            direction: 'block',
-          }),
-        /Missing.*backlog.md/
-      );
+      expect(() =>
+        transitionWUStatus({
+          id: 'WU-100',
+          direction: 'block',
+        })
+      ).toThrow(/Missing.*backlog.md/);
     });
 
     it('should throw if status.md not found', () => {
       createWUFile('WU-100');
       createBacklogFile();
 
-      assert.throws(
-        () =>
-          transitionWUStatus({
-            id: 'WU-100',
-            direction: 'block',
-          }),
-        /Missing.*status.md/
-      );
+      expect(() =>
+        transitionWUStatus({
+          id: 'WU-100',
+          direction: 'block',
+        })
+      ).toThrow(/Missing.*status.md/);
     });
   });
 });

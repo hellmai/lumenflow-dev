@@ -3,8 +3,7 @@
  * Tests for checkpoint-based gate resumption
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
@@ -39,7 +38,7 @@ describe('wu-checkpoint', () => {
 
   describe('CHECKPOINT_SCHEMA_VERSION', () => {
     it('should be a number', () => {
-      assert.equal(typeof CHECKPOINT_SCHEMA_VERSION, 'number');
+      expect(typeof CHECKPOINT_SCHEMA_VERSION).toBe('number');
       assert.ok(CHECKPOINT_SCHEMA_VERSION >= 1, 'version should be >= 1');
     });
   });
@@ -56,7 +55,7 @@ describe('wu-checkpoint', () => {
       );
 
       assert.ok(checkpoint.checkpointId, 'should have checkpointId');
-      assert.equal(checkpoint.wuId, 'WU-100');
+      expect(checkpoint.wuId).toBe('WU-100');
       assert.ok(checkpoint.createdAt, 'should have createdAt');
       assert.ok(checkpoint.worktreeHeadSha, 'should have worktreeHeadSha (or placeholder)');
     });
@@ -87,14 +86,14 @@ describe('wu-checkpoint', () => {
 
       const checkpointPath = path.join(testDir, '.beacon', 'checkpoints', 'WU-200.checkpoint.json');
       const data = JSON.parse(readFileSync(checkpointPath, 'utf8'));
-      assert.equal(data.schemaVersion, CHECKPOINT_SCHEMA_VERSION);
+      expect(data.schemaVersion).toBe(CHECKPOINT_SCHEMA_VERSION);
     });
   });
 
   describe('getCheckpoint()', () => {
     it('should return null when no checkpoint exists', () => {
       const checkpoint = getCheckpoint('WU-999', { baseDir: testDir });
-      assert.equal(checkpoint, null);
+      expect(checkpoint).toBe(null);
     });
 
     it('should return checkpoint data when exists', async () => {
@@ -109,8 +108,8 @@ describe('wu-checkpoint', () => {
 
       const checkpoint = getCheckpoint('WU-100', { baseDir: testDir });
 
-      assert.ok(checkpoint);
-      assert.equal(checkpoint.wuId, 'WU-100');
+      expect(checkpoint).toBeTruthy();
+      expect(checkpoint.wuId).toBe('WU-100');
     });
 
     it('should return null for corrupted checkpoint file', async () => {
@@ -118,7 +117,7 @@ describe('wu-checkpoint', () => {
       writeFileSync(checkpointPath, 'not valid json {{{');
 
       const checkpoint = getCheckpoint('WU-100', { baseDir: testDir });
-      assert.equal(checkpoint, null);
+      expect(checkpoint).toBe(null);
     });
   });
 
@@ -151,7 +150,7 @@ describe('wu-checkpoint', () => {
   describe('canSkipGates()', () => {
     it('should return false when no checkpoint exists', () => {
       const result = canSkipGates('WU-100', { baseDir: testDir });
-      assert.equal(result.canSkip, false);
+      expect(result.canSkip).toBe(false);
     });
 
     it('should return false when checkpoint has different schema version', async () => {
@@ -165,7 +164,7 @@ describe('wu-checkpoint', () => {
       writeFileSync(checkpointPath, JSON.stringify(oldCheckpoint, null, 2));
 
       const result = canSkipGates('WU-100', { baseDir: testDir });
-      assert.equal(result.canSkip, false);
+      expect(result.canSkip).toBe(false);
       assert.ok(result.reason.includes('version'), 'reason should mention version');
     });
 
@@ -193,7 +192,7 @@ describe('wu-checkpoint', () => {
         currentHeadSha: data.worktreeHeadSha,
       });
 
-      assert.equal(result.canSkip, true);
+      expect(result.canSkip).toBe(true);
     });
 
     it('should return false when SHA has changed', async () => {
@@ -219,7 +218,7 @@ describe('wu-checkpoint', () => {
         currentHeadSha: 'different-sha-abc123',
       });
 
-      assert.equal(result.canSkip, false);
+      expect(result.canSkip).toBe(false);
       assert.ok(result.reason.includes('changed'), 'reason should mention changes');
     });
 
@@ -240,7 +239,7 @@ describe('wu-checkpoint', () => {
         currentHeadSha: checkpoint.worktreeHeadSha,
       });
 
-      assert.equal(result.canSkip, false);
+      expect(result.canSkip).toBe(false);
       assert.ok(result.reason.includes('not pass'), 'reason should mention gates not passed');
     });
   });

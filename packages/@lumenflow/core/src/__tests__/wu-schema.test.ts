@@ -10,8 +10,7 @@
  * - Default test structure
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   WUSchema,
   validateWU,
@@ -38,7 +37,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.priority, 'P2');
+      expect(result.data.priority).toBe('P2');
     });
 
     it('should preserve explicit priority value', () => {
@@ -56,8 +55,8 @@ describe('wu-schema defaults', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.priority, 'P1');
+      expect(result.success).toBeTruthy();
+      expect(result.data.priority).toBe('P1');
     });
   });
 
@@ -77,7 +76,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.status, 'ready');
+      expect(result.data.status).toBe('ready');
     });
 
     it('should preserve explicit status value', () => {
@@ -95,8 +94,8 @@ describe('wu-schema defaults', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.status, 'in_progress');
+      expect(result.success).toBeTruthy();
+      expect(result.data.status).toBe('in_progress');
     });
   });
 
@@ -116,7 +115,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.type, 'feature');
+      expect(result.data.type).toBe('feature');
     });
 
     it('should preserve explicit type value', () => {
@@ -134,8 +133,8 @@ describe('wu-schema defaults', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.type, 'bug');
+      expect(result.success).toBeTruthy();
+      expect(result.data.type).toBe('bug');
     });
   });
 
@@ -156,7 +155,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.tests, { manual: [] });
+      expect(result.data.tests).toEqual({ manual: [], unit: [], integration: [], e2e: [] });
     });
 
     it('should preserve explicit tests value', () => {
@@ -178,7 +177,7 @@ describe('wu-schema defaults', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
+      expect(result.success).toBeTruthy();
       assert.deepEqual(result.data.tests, {
         unit: ['tools/lib/__tests__/wu-schema.test.js'],
         manual: ['Run pnpm gates'],
@@ -202,7 +201,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.code_paths, []);
+      expect(result.data.code_paths).toEqual([]);
     });
   });
 
@@ -223,7 +222,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.artifacts, []);
+      expect(result.data.artifacts).toEqual([]);
     });
 
     it('should preserve explicit artifacts value', () => {
@@ -242,8 +241,8 @@ describe('wu-schema defaults', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.deepEqual(result.data.artifacts, ['.beacon/stamps/WU-1337.done']);
+      expect(result.success).toBeTruthy();
+      expect(result.data.artifacts).toEqual(['.beacon/stamps/WU-1337.done']);
     });
   });
 
@@ -264,7 +263,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.dependencies, []);
+      expect(result.data.dependencies).toEqual([]);
     });
   });
 
@@ -285,7 +284,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.risks, []);
+      expect(result.data.risks).toEqual([]);
     });
   });
 
@@ -306,7 +305,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.notes, '');
+      expect(result.data.notes).toBe('');
     });
   });
 
@@ -327,7 +326,7 @@ describe('wu-schema defaults', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.requires_review, false);
+      expect(result.data.requires_review).toBe(false);
     });
   });
 });
@@ -351,7 +350,7 @@ describe('wu-schema auto-repair transformations', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.notes, 'First note\nSecond note\nThird note');
+      expect(result.data.notes).toBe('First note\nSecond note\nThird note');
     });
 
     it('should filter empty strings when converting notes array', () => {
@@ -371,7 +370,7 @@ describe('wu-schema auto-repair transformations', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.notes, 'First note\nSecond note');
+      expect(result.data.notes).toBe('First note\nSecond note');
     });
 
     it('should preserve string notes as-is', () => {
@@ -390,8 +389,8 @@ describe('wu-schema auto-repair transformations', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.notes, 'This is a single note');
+      expect(result.success).toBeTruthy();
+      expect(result.data.notes).toBe('This is a single note');
     });
   });
 
@@ -413,7 +412,7 @@ describe('wu-schema auto-repair transformations', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.match(result.data.completed_at, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(result.data.completed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
     it('should preserve valid ISO datetime format', () => {
@@ -433,8 +432,8 @@ describe('wu-schema auto-repair transformations', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.completed_at, validDateTime);
+      expect(result.success).toBeTruthy();
+      expect(result.data.completed_at).toBe(validDateTime);
     });
 
     it('should handle Unix timestamp format', () => {
@@ -454,7 +453,7 @@ describe('wu-schema auto-repair transformations', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.match(result.data.completed_at, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(result.data.completed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
     it('should return undefined for missing completed_at', () => {
@@ -472,8 +471,8 @@ describe('wu-schema auto-repair transformations', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.completed_at, undefined);
+      expect(result.success).toBeTruthy();
+      expect(result.data.completed_at).toBe(undefined);
     });
   });
 
@@ -495,7 +494,7 @@ describe('wu-schema auto-repair transformations', () => {
 
       const result = validateWU(data);
       assert.ok(result.success, `Validation failed: ${JSON.stringify(result.error?.issues)}`);
-      assert.match(result.data.claimed_at, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(result.data.claimed_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
     it('should preserve valid ISO datetime format', () => {
@@ -515,8 +514,8 @@ describe('wu-schema auto-repair transformations', () => {
       };
 
       const result = validateWU(data);
-      assert.ok(result.success);
-      assert.equal(result.data.claimed_at, validDateTime);
+      expect(result.success).toBeTruthy();
+      expect(result.data.claimed_at).toBe(validDateTime);
     });
   });
 });
@@ -579,7 +578,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ id: 'INVALID-123' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('id')),
         'Error should mention id field'
@@ -590,7 +589,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ title: '' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('title')),
         'Error should mention title field'
@@ -601,7 +600,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ status: 'invalid_status' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('status')),
         'Error should mention status field'
@@ -612,7 +611,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ type: 'invalid_type' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('type')),
         'Error should mention type field'
@@ -623,7 +622,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ created: '2025/12/10' }); // wrong format
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('created')),
         'Error should mention created field'
@@ -634,7 +633,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ description: 'Too short description.' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some(
           (i) => i.path.includes('description') && i.message.includes('50 characters')
@@ -647,7 +646,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ acceptance: [] });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('acceptance')),
         'Error should mention acceptance field'
@@ -658,14 +657,14 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ acceptance: 'This should be an array' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
 
     it('should reject invalid blocks array format', () => {
       const data = createValidWU({ blocks: ['INVALID-FORMAT'] });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.join('.').includes('blocks')),
         'Error should mention blocks field'
@@ -676,7 +675,7 @@ describe('validateReadyWU (WU-1539)', () => {
       const data = createValidWU({ tests: 'should be an object' });
 
       const result = validateReadyWU(data);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
   });
 
@@ -687,7 +686,7 @@ describe('validateReadyWU (WU-1539)', () => {
       });
 
       const result = validateWU(data);
-      assert.ok(!result.success, 'Strict validation should fail for placeholders');
+      expect(result.success, 'Strict validation should fail for placeholders').toBeFalsy();
       assert.ok(
         result.error.issues.some(
           (i) => i.path.includes('description') && i.message.includes(PLACEHOLDER_SENTINEL)
@@ -702,7 +701,7 @@ describe('validateReadyWU (WU-1539)', () => {
       });
 
       const result = validateWU(data);
-      assert.ok(!result.success, 'Strict validation should fail for placeholders');
+      expect(result.success, 'Strict validation should fail for placeholders').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.message.includes(PLACEHOLDER_SENTINEL)),
         'Error should mention placeholder marker'
@@ -758,34 +757,34 @@ describe('wu-schema exposure field (WU-1998)', () => {
       const data = createValidWU({ exposure: 'ui' });
       const result = validateWU(data);
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.exposure, 'ui');
+      expect(result.data.exposure).toBe('ui');
     });
 
     it('should accept "api" as valid exposure value', () => {
       const data = createValidWU({ exposure: 'api' });
       const result = validateWU(data);
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.exposure, 'api');
+      expect(result.data.exposure).toBe('api');
     });
 
     it('should accept "backend-only" as valid exposure value', () => {
       const data = createValidWU({ exposure: 'backend-only' });
       const result = validateWU(data);
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.exposure, 'backend-only');
+      expect(result.data.exposure).toBe('backend-only');
     });
 
     it('should accept "documentation" as valid exposure value', () => {
       const data = createValidWU({ exposure: 'documentation' });
       const result = validateWU(data);
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.exposure, 'documentation');
+      expect(result.data.exposure).toBe('documentation');
     });
 
     it('should reject invalid exposure values', () => {
       const data = createValidWU({ exposure: 'invalid-value' });
       const result = validateWU(data);
-      assert.ok(!result.success, 'Validation should fail for invalid exposure');
+      expect(result.success, 'Validation should fail for invalid exposure').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('exposure')),
         'Error should mention exposure field'
@@ -832,7 +831,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       });
       const result = validateWU(data);
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
-      assert.deepEqual(result.data.ui_pairing_wus, ['WU-1234', 'WU-5678']);
+      expect(result.data.ui_pairing_wus).toEqual(['WU-1234', 'WU-5678']);
     });
 
     it('should allow empty ui_pairing_wus array', () => {
@@ -856,7 +855,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
         ui_pairing_wus: ['INVALID-123'],
       });
       const result = validateWU(data);
-      assert.ok(!result.success, 'Invalid WU ID format should fail');
+      expect(result.success, 'Invalid WU ID format should fail').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.join('.').includes('ui_pairing_wus')),
         'Error should mention ui_pairing_wus field'
@@ -872,7 +871,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       });
       const result = validateWU(data);
       assert.ok(result.success, `Should accept navigation_path: ${JSON.stringify(result.error?.issues)}`);
-      assert.equal(result.data.navigation_path, '/dashboard');
+      expect(result.data.navigation_path).toBe('/dashboard');
     });
 
     it('should allow missing navigation_path (optional)', () => {

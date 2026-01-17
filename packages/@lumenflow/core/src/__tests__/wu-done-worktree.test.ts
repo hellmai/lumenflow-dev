@@ -86,7 +86,7 @@ describe('checkEmptyMerge', () => {
     it('should PASS (no error) when code_paths files were modified', async () => {
       mockGitAdapter.raw
         .mockResolvedValueOnce('2') // 2 commits (claim + work)
-        .mockResolvedValueOnce('tools/lib/core/some-file.mjs\ntools/lib/core/other.js');
+        .mockResolvedValueOnce('tools/lib/core/some-file.js\ntools/lib/core/other.js');
 
       const doc = {
         code_paths: ['tools/lib/core/some-file.js'],
@@ -283,7 +283,7 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
       expect(result.valid).toBe(true);
       expect(result.wasNormalized).toBe(true);
       expect(result.normalized.code_paths).toHaveLength(2);
-      expect(result.normalized.code_paths).toContain('tools/a.js');
+      expect(result.normalized.code_paths).toContain('tools/a.mjs');
       expect(result.normalized.code_paths).toContain('tools/b.js');
     });
 

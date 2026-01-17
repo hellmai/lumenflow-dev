@@ -5,8 +5,7 @@
  * Following TDD discipline: Write tests FIRST, then implementation.
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,20 +68,20 @@ describe('logs tool', () => {
 
     it('should parse JSON log line with time and level', () => {
       const result = parseLogLine(WEB_LOG_ENTRY);
-      assert.equal(result.time, '2025-12-27T10:00:00.000Z');
-      assert.equal(result.level, 'info');
-      assert.equal(result.msg, 'assistant.stream.phase');
+      expect(result.time).toBe('2025-12-27T10:00:00.000Z');
+      expect(result.level).toBe('info');
+      expect(result.msg).toBe('assistant.stream.phase');
     });
 
     it('should return null for invalid JSON', () => {
       const result = parseLogLine('not valid json');
-      assert.equal(result, null);
+      expect(result).toBe(null);
     });
 
     it('should handle log lines without time field', () => {
       const result = parseLogLine(JSON.stringify({ msg: 'test' }));
-      assert.ok(result !== null);
-      assert.equal(result.msg, 'test');
+      expect(result !== null).toBeTruthy();
+      expect(result.msg).toBe('test');
     });
   });
 
@@ -101,8 +100,8 @@ describe('logs tool', () => {
         { level: 'warn', msg: 'warn message' },
       ];
       const result = filterLogs(logs, { level: 'error' });
-      assert.equal(result.length, 1);
-      assert.equal(result[0].msg, 'error message');
+      expect(result.length).toBe(1);
+      expect(result[0].msg).toBe('error message');
     });
 
     it('should filter by service pattern', () => {
@@ -112,7 +111,7 @@ describe('logs tool', () => {
         { msg: 'assistant.stream.end', level: 'info' },
       ];
       const result = filterLogs(logs, { service: 'assistant' });
-      assert.equal(result.length, 2);
+      expect(result.length).toBe(2);
     });
 
     it('should filter by arbitrary text pattern', () => {
@@ -122,8 +121,8 @@ describe('logs tool', () => {
         { msg: 'git.status', level: 'info' },
       ];
       const result = filterLogs(logs, { filter: 'WU-123' });
-      assert.equal(result.length, 1);
-      assert.equal(result[0].wu, 'WU-123');
+      expect(result.length).toBe(1);
+      expect(result[0].wu).toBe('WU-123');
     });
 
     it('should limit results with --last flag', () => {
@@ -135,9 +134,9 @@ describe('logs tool', () => {
         { msg: 'message5', level: 'info' },
       ];
       const result = filterLogs(logs, { last: 2 });
-      assert.equal(result.length, 2);
-      assert.equal(result[0].msg, 'message4');
-      assert.equal(result[1].msg, 'message5');
+      expect(result.length).toBe(2);
+      expect(result[0].msg).toBe('message4');
+      expect(result[1].msg).toBe('message5');
     });
   });
 
@@ -198,34 +197,34 @@ describe('logs tool', () => {
 
     it('should parse --last flag', () => {
       const result = parseLogsArgs(['--last', '10']);
-      assert.equal(result.last, 10);
+      expect(result.last).toBe(10);
     });
 
     it('should parse --level flag', () => {
       const result = parseLogsArgs(['--level', 'error']);
-      assert.equal(result.level, 'error');
+      expect(result.level).toBe('error');
     });
 
     it('should parse --service flag', () => {
       const result = parseLogsArgs(['--service', 'assistant']);
-      assert.equal(result.service, 'assistant');
+      expect(result.service).toBe('assistant');
     });
 
     it('should parse --filter flag', () => {
       const result = parseLogsArgs(['--filter', 'WU-123']);
-      assert.equal(result.filter, 'WU-123');
+      expect(result.filter).toBe('WU-123');
     });
 
     it('should parse --json flag', () => {
       const result = parseLogsArgs(['--json']);
-      assert.equal(result.json, true);
+      expect(result.json).toBe(true);
     });
 
     it('should parse multiple flags', () => {
       const result = parseLogsArgs(['--last', '5', '--level', 'warn', '--json']);
-      assert.equal(result.last, 5);
-      assert.equal(result.level, 'warn');
-      assert.equal(result.json, true);
+      expect(result.last).toBe(5);
+      expect(result.level).toBe('warn');
+      expect(result.json).toBe(true);
     });
   });
 });

@@ -14,8 +14,7 @@
  * @see {@link tools/lib/initiative-orchestrator.mjs} - Core orchestration logic
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -122,13 +121,13 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // This function should exist and create a manifest
       const result = buildCheckpointWave('INIT-001');
 
-      assert.ok(result, 'buildCheckpointWave should return a result');
-      assert.ok(result.manifestPath, 'result should contain manifestPath');
-      assert.ok(existsSync(result.manifestPath), 'manifest file should exist');
+      expect(result).toBeTruthy();
+      expect(result.manifestPath).toBeTruthy();
+      expect(existsSync(result.manifestPath)).toBe(true);
 
       const manifest = readWaveManifest('INIT-001', result.wave);
-      assert.equal(manifest.initiative, 'INIT-001');
-      assert.ok(Array.isArray(manifest.wus), 'manifest.wus should be array');
+      expect(manifest.initiative).toBe('INIT-001');
+      expect(Array.isArray(manifest.wus)).toBe(true);
     });
 
     it('should only include status:ready WUs in wave', async () => {
@@ -146,10 +145,10 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
 
       // Should only have WU-001 (status: ready)
       const wuIds = manifest.wus.map((w: { id: string }) => w.id);
-      assert.ok(wuIds.includes('WU-001'), 'ready WU should be included');
-      assert.ok(!wuIds.includes('WU-002'), 'in_progress WU should be excluded');
-      assert.ok(!wuIds.includes('WU-003'), 'done WU should be excluded');
-      assert.ok(!wuIds.includes('WU-004'), 'blocked WU should be excluded');
+      expect(wuIds.includes('WU-001')).toBe(true);
+      expect(wuIds.includes('WU-002')).toBe(false);
+      expect(wuIds.includes('WU-003')).toBe(false);
+      expect(wuIds.includes('WU-004')).toBe(false);
     });
 
     it('should skip WUs that have stamps (idempotent)', async () => {
@@ -166,8 +165,8 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
 
       // Should only have WU-002 (WU-001 has stamp)
       const wuIds = manifest.wus.map((w: { id: string }) => w.id);
-      assert.ok(!wuIds.includes('WU-001'), 'WU with stamp should be skipped');
-      assert.ok(wuIds.includes('WU-002'), 'WU without stamp should be included');
+      expect(wuIds.includes('WU-001')).toBe(false);
+      expect(wuIds.includes('WU-002')).toBe(true);
     });
 
     it('should enforce max one WU per lane per wave', async () => {
@@ -186,8 +185,8 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const operationsWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Operations');
       const intelligenceWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Intelligence');
 
-      assert.ok(operationsWUs.length <= 1, 'max 1 Operations WU per wave');
-      assert.ok(intelligenceWUs.length <= 1, 'max 1 Intelligence WU per wave');
+      expect(operationsWUs.length).toBeLessThanOrEqual(1);
+      expect(intelligenceWUs.length).toBeLessThanOrEqual(1);
     });
 
     it('should auto-detect wave number based on existing manifests', async () => {
@@ -208,7 +207,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const result = buildCheckpointWave('INIT-001');
 
       // Should auto-increment to wave 1
-      assert.equal(result.wave, 1, 'should auto-increment wave number');
+      expect(result.wave).toBe(1);
     });
 
     it('should return null/empty when all WUs are complete', async () => {
@@ -222,10 +221,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const result = buildCheckpointWave('INIT-001');
 
       // Should indicate nothing to spawn
-      assert.ok(
-        result === null || result.wus?.length === 0,
-        'should return null or empty when all complete'
-      );
+      expect(result === null || result.wus?.length === 0).toBe(true);
     });
 
     // WU-2277: dry-run should not create wave artifacts
@@ -241,8 +237,8 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const result = buildCheckpointWave('INIT-001', { dryRun: true });
 
       // Should still return wave data for stdout output
-      assert.ok(result, 'should return wave data even in dry-run');
-      assert.ok(result.wus.length > 0, 'should have WUs in result');
+      expect(result).toBeTruthy();
+      expect(result.wus.length).toBeGreaterThan(0);
 
       // But manifest file should NOT exist
       const manifestPath = join(
@@ -250,7 +246,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         '.beacon/artifacts/waves',
         `INIT-001-wave-${result.wave}.json`
       );
-      assert.ok(!existsSync(manifestPath), 'manifest file should NOT be created in dry-run mode');
+      expect(existsSync(manifestPath)).toBe(false);
     });
 
     it('should still create manifest file when dryRun is false or undefined', async () => {
@@ -264,7 +260,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const result = buildCheckpointWave('INIT-002');
 
       // Manifest file SHOULD exist
-      assert.ok(existsSync(result.manifestPath), 'manifest file should exist when not dry-run');
+      expect(existsSync(result.manifestPath)).toBe(true);
     });
   });
 
@@ -291,10 +287,10 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       });
 
       // Verify key structural elements are present
-      assert.ok(output.includes('Wave 0 manifest'), 'should include wave info');
-      assert.ok(output.includes('WU-001'), 'should list WU-001');
-      assert.ok(output.includes('WU-002'), 'should list WU-002');
-      assert.ok(output.includes('Resume with'), 'should include resume instructions');
+      expect(output.includes('Wave 0 manifest')).toBe(true);
+      expect(output.includes('WU-001')).toBe(true);
+      expect(output.includes('WU-002')).toBe(true);
+      expect(output.includes('Resume with')).toBe(true);
     });
 
     it('should include resume instructions', async () => {
@@ -309,11 +305,10 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       });
 
       // Should include instructions on how to resume
-      assert.ok(output.includes('Resume'), 'should include resume instructions');
-      assert.ok(
-        output.includes('orchestrate:initiative') || output.includes('pnpm'),
-        'should reference the command'
-      );
+      expect(output.includes('Resume')).toBe(true);
+      expect(
+        output.includes('orchestrate:initiative') || output.includes('pnpm')
+      ).toBe(true);
     });
   });
 
@@ -326,11 +321,9 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const { validateCheckpointFlags } = mod;
 
       // The function should exist and throw for invalid combinations
-      assert.throws(
-        () => validateCheckpointFlags({ checkpointPerWave: true, dryRun: true }),
-        /cannot combine/i,
-        'should reject -c with --dry-run'
-      );
+      expect(
+        () => validateCheckpointFlags({ checkpointPerWave: true, dryRun: true })
+      ).toThrow(/cannot combine/i);
     });
 
     it('should allow -c without --dry-run', async () => {
@@ -338,9 +331,9 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const { validateCheckpointFlags } = mod;
 
       // Should not throw
-      assert.doesNotThrow(() =>
+      expect(() =>
         validateCheckpointFlags({ checkpointPerWave: true, dryRun: false })
-      );
+      ).not.toThrow();
     });
   });
 
@@ -372,7 +365,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // Only WU-002 should be in wave 1
       if (result && result.wus) {
         const wuIds = result.wus.map((w: { id: string }) => w.id);
-        assert.ok(!wuIds.includes('WU-001'), 'WU already in manifest should be skipped');
+        expect(wuIds.includes('WU-001')).toBe(false);
       }
     });
 
@@ -392,7 +385,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // Should not spawn WU-001 because stamp exists
       if (result && result.wus) {
         const wuIds = result.wus.map((w: { id: string }) => w.id);
-        assert.ok(!wuIds.includes('WU-001'), 'stamp takes precedence');
+        expect(wuIds.includes('WU-001')).toBe(false);
       }
     });
   });
@@ -409,10 +402,10 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const manifest = readWaveManifest('INIT-001', result.wave);
 
       // Verify required fields per implementation plan
-      assert.ok(manifest.initiative, 'manifest should have initiative');
-      assert.ok(typeof manifest.wave === 'number', 'manifest should have wave number');
-      assert.ok(manifest.created_at, 'manifest should have created_at');
-      assert.ok(Array.isArray(manifest.wus), 'manifest should have wus array');
+      expect(manifest.initiative).toBeTruthy();
+      expect(typeof manifest.wave).toBe('number');
+      expect(manifest.created_at).toBeTruthy();
+      expect(Array.isArray(manifest.wus)).toBe(true);
     });
 
     it('should include WU metadata in manifest', async () => {
@@ -426,9 +419,9 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const manifest = readWaveManifest('INIT-001', result.wave);
 
       const wu = manifest.wus.find((w: { id: string }) => w.id === 'WU-001');
-      assert.ok(wu, 'WU should be in manifest');
-      assert.equal(wu.lane, 'Operations', 'WU should have lane');
-      assert.equal(wu.status, 'spawned', 'WU status in manifest should be spawned');
+      expect(wu).toBeTruthy();
+      expect(wu.lane).toBe('Operations');
+      expect(wu.status).toBe('spawned');
     });
   });
 });

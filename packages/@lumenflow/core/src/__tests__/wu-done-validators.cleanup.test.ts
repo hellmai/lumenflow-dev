@@ -11,6 +11,10 @@ vi.mock('../git-adapter.js', () => ({
   getGitForCwd: vi.fn(),
 }));
 
+vi.mock('../worktree-ownership.js', () => ({
+  validateWorktreeOwnership: vi.fn().mockReturnValue({ valid: true }),
+}));
+
 import { exec } from 'node:child_process';
 import { getGitForCwd } from '../git-adapter.js';
 import { CLAIMED_MODES, PKG_COMMANDS, PKG_FLAGS, PKG_MANAGER } from '../wu-constants.js';
@@ -18,9 +22,13 @@ import { CLAIMED_MODES, PKG_COMMANDS, PKG_FLAGS, PKG_MANAGER } from '../wu-const
 describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
   const originalCwd = process.cwd();
   let tempWorktreeDir;
+  let tempBase;
 
   beforeEach(async () => {
-    tempWorktreeDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wu-1760-worktree-'));
+    // Create temp dir with proper worktree naming pattern (worktrees/<lane>-wu-<id>)
+    tempBase = await fs.mkdtemp(path.join(os.tmpdir(), 'worktrees-'));
+    tempWorktreeDir = path.join(tempBase, 'operations-wu-1760');
+    await fs.mkdir(tempWorktreeDir, { recursive: true });
 
     exec.mockImplementation((command, optionsOrCallback, callback) => {
       const cb = typeof optionsOrCallback === 'function' ? optionsOrCallback : callback;
@@ -42,8 +50,8 @@ describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
 
   afterEach(async () => {
     process.chdir(originalCwd);
-    if (tempWorktreeDir) {
-      await fs.rm(tempWorktreeDir, { recursive: true, force: true });
+    if (tempBase) {
+      await fs.rm(tempBase, { recursive: true, force: true });
     }
     vi.restoreAllMocks();
   });
