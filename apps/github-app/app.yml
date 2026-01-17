@@ -1,0 +1,64 @@
+# GitHub App Manifest
+# Use this for one-click app registration at:
+# https://github.com/settings/apps/new?manifest=<url-encoded-manifest>
+#
+# Or create manually at: https://github.com/settings/apps/new
+
+name: LumenFlow
+
+# Description shown in Marketplace
+description: |
+  AI-native workflow enforcement for software teams.
+  Validate WU specs, enforce WIP limits, and create completion stamps automatically.
+
+# Public URL for your app
+url: https://lumenflow.dev
+
+# Callback URL for OAuth (if using user auth)
+# callback_url: https://lumenflow-app.vercel.app/api/auth/callback
+
+# Setup URL shown after installation
+setup_url: https://lumenflow.dev/setup
+
+# Webhook configuration
+hook_attributes:
+  url: https://lumenflow-app.vercel.app/api/webhook
+  active: true
+
+# Events the app subscribes to
+default_events:
+  - pull_request
+  - check_run
+  - check_suite
+
+# Permissions required
+default_permissions:
+  # Read PR info (title, body, labels)
+  pull_requests: read
+
+  # Write check statuses
+  checks: write
+
+  # Write to create stamps and lane labels
+  contents: write
+
+  # Add labels to PRs
+  issues: write
+
+  # Read repo metadata
+  metadata: read
+
+# Can be installed on user accounts (not just orgs)
+public: true
+
+# Request user authorization during installation
+request_oauth_on_install: false
+
+# Single file installation (no need to configure per-repo)
+single_file_name: null
+
+# Categories for Marketplace
+categories:
+  - continuous-integration
+  - code-quality
+  - project-management

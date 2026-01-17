@@ -24,6 +24,12 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 |-----|-------------|
 | `apps/github-app` | GitHub App for SaaS workflow enforcement (webhooks, billing) |
 
+## Actions
+
+| Action | Description |
+|--------|-------------|
+| `actions/lumenflow-gates` | Reusable GitHub Action with language presets (Node, Python, Go, Rust) |
+
 ## Documentation
 
 - [LumenFlow Complete Guide](docs/lumenflow/lumenflow-complete.md) - Comprehensive framework reference
