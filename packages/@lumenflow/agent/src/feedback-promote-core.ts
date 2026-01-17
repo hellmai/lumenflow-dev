@@ -10,7 +10,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { stringifyYAML } from '@lumenflow/core/lib/wu-yaml.js';
+import { stringifyYAML, parseYAML } from '@lumenflow/core/lib/wu-yaml.js';
 
 /**
  * Directory for draft WU specs
@@ -48,7 +48,7 @@ const LANES = {
 /**
  * Lane inference mapping from category to suggested lane
  */
-const CATEGORY_TO_LANE = {
+const CATEGORY_TO_LANE: Record<string, string> = {
   test: LANES.OPERATIONS_TOOLING,
   tooling: LANES.OPERATIONS_TOOLING,
   docs: LANES.OPERATIONS_DOCUMENTATION,
@@ -68,13 +68,53 @@ const CATEGORY_TO_LANE = {
 };
 
 /**
+ * Pattern example structure
+ */
+interface PatternExample {
+  id: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Pattern structure from feedback:review
+ */
+interface Pattern {
+  title: string;
+  category?: string;
+  frequency?: number;
+  score?: number;
+  firstSeen?: string;
+  lastSeen?: string;
+  examples?: PatternExample[];
+}
+
+/**
+ * Draft WU spec structure
+ */
+interface DraftSpec {
+  title: string;
+  lane: string;
+  description: string;
+  acceptance: string[];
+  source_incidents: string[];
+  pattern_metadata: {
+    frequency: number | undefined;
+    category: string | undefined;
+    score: number | undefined;
+    firstSeen: string | undefined;
+    lastSeen: string | undefined;
+  };
+  filePath?: string;
+}
+
+/**
  * Infer lane from pattern category
  *
- * @param {string} category - Pattern category
- * @returns {string} Suggested lane
+ * @param category - Pattern category
+ * @returns Suggested lane
  */
-function inferLane(category) {
-  const normalizedCategory = (category || 'uncategorized').toLowerCase();
+function inferLane(category: string | undefined): string {
+  const normalizedCategory = (category ?? 'uncategorized').toLowerCase();
   // Safe lookup using Object.hasOwn to prevent prototype pollution
   if (Object.hasOwn(CATEGORY_TO_LANE, normalizedCategory)) {
     // eslint-disable-next-line security/detect-object-injection -- Safe: hasOwn validates key exists
@@ -86,12 +126,12 @@ function inferLane(category) {
 /**
  * Generate description from pattern
  *
- * @param {object} pattern - Pattern object
- * @returns {string} Description with Context/Problem/Solution structure
+ * @param pattern - Pattern object
+ * @returns Description with Context/Problem/Solution structure
  */
-function generateDescription(pattern) {
-  const frequency = pattern.frequency || 1;
-  const category = pattern.category || 'uncategorized';
+function generateDescription(pattern: Pattern): string {
+  const frequency = pattern.frequency ?? 1;
+  const category = pattern.category ?? 'uncategorized';
   const firstSeen = pattern.firstSeen ? new Date(pattern.firstSeen).toISOString().slice(0, 10) : 'unknown';
   const lastSeen = pattern.lastSeen ? new Date(pattern.lastSeen).toISOString().slice(0, 10) : 'unknown';
 
@@ -107,10 +147,10 @@ function generateDescription(pattern) {
 /**
  * Generate acceptance criteria from pattern
  *
- * @param {object} pattern - Pattern object
- * @returns {string[]} Acceptance criteria
+ * @param pattern - Pattern object
+ * @returns Acceptance criteria
  */
-function generateAcceptance(pattern) {
+function generateAcceptance(pattern: Pattern): string[] {
   return [
     'Root cause identified and documented',
     'Fix implemented',
@@ -120,23 +160,29 @@ function generateAcceptance(pattern) {
 }
 
 /**
+ * Options for generating a draft
+ */
+interface GenerateDraftOptions {
+  writeFile?: boolean;
+}
+
+/**
  * Generate draft WU spec from a pattern
  *
- * @param {string} baseDir - Base directory
- * @param {object} pattern - Pattern from feedback:review
- * @param {object} [options] - Options
- * @param {boolean} [options.writeFile=false] - Write draft to file
- * @returns {Promise<object>} Draft WU spec
+ * @param baseDir - Base directory
+ * @param pattern - Pattern from feedback:review
+ * @param options - Options
+ * @returns Draft WU spec
  */
-export async function generateDraft(baseDir, pattern, options = {}) {
+export async function generateDraft(baseDir: string, pattern: Pattern, options: GenerateDraftOptions = {}): Promise<DraftSpec> {
   const { writeFile: shouldWrite = false } = options;
 
-  const draft = {
+  const draft: DraftSpec = {
     title: pattern.title,
     lane: inferLane(pattern.category),
     description: generateDescription(pattern),
     acceptance: generateAcceptance(pattern),
-    source_incidents: (pattern.examples || []).map((e) => e.id),
+    source_incidents: (pattern.examples ?? []).map((e) => e.id),
     pattern_metadata: {
       frequency: pattern.frequency,
       category: pattern.category,
@@ -168,25 +214,25 @@ export async function generateDraft(baseDir, pattern, options = {}) {
 /**
  * Load all draft files from .beacon/feedback-drafts/
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<object[]>} Array of draft objects with filePath
+ * @param baseDir - Base directory
+ * @returns Array of draft objects with filePath
  */
-export async function loadDrafts(baseDir) {
+export async function loadDrafts(baseDir: string): Promise<DraftSpec[]> {
   const draftsDir = path.join(baseDir, DRAFT_DIRECTORY);
 
-  let files;
+  let files: string[];
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known directory
     files = await fs.readdir(draftsDir);
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return [];
     }
     throw err;
   }
 
   const yamlFiles = files.filter((f) => f.endsWith('.yaml') || f.endsWith('.yml'));
-  const drafts = [];
+  const drafts: DraftSpec[] = [];
 
   for (const file of yamlFiles) {
     const filePath = path.join(draftsDir, file);
@@ -194,20 +240,20 @@ export async function loadDrafts(baseDir) {
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads draft files
       const content = await fs.readFile(filePath, 'utf8');
       // Parse YAML or JSON content
-      let draft;
+      let draft: DraftSpec;
       try {
         // Try JSON first (for test files that might use JSON.stringify)
-        draft = JSON.parse(content);
+        draft = JSON.parse(content) as DraftSpec;
       } catch {
-        // Fall back to YAML parsing using dynamic import
-        const { parseYAML } = await import('./wu-yaml.mjs');
-        draft = parseYAML(content);
+        // Fall back to YAML parsing
+        draft = parseYAML(content) as DraftSpec;
       }
       draft.filePath = path.join(DRAFT_DIRECTORY, file);
       drafts.push(draft);
     } catch (err) {
       // Skip malformed files
-      console.warn(`Warning: Could not load draft ${file}: ${err.message}`);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.warn(`Warning: Could not load draft ${file}: ${errorMessage}`);
     }
   }
 
@@ -215,26 +261,44 @@ export async function loadDrafts(baseDir) {
 }
 
 /**
+ * Options for promoting a draft
+ */
+interface PromoteDraftOptions {
+  dryRun?: boolean;
+  wuIdOverride?: string;
+  removeDraft?: boolean;
+}
+
+/**
+ * Result of promoting a draft
+ */
+interface PromoteDraftResult {
+  success: boolean;
+  wuId: string;
+  command: string;
+  draft?: DraftSpec;
+  error?: string;
+  draftRemoved?: boolean;
+}
+
+/**
  * Promote a draft to a WU via wu:create
  *
- * @param {string} baseDir - Base directory
- * @param {object} draft - Draft object
- * @param {object} [options] - Options
- * @param {boolean} [options.dryRun=false] - Dry run (don't execute command)
- * @param {string} [options.wuIdOverride] - Override WU ID (for testing)
- * @param {boolean} [options.removeDraft=false] - Remove draft file after promotion
- * @returns {Promise<object>} Result with success, wuId, command
+ * @param baseDir - Base directory
+ * @param draft - Draft object
+ * @param options - Options
+ * @returns Result with success, wuId, command
  */
-export async function promoteDraft(baseDir, draft, options = {}) {
+export async function promoteDraft(baseDir: string, draft: DraftSpec, options: PromoteDraftOptions = {}): Promise<PromoteDraftResult> {
   const { dryRun = false, wuIdOverride, removeDraft = false } = options;
 
   // Generate WU ID if not provided
-  const wuId = wuIdOverride || `WU-${Date.now()}`;
+  const wuId = wuIdOverride ?? `WU-${Date.now()}`;
 
   // Build wu:create command
   const command = buildWuCreateCommand(wuId, draft);
 
-  const result = {
+  const result: PromoteDraftResult = {
     success: true,
     wuId,
     command,
@@ -247,11 +311,12 @@ export async function promoteDraft(baseDir, draft, options = {}) {
     try {
       execSync(command, { cwd: baseDir, stdio: 'pipe' });
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
       return {
         success: false,
         wuId,
         command,
-        error: err.message,
+        error: errorMessage,
       };
     }
 
@@ -273,7 +338,7 @@ export async function promoteDraft(baseDir, draft, options = {}) {
       result.draftRemoved = true;
     } catch (err) {
       // Ignore errors if file doesn't exist
-      if (err.code !== 'ENOENT') {
+      if (err instanceof Error && 'code' in err && err.code !== 'ENOENT') {
         console.warn(`Warning: Could not remove draft ${draft.filePath}: ${err.message}`);
       }
       result.draftRemoved = true; // Mark as removed even if it didn't exist
@@ -286,11 +351,11 @@ export async function promoteDraft(baseDir, draft, options = {}) {
 /**
  * Build wu:create command from draft
  *
- * @param {string} wuId - WU ID
- * @param {object} draft - Draft object
- * @returns {string} Command string
+ * @param wuId - WU ID
+ * @param draft - Draft object
+ * @returns Command string
  */
-function buildWuCreateCommand(wuId, draft) {
+function buildWuCreateCommand(wuId: string, draft: DraftSpec): string {
   const parts = ['pnpm wu:create'];
   parts.push(`--id ${wuId}`);
   parts.push(`--lane "${draft.lane}"`);
@@ -310,13 +375,23 @@ function buildWuCreateCommand(wuId, draft) {
 }
 
 /**
+ * Feedback index entry
+ */
+interface FeedbackIndexEntry {
+  incident_id: string;
+  wu_id: string;
+  status: string;
+  timestamp: string;
+}
+
+/**
  * Update feedback index with incident-to-WU mappings
  *
- * @param {string} baseDir - Base directory
- * @param {string} wuId - WU ID
- * @param {string[]} incidentIds - Array of incident IDs
+ * @param baseDir - Base directory
+ * @param wuId - WU ID
+ * @param incidentIds - Array of incident IDs
  */
-export async function updateFeedbackIndex(baseDir, wuId, incidentIds) {
+export async function updateFeedbackIndex(baseDir: string, wuId: string, incidentIds: string[]): Promise<void> {
   const indexPath = path.join(baseDir, FEEDBACK_INDEX_PATH);
   const timestamp = new Date().toISOString();
 
@@ -326,7 +401,7 @@ export async function updateFeedbackIndex(baseDir, wuId, incidentIds) {
   await fs.mkdir(indexDir, { recursive: true });
 
   // Build NDJSON entries
-  const entries = incidentIds.map((incidentId) => ({
+  const entries: FeedbackIndexEntry[] = incidentIds.map((incidentId) => ({
     incident_id: incidentId,
     wu_id: wuId,
     status: FEEDBACK_STATUS.PENDING_RESOLUTION,
@@ -343,10 +418,10 @@ export async function updateFeedbackIndex(baseDir, wuId, incidentIds) {
 /**
  * Load feedback index entries
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<object[]>} Array of index entries
+ * @param baseDir - Base directory
+ * @returns Array of index entries
  */
-export async function loadFeedbackIndex(baseDir) {
+export async function loadFeedbackIndex(baseDir: string): Promise<FeedbackIndexEntry[]> {
   const indexPath = path.join(baseDir, FEEDBACK_INDEX_PATH);
 
   try {
@@ -356,14 +431,14 @@ export async function loadFeedbackIndex(baseDir) {
     return lines
       .map((line) => {
         try {
-          return JSON.parse(line);
+          return JSON.parse(line) as FeedbackIndexEntry;
         } catch {
           return null;
         }
       })
-      .filter(Boolean);
+      .filter((entry): entry is FeedbackIndexEntry => entry !== null);
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return [];
     }
     throw err;

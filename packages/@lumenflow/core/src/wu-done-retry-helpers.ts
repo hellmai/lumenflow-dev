@@ -89,11 +89,15 @@ export async function countPreviousCompletionAttempts(wuId, gitAdapter) {
  * @param {string} wuId - WU ID for logging
  * @param {number} count - Number of commits to squash
  * @param {object} gitAdapter - Git adapter instance
- * @param {object} [options] - Options
- * @param {boolean} [options.preserveIndex=true] - Use --soft when true; --hard when false (recovery)
+ * @param {SquashCompletionAttemptsOptions} [options] - Options
  * @returns {Promise<{ squashed: boolean, count: number }>} Result
  */
-export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, options = {}) {
+export interface SquashCompletionAttemptsOptions {
+  /** Use --soft when true; --hard when false (recovery) */
+  preserveIndex?: boolean;
+}
+
+export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, options: SquashCompletionAttemptsOptions = {}) {
   const { preserveIndex = true } = options;
 
   if (count === 0) {
@@ -191,12 +195,17 @@ export async function prepareRecoveryWithSquash(wuId, gitAdapter) {
  * @param {string} wuId - WU ID
  * @param {object} doc - WU YAML document containing baseline_main_sha
  * @param {object} gitAdapter - Git adapter instance
- * @param {object} options - Options
- * @param {string} options.worktreePath - Path to worktree
- * @param {boolean} options.autoRebase - Whether auto-rebase is enabled (default: true)
+ * @param {HandleParallelCompletionsOptions} options - Options
  * @returns {Promise<{ parallelDetected: boolean, rebaseTriggered: boolean }>}
  */
-export async function handleParallelCompletions(wuId, doc, gitAdapter, options = {}) {
+export interface HandleParallelCompletionsOptions {
+  /** Path to worktree */
+  worktreePath?: string;
+  /** Whether auto-rebase is enabled (default: true) */
+  autoRebase?: boolean;
+}
+
+export async function handleParallelCompletions(wuId, doc, gitAdapter, options: HandleParallelCompletionsOptions = {}) {
   const { worktreePath, autoRebase = true } = options;
 
   // Fetch latest from origin

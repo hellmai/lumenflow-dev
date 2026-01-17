@@ -51,6 +51,8 @@
     "./dependency-guard": "./dist/dependency-guard.js",
     "./worktree-scanner": "./dist/worktree-scanner.js",
     "./worktree-ownership": "./dist/worktree-ownership.js",
+    "./config": "./dist/lumenflow-config.js",
+    "./config-schema": "./dist/lumenflow-config-schema.js",
     "./dist/*": "./dist/*",
     "./lib/*": "./dist/*"
   },
@@ -82,16 +84,20 @@
     "simple-git": "^3.30.0",
     "tiktoken": "^1.0.21",
     "yaml": "^2.7.0",
-    "zod": "^3.25.0"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
   },
   "peerDependencies": {
-    "@lumenflow/memory": "workspace:*"
+    "@lumenflow/memory": "workspace:*",
+    "@lumenflow/initiatives": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@lumenflow/memory": {
+      "optional": true
+    },
+    "@lumenflow/initiatives": {
       "optional": true
     }
   },

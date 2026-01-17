@@ -157,8 +157,27 @@ function formatDiscovery(node) {
  * @param {string} baseDir - Base directory
  * @param {object} args - CLI arguments
  */
-async function handleList(baseDir, args) {
-  const options = {};
+interface ListOptions {
+  wuId?: string;
+  tag?: string;
+}
+
+interface TriageArgs {
+  filterWu?: string;
+  filterTag?: string;
+  json?: boolean;
+  quiet?: boolean;
+  promote?: string;
+  archive?: string;
+  reason?: string;
+  title?: string;
+  lane?: string;
+  wuId?: string;
+  dryRun?: boolean;
+}
+
+async function handleList(baseDir: string, args: TriageArgs) {
+  const options: ListOptions = {};
 
   if (args.filterWu) {
     options.wuId = args.filterWu;

@@ -14,7 +14,8 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { loadMemory, appendNode, MEMORY_FILE_NAME } from './memory-store.js';
+import { loadMemory, appendNode } from './memory-store.js';
+import type { MemoryNode } from './memory-schema.js';
 import { validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
 
 /**
@@ -43,10 +44,15 @@ const DEFAULT_PRIORITY = 'P2';
 const MAX_TITLE_LENGTH = 80;
 
 /**
+ * Priority levels for memory nodes
+ */
+type PriorityLevel = 'P0' | 'P1' | 'P2' | 'P3';
+
+/**
  * Priority ranking for deterministic ordering.
  * Lower rank = higher priority.
  */
-const PRIORITY_RANK = {
+const PRIORITY_RANK: Record<PriorityLevel, number> = {
   P0: 0,
   P1: 1,
   P2: 2,
@@ -57,13 +63,40 @@ const PRIORITY_RANK = {
 const DEFAULT_PRIORITY_RANK = 999;
 
 /**
+ * Memory node structure for triage operations
+ */
+interface TriageMemoryNode {
+  id: string;
+  type: string;
+  lifecycle: string;
+  content: string;
+  created_at: string;
+  updated_at?: string;
+  wu_id?: string;
+  session_id?: string;
+  metadata?: Record<string, unknown>;
+  tags?: string[];
+}
+
+/**
+ * Relationship between memory nodes
+ */
+interface TriageRelationship {
+  from_id: string;
+  to_id: string;
+  type: string;
+  created_at?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
  * Gets the priority rank for a node.
  *
- * @param {object} node - Memory node
- * @returns {number} Priority rank
+ * @param node - Memory node
+ * @returns Priority rank
  */
-function getPriorityRank(node) {
-  const priority = node.metadata?.priority;
+function getPriorityRank(node: TriageMemoryNode): number {
+  const priority = node.metadata?.priority as PriorityLevel | undefined;
   if (!priority) {
     return DEFAULT_PRIORITY_RANK;
   }
@@ -73,11 +106,11 @@ function getPriorityRank(node) {
 /**
  * Comparator for deterministic ordering: priority first, then createdAt, then ID.
  *
- * @param {object} a - First node
- * @param {object} b - Second node
- * @returns {number} Comparison result
+ * @param a - First node
+ * @param b - Second node
+ * @returns Comparison result
  */
-function compareNodes(a, b) {
+function compareNodes(a: TriageMemoryNode, b: TriageMemoryNode): number {
   const priorityDiff = getPriorityRank(a) - getPriorityRank(b);
   if (priorityDiff !== 0) {
     return priorityDiff;
@@ -93,32 +126,40 @@ function compareNodes(a, b) {
 }
 
 /**
+ * Node.js file system error with code
+ */
+interface NodeFsError extends Error {
+  code?: string;
+}
+
+/**
  * Load relationships from relationships.jsonl
  *
- * @param {string} memoryDir - Memory directory path
- * @returns {Promise<object[]>} Array of relationship objects
+ * @param memoryDir - Memory directory path
+ * @returns Array of relationship objects
  */
-async function loadRelationships(memoryDir) {
+async function loadRelationships(memoryDir: string): Promise<TriageRelationship[]> {
   const filePath = path.join(memoryDir, RELATIONSHIPS_FILE_NAME);
 
   try {
-    const content = await fs.readFile(filePath, 'utf-8');
+    const content = await fs.readFile(filePath, { encoding: 'utf-8' as BufferEncoding });
     const lines = content.split('\n');
-    const relationships = [];
+    const relationships: TriageRelationship[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
 
       try {
-        relationships.push(JSON.parse(trimmed));
+        relationships.push(JSON.parse(trimmed) as TriageRelationship);
       } catch {
         continue;
       }
     }
 
     return relationships;
-  } catch (error) {
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
       return [];
     }
@@ -129,11 +170,11 @@ async function loadRelationships(memoryDir) {
 /**
  * Build a set of node IDs that are blocked by relationships
  *
- * @param {object[]} relationships - Relationship objects
- * @returns {Set<string>} Set of blocked node IDs
+ * @param relationships - Relationship objects
+ * @returns Set of blocked node IDs
  */
-function buildBlockedSet(relationships) {
-  const blocked = new Set();
+function buildBlockedSet(relationships: TriageRelationship[]): Set<string> {
+  const blocked = new Set<string>();
 
   for (const rel of relationships) {
     if (rel.type === 'blocks') {
@@ -147,11 +188,11 @@ function buildBlockedSet(relationships) {
 /**
  * Check if a node is blocked
  *
- * @param {object} node - Memory node
- * @param {Set<string>} blockedByRelationships - Set of IDs blocked by relationships
- * @returns {boolean} True if node is blocked
+ * @param node - Memory node
+ * @param blockedByRelationships - Set of IDs blocked by relationships
+ * @returns True if node is blocked
  */
-function isBlocked(node, blockedByRelationships) {
+function isBlocked(node: TriageMemoryNode, blockedByRelationships: Set<string>): boolean {
   if (blockedByRelationships.has(node.id)) {
     return true;
   }
@@ -167,10 +208,10 @@ function isBlocked(node, blockedByRelationships) {
 /**
  * Check if a node is closed/archived
  *
- * @param {object} node - Memory node
- * @returns {boolean} True if node is closed
+ * @param node - Memory node
+ * @returns True if node is closed
  */
-function isClosed(node) {
+function isClosed(node: TriageMemoryNode): boolean {
   const status = node.metadata?.status;
   if (status === 'closed' || status === 'archived') {
     return true;
@@ -184,21 +225,25 @@ function isClosed(node) {
 }
 
 /**
- * @typedef {object} ListOptions
- * @property {string} [wuId] - Filter by WU ID (or 'unlinked' for nodes without wu_id)
- * @property {string} [tag] - Filter by tag
+ * Options for listing discoveries
  */
+export interface ListOptions {
+  /** Filter by WU ID (or 'unlinked' for nodes without wu_id) */
+  wuId?: string;
+  /** Filter by tag */
+  tag?: string;
+}
 
 /**
  * List open discovery nodes.
  *
  * Returns unblocked, non-archived discovery nodes in deterministic order.
  *
- * @param {string} baseDir - Base directory
- * @param {ListOptions} [options] - Filter options
- * @returns {Promise<object[]>} Open discovery nodes
+ * @param baseDir - Base directory
+ * @param options - Filter options
+ * @returns Open discovery nodes
  */
-export async function listOpenDiscoveries(baseDir, options = {}) {
+export async function listOpenDiscoveries(baseDir: string, options: ListOptions = {}): Promise<TriageMemoryNode[]> {
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
   const memory = await loadMemory(memoryDir);
@@ -206,7 +251,7 @@ export async function listOpenDiscoveries(baseDir, options = {}) {
   const blockedByRelationships = buildBlockedSet(relationships);
 
   // Filter to discovery type only
-  let nodes = memory.nodes.filter((node) => node.type === 'discovery');
+  let nodes = (memory.nodes as TriageMemoryNode[]).filter((node) => node.type === 'discovery');
 
   // Filter out blocked nodes
   nodes = nodes.filter((node) => !isBlocked(node, blockedByRelationships));
@@ -225,7 +270,8 @@ export async function listOpenDiscoveries(baseDir, options = {}) {
 
   // Apply tag filter
   if (options.tag) {
-    nodes = nodes.filter((node) => node.tags?.includes(options.tag));
+    const filterTag = options.tag;
+    nodes = nodes.filter((node) => node.tags?.includes(filterTag));
   }
 
   // Sort deterministically
@@ -233,33 +279,41 @@ export async function listOpenDiscoveries(baseDir, options = {}) {
 }
 
 /**
- * @typedef {object} ArchiveOptions
- * @property {string} nodeId - Node ID to archive
- * @property {string} reason - Archive reason
+ * Options for archiving a discovery
  */
+export interface ArchiveOptions {
+  /** Node ID to archive */
+  nodeId: string;
+  /** Archive reason */
+  reason: string;
+}
 
 /**
- * @typedef {object} ArchiveResult
- * @property {boolean} success - Whether archiving succeeded
- * @property {string} nodeId - Archived node ID
+ * Result of archiving a discovery
  */
+export interface ArchiveResult {
+  /** Whether archiving succeeded */
+  success: boolean;
+  /** Archived node ID */
+  nodeId: string;
+}
 
 /**
  * Archive a discovery node without promotion.
  *
  * Sets metadata.status to 'archived' and records the reason.
  *
- * @param {string} baseDir - Base directory
- * @param {ArchiveOptions} options - Archive options
- * @returns {Promise<ArchiveResult>} Archive result
- * @throws {Error} If node not found, not a discovery, or already archived
+ * @param baseDir - Base directory
+ * @param options - Archive options
+ * @returns Archive result
+ * @throws If node not found, not a discovery, or already archived
  */
-export async function archiveDiscovery(baseDir, options) {
+export async function archiveDiscovery(baseDir: string, options: ArchiveOptions): Promise<ArchiveResult> {
   const { nodeId, reason } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
   const memory = await loadMemory(memoryDir);
-  const node = memory.byId.get(nodeId);
+  const node = memory.byId.get(nodeId) as TriageMemoryNode | undefined;
 
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -286,7 +340,8 @@ export async function archiveDiscovery(baseDir, options) {
 
   // Append updated node (JSONL append-only model)
   // Note: This creates a new entry - in production, we'd need deduplication on load
-  await appendNode(memoryDir, archivedNode);
+  // Cast is safe here because the node came from loadMemory which validates the schema
+  await appendNode(memoryDir, archivedNode as unknown as MemoryNode);
 
   return {
     success: true,
@@ -295,37 +350,56 @@ export async function archiveDiscovery(baseDir, options) {
 }
 
 /**
- * @typedef {object} PromoteOptions
- * @property {string} nodeId - Node ID to promote
- * @property {string} lane - WU lane
- * @property {string} [title] - Custom WU title (defaults to discovery content)
- * @property {string} [wuId] - Explicit WU ID (defaults to next available)
- * @property {string} [priority] - Priority override
- * @property {boolean} [dryRun] - If true, return spec without creating WU
+ * Options for promoting a discovery to a WU
  */
+export interface PromoteOptions {
+  /** Node ID to promote */
+  nodeId: string;
+  /** WU lane */
+  lane: string;
+  /** Custom WU title (defaults to discovery content) */
+  title?: string;
+  /** Explicit WU ID (defaults to next available) */
+  wuId?: string;
+  /** Priority override */
+  priority?: string;
+  /** If true, return spec without creating WU */
+  dryRun?: boolean;
+}
 
 /**
- * @typedef {object} WUSpec
- * @property {string} id - WU ID
- * @property {string} title - WU title
- * @property {string} lane - WU lane
- * @property {string} priority - WU priority
- * @property {string} notes - WU notes with provenance
+ * WU specification generated from promotion
  */
+export interface WUSpec {
+  /** WU ID */
+  id: string;
+  /** WU title */
+  title: string;
+  /** WU lane */
+  lane: string;
+  /** WU priority */
+  priority: string;
+  /** WU notes with provenance */
+  notes: string;
+}
 
 /**
- * @typedef {object} PromoteResult
- * @property {boolean} success - Whether promotion succeeded
- * @property {WUSpec} wuSpec - Generated WU specification
+ * Result of promoting a discovery
  */
+export interface PromoteResult {
+  /** Whether promotion succeeded */
+  success: boolean;
+  /** Generated WU specification */
+  wuSpec: WUSpec;
+}
 
 /**
  * Get next available WU ID by scanning existing WUs.
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<string>} Next WU ID (e.g., 'WU-1502')
+ * @param baseDir - Base directory
+ * @returns Next WU ID (e.g., 'WU-1502')
  */
-async function getNextWuId(baseDir) {
+async function getNextWuId(baseDir: string): Promise<string> {
   const wuDir = path.join(baseDir, WU_DIR);
   let maxId = 0;
 
@@ -333,14 +407,15 @@ async function getNextWuId(baseDir) {
     const files = await fs.readdir(wuDir);
     for (const file of files) {
       const match = file.match(/^WU-(\d+)\.yaml$/);
-      if (match) {
+      if (match && match[1]) {
         const id = parseInt(match[1], 10);
         if (id > maxId) {
           maxId = id;
         }
       }
     }
-  } catch (error) {
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code !== 'ENOENT') {
       throw error;
     }
@@ -352,12 +427,13 @@ async function getNextWuId(baseDir) {
 /**
  * Truncate content to max title length.
  *
- * @param {string} content - Content to truncate
- * @returns {string} Truncated title
+ * @param content - Content to truncate
+ * @returns Truncated title
  */
-function truncateToTitle(content) {
+function truncateToTitle(content: string): string {
   // Take first sentence or up to max length
-  const firstSentence = content.split(/[.!?]/)[0].trim();
+  const parts = content.split(/[.!?]/);
+  const firstSentence = (parts[0] ?? '').trim();
   if (firstSentence.length <= MAX_TITLE_LENGTH) {
     return firstSentence;
   }
@@ -367,24 +443,25 @@ function truncateToTitle(content) {
 /**
  * Promote a discovery node to a WU.
  *
- * @param {string} baseDir - Base directory
- * @param {PromoteOptions} options - Promote options
- * @returns {Promise<PromoteResult>} Promotion result
- * @throws {Error} If node not found, not a discovery, or already closed
+ * @param baseDir - Base directory
+ * @param options - Promote options
+ * @returns Promotion result
+ * @throws If node not found, not a discovery, or already closed
  */
-export async function promoteDiscovery(baseDir, options) {
-  const { nodeId, lane, title, wuId, priority, dryRun = false } = options;
+export async function promoteDiscovery(baseDir: string, options: PromoteOptions): Promise<PromoteResult> {
+  const { nodeId, lane, title, wuId, priority, dryRun: _dryRun = false } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
   // Validate lane format
   try {
     validateLaneFormat(lane);
-  } catch (error) {
-    throw new Error(`Invalid lane format: ${error.message}`);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Invalid lane format: ${errMsg}`);
   }
 
   const memory = await loadMemory(memoryDir);
-  const node = memory.byId.get(nodeId);
+  const node = memory.byId.get(nodeId) as TriageMemoryNode | undefined;
 
   if (!node) {
     throw new Error(`Node not found: ${nodeId}`);
@@ -401,7 +478,7 @@ export async function promoteDiscovery(baseDir, options) {
   // Generate WU spec
   const resolvedWuId = wuId || (await getNextWuId(baseDir));
   const resolvedTitle = title || truncateToTitle(node.content);
-  const resolvedPriority = priority || node.metadata?.priority || DEFAULT_PRIORITY;
+  const resolvedPriority = priority || (node.metadata?.priority as string | undefined) || DEFAULT_PRIORITY;
 
   const wuSpec = {
     id: resolvedWuId,

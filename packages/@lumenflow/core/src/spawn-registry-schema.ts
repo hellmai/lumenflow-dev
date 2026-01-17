@@ -21,12 +21,15 @@ export const SpawnStatus = {
   CRASHED: 'crashed',
   /** WU-1967: Spawn escalated to orchestrator (signal sent, prevents duplicates) */
   ESCALATED: 'escalated',
-};
+} as const;
+
+/** Type for spawn status values */
+export type SpawnStatusValue = (typeof SpawnStatus)[keyof typeof SpawnStatus];
 
 /**
  * Array of valid spawn statuses
  */
-export const SPAWN_STATUSES = Object.values(SpawnStatus);
+export const SPAWN_STATUSES = ['pending', 'completed', 'timeout', 'crashed', 'escalated'] as const;
 
 /**
  * Regex patterns for spawn validation
@@ -73,7 +76,7 @@ export const SpawnEventSchema = z.object({
 
   /** Current status of the spawned agent */
   status: z.enum(SPAWN_STATUSES, {
-    errorMap: () => ({ message: ERROR_MESSAGES.STATUS }),
+    error: ERROR_MESSAGES.STATUS,
   }),
 
   /** ISO 8601 timestamp when spawn completed (null if pending) */
@@ -82,15 +85,14 @@ export const SpawnEventSchema = z.object({
 
 /**
  * TypeScript type inferred from schema
- *
- * @typedef {import('zod').z.infer<typeof SpawnEventSchema>} SpawnEvent
  */
+export type SpawnEvent = z.infer<typeof SpawnEventSchema>;
 
 /**
  * Validates spawn event data against schema
  *
  * @param {unknown} data - Data to validate
- * @returns {z.SafeParseReturnType<SpawnEvent, SpawnEvent>} Validation result
+ * @returns Validation result
  *
  * @example
  * const result = validateSpawnEvent(eventData);
@@ -100,7 +102,7 @@ export const SpawnEventSchema = z.object({
  *   });
  * }
  */
-export function validateSpawnEvent(data) {
+export function validateSpawnEvent(data: unknown) {
   return SpawnEventSchema.safeParse(data);
 }
 
@@ -117,7 +119,7 @@ export function validateSpawnEvent(data) {
  * const id = generateSpawnId('WU-1000', 'WU-1001');
  * // Returns: 'spawn-a1b2'
  */
-export function generateSpawnId(parentWuId, targetWuId) {
+export function generateSpawnId(parentWuId: string, targetWuId: string): string {
   // Include timestamp and random bytes for uniqueness
   const timestamp = Date.now().toString();
   const randomBytes = crypto.randomBytes(4).toString('hex');

@@ -65,7 +65,7 @@ export function getRecoveryAttemptCount(id, baseDir = process.cwd()) {
     return 0;
   }
   try {
-    const data = JSON.parse(readFileSync(markerPath, FILE_SYSTEM.UTF8));
+    const data = JSON.parse(readFileSync(markerPath, { encoding: 'utf-8' }));
     return data.attempts || 0;
   } catch {
     // Corrupted file - treat as 0
@@ -138,9 +138,9 @@ export function shouldEscalateToManualIntervention(attempts) {
 function recordRecoveryState(paths) {
   const { wuPath, statusPath, backlogPath, stampPath } = paths;
   return {
-    wuContent: existsSync(wuPath) ? readFileSync(wuPath, FILE_SYSTEM.UTF8) : null,
-    statusContent: existsSync(statusPath) ? readFileSync(statusPath, FILE_SYSTEM.UTF8) : null,
-    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, FILE_SYSTEM.UTF8) : null,
+    wuContent: existsSync(wuPath) ? readFileSync(wuPath, { encoding: 'utf-8' }) : null,
+    statusContent: existsSync(statusPath) ? readFileSync(statusPath, { encoding: 'utf-8' }) : null,
+    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, { encoding: 'utf-8' }) : null,
     stampExisted: existsSync(stampPath),
     timestamp: new Date().toISOString(),
   };
@@ -278,7 +278,12 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
   console.log(RECOVERY.RESUMING);
   console.log(RECOVERY.EXPLANATION);
 
-  const results = {
+  const results: {
+    stamp: { created: boolean; path: string; reason?: string } | null;
+    yaml: { updated: boolean; reason?: string } | null;
+    docs: { status: unknown | null; backlog: unknown | null };
+    commit?: { committed: boolean; reason?: string };
+  } = {
     stamp: null,
     yaml: null,
     docs: { status: null, backlog: null },

@@ -54,14 +54,14 @@ const ERROR_MESSAGES = {
  * Uses SHA-256 hash of the content, taking the first 4 hex characters.
  * Same content always produces the same ID (deterministic).
  *
- * @param {string} content - Content to hash for ID generation
- * @returns {string} Memory ID in format mem-[a-f0-9]{4}
+ * @param content - Content to hash for ID generation
+ * @returns Memory ID in format mem-[a-f0-9]{4}
  *
  * @example
  * const id = generateMemId('discovered file at src/utils.mjs');
  * // Returns something like 'mem-a3f2'
  */
-export function generateMemId(content) {
+export function generateMemId(content: string): string {
   const hash = createHash('sha256').update(content, 'utf-8').digest('hex');
 
   // Take first 4 hex characters from hash
@@ -76,16 +76,16 @@ export function generateMemId(content) {
  * Used for sub-task decomposition where a parent task (mem-a1b2) has
  * child tasks (mem-a1b2.1, mem-a1b2.2) and grandchildren (mem-a1b2.1.1).
  *
- * @param {string} parentId - Parent memory ID (base or hierarchical)
- * @param {number} index - Positive integer index (1-based)
- * @returns {string} Hierarchical memory ID
- * @throws {Error} If parentId is invalid or index is not positive
+ * @param parentId - Parent memory ID (base or hierarchical)
+ * @param index - Positive integer index (1-based)
+ * @returns Hierarchical memory ID
+ * @throws If parentId is invalid or index is not positive
  *
  * @example
  * generateHierarchicalId('mem-a1b2', 1);     // 'mem-a1b2.1'
  * generateHierarchicalId('mem-a1b2.1', 2);  // 'mem-a1b2.1.2'
  */
-export function generateHierarchicalId(parentId, index) {
+export function generateHierarchicalId(parentId: string, index: number): string {
   // Validate parent ID
   if (!MEM_ID_PATTERNS.HIERARCHICAL_ID.test(parentId)) {
     throw new Error(`${ERROR_MESSAGES.INVALID_BASE_ID}: ${parentId}`);
@@ -101,14 +101,19 @@ export function generateHierarchicalId(parentId, index) {
 
 /**
  * Validation result from validateMemId
- *
- * @typedef {object} MemIdValidationResult
- * @property {boolean} valid - Whether the ID is valid
- * @property {'base'|'hierarchical'|undefined} type - Type of ID if valid
- * @property {string|undefined} baseId - Base ID portion if hierarchical
- * @property {number[]} indices - Hierarchical indices (empty for base IDs)
- * @property {string|undefined} error - Error message if invalid
  */
+export interface MemIdValidationResult {
+  /** Whether the ID is valid */
+  valid: boolean;
+  /** Type of ID if valid */
+  type?: 'base' | 'hierarchical';
+  /** Base ID portion if hierarchical */
+  baseId?: string;
+  /** Hierarchical indices (empty for base IDs) */
+  indices: number[];
+  /** Error message if invalid */
+  error?: string;
+}
 
 /**
  * Validates a memory ID and extracts its components.
@@ -116,8 +121,8 @@ export function generateHierarchicalId(parentId, index) {
  * Returns validation result with type classification and parsed components.
  * Compatible with MEMORY_PATTERNS.MEMORY_ID from memory-schema.mjs.
  *
- * @param {string} id - Memory ID to validate
- * @returns {MemIdValidationResult} Validation result with parsed components
+ * @param id - Memory ID to validate
+ * @returns Validation result with parsed components
  *
  * @example
  * validateMemId('mem-a1b2');
@@ -129,7 +134,7 @@ export function generateHierarchicalId(parentId, index) {
  * validateMemId('invalid');
  * // { valid: false, error: 'Invalid memory ID format', indices: [] }
  */
-export function validateMemId(id) {
+export function validateMemId(id: string): MemIdValidationResult {
   // Quick validation using regex
   if (!MEM_ID_PATTERNS.HIERARCHICAL_ID.test(id)) {
     return {

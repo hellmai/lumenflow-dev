@@ -126,7 +126,7 @@ export function detectConflicts(statusPath, claimingPaths, claimingWU) {
   }
 
   // Read status.md
-  const content = readFileSync(statusPath, FILE_SYSTEM.UTF8);
+  const content = readFileSync(statusPath, { encoding: 'utf-8' });
   const lines = content.split(STRING_LITERALS.NEWLINE);
 
   // Find "## In Progress" section (handles both status.md and backlog.md formats)
@@ -194,11 +194,11 @@ export function detectConflicts(statusPath, claimingPaths, claimingWU) {
       continue; // Skip if YAML doesn't exist
     }
 
-    const wuContent = readFileSync(wuPath, FILE_SYSTEM.UTF8);
-    const wuDoc = yaml.load(wuContent);
+    const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
+    const wuDoc = yaml.load(wuContent) as { code_paths?: string[] } | null;
 
     // Extract code_paths (skip if not defined)
-    const existingPaths = wuDoc.code_paths;
+    const existingPaths = wuDoc?.code_paths;
     if (!existingPaths || existingPaths.length === 0) {
       continue;
     }

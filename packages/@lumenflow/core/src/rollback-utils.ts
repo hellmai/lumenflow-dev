@@ -13,17 +13,28 @@ import { writeFileSync, unlinkSync } from 'node:fs';
 import { FILE_SYSTEM } from './wu-constants.js';
 
 /**
+ * Error entry for failed file restoration
+ */
+interface RollbackError {
+  name: string;
+  path: string;
+  error: string;
+}
+
+/**
  * Result of a rollback operation.
  * Tracks which files were restored and which failed.
  *
  * @class
  */
 export class RollbackResult {
-  constructor() {
-    /** @type {string[]} Names of successfully restored files */
-    this.restored = [];
+  /** Names of successfully restored files */
+  restored: string[];
+  /** Failed file restorations */
+  errors: RollbackError[];
 
-    /** @type {{name: string, path: string, error: string}[]} Failed file restorations */
+  constructor() {
+    this.restored = [];
     this.errors = [];
   }
 
@@ -79,10 +90,11 @@ export function rollbackFiles(filesToRestore) {
 
   for (const file of filesToRestore) {
     try {
-      writeFileSync(file.path, file.content, FILE_SYSTEM.UTF8);
+      writeFileSync(file.path, file.content, { encoding: 'utf-8' });
       result.addSuccess(file.name);
     } catch (err) {
-      result.addError(file.name, file.path, err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      result.addError(file.name, file.path, message);
     }
   }
 
@@ -103,7 +115,8 @@ export function deleteFiles(filesToDelete) {
       unlinkSync(file.path);
       result.addSuccess(file.name);
     } catch (err) {
-      result.addError(file.name, file.path, err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      result.addError(file.name, file.path, message);
     }
   }
 

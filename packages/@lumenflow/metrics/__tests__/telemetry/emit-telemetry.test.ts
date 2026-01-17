@@ -3,6 +3,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTelemetryEmitter, TELEMETRY_PATHS } from '../../src/telemetry/emit-telemetry.js';
+import type { TelemetryEmitFn } from '../../src/types.js';
 
 describe('createTelemetryEmitter', () => {
   let emitFn: ReturnType<typeof vi.fn>;
@@ -10,7 +11,7 @@ describe('createTelemetryEmitter', () => {
 
   beforeEach(() => {
     emitFn = vi.fn();
-    emitter = createTelemetryEmitter(emitFn);
+    emitter = createTelemetryEmitter(emitFn as unknown as TelemetryEmitFn);
   });
 
   describe('TELEMETRY_PATHS', () => {

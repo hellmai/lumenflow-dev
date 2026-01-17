@@ -15,6 +15,38 @@ import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-pattern
 import { CONFIG_FILES, FILE_SYSTEM, STRING_LITERALS, getProjectRoot } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 
+// Type definitions
+interface ValidateLaneOptions {
+  strict?: boolean;
+}
+
+interface ValidateLaneResult {
+  valid: boolean;
+  parent: string;
+  error: string | null;
+}
+
+interface CheckLaneFreeResult {
+  free: boolean;
+  occupiedBy: string | null;
+  error: string | null;
+}
+
+interface LaneConfig {
+  name: string;
+}
+
+interface LumenflowConfig {
+  lanes?: {
+    engineering?: LaneConfig[];
+    business?: LaneConfig[];
+  };
+}
+
+interface WUDoc {
+  lane?: string;
+}
+
 // Re-export for test access
 export { getSubLanesForParent };
 
@@ -29,7 +61,7 @@ const NO_ITEMS_MARKER = 'No items currently in progress';
  * @param {string} lane - Lane name (e.g., "Operations: Tooling" or "Operations")
  * @returns {string} Parent lane name
  */
-export function extractParent(lane) {
+export function extractParent(lane: string): string {
   const trimmed = lane.trim();
   const colonIndex = trimmed.indexOf(':');
 
@@ -47,7 +79,7 @@ export function extractParent(lane) {
  * @param {string} parent - Parent lane name
  * @returns {boolean} True if parent has sub-lanes in lane-inference config
  */
-function hasSubLaneTaxonomy(parent) {
+function hasSubLaneTaxonomy(parent: string): boolean {
   const projectRoot = getProjectRoot(import.meta.url);
   const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 
@@ -56,8 +88,8 @@ function hasSubLaneTaxonomy(parent) {
   }
 
   try {
-    const taxonomyContent = readFileSync(taxonomyPath, FILE_SYSTEM.ENCODING);
-    const taxonomy = yaml.load(taxonomyContent);
+    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
+    const taxonomy = yaml.load(taxonomyContent) as Record<string, unknown>;
 
     // Check if parent exists as top-level key in taxonomy
     const normalizedParent = parent.trim();
@@ -75,7 +107,7 @@ function hasSubLaneTaxonomy(parent) {
  * @param {string} subdomain - Sub-lane name
  * @returns {boolean} True if sub-lane exists
  */
-function isValidSubLane(parent, subdomain) {
+function isValidSubLane(parent: string, subdomain: string): boolean {
   const projectRoot = getProjectRoot(import.meta.url);
   const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 
@@ -84,8 +116,8 @@ function isValidSubLane(parent, subdomain) {
   }
 
   try {
-    const taxonomyContent = readFileSync(taxonomyPath, FILE_SYSTEM.ENCODING);
-    const taxonomy = yaml.load(taxonomyContent);
+    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
+    const taxonomy = yaml.load(taxonomyContent) as Record<string, Record<string, unknown>>;
 
     // Find parent key (case-insensitive)
     const normalizedParent = parent.trim().toLowerCase();
@@ -116,7 +148,7 @@ function isValidSubLane(parent, subdomain) {
  * @param {string} char - Character to count
  * @returns {number} Number of occurrences
  */
-function countChar(str, char) {
+function countChar(str: string, char: string): number {
   let count = 0;
   for (const c of str) {
     if (c === char) count++;
@@ -144,7 +176,7 @@ const SPACE = ' ';
  * @param {ValidateLaneOptions} options - Validation options
  * @returns {{ valid: boolean, parent: string, error: string | null }}
  */
-export function validateLaneFormat(lane, configPath = null, options = {}) {
+export function validateLaneFormat(lane: string, configPath: string | null = null, options: ValidateLaneOptions = {}): ValidateLaneResult {
   const { strict = true } = options;
   const trimmed = lane.trim();
 
@@ -254,25 +286,26 @@ export function validateLaneFormat(lane, configPath = null, options = {}) {
  * @param {string} configPath - Path to config file (optional)
  * @returns {boolean} True if parent lane exists
  */
-function isValidParentLane(parent, configPath = null) {
+function isValidParentLane(parent: string, configPath: string | null = null): boolean {
   // Determine config path
-  if (!configPath) {
+  let resolvedConfigPath = configPath;
+  if (!resolvedConfigPath) {
     const projectRoot = getProjectRoot(import.meta.url);
-    configPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
   }
 
   // Read and parse config
-  if (!existsSync(configPath)) {
-    throw createError(ErrorCodes.FILE_NOT_FOUND, `Config file not found: ${configPath}`, {
-      path: configPath,
+  if (!existsSync(resolvedConfigPath)) {
+    throw createError(ErrorCodes.FILE_NOT_FOUND, `Config file not found: ${resolvedConfigPath}`, {
+      path: resolvedConfigPath,
     });
   }
 
-  const configContent = readFileSync(configPath, FILE_SYSTEM.ENCODING);
-  const config = yaml.load(configContent);
+  const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
+  const config = yaml.load(configContent) as LumenflowConfig;
 
   // Extract all lane names from engineering and business sections
-  const allLanes = [];
+  const allLanes: string[] = [];
   if (config.lanes && config.lanes.engineering) {
     allLanes.push(...config.lanes.engineering.map((l) => l.name));
   }
@@ -292,7 +325,7 @@ function isValidParentLane(parent, configPath = null) {
  * @param {string} wuid - WU ID being claimed (e.g., "WU-419")
  * @returns {{ free: boolean, occupiedBy: string | null, error: string | null }}
  */
-export function checkLaneFree(statusPath, lane, wuid) {
+export function checkLaneFree(statusPath: string, lane: string, wuid: string): CheckLaneFreeResult {
   /** Section heading marker for H2 headings */
   const SECTION_HEADING_PREFIX = '## ';
 
@@ -302,7 +335,7 @@ export function checkLaneFree(statusPath, lane, wuid) {
       return { free: false, occupiedBy: null, error: `status.md not found: ${statusPath}` };
     }
 
-    const content = readFileSync(statusPath, FILE_SYSTEM.ENCODING);
+    const content = readFileSync(statusPath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
 
     // Find "## In Progress" section
@@ -360,8 +393,8 @@ export function checkLaneFree(statusPath, lane, wuid) {
       }
 
       try {
-        const wuContent = readFileSync(wuPath, FILE_SYSTEM.ENCODING);
-        const wuDoc = yaml.load(wuContent);
+        const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
+        const wuDoc = yaml.load(wuContent) as WUDoc;
 
         if (!wuDoc || !wuDoc.lane) {
           console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
@@ -377,7 +410,8 @@ export function checkLaneFree(statusPath, lane, wuid) {
           return { free: false, occupiedBy: activeWuid, error: null };
         }
       } catch (e) {
-        console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${e.message}`);
+        const errMessage = e instanceof Error ? e.message : String(e);
+        console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${errMessage}`);
         continue;
       }
     }
@@ -385,6 +419,7 @@ export function checkLaneFree(statusPath, lane, wuid) {
     // No WUs found in target lane
     return { free: true, occupiedBy: null, error: null };
   } catch (error) {
-    return { free: false, occupiedBy: null, error: `Unexpected error: ${error.message}` };
+    const errMessage = error instanceof Error ? error.message : String(error);
+    return { free: false, occupiedBy: null, error: `Unexpected error: ${errMessage}` };
   }
 }

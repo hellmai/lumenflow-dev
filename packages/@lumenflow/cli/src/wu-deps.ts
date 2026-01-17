@@ -83,12 +83,22 @@ async function main() {
   }
 }
 
-function renderGraphJSON(graph, rootId, depth, direction) {
+interface GraphOutput {
+  root: {
+    id: string;
+    title: string;
+    status: string;
+  };
+  upstream?: unknown[];
+  downstream?: unknown[];
+}
+
+function renderGraphJSON(graph: Map<string, { id: string; title: string; status: string; blockedBy: string[]; blocks: string[] }>, rootId: string, depth: number, direction: string) {
   const node = graph.get(rootId);
   if (!node) return JSON.stringify({ error: 'WU not found' }, null, 2);
 
-  const visited = new Set();
-  const collectDeps = (id, currentDepth, isUpstream) => {
+  const visited = new Set<string>();
+  const collectDeps = (id: string, currentDepth: number, isUpstream: boolean): unknown => {
     if (currentDepth > depth || visited.has(id)) return null;
     visited.add(id);
 
@@ -107,7 +117,7 @@ function renderGraphJSON(graph, rootId, depth, direction) {
     };
   };
 
-  const output = {
+  const output: GraphOutput = {
     root: {
       id: node.id,
       title: node.title,

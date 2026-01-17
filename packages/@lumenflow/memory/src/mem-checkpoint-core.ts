@@ -45,20 +45,20 @@ const ERROR_MESSAGES = {
 /**
  * Checkpoint node type constant
  */
-const NODE_TYPE_CHECKPOINT = 'checkpoint';
+const NODE_TYPE_CHECKPOINT = 'checkpoint' as const;
 
 /**
  * Checkpoint lifecycle constant (session-scoped for handoff context)
  */
-const LIFECYCLE_SESSION = 'session';
+const LIFECYCLE_SESSION = 'session' as const;
 
 /**
  * Validates WU ID format if provided
  *
- * @param {string|undefined} wuId - WU ID to validate
- * @returns {boolean} True if valid or not provided
+ * @param wuId - WU ID to validate
+ * @returns True if valid or not provided
  */
-function isValidWuId(wuId) {
+function isValidWuId(wuId: string | undefined): boolean {
   if (!wuId) return true;
   return MEMORY_PATTERNS.WU_ID.test(wuId);
 }
@@ -66,10 +66,10 @@ function isValidWuId(wuId) {
 /**
  * Ensures the memory directory exists
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<string>} Memory directory path
+ * @param baseDir - Base directory
+ * @returns Memory directory path
  */
-async function ensureMemoryDir(baseDir) {
+async function ensureMemoryDir(baseDir: string): Promise<string> {
   const memoryDir = path.join(baseDir, MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
@@ -79,32 +79,64 @@ async function ensureMemoryDir(baseDir) {
 /**
  * Generates content description for checkpoint node
  *
- * @param {string} note - User-provided checkpoint note
- * @returns {string} Content description
+ * @param note - User-provided checkpoint note
+ * @returns Content description
  */
-function generateCheckpointContent(note) {
+function generateCheckpointContent(note: string): string {
   return `Checkpoint: ${note}`;
 }
 
 /**
  * Checkpoint creation options
- *
- * @typedef {object} CreateCheckpointOptions
- * @property {string} note - Checkpoint note/description (required)
- * @property {string} [sessionId] - Session ID to link checkpoint to
- * @property {string} [wuId] - Work Unit ID to link checkpoint to
- * @property {string} [progress] - Progress summary
- * @property {string} [nextSteps] - Next steps description
- * @property {string} [trigger] - Handoff trigger (e.g., 'clear', 'handoff')
  */
+export interface CreateCheckpointOptions {
+  /** Checkpoint note/description (required) */
+  note: string;
+  /** Session ID to link checkpoint to */
+  sessionId?: string;
+  /** Work Unit ID to link checkpoint to */
+  wuId?: string;
+  /** Progress summary */
+  progress?: string;
+  /** Next steps description */
+  nextSteps?: string;
+  /** Handoff trigger (e.g., 'clear', 'handoff') */
+  trigger?: string;
+}
+
+/**
+ * Checkpoint metadata stored in the node
+ */
+interface CheckpointMetadata {
+  progress?: string;
+  nextSteps?: string;
+  trigger?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Memory node structure for checkpoints
+ */
+interface CheckpointNode {
+  id: string;
+  type: 'checkpoint';
+  lifecycle: 'session';
+  content: string;
+  created_at: string;
+  wu_id?: string;
+  session_id?: string;
+  metadata?: CheckpointMetadata;
+}
 
 /**
  * Checkpoint creation result
- *
- * @typedef {object} CreateCheckpointResult
- * @property {boolean} success - Whether the operation succeeded
- * @property {import('./memory-schema.mjs').MemoryNode} checkpoint - Created checkpoint node
  */
+export interface CreateCheckpointResult {
+  /** Whether the operation succeeded */
+  success: boolean;
+  /** Created checkpoint node */
+  checkpoint: CheckpointNode;
+}
 
 /**
  * Creates a new checkpoint node for context preservation.
@@ -115,10 +147,10 @@ function generateCheckpointContent(note) {
  * - Optional session and WU linking
  * - Progress summary and next steps in metadata
  *
- * @param {string} baseDir - Base directory containing .beacon/memory/
- * @param {CreateCheckpointOptions} options - Checkpoint options
- * @returns {Promise<CreateCheckpointResult>} Result with created checkpoint node
- * @throws {Error} If note is missing or WU ID is invalid
+ * @param baseDir - Base directory containing .beacon/memory/
+ * @param options - Checkpoint options
+ * @returns Result with created checkpoint node
+ * @throws If note is missing or WU ID is invalid
  *
  * @example
  * const result = await createCheckpoint(baseDir, {
@@ -130,7 +162,7 @@ function generateCheckpointContent(note) {
  * });
  * console.log(result.checkpoint.id); // 'mem-a1b2'
  */
-export async function createCheckpoint(baseDir, options) {
+export async function createCheckpoint(baseDir: string, options: CreateCheckpointOptions): Promise<CreateCheckpointResult> {
   const { note, sessionId, wuId, progress, nextSteps, trigger } = options;
 
   // Validate required fields
@@ -159,7 +191,7 @@ export async function createCheckpoint(baseDir, options) {
   const id = generateMemId(idContent);
 
   // Build metadata object
-  const metadata = {};
+  const metadata: CheckpointMetadata = {};
   if (progress) {
     metadata.progress = progress;
   }
@@ -170,8 +202,7 @@ export async function createCheckpoint(baseDir, options) {
     metadata.trigger = trigger;
   }
 
-  /** @type {import('./memory-schema.mjs').MemoryNode} */
-  const checkpointNode = {
+  const checkpointNode: CheckpointNode = {
     id,
     type: NODE_TYPE_CHECKPOINT,
     lifecycle: LIFECYCLE_SESSION,

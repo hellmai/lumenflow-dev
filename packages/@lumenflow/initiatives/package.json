@@ -46,10 +46,11 @@
     "@lumenflow/core": "workspace:*",
     "js-yaml": "^4.1.0",
     "yaml": "^2.8.0",
-    "zod": "^3.25.0"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=22"

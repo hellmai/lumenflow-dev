@@ -22,7 +22,7 @@ export function parseBacklogFrontmatter(backlogPath) {
     });
   }
 
-  const content = readFileSync(backlogPath, FILE_SYSTEM.UTF8);
+  const content = readFileSync(backlogPath, { encoding: 'utf-8' });
 
   try {
     // Configure gray-matter to use modern yaml library instead of deprecated js-yaml
@@ -48,16 +48,38 @@ export function parseBacklogFrontmatter(backlogPath) {
 }
 
 /**
+ * Section configuration from frontmatter
+ */
+interface SectionConfig {
+  heading?: string;
+}
+
+/**
+ * Backlog frontmatter structure
+ */
+interface BacklogFrontmatter {
+  sections?: Record<string, SectionConfig>;
+}
+
+/**
+ * Section boundary definition
+ */
+interface SectionBoundary {
+  start: number;
+  end: number | null;
+}
+
+/**
  * Extract section headings from frontmatter
  * @param {object|null} frontmatter - Parsed frontmatter object
  * @returns {object} Map of section names to heading strings (e.g., {ready: "## 🚀 Ready"})
  */
-export function getSectionHeadings(frontmatter) {
+export function getSectionHeadings(frontmatter: BacklogFrontmatter | null): Record<string, string> {
   if (!frontmatter || !frontmatter.sections) {
     return {};
   }
 
-  const headings = {};
+  const headings: Record<string, string> = {};
   for (const [sectionName, sectionConfig] of Object.entries(frontmatter.sections)) {
     if (sectionConfig.heading) {
       headings[sectionName] = sectionConfig.heading;
@@ -73,13 +95,16 @@ export function getSectionHeadings(frontmatter) {
  * @param {object|null} frontmatter - Parsed frontmatter object
  * @returns {object} Map of section names to {start, end} boundary indices
  */
-export function findSectionBoundaries(lines, frontmatter) {
+export function findSectionBoundaries(
+  lines: string[],
+  frontmatter: BacklogFrontmatter | null
+): Record<string, SectionBoundary | null> {
   if (!frontmatter || !frontmatter.sections) {
     return {};
   }
 
   const headings = getSectionHeadings(frontmatter);
-  const boundaries = {};
+  const boundaries: Record<string, SectionBoundary | null> = {};
 
   // Initialize all sections as null (not found)
   for (const sectionName of Object.keys(headings)) {
@@ -99,7 +124,7 @@ export function findSectionBoundaries(lines, frontmatter) {
 
   // Calculate end indices (last line before next section or EOF)
   const sectionStarts = Object.values(boundaries)
-    .filter((b) => b !== null)
+    .filter((b): b is SectionBoundary => b !== null)
     .map((b) => b.start)
     .sort((a, b) => a - b);
 

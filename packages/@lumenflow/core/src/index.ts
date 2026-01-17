@@ -11,25 +11,90 @@ export * from './arg-parser.js';
 export * from './date-utils.js';
 export * from './error-handler.js';
 export * from './retry-strategy.js';
-export * from './user-normalizer.js';
+
+// User normalizer (explicit exports to avoid conflicts)
+export {
+  DEFAULT_DOMAIN,
+  inferDefaultDomain,
+  normalizeToEmail,
+  isValidEmail,
+} from './user-normalizer.js';
 
 // Git operations
 export * from './git-adapter.js';
 
 // State machine
 export * from './state-machine.js';
-export * from './wu-state-schema.js';
-export * from './wu-state-store.js';
+
+// WU State Schema (explicit exports to avoid SpawnEvent conflict with spawn-registry)
+export {
+  WU_EVENT_TYPES,
+  WU_STATUSES,
+  WU_PATTERNS,
+  CreateEventSchema,
+  ClaimEventSchema,
+  BlockEventSchema,
+  UnblockEventSchema,
+  CompleteEventSchema,
+  CheckpointEventSchema,
+  WUEventSchema,
+  validateWUEvent,
+  // Rename conflicting exports
+  SpawnEventSchema as WUSpawnEventSchema,
+  type CreateEvent,
+  type ClaimEvent,
+  type BlockEvent,
+  type UnblockEvent,
+  type CompleteEvent,
+  type CheckpointEvent,
+  type WUEvent,
+  type SpawnEvent as WUSpawnEvent,
+} from './wu-state-schema.js';
+
+// WU State Store (explicit exports to avoid isLockStale conflict)
+export {
+  WU_EVENTS_FILE_NAME,
+  WUStateStore,
+  acquireLock,
+  releaseLock,
+  repairStateFile,
+  isLockStale as isWULockStale,
+  type WUStateEntry,
+  type LockData as WULockData,
+  type CheckpointOptions,
+  type RepairResult,
+} from './wu-state-store.js';
 
 // Lane management
 export * from './lane-checker.js';
 export * from './lane-inference.js';
-export * from './lane-lock.js';
+
+// Lane lock (explicit exports with proper names)
+export {
+  getStaleThresholdMs,
+  getLocksDir,
+  getLockFilePath,
+  isLockStale,
+  isZombieLock,
+  readLockMetadata,
+  acquireLaneLock,
+  releaseLaneLock,
+  checkLaneLock,
+  forceRemoveStaleLock,
+  getAllLaneLocks,
+  auditedUnlock,
+} from './lane-lock.js';
+
 export * from './lane-validator.js';
 
 // WU lifecycle
 export * from './wu-yaml.js';
-export * from './wu-claim-helpers.js';
+
+// WU claim helpers (skip isValidEmail which conflicts with user-normalizer)
+export {
+  getAssignedEmail,
+} from './wu-claim-helpers.js';
+
 export * from './wu-done-worktree.js';
 export * from './wu-done-validators.js';
 export * from './wu-helpers.js';
@@ -56,5 +121,9 @@ export * from './worktree-ownership.js';
 export * from './micro-worktree.js';
 
 // Guards and validators
+// NOTE: Configuration added below
 export * from './dependency-guard.js';
 export * from './stamp-utils.js';
+// Configuration
+export * from './lumenflow-config.js';
+export * from './lumenflow-config-schema.js';

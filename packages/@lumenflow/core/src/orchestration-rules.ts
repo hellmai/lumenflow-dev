@@ -10,7 +10,7 @@
  */
 
 import { minimatch } from 'minimatch';
-import { MANDATORY_TRIGGERS } from './domain/orchestration.constants.js';
+import { MANDATORY_TRIGGERS, type MandatoryAgentName } from './domain/orchestration.constants.js';
 
 /**
  * Threshold for considering a WU "near completion".
@@ -25,16 +25,16 @@ const NEAR_COMPLETION_THRESHOLD = 8;
  * which agents are required for the given file paths.
  *
  * @param {readonly string[]} codePaths - Array of file paths being touched by the WU
- * @returns {string[]} Array of unique mandatory agent names that should be invoked
+ * @returns {MandatoryAgentName[]} Array of unique mandatory agent names that should be invoked
  */
-export function detectMandatoryAgents(codePaths) {
+export function detectMandatoryAgents(codePaths: readonly string[]): MandatoryAgentName[] {
   if (codePaths.length === 0) {
     return [];
   }
 
-  const triggeredAgents = new Set();
+  const triggeredAgents = new Set<MandatoryAgentName>();
 
-  for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
+  for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS) as [MandatoryAgentName, readonly string[]][]) {
     const isTriggered = codePaths.some((filePath) =>
       patterns.some((pattern) => minimatch(filePath, pattern))
     );

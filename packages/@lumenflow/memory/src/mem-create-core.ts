@@ -22,9 +22,11 @@ import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import {
   MEMORY_NODE_TYPES,
+  MEMORY_LIFECYCLES,
   MEMORY_PATTERNS,
   validateMemoryNode,
   validateRelationship,
+  type MemoryNode,
 } from './memory-schema.js';
 
 /**
@@ -48,17 +50,33 @@ const DEFAULT_NODE_TYPE = 'discovery';
 const SESSION_FILE_PATH = '.beacon/sessions/current.json';
 
 /**
+ * Type alias entry for friendly CLI types
+ */
+interface TypeAliasEntry {
+  type: string;
+  tag: string;
+}
+
+/**
  * Type aliases for user-friendly CLI experience (WU-1762)
  * Maps alias names to canonical types and additional tags
- *
- * @type {Record<string, { type: string, tag: string }>}
  */
-const TYPE_ALIASES = {
+const TYPE_ALIASES: Record<string, TypeAliasEntry> = {
   bug: { type: 'discovery', tag: 'bug' },
   idea: { type: 'discovery', tag: 'idea' },
   question: { type: 'discovery', tag: 'question' },
   dependency: { type: 'discovery', tag: 'dependency' },
 };
+
+/**
+ * Memory node types (derived from schema)
+ */
+type MemoryNodeType = (typeof MEMORY_NODE_TYPES)[number];
+
+/**
+ * Memory lifecycle types (derived from schema)
+ */
+type MemoryLifecycleType = (typeof MEMORY_LIFECYCLES)[number];
 
 /**
  * Lifecycle mapping by node type
@@ -68,7 +86,7 @@ const TYPE_ALIASES = {
  * - note: Lives for session (session)
  * - summary: Persists across WUs (project)
  */
-const LIFECYCLE_BY_TYPE = {
+const LIFECYCLE_BY_TYPE: Record<MemoryNodeType, MemoryLifecycleType> = {
   session: 'wu',
   discovery: 'wu',
   checkpoint: 'session',
@@ -93,11 +111,10 @@ const ERROR_MESSAGES = {
  * Converts user-friendly type aliases (bug, idea) to canonical types (discovery)
  * and returns the tag to be added.
  *
- * @param {string} inputType - User-provided type (may be alias)
- * @returns {{ type: string, aliasTag: string | null }} Normalized type and optional tag
+ * @param inputType - User-provided type (may be alias)
+ * @returns Normalized type and optional tag
  */
-function normalizeType(inputType) {
-  // eslint-disable-next-line security/detect-object-injection -- inputType validated against TYPE_ALIASES
+function normalizeType(inputType: string): { type: string; aliasTag: string | null } {
   const alias = TYPE_ALIASES[inputType];
   if (alias) {
     return { type: alias.type, aliasTag: alias.tag };
@@ -108,10 +125,10 @@ function normalizeType(inputType) {
 /**
  * Checks if a path is a git worktree (has .git file pointing to main)
  *
- * @param {string} dir - Directory to check
- * @returns {Promise<string | null>} Path to main checkout or null if not a worktree
+ * @param dir - Directory to check
+ * @returns Path to main checkout or null if not a worktree
  */
-async function getMainCheckoutFromWorktree(dir) {
+async function getMainCheckoutFromWorktree(dir: string): Promise<string | null> {
   const gitPath = path.join(dir, '.git');
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known path
@@ -119,10 +136,10 @@ async function getMainCheckoutFromWorktree(dir) {
     if (stat.isFile()) {
       // .git is a file = we're in a worktree
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known path
-      const gitContent = await fs.readFile(gitPath, 'utf-8');
+      const gitContent = await fs.readFile(gitPath, { encoding: 'utf-8' as BufferEncoding });
       // Format: "gitdir: /path/to/main/.git/worktrees/name"
       const match = gitContent.match(/^gitdir:\s*(.+)/);
-      if (match) {
+      if (match && match[1]) {
         const gitDir = match[1].trim();
         // Extract main checkout: /path/to/main/.git/worktrees/name → /path/to/main
         const worktreesIndex = gitDir.indexOf('/.git/worktrees/');
@@ -138,17 +155,25 @@ async function getMainCheckoutFromWorktree(dir) {
 }
 
 /**
+ * Session data from session file
+ */
+interface SessionData {
+  wu_id?: string;
+  session_id?: string;
+}
+
+/**
  * Reads the current session from session file
  *
- * @param {string} baseDir - Base directory (main checkout)
- * @returns {Promise<{ wu_id?: string, session_id?: string } | null>} Session data or null
+ * @param baseDir - Base directory (main checkout)
+ * @returns Session data or null
  */
-async function readCurrentSession(baseDir) {
+async function readCurrentSession(baseDir: string): Promise<SessionData | null> {
   const sessionPath = path.join(baseDir, SESSION_FILE_PATH);
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known session path
-    const content = await fs.readFile(sessionPath, 'utf-8');
-    return JSON.parse(content);
+    const content = await fs.readFile(sessionPath, { encoding: 'utf-8' as BufferEncoding });
+    return JSON.parse(content) as SessionData;
   } catch {
     return null;
   }
@@ -161,10 +186,10 @@ async function readCurrentSession(baseDir) {
  * 1. Current baseDir (if running in main checkout)
  * 2. Main checkout (if running in worktree)
  *
- * @param {string} baseDir - Current working directory
- * @returns {Promise<string | undefined>} WU ID from session or undefined
+ * @param baseDir - Current working directory
+ * @returns Session data from session file or null
  */
-async function inferSessionFromSessionFile(baseDir) {
+async function inferSessionFromSessionFile(baseDir: string): Promise<SessionData | null> {
   // First, try to read session from current directory
   let session = await readCurrentSession(baseDir);
   if (session) {
@@ -183,7 +208,7 @@ async function inferSessionFromSessionFile(baseDir) {
   return null;
 }
 
-function isValidSessionId(value) {
+function isValidSessionId(value: unknown): value is string {
   if (!value) return false;
   if (typeof value !== 'string') return false;
   // UUID v4 format (sufficient for validation here; actual schema validates uuid too)
@@ -193,10 +218,10 @@ function isValidSessionId(value) {
 /**
  * Validates WU ID format if provided
  *
- * @param {string|undefined} wuId - WU ID to validate
- * @returns {boolean} True if valid or not provided
+ * @param wuId - WU ID to validate
+ * @returns True if valid or not provided
  */
-function isValidWuId(wuId) {
+function isValidWuId(wuId: string | undefined): boolean {
   if (!wuId) return true;
   return MEMORY_PATTERNS.WU_ID.test(wuId);
 }
@@ -204,20 +229,20 @@ function isValidWuId(wuId) {
 /**
  * Validates memory ID format
  *
- * @param {string} memId - Memory ID to validate
- * @returns {boolean} True if valid
+ * @param memId - Memory ID to validate
+ * @returns True if valid
  */
-function isValidMemoryId(memId) {
+function isValidMemoryId(memId: string): boolean {
   return MEMORY_PATTERNS.MEMORY_ID.test(memId);
 }
 
 /**
  * Ensures the memory directory exists
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<string>} Memory directory path
+ * @param baseDir - Base directory
+ * @returns Memory directory path
  */
-async function ensureMemoryDir(baseDir) {
+async function ensureMemoryDir(baseDir: string): Promise<string> {
   const memoryDir = path.join(baseDir, MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
@@ -227,11 +252,11 @@ async function ensureMemoryDir(baseDir) {
 /**
  * Appends a relationship to the relationships.jsonl file
  *
- * @param {string} memoryDir - Memory directory path
- * @param {object} relationship - Relationship object
- * @returns {Promise<object>} The appended relationship
+ * @param memoryDir - Memory directory path
+ * @param relationship - Relationship object
+ * @returns The appended relationship
  */
-async function appendRelationship(memoryDir, relationship) {
+async function appendRelationship(memoryDir: string, relationship: Relationship): Promise<Relationship> {
   // Validate relationship before appending
   const validation = validateRelationship(relationship);
   if (!validation.success) {
@@ -246,7 +271,7 @@ async function appendRelationship(memoryDir, relationship) {
 
   // Use append flag to avoid rewriting the file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes known file
-  await fs.appendFile(filePath, line, 'utf-8');
+  await fs.appendFile(filePath, line, { encoding: 'utf-8' as BufferEncoding });
 
   return relationship;
 }
@@ -254,35 +279,54 @@ async function appendRelationship(memoryDir, relationship) {
 /**
  * Gets the lifecycle for a node type
  *
- * @param {string} type - Node type
- * @returns {string} Lifecycle value
+ * @param type - Node type
+ * @returns Lifecycle value
  */
-function getLifecycleForType(type) {
-  // eslint-disable-next-line security/detect-object-injection -- type is validated against MEMORY_NODE_TYPES
-  return LIFECYCLE_BY_TYPE[type] || 'wu';
+function getLifecycleForType(type: MemoryNodeType): MemoryLifecycleType {
+  return LIFECYCLE_BY_TYPE[type];
 }
 
 /**
  * Memory node creation options
- *
- * @typedef {object} CreateMemoryNodeOptions
- * @property {string} title - Node title/content (required)
- * @property {string} [type='discovery'] - Node type (session, discovery, checkpoint, note, summary)
- * @property {string} [wuId] - Work Unit ID to link node to
- * @property {string} [sessionId] - Session ID to link node to
- * @property {string} [discoveredFrom] - Parent node ID for provenance tracking
- * @property {string[]} [tags] - Tags for categorization
- * @property {string} [priority] - Priority level (P0, P1, P2, P3)
  */
+export interface CreateMemoryNodeOptions {
+  /** Node title/content (required) */
+  title: string;
+  /** Node type (session, discovery, checkpoint, note, summary) */
+  type?: string;
+  /** Work Unit ID to link node to */
+  wuId?: string;
+  /** Session ID to link node to */
+  sessionId?: string;
+  /** Parent node ID for provenance tracking */
+  discoveredFrom?: string;
+  /** Tags for categorization */
+  tags?: string[];
+  /** Priority level (P0, P1, P2, P3) */
+  priority?: string;
+}
+
+/**
+ * Relationship between memory nodes
+ */
+interface Relationship {
+  from_id: string;
+  to_id: string;
+  type: string;
+  created_at: string;
+}
 
 /**
  * Memory node creation result
- *
- * @typedef {object} CreateMemoryNodeResult
- * @property {boolean} success - Whether the operation succeeded
- * @property {import('./memory-schema.mjs').MemoryNode} node - Created memory node
- * @property {import('./memory-schema.mjs').Relationship} [relationship] - Created relationship (if discoveredFrom provided)
  */
+export interface CreateMemoryNodeResult {
+  /** Whether the operation succeeded */
+  success: boolean;
+  /** Created memory node */
+  node: MemoryNode;
+  /** Created relationship (if discoveredFrom provided) */
+  relationship?: Relationship;
+}
 
 /**
  * Creates a new memory node with optional discovered-from provenance.
@@ -318,7 +362,7 @@ function getLifecycleForType(type) {
  *   discoveredFrom: parent.node.id, // Track where this came from
  * });
  */
-export async function createMemoryNode(baseDir, options) {
+export async function createMemoryNode(baseDir: string, options: CreateMemoryNodeOptions): Promise<CreateMemoryNodeResult> {
   const {
     title,
     type: inputType = DEFAULT_NODE_TYPE,
@@ -339,12 +383,14 @@ export async function createMemoryNode(baseDir, options) {
   }
 
   // Normalize type aliases (WU-1762): bug → discovery + tag, idea → discovery + tag
-  const { type, aliasTag } = normalizeType(inputType);
+  const { type: normalizedType, aliasTag } = normalizeType(inputType);
 
-  // Validate node type (after alias normalization)
-  if (!MEMORY_NODE_TYPES.includes(type)) {
+  // Validate node type (after alias normalization) and narrow type
+  if (!MEMORY_NODE_TYPES.includes(normalizedType as MemoryNodeType)) {
     throw new Error(ERROR_MESSAGES.INVALID_TYPE);
   }
+  // Type is now validated - safe to cast
+  const type = normalizedType as MemoryNodeType;
 
   // Merge tags: alias tag + user-provided tags, deduplicated (WU-1762)
   let tags = inputTags ? [...inputTags] : [];
@@ -384,13 +430,12 @@ export async function createMemoryNode(baseDir, options) {
   const lifecycle = getLifecycleForType(type);
 
   // Build metadata object
-  const metadata = {};
+  const metadata: Record<string, unknown> = {};
   if (priority) {
     metadata.priority = priority;
   }
 
-  /** @type {import('./memory-schema.mjs').MemoryNode} */
-  const node = {
+  const node: MemoryNode = {
     id,
     type,
     lifecycle,
@@ -425,14 +470,14 @@ export async function createMemoryNode(baseDir, options) {
   await appendNode(memoryDir, node);
 
   // Build result
-  const result = {
+  const result: CreateMemoryNodeResult = {
     success: true,
     node,
   };
 
   // Create discovered-from relationship if parent specified
   if (discoveredFrom) {
-    const relationship = {
+    const relationship: Relationship = {
       from_id: node.id,
       to_id: discoveredFrom,
       type: 'discovered_from',

@@ -42,14 +42,24 @@ const SIMILARITY_THRESHOLD = 0.7;
 const RECENCY_DECAY_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
+ * Duration multipliers
+ */
+const DURATION_MULTIPLIERS: Record<string, number> = {
+  m: 60 * 1000, // minutes
+  h: 60 * 60 * 1000, // hours
+  d: 24 * 60 * 60 * 1000, // days
+  w: 7 * 24 * 60 * 60 * 1000, // weeks
+};
+
+/**
  * Parse duration string to milliseconds
  *
  * Supports: 1d (day), 1w (week), 1h (hour), 1m (minute)
  *
- * @param {string} duration - Duration string like "7d", "1w"
- * @returns {number} Milliseconds
+ * @param duration - Duration string like "7d", "1w"
+ * @returns Milliseconds
  */
-function parseDuration(duration) {
+function parseDuration(duration: string): number {
   const match = duration.match(/^(\d+)([dwhmDWHM])$/);
   if (!match) {
     throw new Error(`Invalid duration format: ${duration}. Use format like "7d", "1w", "24h"`);
@@ -58,24 +68,22 @@ function parseDuration(duration) {
   const value = Number.parseInt(match[1], 10);
   const unit = match[2].toLowerCase();
 
-  const multipliers = {
-    m: 60 * 1000, // minutes
-    h: 60 * 60 * 1000, // hours
-    d: 24 * 60 * 60 * 1000, // days
-    w: 7 * 24 * 60 * 60 * 1000, // weeks
-  };
-
   // eslint-disable-next-line security/detect-object-injection -- unit is validated by regex
-  return value * multipliers[unit];
+  return value * DURATION_MULTIPLIERS[unit];
 }
+
+/**
+ * Generic record type for NDJSON parsing
+ */
+type NdjsonRecord = Record<string, unknown>;
 
 /**
  * Load NDJSON file and parse lines
  *
- * @param {string} filePath - Path to NDJSON file
- * @returns {Promise<object[]>} Parsed objects
+ * @param filePath - Path to NDJSON file
+ * @returns Parsed objects
  */
-async function loadNdjson(filePath) {
+async function loadNdjson(filePath: string): Promise<NdjsonRecord[]> {
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known paths
     const content = await fs.readFile(filePath, 'utf8');
@@ -83,15 +91,15 @@ async function loadNdjson(filePath) {
     return lines
       .map((line) => {
         try {
-          return JSON.parse(line);
+          return JSON.parse(line) as NdjsonRecord;
         } catch {
           // Skip malformed lines
           return null;
         }
       })
-      .filter(Boolean);
+      .filter((item): item is NdjsonRecord => item !== null);
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return [];
     }
     throw err;
@@ -101,25 +109,25 @@ async function loadNdjson(filePath) {
 /**
  * Load all incidents from .beacon/incidents/*.ndjson
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<object[]>} All incident objects
+ * @param baseDir - Base directory
+ * @returns All incident objects
  */
-async function loadIncidents(baseDir) {
+async function loadIncidents(baseDir: string): Promise<NdjsonRecord[]> {
   const incidentsDir = path.join(baseDir, '.beacon', 'incidents');
-  let files;
+  let files: string[];
 
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known paths
     files = await fs.readdir(incidentsDir);
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return [];
     }
     throw err;
   }
 
   const ndjsonFiles = files.filter((f) => f.endsWith('.ndjson'));
-  const incidents = [];
+  const incidents: NdjsonRecord[] = [];
 
   for (const file of ndjsonFiles) {
     const items = await loadNdjson(path.join(incidentsDir, file));
@@ -132,10 +140,10 @@ async function loadIncidents(baseDir) {
 /**
  * Load memory nodes from .beacon/memory/memory.jsonl
  *
- * @param {string} baseDir - Base directory
- * @returns {Promise<object[]>} Memory node objects
+ * @param baseDir - Base directory
+ * @returns Memory node objects
  */
-async function loadMemoryNodes(baseDir) {
+async function loadMemoryNodes(baseDir: string): Promise<NdjsonRecord[]> {
   const memoryFile = path.join(baseDir, '.beacon', 'memory', 'memory.jsonl');
   return loadNdjson(memoryFile);
 }
@@ -145,16 +153,16 @@ async function loadMemoryNodes(baseDir) {
  *
  * Uses word-level comparison for better semantic matching.
  *
- * @param {string} str1 - First string
- * @param {string} str2 - Second string
- * @returns {number} Similarity score 0-1
+ * @param str1 - First string
+ * @param str2 - Second string
+ * @returns Similarity score 0-1
  */
-function calculateSimilarity(str1, str2) {
+function calculateSimilarity(str1: string, str2: string): number {
   if (!str1 || !str2) return 0;
   if (str1 === str2) return 1;
 
   // Normalize and tokenize
-  const normalize = (s) =>
+  const normalize = (s: string): string[] =>
     s
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
@@ -174,15 +182,40 @@ function calculateSimilarity(str1, str2) {
 }
 
 /**
+ * Node with ID and optional title/content
+ */
+interface NodeWithTitle {
+  id: string;
+  title?: string;
+  content?: string;
+  category?: string;
+  severity?: string;
+  created_at?: string;
+  source?: string;
+  metadata?: Record<string, unknown>;
+  type?: string;
+  tags?: string[];
+}
+
+/**
+ * Cluster of nodes grouped by title similarity
+ */
+interface Cluster {
+  title: string;
+  nodes: NodeWithTitle[];
+  category: string;
+}
+
+/**
  * Get display title for a node
  *
  * Falls back to content if title not present.
  *
- * @param {object} node - Node object
- * @returns {string} Title or content
+ * @param node - Node object
+ * @returns Title or content
  */
-function getNodeTitle(node) {
-  return node.title || node.content || '';
+function getNodeTitle(node: NodeWithTitle): string {
+  return node.title ?? node.content ?? '';
 }
 
 /**
@@ -190,17 +223,17 @@ function getNodeTitle(node) {
  *
  * Uses simple greedy clustering with Jaccard similarity.
  *
- * @param {object[]} nodes - Nodes to cluster
- * @param {number} [threshold=SIMILARITY_THRESHOLD] - Similarity threshold
- * @returns {object[]} Array of cluster objects
+ * @param nodes - Nodes to cluster
+ * @param threshold - Similarity threshold
+ * @returns Array of cluster objects
  */
-export function clusterByTitle(nodes, threshold = SIMILARITY_THRESHOLD) {
+export function clusterByTitle(nodes: NodeWithTitle[], threshold: number = SIMILARITY_THRESHOLD): Cluster[] {
   if (!nodes || nodes.length === 0) {
     return [];
   }
 
-  const clusters = [];
-  const assigned = new Set();
+  const clusters: Cluster[] = [];
+  const assigned = new Set<string>();
 
   for (const node of nodes) {
     if (assigned.has(node.id)) continue;
@@ -213,7 +246,7 @@ export function clusterByTitle(nodes, threshold = SIMILARITY_THRESHOLD) {
     }
 
     // Find or create cluster
-    let bestCluster = null;
+    let bestCluster: Cluster | null = null;
     let bestSimilarity = 0;
 
     for (const cluster of clusters) {
@@ -230,7 +263,7 @@ export function clusterByTitle(nodes, threshold = SIMILARITY_THRESHOLD) {
       clusters.push({
         title,
         nodes: [node],
-        category: node.category || 'uncategorized',
+        category: node.category ?? 'uncategorized',
       });
     }
 
@@ -245,10 +278,10 @@ export function clusterByTitle(nodes, threshold = SIMILARITY_THRESHOLD) {
  *
  * Formula: frequency x average_severity x recency_factor
  *
- * @param {object} cluster - Cluster with nodes
- * @returns {number} Score value
+ * @param cluster - Cluster with nodes
+ * @returns Score value
  */
-export function scorePattern(cluster) {
+export function scorePattern(cluster: Cluster): number {
   if (!cluster.nodes || cluster.nodes.length === 0) {
     return 0;
   }
@@ -257,7 +290,8 @@ export function scorePattern(cluster) {
 
   // Average severity weight
   const severitySum = cluster.nodes.reduce((sum, node) => {
-    const weight = SEVERITY_WEIGHTS[node.severity] || SEVERITY_WEIGHTS.info;
+    const severity = node.severity as keyof typeof SEVERITY_WEIGHTS | undefined;
+    const weight = severity ? (SEVERITY_WEIGHTS[severity] ?? SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO]) : SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO];
     return sum + weight;
   }, 0);
   const avgSeverity = severitySum / cluster.nodes.length;
@@ -282,19 +316,60 @@ export function scorePattern(cluster) {
 }
 
 /**
+ * Options for reviewing feedback
+ */
+interface ReviewOptions {
+  since?: string;
+  minFrequency?: number;
+  category?: string;
+  json?: boolean;
+}
+
+/**
+ * Pattern example for output
+ */
+interface PatternExample {
+  id: string;
+  severity: string | undefined;
+  source: string | undefined;
+}
+
+/**
+ * Pattern in review result
+ */
+interface ReviewPattern {
+  title: string;
+  frequency: number;
+  category: string;
+  score: number;
+  firstSeen: string | undefined;
+  lastSeen: string | undefined;
+  examples: PatternExample[];
+}
+
+/**
+ * Review result
+ */
+interface ReviewResult {
+  success: boolean;
+  patterns: ReviewPattern[];
+  summary: {
+    totalNodes: number;
+    totalClusters: number;
+    topCategory: string | null;
+  };
+}
+
+/**
  * Review feedback from incidents and memory nodes
  *
  * Main entry point for feedback review logic.
  *
- * @param {string} baseDir - Base directory containing .beacon
- * @param {object} options - Review options
- * @param {string} [options.since] - Filter to items since duration (e.g., "7d")
- * @param {number} [options.minFrequency] - Minimum cluster frequency
- * @param {string} [options.category] - Filter by category
- * @param {boolean} [options.json] - Return JSON-compatible output
- * @returns {Promise<object>} Review result
+ * @param baseDir - Base directory containing .beacon
+ * @param options - Review options
+ * @returns Review result
  */
-export async function reviewFeedback(baseDir, options = {}) {
+export async function reviewFeedback(baseDir: string, options: ReviewOptions = {}): Promise<ReviewResult> {
   const { since, minFrequency, category } = options;
 
   // Load all data
@@ -304,19 +379,29 @@ export async function reviewFeedback(baseDir, options = {}) {
   ]);
 
   // Merge into unified nodes format
-  let nodes = [
+  let nodes: NodeWithTitle[] = [
     ...incidents.map((inc) => ({
-      ...inc,
+      id: String(inc.id ?? ''),
       source: 'incident',
-      title: inc.title || inc.content,
+      title: String(inc.title ?? inc.content ?? ''),
+      content: String(inc.content ?? ''),
+      category: String(inc.category ?? 'uncategorized'),
+      severity: String(inc.severity ?? 'info'),
+      created_at: inc.created_at ? String(inc.created_at) : undefined,
     })),
-    ...memoryNodes.map((mem) => ({
-      ...mem,
-      source: 'memory',
-      title: mem.content, // Memory nodes use content as title
-      severity: mem.metadata?.severity || 'info',
-      category: mem.type || mem.tags?.[0] || 'uncategorized',
-    })),
+    ...memoryNodes.map((mem) => {
+      const metadata = mem.metadata as Record<string, unknown> | undefined;
+      const tags = mem.tags as string[] | undefined;
+      return {
+        id: String(mem.id ?? ''),
+        source: 'memory',
+        title: String(mem.content ?? ''), // Memory nodes use content as title
+        content: String(mem.content ?? ''),
+        severity: String(metadata?.severity ?? 'info'),
+        category: String(mem.type ?? tags?.[0] ?? 'uncategorized'),
+        created_at: mem.created_at ? String(mem.created_at) : undefined,
+      };
+    }),
   ];
 
   // Filter by since
@@ -344,7 +429,7 @@ export async function reviewFeedback(baseDir, options = {}) {
   }
 
   // Score and sort patterns
-  const patterns = clusters
+  const patterns: ReviewPattern[] = clusters
     .map((cluster) => ({
       title: cluster.title,
       frequency: cluster.nodes.length,
@@ -352,11 +437,11 @@ export async function reviewFeedback(baseDir, options = {}) {
       score: scorePattern(cluster),
       firstSeen: cluster.nodes
         .map((n) => n.created_at)
-        .filter(Boolean)
+        .filter((c): c is string => c !== undefined)
         .sort()[0],
       lastSeen: cluster.nodes
         .map((n) => n.created_at)
-        .filter(Boolean)
+        .filter((c): c is string => c !== undefined)
         .sort()
         .slice(-1)[0],
       examples: cluster.nodes.slice(0, 3).map((n) => ({
@@ -368,13 +453,13 @@ export async function reviewFeedback(baseDir, options = {}) {
     .sort((a, b) => b.score - a.score);
 
   // Calculate summary
-  const categoryCounts = new Map();
+  const categoryCounts = new Map<string, number>();
   for (const p of patterns) {
-    const cat = p.category || 'uncategorized';
-    categoryCounts.set(cat, (categoryCounts.get(cat) || 0) + p.frequency);
+    const cat = p.category ?? 'uncategorized';
+    categoryCounts.set(cat, (categoryCounts.get(cat) ?? 0) + p.frequency);
   }
   const topCategory =
-    [...categoryCounts.entries()].sort(([, a], [, b]) => b - a)[0]?.[0] || null;
+    [...categoryCounts.entries()].sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
 
   return {
     success: true,

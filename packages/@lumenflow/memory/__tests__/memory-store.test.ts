@@ -18,7 +18,7 @@ import {
   queryReady,
   queryByWu,
   MEMORY_FILE_NAME,
-} from '../memory-store.js';
+} from '../src/memory-store.js';
 
 /**
  * Test fixtures for deterministic ordering validation
@@ -144,14 +144,14 @@ const FIXTURES = {
  * @param {string} filePath - Path to write to
  * @param {object[]} nodes - Array of nodes to write
  */
-async function writeJsonlFile(filePath, nodes) {
+async function writeJsonlFile(filePath: string, nodes: object[]) {
   const content = nodes.map((node) => JSON.stringify(node)).join('\n');
   await fs.writeFile(filePath, content + '\n', 'utf-8');
 }
 
 describe('memory-store', () => {
-  let tempDir;
-  let memoryFilePath;
+  let tempDir: string;
+  let memoryFilePath: string;
 
   beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'memory-store-test-'));
@@ -218,8 +218,8 @@ describe('memory-store', () => {
 
       assert.ok(result.byWu.has('WU-1463'), 'Should index WU-1463');
       assert.ok(result.byWu.has('WU-1464'), 'Should index WU-1464');
-      assert.equal(result.byWu.get('WU-1463').length, 2, 'WU-1463 should have 2 nodes');
-      assert.equal(result.byWu.get('WU-1464').length, 1, 'WU-1464 should have 1 node');
+      assert.equal(result.byWu.get('WU-1463')!.length, 2, 'WU-1463 should have 2 nodes');
+      assert.equal(result.byWu.get('WU-1464')!.length, 1, 'WU-1464 should have 1 node');
     });
 
     it('should skip empty lines gracefully', async () => {
@@ -276,7 +276,7 @@ describe('memory-store', () => {
       const invalidNode = { id: 'invalid', type: 'bad' };
 
       await assert.rejects(
-        async () => appendNode(tempDir, invalidNode),
+        async () => appendNode(tempDir, invalidNode as any),
         /validation/i,
         'Should throw on invalid node'
       );

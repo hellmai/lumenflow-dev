@@ -6,21 +6,19 @@ import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
 import {
   PATTERNS,
   BRANCHES,
-  STDIO,
-  FILE_SYSTEM,
   STRING_LITERALS,
   EXIT_CODES,
 } from '@lumenflow/core/lib/wu-constants.js';
 
-function run(cmd) {
+function run(cmd: string): string {
   try {
-    return execSync(cmd, { stdio: STDIO.PIPE, encoding: FILE_SYSTEM.UTF8 }).trim();
+    return execSync(cmd, { stdio: 'pipe', encoding: 'utf-8' }).trim();
   } catch {
     return '';
   }
 }
 
-function formatWUId(wuId) {
+function formatWUId(wuId: string | null | undefined): string {
   if (!wuId || typeof wuId !== 'string') {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
@@ -39,28 +37,47 @@ function formatWUId(wuId) {
   return normalized;
 }
 
-function checkGitStatus(runFn = run) {
+type RunFn = (cmd: string) => string;
+type ExistsFn = (path: string) => boolean;
+
+function checkGitStatus(runFn: RunFn = run): string | null {
   const status = runFn('git status --porcelain');
   if (!status) return null;
   const lines = status.split(STRING_LITERALS.NEWLINE).filter(Boolean).slice(0, 10);
   return `Working tree dirty (stage or discard changes): ${lines.join('; ')}`;
 }
 
-function stampPath(wuId) {
+function stampPath(wuId: string): string {
   return path.join('.beacon', 'stamps', `${wuId}.done`);
 }
 
-function checkStamp(wuId, existsFn = existsSync) {
+function checkStamp(wuId: string, existsFn: ExistsFn = existsSync): string | null {
   if (existsFn(stampPath(wuId))) return null;
   return `Missing stamp .beacon/stamps/${wuId}.done`;
 }
 
-function checkCommit(wuId, runFn = run) {
+function checkCommit(wuId: string, runFn: RunFn = run): string | null {
   const history = runFn(
     `git log --oneline ${BRANCHES.MAIN} -- docs/04-operations/tasks/wu/${wuId}.yaml | head -n 1`
   );
   if (history) return null;
   return `No commit on ${BRANCHES.MAIN} touching docs/04-operations/tasks/wu/${wuId}.yaml`;
+}
+
+/**
+ * Verification result type
+ */
+export interface VerificationResult {
+  complete: boolean;
+  failures: string[];
+}
+
+/**
+ * Verification overrides for testing
+ */
+interface VerificationOverrides {
+  run?: RunFn;
+  exists?: ExistsFn;
 }
 
 /**
@@ -71,18 +88,16 @@ function checkCommit(wuId, runFn = run) {
  *   2. Completion stamp exists
  *   3. Main history contains a commit updating the WU YAML
  *
- * @param {string} wuId - Work Unit identifier (e.g., "WU-510")
- * @param {object} [overrides]
- * @param {(cmd: string) => string} [overrides.run] - Override git runner (for tests)
- * @param {(path: string) => boolean} [overrides.exists] - Override exists check (for tests)
- * @returns {{ complete: boolean, failures: string[] }}
+ * @param wuId - Work Unit identifier (e.g., "WU-510")
+ * @param overrides - Test overrides
+ * @returns Verification result
  */
-export function verifyWUComplete(wuId, overrides = {}) {
+export function verifyWUComplete(wuId: string, overrides: VerificationOverrides = {}): VerificationResult {
   const normalized = formatWUId(wuId);
-  const failures = [];
+  const failures: string[] = [];
   const runFn = typeof overrides.run === 'function' ? overrides.run : run;
   const existsFn =
-    typeof overrides.exists === 'function' ? overrides.exists : (filePath) => existsSync(filePath);
+    typeof overrides.exists === 'function' ? overrides.exists : (filePath: string) => existsSync(filePath);
 
   const gitStatusFailure = checkGitStatus(runFn);
   if (gitStatusFailure) failures.push(gitStatusFailure);
@@ -99,7 +114,7 @@ export function verifyWUComplete(wuId, overrides = {}) {
   };
 }
 
-export function debugSummary(result) {
+export function debugSummary(result: VerificationResult | null | undefined): string {
   if (!result || typeof result !== 'object') {
     return 'No verification result';
   }

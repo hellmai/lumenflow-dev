@@ -15,15 +15,14 @@
 import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.js';
-import { startSession as startMemorySession } from '@lumenflow/memory/lib/mem-start-core.js';
+import { startSession as startMemorySession } from '@lumenflow/memory/start';
 
 // Default session directory (same as agent-session.mjs)
 const DEFAULT_SESSION_DIR = '.beacon/sessions';
 const SESSION_FILENAME = 'current.json';
 
 // Default context tier for auto-started sessions
-const DEFAULT_TIER = 2;
+const DEFAULT_TIER: 1 | 2 | 3 = 2;
 
 // Agent type for auto-started sessions
 const DEFAULT_AGENT_TYPE = 'claude-code';
@@ -31,19 +30,54 @@ const DEFAULT_AGENT_TYPE = 'claude-code';
 /**
  * Map numeric tier values to string names for memory layer (WU-1466)
  */
-const CONTEXT_TIER_MAP = {
+const CONTEXT_TIER_MAP: Record<number, string> = {
   1: 'minimal',
   2: 'core',
   3: 'full',
 };
 
 /**
- * Get the session file path for a given session directory
- * @param {string} sessionDir - Session directory path
- * @returns {string} Full path to current.json
+ * Session data stored in current.json
  */
-function getSessionFilePath(sessionDir) {
+interface SessionFileData {
+  session_id: string;
+  wu_id: string;
+  started: string;
+  completed?: string;
+  agent_type: string;
+  context_tier: number;
+  incidents_logged: number;
+  incidents_major: number;
+  auto_started?: boolean;
+}
+
+/**
+ * Get the session file path for a given session directory
+ * @param sessionDir - Session directory path
+ * @returns Full path to current.json
+ */
+function getSessionFilePath(sessionDir: string): string {
   return join(sessionDir, SESSION_FILENAME);
+}
+
+/**
+ * Options for starting a session for a WU
+ */
+interface StartSessionOptions {
+  wuId: string;
+  tier?: 1 | 2 | 3;
+  agentType?: string;
+  sessionDir?: string;
+  baseDir?: string;
+}
+
+/**
+ * Result of starting a session
+ */
+interface StartSessionResult {
+  sessionId: string;
+  alreadyActive?: boolean;
+  memoryNodeId?: string | null;
 }
 
 /**
@@ -55,15 +89,10 @@ function getSessionFilePath(sessionDir) {
  * - Supports custom session directory for testing
  * - Creates memory layer session node for context restoration (WU-1466)
  *
- * @param {object} options - Options
- * @param {string} options.wuId - WU ID (e.g., "WU-1234")
- * @param {1|2|3} [options.tier=2] - Context tier
- * @param {string} [options.agentType='claude-code'] - Agent type
- * @param {string} [options.sessionDir] - Custom session directory (for testing)
- * @param {string} [options.baseDir] - Base directory for memory layer (defaults to cwd)
- * @returns {Promise<{sessionId: string, alreadyActive?: boolean, memoryNodeId?: string}>}
+ * @param options - Session options
+ * @returns Session result
  */
-export async function startSessionForWU(options) {
+export async function startSessionForWU(options: StartSessionOptions): Promise<StartSessionResult> {
   const {
     wuId,
     tier = DEFAULT_TIER,
@@ -72,12 +101,12 @@ export async function startSessionForWU(options) {
     baseDir = process.cwd(),
   } = options;
 
-  const sessDir = sessionDir || DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
   const sessionFile = getSessionFilePath(sessDir);
 
   // Check for existing session - return it instead of throwing
   if (existsSync(sessionFile)) {
-    const existing = JSON.parse(readFileSync(sessionFile, FILE_SYSTEM.UTF8));
+    const existing = JSON.parse(readFileSync(sessionFile, { encoding: 'utf-8' })) as SessionFileData;
     return {
       sessionId: existing.session_id,
       alreadyActive: true,
@@ -91,7 +120,7 @@ export async function startSessionForWU(options) {
 
   // Create new session
   const sessionId = randomUUID();
-  const session = {
+  const session: SessionFileData = {
     session_id: sessionId,
     wu_id: wuId,
     started: new Date().toISOString(),
@@ -102,18 +131,18 @@ export async function startSessionForWU(options) {
     auto_started: true, // Mark as auto-started by wu:claim
   };
 
-  writeFileSync(sessionFile, JSON.stringify(session, null, 2), FILE_SYSTEM.UTF8);
+  writeFileSync(sessionFile, JSON.stringify(session, null, 2), { encoding: 'utf-8' });
 
   // WU-1466: Create memory layer session node for context restoration
   // This enables context restoration after /clear by persisting session info to memory.jsonl
-  let memoryNodeId = null;
+  let memoryNodeId: string | null = null;
   try {
     const memResult = await startMemorySession(baseDir, {
       wuId,
       agentType,
-      contextTier: CONTEXT_TIER_MAP[tier] || 'full',
+      contextTier: CONTEXT_TIER_MAP[tier] ?? 'full',
     });
-    memoryNodeId = memResult.session?.id;
+    memoryNodeId = memResult.session?.id ?? null;
   } catch {
     // Memory layer creation is non-blocking - log but don't fail
     // Session file was already created, so the session is functional
@@ -127,6 +156,36 @@ export async function startSessionForWU(options) {
 }
 
 /**
+ * Options for ending a session
+ */
+interface EndSessionOptions {
+  sessionDir?: string;
+}
+
+/**
+ * Session summary
+ */
+interface SessionSummary {
+  wu_id: string;
+  session_id: string;
+  started: string;
+  completed: string;
+  agent_type: string;
+  context_tier: number;
+  incidents_logged: number;
+  incidents_major: number;
+}
+
+/**
+ * Result of ending a session
+ */
+interface EndSessionResult {
+  ended: boolean;
+  summary?: SessionSummary;
+  reason?: string;
+}
+
+/**
  * End the current session (called by wu:done)
  *
  * Unlike endSession in agent-session.mjs, this function:
@@ -134,14 +193,13 @@ export async function startSessionForWU(options) {
  * - Returns structured result with summary
  * - Supports custom session directory for testing
  *
- * @param {object} options - Options
- * @param {string} [options.sessionDir] - Custom session directory (for testing)
- * @returns {{ended: boolean, summary?: object, reason?: string}}
+ * @param options - Session options
+ * @returns Session end result
  */
-export function endSessionForWU(options = {}) {
+export function endSessionForWU(options: EndSessionOptions = {}): EndSessionResult {
   const { sessionDir } = options;
 
-  const sessDir = sessionDir || DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
   const sessionFile = getSessionFilePath(sessDir);
 
   // Check for active session - return early if none
@@ -153,13 +211,13 @@ export function endSessionForWU(options = {}) {
   }
 
   // Read session data
-  const session = JSON.parse(readFileSync(sessionFile, FILE_SYSTEM.UTF8));
+  const session = JSON.parse(readFileSync(sessionFile, { encoding: 'utf-8' })) as SessionFileData;
 
   // Finalize session
   session.completed = new Date().toISOString();
 
   // Build summary for WU YAML
-  const summary = {
+  const summary: SessionSummary = {
     wu_id: session.wu_id,
     session_id: session.session_id,
     started: session.started,
@@ -180,34 +238,39 @@ export function endSessionForWU(options = {}) {
 }
 
 /**
+ * Options for getting current session
+ */
+interface GetSessionOptions {
+  sessionDir?: string;
+}
+
+/**
  * Get the current active session
  *
- * @param {object} options - Options
- * @param {string} [options.sessionDir] - Custom session directory (for testing)
- * @returns {object|null} Session object or null if no active session
+ * @param options - Session options
+ * @returns Session object or null if no active session
  */
-export function getCurrentSessionForWU(options = {}) {
+export function getCurrentSessionForWU(options: GetSessionOptions = {}): SessionFileData | null {
   const { sessionDir } = options;
 
-  const sessDir = sessionDir || DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
   const sessionFile = getSessionFilePath(sessDir);
 
   if (!existsSync(sessionFile)) {
     return null;
   }
 
-  return JSON.parse(readFileSync(sessionFile, FILE_SYSTEM.UTF8));
+  return JSON.parse(readFileSync(sessionFile, { encoding: 'utf-8' })) as SessionFileData;
 }
 
 /**
  * Check if there's an active session for a specific WU
  *
- * @param {string} wuId - WU ID to check
- * @param {object} options - Options
- * @param {string} [options.sessionDir] - Custom session directory (for testing)
- * @returns {boolean} True if session exists and matches WU ID
+ * @param wuId - WU ID to check
+ * @param options - Session options
+ * @returns True if session exists and matches WU ID
  */
-export function hasActiveSessionForWU(wuId, options = {}) {
+export function hasActiveSessionForWU(wuId: string, options: GetSessionOptions = {}): boolean {
   const session = getCurrentSessionForWU(options);
   return session !== null && session.wu_id === wuId;
 }

@@ -15,7 +15,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { validateSpawnEvent, generateSpawnId, SpawnStatus } from './spawn-registry-schema.js';
+import { validateSpawnEvent, generateSpawnId, SpawnStatus, type SpawnEvent } from './spawn-registry-schema.js';
 
 /**
  * Spawn registry file name constant
@@ -29,21 +29,26 @@ export const SPAWN_REGISTRY_FILE_NAME = 'spawn-registry.jsonl';
  * Events are appended to JSONL file, state is rebuilt by replaying events.
  */
 export class SpawnRegistryStore {
+  private readonly baseDir: string;
+  private readonly registryFilePath: string;
+  private readonly spawns: Map<string, SpawnEvent>;
+  private readonly byParent: Map<string, string[]>;
+  private readonly byTarget: Map<string, string>;
+
   /**
    * @param {string} baseDir - Directory containing .beacon/state/
    */
-  constructor(baseDir) {
+  constructor(baseDir: string) {
     this.baseDir = baseDir;
     this.registryFilePath = path.join(baseDir, SPAWN_REGISTRY_FILE_NAME);
 
     // In-memory state (rebuilt from events)
-    /** @type {Map<string, import('./spawn-registry-schema.js').SpawnEvent>} */
     this.spawns = new Map();
 
-    /** @type {Map<string, string[]>} - Index: parentWuId -> spawnIds[] */
+    // Index: parentWuId -> spawnIds[]
     this.byParent = new Map();
 
-    /** @type {Map<string, string>} - Index: targetWuId -> spawnId */
+    // Index: targetWuId -> spawnId
     this.byTarget = new Map();
   }
 
@@ -65,18 +70,18 @@ export class SpawnRegistryStore {
    * await store.load();
    * const pending = store.getPending();
    */
-  async load() {
+  async load(): Promise<void> {
     // Reset state
     this.spawns.clear();
     this.byParent.clear();
     this.byTarget.clear();
 
     // Check if file exists
-    let content;
+    let content: string;
     try {
       content = await fs.readFile(this.registryFilePath, 'utf-8');
     } catch (error) {
-      if (error.code === 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         // File doesn't exist - return empty state
         return;
       }
@@ -122,9 +127,8 @@ export class SpawnRegistryStore {
    * If event for same spawn ID exists, updates it (latest wins).
    *
    * @private
-   * @param {import('./spawn-registry-schema.js').SpawnEvent} event - Event to apply
    */
-  _applyEvent(event) {
+  private _applyEvent(event: SpawnEvent): void {
     const { id, parentWuId, targetWuId } = event;
 
     // Update main state map
@@ -151,11 +155,9 @@ export class SpawnRegistryStore {
    * Validates event before appending.
    *
    * @private
-   * @param {import('./spawn-registry-schema.js').SpawnEvent} event - Event to append
-   * @returns {Promise<void>}
    * @throws {Error} If event fails validation
    */
-  async _appendEvent(event) {
+  private async _appendEvent(event: SpawnEvent): Promise<void> {
     // Validate event before appending
     const validation = validateSpawnEvent(event);
     if (!validation.success) {
@@ -186,7 +188,7 @@ export class SpawnRegistryStore {
    * @example
    * const spawnId = await store.record('WU-1000', 'WU-1001', 'Operations: Tooling');
    */
-  async record(parentWuId, targetWuId, lane) {
+  async record(parentWuId: string, targetWuId: string, lane: string): Promise<string> {
     const id = generateSpawnId(parentWuId, targetWuId);
 
     const event = {
@@ -209,22 +211,22 @@ export class SpawnRegistryStore {
    * Updates the status of a spawn.
    *
    * @param {string} spawnId - Spawn ID to update
-   * @param {'completed' | 'timeout' | 'crashed'} status - New status
+   * @param {string} status - New status
    * @returns {Promise<void>}
    * @throws {Error} If spawn ID not found
    *
    * @example
    * await store.updateStatus('spawn-a1b2', 'completed');
    */
-  async updateStatus(spawnId, status) {
+  async updateStatus(spawnId: string, status: string): Promise<void> {
     const existing = this.spawns.get(spawnId);
     if (!existing) {
       throw new Error(`Spawn ID ${spawnId} not found`);
     }
 
-    const event = {
+    const event: SpawnEvent = {
       ...existing,
-      status,
+      status: status as SpawnEvent['status'],
       completedAt: new Date().toISOString(),
     };
 
@@ -236,26 +238,26 @@ export class SpawnRegistryStore {
    * Gets all spawns for a parent WU.
    *
    * @param {string} parentWuId - Parent WU ID
-   * @returns {import('./spawn-registry-schema.js').SpawnEvent[]} Array of spawn events
+   * @returns {SpawnEvent[]} Array of spawn events
    *
    * @example
    * const spawns = store.getByParent('WU-1000');
    */
-  getByParent(parentWuId) {
+  getByParent(parentWuId: string): SpawnEvent[] {
     const spawnIds = this.byParent.get(parentWuId) ?? [];
-    return spawnIds.map((id) => this.spawns.get(id)).filter(Boolean);
+    return spawnIds.map((id) => this.spawns.get(id)).filter((event): event is SpawnEvent => event !== undefined);
   }
 
   /**
    * Gets spawn for a target WU.
    *
    * @param {string} targetWuId - Target WU ID
-   * @returns {import('./spawn-registry-schema.js').SpawnEvent | null} Spawn event or null
+   * @returns {SpawnEvent | null} Spawn event or null
    *
    * @example
    * const spawn = store.getByTarget('WU-1001');
    */
-  getByTarget(targetWuId) {
+  getByTarget(targetWuId: string): SpawnEvent | null {
     const spawnId = this.byTarget.get(targetWuId);
     if (!spawnId) {
       return null;
@@ -266,14 +268,39 @@ export class SpawnRegistryStore {
   /**
    * Gets all pending spawns.
    *
-   * @returns {import('./spawn-registry-schema.js').SpawnEvent[]} Array of pending spawn events
+   * @returns {SpawnEvent[]} Array of pending spawn events
    *
    * @example
    * const pending = store.getPending();
    */
-  getPending() {
+  getPending(): SpawnEvent[] {
     return Array.from(this.spawns.values()).filter(
       (spawn) => spawn.status === SpawnStatus.PENDING
     );
+  }
+
+  /**
+   * Gets all spawns as an array.
+   *
+   * @returns {SpawnEvent[]} Array of all spawn events
+   *
+   * @example
+   * const allSpawns = store.getAllSpawns();
+   */
+  getAllSpawns(): SpawnEvent[] {
+    return Array.from(this.spawns.values());
+  }
+
+  /**
+   * Gets spawn by ID.
+   *
+   * @param {string} spawnId - Spawn ID
+   * @returns {SpawnEvent | null} Spawn event or null
+   *
+   * @example
+   * const spawn = store.getById('spawn-a1b2');
+   */
+  getById(spawnId: string): SpawnEvent | null {
+    return this.spawns.get(spawnId) ?? null;
   }
 }

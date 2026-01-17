@@ -290,10 +290,10 @@ function parseArgs() {
  *
  * @param {string} id - WU ID
  */
-function displayReadinessSummary(id) {
+function displayReadinessSummary(id: string) {
   try {
     const wuPath = WU_PATHS.WU(id);
-    const wuDoc = readWU(wuPath);
+    const wuDoc = readWU(wuPath, id);
 
     const { valid, errors } = validateSpecCompleteness(wuDoc, id);
 
@@ -391,7 +391,7 @@ function validateWUEditable(id) {
   }
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const content = readFileSync(wuPath, FILE_SYSTEM.ENCODING);
+  const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   const wu = parseYAML(content);
 
   // WU-1929: Done WUs allow initiative/phase edits only (metadata reassignment)
@@ -528,15 +528,15 @@ async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
   const yamlContent = stringifyYAML(updatedWU);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
-  writeFileSync(wuPath, yamlContent, FILE_SYSTEM.ENCODING);
+  writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   console.log(`${PREFIX} ✅ Updated ${id}.yaml in worktree`);
 
   // Format the file
   try {
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} "${wuPath}"`, {
       cwd: worktreePath,
-      encoding: FILE_SYSTEM.ENCODING,
-      stdio: STDIO.PIPE,
+      encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+      stdio: 'pipe',
     });
     console.log(`${PREFIX} ✅ Formatted ${id}.yaml`);
   } catch (err) {
@@ -601,7 +601,7 @@ function loadSpecFile(specPath, originalWU) {
   }
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates spec files
-  const specContent = readFileSync(resolvedPath, FILE_SYSTEM.ENCODING);
+  const specContent = readFileSync(resolvedPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   const newSpec = parseYAML(specContent);
 
   // Preserve id and status from original (cannot be changed via edit)
@@ -960,7 +960,7 @@ async function main() {
         const yamlContent = stringifyYAML(normalizedWU);
 
         // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
-        writeFileSync(wuPath, yamlContent, FILE_SYSTEM.ENCODING);
+        writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
         console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
 
         // WU-1929: Handle bidirectional initiative updates

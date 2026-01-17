@@ -92,7 +92,13 @@ function checkInitiativeExists(id) {
  * @param {Object} options - Optional fields (priority, owner, targetDate)
  * @returns {string} Relative path to created YAML file
  */
-function createInitiativeYamlInWorktree(worktreePath, id, slug, title, options = {}) {
+interface CreateInitiativeOptions {
+  priority?: string;
+  owner?: string;
+  targetDate?: string;
+}
+
+function createInitiativeYamlInWorktree(worktreePath: string, id: string, slug: string, title: string, options: CreateInitiativeOptions = {}) {
   const initRelativePath = INIT_PATHS.INITIATIVE(id);
   const initAbsolutePath = join(worktreePath, initRelativePath);
   const initDir = join(worktreePath, INIT_PATHS.INITIATIVES_DIR());
@@ -126,7 +132,7 @@ function createInitiativeYamlInWorktree(worktreePath, id, slug, title, options =
     forceQuotes: false,
   });
 
-  writeFileSync(initAbsolutePath, yamlContent, FILE_SYSTEM.UTF8);
+  writeFileSync(initAbsolutePath, yamlContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX} ✅ Created ${id}.yaml in micro-worktree`);
 
   return initRelativePath;

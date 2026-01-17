@@ -51,11 +51,14 @@ const EXCLUDED_DIRS = ['node_modules', 'worktrees', '.next', 'dist', '.git'];
  * Custom error class for invariant violations
  */
 export class InvariantError extends Error {
+  /** The invariant ID */
+  invariantId: string;
+
   /**
    * @param {string} invariantId - The invariant ID (e.g., 'INV-001')
    * @param {string} message - Error message
    */
-  constructor(invariantId, message) {
+  constructor(invariantId: string, message: string) {
     super(message);
     this.name = 'InvariantError';
     this.invariantId = invariantId;
@@ -363,11 +366,15 @@ function validateForbiddenImport(invariant, baseDir) {
  *
  * @param {object} invariant - Invariant definition
  * @param {string} baseDir - Base directory for path resolution
- * @param {object} [context={}] - Additional context
- * @param {string} [context.wuId] - Specific WU ID to validate (scoped validation)
+ * @param {ValidateWUAutomatedTestsContext} [context={}] - Additional context
  * @returns {object|null} Violation object if violations found, null otherwise
  */
-function validateWUAutomatedTests(invariant, baseDir, context = {}) {
+interface ValidateWUAutomatedTestsContext {
+  /** Specific WU ID to validate (scoped validation) */
+  wuId?: string;
+}
+
+function validateWUAutomatedTests(invariant, baseDir, context: ValidateWUAutomatedTestsContext = {}) {
   const { wuId } = context;
   const result = checkAutomatedTestsInvariant({ baseDir, wuId });
 
@@ -390,12 +397,17 @@ function validateWUAutomatedTests(invariant, baseDir, context = {}) {
  * WU-2425: When wuId is provided, WU-scoped invariants only validate that specific WU.
  *
  * @param {Array<object>} invariants - Array of invariant definitions
- * @param {object} [options={}] - Options
- * @param {string} [options.baseDir=process.cwd()] - Base directory for path resolution
- * @param {string} [options.wuId] - Specific WU ID for scoped validation (WU-2425)
+ * @param {ValidateInvariantsOptions} [options={}] - Options
  * @returns {{valid: boolean, violations: Array<object>}} Validation result
  */
-export function validateInvariants(invariants, options = {}) {
+export interface ValidateInvariantsOptions {
+  /** Base directory for path resolution */
+  baseDir?: string;
+  /** Specific WU ID for scoped validation (WU-2425) */
+  wuId?: string;
+}
+
+export function validateInvariants(invariants, options: ValidateInvariantsOptions = {}) {
   const { baseDir = process.cwd(), wuId } = options;
   const violations = [];
 
@@ -487,7 +499,7 @@ function formatImportViolationDetails(violation) {
   }
   if (violation.violatingImports) {
     const imports = Object.entries(violation.violatingImports)
-      .map(([mod, count]) => `${mod} (${count} occurrence${count > 1 ? 's' : ''})`)
+      .map(([mod, count]) => `${mod} (${count} occurrence${(count as number) > 1 ? 's' : ''})`)
       .join(', ');
     lines.push(`Forbidden imports found: ${imports}`);
   }
@@ -574,14 +586,21 @@ export function formatInvariantError(violation) {
  * WU-2425: When wuId is provided, WU-scoped invariants (like automated tests)
  * only validate that specific WU, preventing unrelated WUs from blocking wu:done.
  *
- * @param {object} [options={}] - Options
- * @param {string} [options.configPath='tools/invariants.yml'] - Path to invariants config
- * @param {string} [options.baseDir=process.cwd()] - Base directory
- * @param {boolean} [options.silent=false] - Suppress console output
- * @param {string} [options.wuId] - Specific WU ID for scoped validation (WU-2425)
+ * @param {RunInvariantsOptions} [options={}] - Options
  * @returns {{success: boolean, violations: Array<object>, formatted: string}} Result
  */
-export function runInvariants(options = {}) {
+export interface RunInvariantsOptions {
+  /** Path to invariants config */
+  configPath?: string;
+  /** Base directory */
+  baseDir?: string;
+  /** Suppress console output */
+  silent?: boolean;
+  /** Specific WU ID for scoped validation (WU-2425) */
+  wuId?: string;
+}
+
+export function runInvariants(options: RunInvariantsOptions = {}) {
   const {
     configPath = 'tools/invariants.yml',
     baseDir = process.cwd(),

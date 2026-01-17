@@ -243,19 +243,27 @@ export function applyFixes(doc, issues) {
 }
 
 /**
+ * Options for auto-fixing WU YAML
+ */
+export interface AutoFixWUYamlOptions {
+  /** If true, report issues without fixing */
+  dryRun?: boolean;
+  /** If true, create .bak file before fixing */
+  backup?: boolean;
+}
+
+/**
  * Auto-fix WU YAML file
  *
  * @param {string} wuPath - Path to WU YAML file
- * @param {object} options - Options
- * @param {boolean} [options.dryRun=false] - If true, report issues without fixing
- * @param {boolean} [options.backup=true] - If true, create .bak file before fixing
+ * @param {AutoFixWUYamlOptions} options - Options
  * @returns {{fixed: number, issues: Array, backupPath?: string}}
  */
-export function autoFixWUYaml(wuPath, options = {}) {
+export function autoFixWUYaml(wuPath, options: AutoFixWUYamlOptions = {}) {
   const { dryRun = false, backup = true } = options;
 
   // Read and parse
-  const text = readFileSync(wuPath, FILE_SYSTEM.UTF8);
+  const text = readFileSync(wuPath, { encoding: 'utf-8' });
   const doc = parseYAML(text);
 
   // Detect issues
@@ -281,7 +289,7 @@ export function autoFixWUYaml(wuPath, options = {}) {
 
   // Write back
   const newText = stringifyYAML(doc);
-  writeFileSync(wuPath, newText, FILE_SYSTEM.UTF8);
+  writeFileSync(wuPath, newText, { encoding: 'utf-8' });
 
   return { fixed, issues, backupPath };
 }

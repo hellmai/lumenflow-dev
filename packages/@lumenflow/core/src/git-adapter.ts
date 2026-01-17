@@ -17,9 +17,39 @@
  * - tools/guard-worktree-commit.mjs
  */
 
-import simpleGit from 'simple-git';
+import { simpleGit, type SimpleGit } from 'simple-git';
 import { existsSync, rmSync } from 'node:fs';
 import { GIT_FLAGS } from './wu-constants.js';
+
+// Type definitions
+interface GitAdapterOptions {
+  git?: SimpleGit;
+  baseDir?: string;
+}
+
+interface PushOptions {
+  setUpstream?: boolean;
+}
+
+interface MergeOptions {
+  ffOnly?: boolean;
+}
+
+interface WorktreeRemoveOptions {
+  force?: boolean;
+}
+
+interface DeleteBranchOptions {
+  force?: boolean;
+}
+
+interface ResetOptions {
+  hard?: boolean;
+}
+
+interface LogOptions {
+  maxCount?: number;
+}
 
 // WU-2242: Runtime assertion helpers
 /**
@@ -29,7 +59,7 @@ import { GIT_FLAGS } from './wu-constants.js';
  * @throws {TypeError} If value is not a string
  * @throws {Error} If value is an empty string
  */
-function assertNonEmptyString(value, name) {
+function assertNonEmptyString(value: unknown, name: string): asserts value is string {
   if (typeof value !== 'string') {
     throw new TypeError(`${name} must be a string, got ${typeof value}`);
   }
@@ -44,7 +74,7 @@ function assertNonEmptyString(value, name) {
  * @param {string} name - Parameter name for error message
  * @throws {TypeError} If value is not a string (and not null/undefined)
  */
-function assertOptionalString(value, name) {
+function assertOptionalString(value: unknown, name: string): asserts value is string | undefined | null {
   if (value !== undefined && value !== null && typeof value !== 'string') {
     throw new TypeError(`${name} must be a string, got ${typeof value}`);
   }
@@ -57,7 +87,7 @@ function assertOptionalString(value, name) {
  * @throws {TypeError} If value is not a string or array
  * @throws {Error} If value is empty string or empty array
  */
-function assertStringOrArray(value, name) {
+function assertStringOrArray(value: unknown, name: string): asserts value is string | string[] {
   if (typeof value === 'string') {
     if (value === '') {
       throw new Error(`${name} must be a non-empty string or array`);
@@ -79,7 +109,7 @@ function assertStringOrArray(value, name) {
  * @param {string} name - Parameter name for error message
  * @throws {TypeError} If value is not an array
  */
-function assertArray(value, name) {
+function assertArray(value: unknown, name: string): asserts value is string[] {
   if (!Array.isArray(value)) {
     throw new TypeError(`${name} must be an array, got ${typeof value}`);
   }
@@ -90,13 +120,15 @@ function assertArray(value, name) {
  * @class GitAdapter
  */
 export class GitAdapter {
+  private readonly git: SimpleGit;
+
   /**
    * Create a GitAdapter instance
    * @param {object} [options] - Configuration options
    * @param {object} [options.git] - simple-git instance (for testing)
    * @param {string} [options.baseDir] - Base directory for git operations
    */
-  constructor(options = {}) {
+  constructor(options: GitAdapterOptions = {}) {
     if (options.baseDir && process.env.DEBUG) {
       console.log(`[git-adapter] DEBUG: GitAdapter constructor with baseDir=${options.baseDir}`);
     }
@@ -135,7 +167,7 @@ export class GitAdapter {
    * await git.branchExists('main'); // true
    * await git.branchExists('nonexistent'); // false
    */
-  async branchExists(branch) {
+  async branchExists(branch: string): Promise<boolean> {
     assertNonEmptyString(branch, 'branch');
     try {
       await this.git.raw(['rev-parse', '--verify', branch]);
@@ -154,7 +186,7 @@ export class GitAdapter {
    * await git.fetch('origin', 'main');
    * await git.fetch(); // Fetch all remotes
    */
-  async fetch(remote, branch) {
+  async fetch(remote?: string, branch?: string): Promise<void> {
     assertOptionalString(remote, 'remote');
     assertOptionalString(branch, 'branch');
     if (remote && branch) {
@@ -174,7 +206,7 @@ export class GitAdapter {
    * @example
    * await git.pull('origin', 'main');
    */
-  async pull(remote, branch) {
+  async pull(remote: string, branch: string): Promise<void> {
     assertNonEmptyString(remote, 'remote');
     assertNonEmptyString(branch, 'branch');
     await this.git.pull(remote, branch);
@@ -187,7 +219,7 @@ export class GitAdapter {
    * @example
    * await git.getConfigValue('user.email'); // "user@example.com"
    */
-  async getConfigValue(key) {
+  async getConfigValue(key: string): Promise<string> {
     const result = await this.git.raw(['config', key]);
     return result.trim();
   }
@@ -213,7 +245,7 @@ export class GitAdapter {
    * await git.add(['file1.txt', 'file2.txt']);
    * await git.add('.'); // Add all
    */
-  async add(files) {
+  async add(files: string | string[]): Promise<void> {
     assertStringOrArray(files, 'files');
     await this.git.add(files);
   }
@@ -232,7 +264,7 @@ export class GitAdapter {
    * await git.addWithDeletions(['modified.txt', 'deleted.txt']);
    * await git.addWithDeletions([]); // Add all changes including deletions
    */
-  async addWithDeletions(files) {
+  async addWithDeletions(files: string[]): Promise<void> {
     if (files && files.length > 0) {
       // Stage specific files with -A flag to include deletions
       // Using -- separator for safety with paths that might look like flags
@@ -251,7 +283,7 @@ export class GitAdapter {
    * @example
    * await git.commit('feat: add new feature');
    */
-  async commit(message) {
+  async commit(message: string): Promise<void> {
     assertNonEmptyString(message, 'message');
     await this.git.commit(message);
   }
@@ -267,10 +299,10 @@ export class GitAdapter {
    * await git.push('origin', 'main');
    * await git.push('origin', 'feature', { setUpstream: true });
    */
-  async push(remote = 'origin', branch, options = {}) {
+  async push(remote = 'origin', branch?: string, options: PushOptions = {}): Promise<void> {
     assertOptionalString(remote, 'remote');
     assertOptionalString(branch, 'branch');
-    const pushOptions = {};
+    const pushOptions: Record<string, null> = {};
     if (options.setUpstream) {
       pushOptions[GIT_FLAGS.UPSTREAM] = null;
     }
@@ -290,7 +322,7 @@ export class GitAdapter {
    * await git.pushRefspec('origin', 'tmp/wu-claim/wu-123', 'main');
    * // Equivalent to: git push origin tmp/wu-claim/wu-123:main
    */
-  async pushRefspec(remote, localRef, remoteRef) {
+  async pushRefspec(remote: string, localRef: string, remoteRef: string): Promise<void> {
     const refspec = `${localRef}:${remoteRef}`;
     await this.git.push(remote, refspec);
   }
@@ -305,7 +337,7 @@ export class GitAdapter {
    * await git.createBranch('feature/new-feature');
    * await git.createBranch('hotfix/bug', 'main');
    */
-  async createBranch(branch, startPoint) {
+  async createBranch(branch: string, startPoint?: string): Promise<void> {
     assertNonEmptyString(branch, 'branch');
     assertOptionalString(startPoint, 'startPoint');
     const args = [GIT_FLAGS.BRANCH, branch];
@@ -323,7 +355,7 @@ export class GitAdapter {
    * @example
    * await git.checkout('main');
    */
-  async checkout(branch) {
+  async checkout(branch: string): Promise<void> {
     assertNonEmptyString(branch, 'branch');
     await this.git.checkout(branch);
   }
@@ -336,7 +368,7 @@ export class GitAdapter {
    * await git.getCommitHash(); // "a1b2c3d..."
    * await git.getCommitHash('main'); // "e4f5g6h..."
    */
-  async getCommitHash(ref = 'HEAD') {
+  async getCommitHash(ref = 'HEAD'): Promise<string> {
     const result = await this.git.revparse([ref]);
     return result.trim();
   }
@@ -357,9 +389,9 @@ export class GitAdapter {
    * await git.merge('feature-branch');
    * await git.merge('feature-branch', { ffOnly: true });
    */
-  async merge(branch, options = {}) {
+  async merge(branch: string, options: MergeOptions = {}): Promise<{ success: boolean }> {
     assertNonEmptyString(branch, 'branch');
-    const args = [];
+    const args: string[] = [];
     if (options.ffOnly) {
       args.push(GIT_FLAGS.FF_ONLY);
     }
@@ -381,7 +413,7 @@ export class GitAdapter {
    * @example
    * await git.log({ maxCount: 50 });
    */
-  async log(options = {}) {
+  async log(options: LogOptions = {}) {
     return await this.git.log(options);
   }
 
@@ -396,7 +428,7 @@ export class GitAdapter {
    * @example
    * await git.mergeBase('main', 'feature'); // "abc123def456"
    */
-  async mergeBase(ref1, ref2) {
+  async mergeBase(ref1: string, ref2: string): Promise<string> {
     assertNonEmptyString(ref1, 'ref1');
     assertNonEmptyString(ref2, 'ref2');
     const result = await this.git.raw(['merge-base', ref1, ref2]);
@@ -412,7 +444,7 @@ export class GitAdapter {
    * @example
    * await git.mergeTree('base123', 'main', 'feature');
    */
-  async mergeTree(base, ref1, ref2) {
+  async mergeTree(base: string, ref1: string, ref2: string): Promise<string> {
     const result = await this.git.raw(['merge-tree', base, ref1, ref2]);
     return result;
   }
@@ -424,7 +456,7 @@ export class GitAdapter {
    * @example
    * await git.revList(['--count', '--left-right', 'main...feature']); // "5\t0"
    */
-  async revList(args) {
+  async revList(args: string[]): Promise<string> {
     const result = await this.git.raw(['rev-list', ...args]);
     return result.trim();
   }
@@ -439,7 +471,7 @@ export class GitAdapter {
    * @example
    * await git.worktreeAdd('worktrees/feature', 'feature-branch', 'main');
    */
-  async worktreeAdd(path, branch, startPoint) {
+  async worktreeAdd(path: string, branch: string, startPoint?: string): Promise<void> {
     assertNonEmptyString(path, 'path');
     assertNonEmptyString(branch, 'branch');
     assertOptionalString(startPoint, 'startPoint');
@@ -466,7 +498,7 @@ export class GitAdapter {
    * await git.worktreeRemove('worktrees/feature');
    * await git.worktreeRemove('worktrees/feature', { force: true });
    */
-  async worktreeRemove(worktreePath, options = {}) {
+  async worktreeRemove(worktreePath: string, options: WorktreeRemoveOptions = {}): Promise<void> {
     const args = ['worktree', 'remove'];
     if (options.force) {
       args.push(GIT_FLAGS.FORCE);
@@ -516,7 +548,7 @@ export class GitAdapter {
    * await git.deleteBranch('feature');
    * await git.deleteBranch('feature', { force: true });
    */
-  async deleteBranch(branch, options = {}) {
+  async deleteBranch(branch: string, options: DeleteBranchOptions = {}): Promise<void> {
     assertNonEmptyString(branch, 'branch');
     const flag = options.force ? GIT_FLAGS.DELETE_FORCE : GIT_FLAGS.DELETE;
     await this.git.branch([flag, branch]);
@@ -530,7 +562,7 @@ export class GitAdapter {
    * @example
    * await git.createBranchNoCheckout('tmp/wu-create/wu-123', 'main');
    */
-  async createBranchNoCheckout(branch, startPoint) {
+  async createBranchNoCheckout(branch: string, startPoint?: string): Promise<void> {
     const args = ['branch', branch];
     if (startPoint) {
       args.push(startPoint);
@@ -546,7 +578,7 @@ export class GitAdapter {
    * @example
    * await git.worktreeAddExisting('/tmp/wu-create-xyz', 'tmp/wu-create/wu-123');
    */
-  async worktreeAddExisting(path, branch) {
+  async worktreeAddExisting(path: string, branch: string): Promise<void> {
     await this.git.raw(['worktree', 'add', path, branch]);
   }
 
@@ -559,7 +591,7 @@ export class GitAdapter {
    * @example
    * await git.rebase('main');
    */
-  async rebase(onto) {
+  async rebase(onto: string): Promise<void> {
     assertNonEmptyString(onto, 'onto');
     const gitWithEditor = this.git.env({ ...process.env, GIT_EDITOR: 'true' });
     await gitWithEditor.rebase([onto]);
@@ -573,7 +605,7 @@ export class GitAdapter {
    * @example
    * await git.reset('abc123', { hard: true });
    */
-  async reset(ref, options = {}) {
+  async reset(ref?: string, options: ResetOptions = {}): Promise<void> {
     const args = ['reset'];
     if (options.hard) {
       args.push(GIT_FLAGS.HARD);
@@ -592,7 +624,7 @@ export class GitAdapter {
    * @example
    * await git.raw(['status', '--porcelain']);
    */
-  async raw(args) {
+  async raw(args: string[]): Promise<string> {
     assertArray(args, 'args');
     const result = await this.git.raw(args);
     return result;
@@ -607,7 +639,7 @@ export class GitAdapter {
    * @param {string} cmd - Command to execute
    * @returns {string} Trimmed command output
    */
-  run(cmd) {
+  run(cmd: string): never {
     throw new Error(
       'GitAdapter.run() is deprecated (WU-1213). Use async methods instead. ' +
         `Attempted to run: ${cmd}`
@@ -617,14 +649,14 @@ export class GitAdapter {
   /**
    * @deprecated Use worktreeAdd() instead
    */
-  addWorktree(path, branch, startPoint) {
+  addWorktree(path: string, branch: string, startPoint?: string) {
     return this.worktreeAdd(path, branch, startPoint);
   }
 
   /**
    * @deprecated Use worktreeRemove() instead
    */
-  removeWorktree(path, options) {
+  removeWorktree(path: string, options?: WorktreeRemoveOptions) {
     return this.worktreeRemove(path, options);
   }
 }
@@ -640,7 +672,7 @@ export class GitAdapter {
  * const gitWorktree = createGitForPath('/path/to/worktree');
  * const gitMain = createGitForPath('/path/to/main');
  */
-export function createGitForPath(baseDir) {
+export function createGitForPath(baseDir: string): GitAdapter {
   return new GitAdapter({ baseDir });
 }
 
@@ -653,7 +685,7 @@ export function createGitForPath(baseDir) {
  * process.chdir(worktreePath);
  * const git = getGitForCwd(); // Uses new directory
  */
-export function getGitForCwd() {
+export function getGitForCwd(): GitAdapter {
   const cwd = process.cwd();
   if (process.env.DEBUG) {
     console.log(`[git-adapter] DEBUG: getGitForCwd() creating adapter with baseDir=${cwd}`);

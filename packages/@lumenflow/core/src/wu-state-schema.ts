@@ -20,12 +20,18 @@ import { z } from 'zod';
  * - checkpoint: Progress checkpoint (WU-1748: cross-agent visibility)
  * - spawn: WU spawned from parent (WU-1947: parent-child relationships)
  */
-export const WU_EVENT_TYPES = ['create', 'claim', 'block', 'unblock', 'complete', 'checkpoint', 'spawn'];
+export const WU_EVENT_TYPES = ['create', 'claim', 'block', 'unblock', 'complete', 'checkpoint', 'spawn'] as const;
+
+/** Type for WU event types */
+export type WUEventType = (typeof WU_EVENT_TYPES)[number];
 
 /**
  * WU status values (matches LumenFlow state machine)
  */
-export const WU_STATUSES = ['ready', 'in_progress', 'blocked', 'waiting', 'done'];
+export const WU_STATUSES = ['ready', 'in_progress', 'blocked', 'waiting', 'done'] as const;
+
+/** Type for WU status values */
+export type WUStatus = (typeof WU_STATUSES)[number];
 
 /**
  * Regex patterns for WU validation
@@ -53,7 +59,7 @@ const ERROR_MESSAGES = {
 const BaseEventSchema = z.object({
   /** Event type */
   type: z.enum(WU_EVENT_TYPES, {
-    errorMap: () => ({ message: ERROR_MESSAGES.EVENT_TYPE }),
+    error: ERROR_MESSAGES.EVENT_TYPE,
   }),
 
   /** WU ID */
@@ -146,14 +152,15 @@ export const WUEventSchema = z.discriminatedUnion('type', [
 
 /**
  * TypeScript types inferred from schemas
- *
- * @typedef {import('zod').z.infer<typeof CreateEventSchema>} CreateEvent
- * @typedef {import('zod').z.infer<typeof ClaimEventSchema>} ClaimEvent
- * @typedef {import('zod').z.infer<typeof BlockEventSchema>} BlockEvent
- * @typedef {import('zod').z.infer<typeof UnblockEventSchema>} UnblockEvent
- * @typedef {import('zod').z.infer<typeof CompleteEventSchema>} CompleteEvent
- * @typedef {import('zod').z.infer<typeof WUEventSchema>} WUEvent
  */
+export type CreateEvent = z.infer<typeof CreateEventSchema>;
+export type ClaimEvent = z.infer<typeof ClaimEventSchema>;
+export type BlockEvent = z.infer<typeof BlockEventSchema>;
+export type UnblockEvent = z.infer<typeof UnblockEventSchema>;
+export type CompleteEvent = z.infer<typeof CompleteEventSchema>;
+export type CheckpointEvent = z.infer<typeof CheckpointEventSchema>;
+export type SpawnEvent = z.infer<typeof SpawnEventSchema>;
+export type WUEvent = z.infer<typeof WUEventSchema>;
 
 /**
  * Validates WU event data against schema

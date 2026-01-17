@@ -52,8 +52,8 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
     return { valid: true, errors: [], stats: { wuExists: false } };
   }
 
-  const wuContent = await readFile(wuPath, FILE_SYSTEM.UTF8);
-  const wuDoc = yaml.load(wuContent);
+  const wuContent = await readFile(wuPath, { encoding: 'utf-8' });
+  const wuDoc = yaml.load(wuContent) as { status?: string; lane?: string; title?: string } | null;
   const yamlStatus = wuDoc?.status || 'unknown';
   const lane = wuDoc?.lane || '';
   const title = wuDoc?.title || '';
@@ -70,7 +70,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   // Parse backlog sections
   let backlogContent = '';
   try {
-    backlogContent = await readFile(backlogPath, FILE_SYSTEM.UTF8);
+    backlogContent = await readFile(backlogPath, { encoding: 'utf-8' });
   } catch {
     backlogContent = '';
   }
@@ -82,7 +82,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   // Parse status.md sections
   let statusContent = '';
   try {
-    statusContent = await readFile(statusPath, FILE_SYSTEM.UTF8);
+    statusContent = await readFile(statusPath, { encoding: 'utf-8' });
   } catch {
     statusContent = '';
   }
@@ -222,7 +222,7 @@ export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = pr
     const wuPath = path.join(wuDir, file);
     let wuContent;
     try {
-      wuContent = await readFile(wuPath, FILE_SYSTEM.UTF8);
+      wuContent = await readFile(wuPath, { encoding: 'utf-8' });
     } catch {
       // Skip unreadable files
       continue;
@@ -252,15 +252,23 @@ export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = pr
 }
 
 /**
+ * Options for repairing WU inconsistencies
+ */
+export interface RepairWUInconsistencyOptions {
+  /** If true, don't actually repair */
+  dryRun?: boolean;
+  /** Project root directory */
+  projectRoot?: string;
+}
+
+/**
  * Repair WU inconsistencies
  *
  * @param {object} report - Report from checkWUConsistency()
- * @param {object} [options={}] - Repair options
- * @param {boolean} [options.dryRun=false] - If true, don't actually repair
- * @param {string} [options.projectRoot=process.cwd()] - Project root directory
+ * @param {RepairWUInconsistencyOptions} [options={}] - Repair options
  * @returns {Promise<object>} Result with repaired, skipped, and failed counts
  */
-export async function repairWUInconsistency(report, options = {}) {
+export async function repairWUInconsistency(report, options: RepairWUInconsistencyOptions = {}) {
   const { dryRun = false, projectRoot = process.cwd() } = options;
 
   if (report.valid) {
@@ -295,7 +303,8 @@ export async function repairWUInconsistency(report, options = {}) {
         failed++;
       }
     } catch (err) {
-      console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${err.message}`);
+      const errMessage = err instanceof Error ? err.message : String(err);
+      console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${errMessage}`);
       failed++;
     }
   }
@@ -306,13 +315,22 @@ export async function repairWUInconsistency(report, options = {}) {
 // Internal helpers
 
 /**
+ * Repair result type
+ */
+interface RepairResult {
+  success?: boolean;
+  skipped?: boolean;
+  reason?: string;
+}
+
+/**
  * Repair a single inconsistency error
  *
  * @param {object} error - Error object from checkWUConsistency()
  * @param {string} projectRoot - Project root directory
- * @returns {Promise<object>} Result with success, skipped, and reason
+ * @returns {Promise<RepairResult>} Result with success, skipped, and reason
  */
-async function repairSingleError(error, projectRoot) {
+async function repairSingleError(error: { type: string; wuId: string; title?: string; lane?: string }, projectRoot: string): Promise<RepairResult> {
   switch (error.type) {
     case CONSISTENCY_TYPES.YAML_DONE_NO_STAMP:
       await createStampInProject(error.wuId, error.title || `WU ${error.wuId}`, projectRoot);
@@ -375,7 +393,7 @@ async function createStampInProject(id, title, projectRoot) {
 
   // Create stamp file
   const body = `WU ${id} — ${title}\nCompleted: ${todayISO()}\n`;
-  await writeFile(stampPath, body, FILE_SYSTEM.UTF8);
+  await writeFile(stampPath, body, { encoding: 'utf-8' });
 }
 
 /**
@@ -394,8 +412,12 @@ async function updateYamlToDone(id, projectRoot) {
   const wuPath = path.join(projectRoot, WU_PATHS.WU(id));
 
   // Read current YAML
-  const content = await readFile(wuPath, FILE_SYSTEM.UTF8);
-  const wuDoc = yaml.load(content);
+  const content = await readFile(wuPath, { encoding: 'utf-8' });
+  const wuDoc = yaml.load(content) as { status?: string; locked?: boolean; completed?: string } | null;
+
+  if (!wuDoc) {
+    throw new Error(`Failed to parse WU YAML: ${wuPath}`);
+  }
 
   // Update fields
   wuDoc.status = WU_STATUS.DONE;
@@ -407,7 +429,7 @@ async function updateYamlToDone(id, projectRoot) {
 
   // Write updated YAML
   const updatedContent = yaml.dump(wuDoc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
-  await writeFile(wuPath, updatedContent, FILE_SYSTEM.UTF8);
+  await writeFile(wuPath, updatedContent, { encoding: 'utf-8' });
 }
 
 /**
@@ -425,7 +447,7 @@ async function removeWUFromSection(filePath, id, sectionHeading) {
     return; // File doesn't exist
   }
 
-  const content = await readFile(filePath, FILE_SYSTEM.UTF8);
+  const content = await readFile(filePath, { encoding: 'utf-8' });
   const lines = content.split(/\r?\n/);
 
   let inTargetSection = false;

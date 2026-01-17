@@ -51,14 +51,22 @@ function loadWUYaml(wuId) {
 }
 
 /**
+ * Options for getActiveScope
+ */
+interface GetActiveScopeOptions {
+  /** WU context getter (for testing) */
+  getWUContext?: typeof getWUContext;
+  /** WU YAML loader (for testing) */
+  loadWUYaml?: typeof loadWUYaml;
+}
+
+/**
  * Get active WU scope (WU ID + code_paths)
  *
  * Retrieves the current WU context and loads code_paths from WU YAML.
  * Returns null if not in a WU workspace.
  *
- * @param {Object} [options] - Options
- * @param {Function} [options.getWUContext] - WU context getter (for testing)
- * @param {Function} [options.loadWUYaml] - WU YAML loader (for testing)
+ * @param {GetActiveScopeOptions} [options] - Options
  * @returns {Promise<Object|null>} Scope object {wuId, code_paths} or null
  *
  * @example
@@ -67,7 +75,7 @@ function loadWUYaml(wuId) {
  *   console.log(`WU ${scope.wuId} code_paths:`, scope.code_paths);
  * }
  */
-export async function getActiveScope(options = {}) {
+export async function getActiveScope(options: GetActiveScopeOptions = {}) {
   const getContextFn = options.getWUContext || getWUContext;
   const loadYamlFn = options.loadWUYaml || loadWUYaml;
 

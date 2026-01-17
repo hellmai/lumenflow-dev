@@ -119,19 +119,19 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
       }
 
       // Detect pending mandatory agents
-      const pendingMandatory: Array<{ wuId: string; agent: string }> = [];
+      const pendingMandatory: GlobalStatus['pendingMandatory'] = [];
       for (const wu of activeWUsList) {
         const codePaths = wu.code_paths ?? [];
-        for (const [agent, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
+        for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
           const shouldTrigger = patterns.some((pattern) =>
             codePaths.some((path) => this.matchesPattern(path, pattern))
           );
 
           if (shouldTrigger) {
             // Check if agent has been invoked (would be in telemetry)
-            const hasRun = await this.hasAgentRun(wu.id, agent);
+            const hasRun = await this.hasAgentRun(wu.id, agentName);
             if (!hasRun) {
-              pendingMandatory.push({ wuId: wu.id, agent });
+              pendingMandatory.push({ wuId: wu.id, agent: agentName as GlobalStatus['pendingMandatory'][number]['agent'] });
             }
           }
         }
@@ -415,7 +415,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
   private async readStatusFile(): Promise<string> {
     const statusPath = join(this.baseDir, FILESYSTEM_PATHS.STATUS_FILE);
-    return await readFile(statusPath, FILE_SYSTEM.UTF8);
+    return await readFile(statusPath, { encoding: 'utf-8' });
   }
 
   private async readAllWUs(): Promise<Array<any>> {
@@ -424,7 +424,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
     const wus = await Promise.all(
       wuFiles.map(async (file) => {
-        const content = await readFile(file, FILE_SYSTEM.UTF8);
+        const content = await readFile(file, { encoding: 'utf-8' });
         return parseYaml(content);
       })
     );
@@ -438,7 +438,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
     const stamps = await Promise.all(
       stampFiles.map(async (file) => {
-        const content = await readFile(file, FILE_SYSTEM.UTF8);
+        const content = await readFile(file, { encoding: 'utf-8' });
         const data = parseYaml(content);
         return {
           wuId: data.id ?? '',
@@ -460,7 +460,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     const events: TimelineEvent[] = [];
 
     for (const file of telemetryFiles) {
-      const content = await readFile(file, FILE_SYSTEM.UTF8);
+      const content = await readFile(file, { encoding: 'utf-8' });
 
       // Handle NDJSON (newline-delimited JSON)
       if (file.endsWith('.ndjson')) {
@@ -568,7 +568,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     const sessionPath = join(this.baseDir, FILESYSTEM_PATHS.SESSION_FILE);
 
     try {
-      const content = await readFile(sessionPath, FILE_SYSTEM.UTF8);
+      const content = await readFile(sessionPath, { encoding: 'utf-8' });
       const session = JSON.parse(content);
 
       // Transform snake_case to camelCase (session file -> TypeScript types)
@@ -598,7 +598,8 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     GlobalStatus['worktreesWithUncommittedChanges']
   > {
     try {
-      const worktrees = await scanWorktrees(this.baseDir);
+      const scanResult = await scanWorktrees(this.baseDir);
+      const worktrees = scanResult.worktrees ?? [];
 
       // Filter to only worktrees with uncommitted changes and extract WU ID
       const result: GlobalStatus['worktreesWithUncommittedChanges'] = [];

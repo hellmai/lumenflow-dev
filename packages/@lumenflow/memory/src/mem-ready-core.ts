@@ -23,7 +23,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadMemory } from './memory-store.js';
-import { MEMORY_PATTERNS } from './memory-schema.js';
+import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 
 /**
  * Relationships file name
@@ -31,11 +31,16 @@ import { MEMORY_PATTERNS } from './memory-schema.js';
 const RELATIONSHIPS_FILE_NAME = 'relationships.jsonl';
 
 /**
+ * Priority level types
+ */
+type PriorityLevel = 'P0' | 'P1' | 'P2' | 'P3';
+
+/**
  * Priority ranking for deterministic ordering.
  * Lower rank = higher priority.
  * P0 is highest priority, nodes without priority are lowest.
  */
-const PRIORITY_RANK = {
+const PRIORITY_RANK: Record<PriorityLevel, number> = {
   P0: 0,
   P1: 1,
   P2: 2,
@@ -46,29 +51,46 @@ const PRIORITY_RANK = {
 const DEFAULT_PRIORITY_RANK = 999;
 
 /**
+ * Relationship between memory nodes
+ */
+interface ReadyRelationship {
+  from_id: string;
+  to_id: string;
+  type: string;
+  created_at?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Node.js file system error with code
+ */
+interface NodeFsError extends Error {
+  code?: string;
+}
+
+/**
  * Gets the priority rank for a node.
  * Lower rank = higher priority.
  *
- * @param {object} node - Memory node
- * @returns {number} Priority rank
+ * @param node - Memory node
+ * @returns Priority rank
  */
-function getPriorityRank(node) {
-  const priority = node.metadata?.priority;
+function getPriorityRank(node: MemoryNode): number {
+  const priority = node.metadata?.priority as PriorityLevel | undefined;
   if (!priority) {
     return DEFAULT_PRIORITY_RANK;
   }
-  // eslint-disable-next-line security/detect-object-injection -- PRIORITY_RANK keys are known P0-P3 values
   return PRIORITY_RANK[priority] ?? DEFAULT_PRIORITY_RANK;
 }
 
 /**
  * Comparator for deterministic ordering: priority first, then createdAt, then ID.
  *
- * @param {object} a - First node
- * @param {object} b - Second node
- * @returns {number} Comparison result (-1, 0, 1)
+ * @param a - First node
+ * @param b - Second node
+ * @returns Comparison result (-1, 0, 1)
  */
-function compareNodes(a, b) {
+function compareNodes(a: MemoryNode, b: MemoryNode): number {
   // Primary: sort by priority (lower rank first)
   const priorityDiff = getPriorityRank(a) - getPriorityRank(b);
   if (priorityDiff !== 0) {
@@ -89,24 +111,24 @@ function compareNodes(a, b) {
 /**
  * Load relationships from relationships.jsonl
  *
- * @param {string} memoryDir - Memory directory path
- * @returns {Promise<object[]>} Array of relationship objects
+ * @param memoryDir - Memory directory path
+ * @returns Array of relationship objects
  */
-async function loadRelationships(memoryDir) {
+async function loadRelationships(memoryDir: string): Promise<ReadyRelationship[]> {
   const filePath = path.join(memoryDir, RELATIONSHIPS_FILE_NAME);
 
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known file path
-    const content = await fs.readFile(filePath, 'utf-8');
+    const content = await fs.readFile(filePath, { encoding: 'utf-8' as BufferEncoding });
     const lines = content.split('\n');
-    const relationships = [];
+    const relationships: ReadyRelationship[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
 
       try {
-        relationships.push(JSON.parse(trimmed));
+        relationships.push(JSON.parse(trimmed) as ReadyRelationship);
       } catch {
         // Skip malformed lines in relationships file
         continue;
@@ -114,7 +136,8 @@ async function loadRelationships(memoryDir) {
     }
 
     return relationships;
-  } catch (error) {
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
       // File doesn't exist - no relationships
       return [];
@@ -126,11 +149,11 @@ async function loadRelationships(memoryDir) {
 /**
  * Build a set of node IDs that are blocked by relationships
  *
- * @param {object[]} relationships - Relationship objects
- * @returns {Set<string>} Set of blocked node IDs
+ * @param relationships - Relationship objects
+ * @returns Set of blocked node IDs
  */
-function buildBlockedSet(relationships) {
-  const blocked = new Set();
+function buildBlockedSet(relationships: ReadyRelationship[]): Set<string> {
+  const blocked = new Set<string>();
 
   for (const rel of relationships) {
     if (rel.type === 'blocks') {
@@ -145,11 +168,11 @@ function buildBlockedSet(relationships) {
 /**
  * Check if a node is blocked
  *
- * @param {object} node - Memory node
- * @param {Set<string>} blockedByRelationships - Set of IDs blocked by relationships
- * @returns {boolean} True if node is blocked
+ * @param node - Memory node
+ * @param blockedByRelationships - Set of IDs blocked by relationships
+ * @returns True if node is blocked
  */
-function isBlocked(node, blockedByRelationships) {
+function isBlocked(node: MemoryNode, blockedByRelationships: Set<string>): boolean {
   // Check if blocked by relationship
   if (blockedByRelationships.has(node.id)) {
     return true;
@@ -167,10 +190,10 @@ function isBlocked(node, blockedByRelationships) {
 /**
  * Check if a node is closed (not open for processing)
  *
- * @param {object} node - Memory node
- * @returns {boolean} True if node is closed
+ * @param node - Memory node
+ * @returns True if node is closed
  */
-function isClosed(node) {
+function isClosed(node: MemoryNode): boolean {
   // Ephemeral nodes are considered closed (discarded after use)
   if (node.lifecycle === 'ephemeral') {
     return true;
@@ -187,20 +210,24 @@ function isClosed(node) {
 /**
  * Validate WU ID format
  *
- * @param {string} wuId - WU ID to validate
- * @throws {Error} If WU ID format is invalid
+ * @param wuId - WU ID to validate
+ * @throws If WU ID format is invalid
  */
-function validateWuId(wuId) {
+function validateWuId(wuId: string): void {
   if (!MEMORY_PATTERNS.WU_ID.test(wuId)) {
     throw new Error(`Invalid WU ID format: ${wuId}. Expected format: WU-XXX (e.g., WU-1234)`);
   }
 }
 
 /**
- * @typedef {object} QueryOptions
- * @property {string} wuId - WU ID to query (required)
- * @property {string} [type] - Filter by node type (optional)
+ * Query options for ready nodes
  */
+export interface QueryOptions {
+  /** WU ID to query (required) */
+  wuId: string;
+  /** Filter by node type (optional) */
+  type?: string;
+}
 
 /**
  * Query ready nodes for a WU.
@@ -210,10 +237,10 @@ function validateWuId(wuId) {
  * 2. CreatedAt (oldest first for same priority)
  * 3. ID (alphabetical for stable sort)
  *
- * @param {string} baseDir - Base directory containing .beacon/memory
- * @param {QueryOptions} options - Query options
- * @returns {Promise<object[]>} Deterministically ordered ready nodes
- * @throws {Error} If WU ID format is invalid or file contains malformed JSON
+ * @param baseDir - Base directory containing .beacon/memory
+ * @param options - Query options
+ * @returns Deterministically ordered ready nodes
+ * @throws If WU ID format is invalid or file contains malformed JSON
  *
  * @example
  * const ready = await queryReadyNodes('/path/to/project', { wuId: 'WU-1234' });
@@ -226,7 +253,7 @@ function validateWuId(wuId) {
  *   type: 'discovery',
  * });
  */
-export async function queryReadyNodes(baseDir, options) {
+export async function queryReadyNodes(baseDir: string, options: QueryOptions): Promise<MemoryNode[]> {
   const { wuId, type } = options;
 
   // Validate WU ID

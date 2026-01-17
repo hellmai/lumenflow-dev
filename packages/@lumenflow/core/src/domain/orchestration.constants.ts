@@ -25,7 +25,10 @@ export const LANES = [
   'Core Systems',
   'Operations',
   'Discovery',
-];
+] as const;
+
+/** Type for valid lane names */
+export type Lane = (typeof LANES)[number];
 
 /**
  * Known agent names in the orchestration system.
@@ -36,7 +39,10 @@ export const AGENT_NAMES = [
   'beacon-guardian',
   'test-engineer',
   'code-reviewer',
-];
+] as const;
+
+/** Type for agent names */
+export type AgentName = (typeof AGENT_NAMES)[number];
 
 /**
  * Alert severity levels for dashboard display.
@@ -44,7 +50,10 @@ export const AGENT_NAMES = [
  * MEDIUM = action suggested
  * LOW = informational
  */
-export const SEVERITY_LEVELS = ['high', 'medium', 'low'];
+export const SEVERITY_LEVELS = ['high', 'medium', 'low'] as const;
+
+/** Type for severity levels */
+export type SeverityLevel = (typeof SEVERITY_LEVELS)[number];
 
 /**
  * Default timeline window for dashboard display (hours).
@@ -59,22 +68,42 @@ export const MAX_ALERTS_DISPLAY = 10;
 /**
  * Agent result statuses for WU progress tracking.
  */
-export const AGENT_RESULT_STATUSES = ['pending', 'pass', 'fail', 'skipped'];
+export const AGENT_RESULT_STATUSES = ['pending', 'pass', 'fail', 'skipped'] as const;
+
+/** Type for agent result statuses */
+export type AgentResultStatus = (typeof AGENT_RESULT_STATUSES)[number];
 
 /**
  * Timeline event types for orchestration history.
  */
-export const TIMELINE_EVENT_TYPES = ['claim', 'done', 'block', 'agent', 'gates'];
+export const TIMELINE_EVENT_TYPES = ['claim', 'done', 'block', 'agent', 'gates'] as const;
+
+/** Type for timeline event types */
+export type TimelineEventType = (typeof TIMELINE_EVENT_TYPES)[number];
 
 /**
  * Event severity levels for timeline display.
  */
-export const EVENT_SEVERITY_LEVELS = ['info', 'warning', 'error'];
+export const EVENT_SEVERITY_LEVELS = ['info', 'warning', 'error'] as const;
+
+/** Type for event severity levels */
+export type EventSeverityLevel = (typeof EVENT_SEVERITY_LEVELS)[number];
 
 /**
  * User choice options for execution plan confirmation.
  */
-export const USER_CHOICE_OPTIONS = ['approve', 'reject', 'edit'];
+export const USER_CHOICE_OPTIONS = ['approve', 'reject', 'edit'] as const;
+
+/** Type for user choice options */
+export type UserChoiceOption = (typeof USER_CHOICE_OPTIONS)[number];
+
+/**
+ * Mandatory agent names (subset of AGENT_NAMES)
+ */
+export const MANDATORY_AGENT_NAMES = ['security-auditor', 'beacon-guardian'] as const;
+
+/** Type for mandatory agent names */
+export type MandatoryAgentName = (typeof MANDATORY_AGENT_NAMES)[number];
 
 /**
  * Mandatory agent triggers - glob patterns that indicate when agents must be invoked.
@@ -86,7 +115,7 @@ export const USER_CHOICE_OPTIONS = ['approve', 'reject', 'edit'];
  * const triggers = MANDATORY_TRIGGERS['security-auditor'];
  * const shouldTrigger = triggers.some(pattern => minimatch(filePath, pattern));
  */
-export const MANDATORY_TRIGGERS = {
+export const MANDATORY_TRIGGERS: Record<MandatoryAgentName, readonly string[]> = {
   'security-auditor': ['supabase/migrations/**', '**/auth/**', '**/rls/**', '**/permissions/**'],
   'beacon-guardian': ['**/prompts/**', '**/classification/**', '**/detector/**', '**/llm/**'],
 };

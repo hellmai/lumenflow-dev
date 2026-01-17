@@ -258,8 +258,8 @@ function loadInitiative(id) {
   }
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
-  const content = readFileSync(initPath, FILE_SYSTEM.ENCODING);
-  return yaml.load(content);
+  const content = readFileSync(initPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+  return yaml.load(content as string);
 }
 
 /**
@@ -491,7 +491,7 @@ async function main() {
       const yamlContent = yaml.dump(updatedInit, { lineWidth: 100 });
 
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
-      writeFileSync(initPath, yamlContent, FILE_SYSTEM.ENCODING);
+      writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
       console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
 
       return {

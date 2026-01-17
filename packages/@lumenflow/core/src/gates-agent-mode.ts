@@ -2,6 +2,48 @@ import path from 'node:path';
 import { existsSync, unlinkSync, symlinkSync } from 'node:fs';
 
 /**
+ * Options for agent mode detection
+ */
+interface GatesAgentModeOptions {
+  /** Command line arguments */
+  argv?: string[];
+  /** Environment variables */
+  env?: Record<string, string | undefined>;
+  /** stdout stream */
+  stdout?: { isTTY?: boolean };
+}
+
+/**
+ * Options for log path functions
+ */
+interface GatesLogOptions {
+  /** Working directory */
+  cwd: string;
+  /** Environment variables */
+  env?: Record<string, string | undefined>;
+}
+
+/**
+ * Options for building gate log path
+ */
+interface BuildGatesLogPathOptions extends GatesLogOptions {
+  /** WU ID */
+  wuId?: string;
+  /** Lane name */
+  lane?: string;
+  /** Current timestamp */
+  now?: Date;
+}
+
+/**
+ * Options for updating symlink
+ */
+interface UpdateGatesLatestSymlinkOptions extends GatesLogOptions {
+  /** Path to the actual gate log file */
+  logPath: string;
+}
+
+/**
  * Determine whether gates should run in low-noise "agent mode".
  *
  * Agent mode is intended for Claude Code sessions, where tool output is injected into the
@@ -13,13 +55,10 @@ import { existsSync, unlinkSync, symlinkSync } from 'node:fs';
  * 3. TTY check: non-TTY + non-CI = likely agent mode (returns true)
  * 4. Interactive TTY = human user (returns false)
  *
- * @param {Object} options
- * @param {string[]} [options.argv] - Command line arguments
- * @param {Object} [options.env] - Environment variables
- * @param {Object} [options.stdout] - stdout stream (defaults to process.stdout)
+ * @param {GatesAgentModeOptions} options
  * @returns {boolean} True if gates should run in agent mode
  */
-export function shouldUseGatesAgentMode({ argv, env, stdout } = {}) {
+export function shouldUseGatesAgentMode({ argv, env, stdout }: GatesAgentModeOptions = {}) {
   // --verbose flag always forces full output
   const isVerbose = Array.isArray(argv) && argv.includes('--verbose');
   if (isVerbose) {
@@ -49,12 +88,12 @@ export function shouldUseGatesAgentMode({ argv, env, stdout } = {}) {
   return !isTTY;
 }
 
-export function getGatesLogDir({ cwd, env }) {
+export function getGatesLogDir({ cwd, env }: GatesLogOptions) {
   const configured = env?.LUMENFLOW_LOG_DIR;
   return path.resolve(cwd, configured || '.logs');
 }
 
-export function buildGatesLogPath({ cwd, env, wuId, lane, now = new Date() }) {
+export function buildGatesLogPath({ cwd, env, wuId, lane, now = new Date() }: BuildGatesLogPathOptions) {
   const logDir = getGatesLogDir({ cwd, env });
   const safeLane = (lane || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const safeWu = (wuId || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -70,7 +109,7 @@ export function buildGatesLogPath({ cwd, env, wuId, lane, now = new Date() }) {
  * @param {Object} [options.env] - Environment variables
  * @returns {string} Path to the symlink
  */
-export function getGatesLatestSymlinkPath({ cwd, env }) {
+export function getGatesLatestSymlinkPath({ cwd, env }: GatesLogOptions) {
   const logDir = getGatesLogDir({ cwd, env });
   return path.join(logDir, 'gates-latest.log');
 }
@@ -87,7 +126,7 @@ export function getGatesLatestSymlinkPath({ cwd, env }) {
  * @param {Object} [options.env] - Environment variables
  * @returns {boolean} True if symlink was created/updated successfully
  */
-export function updateGatesLatestSymlink({ logPath, cwd, env }) {
+export function updateGatesLatestSymlink({ logPath, cwd, env }: UpdateGatesLatestSymlinkOptions) {
   const symlinkPath = getGatesLatestSymlinkPath({ cwd, env });
 
   try {

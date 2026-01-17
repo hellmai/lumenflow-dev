@@ -21,13 +21,22 @@
  * @extends Error
  */
 export class WUError extends Error {
+  /** Error code (e.g., 'WU_NOT_FOUND') */
+  code: string;
+  /** Additional error context */
+  details: Record<string, unknown>;
+  /** Suggested commands or actions to try (optional) */
+  tryNext?: string[];
+  /** Alias for details for agent-friendly access */
+  context?: Record<string, unknown>;
+
   /**
    * Create a WU error
    * @param {string} code - Error code (e.g., 'WU_NOT_FOUND')
    * @param {string} message - Human-readable error message
    * @param {object} [details={}] - Additional error context
    */
-  constructor(code, message, details = {}) {
+  constructor(code: string, message: string, details: Record<string, unknown> = {}) {
     super(message);
     this.name = 'WUError';
     this.code = code;
@@ -71,14 +80,22 @@ export function createError(code, message, details = {}) {
 }
 
 /**
+ * Options for creating agent-friendly errors
+ */
+export interface AgentFriendlyErrorOptions {
+  /** Array of suggested commands or actions to try */
+  tryNext?: string[];
+  /** Additional context information */
+  context?: Record<string, unknown>;
+}
+
+/**
  * Create an agent-friendly error with try-next command suggestions
  * WU-1339: Agent-friendly error messages and hints (AX3)
  *
  * @param {string} code - Error code from ErrorCodes
  * @param {string} message - Human-readable error message
- * @param {object} options - Options object
- * @param {string[]} [options.tryNext] - Array of suggested commands or actions to try
- * @param {object} [options.context] - Additional context information
+ * @param {AgentFriendlyErrorOptions} options - Options object
  * @returns {WUError} Error instance with tryNext property and context
  * @example
  * throw createAgentFriendlyError(
@@ -90,7 +107,7 @@ export function createError(code, message, details = {}) {
  *   }
  * );
  */
-export function createAgentFriendlyError(code, message, options = {}) {
+export function createAgentFriendlyError(code, message, options: AgentFriendlyErrorOptions = {}) {
   const { tryNext, context = {} } = options;
   const error = createError(code, message, context);
 

@@ -52,40 +52,66 @@ const ERROR_MESSAGES = {
 };
 
 /**
- * @typedef {object} Signal
- * @property {string} id - Unique signal identifier (sig-XXXXXXXX)
- * @property {string} message - Signal content/message
- * @property {string} created_at - ISO 8601 timestamp
- * @property {boolean} read - Whether signal has been read
- * @property {string} [wu_id] - Optional WU ID scope
- * @property {string} [lane] - Optional target lane
+ * Signal structure
  */
+export interface Signal {
+  /** Unique signal identifier (sig-XXXXXXXX) */
+  id: string;
+  /** Signal content/message */
+  message: string;
+  /** ISO 8601 timestamp */
+  created_at: string;
+  /** Whether signal has been read */
+  read: boolean;
+  /** Optional WU ID scope */
+  wu_id?: string;
+  /** Optional target lane */
+  lane?: string;
+}
 
 /**
- * @typedef {object} CreateSignalResult
- * @property {boolean} success - Whether signal was created successfully
- * @property {Signal} signal - The created signal object
+ * Result of creating a signal
  */
+export interface CreateSignalResult {
+  /** Whether signal was created successfully */
+  success: boolean;
+  /** The created signal object */
+  signal: Signal;
+}
 
 /**
- * @typedef {object} CreateSignalOptions
- * @property {string} message - Signal message content (required)
- * @property {string} [wuId] - WU ID to scope signal to
- * @property {string} [lane] - Lane to target signal to
+ * Options for creating a signal
  */
+export interface CreateSignalOptions {
+  /** Signal message content (required) */
+  message: string;
+  /** WU ID to scope signal to */
+  wuId?: string;
+  /** Lane to target signal to */
+  lane?: string;
+}
 
 /**
- * @typedef {object} LoadSignalsOptions
- * @property {string} [wuId] - Filter by WU ID
- * @property {string} [lane] - Filter by lane
- * @property {boolean} [unreadOnly] - Only return unread signals
- * @property {Date} [since] - Only return signals created after this time
+ * Options for loading signals
  */
+export interface LoadSignalsOptions {
+  /** Filter by WU ID */
+  wuId?: string;
+  /** Filter by lane */
+  lane?: string;
+  /** Only return unread signals */
+  unreadOnly?: boolean;
+  /** Only return signals created after this time */
+  since?: Date | string;
+}
 
 /**
- * @typedef {object} MarkAsReadResult
- * @property {number} markedCount - Number of signals marked as read
+ * Result of marking signals as read
  */
+export interface MarkAsReadResult {
+  /** Number of signals marked as read */
+  markedCount: number;
+}
 
 /**
  * Generates a unique signal ID using random bytes.
@@ -102,32 +128,39 @@ function generateSignalId() {
 }
 
 /**
+ * Node.js file system error with code
+ */
+interface NodeFsError extends Error {
+  code?: string;
+}
+
+/**
  * Gets the memory directory path for a project.
  *
- * @param {string} baseDir - Project base directory
- * @returns {string} Full path to memory directory
+ * @param baseDir - Project base directory
+ * @returns Full path to memory directory
  */
-function getMemoryDir(baseDir) {
+function getMemoryDir(baseDir: string): string {
   return path.join(baseDir, MEMORY_DIR);
 }
 
 /**
  * Gets the signals file path for a project.
  *
- * @param {string} baseDir - Project base directory
- * @returns {string} Full path to signals.jsonl
+ * @param baseDir - Project base directory
+ * @returns Full path to signals.jsonl
  */
-function getSignalsPath(baseDir) {
+function getSignalsPath(baseDir: string): string {
   return path.join(getMemoryDir(baseDir), SIGNAL_FILE_NAME);
 }
 
 /**
  * Validates a WU ID format.
  *
- * @param {string} wuId - WU ID to validate
- * @returns {boolean} True if valid
+ * @param wuId - WU ID to validate
+ * @returns True if valid
  */
-function isValidWuId(wuId) {
+function isValidWuId(wuId: string): boolean {
   return WU_ID_PATTERN.test(wuId);
 }
 
@@ -150,7 +183,7 @@ function isValidWuId(wuId) {
  *   lane: 'Operations: Tooling',
  * });
  */
-export async function createSignal(baseDir, options) {
+export async function createSignal(baseDir: string, options: CreateSignalOptions): Promise<CreateSignalResult> {
   const { message, wuId, lane } = options;
 
   // Validate message is provided and non-empty
@@ -164,7 +197,7 @@ export async function createSignal(baseDir, options) {
   }
 
   // Build signal object
-  const signal = {
+  const signal: Signal = {
     id: generateSignalId(),
     message: message.trim(),
     created_at: new Date().toISOString(),
@@ -216,16 +249,17 @@ export async function createSignal(baseDir, options) {
  *   unreadOnly: true,
  * });
  */
-export async function loadSignals(baseDir, options = {}) {
+export async function loadSignals(baseDir: string, options: LoadSignalsOptions = {}): Promise<Signal[]> {
   const { wuId, lane, unreadOnly, since } = options;
   const signalsPath = getSignalsPath(baseDir);
 
   // Read file content
-  let content;
+  let content: string;
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads signals file
-    content = await fs.readFile(signalsPath, 'utf-8');
-  } catch (error) {
+    content = await fs.readFile(signalsPath, { encoding: 'utf-8' as BufferEncoding });
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
       // File doesn't exist - return empty array
       return [];
@@ -267,25 +301,26 @@ export async function loadSignals(baseDir, options = {}) {
  * Reads the entire file, updates the read status for matching IDs,
  * and writes back. Only signals that were previously unread are counted.
  *
- * @param {string} baseDir - Project base directory
- * @param {string[]} signalIds - Array of signal IDs to mark as read
- * @returns {Promise<MarkAsReadResult>} Result with count of signals marked
+ * @param baseDir - Project base directory
+ * @param signalIds - Array of signal IDs to mark as read
+ * @returns Result with count of signals marked
  *
  * @example
  * const result = await markSignalsAsRead('/project', ['sig-abc12345', 'sig-def67890']);
  * console.log(result.markedCount); // 2
  */
-export async function markSignalsAsRead(baseDir, signalIds) {
+export async function markSignalsAsRead(baseDir: string, signalIds: string[]): Promise<MarkAsReadResult> {
   const signalsPath = getSignalsPath(baseDir);
-  const idSet = new Set(signalIds);
+  const idSet = new Set<string>(signalIds);
   let markedCount = 0;
 
   // Read file content
-  let content;
+  let content: string;
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads signals file
-    content = await fs.readFile(signalsPath, 'utf-8');
-  } catch (error) {
+    content = await fs.readFile(signalsPath, { encoding: 'utf-8' as BufferEncoding });
+  } catch (err) {
+    const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
       // No signals file - nothing to mark
       return { markedCount: 0 };
@@ -306,7 +341,7 @@ export async function markSignalsAsRead(baseDir, signalIds) {
 
   // Write back updated content
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes signals file
-  await fs.writeFile(signalsPath, `${updatedLines.join('\n')}\n`, 'utf-8');
+  await fs.writeFile(signalsPath, `${updatedLines.join('\n')}\n`, { encoding: 'utf-8' as BufferEncoding });
 
   return { markedCount };
 }

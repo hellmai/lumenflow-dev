@@ -162,10 +162,10 @@ function truncateTitle(title) {
  *
  * @param {string} id - WU ID
  */
-function displayReadinessSummary(id) {
+function displayReadinessSummary(id: string) {
   try {
     const wuPath = WU_PATHS.WU(id);
-    const wuDoc = readWU(wuPath);
+    const wuDoc = readWU(wuPath, id);
 
     const { valid, errors } = validateSpecCompleteness(wuDoc, id);
 
@@ -220,6 +220,26 @@ function displayReadinessSummary(id) {
   }
 }
 
+/** Options for creating WU YAML */
+interface CreateWUOptions {
+  initiative?: string;
+  phase?: string;
+  blockedBy?: string;
+  blocks?: string;
+  labels?: string;
+  assignedTo?: string;
+  description?: string;
+  acceptance?: string[];
+  codePaths?: string;
+  testPathsManual?: string;
+  testPathsUnit?: string;
+  testPathsE2e?: string;
+  exposure?: string;
+  userJourney?: string;
+  uiPairingWus?: string;
+  specRefs?: string;
+}
+
 /**
  * Create WU YAML file in micro-worktree
  *
@@ -232,7 +252,7 @@ function displayReadinessSummary(id) {
  * @param {Object} opts - Additional options
  * @returns {string} Relative path to created YAML file
  */
-function createWUYamlInWorktree(worktreePath, id, lane, title, priority, type, opts = {}) {
+function createWUYamlInWorktree(worktreePath: string, id: string, lane: string, title: string, priority: string, type: string, opts: CreateWUOptions = {}) {
   const wuRelativePath = WU_PATHS.WU(id);
   const wuAbsolutePath = join(worktreePath, wuRelativePath);
   const wuDir = join(worktreePath, WU_PATHS.WU_DIR());
@@ -362,7 +382,7 @@ function createWUYamlInWorktree(worktreePath, id, lane, title, priority, type, o
   // This ensures embedded newlines are normalized before YAML output
   const yamlContent = stringifyYAML(validationResult.data, { lineWidth: -1 });
 
-  writeFileSync(wuAbsolutePath, yamlContent, FILE_SYSTEM.UTF8);
+  writeFileSync(wuAbsolutePath, yamlContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX} ✅ Created ${id}.yaml in micro-worktree`);
 
   return wuRelativePath;
@@ -446,7 +466,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
   // WU-1352: Use centralized stringify for frontmatter
   const updatedBacklog = `---\n${stringifyYAML(frontmatter, { lineWidth: -1 })}---\n${updatedMarkdown}`;
 
-  writeFileSync(backlogAbsolutePath, updatedBacklog, FILE_SYSTEM.UTF8);
+  writeFileSync(backlogAbsolutePath, updatedBacklog, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX} ✅ Updated backlog.md in micro-worktree`);
 
   return backlogRelativePath;

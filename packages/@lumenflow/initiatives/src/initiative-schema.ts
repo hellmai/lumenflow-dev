@@ -38,7 +38,7 @@ export const InitiativePhaseSchema = z.object({
 
   /** Phase status */
   status: z.enum(PHASE_STATUSES, {
-    errorMap: () => ({ message: `Status must be one of: ${PHASE_STATUSES.join(', ')}` }),
+    error: `Status must be one of: ${PHASE_STATUSES.join(', ')}`,
   }),
 });
 
@@ -67,13 +67,13 @@ export const InitiativeSchema = z.object({
 
   /** Initiative lifecycle status */
   status: z.enum(INIT_STATUSES, {
-    errorMap: () => ({ message: `Status must be one of: ${INIT_STATUSES.join(', ')}` }),
+    error: `Status must be one of: ${INIT_STATUSES.join(', ')}`,
   }),
 
   /** Priority level (optional) */
   priority: z
     .enum(PRIORITIES, {
-      errorMap: () => ({ message: `Priority must be one of: ${PRIORITIES.join(', ')}` }),
+      error: `Priority must be one of: ${PRIORITIES.join(', ')}`,
     })
     .optional(),
 
@@ -123,6 +123,6 @@ export const InitiativeSchema = z.object({
  *   });
  * }
  */
-export function validateInitiative(data) {
+export function validateInitiative(data: unknown) {
   return InitiativeSchema.safeParse(data);
 }
