@@ -7,8 +7,7 @@
  * @see {@link tools/lib/initiative-validator.mjs} - Implementation
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import {
   detectCycles,
   detectOrphanRefs,
@@ -24,8 +23,8 @@ describe('initiative-validator', () => {
         ['WU-002', { id: 'WU-002' }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, false);
-      assert.deepEqual(result.cycles, []);
+      expect(result.hasCycle).toBe(false);
+      expect(result.cycles).toEqual([]);
     });
 
     it('should pass with linear chain (A→B→C)', () => {
@@ -35,14 +34,14 @@ describe('initiative-validator', () => {
         ['WU-003', { id: 'WU-003' }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, false);
+      expect(result.hasCycle).toBe(false);
     });
 
     it('should detect self-reference (A→A)', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', blocks: ['WU-001'] }]]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, true);
-      assert.ok(result.cycles.length > 0, 'Should report cycle');
+      expect(result.hasCycle).toBe(true);
+      expect(result.cycles.length > 0).toBe(true);
     });
 
     it('should detect direct cycle (A→B→A)', () => {
@@ -51,8 +50,8 @@ describe('initiative-validator', () => {
         ['WU-002', { id: 'WU-002', blocks: ['WU-001'] }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, true);
-      assert.ok(result.cycles.length > 0, 'Should report cycle');
+      expect(result.hasCycle).toBe(true);
+      expect(result.cycles.length > 0).toBe(true);
     });
 
     it('should detect indirect cycle (A→B→C→A)', () => {
@@ -62,8 +61,8 @@ describe('initiative-validator', () => {
         ['WU-003', { id: 'WU-003', blocks: ['WU-001'] }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, true);
-      assert.ok(result.cycles.length > 0, 'Should report cycle');
+      expect(result.hasCycle).toBe(true);
+      expect(result.cycles.length > 0).toBe(true);
     });
 
     it('should detect cycle via blocked_by', () => {
@@ -72,7 +71,7 @@ describe('initiative-validator', () => {
         ['WU-002', { id: 'WU-002', blocked_by: ['WU-001'] }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, true);
+      expect(result.hasCycle).toBe(true);
     });
 
     it('should detect cycle using mixed blocks/blocked_by', () => {
@@ -82,14 +81,14 @@ describe('initiative-validator', () => {
         ['WU-003', { id: 'WU-003', blocks: ['WU-001'] }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, true);
+      expect(result.hasCycle).toBe(true);
     });
 
     it('should handle empty wuMap', () => {
       const wuMap = new Map();
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, false);
-      assert.deepEqual(result.cycles, []);
+      expect(result.hasCycle).toBe(false);
+      expect(result.cycles).toEqual([]);
     });
 
     it('should handle WU with undefined blocks/blocked_by', () => {
@@ -99,7 +98,7 @@ describe('initiative-validator', () => {
         ['WU-003', { id: 'WU-003', blocked_by: null }],
       ]);
       const result = detectCycles(wuMap);
-      assert.equal(result.hasCycle, false);
+      expect(result.hasCycle).toBe(false);
     });
   });
 
@@ -111,27 +110,27 @@ describe('initiative-validator', () => {
       ]);
       const allWuIds = new Set(['WU-001', 'WU-002']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.deepEqual(result.orphans, []);
+      expect(result.orphans).toEqual([]);
     });
 
     it('should detect orphan in blocks field', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', blocks: ['WU-999'] }]]);
       const allWuIds = new Set(['WU-001']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.equal(result.orphans.length, 1);
-      assert.equal(result.orphans[0].wuId, 'WU-001');
-      assert.equal(result.orphans[0].field, 'blocks');
-      assert.equal(result.orphans[0].ref, 'WU-999');
+      expect(result.orphans.length).toBe(1);
+      expect(result.orphans[0].wuId).toBe('WU-001');
+      expect(result.orphans[0].field).toBe('blocks');
+      expect(result.orphans[0].ref).toBe('WU-999');
     });
 
     it('should detect orphan in blocked_by field', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', blocked_by: ['WU-888'] }]]);
       const allWuIds = new Set(['WU-001']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.equal(result.orphans.length, 1);
-      assert.equal(result.orphans[0].wuId, 'WU-001');
-      assert.equal(result.orphans[0].field, 'blocked_by');
-      assert.equal(result.orphans[0].ref, 'WU-888');
+      expect(result.orphans.length).toBe(1);
+      expect(result.orphans[0].wuId).toBe('WU-001');
+      expect(result.orphans[0].field).toBe('blocked_by');
+      expect(result.orphans[0].ref).toBe('WU-888');
     });
 
     it('should detect multiple orphans', () => {
@@ -140,14 +139,14 @@ describe('initiative-validator', () => {
       ]);
       const allWuIds = new Set(['WU-001']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.equal(result.orphans.length, 2);
+      expect(result.orphans.length).toBe(2);
     });
 
     it('should handle empty arrays', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', blocks: [], blocked_by: [] }]]);
       const allWuIds = new Set(['WU-001']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.deepEqual(result.orphans, []);
+      expect(result.orphans).toEqual([]);
     });
 
     it('should handle undefined/null refs', () => {
@@ -157,7 +156,7 @@ describe('initiative-validator', () => {
       ]);
       const allWuIds = new Set(['WU-001', 'WU-002']);
       const result = detectOrphanRefs(wuMap, allWuIds);
-      assert.deepEqual(result.orphans, []);
+      expect(result.orphans).toEqual([]);
     });
   });
 
@@ -166,25 +165,22 @@ describe('initiative-validator', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', initiative: 'INIT-001' }]]);
       const initiatives = new Map([['INIT-001', { id: 'INIT-001', slug: 'test' }]]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.deepEqual(result.warnings, []);
+      expect(result.warnings).toEqual([]);
     });
 
     it('should warn when initiative reference missing', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', initiative: 'INIT-999' }]]);
       const initiatives = new Map([['INIT-001', { id: 'INIT-001', slug: 'test' }]]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.ok(result.warnings.length > 0, 'Should warn about missing initiative');
-      assert.ok(
-        result.warnings[0].includes('INIT-999'),
-        'Warning should mention missing initiative'
-      );
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings[0].includes('INIT-999')).toBe(true);
     });
 
     it('should pass when WU has no initiative field', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001' }]]);
       const initiatives = new Map();
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.deepEqual(result.warnings, []);
+      expect(result.warnings).toEqual([]);
     });
 
     it('should validate phase exists in initiative', () => {
@@ -202,7 +198,7 @@ describe('initiative-validator', () => {
         ],
       ]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.deepEqual(result.warnings, []);
+      expect(result.warnings).toEqual([]);
     });
 
     it('should warn when phase not in initiative', () => {
@@ -217,22 +213,22 @@ describe('initiative-validator', () => {
         ],
       ]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.ok(result.warnings.length > 0, 'Should warn about missing phase');
-      assert.ok(result.warnings[0].includes('phase 5'), 'Warning should mention missing phase');
+      expect(result.warnings.length > 0).toBe(true);
+      expect(result.warnings[0].includes('phase 5')).toBe(true);
     });
 
     it('should warn when phase specified but initiative has no phases', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', initiative: 'INIT-001', phase: 1 }]]);
       const initiatives = new Map([['INIT-001', { id: 'INIT-001' }]]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.ok(result.warnings.length > 0, 'Should warn about phase with no phases defined');
+      expect(result.warnings.length > 0).toBe(true);
     });
 
     it('should allow initiative reference by slug', () => {
       const wuMap = new Map([['WU-001', { id: 'WU-001', initiative: 'shock-protocol' }]]);
       const initiatives = new Map([['INIT-001', { id: 'INIT-001', slug: 'shock-protocol' }]]);
       const result = validateInitiativeRefs(wuMap, initiatives);
-      assert.deepEqual(result.warnings, []);
+      expect(result.warnings).toEqual([]);
     });
   });
 
@@ -245,7 +241,7 @@ describe('initiative-validator', () => {
       const allWuIds = new Set(['WU-001', 'WU-002']);
       const initiatives = new Map();
       const result = validateDependencyGraph(wuMap, allWuIds, initiatives);
-      assert.deepEqual(result.errors, []);
+      expect(result.errors).toEqual([]);
     });
 
     it('should return error for cycle', () => {
@@ -256,8 +252,8 @@ describe('initiative-validator', () => {
       const allWuIds = new Set(['WU-001', 'WU-002']);
       const initiatives = new Map();
       const result = validateDependencyGraph(wuMap, allWuIds, initiatives);
-      assert.ok(result.errors.length > 0, 'Should report cycle as error');
-      assert.ok(result.errors[0].includes('Circular'), 'Error should mention circular dependency');
+      expect(result.errors.length > 0).toBe(true);
+      expect(result.errors[0].includes('Circular')).toBe(true);
     });
 
     it('should return error for orphan refs', () => {
@@ -265,8 +261,8 @@ describe('initiative-validator', () => {
       const allWuIds = new Set(['WU-001']);
       const initiatives = new Map();
       const result = validateDependencyGraph(wuMap, allWuIds, initiatives);
-      assert.ok(result.errors.length > 0, 'Should report orphan as error');
-      assert.ok(result.errors[0].includes('WU-999'), 'Error should mention orphan ref');
+      expect(result.errors.length > 0).toBe(true);
+      expect(result.errors[0].includes('WU-999')).toBe(true);
     });
 
     it('should return warnings for missing initiative refs', () => {
@@ -274,7 +270,7 @@ describe('initiative-validator', () => {
       const allWuIds = new Set(['WU-001']);
       const initiatives = new Map();
       const result = validateDependencyGraph(wuMap, allWuIds, initiatives);
-      assert.ok(result.warnings.length > 0, 'Should warn about missing initiative');
+      expect(result.warnings.length > 0).toBe(true);
     });
 
     it('should aggregate multiple errors', () => {
@@ -284,7 +280,7 @@ describe('initiative-validator', () => {
       const allWuIds = new Set(['WU-001']);
       const initiatives = new Map();
       const result = validateDependencyGraph(wuMap, allWuIds, initiatives);
-      assert.ok(result.errors.length >= 2, 'Should report multiple errors');
+      expect(result.errors.length >= 2).toBe(true);
     });
   });
 });

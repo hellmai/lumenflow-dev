@@ -3,8 +3,7 @@
  * Tests for atomic merge locking mechanism to prevent race conditions
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
@@ -55,7 +54,7 @@ describe('merge-lock', () => {
     it('should acquire lock when none exists', async () => {
       const result = await acquireMergeLock('WU-100', { baseDir: testDir });
 
-      assert.equal(result.acquired, true);
+      expect(result.acquired).toBe(true);
       assert.ok(result.lockId, 'should have lockId');
     });
 
@@ -66,7 +65,7 @@ describe('merge-lock', () => {
       // Second lock should fail
       const result = await acquireMergeLock('WU-200', { baseDir: testDir, waitMs: 0 });
 
-      assert.equal(result.acquired, false);
+      expect(result.acquired).toBe(false);
       assert.ok(result.heldBy, 'should indicate who holds lock');
     });
 
@@ -77,8 +76,8 @@ describe('merge-lock', () => {
       // Same WU can re-acquire (idempotent)
       const second = await acquireMergeLock('WU-100', { baseDir: testDir });
 
-      assert.equal(second.acquired, true);
-      assert.equal(second.lockId, first.lockId);
+      expect(second.acquired).toBe(true);
+      expect(second.lockId).toBe(first.lockId);
     });
 
     it('should include WU ID in lock info', async () => {
@@ -86,7 +85,7 @@ describe('merge-lock', () => {
 
       const info = getMergeLockInfo({ baseDir: testDir });
 
-      assert.equal(info.wuId, 'WU-999');
+      expect(info.wuId).toBe('WU-999');
       assert.ok(info.createdAt, 'should have createdAt');
       assert.ok(info.pid, 'should have pid');
     });
@@ -98,8 +97,8 @@ describe('merge-lock', () => {
 
       const released = releaseMergeLock(lock.lockId, { baseDir: testDir });
 
-      assert.equal(released, true);
-      assert.equal(isMergeLocked({ baseDir: testDir }), false);
+      expect(released).toBe(true);
+      expect(isMergeLocked({ baseDir: testDir })).toBe(false);
     });
 
     it('should not release lock with wrong lockId', async () => {
@@ -107,26 +106,26 @@ describe('merge-lock', () => {
 
       const released = releaseMergeLock('wrong-lock-id', { baseDir: testDir });
 
-      assert.equal(released, false);
-      assert.equal(isMergeLocked({ baseDir: testDir }), true);
+      expect(released).toBe(false);
+      expect(isMergeLocked({ baseDir: testDir })).toBe(true);
     });
 
     it('should return false when no lock exists', () => {
       const released = releaseMergeLock('any-id', { baseDir: testDir });
 
-      assert.equal(released, false);
+      expect(released).toBe(false);
     });
   });
 
   describe('isMergeLocked()', () => {
     it('should return false when no lock exists', () => {
-      assert.equal(isMergeLocked({ baseDir: testDir }), false);
+      expect(isMergeLocked({ baseDir: testDir })).toBe(false);
     });
 
     it('should return true when lock exists', async () => {
       await acquireMergeLock('WU-100', { baseDir: testDir });
 
-      assert.equal(isMergeLocked({ baseDir: testDir }), true);
+      expect(isMergeLocked({ baseDir: testDir })).toBe(true);
     });
 
     it('should return false for stale locks', async () => {
@@ -140,14 +139,14 @@ describe('merge-lock', () => {
       writeFileSync(lockPath, JSON.stringify(lockData, null, 2));
 
       // Stale lock should be treated as unlocked
-      assert.equal(isMergeLocked({ baseDir: testDir }), false);
+      expect(isMergeLocked({ baseDir: testDir })).toBe(false);
     });
   });
 
   describe('getMergeLockInfo()', () => {
     it('should return null when no lock exists', () => {
       const info = getMergeLockInfo({ baseDir: testDir });
-      assert.equal(info, null);
+      expect(info).toBe(null);
     });
 
     it('should return lock info when lock exists', async () => {
@@ -155,11 +154,11 @@ describe('merge-lock', () => {
 
       const info = getMergeLockInfo({ baseDir: testDir });
 
-      assert.ok(info);
-      assert.equal(info.wuId, 'WU-123');
-      assert.ok(info.lockId);
-      assert.ok(info.createdAt);
-      assert.ok(info.pid);
+      expect(info).toBeTruthy();
+      expect(info.wuId).toBe('WU-123');
+      expect(info.lockId).toBeTruthy();
+      expect(info.createdAt).toBeTruthy();
+      expect(info.pid).toBeTruthy();
     });
   });
 
@@ -172,9 +171,9 @@ describe('merge-lock', () => {
         return 'done';
       }, { baseDir: testDir });
 
-      assert.equal(lockHeldDuring, true, 'lock should be held during execution');
-      assert.equal(result, 'done', 'should return function result');
-      assert.equal(isMergeLocked({ baseDir: testDir }), false, 'lock should be released after');
+      expect(lockHeldDuring).toBe(true, 'lock should be held during execution');
+      expect(result).toBe('done', 'should return function result');
+      expect(isMergeLocked({ baseDir: testDir })).toBe(false, 'lock should be released after');
     });
 
     it('should release lock even if function throws', async () => {
@@ -182,12 +181,12 @@ describe('merge-lock', () => {
         await withMergeLock('WU-100', async () => {
           throw new Error('Intentional error');
         }, { baseDir: testDir });
-        assert.fail('should have thrown');
+        throw new Error('should have thrown');
       } catch (err) {
-        assert.ok(err.message.includes('Intentional error'));
+        expect(err.message.includes('Intentional error')).toBe(true);
       }
 
-      assert.equal(isMergeLocked({ baseDir: testDir }), false, 'lock should be released after error');
+      expect(isMergeLocked({ baseDir: testDir })).toBe(false, 'lock should be released after error');
     });
 
     it('should throw if lock cannot be acquired', async () => {
@@ -197,7 +196,7 @@ describe('merge-lock', () => {
       // withMergeLock for different WU should fail
       try {
         await withMergeLock('WU-200', async () => 'done', { baseDir: testDir, waitMs: 100 });
-        assert.fail('should have thrown');
+        throw new Error('should have thrown');
       } catch (err) {
         assert.ok(err.message.includes('acquire') || err.message.includes('lock'), 'should mention lock');
       }

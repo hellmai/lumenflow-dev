@@ -8,8 +8,7 @@
  * Run: node --test tools/lib/__tests__/manual-test-validator.test.mjs
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Import the functions to test (will fail until implemented)
 import {
@@ -22,8 +21,8 @@ import {
 
 describe('manual-test-validator constants', () => {
   it('defines HEX_CORE_CODE_PATTERNS for application layer', () => {
-    assert.ok(Array.isArray(HEX_CORE_CODE_PATTERNS));
-    assert.ok(HEX_CORE_CODE_PATTERNS.length > 0);
+    expect(Array.isArray(HEX_CORE_CODE_PATTERNS)).toBeTruthy();
+    expect(HEX_CORE_CODE_PATTERNS.length > 0).toBeTruthy();
     // Should include application package pattern
     assert.ok(
       HEX_CORE_CODE_PATTERNS.some((p) => p.includes('application')),
@@ -39,81 +38,81 @@ describe('containsHexCoreCode', () => {
       'apps/web/src/app/page.tsx',
     ];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), true);
+    expect(containsHexCoreCode(codePaths)).toBe(true);
   });
 
   it('returns true for prompts package files', () => {
     const codePaths = ['packages/@exampleapp/prompts/src/templates/triage.ts'];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), true);
+    expect(containsHexCoreCode(codePaths)).toBe(true);
   });
 
   it('returns false when only infrastructure files', () => {
     const codePaths = ['packages/@exampleapp/infrastructure/src/adapters/db.ts'];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), false);
+    expect(containsHexCoreCode(codePaths)).toBe(false);
   });
 
   it('returns false when only web app files', () => {
     const codePaths = ['apps/web/src/app/page.tsx', 'apps/web/src/lib/utils.ts'];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), false);
+    expect(containsHexCoreCode(codePaths)).toBe(false);
   });
 
   it('returns false when only tooling files', () => {
     const codePaths = ['tools/gates.js', 'tools/lib/wu-done-validators.js'];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), false);
+    expect(containsHexCoreCode(codePaths)).toBe(false);
   });
 
   it('returns false when only docs files', () => {
     const codePaths = ['docs/README.md', 'docs/04-operations/tasks/wu/WU-1433.yaml'];
 
-    assert.strictEqual(containsHexCoreCode(codePaths), false);
+    expect(containsHexCoreCode(codePaths)).toBe(false);
   });
 
   it('returns false for empty array', () => {
-    assert.strictEqual(containsHexCoreCode([]), false);
+    expect(containsHexCoreCode([])).toBe(false);
   });
 
   it('returns false for null/undefined', () => {
-    assert.strictEqual(containsHexCoreCode(null), false);
-    assert.strictEqual(containsHexCoreCode(undefined), false);
+    expect(containsHexCoreCode(null)).toBe(false);
+    expect(containsHexCoreCode(undefined)).toBe(false);
   });
 });
 
 describe('isCodeFile', () => {
   it('returns true for common code file extensions', () => {
-    assert.strictEqual(isCodeFile('tools/wu-create.js'), true);
-    assert.strictEqual(isCodeFile('packages/@exampleapp/application/src/usecase.ts'), true);
-    assert.strictEqual(isCodeFile('apps/web/src/app/page.tsx'), true);
-    assert.strictEqual(isCodeFile('scripts/release.js'), true);
+    expect(isCodeFile('tools/wu-create.js')).toBe(true);
+    expect(isCodeFile('packages/@exampleapp/application/src/usecase.ts')).toBe(true);
+    expect(isCodeFile('apps/web/src/app/page.tsx')).toBe(true);
+    expect(isCodeFile('scripts/release.js')).toBe(true);
   });
 
   it('returns false for documentation and data files', () => {
-    assert.strictEqual(isCodeFile('docs/README.md'), false);
-    assert.strictEqual(isCodeFile('docs/spec.yaml'), false);
-    assert.strictEqual(isCodeFile('config/settings.json'), false);
+    expect(isCodeFile('docs/README.md')).toBe(false);
+    expect(isCodeFile('docs/spec.yaml')).toBe(false);
+    expect(isCodeFile('config/settings.json')).toBe(false);
   });
 
   it('returns false for config files with code extensions', () => {
-    assert.strictEqual(isCodeFile('vitest.config.ts'), false);
-    assert.strictEqual(isCodeFile('.eslintrc.js'), false);
+    expect(isCodeFile('vitest.config.ts')).toBe(false);
+    expect(isCodeFile('.eslintrc.js')).toBe(false);
   });
 });
 
 describe('isExemptFromAutomatedTests', () => {
   it('returns true for type: documentation', () => {
-    assert.strictEqual(isExemptFromAutomatedTests({ type: 'documentation' }), true);
+    expect(isExemptFromAutomatedTests({ type: 'documentation' })).toBe(true);
   });
 
   it('does not exempt based on lane alone', () => {
-    assert.strictEqual(isExemptFromAutomatedTests({ lane: 'Documentation' }), false);
-    assert.strictEqual(isExemptFromAutomatedTests({ lane: 'Operations: Tooling' }), false);
+    expect(isExemptFromAutomatedTests({ lane: 'Documentation' })).toBe(false);
+    expect(isExemptFromAutomatedTests({ lane: 'Operations: Tooling' })).toBe(false);
   });
 
   it('returns false for type: process', () => {
-    assert.strictEqual(isExemptFromAutomatedTests({ type: 'process' }), false);
+    expect(isExemptFromAutomatedTests({ type: 'process' })).toBe(false);
   });
 
   it('returns false for other types', () => {
@@ -125,8 +124,8 @@ describe('isExemptFromAutomatedTests', () => {
   });
 
   it('handles missing lane/type gracefully', () => {
-    assert.strictEqual(isExemptFromAutomatedTests({}), false);
-    assert.strictEqual(isExemptFromAutomatedTests({ lane: null }), false);
+    expect(isExemptFromAutomatedTests({})).toBe(false);
+    expect(isExemptFromAutomatedTests({ lane: null })).toBe(false);
   });
 });
 
@@ -147,8 +146,8 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
-      assert.strictEqual(result.errors.length, 0);
+      expect(result.valid).toBe(true);
+      expect(result.errors.length).toBe(0);
     });
 
     it('passes when e2e tests provided', () => {
@@ -166,8 +165,8 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
-      assert.strictEqual(result.errors.length, 0);
+      expect(result.valid).toBe(true);
+      expect(result.errors.length).toBe(0);
     });
 
     it('passes when integration tests provided', () => {
@@ -185,7 +184,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('FAILS when ONLY manual tests provided', () => {
@@ -203,8 +202,8 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.length > 0);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length > 0).toBeTruthy();
       assert.ok(
         result.errors[0].toLowerCase().includes('automated'),
         'Error should mention automated tests required'
@@ -226,7 +225,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, false);
+      expect(result.valid).toBe(false);
     });
   });
 
@@ -246,7 +245,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('passes with manual-only tests when code_paths are docs-only', () => {
@@ -264,7 +263,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('passes with manual-only tests for config files', () => {
@@ -282,7 +281,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
   });
 
@@ -302,7 +301,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, false);
+      expect(result.valid).toBe(false);
     });
 
     it('fails with manual-only tests for tooling changes', () => {
@@ -320,7 +319,7 @@ describe('validateAutomatedTestRequirement', () => {
 
       const result = validateAutomatedTestRequirement(doc);
 
-      assert.strictEqual(result.valid, false);
+      expect(result.valid).toBe(false);
     });
   });
 
@@ -336,7 +335,7 @@ describe('validateAutomatedTestRequirement', () => {
       const result = validateAutomatedTestRequirement(doc);
 
       // Should not crash, docs lane is exempt anyway
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('handles missing code_paths', () => {
@@ -352,7 +351,7 @@ describe('validateAutomatedTestRequirement', () => {
       const result = validateAutomatedTestRequirement(doc);
 
       // No code_paths means no hex core code, so should pass
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
   });
 });

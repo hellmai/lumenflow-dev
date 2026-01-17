@@ -6,8 +6,7 @@
  * WU-1579: Nested package node_modules symlinking
  */
 
-import { describe, it, beforeEach, afterEach, mock } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -49,34 +48,34 @@ describe('worktree-symlink', () => {
 
   describe('NESTED_PACKAGE_PATHS', () => {
     it('should export the list of nested package paths', () => {
-      assert.ok(Array.isArray(NESTED_PACKAGE_PATHS));
-      assert.ok(NESTED_PACKAGE_PATHS.length > 0);
+      expect(Array.isArray(NESTED_PACKAGE_PATHS)).toBeTruthy();
+      expect(NESTED_PACKAGE_PATHS.length > 0).toBeTruthy();
     });
 
     it('should contain all expected packages and apps', () => {
       // WU-2427: Expanded list to include all workspace packages
-      assert.equal(NESTED_PACKAGE_PATHS.length, 15);
+      expect(NESTED_PACKAGE_PATHS.length).toBe(15);
       // Packages - supabase
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/supabase'));
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/supabase');
       // Packages - @exampleapp/*
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@exampleapp/prompts'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@exampleapp/shared'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@exampleapp/application'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@exampleapp/ports'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@exampleapp/infrastructure'));
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@exampleapp/prompts');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@exampleapp/shared');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@exampleapp/application');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@exampleapp/ports');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@exampleapp/infrastructure');
       // Packages - @lumenflow/*
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@lumenflow/api'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@lumenflow/application'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/@lumenflow/infrastructure'));
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@lumenflow/api');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@lumenflow/application');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/@lumenflow/infrastructure');
       // Packages - lumenflow-*
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/lumenflow-cli'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/lumenflow-tools'));
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/lumenflow-cli');
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/lumenflow-tools');
       // Packages - beacon-explainer
-      assert.ok(NESTED_PACKAGE_PATHS.includes('packages/beacon-explainer'));
+      expect(NESTED_PACKAGE_PATHS).toContain('packages/beacon-explainer');
       // Apps
-      assert.ok(NESTED_PACKAGE_PATHS.includes('apps/web'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('apps/mobile'));
-      assert.ok(NESTED_PACKAGE_PATHS.includes('apps/hellm-ai'));
+      expect(NESTED_PACKAGE_PATHS).toContain('apps/web');
+      expect(NESTED_PACKAGE_PATHS).toContain('apps/mobile');
+      expect(NESTED_PACKAGE_PATHS).toContain('apps/hellm-ai');
     });
   });
 
@@ -85,9 +84,9 @@ describe('worktree-symlink', () => {
       const worktreePath = tempDir;
       const result = symlinkNodeModules(worktreePath);
 
-      assert.equal(result.created, true);
-      assert.equal(result.skipped, false);
-      assert.ok(!result.error);
+      expect(result.created).toBe(true);
+      expect(result.skipped).toBe(false);
+      expect(!result.error).toBeTruthy();
 
       const symlinkPath = path.join(worktreePath, 'node_modules');
       // Use lstatSync to check symlink exists (existsSync follows symlinks and fails if target missing)
@@ -95,7 +94,7 @@ describe('worktree-symlink', () => {
       try {
         stat = fs.lstatSync(symlinkPath);
       } catch {
-        assert.fail(`Symlink should exist at ${symlinkPath}`);
+        throw new Error(`Symlink should exist at ${symlinkPath}`);
       }
       assert.ok(stat.isSymbolicLink(), 'Should be a symbolic link');
     });
@@ -107,8 +106,8 @@ describe('worktree-symlink', () => {
 
       const result = symlinkNodeModules(worktreePath);
 
-      assert.equal(result.created, false);
-      assert.equal(result.skipped, true);
+      expect(result.created).toBe(false);
+      expect(result.skipped).toBe(true);
     });
 
     it('should be idempotent', () => {
@@ -116,11 +115,11 @@ describe('worktree-symlink', () => {
 
       // First call creates
       const result1 = symlinkNodeModules(worktreePath);
-      assert.equal(result1.created, true);
+      expect(result1.created).toBe(true);
 
       // Second call skips (symlink exists even if target doesn't)
       const result2 = symlinkNodeModules(worktreePath);
-      assert.equal(result2.skipped, true);
+      expect(result2.skipped).toBe(true);
     });
   });
 
@@ -136,9 +135,9 @@ describe('worktree-symlink', () => {
 
       const result = symlinkNestedNodeModules(worktreePath, mainRepoPath);
 
-      assert.equal(result.created, NESTED_PACKAGE_PATHS.length);
-      assert.equal(result.skipped, 0);
-      assert.ok(!result.errors || result.errors.length === 0);
+      expect(result.created).toBe(NESTED_PACKAGE_PATHS.length);
+      expect(result.skipped).toBe(0);
+      expect(!result.errors || result.errors.length === 0).toBeTruthy();
 
       // Verify each symlink was created and points to correct location
       for (const pkgPath of NESTED_PACKAGE_PATHS) {
@@ -173,8 +172,8 @@ describe('worktree-symlink', () => {
 
       const result = symlinkNestedNodeModules(worktreePath, mainRepoPath);
 
-      assert.equal(result.created, NESTED_PACKAGE_PATHS.length - 2);
-      assert.equal(result.skipped, 2);
+      expect(result.created).toBe(NESTED_PACKAGE_PATHS.length - 2);
+      expect(result.skipped).toBe(2);
     });
 
     it('should replace empty or cache-only node_modules with symlink', () => {
@@ -197,12 +196,12 @@ describe('worktree-symlink', () => {
       const result = symlinkNestedNodeModules(worktreePath, mainRepoPath);
 
       // All should be created (cache-only directories are replaced)
-      assert.equal(result.created, NESTED_PACKAGE_PATHS.length);
-      assert.equal(result.skipped, 0);
+      expect(result.created).toBe(NESTED_PACKAGE_PATHS.length);
+      expect(result.skipped).toBe(0);
 
       // Verify the first one is now a symlink
       const firstSymlink = path.join(worktreePath, cacheOnly[0], 'node_modules');
-      assert.ok(fs.lstatSync(firstSymlink).isSymbolicLink());
+      expect(fs.lstatSync(firstSymlink).isSymbolicLink()).toBeTruthy();
     });
 
     it('should skip packages where source node_modules does not exist', () => {
@@ -216,8 +215,8 @@ describe('worktree-symlink', () => {
 
       const result = symlinkNestedNodeModules(worktreePath, emptyMainRepo);
 
-      assert.equal(result.created, 0);
-      assert.equal(result.skipped, NESTED_PACKAGE_PATHS.length);
+      expect(result.created).toBe(0);
+      expect(result.skipped).toBe(NESTED_PACKAGE_PATHS.length);
 
       // Cleanup
       fs.rmSync(emptyMainRepo, { recursive: true, force: true });
@@ -233,8 +232,8 @@ describe('worktree-symlink', () => {
       const result = symlinkNestedNodeModules(worktreePath, mainRepoPath);
 
       // Should skip all because parent directories don't exist
-      assert.equal(result.created, 0);
-      assert.equal(result.skipped, NESTED_PACKAGE_PATHS.length);
+      expect(result.created).toBe(0);
+      expect(result.skipped).toBe(NESTED_PACKAGE_PATHS.length);
     });
 
     it('should use correct relative path from worktree to main repo', () => {
@@ -257,7 +256,7 @@ describe('worktree-symlink', () => {
 
       // Verify symlink resolves correctly
       const symlinkPath = path.join(worktreePath, testPkgPath, 'node_modules');
-      assert.ok(fs.existsSync(symlinkPath));
+      expect(fs.existsSync(symlinkPath)).toBeTruthy();
       assert.ok(fs.existsSync(path.join(symlinkPath, '.marker')));
 
       // Cleanup
@@ -275,7 +274,7 @@ describe('worktree-symlink', () => {
       // Should not throw and should work with default silent logging
       const result = symlinkNestedNodeModules(worktreePath, mainRepoPath);
 
-      assert.ok(result.created >= 0);
+      expect(result.created >= 0).toBeTruthy();
     });
 
     it('should be idempotent', () => {
@@ -288,12 +287,12 @@ describe('worktree-symlink', () => {
 
       // First call creates all
       const result1 = symlinkNestedNodeModules(worktreePath, mainRepoPath);
-      assert.equal(result1.created, NESTED_PACKAGE_PATHS.length);
+      expect(result1.created).toBe(NESTED_PACKAGE_PATHS.length);
 
       // Second call skips all
       const result2 = symlinkNestedNodeModules(worktreePath, mainRepoPath);
-      assert.equal(result2.created, 0);
-      assert.equal(result2.skipped, NESTED_PACKAGE_PATHS.length);
+      expect(result2.created).toBe(0);
+      expect(result2.skipped).toBe(NESTED_PACKAGE_PATHS.length);
     });
   });
 
@@ -306,8 +305,8 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, false);
-      assert.deepEqual(result.brokenSymlinks, []);
+      expect(result.hasWorktreeSymlinks).toBe(false);
+      expect(result.brokenSymlinks).toEqual([]);
     });
 
     it('should return false for node_modules with valid symlinks not in worktrees/', () => {
@@ -322,8 +321,8 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, false);
-      assert.deepEqual(result.brokenSymlinks, []);
+      expect(result.hasWorktreeSymlinks).toBe(false);
+      expect(result.brokenSymlinks).toEqual([]);
     });
 
     it('should return true for node_modules with symlinks pointing into worktrees/', () => {
@@ -344,8 +343,8 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, true);
-      assert.equal(result.brokenSymlinks.length, 0); // Symlink is valid, just points to worktree
+      expect(result.hasWorktreeSymlinks).toBe(true);
+      expect(result.brokenSymlinks.length).toBe(0); // Symlink is valid, just points to worktree
 
       // Cleanup
       fs.rmSync(projectRoot, { recursive: true, force: true });
@@ -365,9 +364,9 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, true);
-      assert.equal(result.brokenSymlinks.length, 1);
-      assert.ok(result.brokenSymlinks[0].includes('broken-package'));
+      expect(result.hasWorktreeSymlinks).toBe(true);
+      expect(result.brokenSymlinks.length).toBe(1);
+      expect(result.brokenSymlinks[0].includes('broken-package')).toBe(true);
 
       // Cleanup
       fs.rmSync(projectRoot, { recursive: true, force: true });
@@ -388,7 +387,7 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, true);
+      expect(result.hasWorktreeSymlinks).toBe(true);
 
       // Cleanup
       fs.rmSync(projectRoot, { recursive: true, force: true });
@@ -399,8 +398,8 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nonExistentPath);
 
-      assert.equal(result.hasWorktreeSymlinks, false);
-      assert.deepEqual(result.brokenSymlinks, []);
+      expect(result.hasWorktreeSymlinks).toBe(false);
+      expect(result.brokenSymlinks).toEqual([]);
     });
 
     it('should return false for empty node_modules', () => {
@@ -409,8 +408,8 @@ describe('worktree-symlink', () => {
 
       const result = hasWorktreePathSymlinks(nodeModulesPath);
 
-      assert.equal(result.hasWorktreeSymlinks, false);
-      assert.deepEqual(result.brokenSymlinks, []);
+      expect(result.hasWorktreeSymlinks).toBe(false);
+      expect(result.brokenSymlinks).toEqual([]);
     });
   });
 
@@ -431,10 +430,10 @@ describe('worktree-symlink', () => {
       // Try to create symlink in new worktree - should be refused
       const result = symlinkNodeModules(worktreePath, console, projectRoot);
 
-      assert.equal(result.created, false);
-      assert.equal(result.skipped, false);
-      assert.equal(result.refused, true);
-      assert.ok(result.reason.includes('worktree'));
+      expect(result.created).toBe(false);
+      expect(result.skipped).toBe(false);
+      expect(result.refused).toBe(true);
+      expect(result.reason.includes('worktree')).toBe(true);
 
       // Cleanup
       fs.rmSync(projectRoot, { recursive: true, force: true });
@@ -455,9 +454,9 @@ describe('worktree-symlink', () => {
       // Try to create symlink - should succeed
       const result = symlinkNodeModules(worktreePath, console, projectRoot);
 
-      assert.equal(result.created, true);
-      assert.equal(result.skipped, false);
-      assert.ok(!result.refused);
+      expect(result.created).toBe(true);
+      expect(result.skipped).toBe(false);
+      expect(!result.refused).toBeTruthy();
 
       // Cleanup
       fs.rmSync(projectRoot, { recursive: true, force: true });
@@ -469,9 +468,9 @@ describe('worktree-symlink', () => {
       // Without mainRepoPath, should still work as before (creates symlink)
       const result = symlinkNodeModules(worktreePath);
 
-      assert.equal(result.created, true);
-      assert.equal(result.skipped, false);
-      assert.ok(!result.refused);
+      expect(result.created).toBe(true);
+      expect(result.skipped).toBe(false);
+      expect(!result.refused).toBeTruthy();
     });
   });
 });

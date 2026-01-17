@@ -10,8 +10,7 @@
  * @see {@link tools/lib/generate-traceability.mjs} - Implementation
  */
 
-import { describe, it, beforeEach, mock } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Functions to be implemented
 import {
@@ -56,15 +55,15 @@ describe('generate-traceability', () => {
 
       const hazards = parseHazardLog(content);
 
-      assert.equal(hazards.length, 1);
-      assert.equal(hazards[0].id, 'HAZ-001');
-      assert.equal(hazards[0].severity, 4);
-      assert.equal(hazards[0].likelihood, 3);
-      assert.equal(hazards[0].riskScore, 12);
-      assert.equal(hazards[0].residualRiskScore, 6);
-      assert.equal(hazards[0].controls.length, 2);
-      assert.equal(hazards[0].controls[0].id, 'C-001a');
-      assert.equal(hazards[0].controls[0].status, 'Implemented');
+      expect(hazards.length).toBe(1);
+      expect(hazards[0].id).toBe('HAZ-001');
+      expect(hazards[0].severity).toBe(4);
+      expect(hazards[0].likelihood).toBe(3);
+      expect(hazards[0].riskScore).toBe(12);
+      expect(hazards[0].residualRiskScore).toBe(6);
+      expect(hazards[0].controls.length).toBe(2);
+      expect(hazards[0].controls[0].id).toBe('C-001a');
+      expect(hazards[0].controls[0].status).toBe('Implemented');
     });
 
     it('should parse multiple hazards', () => {
@@ -102,14 +101,14 @@ describe('generate-traceability', () => {
 
       const hazards = parseHazardLog(content);
 
-      assert.equal(hazards.length, 2);
-      assert.equal(hazards[0].id, 'HAZ-001');
-      assert.equal(hazards[1].id, 'HAZ-002');
+      expect(hazards.length).toBe(2);
+      expect(hazards[0].id).toBe('HAZ-001');
+      expect(hazards[1].id).toBe('HAZ-002');
     });
 
     it('should return empty array for invalid content', () => {
       const hazards = parseHazardLog('No hazards here');
-      assert.deepEqual(hazards, []);
+      expect(hazards).toEqual([]);
     });
   });
 
@@ -128,12 +127,12 @@ describe('generate-traceability', () => {
 
       const versions = extractPromptVersions(prompts);
 
-      assert.equal(versions.length, 2);
+      expect(versions.length).toBe(2);
       // Results are sorted by filename
-      assert.equal(versions[0].version, '1.0.0');
-      assert.equal(versions[0].fileName, 'red-flag-detection.yaml');
-      assert.equal(versions[1].version, '1.32.0');
-      assert.equal(versions[1].fileName, 'system-base.yaml');
+      expect(versions[0].version).toBe('1.0.0');
+      expect(versions[0].fileName).toBe('red-flag-detection.yaml');
+      expect(versions[1].version).toBe('1.32.0');
+      expect(versions[1].fileName).toBe('system-base.yaml');
     });
 
     it('should skip prompts without version field', () => {
@@ -145,7 +144,7 @@ describe('generate-traceability', () => {
       ];
 
       const versions = extractPromptVersions(prompts);
-      assert.equal(versions.length, 0);
+      expect(versions.length).toBe(0);
     });
 
     it('should handle invalid YAML gracefully', () => {
@@ -157,7 +156,7 @@ describe('generate-traceability', () => {
       ];
 
       const versions = extractPromptVersions(prompts);
-      assert.equal(versions.length, 0);
+      expect(versions.length).toBe(0);
     });
   });
 
@@ -173,9 +172,9 @@ describe('generate-traceability', () => {
       const refs = buildCrossReferences(hazards, [], []);
 
       const hazardToControl = refs.filter((r) => r.type === 'hazard_to_control');
-      assert.equal(hazardToControl.length, 2);
-      assert.equal(hazardToControl[0].source, 'HAZ-001');
-      assert.equal(hazardToControl[0].target, 'C-001a');
+      expect(hazardToControl.length).toBe(2);
+      expect(hazardToControl[0].source).toBe('HAZ-001');
+      expect(hazardToControl[0].target).toBe('C-001a');
     });
 
     it('should track control coverage in tests', () => {
@@ -193,8 +192,8 @@ describe('generate-traceability', () => {
       const refs = buildCrossReferences(hazards, [], goldenTests);
 
       const controlToTest = refs.filter((r) => r.type === 'control_to_test');
-      assert.ok(controlToTest.length > 0);
-      assert.equal(controlToTest[0].valid, true);
+      expect(controlToTest.length > 0).toBeTruthy();
+      expect(controlToTest[0].valid).toBe(true);
     });
 
     it('should mark uncovered controls as invalid', () => {
@@ -208,7 +207,7 @@ describe('generate-traceability', () => {
       const refs = buildCrossReferences(hazards, [], []);
 
       const controlToTest = refs.filter((r) => r.type === 'control_to_test');
-      assert.ok(controlToTest.some((r) => r.valid === false));
+      expect(controlToTest.some((r) => r.valid === false)).toBeTruthy();
     });
   });
 
@@ -226,11 +225,11 @@ describe('generate-traceability', () => {
 
       const markdown = generateVersionHistory(commits);
 
-      assert.ok(markdown.includes('# Prompt Version History'));
-      assert.ok(markdown.includes('2025-01-15'));
-      assert.ok(markdown.includes('abc1234'));
-      assert.ok(markdown.includes('Developer'));
-      assert.ok(markdown.includes('update safety rules'));
+      expect(markdown).toContain('# Prompt Version History');
+      expect(markdown).toContain('2025-01-15');
+      expect(markdown).toContain('abc1234');
+      expect(markdown).toContain('Developer');
+      expect(markdown).toContain('update safety rules');
     });
 
     it('should group commits by month', () => {
@@ -242,13 +241,13 @@ describe('generate-traceability', () => {
 
       const markdown = generateVersionHistory(commits);
 
-      assert.ok(markdown.includes('2025-01'));
-      assert.ok(markdown.includes('2025-02'));
+      expect(markdown).toContain('2025-01');
+      expect(markdown).toContain('2025-02');
     });
 
     it('should handle empty commit list', () => {
       const markdown = generateVersionHistory([]);
-      assert.ok(markdown.includes('# Prompt Version History'));
+      expect(markdown).toContain('# Prompt Version History');
     });
   });
 
@@ -261,10 +260,10 @@ describe('generate-traceability', () => {
 
       const markdown = generatePromptInventory(prompts);
 
-      assert.ok(markdown.includes('# Prompt Inventory'));
-      assert.ok(markdown.includes('system-base.yaml'));
-      assert.ok(markdown.includes('1.32.0'));
-      assert.ok(markdown.includes('red-flag-detection.yaml'));
+      expect(markdown).toContain('# Prompt Inventory');
+      expect(markdown).toContain('system-base.yaml');
+      expect(markdown).toContain('1.32.0');
+      expect(markdown).toContain('red-flag-detection.yaml');
     });
 
     it('should summarise version distribution', () => {
@@ -276,8 +275,8 @@ describe('generate-traceability', () => {
 
       const markdown = generatePromptInventory(prompts);
 
-      assert.ok(markdown.includes('Total Prompts'));
-      assert.ok(markdown.includes('3'));
+      expect(markdown).toContain('Total Prompts');
+      expect(markdown).toContain('3');
     });
   });
 
@@ -298,10 +297,10 @@ describe('generate-traceability', () => {
 
       const markdown = generateHazardMatrix(hazards);
 
-      assert.ok(markdown.includes('# Hazard Traceability Matrix'));
-      assert.ok(markdown.includes('HAZ-001'));
-      assert.ok(markdown.includes('C-001a'));
-      assert.ok(markdown.includes('Preventive'));
+      expect(markdown).toContain('# Hazard Traceability Matrix');
+      expect(markdown).toContain('HAZ-001');
+      expect(markdown).toContain('C-001a');
+      expect(markdown).toContain('Preventive');
     });
 
     it('should summarise risk distribution', () => {
@@ -312,7 +311,7 @@ describe('generate-traceability', () => {
 
       const markdown = generateHazardMatrix(hazards);
 
-      assert.ok(markdown.includes('Risk Distribution'));
+      expect(markdown).toContain('Risk Distribution');
     });
   });
 
@@ -325,9 +324,9 @@ describe('generate-traceability', () => {
 
       const markdown = generateValidationReport(refs);
 
-      assert.ok(markdown.includes('# Traceability Validation Report'));
-      assert.ok(markdown.includes('Valid'));
-      assert.ok(markdown.includes('100'));
+      expect(markdown).toContain('# Traceability Validation Report');
+      expect(markdown).toContain('Valid');
+      expect(markdown).toContain('100');
     });
 
     it('should list invalid references', () => {
@@ -338,8 +337,8 @@ describe('generate-traceability', () => {
 
       const markdown = generateValidationReport(refs);
 
-      assert.ok(markdown.includes('Issues Found'));
-      assert.ok(markdown.includes('No coverage'));
+      expect(markdown).toContain('Issues Found');
+      expect(markdown).toContain('No coverage');
     });
   });
 
@@ -351,8 +350,8 @@ describe('generate-traceability', () => {
       ];
 
       const result = validateCrossReferences(refs);
-      assert.equal(result.valid, true);
-      assert.equal(result.invalidCount, 0);
+      expect(result.valid).toBe(true);
+      expect(result.invalidCount).toBe(0);
     });
 
     it('should return false when any reference invalid', () => {
@@ -362,8 +361,8 @@ describe('generate-traceability', () => {
       ];
 
       const result = validateCrossReferences(refs);
-      assert.equal(result.valid, false);
-      assert.equal(result.invalidCount, 1);
+      expect(result.valid).toBe(false);
+      expect(result.invalidCount).toBe(1);
     });
 
     it('should collect all errors', () => {
@@ -373,7 +372,7 @@ describe('generate-traceability', () => {
       ];
 
       const result = validateCrossReferences(refs);
-      assert.equal(result.errors.length, 2);
+      expect(result.errors.length).toBe(2);
     });
   });
 });

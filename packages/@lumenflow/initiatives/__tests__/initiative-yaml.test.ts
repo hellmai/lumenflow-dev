@@ -6,8 +6,7 @@
  * @see {@link tools/lib/initiative-yaml.mjs} - Implementation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -93,9 +92,9 @@ describe('initiative-yaml', () => {
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-001.yaml');
       const result = readInitiative(filePath, 'INIT-001');
 
-      assert.equal(result.id, 'INIT-001');
-      assert.equal(result.slug, 'test-init');
-      assert.equal(result.title, 'Test Initiative');
+      expect(result.id).toBe('INIT-001');
+      expect(result.slug).toBe('test-init');
+      expect(result.title).toBe('Test Initiative');
     });
 
     it('should throw error if file does not exist', async () => {
@@ -103,7 +102,7 @@ describe('initiative-yaml', () => {
       readInitiative = mod.readInitiative;
 
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/nonexistent.yaml');
-      assert.throws(() => readInitiative(filePath, 'INIT-999'), /Initiative file not found/);
+      expect(() => readInitiative(filePath, 'INIT-999')).toThrow(/Initiative file not found/);
     });
 
     it('should throw error if YAML is invalid', async () => {
@@ -113,7 +112,7 @@ describe('initiative-yaml', () => {
       const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
-      assert.throws(() => readInitiative(filePath, 'INIT-001'), /Failed to parse YAML/);
+      expect(() => readInitiative(filePath, 'INIT-001')).toThrow(/Failed to parse YAML/);
     });
 
     it('should throw error if Initiative ID does not match', async () => {
@@ -123,7 +122,7 @@ describe('initiative-yaml', () => {
       readInitiative = mod.readInitiative;
 
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-002.yaml');
-      assert.throws(() => readInitiative(filePath, 'INIT-001'), /id mismatch/);
+      expect(() => readInitiative(filePath, 'INIT-001')).toThrow(/id mismatch/);
     });
 
     it('should throw error if Initiative fails schema validation', async () => {
@@ -134,7 +133,7 @@ describe('initiative-yaml', () => {
       const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
 
-      assert.throws(() => readInitiative(filePath, 'INIT-003'), /validation failed/);
+      expect(() => readInitiative(filePath, 'INIT-003')).toThrow(/validation failed/);
     });
   });
 
@@ -156,13 +155,13 @@ describe('initiative-yaml', () => {
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-100.yaml');
       writeInitiative(filePath, doc);
 
-      assert.ok(existsSync(filePath));
+      expect(existsSync(filePath)).toBe(true);
 
       // Read back and verify
       const result = readInitiative(filePath, 'INIT-100');
-      assert.equal(result.id, 'INIT-100');
-      assert.equal(result.slug, 'write-test');
-      assert.equal(result.title, 'Write Test');
+      expect(result.id).toBe('INIT-100');
+      expect(result.slug).toBe('write-test');
+      expect(result.title).toBe('Write Test');
     });
   });
 
@@ -178,7 +177,7 @@ describe('initiative-yaml', () => {
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should list all valid initiatives', async () => {
@@ -189,11 +188,11 @@ describe('initiative-yaml', () => {
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
-      assert.equal(result.length, 2);
+      expect(result.length).toBe(2);
 
       const ids = result.map((r) => r.id);
-      assert.ok(ids.includes('INIT-001'));
-      assert.ok(ids.includes('INIT-002'));
+      expect(ids.includes('INIT-001')).toBe(true);
+      expect(ids.includes('INIT-002')).toBe(true);
     });
 
     it('should skip invalid YAML files', async () => {
@@ -207,8 +206,8 @@ describe('initiative-yaml', () => {
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'INIT-001');
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('INIT-001');
     });
 
     it('should only include files matching INIT-NNN or INIT-NAME pattern', async () => {
@@ -222,7 +221,7 @@ describe('initiative-yaml', () => {
       const { listInitiatives } = mod;
 
       const result = listInitiatives();
-      assert.equal(result.length, 1);
+      expect(result.length).toBe(1);
     });
   });
 
@@ -234,8 +233,8 @@ describe('initiative-yaml', () => {
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-001');
-      assert.ok(result);
-      assert.equal(result.id, 'INIT-001');
+      expect(result).toBeTruthy();
+      expect(result!.id).toBe('INIT-001');
     });
 
     it('should find initiative by slug', async () => {
@@ -245,9 +244,9 @@ describe('initiative-yaml', () => {
       const { findInitiative } = mod;
 
       const result = findInitiative('my-slug');
-      assert.ok(result);
-      assert.equal(result.id, 'INIT-001');
-      assert.equal(result.doc.slug, 'my-slug');
+      expect(result).toBeTruthy();
+      expect(result!.id).toBe('INIT-001');
+      expect(result!.doc.slug).toBe('my-slug');
     });
 
     it('should return null if not found', async () => {
@@ -255,7 +254,7 @@ describe('initiative-yaml', () => {
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-999');
-      assert.equal(result, null);
+      expect(result).toBe(null);
     });
 
     it('should prefer ID match over slug match', async () => {
@@ -266,8 +265,8 @@ describe('initiative-yaml', () => {
       const { findInitiative } = mod;
 
       const result = findInitiative('INIT-002');
-      assert.ok(result);
-      assert.equal(result.id, 'INIT-002');
+      expect(result).toBeTruthy();
+      expect(result!.id).toBe('INIT-002');
     });
   });
 
@@ -280,7 +279,7 @@ describe('initiative-yaml', () => {
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should return WUs that reference initiative by ID', async () => {
@@ -292,8 +291,8 @@ describe('initiative-yaml', () => {
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-001');
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-001');
     });
 
     it('should return WUs that reference initiative by slug', async () => {
@@ -304,8 +303,8 @@ describe('initiative-yaml', () => {
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-001');
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-001');
     });
 
     it('should find WUs when searching by slug', async () => {
@@ -317,7 +316,7 @@ describe('initiative-yaml', () => {
 
       // Search using slug instead of ID
       const result = getInitiativeWUs('my-init');
-      assert.equal(result.length, 1);
+      expect(result.length).toBe(1);
     });
 
     it('should return empty if WU directory does not exist', async () => {
@@ -327,7 +326,7 @@ describe('initiative-yaml', () => {
       const { getInitiativeWUs } = mod;
 
       const result = getInitiativeWUs('INIT-001');
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
   });
 
@@ -339,9 +338,9 @@ describe('initiative-yaml', () => {
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
-      assert.equal(result.total, 0);
-      assert.equal(result.done, 0);
-      assert.equal(result.percentage, 0);
+      expect(result.total).toBe(0);
+      expect(result.done).toBe(0);
+      expect(result.percentage).toBe(0);
     });
 
     it('should calculate progress correctly', async () => {
@@ -355,11 +354,11 @@ describe('initiative-yaml', () => {
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
-      assert.equal(result.total, 4);
-      assert.equal(result.done, 2);
-      assert.equal(result.inProgress, 1);
-      assert.equal(result.ready, 1);
-      assert.equal(result.percentage, 50);
+      expect(result.total).toBe(4);
+      expect(result.done).toBe(2);
+      expect(result.inProgress).toBe(1);
+      expect(result.ready).toBe(1);
+      expect(result.percentage).toBe(50);
     });
 
     it('should count blocked WUs', async () => {
@@ -370,7 +369,7 @@ describe('initiative-yaml', () => {
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
-      assert.equal(result.blocked, 1);
+      expect(result.blocked).toBe(1);
     });
 
     it('should round percentage', async () => {
@@ -383,7 +382,7 @@ describe('initiative-yaml', () => {
       const { getInitiativeProgress } = mod;
 
       const result = getInitiativeProgress('INIT-001');
-      assert.equal(result.percentage, 33); // 1/3 = 33%
+      expect(result.percentage).toBe(33); // 1/3 = 33%
     });
   });
 
@@ -398,8 +397,8 @@ describe('initiative-yaml', () => {
       const { getInitiativePhases } = mod;
 
       const result = getInitiativePhases('INIT-001');
-      assert.equal(result.get(1)!.length, 2);
-      assert.equal(result.get(2)!.length, 1);
+      expect(result.get(1)!.length).toBe(2);
+      expect(result.get(2)!.length).toBe(1);
     });
 
     it('should put unphased WUs under null key', async () => {
@@ -410,8 +409,8 @@ describe('initiative-yaml', () => {
       const { getInitiativePhases } = mod;
 
       const result = getInitiativePhases('INIT-001');
-      assert.ok(result.has(null));
-      assert.equal(result.get(null)!.length, 1);
+      expect(result.has(null)).toBe(true);
+      expect(result.get(null)!.length).toBe(1);
     });
   });
 
@@ -427,7 +426,7 @@ describe('initiative-yaml', () => {
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();
-      assert.equal(result.size, 0);
+      expect(result.size).toBe(0);
     });
 
     it('should index by both ID and slug', async () => {
@@ -437,10 +436,10 @@ describe('initiative-yaml', () => {
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();
-      assert.ok(result.has('INIT-001'));
-      assert.ok(result.has('my-slug'));
-      assert.equal(result.get('INIT-001')!.title, 'Test');
-      assert.equal(result.get('my-slug')!.title, 'Test');
+      expect(result.has('INIT-001')).toBe(true);
+      expect(result.has('my-slug')).toBe(true);
+      expect(result.get('INIT-001')!.title).toBe('Test');
+      expect(result.get('my-slug')!.title).toBe('Test');
     });
 
     it('should handle initiative without slug', async () => {
@@ -452,7 +451,7 @@ describe('initiative-yaml', () => {
       const { buildInitiativeMap } = mod;
 
       const result = buildInitiativeMap();
-      assert.ok(result.has('INIT-001'));
+      expect(result.has('INIT-001')).toBe(true);
     });
   });
 });

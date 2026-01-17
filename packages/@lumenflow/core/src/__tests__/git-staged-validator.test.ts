@@ -1,5 +1,4 @@
-import { describe, it, mock, beforeEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies before importing the module under test
 let mockGitRun;
@@ -30,8 +29,8 @@ async function createMockedModule() {
 
 describe('ensureStaged', () => {
   beforeEach(() => {
-    mockGitRun = mock.fn();
-    mockDie = mock.fn((msg) => {
+    mockGitRun = vi.fn();
+    mockDie = vi.fn((msg) => {
       throw new Error(msg);
     });
   });
@@ -44,7 +43,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.equal(missing.length, 0, 'All files should be staged');
+    expect(missing.length).toBe(0, 'All files should be staged');
   });
 
   it('should detect missing files', () => {
@@ -54,7 +53,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.deepEqual(missing, ['docs/file2.md', 'tools/script.js']);
+    expect(missing).toEqual(['docs/file2.md', 'tools/script.js']);
   });
 
   it('should handle empty staged list', () => {
@@ -64,7 +63,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles ? stagedFiles.split(/\r?\n/).filter(Boolean) : [];
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.deepEqual(missing, ['docs/file1.md']);
+    expect(missing).toEqual(['docs/file1.md']);
   });
 
   it('should handle null staged output', () => {
@@ -74,7 +73,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles ? stagedFiles.split(/\r?\n/).filter(Boolean) : [];
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.deepEqual(missing, ['docs/file1.md']);
+    expect(missing).toEqual(['docs/file1.md']);
   });
 
   it('should support directory prefix matching', () => {
@@ -89,7 +88,7 @@ describe('ensureStaged', () => {
       return !staged.some((name) => name === pathToCheck || name.startsWith(`${pathToCheck}/`));
     });
 
-    assert.equal(missing.length, 0, 'Directory prefix should match all files under it');
+    expect(missing.length).toBe(0, 'Directory prefix should match all files under it');
   });
 
   it('should filter out null and undefined paths', () => {
@@ -99,7 +98,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter(Boolean).filter((p) => !staged.some((name) => name === p));
 
-    assert.equal(missing.length, 0, 'Null/undefined should be filtered out');
+    expect(missing.length).toBe(0, 'Null/undefined should be filtered out');
   });
 
   it('should handle Windows line endings (CRLF)', () => {
@@ -109,7 +108,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.equal(missing.length, 0, 'Should handle CRLF line endings');
+    expect(missing.length).toBe(0, 'Should handle CRLF line endings');
   });
 
   it('should return staged files list when all paths are staged', () => {
@@ -120,7 +119,7 @@ describe('ensureStaged', () => {
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
     if (missing.length === 0) {
-      assert.deepEqual(staged, ['docs/file1.md', 'docs/file2.md', 'tools/script.js']);
+      expect(staged).toEqual(['docs/file1.md', 'docs/file2.md', 'tools/script.js']);
     }
   });
 
@@ -132,7 +131,7 @@ describe('ensureStaged', () => {
     const staged = stagedFiles.split(/\r?\n/).filter(Boolean);
     const missing = paths.filter((p) => !staged.some((name) => name === p));
 
-    assert.equal(missing.length, 0, 'Exact paths should match');
+    expect(missing.length).toBe(0, 'Exact paths should match');
   });
 
   it('should handle mixed exact and prefix paths', () => {
@@ -145,6 +144,6 @@ describe('ensureStaged', () => {
       return !staged.some((name) => name === pathToCheck || name.startsWith(`${pathToCheck}/`));
     });
 
-    assert.equal(missing.length, 0, 'Should handle both exact and prefix matching');
+    expect(missing.length).toBe(0, 'Should handle both exact and prefix matching');
   });
 });

@@ -8,8 +8,7 @@
  * @see {@link tools/lib/dependency-graph.mjs} - Implementation
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   getUpstreamDependencies,
   getDownstreamDependents,
@@ -28,7 +27,7 @@ describe('dependency-graph', () => {
       const graph = new Map([['WU-001', { id: 'WU-001', blockedBy: [], blocks: [] }]]);
 
       const result = getUpstreamDependencies(graph, 'WU-001');
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should return direct dependencies', () => {
@@ -38,9 +37,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getUpstreamDependencies(graph, 'WU-001');
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-002');
-      assert.equal(result[0].depth, 1);
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-002');
+      expect(result[0].depth).toBe(1);
     });
 
     it('should traverse transitive dependencies', () => {
@@ -51,11 +50,11 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getUpstreamDependencies(graph, 'WU-001');
-      assert.equal(result.length, 2);
-      assert.equal(result[0].id, 'WU-002');
-      assert.equal(result[0].depth, 1);
-      assert.equal(result[1].id, 'WU-003');
-      assert.equal(result[1].depth, 2);
+      expect(result.length).toBe(2);
+      expect(result[0].id).toBe('WU-002');
+      expect(result[0].depth).toBe(1);
+      expect(result[1].id).toBe('WU-003');
+      expect(result[1].depth).toBe(2);
     });
 
     it('should respect maxDepth parameter', () => {
@@ -67,7 +66,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getUpstreamDependencies(graph, 'WU-001', 2);
-      assert.equal(result.length, 2);
+      expect(result.length).toBe(2);
       // Should not include WU-004 (depth 3)
     });
 
@@ -76,7 +75,7 @@ describe('dependency-graph', () => {
 
       const result = getUpstreamDependencies(graph, 'WU-001');
       // WU-999 not in graph, should return it but not traverse further
-      assert.ok(result.length >= 0);
+      expect(result.length >= 0).toBeTruthy();
     });
 
     it('should not visit same node twice (prevent infinite loops)', () => {
@@ -90,7 +89,7 @@ describe('dependency-graph', () => {
       const result = getUpstreamDependencies(graph, 'WU-001');
       // WU-004 should only appear once despite being reachable via two paths
       const wu004Count = result.filter((r) => r.id === 'WU-004').length;
-      assert.equal(wu004Count, 1);
+      expect(wu004Count).toBe(1);
     });
   });
 
@@ -99,7 +98,7 @@ describe('dependency-graph', () => {
       const graph = new Map([['WU-001', { id: 'WU-001', blockedBy: [], blocks: [] }]]);
 
       const result = getDownstreamDependents(graph, 'WU-001');
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should return direct dependents', () => {
@@ -109,9 +108,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getDownstreamDependents(graph, 'WU-001');
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-002');
-      assert.equal(result[0].depth, 1);
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-002');
+      expect(result[0].depth).toBe(1);
     });
 
     it('should traverse transitive dependents', () => {
@@ -122,9 +121,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getDownstreamDependents(graph, 'WU-001');
-      assert.equal(result.length, 2);
-      assert.equal(result[0].id, 'WU-002');
-      assert.equal(result[1].id, 'WU-003');
+      expect(result.length).toBe(2);
+      expect(result[0].id).toBe('WU-002');
+      expect(result[1].id).toBe('WU-003');
     });
 
     it('should respect maxDepth parameter', () => {
@@ -136,7 +135,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = getDownstreamDependents(graph, 'WU-001', 2);
-      assert.equal(result.length, 2);
+      expect(result.length).toBe(2);
       // Should not include WU-004 (depth 3)
     });
   });
@@ -145,8 +144,8 @@ describe('dependency-graph', () => {
     it('should return error message for missing WU', () => {
       const graph = new Map();
       const result = renderASCII(graph, 'WU-999');
-      assert.ok(result.includes('WU not found'));
-      assert.ok(result.includes('WU-999'));
+      expect(result).toContain('WU not found');
+      expect(result).toContain('WU-999');
     });
 
     it('should render WU header', () => {
@@ -155,8 +154,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001');
-      assert.ok(result.includes('WU-001'));
-      assert.ok(result.includes('Test WU'));
+      expect(result).toContain('WU-001');
+      expect(result).toContain('Test WU');
     });
 
     it('should render upstream dependencies', () => {
@@ -169,9 +168,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001');
-      assert.ok(result.includes('Dependencies (blocked by)'));
-      assert.ok(result.includes('WU-002'));
-      assert.ok(result.includes('[done]'));
+      expect(result.includes('Dependencies (blocked by)')).toBeTruthy();
+      expect(result).toContain('WU-002');
+      expect(result).toContain('[done]');
     });
 
     it('should render downstream dependents', () => {
@@ -184,8 +183,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001');
-      assert.ok(result.includes('Dependents (blocks)'));
-      assert.ok(result.includes('WU-002'));
+      expect(result.includes('Dependents (blocks)')).toBeTruthy();
+      expect(result).toContain('WU-002');
     });
 
     it('should support direction=up option', () => {
@@ -208,8 +207,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001', { direction: 'up' });
-      assert.ok(result.includes('WU-002'));
-      assert.ok(!result.includes('Dependents (blocks)'));
+      expect(result).toContain('WU-002');
+      expect(!result.includes('Dependents (blocks)')).toBeTruthy();
     });
 
     it('should support direction=down option', () => {
@@ -232,8 +231,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001', { direction: 'down' });
-      assert.ok(result.includes('WU-003'));
-      assert.ok(!result.includes('Dependencies (blocked by)'));
+      expect(result).toContain('WU-003');
+      expect(!result.includes('Dependencies (blocked by)')).toBeTruthy();
     });
 
     it('should truncate long titles', () => {
@@ -243,8 +242,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderASCII(graph, 'WU-001');
-      assert.ok(!result.includes(longTitle));
-      assert.ok(result.includes('...'));
+      expect(result).not.toContain(longTitle);
+      expect(result).toContain('...');
     });
   });
 
@@ -255,7 +254,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph);
-      assert.ok(result.includes('flowchart TD'));
+      expect(result).toContain('flowchart TD');
     });
 
     it('should support custom direction', () => {
@@ -264,7 +263,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph, { direction: 'LR' });
-      assert.ok(result.includes('flowchart LR'));
+      expect(result).toContain('flowchart LR');
     });
 
     it('should render node definitions with titles', () => {
@@ -273,8 +272,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph);
-      assert.ok(result.includes('WU-001'));
-      assert.ok(result.includes('Test WU'));
+      expect(result).toContain('WU-001');
+      expect(result).toContain('Test WU');
     });
 
     it('should render edges for blocked_by relationships', () => {
@@ -287,7 +286,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph);
-      assert.ok(result.includes('WU-002 --> WU-001'));
+      expect(result).toContain('WU-002 --> WU-001');
     });
 
     it('should render status styling classes', () => {
@@ -296,10 +295,10 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph);
-      assert.ok(result.includes('classDef done'));
-      assert.ok(result.includes('classDef in_progress'));
-      assert.ok(result.includes('classDef ready'));
-      assert.ok(result.includes('classDef blocked'));
+      expect(result).toContain('classDef done');
+      expect(result).toContain('classDef in_progress');
+      expect(result).toContain('classDef ready');
+      expect(result).toContain('classDef blocked');
     });
 
     it('should apply class to nodes based on status', () => {
@@ -308,7 +307,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph);
-      assert.ok(result.includes('class WU-001 done'));
+      expect(result).toContain('class WU-001 done');
     });
 
     it('should filter graph when rootId specified', () => {
@@ -325,10 +324,10 @@ describe('dependency-graph', () => {
       ]);
 
       const result = renderMermaid(graph, { rootId: 'WU-001' });
-      assert.ok(result.includes('WU-001'));
-      assert.ok(result.includes('WU-002'));
+      expect(result).toContain('WU-001');
+      expect(result).toContain('WU-002');
       // WU-003 is not connected to WU-001, should not appear
-      assert.ok(!result.includes('Unrelated'));
+      expect(result).not.toContain('Unrelated');
     });
   });
 
@@ -340,25 +339,25 @@ describe('dependency-graph', () => {
       ]);
 
       const result = validateGraph(graph);
-      assert.equal(result.hasCycle, false);
-      assert.deepEqual(result.orphans, []);
+      expect(result.hasCycle).toBe(false);
+      expect(result.orphans).toEqual([]);
     });
 
     it('should detect orphan references', () => {
       const graph = new Map([['WU-001', { id: 'WU-001', blockedBy: ['WU-999'], blocks: [] }]]);
 
       const result = validateGraph(graph);
-      assert.equal(result.orphans.length, 1);
-      assert.equal(result.orphans[0].wuId, 'WU-001');
-      assert.equal(result.orphans[0].ref, 'WU-999');
+      expect(result.orphans.length).toBe(1);
+      expect(result.orphans[0].wuId).toBe('WU-001');
+      expect(result.orphans[0].ref).toBe('WU-999');
     });
 
     it('should detect orphan in blocks field', () => {
       const graph = new Map([['WU-001', { id: 'WU-001', blockedBy: [], blocks: ['WU-999'] }]]);
 
       const result = validateGraph(graph);
-      assert.equal(result.orphans.length, 1);
-      assert.equal(result.orphans[0].ref, 'WU-999');
+      expect(result.orphans.length).toBe(1);
+      expect(result.orphans[0].ref).toBe('WU-999');
     });
 
     it('should delegate cycle detection to initiative-validator', () => {
@@ -368,7 +367,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = validateGraph(graph);
-      assert.equal(result.hasCycle, true);
+      expect(result.hasCycle).toBe(true);
     });
 
     it('should report multiple orphans', () => {
@@ -377,16 +376,16 @@ describe('dependency-graph', () => {
       ]);
 
       const result = validateGraph(graph);
-      assert.equal(result.orphans.length, 2);
+      expect(result.orphans.length).toBe(2);
     });
 
     it('should handle empty graph', () => {
       const graph = new Map();
 
       const result = validateGraph(graph);
-      assert.equal(result.hasCycle, false);
-      assert.deepEqual(result.orphans, []);
-      assert.deepEqual(result.cycles, []);
+      expect(result.hasCycle).toBe(false);
+      expect(result.orphans).toEqual([]);
+      expect(result.cycles).toEqual([]);
     });
   });
 
@@ -396,7 +395,7 @@ describe('dependency-graph', () => {
       const graph = new Map();
 
       const result = topologicalSort(graph);
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should return single node for single-node graph', () => {
@@ -405,7 +404,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = topologicalSort(graph);
-      assert.deepEqual(result, ['WU-001']);
+      expect(result).toEqual(['WU-001']);
     });
 
     it('should return valid ordering for linear chain', () => {
@@ -421,8 +420,8 @@ describe('dependency-graph', () => {
       const indexOf001 = result.indexOf('WU-001');
       const indexOf002 = result.indexOf('WU-002');
       const indexOf003 = result.indexOf('WU-003');
-      assert.ok(indexOf001 < indexOf002, 'WU-001 should come before WU-002');
-      assert.ok(indexOf002 < indexOf003, 'WU-002 should come before WU-003');
+      expect(indexOf001 < indexOf002).toBe(true);
+      expect(indexOf002 < indexOf003).toBe(true);
     });
 
     it('should return valid ordering for diamond pattern', () => {
@@ -441,11 +440,11 @@ describe('dependency-graph', () => {
 
       const result = topologicalSort(graph);
       // WU-001 must come first, WU-004 must come last
-      assert.equal(result.indexOf('WU-001'), 0, 'WU-001 should be first');
-      assert.equal(result.indexOf('WU-004'), 3, 'WU-004 should be last');
+      expect(result.indexOf('WU-001')).toBe(0, 'WU-001 should be first');
+      expect(result.indexOf('WU-004')).toBe(3, 'WU-004 should be last');
       // WU-002 and WU-003 can be in any order but must be between WU-001 and WU-004
-      assert.ok(result.indexOf('WU-002') > 0 && result.indexOf('WU-002') < 3);
-      assert.ok(result.indexOf('WU-003') > 0 && result.indexOf('WU-003') < 3);
+      expect(result.indexOf('WU-002') > 0 && result.indexOf('WU-002') < 3).toBeTruthy();
+      expect(result.indexOf('WU-003') > 0 && result.indexOf('WU-003') < 3).toBeTruthy();
     });
 
     it('should exclude done WUs from ordering', () => {
@@ -456,7 +455,7 @@ describe('dependency-graph', () => {
 
       const result = topologicalSort(graph);
       // Only WU-002 should be in result (WU-001 is done)
-      assert.deepEqual(result, ['WU-002']);
+      expect(result).toEqual(['WU-002']);
     });
 
     it('should handle cycle gracefully and return partial ordering', () => {
@@ -468,7 +467,7 @@ describe('dependency-graph', () => {
 
       const result = topologicalSort(graph);
       // Should not throw, returns object with warning
-      assert.ok(result.warning !== undefined || Array.isArray(result));
+      expect(result.warning !== undefined || Array.isArray(result)).toBeTruthy();
     });
   });
 
@@ -477,8 +476,8 @@ describe('dependency-graph', () => {
       const graph = new Map();
 
       const result = criticalPath(graph);
-      assert.deepEqual(result.path, []);
-      assert.equal(result.length, 0);
+      expect(result.path).toEqual([]);
+      expect(result.length).toBe(0);
     });
 
     it('should return single node for single-node graph', () => {
@@ -487,8 +486,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = criticalPath(graph);
-      assert.deepEqual(result.path, ['WU-001']);
-      assert.equal(result.length, 1);
+      expect(result.path).toEqual(['WU-001']);
+      expect(result.length).toBe(1);
     });
 
     it('should return correct critical path for linear chain', () => {
@@ -499,8 +498,8 @@ describe('dependency-graph', () => {
       ]);
 
       const result = criticalPath(graph);
-      assert.deepEqual(result.path, ['WU-001', 'WU-002', 'WU-003']);
-      assert.equal(result.length, 3);
+      expect(result.path).toEqual(['WU-001', 'WU-002', 'WU-003']);
+      expect(result.length).toBe(3);
     });
 
     it('should return longest path for diamond pattern', () => {
@@ -516,9 +515,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = criticalPath(graph);
-      assert.equal(result.length, 3);
-      assert.equal(result.path[0], 'WU-001');
-      assert.equal(result.path[2], 'WU-004');
+      expect(result.length).toBe(3);
+      expect(result.path[0]).toBe('WU-001');
+      expect(result.path[2]).toBe('WU-004');
     });
 
     it('should exclude done WUs from critical path', () => {
@@ -530,8 +529,8 @@ describe('dependency-graph', () => {
 
       const result = criticalPath(graph);
       // WU-001 is done, so path starts from WU-002
-      assert.deepEqual(result.path, ['WU-002', 'WU-003']);
-      assert.equal(result.length, 2);
+      expect(result.path).toEqual(['WU-002', 'WU-003']);
+      expect(result.length).toBe(2);
     });
 
     it('should handle cycle gracefully with warning', () => {
@@ -542,7 +541,7 @@ describe('dependency-graph', () => {
 
       const result = criticalPath(graph);
       // Should return result with warning, not throw
-      assert.ok(result.warning !== undefined || result.path !== undefined);
+      expect(result.warning !== undefined || result.path !== undefined).toBeTruthy();
     });
   });
 
@@ -553,7 +552,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = impactScore(graph, 'WU-001');
-      assert.equal(result, 0);
+      expect(result).toBe(0);
     });
 
     it('should return 1 for node with one direct dependent', () => {
@@ -563,7 +562,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = impactScore(graph, 'WU-001');
-      assert.equal(result, 1);
+      expect(result).toBe(1);
     });
 
     it('should count all downstream dependents recursively', () => {
@@ -575,7 +574,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = impactScore(graph, 'WU-001');
-      assert.equal(result, 2); // WU-002 and WU-003
+      expect(result).toBe(2); // WU-002 and WU-003
     });
 
     it('should count each dependent only once in diamond pattern', () => {
@@ -591,7 +590,7 @@ describe('dependency-graph', () => {
 
       const result = impactScore(graph, 'WU-001');
       // WU-002, WU-003, WU-004 - each counted once
-      assert.equal(result, 3);
+      expect(result).toBe(3);
     });
 
     it('should exclude done WUs from impact count', () => {
@@ -603,7 +602,7 @@ describe('dependency-graph', () => {
 
       const result = impactScore(graph, 'WU-001');
       // Only WU-003 (WU-002 is done)
-      assert.equal(result, 1);
+      expect(result).toBe(1);
     });
 
     it('should return 0 for non-existent node', () => {
@@ -612,7 +611,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = impactScore(graph, 'WU-999');
-      assert.equal(result, 0);
+      expect(result).toBe(0);
     });
   });
 
@@ -621,7 +620,7 @@ describe('dependency-graph', () => {
       const graph = new Map();
 
       const result = bottlenecks(graph, 5);
-      assert.deepEqual(result, []);
+      expect(result).toEqual([]);
     });
 
     it('should return single node for single-node graph', () => {
@@ -630,9 +629,9 @@ describe('dependency-graph', () => {
       ]);
 
       const result = bottlenecks(graph, 5);
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-001');
-      assert.equal(result[0].score, 0);
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-001');
+      expect(result[0].score).toBe(0);
     });
 
     it('should rank nodes by impact score descending', () => {
@@ -645,10 +644,10 @@ describe('dependency-graph', () => {
 
       const result = bottlenecks(graph, 5);
       // WU-001 has highest impact (3), then WU-002 (1), then WU-003/WU-004 (0)
-      assert.equal(result[0].id, 'WU-001');
-      assert.equal(result[0].score, 3);
-      assert.equal(result[1].id, 'WU-002');
-      assert.equal(result[1].score, 1);
+      expect(result[0].id).toBe('WU-001');
+      expect(result[0].score).toBe(3);
+      expect(result[1].id).toBe('WU-002');
+      expect(result[1].score).toBe(1);
     });
 
     it('should respect limit parameter', () => {
@@ -660,7 +659,7 @@ describe('dependency-graph', () => {
       ]);
 
       const result = bottlenecks(graph, 2);
-      assert.equal(result.length, 2);
+      expect(result.length).toBe(2);
     });
 
     it('should exclude done WUs from results', () => {
@@ -671,8 +670,8 @@ describe('dependency-graph', () => {
 
       const result = bottlenecks(graph, 5);
       // Only WU-002 should be in results (WU-001 is done)
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'WU-002');
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('WU-002');
     });
   });
 });

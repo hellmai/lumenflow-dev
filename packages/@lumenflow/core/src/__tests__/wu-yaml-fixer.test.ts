@@ -6,269 +6,214 @@
  * @see {@link tools/lib/wu-yaml-fixer.mjs} - Implementation
  */
 
-import assert from 'node:assert';
+import { describe, it, expect } from 'vitest';
 import { detectFixableIssues, applyFixes, FIXABLE_ISSUES } from '../wu-yaml-fixer.js';
 
-// Test 1: Detect ISO timestamp in created field
-function testDetectISOTimestamp() {
-  const doc = {
-    id: 'WU-1359',
-    created: '2025-12-02T00:00:00.000Z',
-  };
+describe('wu-yaml-fixer', () => {
+  describe('date handling', () => {
+    it('detects ISO timestamp in created field', () => {
+      const doc = {
+        id: 'WU-1359',
+        created: '2025-12-02T00:00:00.000Z',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
-  assert.equal(issues[0].field, 'created');
-  assert.equal(issues[0].suggested, '2025-12-02');
-  console.log('✓ testDetectISOTimestamp passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
+      expect(issues[0].field).toBe('created');
+      expect(issues[0].suggested).toBe('2025-12-02');
+    });
 
-// Test 2: Detect Date object in created field
-function testDetectDateObject() {
-  const doc = {
-    id: 'WU-1359',
-    created: new Date('2025-12-02T00:00:00.000Z'),
-  };
+    it('detects Date object in created field', () => {
+      const doc = {
+        id: 'WU-1359',
+        created: new Date('2025-12-02T00:00:00.000Z'),
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
-  assert.equal(issues[0].field, 'created');
-  assert.equal(issues[0].suggested, '2025-12-02');
-  console.log('✓ testDetectDateObject passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
+      expect(issues[0].field).toBe('created');
+      expect(issues[0].suggested).toBe('2025-12-02');
+    });
 
-// Test 3: No issue for valid YYYY-MM-DD date
-function testValidDateFormat() {
-  const doc = {
-    id: 'WU-1359',
-    created: '2025-12-02',
-  };
+    it('no issue for valid YYYY-MM-DD date', () => {
+      const doc = {
+        id: 'WU-1359',
+        created: '2025-12-02',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  // Should not detect any date issues
-  const dateIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
-  assert.equal(dateIssues.length, 0);
-  console.log('✓ testValidDateFormat passed');
-}
+      // Should not detect any date issues
+      const dateIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
+      expect(dateIssues.length).toBe(0);
+    });
+  });
 
-// Test 4: Detect username without email domain
-function testDetectUsernameNotEmail() {
-  const doc = {
-    id: 'WU-1359',
-    assigned_to: 'tom',
-  };
+  describe('email handling', () => {
+    it('detects username without email domain', () => {
+      const doc = {
+        id: 'WU-1359',
+        assigned_to: 'tom',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.USERNAME_NOT_EMAIL);
-  assert.equal(issues[0].field, 'assigned_to');
-  assert.equal(issues[0].suggested, 'tom@exampleapp.co.uk');
-  console.log('✓ testDetectUsernameNotEmail passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.USERNAME_NOT_EMAIL);
+      expect(issues[0].field).toBe('assigned_to');
+      expect(issues[0].suggested).toBe('tom@exampleapp.co.uk');
+    });
 
-// Test 5: No issue for valid email
-function testValidEmail() {
-  const doc = {
-    id: 'WU-1359',
-    assigned_to: 'tom@exampleapp.co.uk',
-  };
+    it('no issue for valid email', () => {
+      const doc = {
+        id: 'WU-1359',
+        assigned_to: 'tom@exampleapp.co.uk',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  // Should not detect any email issues
-  const emailIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.USERNAME_NOT_EMAIL);
-  assert.equal(emailIssues.length, 0);
-  console.log('✓ testValidEmail passed');
-}
+      // Should not detect any email issues
+      const emailIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.USERNAME_NOT_EMAIL);
+      expect(emailIssues.length).toBe(0);
+    });
+  });
 
-// Test 6: Detect docs → documentation type alias
-function testDetectTypeAlias() {
-  const doc = {
-    id: 'WU-1359',
-    type: 'docs',
-  };
+  describe('type alias handling', () => {
+    it('detects docs → documentation type alias', () => {
+      const doc = {
+        id: 'WU-1359',
+        type: 'docs',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.TYPE_ALIAS);
-  assert.equal(issues[0].field, 'type');
-  assert.equal(issues[0].suggested, 'documentation');
-  console.log('✓ testDetectTypeAlias passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.TYPE_ALIAS);
+      expect(issues[0].field).toBe('type');
+      expect(issues[0].suggested).toBe('documentation');
+    });
 
-// Test 7: Detect feat → feature type alias
-function testDetectFeatTypeAlias() {
-  const doc = {
-    id: 'WU-1359',
-    type: 'feat',
-  };
+    it('detects feat → feature type alias', () => {
+      const doc = {
+        id: 'WU-1359',
+        type: 'feat',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.TYPE_ALIAS);
-  assert.equal(issues[0].field, 'type');
-  assert.equal(issues[0].suggested, 'feature');
-  console.log('✓ testDetectFeatTypeAlias passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.TYPE_ALIAS);
+      expect(issues[0].field).toBe('type');
+      expect(issues[0].suggested).toBe('feature');
+    });
+  });
 
-// Test 8: Detect phase string → number
-function testDetectPhaseString() {
-  const doc = {
-    id: 'WU-1359',
-    phase: '3',
-  };
+  describe('phase handling', () => {
+    it('detects phase string → number', () => {
+      const doc = {
+        id: 'WU-1359',
+        phase: '3',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.PHASE_STRING);
-  assert.equal(issues[0].field, 'phase');
-  assert.equal(issues[0].suggested, 3);
-  console.log('✓ testDetectPhaseString passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.PHASE_STRING);
+      expect(issues[0].field).toBe('phase');
+      expect(issues[0].suggested).toBe(3);
+    });
 
-// Test 9: No issue for valid phase number
-function testValidPhaseNumber() {
-  const doc = {
-    id: 'WU-1359',
-    phase: 3,
-  };
+    it('no issue for valid phase number', () => {
+      const doc = {
+        id: 'WU-1359',
+        phase: 3,
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  // Should not detect any phase issues
-  const phaseIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.PHASE_STRING);
-  assert.equal(phaseIssues.length, 0);
-  console.log('✓ testValidPhaseNumber passed');
-}
+      // Should not detect any phase issues
+      const phaseIssues = issues.filter((i) => i.type === FIXABLE_ISSUES.PHASE_STRING);
+      expect(phaseIssues.length).toBe(0);
+    });
+  });
 
-// Test 10: Detect lowercase priority
-function testDetectLowercasePriority() {
-  const doc = {
-    id: 'WU-1359',
-    priority: 'p1',
-  };
+  describe('priority handling', () => {
+    it('detects lowercase priority', () => {
+      const doc = {
+        id: 'WU-1359',
+        priority: 'p1',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].type, FIXABLE_ISSUES.PRIORITY_LOWERCASE);
-  assert.equal(issues[0].field, 'priority');
-  assert.equal(issues[0].suggested, 'P1');
-  console.log('✓ testDetectLowercasePriority passed');
-}
+      expect(issues.length).toBe(1);
+      expect(issues[0].type).toBe(FIXABLE_ISSUES.PRIORITY_LOWERCASE);
+      expect(issues[0].field).toBe('priority');
+      expect(issues[0].suggested).toBe('P1');
+    });
+  });
 
-// Test 11: applyFixes modifies doc in place
-function testApplyFixes() {
-  const doc = {
-    id: 'WU-1359',
-    created: '2025-12-02T00:00:00.000Z',
-    assigned_to: 'tom',
-    type: 'docs',
-    phase: '3',
-    priority: 'p1',
-  };
+  describe('applyFixes', () => {
+    it('modifies doc in place', () => {
+      const doc = {
+        id: 'WU-1359',
+        created: '2025-12-02T00:00:00.000Z',
+        assigned_to: 'tom',
+        type: 'docs',
+        phase: '3',
+        priority: 'p1',
+      };
 
-  const issues = detectFixableIssues(doc);
-  const fixed = applyFixes(doc, issues);
+      const issues = detectFixableIssues(doc);
+      const fixed = applyFixes(doc, issues);
 
-  assert.equal(fixed, 5);
-  assert.equal(doc.created, '2025-12-02');
-  assert.equal(doc.assigned_to, 'tom@exampleapp.co.uk');
-  assert.equal(doc.type, 'documentation');
-  assert.equal(doc.phase, 3);
-  assert.equal(doc.priority, 'P1');
-  console.log('✓ testApplyFixes passed');
-}
+      expect(fixed).toBe(5);
+      expect(doc.created).toBe('2025-12-02');
+      expect(doc.assigned_to).toBe('tom@exampleapp.co.uk');
+      expect(doc.type).toBe('documentation');
+      expect(doc.phase).toBe(3);
+      expect(doc.priority).toBe('P1');
+    });
+  });
 
-// Test 12: No issues detected for clean doc
-function testCleanDoc() {
-  const doc = {
-    id: 'WU-1359',
-    title: 'Test WU',
-    lane: 'Operations: Tooling',
-    type: 'feature',
-    status: 'ready',
-    priority: 'P1',
-    created: '2025-12-02',
-    description: 'This is a test description that is long enough to pass validation requirements.',
-    acceptance: ['pnpm gates passes'],
-  };
+  describe('edge cases', () => {
+    it('no issues detected for clean doc', () => {
+      const doc = {
+        id: 'WU-1359',
+        title: 'Test WU',
+        lane: 'Operations: Tooling',
+        type: 'feature',
+        status: 'ready',
+        priority: 'P1',
+        created: '2025-12-02',
+        description: 'This is a test description that is long enough to pass validation requirements.',
+        acceptance: ['pnpm gates passes'],
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 0);
-  console.log('✓ testCleanDoc passed');
-}
+      expect(issues.length).toBe(0);
+    });
 
-// Test 13: Multiple issues detected at once
-function testMultipleIssues() {
-  const doc = {
-    id: 'WU-1359',
-    created: '2025-12-02T00:00:00.000Z',
-    assigned_to: 'tom',
-    type: 'docs',
-  };
+    it('detects multiple issues at once', () => {
+      const doc = {
+        id: 'WU-1359',
+        created: '2025-12-02T00:00:00.000Z',
+        assigned_to: 'tom',
+        type: 'docs',
+      };
 
-  const issues = detectFixableIssues(doc);
+      const issues = detectFixableIssues(doc);
 
-  assert.equal(issues.length, 3);
-  const types = issues.map((i) => i.type);
-  assert.ok(types.includes(FIXABLE_ISSUES.DATE_ISO_TIMESTAMP));
-  assert.ok(types.includes(FIXABLE_ISSUES.USERNAME_NOT_EMAIL));
-  assert.ok(types.includes(FIXABLE_ISSUES.TYPE_ALIAS));
-  console.log('✓ testMultipleIssues passed');
-}
-
-// Run all tests
-function runTests() {
-  console.log('Running wu-yaml-fixer tests...\n');
-
-  try {
-    // Date handling tests
-    testDetectISOTimestamp();
-    testDetectDateObject();
-    testValidDateFormat();
-
-    // Email handling tests
-    testDetectUsernameNotEmail();
-    testValidEmail();
-
-    // Type alias tests
-    testDetectTypeAlias();
-    testDetectFeatTypeAlias();
-
-    // Phase handling tests
-    testDetectPhaseString();
-    testValidPhaseNumber();
-
-    // Priority handling tests
-    testDetectLowercasePriority();
-
-    // Fix application tests
-    testApplyFixes();
-
-    // Clean doc test
-    testCleanDoc();
-
-    // Multiple issues test
-    testMultipleIssues();
-
-    console.log('\n✅ All 13 tests passed!');
-    process.exit(0);
-  } catch (error) {
-    console.error('\n❌ Test failed:', error.message);
-    console.error(error.stack);
-    process.exit(1);
-  }
-}
-
-runTests();
+      expect(issues.length).toBe(3);
+      const types = issues.map((i) => i.type);
+      expect(types).toContain(FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
+      expect(types).toContain(FIXABLE_ISSUES.USERNAME_NOT_EMAIL);
+      expect(types).toContain(FIXABLE_ISSUES.TYPE_ALIAS);
+    });
+  });
+});

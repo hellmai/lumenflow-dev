@@ -85,6 +85,7 @@ function loadAgentConfiguredSkills(agentName) {
   }
 }
 
+
 /**
  * Detect mandatory agents based on code paths.
  *
@@ -111,6 +112,7 @@ function detectMandatoryAgents(codePaths) {
   return Array.from(triggeredAgents);
 }
 
+
 /**
  * Format acceptance criteria as markdown list
  *
@@ -123,6 +125,7 @@ function formatAcceptance(acceptance) {
   }
   return acceptance.map((item) => `- [ ] ${item}`).join('\n');
 }
+
 
 /**
  * Format spec_refs as markdown links
@@ -137,6 +140,7 @@ function formatSpecRefs(specRefs) {
   return specRefs.map((ref) => `- ${ref}`).join('\n');
 }
 
+
 /**
  * Format risks as markdown list
  *
@@ -150,6 +154,7 @@ function formatRisks(risks) {
   return risks.map((risk) => `- ${risk}`).join('\n');
 }
 
+
 /**
  * Format manual tests as markdown checklist
  *
@@ -162,6 +167,7 @@ function formatManualTests(manualTests) {
   }
   return manualTests.map((test) => `- [ ] ${test}`).join('\n');
 }
+
 
 /**
  * Generate implementation context section (WU-1833)
@@ -205,6 +211,7 @@ function generateImplementationContext(doc) {
   return sections.join('\n\n---\n\n');
 }
 
+
 /**
  * Check if a code path matches an invariant based on type
  *
@@ -241,6 +248,7 @@ function codePathMatchesInvariant(invariant, codePaths) {
       return false;
   }
 }
+
 
 /**
  * Format a single invariant for output
@@ -288,6 +296,7 @@ function formatInvariantForOutput(inv) {
   lines.push('');
   return lines;
 }
+
 
 /**
  * WU-2252: Generate invariants/prior-art section for code_paths
@@ -340,6 +349,7 @@ function generateInvariantsPriorArtSection(codePaths) {
   return lines.join('\n');
 }
 
+
 /**
  * Generate the TDD directive section (WU-1585)
  *
@@ -368,6 +378,7 @@ function generateTDDDirective() {
 - Ensures every feature has verification
 - Failing tests prove the test actually tests something`;
 }
+
 
 /**
  * Generate the context loading preamble
@@ -405,6 +416,7 @@ Before starting work, check for prior context from previous sessions:
 
 If prior context exists, resume from the last checkpoint. Otherwise, proceed with the task below.`;
 }
+
 
 /**
  * Generate the constraints block (appended at end per Lost in the Middle research)
@@ -461,6 +473,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
 </constraints>`;
 }
 
+
 function generateCodexConstraints(id) {
   return `## Constraints (Critical)
 
@@ -471,6 +484,7 @@ function generateCodexConstraints(id) {
 5. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
 6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\``;
 }
+
 
 /**
  * Generate mandatory agent advisory section
@@ -496,6 +510,7 @@ Run: pnpm orchestrate:suggest --wu ${id}
 `;
 }
 
+
 /**
  * Generate effort scaling rules section (WU-1986)
  *
@@ -518,6 +533,7 @@ Use this heuristic to decide complexity:
 
 **Rule**: If you need >30 tool calls for a subtask, consider spawning a sub-agent with a focused scope.`;
 }
+
 
 /**
  * Generate parallel tool call guidance (WU-1986)
@@ -543,6 +559,7 @@ Bad examples:
 Parallelism reduces latency by 50-90% for complex tasks.`;
 }
 
+
 /**
  * Generate iterative search heuristics (WU-1986)
  *
@@ -563,6 +580,7 @@ When exploring the codebase:
 Avoid: Jumping directly to specific file edits without understanding context.`;
 }
 
+
 /**
  * Generate token budget awareness section (WU-1986)
  *
@@ -580,6 +598,7 @@ Context limit is ~200K tokens. Monitor your usage:
 
 If approaching limits, summarize progress and spawn continuation agent.`;
 }
+
 
 /**
  * Generate structured completion format (WU-1986)
@@ -614,6 +633,7 @@ When finishing, provide structured output:
 
 This format enables orchestrator to track progress across waves.`;
 }
+
 
 /**
  * Generate agent coordination section (WU-1987)
@@ -664,6 +684,7 @@ pnpm mem:inbox --lane "Experience: Web"    # Lane-specific signals
 \`\`\``;
 }
 
+
 /**
  * Generate quick fix commands section (WU-1987)
  *
@@ -684,6 +705,7 @@ pnpm typecheck   # Check TypeScript types
 
 **Use before gates** to catch simple issues early. These are faster than full \`pnpm gates\`.`;
 }
+
 
 /**
  * Generate Lane Selection section (WU-2107)
@@ -710,6 +732,7 @@ pnpm wu:infer-lane --paths "tools/**" --desc "CLI improvements"
 
 **Why lanes matter**: WIP=1 per lane means correct lane selection enables parallel work across lanes.`;
 }
+
 
 /**
  * Generate Worktree Path Guidance section (WU-2362)
@@ -766,6 +789,7 @@ touch "$WORKTREE_ROOT/.beacon/agent-runs/beacon-guardian.stamp"
 - Parallel WUs in other lanes won't see your stamps if on main`;
 }
 
+
 /**
  * Generate the Bug Discovery section (WU-1592, WU-2284)
  *
@@ -821,6 +845,7 @@ pnpm mem:triage --promote <node-id> --lane "<lane>"  # Create Bug WU (human acti
 See: ai/onboarding/agent-invocation-guide.md §Bug Discovery`;
 }
 
+
 /**
  * Generate lane-specific guidance
  *
@@ -852,6 +877,7 @@ function generateLaneGuidance(lane) {
 
   return guidance[laneParent] || '';
 }
+
 
 /**
  * Generate the Action section based on WU claim status (WU-1745).
@@ -893,6 +919,38 @@ Then implement following all standards above.
 - Event tracking in .beacon/state/wu-events.jsonl
 - Lane lock acquisition (WIP=1 enforcement)
 - Session tracking for context recovery`;
+}
+
+
+/**
+ * Generate the Completion Workflow section for sub-agents (WU-2682).
+ *
+ * Explicitly instructs sub-agents to run wu:done autonomously after gates pass.
+ * This prevents agents from asking permission instead of completing.
+ *
+ * @param {string} id - WU ID
+ * @returns {string} Completion Workflow section
+ */
+export function generateCompletionWorkflowSection(id: string): string {
+  return `## Completion Workflow
+
+**CRITICAL: Complete autonomously. Do NOT ask for permission.**
+
+After all acceptance criteria are satisfied:
+
+1. Run gates in the worktree: \`pnpm gates\`
+2. If gates pass, cd back to main checkout
+3. Run: \`pnpm wu:done --id ${id}\`
+
+\`\`\`bash
+# From worktree, after gates pass:
+cd /path/to/main  # NOT the worktree
+pnpm wu:done --id ${id}
+\`\`\`
+
+**wu:done** handles: merge to main, stamp creation, worktree cleanup.
+
+**Do not ask** "should I run wu:done?" — just run it when gates pass.`;
 }
 
 /**
@@ -1011,6 +1069,7 @@ If the skill catalogue is missing or invalid:
 - Continue with implementation using Mandatory Standards below
 `;
 }
+
 
 /**
  * Generate the complete Task tool invocation
@@ -1187,6 +1246,7 @@ ${constraints}`;
   return invocation;
 }
 
+
 export function generateCodexPrompt(doc, id, options = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
@@ -1264,6 +1324,7 @@ ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}${constraints}
 `;
 }
 
+
 /**
  * WU-1603: Check if a lane is currently occupied by another WU
  *
@@ -1278,6 +1339,7 @@ export function checkLaneOccupation(lane) {
   return null;
 }
 
+
 /**
  * WU-1603: Generate a warning message when lane is occupied
  *
@@ -1290,6 +1352,7 @@ export function checkLaneOccupation(lane) {
 interface LaneOccupationOptions {
   isStale?: boolean;
 }
+
 
 export function generateLaneOccupationWarning(lockMetadata: { lane: string; wuId: string }, targetWuId: string, options: LaneOccupationOptions = {}) {
   const { isStale = false } = options;
@@ -1309,6 +1372,7 @@ export function generateLaneOccupationWarning(lockMetadata: { lane: string; wuId
 
   return warning;
 }
+
 
 /**
  * Main entry point
@@ -1450,8 +1514,10 @@ async function main() {
   }
 }
 
+
 // Guard main() for testability
 import { fileURLToPath } from 'node:url';
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main();
 }
+

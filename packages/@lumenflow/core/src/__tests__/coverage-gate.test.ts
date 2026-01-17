@@ -1,15 +1,10 @@
-#!/usr/bin/env node
 /**
- * Tests for coverage-gate.mjs
+ * Tests for coverage-gate
  *
  * WU-1433: TDD for coverage gate with mode flag
- * Uses Node's built-in test runner (node:test)
- *
- * Run: node --test tools/lib/__tests__/coverage-gate.test.mjs
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -17,7 +12,7 @@ import { tmpdir } from 'node:os';
 // Test fixtures use OS temp directory
 const TEST_DIR = join(tmpdir(), 'wu-1433-coverage-test');
 
-// Import the functions to test (will fail until implemented)
+// Import the functions to test
 import {
   parseCoverageJson,
   isHexCoreFile,
@@ -30,64 +25,51 @@ import {
 
 describe('coverage-gate constants', () => {
   it('defines COVERAGE_GATE_MODES with warn and block', () => {
-    assert.strictEqual(COVERAGE_GATE_MODES.WARN, 'warn');
-    assert.strictEqual(COVERAGE_GATE_MODES.BLOCK, 'block');
+    expect(COVERAGE_GATE_MODES.WARN).toBe('warn');
+    expect(COVERAGE_GATE_MODES.BLOCK).toBe('block');
   });
 
   it('defines HEX_CORE_PATTERNS for application layer', () => {
-    assert.ok(Array.isArray(HEX_CORE_PATTERNS));
-    assert.ok(HEX_CORE_PATTERNS.length > 0);
+    expect(Array.isArray(HEX_CORE_PATTERNS)).toBe(true);
+    expect(HEX_CORE_PATTERNS.length > 0).toBeTruthy();
     // Should include application package pattern
-    assert.ok(
-      HEX_CORE_PATTERNS.some((p) => p.includes('application')),
-      'Should include application package pattern'
-    );
+    expect(HEX_CORE_PATTERNS.some((p) => p.includes('application'))).toBe(true);
   });
 
   it('defines COVERAGE_THRESHOLD as 90', () => {
-    assert.strictEqual(COVERAGE_THRESHOLD, 90);
+    expect(COVERAGE_THRESHOLD).toBe(90);
   });
 });
 
 describe('isHexCoreFile', () => {
   it('returns true for application package files', () => {
-    assert.strictEqual(
-      isHexCoreFile('packages/@exampleapp/application/src/usecases/foo.ts'),
-      true
-    );
-    assert.strictEqual(
-      isHexCoreFile('packages/@exampleapp/application/src/domain/entity.ts'),
-      true
-    );
+    expect(isHexCoreFile('packages/@exampleapp/application/src/usecases/foo.ts')).toBe(true);
+    expect(isHexCoreFile('packages/@exampleapp/application/src/domain/entity.ts')).toBe(true);
   });
 
   // WU-2448: Coverage reporters emit absolute paths, so isHexCoreFile must handle them
   it('returns true for absolute application package paths', () => {
-    assert.strictEqual(
-      isHexCoreFile(join(process.cwd(), 'packages/@exampleapp/application/src/usecases/foo.ts')),
-      true
-    );
+    expect(
+      isHexCoreFile(join(process.cwd(), 'packages/@exampleapp/application/src/usecases/foo.ts'))
+    ).toBe(true);
   });
 
   it('returns false for infrastructure package files', () => {
-    assert.strictEqual(
-      isHexCoreFile('packages/@exampleapp/infrastructure/src/adapters/db.ts'),
-      false
-    );
+    expect(isHexCoreFile('packages/@exampleapp/infrastructure/src/adapters/db.ts')).toBe(false);
   });
 
   it('returns false for web app files', () => {
-    assert.strictEqual(isHexCoreFile('apps/web/src/app/page.tsx'), false);
+    expect(isHexCoreFile('apps/web/src/app/page.tsx')).toBe(false);
   });
 
   it('returns false for tooling files', () => {
-    assert.strictEqual(isHexCoreFile('tools/gates.js'), false);
-    assert.strictEqual(isHexCoreFile('tools/lib/coverage-gate.js'), false);
+    expect(isHexCoreFile('tools/gates.js')).toBe(false);
+    expect(isHexCoreFile('tools/lib/coverage-gate.js')).toBe(false);
   });
 
   it('returns false for null/undefined', () => {
-    assert.strictEqual(isHexCoreFile(null), false);
-    assert.strictEqual(isHexCoreFile(undefined), false);
+    expect(isHexCoreFile(null)).toBe(false);
+    expect(isHexCoreFile(undefined)).toBe(false);
   });
 });
 
@@ -121,16 +103,16 @@ describe('parseCoverageJson', () => {
 
     const result = parseCoverageJson(coveragePath);
 
-    assert.ok(result.total);
-    assert.strictEqual(result.total.lines.pct, 85);
-    assert.ok(result.files);
-    assert.ok(result.files['packages/@exampleapp/application/src/usecases/foo.ts']);
+    expect(result.total).toBeTruthy();
+    expect(result.total.lines.pct).toBe(85);
+    expect(result.files).toBeTruthy();
+    expect(result.files['packages/@exampleapp/application/src/usecases/foo.ts']).toBeTruthy();
   });
 
   it('returns null for missing file', () => {
     const nonexistentPath = join(TEST_DIR, 'nonexistent-dir', 'coverage.json');
     const result = parseCoverageJson(nonexistentPath);
-    assert.strictEqual(result, null);
+    expect(result).toBe(null);
   });
 
   it('returns null for invalid JSON', () => {
@@ -138,7 +120,7 @@ describe('parseCoverageJson', () => {
     writeFileSync(coveragePath, 'not valid json');
 
     const result = parseCoverageJson(coveragePath);
-    assert.strictEqual(result, null);
+    expect(result).toBe(null);
   });
 });
 
@@ -158,8 +140,8 @@ describe('checkCoverageThresholds', () => {
 
     const result = checkCoverageThresholds(coverageData);
 
-    assert.strictEqual(result.pass, true);
-    assert.strictEqual(result.failures.length, 0);
+    expect(result.pass).toBe(true);
+    expect(result.failures.length).toBe(0);
   });
 
   it('returns failing result when hex core file below threshold', () => {
@@ -177,11 +159,11 @@ describe('checkCoverageThresholds', () => {
 
     const result = checkCoverageThresholds(coverageData);
 
-    assert.strictEqual(result.pass, false);
-    assert.ok(result.failures.length > 0);
-    assert.ok(result.failures[0].file.includes('foo.ts'));
-    assert.strictEqual(result.failures[0].actual, 75);
-    assert.strictEqual(result.failures[0].threshold, 90);
+    expect(result.pass).toBe(false);
+    expect(result.failures.length > 0).toBeTruthy();
+    expect(result.failures[0].file.includes('foo.ts')).toBe(true);
+    expect(result.failures[0].actual).toBe(75);
+    expect(result.failures[0].threshold).toBe(90);
   });
 
   it('ignores non-hex-core files even with low coverage', () => {
@@ -205,22 +187,22 @@ describe('checkCoverageThresholds', () => {
 
     const result = checkCoverageThresholds(coverageData);
 
-    assert.strictEqual(result.pass, true);
-    assert.strictEqual(result.failures.length, 0);
+    expect(result.pass).toBe(true);
+    expect(result.failures.length).toBe(0);
   });
 
   it('handles empty coverage data gracefully', () => {
     const result = checkCoverageThresholds({ total: { lines: { pct: 0 } }, files: {} });
 
-    assert.strictEqual(result.pass, true);
-    assert.strictEqual(result.failures.length, 0);
+    expect(result.pass).toBe(true);
+    expect(result.failures.length).toBe(0);
   });
 
   it('handles null coverage data gracefully', () => {
     const result = checkCoverageThresholds(null);
 
-    assert.strictEqual(result.pass, true);
-    assert.strictEqual(result.failures.length, 0);
+    expect(result.pass).toBe(true);
+    expect(result.failures.length).toBe(0);
   });
 });
 
@@ -237,8 +219,8 @@ describe('formatCoverageDelta', () => {
 
     const output = formatCoverageDelta(coverageData);
 
-    assert.ok(typeof output === 'string');
-    assert.ok(output.includes('85.5'), 'Should include total coverage');
+    expect(typeof output === 'string').toBeTruthy();
+    expect(output.includes('85.5')).toBe(true);
   });
 
   it('highlights files below threshold', () => {
@@ -253,20 +235,20 @@ describe('formatCoverageDelta', () => {
 
     const output = formatCoverageDelta(coverageData);
 
-    assert.ok(output.includes('foo.ts'), 'Should include file name');
-    assert.ok(output.includes('75'), 'Should include actual coverage');
+    expect(output.includes('foo.ts')).toBe(true);
+    expect(output.includes('75')).toBe(true);
   });
 
   it('returns empty string for null data', () => {
     const output = formatCoverageDelta(null);
-    assert.strictEqual(output, '');
+    expect(output).toBe('');
   });
 });
 
 describe('coverage gate integration', () => {
   it('exports runCoverageGate function', async () => {
     const { runCoverageGate } = await import('../coverage-gate.js');
-    assert.ok(typeof runCoverageGate === 'function');
+    expect(typeof runCoverageGate === 'function').toBeTruthy();
   });
 
   it('runCoverageGate accepts mode parameter', async () => {
@@ -280,10 +262,10 @@ describe('coverage gate integration', () => {
       coveragePath: nonexistentCoveragePath,
     });
 
-    assert.ok(typeof result === 'object');
-    assert.ok('ok' in result);
-    assert.ok('mode' in result);
-    assert.strictEqual(result.mode, 'warn');
+    expect(typeof result === 'object').toBeTruthy();
+    expect('ok' in result).toBeTruthy();
+    expect('mode' in result).toBeTruthy();
+    expect(result.mode).toBe('warn');
   });
 
   // WU-2448: Block mode must return ok:false when coverage is below threshold (not silent pass)
@@ -318,7 +300,7 @@ describe('coverage gate integration', () => {
         logger: { log: () => {} },
       });
 
-      assert.strictEqual(result.ok, false);
+      expect(result.ok).toBe(false);
     } finally {
       rmSync(TEST_DIR, { recursive: true, force: true });
     }
