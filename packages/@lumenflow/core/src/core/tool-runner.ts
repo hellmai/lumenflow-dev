@@ -41,6 +41,52 @@ import {
 import { getWUContext, assertWorktreeRequired } from './worktree-guard.js';
 import { getActiveScope, isPathInScope } from './scope-checker.js';
 
+// Type definitions
+interface ToolMetadata {
+  name: string;
+  description: string;
+  domain?: string;
+  permission: string;
+  version?: string;
+}
+
+interface ToolDefinition {
+  metadata: ToolMetadata;
+  inputSchema?: unknown;
+  outputSchema?: unknown;
+  execute: (input: unknown, context?: unknown) => Promise<unknown>;
+}
+
+interface ToolConfigOptions {
+  requiresWorktree?: boolean;
+  requiresScope?: boolean;
+  enableAuditLog?: boolean;
+  timeoutMs?: number;
+}
+
+interface ToolConfig {
+  requiresWorktree: boolean;
+  requiresScope: boolean;
+  enableAuditLog: boolean;
+  timeoutMs: number;
+}
+
+interface RunToolOptions {
+  dependencies?: Record<string, unknown>;
+  config?: ToolConfigOptions;
+  context?: unknown;
+}
+
+interface ToolRunnerOptions {
+  enableAuditLog?: boolean;
+  timeoutMs?: number;
+  dependencies?: Record<string, unknown>;
+}
+
+interface ListToolsOptions {
+  domain?: string;
+}
+
 /**
  * Default configuration values for tool runner
  */
@@ -65,7 +111,7 @@ export const RUNNER_DEFAULTS = {
  * @param {object} options - Configuration overrides
  * @returns {object} Merged configuration
  */
-export function createToolConfig(tool, options = {}) {
+export function createToolConfig(tool: ToolDefinition, options: ToolConfigOptions = {}): ToolConfig {
   const isWriteOperation = tool.metadata.permission === PERMISSION_LEVELS.WRITE ||
                            tool.metadata.permission === PERMISSION_LEVELS.ADMIN;
 
@@ -83,7 +129,7 @@ export function createToolConfig(tool, options = {}) {
  * @param {object} input - Tool input
  * @returns {string|null} File path or null
  */
-function extractFilePath(input) {
+function extractFilePath(input: Record<string, unknown>): string | null {
   // Common field names for file paths
   const pathFields = ['path', 'filePath', 'file', 'targetPath'];
 
@@ -101,7 +147,7 @@ function extractFilePath(input) {
  *
  * @returns {object} Default dependency implementations
  */
-function createDefaultDependencies() {
+function createDefaultDependencies(): Record<string, unknown> {
   return {
     getWUContext,
     getActiveScope,
@@ -116,8 +162,8 @@ function createDefaultDependencies() {
  *
  * @returns {Function} Audit logging function
  */
-function createAuditLogger() {
-  return (entry) => {
+function createAuditLogger(): (entry: unknown) => void {
+  return (entry: unknown) => {
     // Write to NDJSON telemetry file
     // Implementation deferred - currently no-op for testing
     // Will integrate with .beacon/telemetry/tools.ndjson in future WU
@@ -132,8 +178,8 @@ function createAuditLogger() {
  * @param {object} zodError - Zod validation error
  * @returns {string[]} Array of suggestions
  */
-function generateValidationHints(tool, zodError) {
-  const hints = [];
+function generateValidationHints(tool: ToolDefinition, zodError: { issues: Array<{ path: string[]; message: string }> }): string[] {
+  const hints: string[] = [];
 
   // Add field-specific hints
   for (const issue of zodError.issues) {
@@ -158,7 +204,7 @@ function generateValidationHints(tool, zodError) {
  * @param {object} options.context - Execution context (sessionId, etc.)
  * @returns {Promise<object>} Tool output (success/failure with data/error)
  */
-export async function runTool(tool, input, options = {}) {
+export async function runTool(tool: ToolDefinition, input: unknown, options: RunToolOptions = {}): Promise<unknown> {
   const startTime = Date.now();
   const startedAt = new Date().toISOString();
 
@@ -172,9 +218,9 @@ export async function runTool(tool, input, options = {}) {
   const config = createToolConfig(tool, options.config);
 
   // Get WU context for audit logging
-  let wuContext = null;
+  let wuContext: { wuId: string; lane: string; worktreePath: string } | null = null;
   try {
-    wuContext = await deps.getWUContext();
+    wuContext = await (deps.getWUContext as () => Promise<{ wuId: string; lane: string; worktreePath: string }>)();
   } catch {
     // Context retrieval failure is non-fatal
     wuContext = null;
@@ -187,7 +233,7 @@ export async function runTool(tool, input, options = {}) {
   };
 
   // Helper to create audit log entry
-  const createAuditEntry = (status, output, error) => ({
+  const createAuditEntry = (status: string, output: unknown, error: unknown) => ({
     tool: tool.metadata.name,
     status,
     startedAt,
@@ -205,31 +251,36 @@ export async function runTool(tool, input, options = {}) {
 
   try {
     // Step 1: Validate input schema
-    const validation = validateToolInput(input, tool.inputSchema);
+    const validation = validateToolInput(input, tool.inputSchema as import('zod').ZodType);
 
     if (!validation.success) {
+      const validationError = validation as { success: false; error: { issues: Array<{ path: string[]; message: string }> } };
       const errorOutput = createErrorOutput({
         code: TOOL_ERROR_CODES.SCHEMA_VALIDATION_FAILED,
         message: `Input validation failed for ${tool.metadata.name}`,
-        details: { issues: validation.error.issues },
-        tryNext: generateValidationHints(tool, validation.error),
+        details: { issues: validationError.error.issues },
+        tryNext: generateValidationHints(tool, validationError.error),
       }, metadata);
 
       if (config.enableAuditLog) {
-        deps.logAudit(createAuditEntry(TOOL_STATUS.FAILED, null, errorOutput.error));
+        (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.FAILED, null, (errorOutput as Record<string, unknown>).error));
       }
 
       return errorOutput;
     }
 
+    // Narrow validation to success case
+    const validatedInput = validation as { success: true; data: Record<string, unknown> };
+
     // Step 2: Check worktree requirement
     if (config.requiresWorktree) {
       try {
-        await deps.assertWorktreeRequired({ operation: tool.metadata.name });
+        await (deps.assertWorktreeRequired as (opts: { operation: string }) => Promise<void>)({ operation: tool.metadata.name });
       } catch (err) {
+        const errMessage = err instanceof Error ? err.message : String(err);
         const errorOutput = createErrorOutput({
           code: TOOL_ERROR_CODES.PERMISSION_DENIED,
-          message: err.message,
+          message: errMessage,
           tryNext: [
             'Claim a WU first: pnpm wu:claim --id WU-XXX --lane "Your Lane"',
             'Then change to the worktree directory',
@@ -237,7 +288,7 @@ export async function runTool(tool, input, options = {}) {
         }, metadata);
 
         if (config.enableAuditLog) {
-          deps.logAudit(createAuditEntry(TOOL_STATUS.FAILED, null, errorOutput.error));
+          (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.FAILED, null, (errorOutput as Record<string, unknown>).error));
         }
 
         return errorOutput;
@@ -246,13 +297,13 @@ export async function runTool(tool, input, options = {}) {
 
     // Step 3: Check scope for write operations with file paths
     if (config.requiresScope) {
-      const filePath = extractFilePath(validation.data);
+      const filePath = extractFilePath(validatedInput.data);
 
       if (filePath) {
-        const scope = await deps.getActiveScope();
+        const scope = await (deps.getActiveScope as () => Promise<{ wuId: string; code_paths: string[] } | null>)();
 
         // If we have a scope, validate the path
-        if (scope && !deps.isPathInScope(filePath, scope)) {
+        if (scope && !(deps.isPathInScope as (path: string, scope: unknown) => boolean)(filePath, scope)) {
           const errorOutput = createErrorOutput({
             code: TOOL_ERROR_CODES.PERMISSION_DENIED,
             message: `Path '${filePath}' is outside WU scope for ${scope.wuId}`,
@@ -267,7 +318,7 @@ export async function runTool(tool, input, options = {}) {
           }, metadata);
 
           if (config.enableAuditLog) {
-            deps.logAudit(createAuditEntry(TOOL_STATUS.FAILED, null, errorOutput.error));
+            (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.FAILED, null, (errorOutput as Record<string, unknown>).error));
           }
 
           return errorOutput;
@@ -276,21 +327,22 @@ export async function runTool(tool, input, options = {}) {
     }
 
     // Step 4: Execute the tool
-    const result = await tool.execute(validation.data, options.context);
+    const result = await tool.execute(validatedInput.data, options.context) as Record<string, unknown>;
 
     // Step 5: Validate output if schema defined
     if (tool.outputSchema && result.success && result.data) {
-      const outputValidation = validateToolInput(result.data, tool.outputSchema);
+      const outputValidation = validateToolInput(result.data, tool.outputSchema as import('zod').ZodType);
 
       if (!outputValidation.success) {
+        const outputValidationError = outputValidation as { success: false; error: { issues: Array<{ path: string[]; message: string }> } };
         const errorOutput = createErrorOutput({
           code: TOOL_ERROR_CODES.INVALID_OUTPUT,
           message: `Tool ${tool.metadata.name} produced invalid output`,
-          details: { issues: outputValidation.error.issues },
+          details: { issues: outputValidationError.error.issues },
         }, { ...metadata, durationMs: Date.now() - startTime });
 
         if (config.enableAuditLog) {
-          deps.logAudit(createAuditEntry(TOOL_STATUS.FAILED, null, errorOutput.error));
+          (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.FAILED, null, (errorOutput as Record<string, unknown>).error));
         }
 
         return errorOutput;
@@ -298,10 +350,11 @@ export async function runTool(tool, input, options = {}) {
     }
 
     // Add metadata to result
+    const resultMetadata = (result.metadata as Record<string, unknown>) || {};
     const finalResult = {
       ...result,
       metadata: {
-        ...result.metadata,
+        ...resultMetadata,
         ...metadata,
         durationMs: Date.now() - startTime,
       },
@@ -309,7 +362,7 @@ export async function runTool(tool, input, options = {}) {
 
     // Log successful execution
     if (config.enableAuditLog) {
-      deps.logAudit(createAuditEntry(TOOL_STATUS.SUCCESS, finalResult, null));
+      (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.SUCCESS, finalResult, null));
     }
 
     return finalResult;
@@ -330,7 +383,7 @@ export async function runTool(tool, input, options = {}) {
     }, { ...metadata, durationMs: Date.now() - startTime });
 
     if (config.enableAuditLog) {
-      deps.logAudit(createAuditEntry(TOOL_STATUS.FAILED, null, errorOutput.error));
+      (deps.logAudit as (entry: unknown) => void)(createAuditEntry(TOOL_STATUS.FAILED, null, (errorOutput as Record<string, unknown>).error));
     }
 
     return errorOutput;
@@ -343,14 +396,9 @@ export async function runTool(tool, input, options = {}) {
  * Provides a registry for tool definitions and a unified execution interface.
  */
 export class ToolRunner {
-  /** @type {Map<string, object>} */
-  #tools = new Map();
-
-  /** @type {object} */
-  #config;
-
-  /** @type {object} */
-  #dependencies;
+  #tools: Map<string, ToolDefinition> = new Map();
+  #config: { enableAuditLog: boolean; timeoutMs: number };
+  #dependencies: Record<string, unknown>;
 
   /**
    * Create a new ToolRunner instance
@@ -360,7 +408,7 @@ export class ToolRunner {
    * @param {number} options.timeoutMs - Default timeout
    * @param {object} options.dependencies - Injected dependencies
    */
-  constructor(options = {}) {
+  constructor(options: ToolRunnerOptions = {}) {
     this.#config = {
       enableAuditLog: options.enableAuditLog ?? RUNNER_DEFAULTS.ENABLE_AUDIT_LOG,
       timeoutMs: options.timeoutMs ?? RUNNER_DEFAULTS.TIMEOUT_MS,
@@ -374,7 +422,7 @@ export class ToolRunner {
    * @param {object} tool - Tool definition
    * @throws {Error} If tool with same name already registered
    */
-  register(tool) {
+  register(tool: ToolDefinition): void {
     const name = tool.metadata.name;
 
     if (this.#tools.has(name)) {
@@ -390,7 +438,7 @@ export class ToolRunner {
    * @param {string} name - Tool name
    * @returns {boolean} True if tool exists
    */
-  hasTool(name) {
+  hasTool(name: string): boolean {
     return this.#tools.has(name);
   }
 
@@ -402,7 +450,7 @@ export class ToolRunner {
    * @param {object} options - Execution options
    * @returns {Promise<object>} Tool output
    */
-  async run(name, input, options = {}) {
+  async run(name: string, input: unknown, options: RunToolOptions = {}): Promise<unknown> {
     const tool = this.#tools.get(name);
 
     if (!tool) {
@@ -428,7 +476,7 @@ export class ToolRunner {
    *
    * @returns {object} Current configuration
    */
-  getConfig() {
+  getConfig(): { enableAuditLog: boolean; timeoutMs: number } {
     return { ...this.#config };
   }
 
@@ -439,8 +487,20 @@ export class ToolRunner {
    * @param {string} options.domain - Filter by domain
    * @returns {object[]} Array of tool metadata
    */
-  listTools(options = {}) {
-    const tools = [];
+  listTools(options: ListToolsOptions = {}): Array<{
+    name: string;
+    description: string;
+    domain?: string;
+    permission: string;
+    version?: string;
+  }> {
+    const tools: Array<{
+      name: string;
+      description: string;
+      domain?: string;
+      permission: string;
+      version?: string;
+    }> = [];
 
     for (const tool of this.#tools.values()) {
       if (options.domain && tool.metadata.domain !== options.domain) {

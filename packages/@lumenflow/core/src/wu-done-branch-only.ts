@@ -128,7 +128,7 @@ export async function executeBranchOnlyCompletion(context) {
 
   // Check for zombie state (recovery mode)
   if (detectZombieState(docForUpdate, null)) {
-    await recoverZombieState({ id, doc: docForUpdate, worktreePath: null, args });
+    await recoverZombieState({ id, doc: docForUpdate, _worktreePath: null, _args: args });
     console.log(`\n${RECOVERY.SUCCESS}`);
     console.log(`- WU: ${id} — ${title}`);
     return { success: true, committed: false, pushed: false, merged, recovered: true };
@@ -242,7 +242,7 @@ async function mergeLaneBranch(laneBranch) {
 
   try {
     // First attempt: fast-forward only
-    await gitAdapter.merge(laneBranch, ['--ff-only']);
+    await gitAdapter.merge(laneBranch, { ffOnly: true });
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch merged to main`);
   } catch {
     // Retry with pull if ff-only fails (main may have advanced)
@@ -250,8 +250,8 @@ async function mergeLaneBranch(laneBranch) {
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed, attempting pull + retry...`
     );
     try {
-      await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN, { '--rebase': null });
-      await gitAdapter.merge(laneBranch, ['--ff-only']);
+      await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
+      await gitAdapter.merge(laneBranch, { ffOnly: true });
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch merged after pull`);
     } catch (retryErr) {
       throw createError(

@@ -31,7 +31,20 @@ import {
   SPAWN_FAILURE_SIGNAL_TYPE,
   SuggestedAction,
 } from './spawn-escalation.js';
-import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/lib/mem-signal-core.js';
+
+// Optional import from @lumenflow/memory
+type Signal = { id: string; message: string };
+type LoadSignalsFn = (baseDir: string, options: { unreadOnly?: boolean }) => Promise<Signal[]>;
+type MarkSignalsAsReadFn = (baseDir: string, signalIds: string[]) => Promise<void>;
+let loadSignals: LoadSignalsFn | null = null;
+let markSignalsAsRead: MarkSignalsAsReadFn | null = null;
+try {
+  const mod = await import('@lumenflow/memory/lib/mem-signal-core.js');
+  loadSignals = mod.loadSignals;
+  markSignalsAsRead = mod.markSignalsAsRead;
+} catch {
+  // @lumenflow/memory not available - signal features disabled
+}
 
 /**
  * Default threshold for stuck spawn detection (in minutes)
@@ -178,8 +191,7 @@ export function detectStuckSpawns(spawns, thresholdMinutes = DEFAULT_THRESHOLD_M
 /**
  * Checks lane lock files for zombie locks (dead PIDs).
  *
- * @param {Object} [options] - Options
- * @param {string} [options.baseDir] - Base directory (defaults to process.cwd())
+ * @param {SpawnMonitorBaseDirOptions} [options] - Options
  * @returns {Promise<ZombieLockInfo[]>} Array of zombie lock info
  *
  * @example
@@ -188,7 +200,12 @@ export function detectStuckSpawns(spawns, thresholdMinutes = DEFAULT_THRESHOLD_M
  *   console.log(`Zombie lock: ${lock.lane} (PID ${lock.pid})`);
  * }
  */
-export async function checkZombieLocks(options = {}) {
+interface SpawnMonitorBaseDirOptions {
+  /** Base directory (defaults to process.cwd()) */
+  baseDir?: string;
+}
+
+export async function checkZombieLocks(options: SpawnMonitorBaseDirOptions = {}) {
   const { baseDir = process.cwd() } = options;
   const locksDir = path.join(baseDir, '.beacon', 'locks');
   const zombies = [];
@@ -349,9 +366,7 @@ export function formatMonitorOutput(result) {
  * When a spawn is escalated (action=ESCALATED_STUCK), chains to escalateStuckSpawn.
  *
  * @param {StuckSpawnInfo[]} stuckSpawns - Array of stuck spawn info
- * @param {Object} [options] - Options
- * @param {string} [options.baseDir] - Base directory for .beacon/
- * @param {boolean} [options.dryRun=false] - If true, escalations return spec only
+ * @param {RunRecoveryOptions} [options] - Options
  * @returns {Promise<RecoveryResultInfo[]>} Array of recovery results
  *
  * @example
@@ -360,14 +375,26 @@ export function formatMonitorOutput(result) {
  *   console.log(`${result.spawnId}: ${result.action}`);
  * }
  */
-export async function runRecovery(stuckSpawns, options = {}) {
+interface RunRecoveryOptions extends SpawnMonitorBaseDirOptions {
+  /** If true, escalations return spec only */
+  dryRun?: boolean;
+}
+
+export async function runRecovery(stuckSpawns, options: RunRecoveryOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
   const results = [];
 
   for (const { spawn } of stuckSpawns) {
     const recoveryResult = await recoverStuckSpawn(spawn.id, { baseDir });
 
-    const resultInfo = {
+    const resultInfo: {
+      spawnId: string;
+      targetWuId: string;
+      action: string;
+      recovered: boolean;
+      reason: string;
+      escalation?: { bugWuId: string; title: string };
+    } = {
       spawnId: spawn.id,
       targetWuId: spawn.targetWuId,
       action: recoveryResult.action,
@@ -379,13 +406,16 @@ export async function runRecovery(stuckSpawns, options = {}) {
     if (recoveryResult.action === RecoveryAction.ESCALATED_STUCK) {
       try {
         const escalationResult = await escalateStuckSpawn(spawn.id, { baseDir, dryRun });
+        // escalationResult contains signalId, signal payload, and spawnStatus
+        // The signal payload has target_wu_id which represents the stuck WU
         resultInfo.escalation = {
-          bugWuId: escalationResult.bugWuId,
-          title: escalationResult.title,
+          bugWuId: escalationResult.signalId,
+          title: `Escalation signal for ${spawn.targetWuId}`,
         };
       } catch (error) {
         // Escalation failed, but we still want to report the recovery result
-        console.log(`${LOG_PREFIX} Escalation failed for ${spawn.id}: ${error.message}`);
+        const message = error instanceof Error ? error.message : String(error);
+        console.log(`${LOG_PREFIX} Escalation failed for ${spawn.id}: ${message}`);
       }
     }
 
@@ -618,9 +648,7 @@ function generateBlockReason(payload) {
  * - Second failure (suggested_action=block): marks WU blocked with reason
  * - Third+ failure (suggested_action=human_escalate): creates Bug WU
  *
- * @param {Object} options - Options
- * @param {string} options.baseDir - Base directory for .beacon/
- * @param {boolean} [options.dryRun=false] - If true, don't execute actions (block/create WU)
+ * @param {RunRecoveryOptions} options - Options
  * @returns {Promise<SignalProcessingResult>} Processing result
  *
  * @example
@@ -630,8 +658,19 @@ function generateBlockReason(payload) {
  *   console.log(`${response.targetWuId}: ${response.action}`);
  * }
  */
-export async function processSpawnFailureSignals(options = {}) {
+export async function processSpawnFailureSignals(options: RunRecoveryOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
+
+  // Check if signal module is available
+  if (!loadSignals) {
+    return {
+      processed: [],
+      signalCount: 0,
+      retryCount: 0,
+      blockCount: 0,
+      bugWuCount: 0,
+    };
+  }
 
   // Load unread signals
   const signals = await loadSignals(baseDir, { unreadOnly: true });
@@ -653,7 +692,18 @@ export async function processSpawnFailureSignals(options = {}) {
   for (const { signal, payload } of spawnFailureSignals) {
     const { action, reason } = determineResponseAction(payload);
 
-    const response = {
+    const response: {
+      signalId: string;
+      spawnId: string;
+      targetWuId: string;
+      action: string;
+      reason: string;
+      severity: string;
+      wuBlocked: boolean;
+      bugWuCreated: string | null;
+      blockReason?: string;
+      bugWuSpec?: { title: string; description: string };
+    } = {
       signalId: signal.id,
       spawnId: payload.spawn_id,
       targetWuId: payload.target_wu_id,
@@ -714,7 +764,7 @@ export async function processSpawnFailureSignals(options = {}) {
   }
 
   // Mark processed signals as read (unless dry-run)
-  if (!dryRun && spawnFailureSignals.length > 0) {
+  if (!dryRun && spawnFailureSignals.length > 0 && markSignalsAsRead) {
     const signalIds = spawnFailureSignals.map((s) => s.signal.id);
     await markSignalsAsRead(baseDir, signalIds);
   }

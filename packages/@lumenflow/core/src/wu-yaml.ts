@@ -91,7 +91,7 @@ export function readWU(wuPath, expectedId) {
     });
   }
 
-  const text = readFileSync(wuPath, FILE_SYSTEM.UTF8);
+  const text = readFileSync(wuPath, { encoding: 'utf-8' });
   let doc;
 
   try {
@@ -154,7 +154,7 @@ export function readWURaw(yamlPath) {
     });
   }
 
-  const text = readFileSync(yamlPath, FILE_SYSTEM.UTF8);
+  const text = readFileSync(yamlPath, { encoding: 'utf-8' });
 
   try {
     return parse(text);
@@ -179,7 +179,7 @@ export function readWURaw(yamlPath) {
  */
 export function writeWU(wuPath, doc) {
   const out = stringify(doc, YAML_STRINGIFY_OPTIONS);
-  writeFileSync(wuPath, out, FILE_SYSTEM.UTF8);
+  writeFileSync(wuPath, out, { encoding: 'utf-8' });
 }
 
 /**

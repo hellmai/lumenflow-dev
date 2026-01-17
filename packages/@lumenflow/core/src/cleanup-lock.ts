@@ -74,13 +74,20 @@ const LOCK_POLL_INTERVAL_MS = 500;
  */
 
 /**
+ * Options for lock file operations
+ */
+interface BaseDirOptions {
+  /** Base directory (defaults to cwd) */
+  baseDir?: string;
+}
+
+/**
  * Get the path to the cleanup lock file
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory (defaults to cwd)
+ * @param {BaseDirOptions} [options]
  * @returns {string} Path to lock file
  */
-function getLockPath(options = {}) {
+function getLockPath(options: BaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
   return path.join(baseDir, '.beacon', LOCK_FILE_NAME);
 }
@@ -88,11 +95,10 @@ function getLockPath(options = {}) {
 /**
  * Read lock file contents
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {BaseDirOptions} [options]
  * @returns {CleanupLockInfo|null} Lock info or null if no lock
  */
-function readLockFile(options = {}) {
+function readLockFile(options: BaseDirOptions = {}) {
   const lockPath = getLockPath(options);
   if (!existsSync(lockPath)) {
     return null;
@@ -109,10 +115,9 @@ function readLockFile(options = {}) {
 /**
  * Delete lock file
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {BaseDirOptions} [options]
  */
-function deleteLockFile(options = {}) {
+function deleteLockFile(options: BaseDirOptions = {}) {
   const lockPath = getLockPath(options);
   if (existsSync(lockPath)) {
     unlinkSync(lockPath);
@@ -175,11 +180,10 @@ function sleep(ms) {
 /**
  * Check if cleanup lock is currently held
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {BaseDirOptions} [options]
  * @returns {boolean} True if lock is held (and not stale)
  */
-export function isCleanupLocked(options = {}) {
+export function isCleanupLocked(options: BaseDirOptions = {}) {
   const lockInfo = readLockFile(options);
   if (!lockInfo) {
     return false;
@@ -191,11 +195,10 @@ export function isCleanupLocked(options = {}) {
 /**
  * Get information about current cleanup lock
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {BaseDirOptions} [options]
  * @returns {CleanupLockInfo|null} Lock info or null if unlocked
  */
-export function getCleanupLockInfo(options = {}) {
+export function getCleanupLockInfo(options: BaseDirOptions = {}) {
   const lockInfo = readLockFile(options);
   if (!lockInfo || isCleanupLockStale(lockInfo) || isCleanupLockZombie(lockInfo)) {
     return null;
@@ -261,6 +264,16 @@ function handleStaleLock(existingLock, options) {
 }
 
 /**
+ * Options for acquiring cleanup lock
+ */
+export interface AcquireCleanupLockOptions extends BaseDirOptions {
+  /** Max time to wait for lock (default: CLEANUP_LOCK_TIMEOUT_MS) */
+  waitMs?: number;
+  /** Path to worktree being cleaned up */
+  worktreePath?: string | null;
+}
+
+/**
  * Attempt to acquire the cleanup lock
  *
  * Will wait up to waitMs for lock to become available.
@@ -268,13 +281,10 @@ function handleStaleLock(existingLock, options) {
  * Stale and zombie locks are automatically cleaned up.
  *
  * @param {string} wuId - WU ID requesting the lock
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {number} [options.waitMs] - Max time to wait for lock (default: CLEANUP_LOCK_TIMEOUT_MS)
- * @param {string} [options.worktreePath] - Path to worktree being cleaned up
+ * @param {AcquireCleanupLockOptions} [options]
  * @returns {Promise<CleanupAcquireResult>} Acquisition result
  */
-export async function acquireCleanupLock(wuId, options = {}) {
+export async function acquireCleanupLock(wuId, options: AcquireCleanupLockOptions = {}) {
   const { baseDir, waitMs = CLEANUP_LOCK_TIMEOUT_MS, worktreePath = null } = options;
   const startTime = Date.now();
 
@@ -337,11 +347,10 @@ export async function acquireCleanupLock(wuId, options = {}) {
  * This prevents accidentally releasing another WU's lock.
  *
  * @param {string} lockId - Lock ID to release
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {BaseDirOptions} [options]
  * @returns {boolean} True if lock was released
  */
-export function releaseCleanupLock(lockId, options = {}) {
+export function releaseCleanupLock(lockId, options: BaseDirOptions = {}) {
   const existingLock = readLockFile(options);
 
   if (!existingLock) {
@@ -370,14 +379,11 @@ export function releaseCleanupLock(lockId, options = {}) {
  * @template T
  * @param {string} wuId - WU ID requesting the lock
  * @param {function(): Promise<T>} fn - Async function to execute
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {number} [options.waitMs] - Max time to wait for lock
- * @param {string} [options.worktreePath] - Path to worktree being cleaned up
+ * @param {AcquireCleanupLockOptions} [options]
  * @returns {Promise<T>} Result of function execution
  * @throws {Error} If lock cannot be acquired or function throws
  */
-export async function withCleanupLock(wuId, fn, options = {}) {
+export async function withCleanupLock<T>(wuId: string, fn: () => Promise<T>, options: AcquireCleanupLockOptions = {}): Promise<T> {
   const result = await acquireCleanupLock(wuId, options);
 
   if (!result.acquired) {

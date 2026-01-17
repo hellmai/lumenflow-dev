@@ -40,7 +40,7 @@ export function readBacklogFile(filePath) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `File not found: ${filePath}`, { path: filePath });
   }
 
-  const raw = readFileSync(filePath, FILE_SYSTEM.UTF8);
+  const raw = readFileSync(filePath, { encoding: 'utf-8' });
 
   // WU-1242: Use gray-matter for robust frontmatter extraction instead of regex
   const parsed = matter(raw);
@@ -62,7 +62,7 @@ export function readBacklogFile(filePath) {
  */
 export function writeBacklogFile(filePath, frontmatter, lines) {
   const content = frontmatter + lines.join(STRING_LITERALS.NEWLINE);
-  writeFileSync(filePath, content, FILE_SYSTEM.UTF8);
+  writeFileSync(filePath, content, { encoding: 'utf-8' });
 }
 
 /**

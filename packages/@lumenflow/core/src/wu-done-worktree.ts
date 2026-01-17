@@ -545,7 +545,7 @@ export async function executeWorktreeCompletion(context) {
     // WU-1369: Atomic transaction pattern
     // - If error occurred BEFORE transaction.commit() → no files were written
     // - If error occurred AFTER transaction.commit() → files written, need manual recovery
-    const wasCommitted = transaction.committed;
+    const wasCommitted = transaction.isCommitted;
 
     // WU-1811: Provide actionable single next step based on failure state
     if (!wasCommitted) {
@@ -950,13 +950,19 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
  * WU-1371: Added wuId option for post-rebase artifact cleanup
  *
  * @param {string} branch - Lane branch name
- * @param {object} [options] - Check options
- * @param {boolean} [options.autoRebase=true] - Automatically rebase if diverged
- * @param {string} [options.worktreePath] - Path to worktree (required if autoRebase=true)
- * @param {string} [options.wuId] - WU ID for artifact cleanup (e.g., 'WU-1371')
+ * @param {CheckBranchOptions} [options] - Check options
  * @throws {Error} If divergence detected and auto-rebase fails or is disabled
  */
-export async function checkBranchDivergence(branch, options = {}) {
+interface CheckBranchOptions {
+  /** Automatically rebase if diverged */
+  autoRebase?: boolean;
+  /** Path to worktree (required if autoRebase=true) */
+  worktreePath?: string | null;
+  /** WU ID for artifact cleanup (e.g., 'WU-1371') */
+  wuId?: string | null;
+}
+
+export async function checkBranchDivergence(branch, options: CheckBranchOptions = {}) {
   const { autoRebase = true, worktreePath = null, wuId = null } = options;
   const gitAdapter = getGitForCwd();
 
@@ -1014,13 +1020,10 @@ export async function checkBranchDivergence(branch, options = {}) {
  * If merge commits are found, triggers auto-rebase to linearize history.
  *
  * @param {string} branch - Lane branch name
- * @param {object} [options] - Check options
- * @param {boolean} [options.autoRebase=true] - Automatically rebase if merge commits found
- * @param {string} [options.worktreePath] - Path to worktree (required if autoRebase=true)
- * @param {string} [options.wuId] - WU ID for artifact cleanup (e.g., 'WU-1371')
+ * @param {CheckBranchOptions} [options] - Check options
  * @throws {Error} If merge commits found and auto-rebase fails or is disabled
  */
-export async function checkMergeCommits(branch, options = {}) {
+export async function checkMergeCommits(branch, options: CheckBranchOptions = {}) {
   const { autoRebase = true, worktreePath = null, wuId = null } = options;
   const gitAdapter = getGitForCwd();
 
@@ -1227,12 +1230,15 @@ async function isMainAncestorOfBranch(gitAdapter, branch) {
  *
  * @param {string} branch - Lane branch name
  * @param {Object} [options] - Merge options
- * @param {number} [options.maxAttempts] - Override max retry attempts
- * @param {string} [options.worktreePath] - Path to worktree (required for auto-rebase)
- * @param {string} [options.wuId] - WU ID for artifact cleanup during rebase
+ * @param {MergeLaneBranchOptions} [options] - Merge options
  * @throws {Error} On merge failure after all retries
  */
-export async function mergeLaneBranch(branch, options = {}) {
+interface MergeLaneBranchOptions extends CheckBranchOptions {
+  /** Override max retry attempts */
+  maxAttempts?: number;
+}
+
+export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = {}) {
   const gitAdapter = getGitForCwd();
   console.log(MERGE.BRANCH_MERGE(branch));
 

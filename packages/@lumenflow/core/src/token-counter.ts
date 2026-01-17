@@ -71,20 +71,20 @@ function stripYAMLComments(text) {
  */
 export function loadPrompt(promptPath) {
   try {
-    const raw = readFileSync(promptPath, FILE_SYSTEM.UTF8);
+    const raw = readFileSync(promptPath, { encoding: 'utf-8' });
 
     // Parse YAML to access prompt structure
-    const parsed = loadYAML(raw);
+    const parsed = loadYAML(raw) as { prompt?: string; system?: string; content?: string } | string | null;
 
     // Extract prompt text (handle different YAML structures)
     let promptText = '';
     if (typeof parsed === 'string') {
       promptText = parsed;
-    } else if (parsed.prompt) {
+    } else if (parsed && parsed.prompt) {
       promptText = parsed.prompt;
-    } else if (parsed.system) {
+    } else if (parsed && parsed.system) {
       promptText = parsed.system;
-    } else if (parsed.content) {
+    } else if (parsed && parsed.content) {
       promptText = parsed.content;
     } else {
       // Fallback: use entire YAML stringified (for complex structures)
@@ -96,10 +96,11 @@ export function loadPrompt(promptPath) {
 
     return { text: renderedText, raw };
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
-      `Failed to load prompt from ${promptPath}: ${error.message}`,
-      { path: promptPath, originalError: error.message }
+      `Failed to load prompt from ${promptPath}: ${message}`,
+      { path: promptPath, originalError: message }
     );
   }
 }

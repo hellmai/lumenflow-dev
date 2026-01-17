@@ -148,7 +148,7 @@ export async function resumeClaimForHandoff(options) {
   };
 
   try {
-    writeFileSync(lockPath, JSON.stringify(newLockMetadata, null, 2), FILE_SYSTEM.UTF8);
+    writeFileSync(lockPath, JSON.stringify(newLockMetadata, null, 2), { encoding: 'utf-8' });
   } catch (err) {
     return {
       success: false,
@@ -239,8 +239,8 @@ export async function createHandoffCheckpoint(options) {
   let ml = memoryLayer;
   if (!ml) {
     try {
-      // Dynamically import to avoid circular dependencies
-      await import('../mem-checkpoint.js');
+      // Dynamically import optional @lumenflow/memory peer dependency
+      await import('@lumenflow/memory/lib/mem-checkpoint-core.js');
       ml = {
         createCheckpoint: async () => {
           // The mem-checkpoint module expects different args

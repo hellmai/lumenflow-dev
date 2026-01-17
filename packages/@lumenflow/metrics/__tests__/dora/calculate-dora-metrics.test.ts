@@ -47,10 +47,8 @@ describe('calculateDeploymentFrequency', () => {
     // would be "low". The constants are: ELITE >5, HIGH >=1, MEDIUM >=0.25
     // A single week with 0 commits = 0/week = low
     // This test uses 0 deploys which is <0.25, so actually low
-    // Let's test a scenario where we have fractional by adjusting the date range
-    const fourWeekStart = new Date('2026-01-01');
-    const fourWeekEnd = new Date('2026-01-28');
-    // But the function counts commits in range, not divides by weeks
+    // For fractional deploys we'd need a multi-week range (fourWeekStart/fourWeekEnd)
+    // but the function counts commits in range, not divides by weeks
     // So medium/low branches are hard to hit without fractional deploys
     // For medium: deploysPerWeek >= 0.25 means at least 1 in 4 weeks
     // The function just counts commits, so we'd need 1 commit to get "high"

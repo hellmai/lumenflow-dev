@@ -71,13 +71,13 @@ export function updateStatusRemoveInProgress(statusPath, id) {
   }
 
   // Reconstruct file with frontmatter preservation
-  const raw = readFileSync(statusPath, FILE_SYSTEM.UTF8);
+  const raw = readFileSync(statusPath, { encoding: 'utf-8' });
   const frontmatterMatch = raw.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterText = frontmatterMatch ? frontmatterMatch[0] : '';
   writeFileSync(
     statusPath,
     frontmatterText + lines.join(STRING_LITERALS.NEWLINE),
-    FILE_SYSTEM.UTF8
+    { encoding: 'utf-8' }
   );
 }
 
@@ -131,12 +131,12 @@ export function addToStatusCompleted(statusPath, id, title) {
   lines.splice(insertIdx, 0, completedEntry);
 
   // Reconstruct file with frontmatter preservation
-  const raw = readFileSync(statusPath, FILE_SYSTEM.UTF8);
+  const raw = readFileSync(statusPath, { encoding: 'utf-8' });
   const frontmatterMatch = raw.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterText = frontmatterMatch ? frontmatterMatch[0] : '';
   writeFileSync(
     statusPath,
     frontmatterText + lines.join(STRING_LITERALS.NEWLINE),
-    FILE_SYSTEM.UTF8
+    { encoding: 'utf-8' }
   );
 }

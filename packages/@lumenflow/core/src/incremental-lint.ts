@@ -68,6 +68,26 @@ function parseGitFileList(output) {
 }
 
 /**
+ * Git adapter interface for testing
+ */
+interface GitAdapter {
+  mergeBase: (ref1: string, ref2: string) => Promise<string>;
+  raw: (args: string[]) => Promise<string>;
+}
+
+/**
+ * Options for getting changed lintable files
+ */
+export interface GetChangedLintableFilesOptions {
+  /** GitAdapter instance (for testing) */
+  git?: GitAdapter;
+  /** Base branch to compare against */
+  baseBranch?: string;
+  /** Optional path prefix to filter files */
+  filterPath?: string;
+}
+
+/**
  * Get list of changed files that should be linted
  * Includes:
  * - Committed changes since branching from main (git diff merge-base...HEAD)
@@ -77,10 +97,7 @@ function parseGitFileList(output) {
  * WU-1784: Extended to include untracked and unstaged files to prevent
  * lint gaps when gates are run before staging/committing changes.
  *
- * @param {object} [options] - Options
- * @param {object} [options.git] - GitAdapter instance (for testing)
- * @param {string} [options.baseBranch='origin/main'] - Base branch to compare against
- * @param {string} [options.filterPath] - Optional path prefix to filter files
+ * @param {GetChangedLintableFilesOptions} [options] - Options
  * @returns {Promise<string[]>} List of file paths to lint
  *
  * @example
@@ -91,7 +108,7 @@ function parseGitFileList(output) {
  * // Get only files in apps/web/
  * const files = await getChangedLintableFiles({ filterPath: 'apps/web/' });
  */
-export async function getChangedLintableFiles(options = {}) {
+export async function getChangedLintableFiles(options: GetChangedLintableFilesOptions = {}) {
   const { git = getGitForCwd(), baseBranch = 'origin/main', filterPath } = options;
 
   // Get the merge base (common ancestor) with the base branch

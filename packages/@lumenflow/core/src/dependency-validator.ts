@@ -102,7 +102,7 @@ export async function validateDependencies(packages) {
 export function formatDependencyError(toolName, missing) {
   const packageList = missing.map((p) => `  - ${p}`).join('\n');
 
-  return `${EMOJI.ERROR} ${toolName} cannot run: missing dependencies
+  return `${EMOJI.FAILURE} ${toolName} cannot run: missing dependencies
 
 The following packages are required but not available:
 ${packageList}

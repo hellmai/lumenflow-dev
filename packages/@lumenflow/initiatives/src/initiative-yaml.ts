@@ -2,13 +2,55 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
-import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
+import { createError, ErrorCodes } from '@lumenflow/core/dist/error-handler.js';
 import { validateInitiative } from './initiative-schema.js';
 import { INIT_PATHS } from './initiative-paths.js';
 import { INIT_PATTERNS } from './initiative-constants.js';
-import { readWU } from '@lumenflow/core/lib/wu-yaml.js';
-import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.js';
-import { FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.js';
+import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+// FILE_SYSTEM removed - not used in this module
+
+/**
+ * WU document interface
+ */
+export interface WUDoc {
+  status: string;
+  lane?: string;
+  title?: string;
+  initiative?: string;
+  blocked_by?: string[];
+  [key: string]: unknown;
+}
+
+/**
+ * Initiative document interface
+ */
+export interface InitiativeDoc {
+  id: string;
+  slug?: string;
+  status?: string;
+  phases?: Array<{ id: number; status?: string; wus?: string[] }>;
+  wus?: string[];
+  [key: string]: unknown;
+}
+
+/**
+ * WU entry with document and metadata
+ */
+export interface WUEntry {
+  id: string;
+  doc: WUDoc;
+  path: string;
+}
+
+/**
+ * Initiative entry with document and metadata
+ */
+export interface InitiativeEntry {
+  id: string;
+  doc: InitiativeDoc;
+  path: string;
+}
 
 /**
  * Initiative YAML I/O module.
@@ -43,7 +85,7 @@ import { FILE_SYSTEM } from '@lumenflow/core/lib/wu-constants.js';
  * @returns {object} Parsed YAML document
  * @throws {Error} If file not found, YAML invalid, ID mismatch, or validation fails
  */
-export function readInitiative(initPath, expectedId) {
+export function readInitiative(initPath: string, expectedId: string): InitiativeDoc {
   if (!existsSync(initPath)) {
     throw createError(ErrorCodes.INIT_NOT_FOUND, `Initiative file not found: ${initPath}`, {
       path: initPath,
@@ -51,33 +93,35 @@ export function readInitiative(initPath, expectedId) {
     });
   }
 
-  const text = readFileSync(initPath, FILE_SYSTEM.UTF8);
-  let doc;
+  const text = readFileSync(initPath, { encoding: 'utf-8' });
+  let rawDoc: unknown;
 
   try {
-    doc = yaml.load(text);
+    rawDoc = yaml.load(text);
   } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
     throw createError(
       ErrorCodes.YAML_PARSE_ERROR,
-      `Failed to parse YAML ${initPath}: ${e.message}`,
+      `Failed to parse YAML ${initPath}: ${errorMessage}`,
       {
         path: initPath,
-        originalError: e.message,
+        originalError: errorMessage,
       }
     );
   }
 
   // Validate ID matches
-  if (!doc || doc.id !== expectedId) {
+  const docWithId = rawDoc as { id?: string } | null;
+  if (!docWithId || docWithId.id !== expectedId) {
     throw createError(
       ErrorCodes.INIT_NOT_FOUND,
-      `Initiative YAML id mismatch. Expected ${expectedId}, found ${doc && doc.id}`,
-      { path: initPath, expectedId, foundId: doc && doc.id }
+      `Initiative YAML id mismatch. Expected ${expectedId}, found ${docWithId?.id}`,
+      { path: initPath, expectedId, foundId: docWithId?.id }
     );
   }
 
   // Schema validation
-  const result = validateInitiative(doc);
+  const result = validateInitiative(rawDoc);
   if (!result.success) {
     const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
     throw createError(ErrorCodes.VALIDATION_ERROR, `Initiative validation failed: ${issues}`, {
@@ -86,7 +130,7 @@ export function readInitiative(initPath, expectedId) {
     });
   }
 
-  return doc;
+  return result.data as InitiativeDoc;
 }
 
 /**
@@ -99,9 +143,9 @@ export function readInitiative(initPath, expectedId) {
  * @param {string} initPath - Path to Initiative YAML file
  * @param {object} doc - YAML document to write
  */
-export function writeInitiative(initPath, doc) {
+export function writeInitiative(initPath: string, doc: InitiativeDoc): void {
   const out = yaml.dump(doc, { lineWidth: 100 });
-  writeFileSync(initPath, out, FILE_SYSTEM.UTF8);
+  writeFileSync(initPath, out, { encoding: 'utf-8' });
 }
 
 /**
@@ -109,7 +153,7 @@ export function writeInitiative(initPath, doc) {
  *
  * @returns {Array<{id: string, doc: object, path: string}>} Array of parsed initiatives
  */
-export function listInitiatives() {
+export function listInitiatives(): InitiativeEntry[] {
   const dir = INIT_PATHS.INITIATIVES_DIR();
 
   if (!existsSync(dir)) {
@@ -133,7 +177,7 @@ export function listInitiatives() {
         return null;
       }
     })
-    .filter(Boolean);
+    .filter((entry): entry is InitiativeEntry => entry !== null);
 }
 
 /**
@@ -142,7 +186,7 @@ export function listInitiatives() {
  * @param {string} ref - Initiative ID (INIT-XXX) or slug
  * @returns {{id: string, doc: object, path: string} | null} Initiative or null if not found
  */
-export function findInitiative(ref) {
+export function findInitiative(ref: string): InitiativeEntry | null {
   const initiatives = listInitiatives();
 
   // Try direct ID match
@@ -160,7 +204,7 @@ export function findInitiative(ref) {
  * @param {string} initRef - Initiative ID (INIT-XXX) or slug
  * @returns {Array<{id: string, doc: object, path: string}>} Array of WUs in initiative
  */
-export function getInitiativeWUs(initRef) {
+export function getInitiativeWUs(initRef: string): WUEntry[] {
   const wuDir = WU_PATHS.WU('').replace(/\/[^/]*$/, ''); // Get directory path
 
   if (!existsSync(wuDir)) {
@@ -183,14 +227,14 @@ export function getInitiativeWUs(initRef) {
 
         // Check if WU belongs to this initiative (by ID or slug)
         if (doc.initiative && matchRefs.includes(doc.initiative)) {
-          return { id, doc, path: filePath };
+          return { id, doc, path: filePath } as WUEntry;
         }
         return null;
       } catch {
         return null;
       }
     })
-    .filter(Boolean);
+    .filter((entry): entry is WUEntry => entry !== null);
 }
 
 /**
@@ -199,7 +243,7 @@ export function getInitiativeWUs(initRef) {
  * @param {string} initRef - Initiative ID or slug
  * @returns {{total: number, done: number, inProgress: number, blocked: number, ready: number, percentage: number}}
  */
-export function getInitiativeProgress(initRef) {
+export function getInitiativeProgress(initRef: string): { total: number; done: number; inProgress: number; blocked: number; ready: number; percentage: number } {
   const wus = getInitiativeWUs(initRef);
 
   const counts = {
@@ -208,6 +252,7 @@ export function getInitiativeProgress(initRef) {
     inProgress: 0,
     blocked: 0,
     ready: 0,
+    percentage: 0,
   };
 
   for (const { doc } of wus) {
@@ -241,7 +286,7 @@ export function getInitiativeProgress(initRef) {
  * @param {string} initRef - Initiative ID or slug
  * @returns {Map<number|null, Array<{id: string, doc: object}>>} Map of phase ID to WU array (null key = no phase)
  */
-export function getInitiativePhases(initRef) {
+export function getInitiativePhases(initRef: string): Map<number | null, Array<{ id: string; doc: WUDoc }>> {
   const wus = getInitiativeWUs(initRef);
   const phases = new Map();
 
@@ -262,7 +307,7 @@ export function getInitiativePhases(initRef) {
  *
  * @returns {Map<string, object>} Map of ID/slug to initiative doc
  */
-export function buildInitiativeMap() {
+export function buildInitiativeMap(): Map<string, InitiativeDoc> {
   const initiatives = listInitiatives();
   const map = new Map();
 

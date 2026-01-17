@@ -42,9 +42,10 @@ export function emit(filePath, event) {
   ensureTelemetryDir();
   const line = `${JSON.stringify(event)}${STRING_LITERALS.NEWLINE}`;
   try {
-    appendFileSync(filePath, line, FILE_SYSTEM.UTF8);
+    appendFileSync(filePath, line, { encoding: 'utf-8' });
   } catch (err) {
-    console.error(`[telemetry] Failed to emit to ${filePath}:`, err.message);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[telemetry] Failed to emit to ${filePath}:`, message);
   }
 }
 
@@ -76,7 +77,7 @@ export function emitGateEvent(data) {
 export function getCurrentWU() {
   try {
     const branch = execSync('git rev-parse --abbrev-ref HEAD', {
-      encoding: FILE_SYSTEM.UTF8,
+      encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],
     }).trim();
 
@@ -98,7 +99,7 @@ export function getCurrentWU() {
 export function getCurrentLane() {
   try {
     const branch = execSync('git rev-parse --abbrev-ref HEAD', {
-      encoding: FILE_SYSTEM.UTF8,
+      encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],
     }).trim();
 
@@ -150,7 +151,7 @@ export function emitLLMClassificationStart(data, logPath = LLM_CLASSIFICATION_LO
  */
 export function emitLLMClassificationComplete(data, logPath = LLM_CLASSIFICATION_LOG) {
   // PII Protection: Explicitly exclude any user input fields
-  const event = {
+  const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.complete',
     classification_type: data.classification_type,
@@ -184,7 +185,7 @@ export function emitLLMClassificationComplete(data, logPath = LLM_CLASSIFICATION
  */
 export function emitLLMClassificationError(data, logPath = LLM_CLASSIFICATION_LOG) {
   // PII Protection: Never log user input or sensitive data
-  const event = {
+  const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.error',
     classification_type: data.classification_type,
@@ -222,9 +223,10 @@ export function emitWUFlowEvent(event, logPath = FLOW_LOG) {
   }
   const line = JSON.stringify({ timestamp: new Date().toISOString(), ...event });
   try {
-    appendFileSync(logPath, `${line}${STRING_LITERALS.NEWLINE}`, FILE_SYSTEM.UTF8);
+    appendFileSync(logPath, `${line}${STRING_LITERALS.NEWLINE}`, { encoding: 'utf-8' });
   } catch (err) {
     // Silently fail - telemetry should not block workflow
-    console.error(`[telemetry] Failed to emit flow event: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[telemetry] Failed to emit flow event: ${message}`);
   }
 }

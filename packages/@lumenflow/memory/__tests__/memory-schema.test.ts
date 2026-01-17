@@ -18,7 +18,7 @@ import {
   MEMORY_LIFECYCLES,
   RELATIONSHIP_TYPES,
   MEMORY_PATTERNS,
-} from '../memory-schema.js';
+} from '../src/memory-schema.js';
 
 describe('memory-schema', () => {
   describe('constants exports', () => {

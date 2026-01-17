@@ -22,6 +22,38 @@ import path from 'node:path';
  * Log source configurations
  * Each source has a path relative to project root and a source identifier
  */
+/**
+ * Log entry structure from JSON logs
+ */
+interface LogEntry {
+  time?: string;
+  level?: string;
+  msg?: string;
+  message?: string;
+  event?: string;
+  _source?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Parsed log arguments
+ */
+interface ParsedLogsArgs {
+  last?: number;
+  level?: string;
+  service?: string;
+  filter?: string;
+  json?: boolean;
+  help?: boolean;
+}
+
+/**
+ * Level color map
+ */
+interface LevelColors {
+  [key: string]: string;
+}
+
 export const LOG_SOURCES = [
   { path: '.logs/web.log', source: 'web.log' },
   { path: '.beacon/commands.log', source: 'commands.log' },
@@ -53,17 +85,27 @@ export function parseLogLine(line) {
 }
 
 /**
+ * Options for filtering logs
+ */
+export interface FilterLogsOptions {
+  /** Filter by log level (info, warn, error) */
+  level?: string;
+  /** Filter by service/message prefix */
+  service?: string;
+  /** Arbitrary text filter (searches in JSON) */
+  filter?: string;
+  /** Return only last N entries */
+  last?: number;
+}
+
+/**
  * Filter log entries by criteria
  *
  * @param {object[]} logs - Array of log objects
- * @param {object} options - Filter options
- * @param {string} [options.level] - Filter by log level (info, warn, error)
- * @param {string} [options.service] - Filter by service/message prefix
- * @param {string} [options.filter] - Arbitrary text filter (searches in JSON)
- * @param {number} [options.last] - Return only last N entries
+ * @param {FilterLogsOptions} options - Filter options
  * @returns {object[]} Filtered logs
  */
-export function filterLogs(logs, options = {}) {
+export function filterLogs(logs: LogEntry[], options: FilterLogsOptions = {}): LogEntry[] {
   const { level, service, filter, last } = options;
 
   let result = logs;
@@ -130,13 +172,20 @@ function readLogFile(filePath, source) {
 }
 
 /**
+ * Options for aggregating logs
+ */
+export interface AggregateLogsOptions {
+  /** Working directory (defaults to process.cwd()) */
+  cwd?: string;
+}
+
+/**
  * Aggregate logs from all configured sources
  *
- * @param {object} options - Options
- * @param {string} [options.cwd] - Working directory (defaults to process.cwd())
+ * @param {AggregateLogsOptions} options - Options
  * @returns {Promise<object[]>} Aggregated and sorted log entries
  */
-export async function aggregateLogs(options = {}) {
+export async function aggregateLogs(options: AggregateLogsOptions = {}) {
   const { cwd = process.cwd() } = options;
 
   const allLogs = [];
@@ -163,8 +212,8 @@ export async function aggregateLogs(options = {}) {
  * @param {string[]} args - Command line arguments (without node and script)
  * @returns {object} Parsed options
  */
-export function parseLogsArgs(args) {
-  const result = {};
+export function parseLogsArgs(args: string[]): ParsedLogsArgs {
+  const result: ParsedLogsArgs = {};
   let i = 0;
 
   while (i < args.length) {
@@ -200,8 +249,8 @@ export function parseLogsArgs(args) {
  * @param {object} log - Log object
  * @returns {string} Formatted log line
  */
-export function formatLogEntry(log) {
-  const levelColors = {
+export function formatLogEntry(log: LogEntry) {
+  const levelColors: LevelColors = {
     debug: '\x1b[36m', // cyan
     info: '\x1b[32m', // green
     warn: '\x1b[33m', // yellow

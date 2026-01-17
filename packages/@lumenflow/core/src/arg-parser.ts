@@ -26,7 +26,19 @@ function collectRepeatable(value, previous) {
  * --no-foo creates opts.foo = false (default true).
  * We post-process to convert these to noFoo = true for backward compat.
  */
-export const WU_OPTIONS = {
+/**
+ * WU option definition structure
+ */
+interface WUOption {
+  name: string;
+  flags: string;
+  description: string;
+  default?: string | boolean | string[];
+  isNegated?: boolean;
+  isRepeatable?: boolean;
+}
+
+export const WU_OPTIONS: Record<string, WUOption> = {
   // String options (require values)
   id: {
     name: 'id',

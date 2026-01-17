@@ -27,8 +27,22 @@ import { normalizeISODateTime } from './date-utils.js';
 /**
  * Valid WU status values derived from WU_STATUS constant (DRY principle)
  * Used for Zod enum validation with improved error messages
+ * Note: Defined as tuple for Zod enum compatibility
  */
-const VALID_STATUSES = Object.values(WU_STATUS);
+const VALID_STATUSES = [
+  'todo',
+  'ready',
+  'backlog',
+  'in_progress',
+  'blocked',
+  'done',
+  'completed',
+  'cancelled',
+  'abandoned',
+  'deferred',
+  'closed',
+  'superseded',
+] as const;
 
 /**
  * Placeholder sentinel constant
@@ -212,7 +226,7 @@ const baseAcceptanceField = z.union([
   // WU-1750: Normalize embedded newlines: ["1. a\n2. b"] → ["1. a", "2. b"]
   normalizedStringArray.pipe(z.array(z.string()).min(1, ACCEPTANCE_REQUIRED_MSG)),
   // Nested object format (structured): acceptance: { category1: ["item1"], category2: ["item2"] }
-  z.record(normalizedStringArray).refine((obj) => Object.values(obj).some(hasItems), {
+  z.record(z.string(), normalizedStringArray).refine((obj) => Object.values(obj).some(hasItems), {
     message: ACCEPTANCE_REQUIRED_MSG,
   }),
 ]);
@@ -232,7 +246,7 @@ const strictAcceptanceField = z.union([
     }),
   // Nested object format (structured): acceptance: { category1: ["item1"], category2: ["item2"] }
   z
-    .record(normalizedStringArray)
+    .record(z.string(), normalizedStringArray)
     .refine((obj) => Object.values(obj).some(hasItems), {
       message: ACCEPTANCE_REQUIRED_MSG,
     })
@@ -257,26 +271,24 @@ const sharedFields = {
 
   /** Work type classification */
   type: z
-    .enum(['feature', 'bug', 'documentation', 'process', 'tooling', 'chore', 'refactor'], {
-      errorMap: () => ({ message: 'Invalid type' }),
+    .enum(['feature', 'bug', 'documentation', 'process', 'tooling', 'chore', 'refactor'] as const, {
+      error: 'Invalid type',
     })
-    .default(WU_DEFAULTS.type),
+    .default(WU_DEFAULTS.type as 'feature' | 'bug' | 'documentation' | 'process' | 'tooling' | 'chore' | 'refactor'),
 
   /** Current status in workflow */
   status: z
     .enum(VALID_STATUSES, {
-      errorMap: (_, ctx) => ({
-        message: `Invalid status "${ctx.data}". Valid values: ${VALID_STATUSES.join(', ')}`,
-      }),
+      error: `Invalid status. Valid values: ${VALID_STATUSES.join(', ')}`,
     })
-    .default(WU_DEFAULTS.status),
+    .default(WU_DEFAULTS.status as (typeof VALID_STATUSES)[number]),
 
   /** Priority level */
   priority: z
-    .enum(['P0', 'P1', 'P2', 'P3'], {
-      errorMap: () => ({ message: 'Invalid priority' }),
+    .enum(['P0', 'P1', 'P2', 'P3'] as const, {
+      error: 'Invalid priority',
     })
-    .default(WU_DEFAULTS.priority),
+    .default(WU_DEFAULTS.priority as 'P0' | 'P1' | 'P2' | 'P3'),
 
   /** Creation date (YYYY-MM-DD) */
   created: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Created must be YYYY-MM-DD'),
@@ -435,9 +447,7 @@ const sharedFields = {
    */
   exposure: z
     .enum(WU_EXPOSURE_VALUES, {
-      errorMap: (_, ctx) => ({
-        message: `Invalid exposure value "${ctx.data}". Valid values: ${WU_EXPOSURE_VALUES.join(', ')}`,
-      }),
+      error: `Invalid exposure value. Valid values: ${WU_EXPOSURE_VALUES.join(', ')}`,
     })
     .optional(),
 

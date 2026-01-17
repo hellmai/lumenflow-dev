@@ -23,6 +23,127 @@
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { findInitiative, getInitiativeWUs } from './initiative-yaml.js';
+import type { InitiativeDoc, WUEntry } from './initiative-yaml.js';
+
+/**
+ * Options for checkpoint mode resolution.
+ */
+export interface CheckpointOptions {
+  checkpointPerWave?: boolean;
+  noCheckpoint?: boolean;
+  dryRun?: boolean;
+}
+
+/**
+ * Result of checkpoint mode resolution.
+ */
+export interface CheckpointModeResult {
+  enabled: boolean;
+  source: 'explicit' | 'override' | 'auto' | 'dryrun';
+  reason?: string;
+}
+
+/**
+ * Result of auto-detection for checkpoint mode.
+ */
+export interface AutoCheckpointResult {
+  autoEnabled: boolean;
+  reason: string;
+  pendingCount: number;
+  waveCount: number;
+}
+
+/**
+ * Skipped WU entry with reason.
+ */
+export interface SkippedWUEntry {
+  id: string;
+  reason: string;
+}
+
+/**
+ * Deferred WU entry with blockers.
+ */
+export interface DeferredWUEntry {
+  id: string;
+  blockedBy: string[];
+  reason: string;
+}
+
+/**
+ * Execution plan result.
+ */
+export interface ExecutionPlan {
+  waves: WUEntry[][];
+  skipped: string[];
+  skippedWithReasons: SkippedWUEntry[];
+  deferred: DeferredWUEntry[];
+}
+
+/**
+ * Progress statistics for WUs.
+ */
+export interface ProgressStats {
+  total: number;
+  done: number;
+  active: number;
+  pending: number;
+  blocked: number;
+  percentage: number;
+}
+
+/**
+ * Bottleneck WU entry.
+ */
+export interface BottleneckWU {
+  id: string;
+  title: string;
+  blocksCount: number;
+}
+
+/**
+ * Wave manifest WU entry.
+ */
+export interface WaveManifestWU {
+  id: string;
+  lane?: string;
+  status?: string;
+}
+
+/**
+ * Wave manifest structure.
+ */
+export interface WaveManifest {
+  initiative: string;
+  wave: number;
+  created_at?: string;
+  wus: WaveManifestWU[];
+  lane_validation?: string;
+  done_criteria?: string;
+}
+
+/**
+ * Checkpoint wave result.
+ */
+export interface CheckpointWaveResult {
+  initiative: string;
+  wave: number;
+  wus: WaveManifestWU[];
+  manifestPath: string | null;
+  blockedBy?: string[];
+  waitingMessage?: string;
+  dryRun?: boolean;
+}
+
+/**
+ * Dependency filter result.
+ */
+export interface DependencyFilterResult {
+  spawnable: WUEntry[];
+  blocked: WUEntry[];
+  blockingDeps: string[];
+  waitingMessage: string;
+}
 import { buildDependencyGraph, validateGraph } from '@lumenflow/core/lib/dependency-graph.js';
 import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
 import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/lib/wu-constants.js';
@@ -87,7 +208,7 @@ export const CHECKPOINT_AUTO_THRESHOLDS = {
  * @returns {{initiative: object, wus: Array<{id: string, doc: object}>}}
  * @throws {Error} If initiative not found
  */
-export function loadInitiativeWUs(initRef) {
+export function loadInitiativeWUs(initRef: string): { initiative: InitiativeDoc; wus: WUEntry[] } {
   const initiative = findInitiative(initRef);
 
   if (!initiative) {
@@ -115,7 +236,7 @@ export function loadInitiativeWUs(initRef) {
  * @returns {Array<{id: string, doc: object}>} Combined WUs from all initiatives
  * @throws {Error} If any initiative not found
  */
-export function loadMultipleInitiatives(initRefs) {
+export function loadMultipleInitiatives(initRefs: string[]): WUEntry[] {
   const allWUs = [];
   const seenIds = new Set();
 
@@ -151,11 +272,11 @@ export function loadMultipleInitiatives(initRefs) {
  * @throws {Error} If circular dependencies detected
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- wave-building logic inherently complex
-export function buildExecutionPlan(wus) {
+export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
   // WU-2430: Enhanced categorisation of WUs
-  const skipped = []; // IDs of done WUs (backwards compat)
-  const skippedWithReasons = []; // WU-2430: Non-ready WUs with reasons
-  const deferred = []; // WU-2430: Ready WUs waiting on external blockers
+  const skipped: string[] = []; // IDs of done WUs (backwards compat)
+  const skippedWithReasons: SkippedWUEntry[] = []; // WU-2430: Non-ready WUs with reasons
+  const deferred: DeferredWUEntry[] = []; // WU-2430: Ready WUs waiting on external blockers
 
   const doneStatuses = new Set([WU_STATUS.DONE, WU_STATUS.COMPLETED]);
 
@@ -187,10 +308,10 @@ export function buildExecutionPlan(wus) {
   const { cycles } = validateGraph(graph);
 
   // Filter cycles to only those involving our WUs
-  const relevantCycles = cycles.filter((cycle) => cycle.some((id) => wuIds.has(id)));
+  const relevantCycles = cycles.filter((cycle: string[]) => cycle.some((id: string) => wuIds.has(id)));
 
   if (relevantCycles.length > 0) {
-    const cycleStr = relevantCycles.map((c) => c.join(' → ')).join('; ');
+    const cycleStr = relevantCycles.map((c: string[]) => c.join(' → ')).join('; ');
     throw createError(ErrorCodes.VALIDATION_ERROR, `Circular dependencies detected: ${cycleStr}`, {
       cycles: relevantCycles,
     });
@@ -199,20 +320,20 @@ export function buildExecutionPlan(wus) {
   // WU-2430: Check for external blockers without stamps
   // A WU with blocked_by dependencies that are NOT in the initiative
   // and do NOT have stamps should be deferred
-  const deferredIds = new Set();
-  const deferredReasons = new Map();
-  const deferredBlockers = new Map();
+  const deferredIds = new Set<string>();
+  const deferredReasons = new Map<string, Set<string>>();
+  const deferredBlockers = new Map<string, Set<string>>();
 
-  const addDeferredEntry = (wuId, blockers, reason) => {
+  const addDeferredEntry = (wuId: string, blockers: string[], reason: string): void => {
     deferredIds.add(wuId);
     if (!deferredReasons.has(wuId)) {
-      deferredReasons.set(wuId, new Set());
+      deferredReasons.set(wuId, new Set<string>());
     }
     if (!deferredBlockers.has(wuId)) {
-      deferredBlockers.set(wuId, new Set());
+      deferredBlockers.set(wuId, new Set<string>());
     }
-    const reasonSet = deferredReasons.get(wuId);
-    const blockerSet = deferredBlockers.get(wuId);
+    const reasonSet = deferredReasons.get(wuId)!;
+    const blockerSet = deferredBlockers.get(wuId)!;
     for (const blockerId of blockers) {
       blockerSet.add(blockerId);
     }
@@ -220,13 +341,13 @@ export function buildExecutionPlan(wus) {
   };
 
   for (const wu of readyWUs) {
-    const blockers = wu.doc.blocked_by || [];
-    const externalBlockers = blockers.filter((blockerId) => !allWuIds.has(blockerId));
-    const internalBlockers = blockers.filter((blockerId) => allWuIds.has(blockerId));
+    const blockers = wu.doc.blocked_by ?? [];
+    const externalBlockers = blockers.filter((blockerId: string) => !allWuIds.has(blockerId));
+    const internalBlockers = blockers.filter((blockerId: string) => allWuIds.has(blockerId));
 
     if (externalBlockers.length > 0) {
       // Check if any external blockers lack stamps
-      const unstampedBlockers = externalBlockers.filter((blockerId) => !hasStamp(blockerId));
+      const unstampedBlockers = externalBlockers.filter((blockerId: string) => !hasStamp(blockerId));
       if (unstampedBlockers.length > 0) {
         addDeferredEntry(
           wu.id,
@@ -322,7 +443,7 @@ export function buildExecutionPlan(wus) {
     const deferredToNextWave = []; // WUs that could run but lane is occupied
 
     for (const id of remaining) {
-      const wu = schedulableMap.get(id);
+      const wu = schedulableMap.get(id)!;
       const blockers = wu.doc.blocked_by || [];
 
       // Check if all blockers are either done or completed in previous waves
@@ -376,7 +497,7 @@ export function buildExecutionPlan(wus) {
  * @param {Array<{id: string, doc: object}>} wus - WUs to analyse
  * @returns {{autoEnabled: boolean, reason: string, pendingCount: number, waveCount: number}}
  */
-export function shouldAutoEnableCheckpoint(wus) {
+export function shouldAutoEnableCheckpoint(wus: WUEntry[]): AutoCheckpointResult {
   // Count only pending WUs (not done)
   const pendingWUs = wus.filter((wu) => wu.doc.status !== WU_STATUS.DONE);
   const pendingCount = pendingWUs.length;
@@ -437,7 +558,7 @@ export function shouldAutoEnableCheckpoint(wus) {
  * @param {Array<{id: string, doc: object}>} wus - WUs for auto-detection
  * @returns {{enabled: boolean, source: 'explicit'|'override'|'auto'|'dryrun', reason?: string}}
  */
-export function resolveCheckpointMode(options, wus) {
+export function resolveCheckpointMode(options: CheckpointOptions, wus: WUEntry[]): CheckpointModeResult {
   const { checkpointPerWave = false, noCheckpoint = false, dryRun = false } = options;
 
   // Explicit enable via -c flag
@@ -484,7 +605,7 @@ export function resolveCheckpointMode(options, wus) {
  * @param {number} [limit=5] - Maximum number of bottlenecks to return
  * @returns {Array<{id: string, title: string, blocksCount: number}>} Bottleneck WUs sorted by impact
  */
-export function getBottleneckWUs(wus, limit = 5) {
+export function getBottleneckWUs(wus: WUEntry[], limit = 5): BottleneckWU[] {
   // Build a map of WU ID -> count of WUs that depend on it
   const blocksCounts = new Map();
 
@@ -504,13 +625,13 @@ export function getBottleneckWUs(wus, limit = 5) {
   }
 
   // Convert to array and filter out WUs that don't block anything
-  const bottlenecks = [];
+  const bottlenecks: BottleneckWU[] = [];
   for (const wu of wus) {
     const blocksCount = blocksCounts.get(wu.id);
-    if (blocksCount > 0) {
+    if (blocksCount !== undefined && blocksCount > 0) {
       bottlenecks.push({
         id: wu.id,
-        title: wu.doc.title,
+        title: wu.doc.title ?? wu.id,
         blocksCount,
       });
     }
@@ -532,7 +653,7 @@ export function getBottleneckWUs(wus, limit = 5) {
  * @returns {string} Formatted plan output
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- display formatting inherently complex
-export function formatExecutionPlan(initiative, plan) {
+export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPlan): string {
   const lines = [];
 
   lines.push(`Initiative: ${initiative.id} — ${initiative.title}`);
@@ -587,7 +708,7 @@ export function formatExecutionPlan(initiative, plan) {
   }
 
   for (let i = 0; i < plan.waves.length; i++) {
-    const wave = plan.waves[i];
+    const wave = plan.waves[i]!;
     lines.push(`Wave ${i} (${wave.length} WU${wave.length !== 1 ? 's' : ''} in parallel):`);
 
     for (const wu of wave) {
@@ -620,7 +741,7 @@ export function formatExecutionPlan(initiative, plan) {
  * @param {Array<{id: string, doc: object}>} wave - WUs in the wave
  * @returns {string[]} Array of spawn command strings
  */
-export function generateSpawnCommands(wave) {
+export function generateSpawnCommands(wave: WUEntry[]): string[] {
   return wave.map((wu) => `pnpm wu:spawn --id ${wu.id}`);
 }
 
@@ -630,7 +751,7 @@ export function generateSpawnCommands(wave) {
  * @param {Array<{id: string, doc: object}>} wus - WUs to calculate progress for
  * @returns {{total: number, done: number, active: number, pending: number, blocked: number, percentage: number}}
  */
-export function calculateProgress(wus) {
+export function calculateProgress(wus: WUEntry[]): ProgressStats {
   const stats = {
     total: wus.length,
     done: 0,
@@ -671,7 +792,7 @@ export function calculateProgress(wus) {
  * @param {{total: number, done: number, active: number, pending: number, blocked: number, percentage: number}} progress
  * @returns {string} Formatted progress string
  */
-export function formatProgress(progress) {
+export function formatProgress(progress: ProgressStats): string {
   const bar = createProgressBar(progress.percentage);
   return [
     `Progress: ${bar} ${progress.percentage}%`,
@@ -689,7 +810,7 @@ export function formatProgress(progress) {
  * @param {number} [width=20] - Bar width in characters
  * @returns {string} Visual progress bar
  */
-function createProgressBar(percentage, width = 20) {
+function createProgressBar(percentage: number, width = 20): string {
   const filled = Math.round((percentage / 100) * width);
   const empty = width - filled;
   return `[${'█'.repeat(filled)}${'░'.repeat(empty)}]`;
@@ -701,7 +822,7 @@ function createProgressBar(percentage, width = 20) {
  * @param {string} wuId - WU ID (e.g., 'WU-001')
  * @returns {boolean} True if stamp exists
  */
-function hasStamp(wuId) {
+function hasStamp(wuId: string): boolean {
   const stampPath = join(STAMPS_DIR, `${wuId}.done`);
   return existsSync(stampPath);
 }
@@ -715,10 +836,10 @@ function hasStamp(wuId) {
  * @param {Array<{id: string, doc: {blocked_by?: string[], lane: string, status: string}}>} candidates - WU candidates
  * @returns {{spawnable: Array<object>, blocked: Array<object>, blockingDeps: string[], waitingMessage: string}}
  */
-export function filterByDependencyStamps(candidates) {
-  const spawnable = [];
-  const blocked = [];
-  const blockingDeps = new Set();
+export function filterByDependencyStamps(candidates: WUEntry[]): DependencyFilterResult {
+  const spawnable: WUEntry[] = [];
+  const blocked: WUEntry[] = [];
+  const blockingDeps = new Set<string>();
 
   for (const wu of candidates) {
     const deps = wu.doc.blocked_by || [];
@@ -759,7 +880,7 @@ export function filterByDependencyStamps(candidates) {
  * @param {string} initId - Initiative ID
  * @returns {Array<{wave: number, wus: Array<{id: string}>}>} Parsed manifests
  */
-function getExistingWaveManifests(initId) {
+function getExistingWaveManifests(initId: string): WaveManifest[] {
   if (!existsSync(WAVE_MANIFEST_DIR)) {
     return [];
   }
@@ -790,9 +911,9 @@ function getExistingWaveManifests(initId) {
  * @param {string} initId - Initiative ID
  * @returns {Set<string>} Set of WU IDs already in manifests
  */
-function getSpawnedWUIds(initId) {
+function getSpawnedWUIds(initId: string): Set<string> {
   const manifests = getExistingWaveManifests(initId);
-  const spawnedIds = new Set();
+  const spawnedIds = new Set<string>();
 
   for (const manifest of manifests) {
     if (manifest.wus) {
@@ -811,7 +932,7 @@ function getSpawnedWUIds(initId) {
  * @param {string} initId - Initiative ID
  * @returns {number} Next wave number (0-indexed)
  */
-function getNextWaveNumber(initId) {
+function getNextWaveNumber(initId: string): number {
   const manifests = getExistingWaveManifests(initId);
   if (manifests.length === 0) {
     return 0;
@@ -828,7 +949,7 @@ function getNextWaveNumber(initId) {
  * @param {{checkpointPerWave?: boolean, dryRun?: boolean, noCheckpoint?: boolean}} options - CLI options
  * @throws {Error} If invalid flag combination
  */
-export function validateCheckpointFlags(options) {
+export function validateCheckpointFlags(options: CheckpointOptions): void {
   if (options.checkpointPerWave && options.dryRun) {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
@@ -864,7 +985,7 @@ export function validateCheckpointFlags(options) {
  * @returns {{wave: number, wus: Array<{id: string, lane: string, status: string}>, manifestPath: string, initiative: string}|null}
  *   Wave data or null if all WUs complete
  */
-export function buildCheckpointWave(initRef, options = {}) {
+export function buildCheckpointWave(initRef: string, options: CheckpointOptions = {}): CheckpointWaveResult | null {
   const { dryRun = false } = options;
   // Load initiative and WUs
   const initData = findInitiative(initRef);
@@ -979,7 +1100,7 @@ export function buildCheckpointWave(initRef, options = {}) {
  * @param {{initiative: string, wave: number, wus: Array<{id: string, lane: string}>, manifestPath: string, blockedBy?: string[], waitingMessage?: string, dryRun?: boolean}} waveData
  * @returns {string} Formatted output with embedded Task invocations
  */
-export function formatCheckpointOutput(waveData) {
+export function formatCheckpointOutput(waveData: CheckpointWaveResult): string {
   const lines = [];
   const isDryRun = waveData.dryRun === true;
 
@@ -1080,7 +1201,7 @@ export function formatCheckpointOutput(waveData) {
  * @returns {string} Escaped spawn prompt content ready for XML embedding
  * @throws {Error} If WU file not found or cannot be parsed
  */
-export function generateEmbeddedSpawnPrompt(wuId) {
+export function generateEmbeddedSpawnPrompt(wuId: string): string {
   const wuPath = WU_PATHS.WU(wuId);
 
   if (!existsSync(wuPath)) {
@@ -1108,7 +1229,7 @@ export function generateEmbeddedSpawnPrompt(wuId) {
  * @param {{id: string, doc: object}} wu - WU with id and YAML doc
  * @returns {string} Complete Task invocation with embedded spawn content
  */
-export function formatTaskInvocationWithEmbeddedSpawn(wu) {
+export function formatTaskInvocationWithEmbeddedSpawn(wu: WUEntry): string {
   // Generate the full Task invocation for this WU
   return generateTaskInvocation(wu.doc, wu.id, {});
 }
@@ -1125,7 +1246,7 @@ export function formatTaskInvocationWithEmbeddedSpawn(wu) {
  * @returns {string} Formatted output with embedded Task invocations
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- spawn formatting inherently complex
-export function formatExecutionPlanWithEmbeddedSpawns(plan) {
+export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): string {
   const lines = [];
 
   if (plan.waves.length === 0) {
@@ -1133,7 +1254,7 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan) {
   }
 
   for (let waveIndex = 0; waveIndex < plan.waves.length; waveIndex++) {
-    const wave = plan.waves[waveIndex];
+    const wave = plan.waves[waveIndex]!;
     lines.push(
       `## Wave ${waveIndex} (${wave.length} WU${wave.length !== 1 ? 's' : ''} in parallel)`
     );

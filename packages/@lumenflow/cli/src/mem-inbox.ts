@@ -287,8 +287,25 @@ function parseArguments() {
  * @param {object} args - Parsed CLI arguments
  * @returns {object} Filter options for loadSignals
  */
-function buildFilterOptions(args) {
-  const filterOptions = {
+interface FilterOptions {
+  unreadOnly: boolean;
+  wuId?: string;
+  lane?: string;
+  since?: Date;
+}
+
+interface ParsedArgs {
+  wu?: string;
+  lane?: string;
+  since?: string;
+  watch?: boolean;
+  quiet?: boolean;
+  count?: boolean;
+  mark?: boolean;
+}
+
+function buildFilterOptions(args: ParsedArgs): FilterOptions {
+  const filterOptions: FilterOptions = {
     unreadOnly: true, // Default to unread only
   };
 

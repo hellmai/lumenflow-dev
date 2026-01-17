@@ -9,9 +9,9 @@
  * @see {@link ../ports/metrics-collector.port.ts} - Port interface
  */
 
-import type { IMetricsCollector } from '../ports/metrics-collector.port';
+import type { IMetricsCollector } from '../ports/metrics-collector.port.js';
 import type { Suggestion, MandatoryAgentName } from '../domain/orchestration.types.js';
-import { detectMandatoryAgents, generateSuggestions } from '../orchestration-rules';
+import { detectMandatoryAgents, generateSuggestions } from '../orchestration-rules.js';
 
 /**
  * Bottleneck scores mapping WU IDs to their impact scores.

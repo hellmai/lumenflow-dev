@@ -16,7 +16,13 @@
 
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import { PATTERNS, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
+import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+
+/** Local EMOJI constants for spawn-list output */
+const EMOJI = {
+  WARNING: '⚠️',
+  ERROR: '❌',
+};
 
 /** Custom options for spawn-list command */
 const SPAWN_LIST_OPTIONS = {
@@ -41,6 +47,17 @@ import {
   STATUS_INDICATORS,
 } from '@lumenflow/core/dist/spawn-tree.js';
 import { SpawnStatus } from '@lumenflow/core/dist/spawn-registry-schema.js';
+
+/** SpawnEvent type for spawn records */
+interface SpawnEvent {
+  id?: string;
+  lane?: string;
+  status?: string;
+  parentWuId?: string;
+  targetWuId?: string;
+  spawnedAt?: string;
+  completedAt?: string;
+}
 
 const LOG_PREFIX = '[spawn:list]';
 
@@ -149,8 +166,9 @@ async function main() {
     console.log(`${LOG_PREFIX} Spawns for ${initId}:\n`);
 
     // Find unique root WUs (parents that are not targets of other spawns)
-    const targetWuIds = new Set(spawns.map((s) => s.targetWuId));
-    const rootWuIds = [...new Set(spawns.map((s) => s.parentWuId))].filter(
+    const typedSpawns = spawns as SpawnEvent[];
+    const targetWuIds = new Set(typedSpawns.map((s) => s.targetWuId));
+    const rootWuIds = [...new Set(typedSpawns.map((s) => s.parentWuId))].filter(
       (id) => !targetWuIds.has(id)
     );
 

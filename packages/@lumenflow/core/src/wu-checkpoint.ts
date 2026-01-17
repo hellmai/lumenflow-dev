@@ -49,14 +49,21 @@ const CHECKPOINT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
  */
 
 /**
+ * Options for checkpoint operations
+ */
+interface CheckpointBaseDirOptions {
+  /** Base directory (defaults to cwd) */
+  baseDir?: string;
+}
+
+/**
  * Get the path to a checkpoint file
  *
  * @param {string} wuId - WU ID
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory (defaults to cwd)
+ * @param {CheckpointBaseDirOptions} [options]
  * @returns {string} Path to checkpoint file
  */
-function getCheckpointPath(wuId, options = {}) {
+function getCheckpointPath(wuId, options: CheckpointBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
   return path.join(baseDir, '.beacon', CHECKPOINT_DIR, `${wuId}.checkpoint.json`);
 }
@@ -64,10 +71,9 @@ function getCheckpointPath(wuId, options = {}) {
 /**
  * Ensure checkpoint directory exists
  *
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {CheckpointBaseDirOptions} [options]
  */
-function ensureCheckpointDir(options = {}) {
+function ensureCheckpointDir(options: CheckpointBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
   const checkpointDir = path.join(baseDir, '.beacon', CHECKPOINT_DIR);
   if (!existsSync(checkpointDir)) {
@@ -140,18 +146,24 @@ function getHeadSha(dir) {
 }
 
 /**
+ * Options for creating pre-gates checkpoint
+ */
+export interface CreatePreGatesCheckpointOptions extends CheckpointBaseDirOptions {
+  /** Whether gates already passed (for testing) */
+  gatesPassed?: boolean;
+}
+
+/**
  * Create a checkpoint before running gates
  *
  * @param {Object} params - Checkpoint parameters
  * @param {string} params.wuId - WU ID
  * @param {string} params.worktreePath - Path to worktree
  * @param {string} params.branchName - Lane branch name
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {boolean} [options.gatesPassed] - Whether gates already passed (for testing)
+ * @param {CreatePreGatesCheckpointOptions} [options]
  * @returns {Promise<Checkpoint>} Created checkpoint
  */
-export async function createPreGatesCheckpoint(params, options = {}) {
+export async function createPreGatesCheckpoint(params, options: CreatePreGatesCheckpointOptions = {}) {
   const { wuId, worktreePath, branchName, gatesPassed = false } = params;
   const { baseDir } = options;
 
@@ -181,11 +193,10 @@ export async function createPreGatesCheckpoint(params, options = {}) {
  * Mark a checkpoint as having passed gates
  *
  * @param {string} wuId - WU ID
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {CheckpointBaseDirOptions} [options]
  * @returns {boolean} True if checkpoint was updated
  */
-export function markGatesPassed(wuId, options = {}) {
+export function markGatesPassed(wuId, options: CheckpointBaseDirOptions = {}) {
   const checkpoint = getCheckpoint(wuId, options);
   if (!checkpoint) {
     return false;
@@ -206,11 +217,10 @@ export function markGatesPassed(wuId, options = {}) {
  * Get a checkpoint for a WU
  *
  * @param {string} wuId - WU ID
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {CheckpointBaseDirOptions} [options]
  * @returns {Checkpoint|null} Checkpoint or null if not found
  */
-export function getCheckpoint(wuId, options = {}) {
+export function getCheckpoint(wuId, options: CheckpointBaseDirOptions = {}) {
   const checkpointPath = getCheckpointPath(wuId, options);
 
   if (!existsSync(checkpointPath)) {
@@ -230,10 +240,9 @@ export function getCheckpoint(wuId, options = {}) {
  * Clear a checkpoint for a WU
  *
  * @param {string} wuId - WU ID
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
+ * @param {CheckpointBaseDirOptions} [options]
  */
-export function clearCheckpoint(wuId, options = {}) {
+export function clearCheckpoint(wuId, options: CheckpointBaseDirOptions = {}) {
   const checkpointPath = getCheckpointPath(wuId, options);
 
   if (existsSync(checkpointPath)) {
@@ -260,12 +269,15 @@ export function clearCheckpoint(wuId, options = {}) {
  * 5. Checkpoint isn't stale
  *
  * @param {string} wuId - WU ID
- * @param {Object} [options]
- * @param {string} [options.baseDir] - Base directory
- * @param {string} [options.currentHeadSha] - Current worktree HEAD SHA to compare
+ * @param {CanSkipGatesOptions} [options]
  * @returns {CanSkipResult} Result indicating if gates can be skipped
  */
-export function canSkipGates(wuId, options = {}) {
+export interface CanSkipGatesOptions extends CheckpointBaseDirOptions {
+  /** Current worktree HEAD SHA to compare */
+  currentHeadSha?: string;
+}
+
+export function canSkipGates(wuId, options: CanSkipGatesOptions = {}) {
   const { baseDir, currentHeadSha } = options;
 
   const checkpoint = getCheckpoint(wuId, { baseDir });

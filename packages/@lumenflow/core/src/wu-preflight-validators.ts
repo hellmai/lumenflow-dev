@@ -211,12 +211,17 @@ function validateTestPathsExistence(tests, rootDir) {
  * preflight validation uses the updated YAML, not stale main.
  *
  * @param {string} id - WU ID (e.g., 'WU-999')
- * @param {object} [options={}] - Options
- * @param {string} [options.rootDir=process.cwd()] - Root directory for path resolution (fallback)
- * @param {string} [options.worktreePath=null] - Worktree path (preferred source for YAML and file checks)
+ * @param {ValidatePreflightOptions} [options={}] - Options
  * @returns {Promise<PreflightResult>}
  */
-export async function validatePreflight(id, options = {}) {
+export interface ValidatePreflightOptions {
+  /** Root directory for path resolution (fallback) */
+  rootDir?: string;
+  /** Worktree path (preferred source for YAML and file checks) */
+  worktreePath?: string | null;
+}
+
+export async function validatePreflight(id, options: ValidatePreflightOptions = {}) {
   const rootDir = options.rootDir || process.cwd();
   const worktreePath = options.worktreePath || rootDir;
 

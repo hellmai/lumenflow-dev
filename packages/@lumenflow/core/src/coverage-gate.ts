@@ -82,7 +82,7 @@ export function parseCoverageJson(coveragePath) {
   }
 
   try {
-    const content = readFileSync(coveragePath, FILE_SYSTEM.UTF8);
+    const content = readFileSync(coveragePath, { encoding: 'utf-8' });
     const data = JSON.parse(content);
 
     // Transform to consistent format
@@ -114,12 +114,13 @@ export function checkCoverageThresholds(coverageData) {
 
   const failures = [];
 
-  for (const [file, metrics] of Object.entries(coverageData.files)) {
+  for (const [file, metricsValue] of Object.entries(coverageData.files)) {
     if (!isHexCoreFile(file)) {
       continue;
     }
 
     // Check lines coverage (primary metric)
+    const metrics = metricsValue as { lines?: { pct: number } };
     const linesCoverage = metrics.lines?.pct ?? 0;
     if (linesCoverage < COVERAGE_THRESHOLD) {
       failures.push({
@@ -162,7 +163,8 @@ export function formatCoverageDelta(coverageData) {
 
   if (hexCoreFiles.length > 0) {
     lines.push('Hex Core Files:');
-    for (const [file, metrics] of hexCoreFiles) {
+    for (const [file, metricsValue] of hexCoreFiles) {
+      const metrics = metricsValue as { lines?: { pct: number } };
       const pct = metrics.lines?.pct ?? 0;
       const status = pct >= COVERAGE_THRESHOLD ? EMOJI.SUCCESS : EMOJI.FAILURE;
       const shortFile = file.replace('packages/@exampleapp/', '');
@@ -174,14 +176,31 @@ export function formatCoverageDelta(coverageData) {
 }
 
 /**
+ * Logger interface for coverage gate output
+ */
+interface CoverageGateLogger {
+  log: (...args: unknown[]) => void;
+}
+
+/**
+ * Options for running coverage gate
+ */
+export interface CoverageGateOptions {
+  /** Gate mode ('warn' or 'block') */
+  mode?: string;
+  /** Path to coverage JSON */
+  coveragePath?: string;
+  /** Logger for output */
+  logger?: CoverageGateLogger;
+}
+
+/**
  * Run coverage gate.
  *
- * @param {object} options - Gate options
- * @param {string} options.mode - Gate mode ('warn' or 'block')
- * @param {string} options.coveragePath - Path to coverage JSON
+ * @param {CoverageGateOptions} options - Gate options
  * @returns {Promise<{ ok: boolean, mode: string, duration: number, message: string }>}
  */
-export async function runCoverageGate(options = {}) {
+export async function runCoverageGate(options: CoverageGateOptions = {}) {
   const start = Date.now();
   const mode = options.mode || COVERAGE_GATE_MODES.WARN;
   const coveragePath = options.coveragePath || DEFAULT_COVERAGE_PATH;

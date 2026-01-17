@@ -224,15 +224,23 @@ function isConstantDefinition(line) {
 }
 
 /**
+ * Options for hardcoded path violation detection
+ */
+export interface FindHardcodedPathViolationsOptions {
+  /** Whether this is a test file (skip detection) */
+  isTestFile?: boolean;
+  /** Whether this is a config file (skip detection) */
+  isConfigFile?: boolean;
+}
+
+/**
  * Find hardcoded path violations in a line of code
  *
  * @param {string} line - The line of code to check
- * @param {Object} options - Options for detection
- * @param {boolean} options.isTestFile - Whether this is a test file (skip detection)
- * @param {boolean} options.isConfigFile - Whether this is a config file (skip detection)
+ * @param {FindHardcodedPathViolationsOptions} options - Options for detection
  * @returns {Array<{line: string, fix: string, pathType: string, path: string}>} Array of violations
  */
-export function findHardcodedPathViolations(line, options = {}) {
+export function findHardcodedPathViolations(line, options: FindHardcodedPathViolationsOptions = {}) {
   const { isTestFile = false, isConfigFile = false } = options;
 
   // Skip test files and config files

@@ -102,7 +102,7 @@ export function createStamp({ id, title }) {
 
   // Create stamp file
   const body = STAMP_TEMPLATE(id, title, todayISO());
-  writeFileSync(stampPath, body, FILE_SYSTEM.UTF8);
+  writeFileSync(stampPath, body, { encoding: 'utf-8' });
 
   return { created: true, path: stampPath };
 }
@@ -202,9 +202,10 @@ export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
   // Read stamp content
   let content;
   try {
-    content = await readFile(stampPath, FILE_SYSTEM.UTF8);
+    content = await readFile(stampPath, { encoding: 'utf-8' });
   } catch (err) {
-    return { valid: false, errors: [`Failed to read stamp: ${err.message}`] };
+    const message = err instanceof Error ? err.message : String(err);
+    return { valid: false, errors: [`Failed to read stamp: ${message}`] };
   }
 
   // Check for empty file
@@ -231,13 +232,22 @@ export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
 }
 
 /**
+ * Parsed stamp metadata
+ */
+interface StampMetadata {
+  wuId?: string;
+  title?: string;
+  completedDate?: string;
+}
+
+/**
  * Parse stamp content to extract metadata
  *
  * @param {string} content - Stamp file content
- * @returns {{wuId?: string, title?: string, completedDate?: string}}
+ * @returns {StampMetadata}
  */
-export function parseStampContent(content) {
-  const result = {};
+export function parseStampContent(content: string): StampMetadata {
+  const result: StampMetadata = {};
   const lines = content.split('\n');
 
   // Parse WU line

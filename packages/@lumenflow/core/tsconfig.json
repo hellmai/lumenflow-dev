@@ -29,5 +29,5 @@
     "noEmitOnError": false
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "__tests__"]
+  "exclude": ["node_modules", "dist", "__tests__", "src/**/__tests__", "src/**/*.test.ts"]
 }

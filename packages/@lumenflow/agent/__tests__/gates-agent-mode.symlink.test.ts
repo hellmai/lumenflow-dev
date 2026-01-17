@@ -10,11 +10,12 @@ import { mkdirSync, rmSync, writeFileSync, readlinkSync, existsSync } from 'node
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Import from @lumenflow/core where the source lives
 import {
   getGatesLatestSymlinkPath,
   updateGatesLatestSymlink,
   getGatesLogDir,
-} from '../gates-agent-mode.js';
+} from '@lumenflow/core/dist/gates-agent-mode.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEST_FIXTURE_DIR = path.join(__dirname, '.test-fixtures-symlink');

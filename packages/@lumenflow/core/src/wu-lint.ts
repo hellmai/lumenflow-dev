@@ -204,15 +204,23 @@ export function validateInvariantsCompliance(wu, invariants) {
 }
 
 /**
+ * Options for linting WU spec
+ */
+export interface LintWUSpecOptions {
+  /** Pre-loaded invariants */
+  invariants?: unknown[];
+  /** Path to invariants.yml */
+  invariantsPath?: string;
+}
+
+/**
  * Lint a WU spec against all rules
  *
  * @param {object} wu - WU spec object
- * @param {object} [options={}] - Options
- * @param {Array<object>} [options.invariants] - Pre-loaded invariants
- * @param {string} [options.invariantsPath] - Path to invariants.yml
+ * @param {LintWUSpecOptions} [options={}] - Options
  * @returns {{valid: boolean, errors: Array<object>}} Lint result
  */
-export function lintWUSpec(wu, options = {}) {
+export function lintWUSpec(wu, options: LintWUSpecOptions = {}) {
   const allErrors = [];
 
   // 1. Validate acceptance/code_paths consistency

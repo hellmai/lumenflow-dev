@@ -31,7 +31,7 @@ function hasSubLaneTaxonomy(parent, projectRoot) {
   }
 
   try {
-    const taxonomyContent = readFileSync(taxonomyPath, FILE_SYSTEM.UTF8);
+    const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
     const taxonomy = yaml.load(taxonomyContent);
 
     const normalizedParent = parent.trim().toLowerCase();
@@ -154,8 +154,8 @@ export function validateBacklogSync(backlogPath) {
     }
 
     try {
-      const wuContent = readFileSync(wuPath, FILE_SYSTEM.UTF8);
-      const wuDoc = yaml.load(wuContent);
+      const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
+      const wuDoc = yaml.load(wuContent) as { lane?: string } | null;
 
       if (wuDoc && wuDoc.lane) {
         const lane = wuDoc.lane.toString().trim();
@@ -202,6 +202,16 @@ export function validateBacklogSync(backlogPath) {
 }
 
 /**
+ * Options for fixing backlog duplicates
+ */
+export interface FixBacklogDuplicatesOptions {
+  /** If true, report changes without writing */
+  dryRun?: boolean;
+  /** If true, return fixed content without writing (WU-1506) */
+  returnContent?: boolean;
+}
+
+/**
  * Fix backlog duplicates by removing WUs from non-authoritative sections
  * - If WU in Done AND Ready: remove from Ready (Done is authoritative)
  * - If WU in Done AND InProgress: remove from InProgress (Done is authoritative)
@@ -210,12 +220,10 @@ export function validateBacklogSync(backlogPath) {
  * WU-1506: Added returnContent option for atomic in-memory validation
  *
  * @param {string} backlogPath - Path to backlog.md file
- * @param {object} options - Fix options
- * @param {boolean} options.dryRun - If true, report changes without writing
- * @param {boolean} options.returnContent - If true, return fixed content without writing (WU-1506)
+ * @param {FixBacklogDuplicatesOptions} options - Fix options
  * @returns {{fixed: boolean, removed: Array<{wu: string, section: string}>, backupPath?: string, content?: string}}
  */
-export function fixBacklogDuplicates(backlogPath, options = {}) {
+export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesOptions = {}) {
   const { dryRun = false, returnContent = false } = options;
 
   // Parse frontmatter to get configured section headings
@@ -311,7 +319,7 @@ export function fixBacklogDuplicates(backlogPath, options = {}) {
   const newLines = lines.filter((_, index) => !linesToRemove.has(index));
 
   // Reconstruct file with frontmatter
-  const originalContent = readFileSync(backlogPath, FILE_SYSTEM.UTF8);
+  const originalContent = readFileSync(backlogPath, { encoding: 'utf-8' });
   const frontmatterMatch = originalContent.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterContent = frontmatterMatch ? frontmatterMatch[0] : STRING_LITERALS.EMPTY;
 
@@ -341,7 +349,7 @@ export function fixBacklogDuplicates(backlogPath, options = {}) {
   const backupPath = `${backlogPath}.bak`;
   copyFileSync(backlogPath, backupPath);
 
-  writeFileSync(backlogPath, newContent, FILE_SYSTEM.UTF8);
+  writeFileSync(backlogPath, newContent, { encoding: 'utf-8' });
 
   return {
     fixed: true,

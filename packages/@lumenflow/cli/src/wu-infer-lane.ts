@@ -60,7 +60,14 @@ Options:
   return args;
 }
 
-function loadWuYaml(id) {
+interface WUYamlDoc {
+  code_paths?: string[];
+  description?: string;
+  title?: string;
+  [key: string]: unknown;
+}
+
+function loadWuYaml(id: string): WUYamlDoc {
   const wuPath = path.join(process.cwd(), 'docs/04-operations/tasks/wu', `${id}.yaml`);
   if (!existsSync(wuPath)) {
     die(
@@ -73,7 +80,7 @@ function loadWuYaml(id) {
 
   let content;
   try {
-    content = readFileSync(wuPath, FILE_SYSTEM.UTF8);
+    content = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   } catch (err) {
     die(
       `Failed to read WU file: ${wuPath}\n\n` +
@@ -85,12 +92,13 @@ function loadWuYaml(id) {
   }
 
   try {
-    const doc = yaml.load(content);
+    const doc = yaml.load(content) as WUYamlDoc;
     return doc;
   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     die(
       `Failed to parse WU YAML: ${wuPath}\n\n` +
-        `Error: ${err.message}\n\n` +
+        `Error: ${errorMessage}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
         `  2. Fix YAML errors manually and retry`

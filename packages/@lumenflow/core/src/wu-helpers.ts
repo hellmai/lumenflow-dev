@@ -43,7 +43,7 @@ export function validateWUIDFormat(id) {
  */
 export function run(cmd, opts = {}) {
   try {
-    return execSync(cmd, { stdio: STDIO.PIPE, encoding: FILE_SYSTEM.UTF8, ...opts }).trim();
+    return execSync(cmd, { stdio: STDIO.PIPE, encoding: 'utf-8', ...opts }).trim();
   } catch {
     return '';
   }
@@ -142,7 +142,7 @@ export function readWUYaml(wuid) {
   if (!existsSync(wuPath)) return null;
 
   try {
-    const content = readFileSync(wuPath, FILE_SYSTEM.UTF8);
+    const content = readFileSync(wuPath, { encoding: 'utf-8' });
     return parse(content);
   } catch {
     return null;

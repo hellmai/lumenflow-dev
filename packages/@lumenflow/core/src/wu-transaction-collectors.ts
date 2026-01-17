@@ -195,7 +195,7 @@ export function computeStatusContent(statusPath, id, title) {
   insertIntoCompleted(lines, completedIdx, completedEntry, id, completedEndIdx);
 
   // Reconstruct with frontmatter
-  const raw = readFileSync(statusPath, FILE_SYSTEM.UTF8);
+  const raw = readFileSync(statusPath, { encoding: 'utf-8' });
   const frontmatterMatch = raw.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterText = frontmatterMatch ? frontmatterMatch[0] : '';
 
@@ -241,7 +241,7 @@ export async function computeWUEventsContentAfterComplete(backlogPath, wuId) {
   }
 
   const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
-  const existing = existsSync(eventsPath) ? readFileSync(eventsPath, FILE_SYSTEM.UTF8) : '';
+  const existing = existsSync(eventsPath) ? readFileSync(eventsPath, { encoding: 'utf-8' }) : '';
   const withNewline = ensureTrailingNewline(existing);
 
   return {

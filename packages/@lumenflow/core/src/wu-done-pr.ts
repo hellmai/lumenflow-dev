@@ -52,7 +52,7 @@ export function isPRModeEnabled(doc, args) {
  */
 export function isGhCliAvailable() {
   try {
-    execSync('gh --version', { encoding: FILE_SYSTEM.UTF8, stdio: STDIO.IGNORE });
+    execSync('gh --version', { encoding: 'utf-8', stdio: STDIO.IGNORE });
     return true;
   } catch {
     return false;
@@ -95,7 +95,7 @@ export async function createPR(context) {
   try {
     const prUrl = execSync(
       `gh pr create --title ${JSON.stringify(prTitle)} --body ${JSON.stringify(body)} ${draftFlag} --head ${JSON.stringify(branch)} --base main`,
-      { encoding: FILE_SYSTEM.UTF8 }
+      { encoding: 'utf-8' }
     ).trim();
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} PR created: ${prUrl}`);
     return { success: true, prUrl, ghAvailable: true };

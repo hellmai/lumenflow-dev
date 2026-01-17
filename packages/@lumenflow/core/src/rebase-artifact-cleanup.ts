@@ -82,7 +82,7 @@ async function yamlIsDoneOnMain(gitAdapter, wuId) {
       'show',
       `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${WU_PATHS.WU(wuId)}`,
     ]);
-    const doc = yaml.load(content);
+    const doc = yaml.load(content) as { status?: string } | null;
     return doc && doc.status === WU_STATUS.DONE;
   } catch {
     return false;
@@ -98,7 +98,7 @@ async function yamlIsDoneOnMain(gitAdapter, wuId) {
  */
 function readMarkdownFile(filePath) {
   const { readFileSync } = require('node:fs');
-  const raw = readFileSync(filePath, FILE_SYSTEM.ENCODING);
+  const raw = readFileSync(filePath, { encoding: 'utf-8' });
   const allLines = raw.split('\n');
 
   // Check for frontmatter (starts with ---)
@@ -140,7 +140,7 @@ function readMarkdownFile(filePath) {
 function writeMarkdownFile(filePath, frontmatter, lines) {
   const { writeFileSync } = require('node:fs');
   const content = frontmatter + lines.join('\n');
-  writeFileSync(filePath, content, FILE_SYSTEM.ENCODING);
+  writeFileSync(filePath, content, { encoding: 'utf-8' });
 }
 
 /**
@@ -182,8 +182,8 @@ export async function detectRebasedArtifacts(worktreePath, wuId, gitAdapter) {
   let localYamlDone = false;
   if (await fileExists(wuYamlPath)) {
     try {
-      const content = await readFile(wuYamlPath, FILE_SYSTEM.ENCODING);
-      const doc = yaml.load(content);
+      const content = await readFile(wuYamlPath, { encoding: 'utf-8' });
+      const doc = yaml.load(content) as { status?: string } | null;
       if (doc && doc.status === WU_STATUS.DONE) {
         localYamlDone = true;
       }
@@ -256,15 +256,16 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
       );
     }
   } catch (error) {
-    errors.push(`Failed to remove stamp: ${error.message}`);
+    const stampErrMessage = error instanceof Error ? error.message : String(error);
+    errors.push(`Failed to remove stamp: ${stampErrMessage}`);
   }
 
   // Reset YAML status
   const wuYamlPath = join(worktreePath, WU_PATHS.WU(wuId));
   try {
     if (await fileExists(wuYamlPath)) {
-      const content = await readFile(wuYamlPath, FILE_SYSTEM.ENCODING);
-      const doc = yaml.load(content);
+      const content = await readFile(wuYamlPath, { encoding: 'utf-8' });
+      const doc = yaml.load(content) as { status?: string; locked?: boolean; completed_at?: string } | null;
 
       if (doc && doc.status === WU_STATUS.DONE) {
         // Reset status
@@ -276,7 +277,7 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
 
         // Write back
         const updatedContent = yaml.dump(doc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
-        await writeFile(wuYamlPath, updatedContent, FILE_SYSTEM.ENCODING);
+        await writeFile(wuYamlPath, updatedContent, { encoding: 'utf-8' });
 
         yamlReset = true;
         console.log(
@@ -286,7 +287,8 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
       }
     }
   } catch (error) {
-    errors.push(`Failed to reset YAML status: ${error.message}`);
+    const message = error instanceof Error ? error.message : String(error);
+    errors.push(`Failed to reset YAML status: ${message}`);
   }
 
   // WU-1449: Also clean backlog/status duplicates

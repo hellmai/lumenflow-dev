@@ -2,8 +2,19 @@ import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { readWU } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
-import { detectCycles } from './initiative-validator.js';
 import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
+
+// Optional import from @lumenflow/initiatives - if not available, provide stub
+let detectCycles: (wuMap: Map<string, unknown>) => { hasCycle: boolean; cycles: string[][] };
+
+try {
+  // Dynamic import for optional peer dependency
+  const module = await import('@lumenflow/initiatives');
+  detectCycles = module.detectCycles;
+} catch {
+  // Fallback stub if @lumenflow/initiatives is not available
+  detectCycles = () => ({ hasCycle: false, cycles: [] });
+}
 
 /**
  * Dependency Graph Module (WU-1247, WU-1568)
@@ -125,16 +136,24 @@ export function getDownstreamDependents(graph, wuId, maxDepth = 10) {
 }
 
 /**
+ * Options for rendering ASCII tree
+ */
+export interface RenderASCIIOptions {
+  /** Direction to traverse: 'up', 'down', or 'both' */
+  direction?: 'up' | 'down' | 'both';
+  /** Maximum depth to traverse */
+  depth?: number;
+}
+
+/**
  * Render dependency graph as ASCII tree.
  *
  * @param {Map} graph - Dependency graph
  * @param {string} rootId - Root WU ID
- * @param {object} [options] - Render options
- * @param {string} [options.direction='both'] - 'up', 'down', or 'both'
- * @param {number} [options.depth=3] - Maximum depth
+ * @param {RenderASCIIOptions} [options] - Render options
  * @returns {string} ASCII tree representation
  */
-export function renderASCII(graph, rootId, options = {}) {
+export function renderASCII(graph, rootId, options: RenderASCIIOptions = {}) {
   const { direction = 'both', depth: maxDepth = 3 } = options;
   const lines = [];
   const root = graph.get(rootId);
@@ -193,16 +212,25 @@ export function renderASCII(graph, rootId, options = {}) {
 }
 
 /**
+ * Options for rendering Mermaid diagram
+ */
+export interface RenderMermaidOptions {
+  /** Optional root WU ID to focus on */
+  rootId?: string;
+  /** Diagram direction: 'TD', 'LR', 'BT', 'RL' */
+  direction?: 'TD' | 'LR' | 'BT' | 'RL';
+  /** Maximum depth from root */
+  depth?: number;
+}
+
+/**
  * Render dependency graph as Mermaid diagram.
  *
  * @param {Map} graph - Dependency graph
- * @param {object} [options] - Render options
- * @param {string} [options.rootId] - Optional root to focus on
- * @param {string} [options.direction='TD'] - 'TD', 'LR', 'BT', 'RL'
- * @param {number} [options.depth=3] - Maximum depth from root
+ * @param {RenderMermaidOptions} [options] - Render options
  * @returns {string} Mermaid diagram syntax
  */
-export function renderMermaid(graph, options = {}) {
+export function renderMermaid(graph, options: RenderMermaidOptions = {}) {
   const { rootId, direction = 'TD', depth: maxDepth = 3 } = options;
   const lines = [];
   const nodes = new Set();

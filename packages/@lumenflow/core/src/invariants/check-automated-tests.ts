@@ -39,14 +39,21 @@ const ACTIVE_STATUSES = Object.freeze(['in_progress', 'blocked']);
 const WU_YAML_PATH = 'docs/04-operations/tasks/wu';
 
 /**
+ * Options for checking WU file
+ */
+interface CheckWUFileOptions {
+  /** Skip status check (WU-2425: for scoped validation) */
+  skipStatusCheck?: boolean;
+}
+
+/**
  * Check a single WU YAML file for automated test requirement.
  *
  * @param {string} filePath - Path to WU YAML file
- * @param {object} [options={}] - Options
- * @param {boolean} [options.skipStatusCheck=false] - Skip status check (WU-2425: for scoped validation)
+ * @param {CheckWUFileOptions} [options={}] - Options
  * @returns {{ valid: boolean, wuId: string|null, error: string|null }} Check result
  */
-function checkWUFile(filePath, options = {}) {
+function checkWUFile(filePath, options: CheckWUFileOptions = {}) {
   const { skipStatusCheck = false } = options;
 
   try {
@@ -107,12 +114,17 @@ function getCodeFilesFromPaths(codePaths) {
  * WU-2425: When wuId is provided, only validates that specific WU instead of
  * all active WUs. This prevents unrelated WUs from blocking wu:done completion.
  *
- * @param {object} [options={}] - Options
- * @param {string} [options.baseDir=process.cwd()] - Base directory for path resolution
- * @param {string} [options.wuId] - Specific WU ID to validate (WU-2425: scoped validation)
+ * @param {CheckAutomatedTestsInvariantOptions} [options={}] - Options
  * @returns {{ valid: boolean, violations: Array<object> }} Check result
  */
-export function checkAutomatedTestsInvariant(options = {}) {
+export interface CheckAutomatedTestsInvariantOptions {
+  /** Base directory for path resolution */
+  baseDir?: string;
+  /** Specific WU ID to validate (WU-2425: scoped validation) */
+  wuId?: string;
+}
+
+export function checkAutomatedTestsInvariant(options: CheckAutomatedTestsInvariantOptions = {}) {
   const { baseDir = process.cwd(), wuId } = options;
   const wuDir = path.join(baseDir, WU_YAML_PATH);
   const violations = [];

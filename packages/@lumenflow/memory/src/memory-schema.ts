@@ -23,7 +23,7 @@ import { z } from 'zod';
  * - note: Free-form annotation (observation, decision rationale)
  * - summary: Condensed context (session summary, WU summary)
  */
-export const MEMORY_NODE_TYPES = ['session', 'discovery', 'checkpoint', 'note', 'summary'];
+export const MEMORY_NODE_TYPES = ['session', 'discovery', 'checkpoint', 'note', 'summary'] as const;
 
 /**
  * Memory lifecycle durations
@@ -33,7 +33,7 @@ export const MEMORY_NODE_TYPES = ['session', 'discovery', 'checkpoint', 'note', 
  * - wu: Lives for WU duration (cleared on wu:done)
  * - project: Persists across WUs (architectural knowledge)
  */
-export const MEMORY_LIFECYCLES = ['ephemeral', 'session', 'wu', 'project'];
+export const MEMORY_LIFECYCLES = ['ephemeral', 'session', 'wu', 'project'] as const;
 
 /**
  * Relationship types between memory nodes
@@ -43,7 +43,7 @@ export const MEMORY_LIFECYCLES = ['ephemeral', 'session', 'wu', 'project'];
  * - related: Semantic similarity or topical connection
  * - discovered_from: Source attribution (discovered from another node)
  */
-export const RELATIONSHIP_TYPES = ['blocks', 'parent_child', 'related', 'discovered_from'];
+export const RELATIONSHIP_TYPES = ['blocks', 'parent_child', 'related', 'discovered_from'] as const;
 
 /**
  * Regex patterns for memory validation
@@ -81,12 +81,12 @@ export const MemoryNodeSchema = z.object({
 
   /** Node type classification */
   type: z.enum(MEMORY_NODE_TYPES, {
-    errorMap: () => ({ message: ERROR_MESSAGES.NODE_TYPE }),
+    error: ERROR_MESSAGES.NODE_TYPE,
   }),
 
   /** Lifecycle duration */
   lifecycle: z.enum(MEMORY_LIFECYCLES, {
-    errorMap: () => ({ message: ERROR_MESSAGES.LIFECYCLE }),
+    error: ERROR_MESSAGES.LIFECYCLE,
   }),
 
   /** Node content (required, non-empty) */
@@ -108,7 +108,7 @@ export const MemoryNodeSchema = z.object({
   session_id: z.string().uuid().optional(),
 
   /** Arbitrary metadata (optional) */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 
   /** Tags for categorization (optional) */
   tags: z.array(z.string()).optional(),
@@ -129,28 +129,27 @@ export const RelationshipSchema = z.object({
 
   /** Relationship type */
   type: z.enum(RELATIONSHIP_TYPES, {
-    errorMap: () => ({ message: ERROR_MESSAGES.RELATIONSHIP_TYPE }),
+    error: ERROR_MESSAGES.RELATIONSHIP_TYPE,
   }),
 
   /** Creation timestamp (optional, ISO 8601 datetime) */
   created_at: z.string().datetime().optional(),
 
   /** Arbitrary metadata (optional) */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
  * TypeScript types inferred from schemas
- *
- * @typedef {import('zod').z.infer<typeof MemoryNodeSchema>} MemoryNode
- * @typedef {import('zod').z.infer<typeof RelationshipSchema>} Relationship
  */
+export type MemoryNode = z.infer<typeof MemoryNodeSchema>;
+export type Relationship = z.infer<typeof RelationshipSchema>;
 
 /**
  * Validates memory node data against schema
  *
- * @param {unknown} data - Data to validate
- * @returns {z.SafeParseReturnType<MemoryNode, MemoryNode>} Validation result
+ * @param data - Data to validate
+ * @returns Validation result
  *
  * @example
  * const result = validateMemoryNode(nodeData);
@@ -160,15 +159,15 @@ export const RelationshipSchema = z.object({
  *   });
  * }
  */
-export function validateMemoryNode(data) {
+export function validateMemoryNode(data: unknown) {
   return MemoryNodeSchema.safeParse(data);
 }
 
 /**
  * Validates relationship data against schema
  *
- * @param {unknown} data - Data to validate
- * @returns {z.SafeParseReturnType<Relationship, Relationship>} Validation result
+ * @param data - Data to validate
+ * @returns Validation result
  *
  * @example
  * const result = validateRelationship(relData);
@@ -178,6 +177,6 @@ export function validateMemoryNode(data) {
  *   });
  * }
  */
-export function validateRelationship(data) {
+export function validateRelationship(data: unknown) {
   return RelationshipSchema.safeParse(data);
 }

@@ -36,11 +36,15 @@ import { STRING_LITERALS, DEFAULTS } from './wu-constants.js';
 
 /**
  * Parsed worktree entry from git worktree list --porcelain
- * @typedef {object} WorktreeEntry
- * @property {string} path - Absolute path to worktree
- * @property {string} [head] - HEAD commit SHA
- * @property {string} [branch] - Branch name (without refs/heads/ prefix)
  */
+interface WorktreeEntry {
+  /** Absolute path to worktree */
+  path: string;
+  /** HEAD commit SHA */
+  head?: string;
+  /** Branch name (without refs/heads/ prefix) */
+  branch?: string;
+}
 
 /**
  * Parse git worktree list --porcelain output into structured entries
@@ -48,19 +52,19 @@ import { STRING_LITERALS, DEFAULTS } from './wu-constants.js';
  * @param {string} porcelainOutput - Output from git worktree list --porcelain
  * @returns {WorktreeEntry[]} Parsed worktree entries
  */
-export function parseWorktreeList(porcelainOutput) {
+export function parseWorktreeList(porcelainOutput: string): WorktreeEntry[] {
   if (!porcelainOutput || porcelainOutput.trim() === '') {
     return [];
   }
 
-  const worktrees = [];
+  const worktrees: WorktreeEntry[] = [];
   const lines = porcelainOutput.split(STRING_LITERALS.NEWLINE);
-  let current = {};
+  let current: Partial<WorktreeEntry> = {};
 
   for (const line of lines) {
     if (line.startsWith('worktree ')) {
       if (current.path) {
-        worktrees.push(current);
+        worktrees.push(current as WorktreeEntry);
       }
       current = { path: line.substring(9).trim() };
     } else if (line.startsWith('HEAD ')) {
@@ -71,7 +75,7 @@ export function parseWorktreeList(porcelainOutput) {
       current.branch = fullRef.replace(/^refs\/heads\//, '');
     } else if (line === '') {
       if (current.path) {
-        worktrees.push(current);
+        worktrees.push(current as WorktreeEntry);
       }
       current = {};
     }
@@ -79,7 +83,7 @@ export function parseWorktreeList(porcelainOutput) {
 
   // Handle final entry without trailing newline
   if (current.path) {
-    worktrees.push(current);
+    worktrees.push(current as WorktreeEntry);
   }
 
   return worktrees;
@@ -139,7 +143,8 @@ export async function detectOrphanWorktrees(projectRoot) {
   try {
     trackedPaths = await getTrackedWorktreePaths(root);
   } catch (err) {
-    errors.push(`Failed to get git worktree list: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    errors.push(`Failed to get git worktree list: ${message}`);
     return { orphans: [], tracked: [], errors };
   }
 
@@ -177,17 +182,24 @@ export async function isOrphanWorktree(worktreePath, projectRoot) {
 }
 
 /**
+ * Options for removing orphan directories
+ */
+export interface RemoveOrphanDirectoryOptions {
+  /** If true, don't actually remove */
+  dryRun?: boolean;
+}
+
+/**
  * Remove an orphan directory
  *
  * Safely removes an orphan worktree directory from disk.
  * Only removes directories that are confirmed orphans.
  *
  * @param {string} orphanPath - Absolute path to orphan directory
- * @param {object} [options] - Options
- * @param {boolean} [options.dryRun=false] - If true, don't actually remove
+ * @param {RemoveOrphanDirectoryOptions} [options] - Options
  * @returns {Promise<{removed: boolean, path: string, error?: string}>} Result
  */
-export async function removeOrphanDirectory(orphanPath, options = {}) {
+export async function removeOrphanDirectory(orphanPath, options: RemoveOrphanDirectoryOptions = {}) {
   const { dryRun = false } = options;
 
   // Verify it exists
@@ -202,7 +214,8 @@ export async function removeOrphanDirectory(orphanPath, options = {}) {
       return { removed: false, path: orphanPath, error: 'Path is not a directory' };
     }
   } catch (err) {
-    return { removed: false, path: orphanPath, error: `Failed to stat: ${err.message}` };
+    const message = err instanceof Error ? err.message : String(err);
+    return { removed: false, path: orphanPath, error: `Failed to stat: ${message}` };
   }
 
   // Verify it's in worktrees/ directory (safety check)
@@ -224,7 +237,8 @@ export async function removeOrphanDirectory(orphanPath, options = {}) {
     rmSync(orphanPath, { recursive: true, force: true });
     return { removed: true, path: orphanPath };
   } catch (err) {
-    return { removed: false, path: orphanPath, error: `Failed to remove: ${err.message}` };
+    const message = err instanceof Error ? err.message : String(err);
+    return { removed: false, path: orphanPath, error: `Failed to remove: ${message}` };
   }
 }
 
@@ -234,11 +248,10 @@ export async function removeOrphanDirectory(orphanPath, options = {}) {
  * Detects and removes all orphan worktree directories.
  *
  * @param {string} [projectRoot] - Project root directory (defaults to cwd)
- * @param {object} [options] - Options
- * @param {boolean} [options.dryRun=false] - If true, don't actually remove
+ * @param {RemoveOrphanDirectoryOptions} [options] - Options
  * @returns {Promise<{detected: number, removed: number, errors: string[]}>} Summary
  */
-export async function cleanupOrphanDirectories(projectRoot, options = {}) {
+export async function cleanupOrphanDirectories(projectRoot, options: RemoveOrphanDirectoryOptions = {}) {
   const { dryRun = false } = options;
   const result = await detectOrphanWorktrees(projectRoot);
   const errors = [...result.errors];

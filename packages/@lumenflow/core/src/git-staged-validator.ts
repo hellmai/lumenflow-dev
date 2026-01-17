@@ -33,10 +33,10 @@ import { die } from './error-handler.js';
  * ensureStaged(['docs/file1.md', 'docs/file2.md']);
  * // Error: Stage updates for: docs/file2.md
  */
-export function ensureStaged(paths) {
+export function ensureStaged(paths: Array<string | null | undefined>) {
   const git = getGitForCwd();
-  const raw = git.run('git diff --cached --name-only');
-  const staged = raw ? raw.split(/\r?\n/).filter(Boolean) : [];
+  const raw = git.run('git diff --cached --name-only') as string;
+  const staged: string[] = raw ? raw.split(/\r?\n/).filter((s): s is string => Boolean(s)) : [];
 
   // Filter out null/undefined and check each path
   const missing = paths.filter(Boolean).filter((p) => {

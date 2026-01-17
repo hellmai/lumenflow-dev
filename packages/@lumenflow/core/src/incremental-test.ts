@@ -45,13 +45,20 @@ export function isCodeFilePath(filePath) {
 }
 
 /**
+ * Options for building Vitest changed args
+ */
+interface BuildVitestChangedArgsOptions {
+  /** Base branch for diff */
+  baseBranch?: string;
+}
+
+/**
  * Build Vitest CLI args for --changed runs.
  *
- * @param {object} [options]
- * @param {string} [options.baseBranch=GIT_REFS.ORIGIN_MAIN] - Base branch for diff
+ * @param {BuildVitestChangedArgsOptions} [options]
  * @returns {string[]} Vitest args for changed test runs
  */
-export function buildVitestChangedArgs(options = {}) {
+export function buildVitestChangedArgs(options: BuildVitestChangedArgsOptions = {}) {
   const { baseBranch = GIT_REFS.ORIGIN_MAIN } = options;
   const args = [
     '--changed',

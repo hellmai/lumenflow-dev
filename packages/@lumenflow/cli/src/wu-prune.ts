@@ -32,8 +32,13 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 /* eslint-disable security/detect-object-injection, security/detect-non-literal-fs-filename */
 
-function parseArgs(argv) {
-  const args = { dryRun: true }; // Default to dry-run for safety
+interface PruneArgs {
+  dryRun: boolean;
+  help?: boolean;
+}
+
+function parseArgs(argv: string[]): PruneArgs {
+  const args: PruneArgs = { dryRun: true }; // Default to dry-run for safety
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === CLI_FLAGS.EXECUTE) args.dryRun = false;
@@ -48,13 +53,19 @@ function parseArgs(argv) {
  * Parse git worktree list --porcelain output
  * @returns {Promise<Array<{path: string, branch: string, head: string}>>}
  */
-async function listWorktrees() {
+interface WorktreeEntry {
+  path?: string;
+  branch?: string;
+  head?: string;
+}
+
+async function listWorktrees(): Promise<WorktreeEntry[]> {
   const output = await getGitForCwd().worktreeList();
   if (!output) return [];
 
-  const worktrees = [];
+  const worktrees: WorktreeEntry[] = [];
   const lines = output.split(STRING_LITERALS.NEWLINE);
-  let current = {};
+  let current: WorktreeEntry = {};
 
   for (const line of lines) {
     if (line.startsWith('worktree ')) {
@@ -190,7 +201,7 @@ This tool:
 
   // Layer 2: Detect orphan directories (WU-1476)
   console.log(`${PREFIX} Checking for orphan directories...`);
-  const orphanResult = await detectOrphanWorktrees();
+  const orphanResult = await detectOrphanWorktrees(process.cwd());
 
   if (orphanResult.errors.length > 0) {
     console.log(`${PREFIX} ${EMOJI.WARNING} Orphan detection errors:`);
