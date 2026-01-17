@@ -1,5 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -43,8 +42,8 @@ headings:
       writeFileSync(filePath, content, 'utf8');
 
       const result = readBacklogFile(filePath);
-      assert.ok(result.frontmatter.includes('headings:'));
-      assert.ok(result.lines[0].includes('## 🚀 Ready'));
+      expect(result.frontmatter.includes('headings:')).toBe(true);
+      expect(result.lines[0].includes('## 🚀 Ready')).toBe(true);
     });
 
     it('should handle files without frontmatter', () => {
@@ -53,8 +52,8 @@ headings:
       writeFileSync(filePath, content, 'utf8');
 
       const result = readBacklogFile(filePath);
-      assert.equal(result.frontmatter, '');
-      assert.ok(result.lines[0].includes('## 🚀 Ready'));
+      expect(result.frontmatter).toBe('');
+      expect(result.lines[0].includes('## 🚀 Ready')).toBe(true);
     });
   });
 
@@ -67,9 +66,9 @@ headings:
       writeBacklogFile(filePath, frontmatter, lines);
 
       const result = readBacklogFile(filePath);
-      assert.ok(result.frontmatter.includes('headings:'));
-      assert.ok(result.lines[0].includes('## Ready'));
-      assert.ok(result.lines[2].includes('WU-123'));
+      expect(result.frontmatter.includes('headings:')).toBe(true);
+      expect(result.lines[0].includes('## Ready')).toBe(true);
+      expect(result.lines[2].includes('WU-123')).toBe(true);
     });
 
     it('should write file without frontmatter', () => {
@@ -80,8 +79,8 @@ headings:
       writeBacklogFile(filePath, frontmatter, lines);
 
       const result = readBacklogFile(filePath);
-      assert.equal(result.frontmatter, '');
-      assert.ok(result.lines[0].includes('## Ready'));
+      expect(result.frontmatter).toBe('');
+      expect(result.lines[0].includes('## Ready')).toBe(true);
     });
   });
 
@@ -98,8 +97,8 @@ headings:
       ];
 
       const result = findSectionBounds(lines, '## Ready');
-      assert.equal(result.start, 0);
-      assert.equal(result.end, 4); // Before "## In Progress"
+      expect(result.start).toBe(0);
+      expect(result.end).toBe(4); // Before "## In Progress"
     });
 
     it('should handle section at end of file', () => {
@@ -114,23 +113,23 @@ headings:
       ];
 
       const result = findSectionBounds(lines, '## In Progress');
-      assert.equal(result.start, 4);
-      assert.equal(result.end, 7); // End of file
+      expect(result.start).toBe(4);
+      expect(result.end).toBe(7); // End of file
     });
 
     it('should return null if section not found', () => {
       const lines = ['## Ready', '', '- [WU-123 — Test](link)'];
 
       const result = findSectionBounds(lines, '## Nonexistent');
-      assert.equal(result, null);
+      expect(result).toBe(null);
     });
 
     it('should handle section headers case-insensitively', () => {
       const lines = ['## ready', '', '- [WU-123 — Test](link)', '', '## In Progress'];
 
       const result = findSectionBounds(lines, '## Ready');
-      assert.equal(result.start, 0);
-      assert.equal(result.end, 4);
+      expect(result.start).toBe(0);
+      expect(result.end).toBe(4);
     });
   });
 
@@ -146,9 +145,9 @@ headings:
       ];
 
       removeBulletFromSection(lines, 0, 5, 'WU-123');
-      assert.equal(lines.length, 5); // One line removed
-      assert.ok(!lines.some((l) => l.includes('WU-123')));
-      assert.ok(lines.some((l) => l.includes('WU-456')));
+      expect(lines.length).toBe(5); // One line removed
+      expect(!lines.some((l) => l.includes('WU-123'))).toBeTruthy();
+      expect(lines.some((l) => l.includes('WU-456'))).toBeTruthy();
     });
 
     it('should not modify lines outside section bounds', () => {
@@ -164,7 +163,7 @@ headings:
 
       removeBulletFromSection(lines, 0, 4, 'WU-123');
       assert.ok(!lines.slice(0, 4).some((l) => l.includes('WU-123')));
-      assert.ok(lines.slice(4).some((l) => l.includes('WU-123'))); // Still in In Progress
+      expect(lines.slice(4).some((l) => l.includes('WU-123'))).toBeTruthy(); // Still in In Progress
     });
   });
 
@@ -173,24 +172,24 @@ headings:
       const lines = ['## Ready', '', '- [WU-456 — Another](link)', '', '## In Progress'];
 
       addBulletToSection(lines, 0, '- [WU-123 — Test](link)');
-      assert.ok(lines[2].includes('WU-123'));
-      assert.ok(lines[3].includes('WU-456'));
+      expect(lines[2]).toContain('WU-123');
+      expect(lines[3]).toContain('WU-456');
     });
 
     it('should replace "(No items...)" marker if present', () => {
       const lines = ['## Ready', '', '(No items currently in progress)', '', '## In Progress'];
 
       addBulletToSection(lines, 0, '- [WU-123 — Test](link)');
-      assert.ok(!lines.some((l) => l.includes('No items')));
-      assert.ok(lines[2].includes('WU-123'));
+      expect(!lines.some((l) => l.includes('No items'))).toBeTruthy();
+      expect(lines[2]).toContain('WU-123');
     });
 
     it('should handle empty section', () => {
       const lines = ['## Ready', '', '## In Progress'];
 
       addBulletToSection(lines, 0, '- [WU-123 — Test](link)');
-      assert.equal(lines[1], '');
-      assert.ok(lines[2].includes('WU-123'));
+      expect(lines[1]).toBe('');
+      expect(lines[2]).toContain('WU-123');
     });
   });
 
@@ -215,7 +214,7 @@ headings:
 
       const result = readBacklogFile(filePath);
       assert.ok(!result.lines.slice(0, 3).some((l) => l.includes('WU-123')));
-      assert.ok(result.lines.slice(3).some((l) => l.includes('WU-123')));
+      expect(result.lines.slice(3).some((l) => l.includes('WU-123'))).toBeTruthy();
     });
 
     it('should preserve frontmatter when moving bullets', () => {
@@ -240,7 +239,7 @@ meta: data
       });
 
       const result = readBacklogFile(filePath);
-      assert.ok(result.frontmatter.includes('meta: data'));
+      expect(result.frontmatter.includes('meta: data')).toBe(true);
     });
   });
 });

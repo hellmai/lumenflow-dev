@@ -4,8 +4,7 @@
  * Verifies that notes field validation works for both string and array formats.
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 /**
  * Simulates the wu:done validation logic for --allow-todo flag
@@ -29,17 +28,17 @@ describe('wu:done --allow-todo validation', () => {
     it('should pass when string notes contain "allow-todo" justification', () => {
       const notes =
         'allow-todo: Pre-existing TODO at route.ts:222 (WU-641 scope) not added by WU-650';
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
 
     it('should pass when string notes contain "TODO" (case-insensitive)', () => {
       const notes = 'This WU has TODO comments that are acceptable for X reason';
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
 
     it('should fail when string notes have no justification', () => {
       const notes = 'Some notes without any justification';
-      assert.equal(validateAllowTodoJustification(notes), false);
+      expect(validateAllowTodoJustification(notes)).toBe(false);
     });
   });
 
@@ -50,7 +49,7 @@ describe('wu:done --allow-todo validation', () => {
         'allow-todo: Pre-existing TODO at route.ts:222',
         'Third note about approach',
       ];
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
 
     it('should pass when array notes contain "TODO" in any element', () => {
@@ -59,45 +58,45 @@ describe('wu:done --allow-todo validation', () => {
         'Root cause: Assumes notes is string',
         'TODO comments are acceptable here because of X reason',
       ];
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
 
     it('should fail when array notes have no justification', () => {
       const notes = ['First note', 'Second note', 'Third note without any justification keywords'];
-      assert.equal(validateAllowTodoJustification(notes), false);
+      expect(validateAllowTodoJustification(notes)).toBe(false);
     });
 
     it('should handle array with single element containing justification', () => {
       const notes = ['allow-todo: Single note with justification'];
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
 
     it('should be case-insensitive for array notes', () => {
       const notes = ['First note', 'ALLOW-TODO: uppercase variant'];
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
   });
 
   describe('Edge cases', () => {
     it('should fail when notes is undefined', () => {
-      assert.equal(validateAllowTodoJustification(undefined), false);
+      expect(validateAllowTodoJustification(undefined)).toBe(false);
     });
 
     it('should fail when notes is null', () => {
-      assert.equal(validateAllowTodoJustification(null), false);
+      expect(validateAllowTodoJustification(null)).toBe(false);
     });
 
     it('should fail when notes is empty string', () => {
-      assert.equal(validateAllowTodoJustification(''), false);
+      expect(validateAllowTodoJustification('')).toBe(false);
     });
 
     it('should fail when notes is empty array', () => {
-      assert.equal(validateAllowTodoJustification([]), false);
+      expect(validateAllowTodoJustification([])).toBe(false);
     });
 
     it('should handle array with empty strings', () => {
       const notes = ['', '', 'allow-todo: justification here'];
-      assert.equal(validateAllowTodoJustification(notes), true);
+      expect(validateAllowTodoJustification(notes)).toBe(true);
     });
   });
 });

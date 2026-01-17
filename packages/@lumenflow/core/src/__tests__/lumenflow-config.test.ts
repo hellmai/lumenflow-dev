@@ -4,8 +4,7 @@
  * @module lumenflow-config.test
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -34,9 +33,9 @@ describe('LumenFlow Config Schema', () => {
   describe('DirectoriesSchema', () => {
     it('should provide sensible defaults', () => {
       const result = DirectoriesSchema.parse({});
-      assert.strictEqual(result.wuDir, 'docs/04-operations/tasks/wu');
-      assert.strictEqual(result.worktrees, 'worktrees/');
-      assert.strictEqual(result.backlogPath, 'docs/04-operations/tasks/backlog.md');
+      expect(result.wuDir).toBe('docs/04-operations/tasks/wu');
+      expect(result.worktrees).toBe('worktrees/');
+      expect(result.backlogPath).toBe('docs/04-operations/tasks/backlog.md');
     });
 
     it('should allow overriding paths', () => {
@@ -44,28 +43,28 @@ describe('LumenFlow Config Schema', () => {
         wuDir: 'custom/wu',
         worktrees: 'custom-worktrees/',
       });
-      assert.strictEqual(result.wuDir, 'custom/wu');
-      assert.strictEqual(result.worktrees, 'custom-worktrees/');
+      expect(result.wuDir).toBe('custom/wu');
+      expect(result.worktrees).toBe('custom-worktrees/');
       // Other defaults still apply
-      assert.strictEqual(result.backlogPath, 'docs/04-operations/tasks/backlog.md');
+      expect(result.backlogPath).toBe('docs/04-operations/tasks/backlog.md');
     });
   });
 
   describe('BeaconPathsSchema', () => {
     it('should provide .beacon defaults', () => {
       const result = BeaconPathsSchema.parse({});
-      assert.strictEqual(result.base, '.beacon');
-      assert.strictEqual(result.stampsDir, '.beacon/stamps');
-      assert.strictEqual(result.stateDir, '.beacon/state');
+      expect(result.base).toBe('.beacon');
+      expect(result.stampsDir).toBe('.beacon/stamps');
+      expect(result.stateDir).toBe('.beacon/state');
     });
   });
 
   describe('GitConfigSchema', () => {
     it('should provide git defaults', () => {
       const result = GitConfigSchema.parse({});
-      assert.strictEqual(result.mainBranch, 'main');
-      assert.strictEqual(result.defaultRemote, 'origin');
-      assert.strictEqual(result.maxBranchDrift, 20);
+      expect(result.mainBranch).toBe('main');
+      expect(result.defaultRemote).toBe('origin');
+      expect(result.maxBranchDrift).toBe(20);
     });
 
     it('should validate numeric constraints', () => {
@@ -78,18 +77,18 @@ describe('LumenFlow Config Schema', () => {
   describe('WuConfigSchema', () => {
     it('should provide WU defaults', () => {
       const result = WuConfigSchema.parse({});
-      assert.strictEqual(result.defaultPriority, 'P2');
-      assert.strictEqual(result.defaultStatus, 'ready');
-      assert.strictEqual(result.minDescriptionLength, 50);
+      expect(result.defaultPriority).toBe('P2');
+      expect(result.defaultStatus).toBe('ready');
+      expect(result.minDescriptionLength).toBe(50);
     });
   });
 
   describe('GatesConfigSchema', () => {
     it('should provide gates defaults', () => {
       const result = GatesConfigSchema.parse({});
-      assert.strictEqual(result.enableCoverage, true);
-      assert.strictEqual(result.minCoverage, 90);
-      assert.strictEqual(result.maxEslintWarnings, 100);
+      expect(result.enableCoverage).toBe(true);
+      expect(result.minCoverage).toBe(90);
+      expect(result.maxEslintWarnings).toBe(100);
     });
 
     it('should validate coverage range', () => {
@@ -102,10 +101,10 @@ describe('LumenFlow Config Schema', () => {
   describe('LumenFlowConfigSchema', () => {
     it('should parse empty object with all defaults', () => {
       const result = LumenFlowConfigSchema.parse({});
-      assert.strictEqual(result.version, '1.0.0');
-      assert.ok(result.directories);
-      assert.ok(result.beacon);
-      assert.ok(result.git);
+      expect(result.version).toBe('1.0.0');
+      expect(result.directories).toBeTruthy();
+      expect(result.beacon).toBeTruthy();
+      expect(result.git).toBeTruthy();
     });
 
     it('should allow partial overrides', () => {
@@ -117,46 +116,46 @@ describe('LumenFlow Config Schema', () => {
           mainBranch: 'master',
         },
       });
-      assert.strictEqual(result.directories.wuDir, 'custom/wu');
-      assert.strictEqual(result.git.mainBranch, 'master');
+      expect(result.directories.wuDir).toBe('custom/wu');
+      expect(result.git.mainBranch).toBe('master');
       // Defaults still apply to non-overridden
-      assert.strictEqual(result.directories.worktrees, 'worktrees/');
+      expect(result.directories.worktrees).toBe('worktrees/');
     });
   });
 
   describe('parseConfig', () => {
     it('should return default config for empty input', () => {
       const config = parseConfig();
-      assert.strictEqual(config.version, '1.0.0');
+      expect(config.version).toBe('1.0.0');
     });
 
     it('should merge partial config with defaults', () => {
       const config = parseConfig({
         directories: { wuDir: 'my-wu' },
       });
-      assert.strictEqual(config.directories.wuDir, 'my-wu');
-      assert.strictEqual(config.directories.worktrees, 'worktrees/');
+      expect(config.directories.wuDir).toBe('my-wu');
+      expect(config.directories.worktrees).toBe('worktrees/');
     });
   });
 
   describe('getDefaultConfig', () => {
     it('should return complete default config', () => {
       const config = getDefaultConfig();
-      assert.strictEqual(typeof config.version, 'string');
-      assert.strictEqual(typeof config.directories.wuDir, 'string');
-      assert.strictEqual(typeof config.git.mainBranch, 'string');
+      expect(typeof config.version).toBe('string');
+      expect(typeof config.directories.wuDir).toBe('string');
+      expect(typeof config.git.mainBranch).toBe('string');
     });
   });
 
   describe('validateConfig', () => {
     it('should return success for valid config', () => {
       const result = validateConfig({ directories: { wuDir: 'custom' } });
-      assert.strictEqual(result.success, true);
+      expect(result.success).toBe(true);
     });
 
     it('should return errors for invalid config', () => {
       const result = validateConfig({ git: { maxBranchDrift: 'invalid' } });
-      assert.strictEqual(result.success, false);
+      expect(result.success).toBe(false);
     });
   });
 });
@@ -182,7 +181,7 @@ describe('LumenFlow Config Loader', () => {
       fs.mkdirSync(subDir, { recursive: true });
 
       const root = findProjectRoot(subDir);
-      assert.strictEqual(root, tempDir);
+      expect(root).toBe(tempDir);
     });
 
     it('should prefer .lumenflow.config.yaml over .git', () => {
@@ -190,7 +189,7 @@ describe('LumenFlow Config Loader', () => {
       fs.writeFileSync(path.join(tempDir, '.lumenflow.config.yaml'), 'version: "1.0.0"');
 
       const root = findProjectRoot(tempDir);
-      assert.strictEqual(root, tempDir);
+      expect(root).toBe(tempDir);
     });
   });
 
@@ -198,7 +197,7 @@ describe('LumenFlow Config Loader', () => {
     it('should return defaults when no config file exists', () => {
       fs.mkdirSync(path.join(tempDir, '.git'));
       const config = getConfig({ projectRoot: tempDir });
-      assert.strictEqual(config.directories.wuDir, 'docs/04-operations/tasks/wu');
+      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
     });
 
     it('should load config from file', () => {
@@ -209,14 +208,14 @@ describe('LumenFlow Config Loader', () => {
       );
 
       const config = getConfig({ projectRoot: tempDir });
-      assert.strictEqual(config.directories.wuDir, 'custom/wu');
+      expect(config.directories.wuDir).toBe('custom/wu');
     });
 
     it('should cache config', () => {
       fs.mkdirSync(path.join(tempDir, '.git'));
       const config1 = getConfig({ projectRoot: tempDir });
       const config2 = getConfig({ projectRoot: tempDir });
-      assert.deepStrictEqual(config1, config2);
+      expect(config1).toEqual(config2);
     });
 
     it('should reload when requested', () => {
@@ -227,7 +226,7 @@ describe('LumenFlow Config Loader', () => {
       );
 
       const config1 = getConfig({ projectRoot: tempDir });
-      assert.strictEqual(config1.directories.wuDir, 'first');
+      expect(config1.directories.wuDir).toBe('first');
 
       fs.writeFileSync(
         path.join(tempDir, '.lumenflow.config.yaml'),
@@ -235,7 +234,7 @@ describe('LumenFlow Config Loader', () => {
       );
 
       const config2 = getConfig({ projectRoot: tempDir, reload: true });
-      assert.strictEqual(config2.directories.wuDir, 'second');
+      expect(config2.directories.wuDir).toBe('second');
     });
   });
 
@@ -251,9 +250,9 @@ describe('LumenFlow Config Loader', () => {
       fs.mkdirSync(path.join(tempDir, '.git'));
       const paths = getResolvedPaths({ projectRoot: tempDir });
 
-      assert.ok(path.isAbsolute(paths.wuDir));
-      assert.ok(path.isAbsolute(paths.stampsDir));
-      assert.ok(paths.wuDir.includes(tempDir));
+      expect(path.isAbsolute(paths.wuDir)).toBeTruthy();
+      expect(path.isAbsolute(paths.stampsDir)).toBeTruthy();
+      expect(paths.wuDir.includes(tempDir)).toBe(true);
     });
   });
 
@@ -263,14 +262,14 @@ describe('LumenFlow Config Loader', () => {
       fs.writeFileSync(configPath, 'version: "1.0.0"\n');
 
       const result = validateConfigFile(configPath);
-      assert.strictEqual(result.valid, true);
-      assert.ok(result.config);
+      expect(result.valid).toBe(true);
+      expect(result.config).toBeTruthy();
     });
 
     it('should report missing file', () => {
       const result = validateConfigFile(path.join(tempDir, 'missing.yaml'));
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.length > 0);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length > 0).toBeTruthy();
     });
 
     it('should report invalid YAML', () => {
@@ -278,7 +277,7 @@ describe('LumenFlow Config Loader', () => {
       fs.writeFileSync(configPath, 'git:\n  maxBranchDrift: invalid\n');
 
       const result = validateConfigFile(configPath);
-      assert.strictEqual(result.valid, false);
+      expect(result.valid).toBe(false);
     });
   });
 
@@ -287,10 +286,10 @@ describe('LumenFlow Config Loader', () => {
       const configPath = path.join(tempDir, '.lumenflow.config.yaml');
       createSampleConfig(configPath);
 
-      assert.ok(fs.existsSync(configPath));
+      expect(fs.existsSync(configPath)).toBeTruthy();
       const content = fs.readFileSync(configPath, 'utf8');
-      assert.ok(content.includes('version:'));
-      assert.ok(content.includes('directories:'));
+      expect(content).toContain('version:');
+      expect(content).toContain('directories:');
     });
   });
 });

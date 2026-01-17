@@ -3,7 +3,7 @@
  */
 
 // @lumenflow/memory optional peer dependency
-declare module '@lumenflow/memory/lib/mem-signal-core.js' {
+declare module '@lumenflow/memory/signal' {
   export function createSignal(
     baseDir: string,
     options: { message: string; wuId: string; lane: string }
@@ -20,14 +20,14 @@ declare module '@lumenflow/memory/lib/mem-signal-core.js' {
   ): Promise<void>;
 }
 
-declare module '@lumenflow/memory/lib/memory-store.js' {
+declare module '@lumenflow/memory/store' {
   export function loadMemory(
     memoryDir: string,
     wuId: string
   ): Promise<{ checkpoints: Array<{ timestamp: string }> } | null>;
 }
 
-declare module '@lumenflow/memory/lib/mem-checkpoint-core.js' {
+declare module '@lumenflow/memory/checkpoint' {
   export function createCheckpoint(options: unknown): Promise<{ success: boolean; checkpointId: string }>;
 }
 

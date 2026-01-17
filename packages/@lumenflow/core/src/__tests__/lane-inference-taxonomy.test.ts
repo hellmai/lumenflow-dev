@@ -19,6 +19,9 @@ import YAML from 'yaml';
 const WORKTREE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const CONFIG_PATH = path.join(WORKTREE_ROOT, '.lumenflow.lane-inference.yaml');
 
+// Skip all tests if config file doesn't exist (running in standalone package without project context)
+const hasConfig = existsSync(CONFIG_PATH);
+
 /**
  * Stale paths that should NOT be in the config because they reference
  * directories that don't exist at repo root.
@@ -82,7 +85,7 @@ const SPARSE_SUBLANES_REQUIRING_EXPANSION = [
  */
 const MIN_KEYWORDS_FOR_RELIABLE_INFERENCE = 8;
 
-describe('Lane Taxonomy Audit (WU-2439)', () => {
+describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
   let config;
 
   beforeAll(() => {
@@ -311,7 +314,7 @@ describe('Lane Taxonomy Audit (WU-2439)', () => {
   });
 });
 
-describe('Lane Inference Integration (WU-2439)', () => {
+describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
   /**
    * Integration tests to verify inference works correctly after taxonomy audit.
    * These tests use real inference function to validate config changes.

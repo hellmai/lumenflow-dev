@@ -6,8 +6,7 @@
  * @see {@link tools/lib/initiative-schema.mjs} - Implementation
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import {
   InitiativeSchema,
   InitiativePhaseSchema,
@@ -23,7 +22,7 @@ describe('initiative-schema', () => {
         status: 'pending',
       };
       const result = InitiativePhaseSchema.safeParse(phase);
-      assert.ok(result.success, 'Valid phase should parse');
+      expect(result.success).toBe(true);
     });
 
     it('should accept phase id 0 for foundation phases (WU-2567)', () => {
@@ -33,7 +32,7 @@ describe('initiative-schema', () => {
         status: 'pending',
       };
       const result = InitiativePhaseSchema.safeParse(phase);
-      assert.ok(result.success, 'Phase id 0 should be valid for foundation phases');
+      expect(result.success).toBe(true);
     });
 
     it('should reject negative phase id', () => {
@@ -43,7 +42,7 @@ describe('initiative-schema', () => {
         status: 'pending',
       };
       const result = InitiativePhaseSchema.safeParse(phase);
-      assert.ok(!result.success, 'Negative phase id must be rejected');
+      expect(result.success).toBe(false);
     });
 
     it('should reject non-integer phase id', () => {
@@ -53,7 +52,7 @@ describe('initiative-schema', () => {
         status: 'pending',
       };
       const result = InitiativePhaseSchema.safeParse(phase);
-      assert.ok(!result.success, 'Phase id must be integer');
+      expect(result.success).toBe(false);
     });
 
     it('should reject invalid status enum', () => {
@@ -63,7 +62,7 @@ describe('initiative-schema', () => {
         status: 'invalid_status',
       };
       const result = InitiativePhaseSchema.safeParse(phase);
-      assert.ok(!result.success, 'Invalid status should fail');
+      expect(result.success).toBe(false);
     });
 
     it('should accept all valid status values', () => {
@@ -71,7 +70,7 @@ describe('initiative-schema', () => {
       for (const status of statuses) {
         const phase = { id: 1, title: 'Test', status };
         const result = InitiativePhaseSchema.safeParse(phase);
-        assert.ok(result.success, `Status '${status}' should be valid`);
+        expect(result.success).toBe(true);
       }
     });
   });
@@ -87,7 +86,7 @@ describe('initiative-schema', () => {
 
     it('should validate a minimal valid initiative', () => {
       const result = InitiativeSchema.safeParse(validInitiative);
-      assert.ok(result.success, 'Valid initiative should parse');
+      expect(result.success).toBe(true);
     });
 
     it('should validate a complete initiative with all fields', () => {
@@ -105,26 +104,26 @@ describe('initiative-schema', () => {
         labels: ['safety', 'beacon', 'p0-critical'],
       };
       const result = InitiativeSchema.safeParse(complete);
-      assert.ok(result.success, 'Complete initiative should parse');
+      expect(result.success).toBe(true);
     });
 
     describe('id validation', () => {
       it('should reject invalid id format (not INIT-NNN)', () => {
         const invalid = { ...validInitiative, id: 'EPIC-001' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid id format should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should reject id with empty suffix', () => {
         const invalid = { ...validInitiative, id: 'INIT-' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Id with empty suffix should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should accept multi-digit ids', () => {
         const valid = { ...validInitiative, id: 'INIT-999' };
         const result = InitiativeSchema.safeParse(valid);
-        assert.ok(result.success, 'Multi-digit id should be valid');
+        expect(result.success).toBe(true);
       });
 
       it('should accept named initiative ids (INIT-NAME format)', () => {
@@ -132,14 +131,14 @@ describe('initiative-schema', () => {
         for (const id of namedIds) {
           const valid = { ...validInitiative, id };
           const result = InitiativeSchema.safeParse(valid);
-          assert.ok(result.success, `Named id '${id}' should be valid`);
+          expect(result.success).toBe(true);
         }
       });
 
       it('should reject lowercase named ids', () => {
         const invalid = { ...validInitiative, id: 'INIT-inpatient-safety' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Lowercase named id should fail');
+        expect(result.success).toBe(false);
       });
     });
 
@@ -147,19 +146,19 @@ describe('initiative-schema', () => {
       it('should reject non-kebab-case slug', () => {
         const invalid = { ...validInitiative, slug: 'ShockProtocol' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Non-kebab-case slug should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should reject slug with spaces', () => {
         const invalid = { ...validInitiative, slug: 'shock protocol' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Slug with spaces should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should reject slug with underscores', () => {
         const invalid = { ...validInitiative, slug: 'shock_protocol' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Slug with underscores should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should accept valid kebab-case slugs', () => {
@@ -167,7 +166,7 @@ describe('initiative-schema', () => {
         for (const slug of slugs) {
           const valid = { ...validInitiative, slug };
           const result = InitiativeSchema.safeParse(valid);
-          assert.ok(result.success, `Slug '${slug}' should be valid`);
+          expect(result.success).toBe(true);
         }
       });
     });
@@ -176,7 +175,7 @@ describe('initiative-schema', () => {
       it('should reject invalid status enum', () => {
         const invalid = { ...validInitiative, status: 'invalid' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid status should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should accept all valid status values', () => {
@@ -184,7 +183,7 @@ describe('initiative-schema', () => {
         for (const status of statuses) {
           const valid = { ...validInitiative, status };
           const result = InitiativeSchema.safeParse(valid);
-          assert.ok(result.success, `Status '${status}' should be valid`);
+          expect(result.success).toBe(true);
         }
       });
     });
@@ -195,21 +194,21 @@ describe('initiative-schema', () => {
         for (const priority of priorities) {
           const valid = { ...validInitiative, priority };
           const result = InitiativeSchema.safeParse(valid);
-          assert.ok(result.success, `Priority '${priority}' should be valid`);
+          expect(result.success).toBe(true);
         }
       });
 
       it('should reject invalid priority', () => {
         const invalid = { ...validInitiative, priority: 'P4' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid priority should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should allow missing priority (optional)', () => {
         const { priority: _unused, ...withoutPriority } = validInitiative;
         void _unused; // Silence unused variable warning
         const result = InitiativeSchema.safeParse(withoutPriority);
-        assert.ok(result.success, 'Missing priority should be valid');
+        expect(result.success).toBe(true);
       });
     });
 
@@ -217,18 +216,18 @@ describe('initiative-schema', () => {
       it('should reject invalid created date format', () => {
         const invalid = { ...validInitiative, created: '2025/11/26' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid date format should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should reject invalid target_date format', () => {
         const invalid = { ...validInitiative, target_date: 'Dec 15 2025' };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid target_date format should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should allow missing target_date (optional)', () => {
         const result = InitiativeSchema.safeParse(validInitiative);
-        assert.ok(result.success, 'Missing target_date should be valid');
+        expect(result.success).toBe(true);
       });
     });
 
@@ -242,7 +241,7 @@ describe('initiative-schema', () => {
           ],
         };
         const result = InitiativeSchema.safeParse(withPhases);
-        assert.ok(result.success, 'Initiative with phases should parse');
+        expect(result.success).toBe(true);
       });
 
       it('should reject invalid phase in array', () => {
@@ -251,35 +250,35 @@ describe('initiative-schema', () => {
           phases: [{ id: 'not-a-number', title: 'Invalid', status: 'pending' }],
         };
         const result = InitiativeSchema.safeParse(invalid);
-        assert.ok(!result.success, 'Invalid phase should fail');
+        expect(result.success).toBe(false);
       });
 
       it('should allow empty phases array', () => {
         const withEmptyPhases = { ...validInitiative, phases: [] };
         const result = InitiativeSchema.safeParse(withEmptyPhases);
-        assert.ok(result.success, 'Empty phases array should be valid');
+        expect(result.success).toBe(true);
       });
     });
 
     describe('optional fields', () => {
       it('should allow missing description', () => {
         const result = InitiativeSchema.safeParse(validInitiative);
-        assert.ok(result.success, 'Missing description should be valid');
+        expect(result.success).toBe(true);
       });
 
       it('should allow missing owner', () => {
         const result = InitiativeSchema.safeParse(validInitiative);
-        assert.ok(result.success, 'Missing owner should be valid');
+        expect(result.success).toBe(true);
       });
 
       it('should allow missing success_metrics', () => {
         const result = InitiativeSchema.safeParse(validInitiative);
-        assert.ok(result.success, 'Missing success_metrics should be valid');
+        expect(result.success).toBe(true);
       });
 
       it('should allow missing labels', () => {
         const result = InitiativeSchema.safeParse(validInitiative);
-        assert.ok(result.success, 'Missing labels should be valid');
+        expect(result.success).toBe(true);
       });
     });
   });
@@ -294,7 +293,7 @@ describe('initiative-schema', () => {
         created: '2025-11-26',
       };
       const result = validateInitiative(valid);
-      assert.ok(result.success, 'Valid initiative should pass');
+      expect(result.success).toBe(true);
     });
 
     it('should return error for invalid initiative', () => {
@@ -306,9 +305,9 @@ describe('initiative-schema', () => {
         created: 'not-a-date',
       };
       const result = validateInitiative(invalid);
-      assert.ok(!result.success, 'Invalid initiative should fail');
-      assert.ok(result.error, 'Should have error object');
-      assert.ok(result.error.issues.length > 0, 'Should have validation issues');
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
   });
 });

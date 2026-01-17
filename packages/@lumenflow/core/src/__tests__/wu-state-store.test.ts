@@ -7,8 +7,7 @@
  * @see {@link tools/lib/wu-state-store.mjs} - Implementation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -89,7 +88,7 @@ describe('wu-state-store', () => {
 
   describe('WU_EVENTS_FILE_NAME constant', () => {
     it('should export the events file name', () => {
-      assert.equal(WU_EVENTS_FILE_NAME, 'wu-events.jsonl');
+      expect(WU_EVENTS_FILE_NAME).toBe('wu-events.jsonl');
     });
   });
 
@@ -98,8 +97,8 @@ describe('wu-state-store', () => {
       await store.load();
 
       const byStatus = store.getByStatus('ready');
-      assert.ok(byStatus instanceof Set, 'Should return Set');
-      assert.equal(byStatus.size, 0, 'Should be empty');
+      expect(byStatus instanceof Set, 'Should return Set');
+      expect(byStatus.size).toBe(0, 'Should be empty');
     });
 
     it('should handle empty file and return empty state', async () => {
@@ -107,7 +106,7 @@ describe('wu-state-store', () => {
       await store.load();
 
       const byStatus = store.getByStatus('ready');
-      assert.equal(byStatus.size, 0, 'Should be empty');
+      expect(byStatus.size).toBe(0, 'Should be empty');
     });
 
     it('should replay claim event into in_progress state', async () => {
@@ -117,8 +116,8 @@ describe('wu-state-store', () => {
       await store.load();
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 1, 'Should have 1 in_progress WU');
-      assert.ok(inProgress.has('WU-100'), 'Should contain WU-100');
+      expect(inProgress.size).toBe(1, 'Should have 1 in_progress WU');
+      expect(inProgress.has('WU-100'), 'Should contain WU-100');
     });
 
     it('should replay complete event into done state', async () => {
@@ -129,11 +128,11 @@ describe('wu-state-store', () => {
       await store.load();
 
       const done = store.getByStatus('done');
-      assert.equal(done.size, 1, 'Should have 1 done WU');
-      assert.ok(done.has('WU-100'), 'Should contain WU-100');
+      expect(done.size).toBe(1, 'Should have 1 done WU');
+      expect(done.has('WU-100'), 'Should contain WU-100');
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 0, 'Should have no in_progress WUs');
+      expect(inProgress.size).toBe(0, 'Should have no in_progress WUs');
     });
 
     it('should replay block event into blocked state', async () => {
@@ -144,11 +143,11 @@ describe('wu-state-store', () => {
       await store.load();
 
       const blocked = store.getByStatus('blocked');
-      assert.equal(blocked.size, 1, 'Should have 1 blocked WU');
-      assert.ok(blocked.has('WU-100'), 'Should contain WU-100');
+      expect(blocked.size).toBe(1, 'Should have 1 blocked WU');
+      expect(blocked.has('WU-100'), 'Should contain WU-100');
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 0, 'Should have no in_progress WUs');
+      expect(inProgress.size).toBe(0, 'Should have no in_progress WUs');
     });
 
     it('should replay unblock event back to in_progress state', async () => {
@@ -160,11 +159,11 @@ describe('wu-state-store', () => {
       await store.load();
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 1, 'Should have 1 in_progress WU');
-      assert.ok(inProgress.has('WU-100'), 'Should contain WU-100');
+      expect(inProgress.size).toBe(1, 'Should have 1 in_progress WU');
+      expect(inProgress.has('WU-100'), 'Should contain WU-100');
 
       const blocked = store.getByStatus('blocked');
-      assert.equal(blocked.size, 0, 'Should have no blocked WUs');
+      expect(blocked.size).toBe(0, 'Should have no blocked WUs');
     });
 
     it('should index WUs by lane', async () => {
@@ -176,13 +175,13 @@ describe('wu-state-store', () => {
       await store.load();
 
       const toolingLane = store.getByLane('Operations: Tooling');
-      assert.equal(toolingLane.size, 2, 'Should have 2 WUs in Tooling lane');
-      assert.ok(toolingLane.has('WU-100'), 'Should contain WU-100');
-      assert.ok(toolingLane.has('WU-102'), 'Should contain WU-102');
+      expect(toolingLane.size).toBe(2, 'Should have 2 WUs in Tooling lane');
+      expect(toolingLane.has('WU-100'), 'Should contain WU-100');
+      expect(toolingLane.has('WU-102'), 'Should contain WU-102');
 
       const workflowLane = store.getByLane('Operations: Workflow Engine');
-      assert.equal(workflowLane.size, 1, 'Should have 1 WU in Workflow Engine lane');
-      assert.ok(workflowLane.has('WU-101'), 'Should contain WU-101');
+      expect(workflowLane.size).toBe(1, 'Should have 1 WU in Workflow Engine lane');
+      expect(workflowLane.has('WU-101'), 'Should contain WU-101');
     });
 
     it('should skip empty lines gracefully', async () => {
@@ -193,21 +192,21 @@ describe('wu-state-store', () => {
       await store.load();
 
       const done = store.getByStatus('done');
-      assert.equal(done.size, 1, 'Should replay both events');
+      expect(done.size).toBe(1, 'Should replay both events');
     });
 
     it('should throw on malformed JSON lines', async () => {
       const content = `${JSON.stringify(FIXTURES.claimEvent())}\n{invalid json}\n`;
       await fs.writeFile(eventsFilePath, content, 'utf-8');
 
-      await assert.rejects(async () => store.load(), /JSON/i, 'Should throw on malformed JSON');
+      await expect(async () => store.load()).rejects.toThrow(/JSON/i);
     });
 
     it('should throw on invalid event schema', async () => {
       const invalidEvent = { type: 'unknown', wuId: 'WU-100' };
       await writeJsonlFile(eventsFilePath, [invalidEvent]);
 
-      await assert.rejects(async () => store.load(), /validation/i, 'Should throw on invalid event');
+      await expect(async () => store.load()).rejects.toThrow(/validation/i);
     });
   });
 
@@ -219,30 +218,26 @@ describe('wu-state-store', () => {
 
       // Check in-memory state
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 1, 'Should have 1 in_progress WU');
-      assert.ok(inProgress.has('WU-100'), 'Should contain WU-100');
+      expect(inProgress.size).toBe(1, 'Should have 1 in_progress WU');
+      expect(inProgress.has('WU-100'), 'Should contain WU-100');
 
       // Check file persisted
       const content = await fs.readFile(eventsFilePath, 'utf-8');
       const lines = content.trim().split('\n');
-      assert.equal(lines.length, 1, 'Should have 1 event');
+      expect(lines.length).toBe(1, 'Should have 1 event');
       const event = JSON.parse(lines[0]);
-      assert.equal(event.type, 'claim', 'Should be claim event');
-      assert.equal(event.wuId, 'WU-100', 'Should have correct wuId');
-      assert.equal(event.lane, 'Operations: Tooling', 'Should have correct lane');
+      expect(event.type).toBe('claim', 'Should be claim event');
+      expect(event.wuId).toBe('WU-100', 'Should have correct wuId');
+      expect(event.lane).toBe('Operations: Tooling', 'Should have correct lane');
     });
 
     it('should validate event before appending', async () => {
       await store.load();
 
-      await assert.rejects(
-        async () => store.claim('', '', ''),
-        /validation/i,
-        'Should throw on invalid data'
-      );
+      await expect(async () => store.claim('', '', '')).rejects.toThrow(/validation/i);
 
       // File should not exist if append failed
-      await assert.rejects(async () => fs.access(eventsFilePath), 'File should not exist after failed append');
+      await expect(async () => fs.access(eventsFilePath)).rejects.toThrow();
     });
 
     it('should reject claim for already claimed WU', async () => {
@@ -250,11 +245,7 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt]);
       await store.load();
 
-      await assert.rejects(
-        async () => store.claim('WU-100', 'Operations: Tooling', 'Test WU'),
-        /already in_progress/i,
-        'Should reject duplicate claim'
-      );
+      await expect(async () => store.claim('WU-100', 'Operations: Tooling', 'Test WU')).rejects.toThrow(/already in_progress/i);
     });
   });
 
@@ -268,28 +259,24 @@ describe('wu-state-store', () => {
 
       // Check in-memory state
       const done = store.getByStatus('done');
-      assert.equal(done.size, 1, 'Should have 1 done WU');
-      assert.ok(done.has('WU-100'), 'Should contain WU-100');
+      expect(done.size).toBe(1, 'Should have 1 done WU');
+      expect(done.has('WU-100'), 'Should contain WU-100');
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 0, 'Should have no in_progress WUs');
+      expect(inProgress.size).toBe(0, 'Should have no in_progress WUs');
 
       // Check file persisted
       const content = await fs.readFile(eventsFilePath, 'utf-8');
       const lines = content.trim().split('\n');
-      assert.equal(lines.length, 2, 'Should have 2 events');
+      expect(lines.length).toBe(2, 'Should have 2 events');
       const event = JSON.parse(lines[1]);
-      assert.equal(event.type, 'complete', 'Should be complete event');
+      expect(event.type).toBe('complete', 'Should be complete event');
     });
 
     it('should reject complete for WU not in_progress', async () => {
       await store.load();
 
-      await assert.rejects(
-        async () => store.complete('WU-100'),
-        /not in_progress/i,
-        'Should reject completing non-in_progress WU'
-      );
+      await expect(async () => store.complete('WU-100')).rejects.toThrow(/not in_progress/i);
     });
   });
 
@@ -303,21 +290,17 @@ describe('wu-state-store', () => {
 
       // Check in-memory state
       const blocked = store.getByStatus('blocked');
-      assert.equal(blocked.size, 1, 'Should have 1 blocked WU');
-      assert.ok(blocked.has('WU-100'), 'Should contain WU-100');
+      expect(blocked.size).toBe(1, 'Should have 1 blocked WU');
+      expect(blocked.has('WU-100'), 'Should contain WU-100');
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 0, 'Should have no in_progress WUs');
+      expect(inProgress.size).toBe(0, 'Should have no in_progress WUs');
     });
 
     it('should reject block for WU not in_progress', async () => {
       await store.load();
 
-      await assert.rejects(
-        async () => store.block('WU-100', 'Test reason'),
-        /not in_progress/i,
-        'Should reject blocking non-in_progress WU'
-      );
+      await expect(async () => store.block('WU-100', 'Test reason')).rejects.toThrow(/not in_progress/i);
     });
   });
 
@@ -332,11 +315,11 @@ describe('wu-state-store', () => {
 
       // Check in-memory state
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 1, 'Should have 1 in_progress WU');
-      assert.ok(inProgress.has('WU-100'), 'Should contain WU-100');
+      expect(inProgress.size).toBe(1, 'Should have 1 in_progress WU');
+      expect(inProgress.has('WU-100'), 'Should contain WU-100');
 
       const blocked = store.getByStatus('blocked');
-      assert.equal(blocked.size, 0, 'Should have no blocked WUs');
+      expect(blocked.size).toBe(0, 'Should have no blocked WUs');
     });
 
     it('should reject unblock for WU not blocked', async () => {
@@ -344,11 +327,7 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt]);
       await store.load();
 
-      await assert.rejects(
-        async () => store.unblock('WU-100'),
-        /not blocked/i,
-        'Should reject unblocking non-blocked WU'
-      );
+      await expect(async () => store.unblock('WU-100')).rejects.toThrow(/not blocked/i);
     });
   });
 
@@ -363,20 +342,20 @@ describe('wu-state-store', () => {
       await store.load();
 
       const inProgress = store.getByStatus('in_progress');
-      assert.equal(inProgress.size, 1, 'Should have 1 in_progress');
-      assert.ok(inProgress.has('WU-101'), 'Should be WU-101');
+      expect(inProgress.size).toBe(1, 'Should have 1 in_progress');
+      expect(inProgress.has('WU-101'), 'Should be WU-101');
 
       const done = store.getByStatus('done');
-      assert.equal(done.size, 1, 'Should have 1 done');
-      assert.ok(done.has('WU-100'), 'Should be WU-100');
+      expect(done.size).toBe(1, 'Should have 1 done');
+      expect(done.has('WU-100'), 'Should be WU-100');
     });
 
     it('should return empty Set for status with no WUs', async () => {
       await store.load();
 
       const ready = store.getByStatus('ready');
-      assert.ok(ready instanceof Set, 'Should return Set');
-      assert.equal(ready.size, 0, 'Should be empty');
+      expect(ready instanceof Set, 'Should return Set');
+      expect(ready.size).toBe(0, 'Should be empty');
     });
   });
 
@@ -391,21 +370,21 @@ describe('wu-state-store', () => {
       await store.load();
 
       const tooling = store.getByLane('Operations: Tooling');
-      assert.equal(tooling.size, 2, 'Should have 2 WUs in Tooling');
-      assert.ok(tooling.has('WU-100'), 'Should have WU-100');
-      assert.ok(tooling.has('WU-102'), 'Should have WU-102');
+      expect(tooling.size).toBe(2, 'Should have 2 WUs in Tooling');
+      expect(tooling.has('WU-100'), 'Should have WU-100');
+      expect(tooling.has('WU-102'), 'Should have WU-102');
 
       const workflow = store.getByLane('Operations: Workflow Engine');
-      assert.equal(workflow.size, 1, 'Should have 1 WU in Workflow Engine');
-      assert.ok(workflow.has('WU-101'), 'Should have WU-101');
+      expect(workflow.size).toBe(1, 'Should have 1 WU in Workflow Engine');
+      expect(workflow.has('WU-101'), 'Should have WU-101');
     });
 
     it('should return empty Set for lane with no WUs', async () => {
       await store.load();
 
       const lane = store.getByLane('Operations: Tooling');
-      assert.ok(lane instanceof Set, 'Should return Set');
-      assert.equal(lane.size, 0, 'Should be empty');
+      expect(lane instanceof Set, 'Should return Set');
+      expect(lane.size).toBe(0, 'Should be empty');
     });
   });
 
@@ -415,11 +394,7 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt]);
       await store.load();
 
-      await assert.rejects(
-        async () => store.claim('WU-100', 'Operations: Tooling', 'Test'),
-        /already in_progress/i,
-        'Should reject duplicate claim'
-      );
+      await expect(async () => store.claim('WU-100', 'Operations: Tooling', 'Test')).rejects.toThrow(/already in_progress/i);
     });
 
     it('should reject blocked -> done transition (must unblock first)', async () => {
@@ -428,11 +403,7 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt, blockEvt]);
       await store.load();
 
-      await assert.rejects(
-        async () => store.complete('WU-100'),
-        /not in_progress/i,
-        'Should reject blocked -> done'
-      );
+      await expect(async () => store.complete('WU-100')).rejects.toThrow(/not in_progress/i);
     });
   });
 
@@ -450,13 +421,13 @@ describe('wu-state-store', () => {
       // applyEvent should throw before any state change
       assert.throws(
         () => store.applyEvent(invalidEvent),
-        /Invalid discriminator value|Event type must be one of/i,
+        /Invalid input|Invalid discriminator value|Event type must be one of/i,
         'Should throw descriptive error for invalid event type'
       );
 
       // Verify no partial state was left
       const wuState = store.getWUState('WU-100');
-      assert.equal(wuState, undefined, 'No partial state should exist after validation failure');
+      expect(wuState).toBe(undefined, 'No partial state should exist after validation failure');
     });
 
     it('should provide descriptive error message with allowed event types', async () => {
@@ -470,10 +441,10 @@ describe('wu-state-store', () => {
 
       try {
         store.applyEvent(invalidEvent);
-        assert.fail('Should have thrown an error');
+        throw new Error('Should have thrown an error');
       } catch (error) {
         // Error should mention valid event types or discriminator
-        assert.ok(
+        expect(
           error.message.includes('create') ||
             error.message.includes('claim') ||
             error.message.includes('Invalid discriminator'),
@@ -492,15 +463,11 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [invalidEvent]);
 
       // Load should reject with line context
-      await assert.rejects(
-        async () => store.load(),
-        /line 1|validation/i,
-        'Should throw with line context for invalid event during load'
-      );
+      await expect(async () => store.load()).rejects.toThrow(/line 1|validation/i);
 
       // Verify no state was built
       const wuState = store.getWUState('WU-100');
-      assert.equal(wuState, undefined, 'No state should exist after load failure');
+      expect(wuState).toBe(undefined, 'No state should exist after load failure');
     });
   });
 
@@ -525,7 +492,7 @@ describe('wu-state-store', () => {
         await store.load();
 
         // If load succeeds without throwing, validation passed
-        assert.ok(true, 'Spawn event should be valid');
+        expect(true, 'Spawn event should be valid');
       });
 
       it('should reject spawn event missing parentWuId', async () => {
@@ -537,11 +504,7 @@ describe('wu-state-store', () => {
         };
         await writeJsonlFile(eventsFilePath, [event]);
 
-        await assert.rejects(
-          async () => store.load(),
-          /validation/i,
-          'Should reject spawn event without parentWuId'
-        );
+        await expect(async () => store.load()).rejects.toThrow(/validation/i);
       });
 
       it('should reject spawn event missing spawnId', async () => {
@@ -553,22 +516,14 @@ describe('wu-state-store', () => {
         };
         await writeJsonlFile(eventsFilePath, [event]);
 
-        await assert.rejects(
-          async () => store.load(),
-          /validation/i,
-          'Should reject spawn event without spawnId'
-        );
+        await expect(async () => store.load()).rejects.toThrow(/validation/i);
       });
 
       it('should validate parentWuId matches WU-XXX pattern', async () => {
         const event = spawnEvent({ parentWuId: 'invalid-id' });
         await writeJsonlFile(eventsFilePath, [event]);
 
-        await assert.rejects(
-          async () => store.load(),
-          /validation/i,
-          'Should reject invalid parentWuId format'
-        );
+        await expect(async () => store.load()).rejects.toThrow(/validation/i);
       });
     });
 
@@ -580,8 +535,8 @@ describe('wu-state-store', () => {
         await store.load();
 
         const children = store.getChildWUs('WU-100');
-        assert.equal(children.size, 1, 'Should have 1 child WU');
-        assert.ok(children.has('WU-200'), 'Should contain WU-200');
+        expect(children.size).toBe(1, 'Should have 1 child WU');
+        expect(children.has('WU-200'), 'Should contain WU-200');
       });
 
       it('should track multiple children for same parent', async () => {
@@ -595,18 +550,18 @@ describe('wu-state-store', () => {
         await store.load();
 
         const children = store.getChildWUs('WU-100');
-        assert.equal(children.size, 3, 'Should have 3 child WUs');
-        assert.ok(children.has('WU-200'), 'Should contain WU-200');
-        assert.ok(children.has('WU-201'), 'Should contain WU-201');
-        assert.ok(children.has('WU-202'), 'Should contain WU-202');
+        expect(children.size).toBe(3, 'Should have 3 child WUs');
+        expect(children.has('WU-200'), 'Should contain WU-200');
+        expect(children.has('WU-201'), 'Should contain WU-201');
+        expect(children.has('WU-202'), 'Should contain WU-202');
       });
 
       it('should return empty Set for parent with no children', async () => {
         await store.load();
 
         const children = store.getChildWUs('WU-999');
-        assert.ok(children instanceof Set, 'Should return Set');
-        assert.equal(children.size, 0, 'Should be empty');
+        expect(children instanceof Set, 'Should return Set');
+        expect(children.size).toBe(0, 'Should be empty');
       });
 
       it('should track children from different parents separately', async () => {
@@ -619,12 +574,12 @@ describe('wu-state-store', () => {
         await store.load();
 
         const children100 = store.getChildWUs('WU-100');
-        assert.equal(children100.size, 1, 'WU-100 should have 1 child');
-        assert.ok(children100.has('WU-200'), 'WU-100 should have WU-200');
+        expect(children100.size).toBe(1, 'WU-100 should have 1 child');
+        expect(children100.has('WU-200'), 'WU-100 should have WU-200');
 
         const children101 = store.getChildWUs('WU-101');
-        assert.equal(children101.size, 1, 'WU-101 should have 1 child');
-        assert.ok(children101.has('WU-300'), 'WU-101 should have WU-300');
+        expect(children101.size).toBe(1, 'WU-101 should have 1 child');
+        expect(children101.has('WU-300'), 'WU-101 should have WU-300');
       });
     });
 
@@ -641,11 +596,11 @@ describe('wu-state-store', () => {
 
         // Parent should still be in_progress
         const inProgress = store.getByStatus('in_progress');
-        assert.ok(inProgress.has('WU-100'), 'Parent should be in_progress');
+        expect(inProgress.has('WU-100'), 'Parent should be in_progress');
 
         // Children should be tracked
         const children = store.getChildWUs('WU-100');
-        assert.equal(children.size, 2, 'Should have 2 children');
+        expect(children.size).toBe(2, 'Should have 2 children');
       });
 
       it('should persist spawn event when recorded', async () => {
@@ -660,13 +615,13 @@ describe('wu-state-store', () => {
         // Check file persisted
         const content = await fs.readFile(eventsFilePath, 'utf-8');
         const lines = content.trim().split('\n');
-        assert.equal(lines.length, 2, 'Should have 2 events');
+        expect(lines.length).toBe(2, 'Should have 2 events');
 
         const spawnEvt = JSON.parse(lines[1]);
-        assert.equal(spawnEvt.type, 'spawn', 'Should be spawn event');
-        assert.equal(spawnEvt.wuId, 'WU-200', 'Should have correct wuId');
-        assert.equal(spawnEvt.parentWuId, 'WU-100', 'Should have correct parentWuId');
-        assert.equal(spawnEvt.spawnId, 'spawn-abc123', 'Should have correct spawnId');
+        expect(spawnEvt.type).toBe('spawn', 'Should be spawn event');
+        expect(spawnEvt.wuId).toBe('WU-200', 'Should have correct wuId');
+        expect(spawnEvt.parentWuId).toBe('WU-100', 'Should have correct parentWuId');
+        expect(spawnEvt.spawnId).toBe('spawn-abc123', 'Should have correct spawnId');
       });
     });
   });

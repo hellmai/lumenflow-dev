@@ -39,7 +39,7 @@ type MarkSignalsAsReadFn = (baseDir: string, signalIds: string[]) => Promise<voi
 let loadSignals: LoadSignalsFn | null = null;
 let markSignalsAsRead: MarkSignalsAsReadFn | null = null;
 try {
-  const mod = await import('@lumenflow/memory/lib/mem-signal-core.js');
+  const mod = await import('@lumenflow/memory/signal');
   loadSignals = mod.loadSignals;
   markSignalsAsRead = mod.markSignalsAsRead;
 } catch {

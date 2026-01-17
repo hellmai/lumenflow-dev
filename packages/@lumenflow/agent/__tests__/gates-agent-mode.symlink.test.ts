@@ -4,8 +4,7 @@
  * Tests for the gates-latest.log symlink functionality.
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync, readlinkSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,8 +33,8 @@ describe('gates-latest.log symlink', () => {
   describe('getGatesLatestSymlinkPath', () => {
     it('should return path to gates-latest.log in .logs dir', () => {
       const result = getGatesLatestSymlinkPath({ cwd: TEST_FIXTURE_DIR, env: {} });
-      assert.ok(result.endsWith('.logs/gates-latest.log'));
-      assert.ok(result.startsWith(TEST_FIXTURE_DIR));
+      expect(result.endsWith('.logs/gates-latest.log')).toBe(true);
+      expect(result.startsWith(TEST_FIXTURE_DIR)).toBe(true);
     });
 
     it('should respect LUMENFLOW_LOG_DIR env var', () => {
@@ -43,7 +42,7 @@ describe('gates-latest.log symlink', () => {
         cwd: TEST_FIXTURE_DIR,
         env: { LUMENFLOW_LOG_DIR: 'custom-logs' },
       });
-      assert.ok(result.includes('custom-logs'));
+      expect(result.includes('custom-logs')).toBe(true);
     });
   });
 
@@ -59,14 +58,14 @@ describe('gates-latest.log symlink', () => {
         env: {},
       });
 
-      assert.equal(result, true);
+      expect(result).toBe(true);
 
       const symlinkPath = getGatesLatestSymlinkPath({ cwd: TEST_FIXTURE_DIR, env: {} });
-      assert.ok(existsSync(symlinkPath));
+      expect(existsSync(symlinkPath)).toBe(true);
 
       // Verify symlink points to correct file
       const target = readlinkSync(symlinkPath);
-      assert.ok(target.includes('gates-test-2025-01-01.log'));
+      expect(target.includes('gates-test-2025-01-01.log')).toBe(true);
     });
 
     it('should replace existing symlink', () => {
@@ -84,12 +83,12 @@ describe('gates-latest.log symlink', () => {
         env: {},
       });
 
-      assert.equal(result, true);
+      expect(result).toBe(true);
 
       // Verify symlink now points to v2
       const symlinkPath = getGatesLatestSymlinkPath({ cwd: TEST_FIXTURE_DIR, env: {} });
       const target = readlinkSync(symlinkPath);
-      assert.ok(target.includes('gates-v2.log'));
+      expect(target.includes('gates-v2.log')).toBe(true);
     });
 
     it('should use relative path for symlink', () => {
@@ -101,8 +100,8 @@ describe('gates-latest.log symlink', () => {
       const target = readlinkSync(symlinkPath);
 
       // Should be relative, not absolute
-      assert.ok(!target.startsWith('/'), 'Symlink should be relative');
-      assert.equal(target, 'gates-relative.log');
+      expect(target.startsWith('/')).toBe(false);
+      expect(target).toBe('gates-relative.log');
     });
   });
 });
