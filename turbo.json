@@ -6,6 +6,19 @@
       "outputs": ["dist/**"],
       "inputs": ["src/**/*.ts", "tsconfig.json", "package.json"]
     },
+    "build:dist": {
+      "dependsOn": ["^build:dist"],
+      "outputs": ["dist/**"],
+      "inputs": ["src/**/*.ts", "tsconfig.build.json", "package.json"]
+    },
+    "pack:dist": {
+      "dependsOn": ["build:dist"],
+      "outputs": ["*.tgz"],
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    },
     "lint": {
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.ts", "**/*.mjs", "eslint.config.mjs"]
