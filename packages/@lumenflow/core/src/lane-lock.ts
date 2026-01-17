@@ -21,8 +21,8 @@ import path from 'node:path';
 import { toKebab, FILE_SYSTEM } from './wu-constants.js';
 import { getProjectRoot } from './wu-constants.js';
 
-// Type definitions
-interface LockMetadata {
+// Type definitions (exported for declaration generation)
+export interface LockMetadata {
   wuId: string;
   timestamp: string;
   agentSession: string | null;
