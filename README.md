@@ -18,6 +18,12 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 | `@lumenflow/metrics` | DORA metrics, flow analysis, telemetry |
 | `@lumenflow/shims` | Git and pnpm safety shims |
 
+## Apps
+
+| App | Description |
+|-----|-------------|
+| `apps/github-app` | GitHub App for SaaS workflow enforcement (webhooks, billing) |
+
 ## Documentation
 
 - [LumenFlow Complete Guide](docs/lumenflow/lumenflow-complete.md) - Comprehensive framework reference
@@ -25,6 +31,7 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 - [WU Sizing Guide](docs/lumenflow/wu-sizing-guide.md) - Scoping work appropriately
 - [Invariants](docs/lumenflow/invariants.md) - Non-negotiable system rules
 - [Templates](docs/templates/) - WU and config templates
+- [Distribution Roadmap](docs/DISTRIBUTION.md) - Packaging for consultancy distribution
 
 ## Requirements
 
