@@ -240,7 +240,7 @@ export async function createHandoffCheckpoint(options) {
   if (!ml) {
     try {
       // Dynamically import optional @lumenflow/memory peer dependency
-      await import('@lumenflow/memory/lib/mem-checkpoint-core.js');
+      await import('@lumenflow/memory/checkpoint');
       ml = {
         createCheckpoint: async () => {
           // The mem-checkpoint module expects different args

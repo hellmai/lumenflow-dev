@@ -8,13 +8,12 @@
  * 2. escalateStuckSpawn() signals orchestrator via memory bus
  * 3. Spawn status updated to ESCALATED (prevents duplicate signals)
  *
- * @see {@link tools/lib/spawn-escalation.mjs} - Implementation
- * @see {@link tools/lib/spawn-recovery.mjs} - Recovery logic
- * @see {@link tools/lib/mem-signal-core.mjs} - Signal creation
+ * @see {@link ../spawn-escalation.ts} - Implementation
+ * @see {@link ../spawn-recovery.ts} - Recovery logic
+ * @see {@link @lumenflow/memory/signal} - Signal creation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -147,19 +146,19 @@ describe('spawn-escalation (WU-1967)', () => {
 
   describe('exported constants', () => {
     it('should export SPAWN_FAILURE_SIGNAL_TYPE', () => {
-      assert.equal(SPAWN_FAILURE_SIGNAL_TYPE, 'spawn_failure');
+      expect(SPAWN_FAILURE_SIGNAL_TYPE).toBe('spawn_failure');
     });
 
     it('should export SignalSeverity with correct values', () => {
-      assert.equal(SignalSeverity.WARNING, 'warning');
-      assert.equal(SignalSeverity.ERROR, 'error');
-      assert.equal(SignalSeverity.CRITICAL, 'critical');
+      expect(SignalSeverity.WARNING).toBe('warning');
+      expect(SignalSeverity.ERROR).toBe('error');
+      expect(SignalSeverity.CRITICAL).toBe('critical');
     });
 
     it('should export SuggestedAction with correct values', () => {
-      assert.equal(SuggestedAction.RETRY, 'retry');
-      assert.equal(SuggestedAction.BLOCK, 'block');
-      assert.equal(SuggestedAction.HUMAN_ESCALATE, 'human_escalate');
+      expect(SuggestedAction.RETRY).toBe('retry');
+      expect(SuggestedAction.BLOCK).toBe('block');
+      expect(SuggestedAction.HUMAN_ESCALATE).toBe('human_escalate');
     });
   });
 
@@ -178,7 +177,7 @@ describe('spawn-escalation (WU-1967)', () => {
 
       assert.ok(result, 'Should return result');
       assert.ok(result.signalId, 'Should have signalId');
-      assert.match(result.signalId, /^sig-/, 'Signal ID should start with sig-');
+      expect(result.signalId).toMatch(/^sig-/, 'Signal ID should start with sig-');
     });
 
     it('should return signal payload with spawn failure type', async () => {
@@ -194,7 +193,7 @@ describe('spawn-escalation (WU-1967)', () => {
       });
 
       assert.ok(result.signal, 'Should have signal payload');
-      assert.equal(result.signal.type, SPAWN_FAILURE_SIGNAL_TYPE);
+      expect(result.signal.type).toBe(SPAWN_FAILURE_SIGNAL_TYPE);
     });
 
     it('should include spawn details in signal payload', async () => {
@@ -217,10 +216,10 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.spawn_id, 'spawn-1234');
-      assert.equal(result.signal.target_wu_id, 'WU-2001');
-      assert.equal(result.signal.parent_wu_id, 'WU-2000');
-      assert.equal(result.signal.lane, 'Intelligence: Prompts');
+      expect(result.signal.spawn_id).toBe('spawn-1234');
+      expect(result.signal.target_wu_id).toBe('WU-2001');
+      expect(result.signal.parent_wu_id).toBe('WU-2000');
+      expect(result.signal.lane).toBe('Intelligence: Prompts');
     });
   });
 
@@ -237,8 +236,8 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.severity, SignalSeverity.WARNING);
-      assert.equal(result.signal.suggested_action, SuggestedAction.RETRY);
+      expect(result.signal.severity).toBe(SignalSeverity.WARNING);
+      expect(result.signal.suggested_action).toBe(SuggestedAction.RETRY);
     });
 
     it('should set severity=error and suggested_action=block on second attempt', async () => {
@@ -255,8 +254,8 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.severity, SignalSeverity.ERROR);
-      assert.equal(result.signal.suggested_action, SuggestedAction.BLOCK);
+      expect(result.signal.severity).toBe(SignalSeverity.ERROR);
+      expect(result.signal.suggested_action).toBe(SuggestedAction.BLOCK);
     });
 
     it('should set severity=critical and suggested_action=human_escalate on third+ attempt', async () => {
@@ -275,8 +274,8 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.severity, SignalSeverity.CRITICAL);
-      assert.equal(result.signal.suggested_action, SuggestedAction.HUMAN_ESCALATE);
+      expect(result.signal.severity).toBe(SignalSeverity.CRITICAL);
+      expect(result.signal.suggested_action).toBe(SuggestedAction.HUMAN_ESCALATE);
     });
   });
 
@@ -294,12 +293,12 @@ describe('spawn-escalation (WU-1967)', () => {
       });
 
       const signals = await readSignals(testDir);
-      assert.equal(signals.length, 1, 'Should have created one signal');
+      expect(signals.length).toBe(1, 'Should have created one signal');
 
       // Parse the message (it's a JSON payload)
       const payload = JSON.parse(signals[0].message);
-      assert.equal(payload.type, SPAWN_FAILURE_SIGNAL_TYPE);
-      assert.equal(payload.spawn_id, 'spawn-1234');
+      expect(payload.type).toBe(SPAWN_FAILURE_SIGNAL_TYPE);
+      expect(payload.spawn_id).toBe('spawn-1234');
     });
 
     it('should target signal to parent WU (orchestrator)', async () => {
@@ -315,7 +314,7 @@ describe('spawn-escalation (WU-1967)', () => {
       });
 
       const signals = await readSignals(testDir);
-      assert.equal(signals[0].wu_id, 'WU-3000', 'Signal should target parent WU');
+      expect(signals[0].wu_id).toBe('WU-3000', 'Signal should target parent WU');
     });
 
     it('should not create signal in dry-run mode', async () => {
@@ -331,7 +330,7 @@ describe('spawn-escalation (WU-1967)', () => {
       });
 
       const signals = await readSignals(testDir);
-      assert.equal(signals.length, 0, 'Should not create signal in dry-run mode');
+      expect(signals.length).toBe(0, 'Should not create signal in dry-run mode');
     });
   });
 
@@ -348,11 +347,11 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: false,
       });
 
-      assert.equal(result.spawnStatus, SpawnStatus.ESCALATED);
+      expect(result.spawnStatus).toBe(SpawnStatus.ESCALATED);
 
       // Verify spawn registry was updated
       const updatedSpawn = await readSpawnStatus(registryDir, 'spawn-1234');
-      assert.equal(updatedSpawn.status, SpawnStatus.ESCALATED);
+      expect(updatedSpawn.status).toBe(SpawnStatus.ESCALATED);
     });
 
     it('should return ESCALATED status in dry-run mode (but not update registry)', async () => {
@@ -367,11 +366,11 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.spawnStatus, SpawnStatus.ESCALATED);
+      expect(result.spawnStatus).toBe(SpawnStatus.ESCALATED);
 
       // Registry should NOT be updated in dry-run
       const unchangedSpawn = await readSpawnStatus(registryDir, 'spawn-1234');
-      assert.equal(unchangedSpawn.status, 'pending', 'Status should remain pending in dry-run');
+      expect(unchangedSpawn.status).toBe('pending', 'Status should remain pending in dry-run');
     });
   });
 
@@ -383,16 +382,12 @@ describe('spawn-escalation (WU-1967)', () => {
       await createSpawnEvents(registryDir, [spawn]);
       await createRecoveryAuditLog(recoveryDir, auditLog);
 
-      await assert.rejects(
-        async () =>
-          escalateStuckSpawn('spawn-1234', {
-            baseDir: testDir,
-            dryRun: false,
-          }),
-        {
-          message: /already escalated/i,
-        }
-      );
+      await expect(async () =>
+        escalateStuckSpawn('spawn-1234', {
+          baseDir: testDir,
+          dryRun: false,
+        })
+      ).rejects.toThrow(/already escalated/i);
     });
   });
 
@@ -400,16 +395,12 @@ describe('spawn-escalation (WU-1967)', () => {
     it('should throw if spawn not found', async () => {
       // No spawn in registry
 
-      await assert.rejects(
-        async () =>
-          escalateStuckSpawn('spawn-nonexistent', {
-            baseDir: testDir,
-            dryRun: true,
-          }),
-        {
-          message: /not found/i,
-        }
-      );
+      await expect(async () =>
+        escalateStuckSpawn('spawn-nonexistent', {
+          baseDir: testDir,
+          dryRun: true,
+        })
+      ).rejects.toThrow(/not found/i);
     });
 
     it('should throw if no escalation audit log exists', async () => {
@@ -417,16 +408,12 @@ describe('spawn-escalation (WU-1967)', () => {
       await createSpawnEvents(registryDir, [spawn]);
       // No audit log created
 
-      await assert.rejects(
-        async () =>
-          escalateStuckSpawn('spawn-1234', {
-            baseDir: testDir,
-            dryRun: true,
-          }),
-        {
-          message: /audit|escalation/i,
-        }
-      );
+      await expect(async () =>
+        escalateStuckSpawn('spawn-1234', {
+          baseDir: testDir,
+          dryRun: true,
+        })
+      ).rejects.toThrow(/audit|escalation/i);
     });
   });
 
@@ -464,7 +451,7 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.last_checkpoint, lastCheckpoint);
+      expect(result.signal.last_checkpoint).toBe(lastCheckpoint);
     });
 
     it('should set last_checkpoint to null if not available', async () => {
@@ -479,7 +466,7 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.last_checkpoint, null);
+      expect(result.signal.last_checkpoint).toBe(null);
     });
 
     it('should include recovery_action from audit log', async () => {
@@ -494,7 +481,7 @@ describe('spawn-escalation (WU-1967)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signal.recovery_action, 'escalated_stuck');
+      expect(result.signal.recovery_action).toBe('escalated_stuck');
     });
   });
 });

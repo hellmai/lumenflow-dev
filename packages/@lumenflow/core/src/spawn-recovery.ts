@@ -36,7 +36,7 @@ import { toKebab } from './wu-constants.js';
 // Optional import from @lumenflow/memory
 let loadMemory: ((baseDir: string, wuId: string) => Promise<{ checkpoints: Array<{ timestamp: string }> } | null>) | null = null;
 try {
-  const mod = await import('@lumenflow/memory/lib/memory-store.js');
+  const mod = await import('@lumenflow/memory/store');
   loadMemory = mod.loadMemory;
 } catch {
   // @lumenflow/memory not available - memory features disabled

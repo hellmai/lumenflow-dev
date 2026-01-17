@@ -8,13 +8,15 @@
  * preserves all data structures correctly.
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse, stringify } from 'yaml';
 
 const WU_DIR = 'docs/04-operations/tasks/wu';
+
+// Skip tests if WU corpus doesn't exist (running in standalone package)
+const hasWUCorpus = existsSync(WU_DIR);
 
 /**
  * Get all WU YAML files
@@ -59,12 +61,12 @@ function deepEqualIgnoreUndefined(obj1, obj2) {
   return obj1 === obj2;
 }
 
-describe('YAML round-trip tests (WU-1342)', () => {
-  const wuFiles = getWUFiles();
+describe.skipIf(!hasWUCorpus)('YAML round-trip tests (WU-1342)', () => {
+  const wuFiles = hasWUCorpus ? getWUFiles() : [];
 
   it('should find WU YAML files in corpus', () => {
-    assert.ok(wuFiles.length > 0, 'Should find at least one WU file');
-    assert.ok(wuFiles.length > 200, 'Should find 200+ WU files (corpus has 248+)');
+    expect(wuFiles.length > 0).toBe(true);
+    expect(wuFiles.length > 200).toBe(true);
   });
 
   describe('round-trip conversion', () => {
@@ -79,34 +81,30 @@ describe('YAML round-trip tests (WU-1342)', () => {
         try {
           // Parse with yaml library
           parsed1 = parse(originalText);
-        } catch (err) {
+        } catch (err: any) {
           // Skip malformed legacy files that yaml library rejects
           // (These are pre-existing issues, not caused by library migration)
-          assert.ok(
+          expect(
             err.message.includes('Implicit keys need to be on a single line') ||
-              err.message.includes('Nested mappings are not allowed'),
-            `WU ${wuId} has malformed YAML (legacy issue): ${err.message}`
-          );
+              err.message.includes('Nested mappings are not allowed')
+          ).toBe(true);
           return; // Skip this test
         }
 
-        assert.ok(parsed1, 'First parse should succeed');
-        assert.equal(parsed1.id, wuId, `WU ID should match ${wuId}`);
+        expect(parsed1).toBeTruthy();
+        expect(parsed1.id).toBe(wuId);
 
         // Stringify back to YAML
         const stringified = stringify(parsed1, { lineWidth: 100 });
-        assert.ok(stringified, 'Stringify should produce output');
-        assert.ok(stringified.length > 0, 'Stringified YAML should not be empty');
+        expect(stringified).toBeTruthy();
+        expect(stringified.length > 0).toBe(true);
 
         // Parse again
         const parsed2 = parse(stringified);
-        assert.ok(parsed2, 'Second parse should succeed');
+        expect(parsed2).toBeTruthy();
 
         // Verify structural equality (not raw text equality)
-        assert.ok(
-          deepEqualIgnoreUndefined(parsed1, parsed2),
-          `Structure should be preserved for ${wuId}`
-        );
+        expect(deepEqualIgnoreUndefined(parsed1, parsed2)).toBe(true);
       });
     });
   });
@@ -130,33 +128,21 @@ describe('YAML round-trip tests (WU-1342)', () => {
         const reparsed = parse(stringified);
 
         // Check required fields
-        assert.equal(reparsed.id, parsed.id, 'id should be preserved');
-        assert.equal(reparsed.title, parsed.title, 'title should be preserved');
-        assert.equal(reparsed.lane, parsed.lane, 'lane should be preserved');
-        assert.equal(reparsed.status, parsed.status, 'status should be preserved');
-        assert.equal(reparsed.type, parsed.type, 'type should be preserved');
+        expect(reparsed.id).toBe(parsed.id, 'id should be preserved');
+        expect(reparsed.title).toBe(parsed.title, 'title should be preserved');
+        expect(reparsed.lane).toBe(parsed.lane, 'lane should be preserved');
+        expect(reparsed.status).toBe(parsed.status, 'status should be preserved');
+        expect(reparsed.type).toBe(parsed.type, 'type should be preserved');
 
         // Check arrays preserved
         if (parsed.acceptance) {
-          assert.deepEqual(
-            reparsed.acceptance,
-            parsed.acceptance,
-            'acceptance criteria should be preserved'
-          );
+          expect(reparsed.acceptance).toEqual(parsed.acceptance);
         }
         if (parsed.code_paths) {
-          assert.deepEqual(
-            reparsed.code_paths,
-            parsed.code_paths,
-            'code_paths should be preserved'
-          );
+          expect(reparsed.code_paths).toEqual(parsed.code_paths);
         }
         if (parsed.dependencies) {
-          assert.deepEqual(
-            reparsed.dependencies,
-            parsed.dependencies,
-            'dependencies should be preserved'
-          );
+          expect(reparsed.dependencies).toEqual(parsed.dependencies);
         }
       });
     });
@@ -167,15 +153,15 @@ describe('YAML round-trip tests (WU-1342)', () => {
       const doc = { id: 'TEST', code_paths: [], dependencies: [] };
       const stringified = stringify(doc, { lineWidth: 100 });
       const reparsed = parse(stringified);
-      assert.deepEqual(reparsed.code_paths, [], 'Empty code_paths array should be preserved');
-      assert.deepEqual(reparsed.dependencies, [], 'Empty dependencies array should be preserved');
+      expect(reparsed.code_paths).toEqual([], 'Empty code_paths array should be preserved');
+      expect(reparsed.dependencies).toEqual([], 'Empty dependencies array should be preserved');
     });
 
     it('should handle empty strings', () => {
       const doc = { id: 'TEST', notes: '' };
       const stringified = stringify(doc, { lineWidth: 100 });
       const reparsed = parse(stringified);
-      assert.equal(reparsed.notes, '', 'Empty string should be preserved');
+      expect(reparsed.notes).toBe('', 'Empty string should be preserved');
     });
 
     it('should handle multiline strings', () => {
@@ -185,11 +171,7 @@ describe('YAML round-trip tests (WU-1342)', () => {
       };
       const stringified = stringify(doc, { lineWidth: 100 });
       const reparsed = parse(stringified);
-      assert.equal(
-        reparsed.description,
-        'Line 1\nLine 2\nLine 3',
-        'Multiline string should be preserved'
-      );
+      expect(reparsed.description).toBe('Line 1\nLine 2\nLine 3');
     });
 
     it('should handle nested objects', () => {
@@ -199,12 +181,8 @@ describe('YAML round-trip tests (WU-1342)', () => {
       };
       const stringified = stringify(doc, { lineWidth: 100 });
       const reparsed = parse(stringified);
-      assert.deepEqual(
-        reparsed.tests.manual,
-        ['test1', 'test2'],
-        'Nested arrays should be preserved'
-      );
-      assert.deepEqual(reparsed.tests.automated, [], 'Nested empty arrays should be preserved');
+      expect(reparsed.tests.manual).toEqual(['test1', 'test2']);
+      expect(reparsed.tests.automated).toEqual([]);
     });
 
     it('should handle ISO timestamps', () => {
@@ -215,12 +193,8 @@ describe('YAML round-trip tests (WU-1342)', () => {
       };
       const stringified = stringify(doc, { lineWidth: 100 });
       const reparsed = parse(stringified);
-      assert.equal(reparsed.created, '2025-11-29', 'Date string should be preserved');
-      assert.equal(
-        reparsed.claimed_at,
-        '2025-11-29T19:19:55.803Z',
-        'ISO timestamp should be preserved'
-      );
+      expect(reparsed.created).toBe('2025-11-29');
+      expect(reparsed.claimed_at).toBe('2025-11-29T19:19:55.803Z');
     });
   });
 });

@@ -1,13 +1,11 @@
 /**
- * @file wu-status-updater.test.mjs
+ * @file wu-status-updater.test.ts
  * Unit tests for status.md update utilities
  *
  * WU-1275: Tests error throwing behavior (replace silent failures)
- * TDD: These tests are written FIRST and should FAIL until implementation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -15,8 +13,8 @@ import { updateStatusRemoveInProgress, addToStatusCompleted } from '../wu-status
 import { WUError, ErrorCodes } from '../error-handler.js';
 
 describe('wu-status-updater', () => {
-  let testDir;
-  let statusPath;
+  let testDir: string;
+  let statusPath: string;
 
   beforeEach(() => {
     testDir = mkdtempSync(join(tmpdir(), 'wu-status-updater-test-'));
@@ -42,15 +40,14 @@ describe('wu-status-updater', () => {
   describe('updateStatusRemoveInProgress', () => {
     it('throws FILE_NOT_FOUND when status.md is missing', () => {
       // No file created - should throw
-      assert.throws(
-        () => updateStatusRemoveInProgress(statusPath, 'WU-100'),
-        (err) => {
-          assert.ok(err instanceof WUError, 'Should throw WUError');
-          assert.equal(err.code, ErrorCodes.FILE_NOT_FOUND);
-          assert.ok(err.message.includes(statusPath), 'Message should include path');
-          return true;
-        }
-      );
+      try {
+        updateStatusRemoveInProgress(statusPath, 'WU-100');
+        expect.fail('Should have thrown');
+      } catch (err: any) {
+        expect(err instanceof WUError).toBe(true);
+        expect(err.code).toBe(ErrorCodes.FILE_NOT_FOUND);
+        expect(err.message.includes(statusPath)).toBe(true);
+      }
     });
 
     it('throws SECTION_NOT_FOUND when In Progress section is missing', () => {
@@ -61,51 +58,49 @@ describe('wu-status-updater', () => {
 `;
       writeFileSync(statusPath, contentWithoutInProgress, 'utf8');
 
-      assert.throws(
-        () => updateStatusRemoveInProgress(statusPath, 'WU-100'),
-        (err) => {
-          assert.ok(err instanceof WUError, 'Should throw WUError');
-          assert.equal(err.code, ErrorCodes.SECTION_NOT_FOUND);
-          assert.ok(err.message.includes('In Progress'), 'Message should mention section');
-          return true;
-        }
-      );
+      try {
+        updateStatusRemoveInProgress(statusPath, 'WU-100');
+        expect.fail('Should have thrown');
+      } catch (err: any) {
+        expect(err instanceof WUError).toBe(true);
+        expect(err.code).toBe(ErrorCodes.SECTION_NOT_FOUND);
+        expect(err.message.includes('In Progress')).toBe(true);
+      }
     });
 
     it('succeeds when file and section exist', () => {
       writeFileSync(statusPath, VALID_STATUS_CONTENT, 'utf8');
 
       // Should not throw
-      assert.doesNotThrow(() => updateStatusRemoveInProgress(statusPath, 'WU-100'));
+      expect(() => updateStatusRemoveInProgress(statusPath, 'WU-100')).not.toThrow();
     });
 
     it('is idempotent - no error when WU not in section', () => {
       writeFileSync(statusPath, VALID_STATUS_CONTENT, 'utf8');
 
       // WU-999 is not in the file - should succeed silently (idempotent)
-      assert.doesNotThrow(() => updateStatusRemoveInProgress(statusPath, 'WU-999'));
+      expect(() => updateStatusRemoveInProgress(statusPath, 'WU-999')).not.toThrow();
     });
   });
 
   describe('addToStatusCompleted', () => {
     it('throws FILE_NOT_FOUND when status.md is missing', () => {
       // No file created - should throw
-      assert.throws(
-        () => addToStatusCompleted(statusPath, 'WU-100', 'Test task'),
-        (err) => {
-          assert.ok(err instanceof WUError, 'Should throw WUError');
-          assert.equal(err.code, ErrorCodes.FILE_NOT_FOUND);
-          assert.ok(err.message.includes(statusPath), 'Message should include path');
-          return true;
-        }
-      );
+      try {
+        addToStatusCompleted(statusPath, 'WU-100', 'Test task');
+        expect.fail('Should have thrown');
+      } catch (err: any) {
+        expect(err instanceof WUError).toBe(true);
+        expect(err.code).toBe(ErrorCodes.FILE_NOT_FOUND);
+        expect(err.message.includes(statusPath)).toBe(true);
+      }
     });
 
     it('succeeds when file exists', () => {
       writeFileSync(statusPath, VALID_STATUS_CONTENT, 'utf8');
 
       // Should not throw
-      assert.doesNotThrow(() => addToStatusCompleted(statusPath, 'WU-200', 'New task'));
+      expect(() => addToStatusCompleted(statusPath, 'WU-200', 'New task')).not.toThrow();
     });
 
     it('is idempotent - no error when WU already in Completed', () => {
@@ -115,7 +110,7 @@ describe('wu-status-updater', () => {
       addToStatusCompleted(statusPath, 'WU-200', 'New task');
 
       // Add again - should succeed silently (idempotent)
-      assert.doesNotThrow(() => addToStatusCompleted(statusPath, 'WU-200', 'New task'));
+      expect(() => addToStatusCompleted(statusPath, 'WU-200', 'New task')).not.toThrow();
     });
   });
 });

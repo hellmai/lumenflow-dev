@@ -24,8 +24,7 @@
  * Run: node --test tools/lib/__tests__/code-path-validator.golden.test.mjs
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -63,25 +62,25 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
       const doc = { id: 'WU-TEST', code_paths: [] };
       const result = await validateCodePathsExist(doc, 'WU-TEST');
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.errors, []);
-      assert.deepStrictEqual(result.missing, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.missing).toEqual([]);
     });
 
     it('returns valid=true for undefined code_paths', async () => {
       const doc = { id: 'WU-TEST' };
       const result = await validateCodePathsExist(doc, 'WU-TEST');
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.errors, []);
-      assert.deepStrictEqual(result.missing, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.missing).toEqual([]);
     });
 
     it('returns valid=true for null code_paths', async () => {
       const doc = { id: 'WU-TEST', code_paths: null };
       const result = await validateCodePathsExist(doc, 'WU-TEST');
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
   });
 
@@ -103,8 +102,8 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.missing, []);
+      expect(result.valid).toBe(true);
+      expect(result.missing).toEqual([]);
     });
 
     it('returns valid=false with missing files listed', async () => {
@@ -121,10 +120,10 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.missing.includes('missing.js'));
-      assert.ok(result.missing.includes('also-missing.js'));
-      assert.strictEqual(result.missing.length, 2);
+      expect(result.valid).toBe(false);
+      expect(result.missing.includes('missing.js')).toBe(true);
+      expect(result.missing.includes('also-missing.js')).toBe(true);
+      expect(result.missing.length).toBe(2);
     });
 
     it('includes contextual error message about worktree', async () => {
@@ -137,8 +136,8 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors[0].includes('not found in worktree'));
+      expect(result.valid).toBe(false);
+      expect(result.errors[0].includes('not found in worktree')).toBe(true);
     });
   });
 
@@ -153,8 +152,8 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors[0].includes('3 file(s)'));
+      expect(result.valid).toBe(false);
+      expect(result.errors[0].includes('3 file(s)')).toBeTruthy();
     });
 
     it('error message lists each missing file with bullet point', async () => {
@@ -167,7 +166,7 @@ describe('GOLDEN: validateCodePathsExist (wu-done-validators.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('- missing-file.js'));
+      expect(result.errors[0].includes('- missing-file.js')).toBe(true);
     });
   });
 });
@@ -182,24 +181,24 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const doc = { code_paths: [] };
       const result = validateLaneCodePaths(doc, 'Operations: Tooling');
 
-      assert.strictEqual(result.hasWarnings, false);
-      assert.strictEqual(result.skipped, true);
-      assert.deepStrictEqual(result.warnings, []);
-      assert.deepStrictEqual(result.violations, []);
+      expect(result.hasWarnings).toBe(false);
+      expect(result.skipped).toBe(true);
+      expect(result.warnings).toEqual([]);
+      expect(result.violations).toEqual([]);
     });
 
     it('returns skipped=true for undefined code_paths', () => {
       const doc = {};
       const result = validateLaneCodePaths(doc, 'Operations: Tooling');
 
-      assert.strictEqual(result.skipped, true);
+      expect(result.skipped).toBe(true);
     });
 
     it('returns skipped=true for null code_paths', () => {
       const doc = { code_paths: null };
       const result = validateLaneCodePaths(doc, 'Operations: Tooling');
 
-      assert.strictEqual(result.skipped, true);
+      expect(result.skipped).toBe(true);
     });
   });
 
@@ -209,8 +208,8 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const doc = { code_paths: ['some/random/path.ts'] };
       const result = validateLaneCodePaths(doc, 'NonExistent: Lane');
 
-      assert.strictEqual(result.skipped, true);
-      assert.strictEqual(result.hasWarnings, false);
+      expect(result.skipped).toBe(true);
+      expect(result.hasWarnings).toBe(false);
     });
 
     it('returns hasWarnings=false when paths match lane expectations', () => {
@@ -218,8 +217,8 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const doc = { code_paths: ['tools/lib/wu-helpers.js'] };
       const result = validateLaneCodePaths(doc, 'Operations: Tooling');
 
-      assert.strictEqual(result.hasWarnings, false);
-      assert.deepStrictEqual(result.violations, []);
+      expect(result.hasWarnings).toBe(false);
+      expect(result.violations).toEqual([]);
     });
 
     it('returns hasWarnings=true for paths that violate lane patterns', () => {
@@ -232,8 +231,8 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       // The exact behaviour depends on LANE_PATH_PATTERNS configuration
       // This golden test captures current behaviour
       if (result.hasWarnings) {
-        assert.ok(result.violations.length > 0);
-        assert.ok(result.warnings.length > 0);
+        expect(result.violations.length > 0).toBeTruthy();
+        expect(result.warnings.length > 0).toBeTruthy();
       }
     });
   });
@@ -245,7 +244,7 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const result = validateLaneCodePaths(doc, 'Operations');
 
       if (result.hasWarnings) {
-        assert.ok(result.warnings[0].includes('Operations'));
+        expect(result.warnings[0].includes('Operations')).toBe(true);
       }
     });
 
@@ -254,7 +253,7 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const result = validateLaneCodePaths(doc, 'Operations');
 
       if (result.hasWarnings) {
-        assert.ok(result.warnings[0].includes('apps/web/src/specific-file.tsx'));
+        expect(result.warnings[0].includes('apps/web/src/specific-file.tsx')).toBe(true);
       }
     });
   });
@@ -264,12 +263,12 @@ describe('GOLDEN: validateLaneCodePaths (lane-validator.mjs)', () => {
       const doc = { code_paths: ['tools/helper.js'] };
       const result = validateLaneCodePaths(doc, 'Operations');
 
-      assert.ok('hasWarnings' in result);
-      assert.ok('warnings' in result);
-      assert.ok('violations' in result);
-      assert.ok('skipped' in result);
-      assert.ok(Array.isArray(result.warnings));
-      assert.ok(Array.isArray(result.violations));
+      expect('hasWarnings' in result).toBeTruthy();
+      expect('warnings' in result).toBeTruthy();
+      expect('violations' in result).toBeTruthy();
+      expect('skipped' in result).toBeTruthy();
+      expect(Array.isArray(result.warnings)).toBe(true);
+      expect(Array.isArray(result.violations)).toBe(true);
     });
   });
 });
@@ -293,21 +292,21 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     it('returns valid=true for empty code_paths array', () => {
       const result = validateWUCodePaths([]);
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.errors, []);
-      assert.deepStrictEqual(result.warnings, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.warnings).toEqual([]);
     });
 
     it('returns valid=true for undefined code_paths', () => {
       const result = validateWUCodePaths(undefined);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('returns valid=true for null code_paths', () => {
       const result = validateWUCodePaths(null);
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
   });
 
@@ -317,8 +316,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.length > 0);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length > 0).toBeTruthy();
     });
 
     it('error message includes file path that does not exist', () => {
@@ -326,7 +325,7 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('specific-missing-file.js'));
+      expect(result.errors[0].includes('specific-missing-file.js')).toBe(true);
     });
 
     it('returns valid=true when all files exist and have no issues', () => {
@@ -337,8 +336,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.errors, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
     });
   });
 
@@ -352,8 +351,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         allowTodos: false,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors[0].includes('TODO'));
+      expect(result.valid).toBe(false);
+      expect(result.errors[0].includes('TODO')).toBe(true);
     });
 
     it('returns valid=true with warning when allowTodos=true', () => {
@@ -365,8 +364,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         allowTodos: true,
       });
 
-      assert.strictEqual(result.valid, true);
-      assert.ok(result.warnings.length > 0);
+      expect(result.valid).toBe(true);
+      expect(result.warnings.length > 0).toBeTruthy();
     });
 
     it('detects FIXME comments', () => {
@@ -378,8 +377,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
         allowTodos: false,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.errors[0].includes('FIXME') || result.errors[0].includes('TODO'));
+      expect(result.valid).toBe(false);
+      expect(result.errors[0].includes('FIXME') || result.errors[0].includes('TODO')).toBe(true);
     });
 
     it('skips test files for TODO detection', () => {
@@ -392,7 +391,7 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
       });
 
       // Test files should be skipped for TODO detection
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('skips markdown files for TODO detection', () => {
@@ -405,7 +404,7 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
       });
 
       // Markdown files should be skipped for TODO detection
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
   });
 
@@ -419,9 +418,9 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
       });
 
       // Mocks are warnings, not errors - WU is still valid
-      assert.strictEqual(result.valid, true);
-      assert.ok(result.warnings.length > 0);
-      assert.ok(result.warnings[0].includes('Mock'));
+      expect(result.valid).toBe(true);
+      expect(result.warnings.length > 0).toBeTruthy();
+      expect(result.warnings[0].includes('Mock')).toBe(true);
     });
 
     it('skips test files for Mock detection', () => {
@@ -433,8 +432,8 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
       });
 
       // Test files should be skipped for mock detection
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.warnings, []);
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toEqual([]);
     });
   });
 
@@ -442,11 +441,11 @@ describe('GOLDEN: validateWUCodePaths (wu-validator.mjs)', () => {
     it('returns correct shape', () => {
       const result = validateWUCodePaths([]);
 
-      assert.ok('valid' in result);
-      assert.ok('errors' in result);
-      assert.ok('warnings' in result);
-      assert.ok(Array.isArray(result.errors));
-      assert.ok(Array.isArray(result.warnings));
+      expect('valid' in result).toBeTruthy();
+      expect('errors' in result).toBeTruthy();
+      expect('warnings' in result).toBeTruthy();
+      expect(Array.isArray(result.errors)).toBe(true);
+      expect(Array.isArray(result.warnings)).toBe(true);
     });
   });
 });
@@ -473,16 +472,16 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
         { id: 'WU-TEST', code_paths: [] },
         'WU-TEST'
       );
-      assert.strictEqual(existResult.valid, true);
+      expect(existResult.valid).toBe(true);
 
       // validateLaneCodePaths
       const laneResult = validateLaneCodePaths({ code_paths: [] }, 'Operations');
-      assert.strictEqual(laneResult.hasWarnings, false);
-      assert.strictEqual(laneResult.skipped, true);
+      expect(laneResult.hasWarnings).toBe(false);
+      expect(laneResult.skipped).toBe(true);
 
       // validateWUCodePaths
       const wuResult = validateWUCodePaths([]);
-      assert.strictEqual(wuResult.valid, true);
+      expect(wuResult.valid).toBe(true);
     });
   });
 
@@ -501,8 +500,8 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
       });
 
       // Both should fail for missing files
-      assert.strictEqual(existResult.valid, false);
-      assert.strictEqual(wuResult.valid, false);
+      expect(existResult.valid).toBe(false);
+      expect(wuResult.valid).toBe(false);
     });
 
     it('validateLaneCodePaths does NOT check file existence (pattern-only)', () => {
@@ -515,26 +514,26 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
       // Lane validator only checks patterns, not file existence
       // It should not fail due to missing files
       // (It may warn if path violates lane patterns, but not for non-existence)
-      assert.ok(!laneResult.hasWarnings || !laneResult.warnings[0]?.includes('not found'));
+      expect(!laneResult.hasWarnings || !laneResult.warnings[0]?.includes('not found')).toBe(true);
     });
   });
 
   describe('sync vs async behaviour', () => {
     it('validateCodePathsExist is async', async () => {
       const result = validateCodePathsExist({ id: 'WU-TEST', code_paths: [] }, 'WU-TEST');
-      assert.ok(result instanceof Promise);
+      expect(result instanceof Promise).toBeTruthy();
     });
 
     it('validateLaneCodePaths is sync', () => {
       const result = validateLaneCodePaths({ code_paths: [] }, 'Operations');
-      assert.ok(!(result instanceof Promise));
-      assert.ok('hasWarnings' in result);
+      expect(result instanceof Promise).toBe(false);
+      expect('hasWarnings' in result).toBeTruthy();
     });
 
     it('validateWUCodePaths is sync', () => {
       const result = validateWUCodePaths([]);
-      assert.ok(!(result instanceof Promise));
-      assert.ok('valid' in result);
+      expect(result instanceof Promise).toBe(false);
+      expect('valid' in result).toBeTruthy();
     });
   });
 });
@@ -576,7 +575,7 @@ describe('GOLDEN: Glob pattern handling', () => {
       // This captures current behaviour for golden test
       if (!existsSync(join(testDir, 'src/*.js'))) {
         // Glob is NOT expanded - treated as literal path
-        assert.strictEqual(result.valid, false);
+        expect(result.valid).toBe(false);
       }
     });
   });
@@ -592,7 +591,7 @@ describe('GOLDEN: Glob pattern handling', () => {
 
       // This documents that lane validator supports glob patterns in LANE_PATH_PATTERNS
       // The result depends on the pattern configuration
-      assert.ok('hasWarnings' in result);
+      expect('hasWarnings' in result).toBeTruthy();
     });
   });
 });
@@ -619,7 +618,7 @@ describe('GOLDEN: Error message formats', () => {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('code_paths validation failed'));
+      expect(result.errors[0].includes('code_paths validation failed')).toBe(true);
     });
   });
 
@@ -630,7 +629,7 @@ describe('GOLDEN: Error message formats', () => {
       });
 
       // Check for the specific error format with emoji
-      assert.ok(result.errors[0].includes('❌'));
+      expect(result.errors[0].includes('❌')).toBe(true);
     });
 
     it('error message includes guidance text', () => {
@@ -638,7 +637,7 @@ describe('GOLDEN: Error message formats', () => {
         worktreePath: testDir,
       });
 
-      assert.ok(result.errors[0].includes('code_paths'));
+      expect(result.errors[0].includes('code_paths')).toBe(true);
     });
   });
 
@@ -649,7 +648,7 @@ describe('GOLDEN: Error message formats', () => {
       const result = validateLaneCodePaths(doc, 'Operations');
 
       if (result.hasWarnings) {
-        assert.ok(result.warnings[0].includes('expected for different lane'));
+        expect(result.warnings[0].includes('expected for different lane')).toBe(true);
       }
     });
   });
@@ -677,9 +676,9 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = await validateCodePathsExist(doc, 'WU-TEST');
       const unifiedResult = await unifiedValidateCodePathsExist(doc, 'WU-TEST');
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
-      assert.deepStrictEqual(originalResult.errors, unifiedResult.errors);
-      assert.deepStrictEqual(originalResult.missing, unifiedResult.missing);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
+      expect(originalResult.errors).toEqual(unifiedResult.errors);
+      expect(originalResult.missing).toEqual(unifiedResult.missing);
     });
 
     it('unified export produces same result for existing files', async () => {
@@ -692,7 +691,7 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = await validateCodePathsExist(doc, 'WU-TEST', opts);
       const unifiedResult = await unifiedValidateCodePathsExist(doc, 'WU-TEST', opts);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
     });
 
     it('unified export produces same result for missing files', async () => {
@@ -702,8 +701,8 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = await validateCodePathsExist(doc, 'WU-TEST', opts);
       const unifiedResult = await unifiedValidateCodePathsExist(doc, 'WU-TEST', opts);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
-      assert.deepStrictEqual(originalResult.missing, unifiedResult.missing);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
+      expect(originalResult.missing).toEqual(unifiedResult.missing);
     });
   });
 
@@ -714,10 +713,10 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateLaneCodePaths(doc, 'Operations');
       const unifiedResult = unifiedValidateLaneCodePaths(doc, 'Operations');
 
-      assert.strictEqual(originalResult.hasWarnings, unifiedResult.hasWarnings);
-      assert.strictEqual(originalResult.skipped, unifiedResult.skipped);
-      assert.deepStrictEqual(originalResult.warnings, unifiedResult.warnings);
-      assert.deepStrictEqual(originalResult.violations, unifiedResult.violations);
+      expect(originalResult.hasWarnings).toBe(unifiedResult.hasWarnings);
+      expect(originalResult.skipped).toBe(unifiedResult.skipped);
+      expect(originalResult.warnings).toEqual(unifiedResult.warnings);
+      expect(originalResult.violations).toEqual(unifiedResult.violations);
     });
 
     it('unified export produces same result for valid paths', () => {
@@ -726,8 +725,8 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateLaneCodePaths(doc, 'Operations');
       const unifiedResult = unifiedValidateLaneCodePaths(doc, 'Operations');
 
-      assert.strictEqual(originalResult.hasWarnings, unifiedResult.hasWarnings);
-      assert.strictEqual(originalResult.skipped, unifiedResult.skipped);
+      expect(originalResult.hasWarnings).toBe(unifiedResult.hasWarnings);
+      expect(originalResult.skipped).toBe(unifiedResult.skipped);
     });
 
     it('unified export produces same result for violating paths', () => {
@@ -736,8 +735,8 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateLaneCodePaths(doc, 'Operations');
       const unifiedResult = unifiedValidateLaneCodePaths(doc, 'Operations');
 
-      assert.strictEqual(originalResult.hasWarnings, unifiedResult.hasWarnings);
-      assert.deepStrictEqual(originalResult.violations, unifiedResult.violations);
+      expect(originalResult.hasWarnings).toBe(unifiedResult.hasWarnings);
+      expect(originalResult.violations).toEqual(unifiedResult.violations);
     });
   });
 
@@ -746,9 +745,9 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateWUCodePaths([]);
       const unifiedResult = unifiedValidateWUCodePaths([]);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
-      assert.deepStrictEqual(originalResult.errors, unifiedResult.errors);
-      assert.deepStrictEqual(originalResult.warnings, unifiedResult.warnings);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
+      expect(originalResult.errors).toEqual(unifiedResult.errors);
+      expect(originalResult.warnings).toEqual(unifiedResult.warnings);
     });
 
     it('unified export produces same result for missing files', () => {
@@ -757,10 +756,10 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateWUCodePaths(['missing.js'], opts);
       const unifiedResult = unifiedValidateWUCodePaths(['missing.js'], opts);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
       // Both should have errors
-      assert.ok(originalResult.errors.length > 0);
-      assert.ok(unifiedResult.errors.length > 0);
+      expect(originalResult.errors.length > 0).toBeTruthy();
+      expect(unifiedResult.errors.length > 0).toBeTruthy();
     });
 
     it('unified export produces same result for clean files', () => {
@@ -772,7 +771,7 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateWUCodePaths(['clean.js'], opts);
       const unifiedResult = unifiedValidateWUCodePaths(['clean.js'], opts);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
     });
 
     it('unified export produces same result for files with TODOs', () => {
@@ -784,9 +783,9 @@ describe('UNIFIED: Backward compatibility with original validators', () => {
       const originalResult = validateWUCodePaths(['todo.js'], opts);
       const unifiedResult = unifiedValidateWUCodePaths(['todo.js'], opts);
 
-      assert.strictEqual(originalResult.valid, unifiedResult.valid);
+      expect(originalResult.valid).toBe(unifiedResult.valid);
       // Both should fail due to TODO
-      assert.strictEqual(originalResult.valid, false);
+      expect(originalResult.valid).toBe(false);
     });
   });
 });
@@ -816,8 +815,8 @@ describe('UNIFIED: validate() API with mode flag', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, true);
-      assert.deepStrictEqual(result.missing, []);
+      expect(result.valid).toBe(true);
+      expect(result.missing).toEqual([]);
     });
 
     it('reports missing files', async () => {
@@ -826,17 +825,14 @@ describe('UNIFIED: validate() API with mode flag', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, false);
-      assert.ok(result.missing.includes('missing.js'));
+      expect(result.valid).toBe(false);
+      expect(result.missing.includes('missing.js')).toBe(true);
     });
   });
 
   describe('mode: lane', () => {
     it('requires lane option', async () => {
-      await assert.rejects(
-        async () => validate(['path.js'], { mode: VALIDATION_MODES.LANE }),
-        /Lane name is required/
-      );
+      await expect(async () => validate(['path.js'], { mode: VALIDATION_MODES.LANE })).rejects.toThrow(/Lane name is required/);
     });
 
     it('returns skipped=true for empty paths', async () => {
@@ -845,7 +841,7 @@ describe('UNIFIED: validate() API with mode flag', () => {
         lane: 'Operations',
       });
 
-      assert.strictEqual(result.skipped, true);
+      expect(result.skipped).toBe(true);
     });
 
     it('validates paths against lane patterns', async () => {
@@ -854,8 +850,8 @@ describe('UNIFIED: validate() API with mode flag', () => {
         lane: 'Operations',
       });
 
-      assert.ok('hasWarnings' in result);
-      assert.ok('violations' in result);
+      expect('hasWarnings' in result).toBeTruthy();
+      expect('violations' in result).toBeTruthy();
     });
   });
 
@@ -869,7 +865,7 @@ describe('UNIFIED: validate() API with mode flag', () => {
         worktreePath: testDir,
       });
 
-      assert.strictEqual(result.valid, true);
+      expect(result.valid).toBe(true);
     });
 
     it('reports TODO comments as errors by default', async () => {
@@ -882,7 +878,7 @@ describe('UNIFIED: validate() API with mode flag', () => {
         allowTodos: false,
       });
 
-      assert.strictEqual(result.valid, false);
+      expect(result.valid).toBe(false);
     });
 
     it('reports TODO comments as warnings when allowTodos=true', async () => {
@@ -895,8 +891,8 @@ describe('UNIFIED: validate() API with mode flag', () => {
         allowTodos: true,
       });
 
-      assert.strictEqual(result.valid, true);
-      assert.ok(result.warnings.length > 0);
+      expect(result.valid).toBe(true);
+      expect(result.warnings.length > 0).toBeTruthy();
     });
   });
 
@@ -904,8 +900,8 @@ describe('UNIFIED: validate() API with mode flag', () => {
     it('defaults to exist mode', async () => {
       const result = await validate([], {});
 
-      assert.strictEqual(result.valid, true);
-      assert.ok('missing' in result);
+      expect(result.valid).toBe(true);
+      expect('missing' in result).toBeTruthy();
     });
   });
 });

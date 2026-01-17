@@ -30,7 +30,7 @@ type SignalResult = { signal: { id: string } };
 type CreateSignalFn = (baseDir: string, options: { message: string; wuId: string; lane: string }) => Promise<SignalResult>;
 let createSignal: CreateSignalFn | null = null;
 try {
-  const mod = await import('@lumenflow/memory/lib/mem-signal-core.js');
+  const mod = await import('@lumenflow/memory/signal');
   createSignal = mod.createSignal;
 } catch {
   // @lumenflow/memory not available - signal features disabled

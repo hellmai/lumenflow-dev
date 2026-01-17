@@ -8,8 +8,7 @@
  * @see {@link tools/lib/spawn-registry-schema.mjs} - Schema definitions
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -56,23 +55,23 @@ async function writeJsonlFile(filePath, events) {
 describe('spawn-registry-schema', () => {
   describe('SpawnStatus constants', () => {
     it('should export status constants', () => {
-      assert.equal(SpawnStatus.PENDING, 'pending');
-      assert.equal(SpawnStatus.COMPLETED, 'completed');
-      assert.equal(SpawnStatus.TIMEOUT, 'timeout');
-      assert.equal(SpawnStatus.CRASHED, 'crashed');
+      expect(SpawnStatus.PENDING).toBe('pending');
+      expect(SpawnStatus.COMPLETED).toBe('completed');
+      expect(SpawnStatus.TIMEOUT).toBe('timeout');
+      expect(SpawnStatus.CRASHED).toBe('crashed');
     });
   });
 
   describe('generateSpawnId()', () => {
     it('should generate spawn ID with spawn-XXXX format (4 hex chars)', () => {
       const id = generateSpawnId('WU-1000', 'WU-1001');
-      assert.match(id, /^spawn-[0-9a-f]{4}$/, 'Should match spawn-XXXX format');
+      expect(id).toMatch(/^spawn-[0-9a-f]{4}$/, 'Should match spawn-XXXX format');
     });
 
     it('should generate different IDs for different inputs', () => {
       const id1 = generateSpawnId('WU-1000', 'WU-1001');
       const id2 = generateSpawnId('WU-1000', 'WU-1002');
-      assert.notEqual(id1, id2, 'Different targets should produce different IDs');
+      expect(id1).not.toBe(id2, 'Different targets should produce different IDs');
     });
 
     it('should include timestamp in hash to ensure uniqueness', () => {
@@ -83,7 +82,7 @@ describe('spawn-registry-schema', () => {
       const id2 = generateSpawnId('WU-1000', 'WU-1001');
       // Note: They might be the same if called within same millisecond
       // The implementation should include some unique factor
-      assert.match(id1, /^spawn-[0-9a-f]{4}$/, 'Should match format');
+      expect(id1).toMatch(/^spawn-[0-9a-f]{4}$/, 'Should match format');
     });
   });
 
@@ -97,25 +96,25 @@ describe('spawn-registry-schema', () => {
     it('should reject event with invalid spawn ID format', () => {
       const event = FIXTURES.spawnEvent({ id: 'invalid' });
       const result = validateSpawnEvent(event);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
 
     it('should reject event with invalid parent WU ID format', () => {
       const event = FIXTURES.spawnEvent({ parentWuId: 'invalid' });
       const result = validateSpawnEvent(event);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
 
     it('should reject event with invalid target WU ID format', () => {
       const event = FIXTURES.spawnEvent({ targetWuId: 'invalid' });
       const result = validateSpawnEvent(event);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
 
     it('should reject event with invalid status', () => {
       const event = FIXTURES.spawnEvent({ status: 'invalid' });
       const result = validateSpawnEvent(event);
-      assert.ok(!result.success, 'Should fail validation');
+      expect(result.success, 'Should fail validation').toBeFalsy();
     });
 
     it('should accept null completedAt for pending status', () => {
@@ -157,7 +156,7 @@ describe('spawn-registry-store', () => {
 
   describe('SPAWN_REGISTRY_FILE_NAME constant', () => {
     it('should export the registry file name', () => {
-      assert.equal(SPAWN_REGISTRY_FILE_NAME, 'spawn-registry.jsonl');
+      expect(SPAWN_REGISTRY_FILE_NAME).toBe('spawn-registry.jsonl');
     });
   });
 
@@ -167,7 +166,7 @@ describe('spawn-registry-store', () => {
 
       const pending = store.getPending();
       assert.ok(Array.isArray(pending), 'Should return array');
-      assert.equal(pending.length, 0, 'Should be empty');
+      expect(pending.length).toBe(0, 'Should be empty');
     });
 
     it('should handle empty file and return empty state', async () => {
@@ -175,7 +174,7 @@ describe('spawn-registry-store', () => {
       await store.load();
 
       const pending = store.getPending();
-      assert.equal(pending.length, 0, 'Should be empty');
+      expect(pending.length).toBe(0, 'Should be empty');
     });
 
     it('should load spawn events from JSONL file', async () => {
@@ -185,8 +184,8 @@ describe('spawn-registry-store', () => {
       await store.load();
 
       const pending = store.getPending();
-      assert.equal(pending.length, 1, 'Should have 1 pending spawn');
-      assert.equal(pending[0].id, 'spawn-1234', 'Should match ID');
+      expect(pending.length).toBe(1, 'Should have 1 pending spawn');
+      expect(pending[0].id).toBe('spawn-1234', 'Should match ID');
     });
 
     it('should skip empty lines gracefully', async () => {
@@ -197,21 +196,21 @@ describe('spawn-registry-store', () => {
       await store.load();
 
       const pending = store.getPending();
-      assert.equal(pending.length, 2, 'Should have 2 spawns');
+      expect(pending.length).toBe(2, 'Should have 2 spawns');
     });
 
     it('should throw on malformed JSON lines', async () => {
       const content = `${JSON.stringify(FIXTURES.spawnEvent())}\n{invalid json}\n`;
       await fs.writeFile(registryFilePath, content, 'utf-8');
 
-      await assert.rejects(async () => store.load(), /JSON/i, 'Should throw on malformed JSON');
+      await expect(async () => store.load()).rejects.toThrow(/JSON/i);
     });
 
     it('should throw on invalid event schema', async () => {
       const invalidEvent = { id: 'invalid', parentWuId: 'bad' };
       await writeJsonlFile(registryFilePath, [invalidEvent]);
 
-      await assert.rejects(async () => store.load(), /validation/i, 'Should throw on invalid event');
+      await expect(async () => store.load()).rejects.toThrow(/validation/i);
     });
   });
 
@@ -222,35 +221,31 @@ describe('spawn-registry-store', () => {
       const spawnId = await store.record('WU-1000', 'WU-1001', 'Operations: Tooling');
 
       // Check spawn ID format
-      assert.match(spawnId, /^spawn-[0-9a-f]{4}$/, 'Should return spawn ID');
+      expect(spawnId).toMatch(/^spawn-[0-9a-f]{4}$/, 'Should return spawn ID');
 
       // Check in-memory state
       const pending = store.getPending();
-      assert.equal(pending.length, 1, 'Should have 1 pending spawn');
-      assert.equal(pending[0].parentWuId, 'WU-1000', 'Should have correct parent');
-      assert.equal(pending[0].targetWuId, 'WU-1001', 'Should have correct target');
-      assert.equal(pending[0].lane, 'Operations: Tooling', 'Should have correct lane');
-      assert.equal(pending[0].status, 'pending', 'Should be pending');
+      expect(pending.length).toBe(1, 'Should have 1 pending spawn');
+      expect(pending[0].parentWuId).toBe('WU-1000', 'Should have correct parent');
+      expect(pending[0].targetWuId).toBe('WU-1001', 'Should have correct target');
+      expect(pending[0].lane).toBe('Operations: Tooling', 'Should have correct lane');
+      expect(pending[0].status).toBe('pending', 'Should be pending');
 
       // Check file persisted
       const content = await fs.readFile(registryFilePath, 'utf-8');
       const lines = content.trim().split('\n');
-      assert.equal(lines.length, 1, 'Should have 1 event');
+      expect(lines.length).toBe(1, 'Should have 1 event');
       const event = JSON.parse(lines[0]);
-      assert.equal(event.status, 'pending', 'Should be pending status');
+      expect(event.status).toBe('pending', 'Should be pending status');
     });
 
     it('should validate event before recording', async () => {
       await store.load();
 
-      await assert.rejects(
-        async () => store.record('', '', ''),
-        /validation/i,
-        'Should throw on invalid data'
-      );
+      await expect(async () => store.record('', '', '')).rejects.toThrow(/validation/i);
 
       // File should not exist if record failed
-      await assert.rejects(async () => fs.access(registryFilePath), 'File should not exist after failed record');
+      await expect(async () => fs.access(registryFilePath)).rejects.toThrow();
     });
 
     it('should create parent directory if missing', async () => {
@@ -260,7 +255,7 @@ describe('spawn-registry-store', () => {
 
       const spawnId = await nestedStore.record('WU-1000', 'WU-1001', 'Operations: Tooling');
 
-      assert.match(spawnId, /^spawn-[0-9a-f]{4}$/, 'Should return spawn ID');
+      expect(spawnId).toMatch(/^spawn-[0-9a-f]{4}$/, 'Should return spawn ID');
     });
   });
 
@@ -274,12 +269,12 @@ describe('spawn-registry-store', () => {
 
       // Check in-memory state
       const pending = store.getPending();
-      assert.equal(pending.length, 0, 'Should have no pending spawns');
+      expect(pending.length).toBe(0, 'Should have no pending spawns');
 
       // Check the spawn was updated
       const spawns = store.getByParent('WU-1000');
-      assert.equal(spawns.length, 1, 'Should have 1 spawn');
-      assert.equal(spawns[0].status, 'completed', 'Should be completed');
+      expect(spawns.length).toBe(1, 'Should have 1 spawn');
+      expect(spawns[0].status).toBe('completed', 'Should be completed');
       assert.ok(spawns[0].completedAt, 'Should have completedAt timestamp');
     });
 
@@ -291,7 +286,7 @@ describe('spawn-registry-store', () => {
       await store.updateStatus('spawn-1234', 'timeout');
 
       const spawns = store.getByParent('WU-1000');
-      assert.equal(spawns[0].status, 'timeout', 'Should be timeout');
+      expect(spawns[0].status).toBe('timeout', 'Should be timeout');
     });
 
     it('should update status to crashed', async () => {
@@ -302,17 +297,13 @@ describe('spawn-registry-store', () => {
       await store.updateStatus('spawn-1234', 'crashed');
 
       const spawns = store.getByParent('WU-1000');
-      assert.equal(spawns[0].status, 'crashed', 'Should be crashed');
+      expect(spawns[0].status).toBe('crashed', 'Should be crashed');
     });
 
     it('should throw on unknown spawn ID', async () => {
       await store.load();
 
-      await assert.rejects(
-        async () => store.updateStatus('spawn-unknown', 'completed'),
-        /not found/i,
-        'Should throw on unknown ID'
-      );
+      await expect(async () => store.updateStatus('spawn-unknown', 'completed')).rejects.toThrow(/not found/i);
     });
 
     it('should append updated event to file', async () => {
@@ -328,7 +319,7 @@ describe('spawn-registry-store', () => {
       assert.equal(lines.length, 2, 'Should have 2 events (original + update)');
 
       const updatedEvent = JSON.parse(lines[1]);
-      assert.equal(updatedEvent.status, 'completed', 'Should be completed');
+      expect(updatedEvent.status).toBe('completed', 'Should be completed');
       assert.ok(updatedEvent.completedAt, 'Should have completedAt');
     });
   });
@@ -345,7 +336,7 @@ describe('spawn-registry-store', () => {
 
       const spawns = store.getByParent('WU-1000');
 
-      assert.equal(spawns.length, 2, 'Should have 2 spawns for WU-1000');
+      expect(spawns.length).toBe(2, 'Should have 2 spawns for WU-1000');
       assert.ok(spawns.some((s) => s.id === 'spawn-1111'), 'Should include spawn-1111');
       assert.ok(spawns.some((s) => s.id === 'spawn-2222'), 'Should include spawn-2222');
     });
@@ -356,7 +347,7 @@ describe('spawn-registry-store', () => {
       const spawns = store.getByParent('WU-9999');
 
       assert.ok(Array.isArray(spawns), 'Should return array');
-      assert.equal(spawns.length, 0, 'Should be empty');
+      expect(spawns.length).toBe(0, 'Should be empty');
     });
   });
 
@@ -372,8 +363,8 @@ describe('spawn-registry-store', () => {
       const spawn = store.getByTarget('WU-1001');
 
       assert.ok(spawn, 'Should return spawn');
-      assert.equal(spawn.id, 'spawn-1111', 'Should match ID');
-      assert.equal(spawn.targetWuId, 'WU-1001', 'Should match target');
+      expect(spawn.id).toBe('spawn-1111', 'Should match ID');
+      expect(spawn.targetWuId).toBe('WU-1001', 'Should match target');
     });
 
     it('should return null for unknown target', async () => {
@@ -381,7 +372,7 @@ describe('spawn-registry-store', () => {
 
       const spawn = store.getByTarget('WU-9999');
 
-      assert.equal(spawn, null, 'Should return null');
+      expect(spawn).toBe(null, 'Should return null');
     });
   });
 
@@ -408,7 +399,7 @@ describe('spawn-registry-store', () => {
 
       const pending = store.getPending();
 
-      assert.equal(pending.length, 2, 'Should have 2 pending spawns');
+      expect(pending.length).toBe(2, 'Should have 2 pending spawns');
       assert.ok(pending.every((s) => s.status === 'pending'), 'All should be pending');
     });
 
@@ -425,7 +416,7 @@ describe('spawn-registry-store', () => {
 
       const pending = store.getPending();
 
-      assert.equal(pending.length, 0, 'Should be empty');
+      expect(pending.length).toBe(0, 'Should be empty');
     });
   });
 
@@ -445,8 +436,8 @@ describe('spawn-registry-store', () => {
       assert.equal(pending.length, 0, 'Should have no pending (spawn is completed)');
 
       const spawns = store.getByParent('WU-1000');
-      assert.equal(spawns.length, 1, 'Should have 1 spawn');
-      assert.equal(spawns[0].status, 'completed', 'Should be completed');
+      expect(spawns.length).toBe(1, 'Should have 1 spawn');
+      expect(spawns[0].status).toBe('completed', 'Should be completed');
     });
   });
 });

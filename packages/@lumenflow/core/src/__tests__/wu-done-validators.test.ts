@@ -8,8 +8,7 @@
  * Run: node --test tools/lib/__tests__/wu-done-validators.test.mjs
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -20,34 +19,34 @@ import { rollbackFiles, RollbackResult } from '../rollback-utils.js';
 describe('isSkipWebTestsPath', () => {
   describe('documentation paths', () => {
     it('returns true for docs/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('docs/README.md'), true);
-      assert.strictEqual(isSkipWebTestsPath('docs/04-operations/tasks/wu/WU-1255.yaml'), true);
+      expect(isSkipWebTestsPath('docs/README.md')).toBe(true);
+      expect(isSkipWebTestsPath('docs/04-operations/tasks/wu/WU-1255.yaml')).toBe(true);
     });
 
     it('returns true for ai/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('ai/onboarding/workspace-modes.md'), true);
+      expect(isSkipWebTestsPath('ai/onboarding/workspace-modes.md')).toBe(true);
     });
 
     it('returns true for .claude/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('.claude/commands/hello.md'), true);
+      expect(isSkipWebTestsPath('.claude/commands/hello.md')).toBe(true);
     });
 
     it('returns true for README files (case insensitive)', () => {
-      assert.strictEqual(isSkipWebTestsPath('README.md'), true);
-      assert.strictEqual(isSkipWebTestsPath('readme.md'), true);
-      assert.strictEqual(isSkipWebTestsPath('README'), true);
+      expect(isSkipWebTestsPath('README.md')).toBe(true);
+      expect(isSkipWebTestsPath('readme.md')).toBe(true);
+      expect(isSkipWebTestsPath('README')).toBe(true);
     });
 
     it('returns true for CLAUDE.md files', () => {
-      assert.strictEqual(isSkipWebTestsPath('CLAUDE.md'), true);
-      assert.strictEqual(isSkipWebTestsPath('CLAUDE-core.md'), true);
+      expect(isSkipWebTestsPath('CLAUDE.md')).toBe(true);
+      expect(isSkipWebTestsPath('CLAUDE-core.md')).toBe(true);
     });
   });
 
   describe('tooling paths (WU-1255)', () => {
     it('returns true for tools/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('tools/wu-done.js'), true);
-      assert.strictEqual(isSkipWebTestsPath('tools/lib/wu-constants.js'), true);
+      expect(isSkipWebTestsPath('tools/wu-done.js')).toBe(true);
+      expect(isSkipWebTestsPath('tools/lib/wu-constants.js')).toBe(true);
       assert.strictEqual(
         isSkipWebTestsPath('tools/lib/__tests__/wu-done-validators.test.js'),
         true
@@ -55,15 +54,15 @@ describe('isSkipWebTestsPath', () => {
     });
 
     it('returns true for scripts/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('scripts/deploy.sh'), true);
-      assert.strictEqual(isSkipWebTestsPath('scripts/setup/init.js'), true);
+      expect(isSkipWebTestsPath('scripts/deploy.sh')).toBe(true);
+      expect(isSkipWebTestsPath('scripts/setup/init.js')).toBe(true);
     });
   });
 
   describe('application paths (should NOT skip tests)', () => {
     it('returns false for apps/web/ paths', () => {
-      assert.strictEqual(isSkipWebTestsPath('apps/web/src/app/page.tsx'), false);
-      assert.strictEqual(isSkipWebTestsPath('apps/web/src/lib/llm/service.ts'), false);
+      expect(isSkipWebTestsPath('apps/web/src/app/page.tsx')).toBe(false);
+      expect(isSkipWebTestsPath('apps/web/src/lib/llm/service.ts')).toBe(false);
     });
 
     it('returns false for packages/ paths', () => {
@@ -74,26 +73,26 @@ describe('isSkipWebTestsPath', () => {
     });
 
     it('returns false for root config files', () => {
-      assert.strictEqual(isSkipWebTestsPath('package.json'), false);
-      assert.strictEqual(isSkipWebTestsPath('tsconfig.json'), false);
+      expect(isSkipWebTestsPath('package.json')).toBe(false);
+      expect(isSkipWebTestsPath('tsconfig.json')).toBe(false);
     });
   });
 
   describe('edge cases', () => {
     it('handles null/undefined gracefully', () => {
-      assert.strictEqual(isSkipWebTestsPath(null), false);
-      assert.strictEqual(isSkipWebTestsPath(undefined), false);
+      expect(isSkipWebTestsPath(null)).toBe(false);
+      expect(isSkipWebTestsPath(undefined)).toBe(false);
     });
 
     it('handles empty string', () => {
-      assert.strictEqual(isSkipWebTestsPath(''), false);
+      expect(isSkipWebTestsPath('')).toBe(false);
     });
 
     it('does not match partial prefixes', () => {
       // "toolsmith" starts with "tool" but is not "tools/"
-      assert.strictEqual(isSkipWebTestsPath('toolsmith/code.ts'), false);
+      expect(isSkipWebTestsPath('toolsmith/code.ts')).toBe(false);
       // "documents" starts with "doc" but is not "docs/"
-      assert.strictEqual(isSkipWebTestsPath('documents/file.md'), false);
+      expect(isSkipWebTestsPath('documents/file.md')).toBe(false);
     });
   });
 });
@@ -104,31 +103,31 @@ describe('shouldSkipWebTests', () => {
     const { shouldSkipWebTests } = await import('../path-classifiers.js');
 
     const docsOnly = ['docs/README.md', 'ai/onboarding/guide.md'];
-    assert.strictEqual(shouldSkipWebTests(docsOnly), true);
+    expect(shouldSkipWebTests(docsOnly)).toBe(true);
 
     const toolsOnly = ['tools/wu-done.js', 'tools/lib/helpers.js'];
-    assert.strictEqual(shouldSkipWebTests(toolsOnly), true);
+    expect(shouldSkipWebTests(toolsOnly)).toBe(true);
 
     const mixed = ['docs/README.md', 'tools/wu-done.js'];
-    assert.strictEqual(shouldSkipWebTests(mixed), true);
+    expect(shouldSkipWebTests(mixed)).toBe(true);
   });
 
   it('returns false when ANY path requires tests', async () => {
     const { shouldSkipWebTests } = await import('../path-classifiers.js');
 
     const mixedWithApp = ['docs/README.md', 'apps/web/src/page.tsx'];
-    assert.strictEqual(shouldSkipWebTests(mixedWithApp), false);
+    expect(shouldSkipWebTests(mixedWithApp)).toBe(false);
   });
 
   it('returns false for empty array', async () => {
     const { shouldSkipWebTests } = await import('../path-classifiers.js');
-    assert.strictEqual(shouldSkipWebTests([]), false);
+    expect(shouldSkipWebTests([])).toBe(false);
   });
 
   it('returns false for null/undefined', async () => {
     const { shouldSkipWebTests } = await import('../path-classifiers.js');
-    assert.strictEqual(shouldSkipWebTests(null), false);
-    assert.strictEqual(shouldSkipWebTests(undefined), false);
+    expect(shouldSkipWebTests(null)).toBe(false);
+    expect(shouldSkipWebTests(undefined)).toBe(false);
   });
 });
 
@@ -164,9 +163,9 @@ describe('rollbackFiles', () => {
     const result = rollbackFiles(filesToRestore);
 
     // Assert all succeeded
-    assert.strictEqual(result.success, true);
-    assert.strictEqual(result.errors.length, 0);
-    assert.strictEqual(result.restored.length, 2);
+    expect(result.success).toBe(true);
+    expect(result.errors.length).toBe(0);
+    expect(result.restored.length).toBe(2);
   });
 
   it('continues restoring subsequent files when one fails', () => {
@@ -185,11 +184,11 @@ describe('rollbackFiles', () => {
     const result = rollbackFiles(filesToRestore);
 
     // Assert partial success - first failed but second succeeded
-    assert.strictEqual(result.success, false);
-    assert.strictEqual(result.errors.length, 1);
-    assert.strictEqual(result.errors[0].name, 'file1');
-    assert.strictEqual(result.restored.length, 1);
-    assert.strictEqual(result.restored[0], 'file2');
+    expect(result.success).toBe(false);
+    expect(result.errors.length).toBe(1);
+    expect(result.errors[0].name).toBe('file1');
+    expect(result.restored.length).toBe(1);
+    expect(result.restored[0]).toBe('file2');
   });
 
   it('reports all errors when multiple files fail', () => {
@@ -204,22 +203,22 @@ describe('rollbackFiles', () => {
     const result = rollbackFiles(filesToRestore);
 
     // Assert all failed but all were attempted
-    assert.strictEqual(result.success, false);
-    assert.strictEqual(result.errors.length, 3);
-    assert.strictEqual(result.restored.length, 0);
+    expect(result.success).toBe(false);
+    expect(result.errors.length).toBe(3);
+    expect(result.restored.length).toBe(0);
 
     // Check error messages are informative
-    assert.ok(result.errors[0].error.length > 0);
-    assert.ok(result.errors[1].error.length > 0);
-    assert.ok(result.errors[2].error.length > 0);
+    expect(result.errors[0].error.length > 0).toBeTruthy();
+    expect(result.errors[1].error.length > 0).toBeTruthy();
+    expect(result.errors[2].error.length > 0).toBeTruthy();
   });
 
   it('handles empty file list gracefully', () => {
     const result = rollbackFiles([]);
 
-    assert.strictEqual(result.success, true);
-    assert.strictEqual(result.errors.length, 0);
-    assert.strictEqual(result.restored.length, 0);
+    expect(result.success).toBe(true);
+    expect(result.errors.length).toBe(0);
+    expect(result.restored.length).toBe(0);
   });
 
   it('includes error messages with file info for manual intervention', () => {
@@ -232,11 +231,11 @@ describe('rollbackFiles', () => {
     const result = rollbackFiles(filesToRestore);
 
     // Assert error has all needed info for manual intervention
-    assert.strictEqual(result.errors.length, 1);
+    expect(result.errors.length).toBe(1);
     const error = result.errors[0];
-    assert.strictEqual(error.name, 'backlog.md');
-    assert.ok(error.path.includes('backlog.md'));
-    assert.ok(typeof error.error === 'string');
+    expect(error.name).toBe('backlog.md');
+    expect(error.path.includes('backlog.md')).toBe(true);
+    expect(typeof error.error === 'string').toBeTruthy();
   });
 });
 
@@ -246,8 +245,8 @@ describe('RollbackResult', () => {
     result.addSuccess('file1');
     result.addSuccess('file2');
 
-    assert.strictEqual(result.success, true);
-    assert.strictEqual(result.restored.length, 2);
+    expect(result.success).toBe(true);
+    expect(result.restored.length).toBe(2);
   });
 
   it('correctly reports failure when any error', () => {
@@ -255,9 +254,9 @@ describe('RollbackResult', () => {
     result.addSuccess('file1');
     result.addError('file2', '/path/file2', 'ENOENT');
 
-    assert.strictEqual(result.success, false);
-    assert.strictEqual(result.restored.length, 1);
-    assert.strictEqual(result.errors.length, 1);
+    expect(result.success).toBe(false);
+    expect(result.restored.length).toBe(1);
+    expect(result.errors.length).toBe(1);
   });
 });
 
@@ -280,9 +279,9 @@ describe('validateCodePathsExist (WU-1351)', () => {
     const doc = { id: 'WU-1351', code_paths: [] };
     const result = await validateCodePathsExist(doc, 'WU-1351');
 
-    assert.strictEqual(result.valid, true);
-    assert.strictEqual(result.errors.length, 0);
-    assert.strictEqual(result.missing.length, 0);
+    expect(result.valid).toBe(true);
+    expect(result.errors.length).toBe(0);
+    expect(result.missing.length).toBe(0);
   });
 
   it('should pass validation when code_paths is undefined', async () => {
@@ -291,7 +290,7 @@ describe('validateCodePathsExist (WU-1351)', () => {
     const doc = { id: 'WU-1351' };
     const result = await validateCodePathsExist(doc, 'WU-1351');
 
-    assert.strictEqual(result.valid, true);
+    expect(result.valid).toBe(true);
   });
 
   it('should pass when all files exist in worktree', async () => {
@@ -312,8 +311,8 @@ describe('validateCodePathsExist (WU-1351)', () => {
       worktreePath: testDir,
     });
 
-    assert.strictEqual(result.valid, true);
-    assert.strictEqual(result.missing.length, 0);
+    expect(result.valid).toBe(true);
+    expect(result.missing.length).toBe(0);
   });
 
   it('should fail when files are missing from worktree', async () => {
@@ -332,9 +331,9 @@ describe('validateCodePathsExist (WU-1351)', () => {
       worktreePath: testDir,
     });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.missing.includes('missing-file.js'));
-    assert.ok(result.errors[0].includes('code_paths validation failed'));
+    expect(result.valid).toBe(false);
+    expect(result.missing.includes('missing-file.js')).toBe(true);
+    expect(result.errors[0].includes('code_paths validation failed')).toBe(true);
   });
 
   it('should report all missing files in error', async () => {
@@ -349,11 +348,11 @@ describe('validateCodePathsExist (WU-1351)', () => {
       worktreePath: testDir,
     });
 
-    assert.strictEqual(result.valid, false);
-    assert.strictEqual(result.missing.length, 3);
-    assert.ok(result.errors[0].includes('missing1.js'));
-    assert.ok(result.errors[0].includes('missing2.js'));
-    assert.ok(result.errors[0].includes('missing3.js'));
+    expect(result.valid).toBe(false);
+    expect(result.missing.length).toBe(3);
+    expect(result.errors[0].includes('missing1.js')).toBe(true);
+    expect(result.errors[0].includes('missing2.js')).toBe(true);
+    expect(result.errors[0].includes('missing3.js')).toBe(true);
   });
 });
 
@@ -392,8 +391,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, true);
-    assert.strictEqual(result.errors.length, 0);
+    expect(result.valid).toBe(true);
+    expect(result.errors.length).toBe(0);
   });
 
   it('should fail when completed_at is missing', async () => {
@@ -410,8 +409,8 @@ locked: true
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('completed_at')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('completed_at'))).toBeTruthy();
   });
 
   it('should fail when locked is missing', async () => {
@@ -428,8 +427,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('locked')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('locked'))).toBeTruthy();
   });
 
   it('should fail when locked is false', async () => {
@@ -447,8 +446,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('locked')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('locked'))).toBeTruthy();
   });
 
   it('should fail when stamp file is missing', async () => {
@@ -466,8 +465,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('Stamp file')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('Stamp file'))).toBeTruthy();
   });
 
   it('should fail when WU YAML file is missing', async () => {
@@ -479,8 +478,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('not found')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('not found'))).toBeTruthy();
   });
 
   it('should fail when status is not done', async () => {
@@ -498,8 +497,8 @@ completed_at: ${new Date().toISOString()}
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('status')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('status'))).toBeTruthy();
   });
 
   it('should fail when completed_at is invalid datetime', async () => {
@@ -517,8 +516,8 @@ completed_at: "not-a-date"
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.some((e) => e.includes('Invalid completed_at')));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('Invalid completed_at'))).toBeTruthy();
   });
 
   it('should report multiple validation errors at once', async () => {
@@ -534,8 +533,8 @@ status: in_progress
 
     const result = validatePostMutation({ id: 'WU-1617', wuPath, stampPath });
 
-    assert.strictEqual(result.valid, false);
+    expect(result.valid).toBe(false);
     // Should report at least 3 errors: stamp file, completed_at, locked, status
-    assert.ok(result.errors.length >= 3);
+    expect(result.errors.length >= 3).toBeTruthy();
   });
 });

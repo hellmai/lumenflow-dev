@@ -3,8 +3,7 @@
  * Tests for exponential backoff and configurable retry mechanisms
  */
 
-import { describe, it, beforeEach, mock } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Import the module we're going to create
 import {
@@ -51,29 +50,29 @@ describe('retry-strategy', () => {
   describe('createRetryConfig()', () => {
     it('should return defaults when called without arguments', () => {
       const config = createRetryConfig();
-      assert.deepEqual(config, DEFAULT_RETRY_CONFIG);
+      expect(config).toEqual(DEFAULT_RETRY_CONFIG);
     });
 
     it('should merge custom options with defaults', () => {
       const config = createRetryConfig({ maxAttempts: 10 });
-      assert.equal(config.maxAttempts, 10);
-      assert.equal(config.baseDelayMs, DEFAULT_RETRY_CONFIG.baseDelayMs);
+      expect(config.maxAttempts).toBe(10);
+      expect(config.baseDelayMs).toBe(DEFAULT_RETRY_CONFIG.baseDelayMs);
     });
 
     it('should accept preset name as first argument', () => {
       const config = createRetryConfig('wu_done');
-      assert.deepEqual(config, RETRY_PRESETS.wu_done);
+      expect(config).toEqual(RETRY_PRESETS.wu_done);
     });
 
     it('should merge custom options onto preset', () => {
       const config = createRetryConfig('wu_done', { maxAttempts: 20 });
-      assert.equal(config.maxAttempts, 20);
-      assert.equal(config.baseDelayMs, RETRY_PRESETS.wu_done.baseDelayMs);
+      expect(config.maxAttempts).toBe(20);
+      expect(config.baseDelayMs).toBe(RETRY_PRESETS.wu_done.baseDelayMs);
     });
 
     it('should not overwrite preset values with undefined', () => {
       const config = createRetryConfig('wu_done', { maxAttempts: undefined });
-      assert.equal(config.maxAttempts, RETRY_PRESETS.wu_done.maxAttempts);
+      expect(config.maxAttempts).toBe(RETRY_PRESETS.wu_done.maxAttempts);
     });
   });
 
@@ -86,7 +85,7 @@ describe('retry-strategy', () => {
         jitter: 0, // Disable jitter for deterministic tests
       });
       const delay = calculateBackoffDelay(0, config);
-      assert.equal(delay, 1000);
+      expect(delay).toBe(1000);
     });
 
     it('should double delay for each subsequent attempt', () => {
@@ -160,9 +159,9 @@ describe('retry-strategy', () => {
 
       const result = await withRetry(mockFn, config);
 
-      assert.equal(result.success, true);
-      assert.equal(result.attempt, 3);
-      assert.equal(callCount, 3, 'should have called function 3 times');
+      expect(result.success).toBe(true);
+      expect(result.attempt).toBe(3);
+      expect(callCount).toBe(3, 'should have called function 3 times');
     });
 
     it('should throw after max attempts exhausted', async () => {
@@ -179,7 +178,7 @@ describe('retry-strategy', () => {
 
       try {
         await withRetry(alwaysFails, config);
-        assert.fail('should have thrown');
+        throw new Error('should have thrown');
       } catch (err) {
         assert.ok(err.message.includes('Always fails'), 'should include original error');
         assert.ok(err.message.includes('3'), 'should mention attempt count');
@@ -210,10 +209,10 @@ describe('retry-strategy', () => {
       await withRetry(mockFn, config);
 
       assert.equal(retryHistory.length, 2, 'should have 2 retry callbacks (before attempts 2 and 3)');
-      assert.equal(retryHistory[0].attempt, 1, 'first retry after attempt 1');
-      assert.equal(retryHistory[0].delay, 10, 'first delay should be baseDelayMs');
-      assert.equal(retryHistory[1].attempt, 2, 'second retry after attempt 2');
-      assert.equal(retryHistory[1].delay, 20, 'second delay should be baseDelayMs * 2');
+      expect(retryHistory[0].attempt).toBe(1, 'first retry after attempt 1');
+      expect(retryHistory[0].delay).toBe(10, 'first delay should be baseDelayMs');
+      expect(retryHistory[1].attempt).toBe(2, 'second retry after attempt 2');
+      expect(retryHistory[1].delay).toBe(20, 'second delay should be baseDelayMs * 2');
     });
 
     it('should not retry if shouldRetry returns false', async () => {
@@ -231,11 +230,11 @@ describe('retry-strategy', () => {
 
       try {
         await withRetry(fn, config);
-        assert.fail('should have thrown');
+        throw new Error('should have thrown');
       } catch (err) {
         // Error is wrapped with attempt count info
         assert.ok(err.message.includes('non-retryable'), 'should include original error');
-        assert.equal(calls, 2, 'should have stopped after non-retryable error');
+        expect(calls).toBe(2, 'should have stopped after non-retryable error');
       }
     });
 
@@ -252,7 +251,7 @@ describe('retry-strategy', () => {
 
       try {
         await withRetry(alwaysFails, config);
-        assert.fail('should have thrown');
+        throw new Error('should have thrown');
       } catch {
         assert.ok(callCount >= 5, 'should have attempted at least 5 times');
       }

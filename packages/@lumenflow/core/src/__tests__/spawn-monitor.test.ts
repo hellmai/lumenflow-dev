@@ -14,8 +14,7 @@
  * @see {@link tools/lib/spawn-escalation.mjs} - Signal creation
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -118,15 +117,15 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
   describe('exported constants', () => {
     it('should export SignalResponseAction enum', () => {
       assert.ok(SignalResponseAction, 'SignalResponseAction should be exported');
-      assert.equal(SignalResponseAction.RETRY, 'retry', 'Should have RETRY action');
-      assert.equal(SignalResponseAction.BLOCK, 'block', 'Should have BLOCK action');
-      assert.equal(SignalResponseAction.BUG_WU, 'bug_wu', 'Should have BUG_WU action');
-      assert.equal(SignalResponseAction.NONE, 'none', 'Should have NONE action');
+      expect(SignalResponseAction.RETRY).toBe('retry', 'Should have RETRY action');
+      expect(SignalResponseAction.BLOCK).toBe('block', 'Should have BLOCK action');
+      expect(SignalResponseAction.BUG_WU).toBe('bug_wu', 'Should have BUG_WU action');
+      expect(SignalResponseAction.NONE).toBe('none', 'Should have NONE action');
     });
 
     it('should export SIGNAL_HANDLER_LOG_PREFIX', () => {
       assert.ok(SIGNAL_HANDLER_LOG_PREFIX, 'SIGNAL_HANDLER_LOG_PREFIX should be exported');
-      assert.match(SIGNAL_HANDLER_LOG_PREFIX, /spawn|signal|monitor/i);
+      expect(SIGNAL_HANDLER_LOG_PREFIX).toMatch(/spawn|signal|monitor/i);
     });
   });
 
@@ -142,8 +141,8 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       });
 
       assert.ok(Array.isArray(result.processed), 'Should return processed array');
-      assert.equal(result.processed.length, 0, 'Should have no processed signals');
-      assert.equal(result.signalCount, 0, 'Should have zero signal count');
+      expect(result.processed.length).toBe(0, 'Should have no processed signals');
+      expect(result.signalCount).toBe(0, 'Should have zero signal count');
     });
 
     it('should filter only spawn_failure signals', async () => {
@@ -167,7 +166,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signalCount, 1, 'Should only count spawn_failure signals');
+      expect(result.signalCount).toBe(1, 'Should only count spawn_failure signals');
     });
 
     it('should mark signals as read after processing', async () => {
@@ -181,7 +180,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
 
       const signals = await readSignals(testDir);
       const processedSignal = signals.find((s) => s.id === signalId);
-      assert.equal(processedSignal.read, true, 'Signal should be marked as read');
+      expect(processedSignal.read).toBe(true, 'Signal should be marked as read');
     });
   });
 
@@ -199,9 +198,9 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.processed.length, 1, 'Should process one signal');
+      expect(result.processed.length).toBe(1, 'Should process one signal');
       const response = result.processed[0];
-      assert.equal(response.action, SignalResponseAction.RETRY, 'Should suggest retry');
+      expect(response.action).toBe(SignalResponseAction.RETRY, 'Should suggest retry');
       assert.ok(response.reason.includes('retry') || response.reason.includes('first'), 'Reason should mention retry');
     });
 
@@ -218,8 +217,8 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       });
 
       const response = result.processed[0];
-      assert.equal(response.wuBlocked, false, 'WU should not be blocked');
-      assert.equal(response.bugWuCreated, null, 'No Bug WU should be created');
+      expect(response.wuBlocked).toBe(false, 'WU should not be blocked');
+      expect(response.bugWuCreated).toBe(null, 'No Bug WU should be created');
     });
   });
 
@@ -237,9 +236,9 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.processed.length, 1, 'Should process one signal');
+      expect(result.processed.length).toBe(1, 'Should process one signal');
       const response = result.processed[0];
-      assert.equal(response.action, SignalResponseAction.BLOCK, 'Should suggest block');
+      expect(response.action).toBe(SignalResponseAction.BLOCK, 'Should suggest block');
     });
 
     it('should include block reason referencing spawn failure', async () => {
@@ -279,7 +278,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       });
 
       const response = result.processed[0];
-      assert.equal(response.action, SignalResponseAction.BLOCK, 'Action should be BLOCK');
+      expect(response.action).toBe(SignalResponseAction.BLOCK, 'Action should be BLOCK');
       // When not in dry-run, wuBlocked would be true after wu:block succeeds
     });
   });
@@ -298,9 +297,9 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.processed.length, 1, 'Should process one signal');
+      expect(result.processed.length).toBe(1, 'Should process one signal');
       const response = result.processed[0];
-      assert.equal(response.action, SignalResponseAction.BUG_WU, 'Should create Bug WU');
+      expect(response.action).toBe(SignalResponseAction.BUG_WU, 'Should create Bug WU');
     });
 
     it('should generate Bug WU spec for third+ failure', async () => {
@@ -321,7 +320,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       const response = result.processed[0];
       assert.ok(response.bugWuSpec, 'Should have Bug WU spec');
       assert.ok(response.bugWuSpec.title, 'Bug WU spec should have title');
-      assert.ok(response.bugWuSpec.title.includes('spawn') || response.bugWuSpec.title.includes('WU-9999'));
+      expect(response.bugWuSpec.title.includes('spawn') || response.bugWuSpec.title.includes('WU-9999')).toBeTruthy();
       assert.ok(response.bugWuSpec.description, 'Bug WU spec should have description');
       assert.ok(response.bugWuSpec.lane, 'Bug WU spec should have lane');
     });
@@ -385,8 +384,8 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         dryRun: true,
       });
 
-      assert.equal(result.signalCount, 3, 'Should count 3 signals');
-      assert.equal(result.processed.length, 3, 'Should process 3 signals');
+      expect(result.signalCount).toBe(3, 'Should count 3 signals');
+      expect(result.processed.length).toBe(3, 'Should process 3 signals');
 
       // Check each response has correct action
       const actions = result.processed.map((r) => r.action);
@@ -417,8 +416,8 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       assert.ok('retryCount' in result, 'Should have retryCount');
       assert.ok('blockCount' in result, 'Should have blockCount');
       assert.ok('bugWuCount' in result, 'Should have bugWuCount');
-      assert.equal(result.retryCount, 1, 'Should have 1 retry');
-      assert.equal(result.blockCount, 1, 'Should have 1 block');
+      expect(result.retryCount).toBe(1, 'Should have 1 retry');
+      expect(result.blockCount).toBe(1, 'Should have 1 block');
     });
   });
 
@@ -465,7 +464,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       });
 
       const response = result.processed[0];
-      assert.equal(response.severity, SignalSeverity.ERROR, 'Should include severity');
+      expect(response.severity).toBe(SignalSeverity.ERROR, 'Should include severity');
     });
   });
 });

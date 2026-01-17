@@ -8,8 +8,7 @@
  * Run: node --test tools/lib/__tests__/error-messages.test.mjs
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createAgentFriendlyError, ErrorCodes } from '../error-handler.js';
 
 describe('createAgentFriendlyError', () => {
@@ -23,15 +22,15 @@ describe('createAgentFriendlyError', () => {
       }
     );
 
-    assert.strictEqual(error.code, ErrorCodes.WU_NOT_FOUND);
-    assert.strictEqual(error.message, 'WU-1234 not found in docs/04-operations/tasks/wu/');
-    assert.ok(Array.isArray(error.tryNext));
-    assert.strictEqual(error.tryNext.length, 1);
+    expect(error.code).toBe(ErrorCodes.WU_NOT_FOUND);
+    expect(error.message).toBe('WU-1234 not found in docs/04-operations/tasks/wu/');
+    expect(Array.isArray(error.tryNext)).toBeTruthy();
+    expect(error.tryNext.length).toBe(1);
     assert.strictEqual(
       error.tryNext[0],
       'pnpm wu:create --id WU-1234 --lane "Operations" --title "..."'
     );
-    assert.deepStrictEqual(error.context, { wuId: 'WU-1234' });
+    expect(error.context).toEqual({ wuId: 'WU-1234' });
   });
 
   it('supports multiple tryNext suggestions', () => {
@@ -47,9 +46,9 @@ describe('createAgentFriendlyError', () => {
       }
     );
 
-    assert.strictEqual(error.tryNext.length, 2);
-    assert.strictEqual(error.tryNext[0], 'pnpm wu:repair --id WU-1234 --deduplicate');
-    assert.strictEqual(error.tryNext[1], 'Or manually edit docs/04-operations/tasks/backlog.md');
+    expect(error.tryNext.length).toBe(2);
+    expect(error.tryNext[0]).toBe('pnpm wu:repair --id WU-1234 --deduplicate');
+    expect(error.tryNext[1]).toBe('Or manually edit docs/04-operations/tasks/backlog.md');
   });
 
   it('works without tryNext (backward compatible)', () => {
@@ -57,9 +56,9 @@ describe('createAgentFriendlyError', () => {
       context: { detail: 'stack trace here' },
     });
 
-    assert.strictEqual(error.code, ErrorCodes.INTERNAL_ERROR);
-    assert.strictEqual(error.message, 'Something went wrong');
-    assert.strictEqual(error.tryNext, undefined);
+    expect(error.code).toBe(ErrorCodes.INTERNAL_ERROR);
+    expect(error.message).toBe('Something went wrong');
+    expect(error.tryNext).toBe(undefined);
   });
 
   it('preserves WUError properties', () => {
@@ -67,9 +66,9 @@ describe('createAgentFriendlyError', () => {
       tryNext: ['pnpm format', 'pnpm lint:fix'],
     });
 
-    assert.ok(error instanceof Error);
-    assert.strictEqual(error.name, 'WUError');
-    assert.ok(error.stack);
+    expect(error instanceof Error).toBeTruthy();
+    expect(error.name).toBe('WUError');
+    expect(error.stack).toBeTruthy();
   });
 });
 
@@ -79,8 +78,8 @@ describe('Error message format consistency', () => {
       tryNext: ['pnpm wu:create --id WU-1234 --lane "<lane>" --title "..."'],
     });
 
-    assert.ok(error.message.includes('WU-1234'));
-    assert.ok(error.tryNext[0].includes('pnpm wu:create'));
+    expect(error.message.includes('WU-1234')).toBe(true);
+    expect(error.tryNext[0].includes('pnpm wu:create')).toBe(true);
   });
 
   it('provides clear description for LANE_OCCUPIED', () => {
@@ -97,8 +96,8 @@ describe('Error message format consistency', () => {
       }
     );
 
-    assert.ok(error.message.includes('occupied'));
-    assert.strictEqual(error.tryNext.length, 3);
+    expect(error.message.includes('occupied')).toBe(true);
+    expect(error.tryNext.length).toBe(3);
   });
 
   it('provides clear description for VALIDATION_ERROR (duplicate WU)', () => {
@@ -113,8 +112,8 @@ describe('Error message format consistency', () => {
       }
     );
 
-    assert.ok(error.message.includes('both'));
-    assert.ok(error.tryNext[0].includes('--deduplicate'));
+    expect(error.message.includes('both')).toBe(true);
+    expect(error.tryNext[0].includes('--deduplicate')).toBe(true);
   });
 
   it('provides clear description for GATES_FAILED', () => {
@@ -126,8 +125,8 @@ describe('Error message format consistency', () => {
       }
     );
 
-    assert.ok(error.message.includes('Gates failed'));
-    assert.strictEqual(error.tryNext[0], 'pnpm format');
+    expect(error.message.includes('Gates failed')).toBe(true);
+    expect(error.tryNext[0]).toBe('pnpm format');
   });
 
   it('provides clear description for GIT_ERROR (dirty working tree)', () => {
@@ -143,8 +142,8 @@ describe('Error message format consistency', () => {
       }
     );
 
-    assert.ok(error.message.includes('Working tree'));
-    assert.strictEqual(error.tryNext.length, 3);
+    expect(error.message.includes('Working tree')).toBe(true);
+    expect(error.tryNext.length).toBe(3);
   });
 });
 
@@ -159,8 +158,8 @@ describe('Error context information', () => {
       }
     );
 
-    assert.ok(error.context.missingFiles);
-    assert.strictEqual(error.context.missingFiles.length, 1);
+    expect(error.context.missingFiles).toBeTruthy();
+    expect(error.context.missingFiles.length).toBe(1);
   });
 
   it('includes WU ID in context for all WU-related errors', () => {
@@ -173,8 +172,8 @@ describe('Error context information', () => {
       }
     );
 
-    assert.strictEqual(error.context.wuId, 'WU-1234');
-    assert.strictEqual(error.context.branch, 'lane/operations/wu-1234');
+    expect(error.context.wuId).toBe('WU-1234');
+    expect(error.context.branch).toBe('lane/operations/wu-1234');
   });
 
   it('includes section names for backlog validation errors', () => {
@@ -183,6 +182,6 @@ describe('Error context information', () => {
       context: { wuId: 'WU-1234', sections: ['ready', 'in_progress'] },
     });
 
-    assert.deepStrictEqual(error.context.sections, ['ready', 'in_progress']);
+    expect(error.context.sections).toEqual(['ready', 'in_progress']);
   });
 });
