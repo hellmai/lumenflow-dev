@@ -1,0 +1,51 @@
+# LumenFlow Gates - Copy to .github/workflows/lumenflow-gates.yml
+# Version: 1.0.0
+# Docs: https://lumenflow.dev/docs/gates
+
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ===== CONFIGURE FOR YOUR STACK =====
+      # Uncomment the section for your language
+
+      # --- JavaScript/TypeScript ---
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      # - run: npm ci
+      # - run: npm run format:check
+      # - run: npm run lint
+      # - run: npm run typecheck
+      # - run: npm test
+
+      # --- Python ---
+      # - uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.12'
+      # - run: pip install -e ".[dev]"
+      # - run: ruff format --check .
+      # - run: ruff check .
+      # - run: mypy .
+      # - run: pytest
+
+      # --- Go ---
+      # - uses: actions/setup-go@v5
+      #   with:
+      #     go-version: '1.22'
+      # - run: gofmt -l . | grep . && exit 1 || exit 0
+      # - run: golangci-lint run
+      # - run: go test ./...
+
+      # --- OR USE PRESET ACTION (recommended) ---
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          preset: auto  # Detects from package.json, pyproject.toml, go.mod
