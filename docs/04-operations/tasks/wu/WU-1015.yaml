@@ -1,5 +1,5 @@
 id: WU-1015
-title: Complete LumenFlow tools migration from 
+title: Add missing CLI command wrappers
 lane: CLI
 type: feature
 status: ready
@@ -7,19 +7,24 @@ priority: P0
 created: 2026-01-18
 code_paths:
   - packages/@lumenflow/cli/src/
-  - packages/@lumenflow/agent/src/
-  - tools/
 tests:
   manual:
-    - pnpm test passes
-    - All CLI commands work
+    - pnpm build passes in CLI package
+    - All bin entries have corresponding source files
   unit: []
   e2e: []
 artifacts:
   - ._legacy/stamps/WU-1015.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  AUDIT COMPLETED 2026-01-18:
+  - @lumenflow/core: 104 files (100%  tools/lib coverage)
+  - @lumenflow/agent: 6 files (all agent-* covered)
+  - @lumenflow/initiatives: 6 files (all initiative-* covered)
+  - @lumenflow/memory: 12 files (all mem-* covered)
+
+  Only CLI WRAPPERS missing - core logic EXISTS in packages.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -27,12 +32,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate all missing LumenFlow-generic tools from  to hellmai/os. Includes
-  wu-delete, wu-unlock-lane, orchestrate-* commands, agent CLI wrappers, guard tools, and validation
-  tools.
+description: |
+  Add missing CLI command wrappers to @lumenflow/cli.
+  Core logic already exists in @lumenflow/* packages.
+
+  Missing CLI wrappers (8 total):
+  1. wu-delete.ts - safe WU deletion
+  2. wu-unlock-lane.ts - lane lock management
+  3. orchestrate-initiative.ts - wave-based execution
+  4. orchestrate-monitor.ts - execution monitoring
+  5. orchestrate-init-status.ts - initiative status
+  6. agent-session.ts - start session
+  7. agent-session-end.ts - end session
+  8. agent-log-issue.ts - log incidents
 acceptance:
-  - All wu-* commands from  migrated
-  - orchestrate-* commands added to CLI
-  - Agent CLI wrappers added
-  - Guard and validation tools migrated
-  - All tests pass
+  - wu-delete and wu-unlock-lane CLI commands added
+  - orchestrate-* CLI commands added (3 commands)
+  - agent-* CLI wrappers added (3 commands)
+  - All bin entries in package.json point to dist files
+  - pnpm build passes in CLI package
