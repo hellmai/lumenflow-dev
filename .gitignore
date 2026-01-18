@@ -38,3 +38,6 @@ coverage/
 /.beacon/memory/
 /.beacon/locks/
 /.beacon/sessions/
+/.beacon/telemetry/
+**/.beacon/
+.logs/
