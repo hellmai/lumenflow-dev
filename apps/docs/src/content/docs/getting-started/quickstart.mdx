@@ -3,31 +3,129 @@ title: Quickstart
 description: Get LumenFlow running in 5 minutes
 ---
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 
-## Prerequisites
+<Tabs>
+  <TabItem label="Free (GitHub App Only)">
+
+## Quick Setup (No CLI Required)
+
+The fastest way to start using LumenFlow is with just the GitHub App.
+
+<Steps>
+
+1. **Install the GitHub App**
+
+   Go to the [GitHub Marketplace](https://github.com/apps/lumenflow-gates) and click **Install**.
+   Select your repository and authorize.
+
+2. **Add configuration file**
+
+   Create `.lumenflow.config.yaml` in your repo root:
+
+   ```yaml
+   version: 1
+   project:
+     name: my-project
+     tasksDir: docs/tasks
+     stampsDir: .beacon/stamps
+
+   lanes:
+     - id: Core
+       description: Core application features
+     - id: Ops
+       description: DevOps and infrastructure
+
+   gates:
+     lint: npm run lint
+     typecheck: npm run typecheck
+     test: npm test
+   ```
+
+3. **Create the tasks directory**
+
+   Create `docs/tasks/backlog.md`:
+
+   ```markdown
+   # Backlog
+
+   ## Ready
+
+   - [WU-001 — My first task](wu/WU-001.yaml)
+
+   ## In Progress
+
+   ## Done
+   ```
+
+4. **Create your first Work Unit**
+
+   Create `docs/tasks/wu/WU-001.yaml`:
+
+   ```yaml
+   id: WU-001
+   title: My first task
+   lane: Core
+   type: feature
+   status: ready
+   priority: P2
+   description: |
+     A simple task to test LumenFlow.
+   acceptance:
+     - The feature works
+   code_paths:
+     - src/
+   ```
+
+5. **Open a Pull Request**
+
+   Create a branch, make changes, and open a PR. The LumenFlow GitHub App will:
+   - Validate your WU spec
+   - Run your configured gates
+   - Add status checks to the PR
+
+</Steps>
+
+<Aside>
+With the Free tier, you manage WU YAML files manually. The GitHub App handles PR validation and gate enforcement.
+</Aside>
+
+  </TabItem>
+  <TabItem label="Pro (With CLI)">
+
+## Full Setup with CLI
+
+For the complete experience with automated workflows:
+
+### Prerequisites
 
 - Node.js 18+ or 22+
 - pnpm (recommended) or npm
 - A Git repository
 
-## Setup
-
 <Steps>
 
 1. **Install the CLI**
 
-   <Tabs>
-     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
-     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
+   <Tabs syncKey="pkg">
+     <TabItem label="pnpm">
+     ```bash
+     pnpm add -D @lumenflow/cli
+     ```
+     </TabItem>
+     <TabItem label="npm">
+     ```bash
+     npm install -D @lumenflow/cli
+     ```
+     </TabItem>
    </Tabs>
 
 2. **Initialize LumenFlow**
 
    ```bash
-   pnpm exec lumenflow init
+   npx lumenflow init
    ```
 
    This creates:
@@ -52,7 +150,7 @@ This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 4. **Create your first Work Unit**
 
    ```bash
-   pnpm wu:create \
+   npx wu-create \
      --id WU-001 \
      --title "Add user authentication" \
      --lane Core
@@ -61,43 +159,81 @@ This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 5. **Claim and start work**
 
    ```bash
-   pnpm wu:claim --id WU-001 --lane Core
+   npx wu-claim --id WU-001 --lane Core
    cd worktrees/core-wu-001
    ```
 
 </Steps>
 
-## Workflow
+### CLI Workflow
 
 Once set up, your daily workflow is:
 
 ```bash
 # 1. Claim a WU from the backlog
-pnpm wu:claim --id WU-XXX --lane Core
+npx wu-claim --id WU-XXX --lane Core
 
-# 2. Work in the worktree
+# 2. Work in the worktree (isolated branch)
 cd worktrees/core-wu-xxx
 # ... make changes ...
 
 # 3. Run gates (checks your work)
-pnpm gates
+npx gates
 
-# 4. Complete the WU
+# 4. Complete the WU (merges to main)
 cd ../..
-pnpm wu:done --id WU-XXX
+npx wu-done --id WU-XXX
 ```
+
+  </TabItem>
+</Tabs>
 
 ## Verify It's Working
 
-After `wu:done`, you should see:
+After your first PR or `wu:done`, you should see:
 
 - ✅ WU status changed to `done`
 - ✅ Stamp file created in `.beacon/stamps/`
-- ✅ Worktree merged and cleaned up
+- ✅ PR checks pass (if using GitHub App)
 - ✅ Backlog updated
+
+## Sample Configuration
+
+Here's a complete `.lumenflow.config.yaml` for reference:
+
+```yaml
+version: 1
+
+project:
+  name: my-project
+  tasksDir: docs/tasks
+  stampsDir: .beacon/stamps
+
+lanes:
+  - id: Core
+    description: Core application features
+    gates: [lint, typecheck, test]
+  - id: UI
+    description: Frontend components
+    gates: [lint, typecheck, test]
+  - id: Ops
+    description: DevOps and infrastructure
+    gates: [lint]
+
+gates:
+  lint: npm run lint
+  typecheck: npm run typecheck
+  test: npm test
+  build: npm run build
+
+defaults:
+  requiresReview: true
+  exposure: backend-only
+```
 
 ## Next Steps
 
-- [Install GitHub App](/getting-started/github-app) – For team enforcement
+- [Install GitHub App](/getting-started/github-app) – PR validation and team enforcement
 - [Work Units](/concepts/work-units) – Deep dive on WUs
 - [Gates](/concepts/gates) – Understanding quality gates
+- [Configuration](/reference/config) – Full config reference
