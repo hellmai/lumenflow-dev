@@ -25,7 +25,7 @@ test_paths:
     - "Verify wu:claim creates worktree"
     - "Verify wu:done merges and stamps"
 assigned_to: tom@hellm.ai
-created_at: "2026-01-18"
+created: "2026-01-18"
 notes: |
   Bootstrap WU to complete dogfooding setup.
   Also fixes CLI project root discovery bug.
