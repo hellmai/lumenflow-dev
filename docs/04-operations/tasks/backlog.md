@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
 - [WU-1009 — Write quickstart guide](wu/WU-1009.yaml)
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)
 
@@ -39,3 +38,4 @@ sections:
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml)
 - [WU-1005 — Add lumenflow init scaffolding command](wu/WU-1005.yaml)
 - [WU-1006 — Refactor codebase to use well-known libraries (Library-First)](wu/WU-1006.yaml)
+- [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
