@@ -2,7 +2,7 @@ id: WU-1006
 title: Refactor codebase to use well-known libraries (Library-First)
 lane: Core
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -64,3 +64,5 @@ session_id: 65325639-1413-4482-b255-bb19346b5b06
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T18:25:27.099Z
+locked: true
+completed_at: 2026-01-18T18:39:47.575Z
