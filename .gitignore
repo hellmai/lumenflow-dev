@@ -43,3 +43,4 @@ coverage/
 /.beacon/skip-gates-audit.log
 /.beacon/checkpoints/
 .logs/
+*.tgz
