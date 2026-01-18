@@ -13,13 +13,13 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import YAML from 'yaml'; // Modern YAML library (not js-yaml)
 import micromatch from 'micromatch'; // Industry-standard glob matching (CommonJS)
 import { extractParent } from './lane-checker.js'; // Shared utility (WU-1137: consolidation)
 import { createError, ErrorCodes } from './error-handler.js';
 import { WEIGHTS, CONFIDENCE } from './wu-validation-constants.js';
 import { FILE_SYSTEM } from './wu-constants.js';
+import { findProjectRoot } from './lumenflow-config.js';
 
 /**
  * Load lane inference config from project root
@@ -29,9 +29,8 @@ import { FILE_SYSTEM } from './wu-constants.js';
  */
 function loadConfig(configPath = null) {
   if (!configPath) {
-    // Default to project root
-    const currentDir = path.dirname(fileURLToPath(import.meta.url));
-    const projectRoot = path.resolve(currentDir, '../..');
+    // Use findProjectRoot() to locate config from cwd
+    const projectRoot = findProjectRoot();
     configPath = path.join(projectRoot, '.lumenflow.lane-inference.yaml');
   }
 
