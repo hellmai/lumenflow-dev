@@ -1,28 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "name": "lumenflow-github-app",
-  "framework": null,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@3"
-    }
-  },
   "routes": [
-    {
-      "src": "/api/webhook",
-      "dest": "/api/webhook.ts"
-    },
     {
       "src": "/health",
       "dest": "/api/health.ts"
     }
-  ],
-  "env": {
-    "GITHUB_APP_ID": "@github-app-id",
-    "GITHUB_PRIVATE_KEY": "@github-private-key",
-    "GITHUB_WEBHOOK_SECRET": "@github-webhook-secret"
-  }
+  ]
 }
