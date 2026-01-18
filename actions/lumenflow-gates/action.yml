@@ -7,6 +7,9 @@ branding:
   color: 'green'
 
 inputs:
+  token:
+    description: 'LumenFlow API token for usage tracking and tier validation'
+    required: true
   preset:
     description: 'Language preset (auto, node, python, go, rust)'
     required: false
@@ -55,6 +58,47 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    # ============================================================
+    # TOKEN VALIDATION & USAGE TRACKING
+    # ============================================================
+    - name: Validate token and check usage limits
+      id: validate
+      shell: bash
+      env:
+        LUMENFLOW_TOKEN: ${{ inputs.token }}
+      run: |
+        echo "Validating LumenFlow token..."
+
+        # Call validation endpoint
+        RESPONSE=$(curl -s -w "\n%{http_code}" \
+          -X POST "https://lumenflow-app.vercel.app/api/validate-token" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $LUMENFLOW_TOKEN" \
+          -d "{\"repo\": \"$GITHUB_REPOSITORY\", \"run_id\": \"$GITHUB_RUN_ID\"}")
+
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | sed '$d')
+
+        if [ "$HTTP_CODE" != "200" ]; then
+          echo "::error::Token validation failed (HTTP $HTTP_CODE)"
+          echo "$BODY"
+          exit 1
+        fi
+
+        # Parse response
+        TIER=$(echo "$BODY" | jq -r '.tier // "free"')
+        REMAINING=$(echo "$BODY" | jq -r '.remaining // 0')
+        LIMIT=$(echo "$BODY" | jq -r '.limit // 10')
+
+        echo "tier=$TIER" >> $GITHUB_OUTPUT
+        echo "remaining=$REMAINING" >> $GITHUB_OUTPUT
+        echo "::notice::LumenFlow tier: $TIER ($REMAINING/$LIMIT gates remaining this month)"
+
+        if [ "$REMAINING" -le 0 ]; then
+          echo "::error::Usage limit exceeded. Upgrade at https://lumenflow.dev/pricing"
+          exit 1
+        fi
+
     - name: Detect preset
       id: detect
       shell: bash

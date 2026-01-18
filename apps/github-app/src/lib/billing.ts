@@ -1,63 +1,141 @@
 /**
  * LumenFlow Billing - Subscription & Usage Tracking
  *
- * Options:
- * 1. GitHub Marketplace (they handle billing)
- * 2. Stripe (direct billing)
- * 3. Simple license keys (for enterprise)
+ * Tracks usage per installation for rate limiting.
+ * MVP uses in-memory storage; production should use Supabase.
  */
 
-interface Subscription {
+export interface Subscription {
   active: boolean;
   tier: 'free' | 'team' | 'business' | 'enterprise';
   wusRemaining: number;
   expiresAt: Date | null;
 }
 
-// In production: Query your database (Supabase, PlanetScale, etc.)
-// For MVP: Use GitHub Marketplace API or simple KV store
+export interface UsageStats {
+  wusThisMonth: number;
+  wusLimit: number;
+  percentUsed: number;
+}
 
-const TIERS = {
+// Tier configuration
+export const TIERS = {
   free: { wusPerMonth: 10, price: 0 },
   team: { wusPerMonth: 100, price: 29 },
   business: { wusPerMonth: 500, price: 99 },
-  enterprise: { wusPerMonth: Infinity, price: 'custom' },
+  enterprise: { wusPerMonth: Infinity, price: 'custom' as const },
 };
 
-export async function checkSubscription(installationId: number): Promise<Subscription> {
-  // Option 1: GitHub Marketplace
-  // The installation already has billing info from GitHub
-  // We just check if they're on a paid plan
+// In-memory usage store (MVP)
+// Key: `${installationId}:${year}-${month}`
+const usageStore = new Map<string, number>();
 
-  // Option 2: Our own database
-  // const sub = await db.query('SELECT * FROM subscriptions WHERE installation_id = ?', [installationId]);
+// In-memory subscription store (MVP)
+// Key: installationId
+const subscriptionStore = new Map<number, { tier: Subscription['tier'] }>();
 
-  // Option 3: Simple KV check (Vercel KV, Upstash Redis)
-  // const tier = await kv.get(`subscription:${installationId}`);
+/**
+ * Get current month key for usage tracking
+ */
+function getCurrentMonthKey(installationId: number): string {
+  const now = new Date();
+  return `${installationId}:${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
 
-  // For MVP: Everyone gets free tier
+/**
+ * Check subscription status for an installation
+ */
+export async function checkSubscription(
+  installationId: number
+): Promise<Subscription> {
+  // TODO: In production, query Supabase:
+  // const { data } = await supabase
+  //   .from('subscriptions')
+  //   .select('*')
+  //   .eq('installation_id', installationId)
+  //   .single();
+
+  const stored = subscriptionStore.get(installationId);
+  const tier = stored?.tier || 'free';
+  const tierConfig = TIERS[tier];
+
+  const usage = await getUsageStats(installationId);
+  const remaining = tierConfig.wusPerMonth - usage.wusThisMonth;
+
   return {
     active: true,
-    tier: 'free',
-    wusRemaining: 10,
+    tier,
+    wusRemaining: Math.max(0, remaining),
     expiresAt: null,
   };
 }
 
-export async function incrementUsage(installationId: number): Promise<void> {
-  // Track WU completion for usage-based billing
-  // await db.query('UPDATE subscriptions SET wus_used = wus_used + 1 WHERE installation_id = ?', [installationId]);
+/**
+ * Set subscription tier for an installation (for testing/admin)
+ */
+export async function setSubscriptionTier(
+  installationId: number,
+  tier: Subscription['tier']
+): Promise<void> {
+  // TODO: In production, upsert to Supabase:
+  // await supabase
+  //   .from('subscriptions')
+  //   .upsert({ installation_id: installationId, tier, updated_at: new Date() });
+
+  subscriptionStore.set(installationId, { tier });
 }
 
-export async function getUsageStats(installationId: number): Promise<{
-  wusThisMonth: number;
-  wusLimit: number;
-  percentUsed: number;
-}> {
-  // Return usage for dashboard/API
+/**
+ * Increment usage count for an installation
+ */
+export async function incrementUsage(installationId: number): Promise<void> {
+  const key = getCurrentMonthKey(installationId);
+  const current = usageStore.get(key) || 0;
+  usageStore.set(key, current + 1);
+
+  // TODO: In production, increment in Supabase:
+  // await supabase.rpc('increment_usage', {
+  //   p_installation_id: installationId,
+  //   p_month: getCurrentMonthKey(installationId).split(':')[1],
+  // });
+
+  console.log(
+    `[billing] Usage incremented for installation ${installationId}: ${current + 1}`
+  );
+}
+
+/**
+ * Get usage statistics for an installation
+ */
+export async function getUsageStats(installationId: number): Promise<UsageStats> {
+  const key = getCurrentMonthKey(installationId);
+  const wusThisMonth = usageStore.get(key) || 0;
+
+  // Get tier to determine limit
+  const stored = subscriptionStore.get(installationId);
+  const tier = stored?.tier || 'free';
+  const wusLimit = TIERS[tier].wusPerMonth;
+
+  // TODO: In production, query Supabase:
+  // const { data } = await supabase
+  //   .from('usage')
+  //   .select('count')
+  //   .eq('installation_id', installationId)
+  //   .eq('month', getCurrentMonthKey(installationId).split(':')[1])
+  //   .single();
+
   return {
-    wusThisMonth: 5,
-    wusLimit: 10,
-    percentUsed: 50,
+    wusThisMonth,
+    wusLimit: wusLimit === Infinity ? 999999 : wusLimit,
+    percentUsed:
+      wusLimit === Infinity ? 0 : Math.round((wusThisMonth / wusLimit) * 100),
   };
+}
+
+/**
+ * Reset usage for testing purposes
+ */
+export function resetUsageForTesting(): void {
+  usageStore.clear();
+  subscriptionStore.clear();
 }
