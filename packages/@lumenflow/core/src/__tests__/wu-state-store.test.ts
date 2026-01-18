@@ -11,10 +11,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {
-  WUStateStore,
-  WU_EVENTS_FILE_NAME,
-} from '../wu-state-store.js';
+import { WUStateStore, WU_EVENTS_FILE_NAME } from '../wu-state-store.js';
 
 /**
  * Test fixtures for event sourcing
@@ -168,7 +165,10 @@ describe('wu-state-store', () => {
 
     it('should index WUs by lane', async () => {
       const claimEvt1 = FIXTURES.claimEvent({ wuId: 'WU-100', lane: 'Operations: Tooling' });
-      const claimEvt2 = FIXTURES.claimEvent({ wuId: 'WU-101', lane: 'Operations: Workflow Engine' });
+      const claimEvt2 = FIXTURES.claimEvent({
+        wuId: 'WU-101',
+        lane: 'Operations: Workflow Engine',
+      });
       const claimEvt3 = FIXTURES.claimEvent({ wuId: 'WU-102', lane: 'Operations: Tooling' });
       await writeJsonlFile(eventsFilePath, [claimEvt1, claimEvt2, claimEvt3]);
 
@@ -245,7 +245,9 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt]);
       await store.load();
 
-      await expect(async () => store.claim('WU-100', 'Operations: Tooling', 'Test WU')).rejects.toThrow(/already in_progress/i);
+      await expect(async () =>
+        store.claim('WU-100', 'Operations: Tooling', 'Test WU'),
+      ).rejects.toThrow(/already in_progress/i);
     });
   });
 
@@ -300,7 +302,9 @@ describe('wu-state-store', () => {
     it('should reject block for WU not in_progress', async () => {
       await store.load();
 
-      await expect(async () => store.block('WU-100', 'Test reason')).rejects.toThrow(/not in_progress/i);
+      await expect(async () => store.block('WU-100', 'Test reason')).rejects.toThrow(
+        /not in_progress/i,
+      );
     });
   });
 
@@ -394,7 +398,9 @@ describe('wu-state-store', () => {
       await writeJsonlFile(eventsFilePath, [claimEvt]);
       await store.load();
 
-      await expect(async () => store.claim('WU-100', 'Operations: Tooling', 'Test')).rejects.toThrow(/already in_progress/i);
+      await expect(async () =>
+        store.claim('WU-100', 'Operations: Tooling', 'Test'),
+      ).rejects.toThrow(/already in_progress/i);
     });
 
     it('should reject blocked -> done transition (must unblock first)', async () => {
@@ -422,7 +428,7 @@ describe('wu-state-store', () => {
       assert.throws(
         () => store.applyEvent(invalidEvent),
         /Invalid input|Invalid discriminator value|Event type must be one of/i,
-        'Should throw descriptive error for invalid event type'
+        'Should throw descriptive error for invalid event type',
       );
 
       // Verify no partial state was left
@@ -448,7 +454,7 @@ describe('wu-state-store', () => {
           error.message.includes('create') ||
             error.message.includes('claim') ||
             error.message.includes('Invalid discriminator'),
-          `Error message should be descriptive: ${error.message}`
+          `Error message should be descriptive: ${error.message}`,
         );
       }
     });

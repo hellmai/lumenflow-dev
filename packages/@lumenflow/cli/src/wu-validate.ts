@@ -53,7 +53,7 @@ function validateSingleWU(wuPath, { strict = false } = {}) {
   const schemaResult = validateWU(doc);
   if (!schemaResult.success) {
     const schemaErrors = schemaResult.error.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`
+      (issue) => `${issue.path.join('.')}: ${issue.message}`,
     );
     errors.push(...schemaErrors);
     return { valid: false, warnings, errors };

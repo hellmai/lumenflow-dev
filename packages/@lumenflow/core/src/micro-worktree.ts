@@ -129,7 +129,7 @@ export async function cleanupOrphanedMicroWorktree(
   operation,
   id,
   gitAdapter,
-  logPrefix = DEFAULT_LOG_PREFIX
+  logPrefix = DEFAULT_LOG_PREFIX,
 ) {
   const tempBranchName = getTempBranchName(operation, id);
   let cleanedWorktree = false;
@@ -142,7 +142,7 @@ export async function cleanupOrphanedMicroWorktree(
 
     if (orphanWorktreePath) {
       console.log(
-        `${logPrefix} Found orphaned worktree for ${tempBranchName}: ${orphanWorktreePath}`
+        `${logPrefix} Found orphaned worktree for ${tempBranchName}: ${orphanWorktreePath}`,
       );
       try {
         await gitAdapter.worktreeRemove(orphanWorktreePath, { force: true });
@@ -232,7 +232,7 @@ async function removeWorktreeSafe(gitAdapter, worktreePath, logPrefix, contextLa
 export async function cleanupMicroWorktree(
   worktreePath,
   branchName,
-  logPrefix = DEFAULT_LOG_PREFIX
+  logPrefix = DEFAULT_LOG_PREFIX,
 ) {
   console.log(`${logPrefix} Cleaning up micro-worktree...`);
   const mainGit = getGitForCwd();
@@ -361,7 +361,7 @@ export async function formatFiles(files, worktreePath, logPrefix = DEFAULT_LOG_P
 export async function mergeWithRetry(
   tempBranchName,
   microWorktreePath,
-  logPrefix = DEFAULT_LOG_PREFIX
+  logPrefix = DEFAULT_LOG_PREFIX,
 ) {
   const gitWorktree = createGitForPath(microWorktreePath);
   const mainGit = getGitForCwd();
@@ -383,7 +383,7 @@ export async function mergeWithRetry(
         throw new Error(
           `FF-only merge failed after ${MAX_MERGE_RETRIES} attempts. ` +
             `Main branch may have significant divergence.\n` +
-            `Error: ${mergeErr.message}`
+            `Error: ${mergeErr.message}`,
         );
       }
     }
@@ -458,7 +458,7 @@ export async function withMicroWorktree(options) {
     if (pushOnly) {
       // WU-1435: Push directly to origin/main without touching local main
       console.log(
-        `${logPrefix} Pushing directly to ${REMOTES.ORIGIN}/${BRANCHES.MAIN} (push-only)...`
+        `${logPrefix} Pushing directly to ${REMOTES.ORIGIN}/${BRANCHES.MAIN} (push-only)...`,
       );
       await gitWorktree.pushRefspec(REMOTES.ORIGIN, tempBranchName, BRANCHES.MAIN);
       console.log(`${logPrefix} ✅ Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);

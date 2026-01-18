@@ -162,7 +162,10 @@ export interface CreateCheckpointResult {
  * });
  * console.log(result.checkpoint.id); // 'mem-a1b2'
  */
-export async function createCheckpoint(baseDir: string, options: CreateCheckpointOptions): Promise<CreateCheckpointResult> {
+export async function createCheckpoint(
+  baseDir: string,
+  options: CreateCheckpointOptions,
+): Promise<CreateCheckpointResult> {
   const { note, sessionId, wuId, progress, nextSteps, trigger } = options;
 
   // Validate required fields

@@ -632,7 +632,7 @@ export interface ObservabilityService {
   log(
     level: 'debug' | 'info' | 'warn' | 'error',
     message: string,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ): void;
 }
 ```
@@ -715,7 +715,7 @@ describe('exampleUseCase', () => {
     // Act
     const result = await exampleUseCase(
       { service: mockService, observability: mockObservability },
-      { input: 'test' }
+      { input: 'test' },
     );
 
     // Assert
@@ -737,7 +737,7 @@ import type { ExampleService, ObservabilityService, ServiceResponse } from '@{PR
 
 export async function exampleUseCase(
   deps: { service: ExampleService; observability: ObservabilityService },
-  input: { input: string }
+  input: { input: string },
 ): Promise<ServiceResponse<Result>> {
   const span = deps.observability.startSpan('usecase.example');
 

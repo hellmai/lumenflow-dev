@@ -34,25 +34,25 @@ describe.skipIf(!hasFullConfig)('validateLaneFormat', () => {
 
     it('rejects unknown sub-lane for parent with taxonomy', () => {
       expect(() => validateLaneFormat('Core Systems: Foo')).toThrow(
-        /Unknown sub-lane: "Foo" for parent lane "Core Systems"/
+        /Unknown sub-lane: "Foo" for parent lane "Core Systems"/,
       );
     });
 
     it('rejects typo in sub-lane name', () => {
       expect(() => validateLaneFormat('Operations: Tool')).toThrow(
-        /Unknown sub-lane: "Tool" for parent lane "Operations"/
+        /Unknown sub-lane: "Tool" for parent lane "Operations"/,
       );
     });
 
     it('rejects sub-lane on parent without taxonomy (Discovery)', () => {
       expect(() => validateLaneFormat('Discovery: Spike')).toThrow(
-        /Parent lane "Discovery" does not support sub-lanes/
+        /Parent lane "Discovery" does not support sub-lanes/,
       );
     });
 
     it('rejects sub-lane on parent without taxonomy (Customer)', () => {
       expect(() => validateLaneFormat('Customer: Research')).toThrow(
-        /Parent lane "Customer" does not support sub-lanes/
+        /Parent lane "Customer" does not support sub-lanes/,
       );
     });
   });

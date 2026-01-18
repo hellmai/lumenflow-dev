@@ -35,7 +35,10 @@ import {
   forceRemoveStaleLock,
 } from '@lumenflow/core/dist/lane-lock.js';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
-import { validateLaneCodePaths, logLaneValidationWarnings } from '@lumenflow/core/dist/code-path-validator.js';
+import {
+  validateLaneCodePaths,
+  logLaneValidationWarnings,
+} from '@lumenflow/core/dist/code-path-validator.js';
 // WU-1574: parseBacklogFrontmatter/getSectionHeadings removed - state store replaces backlog parsing
 import { detectConflicts } from '@lumenflow/core/dist/code-paths-overlap.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
@@ -60,7 +63,10 @@ import {
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { emitWUFlowEvent } from '@lumenflow/core/dist/telemetry.js';
-import { checkLaneForOrphanDoneWU, repairWUInconsistency } from '@lumenflow/core/dist/wu-consistency-checker.js';
+import {
+  checkLaneForOrphanDoneWU,
+  repairWUInconsistency,
+} from '@lumenflow/core/dist/wu-consistency-checker.js';
 import { emitMandatoryAgentAdvisory } from '@lumenflow/core/dist/orchestration-advisory-loader.js';
 import { validateWU, generateAutoApproval } from '@lumenflow/core/dist/wu-schema.js';
 import { startSessionForWU } from '@lumenflow/agent/dist/auto-session-integration.js';
@@ -72,7 +78,10 @@ import {
 } from '@lumenflow/core/dist/wu-yaml-fixer.js';
 import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
 import { getAssignedEmail } from '@lumenflow/core/dist/wu-claim-helpers.js';
-import { symlinkNodeModules, symlinkNestedNodeModules } from '@lumenflow/core/dist/worktree-symlink.js';
+import {
+  symlinkNodeModules,
+  symlinkNestedNodeModules,
+} from '@lumenflow/core/dist/worktree-symlink.js';
 // WU-1572: Import WUStateStore for event-sourced state tracking
 import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
 // WU-1574: Import backlog generator to replace BacklogManager
@@ -92,7 +101,7 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
   const status = await getGitForCwd().getStatus();
   if (!status)
     die(
-      'No staged changes detected. Stage backlog/status/WU YAML claim edits first or omit --no-auto.'
+      'No staged changes detected. Stage backlog/status/WU YAML claim edits first or omit --no-auto.',
     );
   const staged = status
     .split(STRING_LITERALS.NEWLINE)
@@ -102,7 +111,7 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
     (l) =>
       l.includes('docs/04-operations/tasks/status.md') ||
       l.includes('docs/04-operations/tasks/backlog.md') ||
-      /docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml/.test(l)
+      /docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml/.test(l),
   );
   if (!hasClaimFiles) {
     console.error(status);
@@ -126,7 +135,7 @@ function preflightValidateWU(WU_PATH, id) {
         `Options:\n` +
         `  1. Create the WU first: pnpm wu:create --id ${id} --lane <lane> --title "..."\n` +
         `  2. Check if the WU ID is correct\n` +
-        `  3. Check if the WU file was moved or deleted`
+        `  3. Check if the WU file was moved or deleted`,
     );
   }
 
@@ -140,7 +149,7 @@ function preflightValidateWU(WU_PATH, id) {
     die(
       `Failed to parse WU YAML ${WU_PATH}\n\n` +
         `YAML parsing error: ${e.message}\n\n` +
-        `Fix the YAML syntax errors before claiming.`
+        `Fix the YAML syntax errors before claiming.`,
     );
   }
 
@@ -150,7 +159,7 @@ function preflightValidateWU(WU_PATH, id) {
       `WU YAML id mismatch in ${WU_PATH}\n\n` +
         `Expected: ${id}\n` +
         `Found: ${doc?.id || 'missing'}\n\n` +
-        `Fix the id field in the WU YAML before claiming.`
+        `Fix the id field in the WU YAML before claiming.`,
     );
   }
 
@@ -163,7 +172,7 @@ function preflightValidateWU(WU_PATH, id) {
       `Cannot claim ${id} - invalid state transition\n\n` +
         `Current status: ${currentStatus}\n` +
         `Attempted transition: ${currentStatus} → in_progress\n\n` +
-        `Reason: ${error.message}`
+        `Reason: ${error.message}`,
     );
   }
 
@@ -195,7 +204,7 @@ function validateYAMLSchema(WU_PATH, doc, args) {
       // The actual file fix happens when the doc is written to the worktree
       applyFixes(doc, fixableIssues);
       console.log(
-        `${PREFIX} Detected ${fixableIssues.length} fixable YAML issue(s) (will fix in worktree):`
+        `${PREFIX} Detected ${fixableIssues.length} fixable YAML issue(s) (will fix in worktree):`,
       );
       console.log(formatIssues(fixableIssues));
     } else {
@@ -217,7 +226,7 @@ function validateYAMLSchema(WU_PATH, doc, args) {
     const tip =
       fixableIssues.length > 0 ? 'Tip: Run with --fix to auto-repair common issues.\n' : '';
     die(
-      `WU YAML schema validation failed for ${WU_PATH}:\n\n${issueList}\n\nFix these issues before claiming.\n${tip}`
+      `WU YAML schema validation failed for ${WU_PATH}:\n\n${issueList}\n\nFix these issues before claiming.\n${tip}`,
     );
   }
 
@@ -234,7 +243,7 @@ async function updateWUYaml(
   lane,
   claimedMode = 'worktree',
   worktreePath = null,
-  sessionId = null
+  sessionId = null,
 ) {
   // Check file exists
 
@@ -245,7 +254,7 @@ async function updateWUYaml(
       `WU file not found: ${WU_PATH}\n\n` +
         `Options:\n` +
         `  1. Create the WU first: pnpm wu:create --id ${id} --lane "${lane}" --title "..."\n` +
-        `  2. Check if the WU ID is correct`
+        `  2. Check if the WU ID is correct`,
     );
   }
 
@@ -260,7 +269,7 @@ async function updateWUYaml(
         `Error: ${e.message}\n\n` +
         `Options:\n` +
         `  1. Check file permissions: ls -la ${WU_PATH}\n` +
-        `  2. Ensure you have read access to the repository`
+        `  2. Ensure you have read access to the repository`,
     );
   }
   let doc;
@@ -272,7 +281,7 @@ async function updateWUYaml(
         `Error: ${e.message}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
-        `  2. Fix YAML errors manually and retry`
+        `  2. Fix YAML errors manually and retry`,
     );
   }
   if (!doc || doc.id !== id) {
@@ -280,7 +289,7 @@ async function updateWUYaml(
       `WU YAML id mismatch. Expected ${id}, found ${doc && doc.id}\n\n` +
         `Options:\n` +
         `  1. Check the WU file has correct id field\n` +
-        `  2. Verify you're claiming the right WU`
+        `  2. Verify you're claiming the right WU`,
     );
   }
 
@@ -327,7 +336,7 @@ async function updateWUYaml(
   // Log escalation triggers if any detected
   if (autoApproval.requires_human_escalation) {
     console.log(
-      `[wu-claim] ⚠️  Escalation triggers detected: ${autoApproval.escalation_triggers.join(', ')}`
+      `[wu-claim] ⚠️  Escalation triggers detected: ${autoApproval.escalation_triggers.join(', ')}`,
     );
     console.log(`[wu-claim] ℹ️  Human resolution required before wu:done can complete.`);
   } else {
@@ -379,7 +388,9 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   lines.splice(startIdx + 1, 0, '', bullet);
   // Write file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
-  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  });
 }
 
 async function removeFromReadyAndAddToInProgressBacklog(backlogPath, id, title, lane) {
@@ -556,7 +567,7 @@ async function handleOrphanCheck(lane, id) {
         if (repairResult.failed > 0) {
           throw new Error(
             `Lane ${lane} has orphan done WU: ${orphanId}\n` +
-              `Auto-repair failed. Fix manually with: pnpm wu:repair --id ${orphanId}`
+              `Auto-repair failed. Fix manually with: pnpm wu:repair --id ${orphanId}`,
           );
         }
 
@@ -585,7 +596,7 @@ async function handleOrphanCheck(lane, id) {
 
   die(
     `Lane ${lane} has ${orphanCheck.orphans.length} orphan done WUs: ${orphanCheck.orphans.join(', ')}\n` +
-      `Fix with: pnpm wu:repair --id <WU-ID> for each, or pnpm wu:repair --all`
+      `Fix with: pnpm wu:repair --id <WU-ID> for each, or pnpm wu:repair --all`,
   );
 }
 
@@ -605,7 +616,7 @@ function validateLaneFormatWithError(lane) {
         `  - Single colon with EXACTLY one space after (e.g., "Parent: Subdomain")\n` +
         `  - No spaces before colon\n` +
         `  - No multiple colons\n\n` +
-        `See .lumenflow.config.yaml for valid parent lanes.`
+        `See .lumenflow.config.yaml for valid parent lanes.`,
     );
   }
 }
@@ -636,7 +647,7 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
       `  1. Wait for ${laneCheck.occupiedBy} to complete or block\n` +
       `  2. Choose a different lane\n` +
       `  3. Use --force to override (P0 emergencies only)\n\n` +
-      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`
+      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
   );
 }
 
@@ -668,7 +679,7 @@ function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
     const conflictList = overlapCheck.conflicts
       .map(
         (c) =>
-          `  - ${c.wuid}: ${c.overlaps.slice(0, 3).join(', ')}${c.overlaps.length > 3 ? ` (+${c.overlaps.length - 3} more)` : ''}`
+          `  - ${c.wuid}: ${c.overlaps.slice(0, 3).join(', ')}${c.overlaps.length > 3 ? ` (+${c.overlaps.length - 3} more)` : ''}`,
       )
       .join(STRING_LITERALS.NEWLINE);
 
@@ -679,7 +690,7 @@ function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
         `  1. Wait for conflicting WU(s) to complete\n` +
         `  2. Coordinate with agent working on conflicting WU\n` +
         `  3. Use --force-overlap --reason "..." (emits telemetry for audit)\n\n` +
-        `To check WU status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`
+        `To check WU status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
     );
   }
 
@@ -711,7 +722,7 @@ async function validateBranchOnlyMode(STATUS_PATH, id) {
         `  1. Complete ${branchOnlyCheck.existingWU} first (pnpm wu:done --id ${branchOnlyCheck.existingWU})\n` +
         `  2. Block ${branchOnlyCheck.existingWU} (pnpm wu:block --id ${branchOnlyCheck.existingWU} --reason "...")\n` +
         `  3. Use Worktree mode instead (omit --branch-only flag)\n\n` +
-        `Branch-Only mode works in the main checkout and cannot isolate parallel WUs.`
+        `Branch-Only mode works in the main checkout and cannot isolate parallel WUs.`,
     );
   }
 
@@ -723,7 +734,7 @@ async function validateBranchOnlyMode(STATUS_PATH, id) {
         `Uncommitted changes detected:\n${status}\n\n` +
         `Options:\n` +
         `  1. Commit or stash your changes\n` +
-        `  2. Use Worktree mode instead (omit --branch-only flag for isolated workspace)`
+        `  2. Use Worktree mode instead (omit --branch-only flag for isolated workspace)`,
     );
   }
 }
@@ -765,7 +776,7 @@ async function claimBranchOnlyMode(ctx) {
     await addOrReplaceInProgressStatus(STATUS_PATH, id, updatedTitle);
     await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, updatedTitle, args.lane);
     await getGitForCwd().add(
-      `${JSON.stringify(WU_PATH)} ${JSON.stringify(STATUS_PATH)} ${JSON.stringify(BACKLOG_PATH)}`
+      `${JSON.stringify(WU_PATH)} ${JSON.stringify(STATUS_PATH)} ${JSON.stringify(BACKLOG_PATH)}`,
     );
   }
 
@@ -782,7 +793,7 @@ async function claimBranchOnlyMode(ctx) {
   console.log(`- Commit: ${msg}`);
   console.log(`- Branch: ${branch}`);
   console.log(
-    '\n⚠️  LIMITATION: Branch-Only mode does not support parallel WUs (WIP=1 across ALL lanes)'
+    '\n⚠️  LIMITATION: Branch-Only mode does not support parallel WUs (WIP=1 across ALL lanes)',
   );
   console.log('Next: work on this branch in the main checkout.');
 
@@ -915,7 +926,7 @@ async function claimWorktreeMode(ctx) {
     // WU-2238: Symlinking was refused due to worktree-path symlinks
     // Fall back to running pnpm install in the worktree
     console.log(
-      `${PREFIX} Running pnpm install in worktree (symlink refused: ${symlinkResult.reason})`
+      `${PREFIX} Running pnpm install in worktree (symlink refused: ${symlinkResult.reason})`,
     );
     try {
       const { execSync } = await import('node:child_process');
@@ -937,7 +948,7 @@ async function claimWorktreeMode(ctx) {
     const nestedResult = symlinkNestedNodeModules(worktreePath, originalCwd);
     if (nestedResult.created > 0) {
       console.log(
-        `${PREFIX} ${EMOJI.SUCCESS} ${nestedResult.created} nested node_modules symlinked for typecheck`
+        `${PREFIX} ${EMOJI.SUCCESS} ${nestedResult.created} nested node_modules symlinked for typecheck`,
       );
     }
   }
@@ -972,7 +983,9 @@ async function claimWorktreeMode(ctx) {
   // Read from worktree since that's where the updated YAML is
   const wtWUPathForAdvisory = path.join(worktreePath, WU_PATH);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
-  const wuContent = await readFile(wtWUPathForAdvisory, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  const wuContent = await readFile(wtWUPathForAdvisory, {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
   emitMandatoryAgentAdvisory(codePaths, id);
@@ -990,7 +1003,7 @@ async function claimWorktreeMode(ctx) {
 export function printLifecycleNudge(_id) {
   // Single line, concise, actionable
   console.log(
-    `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`
+    `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`,
   );
 }
 
@@ -1027,7 +1040,7 @@ async function handleResumeMode(args, id) {
   if (!result.success) {
     die(
       `Cannot resume ${id}: ${result.error}\n\n` +
-        `If you need to start a fresh claim, use: pnpm wu:claim --id ${id} --lane "${args.lane}"`
+        `If you need to start a fresh claim, use: pnpm wu:claim --id ${id} --lane "${args.lane}"`,
     );
   }
 
@@ -1057,7 +1070,7 @@ async function handleResumeMode(args, id) {
 
   if (checkpointResult.success && checkpointResult.checkpointId) {
     console.log(
-      `${PREFIX} ${EMOJI.SUCCESS} Handoff checkpoint created: ${checkpointResult.checkpointId}`
+      `${PREFIX} ${EMOJI.SUCCESS} Handoff checkpoint created: ${checkpointResult.checkpointId}`,
     );
   }
 
@@ -1076,7 +1089,7 @@ async function handleResumeMode(args, id) {
   console.log(`\n${PREFIX} Resume complete. Worktree preserved at: ${worktree}`);
   console.log(`${PREFIX} Next: cd ${worktree} and continue work.`);
   console.log(
-    `\n${PREFIX} Tip: Run 'pnpm mem:ready --wu ${id}' to check for pending context from previous session.`
+    `\n${PREFIX} Tip: Run 'pnpm mem:ready --wu ${id}' to check for pending context from previous session.`,
   );
 }
 
@@ -1125,7 +1138,7 @@ async function main() {
           `Options:\n` +
           `  1. git add . && git commit -m "..."\n` +
           `  2. git stash\n` +
-          `  3. Use --no-auto if you already staged claim edits manually`
+          `  3. Use --no-auto if you already staged claim edits manually`,
       );
     }
   }
@@ -1167,7 +1180,7 @@ async function main() {
       die(
         `Spec completeness validation failed for ${WU_PATH}:\n\n${errorList}\n\n` +
           `Fix these issues before claiming, or use --allow-incomplete to bypass.\n` +
-          `Note: Schema errors (placeholders, invalid structure) cannot be bypassed.`
+          `Note: Schema errors (placeholders, invalid structure) cannot be bypassed.`,
       );
     }
   }
@@ -1209,7 +1222,7 @@ async function main() {
         `Options:\n` +
         `  1. Wait for ${lockResult.existingLock?.wuId || 'the other WU'} to complete or block\n` +
         `  2. Choose a different lane\n` +
-        `  3. Use --force to override (P0 emergencies only)${staleSuffix}`
+        `  3. Use --force to override (P0 emergencies only)${staleSuffix}`,
     );
   }
 
@@ -1253,7 +1266,7 @@ async function main() {
           `Options:\n` +
           `  1. Check git worktree list to see if worktree exists\n` +
           `  2. Coordinate with the owning agent or wait for them to complete\n` +
-          `  3. Choose a different WU`
+          `  3. Choose a different WU`,
       );
     }
 
@@ -1269,7 +1282,7 @@ async function main() {
         die(
           `Failed to clean up orphan directory at ${worktree}\n\n` +
             `Error: ${err.message}\n\n` +
-            `Manual cleanup: rm -rf ${absoluteWorktreePath}`
+            `Manual cleanup: rm -rf ${absoluteWorktreePath}`,
         );
       }
     }

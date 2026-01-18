@@ -20,8 +20,14 @@ describe('retry-strategy', () => {
     it('should have sensible defaults', () => {
       assert.ok(DEFAULT_RETRY_CONFIG.maxAttempts >= 3, 'should have at least 3 max attempts');
       assert.ok(DEFAULT_RETRY_CONFIG.baseDelayMs > 0, 'should have positive base delay');
-      assert.ok(DEFAULT_RETRY_CONFIG.maxDelayMs >= DEFAULT_RETRY_CONFIG.baseDelayMs, 'max delay should be >= base delay');
-      assert.ok(DEFAULT_RETRY_CONFIG.multiplier > 1, 'multiplier should be > 1 for exponential backoff');
+      assert.ok(
+        DEFAULT_RETRY_CONFIG.maxDelayMs >= DEFAULT_RETRY_CONFIG.baseDelayMs,
+        'max delay should be >= base delay',
+      );
+      assert.ok(
+        DEFAULT_RETRY_CONFIG.multiplier > 1,
+        'multiplier should be > 1 for exponential backoff',
+      );
     });
 
     it('should export expected properties', () => {
@@ -37,7 +43,10 @@ describe('retry-strategy', () => {
     it('should have wu_done preset for wu:done merge operations', () => {
       assert.ok('wu_done' in RETRY_PRESETS, 'should have wu_done preset');
       const preset = RETRY_PRESETS.wu_done;
-      assert.ok(preset.maxAttempts >= 5, 'wu_done should have at least 5 attempts for concurrent scenarios');
+      assert.ok(
+        preset.maxAttempts >= 5,
+        'wu_done should have at least 5 attempts for concurrent scenarios',
+      );
     });
 
     it('should have recovery preset for zombie state recovery', () => {
@@ -208,7 +217,11 @@ describe('retry-strategy', () => {
 
       await withRetry(mockFn, config);
 
-      assert.equal(retryHistory.length, 2, 'should have 2 retry callbacks (before attempts 2 and 3)');
+      assert.equal(
+        retryHistory.length,
+        2,
+        'should have 2 retry callbacks (before attempts 2 and 3)',
+      );
       expect(retryHistory[0].attempt).toBe(1, 'first retry after attempt 1');
       expect(retryHistory[0].delay).toBe(10, 'first delay should be baseDelayMs');
       expect(retryHistory[1].attempt).toBe(2, 'second retry after attempt 2');

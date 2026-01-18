@@ -48,4 +48,4 @@ jobs:
       # --- OR USE PRESET ACTION (recommended) ---
       - uses: hellmai/lumenflow-gates@v1
         with:
-          preset: auto  # Detects from package.json, pyproject.toml, go.mod
+          preset: auto # Detects from package.json, pyproject.toml, go.mod

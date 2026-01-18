@@ -16,7 +16,7 @@ function createNode(
   id: string,
   blocks: string[] = [],
   blockedBy: string[] = [],
-  status = 'ready'
+  status = 'ready',
 ): DependencyGraphNode {
   return { id, title: `Title for ${id}`, blocks, blockedBy, status };
 }
@@ -120,9 +120,7 @@ describe('impactScore', () => {
   });
 
   it('returns 0 for WU with no dependents', () => {
-    const graph: DependencyGraph = new Map([
-      ['WU-1', createNode('WU-1', [], [])],
-    ]);
+    const graph: DependencyGraph = new Map([['WU-1', createNode('WU-1', [], [])]]);
     expect(impactScore(graph, 'WU-1')).toBe(0);
   });
 
@@ -188,9 +186,7 @@ describe('analyzeBottlenecks', () => {
   });
 
   it('includes title in results', () => {
-    const graph: DependencyGraph = new Map([
-      ['WU-1', createNode('WU-1', [], [])],
-    ]);
+    const graph: DependencyGraph = new Map([['WU-1', createNode('WU-1', [], [])]]);
 
     const result = analyzeBottlenecks(graph, 10);
     expect(result[0]?.title).toBeDefined();

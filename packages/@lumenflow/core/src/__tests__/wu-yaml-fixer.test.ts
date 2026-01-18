@@ -190,7 +190,8 @@ describe('wu-yaml-fixer', () => {
         status: 'ready',
         priority: 'P1',
         created: '2025-12-02',
-        description: 'This is a test description that is long enough to pass validation requirements.',
+        description:
+          'This is a test description that is long enough to pass validation requirements.',
         acceptance: ['pnpm gates passes'],
       };
 

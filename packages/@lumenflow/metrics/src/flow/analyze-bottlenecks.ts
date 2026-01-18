@@ -82,7 +82,7 @@ function processNode(
   current: string,
   activeGraph: DependencyGraph,
   inDegree: Map<string, number>,
-  workQueue: string[]
+  workQueue: string[],
 ): void {
   const node = activeGraph.get(current);
   if (!node) return;
@@ -119,7 +119,7 @@ function findCycleNodes(inDegree: Map<string, number>): string[] {
 function processTopologicalSort(
   activeGraph: DependencyGraph,
   inDegree: Map<string, number>,
-  queue: string[]
+  queue: string[],
 ): { sorted: string[]; cycleNodes: string[] } {
   const sorted: string[] = [];
   const workQueue = [...queue];
@@ -168,7 +168,7 @@ export function topologicalSort(graph: DependencyGraph): TopologicalSortResult {
  */
 function calculateDistances(
   activeGraph: DependencyGraph,
-  topoOrder: string[]
+  topoOrder: string[],
 ): { distance: Map<string, number>; predecessor: Map<string, string | null> } {
   const distance = new Map<string, number>();
   const predecessor = new Map<string, string | null>();
@@ -204,7 +204,7 @@ function calculateDistances(
  */
 function reconstructPath(
   predecessor: Map<string, string | null>,
-  endNode: string | null
+  endNode: string | null,
 ): string[] {
   const path: string[] = [];
   let current: string | null = endNode;
@@ -296,10 +296,7 @@ export function impactScore(graph: DependencyGraph, wuId: string): number {
  * A bottleneck is a WU that blocks many other WUs.
  * Excludes done WUs from results.
  */
-export function analyzeBottlenecks(
-  graph: DependencyGraph,
-  limit: number
-): BottleneckResult[] {
+export function analyzeBottlenecks(graph: DependencyGraph, limit: number): BottleneckResult[] {
   const activeGraph = filterActiveGraph(graph);
 
   if (activeGraph.size === 0) {
@@ -326,7 +323,7 @@ export function analyzeBottlenecks(
  */
 export function getBottleneckAnalysis(
   graph: DependencyGraph,
-  limit: number = 10
+  limit: number = 10,
 ): BottleneckAnalysis {
   return {
     bottlenecks: analyzeBottlenecks(graph, limit),

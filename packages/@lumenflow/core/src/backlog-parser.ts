@@ -42,7 +42,7 @@ export function parseBacklogFrontmatter(backlogPath) {
       ErrorCodes.YAML_PARSE_ERROR,
       `Failed to parse frontmatter in ${backlogPath}:\n\n${err.message}\n\n` +
         `Ensure frontmatter is valid YAML between --- delimiters.`,
-      { path: backlogPath, originalError: err.message }
+      { path: backlogPath, originalError: err.message },
     );
   }
 }
@@ -97,7 +97,7 @@ export function getSectionHeadings(frontmatter: BacklogFrontmatter | null): Reco
  */
 export function findSectionBoundaries(
   lines: string[],
-  frontmatter: BacklogFrontmatter | null
+  frontmatter: BacklogFrontmatter | null,
 ): Record<string, SectionBoundary | null> {
   if (!frontmatter || !frontmatter.sections) {
     return {};

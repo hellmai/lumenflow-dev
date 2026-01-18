@@ -36,7 +36,7 @@ function detectMandatoryAgents(codePaths) {
 
   for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
     const isTriggered = codePaths.some((filePath) =>
-      patterns.some((pattern) => minimatch(filePath, pattern))
+      patterns.some((pattern) => minimatch(filePath, pattern)),
     );
 
     if (isTriggered) {

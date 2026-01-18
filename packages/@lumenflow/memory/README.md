@@ -122,37 +122,37 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 
 ### Memory Store
 
-| Function | Description |
-|----------|-------------|
-| `loadMemory(baseDir)` | Load and index all memory nodes from JSONL |
+| Function                    | Description                                |
+| --------------------------- | ------------------------------------------ |
+| `loadMemory(baseDir)`       | Load and index all memory nodes from JSONL |
 | `appendNode(baseDir, node)` | Append a validated node to the memory file |
-| `queryReady(baseDir, wuId)` | Get nodes for WU in priority order |
-| `queryByWu(baseDir, wuId)` | Get all nodes for WU in file order |
+| `queryReady(baseDir, wuId)` | Get nodes for WU in priority order         |
+| `queryByWu(baseDir, wuId)`  | Get all nodes for WU in file order         |
 
 ### Memory Schema
 
-| Export | Description |
-|--------|-------------|
-| `MemoryNodeSchema` | Zod schema for memory nodes |
-| `RelationshipSchema` | Zod schema for node relationships |
-| `validateMemoryNode(data)` | Validate data against node schema |
+| Export                       | Description                               |
+| ---------------------------- | ----------------------------------------- |
+| `MemoryNodeSchema`           | Zod schema for memory nodes               |
+| `RelationshipSchema`         | Zod schema for node relationships         |
+| `validateMemoryNode(data)`   | Validate data against node schema         |
 | `validateRelationship(data)` | Validate data against relationship schema |
-| `MEMORY_NODE_TYPES` | Valid node types array |
-| `MEMORY_LIFECYCLES` | Valid lifecycle values array |
-| `RELATIONSHIP_TYPES` | Valid relationship types array |
+| `MEMORY_NODE_TYPES`          | Valid node types array                    |
+| `MEMORY_LIFECYCLES`          | Valid lifecycle values array              |
+| `RELATIONSHIP_TYPES`         | Valid relationship types array            |
 
 ### Types
 
 ```typescript
 interface MemoryNode {
-  id: string;           // mem-[a-z0-9]{4}
+  id: string; // mem-[a-z0-9]{4}
   type: 'session' | 'discovery' | 'checkpoint' | 'note' | 'summary';
   lifecycle: 'ephemeral' | 'session' | 'wu' | 'project';
   content: string;
-  created_at: string;   // ISO 8601
+  created_at: string; // ISO 8601
   updated_at?: string;
-  wu_id?: string;       // WU-XXX
-  session_id?: string;  // UUID
+  wu_id?: string; // WU-XXX
+  session_id?: string; // UUID
   metadata?: Record<string, unknown>;
   tags?: string[];
 }

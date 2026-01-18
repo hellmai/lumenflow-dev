@@ -39,7 +39,7 @@ function loadConfig(configPath = null) {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
       `Lane inference config not found: ${configPath}\n\nRun WU-906 to create infrastructure files.`,
-      { path: configPath }
+      { path: configPath },
     );
   }
 
@@ -51,7 +51,7 @@ function loadConfig(configPath = null) {
       ErrorCodes.YAML_PARSE_ERROR,
       `Failed to parse lane inference config: ${configPath}\n\n${err.message}\n\n` +
         `Ensure config is valid YAML.`,
-      { path: configPath, originalError: err.message }
+      { path: configPath, originalError: err.message },
     );
   }
 }
@@ -213,7 +213,7 @@ export function getSubLanesForParent(parent, configPath = null) {
   // Find parent key (case-insensitive)
   const normalizedParent = parent.trim().toLowerCase();
   const parentKey = Object.keys(config).find(
-    (key) => key.toLowerCase().trim() === normalizedParent
+    (key) => key.toLowerCase().trim() === normalizedParent,
   );
 
   if (!parentKey) {

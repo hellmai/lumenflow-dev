@@ -34,7 +34,12 @@ import {
 import { toKebab } from './wu-constants.js';
 
 // Optional import from @lumenflow/memory
-let loadMemory: ((baseDir: string, wuId: string) => Promise<{ checkpoints: Array<{ timestamp: string }> } | null>) | null = null;
+let loadMemory:
+  | ((
+      baseDir: string,
+      wuId: string,
+    ) => Promise<{ checkpoints: Array<{ timestamp: string }> } | null>)
+  | null = null;
 try {
   const mod = await import('@lumenflow/memory/store');
   loadMemory = mod.loadMemory;
@@ -137,7 +142,10 @@ async function createAuditLog(baseDir, entry) {
  * @param {string} wuId - WU ID to find checkpoints for
  * @returns {Promise<{timestamp: string, content: string}|null>} Most recent checkpoint or null
  */
-async function getLastCheckpoint(baseDir: string, wuId: string): Promise<{ timestamp: string; content: string } | null> {
+async function getLastCheckpoint(
+  baseDir: string,
+  wuId: string,
+): Promise<{ timestamp: string; content: string } | null> {
   // If memory module not available, return null
   if (!loadMemory) {
     return null;
@@ -289,7 +297,7 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   // Heuristic 1: Zombie lock (PID not running)
   if (isZombieLock(lockMetadata)) {
     console.log(
-      `${LOG_PREFIX} Detected zombie lock for ${spawnId} (PID ${lockMetadata.pid} not running)`
+      `${LOG_PREFIX} Detected zombie lock for ${spawnId} (PID ${lockMetadata.pid} not running)`,
     );
 
     // Release the lock
@@ -319,7 +327,7 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   // Heuristic 2: Stale lock (>2h old)
   if (isLockStale(lockMetadata)) {
     console.log(
-      `${LOG_PREFIX} Detected stale lock for ${spawnId} (acquired ${lockMetadata.timestamp})`
+      `${LOG_PREFIX} Detected stale lock for ${spawnId} (acquired ${lockMetadata.timestamp})`,
     );
 
     // Release the lock

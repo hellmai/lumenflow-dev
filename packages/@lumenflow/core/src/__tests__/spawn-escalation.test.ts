@@ -386,7 +386,7 @@ describe('spawn-escalation (WU-1967)', () => {
         escalateStuckSpawn('spawn-1234', {
           baseDir: testDir,
           dryRun: false,
-        })
+        }),
       ).rejects.toThrow(/already escalated/i);
     });
   });
@@ -399,7 +399,7 @@ describe('spawn-escalation (WU-1967)', () => {
         escalateStuckSpawn('spawn-nonexistent', {
           baseDir: testDir,
           dryRun: true,
-        })
+        }),
       ).rejects.toThrow(/not found/i);
     });
 
@@ -412,7 +412,7 @@ describe('spawn-escalation (WU-1967)', () => {
         escalateStuckSpawn('spawn-1234', {
           baseDir: testDir,
           dryRun: true,
-        })
+        }),
       ).rejects.toThrow(/audit|escalation/i);
     });
   });

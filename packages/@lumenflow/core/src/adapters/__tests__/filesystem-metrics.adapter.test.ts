@@ -255,7 +255,7 @@ describe('FileSystemMetricsCollector', () => {
       const alerts: Alert[] = await collector.getAlerts();
 
       const mandatoryAlerts = alerts.filter(
-        (a) => a.severity === 'high' && a.message.includes('Mandatory agent')
+        (a) => a.severity === 'high' && a.message.includes('Mandatory agent'),
       );
 
       for (const alert of mandatoryAlerts) {

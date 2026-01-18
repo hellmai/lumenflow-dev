@@ -113,10 +113,14 @@ export function scanFileForTODOs(filePath) {
       // Pattern 2: Keyword at start of comment content
       // Matches: // TODO:, /* TODO, * TODO, # TODO, <!-- TODO
       // Does NOT match: // mentions TODO in workflow, // TODO/FIXME/HACK list
-      const commentStartMatch = trimmed.match(/^(?:\/\/|\/\*+|\*|<!--|#)\s*(TODO|FIXME|HACK|XXX)(?::|[\s]|$)/i);
+      const commentStartMatch = trimmed.match(
+        /^(?:\/\/|\/\*+|\*|<!--|#)\s*(TODO|FIXME|HACK|XXX)(?::|[\s]|$)/i,
+      );
       if (commentStartMatch) {
         // Check it is not followed by / (slash-separated list)
-        const afterKeyword = trimmed.slice(trimmed.indexOf(commentStartMatch[1]) + commentStartMatch[1].length);
+        const afterKeyword = trimmed.slice(
+          trimmed.indexOf(commentStartMatch[1]) + commentStartMatch[1].length,
+        );
         if (!afterKeyword.startsWith('/')) {
           return { found: true, pattern: commentStartMatch[1].toUpperCase() };
         }
@@ -299,7 +303,7 @@ export function validateWUCodePaths(codePaths, options: ValidateWUCodePathsOptio
       errors.push(
         `\n❌ Code path validation failed: File does not exist: ${codePath}\n\n` +
           `This indicates the WU claims to have created/modified a file that doesn't exist.\n` +
-          `Either create the file, or remove it from code_paths in the WU YAML.\n`
+          `Either create the file, or remove it from code_paths in the WU YAML.\n`,
       );
       continue;
     }

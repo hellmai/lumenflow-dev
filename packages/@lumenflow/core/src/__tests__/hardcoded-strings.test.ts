@@ -184,7 +184,7 @@ describe('hardcoded-strings', () => {
     });
 
     it('should not flag paths in config files', () => {
-      const line = "+  \"path\": \"/api/v1/endpoint\"";
+      const line = '+  "path": "/api/v1/endpoint"';
       const violations = findHardcodedPathViolations(line, { isConfigFile: true });
       expect(violations).toHaveLength(0);
     });

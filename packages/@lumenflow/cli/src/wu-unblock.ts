@@ -75,11 +75,11 @@ function createWorktree(doc, worktreePath, branchName) {
   getGitForCwd().run(`git fetch ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`);
   if (branchExists(branchName)) {
     getGitForCwd().run(
-      `git worktree add ${JSON.stringify(worktreePath)} ${JSON.stringify(branchName)}`
+      `git worktree add ${JSON.stringify(worktreePath)} ${JSON.stringify(branchName)}`,
     );
   } else {
     getGitForCwd().run(
-      `git worktree add ${JSON.stringify(worktreePath)} -b ${JSON.stringify(branchName)} ${GIT_REFS.ORIGIN_MAIN}`
+      `git worktree add ${JSON.stringify(worktreePath)} -b ${JSON.stringify(branchName)} ${GIT_REFS.ORIGIN_MAIN}`,
     );
   }
 }
@@ -112,7 +112,7 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
       `  1. Wait for ${laneCheck.occupiedBy} to complete or block\n` +
       `  2. Move ${id} to a different lane\n` +
       `  3. Use --force to override (P0 emergencies only)\n\n` +
-      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`
+      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
   );
 }
 
@@ -164,7 +164,7 @@ async function main() {
         `Options:\n` +
         `  1. Check if WU file exists: ls -la ${mainWUPath}\n` +
         `  2. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
-        `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`
+        `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`,
     );
   }
   const title = doc.title || '';
@@ -180,7 +180,7 @@ async function main() {
         `Options:\n` +
         `  1. Check WU current status: grep status ${mainWUPath}\n` +
         `  2. Only blocked or waiting WUs can be unblocked\n` +
-        `  3. If WU is done or ready, use wu:claim instead`
+        `  3. If WU is done or ready, use wu:claim instead`,
     );
   }
 
@@ -233,10 +233,14 @@ async function main() {
 
         // Generate backlog.md and status.md from state store
         const backlogContent = await generateBacklog(store);
-        writeFileSync(microBacklogPath, backlogContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+        writeFileSync(microBacklogPath, backlogContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
 
         const statusContent = await generateStatus(store);
-        writeFileSync(microStatusPath, statusContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+        writeFileSync(microStatusPath, statusContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
 
         return {
           commitMessage: commitMsg,

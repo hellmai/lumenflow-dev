@@ -95,7 +95,7 @@ export async function createPR(context) {
   try {
     const prUrl = execSync(
       `gh pr create --title ${JSON.stringify(prTitle)} --body ${JSON.stringify(body)} ${draftFlag} --head ${JSON.stringify(branch)} --base main`,
-      { encoding: 'utf-8' }
+      { encoding: 'utf-8' },
     ).trim();
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} PR created: ${prUrl}`);
     return { success: true, prUrl, ghAvailable: true };

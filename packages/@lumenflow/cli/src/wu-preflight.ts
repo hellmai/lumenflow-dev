@@ -21,7 +21,10 @@
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
-import { validatePreflight, formatPreflightResult } from '@lumenflow/core/dist/wu-preflight-validators.js';
+import {
+  validatePreflight,
+  formatPreflightResult,
+} from '@lumenflow/core/dist/wu-preflight-validators.js';
 import { PATTERNS, EXIT_CODES, LOG_PREFIX, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
 import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';

@@ -143,7 +143,7 @@ export async function executeWorktreeCompletion(context) {
     '04-operations',
     'tasks',
     'wu',
-    `${id}.yaml`
+    `${id}.yaml`,
   );
 
   // Read WU YAML and validate current state
@@ -163,7 +163,7 @@ export async function executeWorktreeCompletion(context) {
       console.log(BOX.MID);
       console.log(`${BOX.SIDE}  WU: ${id}`);
       console.log(
-        `${BOX.SIDE}  Recovery attempts: ${attemptCount} (max: ${MAX_RECOVERY_ATTEMPTS})`
+        `${BOX.SIDE}  Recovery attempts: ${attemptCount} (max: ${MAX_RECOVERY_ATTEMPTS})`,
       );
       console.log(BOX.SIDE);
       console.log(`${BOX.SIDE}  Automatic recovery has failed multiple times.`);
@@ -181,14 +181,14 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.RECOVERY_ERROR,
         `Recovery loop detected for ${id} after ${attemptCount} attempts. Manual intervention required.`,
-        { wuId: id, attemptCount, maxAttempts: MAX_RECOVERY_ATTEMPTS }
+        { wuId: id, attemptCount, maxAttempts: MAX_RECOVERY_ATTEMPTS },
       );
     }
 
     // Increment attempt counter before trying recovery
     const newAttemptCount = incrementRecoveryAttempt(id);
     console.log(
-      `${LOG_PREFIX.DONE} Recovery attempt ${newAttemptCount}/${MAX_RECOVERY_ATTEMPTS} (WU-1335)`
+      `${LOG_PREFIX.DONE} Recovery attempt ${newAttemptCount}/${MAX_RECOVERY_ATTEMPTS} (WU-1335)`,
     );
 
     console.log(RECOVERY.RESUMING);
@@ -204,7 +204,7 @@ export async function executeWorktreeCompletion(context) {
         const squashResult = await prepareRecoveryWithSquash(id, gitCwd);
         if (squashResult.squashedCount > 0) {
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${squashResult.squashedCount} previous completion attempt(s)`
+            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${squashResult.squashedCount} previous completion attempt(s)`,
           );
         }
       } finally {
@@ -213,19 +213,19 @@ export async function executeWorktreeCompletion(context) {
     } catch (squashError) {
       // Non-fatal: Log and continue with recovery
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${squashError.message}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${squashError.message}`,
       );
     }
 
     console.log(
-      `${LOG_PREFIX.DONE} WU-1440: Resetting worktree YAML to in_progress for recovery flow...`
+      `${LOG_PREFIX.DONE} WU-1440: Resetting worktree YAML to in_progress for recovery flow...`,
     );
 
     // Reset the worktree YAML to in_progress (mutates docForUpdate)
     resetWorktreeYAMLForRecovery({ worktreePath, id, doc: docForUpdate });
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Recovery reset complete - continuing normal flow`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Recovery reset complete - continuing normal flow`,
     );
     // Continue with normal flow - don't return early
     // docForUpdate is now status=in_progress, so normal flow will work
@@ -279,13 +279,15 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.VALIDATION_ERROR,
         `WU YAML validation failed:\n  - ${normalizeResult.errors.join('\n  - ')}\n\nNext step: Fix the validation errors in ${workingWUPath} and rerun wu:done`,
-        { wuId: id }
+        { wuId: id },
       );
     }
 
     // WU-1811: If normalizations were applied, write back to YAML file
     if (normalizeResult.wasNormalized) {
-      console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1811: Applying auto-normalisations to WU YAML...`);
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1811: Applying auto-normalisations to WU YAML...`,
+      );
       writeWU(workingWUPath, normalizeResult.normalized);
       // Update docForUpdate to use normalized data for subsequent processing
       Object.assign(docForUpdate, normalizeResult.normalized);
@@ -298,7 +300,7 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.VALIDATION_ERROR,
         `Cannot mark WU as done - spec incomplete:\n  ${completenessResult.errors.join('\n  ')}\n\nNext step: Update ${workingWUPath} to meet completion requirements and rerun wu:done`,
-        { wuId: id }
+        { wuId: id },
       );
     }
 
@@ -327,7 +329,7 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Transaction validation failed:\n  ${txValidation.errors.join('\n  ')}`,
-        { wuId: id }
+        { wuId: id },
       );
     }
 
@@ -356,7 +358,7 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Transaction commit failed - some files not written:\n  ${commitResult.failed.map((f) => f.path).join('\n  ')}`,
-        { wuId: id, written: commitResult.written, failed: commitResult.failed }
+        { wuId: id, written: commitResult.written, failed: commitResult.failed },
       );
     }
 
@@ -375,7 +377,7 @@ export async function executeWorktreeCompletion(context) {
       throw createError(
         ErrorCodes.VALIDATION_ERROR,
         `Post-mutation validation failed:\n  ${postMutationResult.errors.join('\n  ')}`,
-        { wuId: id, errors: postMutationResult.errors }
+        { wuId: id, errors: postMutationResult.errors },
       );
     }
 
@@ -408,7 +410,7 @@ export async function executeWorktreeCompletion(context) {
       const squashResult = await squashPreviousCompletionAttempts(id, previousAttempts, gitCwd);
       if (squashResult.squashed) {
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1584: Squashed ${squashResult.count} previous attempt(s) - single commit will be created`
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1584: Squashed ${squashResult.count} previous attempt(s) - single commit will be created`,
         );
       }
     }
@@ -533,7 +535,14 @@ export async function executeWorktreeCompletion(context) {
     clearRecoveryAttempts(id);
 
     // WU-1811: All steps succeeded - worktree cleanup is safe
-    return { success: true, committed: true, pushed: !prModeEnabled, merged, prUrl, cleanupSafe: true };
+    return {
+      success: true,
+      committed: true,
+      pushed: !prModeEnabled,
+      merged,
+      prUrl,
+      cleanupSafe: true,
+    };
   } catch (err) {
     // Restore original directory
     try {
@@ -571,16 +580,22 @@ export async function executeWorktreeCompletion(context) {
       // This prevents zombie states where status=done but commit never happened
       let fileRollbackSuccess = false;
       if (!gitCommitMade && transactionSnapshot) {
-        console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: Git commit failed after transaction - rolling back files...`);
+        console.log(
+          `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: Git commit failed after transaction - rolling back files...`,
+        );
         try {
           // cd into worktree for rollback
           process.chdir(worktreePath);
           const rollbackResult = restoreFromSnapshot(transactionSnapshot);
           if (rollbackResult.errors.length === 0) {
             fileRollbackSuccess = true;
-            console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-2310: File rollback complete - ${rollbackResult.restored.length} files restored`);
+            console.log(
+              `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-2310: File rollback complete - ${rollbackResult.restored.length} files restored`,
+            );
           } else {
-            console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: Partial file rollback - ${rollbackResult.restored.length} restored, ${rollbackResult.errors.length} failed`);
+            console.log(
+              `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: Partial file rollback - ${rollbackResult.restored.length} restored, ${rollbackResult.errors.length} failed`,
+            );
             for (const e of rollbackResult.errors) {
               console.log(`${LOG_PREFIX.DONE}   ${EMOJI.FAILURE} ${e.path}: ${e.error}`);
             }
@@ -589,7 +604,9 @@ export async function executeWorktreeCompletion(context) {
           process.chdir(originalCwd);
         } catch (rollbackErr) {
           // Log but don't fail - rollback is best-effort
-          console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: File rollback error: ${rollbackErr.message}`);
+          console.log(
+            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: File rollback error: ${rollbackErr.message}`,
+          );
           try {
             process.chdir(originalCwd);
           } catch {
@@ -601,7 +618,9 @@ export async function executeWorktreeCompletion(context) {
       // WU-1943: If git commit was made but merge failed, rollback the branch
       // This prevents zombie states where branch shows "done" but wasn't merged
       if (gitCommitMade && preCommitSha) {
-        console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge failed after git commit - attempting branch rollback...`);
+        console.log(
+          `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge failed after git commit - attempting branch rollback...`,
+        );
         try {
           // cd into worktree for rollback
           process.chdir(worktreePath);
@@ -626,7 +645,9 @@ export async function executeWorktreeCompletion(context) {
         console.log(BOX.MID);
         console.log(`${BOX.SIDE}  Error: ${err.message}`);
         console.log(BOX.SIDE);
-        console.log(`${BOX.SIDE}  WU-2310: Transaction files were rolled back to pre-commit state.`);
+        console.log(
+          `${BOX.SIDE}  WU-2310: Transaction files were rolled back to pre-commit state.`,
+        );
         console.log(`${BOX.SIDE}  Worktree is now consistent (status=in_progress, no stamp).`);
       } else {
         console.log(`${BOX.SIDE}  WU:DONE FAILED - PARTIAL STATE (post-transaction)`);
@@ -676,9 +697,9 @@ export async function checkBranchDrift(branch) {
           mainAhead,
           THRESHOLDS.BRANCH_DRIFT_MAX,
           REMOTES.ORIGIN,
-          BRANCHES.MAIN
+          BRANCHES.MAIN,
         ),
-        { branch, commitsBehind: mainAhead, threshold: THRESHOLDS.BRANCH_DRIFT_MAX }
+        { branch, commitsBehind: mainAhead, threshold: THRESHOLDS.BRANCH_DRIFT_MAX },
       );
     }
 
@@ -728,7 +749,7 @@ function parseWuEventsJsonl(content, sourceLabel) {
       parsed = JSON.parse(line);
     } catch (error) {
       throw new Error(
-        `wu-events.jsonl ${sourceLabel} has malformed JSON on line ${index + 1}: ${error.message}`
+        `wu-events.jsonl ${sourceLabel} has malformed JSON on line ${index + 1}: ${error.message}`,
       );
     }
 
@@ -738,7 +759,7 @@ function parseWuEventsJsonl(content, sourceLabel) {
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         .join(', ');
       throw new Error(
-        `wu-events.jsonl ${sourceLabel} has invalid event on line ${index + 1}: ${issues}`
+        `wu-events.jsonl ${sourceLabel} has invalid event on line ${index + 1}: ${issues}`,
       );
     }
 
@@ -794,12 +815,12 @@ async function autoResolveAppendOnlyConflicts(gitCwd) {
 
       // Check if this is an append-only file
       const isAppendOnly = APPEND_ONLY_FILES.some(
-        (appendFile) => filePath.endsWith(appendFile) || filePath.includes(appendFile)
+        (appendFile) => filePath.endsWith(appendFile) || filePath.includes(appendFile),
       );
 
       if (isAppendOnly) {
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-resolving append-only conflict: ${filePath}`
+          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-resolving append-only conflict: ${filePath}`,
         );
 
         if (filePath.endsWith(WU_EVENTS_PATH) || filePath.includes(WU_EVENTS_PATH)) {
@@ -818,7 +839,7 @@ async function autoResolveAppendOnlyConflicts(gitCwd) {
     return { resolved: resolvedFiles.length > 0, files: resolvedFiles };
   } catch (error) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-resolve conflicts: ${error.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-resolve conflicts: ${error.message}`,
     );
     return { resolved: false, files: [] };
   }
@@ -857,14 +878,14 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
     } catch (rebaseError) {
       // WU-1749 Bug 3: Check if conflicts are in append-only files that can be auto-resolved
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Rebase hit conflicts, checking for auto-resolvable...`
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Rebase hit conflicts, checking for auto-resolvable...`,
       );
 
       const resolution = await autoResolveAppendOnlyConflicts(gitCwd);
 
       if (resolution.resolved) {
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-resolved ${resolution.files.length} append-only conflict(s)`
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-resolved ${resolution.files.length} append-only conflict(s)`,
         );
 
         // Continue the rebase after resolving conflicts
@@ -901,7 +922,7 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
           await gitCwd.add('.');
           await gitCwd.commit(COMMIT_FORMATS.REBASE_ARTIFACT_CLEANUP(wuId));
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Cleaned rebased artifacts and committed`
+            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Cleaned rebased artifacts and committed`,
           );
         }
       }
@@ -1001,7 +1022,7 @@ export async function checkBranchDivergence(branch, options: CheckBranchOptions 
       throw createError(
         ErrorCodes.GIT_ERROR,
         PREFLIGHT.DIVERGENCE_ERROR(commitCount, REMOTES.ORIGIN, BRANCHES.MAIN, branch),
-        { branch, mergeBase, mainHead, mainCommitsAhead: commitCount }
+        { branch, mergeBase, mainHead, mainCommitsAhead: commitCount },
       );
     }
 
@@ -1071,7 +1092,7 @@ export async function checkMergeCommits(branch, options: CheckBranchOptions = {}
           `  3. git rebase ${REMOTES.ORIGIN}/${BRANCHES.MAIN}\n` +
           `  4. git push --force-with-lease ${REMOTES.ORIGIN} ${branch}\n` +
           `  5. Return to main checkout and retry`,
-        { branch, mergeCommitCount: mergeCount }
+        { branch, mergeCommitCount: mergeCount },
       );
     }
 
@@ -1149,8 +1170,8 @@ export async function checkEmptyMerge(branch, doc = null) {
       const missingCodePaths = codePaths.filter(
         (codePath) =>
           !modifiedFiles.some(
-            (modified) => modified.includes(codePath) || codePath.includes(modified)
-          )
+            (modified) => modified.includes(codePath) || codePath.includes(modified),
+          ),
       );
 
       if (missingCodePaths.length > 0) {
@@ -1158,7 +1179,7 @@ export async function checkEmptyMerge(branch, doc = null) {
         throw createError(
           ErrorCodes.VALIDATION_ERROR,
           PREFLIGHT.CODE_PATHS_NOT_MODIFIED(missingCodePaths),
-          { branch, codePaths, missingCodePaths, modifiedFiles }
+          { branch, codePaths, missingCodePaths, modifiedFiles },
         );
       }
 
@@ -1200,8 +1221,8 @@ export async function isBranchAlreadyMerged(branch) {
           branch,
           branchTip.substring(0, SHA_SHORT_LENGTH),
           mergeBase.substring(0, SHA_SHORT_LENGTH),
-          mainHead.substring(0, SHA_SHORT_LENGTH)
-        )
+          mainHead.substring(0, SHA_SHORT_LENGTH),
+        ),
       );
       return true;
     }
@@ -1248,7 +1269,7 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
     maxAttempts: options.maxAttempts,
     onRetry: async (attempt, error, delay) => {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge attempt ${attempt} failed: ${error.message}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge attempt ${attempt} failed: ${error.message}`,
       );
 
       // WU-1749 Bug 2: Rebase lane branch onto new main instead of just pulling
@@ -1258,31 +1279,29 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
         const mainIsAncestor = await isMainAncestorOfBranch(gitAdapter, branch);
         if (mainIsAncestor) {
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.INFO} Main is already an ancestor - skipping auto-rebase`
+            `${LOG_PREFIX.DONE} ${EMOJI.INFO} Main is already an ancestor - skipping auto-rebase`,
           );
           return;
         }
 
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-rebasing lane branch onto latest main...`
+          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-rebasing lane branch onto latest main...`,
         );
         const rebaseResult = await autoRebaseBranch(branch, options.worktreePath, options.wuId);
         if (rebaseResult.success) {
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch rebased - ff-only merge should succeed`
+            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch rebased - ff-only merge should succeed`,
           );
         } else {
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Auto-rebase failed: ${rebaseResult.error}`
+            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Auto-rebase failed: ${rebaseResult.error}`,
           );
           // Fall back to pulling main (won't help ff-only but maintains old behaviour)
           try {
             await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
             console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
           } catch (pullErr) {
-            console.log(
-              `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull also failed: ${pullErr.message}`
-            );
+            console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull also failed: ${pullErr.message}`);
           }
         }
       } else {
@@ -1293,7 +1312,7 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
           console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
         } catch (pullErr) {
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull failed: ${pullErr.message} - will retry anyway`
+            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull failed: ${pullErr.message} - will retry anyway`,
           );
         }
       }
@@ -1354,7 +1373,7 @@ export function hasSessionCheckpoints(wuId, nodes) {
 export async function rollbackBranchOnMergeFailure(gitAdapter, preCommitSha, wuId) {
   try {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: Rolling back ${wuId} branch to pre-commit state...`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: Rolling back ${wuId} branch to pre-commit state...`,
     );
 
     // WU-2236: GitAdapter.reset expects (ref: string, options?: { hard?: boolean })
@@ -1362,13 +1381,13 @@ export async function rollbackBranchOnMergeFailure(gitAdapter, preCommitSha, wuI
     await gitAdapter.reset(preCommitSha, { hard: true });
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1943: Branch rollback complete for ${wuId}`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1943: Branch rollback complete for ${wuId}`,
     );
 
     return { success: true };
   } catch (error) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: Could not rollback branch for ${wuId}: ${error.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: Could not rollback branch for ${wuId}: ${error.message}`,
     );
 
     return { success: false, error: error.message };

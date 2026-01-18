@@ -13,12 +13,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import fg from 'fast-glob';
 import micromatch from 'micromatch';
-import {
-  STATUS_SECTIONS,
-  BACKLOG_SECTIONS,
-  FILE_SYSTEM,
-  STRING_LITERALS,
-} from './wu-constants.js';
+import { STATUS_SECTIONS, BACKLOG_SECTIONS, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Check for code path overlap between two sets of glob patterns
@@ -188,7 +183,7 @@ export function detectConflicts(statusPath, claimingPaths, claimingWU) {
       '04-operations',
       'tasks',
       'wu',
-      `${activeWuid}.yaml`
+      `${activeWuid}.yaml`,
     );
     if (!existsSync(wuPath)) {
       continue; // Skip if YAML doesn't exist
@@ -268,14 +263,14 @@ function concreteFileIntersection(patternA, patternB) {
     fg.sync(patternA, {
       dot: true, // Include dotfiles
       ignore: ['node_modules/**', '.git/**'], // Exclude common bloat
-    })
+    }),
   );
 
   const filesB = new Set(
     fg.sync(patternB, {
       dot: true,
       ignore: ['node_modules/**', '.git/**'],
-    })
+    }),
   );
 
   // Compute intersection: files in both sets

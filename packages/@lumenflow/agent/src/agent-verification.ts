@@ -23,7 +23,7 @@ function formatWUId(wuId: string | null | undefined): string {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       'verifyWUComplete requires a WU id (e.g., WU-123)',
-      { wuId, type: typeof wuId }
+      { wuId, type: typeof wuId },
     );
   }
   const normalized = wuId.trim().toUpperCase();
@@ -31,7 +31,7 @@ function formatWUId(wuId: string | null | undefined): string {
     throw createError(
       ErrorCodes.INVALID_WU_ID,
       `Invalid WU id "${wuId}". Expected format: WU-123`,
-      { wuId, normalized }
+      { wuId, normalized },
     );
   }
   return normalized;
@@ -58,7 +58,7 @@ function checkStamp(wuId: string, existsFn: ExistsFn = existsSync): string | nul
 
 function checkCommit(wuId: string, runFn: RunFn = run): string | null {
   const history = runFn(
-    `git log --oneline ${BRANCHES.MAIN} -- docs/04-operations/tasks/wu/${wuId}.yaml | head -n 1`
+    `git log --oneline ${BRANCHES.MAIN} -- docs/04-operations/tasks/wu/${wuId}.yaml | head -n 1`,
   );
   if (history) return null;
   return `No commit on ${BRANCHES.MAIN} touching docs/04-operations/tasks/wu/${wuId}.yaml`;
@@ -92,12 +92,17 @@ interface VerificationOverrides {
  * @param overrides - Test overrides
  * @returns Verification result
  */
-export function verifyWUComplete(wuId: string, overrides: VerificationOverrides = {}): VerificationResult {
+export function verifyWUComplete(
+  wuId: string,
+  overrides: VerificationOverrides = {},
+): VerificationResult {
   const normalized = formatWUId(wuId);
   const failures: string[] = [];
   const runFn = typeof overrides.run === 'function' ? overrides.run : run;
   const existsFn =
-    typeof overrides.exists === 'function' ? overrides.exists : (filePath: string) => existsSync(filePath);
+    typeof overrides.exists === 'function'
+      ? overrides.exists
+      : (filePath: string) => existsSync(filePath);
 
   const gitStatusFailure = checkGitStatus(runFn);
   if (gitStatusFailure) failures.push(gitStatusFailure);

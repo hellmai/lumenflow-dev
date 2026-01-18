@@ -49,12 +49,14 @@ function renderDetailed(initiative, useColor) {
   // Header
   console.log(`\n${id}: ${doc.title}`);
   console.log(
-    `Status: ${doc.status} | Progress: ${progress.percentage}% (${progress.done}/${progress.total} WUs)`
+    `Status: ${doc.status} | Progress: ${progress.percentage}% (${progress.done}/${progress.total} WUs)`,
   );
 
   // Start here (actionable next steps)
   console.log('\nStart here:');
-  console.log(`  1) Plan waves (recommended): pnpm orchestrate:initiative --initiative ${id} --dry-run`);
+  console.log(
+    `  1) Plan waves (recommended): pnpm orchestrate:initiative --initiative ${id} --dry-run`,
+  );
 
   const runnableReady = wus
     .filter((wu) => isRunnableReady(wu, wuById))
@@ -69,7 +71,9 @@ function renderDetailed(initiative, useColor) {
     console.log(`  2) Start next WU: pnpm wu:claim --id ${next.id} --lane "${next.doc.lane}"`);
     console.log(`     Then cd into the created worktree (shown by wu:claim output)`);
   } else if (progress.inProgress > 0) {
-    console.log(`  2) Continue: ${progress.inProgress} WU(s) already in progress (finish those first)`);
+    console.log(
+      `  2) Continue: ${progress.inProgress} WU(s) already in progress (finish those first)`,
+    );
   } else if (progress.blocked > 0) {
     console.log(`  2) Unblock: ${progress.blocked} WU(s) blocked (resolve blockers first)`);
   } else {
@@ -95,7 +99,7 @@ function renderDetailed(initiative, useColor) {
       const phaseWUs = phaseGroups.get(phase.id) || [];
       const phaseStatus = formatStatus(phase.status, useColor);
       console.log(
-        `  ${phase.id}. ${phase.title.padEnd(30)} [${phaseStatus}] ${phaseWUs.length} WUs`
+        `  ${phase.id}. ${phase.title.padEnd(30)} [${phaseStatus}] ${phaseWUs.length} WUs`,
       );
     }
 
@@ -236,7 +240,7 @@ async function main() {
   if (!initiative) {
     die(
       `Initiative not found: ${initRef}\n\n` +
-        `Run 'pnpm initiative:list' to see available initiatives.`
+        `Run 'pnpm initiative:list' to see available initiatives.`,
     );
   }
 

@@ -74,7 +74,7 @@ function loadWuYaml(id: string): WUYamlDoc {
       `WU file not found: ${wuPath}\n\n` +
         `Options:\n` +
         `  1. Create the WU first: pnpm wu:create --id ${id} --lane "<lane>" --title "..."\n` +
-        `  2. Use --paths and --desc for manual inference without a WU file`
+        `  2. Use --paths and --desc for manual inference without a WU file`,
     );
   }
 
@@ -87,7 +87,7 @@ function loadWuYaml(id: string): WUYamlDoc {
         `Error: ${err.message}\n\n` +
         `Options:\n` +
         `  1. Check file permissions: ls -la ${wuPath}\n` +
-        `  2. Ensure you have read access to the repository`
+        `  2. Ensure you have read access to the repository`,
     );
   }
 
@@ -101,7 +101,7 @@ function loadWuYaml(id: string): WUYamlDoc {
         `Error: ${errorMessage}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
-        `  2. Fix YAML errors manually and retry`
+        `  2. Fix YAML errors manually and retry`,
     );
   }
 }
@@ -140,7 +140,7 @@ function main() {
 
     if (confidence < 30) {
       console.log(
-        '\n⚠️  Low confidence. Consider adding more code_paths or keywords to WU description.'
+        '\n⚠️  Low confidence. Consider adding more code_paths or keywords to WU description.',
       );
     }
   } catch (err) {

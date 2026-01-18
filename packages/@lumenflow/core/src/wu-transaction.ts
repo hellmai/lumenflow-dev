@@ -87,14 +87,14 @@ export class WUTransaction {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Cannot add writes to committed transaction (${this.wuId})`,
-        { wuId: this.wuId, path: filePath }
+        { wuId: this.wuId, path: filePath },
       );
     }
     if (this.aborted) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Cannot add writes to aborted transaction (${this.wuId})`,
-        { wuId: this.wuId, path: filePath }
+        { wuId: this.wuId, path: filePath },
       );
     }
 
@@ -187,14 +187,14 @@ export class WUTransaction {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Transaction already committed (${this.wuId})`,
-        { wuId: this.wuId }
+        { wuId: this.wuId },
       );
     }
     if (this.aborted) {
       throw createError(
         ErrorCodes.TRANSACTION_ERROR,
         `Cannot commit aborted transaction (${this.wuId})`,
-        { wuId: this.wuId }
+        { wuId: this.wuId },
       );
     }
 
@@ -202,7 +202,7 @@ export class WUTransaction {
     const failed: { path: string; error: string }[] = [];
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - writing ${this.pendingWrites.size} files atomically`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - writing ${this.pendingWrites.size} files atomically`,
     );
 
     for (const [filePath, write] of this.pendingWrites) {
@@ -231,7 +231,7 @@ export class WUTransaction {
 
     if (!success) {
       console.error(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Transaction completed with ${failed.length} failures`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Transaction completed with ${failed.length} failures`,
       );
     }
 
@@ -255,7 +255,7 @@ export class WUTransaction {
     this.aborted = true;
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Transaction ABORTED - ${count} pending writes discarded`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Transaction ABORTED - ${count} pending writes discarded`,
     );
   }
 
@@ -319,9 +319,10 @@ export function createTransactionSnapshot(filePaths: string[]): Map<string, stri
  * @param {Map<string, string|null>} snapshot - Snapshot from createTransactionSnapshot
  * @returns {{ restored: string[], errors: { path: string, error: string }[] }}
  */
-export function restoreFromSnapshot(
-  snapshot: Map<string, string | null>
-): { restored: string[]; errors: { path: string; error: string }[] } {
+export function restoreFromSnapshot(snapshot: Map<string, string | null>): {
+  restored: string[];
+  errors: { path: string; error: string }[];
+} {
   const restored: string[] = [];
   const errors: { path: string; error: string }[] = [];
 

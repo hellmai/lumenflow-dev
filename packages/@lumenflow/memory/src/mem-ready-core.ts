@@ -253,7 +253,10 @@ export interface QueryOptions {
  *   type: 'discovery',
  * });
  */
-export async function queryReadyNodes(baseDir: string, options: QueryOptions): Promise<MemoryNode[]> {
+export async function queryReadyNodes(
+  baseDir: string,
+  options: QueryOptions,
+): Promise<MemoryNode[]> {
   const { wuId, type } = options;
 
   // Validate WU ID

@@ -246,7 +246,7 @@ function tryAtomicLockCreate(lockInfo, options) {
 function handleStaleLock(existingLock, options) {
   if (isCleanupLockStale(existingLock)) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale cleanup lock from ${existingLock.wuId}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale cleanup lock from ${existingLock.wuId}`,
     );
     deleteLockFile(options);
     return 'retry';
@@ -254,7 +254,7 @@ function handleStaleLock(existingLock, options) {
 
   if (isCleanupLockZombie(existingLock)) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up zombie cleanup lock from ${existingLock.wuId} (PID ${existingLock.pid} not running)`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up zombie cleanup lock from ${existingLock.wuId} (PID ${existingLock.pid} not running)`,
     );
     deleteLockFile(options);
     return 'retry';
@@ -326,7 +326,7 @@ export async function acquireCleanupLock(wuId, options: AcquireCleanupLockOption
     const elapsed = Date.now() - startTime;
     if (elapsed >= waitMs) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleanup lock held by ${existingLock.wuId} since ${existingLock.createdAt}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleanup lock held by ${existingLock.wuId} since ${existingLock.createdAt}`,
       );
       return {
         acquired: false,
@@ -359,7 +359,7 @@ export function releaseCleanupLock(lockId, options: BaseDirOptions = {}) {
 
   if (existingLock.lockId !== lockId) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot release cleanup lock - lockId mismatch`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot release cleanup lock - lockId mismatch`,
     );
     return false;
   }
@@ -383,14 +383,18 @@ export function releaseCleanupLock(lockId, options: BaseDirOptions = {}) {
  * @returns {Promise<T>} Result of function execution
  * @throws {Error} If lock cannot be acquired or function throws
  */
-export async function withCleanupLock<T>(wuId: string, fn: () => Promise<T>, options: AcquireCleanupLockOptions = {}): Promise<T> {
+export async function withCleanupLock<T>(
+  wuId: string,
+  fn: () => Promise<T>,
+  options: AcquireCleanupLockOptions = {},
+): Promise<T> {
   const result = await acquireCleanupLock(wuId, options);
 
   if (!result.acquired) {
     throw createError(
       ErrorCodes.LOCK_ERROR,
       `Cannot acquire cleanup lock - held by ${result.heldBy} since ${result.heldSince}`,
-      { wuId, heldBy: result.heldBy, heldSince: result.heldSince }
+      { wuId, heldBy: result.heldBy, heldSince: result.heldSince },
     );
   }
 

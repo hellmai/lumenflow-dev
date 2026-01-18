@@ -176,7 +176,7 @@ describe('cleanup-lock', () => {
           // Verify lock is held during execution
           expect(isCleanupLocked({ baseDir: testDir })).toBe(true);
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       // Verify lock is released after
@@ -193,7 +193,7 @@ describe('cleanup-lock', () => {
           async () => {
             throw new Error('test error');
           },
-          { baseDir: testDir }
+          { baseDir: testDir },
         );
       } catch {
         errorCaught = true;

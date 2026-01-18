@@ -85,10 +85,12 @@ function loadConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
  * @param options.reload - Force reload from disk (bypass cache)
  * @returns LumenFlow configuration
  */
-export function getConfig(options: {
-  projectRoot?: string;
-  reload?: boolean;
-} = {}): LumenFlowConfig {
+export function getConfig(
+  options: {
+    projectRoot?: string;
+    reload?: boolean;
+  } = {},
+): LumenFlowConfig {
   const { projectRoot: overrideRoot, reload = false } = options;
 
   // Use cached config if available and not reloading
@@ -211,9 +213,7 @@ export function validateConfigFile(configPath: string): {
       return { valid: true, errors: [], config: result.data };
     }
 
-    const errors = result.error.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`
-    );
+    const errors = result.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
     return { valid: false, errors };
   } catch (error) {
     return {
@@ -231,7 +231,7 @@ export function validateConfigFile(configPath: string): {
  */
 export function createSampleConfig(
   outputPath: string,
-  options: { includeComments?: boolean } = {}
+  options: { includeComments?: boolean } = {},
 ): void {
   const { includeComments = true } = options;
 

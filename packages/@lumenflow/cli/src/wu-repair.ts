@@ -95,7 +95,7 @@ function createProgram() {
         '  (default)       Consistency repair - detect/repair state inconsistencies\n' +
         '  --claim         Claim repair - fix missing claim metadata in worktrees\n' +
         '  --admin         Admin repair - fix done WUs (lane, status, notes, initiative)\n' +
-        '  --repair-state  State repair - fix corrupted wu-events.jsonl (WU-2240)'
+        '  --repair-state  State repair - fix corrupted wu-events.jsonl (WU-2240)',
     )
     // Mode selection flags
     .option('--claim', 'Claim repair mode: fix missing claim metadata in worktrees')
@@ -128,7 +128,7 @@ function validateOptions(options) {
   const modes = [options.claim, options.admin, options.repairState].filter(Boolean);
   if (modes.length > 1) {
     console.error(
-      `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state are mutually exclusive)`
+      `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state are mutually exclusive)`,
     );
     process.exit(EXIT_CODES.FAILURE);
   }
@@ -157,7 +157,7 @@ function validateModeRequirements(options) {
   if (options.admin && !options.id) {
     console.error(`${PREFIX} Error: --id is required for admin mode`);
     console.error(
-      `${PREFIX} Usage: pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"`
+      `${PREFIX} Usage: pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"`,
     );
     process.exit(EXIT_CODES.FAILURE);
   }

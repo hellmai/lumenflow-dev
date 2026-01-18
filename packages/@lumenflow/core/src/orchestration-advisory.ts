@@ -112,7 +112,7 @@ export interface ComplianceResult {
  */
 export function checkMandatoryAgentsCompliance(
   codePaths: readonly string[],
-  _wuId: string
+  _wuId: string,
 ): ComplianceResult {
   if (codePaths.length === 0) {
     return { compliant: true, missing: [] };

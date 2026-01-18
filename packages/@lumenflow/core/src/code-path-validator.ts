@@ -144,7 +144,10 @@ function getRepoRoot(): string {
  * @param {string} worktreePath - Worktree directory path
  * @returns {ExistValidationResult} Validation result
  */
-function validateExistenceInWorktree(codePaths: string[], worktreePath: string): ExistValidationResult {
+function validateExistenceInWorktree(
+  codePaths: string[],
+  worktreePath: string,
+): ExistValidationResult {
   const missing: string[] = [];
   const errors: string[] = [];
 
@@ -159,7 +162,9 @@ function validateExistenceInWorktree(codePaths: string[], worktreePath: string):
     errors.push(
       `code_paths validation failed - ${missing.length} file(s) not found in worktree:\n${missing
         .map((p) => `  - ${p}`)
-        .join(STRING_LITERALS.NEWLINE)}\n\nEnsure all files listed in code_paths exist before running wu:done.`
+        .join(
+          STRING_LITERALS.NEWLINE,
+        )}\n\nEnsure all files listed in code_paths exist before running wu:done.`,
     );
   }
 
@@ -172,7 +177,10 @@ function validateExistenceInWorktree(codePaths: string[], worktreePath: string):
  * @param {string} targetBranch - Branch to check files against
  * @returns {Promise<ExistValidationResult>} Validation result
  */
-async function validateExistenceOnBranch(codePaths: string[], targetBranch: string): Promise<ExistValidationResult> {
+async function validateExistenceOnBranch(
+  codePaths: string[],
+  targetBranch: string,
+): Promise<ExistValidationResult> {
   const missing: string[] = [];
   const errors: string[] = [];
 
@@ -201,12 +209,14 @@ async function validateExistenceOnBranch(codePaths: string[], targetBranch: stri
           `  1. Ensure all code is committed and merged to ${targetBranch}\n` +
           `  2. Update code_paths in WU YAML to match actual files\n` +
           `  3. Remove files that were intentionally not created\n\n` +
-          `Context: WU-1351 prevents false completions from INIT-WORKFLOW-INTEGRITY`
+          `Context: WU-1351 prevents false completions from INIT-WORKFLOW-INTEGRITY`,
       );
     }
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : String(err);
-    console.warn(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${errMessage}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${errMessage}`,
+    );
     return { valid: true, errors: [], missing: [] };
   }
 
@@ -296,7 +306,10 @@ function validateLanePatterns(codePaths: string[], lane: string): LaneValidation
  * @param {string} filePath - Path to file to scan
  * @returns {{found: boolean, matches: Array<{line: number, text: string, pattern: string}>}}
  */
-function scanFileForTODOs(filePath: string): { found: boolean; matches: Array<{ line: number; text: string; pattern: string | null }> } {
+function scanFileForTODOs(filePath: string): {
+  found: boolean;
+  matches: Array<{ line: number; text: string; pattern: string | null }>;
+} {
   if (!existsSync(filePath)) {
     return { found: false, matches: [] };
   }
@@ -332,9 +345,13 @@ function scanFileForTODOs(filePath: string): { found: boolean; matches: Array<{ 
       }
 
       // Pattern 2: Keyword at start of comment content
-      const commentStartMatch = trimmed.match(/^(?:\/\/|\/\*+|\*|<!--|#)\s*(TODO|FIXME|HACK|XXX)(?::|[\s]|$)/i);
+      const commentStartMatch = trimmed.match(
+        /^(?:\/\/|\/\*+|\*|<!--|#)\s*(TODO|FIXME|HACK|XXX)(?::|[\s]|$)/i,
+      );
       if (commentStartMatch) {
-        const afterKeyword = trimmed.slice(trimmed.indexOf(commentStartMatch[1]) + commentStartMatch[1].length);
+        const afterKeyword = trimmed.slice(
+          trimmed.indexOf(commentStartMatch[1]) + commentStartMatch[1].length,
+        );
         if (!afterKeyword.startsWith('/')) {
           return { found: true, pattern: commentStartMatch[1].toUpperCase() };
         }
@@ -397,7 +414,10 @@ function scanFileForTODOs(filePath: string): { found: boolean; matches: Array<{ 
  * @param {string} filePath - Path to file to scan
  * @returns {{found: boolean, matches: Array<{line: number, text: string, type: string}>}}
  */
-function scanFileForMocks(filePath: string): { found: boolean; matches: Array<{ line: number; text: string; type: string }> } {
+function scanFileForMocks(filePath: string): {
+  found: boolean;
+  matches: Array<{ line: number; text: string; type: string }>;
+} {
   if (!existsSync(filePath)) {
     return { found: false, matches: [] };
   }
@@ -448,7 +468,9 @@ function scanFileForMocks(filePath: string): { found: boolean; matches: Array<{ 
  * @param {Array} findings - TODO findings
  * @returns {string} Formatted message
  */
-function formatTODOFindings(findings: Array<{ path: string; matches: Array<{ line: number; text: string }> }>): string {
+function formatTODOFindings(
+  findings: Array<{ path: string; matches: Array<{ line: number; text: string }> }>,
+): string {
   let msg = '\n❌ TODO/FIXME/HACK/XXX comments found in production code:\n';
 
   findings.forEach(({ path: filePath, matches }) => {
@@ -469,7 +491,9 @@ function formatTODOFindings(findings: Array<{ path: string; matches: Array<{ lin
  * @param {Array} findings - Mock findings
  * @returns {string} Formatted message
  */
-function formatMockFindings(findings: Array<{ path: string; matches: Array<{ line: number; text: string }> }>): string {
+function formatMockFindings(
+  findings: Array<{ path: string; matches: Array<{ line: number; text: string }> }>,
+): string {
   let msg = '\n⚠️  Mock/Stub/Fake/Placeholder classes found in production code:\n';
 
   findings.forEach(({ path: filePath, matches }) => {
@@ -493,7 +517,10 @@ function formatMockFindings(findings: Array<{ path: string; matches: Array<{ lin
  * @param {string} options.worktreePath - Worktree path for file lookups
  * @returns {QualityValidationResult} Validation result
  */
-function validateCodeQuality(codePaths: string[], options: QualityOptions = {}): QualityValidationResult {
+function validateCodeQuality(
+  codePaths: string[],
+  options: QualityOptions = {},
+): QualityValidationResult {
   const { allowTodos = false, worktreePath = null } = options;
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -503,8 +530,16 @@ function validateCodeQuality(codePaths: string[], options: QualityOptions = {}):
     return { valid: true, errors, warnings };
   }
 
-  const todoFindings: Array<{ path: string; found: boolean; matches: Array<{ line: number; text: string; pattern: string | null }> }> = [];
-  const mockFindings: Array<{ path: string; found: boolean; matches: Array<{ line: number; text: string; type: string }> }> = [];
+  const todoFindings: Array<{
+    path: string;
+    found: boolean;
+    matches: Array<{ line: number; text: string; pattern: string | null }>;
+  }> = [];
+  const mockFindings: Array<{
+    path: string;
+    found: boolean;
+    matches: Array<{ line: number; text: string; type: string }>;
+  }> = [];
 
   for (const codePath of codePaths) {
     const absolutePath = path.join(repoRoot, codePath);
@@ -513,7 +548,7 @@ function validateCodeQuality(codePaths: string[], options: QualityOptions = {}):
       errors.push(
         `\n❌ Code path validation failed: File does not exist: ${codePath}\n\n` +
           `This indicates the WU claims to have created/modified a file that doesn't exist.\n` +
-          `Either create the file, or remove it from code_paths in the WU YAML.\n`
+          `Either create the file, or remove it from code_paths in the WU YAML.\n`,
       );
       continue;
     }
@@ -561,7 +596,10 @@ function validateCodeQuality(codePaths: string[], options: QualityOptions = {}):
  * @param {boolean} [options.allowTodos] - Allow TODO comments (for 'quality' mode)
  * @returns {Promise<ExistValidationResult|LaneValidationResult|QualityValidationResult>}
  */
-export async function validate(codePaths: string[], options: ValidateOptions = {}): Promise<ExistValidationResult | LaneValidationResult | QualityValidationResult> {
+export async function validate(
+  codePaths: string[],
+  options: ValidateOptions = {},
+): Promise<ExistValidationResult | LaneValidationResult | QualityValidationResult> {
   const { mode = VALIDATION_MODES.EXIST } = options;
 
   switch (mode) {
@@ -616,7 +654,11 @@ interface ExistOptions {
  * @deprecated Use validate(paths, { mode: 'exist' }) instead
  * Backward-compatible wrapper for validateCodePathsExist
  */
-export async function validateCodePathsExist(doc: WUDoc, _id: string, options: ExistOptions = {}): Promise<ExistValidationResult> {
+export async function validateCodePathsExist(
+  doc: WUDoc,
+  _id: string,
+  options: ExistOptions = {},
+): Promise<ExistValidationResult> {
   const codePaths = doc.code_paths || [];
   const { targetBranch = BRANCHES.MAIN, worktreePath = null } = options;
 
@@ -627,11 +669,11 @@ export async function validateCodePathsExist(doc: WUDoc, _id: string, options: E
 
   console.log(`${LOG_PREFIX.DONE} Validating ${codePaths.length} code_paths exist...`);
 
-  const result = await validate(codePaths, {
+  const result = (await validate(codePaths, {
     mode: VALIDATION_MODES.EXIST,
     worktreePath: worktreePath ?? undefined,
     targetBranch,
-  }) as ExistValidationResult;
+  })) as ExistValidationResult;
 
   if (result.valid) {
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All ${codePaths.length} code_paths verified`);
@@ -656,7 +698,10 @@ export function validateLaneCodePaths(doc: WUDoc, lane: string): LaneValidationR
  * Backward-compatible wrapper for validateWUCodePaths
  * NOTE: This must remain SYNCHRONOUS for backward compatibility
  */
-export function validateWUCodePaths(codePaths: string[], options: QualityOptions = {}): QualityValidationResult {
+export function validateWUCodePaths(
+  codePaths: string[],
+  options: QualityOptions = {},
+): QualityValidationResult {
   const { allowTodos = false, worktreePath = null } = options;
   // Call the sync internal function directly to maintain sync behavior
   return validateCodeQuality(codePaths, { worktreePath, allowTodos });
@@ -669,7 +714,10 @@ export function validateWUCodePaths(codePaths: string[], options: QualityOptions
  * @param {LaneValidationResult} result - Result from validateLaneCodePaths
  * @param {string} logPrefix - Log prefix (e.g., "[wu-claim]")
  */
-export function logLaneValidationWarnings(result: LaneValidationResult, logPrefix = '[wu-claim]'): void {
+export function logLaneValidationWarnings(
+  result: LaneValidationResult,
+  logPrefix = '[wu-claim]',
+): void {
   if (!result.hasWarnings) {
     return;
   }

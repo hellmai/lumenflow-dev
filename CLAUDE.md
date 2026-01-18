@@ -44,31 +44,31 @@ pnpm wu:done --id WU-XXXX
 
 ## Lanes
 
-| Lane | Packages/Paths |
-|------|---------------|
-| Core | `packages/@lumenflow/core/**` |
-| CLI | `packages/@lumenflow/cli/**` |
-| Memory | `packages/@lumenflow/memory/**` |
-| Agent | `packages/@lumenflow/agent/**` |
-| Metrics | `packages/@lumenflow/metrics/**` |
-| Initiatives | `packages/@lumenflow/initiatives/**` |
-| Shims | `packages/@lumenflow/shims/**` |
-| Infrastructure | `apps/**`, `actions/**` |
-| Documentation | `docs/**` |
+| Lane           | Packages/Paths                       |
+| -------------- | ------------------------------------ |
+| Core           | `packages/@lumenflow/core/**`        |
+| CLI            | `packages/@lumenflow/cli/**`         |
+| Memory         | `packages/@lumenflow/memory/**`      |
+| Agent          | `packages/@lumenflow/agent/**`       |
+| Metrics        | `packages/@lumenflow/metrics/**`     |
+| Initiatives    | `packages/@lumenflow/initiatives/**` |
+| Shims          | `packages/@lumenflow/shims/**`       |
+| Infrastructure | `apps/**`, `actions/**`              |
+| Documentation  | `docs/**`                            |
 
 ---
 
 ## Commands Reference
 
-| Command | Description |
-|---------|-------------|
-| `pnpm setup` | Install deps and build CLI |
-| `pnpm wu:create` | Create new WU spec |
-| `pnpm wu:claim` | Claim WU and create worktree |
-| `pnpm wu:done` | Complete WU (merge, stamp, cleanup) |
-| `pnpm gates` | Run quality gates |
-| `pnpm mem:init` | Initialize memory layer |
-| `pnpm mem:checkpoint` | Save memory checkpoint |
+| Command               | Description                         |
+| --------------------- | ----------------------------------- |
+| `pnpm setup`          | Install deps and build CLI          |
+| `pnpm wu:create`      | Create new WU spec                  |
+| `pnpm wu:claim`       | Claim WU and create worktree        |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup) |
+| `pnpm gates`          | Run quality gates                   |
+| `pnpm mem:init`       | Initialize memory layer             |
+| `pnpm mem:checkpoint` | Save memory checkpoint              |
 
 ---
 

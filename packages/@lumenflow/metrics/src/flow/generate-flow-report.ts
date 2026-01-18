@@ -52,10 +52,7 @@ function calculateGatePassRate(events: GateTelemetryEvent[]): {
   const total = events.length;
   const passed = events.filter((e) => e.passed).length;
   const failed = total - passed;
-  const passRate =
-    total > 0
-      ? round((passed / total) * STATISTICS.PERCENTAGE_MULTIPLIER)
-      : '0.0';
+  const passRate = total > 0 ? round((passed / total) * STATISTICS.PERCENTAGE_MULTIPLIER) : '0.0';
 
   return { passRate, total, passed, failed };
 }
@@ -94,9 +91,7 @@ function updateGateStats(stats: GateStats, passed: boolean): void {
  */
 function calculatePassRate(stats: GateStats): void {
   if (stats.total > 0) {
-    stats.passRate = round(
-      (stats.passed / stats.total) * STATISTICS.PERCENTAGE_MULTIPLIER
-    );
+    stats.passRate = round((stats.passed / stats.total) * STATISTICS.PERCENTAGE_MULTIPLIER);
   }
 }
 
@@ -146,20 +141,16 @@ function groupGatesByName(events: GateTelemetryEvent[]): GateMetricsByName {
  */
 function calculateLLMRates(
   completeEvents: LLMTelemetryEvent[],
-  errorCount: number
+  errorCount: number,
 ): { errorRate: string; fallbackRate: string } {
   const total = completeEvents.length + errorCount;
   const errorRate =
-    total > 0
-      ? round((errorCount / total) * STATISTICS.PERCENTAGE_MULTIPLIER)
-      : '0.0';
+    total > 0 ? round((errorCount / total) * STATISTICS.PERCENTAGE_MULTIPLIER) : '0.0';
 
   const fallbackCount = completeEvents.filter((e) => e.fallbackUsed).length;
   const fallbackRate =
     completeEvents.length > 0
-      ? round(
-          (fallbackCount / completeEvents.length) * STATISTICS.PERCENTAGE_MULTIPLIER
-        )
+      ? round((fallbackCount / completeEvents.length) * STATISTICS.PERCENTAGE_MULTIPLIER)
       : '0.0';
 
   return { errorRate, fallbackRate };
@@ -183,9 +174,7 @@ function calculateLLMLatencies(completeEvents: LLMTelemetryEvent[]): {
     return { avgLatencyMs: 0, p50LatencyMs: 0, p95LatencyMs: 0, p99LatencyMs: 0 };
   }
 
-  const avgLatencyMs = Math.round(
-    durations.reduce((sum, d) => sum + d, 0) / durations.length
-  );
+  const avgLatencyMs = Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length);
   const p50LatencyMs = quantile(durations, STATISTICS.MEDIAN_PERCENTILE);
   const p95LatencyMs = quantile(durations, STATISTICS.P95_PERCENTILE);
   const p99LatencyMs = quantile(durations, STATISTICS.P99_PERCENTILE);
@@ -201,14 +190,8 @@ function calculateLLMCosts(completeEvents: LLMTelemetryEvent[]): {
   totalCostUsd: number;
   avgConfidence: string;
 } {
-  const totalTokens = completeEvents.reduce(
-    (sum, e) => sum + (e.tokensUsed ?? 0),
-    0
-  );
-  const totalCostUsd = completeEvents.reduce(
-    (sum, e) => sum + (e.estimatedCostUsd ?? 0),
-    0
-  );
+  const totalTokens = completeEvents.reduce((sum, e) => sum + (e.tokensUsed ?? 0), 0);
+  const totalCostUsd = completeEvents.reduce((sum, e) => sum + (e.estimatedCostUsd ?? 0), 0);
 
   const confidences = completeEvents
     .map((e) => e.confidence)
@@ -248,25 +231,21 @@ function updateLLMTypeStats(stats: LLMTypeStats, event: LLMTelemetryEvent): void
 function calculateLLMTypeAverages(
   stats: LLMTypeStats,
   type: string,
-  completeEvents: LLMTelemetryEvent[]
+  completeEvents: LLMTelemetryEvent[],
 ): void {
   if (stats.count > 0) {
     stats.avgLatencyMs = Math.round(stats.avgLatencyMs / stats.count);
     const typeFallbacks = completeEvents.filter(
-      (e) => e.classificationType === type && e.fallbackUsed
+      (e) => e.classificationType === type && e.fallbackUsed,
     ).length;
-    stats.fallbackRate = round(
-      (typeFallbacks / stats.count) * STATISTICS.PERCENTAGE_MULTIPLIER
-    );
+    stats.fallbackRate = round((typeFallbacks / stats.count) * STATISTICS.PERCENTAGE_MULTIPLIER);
   }
 }
 
 /**
  * Group LLM events by classification type
  */
-function groupLLMByType(
-  completeEvents: LLMTelemetryEvent[]
-): LLMMetrics['byType'] {
+function groupLLMByType(completeEvents: LLMTelemetryEvent[]): LLMMetrics['byType'] {
   const byTypeMap = new Map<string, LLMTypeStats>();
 
   for (const event of completeEvents) {
@@ -292,12 +271,8 @@ function groupLLMByType(
  * Calculate LLM classification metrics
  */
 function calculateLLMMetrics(events: LLMTelemetryEvent[]): LLMMetrics {
-  const completeEvents = events.filter(
-    (e) => e.eventType === 'llm.classification.complete'
-  );
-  const errorEvents = events.filter(
-    (e) => e.eventType === 'llm.classification.error'
-  );
+  const completeEvents = events.filter((e) => e.eventType === 'llm.classification.complete');
+  const errorEvents = events.filter((e) => e.eventType === 'llm.classification.error');
 
   if (completeEvents.length === 0) {
     return {

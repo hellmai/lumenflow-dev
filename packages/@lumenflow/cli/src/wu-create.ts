@@ -42,7 +42,12 @@ import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js'
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { PLACEHOLDER_SENTINEL, validateReadyWU } from '@lumenflow/core/dist/wu-schema.js';
-import { COMMIT_FORMATS, FILE_SYSTEM, STRING_LITERALS, READINESS_UI } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  COMMIT_FORMATS,
+  FILE_SYSTEM,
+  STRING_LITERALS,
+  READINESS_UI,
+} from '@lumenflow/core/dist/wu-constants.js';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
 // WU-1439: Use shared micro-worktree helper
@@ -115,10 +120,10 @@ export function warnIfBetterLaneExists(providedLane, codePathsRaw, title, descri
 
     if (isMoreSpecific || isDifferentLane) {
       console.warn(
-        `${LOG_PREFIX} Consider using "${suggestion.lane}" (${suggestion.confidence}% match) instead of "${providedLane}"`
+        `${LOG_PREFIX} Consider using "${suggestion.lane}" (${suggestion.confidence}% match) instead of "${providedLane}"`,
       );
       console.warn(
-        `${LOG_PREFIX}    Run: pnpm wu:infer-lane --paths "${codePathsRaw || ''}" --desc "${title}"`
+        `${LOG_PREFIX}    Run: pnpm wu:infer-lane --paths "${codePathsRaw || ''}" --desc "${title}"`,
       );
     }
   } catch {
@@ -138,7 +143,7 @@ function checkWUExists(id) {
         `Options:\n` +
         `  1. Choose a different WU ID\n` +
         `  2. Edit existing WU: pnpm wu:edit --id ${id} --title "..." --acceptance "..."\n` +
-        `  3. Delete existing WU: pnpm wu:delete --id ${id} (if obsolete)`
+        `  3. Delete existing WU: pnpm wu:delete --id ${id} (if obsolete)`,
     );
   }
 }
@@ -182,20 +187,20 @@ function displayReadinessSummary(id: string) {
     console.log(`\n${BOX.TOP_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.TOP_RIGHT}`);
     if (valid) {
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_YES}${''.padEnd(PADDING.READY_YES)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.READY_YES}${''.padEnd(PADDING.READY_YES)}${BOX.VERTICAL}`,
       );
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       const claimCmd = `Run: pnpm wu:claim --id ${id}`;
       console.log(
-        `${BOX.VERTICAL} ${claimCmd}${''.padEnd(BOX_WIDTH - claimCmd.length - 1)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${claimCmd}${''.padEnd(BOX_WIDTH - claimCmd.length - 1)}${BOX.VERTICAL}`,
       );
     } else {
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_NO}${''.padEnd(PADDING.READY_NO)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.READY_NO}${''.padEnd(PADDING.READY_NO)}${BOX.VERTICAL}`,
       );
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.MISSING_HEADER}${''.padEnd(PADDING.MISSING_HEADER)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.MISSING_HEADER}${''.padEnd(PADDING.MISSING_HEADER)}${BOX.VERTICAL}`,
       );
       for (const error of errors) {
         // Truncate long error messages to fit box
@@ -204,13 +209,13 @@ function displayReadinessSummary(id: string) {
             ? `${error.substring(0, ERROR_TRUNCATE_LENGTH)}${TRUNCATION_SUFFIX}`
             : error;
         console.log(
-          `${BOX.VERTICAL}   ${MESSAGES.BULLET} ${truncated}${''.padEnd(Math.max(0, PADDING.ERROR_BULLET - truncated.length))}${BOX.VERTICAL}`
+          `${BOX.VERTICAL}   ${MESSAGES.BULLET} ${truncated}${''.padEnd(Math.max(0, PADDING.ERROR_BULLET - truncated.length))}${BOX.VERTICAL}`,
         );
       }
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       const editCmd = `Run: pnpm wu:edit --id ${id} --help`;
       console.log(
-        `${BOX.VERTICAL} ${editCmd}${''.padEnd(BOX_WIDTH - editCmd.length - 1)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${editCmd}${''.padEnd(BOX_WIDTH - editCmd.length - 1)}${BOX.VERTICAL}`,
       );
     }
     console.log(`${BOX.BOTTOM_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.BOTTOM_RIGHT}`);
@@ -252,7 +257,15 @@ interface CreateWUOptions {
  * @param {Object} opts - Additional options
  * @returns {string} Relative path to created YAML file
  */
-function createWUYamlInWorktree(worktreePath: string, id: string, lane: string, title: string, priority: string, type: string, opts: CreateWUOptions = {}) {
+function createWUYamlInWorktree(
+  worktreePath: string,
+  id: string,
+  lane: string,
+  title: string,
+  priority: string,
+  type: string,
+  opts: CreateWUOptions = {},
+) {
   const wuRelativePath = WU_PATHS.WU(id);
   const wuAbsolutePath = join(worktreePath, wuRelativePath);
   const wuDir = join(worktreePath, WU_PATHS.WU_DIR());
@@ -360,7 +373,7 @@ function createWUYamlInWorktree(worktreePath: string, id: string, lane: string, 
       .join(STRING_LITERALS.NEWLINE);
     die(
       `${LOG_PREFIX} ❌ WU YAML validation failed:\n\n${errors}\n\n` +
-        `Fix the issues above and retry.`
+        `Fix the issues above and retry.`,
     );
   }
 
@@ -373,7 +386,7 @@ function createWUYamlInWorktree(worktreePath: string, id: string, lane: string, 
     const formatted = formatLintErrors(lintResult.errors);
     die(
       `${LOG_PREFIX} ❌ WU SPEC LINT FAILED:\n\n${formatted}\n` +
-        `Fix the issues above before creating this WU.`
+        `Fix the issues above before creating this WU.`,
     );
   }
 
@@ -406,7 +419,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
       `Backlog not found in micro-worktree: ${backlogAbsolutePath}\n\n` +
         `Options:\n` +
         `  1. Ensure backlog.md exists at docs/04-operations/tasks/backlog.md\n` +
-        `  2. Run from repository root directory`
+        `  2. Run from repository root directory`,
     );
   }
 
@@ -418,7 +431,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
         'The backlog.md file requires YAML frontmatter to define section headings.\n\n' +
         'Options:\n' +
         '  1. Check backlog.md has valid YAML frontmatter between --- markers\n' +
-        '  2. Ensure sections.ready.heading is defined in frontmatter'
+        '  2. Ensure sections.ready.heading is defined in frontmatter',
     );
   }
 
@@ -427,7 +440,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
       'Invalid backlog frontmatter: Missing sections.ready.heading\n\n' +
         'Options:\n' +
         '  1. Add sections.ready.heading to backlog.md frontmatter\n' +
-        '  2. Check frontmatter YAML structure'
+        '  2. Check frontmatter YAML structure',
     );
   }
 
@@ -442,7 +455,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
       `Could not find Ready section heading: '${readyHeading}'\n\n` +
         `Options:\n` +
         `  1. Add the heading '${readyHeading}' to backlog.md\n` +
-        `  2. Update sections.ready.heading in backlog.md frontmatter`
+        `  2. Update sections.ready.heading in backlog.md frontmatter`,
     );
   }
 
@@ -455,7 +468,7 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
       `Unknown insertion strategy: ${insertionStrategy}\n\n` +
         `Options:\n` +
         `  1. Use 'after_heading_blank_line' in backlog.md frontmatter\n` +
-        `  2. Check sections.ready.insertion value`
+        `  2. Check sections.ready.insertion value`,
     );
   }
 
@@ -466,7 +479,9 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
   // WU-1352: Use centralized stringify for frontmatter
   const updatedBacklog = `---\n${stringifyYAML(frontmatter, { lineWidth: -1 })}---\n${updatedMarkdown}`;
 
-  writeFileSync(backlogAbsolutePath, updatedBacklog, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  writeFileSync(backlogAbsolutePath, updatedBacklog, {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  });
   console.log(`${LOG_PREFIX} ✅ Updated backlog.md in micro-worktree`);
 
   return backlogRelativePath;
@@ -541,7 +556,7 @@ async function main() {
         `  - Single colon with EXACTLY one space after (e.g., "Parent: Subdomain")\n` +
         `  - No spaces before colon\n` +
         `  - No multiple colons\n\n` +
-        `See .lumenflow.config.yaml for valid parent lanes.`
+        `See .lumenflow.config.yaml for valid parent lanes.`,
     );
   }
 
@@ -573,7 +588,7 @@ async function main() {
     const hasTestPaths = args.testPathsManual || args.testPathsUnit || args.testPathsE2e;
     if (!hasTestPaths) {
       validationErrors.push(
-        '--validate requires at least one test path flag (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)'
+        '--validate requires at least one test path flag (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
       );
     }
 
@@ -581,14 +596,14 @@ async function main() {
     const effectiveType = args.type || DEFAULT_TYPE;
     if (effectiveType === 'feature' && !args.specRefs) {
       validationErrors.push(
-        '--spec-refs is required for type: feature WUs (link to plan file in docs/04-operations/plans/)'
+        '--spec-refs is required for type: feature WUs (link to plan file in docs/04-operations/plans/)',
       );
     }
 
     if (validationErrors.length > 0) {
       const errorList = validationErrors.map((e) => `  • ${e}`).join(STRING_LITERALS.NEWLINE);
       die(
-        `Spec validation failed:\n\n${errorList}\n\nTo create without validation, omit the --validate flag.`
+        `Spec validation failed:\n\n${errorList}\n\nTo create without validation, omit the --validate flag.`,
       );
     }
 
@@ -635,7 +650,7 @@ async function main() {
             uiPairingWus: args.uiPairingWus,
             // WU-2320: Spec references
             specRefs: args.specRefs,
-          }
+          },
         );
 
         // Update backlog.md in micro-worktree
@@ -665,7 +680,7 @@ async function main() {
     die(
       `Transaction failed: ${error.message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +
-        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`
+        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
     );
   }
 }

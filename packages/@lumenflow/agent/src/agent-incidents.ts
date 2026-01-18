@@ -61,7 +61,10 @@ export type IncidentLog = z.infer<typeof IncidentLogSchema>;
  * @param incidentsDir - Optional directory override (for testing)
  * @throws {z.ZodError} if incident data is invalid
  */
-export function appendIncident(incident: unknown, incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS): void {
+export function appendIncident(
+  incident: unknown,
+  incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS,
+): void {
   // Validate against schema
   const validated = IncidentLogSchema.parse(incident);
 
@@ -85,7 +88,7 @@ export function appendIncident(incident: unknown, incidentsDir: string = LUMENFL
 export function readIncidents(
   categories: readonly string[] | null = null,
   since: Date | null = null,
-  incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS
+  incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS,
 ): IncidentLog[] {
   if (!existsSync(incidentsDir)) return [];
 
@@ -111,5 +114,7 @@ export function readIncidents(
     }
   }
 
-  return incidents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  return incidents.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
 }

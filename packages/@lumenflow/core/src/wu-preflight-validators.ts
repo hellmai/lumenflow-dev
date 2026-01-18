@@ -89,13 +89,15 @@ function validateSchema(doc, id) {
   // WU-1810: Check for fixable issues (especially created field)
   // This provides better error messages than raw Zod schema errors
   const fixableIssues = detectFixableIssues(doc);
-  const createdIssue = fixableIssues.find((issue) => issue.type === FIXABLE_ISSUES.DATE_ISO_TIMESTAMP);
+  const createdIssue = fixableIssues.find(
+    (issue) => issue.type === FIXABLE_ISSUES.DATE_ISO_TIMESTAMP,
+  );
 
   if (createdIssue) {
     errors.push(
       `created field has invalid format: "${createdIssue.current}" is an ISO timestamp. ` +
         `Expected YYYY-MM-DD format. Suggested fix: change to "${createdIssue.suggested}". ` +
-        `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`
+        `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`,
     );
   }
 
@@ -235,8 +237,7 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
 
   // Debug logging for YAML source (WU-1830)
   if (options.worktreePath && options.worktreePath !== rootDir) {
-    process.env.DEBUG &&
-      console.log(`[wu-preflight] Reading WU YAML from worktree: ${wuPath}`);
+    process.env.DEBUG && console.log(`[wu-preflight] Reading WU YAML from worktree: ${wuPath}`);
   }
 
   let doc;

@@ -169,7 +169,13 @@ async function main() {
   const args = createWUParser({
     name: 'mem-ready',
     description: 'Query ready nodes for a WU (deterministic ordering)',
-    options: [WU_OPTIONS.wu, CLI_OPTIONS.type, CLI_OPTIONS.format, CLI_OPTIONS.baseDir, CLI_OPTIONS.quiet],
+    options: [
+      WU_OPTIONS.wu,
+      CLI_OPTIONS.type,
+      CLI_OPTIONS.format,
+      CLI_OPTIONS.baseDir,
+      CLI_OPTIONS.quiet,
+    ],
     required: ['wu'],
   });
 
@@ -187,7 +193,7 @@ async function main() {
   // Validate type option if provided
   if (args.type && !MEMORY_NODE_TYPES.includes(args.type)) {
     console.error(
-      `${LOG_PREFIX} Error: Invalid type "${args.type}". Valid types: ${MEMORY_NODE_TYPES.join(', ')}`
+      `${LOG_PREFIX} Error: Invalid type "${args.type}". Valid types: ${MEMORY_NODE_TYPES.join(', ')}`,
     );
     process.exit(EXIT_CODES.ERROR);
   }

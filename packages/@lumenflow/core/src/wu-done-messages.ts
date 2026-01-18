@@ -191,7 +191,7 @@ export const MERGE = {
     mergeError,
     pullError,
     remote = REMOTES.ORIGIN,
-    mainBranch = BRANCHES.MAIN
+    mainBranch = BRANCHES.MAIN,
   ) =>
     `Fast-forward merge failed and retry with git pull also failed.\n\n` +
     `Original merge error: ${mergeError}\n` +

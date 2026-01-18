@@ -174,7 +174,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
       const worktreeListMock = vi.fn(
         async () =>
           'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n' +
-          'worktree /tmp/wu-create-xyz123\nHEAD def456\nbranch refs/heads/tmp/wu-create/wu-999\n\n'
+          'worktree /tmp/wu-create-xyz123\nHEAD def456\nbranch refs/heads/tmp/wu-create/wu-999\n\n',
       );
       const worktreeRemoveMock = vi.fn(async () => {});
       const branchExistsMock = vi.fn(async () => true);
@@ -191,7 +191,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
         'wu-create',
         'WU-999',
         mockGitAdapter,
-        '[test]'
+        '[test]',
       );
 
       // Should have found and cleaned the orphaned worktree
@@ -205,7 +205,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 
       const worktreeListMock = vi.fn(
         async () =>
-          'worktree /tmp/wu-create-orphan\nHEAD def456\nbranch refs/heads/tmp/wu-create/wu-888\n\n'
+          'worktree /tmp/wu-create-orphan\nHEAD def456\nbranch refs/heads/tmp/wu-create/wu-888\n\n',
       );
       const worktreeRemoveMock = vi.fn(async () => {});
       const branchExistsMock = vi.fn(async () => true);
@@ -231,7 +231,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 
       // Worktree list with no matching temp branches
       const worktreeListMock = vi.fn(
-        async () => 'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n'
+        async () => 'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n',
       );
       const branchExistsMock = vi.fn(async () => false);
       const deleteBranchMock = vi.fn(async () => {});
@@ -247,7 +247,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
         'wu-create',
         'WU-777',
         mockGitAdapter,
-        '[test]'
+        '[test]',
       );
 
       // No orphan found
@@ -260,7 +260,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
 
       // No worktree matches, but branch exists (stale branch scenario)
       const worktreeListMock = vi.fn(
-        async () => 'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n'
+        async () => 'worktree /home/user/project\nHEAD abc123\nbranch refs/heads/main\n\n',
       );
       const branchExistsMock = vi.fn(async () => true);
       const deleteBranchMock = vi.fn(async () => {});
@@ -276,7 +276,7 @@ describe('orphaned temp branch/worktree cleanup (WU-2237)', () => {
         'wu-create',
         'WU-666',
         mockGitAdapter,
-        '[test]'
+        '[test]',
       );
 
       // Branch should be cleaned even without worktree

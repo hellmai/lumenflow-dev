@@ -52,7 +52,11 @@ import {
   READINESS_UI,
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
-import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
+import {
+  ensureOnMain,
+  ensureMainUpToDate,
+  validateWUIDFormat,
+} from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
 // WU-1620: Import validateSpecCompleteness for readiness summary
@@ -227,7 +231,7 @@ function validateInitiativeFormat(initId) {
   if (!INIT_PATTERNS.INIT_ID.test(initId)) {
     die(
       `Invalid Initiative ID format: "${initId}"\n\n` +
-        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`
+        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`,
     );
   }
 }
@@ -310,20 +314,20 @@ function displayReadinessSummary(id: string) {
     console.log(`\n${BOX.TOP_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.TOP_RIGHT}`);
     if (valid) {
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_YES}${''.padEnd(PADDING.READY_YES)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.READY_YES}${''.padEnd(PADDING.READY_YES)}${BOX.VERTICAL}`,
       );
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       const claimCmd = `Run: pnpm wu:claim --id ${id}`;
       console.log(
-        `${BOX.VERTICAL} ${claimCmd}${''.padEnd(BOX_WIDTH - claimCmd.length - 1)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${claimCmd}${''.padEnd(BOX_WIDTH - claimCmd.length - 1)}${BOX.VERTICAL}`,
       );
     } else {
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_NO}${''.padEnd(PADDING.READY_NO)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.READY_NO}${''.padEnd(PADDING.READY_NO)}${BOX.VERTICAL}`,
       );
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       console.log(
-        `${BOX.VERTICAL} ${MESSAGES.MISSING_HEADER}${''.padEnd(PADDING.MISSING_HEADER)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${MESSAGES.MISSING_HEADER}${''.padEnd(PADDING.MISSING_HEADER)}${BOX.VERTICAL}`,
       );
       for (const error of errors) {
         // Truncate long error messages to fit box
@@ -332,13 +336,13 @@ function displayReadinessSummary(id: string) {
             ? `${error.substring(0, ERROR_TRUNCATE_LENGTH)}${TRUNCATION_SUFFIX}`
             : error;
         console.log(
-          `${BOX.VERTICAL}   ${MESSAGES.BULLET} ${truncated}${''.padEnd(Math.max(0, PADDING.ERROR_BULLET - truncated.length))}${BOX.VERTICAL}`
+          `${BOX.VERTICAL}   ${MESSAGES.BULLET} ${truncated}${''.padEnd(Math.max(0, PADDING.ERROR_BULLET - truncated.length))}${BOX.VERTICAL}`,
         );
       }
       console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
       const editCmd = `Run: pnpm wu:edit --id ${id} --help`;
       console.log(
-        `${BOX.VERTICAL} ${editCmd}${''.padEnd(BOX_WIDTH - editCmd.length - 1)}${BOX.VERTICAL}`
+        `${BOX.VERTICAL} ${editCmd}${''.padEnd(BOX_WIDTH - editCmd.length - 1)}${BOX.VERTICAL}`,
       );
     }
     console.log(`${BOX.BOTTOM_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.BOTTOM_RIGHT}`);
@@ -410,7 +414,7 @@ function validateWUEditable(id) {
       die(
         `Cannot edit branch-only WU ${id} via wu:edit.\n\n` +
           `WUs claimed with claimed_mode='${CLAIMED_MODES.BRANCH_ONLY}' cannot be edited via wu:edit.\n` +
-          `To modify the spec, edit the file directly on the lane branch and commit.`
+          `To modify the spec, edit the file directly on the lane branch and commit.`,
       );
     }
 
@@ -426,7 +430,7 @@ function validateWUEditable(id) {
   // Block other statuses (blocked, etc.)
   die(
     `Cannot edit WU ${id}: status is '${wu.status}'.\n\n` +
-      `Only WUs in '${WU_STATUS.READY}' or '${WU_STATUS.IN_PROGRESS}' (worktree mode) can be edited.`
+      `Only WUs in '${WU_STATUS.READY}' or '${WU_STATUS.IN_PROGRESS}' (worktree mode) can be edited.`,
   );
 }
 
@@ -444,7 +448,7 @@ function validateWorktreeExists(worktreePath, id) {
       `Cannot edit WU ${id}: worktree path missing from disk.\n\n` +
         `Expected worktree at: ${worktreePath}\n\n` +
         `The worktree may have been removed or the path is incorrect.\n` +
-        `If the worktree was accidentally deleted, you may need to re-claim the WU.`
+        `If the worktree was accidentally deleted, you may need to re-claim the WU.`,
     );
   }
 }
@@ -468,14 +472,14 @@ async function validateWorktreeClean(worktreePath, id) {
           `Commit or discard your changes before editing the WU spec:\n` +
           `  cd ${worktreePath}\n` +
           `  git add . && git commit -m "wip: save progress"\n\n` +
-          `Then retry wu:edit.`
+          `Then retry wu:edit.`,
       );
     }
   } catch (err) {
     die(
       `Cannot edit WU ${id}: failed to check worktree status.\n\n` +
         `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`
+        `Worktree path: ${worktreePath}`,
     );
   }
 }
@@ -499,14 +503,14 @@ async function validateWorktreeBranch(worktreePath, expectedBranch, id) {
           `Expected branch: ${expectedBranch}\n` +
           `Actual branch:   ${actualBranch}\n\n` +
           `This may indicate a corrupted worktree state.\n` +
-          `Verify the worktree is correctly set up for this WU.`
+          `Verify the worktree is correctly set up for this WU.`,
       );
     }
   } catch (err) {
     die(
       `Cannot edit WU ${id}: failed to check worktree branch.\n\n` +
         `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`
+        `Worktree path: ${worktreePath}`,
     );
   }
 }
@@ -555,7 +559,7 @@ async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
       `Failed to commit edit in worktree.\n\n` +
         `Error: ${err.message}\n\n` +
         `The WU file was updated but could not be committed.\n` +
-        `You may need to commit manually in the worktree.`
+        `You may need to commit manually in the worktree.`,
     );
   }
 }
@@ -567,7 +571,7 @@ async function ensureCleanWorkingTree() {
   const status = await getGitForCwd().getStatus();
   if (status.trim()) {
     die(
-      `Working tree is not clean. Cannot edit WU.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before editing:\n  git add . && git commit -m "..."\n`
+      `Working tree is not clean. Cannot edit WU.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before editing:\n  git add . && git commit -m "..."\n`,
     );
   }
 }
@@ -601,7 +605,9 @@ function loadSpecFile(specPath, originalWU) {
   }
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates spec files
-  const specContent = readFileSync(resolvedPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+  const specContent = readFileSync(resolvedPath, {
+    encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+  });
   const newSpec = parseYAML(specContent);
 
   // Preserve id and status from original (cannot be changed via edit)
@@ -665,7 +671,7 @@ function applyEdits(wu, opts) {
     const phaseNum = parseInt(opts.phase, 10);
     if (isNaN(phaseNum) || phaseNum < 1) {
       die(
-        `Invalid phase number: "${opts.phase}"\n\nPhase must be a positive integer (e.g., 1, 2, 3)`
+        `Invalid phase number: "${opts.phase}"\n\nPhase must be a positive integer (e.g., 1, 2, 3)`,
       );
     }
     updated.phase = phaseNum;
@@ -777,7 +783,7 @@ async function main() {
           `Disallowed edits: ${disallowedEdits.join(', ')}\n\n` +
           `Allowed for done WUs:\n` +
           `  --initiative <initId>     Reassign to different initiative\n` +
-          `  --phase <number>          Update phase within initiative`
+          `  --phase <number>          Update phase within initiative`,
       );
     }
   }
@@ -824,7 +830,7 @@ async function main() {
         '  --test-paths-unit <path>  Add unit test paths (repeatable; use --append to add)\n' +
         '  --test-paths-e2e <path>   Add e2e test paths (repeatable; use --append to add)\n' +
         '  --blocked-by <wuIds>      WU IDs that block this WU (comma-separated; use --append to add)\n' +
-        '  --add-dep <wuIds>         Add WU IDs to dependencies (comma-separated; use --append to add)'
+        '  --add-dep <wuIds>         Add WU IDs to dependencies (comma-separated; use --append to add)',
     );
   }
 
@@ -854,7 +860,7 @@ async function main() {
     const formatted = formatLintErrors(lintResult.errors);
     die(
       `${PREFIX} ❌ WU SPEC LINT FAILED:\n\n${formatted}\n` +
-        `Fix the issues above before editing this WU.`
+        `Fix the issues above before editing this WU.`,
     );
   }
 
@@ -881,7 +887,7 @@ async function main() {
           `  1. Complete the WU first: pnpm wu:done --id ${id}\n` +
           `     Then reassign: pnpm wu:edit --id ${id} --initiative ${opts.initiative}\n` +
           `  2. Block the WU if not ready to complete:\n` +
-          `     pnpm wu:block --id ${id} --reason "Needs initiative reassignment"`
+          `     pnpm wu:block --id ${id} --reason "Needs initiative reassignment"`,
       );
     }
 
@@ -893,7 +899,7 @@ async function main() {
     if (!worktreePath) {
       die(
         `Cannot determine worktree path for WU ${id}.\n\n` +
-          `Check that worktree_path is set in the WU YAML or lane field is valid.`
+          `Check that worktree_path is set in the WU YAML or lane field is valid.`,
       );
     }
 
@@ -969,7 +975,7 @@ async function main() {
             worktreePath,
             id,
             oldInitiative,
-            newInitiative
+            newInitiative,
           );
           files.push(...initiativeFiles);
         }

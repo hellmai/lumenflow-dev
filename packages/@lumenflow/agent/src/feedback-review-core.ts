@@ -227,7 +227,10 @@ function getNodeTitle(node: NodeWithTitle): string {
  * @param threshold - Similarity threshold
  * @returns Array of cluster objects
  */
-export function clusterByTitle(nodes: NodeWithTitle[], threshold: number = SIMILARITY_THRESHOLD): Cluster[] {
+export function clusterByTitle(
+  nodes: NodeWithTitle[],
+  threshold: number = SIMILARITY_THRESHOLD,
+): Cluster[] {
   if (!nodes || nodes.length === 0) {
     return [];
   }
@@ -291,7 +294,9 @@ export function scorePattern(cluster: Cluster): number {
   // Average severity weight
   const severitySum = cluster.nodes.reduce((sum, node) => {
     const severity = node.severity as keyof typeof SEVERITY_WEIGHTS | undefined;
-    const weight = severity ? (SEVERITY_WEIGHTS[severity] ?? SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO]) : SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO];
+    const weight = severity
+      ? (SEVERITY_WEIGHTS[severity] ?? SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO])
+      : SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO];
     return sum + weight;
   }, 0);
   const avgSeverity = severitySum / cluster.nodes.length;
@@ -369,7 +374,10 @@ interface ReviewResult {
  * @param options - Review options
  * @returns Review result
  */
-export async function reviewFeedback(baseDir: string, options: ReviewOptions = {}): Promise<ReviewResult> {
+export async function reviewFeedback(
+  baseDir: string,
+  options: ReviewOptions = {},
+): Promise<ReviewResult> {
   const { since, minFrequency, category } = options;
 
   // Load all data
@@ -458,8 +466,7 @@ export async function reviewFeedback(baseDir: string, options: ReviewOptions = {
     const cat = p.category ?? 'uncategorized';
     categoryCounts.set(cat, (categoryCounts.get(cat) ?? 0) + p.frequency);
   }
-  const topCategory =
-    [...categoryCounts.entries()].sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
+  const topCategory = [...categoryCounts.entries()].sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
 
   return {
     success: true,

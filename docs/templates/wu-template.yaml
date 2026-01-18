@@ -7,16 +7,16 @@
 id: WU-XXX
 
 # Required: Short, descriptive title (max 80 chars)
-title: "Your WU title here"
+title: 'Your WU title here'
 
 # Required: Engineering lane (Discovery, Intelligence, Main, Operations)
-lane: "Main"
+lane: 'Main'
 
 # Required: Type of work (feature, bugfix, refactor, documentation, chore, infrastructure, spike)
-type: "feature"
+type: 'feature'
 
 # Required: Current status (ready, in_progress, done, blocked, cancelled)
-status: "ready"
+status: 'ready'
 
 # Required: Priority (P0=critical, P1=high, P2=medium, P3=low)
 priority: P2
@@ -25,7 +25,7 @@ priority: P2
 created: 2025-10-23T00:00:00.000Z
 
 # Required: Owner (email or "unassigned")
-owner: "unassigned"
+owner: 'unassigned'
 
 # Required: Brief summary of what this WU delivers (2-3 sentences)
 summary: |
@@ -53,9 +53,9 @@ acceptance:
 # Plans should be stored in docs/04-operations/plans/ for version control.
 # See: ai/onboarding/workspace-modes.md §Plan Linking
 spec_refs:
-  - docs/04-operations/plans/WU-XXX-plan.md  # Plan file (copy from .claude/plans/)
-  - docs/design/feature-spec.md              # Design specification
-  - ADR-XXX                                  # Architecture decision record
+  - docs/04-operations/plans/WU-XXX-plan.md # Plan file (copy from .claude/plans/)
+  - docs/design/feature-spec.md # Design specification
+  - ADR-XXX # Architecture decision record
 
 # Required: Code files changed or created (for test coverage tracking)
 code_paths:
@@ -72,8 +72,8 @@ test_paths:
 
 # Required: Hexagonal architecture ports (empty list if none)
 ports:
-  - port: "IUserRepository"
-    path: "packages/core/ports/IUserRepository.ts"
+  - port: 'IUserRepository'
+    path: 'packages/core/ports/IUserRepository.ts'
   # Leave empty list [] if no ports are modified
 
 # Required: Deliverable artifacts (files, docs, deployed services)
@@ -97,13 +97,13 @@ notes: |
 
 # Required: Dependencies (other WUs that must complete first)
 dependencies:
-  - WU-XXX  # Required dependency
+  - WU-XXX # Required dependency
 # Use empty list [] if no dependencies
 
 # Required: Blockers (WUs or external factors blocking this work)
 blocked_by:
-  - WU-YYY  # Blocking WU
-  - "External API not ready"  # External blocker
+  - WU-YYY # Blocking WU
+  - 'External API not ready' # External blocker
 # Use empty list [] if not blocked
 
 # ============================================================================
@@ -118,7 +118,7 @@ blocked_by:
 #   - api: API endpoints called by UI or external clients
 #   - backend-only: Backend-only changes (no user visibility)
 #   - documentation: Documentation changes only
-exposure: "ui"
+exposure: 'ui'
 
 # WU-2022: Navigation path for exposure=ui WUs
 # Specifies the route where the UI feature is accessible.
@@ -128,7 +128,7 @@ exposure: "ui"
 #   1. navigation_path is specified (this field)
 #   2. code_paths includes a page.tsx file (Next.js page)
 #   3. tests.manual includes navigation/accessibility verification
-navigation_path: "/settings"
+navigation_path: '/settings'
 
 # Recommended for exposure: ui, api
 # Describes the end-user interaction flow affected by this WU.

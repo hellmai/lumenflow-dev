@@ -93,7 +93,13 @@ export function getGatesLogDir({ cwd, env }: GatesLogOptions) {
   return path.resolve(cwd, configured || '.logs');
 }
 
-export function buildGatesLogPath({ cwd, env, wuId, lane, now = new Date() }: BuildGatesLogPathOptions) {
+export function buildGatesLogPath({
+  cwd,
+  env,
+  wuId,
+  lane,
+  now = new Date(),
+}: BuildGatesLogPathOptions) {
   const logDir = getGatesLogDir({ cwd, env });
   const safeLane = (lane || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const safeWu = (wuId || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -146,4 +152,3 @@ export function updateGatesLatestSymlink({ logPath, cwd, env }: UpdateGatesLates
     return false;
   }
 }
-

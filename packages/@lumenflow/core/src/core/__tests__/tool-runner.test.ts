@@ -17,12 +17,7 @@ import assert from 'node:assert/strict';
 import { z } from 'zod';
 
 // Import will fail until implementation exists (RED phase of TDD)
-import {
-  runTool,
-  createToolConfig,
-  ToolRunner,
-  RUNNER_DEFAULTS,
-} from '../tool-runner.js';
+import { runTool, createToolConfig, ToolRunner, RUNNER_DEFAULTS } from '../tool-runner.js';
 
 import { TOOL_DOMAINS, PERMISSION_LEVELS, TOOL_ERROR_CODES } from '../tool.constants.js';
 
@@ -206,10 +201,14 @@ describe('tool-runner', () => {
       });
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { requiresWorktree: true },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { requiresWorktree: true },
+        },
+      );
 
       assert.strictEqual(deps.assertWorktreeRequired.mock.calls.length, 1);
     });
@@ -220,10 +219,14 @@ describe('tool-runner', () => {
       });
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { requiresWorktree: false },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { requiresWorktree: false },
+        },
+      );
 
       assert.strictEqual(deps.assertWorktreeRequired.mock.calls.length, 0);
     });
@@ -237,10 +240,14 @@ describe('tool-runner', () => {
         throw new Error('BLOCKED: Operation requires worktree');
       });
 
-      const result = await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { requiresWorktree: true },
-      });
+      const result = await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { requiresWorktree: true },
+        },
+      );
 
       assert.strictEqual(result.success, false);
       assert.match(result.error.message, /worktree/i);
@@ -262,10 +269,14 @@ describe('tool-runner', () => {
       });
       const deps = createMockDependencies();
 
-      await runTool(tool, { path: 'tools/lib/core/test.js', content: 'test' }, {
-        dependencies: deps,
-        config: { requiresScope: true },
-      });
+      await runTool(
+        tool,
+        { path: 'tools/lib/core/test.js', content: 'test' },
+        {
+          dependencies: deps,
+          config: { requiresScope: true },
+        },
+      );
 
       assert.strictEqual(deps.getActiveScope.mock.calls.length, 1);
       assert.strictEqual(deps.isPathInScope.mock.calls.length, 1);
@@ -286,10 +297,14 @@ describe('tool-runner', () => {
       const deps = createMockDependencies();
       deps.isPathInScope = mock.fn(() => false);
 
-      const result = await runTool(tool, { path: 'apps/web/src/index.ts', content: 'test' }, {
-        dependencies: deps,
-        config: { requiresScope: true },
-      });
+      const result = await runTool(
+        tool,
+        { path: 'apps/web/src/index.ts', content: 'test' },
+        {
+          dependencies: deps,
+          config: { requiresScope: true },
+        },
+      );
 
       assert.strictEqual(result.success, false);
       assert.strictEqual(result.error.code, TOOL_ERROR_CODES.PERMISSION_DENIED);
@@ -303,10 +318,14 @@ describe('tool-runner', () => {
       const deps = createMockDependencies();
       deps.getActiveScope = mock.fn(() => null);
 
-      const result = await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { requiresScope: true },
-      });
+      const result = await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { requiresScope: true },
+        },
+      );
 
       // Should still succeed - no scope means no restrictions
       assert.strictEqual(result.success, true);
@@ -318,10 +337,14 @@ describe('tool-runner', () => {
       const tool = createMockTool();
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { enableAuditLog: true },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { enableAuditLog: true },
+        },
+      );
 
       assert.strictEqual(deps.logAudit.mock.calls.length, 1);
       const logEntry = deps.logAudit.mock.calls[0].arguments[0];
@@ -333,10 +356,14 @@ describe('tool-runner', () => {
       const tool = createMockTool();
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { enableAuditLog: false },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { enableAuditLog: false },
+        },
+      );
 
       assert.strictEqual(deps.logAudit.mock.calls.length, 0);
     });
@@ -349,10 +376,14 @@ describe('tool-runner', () => {
       });
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { enableAuditLog: true },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { enableAuditLog: true },
+        },
+      );
 
       assert.strictEqual(deps.logAudit.mock.calls.length, 1);
       const logEntry = deps.logAudit.mock.calls[0].arguments[0];
@@ -363,10 +394,14 @@ describe('tool-runner', () => {
       const tool = createMockTool();
       const deps = createMockDependencies();
 
-      await runTool(tool, { message: 'hello' }, {
-        dependencies: deps,
-        config: { enableAuditLog: true },
-      });
+      await runTool(
+        tool,
+        { message: 'hello' },
+        {
+          dependencies: deps,
+          config: { enableAuditLog: true },
+        },
+      );
 
       const logEntry = deps.logAudit.mock.calls[0].arguments[0];
       assert.strictEqual(logEntry.context.wuId, 'WU-1398');
@@ -551,8 +586,12 @@ describe('tool-runner', () => {
 
     it('should filter tools by domain', () => {
       const runner = new ToolRunner();
-      runner.register(createMockTool({ metadata: { name: 'git:status', domain: TOOL_DOMAINS.GIT } }));
-      runner.register(createMockTool({ metadata: { name: 'file:read', domain: TOOL_DOMAINS.FILE } }));
+      runner.register(
+        createMockTool({ metadata: { name: 'git:status', domain: TOOL_DOMAINS.GIT } }),
+      );
+      runner.register(
+        createMockTool({ metadata: { name: 'file:read', domain: TOOL_DOMAINS.FILE } }),
+      );
 
       const gitTools = runner.listTools({ domain: TOOL_DOMAINS.GIT });
 
@@ -600,7 +639,7 @@ describe('integration scenarios', () => {
       const result = await runTool(
         fileWriteTool,
         { path: 'tools/lib/core/new-file.js', content: 'test content' },
-        { dependencies: deps }
+        { dependencies: deps },
       );
 
       // Should check worktree

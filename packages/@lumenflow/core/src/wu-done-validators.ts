@@ -174,7 +174,7 @@ export function validateInputs(argv) {
         '  Automatically scans code_paths for:\n' +
         '    • TODO/FIXME/HACK/XXX comments (fails validation unless --allow-todo)\n' +
         '    • Mock/Stub/Fake classes in production code (warning only)\n' +
-        '  Use --allow-todo only for legitimate cases with justification in WU notes.\n'
+        '  Use --allow-todo only for legitimate cases with justification in WU notes.\n',
     );
     process.exit(args.help ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
   }
@@ -207,18 +207,18 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
         if (doc && doc.id === id) {
           // WU-1584: Log source file for validation debugging
           console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.INFO} Reading WU YAML from worktree: ${wtWUPath}`
+            `${LOG_PREFIX.DONE} ${EMOJI.INFO} Reading WU YAML from worktree: ${wtWUPath}`,
           );
           if (doc.code_paths && doc.code_paths.length > 0) {
             console.log(
-              `${LOG_PREFIX.DONE}   code_paths source: worktree (${doc.code_paths.length} path(s))`
+              `${LOG_PREFIX.DONE}   code_paths source: worktree (${doc.code_paths.length} path(s))`,
             );
           }
           return doc;
         }
         // If ID mismatch, log warning but continue
         console.warn(
-          `${LOG_PREFIX.DONE} Warning: Worktree YAML ID mismatch (expected ${id}, got ${doc?.id})`
+          `${LOG_PREFIX.DONE} Warning: Worktree YAML ID mismatch (expected ${id}, got ${doc?.id})`,
         );
       } catch (err) {
         // Log parse errors for debugging
@@ -234,7 +234,7 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
   const doc = readWU(mainWUPath, id);
   if (doc.code_paths && doc.code_paths.length > 0) {
     console.log(
-      `${LOG_PREFIX.DONE}   code_paths source: main checkout (${doc.code_paths.length} path(s))`
+      `${LOG_PREFIX.DONE}   code_paths source: main checkout (${doc.code_paths.length} path(s))`,
     );
   }
   return doc;
@@ -260,7 +260,7 @@ export function detectCurrentWorktree() {
       const match = gitContent.match(/^gitdir:\s*(.+)$/m);
       if (match && match[1].includes('.git/worktrees/')) {
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.TARGET} Auto-detected worktree from process.cwd(): ${cwd}`
+          `${LOG_PREFIX.DONE} ${EMOJI.TARGET} Auto-detected worktree from process.cwd(): ${cwd}`,
         );
         return cwd;
       }
@@ -324,7 +324,7 @@ export async function defaultWorktreeFrom(doc) {
                 `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Worktree path mismatch detected:\n` +
                   `  Expected: ${calculated}\n` +
                   `  Actual:   ${relativePath}\n` +
-                  `  Using actual path from git worktree list`
+                  `  Using actual path from git worktree list`,
               );
               return relativePath;
             }
@@ -408,7 +408,7 @@ export async function detectModeAndPaths(id, args) {
 
   if (!isBranchOnly && derivedWorktree && !detectedWorktree) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.FOLDER} Calculated worktree path from YAML: ${derivedWorktree}`
+      `${LOG_PREFIX.DONE} ${EMOJI.FOLDER} Calculated worktree path from YAML: ${derivedWorktree}`,
     );
   }
 
@@ -425,7 +425,7 @@ export async function detectModeAndPaths(id, args) {
 
   if (isDocsOnlyByPaths && !isDocsOnlyByType) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-detected docs-only WU from code_paths (type: ${docForValidation.type || 'unset'})`
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-detected docs-only WU from code_paths (type: ${docForValidation.type || 'unset'})`,
     );
   }
 
@@ -464,7 +464,7 @@ export function generateCommitMessage(id, title, maxLength = DEFAULTS.MAX_COMMIT
       `Commit message too long (${msg.length}/${maxLength}).\n` +
         `Fix: Shorten WU title\n` +
         `Current title: "${title}" (${title.length} chars)\n` +
-        `Suggested max: ~${maxLength - prefix.length} chars`
+        `Suggested max: ~${maxLength - prefix.length} chars`,
     );
     error.code = 'COMMIT_MESSAGE_TOO_LONG';
     error.data = {
@@ -504,7 +504,7 @@ export function validateMetadataFilesExist({ statusPath, backlogPath }) {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
       `Required metadata files missing:\n  ${missing.join('\n  ')}\n\nCannot complete WU - verify worktree has latest metadata files.`,
-      { missingFiles: missing }
+      { missingFiles: missing },
     );
   }
 }
@@ -605,7 +605,7 @@ export async function collectMetadataToTransaction({
   transaction.addWrite(stampPath, stampContent, 'completion stamp');
 
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Collected ${transaction.size} metadata updates for atomic commit`
+    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Collected ${transaction.size} metadata updates for atomic commit`,
   );
 }
 
@@ -644,7 +644,7 @@ export async function stageAndFormatMetadata({ id, wuPath, statusPath, backlogPa
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       `Failed to format documentation: ${err.message}`,
-      { wuId: id, error: err.message }
+      { wuId: id, error: err.message },
     );
   }
 }
@@ -672,7 +672,7 @@ export async function runCleanup(docMain, args) {
       throw createError(
         ErrorCodes.VALIDATION_ERROR,
         `${ownershipResult.error}\n\nTo override (DANGEROUS): pnpm wu:done --id ${wuId} --override-owner --reason "explanation"`,
-        { wuId, worktreePath, error: ownershipResult.error }
+        { wuId, worktreePath, error: ownershipResult.error },
       );
     }
   }
@@ -683,7 +683,7 @@ export async function runCleanup(docMain, args) {
     async () => {
       await runCleanupInternal(docMain, args, worktreePath);
     },
-    { worktreePath }
+    { worktreePath },
   );
 }
 
@@ -752,7 +752,7 @@ async function runCleanupInternal(docMain, args, worktreePath) {
     }
   } else if (prModeEnabled) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Worktree preserved (PR mode - run wu:cleanup after PR merge)`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Worktree preserved (PR mode - run wu:cleanup after PR merge)`,
     );
   }
 }
@@ -773,7 +773,7 @@ async function deleteBranchWithCleanup(laneBranch) {
     await gitAdapter.deleteBranch(laneBranch, { force: isMerged });
     const modeIndicator = isMerged ? ' (force: merged)' : '';
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Deleted local branch ${laneBranch}${modeIndicator}`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Deleted local branch ${laneBranch}${modeIndicator}`,
     );
 
     // Also delete remote if it exists
@@ -841,8 +841,8 @@ export async function validateCodePathsExist(doc, id, options: ValidateCodePaths
         `code_paths validation failed - ${missing.length} file(s) not found in worktree:\n${missing
           .map((p) => `  - ${p}`)
           .join(
-            STRING_LITERALS.NEWLINE
-          )}\n\nEnsure all files listed in code_paths exist before running wu:done.`
+            STRING_LITERALS.NEWLINE,
+          )}\n\nEnsure all files listed in code_paths exist before running wu:done.`,
       );
     }
   } else {
@@ -875,13 +875,13 @@ export async function validateCodePathsExist(doc, id, options: ValidateCodePaths
             `  1. Ensure all code is committed and merged to ${targetBranch}\n` +
             `  2. Update code_paths in ${id}.yaml to match actual files\n` +
             `  3. Remove files that were intentionally not created\n\n` +
-            `Context: WU-1351 prevents false completions from INIT-WORKFLOW-INTEGRITY`
+            `Context: WU-1351 prevents false completions from INIT-WORKFLOW-INTEGRITY`,
         );
       }
     } catch (err) {
       // Non-fatal: warn but don't block if git command fails
       console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${err.message}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${err.message}`,
       );
       return { valid: true, errors: [], missing: [] };
     }
@@ -940,7 +940,7 @@ export function validateSpecCompleteness(doc, _id) {
   // WU-1281: Using centralized constant from wu-constants.mjs
   if (!doc.description || doc.description.trim().length < VALIDATION.MIN_DESCRIPTION_LENGTH) {
     errors.push(
-      `Description too short (${doc.description?.trim().length || 0} chars, minimum ${VALIDATION.MIN_DESCRIPTION_LENGTH})`
+      `Description too short (${doc.description?.trim().length || 0} chars, minimum ${VALIDATION.MIN_DESCRIPTION_LENGTH})`,
     );
   }
 
@@ -1031,7 +1031,7 @@ export function validatePostMutation({ id, wuPath, stampPath }) {
     // Verify locked is true
     if (doc.locked !== true) {
       errors.push(
-        `Missing or invalid 'locked' field in ${id}.yaml (expected: true, got: ${doc.locked})`
+        `Missing or invalid 'locked' field in ${id}.yaml (expected: true, got: ${doc.locked})`,
       );
     }
 
@@ -1114,7 +1114,11 @@ interface ExecutePreflightCodePathValidationOptions {
   validatePreflightFn?: typeof validatePreflight;
 }
 
-export async function executePreflightCodePathValidation(id, paths, options: ExecutePreflightCodePathValidationOptions = {}) {
+export async function executePreflightCodePathValidation(
+  id,
+  paths,
+  options: ExecutePreflightCodePathValidationOptions = {},
+) {
   // Use injected validator for testability, default to actual implementation
   const validatePreflightFn = options.validatePreflightFn || validatePreflight;
 
@@ -1276,7 +1280,11 @@ export function runPreflightTasksValidation(id, options: ExecSyncOverrideOptions
  * @param {ExecSyncOverrideOptions} options - Options for testing
  * @returns {{ valid: boolean, errors: string[] }}
  */
-export function validateAllPreCommitHooks(id, worktreePath = null, options: ExecSyncOverrideOptions = {}) {
+export function validateAllPreCommitHooks(
+  id,
+  worktreePath = null,
+  options: ExecSyncOverrideOptions = {},
+) {
   const execSyncFn = options.execSyncFn || execSyncImport;
 
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Pre-flight: validating all pre-commit hooks...`);
@@ -1460,7 +1468,7 @@ export function validateTypeVsCodePathsPreflight(wu) {
   if (blockedPaths.length > 0) {
     const pathsList = blockedPaths.map((p) => `  - ${p}`).join('\n');
     errors.push(
-      `Documentation WU ${wu.id} has code_paths that would fail pre-commit hook:\n${pathsList}`
+      `Documentation WU ${wu.id} has code_paths that would fail pre-commit hook:\n${pathsList}`,
     );
     return { valid: false, errors, blockedPaths, abortedBeforeTransaction: true };
   }

@@ -40,12 +40,12 @@ describe('WU-1752: wu:done event log atomicity', () => {
         '',
         '(No completed items)',
         '',
-      ].join('\n')
+      ].join('\n'),
     );
 
     await writeFile(
       path.join('docs', '04-operations', 'tasks', 'backlog.md'),
-      ['# Backlog', '', '(fixture)'].join('\n')
+      ['# Backlog', '', '(fixture)'].join('\n'),
     );
 
     await writeFile(
@@ -59,7 +59,7 @@ describe('WU-1752: wu:done event log atomicity', () => {
           timestamp: '2025-12-17T00:00:00.000Z',
         }),
         '',
-      ].join('\n')
+      ].join('\n'),
     );
   });
 
@@ -121,7 +121,7 @@ describe('WU-1752: wu:done event log atomicity', () => {
           timestamp: '2025-12-17T00:01:00.000Z',
         }),
         '',
-      ].join('\n')
+      ].join('\n'),
     );
 
     const transaction = new WUTransaction('WU-123');
@@ -151,4 +151,3 @@ describe('WU-1752: wu:done event log atomicity', () => {
     expect(completeCount).toBe(1);
   });
 });
-

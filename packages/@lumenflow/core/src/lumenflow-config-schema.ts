@@ -168,10 +168,18 @@ export const MemoryConfigSchema = z.object({
   directory: z.string().default('memory-bank/'),
 
   /** Session TTL in milliseconds (default: 7 days) */
-  sessionTtl: z.number().int().positive().default(7 * 24 * 60 * 60 * 1000),
+  sessionTtl: z
+    .number()
+    .int()
+    .positive()
+    .default(7 * 24 * 60 * 60 * 1000),
 
   /** Checkpoint TTL in milliseconds (default: 30 days) */
-  checkpointTtl: z.number().int().positive().default(30 * 24 * 60 * 60 * 1000),
+  checkpointTtl: z
+    .number()
+    .int()
+    .positive()
+    .default(30 * 24 * 60 * 60 * 1000),
 
   /** Enable auto-cleanup (default: true) */
   enableAutoCleanup: z.boolean().default(true),

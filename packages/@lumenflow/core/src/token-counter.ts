@@ -74,7 +74,10 @@ export function loadPrompt(promptPath) {
     const raw = readFileSync(promptPath, { encoding: 'utf-8' });
 
     // Parse YAML to access prompt structure
-    const parsed = loadYAML(raw) as { prompt?: string; system?: string; content?: string } | string | null;
+    const parsed = loadYAML(raw) as
+      | { prompt?: string; system?: string; content?: string }
+      | string
+      | null;
 
     // Extract prompt text (handle different YAML structures)
     let promptText = '';
@@ -100,7 +103,7 @@ export function loadPrompt(promptPath) {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
       `Failed to load prompt from ${promptPath}: ${message}`,
-      { path: promptPath, originalError: message }
+      { path: promptPath, originalError: message },
     );
   }
 }

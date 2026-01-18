@@ -285,7 +285,7 @@ describe('assertWorktreeRequired', () => {
       {
         name: 'Error',
         message: /BLOCKED: Operation 'wu:claim' requires a worktree/,
-      }
+      },
     );
   });
 
@@ -304,7 +304,7 @@ describe('assertWorktreeRequired', () => {
       },
       {
         message: /file-write/,
-      }
+      },
     );
   });
 
@@ -323,7 +323,7 @@ describe('assertWorktreeRequired', () => {
       },
       {
         message: /pnpm wu:claim/,
-      }
+      },
     );
   });
 
@@ -341,7 +341,7 @@ describe('assertWorktreeRequired', () => {
       },
       {
         message: /this operation/,
-      }
+      },
     );
   });
 });

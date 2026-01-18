@@ -24,7 +24,10 @@ import ms from 'ms';
 import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/dist/mem-signal-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
-import { validateInboxDependencies, formatDependencyError } from '@lumenflow/core/dist/dependency-validator.js';
+import {
+  validateInboxDependencies,
+  formatDependencyError,
+} from '@lumenflow/core/dist/dependency-validator.js';
 
 /**
  * Log prefix for mem:inbox output

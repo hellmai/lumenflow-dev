@@ -193,7 +193,7 @@ export function moveBullet(filePath, { fromSection, toSection, bulletPattern, ne
     throw createError(
       ErrorCodes.SECTION_NOT_FOUND,
       `Target section not found after removal: ${toSection}`,
-      { section: toSection, file: filePath, context: 'after removal' }
+      { section: toSection, file: filePath, context: 'after removal' },
     );
   }
 

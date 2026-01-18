@@ -27,7 +27,10 @@ import { RECOVERY_DIR_NAME } from './spawn-recovery.js';
 
 // Optional import from @lumenflow/memory
 type SignalResult = { signal: { id: string } };
-type CreateSignalFn = (baseDir: string, options: { message: string; wuId: string; lane: string }) => Promise<SignalResult>;
+type CreateSignalFn = (
+  baseDir: string,
+  options: { message: string; wuId: string; lane: string },
+) => Promise<SignalResult>;
 let createSignal: CreateSignalFn | null = null;
 try {
   const mod = await import('@lumenflow/memory/signal');
@@ -107,9 +110,7 @@ async function countEscalationAttempts(baseDir, spawnId) {
 
   try {
     const files = await fs.readdir(recoveryDir);
-    const spawnFiles = files.filter(
-      (f) => f.startsWith(`${spawnId}-`) && f.endsWith('.json')
-    );
+    const spawnFiles = files.filter((f) => f.startsWith(`${spawnId}-`) && f.endsWith('.json'));
     return spawnFiles.length;
   } catch (error) {
     if (error.code === 'ENOENT') {

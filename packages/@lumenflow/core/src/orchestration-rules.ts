@@ -34,9 +34,12 @@ export function detectMandatoryAgents(codePaths: readonly string[]): MandatoryAg
 
   const triggeredAgents = new Set<MandatoryAgentName>();
 
-  for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS) as [MandatoryAgentName, readonly string[]][]) {
+  for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS) as [
+    MandatoryAgentName,
+    readonly string[],
+  ][]) {
     const isTriggered = codePaths.some((filePath) =>
-      patterns.some((pattern) => minimatch(filePath, pattern))
+      patterns.some((pattern) => minimatch(filePath, pattern)),
     );
 
     if (isTriggered) {

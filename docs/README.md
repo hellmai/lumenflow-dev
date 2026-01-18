@@ -6,12 +6,12 @@ Welcome to the LumenFlow documentation. Organized by **concern and audience** fo
 
 ## Quick Start by Role
 
-| Role | Start Here | Key Documents |
-|------|------------|---------------|
-| **Product/Business** | [01-product/](01-product/) | Vision, product lines, tiers |
-| **Engineering** | [02-technical/](02-technical/) | Architecture, packages, implementation |
-| **Operations** | [04-operations/](04-operations/) | Tasks, WU management |
-| **Distribution** | [plans/](plans/) | Distribution plan, npm publishing |
+| Role                 | Start Here                       | Key Documents                          |
+| -------------------- | -------------------------------- | -------------------------------------- |
+| **Product/Business** | [01-product/](01-product/)       | Vision, product lines, tiers           |
+| **Engineering**      | [02-technical/](02-technical/)   | Architecture, packages, implementation |
+| **Operations**       | [04-operations/](04-operations/) | Tasks, WU management                   |
+| **Distribution**     | [plans/](plans/)                 | Distribution plan, npm publishing      |
 
 ---
 
@@ -38,15 +38,15 @@ Technical architecture, package documentation, implementation guides.
 
 **Packages:**
 
-| Package | Description |
-|---------|-------------|
-| `@lumenflow/core` | Core WU types, validation, configuration |
-| `@lumenflow/cli` | 30+ CLI commands (wu-*, mem-*, gates) |
-| `@lumenflow/memory` | Session tracking, context recovery |
-| `@lumenflow/agent` | Agent coordination primitives |
-| `@lumenflow/metrics` | Flow metrics and reporting |
-| `@lumenflow/initiatives` | Multi-WU project tracking |
-| `@lumenflow/shims` | Git safety shims |
+| Package                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `@lumenflow/core`        | Core WU types, validation, configuration |
+| `@lumenflow/cli`         | 30+ CLI commands (wu-_, mem-_, gates)    |
+| `@lumenflow/memory`      | Session tracking, context recovery       |
+| `@lumenflow/agent`       | Agent coordination primitives            |
+| `@lumenflow/metrics`     | Flow metrics and reporting               |
+| `@lumenflow/initiatives` | Multi-WU project tracking                |
+| `@lumenflow/shims`       | Git safety shims                         |
 
 ---
 

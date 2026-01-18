@@ -22,7 +22,11 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { listOpenDiscoveries, promoteDiscovery, archiveDiscovery } from '@lumenflow/memory/dist/mem-triage-core.js';
+import {
+  listOpenDiscoveries,
+  promoteDiscovery,
+  archiveDiscovery,
+} from '@lumenflow/memory/dist/mem-triage-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
 
@@ -263,7 +267,9 @@ async function handlePromote(baseDir, args) {
   console.log(`  Priority: ${result.wuSpec.priority}`);
   console.log('');
   console.log('Next: To create the WU, run:');
-  console.log(`  pnpm wu:create --id ${result.wuSpec.id} --lane "${result.wuSpec.lane}" --title "${result.wuSpec.title}" --priority ${result.wuSpec.priority}`);
+  console.log(
+    `  pnpm wu:create --id ${result.wuSpec.id} --lane "${result.wuSpec.lane}" --title "${result.wuSpec.title}" --priority ${result.wuSpec.priority}`,
+  );
 
   return result;
 }

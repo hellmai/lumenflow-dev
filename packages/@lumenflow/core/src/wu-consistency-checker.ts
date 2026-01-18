@@ -76,7 +76,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   }
   const { inDone: backlogInDone, inProgress: backlogInProgress } = parseBacklogSections(
     backlogContent,
-    id
+    id,
   );
 
   // Parse status.md sections
@@ -330,7 +330,10 @@ interface RepairResult {
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<RepairResult>} Result with success, skipped, and reason
  */
-async function repairSingleError(error: { type: string; wuId: string; title?: string; lane?: string }, projectRoot: string): Promise<RepairResult> {
+async function repairSingleError(
+  error: { type: string; wuId: string; title?: string; lane?: string },
+  projectRoot: string,
+): Promise<RepairResult> {
   switch (error.type) {
     case CONSISTENCY_TYPES.YAML_DONE_NO_STAMP:
       await createStampInProject(error.wuId, error.title || `WU ${error.wuId}`, projectRoot);
@@ -340,7 +343,7 @@ async function repairSingleError(error: { type: string; wuId: string; title?: st
       await removeWUFromSection(
         path.join(projectRoot, WU_PATHS.STATUS()),
         error.wuId,
-        '## In Progress'
+        '## In Progress',
       );
       return { success: true };
 
@@ -348,7 +351,7 @@ async function repairSingleError(error: { type: string; wuId: string; title?: st
       await removeWUFromSection(
         path.join(projectRoot, WU_PATHS.BACKLOG()),
         error.wuId,
-        '## 🔧 In progress'
+        '## 🔧 In progress',
       );
       return { success: true };
 
@@ -413,7 +416,11 @@ async function updateYamlToDone(id, projectRoot) {
 
   // Read current YAML
   const content = await readFile(wuPath, { encoding: 'utf-8' });
-  const wuDoc = yaml.load(content) as { status?: string; locked?: boolean; completed?: string } | null;
+  const wuDoc = yaml.load(content) as {
+    status?: string;
+    locked?: boolean;
+    completed?: string;
+  } | null;
 
   if (!wuDoc) {
     throw new Error(`Failed to parse WU YAML: ${wuPath}`);

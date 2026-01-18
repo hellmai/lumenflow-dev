@@ -195,7 +195,7 @@ describe('GetSuggestionsUseCase', () => {
       });
 
       const wu1235Suggestion = result.find(
-        (s) => s.command?.includes('WU-1235') && s.priority === 'high'
+        (s) => s.command?.includes('WU-1235') && s.priority === 'high',
       );
       expect(wu1235Suggestion?.reason).toContain('blocks 10');
     });

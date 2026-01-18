@@ -183,7 +183,10 @@ function isValidWuId(wuId: string): boolean {
  *   lane: 'Operations: Tooling',
  * });
  */
-export async function createSignal(baseDir: string, options: CreateSignalOptions): Promise<CreateSignalResult> {
+export async function createSignal(
+  baseDir: string,
+  options: CreateSignalOptions,
+): Promise<CreateSignalResult> {
   const { message, wuId, lane } = options;
 
   // Validate message is provided and non-empty
@@ -249,7 +252,10 @@ export async function createSignal(baseDir: string, options: CreateSignalOptions
  *   unreadOnly: true,
  * });
  */
-export async function loadSignals(baseDir: string, options: LoadSignalsOptions = {}): Promise<Signal[]> {
+export async function loadSignals(
+  baseDir: string,
+  options: LoadSignalsOptions = {},
+): Promise<Signal[]> {
   const { wuId, lane, unreadOnly, since } = options;
   const signalsPath = getSignalsPath(baseDir);
 
@@ -309,7 +315,10 @@ export async function loadSignals(baseDir: string, options: LoadSignalsOptions =
  * const result = await markSignalsAsRead('/project', ['sig-abc12345', 'sig-def67890']);
  * console.log(result.markedCount); // 2
  */
-export async function markSignalsAsRead(baseDir: string, signalIds: string[]): Promise<MarkAsReadResult> {
+export async function markSignalsAsRead(
+  baseDir: string,
+  signalIds: string[],
+): Promise<MarkAsReadResult> {
   const signalsPath = getSignalsPath(baseDir);
   const idSet = new Set<string>(signalIds);
   let markedCount = 0;
@@ -341,7 +350,9 @@ export async function markSignalsAsRead(baseDir: string, signalIds: string[]): P
 
   // Write back updated content
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes signals file
-  await fs.writeFile(signalsPath, `${updatedLines.join('\n')}\n`, { encoding: 'utf-8' as BufferEncoding });
+  await fs.writeFile(signalsPath, `${updatedLines.join('\n')}\n`, {
+    encoding: 'utf-8' as BufferEncoding,
+  });
 
   return { markedCount };
 }

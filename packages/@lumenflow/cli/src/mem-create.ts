@@ -214,7 +214,7 @@ async function main() {
     console.error('');
     console.error('Options:');
     console.error(
-      '  --type <type>            Node type (discovery, session, checkpoint, note, summary) or alias (bug, idea, question, dependency)'
+      '  --type <type>            Node type (discovery, session, checkpoint, note, summary) or alias (bug, idea, question, dependency)',
     );
     console.error('  --discovered-from <id>   Parent node ID for provenance (mem-XXXX)');
     console.error('  --wu <id>                WU ID to link node to (WU-XXX)');

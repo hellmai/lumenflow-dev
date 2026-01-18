@@ -34,7 +34,11 @@ import { join } from 'node:path';
 import yaml from 'js-yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
-import { INIT_PATTERNS, INIT_COMMIT_FORMATS, INIT_DEFAULTS } from '@lumenflow/initiatives/dist/initiative-constants.js';
+import {
+  INIT_PATTERNS,
+  INIT_COMMIT_FORMATS,
+  INIT_DEFAULTS,
+} from '@lumenflow/initiatives/dist/initiative-constants.js';
 import { FILE_SYSTEM, YAML_OPTIONS } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
@@ -66,7 +70,7 @@ function validateSlugFormat(slug) {
     die(
       `Invalid slug format: "${slug}"\n\n` +
         `Slugs must be kebab-case (lowercase letters, numbers, hyphens only)\n` +
-        `Examples: shock-protocol, lumenflow-saas-v2`
+        `Examples: shock-protocol, lumenflow-saas-v2`,
     );
   }
 }
@@ -98,7 +102,13 @@ interface CreateInitiativeOptions {
   targetDate?: string;
 }
 
-function createInitiativeYamlInWorktree(worktreePath: string, id: string, slug: string, title: string, options: CreateInitiativeOptions = {}) {
+function createInitiativeYamlInWorktree(
+  worktreePath: string,
+  id: string,
+  slug: string,
+  title: string,
+  options: CreateInitiativeOptions = {},
+) {
   const initRelativePath = INIT_PATHS.INITIATIVE(id);
   const initAbsolutePath = join(worktreePath, initRelativePath);
   const initDir = join(worktreePath, INIT_PATHS.INITIATIVES_DIR());
@@ -179,7 +189,7 @@ async function main() {
             priority: args.priority,
             owner: args.owner,
             targetDate: args.targetDate,
-          }
+          },
         );
 
         // Return commit message and files to commit
@@ -205,7 +215,7 @@ async function main() {
     die(
       `Transaction failed: ${error.message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +
-        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`
+        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
     );
   }
 }

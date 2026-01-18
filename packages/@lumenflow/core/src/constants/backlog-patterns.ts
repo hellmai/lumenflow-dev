@@ -23,6 +23,6 @@ export const WU_LINK_PATTERN = /\[([A-Z]+-\d+)\s*—\s*[^\]]+\]\([^)]+\)/gi;
 export function isInProgressHeader(line) {
   const normalized = line.trim().toLowerCase();
   return IN_PROGRESS_HEADERS.some(
-    (header) => normalized === header || normalized.startsWith(header)
+    (header) => normalized === header || normalized.startsWith(header),
   );
 }

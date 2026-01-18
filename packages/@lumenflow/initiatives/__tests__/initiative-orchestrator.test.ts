@@ -26,7 +26,7 @@ function createStamp(wuId: string) {
   createDir(STAMPS_DIR);
   writeFileSync(
     join(STAMPS_DIR, `${wuId}.done`),
-    JSON.stringify({ wuId, completedAt: new Date().toISOString() })
+    JSON.stringify({ wuId, completedAt: new Date().toISOString() }),
   );
 }
 
@@ -200,7 +200,10 @@ describe('WU-2280: Prevent false wave spawned confusion', () => {
     }
   }
 
-  function createTestWUFile(wuId: string, options: { lane?: string; status?: string; blockedBy?: string[] } = {}) {
+  function createTestWUFile(
+    wuId: string,
+    options: { lane?: string; status?: string; blockedBy?: string[] } = {},
+  ) {
     const { lane = 'Test Lane', status = 'ready', blockedBy = [] } = options;
     createDir(TEST_WU_DIR);
 
@@ -378,7 +381,10 @@ describe('WU-2430: dry-run suppression and ready-only filtering', () => {
     }
   }
 
-  function createTestWUFile(wuId: string, options: { lane?: string; status?: string; blockedBy?: string[] } = {}) {
+  function createTestWUFile(
+    wuId: string,
+    options: { lane?: string; status?: string; blockedBy?: string[] } = {},
+  ) {
     const { lane = 'Test Lane', status = 'ready', blockedBy = [] } = options;
     createDir(TEST_WU_DIR);
 
@@ -753,9 +759,8 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
   });
 
   it('should output Task XML blocks for execution plan previews', async () => {
-    const { formatExecutionPlanWithEmbeddedSpawns } = await import(
-      '../src/initiative-orchestrator.js'
-    );
+    const { formatExecutionPlanWithEmbeddedSpawns } =
+      await import('../src/initiative-orchestrator.js');
 
     const plan = {
       waves: [
@@ -785,7 +790,10 @@ describe('WU-2040: Checkpoint mode Task invocation output', () => {
     }
   }
 
-  function createTestWUFile(wuId: string, options: { lane?: string; status?: string; blockedBy?: string[] } = {}) {
+  function createTestWUFile(
+    wuId: string,
+    options: { lane?: string; status?: string; blockedBy?: string[] } = {},
+  ) {
     const { lane = 'Test Lane', status = 'ready', blockedBy = [] } = options;
     createDir(TEST_WU_DIR);
 

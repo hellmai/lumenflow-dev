@@ -11,6 +11,7 @@ AI-native quality gates with automatic language detection.
 ```
 
 Automatically detects your project type from:
+
 - `package.json` → Node.js/TypeScript
 - `pyproject.toml` / `setup.py` → Python
 - `go.mod` → Go
@@ -30,69 +31,69 @@ Automatically detects your project type from:
 ```yaml
 - uses: hellmai/lumenflow-gates@v1
   with:
-    skip-typecheck: true  # For JS projects without TypeScript
+    skip-typecheck: true # For JS projects without TypeScript
 ```
 
 ## Presets
 
 ### Node.js (`node`)
 
-| Gate | Command | Fallback |
-|------|---------|----------|
-| Format | `npm run format:check` | `prettier --check .` |
-| Lint | `npm run lint` | `eslint .` |
-| Typecheck | `npm run typecheck` | `tsc --noEmit` |
-| Test | `npm test` | - |
+| Gate      | Command                | Fallback             |
+| --------- | ---------------------- | -------------------- |
+| Format    | `npm run format:check` | `prettier --check .` |
+| Lint      | `npm run lint`         | `eslint .`           |
+| Typecheck | `npm run typecheck`    | `tsc --noEmit`       |
+| Test      | `npm test`             | -                    |
 
 Supports: npm, pnpm, yarn, bun (auto-detected from lockfile)
 
 ### Python (`python`)
 
-| Gate | Command | Fallback |
-|------|---------|----------|
-| Format | `ruff format --check .` | `black --check .` |
-| Lint | `ruff check .` | `flake8 .` |
-| Typecheck | `mypy .` | - |
-| Test | `pytest` | `python -m unittest discover` |
+| Gate      | Command                 | Fallback                      |
+| --------- | ----------------------- | ----------------------------- |
+| Format    | `ruff format --check .` | `black --check .`             |
+| Lint      | `ruff check .`          | `flake8 .`                    |
+| Typecheck | `mypy .`                | -                             |
+| Test      | `pytest`                | `python -m unittest discover` |
 
 ### Go (`go`)
 
-| Gate | Command |
-|------|---------|
-| Format | `gofmt -l .` |
-| Lint | `golangci-lint run` |
-| Typecheck | `go vet ./...` |
-| Test | `go test ./...` |
+| Gate      | Command             |
+| --------- | ------------------- |
+| Format    | `gofmt -l .`        |
+| Lint      | `golangci-lint run` |
+| Typecheck | `go vet ./...`      |
+| Test      | `go test ./...`     |
 
 ### Rust (`rust`)
 
-| Gate | Command |
-|------|---------|
-| Format | `cargo fmt --check` |
-| Lint | `cargo clippy -- -D warnings` |
-| Typecheck | `cargo check` |
-| Test | `cargo test` |
+| Gate      | Command                       |
+| --------- | ----------------------------- |
+| Format    | `cargo fmt --check`           |
+| Lint      | `cargo clippy -- -D warnings` |
+| Typecheck | `cargo check`                 |
+| Test      | `cargo test`                  |
 
 ## Inputs
 
-| Input | Description | Default |
-|-------|-------------|---------|
-| `preset` | Language preset | `auto` |
-| `working-directory` | Directory to run in | `.` |
-| `node-version` | Node.js version | `20` |
-| `python-version` | Python version | `3.12` |
-| `go-version` | Go version | `1.22` |
-| `skip-format` | Skip format check | `false` |
-| `skip-lint` | Skip lint check | `false` |
-| `skip-typecheck` | Skip type check | `false` |
-| `skip-test` | Skip tests | `false` |
+| Input               | Description         | Default |
+| ------------------- | ------------------- | ------- |
+| `preset`            | Language preset     | `auto`  |
+| `working-directory` | Directory to run in | `.`     |
+| `node-version`      | Node.js version     | `20`    |
+| `python-version`    | Python version      | `3.12`  |
+| `go-version`        | Go version          | `1.22`  |
+| `skip-format`       | Skip format check   | `false` |
+| `skip-lint`         | Skip lint check     | `false` |
+| `skip-typecheck`    | Skip type check     | `false` |
+| `skip-test`         | Skip tests          | `false` |
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
+| Output            | Description              |
+| ----------------- | ------------------------ |
 | `preset-detected` | The preset that was used |
-| `gates-passed` | Whether all gates passed |
+| `gates-passed`    | Whether all gates passed |
 
 ## Full Example
 

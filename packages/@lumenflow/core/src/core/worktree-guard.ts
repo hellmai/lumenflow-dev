@@ -294,7 +294,7 @@ To fix:
 For more information:
   See CLAUDE.md §2 (Worktree Discipline)
   See .claude/skills/worktree-discipline/SKILL.md
-`
+`,
     );
   }
 

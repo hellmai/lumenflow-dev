@@ -16,11 +16,18 @@
 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { readWUYaml, validateBranchName, extractWUFromBranch } from '@lumenflow/core/dist/wu-helpers.js';
+import {
+  readWUYaml,
+  validateBranchName,
+  extractWUFromBranch,
+} from '@lumenflow/core/dist/wu-helpers.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { detectOrphanWorktrees, removeOrphanDirectory } from '@lumenflow/core/dist/orphan-detector.js';
+import {
+  detectOrphanWorktrees,
+  removeOrphanDirectory,
+} from '@lumenflow/core/dist/orphan-detector.js';
 import {
   BRANCHES,
   WU_STATUS,
@@ -104,7 +111,7 @@ async function validateWorktree(wt) {
   const branchValidation = validateBranchName(wt.branch);
   if (!branchValidation.valid) {
     errors.push(
-      `Invalid branch name: ${wt.branch}\n    Expected: lane/<lane>/<wu-id>\n    ${branchValidation.error}`
+      `Invalid branch name: ${wt.branch}\n    Expected: lane/<lane>/<wu-id>\n    ${branchValidation.error}`,
     );
     return { valid: false, warnings, errors }; // Can't continue validation without WU ID
   }
@@ -120,7 +127,7 @@ async function validateWorktree(wt) {
   const wuPath = path.join(repoRoot.trim(), WU_PATHS.WU(wuid));
   if (!existsSync(wuPath)) {
     errors.push(
-      `Orphaned worktree: WU ${wuid} not found\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Expected: ${wuPath}`
+      `Orphaned worktree: WU ${wuid} not found\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Expected: ${wuPath}`,
     );
     return { valid: false, warnings, errors };
   }
@@ -136,15 +143,15 @@ async function validateWorktree(wt) {
   const status = wu.status;
   if (status === WU_STATUS.DONE) {
     warnings.push(
-      `Stale worktree: WU ${wuid} is marked '${WU_STATUS.DONE}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Action: Remove with 'git worktree remove ${wt.path}'`
+      `Stale worktree: WU ${wuid} is marked '${WU_STATUS.DONE}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Action: Remove with 'git worktree remove ${wt.path}'`,
     );
   } else if (status === WU_STATUS.BLOCKED) {
     warnings.push(
-      `Blocked worktree: WU ${wuid} is marked '${WU_STATUS.BLOCKED}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Consider: Keep if resuming soon, otherwise remove`
+      `Blocked worktree: WU ${wuid} is marked '${WU_STATUS.BLOCKED}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Consider: Keep if resuming soon, otherwise remove`,
     );
   } else if (status === WU_STATUS.READY) {
     warnings.push(
-      `Unclaimed worktree: WU ${wuid} is marked '${WU_STATUS.READY}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Expected: Status should be '${WU_STATUS.IN_PROGRESS}' for active worktrees`
+      `Unclaimed worktree: WU ${wuid} is marked '${WU_STATUS.READY}'\n    Worktree: ${wt.path}\n    Branch: ${wt.branch}\n    Expected: Status should be '${WU_STATUS.IN_PROGRESS}' for active worktrees`,
     );
   }
 
@@ -153,7 +160,7 @@ async function validateWorktree(wt) {
   const wuLane = wu.lane;
   if (wuLane && laneName && laneName !== wuLane.toLowerCase()) {
     warnings.push(
-      `Lane mismatch: Branch lane '${laneName}' doesn't match WU lane '${wuLane}'\n    Worktree: ${wt.path}\n    WU: ${wuid}`
+      `Lane mismatch: Branch lane '${laneName}' doesn't match WU lane '${wuLane}'\n    Worktree: ${wt.path}\n    WU: ${wuid}`,
     );
   }
 
@@ -211,7 +218,7 @@ This tool:
 
   if (orphanResult.orphans.length > 0) {
     console.log(
-      `${PREFIX} ${EMOJI.WARNING} Found ${orphanResult.orphans.length} orphan director${orphanResult.orphans.length === 1 ? 'y' : 'ies'} (not tracked by git):`
+      `${PREFIX} ${EMOJI.WARNING} Found ${orphanResult.orphans.length} orphan director${orphanResult.orphans.length === 1 ? 'y' : 'ies'} (not tracked by git):`,
     );
     for (const orphanPath of orphanResult.orphans) {
       console.log(`    - ${orphanPath}`);

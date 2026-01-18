@@ -291,7 +291,10 @@ function createCleanupMarkers(nodes: MemoryNode[], summaryId: string): MemoryNod
  *   dryRun: true,
  * });
  */
-export async function summarizeWu(baseDir: string, options: SummarizeOptions): Promise<SummarizeResult> {
+export async function summarizeWu(
+  baseDir: string,
+  options: SummarizeOptions,
+): Promise<SummarizeResult> {
   const { wuId, dryRun = false } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 

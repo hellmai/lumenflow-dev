@@ -185,7 +185,7 @@ sections:
           id: 'WU-100',
           direction: 'block',
           reason: 'Cannot block completed WU',
-        })
+        }),
       ).toThrow(/State transition validation failed/);
     });
 
@@ -354,7 +354,7 @@ sections:
         transitionWUStatus({
           id: 'WU-999',
           direction: 'block',
-        })
+        }),
       ).toThrow(/WU file not found/);
     });
 
@@ -366,7 +366,7 @@ sections:
         transitionWUStatus({
           id: 'WU-100',
           direction: 'block',
-        })
+        }),
       ).toThrow(/Missing.*backlog.md/);
     });
 
@@ -378,7 +378,7 @@ sections:
         transitionWUStatus({
           id: 'WU-100',
           direction: 'block',
-        })
+        }),
       ).toThrow(/Missing.*status.md/);
     });
   });

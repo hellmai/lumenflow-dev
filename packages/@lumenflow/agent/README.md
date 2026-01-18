@@ -121,26 +121,26 @@ import { reviewFeedback } from '@lumenflow/agent/feedback-review';
 
 ### Session Management
 
-| Function | Description |
-|----------|-------------|
-| `startSession(wuId, tier, agentType?)` | Start a new agent session |
-| `getCurrentSession()` | Get the current active session |
-| `endSession()` | End session and return summary |
-| `logIncident(data)` | Log an incident to the current session |
+| Function                               | Description                            |
+| -------------------------------------- | -------------------------------------- |
+| `startSession(wuId, tier, agentType?)` | Start a new agent session              |
+| `getCurrentSession()`                  | Get the current active session         |
+| `endSession()`                         | End session and return summary         |
+| `logIncident(data)`                    | Log an incident to the current session |
 
 ### Verification
 
-| Function | Description |
-|----------|-------------|
+| Function                 | Description                                      |
+| ------------------------ | ------------------------------------------------ |
 | `verifyWUComplete(wuId)` | Verify WU completion (stamp, commit, clean tree) |
-| `debugSummary(result)` | Format verification result for display |
+| `debugSummary(result)`   | Format verification result for display           |
 
 ### Incidents
 
-| Function | Description |
-|----------|-------------|
+| Function                   | Description                   |
+| -------------------------- | ----------------------------- |
 | `appendIncident(incident)` | Append incident to NDJSON log |
-| `readIncidents()` | Read all incidents from log |
+| `readIncidents()`          | Read all incidents from log   |
 
 ### Types
 

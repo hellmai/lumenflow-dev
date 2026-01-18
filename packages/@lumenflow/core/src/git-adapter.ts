@@ -74,7 +74,10 @@ function assertNonEmptyString(value: unknown, name: string): asserts value is st
  * @param {string} name - Parameter name for error message
  * @throws {TypeError} If value is not a string (and not null/undefined)
  */
-function assertOptionalString(value: unknown, name: string): asserts value is string | undefined | null {
+function assertOptionalString(
+  value: unknown,
+  name: string,
+): asserts value is string | undefined | null {
   if (value !== undefined && value !== null && typeof value !== 'string') {
     throw new TypeError(`${name} must be a string, got ${typeof value}`);
   }
@@ -642,7 +645,7 @@ export class GitAdapter {
   run(cmd: string): never {
     throw new Error(
       'GitAdapter.run() is deprecated (WU-1213). Use async methods instead. ' +
-        `Attempted to run: ${cmd}`
+        `Attempted to run: ${cmd}`,
     );
   }
 
@@ -717,7 +720,7 @@ export const git = new Proxy(gitSingleton, {
     if (!singletonWarned) {
       console.warn(
         '[DEPRECATED] git singleton captured cwd at import time. ' +
-          'Use createGitForPath(path) or getGitForCwd() for explicit directory control.'
+          'Use createGitForPath(path) or getGitForCwd() for explicit directory control.',
       );
       singletonWarned = true;
     }

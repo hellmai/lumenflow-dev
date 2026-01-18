@@ -86,7 +86,7 @@ describe.skipIf(!hasWUCorpus)('YAML round-trip tests (WU-1342)', () => {
           // (These are pre-existing issues, not caused by library migration)
           expect(
             err.message.includes('Implicit keys need to be on a single line') ||
-              err.message.includes('Nested mappings are not allowed')
+              err.message.includes('Nested mappings are not allowed'),
           ).toBe(true);
           return; // Skip this test
         }
