@@ -2,7 +2,7 @@ id: WU-1013
 title: Deploy docs to Vercel (lumenflow.dev)
 lane: Documentation
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-18
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - Site deployed to Vercel
   - lumenflow.dev domain configured
   - Auto-deploy on main push works
+claimed_mode: worktree
+worktree_path: worktrees/documentation-wu-1013
+claimed_at: 2026-01-18T23:45:27.150Z
+baseline_main_sha: 2bdd008b6f4c0bf95ac2dff3363168480addbe25
+session_id: 862ff441-edf7-46fe-9884-25bb391e8ef0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-18T23:45:27.154Z
