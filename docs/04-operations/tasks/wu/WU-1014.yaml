@@ -1,14 +1,16 @@
 id: WU-1014
 title: Add error logging to worktreeRemove fallback rmSync
 lane: CLI
-type: feature
+type: bug
 status: ready
 priority: P2
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - packages/@lumenflow/core/src/git-adapter.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/core/tests/git-adapter.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1014.done
@@ -23,11 +25,21 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Add error logging to worktreeRemove fallback rmSync in git-adapter.ts.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: The worktreeRemove function has a "Layer 1 defense" (WU-1476) that
+  calls rmSync after git worktree remove succeeds, to handle edge cases where
+  the directory is left behind.
+
+  Problem: The rmSync call on line 528 is outside the try-catch block. If it
+  throws (permission denied, file locked, etc.), the error propagates with no
+  logging about what failed. This makes debugging difficult when wu:done or
+  wu:cleanup fails silently.
+
+  Solution: Wrap the fallback rmSync in try-catch with descriptive error
+  logging that includes the worktree path and original error message.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - Fallback rmSync wrapped in try-catch with console.warn logging
+  - Log message includes worktree path and error message
+  - Unit test covers rmSync throwing after successful git worktree remove
   - pnpm format, lint, typecheck → PASS
