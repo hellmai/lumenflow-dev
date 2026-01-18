@@ -5,9 +5,14 @@ type: feature
 status: ready
 priority: P0
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/
+  - packages/@lumenflow/agent/src/
+  - tools/
 tests:
-  manual: []
+  manual:
+    - pnpm test passes
+    - All CLI commands work
   unit: []
   e2e: []
 artifacts:
@@ -22,7 +27,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate all missing LumenFlow-generic tools from ExampleApp to hellmai/os. Includes wu-delete, wu-unlock-lane, orchestrate-* commands, agent CLI wrappers, guard tools, and validation tools.
+description: Migrate all missing LumenFlow-generic tools from ExampleApp to hellmai/os. Includes
+  wu-delete, wu-unlock-lane, orchestrate-* commands, agent CLI wrappers, guard tools, and validation
+  tools.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - All wu-* commands from ExampleApp migrated
+  - orchestrate-* commands added to CLI
+  - Agent CLI wrappers added
+  - Guard and validation tools migrated
+  - All tests pass
