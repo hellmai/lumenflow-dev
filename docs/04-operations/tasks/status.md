@@ -18,7 +18,8 @@ _None_
 
 ## Completed
 
-_None_
+- [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
+  _None_
 
 ---
 
