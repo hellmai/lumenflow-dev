@@ -164,7 +164,8 @@ export default async function handler(
     });
     res.status(200).json({ ok: true });
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Webhook error:', errorMessage, error);
+    res.status(500).json({ error: 'Webhook processing failed', details: errorMessage });
   }
 }

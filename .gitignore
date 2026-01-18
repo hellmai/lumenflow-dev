@@ -32,3 +32,9 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# LumenFlow
+/worktrees/
+/.beacon/memory/
+/.beacon/locks/
+/.beacon/sessions/
