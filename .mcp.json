@@ -1,0 +1,41 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Access up-to-date documentation for libraries and frameworks"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "description": "GitHub repository operations (create/update files, PRs, issues, branches)"
+    },
+    "vercel": {
+      "command": "npx",
+      "args": ["-y", "@mistertk/vercel-mcp"],
+      "description": "Vercel platform management (deployments, domains, DNS, projects, teams, monitoring)"
+    },
+    "axiom": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.axiom.co/mcp"],
+      "description": "Query application logs and traces from Axiom (authenticates via browser)"
+    }
+  },
+  "setupInstructions": {
+    "prerequisites": [
+      "Node.js v20+ and pnpm installed",
+      "GitHub authentication configured (for github server)",
+      "Vercel account with API token (for vercel server)"
+    ],
+    "installation": [
+      "1. Run 'claude mcp add' for each server or use Claude Desktop MCP configuration",
+      "2. Verify all servers connected: claude mcp list"
+    ],
+    "environmentVariables": {
+      "GITHUB_TOKEN": "Required for github server (create at https://github.com/settings/tokens)",
+      "VERCEL_API_KEY": "Required for vercel server (create at https://vercel.com/account/tokens)",
+      "AXIOM_TOKEN": "Required for axiom server (from https://app.axiom.co/settings/api-tokens)",
+      "AXIOM_URL": "Required for axiom server (https://api.eu.axiom.co for EU region)"
+    }
+  }
+}
