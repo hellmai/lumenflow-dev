@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1004 — Make gates script repo-agnostic (skip missing apps/web)](wu/WU-1004.yaml) — CLI
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — Infrastructure
   (No items ready)
 
