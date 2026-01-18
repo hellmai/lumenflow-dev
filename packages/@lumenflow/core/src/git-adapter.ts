@@ -525,7 +525,14 @@ export class GitAdapter {
     // This handles edge cases where git worktree remove succeeds but leaves the directory
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
     if (existsSync(worktreePath)) {
-      rmSync(worktreePath, { recursive: true, force: true });
+      try {
+        rmSync(worktreePath, { recursive: true, force: true });
+      } catch (rmErr) {
+        // WU-1014: Log but don't throw - git worktree remove succeeded, directory cleanup is best-effort
+        console.warn(
+          `[git-adapter] worktreeRemove: git succeeded but directory cleanup failed for ${worktreePath}: ${rmErr instanceof Error ? rmErr.message : String(rmErr)}`,
+        );
+      }
     }
   }
 
