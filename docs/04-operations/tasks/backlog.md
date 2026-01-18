@@ -22,6 +22,8 @@ sections:
 
 - [WU-1009 — Write quickstart guide](wu/WU-1009.yaml)
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)
+- [WU-1011 — Fix circular dependency between core and memory packages](wu/WU-1011.yaml)
+- [WU-1012 — Add --docs-only flag to wu:done](wu/WU-1012.yaml)
 
 ## 🔧 In progress
 
