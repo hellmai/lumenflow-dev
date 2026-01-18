@@ -2,7 +2,7 @@ id: WU-1006
 title: Refactor codebase to use well-known libraries (Library-First)
 lane: Core
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -54,3 +54,11 @@ acceptance:
   - init.ts uses js-yaml.dump() for .lumenflow.yaml generation
   - Existing tests pass (no behavior change)
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/core-wu-1006
+claimed_at: 2026-01-18T18:25:27.087Z
+baseline_main_sha: 2212836b05252d0717a04b1572972ef9bdf2ecd5
+session_id: 65325639-1413-4482-b255-bb19346b5b06
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-18T18:25:27.099Z
