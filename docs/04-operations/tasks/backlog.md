@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
