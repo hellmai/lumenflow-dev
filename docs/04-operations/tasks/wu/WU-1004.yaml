@@ -2,7 +2,7 @@ id: WU-1004
 title: Make gates script repo-agnostic (skip missing apps/web)
 lane: CLI
 type: feature
-status: ready
+status: cancelled
 priority: P2
 created: 2026-01-18
 code_paths: []
@@ -23,11 +23,10 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Cancelled: This WU was created but never specified or implemented.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Original intent was to make gates script skip missing directories
+  (like apps/web) when running in repos that don't have all paths.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - Cancelled - no acceptance criteria defined
   - pnpm format, lint, typecheck → PASS
