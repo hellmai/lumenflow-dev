@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
