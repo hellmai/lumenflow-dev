@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+/**
+ * Orchestrate Initiative CLI
+ *
+ * Orchestrate initiative execution with parallel agent spawning.
+ * Builds execution plan based on WU dependencies and manages wave-based execution.
+ *
+ * Usage:
+ *   pnpm orchestrate:initiative --initiative INIT-001
+ *   pnpm orchestrate:initiative --initiative INIT-001 --dry-run
+ */
+
+import { Command } from 'commander';
+import chalk from 'chalk';
+import {
+  loadInitiativeWUs,
+  loadMultipleInitiatives,
+  buildExecutionPlan,
+  formatExecutionPlan,
+  calculateProgress,
+  formatProgress,
+  buildCheckpointWave,
+  formatCheckpointOutput,
+  validateCheckpointFlags,
+  resolveCheckpointMode,
+  LOG_PREFIX,
+} from '@lumenflow/initiatives';
+import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+
+const program = new Command()
+  .name('orchestrate-initiative')
+  .description('Orchestrate initiative execution with parallel agent spawning')
+  .option('-i, --initiative <ids...>', 'Initiative ID(s) to orchestrate')
+  .option('-d, --dry-run', 'Show execution plan without spawning agents')
+  .option('-p, --progress', 'Show current progress only')
+  .option('-c, --checkpoint-per-wave', 'Spawn next wave then exit (no polling)')
+  .option('--no-checkpoint', 'Force polling mode')
+  .action(async (options) => {
+    const {
+      initiative: initIds,
+      dryRun,
+      progress: progressOnly,
+      checkpointPerWave,
+      checkpoint,
+    } = options;
+    const noCheckpoint = checkpoint === false;
+
+    try {
+      validateCheckpointFlags({ checkpointPerWave, dryRun, noCheckpoint });
+    } catch (error: any) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: ${error.message}`));
+      process.exit(EXIT_CODES.ERROR);
+    }
+
+    if (!initIds || initIds.length === 0) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: --initiative is required`));
+      console.error('');
+      console.error('Usage:');
+      console.error('  pnpm orchestrate:initiative --initiative INIT-001');
+      console.error('  pnpm orchestrate:initiative --initiative INIT-001 --dry-run');
+      process.exit(EXIT_CODES.ERROR);
+    }
+
+    try {
+      console.log(chalk.cyan(`${LOG_PREFIX} Loading initiative(s): ${initIds.join(', ')}`));
+
+      let wus: any[];
+      let initiative: any;
+
+      if (initIds.length === 1) {
+        const result = loadInitiativeWUs(initIds[0]);
+        initiative = result.initiative;
+        wus = result.wus;
+      } else {
+        wus = loadMultipleInitiatives(initIds);
+        initiative = { id: 'MULTI', title: `Combined: ${initIds.join(', ')}` };
+      }
+
+      console.log(chalk.green(`${LOG_PREFIX} Loaded ${wus.length} WU(s)`));
+      console.log('');
+
+      const progress = calculateProgress(wus);
+      console.log(chalk.bold('Progress:'));
+      console.log(formatProgress(progress));
+      console.log('');
+
+      if (progressOnly) {
+        return;
+      }
+
+      const checkpointDecision = resolveCheckpointMode(
+        { checkpointPerWave, noCheckpoint, dryRun },
+        wus,
+      );
+
+      if (checkpointDecision.enabled) {
+        if (initIds.length > 1) {
+          console.error(
+            chalk.red(`${LOG_PREFIX} Error: Checkpoint mode only supports single initiative`),
+          );
+          process.exit(EXIT_CODES.ERROR);
+        }
+
+        const waveData = buildCheckpointWave(initIds[0], { dryRun });
+
+        if (!waveData) {
+          console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to spawn.`));
+          return;
+        }
+
+        console.log(formatCheckpointOutput({ ...waveData, dryRun }));
+        return;
+      }
+
+      console.log(chalk.cyan(`${LOG_PREFIX} Building execution plan...`));
+      const plan = buildExecutionPlan(wus);
+
+      if (plan.waves.length === 0) {
+        console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
+        return;
+      }
+
+      console.log('');
+      console.log(chalk.bold('Execution Plan:'));
+      console.log(formatExecutionPlan(initiative, plan));
+
+      if (dryRun) {
+        console.log(chalk.yellow(`${LOG_PREFIX} Dry run mode - no agents spawned`));
+        console.log(chalk.cyan('To execute this plan, remove the --dry-run flag.'));
+        return;
+      }
+
+      console.log(chalk.green(`${LOG_PREFIX} Execution plan output complete.`));
+      console.log(chalk.cyan('Copy the spawn commands above to execute.'));
+    } catch (error: any) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: ${error.message}`));
+      process.exit(EXIT_CODES.ERROR);
+    }
+  });
+
+program.parse();
