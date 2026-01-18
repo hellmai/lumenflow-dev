@@ -57,3 +57,4 @@ acceptance:
   - Free tier plan configured (10 WUs/month)
   - App installable by external users
   - Basic description and categories set
+initiative: INIT-001
