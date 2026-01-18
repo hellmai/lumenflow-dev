@@ -1,0 +1,72 @@
+---
+title: LumenFlow
+description: AI-native workflow for software teams
+template: splash
+hero:
+  tagline: Ship faster with clarity. Every Work Unit (WU) is a small, testable promise. Gates enforce quality. Memory preserves context.
+  actions:
+    - text: Get Started
+      link: /getting-started/quickstart/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/hellmai/os
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why LumenFlow?
+
+<CardGrid stagger>
+  <Card title="Clarity over chaos" icon="pencil">
+    Every Work Unit has explicit acceptance criteria. No ambiguity about what "done" means.
+  </Card>
+  <Card title="AI-first design" icon="rocket">
+    Built for AI agents to understand and execute. Clear specs, automated gates, context recovery.
+  </Card>
+  <Card title="Quality by default" icon="approve-check">
+    Gates (format, lint, typecheck, test) run automatically. No "works on my machine."
+  </Card>
+  <Card title="Flow, not queues" icon="forward-slash">
+    Lane-based WIP limits prevent overload. Finish work before starting new work.
+  </Card>
+</CardGrid>
+
+## How it works
+
+```yaml
+# 1. Define your lanes
+lanes:
+  - name: Core
+    wip_limit: 1
+  - name: UI
+    wip_limit: 2
+
+# 2. Create a Work Unit
+# pnpm wu:create --id WU-001 --title "Add auth" --lane Core
+
+# 3. Claim and work
+# pnpm wu:claim --id WU-001 --lane Core
+# cd worktrees/core-wu-001
+
+# 4. Complete with gates
+# pnpm gates && pnpm wu:done --id WU-001
+```
+
+## Get Started
+
+<CardGrid>
+  <Card title="Quickstart" icon="rocket">
+    [Get running in 5 minutes →](/getting-started/quickstart/)
+  </Card>
+  <Card title="Core Concepts" icon="open-book">
+    [Understand WUs, Lanes, Gates →](/concepts/work-units/)
+  </Card>
+  <Card title="Install GitHub App" icon="github">
+    [Add team enforcement →](/getting-started/github-app/)
+  </Card>
+  <Card title="CLI Reference" icon="setting">
+    [All commands →](/reference/cli/)
+  </Card>
+</CardGrid>
