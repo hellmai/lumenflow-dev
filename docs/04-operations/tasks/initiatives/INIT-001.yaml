@@ -12,3 +12,4 @@ success_metrics: []
 labels: []
 wus:
   - WU-1010
+  - WU-1012
