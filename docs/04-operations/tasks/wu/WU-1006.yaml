@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/core/src/stamp-utils.ts
   - packages/@lumenflow/core/src/error-handler.ts
   - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual:
     - All date handling uses date-fns (no manual parseInt parsing)
@@ -27,6 +28,7 @@ notes: |
   1. stamp-utils.ts: Manual date parsing → date-fns parse/isValid
   2. error-handler.ts: Manual path split → path.basename()
   3. init.ts: String template YAML → js-yaml.dump()
+  4. gates.ts: Skip web-specific gates when apps/web doesn't exist (repo-agnostic)
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []

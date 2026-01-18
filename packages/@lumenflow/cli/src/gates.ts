@@ -240,6 +240,15 @@ async function runIncrementalLint({
     writeSync(agentLog.logFd, `${line}\n`);
   };
 
+  // WU-1006: Skip incremental lint if apps/web doesn't exist (repo-agnostic)
+  const webDir = path.join(process.cwd(), DIRECTORIES.APPS_WEB);
+  try {
+    await access(webDir);
+  } catch {
+    logLine('\n> ESLint (incremental) skipped (apps/web not present)\n');
+    return { ok: true, duration: Date.now() - start, fileCount: 0 };
+  }
+
   try {
     // Check if we're on main branch
     const git = getGitForCwd();
@@ -379,17 +388,12 @@ async function runChangedTests({
       return { ...result, duration: Date.now() - start, isIncremental: false };
     }
 
-    logLine('\n> Vitest (changed: tools project)\n');
-    const toolsArgs = ['--project', 'tools', ...buildVitestChangedArgs()];
-    const toolsResult = run(pnpmCmd('vitest', ...toolsArgs), { agentLog });
-    if (!toolsResult.ok) {
-      return { ...toolsResult, duration: Date.now() - start, isIncremental: true };
-    }
+    // WU-1006: Use turbo for tests (repo-agnostic)
+    // Previously used --project tools and test:changed which don't exist in all repos
+    logLine('\n> Running tests (turbo run test)\n');
+    const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
 
-    logLine('\n> Vitest (changed: turbo --affected)\n');
-    const result = run(pnpmCmd('turbo', 'run', 'test:changed', '--affected'), { agentLog });
-
-    return { ...result, duration: Date.now() - start, isIncremental: true };
+    return { ...result, duration: Date.now() - start, isIncremental: false };
   } catch (error) {
     console.error('⚠️  Changed tests failed, falling back to full suite:', error.message);
     const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
@@ -445,6 +449,15 @@ async function runSafetyCriticalTests({
     }
     writeSync(agentLog.logFd, `${line}\n`);
   };
+
+  // WU-1006: Skip safety-critical tests if apps/web doesn't exist (repo-agnostic)
+  const webDir = path.join(process.cwd(), DIRECTORIES.APPS_WEB);
+  try {
+    await access(webDir);
+  } catch {
+    logLine('\n> Safety-critical tests skipped (apps/web not present)\n');
+    return { ok: true, duration: Date.now() - start, testCount: 0 };
+  }
 
   try {
     logLine('\n> Safety-critical tests (always run)\n');
