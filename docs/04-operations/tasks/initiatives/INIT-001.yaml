@@ -1,14 +1,28 @@
 id: INIT-001
 slug: lumenflow-launch
 title: LumenFlow Public Launch
-description: ''
-status: draft
+description: >-
+  Launch LumenFlow as a public product: docs site, GitHub Marketplace listing, and example
+  repositories.
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: '2026-01-18'
 target_date: '2026-01-25'
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Polish & Document
+    status: pending
+  - id: 2
+    title: Deploy & Publish
+    status: pending
+  - id: 3
+    title: Marketplace Launch
+    status: pending
+success_metrics:
+  - lumenflow.dev live and accessible
+  - GitHub App listed on Marketplace
+  - At least one external repo installs the app
 labels: []
 wus:
   - WU-1010
