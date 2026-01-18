@@ -38,7 +38,7 @@ interface LaneConfig {
 }
 
 interface LumenflowConfig {
-  lanes?: {
+  lanes?: LaneConfig[] | {
     engineering?: LaneConfig[];
     business?: LaneConfig[];
   };
@@ -305,13 +305,21 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
   const config = yaml.load(configContent) as LumenflowConfig;
 
-  // Extract all lane names from engineering and business sections
+  // Extract all lane names - handle both flat array and nested engineering/business formats
   const allLanes: string[] = [];
-  if (config.lanes && config.lanes.engineering) {
-    allLanes.push(...config.lanes.engineering.map((l) => l.name));
-  }
-  if (config.lanes && config.lanes.business) {
-    allLanes.push(...config.lanes.business.map((l) => l.name));
+  if (config.lanes) {
+    if (Array.isArray(config.lanes)) {
+      // Flat array format: lanes: [{name: "Core"}, {name: "CLI"}, ...]
+      allLanes.push(...config.lanes.map((l) => l.name));
+    } else {
+      // Nested format: lanes: {engineering: [...], business: [...]}
+      if (config.lanes.engineering) {
+        allLanes.push(...config.lanes.engineering.map((l) => l.name));
+      }
+      if (config.lanes.business) {
+        allLanes.push(...config.lanes.business.map((l) => l.name));
+      }
+    }
   }
 
   // Case-insensitive comparison
