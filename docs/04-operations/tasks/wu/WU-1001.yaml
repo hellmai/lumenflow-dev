@@ -2,8 +2,8 @@ id: WU-1001
 title: Complete LumenFlow dogfooding setup
 lane: Infrastructure
 type: chore
-status: in_progress
-locked: false
+status: done
+locked: true
 priority: P1
 description: |
   Complete the LumenFlow dogfooding setup after minimal bootstrap commit.
@@ -36,3 +36,4 @@ approved_by:
 approved_at: 2026-01-18T16:51:03.644Z
 escalation_triggers: []
 requires_human_escalation: false
+completed_at: 2026-01-18T17:05:11.868Z
