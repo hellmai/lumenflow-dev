@@ -1,20 +1,36 @@
 id: WU-1002
 title: Publish @lumenflow packages to npm
 lane: Infrastructure
-type: feature
+type: chore
 status: ready
-priority: P2
+priority: P1
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - "packages/@lumenflow/core/package.json"
+  - "packages/@lumenflow/cli/package.json"
+  - "packages/@lumenflow/memory/package.json"
+  - "packages/@lumenflow/agent/package.json"
+  - "packages/@lumenflow/metrics/package.json"
+  - "packages/@lumenflow/initiatives/package.json"
+  - "packages/@lumenflow/shims/package.json"
+  - ".changeset/"
+  - "package.json"
 tests:
-  manual: []
+  manual:
+    - "Verify changeset init creates .changeset/config.json"
+    - "Verify pnpm changeset works after setup"
   unit: []
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1002.done
-dependencies: []
-risks: []
-notes: ''
+dependencies:
+  - WU-1001
+risks:
+  - "npm org @lumenflow might be taken - fallback to @hellmai"
+notes: |
+  Phase 2 of LumenFlow dogfooding plan.
+  Prepares packages for npm publishing with changesets.
+  Actual npm publish will be manual after this WU.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -23,11 +39,14 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Configure @lumenflow/* packages for npm publishing.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: LumenFlow is now self-hosted with working workflow (Phase 1 complete).
+  Problem: Packages can't be published to npm without proper configuration.
+  Solution: Add publishConfig to all 7 packages, setup changesets for versioning.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - "All 7 @lumenflow/* packages have publishConfig with access: restricted"
+  - "Changesets initialized with .changeset/config.json"
+  - "Release scripts added to root package.json (prerelease, release, version)"
+  - "pnpm changeset works without errors"
   - pnpm format, lint, typecheck → PASS
