@@ -44,3 +44,4 @@ coverage/
 /.beacon/checkpoints/
 .logs/
 *.tgz
+.npmrc
