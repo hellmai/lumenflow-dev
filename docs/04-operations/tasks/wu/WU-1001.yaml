@@ -15,11 +15,8 @@ acceptance:
   - "Framework docs exist at docs/04-operations/_frameworks/"
   - "Memory layer initialized with pnpm mem:init"
   - "pnpm gates passes"
-  - "Fix CLI getProjectRoot to use process.cwd() based discovery"
 code_paths:
   - "docs/04-operations/_frameworks/"
-  - "packages/@lumenflow/core/src/wu-constants.ts"
-  - "packages/@lumenflow/core/src/lane-checker.ts"
 test_paths:
   manual:
     - "Verify wu:claim creates worktree"
@@ -28,4 +25,4 @@ assigned_to: tom@hellm.ai
 created: "2026-01-18"
 notes: |
   Bootstrap WU to complete dogfooding setup.
-  Also fixes CLI project root discovery bug.
+  CLI project root discovery bug was fixed in earlier commits.
