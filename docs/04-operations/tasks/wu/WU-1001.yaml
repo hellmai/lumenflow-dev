@@ -1,0 +1,31 @@
+id: WU-1001
+title: "Complete LumenFlow dogfooding setup"
+lane: Infrastructure
+type: chore
+status: ready
+locked: false
+priority: P1
+description: |
+  Complete the LumenFlow dogfooding setup after minimal bootstrap commit.
+
+  Context: hellmai/os bootstrap commit added config and directory structure.
+  Problem: Framework docs and memory layer not yet initialized.
+  Solution: Add _frameworks content, initialize memory, verify workflow.
+acceptance:
+  - "Framework docs exist at docs/04-operations/_frameworks/"
+  - "Memory layer initialized with pnpm mem:init"
+  - "pnpm gates passes"
+  - "Fix CLI getProjectRoot to use process.cwd() based discovery"
+code_paths:
+  - "docs/04-operations/_frameworks/"
+  - "packages/@lumenflow/core/src/wu-constants.ts"
+  - "packages/@lumenflow/core/src/lane-checker.ts"
+test_paths:
+  manual:
+    - "Verify wu:claim creates worktree"
+    - "Verify wu:done merges and stamps"
+assigned_to: tom@hellm.ai
+created_at: "2026-01-18"
+notes: |
+  Bootstrap WU to complete dogfooding setup.
+  Also fixes CLI project root discovery bug.
