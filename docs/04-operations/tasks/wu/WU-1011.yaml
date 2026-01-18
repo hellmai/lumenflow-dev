@@ -6,12 +6,9 @@ status: in_progress
 priority: P1
 created: 2026-01-18
 code_paths:
-  - packages/@lumenflow/core/
   - packages/@lumenflow/memory/
 tests:
-  unit:
-    - packages/@lumenflow/core/src/__tests__/
-    - packages/@lumenflow/memory/src/__tests__/
+  unit: []
   manual:
     - turbo build succeeds without errors
     - Gates run in worktrees

@@ -16,7 +16,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
-import { validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
+import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 
 /**
  * Memory directory path relative to base

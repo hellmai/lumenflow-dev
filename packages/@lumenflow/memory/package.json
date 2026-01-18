@@ -51,6 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@lumenflow/core": "workspace:*",
     "ms": "^2.1.3",
     "yaml": "^2.8.0",
     "zod": "^4.3.5"
@@ -58,14 +59,6 @@
   "devDependencies": {
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
-  },
-  "peerDependencies": {
-    "@lumenflow/core": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@lumenflow/core": {
-      "optional": true
-    }
   },
   "engines": {
     "node": ">=22"
