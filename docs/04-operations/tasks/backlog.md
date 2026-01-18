@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1015 — Complete LumenFlow tools migration from ExampleApp](wu/WU-1015.yaml) — CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -40,3 +39,4 @@ sections:
 - [WU-1006 — Refactor codebase to use well-known libraries (Library-First)](wu/WU-1006.yaml)
 - [WU-1011 — Fix circular dependency between core and memory packages](wu/WU-1011.yaml)
 - [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml)
+- [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml)

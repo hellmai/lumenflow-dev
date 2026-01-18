@@ -18,6 +18,7 @@ _None_
 
 ## Completed
 
+- [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml) — 2026-01-18
 - [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml) — 2026-01-18
 - [WU-1011 — Fix circular dependency between core and memory packages](wu/WU-1011.yaml) — 2026-01-18
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — 2026-01-18
