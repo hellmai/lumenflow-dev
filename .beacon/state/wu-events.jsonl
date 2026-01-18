@@ -13,3 +13,4 @@
 {"type":"complete","wuId":"WU-1011","timestamp":"2026-01-18T20:32:11.064Z"}
 {"type":"claim","wuId":"WU-1014","lane":"CLI","title":"Add error logging to worktreeRemove fallback rmSync","timestamp":"2026-01-18T21:25:27.768Z"}
 {"type":"complete","wuId":"WU-1014","timestamp":"2026-01-18T21:32:07.164Z"}
+{"type":"claim","wuId":"WU-1015","lane":"CLI","title":"Add missing CLI command wrappers","timestamp":"2026-01-18T23:18:59.264Z"}
