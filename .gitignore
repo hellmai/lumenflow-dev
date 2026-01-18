@@ -44,3 +44,4 @@ coverage/
 /._legacy/checkpoints/
 .logs/
 *.tgz
+.npmrc
