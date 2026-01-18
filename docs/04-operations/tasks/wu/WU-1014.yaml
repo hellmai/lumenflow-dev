@@ -2,7 +2,7 @@ id: WU-1014
 title: Add error logging to worktreeRemove fallback rmSync
 lane: CLI
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - Log message includes worktree path and error message
   - Unit test covers rmSync throwing after successful git worktree remove
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/cli-wu-1014
+claimed_at: 2026-01-18T21:25:27.742Z
+baseline_main_sha: a429935c22bdd520e0c8400e7abefb0df1255135
+session_id: c5cd0689-0815-4626-91ed-39668c6db915
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-18T21:25:27.751Z
