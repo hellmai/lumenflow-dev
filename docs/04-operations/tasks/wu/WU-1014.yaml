@@ -2,7 +2,7 @@ id: WU-1014
 title: Add error logging to worktreeRemove fallback rmSync
 lane: CLI
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -51,3 +51,5 @@ session_id: c5cd0689-0815-4626-91ed-39668c6db915
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T21:25:27.751Z
+locked: true
+completed_at: 2026-01-18T21:32:07.147Z

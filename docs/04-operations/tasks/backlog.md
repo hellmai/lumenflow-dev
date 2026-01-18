@@ -20,18 +20,15 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml) — CLI
-- [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Core
-- [WU-1012 — Add --docs-only flag to wu:done](wu/WU-1012.yaml) — Core
-- [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml) — Core
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — Core
 
 ## ⛔ Blocked
 
-- [WU-1007 — List LumenFlow GitHub App on Marketplace](wu/WU-1007.yaml) — Core (blocked by: docs deployment)
+(No items currently blocked)
 
 ## ✅ Done
 
@@ -40,6 +37,5 @@ sections:
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml)
 - [WU-1005 — Add lumenflow init scaffolding command](wu/WU-1005.yaml)
 - [WU-1006 — Refactor codebase to use well-known libraries (Library-First)](wu/WU-1006.yaml)
-- [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
-- [WU-1009 — Write quickstart guide](wu/WU-1009.yaml)
 - [WU-1011 — Fix circular dependency between core and memory packages](wu/WU-1011.yaml)
+- [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml)
