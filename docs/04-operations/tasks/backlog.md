@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1005 — Add lumenflow init scaffolding command](wu/WU-1005.yaml) — CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -36,3 +35,4 @@ sections:
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml)
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml)
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml)
+- [WU-1005 — Add lumenflow init scaffolding command](wu/WU-1005.yaml)
