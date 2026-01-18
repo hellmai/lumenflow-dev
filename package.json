@@ -51,6 +51,7 @@
     "initiative:status": "node packages/@lumenflow/cli/dist/initiative-status.js",
     "initiative:add-wu": "node packages/@lumenflow/cli/dist/initiative-add-wu.js",
     "spawn:list": "node packages/@lumenflow/cli/dist/spawn-list.js",
+    "lumenflow:init": "node packages/@lumenflow/cli/dist/init.js",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish",
