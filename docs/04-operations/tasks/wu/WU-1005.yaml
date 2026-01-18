@@ -2,7 +2,7 @@ id: WU-1005
 title: Add lumenflow init scaffolding command
 lane: CLI
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -65,3 +65,5 @@ session_id: cff097c2-d00b-48f7-9d30-27c00a680135
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T18:15:51.337Z
+locked: true
+completed_at: 2026-01-18T18:19:31.636Z
