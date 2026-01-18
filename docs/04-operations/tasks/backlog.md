@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1015 — Complete LumenFlow tools migration from ](wu/WU-1015.yaml) — CLI
+  (No items ready)
 
 ## 🔧 In progress
 
