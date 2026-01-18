@@ -2,6 +2,7 @@
  * @file error-handler.mjs
  * @description Structured error handling with error codes
  * WU-1082: Extract shared utilities (eliminate die() duplication)
+ * WU-1006: Library-First - use path.basename() instead of manual split
  *
  * Replaces die() function in:
  * - tools/wu-claim.mjs
@@ -14,6 +15,8 @@
  * - tools/validate.mjs
  * - tools/guard-worktree-commit.mjs
  */
+
+import path from 'node:path';
 
 /**
  * Structured error class with error codes and details
@@ -60,8 +63,9 @@ export class WUError extends Error {
  */
 export function die(message, exitCode = 1) {
   // Auto-detect script name from process.argv[1] (eliminates string literal duplication)
+  // WU-1006: Use path.basename() instead of manual split (Library-First principle)
   const scriptPath = process.argv[1] || 'unknown';
-  const scriptName = scriptPath.split('/').pop().replace('.js', '');
+  const scriptName = path.basename(scriptPath, '.js');
   console.error(`[${scriptName}] ${message}`);
   process.exit(exitCode);
 }

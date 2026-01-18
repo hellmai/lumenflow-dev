@@ -15,6 +15,7 @@ import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { readFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
+import { parse, isValid } from 'date-fns';
 import { WU_PATHS } from './wu-paths.js';
 import { todayISO } from './date-utils.js';
 import { FILE_SYSTEM } from './wu-constants.js';
@@ -38,39 +39,34 @@ export const STAMP_FORMAT_ERRORS = Object.freeze({
 });
 
 /**
- * Valid date regex: YYYY-MM-DD format
+ * Valid date regex: YYYY-MM-DD format (for format checking before parsing)
  * @type {RegExp}
  */
-const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const DATE_FORMAT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Validate that a date string is a valid ISO date
+ * Validate that a date string is a valid ISO date (YYYY-MM-DD)
+ *
+ * WU-1006: Uses date-fns parse() and isValid() instead of manual parseInt parsing
+ * Library-First principle: leverage well-known libraries over brittle custom code
+ *
  * @param {string} dateStr - Date string in YYYY-MM-DD format
  * @returns {boolean} True if date is valid
  */
-function isValidDate(dateStr) {
-  const match = dateStr.match(DATE_PATTERN);
-  if (!match) {
+export function isValidDateString(dateStr: string): boolean {
+  // Quick format check - must be YYYY-MM-DD pattern
+  if (!dateStr || !DATE_FORMAT_PATTERN.test(dateStr)) {
     return false;
   }
 
-  const year = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10);
-  const day = parseInt(match[3], 10);
-
-  // Basic validation
-  if (month < 1 || month > 12) {
-    return false;
-  }
-
-  // Check day validity for the month
-  const daysInMonth = new Date(year, month, 0).getDate();
-  if (day < 1 || day > daysInMonth) {
-    return false;
-  }
-
-  return true;
+  // Parse with date-fns and validate the result
+  // parse() with strict format ensures proper date validation
+  const parsed = parse(dateStr, 'yyyy-MM-dd', new Date());
+  return isValid(parsed);
 }
+
+// Internal alias for backward compatibility
+const isValidDate = isValidDateString;
 
 /**
  * Stamp file body template (eliminates magic string)
