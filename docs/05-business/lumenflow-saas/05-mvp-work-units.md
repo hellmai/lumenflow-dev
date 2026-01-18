@@ -687,7 +687,7 @@ useEffect(() => {
       (payload) => {
         // Invalidate React Query cache to refetch
         trpc.useContext().wus.list.invalidate({ teamId });
-      }
+      },
     )
     .subscribe();
 
@@ -756,7 +756,7 @@ export const wusRouter = router({
         type: z.enum(['feature', 'bug', 'chore', 'refactor', 'docs', 'test']),
         lane: z.enum(['Unrefined', 'Backlog', 'Operations', 'Intelligence', 'Creative']),
         priority: z.number().int().min(1).max(5).optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Generate WU ID (fetch latest ID from DB and increment)
@@ -932,7 +932,7 @@ export const gatesRouter = router({
         wuId: z.string(),
         gateName: z.enum(['lint', 'test', 'security']),
         workingDir: z.string(), // Path to WU worktree
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Create gate run entry
@@ -1031,7 +1031,7 @@ export type ValidationError = {
 
 export async function validateWU(
   workingDir: string,
-  rules: ValidationRule[]
+  rules: ValidationRule[],
 ): Promise<ValidationError[]> {
   const errors: ValidationError[] = [];
 
@@ -1148,7 +1148,7 @@ export const metricsRouter = router({
         teamId: z.string().uuid(),
         startDate: z.string().datetime(),
         endDate: z.string().datetime(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       // Query materialized view (see 03-data-model.md)
@@ -1326,7 +1326,7 @@ export async function POST(req: Request) {
         stripe_price_id: session.line_items[0].price.id,
         status: 'active',
         current_period_start: new Date(
-          session.subscription.current_period_start * 1000
+          session.subscription.current_period_start * 1000,
         ).toISOString(),
         current_period_end: new Date(session.subscription.current_period_end * 1000).toISOString(),
       });
