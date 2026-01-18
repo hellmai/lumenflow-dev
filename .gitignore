@@ -35,7 +35,11 @@ coverage/
 
 # LumenFlow
 /worktrees/
-/._legacy/
-# Allow ._legacy/wu-events.jsonl in worktrees for completion tracking
-!**/._legacy/wu-events.jsonl
+# Legacy state directory (allow state/wu-events.jsonl for completion tracking)
+/._legacy/memory/
+/._legacy/locks/
+/._legacy/sessions/
+/._legacy/telemetry/
+/._legacy/skip-gates-audit.log
+/._legacy/checkpoints/
 .logs/
