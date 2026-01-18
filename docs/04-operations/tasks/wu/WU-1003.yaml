@@ -13,8 +13,8 @@ tests:
   manual:
     - 'Gates Action rejects requests without token'
     - 'Gates Action enforces 10 WU/month limit for free tier'
-    - 'Validation endpoint returns correct tier info'
-  unit: []
+  unit:
+    - 'apps/github-app/src/lib/__tests__/billing.test.ts'
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1003.done
