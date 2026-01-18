@@ -2,7 +2,7 @@ id: WU-1003
 title: Add rate limiting to Gates Action
 lane: Infrastructure
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -61,3 +61,5 @@ session_id: 263b1b7a-6cc9-4848-adf2-61ac26912541
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T18:00:48.426Z
+locked: true
+completed_at: 2026-01-18T18:14:08.137Z
