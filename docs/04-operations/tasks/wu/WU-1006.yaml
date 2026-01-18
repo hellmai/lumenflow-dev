@@ -5,16 +5,28 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - packages/@lumenflow/core/src/stamp-utils.ts
+  - packages/@lumenflow/core/src/error-handler.ts
+  - packages/@lumenflow/cli/src/init.ts
 tests:
-  manual: []
-  unit: []
+  manual:
+    - All date handling uses date-fns (no manual parseInt parsing)
+  unit:
+    - packages/@lumenflow/core/src/__tests__/stamp-utils.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1006.done
-dependencies: []
-risks: []
-notes: ''
+dependencies:
+  - WU-1005
+risks:
+  - Changing date parsing could affect existing stamps if not careful
+exposure: backend-only
+notes: |
+  Audit found most code already uses proper libraries. Key fixes:
+  1. stamp-utils.ts: Manual date parsing → date-fns parse/isValid
+  2. error-handler.ts: Manual path split → path.basename()
+  3. init.ts: String template YAML → js-yaml.dump()
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -23,11 +35,22 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Apply Library-First principle to remove brittle custom code.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: CLAUDE.md principle 3 says "Library-First: Search existing
+  libraries before custom code". Audit found several brittle patterns.
+
+  Problem: Manual parsing/formatting is error-prone and harder to maintain.
+
+  Solution: Replace custom implementations with well-known libraries.
+
+  High Priority:
+  1. stamp-utils.ts - Replace manual date parsing with date-fns
+  2. error-handler.ts - Use path.basename() instead of manual split
+  3. init.ts - Use js-yaml.dump() for YAML config generation
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - stamp-utils.ts uses date-fns parse() and isValid() for dates
+  - error-handler.ts uses path.basename() for script name
+  - init.ts uses js-yaml.dump() for .lumenflow.yaml generation
+  - Existing tests pass (no behavior change)
   - pnpm format, lint, typecheck → PASS
