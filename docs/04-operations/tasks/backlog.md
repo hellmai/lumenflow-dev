@@ -1,38 +1,35 @@
-# LumenFlow Backlog
-
-**Single Source of Truth** for all planned work.
-
+---
+sections:
+  ready:
+    heading: '## 🚀 Ready (pull from here)'
+    insertion: after_heading_blank_line
+  in_progress:
+    heading: '## 🔧 In progress'
+    insertion: after_heading_blank_line
+  blocked:
+    heading: '## ⛔ Blocked'
+    insertion: after_heading_blank_line
+  done:
+    heading: '## ✅ Done'
+    insertion: after_heading_blank_line
 ---
 
-## Ready (Prioritized)
+> Agent: Read **ai/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
-| WU ID | Title | Lane | Type |
-|-------|-------|------|------|
-| WU-OS-001 | Complete LumenFlow dogfooding setup | Infrastructure | chore |
-| WU-OS-002 | Publish @lumenflow packages to npm | Infrastructure | feature |
-| WU-OS-003 | Build lumenflow-gates GitHub Action | Infrastructure | feature |
+# Backlog (single source of truth)
 
----
+## 🚀 Ready (pull from here)
 
-## Drafts (Needs Refinement)
+(No items ready)
 
-_None_
+## 🔧 In progress
 
----
+(No items currently in progress)
 
-## Icebox (Future Consideration)
+## ⛔ Blocked
 
-| WU ID | Title | Lane | Notes |
-|-------|-------|------|-------|
-| WU-OS-100 | GitHub Marketplace listing | Infrastructure | After App is stable |
-| WU-OS-101 | Memory API for SaaS tier | Core | If needed for Team tier |
+(No items currently blocked)
 
----
+## ✅ Done
 
-## Completed
-
-_None yet_
-
----
-
-**Last Updated:** 2026-01-18
+- [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml)
