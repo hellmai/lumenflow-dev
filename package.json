@@ -24,6 +24,8 @@
     "wu:block": "node packages/@lumenflow/cli/dist/wu-block.js",
     "wu:unblock": "node packages/@lumenflow/cli/dist/wu-unblock.js",
     "wu:validate": "node packages/@lumenflow/cli/dist/wu-validate.js",
+    "spec:linter": "node packages/@lumenflow/cli/dist/wu-validate.js --all",
+    "prompts:lint": "echo 'prompts:lint: no prompt files to lint (stub)' && exit 0",
     "mem:init": "node packages/@lumenflow/cli/dist/mem-init.js",
     "mem:checkpoint": "node packages/@lumenflow/cli/dist/mem-checkpoint.js"
   },
