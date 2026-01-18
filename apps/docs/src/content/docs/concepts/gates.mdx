@@ -1,0 +1,185 @@
+---
+title: Gates
+description: Automated quality enforcement
+---
+
+Gates are automated quality checks that must pass before a WU can be completed. They replace manual code review with consistent, automated enforcement.
+
+## Why Gates?
+
+Traditional review:
+
+- Human bottleneck (waiting for reviewers)
+- Inconsistent (different reviewers, different standards)
+- Slow feedback (review happens after code is written)
+
+Gates:
+
+- Instant (run automatically)
+- Consistent (same checks every time)
+- Fast feedback (run locally before pushing)
+
+## Default Gates
+
+```yaml
+# .lumenflow.config.yaml
+gates:
+  format: true # prettier, etc.
+  lint: true # eslint, ruff, etc.
+  typecheck: true # tsc, mypy, etc.
+  test: true # jest, pytest, etc.
+```
+
+## Running Gates
+
+```bash
+# Run all gates
+pnpm gates
+
+# Output
+> Format check... ✅
+> Lint check... ✅
+> Type check... ✅
+> Test suite... ✅
+> All gates passed!
+```
+
+If any gate fails, `wu:done` is blocked until fixed.
+
+## Gate Configuration
+
+### Per-Project Detection
+
+LumenFlow auto-detects your stack:
+
+| File Detected               | Gates Run                                  |
+| --------------------------- | ------------------------------------------ |
+| `package.json` + TypeScript | `prettier`, `eslint`, `tsc`, `vitest/jest` |
+| `pyproject.toml`            | `ruff`, `mypy`, `pytest`                   |
+| `go.mod`                    | `gofmt`, `golint`, `go test`               |
+
+### Custom Gate Commands
+
+Override auto-detection with explicit commands:
+
+```yaml
+gates:
+  format:
+    command: pnpm prettier --check .
+  lint:
+    command: pnpm eslint src/
+  typecheck:
+    command: pnpm tsc --noEmit
+  test:
+    command: pnpm vitest run
+```
+
+### Additional Gates
+
+Add project-specific gates:
+
+```yaml
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+  # Custom gates
+  security:
+    command: pnpm audit --audit-level=high
+  a11y:
+    command: pnpm test:a11y
+```
+
+## Gate Behavior
+
+### On Claim
+
+When you `wu:claim`:
+
+- Worktree is created
+- Gates status is "pending"
+
+### During Work
+
+Run `pnpm gates` frequently:
+
+```bash
+# Quick feedback loop
+pnpm gates
+# Fix issues
+pnpm gates
+# All green? Continue
+```
+
+### On Done
+
+When you `wu:done`:
+
+1. Gates run automatically
+2. If any fail → error, WU stays `in_progress`
+3. If all pass → WU marked `done`, stamp created
+
+## Gate Failures
+
+```bash
+pnpm wu:done --id WU-042
+
+> Running gates...
+> Format check... ❌
+>   src/utils/validation.ts - needs formatting
+>
+> Fix the issues above before completing.
+```
+
+Fix and retry:
+
+```bash
+pnpm prettier --write src/utils/validation.ts
+pnpm wu:done --id WU-042
+# ✅ Success
+```
+
+## Safety-Critical Gates
+
+For healthcare/compliance contexts, add mandatory gates:
+
+```yaml
+gates:
+  # Standard
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+
+  # Safety-critical
+  spec-linter:
+    command: pnpm spec:lint
+    required: true
+  phi-check:
+    command: pnpm phi:audit
+    required: true
+```
+
+## CI Integration
+
+Gates can run in CI for team enforcement:
+
+```yaml
+# .github/workflows/gates.yml
+name: Gates
+on: [pull_request]
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - run: pnpm install
+      - run: pnpm gates
+```
+
+## Next Steps
+
+- [Memory Layer](/concepts/memory) – Context persistence
+- [CLI Reference](/reference/cli) – All gate commands

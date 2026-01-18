@@ -1,0 +1,239 @@
+---
+title: AI Agent Integration
+description: Working with AI assistants in LumenFlow
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+LumenFlow treats AI agents as first-class collaborators. This guide covers how to work effectively with AI assistants.
+
+## AI as Teammate
+
+LumenFlow is designed for AI agents to:
+
+- Understand work context (WU specs)
+- Execute autonomously (clear acceptance)
+- Prove completion (gates + stamps)
+- Recover context (memory layer)
+
+## Agent Onboarding
+
+Provide agents with:
+
+<Steps>
+
+1. **WU Spec** – The work to be done
+2. **Acceptance Criteria** – Definition of done
+3. **Code Paths** – Where to work
+4. **Memory Context** – What happened before
+
+</Steps>
+
+### Prompt Template
+
+```markdown
+## Context
+
+You are working on WU-042 in the LumenFlow workflow.
+
+## Work Unit
+
+- ID: WU-042
+- Title: Add email validation to login form
+- Lane: UI
+- Status: in_progress
+
+## Acceptance Criteria
+
+1. Email field validates on blur
+2. Invalid emails show "Please enter a valid email"
+3. Valid emails allow form submission
+4. Unit test covers validation logic
+
+## Code Paths
+
+- src/components/LoginForm.tsx
+- src/utils/validation.ts
+
+## Instructions
+
+1. Work in worktree: worktrees/ui-wu-042
+2. Implement changes per acceptance
+3. Run: pnpm gates
+4. When done: pnpm wu:done --id WU-042
+```
+
+## Memory Integration
+
+For long-running agent sessions:
+
+```bash
+# Agent starts session
+pnpm mem:start --wu WU-042
+
+# Agent signals progress
+pnpm mem:signal "Validation logic complete"
+
+# Agent creates checkpoint (before pause/context limit)
+pnpm mem:checkpoint
+
+# Agent resumes later
+pnpm mem:ready
+# → Shows previous progress
+```
+
+## Context Recovery
+
+When an agent session ends and a new one begins:
+
+```bash
+# New agent runs
+pnpm mem:ready
+
+# Output:
+# WU-042 in progress
+# Last signal: "Validation logic complete"
+# Files touched: src/utils/validation.ts
+# Next: Add unit tests
+```
+
+The agent can continue where the previous session left off.
+
+## Autonomous Execution
+
+For trusted agents, enable autonomous mode:
+
+```yaml
+# WU spec
+autonomous: true
+approval_required: false
+```
+
+The agent can:
+
+- Claim and complete without human approval
+- Make decisions within scope
+- Log decisions for audit
+
+<Aside type="caution">
+  Use autonomous mode only for well-scoped WUs with clear boundaries. Human oversight is still
+  recommended for security-sensitive or customer-facing changes.
+</Aside>
+
+## Safety Guardrails
+
+### Scope Limits
+
+Define what agents can and cannot do:
+
+```yaml
+# .lumenflow.config.yaml
+agent:
+  allowed_paths:
+    - src/**
+    - tests/**
+  forbidden_paths:
+    - .env*
+    - secrets/**
+  max_file_changes: 10
+```
+
+### Approval Gates
+
+Require human approval for certain actions:
+
+```yaml
+agent:
+  require_approval_for:
+    - delete_files
+    - modify_config
+    - external_api_calls
+```
+
+### Escalation
+
+Agents should escalate when:
+
+- Acceptance criteria are unclear
+- Security concerns arise
+- Scope seems larger than WU
+
+```bash
+pnpm wu:escalate --id WU-042 --reason "Unclear: should validation be server-side too?"
+```
+
+## Multi-Agent Coordination
+
+When multiple agents work in parallel:
+
+### Lane Isolation
+
+Each agent works in a separate lane:
+
+```
+Agent A → Lane: UI → WU-100
+Agent B → Lane: Core → WU-101
+Agent C → Lane: Infra → WU-102
+```
+
+No conflicts, parallel progress.
+
+### Dependency Handling
+
+If WUs depend on each other:
+
+```yaml
+# WU-101
+dependencies:
+  - WU-100 # Agent B waits for Agent A
+```
+
+Agent B blocks until WU-100 is done.
+
+## Agent Types
+
+### Coding Agent
+
+Implements code per WU spec:
+
+- Writes code
+- Writes tests
+- Runs gates
+- Completes WU
+
+### Review Agent
+
+Reviews completed WUs:
+
+- Checks code quality
+- Validates against acceptance
+- Suggests improvements
+
+### Discovery Agent
+
+Explores and documents:
+
+- Research spikes
+- Architecture decisions
+- Documentation updates
+
+## Best Practices
+
+### For Human-Agent Collaboration
+
+1. **Clear WU specs** – Agents need explicit acceptance
+2. **Small WUs** – Easier for agents to complete
+3. **Frequent checkpoints** – Recover from context limits
+4. **Review agent work** – Trust but verify
+
+### For Fully Autonomous Agents
+
+1. **Strict scope limits** – Prevent runaway changes
+2. **Gate enforcement** – Quality checks are non-negotiable
+3. **Audit trails** – Log all decisions and actions
+4. **Kill switch** – Ability to pause/stop agent work
+
+## Next Steps
+
+- [Memory Layer](/concepts/memory) – Context persistence details
+- [CLI Reference](/reference/cli) – Agent-relevant commands

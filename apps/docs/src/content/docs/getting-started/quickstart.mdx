@@ -1,0 +1,103 @@
+---
+title: Quickstart
+description: Get LumenFlow running in 5 minutes
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
+
+## Prerequisites
+
+- Node.js 18+ or 22+
+- pnpm (recommended) or npm
+- A Git repository
+
+## Setup
+
+<Steps>
+
+1. **Install the CLI**
+
+   <Tabs>
+     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
+     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
+   </Tabs>
+
+2. **Initialize LumenFlow**
+
+   ```bash
+   pnpm exec lumenflow init
+   ```
+
+   This creates:
+   - `.lumenflow.config.yaml` – Your configuration
+   - `docs/tasks/backlog.md` – Your task board
+   - `docs/tasks/wu/` – Where WU specs live
+   - `.beacon/stamps/` – Completion proofs
+
+3. **Add scripts to package.json**
+
+   ```json
+   {
+     "scripts": {
+       "wu:create": "wu-create",
+       "wu:claim": "wu-claim",
+       "wu:done": "wu-done",
+       "gates": "gates"
+     }
+   }
+   ```
+
+4. **Create your first Work Unit**
+
+   ```bash
+   pnpm wu:create \
+     --id WU-001 \
+     --title "Add user authentication" \
+     --lane Core
+   ```
+
+5. **Claim and start work**
+
+   ```bash
+   pnpm wu:claim --id WU-001 --lane Core
+   cd worktrees/core-wu-001
+   ```
+
+</Steps>
+
+## Workflow
+
+Once set up, your daily workflow is:
+
+```bash
+# 1. Claim a WU from the backlog
+pnpm wu:claim --id WU-XXX --lane Core
+
+# 2. Work in the worktree
+cd worktrees/core-wu-xxx
+# ... make changes ...
+
+# 3. Run gates (checks your work)
+pnpm gates
+
+# 4. Complete the WU
+cd ../..
+pnpm wu:done --id WU-XXX
+```
+
+## Verify It's Working
+
+After `wu:done`, you should see:
+
+- ✅ WU status changed to `done`
+- ✅ Stamp file created in `.beacon/stamps/`
+- ✅ Worktree merged and cleaned up
+- ✅ Backlog updated
+
+## Next Steps
+
+- [Install GitHub App](/getting-started/github-app) – For team enforcement
+- [Work Units](/concepts/work-units) – Deep dive on WUs
+- [Gates](/concepts/gates) – Understanding quality gates

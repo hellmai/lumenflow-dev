@@ -1,0 +1,284 @@
+---
+title: CLI Commands
+description: Complete reference for LumenFlow CLI commands
+---
+
+The LumenFlow CLI provides commands for managing work units, gates, and memory.
+
+## Installation
+
+```bash
+# pnpm
+pnpm add -D @lumenflow/cli
+
+# npm
+npm install -D @lumenflow/cli
+```
+
+## Work Unit Commands
+
+### wu:create
+
+Create a new work unit spec.
+
+```bash
+pnpm wu:create --id WU-001 --title "Add feature" --lane Core
+```
+
+| Flag      | Description                            | Required                |
+| --------- | -------------------------------------- | ----------------------- |
+| `--id`    | Unique WU identifier                   | Yes                     |
+| `--title` | Short description                      | Yes                     |
+| `--lane`  | Target lane                            | Yes                     |
+| `--type`  | `feature`, `fix`, `chore`, `discovery` | No (default: `feature`) |
+
+### wu:claim
+
+Claim a WU and create a worktree.
+
+```bash
+pnpm wu:claim --id WU-001 --lane Core
+```
+
+| Flag     | Description      | Required |
+| -------- | ---------------- | -------- |
+| `--id`   | WU to claim      | Yes      |
+| `--lane` | Lane to claim in | Yes      |
+
+Creates:
+
+- Worktree at `worktrees/{lane}-{wu-id}`
+- Branch `lane/{lane}/{wu-id}`
+- Updates WU status to `in_progress`
+
+### wu:done
+
+Complete a WU after gates pass.
+
+```bash
+pnpm wu:done --id WU-001
+```
+
+| Flag           | Description                        | Required |
+| -------------- | ---------------------------------- | -------- |
+| `--id`         | WU to complete                     | Yes      |
+| `--skip-gates` | Skip gate checks (not recommended) | No       |
+
+Actions:
+
+1. Runs gates (unless skipped)
+2. Merges worktree to main
+3. Creates stamp in `.beacon/stamps/`
+4. Cleans up worktree
+5. Updates WU status to `done`
+
+### wu:block
+
+Mark a WU as blocked.
+
+```bash
+pnpm wu:block --id WU-001 --reason "Waiting for API spec"
+```
+
+| Flag       | Description      | Required |
+| ---------- | ---------------- | -------- |
+| `--id`     | WU to block      | Yes      |
+| `--reason` | Why it's blocked | Yes      |
+
+### wu:unblock
+
+Unblock a WU.
+
+```bash
+pnpm wu:unblock --id WU-001
+```
+
+### wu:release
+
+Release a claimed WU (handoff).
+
+```bash
+pnpm wu:release --id WU-001
+```
+
+### wu:validate
+
+Validate WU YAML against schema.
+
+```bash
+pnpm wu:validate --id WU-001
+# or validate all
+pnpm wu:validate --all
+```
+
+## Gate Commands
+
+### gates
+
+Run all quality gates.
+
+```bash
+pnpm gates
+```
+
+Runs:
+
+1. Format check
+2. Lint check
+3. Type check
+4. Test suite
+
+Returns exit code 0 if all pass, 1 if any fail.
+
+### gates:format
+
+Run only format gate.
+
+```bash
+pnpm gates:format
+```
+
+### gates:lint
+
+Run only lint gate.
+
+```bash
+pnpm gates:lint
+```
+
+### gates:typecheck
+
+Run only typecheck gate.
+
+```bash
+pnpm gates:typecheck
+```
+
+### gates:test
+
+Run only test gate.
+
+```bash
+pnpm gates:test
+```
+
+## Memory Commands
+
+### mem:init
+
+Initialize memory layer.
+
+```bash
+pnpm mem:init
+```
+
+Creates `.beacon/memory/` directory structure.
+
+### mem:start
+
+Start a new agent session.
+
+```bash
+pnpm mem:start --wu WU-001
+```
+
+| Flag   | Description   | Required |
+| ------ | ------------- | -------- |
+| `--wu` | Associated WU | No       |
+
+### mem:ready
+
+Check pending work and context.
+
+```bash
+pnpm mem:ready
+```
+
+Shows:
+
+- Active WU
+- Last checkpoint
+- Pending signals
+- Next steps
+
+### mem:checkpoint
+
+Create a checkpoint.
+
+```bash
+pnpm mem:checkpoint
+```
+
+Saves current session state for recovery.
+
+### mem:signal
+
+Signal progress.
+
+```bash
+pnpm mem:signal "Completed validation logic"
+```
+
+### mem:inbox
+
+Check for messages/signals from other sessions.
+
+```bash
+pnpm mem:inbox
+```
+
+## Initialization
+
+### lumenflow init
+
+Initialize LumenFlow in a project.
+
+```bash
+pnpm exec lumenflow init
+```
+
+Creates:
+
+- `.lumenflow.config.yaml`
+- `docs/tasks/backlog.md`
+- `docs/tasks/wu/`
+- `.beacon/stamps/`
+
+## Configuration
+
+### lumenflow validate
+
+Validate configuration.
+
+```bash
+pnpm exec lumenflow validate
+```
+
+Checks:
+
+- Config file syntax
+- Lane definitions
+- Gate configuration
+
+## Exit Codes
+
+| Code | Meaning                            |
+| ---- | ---------------------------------- |
+| 0    | Success                            |
+| 1    | Command failed (see error message) |
+| 2    | Validation error                   |
+| 3    | WU not found                       |
+| 4    | Lane at WIP limit                  |
+
+## Environment Variables
+
+| Variable             | Description            | Default                  |
+| -------------------- | ---------------------- | ------------------------ |
+| `LUMENFLOW_CONFIG`   | Config file path       | `.lumenflow.config.yaml` |
+| `LUMENFLOW_VERBOSE`  | Enable verbose output  | `false`                  |
+| `LUMENFLOW_NO_COLOR` | Disable colored output | `false`                  |
+
+## Next Steps
+
+- [Configuration Reference](/reference/config) – Config file options
+- [WU Schema](/reference/wu-schema) – WU YAML structure

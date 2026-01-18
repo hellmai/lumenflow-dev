@@ -1,0 +1,289 @@
+---
+title: WU Schema
+description: Work Unit YAML specification
+---
+
+Work Units are defined in YAML files in the `wu_specs` directory (default: `docs/tasks/wu/`).
+
+## Minimal WU
+
+```yaml
+id: WU-001
+title: Add email validation
+lane: Core
+type: feature
+status: ready
+
+description: |
+  Add client-side email validation to the login form.
+
+acceptance:
+  - Email validates on blur
+  - Invalid format shows error
+  - Unit test covers validation
+```
+
+## Full WU Schema
+
+```yaml
+# === Required Fields ===
+
+id: WU-001 # Unique identifier
+title: Add email validation # Short description
+lane: Core # Target lane
+type: feature # feature | fix | chore | discovery
+status: ready # ready | in_progress | blocked | done
+
+description: | # Detailed description
+  Add client-side email validation to the login form.
+  Show inline error for invalid formats.
+
+acceptance: # Definition of done
+  - Email validates on blur
+  - Invalid format shows "Please enter a valid email"
+  - Valid email allows form submission
+  - Unit test covers validation logic
+
+# === Optional Fields ===
+
+priority: P2 # P0 | P1 | P2 | P3
+
+# Who created this WU
+created: 2026-01-18
+created_by: alice@team.com
+
+# Assignment
+assigned_to: bob@team.com
+
+# Dependencies
+dependencies:
+  - WU-000 # Must complete first
+
+# Affected code
+code_paths:
+  - src/components/LoginForm.tsx
+  - src/utils/validation.ts
+
+# Test locations
+tests:
+  unit:
+    - src/utils/__tests__/validation.test.ts
+  e2e:
+    - e2e/login.spec.ts
+  manual:
+    - Test with various email formats
+
+# Artifacts produced
+artifacts:
+  - .beacon/stamps/WU-001.done
+
+# Notes for implementer
+notes: |
+  Consider using Zod for validation.
+  Check existing patterns in UserForm.tsx.
+
+# Risk assessment
+risks:
+  - May need to update form styles
+  - Could affect autofill behavior
+
+exposure: ui # ui | api | backend-only | documentation
+
+# Review requirements
+requires_review: false
+reviewers:
+  - security@team.com
+
+# Agent permissions
+autonomous: false
+approval_required: true
+
+# Blocking info (set by wu:block)
+blocked_by: WU-099
+blocked_reason: Waiting for design spec
+
+# Completion info (set by wu:done)
+completed_at: 2026-01-19T15:30:00Z
+completed_by: bob@team.com
+```
+
+## Field Reference
+
+### Required Fields
+
+| Field         | Type     | Description                               |
+| ------------- | -------- | ----------------------------------------- |
+| `id`          | string   | Unique identifier (e.g., `WU-001`)        |
+| `title`       | string   | Short description (1 line)                |
+| `lane`        | string   | Target lane name                          |
+| `type`        | enum     | `feature`, `fix`, `chore`, `discovery`    |
+| `status`      | enum     | `ready`, `in_progress`, `blocked`, `done` |
+| `description` | string   | Detailed description                      |
+| `acceptance`  | string[] | List of acceptance criteria               |
+
+### Optional Fields
+
+| Field          | Type     | Description                                  |
+| -------------- | -------- | -------------------------------------------- |
+| `priority`     | enum     | `P0`, `P1`, `P2`, `P3`                       |
+| `created`      | date     | Creation date                                |
+| `created_by`   | string   | Creator email                                |
+| `assigned_to`  | string   | Assignee email                               |
+| `dependencies` | string[] | WU IDs that must complete first              |
+| `code_paths`   | string[] | Files to modify                              |
+| `tests`        | object   | Test file locations                          |
+| `artifacts`    | string[] | Output files                                 |
+| `notes`        | string   | Implementation notes                         |
+| `risks`        | string[] | Potential risks                              |
+| `exposure`     | enum     | `ui`, `api`, `backend-only`, `documentation` |
+
+### Review Fields
+
+| Field             | Type     | Description           |
+| ----------------- | -------- | --------------------- |
+| `requires_review` | boolean  | Human review required |
+| `reviewers`       | string[] | Required reviewers    |
+
+### Agent Fields
+
+| Field               | Type    | Description                         |
+| ------------------- | ------- | ----------------------------------- |
+| `autonomous`        | boolean | Agent can complete without approval |
+| `approval_required` | boolean | Needs human approval to complete    |
+
+### Status Fields (auto-managed)
+
+| Field            | Type     | Description          |
+| ---------------- | -------- | -------------------- |
+| `blocked_by`     | string   | Blocking WU ID       |
+| `blocked_reason` | string   | Why blocked          |
+| `completed_at`   | datetime | Completion timestamp |
+| `completed_by`   | string   | Who completed        |
+
+## Status Lifecycle
+
+```
+ready → in_progress → done
+            ↓
+         blocked → in_progress → done
+```
+
+| Status        | Meaning                  |
+| ------------- | ------------------------ |
+| `ready`       | Approved, awaiting claim |
+| `in_progress` | Claimed, being worked on |
+| `blocked`     | Waiting on dependency    |
+| `done`        | Acceptance met, stamped  |
+
+## Type Definitions
+
+| Type        | Use For                  |
+| ----------- | ------------------------ |
+| `feature`   | New functionality        |
+| `fix`       | Bug fixes                |
+| `chore`     | Maintenance, refactoring |
+| `discovery` | Research, spikes         |
+
+## Priority Definitions
+
+| Priority | Response                  |
+| -------- | ------------------------- |
+| `P0`     | Critical, drop everything |
+| `P1`     | High, next up             |
+| `P2`     | Normal, queue order       |
+| `P3`     | Low, when available       |
+
+## Validation
+
+WU specs are validated on:
+
+- `wu:create` – When creating
+- `wu:claim` – Before claiming
+- `wu:done` – Before completing
+
+Validation checks:
+
+- Required fields present
+- ID format correct
+- Lane exists in config
+- Status is valid
+- Acceptance criteria present
+
+## Examples
+
+### Feature WU
+
+```yaml
+id: WU-042
+title: Add dark mode toggle
+lane: UI
+type: feature
+status: ready
+priority: P2
+
+description: |
+  Add a toggle in settings to switch between light and dark mode.
+  Persist preference in localStorage.
+
+acceptance:
+  - Toggle visible in settings panel
+  - Clicking toggles theme immediately
+  - Preference persists across sessions
+  - Works with system preference fallback
+
+code_paths:
+  - src/components/Settings.tsx
+  - src/hooks/useTheme.ts
+  - src/styles/theme.css
+```
+
+### Fix WU
+
+```yaml
+id: WU-043
+title: Fix login redirect loop
+lane: Core
+type: fix
+status: ready
+priority: P1
+
+description: |
+  Users are stuck in a redirect loop after session expires.
+  The auth check redirects to login, which redirects back.
+
+acceptance:
+  - Session expiry redirects to /login once
+  - Login page doesn't redirect if already there
+  - E2E test covers the scenario
+
+code_paths:
+  - src/auth/sessionCheck.ts
+  - src/pages/login.tsx
+```
+
+### Discovery WU
+
+```yaml
+id: WU-044
+title: Spike - evaluate auth providers
+lane: Core
+type: discovery
+status: ready
+
+description: |
+  Research authentication providers for the new project.
+  No code changes, just documentation.
+
+acceptance:
+  - Document pros/cons of Auth0, Clerk, Firebase Auth
+  - Recommend one with rationale
+  - Estimate integration effort
+
+artifacts:
+  - docs/decisions/auth-provider.md
+```
+
+## Next Steps
+
+- [CLI Reference](/reference/cli) – WU commands
+- [Configuration](/reference/config) – Config options

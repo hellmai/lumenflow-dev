@@ -1,0 +1,168 @@
+---
+title: Memory Layer
+description: Context recovery for long-running sessions
+---
+
+The Memory Layer preserves context across sessions, enabling AI agents and humans to resume work without losing track.
+
+## Why Memory?
+
+Without memory:
+
+- "What was I working on?"
+- "Why did I make this decision?"
+- "Where did I leave off?"
+
+With memory:
+
+- Automatic checkpoints capture state
+- Session context is recoverable
+- Decisions are documented
+
+## How It Works
+
+```
+Session Start
+     ↓
+mem:ready (check pending work)
+     ↓
+Work (changes, decisions)
+     ↓
+mem:checkpoint (periodic save)
+     ↓
+Session End
+     ↓
+Next Session: mem:ready (resume)
+```
+
+## Memory Commands
+
+### Initialize
+
+```bash
+pnpm mem:init
+```
+
+Creates `.beacon/memory/` directory for storing checkpoints.
+
+### Check Pending Work
+
+```bash
+pnpm mem:ready
+```
+
+Shows what's in progress and any pending decisions.
+
+### Create Checkpoint
+
+```bash
+pnpm mem:checkpoint
+```
+
+Saves current session state:
+
+- Active WU
+- Recent changes
+- Decision context
+
+## Memory Structure
+
+```
+.beacon/
+├── memory/
+│   ├── sessions/
+│   │   └── 2026-01-18-abc123.json
+│   ├── checkpoints/
+│   │   └── WU-042-checkpoint-1.json
+│   └── decisions/
+│       └── WU-042-decisions.md
+├── stamps/
+│   └── WU-041.done
+└── locks/
+    └── core.lock
+```
+
+## Session Context
+
+Each session captures:
+
+```json
+{
+  "session_id": "abc123",
+  "started_at": "2026-01-18T10:00:00Z",
+  "active_wu": "WU-042",
+  "lane": "Core",
+  "files_touched": ["src/utils/validation.ts", "src/components/LoginForm.tsx"],
+  "decisions": [
+    {
+      "question": "Use Zod or custom validation?",
+      "answer": "Zod - better TypeScript integration",
+      "timestamp": "2026-01-18T10:15:00Z"
+    }
+  ]
+}
+```
+
+## AI Agent Integration
+
+For AI agents, memory is critical:
+
+```bash
+# Agent starts session
+pnpm mem:start --wu WU-042
+
+# Agent checks what's pending
+pnpm mem:ready
+
+# During work, agent signals progress
+pnpm mem:signal "Completed validation logic, starting tests"
+
+# Agent creates checkpoint before pause
+pnpm mem:checkpoint
+
+# Later, agent resumes
+pnpm mem:ready
+# → Shows: "WU-042 in progress, last: 'starting tests'"
+```
+
+## Decision Logging
+
+Capture why decisions were made:
+
+```bash
+pnpm mem:decide \
+  --question "Which validation library?" \
+  --answer "Zod" \
+  --reason "Better TypeScript inference, smaller bundle"
+```
+
+This creates an audit trail for future reference.
+
+## Configuration
+
+```yaml
+# .lumenflow.config.yaml
+memory:
+  checkpoint_interval: 30 # minutes
+  max_checkpoints: 10 # per WU
+  auto_checkpoint: true # on significant changes
+```
+
+## Best Practices
+
+### For Humans
+
+1. Run `mem:ready` at session start
+2. Create checkpoints before long breaks
+3. Log non-obvious decisions
+
+### For AI Agents
+
+1. Always start with `mem:start`
+2. Signal progress frequently
+3. Checkpoint before context limits
+
+## Next Steps
+
+- [AI Agent Integration](/guides/ai-agents) – Using memory with agents
+- [CLI Reference](/reference/cli) – All memory commands
