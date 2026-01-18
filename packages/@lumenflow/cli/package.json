@@ -53,7 +53,9 @@
     "initiative-add-wu": "./dist/initiative-add-wu.js",
     "spawn-list": "./dist/spawn-list.js",
     "gates": "./dist/gates.js",
-    "lumenflow-gates": "./dist/gates.js"
+    "lumenflow-gates": "./dist/gates.js",
+    "lumenflow-init": "./dist/init.js",
+    "lumenflow": "./dist/init.js"
   },
   "files": [
     "dist",
