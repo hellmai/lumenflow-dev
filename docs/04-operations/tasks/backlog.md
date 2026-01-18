@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1005 — Add lumenflow init scaffolding command](wu/WU-1005.yaml) — CLI
+  (No items ready)
 
 ## 🔧 In progress
 
