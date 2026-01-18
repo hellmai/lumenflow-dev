@@ -45,9 +45,7 @@ function getCurrentMonthKey(installationId: number): string {
 /**
  * Check subscription status for an installation
  */
-export async function checkSubscription(
-  installationId: number
-): Promise<Subscription> {
+export async function checkSubscription(installationId: number): Promise<Subscription> {
   // TODO: In production, query Supabase:
   // const { data } = await supabase
   //   .from('subscriptions')
@@ -75,7 +73,7 @@ export async function checkSubscription(
  */
 export async function setSubscriptionTier(
   installationId: number,
-  tier: Subscription['tier']
+  tier: Subscription['tier'],
 ): Promise<void> {
   // TODO: In production, upsert to Supabase:
   // await supabase
@@ -99,9 +97,7 @@ export async function incrementUsage(installationId: number): Promise<void> {
   //   p_month: getCurrentMonthKey(installationId).split(':')[1],
   // });
 
-  console.log(
-    `[billing] Usage incremented for installation ${installationId}: ${current + 1}`
-  );
+  console.log(`[billing] Usage incremented for installation ${installationId}: ${current + 1}`);
 }
 
 /**
@@ -127,8 +123,7 @@ export async function getUsageStats(installationId: number): Promise<UsageStats>
   return {
     wusThisMonth,
     wusLimit: wusLimit === Infinity ? 999999 : wusLimit,
-    percentUsed:
-      wusLimit === Infinity ? 0 : Math.round((wusThisMonth / wusLimit) * 100),
+    percentUsed: wusLimit === Infinity ? 0 : Math.round((wusThisMonth / wusLimit) * 100),
   };
 }
 
