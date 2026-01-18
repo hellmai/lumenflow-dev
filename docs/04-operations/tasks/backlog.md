@@ -20,7 +20,9 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
+- [WU-1009 — Write quickstart guide](wu/WU-1009.yaml)
+- [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)
 
 ## 🔧 In progress
 
@@ -28,7 +30,7 @@ sections:
 
 ## ⛔ Blocked
 
-(No items currently blocked)
+- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — blocked by WU-1008, WU-1009
 
 ## ✅ Done
 
