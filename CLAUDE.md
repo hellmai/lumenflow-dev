@@ -36,9 +36,12 @@ pnpm wu:done --id WU-XXXX
 ## Core Principles
 
 1. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
-2. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-3. **Gates Before Done**: All gates must pass before `wu:done`
-4. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+2. **TDD**: Failing test → implementation → passing test (≥90% coverage on new code)
+3. **Library-First**: Search context7 before custom code
+4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+6. **Gates Before Done**: All gates must pass before `wu:done`
+7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
 
 ---
 
