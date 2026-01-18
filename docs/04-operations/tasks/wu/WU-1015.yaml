@@ -2,7 +2,7 @@ id: WU-1015
 title: Add missing CLI command wrappers
 lane: CLI
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-01-18
 code_paths:
@@ -59,3 +59,5 @@ session_id: 98d2e952-8469-446f-9faf-edab898e0ec2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T23:18:59.250Z
+locked: true
+completed_at: 2026-01-18T23:30:28.449Z
