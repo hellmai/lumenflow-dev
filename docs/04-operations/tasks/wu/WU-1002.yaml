@@ -2,7 +2,7 @@ id: WU-1002
 title: Publish @lumenflow packages to npm
 lane: Infrastructure
 type: chore
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-18
 code_paths:
@@ -58,3 +58,5 @@ session_id: de4e1467-5fab-4e39-a266-923c94b940c2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T17:10:15.142Z
+locked: true
+completed_at: 2026-01-18T17:14:27.306Z
