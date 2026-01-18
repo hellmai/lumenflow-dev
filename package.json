@@ -27,6 +27,7 @@
     "spec:linter": "node packages/@lumenflow/cli/dist/wu-validate.js --all",
     "prompts:lint": "echo 'prompts:lint: no prompt files to lint (stub)' && exit 0",
     "cos:gates": "echo 'cos:gates: COS governance not configured (stub)' && exit 0",
+    "tasks:validate": "echo 'tasks:validate: no task validation (stub)' && exit 0",
     "mem:init": "node packages/@lumenflow/cli/dist/mem-init.js",
     "mem:checkpoint": "node packages/@lumenflow/cli/dist/mem-checkpoint.js"
   },
