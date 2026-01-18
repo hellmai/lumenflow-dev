@@ -2,23 +2,23 @@ id: WU-1002
 title: Publish @lumenflow packages to npm
 lane: Infrastructure
 type: chore
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-18
 code_paths:
-  - "packages/@lumenflow/core/package.json"
-  - "packages/@lumenflow/cli/package.json"
-  - "packages/@lumenflow/memory/package.json"
-  - "packages/@lumenflow/agent/package.json"
-  - "packages/@lumenflow/metrics/package.json"
-  - "packages/@lumenflow/initiatives/package.json"
-  - "packages/@lumenflow/shims/package.json"
-  - ".changeset/"
-  - "package.json"
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/metrics/package.json
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/shims/package.json
+  - .changeset/
+  - package.json
 tests:
   manual:
-    - "Verify changeset init creates .changeset/config.json"
-    - "Verify pnpm changeset works after setup"
+    - Verify changeset init creates .changeset/config.json
+    - Verify pnpm changeset works after setup
   unit: []
   e2e: []
 artifacts:
@@ -26,7 +26,7 @@ artifacts:
 dependencies:
   - WU-1001
 risks:
-  - "npm org @lumenflow might be taken - fallback to @hellmai"
+  - npm org @lumenflow might be taken - fallback to @hellmai
 notes: |
   Phase 2 of LumenFlow dogfooding plan.
   Prepares packages for npm publishing with changesets.
@@ -45,8 +45,16 @@ description: |
   Problem: Packages can't be published to npm without proper configuration.
   Solution: Add publishConfig to all 7 packages, setup changesets for versioning.
 acceptance:
-  - "All 7 @lumenflow/* packages have publishConfig with access: restricted"
-  - "Changesets initialized with .changeset/config.json"
-  - "Release scripts added to root package.json (prerelease, release, version)"
-  - "pnpm changeset works without errors"
+  - 'All 7 @lumenflow/* packages have publishConfig with access: restricted'
+  - Changesets initialized with .changeset/config.json
+  - Release scripts added to root package.json (prerelease, release, version)
+  - pnpm changeset works without errors
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/infrastructure-wu-1002
+claimed_at: 2026-01-18T17:10:15.136Z
+baseline_main_sha: 1fb88061f3574435fe8ad889e4db837f12b7f152
+session_id: de4e1467-5fab-4e39-a266-923c94b940c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-18T17:10:15.142Z
