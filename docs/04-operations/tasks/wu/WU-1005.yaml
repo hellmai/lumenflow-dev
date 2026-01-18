@@ -2,15 +2,15 @@ id: WU-1005
 title: Add lumenflow init scaffolding command
 lane: CLI
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-18
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
 tests:
   manual:
-    - 'npx @lumenflow/cli init creates .lumenflow.yaml'
-    - 'npx @lumenflow/cli init creates CLAUDE.md template'
+    - npx @lumenflow/cli init creates .lumenflow.yaml
+    - npx @lumenflow/cli init creates CLAUDE.md template
   unit:
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
   e2e: []
@@ -50,10 +50,18 @@ description: |
   pnpm lumenflow init
   ```
 acceptance:
-  - 'lumenflow init creates .lumenflow.yaml with sensible defaults'
-  - 'lumenflow init creates CLAUDE.md template'
-  - 'lumenflow init creates AGENTS.md template'
-  - 'lumenflow init creates .beacon/ directory'
-  - 'lumenflow init creates docs/ structure for WUs'
-  - 'lumenflow init --force overwrites existing files'
+  - lumenflow init creates .lumenflow.yaml with sensible defaults
+  - lumenflow init creates CLAUDE.md template
+  - lumenflow init creates AGENTS.md template
+  - lumenflow init creates .beacon/ directory
+  - lumenflow init creates docs/ structure for WUs
+  - lumenflow init --force overwrites existing files
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/cli-wu-1005
+claimed_at: 2026-01-18T18:15:51.324Z
+baseline_main_sha: 9416c26ff0e303a86349ae6fc66db41999bbaced
+session_id: cff097c2-d00b-48f7-9d30-27c00a680135
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-18T18:15:51.337Z
