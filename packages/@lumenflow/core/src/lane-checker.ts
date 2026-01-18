@@ -12,8 +12,9 @@ import yaml from 'js-yaml';
 import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
-import { CONFIG_FILES, FILE_SYSTEM, STRING_LITERALS, getProjectRoot } from './wu-constants.js';
+import { CONFIG_FILES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
+import { findProjectRoot } from './lumenflow-config.js';
 
 // Type definitions
 interface ValidateLaneOptions {
@@ -80,7 +81,7 @@ export function extractParent(lane: string): string {
  * @returns {boolean} True if parent has sub-lanes in lane-inference config
  */
 function hasSubLaneTaxonomy(parent: string): boolean {
-  const projectRoot = getProjectRoot(import.meta.url);
+  const projectRoot = findProjectRoot();
   const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 
   if (!existsSync(taxonomyPath)) {
@@ -108,7 +109,7 @@ function hasSubLaneTaxonomy(parent: string): boolean {
  * @returns {boolean} True if sub-lane exists
  */
 function isValidSubLane(parent: string, subdomain: string): boolean {
-  const projectRoot = getProjectRoot(import.meta.url);
+  const projectRoot = findProjectRoot();
   const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 
   if (!existsSync(taxonomyPath)) {
@@ -290,7 +291,7 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   // Determine config path
   let resolvedConfigPath = configPath;
   if (!resolvedConfigPath) {
-    const projectRoot = getProjectRoot(import.meta.url);
+    const projectRoot = findProjectRoot();
     resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
   }
 
