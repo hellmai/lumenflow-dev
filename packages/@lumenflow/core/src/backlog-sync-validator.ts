@@ -113,7 +113,7 @@ export function validateBacklogSync(backlogPath) {
         .map((wu) => `   - ${wu}`)
         .join(STRING_LITERALS.NEWLINE)}${STRING_LITERALS.DOUBLE_NEWLINE}` +
         `   Fix: Remove from Ready section (they are already complete)${STRING_LITERALS.NEWLINE}` +
-        `   Command: Edit docs/04-operations/tasks/backlog.md and remove duplicate entries`
+        `   Command: Edit docs/04-operations/tasks/backlog.md and remove duplicate entries`,
     );
   }
 
@@ -125,7 +125,7 @@ export function validateBacklogSync(backlogPath) {
         .map((wu) => `   - ${wu}`)
         .join(STRING_LITERALS.NEWLINE)}${STRING_LITERALS.DOUBLE_NEWLINE}` +
         `   Fix: Remove from In Progress section (they are already complete)${STRING_LITERALS.NEWLINE}` +
-        `   Or: If reopened, remove from Done and update WU YAML status to in_progress`
+        `   Or: If reopened, remove from Done and update WU YAML status to in_progress`,
     );
   }
 
@@ -138,7 +138,7 @@ export function validateBacklogSync(backlogPath) {
         .join(STRING_LITERALS.NEWLINE)}${STRING_LITERALS.DOUBLE_NEWLINE}` +
         `   This is normal during wu:claim before commit.${STRING_LITERALS.NEWLINE}` +
         `   If you see this error after commit, wu:claim did not remove from Ready.${STRING_LITERALS.NEWLINE}` +
-        `   Fix: Remove from Ready section`
+        `   Fix: Remove from Ready section`,
     );
   }
 
@@ -183,7 +183,7 @@ export function validateBacklogSync(backlogPath) {
         `   Fix: Migrate to sub-lane format using:${STRING_LITERALS.NEWLINE}` +
         `        pnpm wu:infer-lane --id WU-123     # Suggest a sub-lane${STRING_LITERALS.NEWLINE}` +
         `        pnpm wu:edit --id WU-123 --lane "Parent: Sub"${STRING_LITERALS.NEWLINE}` +
-        `   See: docs/04-operations/_frameworks/lumenflow/sub-lanes.md`
+        `   See: docs/04-operations/_frameworks/lumenflow/sub-lanes.md`,
     );
   }
 

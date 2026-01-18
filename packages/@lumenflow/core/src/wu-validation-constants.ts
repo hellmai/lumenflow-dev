@@ -61,4 +61,10 @@ export const VALIDATION_LIMITS = {
  * Valid incident categories for agent issue logging.
  * Duplicated from agent-incidents.mjs z.enum for use in default arrays.
  */
-export const INCIDENT_CATEGORIES = ['workflow', 'tooling', 'confusion', 'violation', 'error'] as const;
+export const INCIDENT_CATEGORIES = [
+  'workflow',
+  'tooling',
+  'confusion',
+  'violation',
+  'error',
+] as const;

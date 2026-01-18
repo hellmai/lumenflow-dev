@@ -139,7 +139,10 @@ export interface StartSessionResult {
  * });
  * console.log(result.session.id); // 'mem-a1b2'
  */
-export async function startSession(baseDir: string, options: StartSessionOptions): Promise<StartSessionResult> {
+export async function startSession(
+  baseDir: string,
+  options: StartSessionOptions,
+): Promise<StartSessionResult> {
   const { wuId, agentType = DEFAULTS.AGENT_TYPE, contextTier = DEFAULTS.CONTEXT_TIER } = options;
 
   // Validate required fields

@@ -23,7 +23,10 @@ describe('merge-lock', () => {
 
   beforeEach(() => {
     // Create a temp directory for each test
-    testDir = path.join(tmpdir(), `merge-lock-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = path.join(
+      tmpdir(),
+      `merge-lock-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
     mkdirSync(testDir, { recursive: true });
     mkdirSync(path.join(testDir, '.beacon'), { recursive: true });
   });
@@ -166,10 +169,14 @@ describe('merge-lock', () => {
     it('should execute function with lock and release after', async () => {
       let lockHeldDuring = false;
 
-      const result = await withMergeLock('WU-100', async () => {
-        lockHeldDuring = isMergeLocked({ baseDir: testDir });
-        return 'done';
-      }, { baseDir: testDir });
+      const result = await withMergeLock(
+        'WU-100',
+        async () => {
+          lockHeldDuring = isMergeLocked({ baseDir: testDir });
+          return 'done';
+        },
+        { baseDir: testDir },
+      );
 
       expect(lockHeldDuring).toBe(true, 'lock should be held during execution');
       expect(result).toBe('done', 'should return function result');
@@ -178,15 +185,22 @@ describe('merge-lock', () => {
 
     it('should release lock even if function throws', async () => {
       try {
-        await withMergeLock('WU-100', async () => {
-          throw new Error('Intentional error');
-        }, { baseDir: testDir });
+        await withMergeLock(
+          'WU-100',
+          async () => {
+            throw new Error('Intentional error');
+          },
+          { baseDir: testDir },
+        );
         throw new Error('should have thrown');
       } catch (err) {
         expect(err.message.includes('Intentional error')).toBe(true);
       }
 
-      expect(isMergeLocked({ baseDir: testDir })).toBe(false, 'lock should be released after error');
+      expect(isMergeLocked({ baseDir: testDir })).toBe(
+        false,
+        'lock should be released after error',
+      );
     });
 
     it('should throw if lock cannot be acquired', async () => {
@@ -198,7 +212,10 @@ describe('merge-lock', () => {
         await withMergeLock('WU-200', async () => 'done', { baseDir: testDir, waitMs: 100 });
         throw new Error('should have thrown');
       } catch (err) {
-        assert.ok(err.message.includes('acquire') || err.message.includes('lock'), 'should mention lock');
+        assert.ok(
+          err.message.includes('acquire') || err.message.includes('lock'),
+          'should mention lock',
+        );
       }
     });
   });

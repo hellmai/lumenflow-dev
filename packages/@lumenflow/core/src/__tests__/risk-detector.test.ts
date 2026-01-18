@@ -36,35 +36,29 @@ describe('RISK_TIERS', () => {
 describe('SAFETY_CRITICAL_TEST_PATTERNS', () => {
   it('should include red-flag patterns', () => {
     const hasRedFlag = SAFETY_CRITICAL_TEST_PATTERNS.some(
-      (p) => p.includes('red-flag') || p.includes('redflag')
+      (p) => p.includes('red-flag') || p.includes('redflag'),
     );
     assert.ok(hasRedFlag, 'Should include red-flag test patterns');
   });
 
   it('should include PHI patterns', () => {
-    const hasPhi = SAFETY_CRITICAL_TEST_PATTERNS.some(
-      (p) => p.toLowerCase().includes('phi')
-    );
+    const hasPhi = SAFETY_CRITICAL_TEST_PATTERNS.some((p) => p.toLowerCase().includes('phi'));
     assert.ok(hasPhi, 'Should include PHI test patterns');
   });
 
   it('should include escalation patterns', () => {
-    const hasEscalation = SAFETY_CRITICAL_TEST_PATTERNS.some(
-      (p) => p.includes('escalation')
-    );
+    const hasEscalation = SAFETY_CRITICAL_TEST_PATTERNS.some((p) => p.includes('escalation'));
     assert.ok(hasEscalation, 'Should include escalation test patterns');
   });
 
   it('should include privacy patterns', () => {
-    const hasPrivacy = SAFETY_CRITICAL_TEST_PATTERNS.some(
-      (p) => p.includes('privacy')
-    );
+    const hasPrivacy = SAFETY_CRITICAL_TEST_PATTERNS.some((p) => p.includes('privacy'));
     assert.ok(hasPrivacy, 'Should include privacy test patterns');
   });
 
   it('should include constitutional enforcer patterns', () => {
-    const hasConstitutional = SAFETY_CRITICAL_TEST_PATTERNS.some(
-      (p) => p.includes('constitutional')
+    const hasConstitutional = SAFETY_CRITICAL_TEST_PATTERNS.some((p) =>
+      p.includes('constitutional'),
     );
     assert.ok(hasConstitutional, 'Should include constitutional enforcer test patterns');
   });
@@ -72,30 +66,22 @@ describe('SAFETY_CRITICAL_TEST_PATTERNS', () => {
 
 describe('HIGH_RISK_PATH_PATTERNS', () => {
   it('should include auth paths', () => {
-    const hasAuth = HIGH_RISK_PATH_PATTERNS.some(
-      (p) => p.includes('auth')
-    );
+    const hasAuth = HIGH_RISK_PATH_PATTERNS.some((p) => p.includes('auth'));
     assert.ok(hasAuth, 'Should include auth path patterns');
   });
 
   it('should include PHI paths', () => {
-    const hasPhi = HIGH_RISK_PATH_PATTERNS.some(
-      (p) => p.toLowerCase().includes('phi')
-    );
+    const hasPhi = HIGH_RISK_PATH_PATTERNS.some((p) => p.toLowerCase().includes('phi'));
     assert.ok(hasPhi, 'Should include PHI path patterns');
   });
 
   it('should avoid generic migration path patterns', () => {
-    const hasGenericMigration = HIGH_RISK_PATH_PATTERNS.some(
-      (p) => p.includes('/migrations/')
-    );
+    const hasGenericMigration = HIGH_RISK_PATH_PATTERNS.some((p) => p.includes('/migrations/'));
     expect(hasGenericMigration).toBe(false);
   });
 
   it('should include RLS paths', () => {
-    const hasRls = HIGH_RISK_PATH_PATTERNS.some(
-      (p) => p.toLowerCase().includes('rls')
-    );
+    const hasRls = HIGH_RISK_PATH_PATTERNS.some((p) => p.toLowerCase().includes('rls'));
     assert.ok(hasRls, 'Should include RLS path patterns');
   });
 });
@@ -114,7 +100,9 @@ describe('isSafetyCriticalTest', () => {
 
   it('should identify escalation tests', () => {
     expect(isSafetyCriticalTest('src/lib/llm/__tests__/escalationTrigger.test.ts')).toBe(true);
-    expect(isSafetyCriticalTest('src/components/escalation/__tests__/EscalationHistory.test.tsx')).toBe(true);
+    expect(
+      isSafetyCriticalTest('src/components/escalation/__tests__/EscalationHistory.test.tsx'),
+    ).toBe(true);
   });
 
   it('should identify privacy detector tests', () => {
@@ -173,25 +161,16 @@ describe('isHighRiskPath', () => {
 
 describe('isHighRiskMigration', () => {
   it('should detect policy and RLS keywords in migration filenames', () => {
-    assert.equal(
-      isHighRiskMigration('supabase/supabase/migrations/20240101_policy.sql'),
-      true
-    );
-    assert.equal(
-      isHighRiskMigration('supabase/supabase/migrations/20240102_enable_rls.sql'),
-      true
-    );
+    assert.equal(isHighRiskMigration('supabase/supabase/migrations/20240101_policy.sql'), true);
+    assert.equal(isHighRiskMigration('supabase/supabase/migrations/20240102_enable_rls.sql'), true);
     assert.equal(
       isHighRiskMigration('supabase/supabase/migrations/20240103_row_level_security.sql'),
-      true
+      true,
     );
   });
 
   it('should return false for schema-only migration filenames', () => {
-    assert.equal(
-      isHighRiskMigration('supabase/supabase/migrations/20240101_init_core.sql'),
-      false
-    );
+    assert.equal(isHighRiskMigration('supabase/supabase/migrations/20240101_init_core.sql'), false);
   });
 
   it('should return false for non-migration paths', () => {
@@ -208,10 +187,7 @@ describe('detectRiskTier', () => {
     });
 
     it('should detect docs-only when all files are in docs/ directory', () => {
-      const changedFiles = [
-        'docs/04-operations/tasks/wu/WU-2062.yaml',
-        'docs/README.md',
-      ];
+      const changedFiles = ['docs/04-operations/tasks/wu/WU-2062.yaml', 'docs/README.md'];
       const result = detectRiskTier({ changedFiles });
       expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
@@ -287,7 +263,9 @@ describe('detectRiskTier', () => {
     it('should include the safety-critical patterns for filtering tests', () => {
       const result = detectRiskTier({ changedFiles: ['src/lib/utils.ts'] });
       // Should have patterns that can be used to filter tests
-      expect(result.safetyCriticalPatterns.some((p) => p.includes('phi') || p.includes('PHI'))).toBeTruthy();
+      expect(
+        result.safetyCriticalPatterns.some((p) => p.includes('phi') || p.includes('PHI')),
+      ).toBeTruthy();
       expect(result.safetyCriticalPatterns.some((p) => p.includes('escalation'))).toBeTruthy();
     });
   });

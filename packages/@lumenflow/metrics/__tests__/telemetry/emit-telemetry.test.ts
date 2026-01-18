@@ -17,7 +17,9 @@ describe('createTelemetryEmitter', () => {
   describe('TELEMETRY_PATHS', () => {
     it('exports default paths', () => {
       expect(TELEMETRY_PATHS.GATES).toBe('.beacon/telemetry/gates.ndjson');
-      expect(TELEMETRY_PATHS.LLM_CLASSIFICATION).toBe('.beacon/telemetry/llm-classification.ndjson');
+      expect(TELEMETRY_PATHS.LLM_CLASSIFICATION).toBe(
+        '.beacon/telemetry/llm-classification.ndjson',
+      );
       expect(TELEMETRY_PATHS.FLOW_LOG).toBe('.beacon/flow.log');
     });
   });
@@ -55,10 +57,7 @@ describe('createTelemetryEmitter', () => {
 
     it('uses custom log path', () => {
       const customPath = '/custom/gates.log';
-      emitter.emitGateEvent(
-        { gateName: 'lint', passed: true, durationMs: 50 },
-        customPath
-      );
+      emitter.emitGateEvent({ gateName: 'lint', passed: true, durationMs: 50 }, customPath);
 
       const [path] = emitFn.mock.calls[0]!;
       expect(path).toBe(customPath);

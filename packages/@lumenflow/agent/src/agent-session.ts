@@ -31,7 +31,11 @@ interface SessionData {
  * @returns session_id
  * @throws {Error} if session already active or WU format invalid
  */
-export async function startSession(wuId: string, tier: 1 | 2 | 3, agentType: string = 'claude-code'): Promise<string> {
+export async function startSession(
+  wuId: string,
+  tier: 1 | 2 | 3,
+  agentType: string = 'claude-code',
+): Promise<string> {
   // Check for existing session
   const sessionExists = await access(SESSION_FILE)
     .then(() => true)
@@ -41,7 +45,7 @@ export async function startSession(wuId: string, tier: 1 | 2 | 3, agentType: str
     const existing = JSON.parse(content) as SessionData;
     throw new Error(
       `Session ${existing.session_id} already active for ${existing.wu_id}. ` +
-        `Run 'pnpm agent:session:end' first.`
+        `Run 'pnpm agent:session:end' first.`,
     );
   }
 

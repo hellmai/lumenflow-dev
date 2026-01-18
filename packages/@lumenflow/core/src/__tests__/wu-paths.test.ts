@@ -216,7 +216,7 @@ describe('getStateStoreDirFromBacklog (WU-1593)', () => {
       'docs',
       '04-operations',
       '.beacon',
-      'state'
+      'state',
     );
     expect(result).not.toBe(wrongPath);
 

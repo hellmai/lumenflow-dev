@@ -79,7 +79,8 @@ export const INIT_COMMIT_FORMATS = {
    * @param initId - Initiative ID
    * @returns Commit message
    */
-  LINK_WU: (wuId: string, initId: string): string => `docs: link ${wuId.toLowerCase()} to ${initId.toLowerCase()}`,
+  LINK_WU: (wuId: string, initId: string): string =>
+    `docs: link ${wuId.toLowerCase()} to ${initId.toLowerCase()}`,
 
   /**
    * Edit initiative commit message (WU-1451)

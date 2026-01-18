@@ -50,7 +50,10 @@ import {
   hasMigrationChanges,
   formatMigrationReport,
 } from '@lumenflow/core/dist/migration-deployer.js';
-import { validateDocsOnly, getAllowedPathsDescription } from '@lumenflow/core/dist/docs-path-validator.js';
+import {
+  validateDocsOnly,
+  getAllowedPathsDescription,
+} from '@lumenflow/core/dist/docs-path-validator.js';
 import { scanLogForViolations, rotateLog } from '@lumenflow/core/dist/commands-logger.js';
 import { rollbackFiles } from '@lumenflow/core/dist/rollback-utils.js';
 import {
@@ -106,7 +109,10 @@ import {
 } from '@lumenflow/core/dist/wu-schema.js';
 import { validateBacklogSync } from '@lumenflow/core/dist/backlog-sync-validator.js';
 import { executeBranchOnlyCompletion } from '@lumenflow/core/dist/wu-done-branch-only.js';
-import { executeWorktreeCompletion, autoRebaseBranch } from '@lumenflow/core/dist/wu-done-worktree.js';
+import {
+  executeWorktreeCompletion,
+  autoRebaseBranch,
+} from '@lumenflow/core/dist/wu-done-worktree.js';
 import { checkWUConsistency } from '@lumenflow/core/dist/wu-consistency-checker.js';
 // WU-1542: Use blocking mode compliance check (replaces non-blocking checkMandatoryAgentsCompliance)
 import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/dist/orchestration-rules.js';
@@ -134,7 +140,10 @@ import { SpawnRegistryStore } from '@lumenflow/core/dist/spawn-registry-store.js
 import { SpawnStatus } from '@lumenflow/core/dist/spawn-registry-schema.js';
 // WU-1999: Exposure validation for UI pairing
 // WU-2022: Feature accessibility validation (blocking)
-import { validateExposure, validateFeatureAccessibility } from '@lumenflow/core/dist/wu-validation.js';
+import {
+  validateExposure,
+  validateFeatureAccessibility,
+} from '@lumenflow/core/dist/wu-validation.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -205,7 +214,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
       `  pnpm wu:repair-claim --id ${id}\n\n` +
       `After repair, retry:\n` +
       `  pnpm wu:done --id ${id}\n\n` +
-      `See: ai/onboarding/troubleshooting-wu-done.md for more recovery options.`
+      `See: ai/onboarding/troubleshooting-wu-done.md for more recovery options.`,
   );
 }
 
@@ -242,7 +251,7 @@ export function printExposureWarnings(wu: Record<string, unknown>, options: Expo
     }
     console.log(
       `${LOG_PREFIX.DONE} These are non-blocking warnings. ` +
-        `To skip, use --skip-exposure-check flag.\n`
+        `To skip, use --skip-exposure-check flag.\n`,
     );
   }
 }
@@ -267,20 +276,23 @@ interface AccessibilityOptions {
   skipAccessibilityCheck?: boolean;
 }
 
-export function validateAccessibilityOrDie(wu: Record<string, unknown>, options: AccessibilityOptions = {}) {
+export function validateAccessibilityOrDie(
+  wu: Record<string, unknown>,
+  options: AccessibilityOptions = {},
+) {
   const result = validateFeatureAccessibility(wu, {
     skipAccessibilityCheck: options.skipAccessibilityCheck,
   });
 
   if (!result.valid) {
     console.log(
-      `\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} WU-2022: Feature accessibility validation failed`
+      `\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} WU-2022: Feature accessibility validation failed`,
     );
     die(
       `❌ FEATURE ACCESSIBILITY VALIDATION FAILED (WU-2022)\n\n` +
         `Cannot complete wu:done - UI feature accessibility not verified.\n\n` +
         `${result.errors.join('\n\n')}\n\n` +
-        `This gate prevents "orphaned code" - features that exist but users cannot access.`
+        `This gate prevents "orphaned code" - features that exist but users cannot access.`,
     );
   }
 }
@@ -299,7 +311,7 @@ async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
         `Path: ${eventsPath}\n\n` +
         `Error: ${err.message}\n\n` +
         `If this WU was claimed on an older tool version or the event log is missing/corrupt,\n` +
-        `repair the worktree state store before rerunning wu:done.`
+        `repair the worktree state store before rerunning wu:done.`,
     );
   }
 
@@ -309,7 +321,7 @@ async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
       `WU ${id} is not in_progress in the worktree state store.\n\n` +
         `Path: ${eventsPath}\n\n` +
         `This will fail later when wu:done tries to append a complete event and regenerate backlog/status.\n` +
-        `Fix the claim/state log first, then rerun wu:done.`
+        `Fix the claim/state log first, then rerun wu:done.`,
     );
   }
 }
@@ -336,13 +348,13 @@ async function createPreGatesCheckpoint(id, worktreePath, baseDir = process.cwd(
     });
     if (result.success) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pre-gates checkpoint created (${result.checkpoint.id})`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pre-gates checkpoint created (${result.checkpoint.id})`,
       );
     }
   } catch (err) {
     // Non-blocking: checkpoint failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not create pre-gates checkpoint: ${err.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not create pre-gates checkpoint: ${err.message}`,
     );
   }
 }
@@ -364,13 +376,13 @@ async function broadcastCompletionSignal(id, title, baseDir = process.cwd()) {
     });
     if (result.success) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Completion signal broadcast (${result.signal.id})`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Completion signal broadcast (${result.signal.id})`,
       );
     }
   } catch (err) {
     // Non-blocking: signal failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not broadcast completion signal: ${err.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not broadcast completion signal: ${err.message}`,
     );
   }
 }
@@ -406,7 +418,7 @@ async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
   } catch (err) {
     // Non-blocking: inbox check failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check inbox for signals: ${err.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check inbox for signals: ${err.message}`,
     );
   }
 }
@@ -438,7 +450,7 @@ export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd(
     // Graceful skip if no spawn entry found (legacy WU)
     if (!spawnEntry) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.INFO} No spawn registry entry found for ${id} (legacy WU or not spawned)`
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} No spawn registry entry found for ${id} (legacy WU or not spawned)`,
       );
       return;
     }
@@ -446,12 +458,12 @@ export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd(
     // Update status to completed with completedAt timestamp
     await store.updateStatus(spawnEntry.id, SpawnStatus.COMPLETED);
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Spawn registry updated: ${id} marked as completed`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Spawn registry updated: ${id} marked as completed`,
     );
   } catch (err) {
     // Non-blocking: spawn registry update failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not update spawn registry for ${id}: ${err.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not update spawn registry for ${id}: ${err.message}`,
     );
   }
 }
@@ -505,7 +517,7 @@ export async function isBranchAlreadyMerged(branch) {
         `${LOG_PREFIX.DONE} ${EMOJI.INFO} Branch ${branch} is already merged to main\n` +
           `         Branch tip: ${branchTip.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
           `         Merge-base: ${mergeBase.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
-          `         Main HEAD:  ${mainHead.substring(0, GIT.SHA_SHORT_LENGTH)}`
+          `         Main HEAD:  ${mainHead.substring(0, GIT.SHA_SHORT_LENGTH)}`,
       );
       return true;
     }
@@ -557,7 +569,7 @@ export function checkBacklogConsistencyForWU(id, backlogPath) {
   } catch (e) {
     // If validation fails (e.g., file not found), warn but don't block
     console.warn(
-      `${LOG_PREFIX.DONE} Warning: Could not validate backlog consistency: ${e.message}`
+      `${LOG_PREFIX.DONE} Warning: Could not validate backlog consistency: ${e.message}`,
     );
     return { valid: true, error: null };
   }
@@ -571,7 +583,9 @@ function getCommitHeaderLimit() {
   try {
     const configPath = path.join(process.cwd(), '.commitlintrc.json');
     if (!existsSync(configPath)) return DEFAULTS.MAX_COMMIT_SUBJECT;
-    const cfg = JSON.parse(readFileSync(configPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }));
+    const cfg = JSON.parse(
+      readFileSync(configPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }),
+    );
     return cfg?.rules?.['header-max-length']?.[2] ?? DEFAULTS.MAX_COMMIT_SUBJECT;
   } catch {
     return DEFAULTS.MAX_COMMIT_SUBJECT; // Fallback if config is malformed or missing
@@ -611,7 +625,7 @@ async function ensureCleanWorkingTree() {
         `Common causes:\n` +
         `  - You forgot to commit changes before claiming a different WU\n` +
         `  - Another agent is actively working in main checkout\n` +
-        `  - Leftover changes from previous session`
+        `  - Leftover changes from previous session`,
     );
   }
 }
@@ -687,7 +701,7 @@ async function detectParallelCompletions(id, doc) {
   // If no baseline recorded (legacy WU), skip detection
   if (!baselineSha) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.INFO} No baseline_main_sha recorded (legacy WU) - skipping parallel detection`
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} No baseline_main_sha recorded (legacy WU) - skipping parallel detection`,
     );
     return noParallel;
   }
@@ -702,7 +716,7 @@ async function detectParallelCompletions(id, doc) {
 
     if (currentSha === baselineSha) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} No parallel completions detected (main unchanged since claim)`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} No parallel completions detected (main unchanged since claim)`,
       );
       return noParallel;
     }
@@ -716,7 +730,7 @@ async function detectParallelCompletions(id, doc) {
 
     if (!logOutput?.trim()) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main advanced since claim but no WU completions detected`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main advanced since claim but no WU completions detected`,
       );
       return noParallel;
     }
@@ -725,7 +739,7 @@ async function detectParallelCompletions(id, doc) {
 
     if (completedWUs.length === 0) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main advanced since claim but no other WU completions`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main advanced since claim but no other WU completions`,
       );
       return noParallel;
     }
@@ -734,7 +748,7 @@ async function detectParallelCompletions(id, doc) {
     return { hasParallelCompletions: true, completedWUs, warning };
   } catch (err) {
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect parallel completions: ${err.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect parallel completions: ${err.message}`,
     );
     return noParallel;
   }
@@ -783,7 +797,7 @@ async function ensureMainUpToDate() {
           `  - Another agent completed a WU and pushed to main\n` +
           `  - Your main checkout is now behind origin/main\n` +
           `  - The fast-forward merge will fail without updating first\n\n` +
-          `Multi-agent coordination: See CLAUDE.md §2.7`
+          `Multi-agent coordination: See CLAUDE.md §2.7`,
       );
     }
 
@@ -887,7 +901,7 @@ async function ensureNoAutoStagedOrNoop(paths) {
   const present = paths.filter(Boolean).filter((p) => isStaged(p));
   if (present.length === 0) {
     console.log(
-      `${LOG_PREFIX.DONE} No staged changes detected for --no-auto; treating as no-op finalisation (repo already in done state)`
+      `${LOG_PREFIX.DONE} No staged changes detected for --no-auto; treating as no-op finalisation (repo already in done state)`,
     );
     return { noop: true };
   }
@@ -971,8 +985,12 @@ function checkNodeModulesStaleness(worktreePath) {
       return;
     }
 
-    const mainContent = readFileSync(mainPackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-    const worktreeContent = readFileSync(worktreePackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+    const mainContent = readFileSync(mainPackageJson, {
+      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+    });
+    const worktreeContent = readFileSync(worktreePackageJson, {
+      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+    });
 
     // Compare package.json files
     if (mainContent !== worktreeContent) {
@@ -994,7 +1012,7 @@ function checkNodeModulesStaleness(worktreePath) {
               `    cd ${worktreePath}\n` +
               `    pnpm install\n` +
               `    cd -\n` +
-              `    pnpm wu:done --id <WU-ID>\n`
+              `    pnpm wu:done --id <WU-ID>\n`,
           );
         }
       } else {
@@ -1007,7 +1025,7 @@ function checkNodeModulesStaleness(worktreePath) {
             `    cd ${worktreePath}\n` +
             `    pnpm install\n` +
             `    cd -\n` +
-            `    pnpm wu:done --id <WU-ID>\n`
+            `    pnpm wu:done --id <WU-ID>\n`,
         );
       }
     }
@@ -1075,7 +1093,7 @@ async function validateStagedFiles(id, isDocsOnly = false) {
     const docsResult = validateDocsOnly(staged);
     if (!docsResult.valid) {
       die(
-        `Docs-only WU cannot modify code files:\n  ${docsResult.violations.join(`${STRING_LITERALS.NEWLINE}  `)}\n\n${getAllowedPathsDescription()}`
+        `Docs-only WU cannot modify code files:\n  ${docsResult.violations.join(`${STRING_LITERALS.NEWLINE}  `)}\n\n${getAllowedPathsDescription()}`,
       );
     }
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Docs-only path validation passed`);
@@ -1092,15 +1110,15 @@ async function validateStagedFiles(id, isDocsOnly = false) {
 
   if (unexpected.length > 0) {
     const otherWuYamlOnly = unexpected.every((f) =>
-      /^docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml$/.test(f)
+      /^docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml$/.test(f),
     );
     if (otherWuYamlOnly) {
       console.warn(
-        `${LOG_PREFIX.DONE} Warning: other WU YAMLs are staged; proceeding and committing only current WU files.`
+        `${LOG_PREFIX.DONE} Warning: other WU YAMLs are staged; proceeding and committing only current WU files.`,
       );
     } else {
       die(
-        `Unexpected files staged (only current WU YAML, status.md, backlog.md, .beacon/stamps/<id>.done allowed):\n  ${unexpected.join(`${STRING_LITERALS.NEWLINE}  `)}`
+        `Unexpected files staged (only current WU YAML, status.md, backlog.md, .beacon/stamps/<id>.done allowed):\n  ${unexpected.join(`${STRING_LITERALS.NEWLINE}  `)}`,
       );
     }
   }
@@ -1167,10 +1185,16 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
   return {
     id,
     timestamp: new Date().toISOString(),
-    wuYamlContent: existsSync(wuPath) ? readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
+    wuYamlContent: existsSync(wuPath)
+      ? readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding })
+      : null,
     stampExisted: existsSync(stampPath),
-    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
-    statusContent: existsSync(statusPath) ? readFileSync(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }) : null,
+    backlogContent: existsSync(backlogPath)
+      ? readFileSync(backlogPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding })
+      : null,
+    statusContent: existsSync(statusPath)
+      ? readFileSync(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding })
+      : null,
     mainSHA: gitAdapter.getCommitHash(),
     laneBranch: gitAdapter.getCurrentBranch(),
   };
@@ -1187,7 +1211,7 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
 async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, statusPath) {
   console.error(
-    `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} ROLLING BACK TRANSACTION (WU-755 + WU-1230 + WU-1255 + WU-1280)...`
+    `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} ROLLING BACK TRANSACTION (WU-755 + WU-1230 + WU-1255 + WU-1280)...`,
   );
 
   // WU-1280: ATOMIC ROLLBACK - Clean git state FIRST, then restore files
@@ -1261,7 +1285,7 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
   }
   for (const err of restoreResult.errors) {
     console.error(
-      `${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to restore ${err.name}: ${err.error}`
+      `${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to restore ${err.name}: ${err.error}`,
     );
   }
 
@@ -1275,7 +1299,7 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
         await gitAdapter.reset(txState.mainSHA, { hard: true });
         // Emergency fix Session 2: Use GIT.SHA_SHORT_LENGTH constant
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Reset main to ${txState.mainSHA.slice(0, GIT.SHA_SHORT_LENGTH)}`
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Reset main to ${txState.mainSHA.slice(0, GIT.SHA_SHORT_LENGTH)}`,
         );
       }
     }
@@ -1301,7 +1325,7 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
   // WU-1255: Report final status with all errors
   if (restoreResult.errors.length > 0) {
     console.error(
-      `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rollback completed with ${restoreResult.errors.length} error(s):`
+      `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rollback completed with ${restoreResult.errors.length} error(s):`,
     );
     for (const err of restoreResult.errors) {
       console.error(`  - ${err.name}: ${err.error}`);
@@ -1310,7 +1334,7 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
     console.error(`${LOG_PREFIX.DONE} See playbook.md section 12 "Scenario D" for recovery steps`);
   } else {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Rollback complete - WU state fully reverted (no infinite loop)`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Rollback complete - WU state fully reverted (no infinite loop)`,
     );
   }
 }
@@ -1329,7 +1353,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
   const codePaths = doc.code_paths || [];
   if (codePaths.length === 0) {
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} No code_paths defined in WU YAML, skipping validator`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} No code_paths defined in WU YAML, skipping validator`,
     );
     return;
   }
@@ -1349,7 +1373,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
     if (!hasJustification) {
       die(
         '--allow-todo flag requires justification in WU YAML notes field.\n' +
-          'Add a note explaining why TODOs are acceptable for this WU.'
+          'Add a note explaining why TODOs are acceptable for this WU.',
       );
     }
   }
@@ -1376,7 +1400,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
     result.errors.forEach((error) => console.log(error));
     console.log('\nFix these issues before marking WU as done.');
     console.log(
-      'Alternatively, use --allow-todo if TODOs are acceptable (requires justification in notes).'
+      'Alternatively, use --allow-todo if TODOs are acceptable (requires justification in notes).',
     );
     die('WU validation failed. See errors above.');
   }
@@ -1424,12 +1448,12 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
         assignedTo = wtDoc?.assigned_to || null;
         if (assignedTo) {
           console.log(
-            `${LOG_PREFIX.DONE} Note: Read assigned_to from worktree YAML (not found in main)`
+            `${LOG_PREFIX.DONE} Note: Read assigned_to from worktree YAML (not found in main)`,
           );
         }
       } catch (err) {
         console.warn(
-          `${LOG_PREFIX.DONE} Warning: Failed to read assigned_to from worktree: ${err.message}`
+          `${LOG_PREFIX.DONE} Warning: Failed to read assigned_to from worktree: ${err.message}`,
         );
       }
     }
@@ -1477,7 +1501,7 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
     // Owner is completing their own WU - allow
     if (assignedTo !== currentUser) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Ownership match via normalization: "${assignedTo}" == "${currentUser}"`
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Ownership match via normalization: "${assignedTo}" == "${currentUser}"`,
       );
     }
     return { valid: true, error: null, auditEntry: null };
@@ -1582,7 +1606,7 @@ async function executePreFlightChecks({
     const doneResult = validateDoneWU(schemaResult.data);
     if (!doneResult.valid) {
       die(
-        `❌ WU not ready for done status:\n\n${doneResult.errors.map((e) => `  - ${e}`).join(STRING_LITERALS.NEWLINE)}`
+        `❌ WU not ready for done status:\n\n${doneResult.errors.map((e) => `  - ${e}`).join(STRING_LITERALS.NEWLINE)}`,
       );
     }
   }
@@ -1599,7 +1623,7 @@ async function executePreFlightChecks({
         `   1. Request approval from the required role(s)\n` +
         `   2. Add their email(s) to the 'approved_by' field in the WU YAML\n` +
         `   3. Re-run: pnpm wu:done --id ${id}\n\n` +
-        `   See docs/04-operations/governance/project-governance.md for role definitions.`
+        `   See docs/04-operations/governance/project-governance.md for role definitions.`,
     );
   }
   // Log advisory warnings (non-blocking)
@@ -1654,7 +1678,7 @@ async function executePreFlightChecks({
       .join(STRING_LITERALS.NEWLINE);
     die(
       `Pre-existing inconsistencies for ${id}:\n${errors}\n\n` +
-        `Fix with: pnpm wu:repair --id ${id}`
+        `Fix with: pnpm wu:repair --id ${id}`,
     );
   }
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU state consistency check passed`);
@@ -1715,14 +1739,14 @@ async function executePreFlightChecks({
       // This prevents merge conflicts that would fail downstream
       if (derivedWorktree && !args.noAutoRebase) {
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1584: Triggering auto-rebase to incorporate parallel completions...`
+          `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1584: Triggering auto-rebase to incorporate parallel completions...`,
         );
         const laneBranch = await defaultBranchFrom(docForValidation);
         if (laneBranch) {
           const rebaseResult = await autoRebaseBranch(laneBranch, derivedWorktree, id);
           if (rebaseResult.success) {
             console.log(
-              `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1584: Auto-rebase complete - parallel completions incorporated`
+              `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1584: Auto-rebase complete - parallel completions incorporated`,
             );
             emitTelemetry({
               script: MICRO_WORKTREE_OPERATIONS.WU_DONE,
@@ -1737,19 +1761,19 @@ async function executePreFlightChecks({
             console.error(rebaseResult.error);
             die(
               `WU-1584: Auto-rebase failed after detecting parallel completions.\n` +
-                `Manual resolution required - see instructions above.`
+                `Manual resolution required - see instructions above.`,
             );
           }
         }
       } else if (!args.noAutoRebase) {
         // No worktree path available - warn and proceed (legacy behavior)
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot auto-rebase (no worktree path) - proceeding with caution`
+          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot auto-rebase (no worktree path) - proceeding with caution`,
         );
       } else {
         // Auto-rebase disabled - warn and proceed
         console.log(
-          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Auto-rebase disabled (--no-auto-rebase) - proceeding with caution`
+          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Auto-rebase disabled (--no-auto-rebase) - proceeding with caution`,
         );
       }
     }
@@ -1790,7 +1814,7 @@ async function executePreFlightChecks({
       docForValidation,
       derivedWorktree,
       args.overrideOwner,
-      args.reason
+      args.reason,
     );
 
     if (!ownershipCheck.valid) {
@@ -1813,7 +1837,7 @@ async function executePreFlightChecks({
           '04-operations',
           'tasks',
           'wu',
-          `${id}.yaml`
+          `${id}.yaml`,
         );
         if (existsSync(wtWUPath)) {
           writeWU(wtWUPath, docForValidation);
@@ -1837,7 +1861,7 @@ async function executePreFlightChecks({
         `  4. List all modified files in code_paths\n` +
         `  5. Add at least one test path (unit, e2e, integration, or manual)\n` +
         `  6. Re-run: pnpm wu:done --id ${id}\n\n` +
-        `See: CLAUDE.md §2.7 "WUs are specs, not code"\n`
+        `See: CLAUDE.md §2.7 "WUs are specs, not code"\n`,
     );
     die(`Cannot mark ${id} as done - spec incomplete`);
   }
@@ -1928,17 +1952,24 @@ interface ExecuteGatesParams {
   branchName?: string;
 }
 
-async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, branchName }: ExecuteGatesParams) {
+async function executeGates({
+  id,
+  args,
+  isBranchOnly,
+  isDocsOnly,
+  worktreePath,
+  branchName,
+}: ExecuteGatesParams) {
   // WU-1747: Check if gates can be skipped based on valid checkpoint
   // This allows resuming wu:done without re-running gates if nothing changed
   const skipResult = canSkipGates(id, { currentHeadSha: undefined });
   if (skipResult.canSkip) {
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${CHECKPOINT_MESSAGES.SKIPPING_GATES_VALID}`);
     console.log(
-      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.CHECKPOINT_LABEL}: ${skipResult.checkpoint.checkpointId}`
+      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.CHECKPOINT_LABEL}: ${skipResult.checkpoint.checkpointId}`,
     );
     console.log(
-      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.GATES_PASSED_AT}: ${skipResult.checkpoint.gatesPassedAt}`
+      `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.GATES_PASSED_AT}: ${skipResult.checkpoint.gatesPassedAt}`,
     );
     emitTelemetry({
       script: TELEMETRY_STEPS.GATES,
@@ -1958,7 +1989,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
     } catch (err) {
       // Non-blocking: checkpoint failure should not block wu:done
       console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${CHECKPOINT_MESSAGES.COULD_NOT_CREATE}: ${err.message}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${CHECKPOINT_MESSAGES.COULD_NOT_CREATE}: ${err.message}`,
       );
     }
   }
@@ -1997,7 +2028,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
       ok: false,
     });
     die(
-      `Invariants check failed. Fix violations before completing WU.\n\n${invariantsResult.formatted}`
+      `Invariants check failed. Fix violations before completing WU.\n\n${invariantsResult.formatted}`,
     );
   }
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Invariants check passed`);
@@ -2011,7 +2042,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
   // Step 0b: Run gates BEFORE merge (or skip with audit trail)
   if (args.skipGates) {
     console.log(
-      `\n${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}  SKIP-GATES MODE ACTIVE ${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}\n`
+      `\n${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}  SKIP-GATES MODE ACTIVE ${EMOJI.WARNING}  ${EMOJI.WARNING}  ${EMOJI.WARNING}\n`,
     );
     console.log(`${LOG_PREFIX.DONE} Skipping gates check as requested`);
     console.log(`${LOG_PREFIX.DONE} Reason: ${args.reason}`);
@@ -2075,7 +2106,7 @@ async function executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath, 
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
-        `If the worktree was removed, recreate it and retry, or use --skip-gates with justification.`
+        `If the worktree was removed, recreate it and retry, or use --skip-gates with justification.`,
     );
   }
 
@@ -2150,7 +2181,7 @@ function printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree,
   const branch = defaultBranchFrom(docMain) || 'n/a';
   const worktreeDisplay = isBranchOnly ? 'none' : derivedWorktree || 'none';
   console.log(
-    `\n${LOG_PREFIX.DONE} HUD: WU=${id} status=${yamlStatus} stamp=${stampExists} locked=${yamlLocked} mode=${mode} branch=${branch} worktree=${worktreeDisplay}`
+    `\n${LOG_PREFIX.DONE} HUD: WU=${id} status=${yamlStatus} stamp=${stampExists} locked=${yamlLocked} mode=${mode} branch=${branch} worktree=${worktreeDisplay}`,
   );
 }
 
@@ -2204,13 +2235,13 @@ async function main() {
     const wuNodes = await queryByWu(worktreePath || mainCheckoutPath, id);
     if (!hasSessionCheckpoints(id, wuNodes)) {
       console.log(
-        `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: No checkpoints found for ${id} session.`
+        `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: No checkpoints found for ${id} session.`,
       );
       console.log(
-        `${LOG_PREFIX.DONE} Consider using 'pnpm mem:checkpoint --wu ${id}' periodically for crash recovery.`
+        `${LOG_PREFIX.DONE} Consider using 'pnpm mem:checkpoint --wu ${id}' periodically for crash recovery.`,
       );
       console.log(
-        `${LOG_PREFIX.DONE} Checkpoint triggers: after each acceptance criterion, before gates, every 30 tool calls.\n`
+        `${LOG_PREFIX.DONE} Checkpoint triggers: after each acceptance criterion, before gates, every 30 tool calls.\n`,
       );
     }
   } catch {
@@ -2309,7 +2340,7 @@ async function main() {
       // If cleanupSafe is false (or undefined), preserve worktree for recovery
       if (err.cleanupSafe === false) {
         console.log(
-          `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1811: Worktree preserved - rerun wu:done to recover`
+          `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1811: Worktree preserved - rerun wu:done to recover`,
         );
       }
 
@@ -2327,7 +2358,7 @@ async function main() {
     await runCleanup(docMain, args);
   } else {
     console.log(
-      `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1811: Skipping worktree cleanup - metadata/push incomplete`
+      `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1811: Skipping worktree cleanup - metadata/push incomplete`,
     );
   }
 
@@ -2353,7 +2384,7 @@ async function main() {
     if (sessionResult.ended) {
       // Emergency fix Session 2: Use SESSION.ID_DISPLAY_LENGTH constant
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Agent session ended (${sessionResult.summary.session_id.slice(0, SESSION.ID_DISPLAY_LENGTH)}...)`
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Agent session ended (${sessionResult.summary.session_id.slice(0, SESSION.ID_DISPLAY_LENGTH)}...)`,
       );
     }
     // No warning if no active session - silent no-op is expected
@@ -2376,7 +2407,7 @@ async function main() {
   clearCheckpoint(id);
 
   console.log(
-    `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - all steps succeeded (WU-755)`
+    `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - all steps succeeded (WU-755)`,
   );
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Marked done, pushed, and cleaned up.`);
   console.log(`- WU: ${id} — ${title}`);
@@ -2418,7 +2449,7 @@ export async function printMigrationDeploymentNudge(codePaths, baseDir) {
 
     if (errors.length > 0) {
       console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Migration discovery errors: ${errors.join(', ')}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Migration discovery errors: ${errors.join(', ')}`,
       );
     }
 
@@ -2451,7 +2482,7 @@ export function printDiscoveryNudge(id, discoveryCount, discoveryIds) {
     const displayIds = discoveryIds.slice(0, 5).join(', ');
     const moreText = discoveryCount > 5 ? ` (+${discoveryCount - 5} more)` : '';
     console.log(
-      `\n${LOG_PREFIX.DONE} 💡 ${discoveryCount} open discoveries: ${displayIds}${moreText}`
+      `\n${LOG_PREFIX.DONE} 💡 ${discoveryCount} open discoveries: ${displayIds}${moreText}`,
     );
     console.log(`   Triage with: pnpm mem:triage --wu ${id}`);
   }

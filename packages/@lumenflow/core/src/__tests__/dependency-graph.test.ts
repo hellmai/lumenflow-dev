@@ -432,10 +432,7 @@ describe('dependency-graph', () => {
         ['WU-001', { id: 'WU-001', status: 'ready', blockedBy: [], blocks: ['WU-002', 'WU-003'] }],
         ['WU-002', { id: 'WU-002', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
         ['WU-003', { id: 'WU-003', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
-        [
-          'WU-004',
-          { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] },
-        ],
+        ['WU-004', { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] }],
       ]);
 
       const result = topologicalSort(graph);
@@ -508,10 +505,7 @@ describe('dependency-graph', () => {
         ['WU-001', { id: 'WU-001', status: 'ready', blockedBy: [], blocks: ['WU-002', 'WU-003'] }],
         ['WU-002', { id: 'WU-002', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
         ['WU-003', { id: 'WU-003', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
-        [
-          'WU-004',
-          { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] },
-        ],
+        ['WU-004', { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] }],
       ]);
 
       const result = criticalPath(graph);
@@ -582,10 +576,7 @@ describe('dependency-graph', () => {
         ['WU-001', { id: 'WU-001', status: 'ready', blockedBy: [], blocks: ['WU-002', 'WU-003'] }],
         ['WU-002', { id: 'WU-002', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
         ['WU-003', { id: 'WU-003', status: 'ready', blockedBy: ['WU-001'], blocks: ['WU-004'] }],
-        [
-          'WU-004',
-          { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] },
-        ],
+        ['WU-004', { id: 'WU-004', status: 'ready', blockedBy: ['WU-002', 'WU-003'], blocks: [] }],
       ]);
 
       const result = impactScore(graph, 'WU-001');

@@ -100,7 +100,7 @@ function detectMandatoryAgents(codePaths) {
 
   for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
     const isTriggered = codePaths.some((filePath) =>
-      patterns.some((pattern) => minimatch(filePath, pattern))
+      patterns.some((pattern) => minimatch(filePath, pattern)),
     );
 
     if (isTriggered) {
@@ -217,19 +217,19 @@ function codePathMatchesInvariant(invariant, codePaths) {
     case INVARIANT_TYPES.FORBIDDEN_FILE:
     case INVARIANT_TYPES.REQUIRED_FILE:
       return codePaths.some(
-        (p) => p === invariant.path || minimatch(p, invariant.path) || minimatch(invariant.path, p)
+        (p) => p === invariant.path || minimatch(p, invariant.path) || minimatch(invariant.path, p),
       );
 
     case INVARIANT_TYPES.MUTUAL_EXCLUSIVITY:
       return codePaths.some((p) =>
-        invariant.paths.some((invPath) => p === invPath || minimatch(p, invPath))
+        invariant.paths.some((invPath) => p === invPath || minimatch(p, invPath)),
       );
 
     case INVARIANT_TYPES.FORBIDDEN_PATTERN:
     case INVARIANT_TYPES.REQUIRED_PATTERN:
       return (
         invariant.scope?.some((scopePattern) =>
-          codePaths.some((p) => minimatch(p, scopePattern))
+          codePaths.some((p) => minimatch(p, scopePattern)),
         ) ?? false
       );
 
@@ -1294,7 +1294,11 @@ interface LaneOccupationWarningOptions {
  * @param {LaneOccupationWarningOptions} [options={}] - Options
  * @returns {string} Warning message
  */
-export function generateLaneOccupationWarning(lockMetadata, targetWuId, options: LaneOccupationWarningOptions = {}) {
+export function generateLaneOccupationWarning(
+  lockMetadata,
+  targetWuId,
+  options: LaneOccupationWarningOptions = {},
+) {
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
@@ -1360,7 +1364,7 @@ async function main() {
         `Cannot spawn a sub-agent for a WU that doesn't exist.\n\n` +
         `Options:\n` +
         `  1. Create the WU first: pnpm wu:create --id ${id} --lane <lane> --title "..."\n` +
-        `  2. Check if the WU ID is correct`
+        `  2. Check if the WU ID is correct`,
     );
   }
 
@@ -1375,7 +1379,7 @@ async function main() {
         `Error: ${e.message}\n\n` +
         `Options:\n` +
         `  1. Check file permissions: ls -la ${WU_PATH}\n` +
-        `  2. Ensure the file exists and is readable`
+        `  2. Ensure the file exists and is readable`,
     );
   }
   try {
@@ -1386,7 +1390,7 @@ async function main() {
         `Error: ${e.message}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
-        `  2. Fix YAML errors manually and retry`
+        `  2. Fix YAML errors manually and retry`,
     );
   }
 
@@ -1395,7 +1399,7 @@ async function main() {
   if (!validStatuses.includes(doc.status)) {
     console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
     console.warn(
-      `${LOG_PREFIX} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`
+      `${LOG_PREFIX} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
     );
     console.warn('');
   }
@@ -1447,7 +1451,7 @@ async function main() {
 
     const registryMessage = formatSpawnRecordedMessage(
       registryResult.spawnId,
-      registryResult.error
+      registryResult.error,
     );
     console.log(`\n${registryMessage}`);
   }

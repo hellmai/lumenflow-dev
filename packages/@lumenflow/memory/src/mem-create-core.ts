@@ -256,7 +256,10 @@ async function ensureMemoryDir(baseDir: string): Promise<string> {
  * @param relationship - Relationship object
  * @returns The appended relationship
  */
-async function appendRelationship(memoryDir: string, relationship: Relationship): Promise<Relationship> {
+async function appendRelationship(
+  memoryDir: string,
+  relationship: Relationship,
+): Promise<Relationship> {
   // Validate relationship before appending
   const validation = validateRelationship(relationship);
   if (!validation.success) {
@@ -362,7 +365,10 @@ export interface CreateMemoryNodeResult {
  *   discoveredFrom: parent.node.id, // Track where this came from
  * });
  */
-export async function createMemoryNode(baseDir: string, options: CreateMemoryNodeOptions): Promise<CreateMemoryNodeResult> {
+export async function createMemoryNode(
+  baseDir: string,
+  options: CreateMemoryNodeOptions,
+): Promise<CreateMemoryNodeResult> {
   const {
     title,
     type: inputType = DEFAULT_NODE_TYPE,
@@ -401,10 +407,12 @@ export async function createMemoryNode(baseDir: string, options: CreateMemoryNod
   tags = [...new Set(tags)];
 
   // Auto-infer WU ID and session ID from current session if not provided (WU-1762)
-  const inferredSession = explicitWuId && explicitSessionId ? null : await inferSessionFromSessionFile(baseDir);
+  const inferredSession =
+    explicitWuId && explicitSessionId ? null : await inferSessionFromSessionFile(baseDir);
   const wuId = explicitWuId || inferredSession?.wu_id;
   const sessionId =
-    explicitSessionId || (isValidSessionId(inferredSession?.session_id) ? inferredSession.session_id : undefined);
+    explicitSessionId ||
+    (isValidSessionId(inferredSession?.session_id) ? inferredSession.session_id : undefined);
 
   // Validate WU ID format if provided
   if (wuId && !isValidWuId(wuId)) {

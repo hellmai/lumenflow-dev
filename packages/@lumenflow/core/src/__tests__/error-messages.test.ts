@@ -19,7 +19,7 @@ describe('createAgentFriendlyError', () => {
       {
         tryNext: ['pnpm wu:create --id WU-1234 --lane "Operations" --title "..."'],
         context: { wuId: 'WU-1234' },
-      }
+      },
     );
 
     expect(error.code).toBe(ErrorCodes.WU_NOT_FOUND);
@@ -28,7 +28,7 @@ describe('createAgentFriendlyError', () => {
     expect(error.tryNext.length).toBe(1);
     assert.strictEqual(
       error.tryNext[0],
-      'pnpm wu:create --id WU-1234 --lane "Operations" --title "..."'
+      'pnpm wu:create --id WU-1234 --lane "Operations" --title "..."',
     );
     expect(error.context).toEqual({ wuId: 'WU-1234' });
   });
@@ -43,7 +43,7 @@ describe('createAgentFriendlyError', () => {
           'Or manually edit docs/04-operations/tasks/backlog.md',
         ],
         context: { wuId: 'WU-1234', sections: ['ready', 'in_progress'] },
-      }
+      },
     );
 
     expect(error.tryNext.length).toBe(2);
@@ -93,7 +93,7 @@ describe('Error message format consistency', () => {
           'Use --force to override (P0 emergencies only)',
         ],
         context: { lane: 'Operations: Tooling', occupiedBy: 'WU-1200' },
-      }
+      },
     );
 
     expect(error.message.includes('occupied')).toBe(true);
@@ -109,7 +109,7 @@ describe('Error message format consistency', () => {
           'pnpm wu:repair --id WU-1234 --deduplicate',
           'Or manually edit docs/04-operations/tasks/backlog.md',
         ],
-      }
+      },
     );
 
     expect(error.message.includes('both')).toBe(true);
@@ -122,7 +122,7 @@ describe('Error message format consistency', () => {
       'Gates failed: format check failed',
       {
         tryNext: ['pnpm format', 'pnpm gates'],
-      }
+      },
     );
 
     expect(error.message.includes('Gates failed')).toBe(true);
@@ -139,7 +139,7 @@ describe('Error message format consistency', () => {
           'git stash',
           'Use --no-auto if you already staged claim edits manually',
         ],
-      }
+      },
     );
 
     expect(error.message.includes('Working tree')).toBe(true);
@@ -155,7 +155,7 @@ describe('Error context information', () => {
       {
         tryNext: ['Verify worktree has latest metadata files'],
         context: { missingFiles: ['Status: docs/04-operations/tasks/status.md'] },
-      }
+      },
     );
 
     expect(error.context.missingFiles).toBeTruthy();
@@ -169,7 +169,7 @@ describe('Error context information', () => {
       {
         tryNext: ['Wait for owning agent to complete or coordinate handoff'],
         context: { wuId: 'WU-1234', branch: 'lane/operations/wu-1234' },
-      }
+      },
     );
 
     expect(error.context.wuId).toBe('WU-1234');

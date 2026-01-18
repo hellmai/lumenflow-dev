@@ -470,7 +470,7 @@ describe('GOLDEN: Cross-validator behaviour consistency', () => {
       // validateCodePathsExist
       const existResult = await validateCodePathsExist(
         { id: 'WU-TEST', code_paths: [] },
-        'WU-TEST'
+        'WU-TEST',
       );
       expect(existResult.valid).toBe(true);
 
@@ -832,7 +832,9 @@ describe('UNIFIED: validate() API with mode flag', () => {
 
   describe('mode: lane', () => {
     it('requires lane option', async () => {
-      await expect(async () => validate(['path.js'], { mode: VALIDATION_MODES.LANE })).rejects.toThrow(/Lane name is required/);
+      await expect(async () =>
+        validate(['path.js'], { mode: VALIDATION_MODES.LANE }),
+      ).rejects.toThrow(/Lane name is required/);
     });
 
     it('returns skipped=true for empty paths', async () => {

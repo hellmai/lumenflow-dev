@@ -85,15 +85,15 @@ export const COMPLIANCE_PHASES = [
 const STATUS_EMOJI_MAP = {
   'Not Started': 'not_started',
   'In Progress': 'in_progress',
-  'Completed': 'completed',
-  'Blocked': 'blocked',
+  Completed: 'completed',
+  Blocked: 'blocked',
 };
 
 const PRIORITY_EMOJI_MAP = {
-  'CRITICAL': 'critical',
-  'HIGH': 'high',
-  'MEDIUM': 'medium',
-  'LOW': 'low',
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
 };
 
 const EVIDENCE_STATUS_MAP = {

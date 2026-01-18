@@ -77,7 +77,7 @@ describe('WU-2278 H1: Worktree ownership validation', () => {
 
       expect(validateWorktreeOwnership({ worktreePath: null, wuId: 'WU-100' }).valid).toBe(true);
       expect(validateWorktreeOwnership({ worktreePath: undefined, wuId: 'WU-100' }).valid).toBe(
-        true
+        true,
       );
     });
   });
@@ -147,9 +147,8 @@ describe('WU-2278 H3: Cleanup install configuration', () => {
     });
 
     it('returns 60 second timeout', async () => {
-      const { getCleanupInstallConfig, CLEANUP_INSTALL_TIMEOUT_MS } = await import(
-        '../cleanup-install-config.js'
-      );
+      const { getCleanupInstallConfig, CLEANUP_INSTALL_TIMEOUT_MS } =
+        await import('../cleanup-install-config.js');
 
       const config = getCleanupInstallConfig();
 
@@ -208,10 +207,10 @@ describe('WU-2278 L2: Commit message lowercasing', () => {
       const { lowercaseCommitSubject } = await import('../commit-message-utils.js');
 
       expect(lowercaseCommitSubject('docs: Update Supabase config')).toBe(
-        'docs: update supabase config'
+        'docs: update supabase config',
       );
       expect(lowercaseCommitSubject('feat: Add Vercel deployment')).toBe(
-        'feat: add vercel deployment'
+        'feat: add vercel deployment',
       );
       expect(lowercaseCommitSubject('fix: Fix OpenAI timeout')).toBe('fix: fix openai timeout');
     });

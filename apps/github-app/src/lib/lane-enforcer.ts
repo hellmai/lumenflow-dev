@@ -13,32 +13,32 @@ interface WIPCheckResult {
 /**
  * Check if lane has capacity for another PR.
  * Uses GitHub labels as the source of truth.
- * 
+ *
  * Label format: lane:core-systems, lane:intelligence, etc.
  */
 export async function checkLaneWIP(
   octokit: Octokit,
   repository: { owner: { login: string }; name: string },
   lane: string,
-  excludePR?: number
+  excludePR?: number,
 ): Promise<WIPCheckResult> {
   const labelName = `lane:${lane.toLowerCase().replace(/\s+/g, '-')}`;
-  
+
   // Find open PRs with this lane label
   const { data: prs } = await octokit.pulls.list({
     owner: repository.owner.login,
     repo: repository.name,
     state: 'open',
   });
-  
-  const prsInLane = prs.filter(pr => {
+
+  const prsInLane = prs.filter((pr) => {
     if (excludePR && pr.number === excludePR) return false;
-    return pr.labels.some(l => l.name === labelName);
+    return pr.labels.some((l) => l.name === labelName);
   });
-  
+
   // WIP limit = 1 per lane (configurable via repo settings later)
   const wipLimit = 1;
-  
+
   return {
     allowed: prsInLane.length < wipLimit,
     blockingPR: prsInLane[0]?.number || null,
@@ -51,16 +51,16 @@ export async function checkLaneWIP(
  */
 export async function getAllLaneStatus(
   octokit: Octokit,
-  repository: { owner: { login: string }; name: string }
+  repository: { owner: { login: string }; name: string },
 ): Promise<Map<string, { wip: number; prs: number[] }>> {
   const { data: prs } = await octokit.pulls.list({
     owner: repository.owner.login,
     repo: repository.name,
     state: 'open',
   });
-  
+
   const laneStatus = new Map<string, { wip: number; prs: number[] }>();
-  
+
   for (const pr of prs) {
     for (const label of pr.labels) {
       if (label.name?.startsWith('lane:')) {
@@ -72,6 +72,6 @@ export async function getAllLaneStatus(
       }
     }
   }
-  
+
   return laneStatus;
 }

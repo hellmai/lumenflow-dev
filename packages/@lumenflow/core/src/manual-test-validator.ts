@@ -222,7 +222,7 @@ export function validateAutomatedTestRequirement(doc) {
         `  Code files: ${codeFiles.join(', ')}\n` +
         `  Required: At least one automated test (unit, e2e, or integration)\n` +
         `  Manual-only tests are not allowed for code changes.\n\n` +
-        `  Fix: Add tests to tests.unit, tests.e2e, or tests.integration in WU YAML.`
+        `  Fix: Add tests to tests.unit, tests.e2e, or tests.integration in WU YAML.`,
     );
     return { valid: false, errors };
   }

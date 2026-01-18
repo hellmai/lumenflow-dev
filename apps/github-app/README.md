@@ -32,6 +32,7 @@ AI-native workflow enforcement via GitHub.
 ### App Updates (Instant)
 
 When you deploy this webhook handler:
+
 - **All clients get updates immediately**
 - No client action required
 - You control the rollout
@@ -52,7 +53,7 @@ Clients pin their workflow to a version:
 
 ```yaml
 # Client's .github/workflows/lumenflow-gates.yml
-- uses: hellmai/lumenflow-gates@v1  # Pinned to v1
+- uses: hellmai/lumenflow-gates@v1 # Pinned to v1
 ```
 
 **To release updates:**
@@ -71,6 +72,7 @@ git push --tags
 ### Template Updates (Optional)
 
 PR templates and config are copied once. Updates are:
+
 - Announced via changelog
 - Client applies manually (or you provide migration script)
 
@@ -90,11 +92,13 @@ const plan = data.plan.name; // 'free', 'team', 'business'
 ```
 
 **Pros:**
+
 - Zero billing code
 - GitHub handles invoices, taxes, refunds
 - Users pay via existing GitHub billing
 
 **Setup:**
+
 1. Go to github.com/marketplace/new
 2. Create listing for LumenFlow
 3. Set pricing tiers
@@ -107,7 +111,7 @@ More control, more work:
 ```typescript
 // Check our database for subscription
 const sub = await db.subscriptions.findOne({
-  where: { githubInstallationId: installation.id }
+  where: { githubInstallationId: installation.id },
 });
 
 if (!sub || sub.status !== 'active') {
@@ -116,6 +120,7 @@ if (!sub || sub.status !== 'active') {
 ```
 
 **Pros:**
+
 - Higher margins (no GitHub cut)
 - Custom pricing models
 - Works with non-GitHub clients
@@ -136,12 +141,12 @@ if (!license.valid) {
 
 ## Pricing Strategy
 
-| Tier | Price | WUs/month | Features |
-|------|-------|-----------|----------|
-| Free | $0 | 10 | Basic validation, 1 lane |
-| Team | $29/mo | 100 | All lanes, email support |
-| Business | $99/mo | 500 | Priority support, custom lanes |
-| Enterprise | Custom | Unlimited | SSO, SLA, dedicated support |
+| Tier       | Price  | WUs/month | Features                       |
+| ---------- | ------ | --------- | ------------------------------ |
+| Free       | $0     | 10        | Basic validation, 1 lane       |
+| Team       | $29/mo | 100       | All lanes, email support       |
+| Business   | $99/mo | 500       | Priority support, custom lanes |
+| Enterprise | Custom | Unlimited | SSO, SLA, dedicated support    |
 
 ## Deployment
 

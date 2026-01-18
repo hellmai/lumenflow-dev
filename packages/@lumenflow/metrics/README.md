@@ -28,13 +28,7 @@ import {
   calculateMTTR,
 } from '@lumenflow/metrics';
 
-const doraMetrics = calculateDORAMetrics(
-  commits,
-  skipGatesEntries,
-  wuMetrics,
-  weekStart,
-  weekEnd
-);
+const doraMetrics = calculateDORAMetrics(commits, skipGatesEntries, wuMetrics, weekStart, weekEnd);
 
 // Status tiers: 'elite' | 'high' | 'medium' | 'low'
 console.log(doraMetrics.deploymentFrequency.status);
@@ -142,12 +136,12 @@ emitter.emitLLMClassificationComplete({
 
 Based on "Accelerate" research by Nicole Forsgren, Jez Humble, Gene Kim:
 
-| Metric                | Elite      | High         | Medium           | Low         |
-| --------------------- | ---------- | ------------ | ---------------- | ----------- |
-| Deployment Frequency  | >5/week    | 1-5/week     | 0.25-1/week      | <0.25/week  |
-| Lead Time for Changes | <24h       | <168h (7d)   | <720h (30d)      | >720h       |
-| Change Failure Rate   | <15%       | 15-30%       | 30-45%           | >45%        |
-| Mean Time to Recovery | <1h        | <24h         | <168h (7d)       | >168h       |
+| Metric                | Elite   | High       | Medium      | Low        |
+| --------------------- | ------- | ---------- | ----------- | ---------- |
+| Deployment Frequency  | >5/week | 1-5/week   | 0.25-1/week | <0.25/week |
+| Lead Time for Changes | <24h    | <168h (7d) | <720h (30d) | >720h      |
+| Change Failure Rate   | <15%    | 15-30%     | 30-45%      | >45%       |
+| Mean Time to Recovery | <1h     | <24h       | <168h (7d)  | >168h      |
 
 ## Subpath Exports
 

@@ -101,7 +101,7 @@ describe('orchestration-advisory-loader', () => {
     it('returns both missing agents when both triggered', () => {
       const result = checkMandatoryAgentsCompliance(
         ['src/auth/login.ts', 'src/prompts/system.ts'],
-        'WU-1234'
+        'WU-1234',
       );
       expect(result.compliant).toBe(false);
       expect(result.missing).toContain('security-auditor');

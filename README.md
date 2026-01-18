@@ -8,26 +8,26 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `@lumenflow/core` | Core WU lifecycle: state machine, validators, spawn management, memory |
-| `@lumenflow/memory` | Session tracking, context recovery, agent coordination |
-| `@lumenflow/initiatives` | Multi-phase project orchestration across WUs |
-| `@lumenflow/agent` | Agent definitions, skill loading, verification |
-| `@lumenflow/cli` | Command-line tools for wu:claim, wu:done, wu:spawn |
-| `@lumenflow/metrics` | DORA metrics, flow analysis, telemetry |
-| `@lumenflow/shims` | Git and pnpm safety shims |
+| Package                  | Description                                                            |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `@lumenflow/core`        | Core WU lifecycle: state machine, validators, spawn management, memory |
+| `@lumenflow/memory`      | Session tracking, context recovery, agent coordination                 |
+| `@lumenflow/initiatives` | Multi-phase project orchestration across WUs                           |
+| `@lumenflow/agent`       | Agent definitions, skill loading, verification                         |
+| `@lumenflow/cli`         | Command-line tools for wu:claim, wu:done, wu:spawn                     |
+| `@lumenflow/metrics`     | DORA metrics, flow analysis, telemetry                                 |
+| `@lumenflow/shims`       | Git and pnpm safety shims                                              |
 
 ## Apps
 
-| App | Description |
-|-----|-------------|
+| App               | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
 | `apps/github-app` | GitHub App for SaaS workflow enforcement (webhooks, billing) |
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
+| Action                    | Description                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
 | `actions/lumenflow-gates` | Reusable GitHub Action with language presets (Node, Python, Go, Rust) |
 
 ## Documentation

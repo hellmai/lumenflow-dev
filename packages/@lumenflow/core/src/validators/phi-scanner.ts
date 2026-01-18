@@ -114,7 +114,7 @@ function findMedicalContext(content, postcodeIndex, postcodeLength) {
   const windowStart = Math.max(0, postcodeIndex - MEDICAL_CONTEXT_WINDOW_SIZE);
   const windowEnd = Math.min(
     content.length,
-    postcodeIndex + postcodeLength + MEDICAL_CONTEXT_WINDOW_SIZE
+    postcodeIndex + postcodeLength + MEDICAL_CONTEXT_WINDOW_SIZE,
   );
 
   const windowContent = content.slice(windowStart, windowEnd).toLowerCase();

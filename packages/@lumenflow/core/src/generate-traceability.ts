@@ -123,7 +123,7 @@ function parseHazardSection(section) {
 function parseControls(section) {
   const controls = [];
   const controlMatches = section.matchAll(
-    /\|\s*(C-\d{3}[a-z]?)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g
+    /\|\s*(C-\d{3}[a-z]?)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g,
   );
 
   for (const match of controlMatches) {
@@ -233,11 +233,14 @@ export function generateVersionHistory(commits) {
   for (const commit of commits.slice(0, 50)) {
     const filesStr =
       commit.files.length > 3
-        ? `${commit.files.slice(0, 3).map((f) => path.basename(f)).join(', ')}... (+${commit.files.length - 3})`
+        ? `${commit.files
+            .slice(0, 3)
+            .map((f) => path.basename(f))
+            .join(', ')}... (+${commit.files.length - 3})`
         : commit.files.map((f) => path.basename(f)).join(', ');
 
     lines.push(
-      `| ${commit.date} | \`${commit.hash.slice(0, 7)}\` | ${commit.author} | ${commit.message.slice(0, 60)}${commit.message.length > 60 ? '...' : ''} | ${filesStr} |`
+      `| ${commit.date} | \`${commit.hash.slice(0, 7)}\` | ${commit.author} | ${commit.message.slice(0, 60)}${commit.message.length > 60 ? '...' : ''} | ${filesStr} |`,
     );
   }
 
@@ -265,7 +268,7 @@ export function generateVersionHistory(commits) {
       (c) =>
         c.message.toLowerCase().includes('safety') ||
         c.message.toLowerCase().includes('red-flag') ||
-        c.message.toLowerCase().includes('emergency')
+        c.message.toLowerCase().includes('emergency'),
     ).length;
     const featureCount = monthCommits.length - safetyCount;
     lines.push(`| ${month} | ${monthCommits.length} | ${safetyCount} | ${featureCount} |`);
@@ -347,7 +350,7 @@ export function generateHazardMatrix(hazards) {
     const controlList = hazard.controls.map((c) => c.id).join(', ');
     const title = hazard.title || '';
     lines.push(
-      `| ${hazard.id} | ${title.slice(0, 50)}${title.length > 50 ? '...' : ''} | ${hazard.riskScore} | ${hazard.residualRiskScore} | ${hazard.acceptability} | ${controlList} |`
+      `| ${hazard.id} | ${title.slice(0, 50)}${title.length > 50 ? '...' : ''} | ${hazard.riskScore} | ${hazard.residualRiskScore} | ${hazard.acceptability} | ${controlList} |`,
     );
   }
 
@@ -363,7 +366,7 @@ export function generateHazardMatrix(hazards) {
     for (const control of hazard.controls) {
       const desc = control.description || '';
       lines.push(
-        `| ${control.id} | ${hazard.id} | ${desc.slice(0, 60)}${desc.length > 60 ? '...' : ''} | ${control.type} | ${control.status} |`
+        `| ${control.id} | ${hazard.id} | ${desc.slice(0, 60)}${desc.length > 60 ? '...' : ''} | ${control.type} | ${control.status} |`,
       );
     }
   }

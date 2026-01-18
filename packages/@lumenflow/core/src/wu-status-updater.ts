@@ -43,7 +43,7 @@ export function updateStatusRemoveInProgress(statusPath, id) {
     throw createError(
       ErrorCodes.SECTION_NOT_FOUND,
       `Could not find "${headings.in_progress}" section in ${statusPath}`,
-      { path: statusPath, section: headings.in_progress, function: 'updateStatusRemoveInProgress' }
+      { path: statusPath, section: headings.in_progress, function: 'updateStatusRemoveInProgress' },
     );
   }
 
@@ -74,11 +74,9 @@ export function updateStatusRemoveInProgress(statusPath, id) {
   const raw = readFileSync(statusPath, { encoding: 'utf-8' });
   const frontmatterMatch = raw.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterText = frontmatterMatch ? frontmatterMatch[0] : '';
-  writeFileSync(
-    statusPath,
-    frontmatterText + lines.join(STRING_LITERALS.NEWLINE),
-    { encoding: 'utf-8' }
-  );
+  writeFileSync(statusPath, frontmatterText + lines.join(STRING_LITERALS.NEWLINE), {
+    encoding: 'utf-8',
+  });
 }
 
 /**
@@ -134,9 +132,7 @@ export function addToStatusCompleted(statusPath, id, title) {
   const raw = readFileSync(statusPath, { encoding: 'utf-8' });
   const frontmatterMatch = raw.match(/^---\n[\s\S]*?\n---\n/);
   const frontmatterText = frontmatterMatch ? frontmatterMatch[0] : '';
-  writeFileSync(
-    statusPath,
-    frontmatterText + lines.join(STRING_LITERALS.NEWLINE),
-    { encoding: 'utf-8' }
-  );
+  writeFileSync(statusPath, frontmatterText + lines.join(STRING_LITERALS.NEWLINE), {
+    encoding: 'utf-8',
+  });
 }

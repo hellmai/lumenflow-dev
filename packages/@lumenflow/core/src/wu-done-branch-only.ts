@@ -86,7 +86,7 @@ export async function executeBranchOnlyCompletion(context) {
       merged = true;
     } else {
       console.log(
-        `${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`
+        `${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`,
       );
       await gitAdapter.checkout(BRANCHES.MAIN);
     }
@@ -103,21 +103,21 @@ export async function executeBranchOnlyCompletion(context) {
     '04-operations',
     'tasks',
     'wu',
-    `${id}.yaml`
+    `${id}.yaml`,
   );
   const metadataStatusPath = path.join(
     metadataBasePath,
     'docs',
     '04-operations',
     'tasks',
-    'status.md'
+    'status.md',
   );
   const metadataBacklogPath = path.join(
     metadataBasePath,
     'docs',
     '04-operations',
     'tasks',
-    'backlog.md'
+    'backlog.md',
   );
   const metadataStampsDir = path.join(metadataBasePath, '.beacon', 'stamps');
   const metadataStampPath = path.join(metadataStampsDir, `${id}.done`);
@@ -147,10 +147,10 @@ export async function executeBranchOnlyCompletion(context) {
     metadataWUPath,
     metadataStampPath,
     metadataBacklogPath,
-    metadataStatusPath
+    metadataStatusPath,
   );
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction BEGIN - state recorded for rollback (WU YAML + backlog + status)`
+    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction BEGIN - state recorded for rollback (WU YAML + backlog + status)`,
   );
 
   try {
@@ -158,7 +158,7 @@ export async function executeBranchOnlyCompletion(context) {
     const schemaResult = validateWU(docForUpdate);
     if (!schemaResult.success) {
       const errors = schemaResult.error.issues.map(
-        (issue) => `  - ${issue.path.join('.')}: ${issue.message}`
+        (issue) => `  - ${issue.path.join('.')}: ${issue.message}`,
       );
       die(`WU YAML validation failed:\n${errors.join(STRING_LITERALS.NEWLINE)}`);
     }
@@ -209,7 +209,7 @@ export async function executeBranchOnlyCompletion(context) {
       metadataWUPath,
       metadataStampPath,
       metadataBacklogPath,
-      metadataStatusPath
+      metadataStatusPath,
     );
 
     // Re-throw with context
@@ -247,7 +247,7 @@ async function mergeLaneBranch(laneBranch) {
   } catch {
     // Retry with pull if ff-only fails (main may have advanced)
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed, attempting pull + retry...`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed, attempting pull + retry...`,
     );
     try {
       await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
@@ -259,7 +259,7 @@ async function mergeLaneBranch(laneBranch) {
         `Failed to merge lane branch ${laneBranch}: ${retryErr.message}\n` +
           `Suggestion: Rebase your lane branch on main and retry:\n` +
           `  cd worktrees/<lane>-<wu>; git rebase main`,
-        { branch: laneBranch, error: retryErr.message }
+        { branch: laneBranch, error: retryErr.message },
       );
     }
   }

@@ -148,21 +148,15 @@ describe('logs tool', () => {
       aggregateLogs = mod.aggregateLogs;
 
       // Create test log files
-      writeFileSync(
-        path.join(TEST_FIXTURE_DIR, '.logs', 'web.log'),
-        WEB_LOG_ENTRY + '\n'
-      );
+      writeFileSync(path.join(TEST_FIXTURE_DIR, '.logs', 'web.log'), WEB_LOG_ENTRY + '\n');
       writeFileSync(
         path.join(TEST_FIXTURE_DIR, '.beacon', 'commands.log'),
-        COMMANDS_LOG_ENTRY + '\n'
+        COMMANDS_LOG_ENTRY + '\n',
       );
-      writeFileSync(
-        path.join(TEST_FIXTURE_DIR, '.beacon', 'flow.log'),
-        FLOW_LOG_ENTRY + '\n'
-      );
+      writeFileSync(path.join(TEST_FIXTURE_DIR, '.beacon', 'flow.log'), FLOW_LOG_ENTRY + '\n');
       writeFileSync(
         path.join(TEST_FIXTURE_DIR, '.logs', 'tool-audit.ndjson'),
-        TOOL_AUDIT_ENTRY + '\n'
+        TOOL_AUDIT_ENTRY + '\n',
       );
     });
 

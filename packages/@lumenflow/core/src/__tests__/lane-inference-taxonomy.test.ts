@@ -118,7 +118,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
 
       expect(
         foundStalePaths,
-        `Found stale paths in config: ${foundStalePaths.join(', ')}. These directories don't exist.`
+        `Found stale paths in config: ${foundStalePaths.join(', ')}. These directories don't exist.`,
       ).toHaveLength(0);
     });
 
@@ -150,7 +150,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
       expect(
         foundInvalidPaths,
         `Found invalid test path patterns: ${foundInvalidPaths.join(', ')}. ` +
-          `These __tests__/ patterns at repo root don't match actual test locations.`
+          `These __tests__/ patterns at repo root don't match actual test locations.`,
       ).toHaveLength(0);
     });
 
@@ -195,7 +195,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
       expect(
         duplicateKeywords,
         `Found ambiguous keywords appearing in multiple sub-lanes:\n` +
-          duplicateKeywords.map((d) => `  "${d.keyword}" -> ${d.lanes.join(', ')}`).join('\n')
+          duplicateKeywords.map((d) => `  "${d.keyword}" -> ${d.lanes.join(', ')}`).join('\n'),
       ).toHaveLength(0);
     });
 
@@ -229,7 +229,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
         `Sub-lanes with insufficient keywords:\n` +
           sparseViolations
             .map((v) => `  ${v.lane}: ${v.count} keywords (need >= ${v.required})`)
-            .join('\n')
+            .join('\n'),
       ).toHaveLength(0);
     });
   });
@@ -272,7 +272,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
 
       expect(
         missingDescriptions,
-        `Sub-lanes missing descriptions: ${missingDescriptions.join(', ')}`
+        `Sub-lanes missing descriptions: ${missingDescriptions.join(', ')}`,
       ).toHaveLength(0);
     });
 
@@ -290,7 +290,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
 
       expect(
         missingCodePaths,
-        `Sub-lanes missing code_paths: ${missingCodePaths.join(', ')}`
+        `Sub-lanes missing code_paths: ${missingCodePaths.join(', ')}`,
       ).toHaveLength(0);
     });
 
@@ -308,7 +308,7 @@ describe.skipIf(!hasConfig)('Lane Taxonomy Audit (WU-2439)', () => {
 
       expect(
         missingKeywords,
-        `Sub-lanes missing keywords: ${missingKeywords.join(', ')}`
+        `Sub-lanes missing keywords: ${missingKeywords.join(', ')}`,
       ).toHaveLength(0);
     });
   });
@@ -326,7 +326,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
     // Test with streaming-related description
     const result = inferSubLane(
       ['apps/web/src/lib/orchestrator/index.ts'],
-      'Fix streaming response handling in orchestrator'
+      'Fix streaming response handling in orchestrator',
     );
 
     expect(result.lane).toBe('Intelligence: Orchestrator');
@@ -338,7 +338,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
 
     const result = inferSubLane(
       ['tools/prompts-eval/harness.ts'],
-      'Add new golden dataset for prompt evaluation'
+      'Add new golden dataset for prompt evaluation',
     );
 
     expect(result.lane).toBe('Intelligence: Evaluation');
@@ -360,13 +360,13 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
     // CI/CD workflow (GitHub Actions)
     const cicdResult = inferSubLane(
       ['.github/workflows/ci.yml'],
-      'Fix GitHub Actions workflow for CI'
+      'Fix GitHub Actions workflow for CI',
     );
 
     // Governance workflow (LumenFlow)
     const govResult = inferSubLane(
       ['docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md'],
-      'Update LumenFlow workflow documentation'
+      'Update LumenFlow workflow documentation',
     );
 
     expect(cicdResult.lane).toBe('Operations: CI/CD');
@@ -379,7 +379,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
     // Data schema (database)
     const dataResult = inferSubLane(
       ['supabase/migrations/001_schema.sql'],
-      'Add new table schema for patients'
+      'Add new table schema for patients',
     );
 
     // Workflow Engine schema (WU validation)
@@ -396,7 +396,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-2439)', () => {
     // The inference should fall back to description/other patterns
     const result = inferSubLane(
       ['prisma/schema.prisma'], // Stale path - should not match
-      'Add new field to user model'
+      'Add new field to user model',
     );
 
     // Should NOT match Core Systems: Data just from stale path

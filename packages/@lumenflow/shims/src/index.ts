@@ -25,8 +25,4 @@ export {
 } from './git-shim.js';
 
 // Re-export pnpm shim functions
-export {
-  findRealPnpm,
-  isDependencyCommand,
-  runPnpmShim,
-} from './pnpm-shim.js';
+export { findRealPnpm, isDependencyCommand, runPnpmShim } from './pnpm-shim.js';

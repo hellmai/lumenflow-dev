@@ -101,16 +101,12 @@ export function readMigrationContent(migrationPath) {
 export function hasMigrationChanges(codePaths) {
   if (!Array.isArray(codePaths)) return false;
 
-  const migrationPatterns = [
-    'supabase/',
-    'supabase/supabase/migrations/',
-    MIGRATIONS_DIR,
-  ];
+  const migrationPatterns = ['supabase/', 'supabase/supabase/migrations/', MIGRATIONS_DIR];
 
   return codePaths.some((codePath) =>
     migrationPatterns.some(
-      (pattern) => codePath.startsWith(pattern) || codePath === pattern.slice(0, -1)
-    )
+      (pattern) => codePath.startsWith(pattern) || codePath === pattern.slice(0, -1),
+    ),
   );
 }
 
@@ -125,14 +121,10 @@ export function compareMigrations(localMigrations, productionMigrations) {
   const prodNames = new Set(productionMigrations.map((m) => m.name));
 
   // Migrations in local but not in production
-  const missing = localMigrations
-    .filter((m) => !prodNames.has(m.fullName))
-    .map((m) => m.fullName);
+  const missing = localMigrations.filter((m) => !prodNames.has(m.fullName)).map((m) => m.fullName);
 
   // Migrations in production but not in local (unusual but possible)
-  const extra = productionMigrations
-    .filter((m) => !localNames.has(m.name))
-    .map((m) => m.name);
+  const extra = productionMigrations.filter((m) => !localNames.has(m.name)).map((m) => m.name);
 
   return {
     missing,

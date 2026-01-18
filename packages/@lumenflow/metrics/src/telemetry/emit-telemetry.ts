@@ -60,7 +60,7 @@ export function createTelemetryEmitter(emit: TelemetryEmitFn): TelemetryEmitter 
      */
     emitLLMClassificationStart(
       data: LLMClassificationStartInput,
-      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION
+      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION,
     ): void {
       const event = {
         timestamp: new Date().toISOString(),
@@ -78,7 +78,7 @@ export function createTelemetryEmitter(emit: TelemetryEmitFn): TelemetryEmitter 
      */
     emitLLMClassificationComplete(
       data: LLMClassificationCompleteInput,
-      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION
+      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION,
     ): void {
       const event: Record<string, unknown> = {
         timestamp: new Date().toISOString(),
@@ -105,7 +105,7 @@ export function createTelemetryEmitter(emit: TelemetryEmitFn): TelemetryEmitter 
      */
     emitLLMClassificationError(
       data: LLMClassificationErrorInput,
-      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION
+      logPath: string = TELEMETRY_PATHS.LLM_CLASSIFICATION,
     ): void {
       const event: Record<string, unknown> = {
         timestamp: new Date().toISOString(),
@@ -131,10 +131,7 @@ export function createTelemetryEmitter(emit: TelemetryEmitFn): TelemetryEmitter 
     /**
      * Emit WU flow telemetry event
      */
-    emitWUFlowEvent(
-      data: WUFlowEventInput,
-      logPath: string = TELEMETRY_PATHS.FLOW_LOG
-    ): void {
+    emitWUFlowEvent(data: WUFlowEventInput, logPath: string = TELEMETRY_PATHS.FLOW_LOG): void {
       const event = {
         timestamp: new Date().toISOString(),
         ...data,

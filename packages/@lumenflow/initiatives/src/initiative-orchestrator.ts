@@ -215,7 +215,7 @@ export function loadInitiativeWUs(initRef: string): { initiative: InitiativeDoc;
     throw createError(
       ErrorCodes.INIT_NOT_FOUND,
       `Initiative '${initRef}' not found. Check the ID or slug.`,
-      { initRef }
+      { initRef },
     );
   }
 
@@ -308,7 +308,9 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
   const { cycles } = validateGraph(graph);
 
   // Filter cycles to only those involving our WUs
-  const relevantCycles = cycles.filter((cycle: string[]) => cycle.some((id: string) => wuIds.has(id)));
+  const relevantCycles = cycles.filter((cycle: string[]) =>
+    cycle.some((id: string) => wuIds.has(id)),
+  );
 
   if (relevantCycles.length > 0) {
     const cycleStr = relevantCycles.map((c: string[]) => c.join(' → ')).join('; ');
@@ -347,12 +349,14 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
 
     if (externalBlockers.length > 0) {
       // Check if any external blockers lack stamps
-      const unstampedBlockers = externalBlockers.filter((blockerId: string) => !hasStamp(blockerId));
+      const unstampedBlockers = externalBlockers.filter(
+        (blockerId: string) => !hasStamp(blockerId),
+      );
       if (unstampedBlockers.length > 0) {
         addDeferredEntry(
           wu.id,
           unstampedBlockers,
-          `waiting for external: ${unstampedBlockers.join(', ')}`
+          `waiting for external: ${unstampedBlockers.join(', ')}`,
         );
       }
     }
@@ -386,7 +390,7 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
       }
       const blockers = wu.doc.blocked_by || [];
       const deferredInternal = blockers.filter(
-        (blockerId) => allWuIds.has(blockerId) && deferredIds.has(blockerId)
+        (blockerId) => allWuIds.has(blockerId) && deferredIds.has(blockerId),
       );
 
       if (deferredInternal.length > 0) {
@@ -469,7 +473,7 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
       throw createError(
         ErrorCodes.VALIDATION_ERROR,
         `Circular or unresolvable dependencies detected. Stuck WUs: ${stuckIds.join(', ')}`,
-        { stuckIds }
+        { stuckIds },
       );
     }
 
@@ -558,7 +562,10 @@ export function shouldAutoEnableCheckpoint(wus: WUEntry[]): AutoCheckpointResult
  * @param {Array<{id: string, doc: object}>} wus - WUs for auto-detection
  * @returns {{enabled: boolean, source: 'explicit'|'override'|'auto'|'dryrun', reason?: string}}
  */
-export function resolveCheckpointMode(options: CheckpointOptions, wus: WUEntry[]): CheckpointModeResult {
+export function resolveCheckpointMode(
+  options: CheckpointOptions,
+  wus: WUEntry[],
+): CheckpointModeResult {
   const { checkpointPerWave = false, noCheckpoint = false, dryRun = false } = options;
 
   // Explicit enable via -c flag
@@ -701,7 +708,7 @@ export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPl
     lines.push('Bottleneck WUs (prioritise these for fastest unblocking):');
     for (const bottleneck of bottleneckWUs) {
       lines.push(
-        `  - ${bottleneck.id}: ${bottleneck.title} [blocks ${bottleneck.blocksCount} WU${bottleneck.blocksCount !== 1 ? 's' : ''}]`
+        `  - ${bottleneck.id}: ${bottleneck.title} [blocks ${bottleneck.blocksCount} WU${bottleneck.blocksCount !== 1 ? 's' : ''}]`,
       );
     }
     lines.push('');
@@ -955,7 +962,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --dry-run (-d). ' +
         'Checkpoint mode writes manifests and spawns agents.',
-      { flags: { checkpointPerWave: true, dryRun: true } }
+      { flags: { checkpointPerWave: true, dryRun: true } },
     );
   }
 
@@ -965,7 +972,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --no-checkpoint. ' +
         'These flags are mutually exclusive.',
-      { flags: { checkpointPerWave: true, noCheckpoint: true } }
+      { flags: { checkpointPerWave: true, noCheckpoint: true } },
     );
   }
 }
@@ -985,7 +992,10 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
  * @returns {{wave: number, wus: Array<{id: string, lane: string, status: string}>, manifestPath: string, initiative: string}|null}
  *   Wave data or null if all WUs complete
  */
-export function buildCheckpointWave(initRef: string, options: CheckpointOptions = {}): CheckpointWaveResult | null {
+export function buildCheckpointWave(
+  initRef: string,
+  options: CheckpointOptions = {},
+): CheckpointWaveResult | null {
   const { dryRun = false } = options;
   // Load initiative and WUs
   const initData = findInitiative(initRef);
@@ -1164,7 +1174,7 @@ export function formatCheckpointOutput(waveData: CheckpointWaveResult): string {
       if (startIdx !== -1 && endIdx !== -1) {
         const invokeBlock = fullInvocation.substring(
           startIdx,
-          endIdx + XML_PATTERNS.INVOKE_CLOSE.length
+          endIdx + XML_PATTERNS.INVOKE_CLOSE.length,
         );
         xmlLines.push(invokeBlock);
       }
@@ -1256,7 +1266,7 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
   for (let waveIndex = 0; waveIndex < plan.waves.length; waveIndex++) {
     const wave = plan.waves[waveIndex]!;
     lines.push(
-      `## Wave ${waveIndex} (${wave.length} WU${wave.length !== 1 ? 's' : ''} in parallel)`
+      `## Wave ${waveIndex} (${wave.length} WU${wave.length !== 1 ? 's' : ''} in parallel)`,
     );
     lines.push('');
 
@@ -1299,7 +1309,7 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
           const invokeTag = '<' + 'antml:invoke name="Task">';
           invokeBlock = invokeBlock.replace(
             invokeTag,
-            `${invokeTag}\n${paramOpen}run_in_background">true${paramClose}`
+            `${invokeTag}\n${paramOpen}run_in_background">true${paramClose}`,
           );
         }
         xmlLines.push(invokeBlock);

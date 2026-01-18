@@ -53,7 +53,7 @@ function validateInitIdFormat(id) {
   if (!INIT_PATTERNS.INIT_ID.test(id)) {
     die(
       `Invalid Initiative ID format: "${id}"\n\n` +
-        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`
+        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`,
     );
   }
 }
@@ -105,7 +105,7 @@ function checkConflictingLink(wuDoc, targetInitId) {
     die(
       `WU ${wuDoc.id} is already linked to ${currentInit}\n\n` +
         `Cannot link to ${targetInitId}. Remove the existing link first.\n` +
-        `Current initiative field: ${currentInit}`
+        `Current initiative field: ${currentInit}`,
     );
   }
 }
@@ -266,7 +266,7 @@ async function main() {
     die(
       `Transaction failed: ${error.message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +
-        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`
+        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
     );
   }
 }

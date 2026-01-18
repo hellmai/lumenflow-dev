@@ -21,54 +21,54 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Work Unit Commands
 
-| Command | Description |
-|---------|-------------|
-| `wu-claim` | Claim a WU and create a worktree |
-| `wu-done` | Complete a WU (runs gates, merges, creates stamp) |
-| `wu-block` | Mark a WU as blocked with reason |
-| `wu-unblock` | Remove blocked status from a WU |
-| `wu-create` | Create a new WU specification |
-| `wu-edit` | Edit an existing WU specification |
-| `wu-spawn` | Generate spawn prompt for delegating WU to sub-agent |
-| `wu-validate` | Validate WU YAML against schema |
-| `wu-preflight` | Pre-claim validation checks |
-| `wu-repair` | Repair corrupted WU state |
-| `wu-prune` | Clean up stale worktrees |
-| `wu-cleanup` | Post-merge cleanup for a WU |
-| `wu-deps` | Display WU dependency graph |
-| `wu-infer-lane` | Infer lane from WU content |
+| Command         | Description                                          |
+| --------------- | ---------------------------------------------------- |
+| `wu-claim`      | Claim a WU and create a worktree                     |
+| `wu-done`       | Complete a WU (runs gates, merges, creates stamp)    |
+| `wu-block`      | Mark a WU as blocked with reason                     |
+| `wu-unblock`    | Remove blocked status from a WU                      |
+| `wu-create`     | Create a new WU specification                        |
+| `wu-edit`       | Edit an existing WU specification                    |
+| `wu-spawn`      | Generate spawn prompt for delegating WU to sub-agent |
+| `wu-validate`   | Validate WU YAML against schema                      |
+| `wu-preflight`  | Pre-claim validation checks                          |
+| `wu-repair`     | Repair corrupted WU state                            |
+| `wu-prune`      | Clean up stale worktrees                             |
+| `wu-cleanup`    | Post-merge cleanup for a WU                          |
+| `wu-deps`       | Display WU dependency graph                          |
+| `wu-infer-lane` | Infer lane from WU content                           |
 
 ### Memory Commands
 
-| Command | Description |
-|---------|-------------|
-| `mem-init` | Initialize memory directory structure |
-| `mem-start` | Start a new memory session |
-| `mem-checkpoint` | Create a progress checkpoint |
-| `mem-ready` | Query pending nodes for a WU |
-| `mem-signal` | Send coordination signal to other agents |
-| `mem-inbox` | Check incoming coordination signals |
-| `mem-create` | Create a memory node |
-| `mem-summarize` | Roll up nodes for context compaction |
-| `mem-triage` | Triage discovered bugs |
-| `mem-cleanup` | Clean up expired memory nodes |
+| Command          | Description                              |
+| ---------------- | ---------------------------------------- |
+| `mem-init`       | Initialize memory directory structure    |
+| `mem-start`      | Start a new memory session               |
+| `mem-checkpoint` | Create a progress checkpoint             |
+| `mem-ready`      | Query pending nodes for a WU             |
+| `mem-signal`     | Send coordination signal to other agents |
+| `mem-inbox`      | Check incoming coordination signals      |
+| `mem-create`     | Create a memory node                     |
+| `mem-summarize`  | Roll up nodes for context compaction     |
+| `mem-triage`     | Triage discovered bugs                   |
+| `mem-cleanup`    | Clean up expired memory nodes            |
 
 ### Initiative Commands
 
-| Command | Description |
-|---------|-------------|
-| `initiative-create` | Create a new initiative |
-| `initiative-edit` | Edit an existing initiative |
-| `initiative-list` | List all initiatives |
+| Command             | Description                         |
+| ------------------- | ----------------------------------- |
+| `initiative-create` | Create a new initiative             |
+| `initiative-edit`   | Edit an existing initiative         |
+| `initiative-list`   | List all initiatives                |
 | `initiative-status` | Show initiative status and progress |
-| `initiative-add-wu` | Link a WU to an initiative |
+| `initiative-add-wu` | Link a WU to an initiative          |
 
 ### Other Commands
 
-| Command | Description |
-|---------|-------------|
-| `gates` | Run quality gates (format, lint, typecheck, tests) |
-| `spawn-list` | List active spawned agents |
+| Command      | Description                                        |
+| ------------ | -------------------------------------------------- |
+| `gates`      | Run quality gates (format, lint, typecheck, tests) |
+| `spawn-list` | List active spawned agents                         |
 
 ## Usage
 

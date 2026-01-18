@@ -93,7 +93,15 @@ interface GraphOutput {
   downstream?: unknown[];
 }
 
-function renderGraphJSON(graph: Map<string, { id: string; title: string; status: string; blockedBy: string[]; blocks: string[] }>, rootId: string, depth: number, direction: string) {
+function renderGraphJSON(
+  graph: Map<
+    string,
+    { id: string; title: string; status: string; blockedBy: string[]; blocks: string[] }
+  >,
+  rootId: string,
+  depth: number,
+  direction: string,
+) {
   const node = graph.get(rootId);
   if (!node) return JSON.stringify({ error: 'WU not found' }, null, 2);
 

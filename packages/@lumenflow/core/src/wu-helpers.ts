@@ -260,7 +260,7 @@ export async function ensureMainUpToDate(git, _scriptName = 'wu') {
   const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
   if (localMain !== remoteMain) {
     throw new Error(
-      `Main branch is out of sync with origin.\n\nRun: git pull ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`
+      `Main branch is out of sync with origin.\n\nRun: git pull ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`,
     );
   }
 }

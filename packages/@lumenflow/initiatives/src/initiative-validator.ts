@@ -159,7 +159,12 @@ const WU_ID_PATTERN = /^WU-\d+$/;
  * @param {Set<string>} allWuIds - Set of all known WU IDs
  * @returns {Array<{wuId: string, field: string, ref: string}>} Orphan references found
  */
-function findOrphansInField(wuId: string, refs: string[], fieldName: string, allWuIds: Set<string>): OrphanRef[] {
+function findOrphansInField(
+  wuId: string,
+  refs: string[],
+  fieldName: string,
+  allWuIds: Set<string>,
+): OrphanRef[] {
   const orphans: OrphanRef[] = [];
   for (const ref of refs) {
     if (WU_ID_PATTERN.test(ref) && !allWuIds.has(ref)) {
@@ -202,7 +207,10 @@ export function detectOrphanRefs(wuMap: Map<string, WUObject>, allWuIds: Set<str
  * const result = validateInitiativeRefs(wuMap, initiatives);
  * // result.warnings contains warning about missing initiative
  */
-export function validateInitiativeRefs(wuMap: Map<string, WUObject>, initiatives: Map<string, InitiativeObject>) {
+export function validateInitiativeRefs(
+  wuMap: Map<string, WUObject>,
+  initiatives: Map<string, InitiativeObject>,
+) {
   const warnings: string[] = [];
 
   // Build slug lookup for initiative references
@@ -239,12 +247,12 @@ export function validateInitiativeRefs(wuMap: Map<string, WUObject>, initiatives
 
       if (phases.length === 0) {
         warnings.push(
-          `[${wuId}] specifies phase ${phase} but initiative ${initRef} has no phases defined`
+          `[${wuId}] specifies phase ${phase} but initiative ${initRef} has no phases defined`,
         );
       } else if (!phaseExists) {
         const validPhases = phases.map((p: { id: number }) => p.id).join(', ');
         warnings.push(
-          `[${wuId}] references phase ${phase} which does not exist in initiative ${initRef} (valid phases: ${validPhases})`
+          `[${wuId}] references phase ${phase} which does not exist in initiative ${initRef} (valid phases: ${validPhases})`,
         );
       }
     }
@@ -259,7 +267,9 @@ export function validateInitiativeRefs(wuMap: Map<string, WUObject>, initiatives
  * @param {Map<string, Object>} initiatives - Map of Initiative ID to Initiative object
  * @returns {Map<string, string>} Map from ID or slug to initiative ID
  */
-function buildInitiativeSlugLookup(initiatives: Map<string, InitiativeObject>): Map<string, string> {
+function buildInitiativeSlugLookup(
+  initiatives: Map<string, InitiativeObject>,
+): Map<string, string> {
   const lookup = new Map<string, string>();
   for (const [id, init] of initiatives.entries()) {
     if (init.slug) {
@@ -278,7 +288,11 @@ function buildInitiativeSlugLookup(initiatives: Map<string, InitiativeObject>): 
  * @param {Map<string, string>} slugLookup - Lookup from slug/ID to initiative ID
  * @returns {string[]} Array of error messages
  */
-function validateWuToInitiativeRefs(wuMap: Map<string, WUObject>, initiatives: Map<string, InitiativeObject>, slugLookup: Map<string, string>): string[] {
+function validateWuToInitiativeRefs(
+  wuMap: Map<string, WUObject>,
+  initiatives: Map<string, InitiativeObject>,
+  slugLookup: Map<string, string>,
+): string[] {
   const errors: string[] = [];
 
   for (const [wuId, wu] of wuMap.entries()) {
@@ -307,7 +321,11 @@ function validateWuToInitiativeRefs(wuMap: Map<string, WUObject>, initiatives: M
  * @param {Map<string, string>} slugLookup - Lookup from slug/ID to initiative ID
  * @returns {{errors: string[], warnings: string[]}} Validation results
  */
-function validateInitiativeToWuRefs(wuMap: Map<string, WUObject>, initiatives: Map<string, InitiativeObject>, slugLookup: Map<string, string>): { errors: string[]; warnings: string[] } {
+function validateInitiativeToWuRefs(
+  wuMap: Map<string, WUObject>,
+  initiatives: Map<string, InitiativeObject>,
+  slugLookup: Map<string, string>,
+): { errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -331,7 +349,7 @@ function validateInitiativeToWuRefs(wuMap: Map<string, WUObject>, initiatives: M
       const resolvedWuInitId = slugLookup.get(wuInitRef);
       if (resolvedWuInitId && resolvedWuInitId !== initId) {
         errors.push(
-          `[${wuRef}] is listed in ${initId}.wus but has initiative: ${wuInitRef} (points to ${resolvedWuInitId})`
+          `[${wuRef}] is listed in ${initId}.wus but has initiative: ${wuInitRef} (points to ${resolvedWuInitId})`,
         );
       }
     }
@@ -363,7 +381,10 @@ function validateInitiativeToWuRefs(wuMap: Map<string, WUObject>, initiatives: M
  * const result = validateBidirectionalRefs(wuMap, initiatives);
  * // result.errors === [] (all refs match)
  */
-export function validateBidirectionalRefs(wuMap: Map<string, WUObject>, initiatives: Map<string, InitiativeObject>) {
+export function validateBidirectionalRefs(
+  wuMap: Map<string, WUObject>,
+  initiatives: Map<string, InitiativeObject>,
+) {
   const slugLookup = buildInitiativeSlugLookup(initiatives);
 
   // Direction 1: WU->Initiative
@@ -401,7 +422,11 @@ export function validateBidirectionalRefs(wuMap: Map<string, WUObject>, initiati
  *   console.error('Validation failed:', result.errors);
  * }
  */
-export function validateDependencyGraph(wuMap: Map<string, WUObject>, allWuIds: Set<string>, initiatives: Map<string, InitiativeObject>) {
+export function validateDependencyGraph(
+  wuMap: Map<string, WUObject>,
+  allWuIds: Set<string>,
+  initiatives: Map<string, InitiativeObject>,
+) {
   const errors: string[] = [];
   const warnings: string[] = [];
 

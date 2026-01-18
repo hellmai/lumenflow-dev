@@ -1,62 +1,62 @@
-version: "2.0"
+version: '2.0'
 project: lumenflow
 
 lanes:
-  - name: "Core"
+  - name: 'Core'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/core/**"
+      - 'packages/@lumenflow/core/**'
 
-  - name: "CLI"
+  - name: 'CLI'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/cli/**"
+      - 'packages/@lumenflow/cli/**'
 
-  - name: "Memory"
+  - name: 'Memory'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/memory/**"
+      - 'packages/@lumenflow/memory/**'
 
-  - name: "Agent"
+  - name: 'Agent'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/agent/**"
+      - 'packages/@lumenflow/agent/**'
 
-  - name: "Metrics"
+  - name: 'Metrics'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/metrics/**"
+      - 'packages/@lumenflow/metrics/**'
 
-  - name: "Initiatives"
+  - name: 'Initiatives'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/initiatives/**"
+      - 'packages/@lumenflow/initiatives/**'
 
-  - name: "Shims"
+  - name: 'Shims'
     wip_limit: 1
     code_paths:
-      - "packages/@lumenflow/shims/**"
+      - 'packages/@lumenflow/shims/**'
 
-  - name: "Infrastructure"
+  - name: 'Infrastructure'
     wip_limit: 1
     code_paths:
-      - "apps/**"
-      - "actions/**"
-      - ".github/**"
+      - 'apps/**'
+      - 'actions/**'
+      - '.github/**'
 
-  - name: "Documentation"
+  - name: 'Documentation'
     wip_limit: 1
     code_paths:
-      - "docs/**"
+      - 'docs/**'
 
 git:
   main_branch: main
-  branch_pattern: "lane/{lane}/{wu_id}"
+  branch_pattern: 'lane/{lane}/{wu_id}'
 
 directories:
-  wu_specs: "docs/04-operations/tasks/wu"
-  backlog: "docs/04-operations/tasks/backlog.md"
-  status: "docs/04-operations/tasks/status.md"
-  stamps: ".beacon/stamps"
+  wu_specs: 'docs/04-operations/tasks/wu'
+  backlog: 'docs/04-operations/tasks/backlog.md'
+  status: 'docs/04-operations/tasks/status.md'
+  stamps: '.beacon/stamps'
 
-worktree_pattern: "worktrees/{lane}-{wu_id}"
+worktree_pattern: 'worktrees/{lane}-{wu_id}'

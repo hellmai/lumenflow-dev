@@ -69,4 +69,3 @@ describe('docs-path-validator', () => {
     expect(description).toContain(`${BEACON_PATHS.STATE_DIR}/${WU_EVENTS_FILE_NAME}`);
   });
 });
-

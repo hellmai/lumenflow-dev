@@ -93,11 +93,7 @@ describe('worktree-scanner', () => {
 
       expect(result.hasUncommittedChanges).toBe(true);
       expect(result.uncommittedFileCount).toBe(3);
-      expect(result.uncommittedFiles).toEqual([
-        'src/file1.ts',
-        'src/file2.ts',
-        'src/newfile.ts',
-      ]);
+      expect(result.uncommittedFiles).toEqual(['src/file1.ts', 'src/file2.ts', 'src/newfile.ts']);
     });
 
     it('should report clean worktree with no uncommitted changes', async () => {

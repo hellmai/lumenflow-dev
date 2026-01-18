@@ -65,6 +65,6 @@ export async function getAssignedEmail(gitAdapter) {
       '  2. GIT_AUTHOR_EMAIL env var - not set or invalid\n\n' +
       'Fix:\n' +
       '  git config --global user.email "you@example.com"\n' +
-      '  OR export GIT_AUTHOR_EMAIL="you@example.com"'
+      '  OR export GIT_AUTHOR_EMAIL="you@example.com"',
   );
 }

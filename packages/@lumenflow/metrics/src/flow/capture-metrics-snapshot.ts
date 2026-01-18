@@ -6,12 +6,7 @@
  * @module @lumenflow/metrics/flow
  */
 
-import type {
-  MetricsSnapshot,
-  MetricsSnapshotInput,
-  LaneHealth,
-  WUMetrics,
-} from '../types.js';
+import type { MetricsSnapshot, MetricsSnapshotInput, LaneHealth, WUMetrics } from '../types.js';
 import { calculateDORAMetrics } from '../dora/calculate-dora-metrics.js';
 import { calculateFlowState } from './calculate-flow-state.js';
 import { STATISTICS } from '../dora/constants.js';
@@ -19,10 +14,7 @@ import { STATISTICS } from '../dora/constants.js';
 /**
  * Determine lane health status based on blocked ratio
  */
-function determineLaneStatus(
-  blocked: number,
-  inProgress: number
-): LaneHealth['status'] {
+function determineLaneStatus(blocked: number, inProgress: number): LaneHealth['status'] {
   if (blocked === 0) return 'healthy';
   if (inProgress > 0 && blocked <= inProgress) return 'at-risk';
   return 'blocked';
@@ -99,11 +91,9 @@ function accumulatorToHealth(acc: LaneAccumulator): LaneHealth {
     wusInProgress: acc.wusInProgress,
     wusBlocked: acc.wusBlocked,
     averageCycleTimeHours:
-      Math.round(avgCycleTime * STATISTICS.ROUNDING_FACTOR) /
-      STATISTICS.ROUNDING_FACTOR,
+      Math.round(avgCycleTime * STATISTICS.ROUNDING_FACTOR) / STATISTICS.ROUNDING_FACTOR,
     medianCycleTimeHours:
-      Math.round(medianCycleTime * STATISTICS.ROUNDING_FACTOR) /
-      STATISTICS.ROUNDING_FACTOR,
+      Math.round(medianCycleTime * STATISTICS.ROUNDING_FACTOR) / STATISTICS.ROUNDING_FACTOR,
     status,
   };
 }
@@ -134,9 +124,7 @@ function calculateLaneMetrics(wuMetrics: WUMetrics[]): {
   laneMetrics.sort((a, b) => a.lane.localeCompare(b.lane));
 
   const activeStatuses = ['ready', 'in_progress', 'blocked', 'waiting'];
-  const totalActive = wuMetrics.filter((wu) =>
-    activeStatuses.includes(wu.status)
-  ).length;
+  const totalActive = wuMetrics.filter((wu) => activeStatuses.includes(wu.status)).length;
   const totalBlocked = wuMetrics.filter((wu) => wu.status === 'blocked').length;
   const totalCompleted = wuMetrics.filter((wu) => wu.status === 'done').length;
 
@@ -157,13 +145,7 @@ export function captureMetricsSnapshot(input: MetricsSnapshotInput): MetricsSnap
   const snapshot: MetricsSnapshot = {};
 
   if (type === 'all' || type === 'dora') {
-    snapshot.dora = calculateDORAMetrics(
-      commits,
-      skipGatesEntries,
-      wuMetrics,
-      weekStart,
-      weekEnd
-    );
+    snapshot.dora = calculateDORAMetrics(commits, skipGatesEntries, wuMetrics, weekStart, weekEnd);
   }
 
   if (type === 'all' || type === 'lanes') {

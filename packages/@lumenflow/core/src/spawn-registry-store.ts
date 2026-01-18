@@ -15,7 +15,12 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { validateSpawnEvent, generateSpawnId, SpawnStatus, type SpawnEvent } from './spawn-registry-schema.js';
+import {
+  validateSpawnEvent,
+  generateSpawnId,
+  SpawnStatus,
+  type SpawnEvent,
+} from './spawn-registry-schema.js';
 
 /**
  * Spawn registry file name constant
@@ -245,7 +250,9 @@ export class SpawnRegistryStore {
    */
   getByParent(parentWuId: string): SpawnEvent[] {
     const spawnIds = this.byParent.get(parentWuId) ?? [];
-    return spawnIds.map((id) => this.spawns.get(id)).filter((event): event is SpawnEvent => event !== undefined);
+    return spawnIds
+      .map((id) => this.spawns.get(id))
+      .filter((event): event is SpawnEvent => event !== undefined);
   }
 
   /**
@@ -274,9 +281,7 @@ export class SpawnRegistryStore {
    * const pending = store.getPending();
    */
   getPending(): SpawnEvent[] {
-    return Array.from(this.spawns.values()).filter(
-      (spawn) => spawn.status === SpawnStatus.PENDING
-    );
+    return Array.from(this.spawns.values()).filter((spawn) => spawn.status === SpawnStatus.PENDING);
   }
 
   /**

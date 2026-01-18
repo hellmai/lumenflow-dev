@@ -45,7 +45,10 @@ import { access } from 'node:fs/promises';
 import path from 'node:path';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import { getChangedLintableFiles, convertToPackageRelativePaths } from '@lumenflow/core/dist/incremental-lint.js';
+import {
+  getChangedLintableFiles,
+  convertToPackageRelativePaths,
+} from '@lumenflow/core/dist/incremental-lint.js';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/dist/incremental-test.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { runCoverageGate, COVERAGE_GATE_MODES } from '@lumenflow/core/dist/coverage-gate.js';
@@ -56,7 +59,11 @@ import {
 } from '@lumenflow/core/dist/gates-agent-mode.js';
 // WU-2062: Import risk detector for tiered test execution
 // eslint-disable-next-line no-unused-vars -- Pre-existing: SAFETY_CRITICAL_TEST_PATTERNS imported for future use
-import { detectRiskTier, RISK_TIERS, SAFETY_CRITICAL_TEST_PATTERNS } from '@lumenflow/core/dist/risk-detector.js';
+import {
+  detectRiskTier,
+  RISK_TIERS,
+  SAFETY_CRITICAL_TEST_PATTERNS,
+} from '@lumenflow/core/dist/risk-detector.js';
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
 import { Command } from 'commander';
@@ -98,7 +105,7 @@ const filteredArgv = process.argv.filter((arg, index, arr) => {
 const program = new Command()
   .name('gates')
   .description(
-    'Run quality gates with support for docs-only mode, incremental linting, and tiered testing'
+    'Run quality gates with support for docs-only mode, incremental linting, and tiered testing',
   )
   .option('--docs-only', 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)')
   .option('--full-lint', 'Run full lint instead of incremental')
@@ -107,7 +114,7 @@ const program = new Command()
   .option(
     '--coverage-mode <mode>',
     'Coverage gate mode: "warn" logs warnings, "block" fails gate (default)',
-    'block'
+    'block',
   )
   .option('--verbose', 'Stream output in agent mode instead of logging to file')
   .helpOption('-h, --help', 'Display help for command');
@@ -189,7 +196,10 @@ function createAgentLogContext({ wuId, lane }: { wuId: string | null; lane: stri
   return { logPath, logFd };
 }
 
-function run(cmd: string, { agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+function run(
+  cmd: string,
+  { agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {},
+) {
   const start = Date.now();
 
   if (!agentLog) {
@@ -218,7 +228,9 @@ function run(cmd: string, { agentLog }: { agentLog?: { logFd: number; logPath: s
  * Falls back to full lint if on main branch or if incremental fails
  * @returns {{ ok: boolean, duration: number, fileCount: number }}
  */
-async function runIncrementalLint({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+async function runIncrementalLint({
+  agentLog,
+}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   const logLine = (line: string) => {
     if (!agentLog) {
@@ -261,7 +273,7 @@ async function runIncrementalLint({ agentLog }: { agentLog?: { logFd: number; lo
           } catch {
             return null;
           }
-        })
+        }),
       )
     ).filter(Boolean);
 
@@ -301,7 +313,11 @@ async function runIncrementalLint({ agentLog }: { agentLog?: { logFd: number; lo
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
             cwd: webDir,
           }
-        : { stdio: 'inherit' as const, encoding: FILE_SYSTEM.ENCODING as BufferEncoding, cwd: webDir }
+        : {
+            stdio: 'inherit' as const,
+            encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+            cwd: webDir,
+          },
     );
 
     const duration = Date.now() - start;
@@ -323,7 +339,9 @@ async function runIncrementalLint({ agentLog }: { agentLog?: { logFd: number; lo
  *
  * @returns {{ ok: boolean, duration: number, isIncremental: boolean }}
  */
-async function runChangedTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+async function runChangedTests({
+  agentLog,
+}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -354,7 +372,7 @@ async function runChangedTests({ agentLog }: { agentLog?: { logFd: number; logPa
     if (untrackedCodeFiles.length > 0) {
       const preview = untrackedCodeFiles.slice(0, 5).join(', ');
       logLine(
-        `⚠️  Untracked code files detected (${untrackedCodeFiles.length}): ${preview}${untrackedCodeFiles.length > 5 ? '...' : ''}`
+        `⚠️  Untracked code files detected (${untrackedCodeFiles.length}): ${preview}${untrackedCodeFiles.length > 5 ? '...' : ''}`,
       );
       logLine('📋 Running full test suite to avoid missing coverage');
       const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
@@ -415,7 +433,9 @@ const SAFETY_CRITICAL_TEST_FILES = [
  * @param {object} [options.agentLog] - Agent log context
  * @returns {Promise<{ ok: boolean, duration: number, testCount: number }>}
  */
-async function runSafetyCriticalTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+async function runSafetyCriticalTests({
+  agentLog,
+}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -449,7 +469,11 @@ async function runSafetyCriticalTests({ agentLog }: { agentLog?: { logFd: number
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
             cwd: process.cwd(),
           }
-        : { stdio: 'inherit' as const, encoding: FILE_SYSTEM.ENCODING as BufferEncoding, cwd: process.cwd() }
+        : {
+            stdio: 'inherit' as const,
+            encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+            cwd: process.cwd(),
+          },
     );
 
     const duration = Date.now() - start;
@@ -472,7 +496,9 @@ async function runSafetyCriticalTests({ agentLog }: { agentLog?: { logFd: number
  * @param {object} [options.agentLog] - Agent log context
  * @returns {Promise<{ ok: boolean, duration: number }>}
  */
-async function runIntegrationTests({ agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+async function runIntegrationTests({
+  agentLog,
+}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -491,9 +517,9 @@ async function runIntegrationTests({ agentLog }: { agentLog?: { logFd: number; l
         'vitest',
         'run',
         "--include='**/*.integration.*'",
-        "--include='**/golden-*.test.*'"
+        "--include='**/golden-*.test.*'",
       )}`,
-      { agentLog }
+      { agentLog },
     );
 
     const duration = Date.now() - start;
@@ -566,7 +592,7 @@ const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane }) : n
 async function main() {
   if (useAgentMode) {
     console.log(
-      `🧾 gates (agent mode): output -> ${agentLog.logPath} (use --verbose for streaming)\n`
+      `🧾 gates (agent mode): output -> ${agentLog.logPath} (use --verbose for streaming)\n`,
     );
   }
 
@@ -586,7 +612,7 @@ async function main() {
       logLine(`\n🎯 Risk tier detected: ${riskTier.tier}`);
       if (riskTier.highRiskPaths.length > 0) {
         logLine(
-          `   High-risk paths: ${riskTier.highRiskPaths.slice(0, 3).join(', ')}${riskTier.highRiskPaths.length > 3 ? '...' : ''}`
+          `   High-risk paths: ${riskTier.highRiskPaths.slice(0, 3).join(', ')}${riskTier.highRiskPaths.length > 3 ? '...' : ''}`,
         );
       }
       logLine('');

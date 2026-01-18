@@ -134,7 +134,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
       const priorityLabel = suggestion.priority.toUpperCase().padEnd(6);
 
       console.log(
-        `${BULLET} ${priorityColour(priorityLabel)} ${picocolors.bold(suggestion.action)}`
+        `${BULLET} ${priorityColour(priorityLabel)} ${picocolors.bold(suggestion.action)}`,
       );
       console.log(`  ${picocolors.gray('Reason:')} ${suggestion.reason}`);
       console.log(`  ${picocolors.gray('Command:')} ${picocolors.cyan(suggestion.command)}\n`);
@@ -153,7 +153,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
 
     console.log(`${picocolors.gray('WU:')} ${picocolors.cyan(plan.wuId)}`);
     console.log(
-      `${picocolors.gray('Estimated Tokens:')} ${picocolors.yellow(plan.estimatedTokens.toString())}\n`
+      `${picocolors.gray('Estimated Tokens:')} ${picocolors.yellow(plan.estimatedTokens.toString())}\n`,
     );
 
     console.log(picocolors.bold('Steps:'));
@@ -194,25 +194,25 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
     console.log(picocolors.bold(`${HEADER_PREFIX} Global Status\n`));
 
     console.log(
-      `${picocolors.gray('Active WUs:')} ${picocolors.cyan(status.activeWUs.toString())}`
+      `${picocolors.gray('Active WUs:')} ${picocolors.cyan(status.activeWUs.toString())}`,
     );
     console.log(
-      `${picocolors.gray('Completed (24h):')} ${picocolors.green(status.completed24h.toString())}`
+      `${picocolors.gray('Completed (24h):')} ${picocolors.green(status.completed24h.toString())}`,
     );
     console.log(
-      `${picocolors.gray('Blocked:')} ${status.blocked > 0 ? picocolors.yellow(status.blocked.toString()) : picocolors.gray(status.blocked.toString())}`
+      `${picocolors.gray('Blocked:')} ${status.blocked > 0 ? picocolors.yellow(status.blocked.toString()) : picocolors.gray(status.blocked.toString())}`,
     );
     console.log(
-      `${picocolors.gray('Gates Failing:')} ${status.gatesFailing > 0 ? picocolors.red(status.gatesFailing.toString()) : picocolors.gray(status.gatesFailing.toString())}`
+      `${picocolors.gray('Gates Failing:')} ${status.gatesFailing > 0 ? picocolors.red(status.gatesFailing.toString()) : picocolors.gray(status.gatesFailing.toString())}`,
     );
 
     if (status.longestRunning) {
       const durationHours = Math.floor(status.longestRunning.durationMs / (1000 * 60 * 60));
       const durationMinutes = Math.floor(
-        (status.longestRunning.durationMs % (1000 * 60 * 60)) / (1000 * 60)
+        (status.longestRunning.durationMs % (1000 * 60 * 60)) / (1000 * 60),
       );
       console.log(
-        `${picocolors.gray('Longest Running:')} ${picocolors.cyan(status.longestRunning.wuId)} ${picocolors.gray(`(${durationHours}h ${durationMinutes}m)`)}`
+        `${picocolors.gray('Longest Running:')} ${picocolors.cyan(status.longestRunning.wuId)} ${picocolors.gray(`(${durationHours}h ${durationMinutes}m)`)}`,
       );
     }
 
@@ -233,7 +233,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
 
       console.log(`\n${picocolors.green(BULLET)} ${picocolors.bold('Active Agent Session:')}`);
       console.log(
-        `  ${picocolors.gray('Session ID:')} ${picocolors.cyan(session.sessionId.slice(0, 8))}...`
+        `  ${picocolors.gray('Session ID:')} ${picocolors.cyan(session.sessionId.slice(0, 8))}...`,
       );
       console.log(`  ${picocolors.gray('WU:')} ${picocolors.cyan(session.wuId)}`);
       console.log(`  ${picocolors.gray('Context Tier:')} ${session.contextTier}`);
@@ -246,14 +246,14 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
     // WU-1748: Display worktrees with uncommitted changes
     if (status.worktreesWithUncommittedChanges.length > 0) {
       console.log(
-        `\n${picocolors.yellow(BULLET)} ${picocolors.bold('Worktrees with Uncommitted Changes:')}`
+        `\n${picocolors.yellow(BULLET)} ${picocolors.bold('Worktrees with Uncommitted Changes:')}`,
       );
       for (const wt of status.worktreesWithUncommittedChanges) {
         const lastActivity = wt.lastActivityTimestamp
           ? new Date(wt.lastActivityTimestamp).toLocaleString('en-GB')
           : 'Unknown';
         console.log(
-          `  ${picocolors.gray('-')} ${picocolors.cyan(wt.wuId)}: ${picocolors.yellow(wt.uncommittedFileCount.toString())} uncommitted files`
+          `  ${picocolors.gray('-')} ${picocolors.cyan(wt.wuId)}: ${picocolors.yellow(wt.uncommittedFileCount.toString())} uncommitted files`,
         );
         console.log(`    ${picocolors.gray('Last activity:')} ${lastActivity}`);
         console.log(`    ${picocolors.gray('Path:')} ${wt.worktreePath}`);
@@ -331,7 +331,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
     for (const wu of progress) {
       // WU header
       console.log(
-        `${picocolors.bold(picocolors.cyan(wu.wuId))} ${picocolors.gray('-')} ${wu.title}`
+        `${picocolors.bold(picocolors.cyan(wu.wuId))} ${picocolors.gray('-')} ${wu.title}`,
       );
       console.log(`${picocolors.gray('Lane:')} ${wu.lane}`);
 
@@ -344,7 +344,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
         picocolors.green('█'.repeat(filledWidth)) + picocolors.gray('░'.repeat(emptyWidth));
 
       console.log(
-        `${picocolors.gray('DoD:')} [${progressBar}] ${picocolors.cyan(`${wu.dodProgress}/${wu.dodTotal}`)}`
+        `${picocolors.gray('DoD:')} [${progressBar}] ${picocolors.cyan(`${wu.dodProgress}/${wu.dodTotal}`)}`,
       );
 
       // Agent status
@@ -391,7 +391,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
       const severityColour = EVENT_SEVERITY_COLOURS[event.severity];
 
       console.log(
-        `${picocolors.gray(timestamp)} ${severityColour(BULLET)} ${picocolors.cyan(event.wuId)} ${picocolors.gray('-')} ${event.detail}`
+        `${picocolors.gray(timestamp)} ${severityColour(BULLET)} ${picocolors.cyan(event.wuId)} ${picocolors.gray('-')} ${event.detail}`,
       );
     }
 
@@ -417,7 +417,7 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
       const severityLabel = alert.severity.toUpperCase().padEnd(6);
 
       console.log(
-        `${severityColour(BULLET)} ${severityColour(severityLabel)} ${picocolors.bold(alert.message)}`
+        `${severityColour(BULLET)} ${severityColour(severityLabel)} ${picocolors.bold(alert.message)}`,
       );
       console.log(`  ${picocolors.gray('WU:')} ${picocolors.cyan(alert.wuId)}`);
       console.log(`  ${picocolors.gray('Action:')} ${alert.action}\n`);

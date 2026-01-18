@@ -72,10 +72,7 @@ describe('checkEmptyMerge', () => {
         .mockResolvedValueOnce('docs/README.md'); // Only docs changed, not code_paths
 
       const doc = {
-        code_paths: [
-          'tools/lib/core/file-a.js',
-          'tools/lib/core/file-b.js',
-        ],
+        code_paths: ['tools/lib/core/file-a.js', 'tools/lib/core/file-b.js'],
       };
 
       await expect(checkEmptyMerge('lane/test/wu-456', doc)).rejects.toThrow();
@@ -109,9 +106,7 @@ describe('checkEmptyMerge', () => {
       await expect(checkEmptyMerge('lane/test/wu-docs', doc)).resolves.not.toThrow();
 
       // Should log warning
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('WARNING')
-      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('WARNING'));
     });
 
     it('should WARN but not block when code_paths undefined', async () => {
@@ -216,7 +211,8 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
     status: 'in_progress',
     priority: 'P2',
     created: '2025-12-18',
-    description: 'This is a test description that meets the minimum length requirement for WU descriptions.',
+    description:
+      'This is a test description that meets the minimum length requirement for WU descriptions.',
     acceptance: ['Acceptance criterion 1', 'Acceptance criterion 2'],
     code_paths: ['tools/test.js'],
     tests: { manual: ['Test manually'] },
@@ -261,7 +257,8 @@ describe('validateAndNormalizeWUYAML (WU-1811)', () => {
     it('should detect when description has escaped newlines normalized', () => {
       const dataWithEscapedNewlines = {
         ...validWUData,
-        description: 'Line 1\\nLine 2\\nLine 3 - meeting minimum length requirement for descriptions.',
+        description:
+          'Line 1\\nLine 2\\nLine 3 - meeting minimum length requirement for descriptions.',
       };
 
       const result = validateAndNormalizeWUYAML(dataWithEscapedNewlines);
@@ -498,12 +495,8 @@ describe('branch rollback on merge failure (WU-1943)', () => {
 
       await rollbackBranchOnMergeFailure(mockGitAdapter, preCommitSha, 'WU-1943');
 
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('WU-1943')
-      );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('rollback')
-      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('WU-1943'));
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('rollback'));
     });
 
     it('should handle reset failures gracefully', async () => {
@@ -514,13 +507,11 @@ describe('branch rollback on merge failure (WU-1943)', () => {
 
       // Should not throw - rollback failure is logged but not fatal
       await expect(
-        rollbackBranchOnMergeFailure(mockGitAdapter, preCommitSha, 'WU-1943')
+        rollbackBranchOnMergeFailure(mockGitAdapter, preCommitSha, 'WU-1943'),
       ).resolves.not.toThrow();
 
       // Should log warning about failed rollback
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Could not rollback')
-      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Could not rollback'));
     });
   });
 

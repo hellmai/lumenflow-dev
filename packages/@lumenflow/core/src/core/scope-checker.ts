@@ -162,7 +162,7 @@ File path: ${filePath}
 
 You must claim a WU before performing operations.
 Run: pnpm wu:claim --id WU-XXX --lane "<lane>"
-`
+`,
     );
   }
 
@@ -186,7 +186,7 @@ Either:
   3. Choose a different file within scope
 
 See: CLAUDE.md §2 (Worktree Discipline)
-`
+`,
     );
   }
 }

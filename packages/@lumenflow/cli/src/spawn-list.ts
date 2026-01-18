@@ -88,11 +88,7 @@ async function main() {
   const args = createWUParser({
     name: 'spawn-list',
     description: 'Display spawn trees for WUs or initiatives',
-    options: [
-      WU_OPTIONS.wu,
-      SPAWN_LIST_OPTIONS.initiative,
-      SPAWN_LIST_OPTIONS.json,
-    ],
+    options: [WU_OPTIONS.wu, SPAWN_LIST_OPTIONS.initiative, SPAWN_LIST_OPTIONS.json],
     required: [],
     allowPositionalId: false,
   });
@@ -101,7 +97,9 @@ async function main() {
 
   // Validate: exactly one of --wu or --initiative required
   if (!wu && !initiative) {
-    die('Either --wu or --initiative is required.\n\nUsage:\n  pnpm spawn:list --wu WU-XXX\n  pnpm spawn:list --initiative INIT-XXX');
+    die(
+      'Either --wu or --initiative is required.\n\nUsage:\n  pnpm spawn:list --wu WU-XXX\n  pnpm spawn:list --initiative INIT-XXX',
+    );
   }
 
   if (wu && initiative) {
@@ -148,7 +146,7 @@ async function main() {
     const spawns = await getSpawnsByInitiative(
       initId,
       DEFAULT_PATHS.REGISTRY_DIR,
-      DEFAULT_PATHS.WU_DIR
+      DEFAULT_PATHS.WU_DIR,
     );
 
     if (json) {
@@ -169,7 +167,7 @@ async function main() {
     const typedSpawns = spawns as SpawnEvent[];
     const targetWuIds = new Set(typedSpawns.map((s) => s.targetWuId));
     const rootWuIds = [...new Set(typedSpawns.map((s) => s.parentWuId))].filter(
-      (id) => !targetWuIds.has(id)
+      (id) => !targetWuIds.has(id),
     );
 
     for (const rootWuId of rootWuIds) {

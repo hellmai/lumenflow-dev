@@ -33,7 +33,10 @@ export const ToolInputSchema = z.object({
   arguments: z.record(z.string(), z.unknown()).default({}),
 
   /** Optional execution context (session ID, user, etc.) */
-  context: z.record(z.string(), z.unknown()).optional().describe('Execution context (session_id, user, etc.)'),
+  context: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Execution context (session_id, user, etc.)'),
 });
 
 export type ToolInput = z.infer<typeof ToolInputSchema>;
@@ -133,7 +136,7 @@ export const ToolMetadataSchema = z.object({
         description: z.string(),
         input: z.record(z.string(), z.unknown()),
         output: z.record(z.string(), z.unknown()).optional(),
-      })
+      }),
     )
     .optional(),
 
@@ -233,7 +236,7 @@ export function toJSONSchema(
     name?: string;
     /** Base URI for schema references */
     baseUri?: string;
-  }
+  },
 ): Record<string, unknown> {
   // Use Zod 4's native JSON Schema conversion
   const jsonSchema = z.toJSONSchema(schema) as Record<string, unknown>;
@@ -258,7 +261,7 @@ export function toJSONSchema(
  */
 export function validateToolInput<T>(
   input: unknown,
-  schema: z.ZodType<T>
+  schema: z.ZodType<T>,
 ): { success: true; data: T } | { success: false; error: z.ZodError } {
   const result = schema.safeParse(input);
 
@@ -293,7 +296,7 @@ export function createSuccessOutput(data: unknown, metadata?: Record<string, unk
  */
 export function createErrorOutput(
   error: ToolError,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ): ToolOutput {
   return {
     success: false,

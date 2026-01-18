@@ -80,11 +80,9 @@ function classifyMTTR(averageHours: number): DORAStatusTier {
 export function calculateDeploymentFrequency(
   commits: GitCommit[],
   weekStart: Date,
-  weekEnd: Date
+  weekEnd: Date,
 ): DeploymentFrequencyMetrics {
-  const weekCommits = commits.filter(
-    (c) => c.timestamp >= weekStart && c.timestamp <= weekEnd
-  );
+  const weekCommits = commits.filter((c) => c.timestamp >= weekStart && c.timestamp <= weekEnd);
 
   const deploysPerWeek = weekCommits.length;
   const status = classifyDeploymentFrequency(deploysPerWeek);
@@ -128,15 +126,13 @@ export function calculateLeadTime(wuMetrics: WUMetrics[]): LeadTimeMetrics {
  */
 export function calculateCFR(
   commits: GitCommit[],
-  skipGatesEntries: SkipGatesEntry[]
+  skipGatesEntries: SkipGatesEntry[],
 ): ChangeFailureRateMetrics {
   const totalDeployments = commits.length;
   const failures = skipGatesEntries.length;
 
   const failurePercentage =
-    totalDeployments > 0
-      ? (failures / totalDeployments) * STATISTICS.PERCENTAGE_MULTIPLIER
-      : 0;
+    totalDeployments > 0 ? (failures / totalDeployments) * STATISTICS.PERCENTAGE_MULTIPLIER : 0;
 
   const status = classifyCFR(failurePercentage);
 
@@ -153,7 +149,7 @@ export function calculateCFR(
  */
 export function identifyEmergencyFixes(commits: GitCommit[]): GitCommit[] {
   return commits.filter(
-    (c) => c.message.includes('EMERGENCY') || /fix\(EMERGENCY\)/.test(c.message)
+    (c) => c.message.includes('EMERGENCY') || /fix\(EMERGENCY\)/.test(c.message),
   );
 }
 
@@ -219,7 +215,7 @@ export function calculateDORAMetrics(
   skipGatesEntries: SkipGatesEntry[],
   wuMetrics: WUMetrics[],
   weekStart: Date,
-  weekEnd: Date
+  weekEnd: Date,
 ): DORAMetrics {
   return {
     deploymentFrequency: calculateDeploymentFrequency(commits, weekStart, weekEnd),

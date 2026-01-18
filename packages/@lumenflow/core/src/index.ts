@@ -91,9 +91,7 @@ export * from './lane-validator.js';
 export * from './wu-yaml.js';
 
 // WU claim helpers (skip isValidEmail which conflicts with user-normalizer)
-export {
-  getAssignedEmail,
-} from './wu-claim-helpers.js';
+export { getAssignedEmail } from './wu-claim-helpers.js';
 
 export * from './wu-done-worktree.js';
 export * from './wu-done-validators.js';

@@ -35,9 +35,7 @@ const DEFAULT_CONFIG: PnpmShimConfig = PnpmShimConfigSchema.parse({});
  * @param config - Pnpm shim configuration
  * @returns Path to real pnpm
  */
-export function findRealPnpm(
-  config: PnpmShimConfig = DEFAULT_CONFIG,
-): string {
+export function findRealPnpm(config: PnpmShimConfig = DEFAULT_CONFIG): string {
   // Build list of candidate paths: system paths + user home paths
   const userHomePaths = [
     path.join(process.env['HOME'] || '', '.local', 'share', 'pnpm', 'pnpm'),
@@ -88,7 +86,7 @@ export function isDependencyCommand(
   args: string[],
   config: PnpmShimConfig = DEFAULT_CONFIG,
 ): boolean {
-  const command = args[0]?.toLowerCase() ?? "";
+  const command = args[0]?.toLowerCase() ?? '';
   return config.dependencyCommands.includes(command);
 }
 
@@ -99,10 +97,7 @@ export function isDependencyCommand(
  * @param config - Pnpm shim configuration
  * @returns Exit code
  */
-export function runPnpmShim(
-  args: string[],
-  config: PnpmShimConfig = DEFAULT_CONFIG,
-): number {
+export function runPnpmShim(args: string[], config: PnpmShimConfig = DEFAULT_CONFIG): number {
   // Recursion guard
   if (process.env[config.recursionEnvVar]) {
     const realPnpm = findRealPnpm(config);
@@ -119,17 +114,10 @@ export function runPnpmShim(
     const mainCheckout = getMainCheckoutPath();
 
     if (mainCheckout) {
-      const virtualStorePath = path.join(
-        mainCheckout,
-        'node_modules',
-        '.pnpm',
-      );
+      const virtualStorePath = path.join(mainCheckout, 'node_modules', '.pnpm');
 
       // Inject virtual-store-dir config before passing to pnpm
-      const newArgs = [
-        `--config.virtual-store-dir=${virtualStorePath}`,
-        ...args,
-      ];
+      const newArgs = [`--config.virtual-store-dir=${virtualStorePath}`, ...args];
 
       // Log that we're applying the worktree fix (helpful for debugging)
       if (config.enableDebug || process.env['DEBUG_PNPM_SHIM']) {

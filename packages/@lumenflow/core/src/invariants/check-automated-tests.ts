@@ -168,7 +168,7 @@ export function checkAutomatedTestsInvariant(options: CheckAutomatedTestsInvaria
   let files;
   try {
     files = readdirSync(wuDir).filter(
-      (f) => f.startsWith('WU-') && (f.endsWith('.yaml') || f.endsWith('.yml'))
+      (f) => f.startsWith('WU-') && (f.endsWith('.yaml') || f.endsWith('.yml')),
     );
   } catch {
     return { valid: true, violations: [] };
@@ -216,7 +216,7 @@ export function formatAutomatedTestsViolation(violation) {
 
   lines.push('');
   lines.push(
-    'Action: Add automated tests (unit, e2e, or integration) to the tests field in the WU YAML.'
+    'Action: Add automated tests (unit, e2e, or integration) to the tests field in the WU YAML.',
   );
 
   return lines.join('\n');

@@ -251,9 +251,7 @@ describe('identifyEmergencyFixes', () => {
   });
 
   it('returns empty array for no emergencies', () => {
-    const commits: GitCommit[] = [
-      { hash: 'a', timestamp: new Date(), message: 'feat: normal' },
-    ];
+    const commits: GitCommit[] = [{ hash: 'a', timestamp: new Date(), message: 'feat: normal' }];
 
     const result = identifyEmergencyFixes(commits);
     expect(result).toHaveLength(0);
@@ -262,9 +260,7 @@ describe('identifyEmergencyFixes', () => {
 
 describe('calculateMTTR', () => {
   it('returns elite status for no incidents', () => {
-    const commits: GitCommit[] = [
-      { hash: 'a', timestamp: new Date(), message: 'feat: normal' },
-    ];
+    const commits: GitCommit[] = [{ hash: 'a', timestamp: new Date(), message: 'feat: normal' }];
 
     const result = calculateMTTR(commits);
     expect(result.averageHours).toBe(0);
@@ -309,9 +305,7 @@ describe('calculateMTTR', () => {
   });
 
   it('handles single emergency fix', () => {
-    const commits: GitCommit[] = [
-      { hash: 'a', timestamp: new Date(), message: 'EMERGENCY: fix' },
-    ];
+    const commits: GitCommit[] = [{ hash: 'a', timestamp: new Date(), message: 'EMERGENCY: fix' }];
 
     const result = calculateMTTR(commits);
     expect(result.incidents).toBe(1);
@@ -333,13 +327,7 @@ describe('calculateDORAMetrics', () => {
     const weekStart = new Date('2026-01-01');
     const weekEnd = new Date('2026-01-07');
 
-    const result = calculateDORAMetrics(
-      commits,
-      skipGatesEntries,
-      wuMetrics,
-      weekStart,
-      weekEnd
-    );
+    const result = calculateDORAMetrics(commits, skipGatesEntries, wuMetrics, weekStart, weekEnd);
 
     expect(result.deploymentFrequency).toBeDefined();
     expect(result.leadTimeForChanges).toBeDefined();

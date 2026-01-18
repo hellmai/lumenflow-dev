@@ -247,7 +247,7 @@ code_paths:
 
       assert.equal(
         result.description,
-        'Context: This is the context.\nProblem: This is the problem.\nSolution: This is the solution.'
+        'Context: This is the context.\nProblem: This is the problem.\nSolution: This is the solution.',
       );
     });
 
@@ -264,7 +264,7 @@ code_paths:
 
       assert.equal(
         result.notes,
-        'Line 1: with colon\nLine 2: also with colon\nLine 3: Format: YAML'
+        'Line 1: with colon\nLine 2: also with colon\nLine 3: Format: YAML',
       );
     });
 
@@ -294,7 +294,7 @@ code_paths:
     it.skip('should roundtrip complex fixture with multiple colon edge cases', () => {
       const fixturePath = join(
         process.cwd(),
-        'tools/lib/__tests__/__fixtures__/wu-colon-edge-cases.yaml'
+        'tools/lib/__tests__/__fixtures__/wu-colon-edge-cases.yaml',
       );
 
       // Read the fixture

@@ -21,7 +21,10 @@ describe('wu-checkpoint', () => {
 
   beforeEach(() => {
     // Create a temp directory for each test
-    testDir = path.join(tmpdir(), `wu-checkpoint-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = path.join(
+      tmpdir(),
+      `wu-checkpoint-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
     mkdirSync(testDir, { recursive: true });
     mkdirSync(path.join(testDir, '.beacon', 'checkpoints'), { recursive: true });
     mkdirSync(path.join(testDir, 'docs', '04-operations', 'tasks', 'wu'), { recursive: true });
@@ -51,7 +54,7 @@ describe('wu-checkpoint', () => {
           worktreePath: '/path/to/worktree',
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       assert.ok(checkpoint.checkpointId, 'should have checkpointId');
@@ -67,7 +70,7 @@ describe('wu-checkpoint', () => {
           worktreePath: '/path/to/worktree',
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       const checkpointPath = path.join(testDir, '.beacon', 'checkpoints', 'WU-100.checkpoint.json');
@@ -81,7 +84,7 @@ describe('wu-checkpoint', () => {
           worktreePath: '/path/to/worktree',
           branchName: 'lane/operations/wu-200',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       const checkpointPath = path.join(testDir, '.beacon', 'checkpoints', 'WU-200.checkpoint.json');
@@ -103,7 +106,7 @@ describe('wu-checkpoint', () => {
           worktreePath: '/path/to/worktree',
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       const checkpoint = getCheckpoint('WU-100', { baseDir: testDir });
@@ -129,7 +132,7 @@ describe('wu-checkpoint', () => {
           worktreePath: '/path/to/worktree',
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       const checkpointPath = path.join(testDir, '.beacon', 'checkpoints', 'WU-100.checkpoint.json');
@@ -176,7 +179,7 @@ describe('wu-checkpoint', () => {
           branchName: 'lane/operations/wu-100',
           gatesPassed: true, // Simulate gates already passed
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       // Read back and manually update to mark gates passed
@@ -202,7 +205,7 @@ describe('wu-checkpoint', () => {
           worktreePath: testDir,
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       // Manually update to mark gates passed
@@ -229,7 +232,7 @@ describe('wu-checkpoint', () => {
           worktreePath: testDir,
           branchName: 'lane/operations/wu-100',
         },
-        { baseDir: testDir }
+        { baseDir: testDir },
       );
 
       // Checkpoint exists but gates not passed yet

@@ -96,11 +96,11 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         const sorted = [...activeWUsList].sort((a, b) => {
           const aDuration = differenceInMilliseconds(
             new Date(),
-            new Date(a.claimed_at ?? a.created)
+            new Date(a.claimed_at ?? a.created),
           );
           const bDuration = differenceInMilliseconds(
             new Date(),
-            new Date(b.claimed_at ?? b.created)
+            new Date(b.claimed_at ?? b.created),
           );
           return bDuration - aDuration;
         });
@@ -112,7 +112,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
             lane: longest.lane,
             durationMs: differenceInMilliseconds(
               new Date(),
-              new Date(longest.claimed_at ?? longest.created)
+              new Date(longest.claimed_at ?? longest.created),
             ),
           };
         }
@@ -124,14 +124,17 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         const codePaths = wu.code_paths ?? [];
         for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
           const shouldTrigger = patterns.some((pattern) =>
-            codePaths.some((path) => this.matchesPattern(path, pattern))
+            codePaths.some((path) => this.matchesPattern(path, pattern)),
           );
 
           if (shouldTrigger) {
             // Check if agent has been invoked (would be in telemetry)
             const hasRun = await this.hasAgentRun(wu.id, agentName);
             if (!hasRun) {
-              pendingMandatory.push({ wuId: wu.id, agent: agentName as GlobalStatus['pendingMandatory'][number]['agent'] });
+              pendingMandatory.push({
+                wuId: wu.id,
+                agent: agentName as GlobalStatus['pendingMandatory'][number]['agent'],
+              });
             }
           }
         }
@@ -215,7 +218,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         const avgDurationMs = 0; // Would need duration data from telemetry
 
         const sortedRuns = [...runs].sort(
-          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
         );
         const lastRun = sortedRuns[0]
           ? {
@@ -248,7 +251,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     try {
       const allWUs = await this.readAllWUs();
       const activeWUs = allWUs.filter(
-        (wu) => wu.status === 'in_progress' || wu.status === 'blocked'
+        (wu) => wu.status === 'in_progress' || wu.status === 'blocked',
       );
 
       const progress: WUProgress[] = [];
@@ -263,7 +266,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
         for (const [agent, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
           const shouldTrigger = patterns.some((pattern) =>
-            codePaths.some((path) => this.matchesPattern(path, pattern))
+            codePaths.some((path) => this.matchesPattern(path, pattern)),
           );
 
           if (shouldTrigger) {
@@ -340,7 +343,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
         for (const [agent, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
           const shouldTrigger = patterns.some((pattern) =>
-            codePaths.some((path) => this.matchesPattern(path, pattern))
+            codePaths.some((path) => this.matchesPattern(path, pattern)),
           );
 
           if (shouldTrigger) {
@@ -426,7 +429,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
       wuFiles.map(async (file) => {
         const content = await readFile(file, { encoding: 'utf-8' });
         return parseYaml(content);
-      })
+      }),
     );
 
     return wus;
@@ -444,7 +447,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
           wuId: data.id ?? '',
           completedAt: data.completed_at ?? data.timestamp ?? new Date().toISOString(),
         };
-      })
+      }),
     );
 
     return stamps;
@@ -508,7 +511,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
   private async hasAgentRun(wuId: string, agentName: string): Promise<boolean> {
     const events = await this.readTelemetry();
     return events.some(
-      (e) => e.wuId === wuId && e.event === 'agent' && e.detail.includes(agentName)
+      (e) => e.wuId === wuId && e.event === 'agent' && e.detail.includes(agentName),
     );
   }
 

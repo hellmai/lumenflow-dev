@@ -48,7 +48,7 @@ const plan = buildExecutionPlan(wus);
 
 console.log(`${plan.waves.length} waves`);
 console.log(`Skipped (done): ${plan.skipped.join(', ')}`);
-console.log(`Deferred: ${plan.deferred.map(d => d.id).join(', ')}`);
+console.log(`Deferred: ${plan.deferred.map((d) => d.id).join(', ')}`);
 
 // Format for display
 const output = formatExecutionPlan(initiative, plan);
@@ -119,43 +119,43 @@ import { getInitiativePath, getInitiativesDir } from '@lumenflow/initiatives/pat
 
 ### Orchestrator
 
-| Function | Description |
-|----------|-------------|
-| `loadInitiativeWUs(initRef)` | Load initiative and its linked WUs |
-| `loadMultipleInitiatives(refs)` | Combine WUs from multiple initiatives |
-| `buildExecutionPlan(wus)` | Build dependency-ordered execution waves |
-| `buildCheckpointWave(initRef)` | Build next wave for checkpoint execution |
-| `calculateProgress(wus)` | Calculate completion statistics |
-| `getBottleneckWUs(wus, limit?)` | Identify bottleneck WUs |
-| `filterByDependencyStamps(wus)` | Filter WUs by dependency completion |
+| Function                        | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `loadInitiativeWUs(initRef)`    | Load initiative and its linked WUs       |
+| `loadMultipleInitiatives(refs)` | Combine WUs from multiple initiatives    |
+| `buildExecutionPlan(wus)`       | Build dependency-ordered execution waves |
+| `buildCheckpointWave(initRef)`  | Build next wave for checkpoint execution |
+| `calculateProgress(wus)`        | Calculate completion statistics          |
+| `getBottleneckWUs(wus, limit?)` | Identify bottleneck WUs                  |
+| `filterByDependencyStamps(wus)` | Filter WUs by dependency completion      |
 
 ### YAML Operations
 
-| Function | Description |
-|----------|-------------|
-| `findInitiative(ref)` | Find initiative by ID or slug |
+| Function                | Description                     |
+| ----------------------- | ------------------------------- |
+| `findInitiative(ref)`   | Find initiative by ID or slug   |
 | `getInitiativeWUs(ref)` | Get WUs linked to an initiative |
-| `listInitiatives()` | List all initiative files |
+| `listInitiatives()`     | List all initiative files       |
 
 ### Validation
 
-| Function | Description |
-|----------|-------------|
-| `validateInitiative(data)` | Validate data against schema |
-| `validateInitiativeDependencies(init)` | Validate WU dependencies |
+| Function                               | Description                  |
+| -------------------------------------- | ---------------------------- |
+| `validateInitiative(data)`             | Validate data against schema |
+| `validateInitiativeDependencies(init)` | Validate WU dependencies     |
 
 ### Types
 
 ```typescript
 interface Initiative {
-  id: string;           // INIT-NNN or INIT-NAME
-  slug: string;         // kebab-case identifier
+  id: string; // INIT-NNN or INIT-NAME
+  slug: string; // kebab-case identifier
   title: string;
   description?: string;
   status: 'proposed' | 'active' | 'paused' | 'completed' | 'cancelled';
   priority?: 'P0' | 'P1' | 'P2' | 'P3';
   owner?: string;
-  created: string;      // YYYY-MM-DD
+  created: string; // YYYY-MM-DD
   target_date?: string;
   phases?: InitiativePhase[];
   success_metrics?: string[];

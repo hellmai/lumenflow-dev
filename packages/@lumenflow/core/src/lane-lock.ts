@@ -15,7 +15,15 @@
  * @see WU-1603 - Race condition fix for wu:claim
  */
 
-import { openSync, closeSync, writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync } from 'node:fs';
+import {
+  openSync,
+  closeSync,
+  writeFileSync,
+  readFileSync,
+  unlinkSync,
+  existsSync,
+  mkdirSync,
+} from 'node:fs';
 import type { WriteFileOptions } from 'node:fs';
 import path from 'node:path';
 import { toKebab, FILE_SYSTEM } from './wu-constants.js';
@@ -233,7 +241,11 @@ export function readLockMetadata(lockPath: string): LockMetadata | null {
  * @returns {LockResult} Result of lock acquisition attempt
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- WU-1808: Added zombie lock detection increases complexity but all paths are necessary
-export function acquireLaneLock(lane: string, wuId: string, options: AcquireLockOptions = {}): LockResult {
+export function acquireLaneLock(
+  lane: string,
+  wuId: string,
+  options: AcquireLockOptions = {},
+): LockResult {
   const { agentSession = null, baseDir = null } = options;
 
   try {
@@ -286,7 +298,9 @@ export function acquireLaneLock(lane: string, wuId: string, options: AcquireLock
         // WU-1808: Auto-clear zombie locks (PID no longer running)
         // This allows recovery from crashed wu:claim processes
         if (zombie) {
-          console.warn(`${LOG_PREFIX} Detected zombie lock for "${lane}" (PID ${existingLock?.pid} not running)`);
+          console.warn(
+            `${LOG_PREFIX} Detected zombie lock for "${lane}" (PID ${existingLock?.pid} not running)`,
+          );
           console.warn(`${LOG_PREFIX}    Previous owner: ${existingLock?.wuId}`);
           console.warn(`${LOG_PREFIX}    Lock timestamp: ${existingLock?.timestamp}`);
           console.warn(`${LOG_PREFIX}    Auto-clearing zombie lock...`);
@@ -390,7 +404,10 @@ export function releaseLaneLock(lane: string, options: ReleaseLockOptions = {}):
  * @param {string} [options.baseDir] - Base directory for lock files
  * @returns {{ locked: boolean, metadata: LockMetadata|null, isStale: boolean }}
  */
-export function checkLaneLock(lane: string, options: CheckLockOptions = {}): { locked: boolean; metadata: LockMetadata | null; isStale: boolean } {
+export function checkLaneLock(
+  lane: string,
+  options: CheckLockOptions = {},
+): { locked: boolean; metadata: LockMetadata | null; isStale: boolean } {
   const { baseDir = null } = options;
 
   const lockPath = getLockFilePath(lane, baseDir);

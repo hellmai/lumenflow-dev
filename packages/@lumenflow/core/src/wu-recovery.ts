@@ -140,7 +140,9 @@ function recordRecoveryState(paths) {
   return {
     wuContent: existsSync(wuPath) ? readFileSync(wuPath, { encoding: 'utf-8' }) : null,
     statusContent: existsSync(statusPath) ? readFileSync(statusPath, { encoding: 'utf-8' }) : null,
-    backlogContent: existsSync(backlogPath) ? readFileSync(backlogPath, { encoding: 'utf-8' }) : null,
+    backlogContent: existsSync(backlogPath)
+      ? readFileSync(backlogPath, { encoding: 'utf-8' })
+      : null,
     stampExisted: existsSync(stampPath),
     timestamp: new Date().toISOString(),
   };
@@ -178,7 +180,7 @@ function rollbackRecoveryTransaction(state, paths) {
     }
     for (const err of result.errors) {
       console.error(
-        `${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to restore ${err.name}: ${err.error}`
+        `${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to restore ${err.name}: ${err.error}`,
       );
     }
   }
@@ -244,7 +246,7 @@ export function resetWorktreeYAMLForRecovery({ worktreePath, id, doc }) {
   writeWU(wtWUPath, doc);
 
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Reset worktree YAML to in_progress for recovery`
+    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Reset worktree YAML to in_progress for recovery`,
   );
 
   return { reset: true };
@@ -364,7 +366,7 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
         throw createError(
           ErrorCodes.GIT_ERROR,
           `Recovery commit failed: ${commitError.message}\nFiles rolled back to clean state. Re-run wu:done to retry.`,
-          { originalError: commitError.message, wuId: id }
+          { originalError: commitError.message, wuId: id },
         );
       }
     } else {
@@ -389,7 +391,7 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
     throw createError(
       ErrorCodes.RECOVERY_ERROR,
       `Recovery operation failed: ${error.message}\nFiles rolled back to clean state. Re-run wu:done to retry.`,
-      { originalError: error.message, wuId: id }
+      { originalError: error.message, wuId: id },
     );
   }
 }

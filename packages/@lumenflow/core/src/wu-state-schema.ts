@@ -20,7 +20,15 @@ import { z } from 'zod';
  * - checkpoint: Progress checkpoint (WU-1748: cross-agent visibility)
  * - spawn: WU spawned from parent (WU-1947: parent-child relationships)
  */
-export const WU_EVENT_TYPES = ['create', 'claim', 'block', 'unblock', 'complete', 'checkpoint', 'spawn'] as const;
+export const WU_EVENT_TYPES = [
+  'create',
+  'claim',
+  'block',
+  'unblock',
+  'complete',
+  'checkpoint',
+  'spawn',
+] as const;
 
 /** Type for WU event types */
 export type WUEventType = (typeof WU_EVENT_TYPES)[number];
@@ -132,7 +140,9 @@ export const CheckpointEventSchema = BaseEventSchema.extend({
 export const SpawnEventSchema = BaseEventSchema.extend({
   type: z.literal('spawn'),
   /** Parent WU ID that spawned this WU */
-  parentWuId: z.string().regex(WU_PATTERNS.WU_ID, { message: 'Parent WU ID must match pattern WU-XXX' }),
+  parentWuId: z
+    .string()
+    .regex(WU_PATTERNS.WU_ID, { message: 'Parent WU ID must match pattern WU-XXX' }),
   /** Unique spawn identifier */
   spawnId: z.string().min(1, { message: 'Spawn ID is required' }),
 });

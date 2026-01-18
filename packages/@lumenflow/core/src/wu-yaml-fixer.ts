@@ -125,7 +125,7 @@ function checkTypeField(doc) {
   // Check for invalid type not in aliases - try fuzzy match
   if (!VALID_TYPES.includes(typeLower)) {
     const closest = VALID_TYPES.find(
-      (t) => t.startsWith(typeLower.slice(0, 3)) || typeLower.startsWith(t.slice(0, 3))
+      (t) => t.startsWith(typeLower.slice(0, 3)) || typeLower.startsWith(t.slice(0, 3)),
     );
     if (closest) {
       return {

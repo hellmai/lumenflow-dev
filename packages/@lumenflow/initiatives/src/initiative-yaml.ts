@@ -106,7 +106,7 @@ export function readInitiative(initPath: string, expectedId: string): Initiative
       {
         path: initPath,
         originalError: errorMessage,
-      }
+      },
     );
   }
 
@@ -116,7 +116,7 @@ export function readInitiative(initPath: string, expectedId: string): Initiative
     throw createError(
       ErrorCodes.INIT_NOT_FOUND,
       `Initiative YAML id mismatch. Expected ${expectedId}, found ${docWithId?.id}`,
-      { path: initPath, expectedId, foundId: docWithId?.id }
+      { path: initPath, expectedId, foundId: docWithId?.id },
     );
   }
 
@@ -161,7 +161,7 @@ export function listInitiatives(): InitiativeEntry[] {
   }
 
   const files = readdirSync(dir).filter(
-    (f) => f.endsWith('.yaml') && INIT_PATTERNS.INIT_ID.test(f.replace('.yaml', ''))
+    (f) => f.endsWith('.yaml') && INIT_PATTERNS.INIT_ID.test(f.replace('.yaml', '')),
   );
 
   return files
@@ -243,7 +243,14 @@ export function getInitiativeWUs(initRef: string): WUEntry[] {
  * @param {string} initRef - Initiative ID or slug
  * @returns {{total: number, done: number, inProgress: number, blocked: number, ready: number, percentage: number}}
  */
-export function getInitiativeProgress(initRef: string): { total: number; done: number; inProgress: number; blocked: number; ready: number; percentage: number } {
+export function getInitiativeProgress(initRef: string): {
+  total: number;
+  done: number;
+  inProgress: number;
+  blocked: number;
+  ready: number;
+  percentage: number;
+} {
   const wus = getInitiativeWUs(initRef);
 
   const counts = {
@@ -286,7 +293,9 @@ export function getInitiativeProgress(initRef: string): { total: number; done: n
  * @param {string} initRef - Initiative ID or slug
  * @returns {Map<number|null, Array<{id: string, doc: object}>>} Map of phase ID to WU array (null key = no phase)
  */
-export function getInitiativePhases(initRef: string): Map<number | null, Array<{ id: string; doc: WUDoc }>> {
+export function getInitiativePhases(
+  initRef: string,
+): Map<number | null, Array<{ id: string; doc: WUDoc }>> {
   const wus = getInitiativeWUs(initRef);
   const phases = new Map();
 

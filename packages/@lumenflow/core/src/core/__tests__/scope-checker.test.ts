@@ -104,13 +104,10 @@ describe('scope-checker', () => {
       assert.strictEqual(isPathInScope('tools/lib/core/scope-checker.js', scope), true);
       assert.strictEqual(
         isPathInScope('tools/lib/core/__tests__/scope-checker.test.js', scope),
-        true
+        true,
       );
       assert.strictEqual(isPathInScope('apps/web/src/components/Header.tsx', scope), true);
-      assert.strictEqual(
-        isPathInScope('apps/web/src/lib/utils/validators.tsx', scope),
-        true
-      );
+      assert.strictEqual(isPathInScope('apps/web/src/lib/utils/validators.tsx', scope), true);
 
       // Should not match outside glob scope
       assert.strictEqual(isPathInScope('tools/wu-done.js', scope), false);
@@ -186,7 +183,7 @@ describe('scope-checker', () => {
           assert.match(error.message, /tools\/lib\/core\/scope-checker\.mjs/);
           assert.match(error.message, /tools\/lib\/core\/__tests__\/\*\.mjs/);
           return true;
-        }
+        },
       );
     });
 
@@ -199,7 +196,7 @@ describe('scope-checker', () => {
           assert.ok(error instanceof Error);
           assert.match(error.message, /No active WU/);
           return true;
-        }
+        },
       );
     });
 
@@ -228,7 +225,7 @@ describe('scope-checker', () => {
           assert.ok(error instanceof Error);
           assert.match(error.message, /file write/);
           return true;
-        }
+        },
       );
     });
   });

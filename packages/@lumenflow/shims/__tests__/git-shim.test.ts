@@ -53,10 +53,7 @@ describe('git-shim', () => {
     });
 
     it('should block push --force on main', () => {
-      const result = checkBannedPattern(
-        ['push', '--force'],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['push', '--force'], DEFAULT_CONFIG);
       expect(result.banned).toBe(true);
       expect(result.reason).toContain('destructive');
     });
@@ -72,26 +69,17 @@ describe('git-shim', () => {
     });
 
     it('should block checkout --force on main', () => {
-      const result = checkBannedPattern(
-        ['checkout', '--force'],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['checkout', '--force'], DEFAULT_CONFIG);
       expect(result.banned).toBe(true);
     });
 
     it('should allow normal checkout on main', () => {
-      const result = checkBannedPattern(
-        ['checkout', 'feature-branch'],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['checkout', 'feature-branch'], DEFAULT_CONFIG);
       expect(result.banned).toBe(false);
     });
 
     it('should allow normal push on main', () => {
-      const result = checkBannedPattern(
-        ['push', 'origin', 'main'],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['push', 'origin', 'main'], DEFAULT_CONFIG);
       expect(result.banned).toBe(false);
     });
 
@@ -106,10 +94,7 @@ describe('git-shim', () => {
     });
 
     it('should allow commit on main', () => {
-      const result = checkBannedPattern(
-        ['commit', '-m', 'test'],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['commit', '-m', 'test'], DEFAULT_CONFIG);
       expect(result.banned).toBe(false);
     });
   });
@@ -118,20 +103,14 @@ describe('git-shim', () => {
     it('should block commit with hook bypass flag', () => {
       // The flag string is split to avoid hook detection
       const noVerify = '--no-' + 'verify';
-      const result = checkBannedPattern(
-        ['commit', '-m', 'test', noVerify],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['commit', '-m', 'test', noVerify], DEFAULT_CONFIG);
       expect(result.banned).toBe(true);
       expect(result.reason).toContain('bypasses hooks');
     });
 
     it('should block commit with gpg sign bypass flag', () => {
       const noGpgSign = '--no-' + 'gpg-sign';
-      const result = checkBannedPattern(
-        ['commit', '-m', 'test', noGpgSign],
-        DEFAULT_CONFIG,
-      );
+      const result = checkBannedPattern(['commit', '-m', 'test', noGpgSign], DEFAULT_CONFIG);
       expect(result.banned).toBe(true);
       expect(result.reason).toContain('bypasses hooks');
     });
@@ -219,11 +198,7 @@ describe('git-shim', () => {
 
   describe('formatBlockedError', () => {
     it('should format error with command, reason, and context', () => {
-      const result = formatBlockedError(
-        'reset --hard',
-        'Command is destructive',
-        'main branch',
-      );
+      const result = formatBlockedError('reset --hard', 'Command is destructive', 'main branch');
 
       expect(result).toContain('GIT SHIM HOOK ERROR');
       expect(result).toContain('reset --hard');
@@ -265,10 +240,7 @@ describe('git-shim', () => {
         bannedFlags: ['--custom-flag'],
       });
 
-      const result = checkBannedPattern(
-        ['commit', '--custom-flag'],
-        customConfig,
-      );
+      const result = checkBannedPattern(['commit', '--custom-flag'], customConfig);
       expect(result.banned).toBe(true);
     });
   });

@@ -65,7 +65,7 @@ describe('wu-recovery attempt tracking (WU-1335)', () => {
       const markerPath = getRecoveryMarkerPath('WU-1335', testDir);
       writeFileSync(
         markerPath,
-        JSON.stringify({ attempts: 1, lastAttempt: new Date().toISOString() })
+        JSON.stringify({ attempts: 1, lastAttempt: new Date().toISOString() }),
       );
       const count = getRecoveryAttemptCount('WU-1335', testDir);
       expect(count).toBe(1);

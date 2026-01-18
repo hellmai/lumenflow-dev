@@ -204,7 +204,7 @@ describe('LumenFlow Config Loader', () => {
       fs.mkdirSync(path.join(tempDir, '.git'));
       fs.writeFileSync(
         path.join(tempDir, '.lumenflow.config.yaml'),
-        'directories:\n  wuDir: custom/wu\n'
+        'directories:\n  wuDir: custom/wu\n',
       );
 
       const config = getConfig({ projectRoot: tempDir });
@@ -222,7 +222,7 @@ describe('LumenFlow Config Loader', () => {
       fs.mkdirSync(path.join(tempDir, '.git'));
       fs.writeFileSync(
         path.join(tempDir, '.lumenflow.config.yaml'),
-        'directories:\n  wuDir: first\n'
+        'directories:\n  wuDir: first\n',
       );
 
       const config1 = getConfig({ projectRoot: tempDir });
@@ -230,7 +230,7 @@ describe('LumenFlow Config Loader', () => {
 
       fs.writeFileSync(
         path.join(tempDir, '.lumenflow.config.yaml'),
-        'directories:\n  wuDir: second\n'
+        'directories:\n  wuDir: second\n',
       );
 
       const config2 = getConfig({ projectRoot: tempDir, reload: true });

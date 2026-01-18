@@ -581,7 +581,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('id')),
-        'Error should mention id field'
+        'Error should mention id field',
       );
     });
 
@@ -592,7 +592,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('title')),
-        'Error should mention title field'
+        'Error should mention title field',
       );
     });
 
@@ -603,7 +603,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('status')),
-        'Error should mention status field'
+        'Error should mention status field',
       );
     });
 
@@ -614,7 +614,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('type')),
-        'Error should mention type field'
+        'Error should mention type field',
       );
     });
 
@@ -625,7 +625,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('created')),
-        'Error should mention created field'
+        'Error should mention created field',
       );
     });
 
@@ -636,9 +636,9 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some(
-          (i) => i.path.includes('description') && i.message.includes('50 characters')
+          (i) => i.path.includes('description') && i.message.includes('50 characters'),
         ),
-        'Error should mention description length requirement'
+        'Error should mention description length requirement',
       );
     });
 
@@ -649,7 +649,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('acceptance')),
-        'Error should mention acceptance field'
+        'Error should mention acceptance field',
       );
     });
 
@@ -667,7 +667,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Should fail validation').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.join('.').includes('blocks')),
-        'Error should mention blocks field'
+        'Error should mention blocks field',
       );
     });
 
@@ -689,9 +689,9 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Strict validation should fail for placeholders').toBeFalsy();
       assert.ok(
         result.error.issues.some(
-          (i) => i.path.includes('description') && i.message.includes(PLACEHOLDER_SENTINEL)
+          (i) => i.path.includes('description') && i.message.includes(PLACEHOLDER_SENTINEL),
         ),
-        'Error should mention placeholder marker'
+        'Error should mention placeholder marker',
       );
     });
 
@@ -704,7 +704,7 @@ describe('validateReadyWU (WU-1539)', () => {
       expect(result.success, 'Strict validation should fail for placeholders').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.message.includes(PLACEHOLDER_SENTINEL)),
-        'Error should mention placeholder marker'
+        'Error should mention placeholder marker',
       );
     });
   });
@@ -720,7 +720,7 @@ describe('validateReadyWU (WU-1539)', () => {
       assert.strictEqual(
         ReadyWUSchema,
         BaseWUSchema,
-        'ReadyWUSchema should be alias for BaseWUSchema'
+        'ReadyWUSchema should be alias for BaseWUSchema',
       );
     });
 
@@ -787,7 +787,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       expect(result.success, 'Validation should fail for invalid exposure').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.includes('exposure')),
-        'Error should mention exposure field'
+        'Error should mention exposure field',
       );
     });
 
@@ -797,7 +797,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       const result = validateWU(data);
       assert.ok(
         result.success,
-        `Missing exposure should be valid during transition: ${JSON.stringify(result.error?.issues)}`
+        `Missing exposure should be valid during transition: ${JSON.stringify(result.error?.issues)}`,
       );
     });
   });
@@ -812,7 +812,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       assert.ok(result.success, `Validation should pass: ${JSON.stringify(result.error?.issues)}`);
       assert.equal(
         result.data.user_journey,
-        'User clicks button to submit the form and sees confirmation'
+        'User clicks button to submit the form and sees confirmation',
       );
     });
 
@@ -858,7 +858,7 @@ describe('wu-schema exposure field (WU-1998)', () => {
       expect(result.success, 'Invalid WU ID format should fail').toBeFalsy();
       assert.ok(
         result.error.issues.some((i) => i.path.join('.').includes('ui_pairing_wus')),
-        'Error should mention ui_pairing_wus field'
+        'Error should mention ui_pairing_wus field',
       );
     });
   });
@@ -870,7 +870,10 @@ describe('wu-schema exposure field (WU-1998)', () => {
         navigation_path: '/dashboard',
       });
       const result = validateWU(data);
-      assert.ok(result.success, `Should accept navigation_path: ${JSON.stringify(result.error?.issues)}`);
+      assert.ok(
+        result.success,
+        `Should accept navigation_path: ${JSON.stringify(result.error?.issues)}`,
+      );
       expect(result.data.navigation_path).toBe('/dashboard');
     });
 

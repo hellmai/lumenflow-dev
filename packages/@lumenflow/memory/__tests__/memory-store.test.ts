@@ -195,7 +195,10 @@ describe('memory-store', () => {
     });
 
     it('should load and index nodes from JSONL file', async () => {
-      const nodes = [FIXTURES.createNode({ id: 'mem-abc1' }), FIXTURES.createNode({ id: 'mem-def2' })];
+      const nodes = [
+        FIXTURES.createNode({ id: 'mem-abc1' }),
+        FIXTURES.createNode({ id: 'mem-def2' }),
+      ];
       await writeJsonlFile(memoryFilePath, nodes);
 
       const result = await loadMemory(tempDir);
@@ -283,7 +286,7 @@ describe('memory-store', () => {
     it('should use append mode (not rewrite file)', async () => {
       // Create a large existing file to verify append-only behavior
       const existingNodes = Array.from({ length: 100 }, (_, i) =>
-        FIXTURES.createNode({ id: `mem-${String(i).padStart(4, '0')}` })
+        FIXTURES.createNode({ id: `mem-${String(i).padStart(4, '0')}` }),
       );
       await writeJsonlFile(memoryFilePath, existingNodes);
 

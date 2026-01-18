@@ -240,7 +240,10 @@ export interface FindHardcodedPathViolationsOptions {
  * @param {FindHardcodedPathViolationsOptions} options - Options for detection
  * @returns {Array<{line: string, fix: string, pathType: string, path: string}>} Array of violations
  */
-export function findHardcodedPathViolations(line, options: FindHardcodedPathViolationsOptions = {}) {
+export function findHardcodedPathViolations(
+  line,
+  options: FindHardcodedPathViolationsOptions = {},
+) {
   const { isTestFile = false, isConfigFile = false } = options;
 
   // Skip test files and config files

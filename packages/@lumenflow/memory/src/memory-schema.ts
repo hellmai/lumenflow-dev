@@ -99,10 +99,7 @@ export const MemoryNodeSchema = z.object({
   updated_at: z.string().datetime().optional(),
 
   /** Associated WU ID (optional) */
-  wu_id: z
-    .string()
-    .regex(MEMORY_PATTERNS.WU_ID, { message: ERROR_MESSAGES.WU_ID })
-    .optional(),
+  wu_id: z.string().regex(MEMORY_PATTERNS.WU_ID, { message: ERROR_MESSAGES.WU_ID }).optional(),
 
   /** Session ID this node belongs to (optional, UUID) */
   session_id: z.string().uuid().optional(),

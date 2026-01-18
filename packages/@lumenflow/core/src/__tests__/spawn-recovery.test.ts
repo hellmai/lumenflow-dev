@@ -197,9 +197,7 @@ describe('spawn-recovery', () => {
 
       expect(result.recovered).toBe(true);
       expect(result.action).toBe(RecoveryAction.RELEASED_ZOMBIE);
-      expect(
-        result.reason.includes('zombie') || result.reason.includes('PID')
-      ).toBe(true);
+      expect(result.reason.includes('zombie') || result.reason.includes('PID')).toBe(true);
     });
 
     it('should mark spawn as crashed after zombie recovery', async () => {
@@ -282,9 +280,7 @@ describe('spawn-recovery', () => {
 
       expect(result.recovered).toBe(true);
       expect(result.action).toBe(RecoveryAction.RELEASED_STALE);
-      expect(
-        result.reason.includes('stale') || result.reason.includes('2h')
-      ).toBe(true);
+      expect(result.reason.includes('stale') || result.reason.includes('2h')).toBe(true);
     });
 
     it('should mark spawn as timeout after stale recovery', async () => {
@@ -367,9 +363,7 @@ describe('spawn-recovery', () => {
 
       expect(result.recovered).toBe(false);
       expect(result.action).toBe(RecoveryAction.ESCALATED_STUCK);
-      expect(
-        result.reason.includes('checkpoint') || result.reason.includes('stuck')
-      ).toBe(true);
+      expect(result.reason.includes('checkpoint') || result.reason.includes('stuck')).toBe(true);
     });
 
     it('should flag for escalation if no checkpoint at all', async () => {
@@ -421,9 +415,7 @@ describe('spawn-recovery', () => {
       const result = await recoverStuckSpawn('spawn-1234', { baseDir: testDir });
 
       expect(result.action).toBe(RecoveryAction.NONE);
-      expect(
-        result.reason.includes('healthy') || result.reason.includes('recent')
-      ).toBe(true);
+      expect(result.reason.includes('healthy') || result.reason.includes('recent')).toBe(true);
     });
   });
 
@@ -449,9 +441,7 @@ describe('spawn-recovery', () => {
 
       expect(result.recovered).toBe(false);
       expect(result.action).toBe(RecoveryAction.NONE);
-      expect(
-        result.reason.includes('already') || result.reason.includes('completed')
-      ).toBe(true);
+      expect(result.reason.includes('already') || result.reason.includes('completed')).toBe(true);
     });
 
     it('should handle missing lock file', async () => {

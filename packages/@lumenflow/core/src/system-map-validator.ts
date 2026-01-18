@@ -32,12 +32,7 @@ export const CANONICAL_AUDIENCES = [
  * From least to most restrictive: public < internal < confidential < restricted
  * @type {string[]}
  */
-export const CANONICAL_CLASSIFICATIONS = [
-  'public',
-  'internal',
-  'confidential',
-  'restricted',
-];
+export const CANONICAL_CLASSIFICATIONS = ['public', 'internal', 'confidential', 'restricted'];
 
 /**
  * Audiences that should NOT have access to restricted (PHI) data
@@ -232,18 +227,14 @@ export function validateQuickQueries(systemMap) {
     const query = queryValue as { primary?: string; related?: string[] };
     // Check primary reference
     if (query.primary && !validIds.has(query.primary)) {
-      errors.push(
-        `Quick query '${queryKey}' references non-existent primary: ${query.primary}`
-      );
+      errors.push(`Quick query '${queryKey}' references non-existent primary: ${query.primary}`);
     }
 
     // Check related references
     if (query.related && Array.isArray(query.related)) {
       for (const related of query.related) {
         if (!validIds.has(related)) {
-          errors.push(
-            `Quick query '${queryKey}' references non-existent related: ${related}`
-          );
+          errors.push(`Quick query '${queryKey}' references non-existent related: ${related}`);
         }
       }
     }
@@ -280,7 +271,7 @@ export function validateClassificationRouting(systemMap) {
     for (const audience of audiences) {
       if (PHI_RESTRICTED_AUDIENCES.includes(audience)) {
         errors.push(
-          `PHI routing violation: ${entry.id} has restricted (PHI) classification but is accessible to '${audience}'`
+          `PHI routing violation: ${entry.id} has restricted (PHI) classification but is accessible to '${audience}'`,
         );
       }
     }

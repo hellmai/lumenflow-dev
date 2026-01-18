@@ -108,7 +108,7 @@ export function readWU(wuPath, expectedId) {
     throw createError(
       ErrorCodes.WU_NOT_FOUND,
       `WU YAML id mismatch. Expected ${expectedId}, found ${doc && doc.id}`,
-      { path: wuPath, expectedId, foundId: doc && doc.id }
+      { path: wuPath, expectedId, foundId: doc && doc.id },
     );
   }
 
@@ -165,7 +165,7 @@ export function readWURaw(yamlPath) {
       {
         path: yamlPath,
         originalError: e.message,
-      }
+      },
     );
   }
 }

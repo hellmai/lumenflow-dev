@@ -183,7 +183,9 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
 
       // Should only have 1 Operations WU and 1 Intelligence WU per wave
       const operationsWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Operations');
-      const intelligenceWUs = manifest.wus.filter((w: { lane: string }) => w.lane === 'Intelligence');
+      const intelligenceWUs = manifest.wus.filter(
+        (w: { lane: string }) => w.lane === 'Intelligence',
+      );
 
       expect(operationsWUs.length).toBeLessThanOrEqual(1);
       expect(intelligenceWUs.length).toBeLessThanOrEqual(1);
@@ -198,7 +200,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       writeFileSync(
         wave0ManifestPath,
         JSON.stringify({ initiative: 'INIT-001', wave: 0, wus: [] }),
-        'utf8'
+        'utf8',
       );
 
       const mod = await import('../src/initiative-orchestrator.js');
@@ -244,7 +246,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const manifestPath = join(
         testDir,
         '.beacon/artifacts/waves',
-        `INIT-001-wave-${result.wave}.json`
+        `INIT-001-wave-${result.wave}.json`,
       );
       expect(existsSync(manifestPath)).toBe(false);
     });
@@ -306,9 +308,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
 
       // Should include instructions on how to resume
       expect(output.includes('Resume')).toBe(true);
-      expect(
-        output.includes('orchestrate:initiative') || output.includes('pnpm')
-      ).toBe(true);
+      expect(output.includes('orchestrate:initiative') || output.includes('pnpm')).toBe(true);
     });
   });
 
@@ -321,9 +321,9 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       const { validateCheckpointFlags } = mod;
 
       // The function should exist and throw for invalid combinations
-      expect(
-        () => validateCheckpointFlags({ checkpointPerWave: true, dryRun: true })
-      ).toThrow(/cannot combine/i);
+      expect(() => validateCheckpointFlags({ checkpointPerWave: true, dryRun: true })).toThrow(
+        /cannot combine/i,
+      );
     });
 
     it('should allow -c without --dry-run', async () => {
@@ -332,7 +332,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
 
       // Should not throw
       expect(() =>
-        validateCheckpointFlags({ checkpointPerWave: true, dryRun: false })
+        validateCheckpointFlags({ checkpointPerWave: true, dryRun: false }),
       ).not.toThrow();
     });
   });
@@ -353,7 +353,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
           wus: [{ id: 'WU-001', lane: 'Operations', status: 'spawned' }],
           created_at: new Date().toISOString(),
         }),
-        'utf8'
+        'utf8',
       );
 
       const mod = await import('../src/initiative-orchestrator.js');

@@ -1,6 +1,6 @@
 /**
  * LumenFlow Billing - Subscription & Usage Tracking
- * 
+ *
  * Options:
  * 1. GitHub Marketplace (they handle billing)
  * 2. Stripe (direct billing)
@@ -28,13 +28,13 @@ export async function checkSubscription(installationId: number): Promise<Subscri
   // Option 1: GitHub Marketplace
   // The installation already has billing info from GitHub
   // We just check if they're on a paid plan
-  
+
   // Option 2: Our own database
   // const sub = await db.query('SELECT * FROM subscriptions WHERE installation_id = ?', [installationId]);
-  
+
   // Option 3: Simple KV check (Vercel KV, Upstash Redis)
   // const tier = await kv.get(`subscription:${installationId}`);
-  
+
   // For MVP: Everyone gets free tier
   return {
     active: true,

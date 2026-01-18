@@ -157,7 +157,7 @@ export function computeStatusContent(statusPath, id, title) {
     throw createError(
       ErrorCodes.SECTION_NOT_FOUND,
       `Could not find "${headings.in_progress}" section in ${statusPath}`,
-      { path: statusPath, section: headings.in_progress, function: 'computeStatusContent' }
+      { path: statusPath, section: headings.in_progress, function: 'computeStatusContent' },
     );
   }
 
@@ -167,7 +167,7 @@ export function computeStatusContent(statusPath, id, title) {
     inProgressIdx,
     inProgressEndIdx,
     rel,
-    id
+    id,
   );
   inProgressEndIdx = newEndIdx;
 
@@ -187,7 +187,7 @@ export function computeStatusContent(statusPath, id, title) {
     throw createError(
       ErrorCodes.SECTION_NOT_FOUND,
       `Could not find "${headings.completed}" section in ${statusPath}`,
-      { path: statusPath, section: headings.completed, function: 'computeStatusContent' }
+      { path: statusPath, section: headings.completed, function: 'computeStatusContent' },
     );
   }
 

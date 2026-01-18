@@ -199,7 +199,10 @@ export interface RemoveOrphanDirectoryOptions {
  * @param {RemoveOrphanDirectoryOptions} [options] - Options
  * @returns {Promise<{removed: boolean, path: string, error?: string}>} Result
  */
-export async function removeOrphanDirectory(orphanPath, options: RemoveOrphanDirectoryOptions = {}) {
+export async function removeOrphanDirectory(
+  orphanPath,
+  options: RemoveOrphanDirectoryOptions = {},
+) {
   const { dryRun = false } = options;
 
   // Verify it exists
@@ -251,7 +254,10 @@ export async function removeOrphanDirectory(orphanPath, options: RemoveOrphanDir
  * @param {RemoveOrphanDirectoryOptions} [options] - Options
  * @returns {Promise<{detected: number, removed: number, errors: string[]}>} Summary
  */
-export async function cleanupOrphanDirectories(projectRoot, options: RemoveOrphanDirectoryOptions = {}) {
+export async function cleanupOrphanDirectories(
+  projectRoot,
+  options: RemoveOrphanDirectoryOptions = {},
+) {
   const { dryRun = false } = options;
   const result = await detectOrphanWorktrees(projectRoot);
   const errors = [...result.errors];

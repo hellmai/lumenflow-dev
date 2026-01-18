@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    [
+      "@lumenflow/core",
+      "@lumenflow/cli",
+      "@lumenflow/memory",
+      "@lumenflow/agent",
+      "@lumenflow/metrics",
+      "@lumenflow/initiatives",
+      "@lumenflow/shims"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

@@ -106,7 +106,9 @@ export async function startSessionForWU(options: StartSessionOptions): Promise<S
 
   // Check for existing session - return it instead of throwing
   if (existsSync(sessionFile)) {
-    const existing = JSON.parse(readFileSync(sessionFile, { encoding: 'utf-8' })) as SessionFileData;
+    const existing = JSON.parse(
+      readFileSync(sessionFile, { encoding: 'utf-8' }),
+    ) as SessionFileData;
     return {
       sessionId: existing.session_id,
       alreadyActive: true,

@@ -26,13 +26,7 @@ import { readWU, writeWU, parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
-import {
-  EXIT_CODES,
-  LOG_PREFIX,
-  EMOJI,
-  WU_STATUS,
-  FILE_SYSTEM,
-} from './wu-constants.js';
+import { EXIT_CODES, LOG_PREFIX, EMOJI, WU_STATUS, FILE_SYSTEM } from './wu-constants.js';
 import { die } from './error-handler.js';
 import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from './wu-helpers.js';
 import { withMicroWorktree } from './micro-worktree.js';
@@ -40,11 +34,7 @@ import { validateLaneFormat } from './lane-checker.js';
 import { normalizeToDateString } from './date-utils.js';
 
 // Re-export for backwards compatibility
-export {
-  checkWUConsistency,
-  checkAllWUConsistency,
-  repairWUInconsistency,
-};
+export { checkWUConsistency, checkAllWUConsistency, repairWUInconsistency };
 
 // Re-export recovery utilities from wu-recovery.mjs
 export {
@@ -126,9 +116,7 @@ export async function checkClaimMetadata(id, worktreePath) {
       const doc = readWU(wuPath, id);
       yamlStatus = doc.status;
       if (yamlStatus !== WU_STATUS.IN_PROGRESS) {
-        errors.push(
-          `WU YAML status is '${yamlStatus}', expected '${WU_STATUS.IN_PROGRESS}'`
-        );
+        errors.push(`WU YAML status is '${yamlStatus}', expected '${WU_STATUS.IN_PROGRESS}'`);
       }
     } catch (err) {
       errors.push(`Failed to read WU YAML: ${err.message}`);
@@ -372,10 +360,7 @@ const VALID_STATUSES = Object.values(WU_STATUS);
  */
 function validateStatus(status) {
   if (!VALID_STATUSES.includes(status)) {
-    die(
-      `Invalid status: '${status}'\n\n` +
-        `Valid statuses: ${VALID_STATUSES.join(', ')}`
-    );
+    die(`Invalid status: '${status}'\n\n` + `Valid statuses: ${VALID_STATUSES.join(', ')}`);
   }
 }
 
@@ -405,7 +390,7 @@ async function ensureCleanWorkingTree() {
   const status = await getGitForCwd().getStatus();
   if (status.trim()) {
     die(
-      `Working tree is not clean. Cannot run admin-repair.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before running admin-repair:\n  git add . && git commit -m "..."\n`
+      `Working tree is not clean. Cannot run admin-repair.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before running admin-repair:\n  git add . && git commit -m "..."\n`,
     );
   }
 }
@@ -497,7 +482,7 @@ function appendAuditTrail(updated, opts, changes) {
 
   if (opts.notes) {
     // If notes were explicitly provided, add audit for non-notes changes only
-    const nonNotesChanges = changes.filter(c => c !== 'notes updated');
+    const nonNotesChanges = changes.filter((c) => c !== 'notes updated');
     if (nonNotesChanges.length > 0) {
       updated.notes = `${updated.notes}${generateAuditEntry(nonNotesChanges)}`;
     }
@@ -537,7 +522,7 @@ export function applyAdminRepairs(wu, opts) {
  */
 function generateAdminCommitMessage(id, changes) {
   // Extract field names from changes
-  const fields = changes.map(c => c.split(' ')[0]).filter(f => f !== 'notes');
+  const fields = changes.map((c) => c.split(' ')[0]).filter((f) => f !== 'notes');
   const uniqueFields = [...new Set(fields)];
   const fieldSummary = uniqueFields.length > 0 ? uniqueFields.join(', ') : 'notes';
   return `fix(${id.toLowerCase()}): admin-repair ${fieldSummary}`;
@@ -574,7 +559,7 @@ export async function runAdminRepairMode(options) {
         '  --notes <text>          Add repair notes (appends with audit trail)\n' +
         '  --initiative <ref>      Fix initiative reference (e.g., INIT-001)\n\n' +
         'Example:\n' +
-        '  pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"'
+        '  pnpm wu:repair --admin --id WU-123 --lane "Operations: Tooling"',
     );
   }
 
@@ -690,7 +675,7 @@ export async function repairSingleWU(id, options) {
 
   if (result.failed > 0) {
     console.error(
-      `${PREFIX} Repair partially failed: ${result.repaired} repaired, ${result.failed} failed`
+      `${PREFIX} Repair partially failed: ${result.repaired} repaired, ${result.failed} failed`,
     );
     return { success: false, repaired: result.repaired, failed: result.failed };
   }
@@ -715,7 +700,7 @@ export async function repairAllWUs(options: { dryRun?: boolean } = {}) {
   }
 
   console.log(
-    `${PREFIX} Found ${report.errors.length} inconsistency issue(s) out of ${report.checked} WUs checked`
+    `${PREFIX} Found ${report.errors.length} inconsistency issue(s) out of ${report.checked} WUs checked`,
   );
   console.log();
 
@@ -735,7 +720,7 @@ export async function repairAllWUs(options: { dryRun?: boolean } = {}) {
 
   if (result.failed > 0) {
     console.error(
-      `${PREFIX} Partial failure - ${result.repaired} repaired, ${result.failed} failed`
+      `${PREFIX} Partial failure - ${result.repaired} repaired, ${result.failed} failed`,
     );
   } else {
     console.log(`${PREFIX} Repaired ${result.repaired} issue(s)`);

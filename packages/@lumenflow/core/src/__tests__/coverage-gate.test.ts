@@ -50,7 +50,7 @@ describe('isHexCoreFile', () => {
   // WU-2448: Coverage reporters emit absolute paths, so isHexCoreFile must handle them
   it('returns true for absolute application package paths', () => {
     expect(
-      isHexCoreFile(join(process.cwd(), 'packages/@exampleapp/application/src/usecases/foo.ts'))
+      isHexCoreFile(join(process.cwd(), 'packages/@exampleapp/application/src/usecases/foo.ts')),
     ).toBe(true);
   });
 

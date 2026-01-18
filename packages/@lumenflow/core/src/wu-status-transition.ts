@@ -88,7 +88,7 @@ export async function transitionWUStatus({
   if (!direction || !['block', 'unblock'].includes(direction)) {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
-      `Invalid direction: ${direction}. Must be 'block' or 'unblock'`
+      `Invalid direction: ${direction}. Must be 'block' or 'unblock'`,
     );
   }
 
@@ -132,7 +132,7 @@ export async function transitionWUStatus({
     // If already in target state, make operation idempotent (don't throw)
     if (currentStatus === toStatus) {
       console.warn(
-        `[wu-status-transition] WU ${id} already ${toStatus}, skipping transition (idempotent)`
+        `[wu-status-transition] WU ${id} already ${toStatus}, skipping transition (idempotent)`,
       );
       return { id, fromStatus: currentStatus, toStatus };
     }
@@ -140,7 +140,7 @@ export async function transitionWUStatus({
     throw createError(
       ErrorCodes.STATE_ERROR,
       `State transition validation failed: ${error.message}`,
-      { id, fromStatus: currentStatus, toStatus, originalError: error.message }
+      { id, fromStatus: currentStatus, toStatus, originalError: error.message },
     );
   }
 
@@ -205,7 +205,7 @@ async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, di
     throw createError(
       ErrorCodes.YAML_PARSE_ERROR,
       `Failed to parse backlog frontmatter: ${err.message}`,
-      { path: paths.backlog, originalError: err.message }
+      { path: paths.backlog, originalError: err.message },
     );
   }
 
@@ -372,7 +372,7 @@ function handleWorktreeCreation(doc, worktreeOverride, gitAdapter) {
 
   if (existsSync(worktreePath)) {
     console.warn(
-      `[wu-status-transition] Worktree ${worktreePath} already exists; skipping creation`
+      `[wu-status-transition] Worktree ${worktreePath} already exists; skipping creation`,
     );
     return;
   }
@@ -381,11 +381,11 @@ function handleWorktreeCreation(doc, worktreeOverride, gitAdapter) {
 
   if (branchExists(branchName, gitAdapter)) {
     gitAdapter.run(
-      `git worktree add ${JSON.stringify(worktreePath)} ${JSON.stringify(branchName)}`
+      `git worktree add ${JSON.stringify(worktreePath)} ${JSON.stringify(branchName)}`,
     );
   } else {
     gitAdapter.run(
-      `git worktree add ${JSON.stringify(worktreePath)} -b ${JSON.stringify(branchName)} ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`
+      `git worktree add ${JSON.stringify(worktreePath)} -b ${JSON.stringify(branchName)} ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
     );
   }
 }

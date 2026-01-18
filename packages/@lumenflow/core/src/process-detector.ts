@@ -156,7 +156,7 @@ export async function detectBackgroundProcesses(worktreePath) {
     // Handle ps-list errors gracefully (permission issues, etc.)
     // Don't block wu:done on process detection failure
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect background processes: ${error.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect background processes: ${error.message}`,
     );
     return {
       ...noProcessesResult,
@@ -187,7 +187,7 @@ export async function runBackgroundProcessCheck(worktreePath) {
     // Log warning but don't fail
     console.warn(`\n${LOG_PREFIX.DONE} ${result.warnings.join(STRING_LITERALS.NEWLINE)}`);
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Proceeding with wu:done despite background processes`
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Proceeding with wu:done despite background processes`,
     );
   } else {
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} No interfering background processes detected`);

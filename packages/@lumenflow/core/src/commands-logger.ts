@@ -73,7 +73,11 @@ export interface LogGitCommandOptions {
  * @param {string} logPath - Path to log file (defaults to .beacon/commands.log)
  * @param {LogGitCommandOptions} options - Additional logging options (WU-1552)
  */
-export function logGitCommand(args, logPath = DEFAULT_LOG_PATH, options: LogGitCommandOptions = {}) {
+export function logGitCommand(
+  args,
+  logPath = DEFAULT_LOG_PATH,
+  options: LogGitCommandOptions = {},
+) {
   try {
     const timestamp = new Date().toISOString();
     const command = `git ${args.join(' ')}`;
@@ -293,7 +297,7 @@ export function rotateLog(logPath = DEFAULT_LOG_PATH, retentionDays = 7) {
       logPath,
       recentLines.join(STRING_LITERALS.NEWLINE) +
         (recentLines.length > 0 ? STRING_LITERALS.NEWLINE : ''),
-      { encoding: 'utf-8' }
+      { encoding: 'utf-8' },
     );
   } catch (error) {
     console.error(`[commands-logger] Warning: Failed to rotate log: ${error.message}`);

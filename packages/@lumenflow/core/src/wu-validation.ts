@@ -103,7 +103,7 @@ function hasUIVerificationInAcceptance(acceptance) {
   const lowerCriteria = criteria.map((c) => (typeof c === 'string' ? c.toLowerCase() : ''));
 
   return lowerCriteria.some((criterion) =>
-    UI_VERIFICATION_KEYWORDS.some((keyword) => criterion.includes(keyword.toLowerCase()))
+    UI_VERIFICATION_KEYWORDS.some((keyword) => criterion.includes(keyword.toLowerCase())),
   );
 }
 
@@ -249,9 +249,7 @@ function hasPageFileInCodePaths(codePaths) {
     return false;
   }
 
-  return codePaths.some((codePath) =>
-    PAGE_FILE_PATTERNS.some((pattern) => pattern.test(codePath))
-  );
+  return codePaths.some((codePath) => PAGE_FILE_PATTERNS.some((pattern) => pattern.test(codePath)));
 }
 
 /**
@@ -270,12 +268,10 @@ function hasNavigationInManualTests(tests) {
     return false;
   }
 
-  const lowerTests = manualTests.map((t) =>
-    typeof t === 'string' ? t.toLowerCase() : ''
-  );
+  const lowerTests = manualTests.map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
 
   return lowerTests.some((test) =>
-    NAVIGATION_KEYWORDS.some((keyword) => test.includes(keyword.toLowerCase()))
+    NAVIGATION_KEYWORDS.some((keyword) => test.includes(keyword.toLowerCase())),
   );
 }
 
@@ -307,7 +303,10 @@ interface ValidateFeatureAccessibilityOptions {
   skipAccessibilityCheck?: boolean;
 }
 
-export function validateFeatureAccessibility(wu, options: ValidateFeatureAccessibilityOptions = {}) {
+export function validateFeatureAccessibility(
+  wu,
+  options: ValidateFeatureAccessibilityOptions = {},
+) {
   const errors = [];
 
   // Early return if skip flag is set

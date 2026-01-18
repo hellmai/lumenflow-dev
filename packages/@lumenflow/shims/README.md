@@ -22,6 +22,7 @@ pnpm add @lumenflow/shims
 The git shim prevents destructive commands on protected branches (default: main).
 
 **Blocked commands on main:**
+
 - git reset with hard flag
 - git stash (any form)
 - git clean with fd flags
@@ -68,7 +69,12 @@ isDependencyCommand(['run', 'test']); // false
 ### Worktree Detection
 
 ```typescript
-import { isInWorktree, isMainWorktree, getMainCheckoutPath, getCurrentBranch } from '@lumenflow/shims';
+import {
+  isInWorktree,
+  isMainWorktree,
+  getMainCheckoutPath,
+  getCurrentBranch,
+} from '@lumenflow/shims';
 
 // Check worktree context
 if (isInWorktree()) {
@@ -92,25 +98,25 @@ Both shims are configurable via Zod schemas.
 
 ### GitShimConfig
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| protectedBranch | string | main | Branch where destructive commands are blocked |
-| bannedPatterns | array | See defaults | Command + flags combinations to block |
-| bannedFlags | string[] | See defaults | Flags blocked on any command |
-| realGitPath | string | /usr/bin/git | Path to real git executable |
-| enableLogging | boolean | false | Enable command logging |
-| logPath | string | undefined | Path to log file |
-| recursionEnvVar | string | auto | Env var for recursion guard |
-| agentEnvVars | string[] | See defaults | Env vars indicating agent context |
+| Option          | Type     | Default      | Description                                   |
+| --------------- | -------- | ------------ | --------------------------------------------- |
+| protectedBranch | string   | main         | Branch where destructive commands are blocked |
+| bannedPatterns  | array    | See defaults | Command + flags combinations to block         |
+| bannedFlags     | string[] | See defaults | Flags blocked on any command                  |
+| realGitPath     | string   | /usr/bin/git | Path to real git executable                   |
+| enableLogging   | boolean  | false        | Enable command logging                        |
+| logPath         | string   | undefined    | Path to log file                              |
+| recursionEnvVar | string   | auto         | Env var for recursion guard                   |
+| agentEnvVars    | string[] | See defaults | Env vars indicating agent context             |
 
 ### PnpmShimConfig
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
+| Option             | Type     | Default                   | Description                       |
+| ------------------ | -------- | ------------------------- | --------------------------------- |
 | dependencyCommands | string[] | add, remove, install, etc | Commands that modify dependencies |
-| systemPnpmPaths | string[] | System paths | Paths to search for real pnpm |
-| recursionEnvVar | string | auto | Env var for recursion guard |
-| enableDebug | boolean | false | Enable debug output |
+| systemPnpmPaths    | string[] | System paths              | Paths to search for real pnpm     |
+| recursionEnvVar    | string   | auto                      | Env var for recursion guard       |
+| enableDebug        | boolean  | false                     | Enable debug output               |
 
 ## CLI Usage
 

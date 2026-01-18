@@ -38,10 +38,12 @@ interface LaneConfig {
 }
 
 interface LumenflowConfig {
-  lanes?: LaneConfig[] | {
-    engineering?: LaneConfig[];
-    business?: LaneConfig[];
-  };
+  lanes?:
+    | LaneConfig[]
+    | {
+        engineering?: LaneConfig[];
+        business?: LaneConfig[];
+      };
 }
 
 interface WUDoc {
@@ -95,7 +97,7 @@ function hasSubLaneTaxonomy(parent: string): boolean {
     // Check if parent exists as top-level key in taxonomy
     const normalizedParent = parent.trim();
     return Object.keys(taxonomy).some(
-      (key) => key.toLowerCase().trim() === normalizedParent.toLowerCase()
+      (key) => key.toLowerCase().trim() === normalizedParent.toLowerCase(),
     );
   } catch {
     return false;
@@ -123,7 +125,7 @@ function isValidSubLane(parent: string, subdomain: string): boolean {
     // Find parent key (case-insensitive)
     const normalizedParent = parent.trim().toLowerCase();
     const parentKey = Object.keys(taxonomy).find(
-      (key) => key.toLowerCase().trim() === normalizedParent
+      (key) => key.toLowerCase().trim() === normalizedParent,
     );
 
     if (!parentKey) {
@@ -177,7 +179,11 @@ const SPACE = ' ';
  * @param {ValidateLaneOptions} options - Validation options
  * @returns {{ valid: boolean, parent: string, error: string | null }}
  */
-export function validateLaneFormat(lane: string, configPath: string | null = null, options: ValidateLaneOptions = {}): ValidateLaneResult {
+export function validateLaneFormat(
+  lane: string,
+  configPath: string | null = null,
+  options: ValidateLaneOptions = {},
+): ValidateLaneResult {
   const { strict = true } = options;
   const trimmed = lane.trim();
 
@@ -187,7 +193,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
     throw createError(
       ErrorCodes.INVALID_LANE,
       `Invalid lane format: "${lane}" contains multiple colons. Expected format: "Parent: Subdomain" or "Parent"`,
-      { lane }
+      { lane },
     );
   }
 
@@ -202,7 +208,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
       throw createError(
         ErrorCodes.INVALID_LANE,
         `Invalid lane format: "${lane}" has space before colon. Expected format: "Parent: Subdomain" (space AFTER colon only)`,
-        { lane }
+        { lane },
       );
     }
 
@@ -211,7 +217,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
       throw createError(
         ErrorCodes.INVALID_LANE,
         `Invalid lane format: "${lane}" is missing space after colon. Expected format: "Parent: Subdomain"`,
-        { lane }
+        { lane },
       );
     }
 
@@ -224,7 +230,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
       throw createError(
         ErrorCodes.INVALID_LANE,
         `Unknown parent lane: "${parent}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
-        { parent, lane }
+        { parent, lane },
       );
     }
 
@@ -237,7 +243,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
           ErrorCodes.INVALID_LANE,
           `Unknown sub-lane: "${subdomain}" for parent lane "${parent}".\n\n` +
             `Valid sub-lanes: ${validSubLanes.join(', ')}`,
-          { parent, subdomain, validSubLanes }
+          { parent, subdomain, validSubLanes },
         );
       }
     } else {
@@ -245,7 +251,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
       throw createError(
         ErrorCodes.INVALID_LANE,
         `Parent lane "${parent}" does not support sub-lanes. Use parent-only format or extend ${CONFIG_FILES.LANE_INFERENCE}.`,
-        { parent, lane }
+        { parent, lane },
       );
     }
 
@@ -256,7 +262,7 @@ export function validateLaneFormat(lane: string, configPath: string | null = nul
       throw createError(
         ErrorCodes.INVALID_LANE,
         `Unknown parent lane: "${trimmed}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
-        { lane: trimmed }
+        { lane: trimmed },
       );
     }
 
@@ -396,7 +402,7 @@ export function checkLaneFree(statusPath: string, lane: string, wuid: string): C
 
       if (!existsSync(wuPath)) {
         console.warn(
-          `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`
+          `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`,
         );
         continue;
       }

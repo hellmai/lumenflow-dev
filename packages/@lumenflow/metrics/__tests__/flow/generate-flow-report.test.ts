@@ -21,9 +21,30 @@ describe('generateFlowReport', () => {
   describe('gate metrics', () => {
     it('calculates pass rate correctly', () => {
       const gateEvents: GateTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', wuId: 'WU-1', lane: 'Ops', gateName: 'lint', passed: true, durationMs: 100 },
-        { timestamp: '2026-01-02T11:00:00Z', wuId: 'WU-1', lane: 'Ops', gateName: 'lint', passed: true, durationMs: 120 },
-        { timestamp: '2026-01-02T12:00:00Z', wuId: 'WU-2', lane: 'Ops', gateName: 'lint', passed: false, durationMs: 150 },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          wuId: 'WU-1',
+          lane: 'Ops',
+          gateName: 'lint',
+          passed: true,
+          durationMs: 100,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          wuId: 'WU-1',
+          lane: 'Ops',
+          gateName: 'lint',
+          passed: true,
+          durationMs: 120,
+        },
+        {
+          timestamp: '2026-01-02T12:00:00Z',
+          wuId: 'WU-2',
+          lane: 'Ops',
+          gateName: 'lint',
+          passed: false,
+          durationMs: 150,
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, gateEvents });
@@ -35,9 +56,30 @@ describe('generateFlowReport', () => {
 
     it('groups by gate name', () => {
       const gateEvents: GateTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', wuId: 'WU-1', lane: 'Ops', gateName: 'lint', passed: true, durationMs: 100 },
-        { timestamp: '2026-01-02T11:00:00Z', wuId: 'WU-1', lane: 'Ops', gateName: 'typecheck', passed: true, durationMs: 200 },
-        { timestamp: '2026-01-02T12:00:00Z', wuId: 'WU-2', lane: 'Ops', gateName: 'lint', passed: false, durationMs: 150 },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          wuId: 'WU-1',
+          lane: 'Ops',
+          gateName: 'lint',
+          passed: true,
+          durationMs: 100,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          wuId: 'WU-1',
+          lane: 'Ops',
+          gateName: 'typecheck',
+          passed: true,
+          durationMs: 200,
+        },
+        {
+          timestamp: '2026-01-02T12:00:00Z',
+          wuId: 'WU-2',
+          lane: 'Ops',
+          gateName: 'lint',
+          passed: false,
+          durationMs: 150,
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, gateEvents });
@@ -71,9 +113,33 @@ describe('generateFlowReport', () => {
 
     it('calculates error rate', () => {
       const llmEvents: LLMTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 100, tokensUsed: 50, estimatedCostUsd: 0.001, confidence: 0.9, fallbackUsed: false },
-        { timestamp: '2026-01-02T11:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 110, tokensUsed: 55, estimatedCostUsd: 0.001, confidence: 0.95, fallbackUsed: false },
-        { timestamp: '2026-01-02T12:00:00Z', eventType: 'llm.classification.error', classificationType: 'mode', errorType: 'timeout', errorMessage: 'timed out' },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 100,
+          tokensUsed: 50,
+          estimatedCostUsd: 0.001,
+          confidence: 0.9,
+          fallbackUsed: false,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 110,
+          tokensUsed: 55,
+          estimatedCostUsd: 0.001,
+          confidence: 0.95,
+          fallbackUsed: false,
+        },
+        {
+          timestamp: '2026-01-02T12:00:00Z',
+          eventType: 'llm.classification.error',
+          classificationType: 'mode',
+          errorType: 'timeout',
+          errorMessage: 'timed out',
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, llmEvents });
@@ -83,8 +149,26 @@ describe('generateFlowReport', () => {
 
     it('calculates fallback rate', () => {
       const llmEvents: LLMTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 100, tokensUsed: 50, estimatedCostUsd: 0.001, confidence: 0.9, fallbackUsed: true },
-        { timestamp: '2026-01-02T11:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 110, tokensUsed: 55, estimatedCostUsd: 0.001, confidence: 0.95, fallbackUsed: false },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 100,
+          tokensUsed: 50,
+          estimatedCostUsd: 0.001,
+          confidence: 0.9,
+          fallbackUsed: true,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 110,
+          tokensUsed: 55,
+          estimatedCostUsd: 0.001,
+          confidence: 0.95,
+          fallbackUsed: false,
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, llmEvents });
@@ -93,8 +177,26 @@ describe('generateFlowReport', () => {
 
     it('aggregates by type', () => {
       const llmEvents: LLMTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode_detection', durationMs: 100, tokensUsed: 50, estimatedCostUsd: 0.001, confidence: 0.9, fallbackUsed: false },
-        { timestamp: '2026-01-02T11:00:00Z', eventType: 'llm.classification.complete', classificationType: 'phi_detection', durationMs: 200, tokensUsed: 100, estimatedCostUsd: 0.002, confidence: 0.8, fallbackUsed: true },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode_detection',
+          durationMs: 100,
+          tokensUsed: 50,
+          estimatedCostUsd: 0.001,
+          confidence: 0.9,
+          fallbackUsed: false,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'phi_detection',
+          durationMs: 200,
+          tokensUsed: 100,
+          estimatedCostUsd: 0.002,
+          confidence: 0.8,
+          fallbackUsed: true,
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, llmEvents });
@@ -106,8 +208,26 @@ describe('generateFlowReport', () => {
 
     it('sums tokens and costs', () => {
       const llmEvents: LLMTelemetryEvent[] = [
-        { timestamp: '2026-01-02T10:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 100, tokensUsed: 50, estimatedCostUsd: 0.001, confidence: 0.9, fallbackUsed: false },
-        { timestamp: '2026-01-02T11:00:00Z', eventType: 'llm.classification.complete', classificationType: 'mode', durationMs: 110, tokensUsed: 70, estimatedCostUsd: 0.002, confidence: 0.95, fallbackUsed: false },
+        {
+          timestamp: '2026-01-02T10:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 100,
+          tokensUsed: 50,
+          estimatedCostUsd: 0.001,
+          confidence: 0.9,
+          fallbackUsed: false,
+        },
+        {
+          timestamp: '2026-01-02T11:00:00Z',
+          eventType: 'llm.classification.complete',
+          classificationType: 'mode',
+          durationMs: 110,
+          tokensUsed: 70,
+          estimatedCostUsd: 0.002,
+          confidence: 0.95,
+          fallbackUsed: false,
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, llmEvents });
@@ -119,7 +239,13 @@ describe('generateFlowReport', () => {
   describe('completed WUs', () => {
     it('formats completed WUs list', () => {
       const completedWUs: WUMetrics[] = [
-        { id: 'WU-100', title: 'Test WU', lane: 'Operations', status: 'done', completedAt: new Date('2026-01-05') },
+        {
+          id: 'WU-100',
+          title: 'Test WU',
+          lane: 'Operations',
+          status: 'done',
+          completedAt: new Date('2026-01-05'),
+        },
       ];
 
       const result = generateFlowReport({ ...baseInput, completedWUs });

@@ -33,7 +33,7 @@ export function printGateFailureBox({ id, location, durationMs, isWorktreeMode =
   console.error('═'.repeat(width));
   console.error(`WU ID:     ${id}`);
   console.error(
-    `${isWorktreeMode ? 'Worktree' : 'Mode'}:  ${isWorktreeMode ? location : 'Branch-Only'}`
+    `${isWorktreeMode ? 'Worktree' : 'Mode'}:  ${isWorktreeMode ? location : 'Branch-Only'}`,
   );
   console.error(`Duration:  ${duration}`);
   console.error('─'.repeat(width));

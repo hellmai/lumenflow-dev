@@ -2,14 +2,14 @@
 # Copy this to your project root as .lumenflow.config.yaml
 
 # Organization and project identity
-company: "{ORG_NAME}"  # e.g., "HellmAI" or "Acme Corp"
-project: "{PROJECT_NAME}"  # e.g., "ExampleApp", "MyProduct"
+company: '{ORG_NAME}' # e.g., "HellmAI" or "Acme Corp"
+project: '{PROJECT_NAME}' # e.g., "ExampleApp", "MyProduct"
 
 # Framework source and versioning
 frameworks:
-  source: "git@github.com:hellmai/os.git"  # Framework repository
-  version: "v1.0"  # Version tag (e.g., "v1.0", "v1.1", "main")
-  local_path: "docs/04-operations/_frameworks"  # Where frameworks are copied
+  source: 'git@github.com:hellmai/os.git' # Framework repository
+  version: 'v1.0' # Version tag (e.g., "v1.0", "v1.1", "main")
+  local_path: 'docs/04-operations/_frameworks' # Where frameworks are copied
 
 # Company Operating System (COS) governance
 governance:
@@ -17,77 +17,77 @@ governance:
 
   # Rules files (evaluated in order, later rules can override)
   rules_files:
-    - "_frameworks/cos/rules/hellmai-core-rules.yaml"  # Company-wide rules
-    - "docs/04-operations/governance/project-rules.yaml"  # Project-specific rules
+    - '_frameworks/cos/rules/hellmai-core-rules.yaml' # Company-wide rules
+    - 'docs/04-operations/governance/project-rules.yaml' # Project-specific rules
 
   # Parameters (override defaults from hellmai-core-rules.yaml)
   parameters:
-    SPEND_THRESHOLD: 500  # £500/month (adjust per project budget)
-    OWNER_EMAIL: "owner@example.com"  # Project owner for approvals
+    SPEND_THRESHOLD: 500 # £500/month (adjust per project budget)
+    OWNER_EMAIL: 'owner@example.com' # Project owner for approvals
     # Historical WU ratification date (WUs before this exempt from strict validation)
     # Rationale: Preserves immutable history while enforcing modern standards on new work
     # WUs completed before this date are historical artifacts exempt from:
     # - Placeholder text checks, minimum description length, test_paths requirements
-    RATIFICATION_DATE: "2025-11-20"  # Adjust to your project's go-live date
+    RATIFICATION_DATE: '2025-11-20' # Adjust to your project's go-live date
 
   # Gates enforcement
   gates:
     # Run cos:narrative gate (TRUTH-01, UPAIN-01, FAIR-01) on these WU types
-    narrative: ["feature", "bugfix", "refactor"]
+    narrative: ['feature', 'bugfix', 'refactor']
     # Run cos:finance gate (CASH-03) on spend commitments
-    finance: ["feature", "infrastructure"]
+    finance: ['feature', 'infrastructure']
     # Skip gates for documentation-only WUs
-    skip_for_types: ["documentation", "chore"]
+    skip_for_types: ['documentation', 'chore']
 
 # Engineering lanes (WIP=1 per lane)
 lanes:
   engineering:
-    - name: "Discovery"
-      description: "Research, spikes, proof-of-concepts"
+    - name: 'Discovery'
+      description: 'Research, spikes, proof-of-concepts'
       wip_limit: 1
 
-    - name: "Intelligence"
-      description: "AI/LLM features, prompts, classifiers"
+    - name: 'Intelligence'
+      description: 'AI/LLM features, prompts, classifiers'
       wip_limit: 1
 
-    - name: "Main"
-      description: "Core product features and user experience"
+    - name: 'Main'
+      description: 'Core product features and user experience'
       wip_limit: 1
 
   operations:
-    - name: "Operations"
-      description: "Infrastructure, tooling, governance, frameworks"
+    - name: 'Operations'
+      description: 'Infrastructure, tooling, governance, frameworks'
       wip_limit: 1
 
 # LumenFlow workflow tools
 tools:
-  wu_claim: "pnpm wu:claim --id {WU_ID} --lane {LANE}"
-  wu_done: "pnpm wu:done --id {WU_ID}"
-  cos_gates: "node tools/cos-gates.mjs"
-  format: "pnpm format"
-  lint: "pnpm lint"
-  typecheck: "pnpm typecheck"
-  test: "pnpm test"
+  wu_claim: 'pnpm wu:claim --id {WU_ID} --lane {LANE}'
+  wu_done: 'pnpm wu:done --id {WU_ID}'
+  cos_gates: 'node tools/cos-gates.mjs'
+  format: 'pnpm format'
+  lint: 'pnpm lint'
+  typecheck: 'pnpm typecheck'
+  test: 'pnpm test'
 
 # Work unit schema version
-wu_schema_version: "2.0"  # Includes governance block
+wu_schema_version: '2.0' # Includes governance block
 
 # Directories
 directories:
-  wu_files: "docs/04-operations/tasks/wu"
-  backlog: "docs/04-operations/tasks/backlog.md"
-  status: "docs/04-operations/tasks/status.md"
-  stamps: ".beacon/stamps"
-  worktrees: "worktrees"
+  wu_files: 'docs/04-operations/tasks/wu'
+  backlog: 'docs/04-operations/tasks/backlog.md'
+  status: 'docs/04-operations/tasks/status.md'
+  stamps: '.beacon/stamps'
+  worktrees: 'worktrees'
 
 # Git workflow
 git:
-  main_branch: "main"
-  lane_branch_pattern: "lane/{lane}/{wu_id}"  # e.g., "lane/intelligence/wu-123"
-  worktree_pattern: "worktrees/{lane}-{wu_id}"  # e.g., "worktrees/intelligence-wu-123"
-  fast_forward_only: true  # Enforce linear history
+  main_branch: 'main'
+  lane_branch_pattern: 'lane/{lane}/{wu_id}' # e.g., "lane/intelligence/wu-123"
+  worktree_pattern: 'worktrees/{lane}-{wu_id}' # e.g., "worktrees/intelligence-wu-123"
+  fast_forward_only: true # Enforce linear history
 
 # Optional: Telemetry and metrics (for future governance.metrics)
 telemetry:
-  enabled: false  # Set true when ready to track metrics
-  endpoint: null  # Your metrics endpoint
+  enabled: false # Set true when ready to track metrics
+  endpoint: null # Your metrics endpoint

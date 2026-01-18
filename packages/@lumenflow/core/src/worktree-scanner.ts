@@ -130,7 +130,13 @@ export async function getWorktreeStatus(worktreePath, options: WorktreeScannerOp
   const runCmd = options.execAsync || execAsync;
 
   /** @type {WorktreeStatus} */
-  const status: { hasUncommittedChanges: boolean; uncommittedFileCount: number; uncommittedFiles: string[]; lastActivityTimestamp: string; error?: string } = {
+  const status: {
+    hasUncommittedChanges: boolean;
+    uncommittedFileCount: number;
+    uncommittedFiles: string[];
+    lastActivityTimestamp: string;
+    error?: string;
+  } = {
     hasUncommittedChanges: false,
     uncommittedFileCount: 0,
     uncommittedFiles: [],
@@ -156,7 +162,7 @@ export async function getWorktreeStatus(worktreePath, options: WorktreeScannerOp
 
     // Get last activity timestamp from git log
     const logResult = await runCmd(
-      `git -C "${worktreePath}" log -1 --format=%aI 2>/dev/null || echo ""`
+      `git -C "${worktreePath}" log -1 --format=%aI 2>/dev/null || echo ""`,
     );
     status.lastActivityTimestamp = logResult.stdout.trim();
   } catch (error) {
@@ -196,7 +202,7 @@ export async function scanWorktrees(basePath, options: WorktreeScannerOptions = 
     wuWorktrees.map(async (wt) => {
       const status = await getWorktreeStatus(wt.path, { execAsync: runCmd });
       return { ...wt, ...status };
-    })
+    }),
   );
 
   // Filter to those with uncommitted changes
@@ -208,7 +214,7 @@ export async function scanWorktrees(basePath, options: WorktreeScannerOptions = 
     withUncommittedChanges: worktreesWithUncommittedWork.length,
     totalUncommittedFiles: worktreesWithStatus.reduce(
       (sum, wt) => sum + wt.uncommittedFileCount,
-      0
+      0,
     ),
   };
 

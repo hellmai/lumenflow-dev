@@ -133,7 +133,9 @@ export const WU_PATHS = createWuPaths();
  * @param doc - WU document with lane and id fields
  * @returns Worktree path or null if inputs are invalid
  */
-export function defaultWorktreeFrom(doc: { lane?: string; id?: string } | null | undefined): string | null {
+export function defaultWorktreeFrom(
+  doc: { lane?: string; id?: string } | null | undefined,
+): string | null {
   if (!doc) return null;
   const lane = doc.lane;
   const id = doc.id;

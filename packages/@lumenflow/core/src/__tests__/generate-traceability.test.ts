@@ -185,9 +185,7 @@ describe('generate-traceability', () => {
         },
       ];
 
-      const goldenTests = [
-        { file: 'test.yaml', mentionsControls: ['C-001a'] },
-      ];
+      const goldenTests = [{ file: 'test.yaml', mentionsControls: ['C-001a'] }];
 
       const refs = buildCrossReferences(hazards, [], goldenTests);
 
@@ -254,8 +252,16 @@ describe('generate-traceability', () => {
   describe('generatePromptInventory', () => {
     it('should list all prompts with versions', () => {
       const prompts = [
-        { fileName: 'system-base.yaml', version: '1.32.0', relativePath: 'apps/web/src/lib/prompts/system-base.yaml' },
-        { fileName: 'red-flag-detection.yaml', version: '1.0.0', relativePath: 'apps/web/src/lib/prompts/red-flag-detection.yaml' },
+        {
+          fileName: 'system-base.yaml',
+          version: '1.32.0',
+          relativePath: 'apps/web/src/lib/prompts/system-base.yaml',
+        },
+        {
+          fileName: 'red-flag-detection.yaml',
+          version: '1.0.0',
+          relativePath: 'apps/web/src/lib/prompts/red-flag-detection.yaml',
+        },
       ];
 
       const markdown = generatePromptInventory(prompts);
@@ -305,8 +311,20 @@ describe('generate-traceability', () => {
 
     it('should summarise risk distribution', () => {
       const hazards = [
-        { id: 'HAZ-001', acceptability: 'Acceptable', riskScore: 2, residualRiskScore: 2, controls: [] },
-        { id: 'HAZ-002', acceptability: 'Medium', riskScore: 8, residualRiskScore: 6, controls: [] },
+        {
+          id: 'HAZ-001',
+          acceptability: 'Acceptable',
+          riskScore: 2,
+          residualRiskScore: 2,
+          controls: [],
+        },
+        {
+          id: 'HAZ-002',
+          acceptability: 'Medium',
+          riskScore: 8,
+          residualRiskScore: 6,
+          controls: [],
+        },
       ];
 
       const markdown = generateHazardMatrix(hazards);
@@ -332,7 +350,13 @@ describe('generate-traceability', () => {
     it('should list invalid references', () => {
       const refs = [
         { source: 'HAZ-001', target: 'C-001a', type: 'hazard_to_control', valid: true },
-        { source: 'C-001a', target: 'golden-tests', type: 'control_to_test', valid: false, error: 'No coverage' },
+        {
+          source: 'C-001a',
+          target: 'golden-tests',
+          type: 'control_to_test',
+          valid: false,
+          error: 'No coverage',
+        },
       ];
 
       const markdown = generateValidationReport(refs);
@@ -344,10 +368,7 @@ describe('generate-traceability', () => {
 
   describe('validateCrossReferences', () => {
     it('should return true when all references valid', () => {
-      const refs = [
-        { valid: true },
-        { valid: true },
-      ];
+      const refs = [{ valid: true }, { valid: true }];
 
       const result = validateCrossReferences(refs);
       expect(result.valid).toBe(true);
@@ -355,10 +376,7 @@ describe('generate-traceability', () => {
     });
 
     it('should return false when any reference invalid', () => {
-      const refs = [
-        { valid: true },
-        { valid: false, error: 'Missing coverage' },
-      ];
+      const refs = [{ valid: true }, { valid: false, error: 'Missing coverage' }];
 
       const result = validateCrossReferences(refs);
       expect(result.valid).toBe(false);

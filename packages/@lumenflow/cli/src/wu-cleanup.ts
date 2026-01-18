@@ -22,7 +22,13 @@ import path from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { BRANCHES, EXIT_CODES, FILE_SYSTEM, REMOTES, GIT_REFS } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  BRANCHES,
+  EXIT_CODES,
+  FILE_SYSTEM,
+  REMOTES,
+  GIT_REFS,
+} from '@lumenflow/core/dist/wu-constants.js';
 // WU-2278: Import ownership validation for cross-agent protection
 import { validateWorktreeOwnership } from '@lumenflow/core/dist/worktree-ownership.js';
 /* eslint-disable security/detect-non-literal-fs-filename */
@@ -42,7 +48,7 @@ async function verifyPRMerged(laneBranch) {
   try {
     ghResult = execSync(
       `gh api repos/:owner/:repo/pulls -q '.[] | select(.head.ref == "${laneBranch}") | .merged'`,
-      { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }
+      { encoding: FILE_SYSTEM.UTF8 as BufferEncoding },
     ).trim();
   } catch {
     ghResult = '';

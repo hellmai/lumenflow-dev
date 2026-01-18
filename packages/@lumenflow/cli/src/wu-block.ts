@@ -24,7 +24,11 @@ import { die } from '@lumenflow/core/dist/error-handler.js';
 import { generateBacklog } from '@lumenflow/core/dist/backlog-generator.js';
 import { todayISO } from '@lumenflow/core/dist/date-utils.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS, defaultWorktreeFrom, getStateStoreDirFromBacklog } from '@lumenflow/core/dist/wu-paths.js';
+import {
+  WU_PATHS,
+  defaultWorktreeFrom,
+  getStateStoreDirFromBacklog,
+} from '@lumenflow/core/dist/wu-paths.js';
 import { readWU, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
 import {
   BRANCHES,
@@ -97,7 +101,9 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   lines.splice(sectionStart, 0, '', bullet);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
-  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  });
 }
 
 // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager manipulation)
@@ -168,7 +174,7 @@ async function main() {
         `Options:\n` +
         `  1. Check if WU file exists: ls -la ${mainWUPath}\n` +
         `  2. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
-        `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`
+        `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`,
     );
   }
   const title = doc.title || '';
@@ -183,7 +189,7 @@ async function main() {
         `Options:\n` +
         `  1. Check WU current status: grep status ${mainWUPath}\n` +
         `  2. Only in_progress or waiting WUs can be blocked\n` +
-        `  3. If WU is done, it cannot be blocked`
+        `  3. If WU is done, it cannot be blocked`,
     );
   }
 

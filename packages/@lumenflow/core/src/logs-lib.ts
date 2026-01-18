@@ -271,7 +271,7 @@ export function formatLogEntry(log: LogEntry) {
     : '??:??:??';
 
   const msg = log.msg || log.message || log.event || 'unknown';
-  const source = log._source ? (dim + '[' + log._source + ']' + reset) : '';
+  const source = log._source ? dim + '[' + log._source + ']' + reset : '';
 
   // Build metadata string excluding known fields
   const knownFields = ['time', 'level', 'msg', 'message', 'event', '_source'];
@@ -281,7 +281,7 @@ export function formatLogEntry(log: LogEntry) {
       meta[key] = value;
     }
   }
-  const metaStr = Object.keys(meta).length > 0 ? (' ' + JSON.stringify(meta)) : '';
+  const metaStr = Object.keys(meta).length > 0 ? ' ' + JSON.stringify(meta) : '';
 
   const levelStr = level.toUpperCase().padEnd(5);
   return color + '[' + time + '] ' + levelStr + reset + ' ' + source + ' ' + msg + metaStr;

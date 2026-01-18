@@ -234,7 +234,7 @@ export async function acquireMergeLock(wuId, options: AcquireMergeLockOptions = 
     // Lock is stale - clean it up and acquire
     if (isLockStale(existingLock)) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale lock from ${existingLock.wuId}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale lock from ${existingLock.wuId}`,
       );
       deleteLockFile({ baseDir });
       continue; // Retry acquisition
@@ -249,7 +249,7 @@ export async function acquireMergeLock(wuId, options: AcquireMergeLockOptions = 
     const elapsed = Date.now() - startTime;
     if (elapsed >= waitMs) {
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge lock held by ${existingLock.wuId} since ${existingLock.createdAt}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge lock held by ${existingLock.wuId} since ${existingLock.createdAt}`,
       );
 
       return {
@@ -282,9 +282,7 @@ export function releaseMergeLock(lockId, options: MergeLockBaseDirOptions = {}) 
   }
 
   if (existingLock.lockId !== lockId) {
-    console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot release lock - lockId mismatch`
-    );
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cannot release lock - lockId mismatch`);
     return false;
   }
 
@@ -307,14 +305,18 @@ export function releaseMergeLock(lockId, options: MergeLockBaseDirOptions = {}) 
  * @returns {Promise<T>} Result of function execution
  * @throws {Error} If lock cannot be acquired or function throws
  */
-export async function withMergeLock<T>(wuId: string, fn: () => Promise<T>, options: AcquireMergeLockOptions = {}): Promise<T> {
+export async function withMergeLock<T>(
+  wuId: string,
+  fn: () => Promise<T>,
+  options: AcquireMergeLockOptions = {},
+): Promise<T> {
   const result = await acquireMergeLock(wuId, options);
 
   if (!result.acquired) {
     throw createError(
       ErrorCodes.LOCK_ERROR,
       `Cannot acquire merge lock - held by ${result.heldBy} since ${result.heldSince}`,
-      { wuId, heldBy: result.heldBy, heldSince: result.heldSince }
+      { wuId, heldBy: result.heldBy, heldSince: result.heldSince },
     );
   }
 

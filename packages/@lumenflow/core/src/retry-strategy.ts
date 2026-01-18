@@ -72,9 +72,7 @@ export const RETRY_PRESETS = Object.freeze({
     shouldRetry: (error) => {
       // Retry fast-forward failures and network errors using defined patterns
       const message = error.message || '';
-      return Object.values(RETRYABLE_ERROR_PATTERNS).some((pattern) =>
-        message.includes(pattern)
-      );
+      return Object.values(RETRYABLE_ERROR_PATTERNS).some((pattern) => message.includes(pattern));
     },
     onRetry: null,
   }),
@@ -154,7 +152,7 @@ export function createRetryConfig(presetOrOptions, options) {
   // callers often pass option keys conditionally, and spreading `undefined`
   // clobbers required defaults (e.g., maxAttempts) leading to zero-attempt retries.
   const definedOptions = Object.fromEntries(
-    Object.entries(customOptions).filter(([, value]) => value !== undefined)
+    Object.entries(customOptions).filter(([, value]) => value !== undefined),
   );
   return {
     ...baseConfig,
@@ -249,7 +247,7 @@ export async function withRetry(fn, config = DEFAULT_RETRY_CONFIG) {
 
       // Log retry info
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempt ${attempt}/${maxAttempts} failed: ${error.message}`
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempt ${attempt}/${maxAttempts} failed: ${error.message}`,
       );
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Retrying in ${delay}ms...`);
 
@@ -265,7 +263,7 @@ export async function withRetry(fn, config = DEFAULT_RETRY_CONFIG) {
   }
   throw new Error(
     `Operation failed after ${attempt} attempt(s): ${lastError.message}\n` +
-      `Original error: ${lastError.stack || lastError.message}`
+      `Original error: ${lastError.stack || lastError.message}`,
   );
 }
 

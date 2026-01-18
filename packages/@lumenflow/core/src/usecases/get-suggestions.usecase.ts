@@ -89,7 +89,7 @@ export class GetSuggestionsUseCase {
     const pathSuggestions = this.generateMandatoryAgentSuggestions(
       mandatoryAgents,
       progressSuggestions,
-      wuProgress.length > 0 ? wuProgress[0].wuId : 'current'
+      wuProgress.length > 0 ? wuProgress[0].wuId : 'current',
     );
 
     // Combine and deduplicate suggestions
@@ -108,7 +108,7 @@ export class GetSuggestionsUseCase {
    */
   private enrichWithImpactScores(
     suggestions: Suggestion[],
-    bottleneckScores: BottleneckScores
+    bottleneckScores: BottleneckScores,
   ): Suggestion[] {
     if (Object.keys(bottleneckScores).length === 0) {
       return suggestions;
@@ -157,7 +157,7 @@ export class GetSuggestionsUseCase {
    */
   private sortSuggestions(
     suggestions: Suggestion[],
-    bottleneckScores: BottleneckScores
+    bottleneckScores: BottleneckScores,
   ): Suggestion[] {
     const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
 
@@ -192,7 +192,7 @@ export class GetSuggestionsUseCase {
   private generateMandatoryAgentSuggestions(
     mandatoryAgents: MandatoryAgentName[],
     existingSuggestions: Suggestion[],
-    wuId: string
+    wuId: string,
   ): Suggestion[] {
     const suggestions: Suggestion[] = [];
     let nextId = existingSuggestions.length + 1;
@@ -200,7 +200,7 @@ export class GetSuggestionsUseCase {
     for (const agentName of mandatoryAgents) {
       // Check if suggestion already exists for this agent
       const alreadyExists = existingSuggestions.some((s) =>
-        s.action.toLowerCase().includes(agentName)
+        s.action.toLowerCase().includes(agentName),
       );
 
       if (!alreadyExists) {

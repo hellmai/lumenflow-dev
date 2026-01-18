@@ -98,14 +98,12 @@ const NEWLINE_PATTERN = /\\n|\n/;
  * // Input: ["tools/a.mjs\ntools/b.js"]
  * // Output: ["tools/a.js", "tools/b.js"]
  */
-const normalizedStringArray = z
-  .array(z.string())
-  .transform((arr) =>
-    arr
-      .flatMap((s) => s.split(NEWLINE_PATTERN))
-      .map((s) => s.trim())
-      .filter(Boolean)
-  );
+const normalizedStringArray = z.array(z.string()).transform((arr) =>
+  arr
+    .flatMap((s) => s.split(NEWLINE_PATTERN))
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
 
 /**
  * Transform: Normalize description/notes strings by converting escaped newlines
@@ -117,26 +115,23 @@ const normalizedStringArray = z
  * // Input: "Problem:\\n\\n1. First issue"
  * // Output: "Problem:\n\n1. First issue"
  */
-const normalizedMultilineString = z
-  .string()
-  .transform((s) => s.replace(/\\n/g, '\n'));
+const normalizedMultilineString = z.string().transform((s) => s.replace(/\\n/g, '\n'));
 
 /**
  * Refinement: File path cannot contain newlines (post-normalization safety check)
  *
  * WU-1750: After normalization, paths should be clean. This catches any edge cases.
  */
-const filePathItem = z.string().refine(
-  (s) => !s.includes('\n') && !s.includes('\\n'),
-  { message: 'File path cannot contain newlines - split into separate array items' }
-);
+const filePathItem = z
+  .string()
+  .refine((s) => !s.includes('\n') && !s.includes('\\n'), {
+    message: 'File path cannot contain newlines - split into separate array items',
+  });
 
 /**
  * Normalized code_paths: split embedded newlines + validate each path
  */
-const normalizedCodePaths = normalizedStringArray
-  .pipe(z.array(filePathItem))
-  .default([]);
+const normalizedCodePaths = normalizedStringArray.pipe(z.array(filePathItem)).default([]);
 
 /**
  * Normalized test paths object: all test arrays normalized
@@ -274,7 +269,16 @@ const sharedFields = {
     .enum(['feature', 'bug', 'documentation', 'process', 'tooling', 'chore', 'refactor'] as const, {
       error: 'Invalid type',
     })
-    .default(WU_DEFAULTS.type as 'feature' | 'bug' | 'documentation' | 'process' | 'tooling' | 'chore' | 'refactor'),
+    .default(
+      WU_DEFAULTS.type as
+        | 'feature'
+        | 'bug'
+        | 'documentation'
+        | 'process'
+        | 'tooling'
+        | 'chore'
+        | 'refactor',
+    ),
 
   /** Current status in workflow */
   status: z
@@ -353,7 +357,7 @@ const sharedFields = {
             file: z.string().optional(),
             section: z.string(),
           }),
-        ])
+        ]),
       ),
     ])
     .optional(),
@@ -428,7 +432,7 @@ const sharedFields = {
         incidents_logged: z.number().int().min(0).default(0),
         incidents_major: z.number().int().min(0).default(0),
         artifacts: z.array(z.string()).optional(),
-      })
+      }),
     )
     .optional(),
 
@@ -747,7 +751,7 @@ export function validateApprovalGates(wu) {
       errors.push(
         `Human escalation required for: ${triggers.join(', ')}\n` +
           `   To resolve: Add escalation_resolved_by: "${ESCALATION_EMAIL}" and escalation_resolved_at to WU YAML\n` +
-          `   Or use: pnpm wu:escalate --resolve --id ${wu.id}`
+          `   Or use: pnpm wu:escalate --resolve --id ${wu.id}`,
       );
     }
   }
@@ -755,7 +759,7 @@ export function validateApprovalGates(wu) {
   // Legacy backwards compatibility: map old fields to new model
   if (wu.requires_cso_approval || wu.requires_cto_approval || wu.requires_design_approval) {
     warnings.push(
-      'Using deprecated requires_X_approval fields. Migrate to escalation_triggers model.'
+      'Using deprecated requires_X_approval fields. Migrate to escalation_triggers model.',
     );
   }
 
@@ -790,7 +794,9 @@ export function detectEscalationTriggers(wu) {
     'hipaa',
     'supabase/migrations',
   ];
-  const touchesPhi = codePaths.some((p) => phiPatterns.some((pat) => p.toLowerCase().includes(pat)));
+  const touchesPhi = codePaths.some((p) =>
+    phiPatterns.some((pat) => p.toLowerCase().includes(pat)),
+  );
   if (touchesPhi || lane.includes('phi') || lane.includes('pii')) {
     triggers.push('phi_pii');
   }
@@ -803,7 +809,7 @@ export function detectEscalationTriggers(wu) {
   // External compliance: Regulatory submissions
   const compliancePatterns = ['fda', 'mhra', 'ce-mark', 'regulatory', 'submission'];
   const touchesCompliance = codePaths.some((p) =>
-    compliancePatterns.some((pat) => p.toLowerCase().includes(pat))
+    compliancePatterns.some((pat) => p.toLowerCase().includes(pat)),
   );
   if (touchesCompliance || lane.includes('compliance')) {
     triggers.push('external_compliance');
@@ -880,9 +886,7 @@ export function validateAndNormalizeWUYAML(data) {
 
   if (!result.success) {
     // Schema validation failed - return errors
-    const errors = result.error.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`
-    );
+    const errors = result.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
     return {
       valid: false,
       normalized: null,
@@ -941,7 +945,7 @@ export function validateWUCompleteness(wu) {
   // Check for notes (implementation context)
   if (!wu.notes || wu.notes.trim().length === 0) {
     warnings.push(
-      `${wu.id}: Missing 'notes' field. Add implementation context, deployment instructions, or plan links.`
+      `${wu.id}: Missing 'notes' field. Add implementation context, deployment instructions, or plan links.`,
     );
   }
 
@@ -949,7 +953,7 @@ export function validateWUCompleteness(wu) {
   const hasManualTests = wu.tests?.manual && wu.tests.manual.length > 0;
   if (!hasManualTests) {
     warnings.push(
-      `${wu.id}: Missing 'tests.manual' field. Add manual verification steps for acceptance criteria.`
+      `${wu.id}: Missing 'tests.manual' field. Add manual verification steps for acceptance criteria.`,
     );
   }
 
@@ -958,7 +962,7 @@ export function validateWUCompleteness(wu) {
     const hasSpecRefs = wu.spec_refs && wu.spec_refs.length > 0;
     if (!hasSpecRefs) {
       warnings.push(
-        `${wu.id}: Missing 'spec_refs' field. Link to plan file in docs/04-operations/plans/ for traceability.`
+        `${wu.id}: Missing 'spec_refs' field. Link to plan file in docs/04-operations/plans/ for traceability.`,
       );
     }
   }

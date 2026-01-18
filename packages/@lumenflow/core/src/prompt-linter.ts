@@ -232,16 +232,16 @@ async function lintPromptFile(filePath, previousMetrics, mode, config, output) {
       'error',
       'prompt.lint.blocked',
       {
-      file: filePath,
-      tokenCount,
-      delta,
-      hash,
-      cap,
-      mode,
-      message: `Exceeds ${cap} token cap or delta >${config.delta_budgets.block}`,
-      longestLines: longestLines.map((l) => `Line ${l.number}: ${l.length} chars`),
+        file: filePath,
+        tokenCount,
+        delta,
+        hash,
+        cap,
+        mode,
+        message: `Exceeds ${cap} token cap or delta >${config.delta_budgets.block}`,
+        longestLines: longestLines.map((l) => `Line ${l.number}: ${l.length} chars`),
       },
-      output
+      output,
     );
     return { passed: false, tokenCount, delta, hash };
   }
@@ -255,16 +255,16 @@ async function lintPromptFile(filePath, previousMetrics, mode, config, output) {
       'warn',
       'prompt.lint.warning',
       {
-      file: filePath,
-      tokenCount,
-      delta,
-      hash,
-      threshold: config.token_budgets.default.warn_threshold,
-      mode,
-      message: 'Approaching token budget cap',
-      longestLines: longestLines.map((l) => `Line ${l.number}: ${l.length} chars`),
+        file: filePath,
+        tokenCount,
+        delta,
+        hash,
+        threshold: config.token_budgets.default.warn_threshold,
+        mode,
+        message: 'Approaching token budget cap',
+        longestLines: longestLines.map((l) => `Line ${l.number}: ${l.length} chars`),
       },
-      output
+      output,
     );
   }
 
@@ -280,7 +280,7 @@ async function lintPromptFile(filePath, previousMetrics, mode, config, output) {
       mode,
       longestLines: longestLines.map((l) => `Line ${l.number}: ${l.length} chars`),
     },
-    output
+    output,
   );
 
   return { passed: true, tokenCount, delta, hash };
@@ -308,7 +308,7 @@ export async function lintPrompts(
   filePaths = [],
   mode = 'local',
   configPath = undefined,
-  options: LintPromptsOptions = {}
+  options: LintPromptsOptions = {},
 ) {
   // Load configuration
   const config = loadConfig(configPath);
@@ -370,18 +370,18 @@ async function main() {
   const total = results.length;
   const blocked = results.filter((r) => !r.passed).length;
   const warned = results.filter(
-    (r) => r.passed && r.tokenCount >= config.token_budgets.default.warn_threshold
+    (r) => r.passed && r.tokenCount >= config.token_budgets.default.warn_threshold,
   ).length;
 
   console.error(`\n📋 Summary: ${total} prompts analyzed`);
   if (blocked > 0) {
     console.error(
-      `   ❌ ${blocked} BLOCKED (>${config.token_budgets.default.hard_cap} tokens or delta >${config.delta_budgets.block})`
+      `   ❌ ${blocked} BLOCKED (>${config.token_budgets.default.hard_cap} tokens or delta >${config.delta_budgets.block})`,
     );
   }
   if (warned > 0) {
     console.error(
-      `   ⚠️  ${warned} WARNING (≥${config.token_budgets.default.warn_threshold} tokens or delta >${config.delta_budgets.warn})`
+      `   ⚠️  ${warned} WARNING (≥${config.token_budgets.default.warn_threshold} tokens or delta >${config.delta_budgets.warn})`,
     );
   }
   if (blocked === 0 && warned === 0) {

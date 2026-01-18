@@ -14,10 +14,7 @@ import path from 'node:path';
 import os from 'node:os';
 
 // Imports will fail until implementation exists (TDD RED phase)
-import {
-  SpawnRegistryStore,
-  SPAWN_REGISTRY_FILE_NAME,
-} from '../spawn-registry-store.js';
+import { SpawnRegistryStore, SPAWN_REGISTRY_FILE_NAME } from '../spawn-registry-store.js';
 import {
   SpawnEventSchema,
   SpawnStatus,
@@ -303,7 +300,9 @@ describe('spawn-registry-store', () => {
     it('should throw on unknown spawn ID', async () => {
       await store.load();
 
-      await expect(async () => store.updateStatus('spawn-unknown', 'completed')).rejects.toThrow(/not found/i);
+      await expect(async () => store.updateStatus('spawn-unknown', 'completed')).rejects.toThrow(
+        /not found/i,
+      );
     });
 
     it('should append updated event to file', async () => {
@@ -337,8 +336,14 @@ describe('spawn-registry-store', () => {
       const spawns = store.getByParent('WU-1000');
 
       expect(spawns.length).toBe(2, 'Should have 2 spawns for WU-1000');
-      assert.ok(spawns.some((s) => s.id === 'spawn-1111'), 'Should include spawn-1111');
-      assert.ok(spawns.some((s) => s.id === 'spawn-2222'), 'Should include spawn-2222');
+      assert.ok(
+        spawns.some((s) => s.id === 'spawn-1111'),
+        'Should include spawn-1111',
+      );
+      assert.ok(
+        spawns.some((s) => s.id === 'spawn-2222'),
+        'Should include spawn-2222',
+      );
     });
 
     it('should return empty array for unknown parent', async () => {
@@ -400,7 +405,10 @@ describe('spawn-registry-store', () => {
       const pending = store.getPending();
 
       expect(pending.length).toBe(2, 'Should have 2 pending spawns');
-      assert.ok(pending.every((s) => s.status === 'pending'), 'All should be pending');
+      assert.ok(
+        pending.every((s) => s.status === 'pending'),
+        'All should be pending',
+      );
     });
 
     it('should return empty array when no pending spawns', async () => {

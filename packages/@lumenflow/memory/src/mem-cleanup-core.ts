@@ -258,7 +258,10 @@ function getLifecyclePolicy(lifecycle: string): LifecyclePolicyEntry | undefined
  * @param {CleanupOptions} options - Cleanup options
  * @returns {{remove: boolean, reason: string}} Removal decision with reason
  */
-export function shouldRemoveNode(node: MemoryNode, options: CleanupOptions = {}): { remove: boolean; reason: string } {
+export function shouldRemoveNode(
+  node: MemoryNode,
+  options: CleanupOptions = {},
+): { remove: boolean; reason: string } {
   const { sessionId, ttlMs, now = Date.now() } = options;
 
   // WU-1554: Active sessions are always protected first
@@ -416,7 +419,10 @@ async function writeRetainedNodes(memoryDir: string, retainedNodes: MemoryNode[]
  * const result = await cleanupMemory(baseDir, { ttl: '30d' });
  * console.log(`Removed ${result.breakdown.ttlExpired} expired nodes`);
  */
-export async function cleanupMemory(baseDir: string, options: CleanupOptions = {}): Promise<CleanupResult> {
+export async function cleanupMemory(
+  baseDir: string,
+  options: CleanupOptions = {},
+): Promise<CleanupResult> {
   const { dryRun = false, sessionId, ttl, ttlMs: providedTtlMs, now = Date.now() } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 

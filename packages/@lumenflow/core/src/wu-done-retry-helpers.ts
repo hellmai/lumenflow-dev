@@ -72,7 +72,7 @@ export async function countPreviousCompletionAttempts(wuId, gitAdapter) {
     return trailingCount;
   } catch (error) {
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not count previous attempts: ${error.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not count previous attempts: ${error.message}`,
     );
     return 0;
   }
@@ -97,7 +97,12 @@ export interface SquashCompletionAttemptsOptions {
   preserveIndex?: boolean;
 }
 
-export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, options: SquashCompletionAttemptsOptions = {}) {
+export async function squashPreviousCompletionAttempts(
+  wuId,
+  count,
+  gitAdapter,
+  options: SquashCompletionAttemptsOptions = {},
+) {
   const { preserveIndex = true } = options;
 
   if (count === 0) {
@@ -105,10 +110,10 @@ export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, 
   }
 
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Detected ${count} previous completion attempt commit(s)`
+    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Detected ${count} previous completion attempt commit(s)`,
   );
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Squashing previous attempts to avoid duplicate commits...`
+    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Squashing previous attempts to avoid duplicate commits...`,
   );
 
   try {
@@ -127,7 +132,7 @@ export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, 
             `  ${GIT_COMMANDS.GIT} status${STRING_LITERALS.NEWLINE}` +
             `  ${GIT_COMMANDS.GIT} restore -SW .${STRING_LITERALS.NEWLINE}` +
             `Then retry wu:done.${STRING_LITERALS.NEWLINE}`,
-          { wuId, count, preserveIndex, status }
+          { wuId, count, preserveIndex, status },
         );
       }
     }
@@ -137,13 +142,13 @@ export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, 
     await gitAdapter.raw([GIT_COMMANDS.RESET, resetMode, headBackRef]);
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${count} previous attempt(s) - will create single completion commit`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${count} previous attempt(s) - will create single completion commit`,
     );
 
     return { squashed: true, count };
   } catch (error) {
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${error.message}`
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${error.message}`,
     );
     return { squashed: false, count: 0 };
   }
@@ -163,14 +168,14 @@ export async function squashPreviousCompletionAttempts(wuId, count, gitAdapter, 
  */
 export async function prepareRecoveryWithSquash(wuId, gitAdapter) {
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Checking for previous completion attempts before recovery...`
+    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Checking for previous completion attempts before recovery...`,
   );
 
   const previousCount = await countPreviousCompletionAttempts(wuId, gitAdapter);
 
   if (previousCount > 0) {
     console.log(
-      `${LOG_PREFIX.DONE} Squashing ${previousCount} previous completion attempt(s) for clean recovery`
+      `${LOG_PREFIX.DONE} Squashing ${previousCount} previous completion attempt(s) for clean recovery`,
     );
 
     // Recovery: do not preserve index; reset to a clean state before continuing.
@@ -205,7 +210,12 @@ export interface HandleParallelCompletionsOptions {
   autoRebase?: boolean;
 }
 
-export async function handleParallelCompletions(wuId, doc, gitAdapter, options: HandleParallelCompletionsOptions = {}) {
+export async function handleParallelCompletions(
+  wuId,
+  doc,
+  gitAdapter,
+  options: HandleParallelCompletionsOptions = {},
+) {
   const { worktreePath, autoRebase = true } = options;
 
   // Fetch latest from origin
@@ -240,7 +250,7 @@ export async function handleParallelCompletions(wuId, doc, gitAdapter, options: 
 
   // Parallel completions detected
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Parallel completion(s) detected on main since WU claim`
+    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Parallel completion(s) detected on main since WU claim`,
   );
 
   if (!autoRebase) {
@@ -251,13 +261,13 @@ export async function handleParallelCompletions(wuId, doc, gitAdapter, options: 
         `Fix: Run 'git fetch origin && git rebase origin/main' in your worktree,\n` +
         `then retry wu:done.\n\n` +
         `Or use --no-auto-rebase to disable this check (not recommended).`,
-      { wuId, baselineSha, currentMainSha }
+      { wuId, baselineSha, currentMainSha },
     );
   }
 
   // Trigger auto-rebase
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Triggering auto-rebase to incorporate parallel completions...`
+    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Triggering auto-rebase to incorporate parallel completions...`,
   );
 
   try {
@@ -265,7 +275,7 @@ export async function handleParallelCompletions(wuId, doc, gitAdapter, options: 
     await gitAdapter.rebase('origin/main');
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-rebase complete - parallel completions incorporated`
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-rebase complete - parallel completions incorporated`,
     );
 
     return { parallelDetected: true, rebaseTriggered: true };
@@ -278,7 +288,7 @@ export async function handleParallelCompletions(wuId, doc, gitAdapter, options: 
         `2. git fetch origin && git rebase origin/main\n` +
         `3. Resolve conflicts if any\n` +
         `4. Retry wu:done`,
-      { wuId, originalError: error.message }
+      { wuId, originalError: error.message },
     );
   }
 }

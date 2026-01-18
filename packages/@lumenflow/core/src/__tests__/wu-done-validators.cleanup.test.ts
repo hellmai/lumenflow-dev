@@ -65,7 +65,7 @@ describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
         noRemove: false,
         createPR: false,
         worktree: tempWorktreeDir,
-      }
+      },
     );
 
     const commands = exec.mock.calls.map(([cmd]) => cmd);
@@ -73,8 +73,8 @@ describe('WU-1760: runCleanup symlink repair is non-mutating', () => {
       commands.some(
         (cmd) =>
           cmd.includes(`${PKG_MANAGER} ${PKG_COMMANDS.INSTALL}`) &&
-          cmd.includes(PKG_FLAGS.FROZEN_LOCKFILE)
-      )
+          cmd.includes(PKG_FLAGS.FROZEN_LOCKFILE),
+      ),
     ).toBe(true);
   });
 });

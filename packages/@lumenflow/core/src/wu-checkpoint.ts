@@ -163,7 +163,10 @@ export interface CreatePreGatesCheckpointOptions extends CheckpointBaseDirOption
  * @param {CreatePreGatesCheckpointOptions} [options]
  * @returns {Promise<Checkpoint>} Created checkpoint
  */
-export async function createPreGatesCheckpoint(params, options: CreatePreGatesCheckpointOptions = {}) {
+export async function createPreGatesCheckpoint(
+  params,
+  options: CreatePreGatesCheckpointOptions = {},
+) {
   const { wuId, worktreePath, branchName, gatesPassed = false } = params;
   const { baseDir } = options;
 
@@ -316,7 +319,7 @@ export function canSkipGates(wuId, options: CanSkipGatesOptions = {}) {
 
   // All checks passed - gates can be skipped
   console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates can be skipped - checkpoint valid (${checkpoint.checkpointId})`
+    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates can be skipped - checkpoint valid (${checkpoint.checkpointId})`,
   );
 
   return { canSkip: true, checkpoint };

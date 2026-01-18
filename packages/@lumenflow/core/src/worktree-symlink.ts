@@ -214,7 +214,7 @@ function checkMainNodeModulesHealth(mainRepoPath, logger) {
   if (logger.warn) {
     logger.warn(`${LOG_PREFIX.CLAIM} Refusing to symlink node_modules: ${reason}`);
     logger.warn(
-      `${LOG_PREFIX.CLAIM} Run 'pnpm install' in the worktree instead, or heal main with 'pnpm install --force'`
+      `${LOG_PREFIX.CLAIM} Run 'pnpm install' in the worktree instead, or heal main with 'pnpm install --force'`,
     );
   }
 
@@ -262,7 +262,7 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
 
     if (logger.info) {
       logger.info(
-        `${LOG_PREFIX.CLAIM} node_modules symlink created -> ${RELATIVE_NODE_MODULES_PATH}`
+        `${LOG_PREFIX.CLAIM} node_modules symlink created -> ${RELATIVE_NODE_MODULES_PATH}`,
       );
     }
 
@@ -326,7 +326,7 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
   const contents = fs.readdirSync(targetNodeModules);
   const hasMeaningfulContent = contents.some(
-    (item) => !item.startsWith('.') && item !== '.vite' && item !== '.turbo'
+    (item) => !item.startsWith('.') && item !== '.vite' && item !== '.turbo',
   );
 
   if (hasMeaningfulContent) {
@@ -341,7 +341,7 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
     errors.push(rmError);
     if (logger?.warn) {
       logger.warn(
-        `${LOG_PREFIX.CLAIM} Failed to remove stale ${pkgPath}/node_modules: ${rmError.message}`
+        `${LOG_PREFIX.CLAIM} Failed to remove stale ${pkgPath}/node_modules: ${rmError.message}`,
       );
     }
     return 'skip';
@@ -401,7 +401,7 @@ export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = nu
       errors.push(error);
       if (logger?.warn) {
         logger.warn(
-          `${LOG_PREFIX.CLAIM} Failed to create ${pkgPath}/node_modules symlink: ${error.message}`
+          `${LOG_PREFIX.CLAIM} Failed to create ${pkgPath}/node_modules symlink: ${error.message}`,
         );
       }
     }

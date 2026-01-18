@@ -26,11 +26,7 @@ import {
   SIGNAL_HANDLER_LOG_PREFIX,
 } from '../spawn-monitor.js';
 
-import {
-  SPAWN_FAILURE_SIGNAL_TYPE,
-  SignalSeverity,
-  SuggestedAction,
-} from '../spawn-escalation.js';
+import { SPAWN_FAILURE_SIGNAL_TYPE, SignalSeverity, SuggestedAction } from '../spawn-escalation.js';
 
 /**
  * Creates a spawn_failure signal in the signals file
@@ -131,7 +127,10 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
 
   describe('processSpawnFailureSignals()', () => {
     it('should be a function', () => {
-      assert.ok(typeof processSpawnFailureSignals === 'function', 'Should export processSpawnFailureSignals');
+      assert.ok(
+        typeof processSpawnFailureSignals === 'function',
+        'Should export processSpawnFailureSignals',
+      );
     });
 
     it('should return empty result when no signals exist', async () => {
@@ -201,7 +200,10 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       expect(result.processed.length).toBe(1, 'Should process one signal');
       const response = result.processed[0];
       expect(response.action).toBe(SignalResponseAction.RETRY, 'Should suggest retry');
-      assert.ok(response.reason.includes('retry') || response.reason.includes('first'), 'Reason should mention retry');
+      assert.ok(
+        response.reason.includes('retry') || response.reason.includes('first'),
+        'Reason should mention retry',
+      );
     });
 
     it('should not modify WU status for first failure (just log warning)', async () => {
@@ -258,7 +260,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       assert.ok(response.blockReason, 'Should have block reason');
       assert.ok(
         response.blockReason.includes('WU-5555') || response.blockReason.includes('spawn'),
-        'Block reason should reference the failure'
+        'Block reason should reference the failure',
       );
     });
 
@@ -320,7 +322,9 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
       const response = result.processed[0];
       assert.ok(response.bugWuSpec, 'Should have Bug WU spec');
       assert.ok(response.bugWuSpec.title, 'Bug WU spec should have title');
-      expect(response.bugWuSpec.title.includes('spawn') || response.bugWuSpec.title.includes('WU-9999')).toBeTruthy();
+      expect(
+        response.bugWuSpec.title.includes('spawn') || response.bugWuSpec.title.includes('WU-9999'),
+      ).toBeTruthy();
       assert.ok(response.bugWuSpec.description, 'Bug WU spec should have description');
       assert.ok(response.bugWuSpec.lane, 'Bug WU spec should have lane');
     });
@@ -344,7 +348,7 @@ describe('spawn-monitor signal handler (WU-1968)', () => {
         response.bugWuSpec.description.includes('5') ||
           response.bugWuSpec.description.includes('attempt') ||
           response.bugWuSpec.description.includes('checkpoint'),
-        'Description should reference recovery attempts or failure context'
+        'Description should reference recovery attempts or failure context',
       );
     });
   });

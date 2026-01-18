@@ -142,18 +142,15 @@ webhooks.on('pull_request.closed', async ({ payload }) => {
 // =============================================================================
 // Vercel Handler
 // =============================================================================
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-): Promise<void> {
+export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
-  const signature = req.headers['x-hub-signature-256'] as string || '';
-  const id = req.headers['x-github-delivery'] as string || '';
-  const event = req.headers['x-github-event'] as string || '';
+  const signature = (req.headers['x-hub-signature-256'] as string) || '';
+  const id = (req.headers['x-github-delivery'] as string) || '';
+  const event = (req.headers['x-github-event'] as string) || '';
 
   try {
     await webhooks.verifyAndReceive({

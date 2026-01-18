@@ -46,7 +46,11 @@ import {
   INIT_LOG_PREFIX,
   INIT_COMMIT_FORMATS,
 } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { EXIT_CODES, FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  EXIT_CODES,
+  FILE_SYSTEM,
+  MICRO_WORKTREE_OPERATIONS,
+} from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 
@@ -171,7 +175,7 @@ function parseArgs() {
       'Missing required option: --id <initId>\n\n' +
         'Usage:\n' +
         '  pnpm initiative:edit --id INIT-001 --status in_progress\n' +
-        '  pnpm initiative:edit INIT-001 --status in_progress'
+        '  pnpm initiative:edit INIT-001 --status in_progress',
     );
   }
 
@@ -185,7 +189,7 @@ function validateInitIdFormat(id) {
   if (!INIT_PATTERNS.INIT_ID.test(id)) {
     die(
       `Invalid Initiative ID format: "${id}"\n\n` +
-        `Expected format: INIT-<number> (e.g., INIT-001) or INIT-<NAME> (e.g., INIT-SAFETY)`
+        `Expected format: INIT-<number> (e.g., INIT-001) or INIT-<NAME> (e.g., INIT-SAFETY)`,
     );
   }
 }
@@ -205,7 +209,8 @@ function validateStatus(status) {
 function validatePhaseStatus(status) {
   if (!PHASE_STATUSES.includes(status)) {
     die(
-      `Invalid phase status: "${status}"\n\n` + `Valid phase statuses: ${PHASE_STATUSES.join(', ')}`
+      `Invalid phase status: "${status}"\n\n` +
+        `Valid phase statuses: ${PHASE_STATUSES.join(', ')}`,
     );
   }
 }
@@ -224,7 +229,7 @@ function validatePhaseExists(initiative, phaseId) {
   if (!phase) {
     const existingIds = phases.map((p) => p.id).join(', ') || 'none';
     die(
-      `Phase ${phaseId} not found in ${initiative.id}.\n\n` + `Existing phase IDs: ${existingIds}`
+      `Phase ${phaseId} not found in ${initiative.id}.\n\n` + `Existing phase IDs: ${existingIds}`,
     );
   }
   return numericId;
@@ -253,7 +258,7 @@ function loadInitiative(id) {
   if (!existsSync(initPath)) {
     die(
       `Initiative ${id} not found at ${initPath}\n\n` +
-        `Ensure the Initiative exists and you're in the repo root.`
+        `Ensure the Initiative exists and you're in the repo root.`,
     );
   }
 
@@ -271,7 +276,7 @@ async function ensureCleanWorkingTree() {
     die(
       `Working tree is not clean. Cannot edit Initiative.\n\n` +
         `Uncommitted changes:\n${status}\n\n` +
-        `Commit or stash changes before editing:\n  git add . && git commit -m "..."\n`
+        `Commit or stash changes before editing:\n  git add . && git commit -m "..."\n`,
     );
   }
 }
@@ -284,13 +289,13 @@ function applyBlockingEdits(updated, opts) {
     if (!opts.blockedReason) {
       die(
         `--blocked-reason is required when using --blocked-by.\n\n` +
-          `Usage: pnpm initiative:edit --id ${updated.id} --blocked-by ${opts.blockedBy} --blocked-reason "Reason text"`
+          `Usage: pnpm initiative:edit --id ${updated.id} --blocked-by ${opts.blockedBy} --blocked-reason "Reason text"`,
       );
     }
     if (!INIT_PATTERNS.INIT_ID.test(opts.blockedBy)) {
       die(
         `Invalid blocked-by Initiative ID format: "${opts.blockedBy}"\n\n` +
-          `Expected format: INIT-<number> (e.g., INIT-001)`
+          `Expected format: INIT-<number> (e.g., INIT-001)`,
       );
     }
     updated.blocked_by = opts.blockedBy;
@@ -422,13 +427,13 @@ async function main() {
   if (opts.phaseId && !opts.phaseStatus) {
     die(
       `--phase-status is required when using --phase-id.\n\n` +
-        `Usage: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-status done`
+        `Usage: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-status done`,
     );
   }
   if (opts.phaseStatus && !opts.phaseId) {
     die(
       `--phase-id is required when using --phase-status.\n\n` +
-        `Usage: pnpm initiative:edit --id ${id} --phase-id 1 --phase-status ${opts.phaseStatus}`
+        `Usage: pnpm initiative:edit --id ${id} --phase-id 1 --phase-status ${opts.phaseStatus}`,
     );
   }
 
@@ -466,7 +471,7 @@ async function main() {
         '  --add-phase <title>         Add phase with auto-incremented id (repeatable)\n' +
         '  --add-success-metric <text> Add success metric (repeatable, deduplicated)\n' +
         '  --phase-id <id> --phase-status <status>  Update specific phase status\n' +
-        '  --created <YYYY-MM-DD>      Set created date'
+        '  --created <YYYY-MM-DD>      Set created date',
     );
   }
 

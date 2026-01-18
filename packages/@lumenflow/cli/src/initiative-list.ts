@@ -11,7 +11,10 @@
  */
 
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { listInitiatives, getInitiativeProgress } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+import {
+  listInitiatives,
+  getInitiativeProgress,
+} from '@lumenflow/initiatives/dist/initiative-yaml.js';
 import { OUTPUT_FORMATS } from '@lumenflow/initiatives/dist/initiative-constants.js';
 import Table from 'cli-table3';
 

@@ -316,7 +316,7 @@ function validateForbiddenImport(invariant, baseDir) {
         `export\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // re-export
         `require\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)|` + // require()
         `import\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)` + // dynamic import()
-        `)`
+        `)`,
     );
   });
 
@@ -374,7 +374,11 @@ interface ValidateWUAutomatedTestsContext {
   wuId?: string;
 }
 
-function validateWUAutomatedTests(invariant, baseDir, context: ValidateWUAutomatedTestsContext = {}) {
+function validateWUAutomatedTests(
+  invariant,
+  baseDir,
+  context: ValidateWUAutomatedTestsContext = {},
+) {
   const { wuId } = context;
   const result = checkAutomatedTestsInvariant({ baseDir, wuId });
 

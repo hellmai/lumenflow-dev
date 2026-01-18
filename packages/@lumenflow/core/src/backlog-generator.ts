@@ -399,7 +399,7 @@ export async function validateBacklogConsistency(store, markdown) {
 
       if (foundInSection) {
         errors.push(
-          `${wuId} in wrong section: expected ${expectedSection}, found ${foundInSection}`
+          `${wuId} in wrong section: expected ${expectedSection}, found ${foundInSection}`,
         );
       } else {
         errors.push(`${wuId} missing from backlog (status: ${expectedSection})`);

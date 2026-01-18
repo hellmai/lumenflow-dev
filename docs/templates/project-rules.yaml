@@ -9,20 +9,20 @@
 # - Start with minimal evidence, add metrics later (phased rollout)
 # - Document the "why" in notes (business context, regulatory, risk mitigation)
 
-extends: "_frameworks/cos/rules/hellmai-core-rules.yaml"
+extends: '_frameworks/cos/rules/hellmai-core-rules.yaml'
 
 rules:
   # Example 1: Healthcare-specific compliance rule
   - id: PROJECT-01
     kind: guardrail
-    statement: "All patient-facing features require GDPR privacy impact assessment"
+    statement: 'All patient-facing features require GDPR privacy impact assessment'
     evidence:
       required:
-        - "link:pia_doc"  # Privacy Impact Assessment document
-        - "approval:dpo@example.com"  # Data Protection Officer approval
+        - 'link:pia_doc' # Privacy Impact Assessment document
+        - 'approval:dpo@example.com' # Data Protection Officer approval
       future:
-        - "metric:data_retention_compliance"  # Automated compliance tracking
-    gate: "cos:narrative"
+        - 'metric:data_retention_compliance' # Automated compliance tracking
+    gate: 'cos:narrative'
     notes: |
       Required for GDPR Article 35 (Data Protection Impact Assessment).
       PIA must document:
@@ -39,18 +39,18 @@ rules:
   # Example 2: API rate limiting rule
   - id: PROJECT-02
     kind: guardrail
-    statement: "External API integrations require rate limit configuration and circuit breaker"
+    statement: 'External API integrations require rate limit configuration and circuit breaker'
     evidence:
       required:
-        - "link:api_config"  # API configuration with rate limits
-        - "screenshot:circuit_breaker_dashboard"  # Circuit breaker setup
+        - 'link:api_config' # API configuration with rate limits
+        - 'screenshot:circuit_breaker_dashboard' # Circuit breaker setup
       future:
-        - "metric:api_error_rate"  # Error rate < 1%
-        - "metric:circuit_breaker_trips"  # Circuit breaker activation count
-    gate: "cos:narrative"
+        - 'metric:api_error_rate' # Error rate < 1%
+        - 'metric:circuit_breaker_trips' # Circuit breaker activation count
+    gate: 'cos:narrative'
     parameters:
-      MAX_API_ERROR_RATE: 0.01  # 1% error rate threshold
-      CIRCUIT_BREAKER_THRESHOLD: 5  # Trip after 5 consecutive failures
+      MAX_API_ERROR_RATE: 0.01 # 1% error rate threshold
+      CIRCUIT_BREAKER_THRESHOLD: 5 # Trip after 5 consecutive failures
     notes: |
       Prevents cascading failures from external API outages.
       Config must include:
@@ -70,11 +70,11 @@ rules:
   # Example 3: Security review ritual
   - id: PROJECT-WEEKLY-SEC
     kind: ritual
-    statement: "Weekly security review (30min) covering recent changes and vulnerabilities"
+    statement: 'Weekly security review (30min) covering recent changes and vulnerabilities'
     evidence:
-      required: []  # Ritual, no artifacts required
+      required: [] # Ritual, no artifacts required
       future: []
-    gate: null  # Calendar-based, not WU-based
+    gate: null # Calendar-based, not WU-based
     notes: |
       Weekly security review ritual (not a deliverable).
 

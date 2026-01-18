@@ -26,7 +26,7 @@ describe('manual-test-validator constants', () => {
     // Should include application package pattern
     assert.ok(
       HEX_CORE_CODE_PATTERNS.some((p) => p.includes('application')),
-      'Should include application package pattern'
+      'Should include application package pattern',
     );
   });
 });
@@ -118,7 +118,7 @@ describe('isExemptFromAutomatedTests', () => {
   it('returns false for other types', () => {
     assert.strictEqual(
       isExemptFromAutomatedTests({ lane: 'Core Systems', type: 'feature' }),
-      false
+      false,
     );
     assert.strictEqual(isExemptFromAutomatedTests({ lane: 'Core Systems', type: 'bug' }), false);
   });
@@ -206,7 +206,7 @@ describe('validateAutomatedTestRequirement', () => {
       expect(result.errors.length > 0).toBeTruthy();
       assert.ok(
         result.errors[0].toLowerCase().includes('automated'),
-        'Error should mention automated tests required'
+        'Error should mention automated tests required',
       );
     });
 

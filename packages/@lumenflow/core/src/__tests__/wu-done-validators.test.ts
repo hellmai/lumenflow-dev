@@ -49,7 +49,7 @@ describe('isSkipWebTestsPath', () => {
       expect(isSkipWebTestsPath('tools/lib/wu-constants.js')).toBe(true);
       assert.strictEqual(
         isSkipWebTestsPath('tools/lib/__tests__/wu-done-validators.test.js'),
-        true
+        true,
       );
     });
 
@@ -68,7 +68,7 @@ describe('isSkipWebTestsPath', () => {
     it('returns false for packages/ paths', () => {
       assert.strictEqual(
         isSkipWebTestsPath('packages/@exampleapp/application/src/index.ts'),
-        false
+        false,
       );
     });
 

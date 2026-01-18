@@ -243,7 +243,10 @@ export interface ListOptions {
  * @param options - Filter options
  * @returns Open discovery nodes
  */
-export async function listOpenDiscoveries(baseDir: string, options: ListOptions = {}): Promise<TriageMemoryNode[]> {
+export async function listOpenDiscoveries(
+  baseDir: string,
+  options: ListOptions = {},
+): Promise<TriageMemoryNode[]> {
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
   const memory = await loadMemory(memoryDir);
@@ -308,7 +311,10 @@ export interface ArchiveResult {
  * @returns Archive result
  * @throws If node not found, not a discovery, or already archived
  */
-export async function archiveDiscovery(baseDir: string, options: ArchiveOptions): Promise<ArchiveResult> {
+export async function archiveDiscovery(
+  baseDir: string,
+  options: ArchiveOptions,
+): Promise<ArchiveResult> {
   const { nodeId, reason } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
@@ -448,7 +454,10 @@ function truncateToTitle(content: string): string {
  * @returns Promotion result
  * @throws If node not found, not a discovery, or already closed
  */
-export async function promoteDiscovery(baseDir: string, options: PromoteOptions): Promise<PromoteResult> {
+export async function promoteDiscovery(
+  baseDir: string,
+  options: PromoteOptions,
+): Promise<PromoteResult> {
   const { nodeId, lane, title, wuId, priority, dryRun: _dryRun = false } = options;
   const memoryDir = path.join(baseDir, MEMORY_DIR);
 
@@ -478,7 +487,8 @@ export async function promoteDiscovery(baseDir: string, options: PromoteOptions)
   // Generate WU spec
   const resolvedWuId = wuId || (await getNextWuId(baseDir));
   const resolvedTitle = title || truncateToTitle(node.content);
-  const resolvedPriority = priority || (node.metadata?.priority as string | undefined) || DEFAULT_PRIORITY;
+  const resolvedPriority =
+    priority || (node.metadata?.priority as string | undefined) || DEFAULT_PRIORITY;
 
   const wuSpec = {
     id: resolvedWuId,

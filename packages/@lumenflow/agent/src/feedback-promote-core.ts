@@ -132,8 +132,12 @@ function inferLane(category: string | undefined): string {
 function generateDescription(pattern: Pattern): string {
   const frequency = pattern.frequency ?? 1;
   const category = pattern.category ?? 'uncategorized';
-  const firstSeen = pattern.firstSeen ? new Date(pattern.firstSeen).toISOString().slice(0, 10) : 'unknown';
-  const lastSeen = pattern.lastSeen ? new Date(pattern.lastSeen).toISOString().slice(0, 10) : 'unknown';
+  const firstSeen = pattern.firstSeen
+    ? new Date(pattern.firstSeen).toISOString().slice(0, 10)
+    : 'unknown';
+  const lastSeen = pattern.lastSeen
+    ? new Date(pattern.lastSeen).toISOString().slice(0, 10)
+    : 'unknown';
 
   return [
     `Context: Pattern detected from ${frequency} incident(s) in category "${category}". First seen: ${firstSeen}, last seen: ${lastSeen}.`,
@@ -174,7 +178,11 @@ interface GenerateDraftOptions {
  * @param options - Options
  * @returns Draft WU spec
  */
-export async function generateDraft(baseDir: string, pattern: Pattern, options: GenerateDraftOptions = {}): Promise<DraftSpec> {
+export async function generateDraft(
+  baseDir: string,
+  pattern: Pattern,
+  options: GenerateDraftOptions = {},
+): Promise<DraftSpec> {
   const { writeFile: shouldWrite = false } = options;
 
   const draft: DraftSpec = {
@@ -289,7 +297,11 @@ interface PromoteDraftResult {
  * @param options - Options
  * @returns Result with success, wuId, command
  */
-export async function promoteDraft(baseDir: string, draft: DraftSpec, options: PromoteDraftOptions = {}): Promise<PromoteDraftResult> {
+export async function promoteDraft(
+  baseDir: string,
+  draft: DraftSpec,
+  options: PromoteDraftOptions = {},
+): Promise<PromoteDraftResult> {
   const { dryRun = false, wuIdOverride, removeDraft = false } = options;
 
   // Generate WU ID if not provided
@@ -391,7 +403,11 @@ interface FeedbackIndexEntry {
  * @param wuId - WU ID
  * @param incidentIds - Array of incident IDs
  */
-export async function updateFeedbackIndex(baseDir: string, wuId: string, incidentIds: string[]): Promise<void> {
+export async function updateFeedbackIndex(
+  baseDir: string,
+  wuId: string,
+  incidentIds: string[],
+): Promise<void> {
   const indexPath = path.join(baseDir, FEEDBACK_INDEX_PATH);
   const timestamp = new Date().toISOString();
 

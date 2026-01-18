@@ -3,7 +3,12 @@
  */
 import { describe, it, expect } from 'vitest';
 import { captureMetricsSnapshot } from '../../src/flow/capture-metrics-snapshot.js';
-import type { GitCommit, WUMetrics, SkipGatesEntry, MetricsSnapshotInput } from '../../src/types.js';
+import type {
+  GitCommit,
+  WUMetrics,
+  SkipGatesEntry,
+  MetricsSnapshotInput,
+} from '../../src/types.js';
 
 describe('captureMetricsSnapshot', () => {
   const baseInput: MetricsSnapshotInput = {
@@ -56,7 +61,7 @@ describe('captureMetricsSnapshot', () => {
       const result = captureMetricsSnapshot({ ...baseInput, wuMetrics, type: 'lanes' });
       expect(result.lanes!.lanes).toHaveLength(2);
 
-      const opsLane = result.lanes!.lanes.find(l => l.lane === 'Operations');
+      const opsLane = result.lanes!.lanes.find((l) => l.lane === 'Operations');
       expect(opsLane).toBeDefined();
       expect(opsLane!.wusCompleted).toBe(1);
       expect(opsLane!.wusInProgress).toBe(1);
@@ -72,9 +77,9 @@ describe('captureMetricsSnapshot', () => {
 
       const result = captureMetricsSnapshot({ ...baseInput, wuMetrics, type: 'lanes' });
 
-      const healthy = result.lanes!.lanes.find(l => l.lane === 'Healthy');
-      const atRisk = result.lanes!.lanes.find(l => l.lane === 'AtRisk');
-      const blocked = result.lanes!.lanes.find(l => l.lane === 'Blocked');
+      const healthy = result.lanes!.lanes.find((l) => l.lane === 'Healthy');
+      const atRisk = result.lanes!.lanes.find((l) => l.lane === 'AtRisk');
+      const blocked = result.lanes!.lanes.find((l) => l.lane === 'Blocked');
 
       expect(healthy!.status).toBe('healthy');
       expect(atRisk!.status).toBe('at-risk');

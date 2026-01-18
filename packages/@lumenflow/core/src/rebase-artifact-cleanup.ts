@@ -252,7 +252,7 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
       stampsCleaned.push(wuId);
       console.log(
         LOG_PREFIX.CLEANUP,
-        `${EMOJI.WARNING} Removed rebased stamp file for ${wuId} (artifact from main rebase)`
+        `${EMOJI.WARNING} Removed rebased stamp file for ${wuId} (artifact from main rebase)`,
       );
     }
   } catch (error) {
@@ -265,7 +265,11 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
   try {
     if (await fileExists(wuYamlPath)) {
       const content = await readFile(wuYamlPath, { encoding: 'utf-8' });
-      const doc = yaml.load(content) as { status?: string; locked?: boolean; completed_at?: string } | null;
+      const doc = yaml.load(content) as {
+        status?: string;
+        locked?: boolean;
+        completed_at?: string;
+      } | null;
 
       if (doc && doc.status === WU_STATUS.DONE) {
         // Reset status
@@ -282,7 +286,7 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
         yamlReset = true;
         console.log(
           LOG_PREFIX.CLEANUP,
-          `${EMOJI.WARNING} Reset YAML status from done to in_progress for ${wuId} (artifact from main rebase)`
+          `${EMOJI.WARNING} Reset YAML status from done to in_progress for ${wuId} (artifact from main rebase)`,
         );
       }
     }
@@ -410,7 +414,7 @@ function cleanDuplicatesFromFile(
   inProgressSection,
   completedSection,
   fileLabel,
-  completedLabel
+  completedLabel,
 ) {
   if (!existsSync(filePath)) {
     return { cleaned: false, error: null };
@@ -442,7 +446,7 @@ function cleanDuplicatesFromFile(
 
     console.log(
       LOG_PREFIX.CLEANUP,
-      `${EMOJI.WARNING} Removed ${wuId} from In Progress section in ${fileLabel} (already in ${completedLabel} after rebase)`
+      `${EMOJI.WARNING} Removed ${wuId} from In Progress section in ${fileLabel} (already in ${completedLabel} after rebase)`,
     );
 
     return { cleaned: true, error: null };
@@ -490,7 +494,7 @@ export async function deduplicateBacklogAfterRebase(worktreePath, wuId) {
     BACKLOG_SECTIONS.IN_PROGRESS,
     BACKLOG_SECTIONS.DONE,
     'backlog.md',
-    'Done'
+    'Done',
   );
   if (backlogResult.error) {
     errors.push(backlogResult.error);
@@ -504,7 +508,7 @@ export async function deduplicateBacklogAfterRebase(worktreePath, wuId) {
     STATUS_SECTIONS.IN_PROGRESS,
     STATUS_SECTIONS.COMPLETED,
     'status.md',
-    'Completed'
+    'Completed',
   );
   if (statusResult.error) {
     errors.push(statusResult.error);

@@ -31,7 +31,10 @@ describe('lane-lock', () => {
 
   beforeEach(() => {
     // Create unique temp directory for each test
-    testDir = path.join(os.tmpdir(), `lane-lock-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `lane-lock-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
     mkdirSync(testDir, { recursive: true });
   });
 
@@ -565,7 +568,9 @@ describe('lane-lock', () => {
         expect(removeResult.released).toBe(true);
 
         // Now new claim should succeed
-        const claimResult = acquireLaneLock('Operations: Tooling', 'WU-NEW-CLAIM', { baseDir: testDir });
+        const claimResult = acquireLaneLock('Operations: Tooling', 'WU-NEW-CLAIM', {
+          baseDir: testDir,
+        });
         expect(claimResult.acquired).toBe(true);
       });
     });

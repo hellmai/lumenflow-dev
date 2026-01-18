@@ -153,12 +153,12 @@ export function formatCoverageDelta(coverageData) {
   const totalPct = coverageData.total?.lines?.pct ?? 0;
 
   lines.push(
-    `${STRING_LITERALS.NEWLINE}Coverage Summary: ${totalPct.toFixed(1)}% lines${STRING_LITERALS.NEWLINE}`
+    `${STRING_LITERALS.NEWLINE}Coverage Summary: ${totalPct.toFixed(1)}% lines${STRING_LITERALS.NEWLINE}`,
   );
 
   // Show hex core files
   const hexCoreFiles = Object.entries(coverageData.files || {}).filter(([file]) =>
-    isHexCoreFile(file)
+    isHexCoreFile(file),
   );
 
   if (hexCoreFiles.length > 0) {
@@ -231,7 +231,7 @@ export async function runCoverageGate(options: CoverageGateOptions = {}) {
     for (const failure of failures) {
       const shortFile = failure.file.replace('packages/@exampleapp/', '');
       logger.log(
-        `  - ${shortFile}: ${failure.actual.toFixed(1)}% (requires ${failure.threshold}%)`
+        `  - ${shortFile}: ${failure.actual.toFixed(1)}% (requires ${failure.threshold}%)`,
       );
     }
 

@@ -21,11 +21,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import type {
-  GitShimConfig,
-  BannedPatternResult,
-  ProtectedContextResult,
-} from './types.js';
+import type { GitShimConfig, BannedPatternResult, ProtectedContextResult } from './types.js';
 import { GitShimConfigSchema, UserType, CommandOutcome } from './types.js';
 import { getCurrentBranch, isMainWorktree } from './worktree.js';
 
@@ -110,9 +106,7 @@ export function checkBannedPattern(
     }
 
     // Check if any required flag is present
-    const hasRequiredFlag = pattern.flags.some((reqFlag) =>
-      flags.includes(reqFlag),
-    );
+    const hasRequiredFlag = pattern.flags.some((reqFlag) => flags.includes(reqFlag));
     if (hasRequiredFlag) {
       return {
         banned: true,
@@ -139,12 +133,7 @@ export function checkProtectedContext(
     const inMainWorktree = process.env['TEST_IS_MAIN_WORKTREE'] === 'true';
     const isProtectedBranch = branch === config.protectedBranch;
     const isProtected = isProtectedBranch || inMainWorktree;
-    const context = buildContextString(
-      isProtected,
-      inMainWorktree,
-      config.protectedBranch,
-      branch,
-    );
+    const context = buildContextString(isProtected, inMainWorktree, config.protectedBranch, branch);
     return { protected: isProtected, context };
   }
 
@@ -154,14 +143,8 @@ export function checkProtectedContext(
   // Protected if:
   // 1. On protected branch (regardless of worktree)
   // 2. OR in main worktree (even if on a lane branch)
-  const isProtected =
-    branch === config.protectedBranch || inMainWorktree;
-  const context = buildContextString(
-    isProtected,
-    inMainWorktree,
-    config.protectedBranch,
-    branch,
-  );
+  const isProtected = branch === config.protectedBranch || inMainWorktree;
+  const context = buildContextString(isProtected, inMainWorktree, config.protectedBranch, branch);
 
   return { protected: isProtected, context };
 }
@@ -174,11 +157,7 @@ export function checkProtectedContext(
  * @param context - Where it was blocked
  * @returns Formatted error message
  */
-export function formatBlockedError(
-  command: string,
-  reason: string,
-  context: string,
-): string {
+export function formatBlockedError(command: string, reason: string, context: string): string {
   return `
 ╔═══════════════════════════════════════════════════════════════════╗
 ║  GIT SHIM HOOK ERROR
@@ -211,12 +190,7 @@ export function formatBlockedError(
  * @returns Path to real git
  */
 export function findRealGit(preferredPath: string = '/usr/bin/git'): string {
-  const gitPaths = [
-    preferredPath,
-    '/usr/bin/git',
-    '/usr/local/bin/git',
-    '/opt/homebrew/bin/git',
-  ];
+  const gitPaths = [preferredPath, '/usr/bin/git', '/usr/local/bin/git', '/opt/homebrew/bin/git'];
 
   for (const gitPath of gitPaths) {
     try {
@@ -239,11 +213,7 @@ export function findRealGit(preferredPath: string = '/usr/bin/git'): string {
  * @param _outcome - Command outcome (allowed/blocked)
  * @param _config - Git shim configuration
  */
-function logCommand(
-  _user: string,
-  _outcome: string,
-  _config: GitShimConfig,
-): void {
+function logCommand(_user: string, _outcome: string, _config: GitShimConfig): void {
   // Logging would go here - simplified for extraction
   // Future: write to config.logPath
 }
@@ -255,10 +225,7 @@ function logCommand(
  * @param config - Git shim configuration
  * @returns Exit code
  */
-export function runGitShim(
-  args: string[],
-  config: GitShimConfig = DEFAULT_CONFIG,
-): number {
+export function runGitShim(args: string[], config: GitShimConfig = DEFAULT_CONFIG): number {
   // Recursion guard
   if (process.env[config.recursionEnvVar]) {
     const result = spawnSync(config.realGitPath, args, {
