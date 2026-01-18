@@ -122,11 +122,9 @@ const normalizedMultilineString = z.string().transform((s) => s.replace(/\\n/g, 
  *
  * WU-1750: After normalization, paths should be clean. This catches any edge cases.
  */
-const filePathItem = z
-  .string()
-  .refine((s) => !s.includes('\n') && !s.includes('\\n'), {
-    message: 'File path cannot contain newlines - split into separate array items',
-  });
+const filePathItem = z.string().refine((s) => !s.includes('\n') && !s.includes('\\n'), {
+  message: 'File path cannot contain newlines - split into separate array items',
+});
 
 /**
  * Normalized code_paths: split embedded newlines + validate each path
