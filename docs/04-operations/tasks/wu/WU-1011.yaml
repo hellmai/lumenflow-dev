@@ -2,7 +2,7 @@ id: WU-1011
 title: Fix circular dependency between core and memory packages
 lane: Core
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-18
 code_paths:
@@ -62,3 +62,5 @@ session_id: fb3670af-5537-42de-b783-e51842833c42
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T20:27:22.908Z
+locked: true
+completed_at: 2026-01-18T20:32:11.041Z
