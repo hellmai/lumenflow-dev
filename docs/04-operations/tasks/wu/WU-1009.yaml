@@ -1,0 +1,57 @@
+id: WU-1009
+title: Write quickstart guide
+lane: Core
+type: feature
+status: ready
+priority: P1
+created: 2026-01-18
+code_paths:
+  - apps/docs/
+tests:
+  manual:
+    - Guide works end-to-end on fresh repo
+    - All commands execute correctly
+    - Screenshots/examples are accurate
+  unit: []
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1009.done
+dependencies:
+  - WU-1008
+risks:
+  - Guide may become outdated if CLI changes
+exposure: documentation
+notes: |
+  The "5-minute" experience for new users.
+
+  Flow:
+  1. Install GitHub App (1 click)
+  2. Add config file (copy-paste)
+  3. Create first WU (one command)
+  4. See it work (open PR, see validation)
+
+  Should work without npm CLI (GitHub App only for Free tier).
+requires_review: false
+assigned_to: tom@hellm.ai
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |
+  Write a quickstart guide that gets users from zero to working
+  LumenFlow in under 5 minutes.
+
+  Context: Users finding LumenFlow on Marketplace need clear
+  onboarding path.
+
+  Problem: No step-by-step guide for new users.
+
+  Solution: Single-page quickstart with copy-paste examples.
+acceptance:
+  - Guide covers GitHub App installation
+  - Includes sample .lumenflow.config.yaml
+  - Shows how to create first WU
+  - Demonstrates PR validation working
+  - Works for Free tier (no npm CLI required)
+  - Tested on fresh repo
