@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml) — CLI
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Core
 - [WU-1012 — Add --docs-only flag to wu:done](wu/WU-1012.yaml) — Core
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml) — Core
