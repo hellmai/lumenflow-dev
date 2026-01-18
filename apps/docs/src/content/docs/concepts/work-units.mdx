@@ -1,0 +1,126 @@
+---
+title: Work Units (WUs)
+description: The fundamental unit of work in LumenFlow
+---
+
+A Work Unit (WU) is a small, well-defined piece of work with clear acceptance criteria and proof of completion.
+
+## Why WUs?
+
+Traditional tickets are:
+
+- Vague ("Fix the login bug")
+- Unbounded (no clear definition of done)
+- Trust-based (marked done without proof)
+
+WUs are:
+
+- Specific ("Add email validation to login form")
+- Bounded (1-3 hours of work)
+- Evidence-based (tests and artifacts prove completion)
+
+## Anatomy of a WU
+
+```yaml
+id: WU-042
+title: Add email validation to login form
+lane: UI
+type: feature
+status: ready
+
+description: |
+  Add client-side email validation before form submission.
+  Show inline error message for invalid formats.
+
+acceptance:
+  - Email field validates on blur
+  - Invalid emails show "Please enter a valid email"
+  - Valid emails allow form submission
+  - Unit test covers validation logic
+
+tests:
+  unit:
+    - src/components/__tests__/login-form.test.ts
+  e2e:
+    - e2e/login.spec.ts
+
+code_paths:
+  - src/components/LoginForm.tsx
+  - src/utils/validation.ts
+```
+
+## WU Lifecycle
+
+```
+ready → in_progress → [blocked] → done
+```
+
+| Status        | Meaning                        |
+| ------------- | ------------------------------ |
+| `ready`       | Approved, can be claimed       |
+| `in_progress` | Someone is working on it       |
+| `blocked`     | Waiting on external dependency |
+| `done`        | Acceptance met, stamp created  |
+
+## Right-Sizing WUs
+
+WUs should be **1-3 hours of work**. If bigger, split them.
+
+### Too Big
+
+❌ "Implement user authentication system"
+
+### Right-Sized
+
+✅ "Add login form UI"
+✅ "Add password validation"
+✅ "Connect login to auth API"
+✅ "Add session persistence"
+
+See [Sizing Guide](/guides/sizing) for detailed heuristics.
+
+## WU vs PR
+
+In LumenFlow:
+
+| Traditional                                     | LumenFlow                                           |
+| ----------------------------------------------- | --------------------------------------------------- |
+| Create ticket → Code → Open PR → Review → Merge | Create WU → Claim → Code in worktree → Gates → Done |
+
+The "review" is automated gates, not human PR review. This unblocks flow while maintaining quality.
+
+## Evidence, Not Claims
+
+Every WU completion creates:
+
+1. **Stamp file** in `.beacon/stamps/WU-XXX.done`
+2. **Test results** proving acceptance criteria
+3. **Git history** linking to the WU spec
+
+This audit trail is valuable for:
+
+- Compliance reviews
+- Team retrospectives
+- Understanding "why was this built?"
+
+## Creating WUs
+
+```bash
+# Interactive creation
+pnpm wu:create
+
+# With flags
+pnpm wu:create \
+  --id WU-043 \
+  --title "Add password strength meter" \
+  --lane UI \
+  --type feature
+```
+
+The created WU goes into `docs/tasks/wu/WU-043.yaml` with status `ready`.
+
+## Next Steps
+
+- [Lanes](/concepts/lanes) – Organizing work streams
+- [Gates](/concepts/gates) – Quality enforcement
+- [Sizing Guide](/guides/sizing) – How to size WUs properly

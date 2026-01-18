@@ -1,0 +1,263 @@
+---
+title: Configuration
+description: LumenFlow configuration file reference
+---
+
+LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
+
+## Minimal Config
+
+```yaml
+version: '1.0'
+
+lanes:
+  - name: Core
+    paths: ['src/**']
+
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+```
+
+## Full Config
+
+```yaml
+version: '1.0'
+
+# Optional: Project name
+project: my-project
+
+# Lane definitions
+lanes:
+  - name: Core
+    wip_limit: 1
+    paths:
+      - src/core/**
+      - src/domain/**
+
+  - name: UI
+    wip_limit: 2
+    paths:
+      - src/components/**
+      - src/pages/**
+
+  - name: Infrastructure
+    wip_limit: 1
+    paths:
+      - infra/**
+      - .github/**
+
+# Gate configuration
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+
+# Or with custom commands:
+# gates:
+#   format:
+#     command: pnpm prettier --check .
+#   lint:
+#     command: pnpm eslint src/
+#   typecheck:
+#     command: pnpm tsc --noEmit
+#   test:
+#     command: pnpm vitest run
+
+# Directory locations
+directories:
+  wu_specs: docs/tasks/wu
+  backlog: docs/tasks/backlog.md
+  stamps: .beacon/stamps
+
+# Git settings
+git:
+  main_branch: main
+  branch_pattern: 'lane/{lane}/{wu_id}'
+
+# Worktree settings
+worktree_pattern: 'worktrees/{lane}-{wu_id}'
+
+# Memory layer settings
+memory:
+  checkpoint_interval: 30 # minutes
+  max_checkpoints: 10
+  auto_checkpoint: true
+```
+
+## Config Reference
+
+### version
+
+**Required.** Config schema version.
+
+```yaml
+version: '1.0'
+```
+
+### project
+
+**Optional.** Project name for display.
+
+```yaml
+project: my-awesome-app
+```
+
+### lanes
+
+**Required.** Lane definitions.
+
+```yaml
+lanes:
+  - name: Core # Lane name
+    wip_limit: 1 # Max WUs in progress (default: 1)
+    paths: # File paths for auto-detection
+      - src/core/**
+```
+
+| Field       | Type     | Default  | Description                      |
+| ----------- | -------- | -------- | -------------------------------- |
+| `name`      | string   | required | Lane identifier                  |
+| `wip_limit` | number   | 1        | Max concurrent WUs               |
+| `paths`     | string[] | []       | Glob patterns for lane detection |
+
+### gates
+
+**Required.** Quality gate configuration.
+
+#### Simple (auto-detect)
+
+```yaml
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+```
+
+#### Custom commands
+
+```yaml
+gates:
+  format:
+    command: pnpm prettier --check .
+    required: true
+  lint:
+    command: pnpm eslint src/
+    required: true
+  typecheck:
+    command: pnpm tsc --noEmit
+    required: true
+  test:
+    command: pnpm vitest run
+    required: true
+```
+
+#### Additional gates
+
+```yaml
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+  security:
+    command: pnpm audit --audit-level=high
+    required: false # Warning only
+  e2e:
+    command: pnpm playwright test
+    required: true
+```
+
+### directories
+
+**Optional.** Override default directories.
+
+```yaml
+directories:
+  wu_specs: docs/tasks/wu # Where WU YAMLs live
+  backlog: docs/tasks/backlog.md # Backlog file
+  stamps: .beacon/stamps # Completion stamps
+```
+
+| Field      | Default                 | Description       |
+| ---------- | ----------------------- | ----------------- |
+| `wu_specs` | `docs/tasks/wu`         | WU YAML directory |
+| `backlog`  | `docs/tasks/backlog.md` | Backlog file path |
+| `stamps`   | `.beacon/stamps`        | Stamp directory   |
+
+### git
+
+**Optional.** Git configuration.
+
+```yaml
+git:
+  main_branch: main
+  branch_pattern: 'lane/{lane}/{wu_id}'
+```
+
+| Field            | Default               | Description           |
+| ---------------- | --------------------- | --------------------- |
+| `main_branch`    | `main`                | Primary branch name   |
+| `branch_pattern` | `lane/{lane}/{wu_id}` | Branch naming pattern |
+
+### worktree_pattern
+
+**Optional.** Worktree directory pattern.
+
+```yaml
+worktree_pattern: 'worktrees/{lane}-{wu_id}'
+```
+
+Available variables:
+
+- `{lane}` – Lane name (lowercase)
+- `{wu_id}` – WU identifier (lowercase)
+
+### memory
+
+**Optional.** Memory layer configuration.
+
+```yaml
+memory:
+  checkpoint_interval: 30 # Auto-checkpoint interval (minutes)
+  max_checkpoints: 10 # Max checkpoints per WU
+  auto_checkpoint: true # Enable auto-checkpointing
+```
+
+## Environment Overrides
+
+Config values can be overridden via environment variables:
+
+```bash
+LUMENFLOW_MAIN_BRANCH=develop pnpm wu:done --id WU-001
+```
+
+| Variable                | Overrides              |
+| ----------------------- | ---------------------- |
+| `LUMENFLOW_CONFIG`      | Config file path       |
+| `LUMENFLOW_MAIN_BRANCH` | `git.main_branch`      |
+| `LUMENFLOW_WU_SPECS`    | `directories.wu_specs` |
+
+## Validation
+
+Validate your config:
+
+```bash
+pnpm exec lumenflow validate
+```
+
+Checks:
+
+- YAML syntax
+- Required fields present
+- Lane names unique
+- Paths are valid globs
+
+## Next Steps
+
+- [WU Schema](/reference/wu-schema) – WU YAML structure
+- [CLI Reference](/reference/cli) – All commands

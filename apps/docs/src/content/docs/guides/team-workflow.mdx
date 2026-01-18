@@ -1,0 +1,227 @@
+---
+title: Team Workflow
+description: Best practices for teams using LumenFlow
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+LumenFlow scales from solo developers to teams. This guide covers team-specific practices.
+
+## Team Setup
+
+<Steps>
+
+1. **Install GitHub App** for enforcement
+2. **Define lanes** for your team structure
+3. **Set WIP limits** per lane
+4. **Add team members** to npm org (for CLI access)
+
+</Steps>
+
+## Lane Strategies
+
+### By Domain
+
+```yaml
+lanes:
+  - name: Frontend
+    wip_limit: 2
+  - name: Backend
+    wip_limit: 2
+  - name: Infrastructure
+    wip_limit: 1
+```
+
+### By Team
+
+```yaml
+lanes:
+  - name: Team-Alpha
+    wip_limit: 3
+  - name: Team-Beta
+    wip_limit: 3
+  - name: Platform
+    wip_limit: 1
+```
+
+### By Product Area
+
+```yaml
+lanes:
+  - name: Checkout
+    wip_limit: 2
+  - name: Search
+    wip_limit: 2
+  - name: User-Profile
+    wip_limit: 1
+```
+
+## Claiming Protocol
+
+### First Come, First Served
+
+Simple: whoever claims first, owns it.
+
+```bash
+pnpm wu:claim --id WU-100 --lane Frontend
+# If already claimed → error
+```
+
+### Assigned
+
+Pre-assign in the WU spec:
+
+```yaml
+id: WU-100
+assigned_to: alice@team.com
+```
+
+Only the assigned person can claim.
+
+### Team Discussion
+
+For complex WUs, discuss before claiming:
+
+1. Review in standup
+2. Agree on approach
+3. Assign and claim
+
+## Handoffs
+
+If you need to hand off a WU:
+
+```bash
+# Current owner releases
+pnpm wu:release --id WU-100
+
+# New owner claims
+pnpm wu:claim --id WU-100 --lane Frontend
+```
+
+<Aside type="caution">
+  Minimize handoffs. Each handoff loses context. If handoffs are frequent, WUs may be too big.
+</Aside>
+
+## Blocking and Unblocking
+
+When stuck on external dependency:
+
+```bash
+pnpm wu:block --id WU-100 --reason "Waiting for API spec from backend team"
+```
+
+This:
+
+- Sets status to `blocked`
+- Frees the lane for other work
+- Documents the blocker
+
+When unblocked:
+
+```bash
+pnpm wu:unblock --id WU-100
+# Status returns to in_progress
+```
+
+## Daily Standup
+
+Use the backlog as the standup board:
+
+```
+## 🔧 In Progress
+- [WU-100 — Add cart API](wu/WU-100.yaml) - Alice
+- [WU-101 — Add product search](wu/WU-101.yaml) - Bob
+
+## ⛔ Blocked
+- [WU-102 — Payment integration](wu/WU-102.yaml) - Carol
+  Blocked: Waiting for Stripe API keys
+```
+
+Focus on:
+
+- What's blocked (help unblock)
+- What's nearing completion (coordinate)
+- What to claim next (visibility)
+
+## WIP Enforcement
+
+GitHub App enforces WIP limits:
+
+```
+❌ Cannot claim WU-105 for lane "Frontend"
+   Lane already at WIP limit (2/2):
+   - WU-100 (Alice)
+   - WU-101 (Bob)
+
+   Complete or release a WU first.
+```
+
+This prevents overload and encourages finishing work.
+
+## Review Practices
+
+### Gates Replace PRs
+
+LumenFlow's gates replace traditional code review:
+
+- Format, lint, typecheck, test run automatically
+- All must pass before completion
+
+### When to Add Human Review
+
+Add human review for:
+
+- Security-sensitive changes
+- Architectural decisions
+- Public API changes
+
+```yaml
+# WU spec
+requires_review: true
+reviewers:
+  - security@team.com
+```
+
+### Pair Programming
+
+For complex WUs, pair instead of review:
+
+1. Pair claims together
+2. Both work in the worktree
+3. Gates validate as usual
+4. No separate review needed
+
+## Metrics
+
+Track team health:
+
+| Metric           | Healthy   | Concerning         |
+| ---------------- | --------- | ------------------ |
+| WU cycle time    | 1-3 hours | > 1 day            |
+| Gate pass rate   | > 90%     | < 80%              |
+| Blocked WU count | 0-1       | > 3                |
+| WIP per lane     | At limit  | Consistently under |
+
+## Scaling to Multiple Teams
+
+For larger organizations:
+
+```yaml
+# Separate config per team
+lanes:
+  - name: Team-A-Core
+    wip_limit: 2
+  - name: Team-A-UI
+    wip_limit: 2
+  - name: Team-B-Core
+    wip_limit: 2
+  - name: Team-B-UI
+    wip_limit: 2
+```
+
+Or use separate repos per team, each with LumenFlow.
+
+## Next Steps
+
+- [AI Agent Integration](/guides/ai-agents) – Working with AI teammates
+- [CLI Reference](/reference/cli) – Team commands

@@ -1,0 +1,175 @@
+---
+title: Sizing WUs
+description: How to break work into right-sized units
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Right-sizing WUs is critical for flow. Too big = stuck. Too small = overhead. Aim for 1-3 hours of focused work.
+
+## The 1-3 Hour Rule
+
+A well-sized WU should take **1-3 hours** to complete, including:
+
+- Understanding the acceptance criteria
+- Writing the code
+- Writing/updating tests
+- Running gates
+
+<Aside type="tip">
+  If you can't estimate within 1-3 hours, the WU is too vague. Clarify requirements or split it.
+</Aside>
+
+## Sizing Heuristics
+
+### ✅ Good Size Indicators
+
+- Single clear outcome
+- Touches 1-3 files
+- One test file added/modified
+- Can describe in one sentence
+- No "and then..." in the description
+
+### ❌ Too Big Indicators
+
+- Multiple outcomes
+- Touches 5+ files
+- Requires multiple test suites
+- Description has multiple paragraphs
+- Contains "and", "also", "plus"
+
+### ❌ Too Small Indicators
+
+- Just a config change
+- Single line fix
+- No tests needed
+- Overhead exceeds value
+
+## Splitting Strategies
+
+### By Layer
+
+**Too big:** "Add user preferences feature"
+
+**Split:**
+
+- WU-100: Add preferences API endpoint (Core)
+- WU-101: Add preferences database schema (Infra)
+- WU-102: Add preferences UI panel (UI)
+
+### By Behavior
+
+**Too big:** "Add form validation"
+
+**Split:**
+
+- WU-110: Add email format validation
+- WU-111: Add password strength check
+- WU-112: Add form error display
+
+### By User Action
+
+**Too big:** "Add checkout flow"
+
+**Split:**
+
+- WU-120: Add cart summary view
+- WU-121: Add payment method selection
+- WU-122: Add order confirmation
+
+## Examples
+
+### Example 1: Feature
+
+**Original:** "Add dark mode support"
+
+**Split:**
+| WU | Title | Est. |
+|----|-------|------|
+| WU-200 | Add theme context provider | 2h |
+| WU-201 | Add theme toggle component | 1h |
+| WU-202 | Add dark mode CSS variables | 2h |
+| WU-203 | Persist theme preference | 1h |
+
+### Example 2: Bug Fix
+
+**Original:** "Fix login issues"
+
+**Clarify first:** What issues? Then split:
+| WU | Title | Est. |
+|----|-------|------|
+| WU-210 | Fix session expiry redirect | 1h |
+| WU-211 | Fix password field autocomplete | 30m |
+| WU-212 | Fix error message display | 1h |
+
+### Example 3: Refactor
+
+**Original:** "Refactor authentication module"
+
+**Split by concern:**
+| WU | Title | Est. |
+|----|-------|------|
+| WU-220 | Extract auth types to shared module | 2h |
+| WU-221 | Move JWT logic to auth service | 2h |
+| WU-222 | Add auth service tests | 2h |
+
+## When to Combine
+
+Sometimes tiny WUs can be combined:
+
+**Too granular:**
+
+- WU-A: Add firstName field
+- WU-B: Add lastName field
+- WU-C: Add email field
+
+**Better:**
+
+- WU-X: Add user profile fields (firstName, lastName, email)
+
+## Dependencies
+
+If WUs depend on each other, note it:
+
+```yaml
+id: WU-201
+title: Add theme toggle component
+dependencies:
+  - WU-200 # Needs theme context first
+```
+
+Execute in order, or work on independent WUs in parallel.
+
+## Estimating
+
+For new WUs:
+
+1. **Read acceptance criteria** – Clear enough to estimate?
+2. **Mental walkthrough** – What files? What tests?
+3. **Gut check** – Does 1-3 hours feel right?
+4. **Too uncertain?** – Spike first (discovery WU)
+
+<Aside type="caution">
+  If you consistently under/over-estimate, adjust your calibration. Track actual time vs. estimate.
+</Aside>
+
+## Discovery WUs
+
+When uncertain, create a discovery WU first:
+
+```yaml
+id: WU-299
+title: Spike - evaluate auth libraries
+type: discovery
+acceptance:
+  - Document pros/cons of 3 auth libraries
+  - Recommend one with rationale
+  - No code changes (research only)
+```
+
+Discovery WUs produce decisions, not code. They unblock future implementation WUs.
+
+## Next Steps
+
+- [Work Units](/concepts/work-units) – WU structure and lifecycle
+- [Team Workflow](/guides/team-workflow) – Collaborative sizing

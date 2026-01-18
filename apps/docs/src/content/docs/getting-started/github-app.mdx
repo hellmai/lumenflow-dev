@@ -1,0 +1,98 @@
+---
+title: Install GitHub App
+description: Add LumenFlow enforcement to your repository
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The LumenFlow GitHub App adds automated enforcement to your repository via pull requests.
+
+## What It Does
+
+| Feature               | Description                              |
+| --------------------- | ---------------------------------------- |
+| **PR Validation**     | Checks that PRs reference valid WU specs |
+| **WIP Enforcement**   | Ensures lane limits aren't exceeded      |
+| **Completion Stamps** | Auto-creates stamp commits on merge      |
+| **Labels**            | Adds lane and status labels to PRs       |
+
+## Installation
+
+<Steps>
+
+1. **Visit the GitHub Marketplace**
+
+   Go to [github.com/apps/lumenflow-by-hellmai](https://github.com/apps/lumenflow-by-hellmai)
+
+2. **Click "Install"**
+
+   Choose which repositories to install on (all or select repos).
+
+3. **Authorize**
+
+   Grant the app permission to read/write PRs and checks.
+
+4. **Done!**
+
+   The app is now active on your repository.
+
+</Steps>
+
+## How It Works
+
+When you open a PR:
+
+1. **App validates** the PR title/body for WU reference
+2. **App checks** WIP limits for the target lane
+3. **App adds** labels (e.g., `lane:core`, `status:in-progress`)
+4. **On merge**, app creates a completion stamp
+
+## Configuration
+
+The app reads your `.lumenflow.config.yaml` for:
+
+- Lane definitions and WIP limits
+- Directory mappings for auto-detection
+- Gate requirements
+
+```yaml
+# Example config
+lanes:
+  - name: Core
+    wip_limit: 1
+    paths: ['src/core/**']
+  - name: UI
+    wip_limit: 2
+    paths: ['src/components/**']
+```
+
+## CLI vs App
+
+| Capability        | CLI Only   | With App  |
+| ----------------- | ---------- | --------- |
+| Create WUs        | ✅         | ✅        |
+| Run gates locally | ✅         | ✅        |
+| PR validation     | ❌         | ✅        |
+| WIP enforcement   | Local only | Repo-wide |
+| Team visibility   | ❌         | ✅        |
+
+**Solo developers**: CLI is sufficient.
+**Teams**: Add the app for enforcement and visibility.
+
+## Troubleshooting
+
+### App not responding to PRs
+
+- Check the app is installed on the repo
+- Verify `.lumenflow.config.yaml` exists and is valid
+- Check webhook delivery in repo settings
+
+### WU not recognized
+
+- Ensure WU YAML exists in the configured `wu_specs` directory
+- Check the WU ID format matches your PR title
+
+## Next Steps
+
+- [Lanes](/concepts/lanes) – Understanding lane limits
+- [Team Workflow](/guides/team-workflow) – Best practices for teams

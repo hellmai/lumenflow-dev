@@ -1,0 +1,74 @@
+---
+title: What is LumenFlow?
+description: AI-native workflow for software teams
+---
+
+LumenFlow is an open, stack-agnostic delivery methodology for AI-augmented teams. It combines test-driven development with a lane-based flow system that keeps work visible, parallel, and humane.
+
+## Why LumenFlow?
+
+1. **Clarity over chaos** – Every Work Unit (WU) has an explicit state, owner, and outcome. No ambiguity.
+
+2. **AI as a first-class collaborator** – Instructions, ports, and tests let AI agents contribute safely and autonomously.
+
+3. **Focus without bottlenecks** – Lane-based WIP keeps individual streams calm while teams move together.
+
+4. **Evidence, not claims** – Tests and artifacts prove the work is done, not just "closed".
+
+## Core Concepts
+
+| Concept              | What it Does                                                |
+| -------------------- | ----------------------------------------------------------- |
+| **Work Units (WUs)** | Tiny, testable jobs with clear acceptance criteria          |
+| **Lanes**            | Parallel tracks for different domains (e.g., Core, UI, Ops) |
+| **Gates**            | Automated quality checks (lint, test, typecheck)            |
+| **Memory**           | Context recovery for long-running sessions                  |
+
+## How It Works
+
+```
+Backlog (ready)
+      ↓ claim a WU
+Lane board (one WU per lane)
+      ↓ implement with TDD
+Gates (lint, test, typecheck)
+      ↓ all green
+Done (stamp committed)
+```
+
+## Quick Example
+
+```yaml
+# .lumenflow.config.yaml
+version: '1.0'
+lanes:
+  - name: Core
+    paths: ['src/core/**']
+  - name: UI
+    paths: ['src/components/**']
+gates:
+  format: true
+  lint: true
+  typecheck: true
+  test: true
+```
+
+```bash
+# Create and claim a work unit
+pnpm wu:create --id WU-001 --title "Add user auth"
+pnpm wu:claim --id WU-001 --lane Core
+
+# Work in the worktree
+cd worktrees/core-wu-001
+# ... make changes ...
+
+# Run gates and complete
+pnpm gates
+pnpm wu:done --id WU-001
+```
+
+## Next Steps
+
+- [Quickstart](/getting-started/quickstart) – Get running in 5 minutes
+- [Work Units](/concepts/work-units) – Understanding WUs
+- [Install GitHub App](/getting-started/github-app) – Team enforcement
