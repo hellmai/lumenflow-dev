@@ -5,9 +5,12 @@ type: feature
 status: ready
 priority: P1
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - apps/docs/
 tests:
-  manual: []
+  manual:
+    - Visit lumenflow.dev and verify site loads
+    - Check all pages render correctly
   unit: []
   e2e: []
 artifacts:
@@ -25,5 +28,6 @@ requires_cto_approval: false
 requires_design_approval: false
 description: Deploy the Astro Starlight docs site to Vercel and configure lumenflow.dev domain.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Site deployed to Vercel
+  - lumenflow.dev domain configured
+  - Auto-deploy on main push works
