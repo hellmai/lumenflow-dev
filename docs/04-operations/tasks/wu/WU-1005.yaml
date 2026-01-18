@@ -12,7 +12,7 @@ tests:
     - npx @lumenflow/cli init creates .lumenflow.yaml
     - npx @lumenflow/cli init creates CLAUDE.md template
   unit:
-    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1005.done
