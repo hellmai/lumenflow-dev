@@ -22,7 +22,12 @@ dependencies:
   - WU-1002
 risks:
   - Supabase schema changes may require migration
-notes: ''
+exposure: api
+notes: |
+  MVP uses in-memory storage for rate limiting. TODOs mark where Supabase
+  integration is needed for production persistence. In-memory is acceptable
+  for MVP/launch since: (1) usage resets on deploy which is fine for soft
+  launch, (2) allows shipping rate limiting without Supabase schema setup.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
