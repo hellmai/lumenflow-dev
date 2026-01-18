@@ -2,7 +2,7 @@ id: WU-1009
 title: Write quickstart guide
 lane: Core
 type: feature
-status: ready
+status: done
 priority: P1
 created: 2026-01-18
 code_paths:
