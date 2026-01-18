@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.15.0",
   "type": "module",
   "scripts": {
+    "setup": "pnpm install && turbo build --filter=@lumenflow/cli",
     "build": "turbo build",
     "build:dist": "turbo build:dist",
     "dev": "turbo dev",
@@ -14,7 +15,17 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "pack:all": "turbo pack:dist",
-    "clean": "turbo clean && rm -rf node_modules/.cache"
+    "clean": "turbo clean && rm -rf node_modules/.cache",
+    "gates": "pnpm exec gates",
+    "wu:claim": "pnpm exec wu-claim",
+    "wu:done": "pnpm exec wu-done",
+    "wu:create": "pnpm exec wu-create",
+    "wu:edit": "pnpm exec wu-edit",
+    "wu:block": "pnpm exec wu-block",
+    "wu:unblock": "pnpm exec wu-unblock",
+    "wu:validate": "pnpm exec wu-validate",
+    "mem:init": "pnpm exec mem-init",
+    "mem:checkpoint": "pnpm exec mem-checkpoint"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

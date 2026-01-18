@@ -32,3 +32,9 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# LumenFlow
+/worktrees/
+/._legacy/memory/
+/._legacy/locks/
+/._legacy/sessions/
