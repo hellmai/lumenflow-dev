@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1006 — Refactor codebase to use well-known libraries (Library-First)](wu/WU-1006.yaml) — Core
+  (No items ready)
 
 ## 🔧 In progress
 
