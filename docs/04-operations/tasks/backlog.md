@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — Infrastructure
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -34,3 +33,4 @@ sections:
 ## ✅ Done
 
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml)
+- [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml)
