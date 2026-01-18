@@ -16,7 +16,7 @@ _None_
 
 ---
 
-## Recently Completed
+## Completed
 
 _None_
 
