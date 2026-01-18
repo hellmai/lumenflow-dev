@@ -35,9 +35,7 @@ coverage/
 
 # LumenFlow
 /worktrees/
-/.beacon/memory/
-/.beacon/locks/
-/.beacon/sessions/
-/.beacon/telemetry/
-**/.beacon/
+/.beacon/
+# Allow .beacon/wu-events.jsonl in worktrees for completion tracking
+!**/.beacon/wu-events.jsonl
 .logs/
