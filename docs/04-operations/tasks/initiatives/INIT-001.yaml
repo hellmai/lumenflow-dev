@@ -10,3 +10,5 @@ target_date: '2026-01-25'
 phases: []
 success_metrics: []
 labels: []
+wus:
+  - WU-1010
