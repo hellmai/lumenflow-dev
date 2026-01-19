@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-2698 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-2698.yaml) — CLI
+  (No items ready)
 
 ## 🔧 In progress
 
