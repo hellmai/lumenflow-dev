@@ -84,3 +84,17 @@ export interface ProtectedContextResult {
   protected: boolean;
   context: string;
 }
+
+/**
+ * Result of worktree remove check for agents (WU-1027).
+ */
+export interface WorktreeRemoveCheckResult {
+  blocked: boolean;
+  reason: string | null;
+}
+
+/**
+ * Environment variable to bypass worktree remove blocking.
+ * Set by wu:done and wu:prune before removing worktrees.
+ */
+export const WORKTREE_REMOVE_BYPASS_ENV_VAR = 'LUMENFLOW_WORKTREE_REMOVE_ALLOWED';

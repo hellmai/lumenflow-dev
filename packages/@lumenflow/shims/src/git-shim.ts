@@ -21,8 +21,8 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import type { GitShimConfig, BannedPatternResult, ProtectedContextResult } from './types.js';
-import { GitShimConfigSchema, UserType, CommandOutcome } from './types.js';
+import type { GitShimConfig, BannedPatternResult, ProtectedContextResult, WorktreeRemoveCheckResult } from './types.js';
+import { GitShimConfigSchema, UserType, CommandOutcome, WORKTREE_REMOVE_BYPASS_ENV_VAR } from './types.js';
 import { getCurrentBranch, isMainWorktree } from './worktree.js';
 import { isAgentBranch, isHeadlessAllowed, getConfig } from '@lumenflow/core';
 
@@ -194,6 +194,51 @@ export function checkProtectedContext(
 }
 
 /**
+ * Check if a worktree remove command should be blocked for agents (WU-1027).
+ *
+ * Agents must not delete worktrees that belong to other sessions.
+ * Only proper workflow (wu:done, wu:prune) should remove worktrees.
+ *
+ * @param args - Git command arguments
+ * @param config - Git shim configuration
+ * @returns Object with blocked status and reason
+ */
+export function checkWorktreeRemoveForAgent(
+  args: string[],
+  config: GitShimConfig = DEFAULT_CONFIG,
+): WorktreeRemoveCheckResult {
+  const command = args[0]?.toLowerCase();
+  const subcommand = args[1]?.toLowerCase();
+
+  // Only check worktree remove commands
+  if (command !== 'worktree' || subcommand !== 'remove') {
+    return { blocked: false, reason: null };
+  }
+
+  // Check if bypass env var is set (set by wu:done and wu:prune)
+  if (process.env[WORKTREE_REMOVE_BYPASS_ENV_VAR] === '1') {
+    return { blocked: false, reason: null };
+  }
+
+  // Check if user is an agent
+  const userType = detectUserType(config);
+  if (userType !== UserType.AGENT) {
+    return { blocked: false, reason: null };
+  }
+
+  // Block the command for agents
+  return {
+    blocked: true,
+    reason:
+      'Agents must not delete worktrees directly.\n' +
+      'Worktrees belong to WU sessions and may contain uncommitted work.\n\n' +
+      'Proper workflow:\n' +
+      '  - To complete a WU: pnpm wu:done --id WU-XXXX\n' +
+      '  - To clean up orphaned worktrees: pnpm wu:prune',
+  };
+}
+
+/**
  * Format error message for blocked command.
  *
  * @param command - The blocked command
@@ -282,6 +327,16 @@ export function runGitShim(args: string[], config: GitShimConfig = DEFAULT_CONFI
 
   // Detect user type for audit trail
   const user = detectUserType(config);
+
+  // WU-1027: Check worktree remove for agents BEFORE protected context check
+  // This applies everywhere, not just in protected context
+  const worktreeCheck = checkWorktreeRemoveForAgent(args, config);
+  if (worktreeCheck.blocked && worktreeCheck.reason) {
+    const command = args.join(' ');
+    const errorMsg = formatBlockedError(command, worktreeCheck.reason, 'agent session');
+    console.error(errorMsg);
+    return 1;
+  }
 
   // Check if we're in a protected context
   const { protected: isProtected, context } = checkProtectedContext(config);
