@@ -7,7 +7,7 @@ priority: P1
 created: 2026-01-19
 code_paths:
   - .lumenflow.lane-inference.yaml
-  - packages/@lumenflow/core/src/lane-inference.ts
+  - packages/@lumenflow/core/src/__tests__/lane-inference-taxonomy.test.ts
 tests:
   manual:
     - inferSubLane returns correct sublane for code_paths match
