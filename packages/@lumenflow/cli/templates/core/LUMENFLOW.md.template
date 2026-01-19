@@ -1,0 +1,134 @@
+# LumenFlow Workflow Guide
+
+**Last updated:** {{DATE}}
+
+LumenFlow is a vendor-agnostic workflow framework for AI-native software development.
+
+---
+
+## Critical Rule: ALWAYS Run wu:done
+
+**After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
+
+This is the single most forgotten step. Do NOT:
+- Write "To Complete: pnpm wu:done" and stop
+- Ask if you should run wu:done
+- Forget to run wu:done
+
+**DO**: Run `pnpm wu:done --id WU-XXXX` immediately after gates pass.
+
+See: [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
+
+---
+
+## Quick Start
+
+```bash
+# 1. Create a WU
+pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"
+
+# 2. Edit WU spec with acceptance criteria, then claim:
+pnpm wu:claim --id WU-XXXX --lane <Lane>
+cd worktrees/<lane>-wu-xxxx
+
+# 3. Implement in worktree
+
+# 4. Run gates
+pnpm gates --docs-only  # for docs changes
+pnpm gates              # for code changes
+
+# 5. Complete (from main checkout)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXXX
+```
+
+---
+
+## Core Principles
+
+1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
+2. **Library-First**: Search existing libraries before custom code
+3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+4. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+5. **Gates Before Done**: All gates must pass before `wu:done`
+6. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+7. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+
+---
+
+## Documentation Structure
+
+### Core (Vendor-Agnostic)
+
+- **LUMENFLOW.md** - This file, main entry point
+- **.lumenflow/constraints.md** - Non-negotiable workflow constraints
+- **.lumenflow/rules/** - Workflow rules (git-safety.md, wu-workflow.md, etc.)
+- **ai/onboarding/** - Agent onboarding documentation
+
+### Vendor Integrations
+
+- **.claude/** - Claude Code (settings.json, hooks, CLAUDE.md)
+- **.cursor/** - Cursor (rules, settings)
+- **.aider.conf.yml** - Aider configuration
+- **.continue/** - Continue configuration
+
+---
+
+## Worktree Discipline (IMMUTABLE LAW)
+
+After claiming a WU, you MUST work in its worktree:
+
+```bash
+# 1. Claim creates worktree
+pnpm wu:claim --id WU-XXX --lane <lane>
+
+# 2. IMMEDIATELY cd to worktree
+cd worktrees/<lane>-wu-xxx
+
+# 3. ALL work happens here (edits, git add/commit/push, tests, gates)
+
+# 4. Return to main ONLY to complete
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+```
+
+Main checkout becomes read-only after claim. Hooks will block WU commits from main.
+
+---
+
+## Definition of Done
+
+- Acceptance criteria satisfied
+- Gates green (`pnpm gates` or `pnpm gates --docs-only`)
+- WU YAML status = `done`
+- `.beacon/stamps/WU-<id>.done` exists
+- **wu:done has been run** (not just documented as "to do")
+
+---
+
+## Commands Reference
+
+| Command               | Description                         |
+| --------------------- | ----------------------------------- |
+| `pnpm wu:create`      | Create new WU spec                  |
+| `pnpm wu:claim`       | Claim WU and create worktree        |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup) |
+| `pnpm gates`          | Run quality gates                   |
+| `pnpm mem:checkpoint` | Save memory checkpoint              |
+
+---
+
+## Constraints
+
+See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules.
+
+---
+
+## Agent Onboarding
+
+If you're an AI agent, read the onboarding docs:
+
+1. [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
+2. [ai/onboarding/first-wu-mistakes.md](ai/onboarding/first-wu-mistakes.md)
+3. [ai/onboarding/agent-safety-card.md](ai/onboarding/agent-safety-card.md)
+4. [ai/onboarding/quick-ref-commands.md](ai/onboarding/quick-ref-commands.md)

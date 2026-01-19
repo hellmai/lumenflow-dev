@@ -1,0 +1,26 @@
+# Aider Configuration for LumenFlow Projects
+# See LUMENFLOW.md for workflow documentation
+
+# Model settings
+model: gpt-4-turbo
+
+# Git settings
+auto-commits: false
+dirty-commits: false
+
+# Read these files for context
+read:
+  - LUMENFLOW.md
+  - .lumenflow/constraints.md
+  - ai/onboarding/troubleshooting-wu-done.md
+
+# Message to remind about workflow
+message: |
+  This project uses LumenFlow workflow.
+
+  Critical Rules:
+  1. Work only in worktrees after wu:claim
+  2. Run pnpm gates before completing
+  3. ALWAYS run pnpm wu:done --id WU-XXX to complete
+
+  See LUMENFLOW.md for full documentation.

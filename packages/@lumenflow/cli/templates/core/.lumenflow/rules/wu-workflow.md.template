@@ -1,0 +1,48 @@
+# WU Workflow Rules
+
+**Last updated:** {{DATE}}
+
+## WU Lifecycle
+
+```
+ready -> in_progress -> done
+              |
+              v
+          blocked -> in_progress (unblocked)
+```
+
+## Claiming a WU
+
+```bash
+# 1. Check lane is free
+cat docs/04-operations/tasks/status.md
+
+# 2. Claim the WU (creates worktree)
+pnpm wu:claim --id WU-XXX --lane <Lane>
+
+# 3. IMMEDIATELY cd to worktree
+cd worktrees/<lane>-wu-xxx
+```
+
+## Completing a WU
+
+**CRITICAL: ALWAYS run wu:done to complete a WU.**
+
+```bash
+# 1. Ensure gates pass in worktree
+pnpm gates
+
+# 2. Return to main checkout
+cd {{PROJECT_ROOT}}
+
+# 3. Complete the WU
+pnpm wu:done --id WU-XXX
+```
+
+## Definition of Done
+
+- [ ] Acceptance criteria satisfied
+- [ ] Gates pass
+- [ ] WU YAML status = `done`
+- [ ] `.beacon/stamps/WU-<id>.done` exists
+- [ ] `pnpm wu:done` has been run

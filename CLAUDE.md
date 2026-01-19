@@ -1,8 +1,18 @@
-# LumenFlow Development Guide
+# LumenFlow OS Development Guide
 
 **Last updated:** 2026-01-19
 
 This repo contains LumenFlow source code. We dogfood LumenFlow to build LumenFlow.
+
+For complete workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
+
+---
+
+## Critical Rule: ALWAYS Run wu:done
+
+**After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
+
+This is the single most forgotten step. See [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md).
 
 ---
 
@@ -26,7 +36,7 @@ cd worktrees/<lane>-wu-xxxx
 pnpm gates --docs-only  # for docs changes
 pnpm gates              # for code changes (requires built CLI in worktree)
 
-# 6. Complete (from main)
+# 6. Complete (from main) - DO NOT SKIP THIS!
 cd /home/tom/source/hellmai/os
 pnpm wu:done --id WU-XXXX
 ```
@@ -36,12 +46,13 @@ pnpm wu:done --id WU-XXXX
 ## Core Principles
 
 1. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
-2. **TDD**: Failing test → implementation → passing test (≥90% coverage on new code)
+2. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
 3. **Library-First**: Search context7 before custom code
 4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
 5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
 6. **Gates Before Done**: All gates must pass before `wu:done`
 7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+8. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
 
 ---
 
@@ -92,11 +103,25 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 - Gates green (`pnpm gates` or `pnpm gates --docs-only`)
 - WU YAML status = `done`
 - `.beacon/stamps/WU-<id>.done` exists
+- **wu:done has been run** (not just documented)
+
+---
+
+## Documentation Structure
+
+This repo follows the vendor-agnostic LumenFlow documentation structure:
+
+- **LUMENFLOW.md** - Main workflow entry point
+- **.lumenflow/constraints.md** - Non-negotiable rules
+- **.lumenflow/rules/** - Workflow rules
+- **ai/onboarding/** - Agent onboarding docs
+- **.claude/** - Claude Code-specific configuration
 
 ---
 
 ## References
 
-- [LumenFlow Playbook](docs/lumenflow/playbook.md)
-- [WU Sizing Guide](docs/lumenflow/wu-sizing-guide.md)
-- [Distribution Plan](docs/plans/distribution-dogfooding.md)
+- [LUMENFLOW.md](LUMENFLOW.md) - Main workflow documentation
+- [.lumenflow/constraints.md](.lumenflow/constraints.md) - Constraints capsule
+- [ai/onboarding/](ai/onboarding/) - Agent onboarding
+- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)

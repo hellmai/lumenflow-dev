@@ -2,21 +2,30 @@
  * @file init.ts
  * LumenFlow project scaffolding command (WU-1005)
  * WU-1006: Library-First - use js-yaml.dump() for YAML generation
+ * WU-1028: Vendor-agnostic core + vendor integrations
  *
  * Scaffolds new projects with:
+ * - LUMENFLOW.md main entry point (vendor-agnostic)
+ * - .lumenflow/ directory with constraints and rules
+ * - ai/onboarding/ agent onboarding docs
  * - .lumenflow.yaml configuration
- * - CLAUDE.md development guide
- * - AGENTS.md agent context
  * - .beacon/stamps directory
  * - docs/04-operations/tasks/wu directory
+ * - Vendor-specific files based on --vendor flag
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import yaml from 'js-yaml';
 
+/**
+ * Supported vendor integrations
+ */
+export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
+
 export interface ScaffoldOptions {
   force: boolean;
+  vendor: VendorType;
 }
 
 export interface ScaffoldResult {
@@ -60,12 +69,43 @@ function generateLumenflowYaml(): string {
   return header + yaml.dump(DEFAULT_LUMENFLOW_CONFIG, { lineWidth: -1, quotingType: "'" });
 }
 
-// Template for CLAUDE.md
-const CLAUDE_MD_TEMPLATE = `# Development Guide
+/**
+ * Get current date in YYYY-MM-DD format
+ */
+function getCurrentDate(): string {
+  return new Date().toISOString().split('T')[0];
+}
 
-**Last updated:** ${new Date().toISOString().split('T')[0]}
+/**
+ * Process template content by replacing placeholders
+ */
+function processTemplate(content: string, targetDir: string): string {
+  return content
+    .replace(/\{\{DATE\}\}/g, getCurrentDate())
+    .replace(/\{\{PROJECT_ROOT\}\}/g, targetDir);
+}
 
-This project uses LumenFlow workflow for all changes.
+// Template for LUMENFLOW.md (main entry point)
+const LUMENFLOW_MD_TEMPLATE = `# LumenFlow Workflow Guide
+
+**Last updated:** {{DATE}}
+
+LumenFlow is a vendor-agnostic workflow framework for AI-native software development.
+
+---
+
+## Critical Rule: ALWAYS Run wu:done
+
+**After completing work on a WU, you MUST run \`pnpm wu:done --id WU-XXXX\` from the main checkout.**
+
+This is the single most forgotten step. Do NOT:
+- Write "To Complete: pnpm wu:done" and stop
+- Ask if you should run wu:done
+- Forget to run wu:done
+
+**DO**: Run \`pnpm wu:done --id WU-XXXX\` immediately after gates pass.
+
+See: [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
 
 ---
 
@@ -82,10 +122,11 @@ cd worktrees/<lane>-wu-xxxx
 # 3. Implement in worktree
 
 # 4. Run gates
-pnpm gates
+pnpm gates --docs-only  # for docs changes
+pnpm gates              # for code changes
 
-# 5. Complete (from main)
-cd /path/to/main
+# 5. Complete (from main checkout)
+cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXXX
 \`\`\`
 
@@ -93,21 +134,60 @@ pnpm wu:done --id WU-XXXX
 
 ## Core Principles
 
-1. **TDD**: Failing test → implementation → passing test (≥90% coverage on new code)
+1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
 2. **Library-First**: Search existing libraries before custom code
 3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
 4. **Worktree Discipline**: After \`wu:claim\`, work ONLY in the worktree
 5. **Gates Before Done**: All gates must pass before \`wu:done\`
 6. **Do Not Bypass Hooks**: No \`--no-verify\`, fix issues properly
+7. **Always wu:done**: Complete every WU by running \`pnpm wu:done\`
+
+---
+
+## Documentation Structure
+
+### Core (Vendor-Agnostic)
+
+- **LUMENFLOW.md** - This file, main entry point
+- **.lumenflow/constraints.md** - Non-negotiable workflow constraints
+- **.lumenflow/rules/** - Workflow rules
+- **ai/onboarding/** - Agent onboarding documentation
+
+### Vendor Integrations
+
+- **.claude/** - Claude Code configuration
+- **.cursor/** - Cursor configuration
+- **.aider.conf.yml** - Aider configuration
+
+---
+
+## Worktree Discipline (IMMUTABLE LAW)
+
+After claiming a WU, you MUST work in its worktree:
+
+\`\`\`bash
+# 1. Claim creates worktree
+pnpm wu:claim --id WU-XXX --lane <lane>
+
+# 2. IMMEDIATELY cd to worktree
+cd worktrees/<lane>-wu-xxx
+
+# 3. ALL work happens here
+
+# 4. Return to main ONLY to complete
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+\`\`\`
 
 ---
 
 ## Definition of Done
 
 - Acceptance criteria satisfied
-- Gates green (\`pnpm gates\`)
+- Gates green (\`pnpm gates\` or \`pnpm gates --docs-only\`)
 - WU YAML status = \`done\`
 - \`.beacon/stamps/WU-<id>.done\` exists
+- **wu:done has been run**
 
 ---
 
@@ -119,74 +199,269 @@ pnpm wu:done --id WU-XXXX
 | \`pnpm wu:claim\`     | Claim WU and create worktree        |
 | \`pnpm wu:done\`      | Complete WU (merge, stamp, cleanup) |
 | \`pnpm gates\`        | Run quality gates                   |
-| \`pnpm mem:checkpoint\` | Save memory checkpoint            |
+
+---
+
+## Constraints
+
+See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules.
+
+---
+
+## Agent Onboarding
+
+If you're an AI agent, read:
+
+1. [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
+2. [ai/onboarding/agent-safety-card.md](ai/onboarding/agent-safety-card.md)
 `;
 
-// Template for AGENTS.md
-const AGENTS_MD_TEMPLATE = `# Agent Context
+// Template for .lumenflow/constraints.md
+const CONSTRAINTS_MD_TEMPLATE = `# LumenFlow Constraints Capsule
 
-This project uses LumenFlow workflow. Before starting any work:
+**Version:** 1.0
+**Last updated:** {{DATE}}
 
-## Context Loading Protocol
+## The 6 Non-Negotiable Constraints
 
-1. Read \`CLAUDE.md\` for workflow fundamentals
-2. Read \`README.md\` for project structure
-3. Read the specific WU YAML file from \`docs/04-operations/tasks/wu/\`
+### 1. Worktree Discipline and Git Safety
+Work only in worktrees, treat main as read-only, never run destructive git commands on main.
 
-## Critical Rules
+### 2. WUs Are Specs, Not Code
+Respect code_paths boundaries, no feature creep, no code blocks in WU YAML files.
 
-### Worktree Discipline (IMMUTABLE LAW)
+### 3. Docs-Only vs Code WUs
+Documentation WUs use \`--docs-only\` gates, code WUs run full gates.
 
-After claiming a WU, you MUST work in its worktree:
+### 4. LLM-First, Zero-Fallback Inference
+Use LLMs for semantic tasks, fall back to safe defaults (never regex/keywords).
+
+### 5. Gates and Skip-Gates
+Complete via \`pnpm wu:done\`; skip-gates only for pre-existing failures with \`--reason\` and \`--fix-wu\`.
+
+### 6. Safety and Governance
+Respect privacy rules, approved sources, security policies; when uncertain, choose safer path.
+
+---
+
+## Mini Audit Checklist
+
+Before running \`wu:done\`, verify:
+
+- [ ] Working in worktree (not main)
+- [ ] Only modified files in \`code_paths\`
+- [ ] Gates pass
+- [ ] No forbidden git commands used
+- [ ] Acceptance criteria satisfied
+
+---
+
+## Escalation Triggers
+
+Stop and ask a human when:
+- Same error repeats 3 times
+- Auth or permissions changes required
+- PII/PHI/safety issues discovered
+- Cloud spend or secrets involved
+`;
+
+// Template for ai/onboarding/troubleshooting-wu-done.md
+const TROUBLESHOOTING_WU_DONE_TEMPLATE = `# Troubleshooting: wu:done Not Run
+
+**Last updated:** {{DATE}}
+
+## The Problem
+
+Agents complete their work, write "To Complete: pnpm wu:done" and then **stop without running the command**.
+
+## The Fix
+
+After gates pass, you MUST run:
 
 \`\`\`bash
-# 1. Claim creates worktree
-pnpm wu:claim --id WU-XXX --lane <lane>
-
-# 2. IMMEDIATELY cd to worktree
-cd worktrees/<lane>-wu-xxx
-
-# 3. ALL work happens here (edits, git add/commit/push, tests, gates)
-
-# 4. Return to main ONLY to complete
-cd ../../
+cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXX
 \`\`\`
 
-Main checkout becomes read-only after claim. Hooks will block WU commits from main.
+Do NOT:
+- Ask "Should I run wu:done?"
+- Write "To Complete: pnpm wu:done"
+- Wait for permission
 
-### Never Bypass Hooks
+## Checklist Before Ending Session
 
-If a git hook fails (pre-commit, commit-msg):
+- [ ] Did I run \`pnpm gates\` in the worktree?
+- [ ] Did gates pass?
+- [ ] Did I \`cd\` back to main?
+- [ ] Did I run \`pnpm wu:done --id WU-XXX\`?
+- [ ] Did wu:done complete successfully?
 
-1. Read the error message (shows which gate failed)
-2. Fix the underlying issue (format/lint/type errors)
-3. Re-run the commit
+If any answer is "no", you're not done yet.
+`;
 
-**NEVER use \`--no-verify\` or \`--no-gpg-sign\` to bypass hooks.**
+// Template for ai/onboarding/agent-safety-card.md
+const AGENT_SAFETY_CARD_TEMPLATE = `# Agent Safety Card
 
-### WIP = 1 Per Lane
+**Last updated:** {{DATE}}
 
-Only ONE work unit can be "in progress" per lane at any time.
+## Stop and Ask When
 
-## Coding Standards
+- Same error repeats 3 times
+- Auth or permissions changes needed
+- PII/PHI/secrets involved
+- Cloud spend decisions
 
-- **TDD:** Tests first, ≥90% coverage on new application code
-- **Conventional commits:** \`type: summary\` (e.g., \`feat: add feature\`, \`fix: resolve bug\`)
-- **Documentation:** Concise, clear Markdown
+## Never Do
 
-## Forbidden Git Commands (NEVER RUN on main)
+- \`git reset --hard\`
+- \`git push --force\`
+- \`--no-verify\`
+- Work in main after claim
+- Skip wu:done
+
+## Always Do
+
+- Read WU spec first
+- cd to worktree after claim
+- Write tests before code
+- Run gates before wu:done
+- Run wu:done
+`;
+
+// Template for .claude/CLAUDE.md
+const CLAUDE_MD_TEMPLATE = `# Claude Code Configuration
+
+**Last updated:** {{DATE}}
+
+This project uses LumenFlow workflow. For workflow documentation, see [LUMENFLOW.md](../LUMENFLOW.md).
+
+---
+
+## Quick Start
 
 \`\`\`bash
-git reset --hard         # Data loss
-git stash                # Hides work
-git clean -fd            # Deletes files
-git push --force         # History rewrite
---no-verify              # Bypasses safety checks
+# See LUMENFLOW.md for complete workflow
+
+# 1. Claim a WU
+pnpm wu:claim --id WU-XXXX --lane <Lane>
+cd worktrees/<lane>-wu-xxxx
+
+# 2. Work in worktree, run gates
+pnpm gates
+
+# 3. Complete (ALWAYS run this!)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXXX
 \`\`\`
 
-**Where allowed:** Inside your worktree on a lane branch (safe, isolated).
+---
+
+## Critical: Always wu:done
+
+After completing work, ALWAYS run \`pnpm wu:done --id WU-XXXX\`.
+
+See [LUMENFLOW.md](../LUMENFLOW.md) for full workflow documentation.
 `;
+
+// Template for .claude/settings.json
+const CLAUDE_SETTINGS_TEMPLATE = `{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Write(./.env*)",
+      "Bash(git reset --hard *)",
+      "Bash(git stash *)",
+      "Bash(git clean -fd *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git commit --no-verify *)",
+      "Bash(HUSKY=0 *)",
+      "Bash(rm -rf /*)",
+      "Bash(sudo *)",
+      "Bash(git worktree remove *)",
+      "Bash(git worktree prune *)"
+    ]
+  }
+}
+`;
+
+// Template for .cursor/rules.md
+const CURSOR_RULES_TEMPLATE = `# Cursor Rules
+
+This project uses LumenFlow workflow. See [LUMENFLOW.md](../LUMENFLOW.md).
+
+## Critical Rules
+
+1. **Always run wu:done** - After gates pass, run \`pnpm wu:done --id WU-XXX\`
+2. **Work in worktrees** - After \`wu:claim\`, work only in the worktree
+3. **Never bypass hooks** - No \`--no-verify\`
+4. **TDD** - Write tests first
+
+## Forbidden Commands
+
+- \`git reset --hard\`
+- \`git push --force\`
+- \`git stash\` (on main)
+- \`--no-verify\`
+`;
+
+// Template for .aider.conf.yml
+const AIDER_CONF_TEMPLATE = `# Aider Configuration for LumenFlow Projects
+# See LUMENFLOW.md for workflow documentation
+
+model: gpt-4-turbo
+auto-commits: false
+dirty-commits: false
+
+read:
+  - LUMENFLOW.md
+  - .lumenflow/constraints.md
+  - ai/onboarding/troubleshooting-wu-done.md
+`;
+
+/**
+ * Detect vendor from environment
+ */
+function detectVendor(): VendorType {
+  // Check for Claude Code
+  if (process.env.CLAUDE_PROJECT_DIR || process.env.CLAUDE_CODE) {
+    return 'claude';
+  }
+  // Check for Cursor
+  if (process.env.CURSOR_SESSION_ID) {
+    return 'cursor';
+  }
+  // Check for Aider
+  if (process.env.AIDER_MODEL) {
+    return 'aider';
+  }
+  // Default to all if no environment detected
+  return 'all';
+}
+
+/**
+ * Parse vendor flag from arguments
+ */
+function parseVendorArg(args: string[]): VendorType {
+  const vendorIndex = args.findIndex((arg) => arg === '--vendor');
+  if (vendorIndex !== -1 && args[vendorIndex + 1]) {
+    const vendor = args[vendorIndex + 1].toLowerCase();
+    if (['claude', 'cursor', 'aider', 'all', 'none'].includes(vendor)) {
+      return vendor as VendorType;
+    }
+  }
+  return detectVendor();
+}
 
 /**
  * Scaffold a new LumenFlow project
@@ -205,7 +480,7 @@ export async function scaffoldProject(
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  // Create .lumenflow.yaml (WU-1006: use js-yaml.dump() instead of string template)
+  // Create .lumenflow.yaml
   await createFile(
     path.join(targetDir, '.lumenflow.yaml'),
     generateLumenflowYaml(),
@@ -213,11 +488,52 @@ export async function scaffoldProject(
     result,
   );
 
-  // Create CLAUDE.md
-  await createFile(path.join(targetDir, 'CLAUDE.md'), CLAUDE_MD_TEMPLATE, options.force, result);
+  // Create LUMENFLOW.md (main entry point)
+  await createFile(
+    path.join(targetDir, 'LUMENFLOW.md'),
+    processTemplate(LUMENFLOW_MD_TEMPLATE, targetDir),
+    options.force,
+    result,
+  );
 
-  // Create AGENTS.md
-  await createFile(path.join(targetDir, 'AGENTS.md'), AGENTS_MD_TEMPLATE, options.force, result);
+  // Create .lumenflow/constraints.md
+  const lumenflowDir = path.join(targetDir, '.lumenflow');
+  await createFile(
+    path.join(lumenflowDir, 'constraints.md'),
+    processTemplate(CONSTRAINTS_MD_TEMPLATE, targetDir),
+    options.force,
+    result,
+  );
+
+  // Create .lumenflow/rules directory with .gitkeep
+  const rulesDir = path.join(lumenflowDir, 'rules');
+  if (!fs.existsSync(rulesDir)) {
+    fs.mkdirSync(rulesDir, { recursive: true });
+    fs.writeFileSync(path.join(rulesDir, '.gitkeep'), '');
+    result.created.push('.lumenflow/rules');
+  }
+
+  // Create ai/onboarding directory
+  const onboardingDir = path.join(targetDir, 'ai', 'onboarding');
+  if (!fs.existsSync(onboardingDir)) {
+    fs.mkdirSync(onboardingDir, { recursive: true });
+  }
+
+  // Create ai/onboarding/troubleshooting-wu-done.md
+  await createFile(
+    path.join(onboardingDir, 'troubleshooting-wu-done.md'),
+    processTemplate(TROUBLESHOOTING_WU_DONE_TEMPLATE, targetDir),
+    options.force,
+    result,
+  );
+
+  // Create ai/onboarding/agent-safety-card.md
+  await createFile(
+    path.join(onboardingDir, 'agent-safety-card.md'),
+    processTemplate(AGENT_SAFETY_CARD_TEMPLATE, targetDir),
+    options.force,
+    result,
+  );
 
   // Create .beacon/stamps directory
   const beaconStampsDir = path.join(targetDir, '.beacon', 'stamps');
@@ -239,7 +555,65 @@ export async function scaffoldProject(
     fs.writeFileSync(gitkeepPath, '');
   }
 
+  // Scaffold vendor-specific files
+  await scaffoldVendorFiles(targetDir, options, result);
+
   return result;
+}
+
+/**
+ * Scaffold vendor-specific files based on --vendor option
+ */
+async function scaffoldVendorFiles(
+  targetDir: string,
+  options: ScaffoldOptions,
+  result: ScaffoldResult,
+): Promise<void> {
+  const { vendor } = options;
+
+  // Claude Code
+  if (vendor === 'claude' || vendor === 'all') {
+    const claudeDir = path.join(targetDir, '.claude');
+    if (!fs.existsSync(claudeDir)) {
+      fs.mkdirSync(claudeDir, { recursive: true });
+    }
+    await createFile(
+      path.join(claudeDir, 'CLAUDE.md'),
+      processTemplate(CLAUDE_MD_TEMPLATE, targetDir),
+      options.force,
+      result,
+    );
+    await createFile(
+      path.join(claudeDir, 'settings.json'),
+      CLAUDE_SETTINGS_TEMPLATE,
+      options.force,
+      result,
+    );
+  }
+
+  // Cursor
+  if (vendor === 'cursor' || vendor === 'all') {
+    const cursorDir = path.join(targetDir, '.cursor');
+    if (!fs.existsSync(cursorDir)) {
+      fs.mkdirSync(cursorDir, { recursive: true });
+    }
+    await createFile(
+      path.join(cursorDir, 'rules.md'),
+      processTemplate(CURSOR_RULES_TEMPLATE, targetDir),
+      options.force,
+      result,
+    );
+  }
+
+  // Aider
+  if (vendor === 'aider' || vendor === 'all') {
+    await createFile(
+      path.join(targetDir, '.aider.conf.yml'),
+      AIDER_CONF_TEMPLATE,
+      options.force,
+      result,
+    );
+  }
 }
 
 /**
@@ -251,7 +625,16 @@ async function createFile(
   force: boolean,
   result: ScaffoldResult,
 ): Promise<void> {
-  const relativePath = path.basename(filePath);
+  // Get relative path from target directory for reporting
+  const relativePath = filePath.includes('.lumenflow')
+    ? filePath.substring(filePath.indexOf('.lumenflow'))
+    : filePath.includes('.claude')
+      ? filePath.substring(filePath.indexOf('.claude'))
+      : filePath.includes('.cursor')
+        ? filePath.substring(filePath.indexOf('.cursor'))
+        : filePath.includes('ai/onboarding')
+          ? filePath.substring(filePath.indexOf('ai/onboarding'))
+          : path.basename(filePath);
 
   if (fs.existsSync(filePath) && !force) {
     result.skipped.push(relativePath);
@@ -274,24 +657,26 @@ async function createFile(
 export async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const force = args.includes('--force') || args.includes('-f');
+  const vendor = parseVendorArg(args);
   const targetDir = process.cwd();
 
   console.log('[lumenflow init] Scaffolding LumenFlow project...');
+  console.log(`  Vendor: ${vendor}`);
 
-  const result = await scaffoldProject(targetDir, { force });
+  const result = await scaffoldProject(targetDir, { force, vendor });
 
   if (result.created.length > 0) {
     console.log('\nCreated:');
-    result.created.forEach((f) => console.log(`  ✅ ${f}`));
+    result.created.forEach((f) => console.log(`  + ${f}`));
   }
 
   if (result.skipped.length > 0) {
     console.log('\nSkipped (already exists, use --force to overwrite):');
-    result.skipped.forEach((f) => console.log(`  ⏭️  ${f}`));
+    result.skipped.forEach((f) => console.log(`  - ${f}`));
   }
 
   console.log('\n[lumenflow init] Done! Next steps:');
-  console.log('  1. Edit .lumenflow.yaml to match your project structure');
-  console.log('  2. Review CLAUDE.md and AGENTS.md templates');
+  console.log('  1. Review LUMENFLOW.md for workflow documentation');
+  console.log('  2. Edit .lumenflow.yaml to match your project structure');
   console.log('  3. Run: pnpm wu:create --id WU-0001 --lane <lane> --title "First WU"');
 }

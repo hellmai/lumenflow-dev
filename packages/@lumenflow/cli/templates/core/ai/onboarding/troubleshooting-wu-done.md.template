@@ -1,0 +1,31 @@
+# Troubleshooting: wu:done Not Run
+
+**Last updated:** {{DATE}}
+
+## The Problem
+
+Agents complete their work, write "To Complete: pnpm wu:done" and then **stop without running the command**.
+
+## The Fix
+
+After gates pass, you MUST run:
+
+```bash
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+```
+
+Do NOT:
+- Ask "Should I run wu:done?"
+- Write "To Complete: pnpm wu:done"
+- Wait for permission
+
+## Checklist Before Ending Session
+
+- [ ] Did I run `pnpm gates` in the worktree?
+- [ ] Did gates pass?
+- [ ] Did I `cd` back to main?
+- [ ] Did I run `pnpm wu:done --id WU-XXX`?
+- [ ] Did wu:done complete successfully?
+
+If any answer is "no", you're not done yet.
