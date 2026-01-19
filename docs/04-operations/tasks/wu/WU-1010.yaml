@@ -1,6 +1,6 @@
 id: WU-1010
 title: Create example repos (Node/Python/Go)
-lane: Core
+lane: Documentation
 type: feature
 status: ready
 priority: P2
@@ -23,7 +23,7 @@ phase: 2
 risks:
   - Maintenance burden across multiple repos
   - Language-specific gates may need work
-notes: |
+notes: |-
   Example repos show LumenFlow in action for different ecosystems.
 
   Repos to create:
@@ -36,6 +36,9 @@ notes: |
   - Sample WU specs
   - Working gates for that language
   - README pointing to docs
+
+
+  [ADMIN-REPAIR 2026-01-19]: lane changed from 'Core' to 'Documentation'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
