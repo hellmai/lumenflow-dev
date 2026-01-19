@@ -2331,6 +2331,9 @@ function printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree,
 
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
 async function main() {
+  // Allow pre-push hook to recognize wu:done automation (WU-1030)
+  process.env.LUMENFLOW_WU_TOOL = 'wu-done';
+
   // Validate CLI arguments and WU ID format (extracted to wu-done-validators.mjs)
   const { args, id } = validateInputs(process.argv);
 

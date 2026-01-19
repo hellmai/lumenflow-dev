@@ -18,6 +18,7 @@ code_paths:
   - ai/onboarding/quick-ref-commands.md
   - ai/onboarding/troubleshooting-wu-done.md
   - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-edit.ts
   - packages/@lumenflow/cli/__tests__/init.test.ts
   - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
