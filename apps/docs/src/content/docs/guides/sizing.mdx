@@ -11,12 +11,12 @@ Right-sizing WUs is critical for flow. Too big = stuck. Too small = overhead.
 
 Estimate WU "weight" using these heuristics. Agents operate in context windows and tool calls, not clock time.
 
-| Complexity    | Files | Tool Calls | Context Budget | Strategy               |
-| ------------- | ----- | ---------- | -------------- | ---------------------- |
-| **Simple**    | <20   | <50        | <30%           | Single Session         |
-| **Medium**    | 20-50 | 50-100     | 30-50%         | Checkpoint-Resume      |
-| **Complex**   | 50+   | 100+       | >50%           | Orchestrator or Split  |
-| **Oversized** | 100+  | 200+       | —              | **Must Split**         |
+| Complexity    | Files | Tool Calls | Context Budget | Strategy              |
+| ------------- | ----- | ---------- | -------------- | --------------------- |
+| **Simple**    | <20   | <50        | <30%           | Single Session        |
+| **Medium**    | 20-50 | 50-100     | 30-50%         | Checkpoint-Resume     |
+| **Complex**   | 50+   | 100+       | >50%           | Orchestrator or Split |
+| **Oversized** | 100+  | 200+       | —              | **Must Split**        |
 
 <Aside type="tip">
   If you can't complete a WU in a single session, it's too large. Split it using the patterns below.
@@ -96,19 +96,19 @@ Estimate WU "weight" using these heuristics. Agents operate in context windows a
 
 **Best for:** Large backend features, hexagonal architecture.
 
-| WU   | Title                              | Tool Calls |
-| ---- | ---------------------------------- | ---------- |
-| WU-A | Ports + application + unit tests   | ~40        |
-| WU-B | Infrastructure adapters + int tests| ~40        |
+| WU   | Title                               | Tool Calls |
+| ---- | ----------------------------------- | ---------- |
+| WU-A | Ports + application + unit tests    | ~40        |
+| WU-B | Infrastructure adapters + int tests | ~40        |
 
 ### Pattern C: UI/Logic Split (Lane Separation)
 
 **Best for:** Full-stack features.
 
-| WU   | Title                  | Lane |
-| ---- | ---------------------- | ---- |
-| WU-A | API + DB + backend     | Core |
-| WU-B | Components + UI state  | UI   |
+| WU   | Title                 | Lane |
+| ---- | --------------------- | ---- |
+| WU-A | API + DB + backend    | Core |
+| WU-B | Components + UI state | UI   |
 
 ### Pattern D: Feature Flag (Phased Rollout)
 
@@ -156,7 +156,8 @@ If you hit ANY of these during a session, checkpoint and handoff:
 - **Performance Degradation:** Redundant queries, forgotten context
 
 <Aside type="caution">
-  When triggers fire: commit work, push branch, document progress in WU notes, then clear context and resume fresh.
+  When triggers fire: commit work, push branch, document progress in WU notes, then clear context
+  and resume fresh.
 </Aside>
 
 ## Discovery WUs
