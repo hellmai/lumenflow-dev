@@ -81,7 +81,12 @@ describe('lumenflow init command (WU-1005, WU-1028)', () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { force: false, vendor: 'none' });
 
-      const troubleshootingPath = path.join(tempDir, 'ai', 'onboarding', 'troubleshooting-wu-done.md');
+      const troubleshootingPath = path.join(
+        tempDir,
+        'ai',
+        'onboarding',
+        'troubleshooting-wu-done.md',
+      );
       expect(fs.existsSync(troubleshootingPath)).toBe(true);
 
       const content = fs.readFileSync(troubleshootingPath, 'utf-8');
@@ -256,7 +261,9 @@ describe('lumenflow init command (WU-1005, WU-1028)', () => {
       // Core files should always exist
       expect(fs.existsSync(path.join(tempDir, 'LUMENFLOW.md'))).toBe(true);
       expect(fs.existsSync(path.join(tempDir, '.lumenflow', 'constraints.md'))).toBe(true);
-      expect(fs.existsSync(path.join(tempDir, 'ai', 'onboarding', 'troubleshooting-wu-done.md'))).toBe(true);
+      expect(
+        fs.existsSync(path.join(tempDir, 'ai', 'onboarding', 'troubleshooting-wu-done.md')),
+      ).toBe(true);
     });
   });
 });

@@ -124,12 +124,14 @@ describe('calculateTotal', () => {
 ## Mocking Guidelines
 
 ### DO Mock:
+
 - External APIs (databases, HTTP clients)
 - Time-dependent functions
 - File system operations
 - Third-party services
 
 ### DO NOT Mock:
+
 - Your own domain logic
 - Standard library functions
 - Language primitives

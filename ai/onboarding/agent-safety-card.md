@@ -19,28 +19,28 @@ Quick reference for AI agents working in LumenFlow projects.
 
 ## Never Do
 
-| Action | Why |
-|--------|-----|
-| `git reset --hard` | Data loss |
-| `git push --force` | History rewrite |
-| `--no-verify` | Bypasses safety |
-| `git stash` (on main) | Hides work |
-| `git clean -fd` | Deletes files |
+| Action                   | Why              |
+| ------------------------ | ---------------- |
+| `git reset --hard`       | Data loss        |
+| `git push --force`       | History rewrite  |
+| `--no-verify`            | Bypasses safety  |
+| `git stash` (on main)    | Hides work       |
+| `git clean -fd`          | Deletes files    |
 | Work in main after claim | Breaks isolation |
-| Skip wu:done | Incomplete WU |
+| Skip wu:done             | Incomplete WU    |
 
 ---
 
 ## Always Do
 
-| Action | Why |
-|--------|-----|
-| Read WU spec first | Understand scope |
-| cd to worktree after claim | Isolation |
-| Write tests before code | TDD |
-| Run gates before wu:done | Quality |
-| Run wu:done | Complete WU |
-| Stay within code_paths | Scope discipline |
+| Action                     | Why              |
+| -------------------------- | ---------------- |
+| Read WU spec first         | Understand scope |
+| cd to worktree after claim | Isolation        |
+| Write tests before code    | TDD              |
+| Run gates before wu:done   | Quality          |
+| Run wu:done                | Complete WU      |
+| Stay within code_paths     | Scope discipline |
 
 ---
 
@@ -49,6 +49,7 @@ Quick reference for AI agents working in LumenFlow projects.
 ### Max 3 Attempts
 
 If same error happens 3 times:
+
 1. Stop trying
 2. Document what happened
 3. Ask for help
@@ -98,6 +99,7 @@ pnpm wu:done --id WU-XXX
 ## When Uncertain
 
 Choose the safer path:
+
 - Don't modify files outside code_paths
 - Don't bypass hooks
 - Don't skip gates
