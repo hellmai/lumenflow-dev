@@ -2,7 +2,7 @@ id: WU-1016
 title: Implement configurable WIP limits per lane
 lane: Core
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -56,3 +56,11 @@ acceptance:
   - Default wip_limit is 1 if not specified
   - Tests cover multi-WU scenarios
   - Documentation updated to reflect configurable limits
+claimed_mode: worktree
+worktree_path: worktrees/core-wu-1016
+claimed_at: 2026-01-19T11:55:40.459Z
+baseline_main_sha: f446d35c85b1d0173fb578785a859e73bbd5edb1
+session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T11:55:40.465Z
