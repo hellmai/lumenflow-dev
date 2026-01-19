@@ -13,7 +13,8 @@ tests:
     - inferSubLane returns correct sublane for code_paths match
     - inferSubLane returns correct sublane for keyword match
     - getAllSubLanes returns complete taxonomy
-  unit: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-inference-taxonomy.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1019.done
