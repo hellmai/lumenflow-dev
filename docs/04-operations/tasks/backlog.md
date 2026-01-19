@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml) — Operations: Infrastructure
-- [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -54,3 +52,4 @@ sections:
 - [WU-1024 — Pre-push hook should allow CLI tool pushes to main](wu/WU-1024.yaml)
 - [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml)
 - [WU-1023 — Auto-setup worktree dependencies on wu:claim](wu/WU-1023.yaml)
+- [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml)

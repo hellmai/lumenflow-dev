@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — 2026-01-19
 - [WU-1023 — Auto-setup worktree dependencies on wu:claim](wu/WU-1023.yaml) — 2026-01-19
 - [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml) — 2026-01-19
 - [WU-1024 — Pre-push hook should allow CLI tool pushes to main](wu/WU-1024.yaml) — 2026-01-19
