@@ -49,18 +49,18 @@ pnpm wu:done --id WU-XXXX
 
 Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.yaml` for full list.
 
-| Lane                        | Packages/Paths                       |
-| --------------------------- | ------------------------------------ |
-| Framework: Core             | `packages/@lumenflow/core/**`        |
-| Framework: CLI              | `packages/@lumenflow/cli/**`         |
-| Framework: Memory           | `packages/@lumenflow/memory/**`      |
-| Framework: Agent            | `packages/@lumenflow/agent/**`       |
-| Framework: Metrics          | `packages/@lumenflow/metrics/**`     |
-| Framework: Initiatives      | `packages/@lumenflow/initiatives/**` |
-| Framework: Shims            | `packages/@lumenflow/shims/**`       |
-| Operations: Infrastructure  | `apps/**`, `actions/**`              |
-| Operations: CI/CD           | `.github/**`                         |
-| Content: Documentation      | `docs/**`                            |
+| Lane                       | Packages/Paths                       |
+| -------------------------- | ------------------------------------ |
+| Framework: Core            | `packages/@lumenflow/core/**`        |
+| Framework: CLI             | `packages/@lumenflow/cli/**`         |
+| Framework: Memory          | `packages/@lumenflow/memory/**`      |
+| Framework: Agent           | `packages/@lumenflow/agent/**`       |
+| Framework: Metrics         | `packages/@lumenflow/metrics/**`     |
+| Framework: Initiatives     | `packages/@lumenflow/initiatives/**` |
+| Framework: Shims           | `packages/@lumenflow/shims/**`       |
+| Operations: Infrastructure | `apps/**`, `actions/**`              |
+| Operations: CI/CD          | `.github/**`                         |
+| Content: Documentation     | `docs/**`                            |
 
 ---
 
