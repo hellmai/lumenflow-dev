@@ -2,7 +2,7 @@ id: WU-1019
 title: Add .lumenflow.lane-inference.yaml for sublane taxonomy
 lane: Infrastructure
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - Config defines 10 sub-lanes with code_paths and keywords
   - inferSubLane() from @lumenflow/core works without errors
   - Existing WUs can still use simple lane names (backward compatible)
+claimed_mode: worktree
+worktree_path: worktrees/infrastructure-wu-1019
+claimed_at: 2026-01-19T11:21:03.923Z
+baseline_main_sha: 6542f035ca45d77448709ad6d3dad2eb1a640605
+session_id: a4ef71e2-4815-4b58-817e-bcd5c6679b71
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T11:21:03.932Z
