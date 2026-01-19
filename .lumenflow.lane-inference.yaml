@@ -1,0 +1,175 @@
+# Lane Inference Configuration for LumenFlow OS
+#
+# Defines sub-lane taxonomy with code_paths patterns and keywords for automated inference.
+# Used by @lumenflow/core lane-inference.ts to suggest sub-lanes during WU creation.
+#
+# Taxonomy: 10 sub-lanes across 3 parent lanes
+# - Framework: 7 sub-lanes (Core, CLI, Memory, Agent, Metrics, Initiatives, Shims)
+# - Operations: 2 sub-lanes (Infrastructure, CI/CD)
+# - Content: 1 sub-lane (Documentation)
+#
+# Created: WU-1019
+# Based on: ExampleApp .lumenflow.lane-inference.yaml pattern
+
+# Framework Lane: @lumenflow packages
+Framework:
+  Core:
+    description: 'Core library: WU lifecycle, git adapter, dependency graph, lane inference'
+    code_paths:
+      - 'packages/@lumenflow/core/**'
+      - 'packages/@lumenflow/core/src/**'
+    keywords:
+      - 'core library'
+      - 'wu lifecycle'
+      - 'git adapter'
+      - 'dependency graph'
+      - 'lane inference'
+      - 'file operations'
+      - 'wu parser'
+      - 'worktree'
+
+  CLI:
+    description: 'CLI commands: wu-*, mem-*, initiative-*, agent-*, gates'
+    code_paths:
+      - 'packages/@lumenflow/cli/**'
+      - 'packages/@lumenflow/cli/src/**'
+    keywords:
+      - 'cli command'
+      - 'wu:claim'
+      - 'wu:done'
+      - 'wu:create'
+      - 'command line'
+      - 'argument parsing'
+      - 'commander'
+      - 'bin script'
+
+  Memory:
+    description: 'Memory layer: checkpoints, summarization, context management'
+    code_paths:
+      - 'packages/@lumenflow/memory/**'
+      - 'packages/@lumenflow/memory/src/**'
+    keywords:
+      - 'memory'
+      - 'checkpoint'
+      - 'summarization'
+      - 'context management'
+      - 'mem:init'
+      - 'mem:checkpoint'
+      - 'conversation history'
+      - 'token budget'
+
+  Agent:
+    description: 'Agent tooling: session management, issue logging, feedback'
+    code_paths:
+      - 'packages/@lumenflow/agent/**'
+      - 'packages/@lumenflow/agent/src/**'
+    keywords:
+      - 'agent session'
+      - 'issue logging'
+      - 'feedback'
+      - 'agent:session'
+      - 'agent:log-issue'
+      - 'triage'
+      - 'escalation'
+      - 'signal'
+
+  Metrics:
+    description: 'Metrics and analytics: DORA, flow reports, telemetry'
+    code_paths:
+      - 'packages/@lumenflow/metrics/**'
+      - 'packages/@lumenflow/metrics/src/**'
+    keywords:
+      - 'metrics'
+      - 'DORA'
+      - 'flow report'
+      - 'telemetry'
+      - 'deployment frequency'
+      - 'lead time'
+      - 'change failure rate'
+      - 'bottleneck analysis'
+
+  Initiatives:
+    description: 'Initiative orchestration: multi-WU coordination, bulk operations'
+    code_paths:
+      - 'packages/@lumenflow/initiatives/**'
+      - 'packages/@lumenflow/initiatives/src/**'
+    keywords:
+      - 'initiative'
+      - 'orchestration'
+      - 'bulk assign'
+      - 'initiative:create'
+      - 'initiative:status'
+      - 'multi-wu'
+      - 'coordination'
+      - 'spawning'
+
+  Shims:
+    description: 'Compatibility shims: platform adapters, polyfills'
+    code_paths:
+      - 'packages/@lumenflow/shims/**'
+      - 'packages/@lumenflow/shims/src/**'
+    keywords:
+      - 'shim'
+      - 'compatibility'
+      - 'adapter'
+      - 'polyfill'
+      - 'platform'
+      - 'browser'
+      - 'node'
+      - 'cross-platform'
+
+# Operations Lane: Infrastructure and CI/CD
+Operations:
+  Infrastructure:
+    description: 'Apps, actions, deployment, hosting configuration'
+    code_paths:
+      - 'apps/**'
+      - 'actions/**'
+      - 'turbo.json'
+      - 'pnpm-workspace.yaml'
+      - '.husky/**'
+    keywords:
+      - 'infrastructure'
+      - 'deployment'
+      - 'hosting'
+      - 'app'
+      - 'action'
+      - 'turbo'
+      - 'monorepo'
+      - 'workspace'
+
+  CI/CD:
+    description: 'GitHub Actions, workflows, build pipelines'
+    code_paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/**'
+    keywords:
+      - 'ci'
+      - 'cd'
+      - 'github actions'
+      - 'workflow'
+      - 'pipeline'
+      - 'build'
+      - 'release'
+      - 'automation'
+
+# Content Lane: Documentation
+Content:
+  Documentation:
+    description: 'All documentation: guides, references, playbooks, WU specs'
+    code_paths:
+      - 'docs/**'
+      - 'docs/lumenflow/**'
+      - 'docs/04-operations/**'
+      - 'CLAUDE.md'
+      - 'README.md'
+    keywords:
+      - 'documentation'
+      - 'docs'
+      - 'guide'
+      - 'playbook'
+      - 'reference'
+      - 'readme'
+      - 'mdx'
+      - 'markdown'
