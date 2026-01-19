@@ -29,3 +29,4 @@
 {"type":"claim","wuId":"WU-1020","lane":"CLI","title":"Fix TypeScript error in metrics-snapshot.ts for readonly array cast","timestamp":"2026-01-19T12:12:00.255Z"}
 {"type":"claim","wuId":"WU-1016","lane":"Core","title":"Implement configurable WIP limits per lane","timestamp":"2026-01-19T11:55:40.482Z"}
 {"type":"complete","wuId":"WU-1020","timestamp":"2026-01-19T12:15:42.885Z"}
+{"type":"claim","wuId":"WU-1022","lane":"Framework: CLI","title":"Enforce parent:sublane format for lanes (Framework: CLI not CLI)","timestamp":"2026-01-19T12:20:00.000Z"}
