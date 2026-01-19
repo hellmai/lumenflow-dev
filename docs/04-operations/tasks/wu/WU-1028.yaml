@@ -7,9 +7,10 @@ priority: P1
 created: 2026-01-19
 code_paths:
   - CLAUDE.md
-  - docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md
-  - docs/templates/CLAUDE.md
-  - docs/templates/agent-rules.md
+  - CLAUDE-core.md
+  - .claude/constraints-capsule.md
+  - .claude/rules/**
+  - ai/onboarding/**
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/templates/**
 tests:
@@ -76,11 +77,10 @@ description: |-
   3. Update init.ts to scaffold full .claude/ and ai/ structure
   4. LumenFlow OS dogfoods its own docs
 acceptance:
-  - CLAUDE.md has prominent WARNING section about wu:done being mandatory
-  - CLAUDE.md states "Work is NOT complete until wu:done runs successfully"
-  - docs/templates/CLAUDE.md exists as distributable template
-  - docs/templates/agent-rules.md exists with non-negotiables
-  - pnpm lumenflow init copies templates to target project
-  - Existing lumenflow-agent-capsule.md content merged into templates
-  - constraints-capsule.md created or reference removed
+  - CLAUDE-core.md created with 'Always wu:done' as explicit rule
+  - .claude/constraints-capsule.md migrated from PatientPath (genericized)
+  - .claude/rules/ directory with 5 rule files migrated
+  - ai/onboarding/ directory created with key files including troubleshooting-wu-done.md
+  - init.ts updated to scaffold full .claude/ and ai/ structure
+  - LumenFlow OS repo uses its own docs (dogfooding)
   - pnpm format, lint, typecheck pass
