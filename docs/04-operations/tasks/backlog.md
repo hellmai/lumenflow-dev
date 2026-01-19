@@ -20,11 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml) — Infrastructure
-- [WU-1018 — Migrate missing CLI commands from PatientPath to @lumenflow/cli](wu/WU-1018.yaml) — CLI
-- [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml) — Infrastructure
-- [WU-2698 — Migrate missing CLI commands from PatientPath to @lumenflow/cli](wu/WU-2698.yaml) — CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -47,3 +43,4 @@ sections:
 - [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml)
 - [WU-1012 — Add --docs-only flag to wu:done for documentation WUs](wu/WU-1012.yaml)
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)
+- [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml)

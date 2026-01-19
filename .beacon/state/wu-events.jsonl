@@ -21,3 +21,4 @@
 {"type":"claim","wuId":"WU-1010","lane":"Documentation","title":"Create example repos (Node/Python/Go)","timestamp":"2026-01-19T09:53:00.000Z"}
 {"type":"complete","wuId":"WU-1010","timestamp":"2026-01-19T10:05:35.567Z"}
 {"type":"claim","wuId":"WU-1017","lane":"Infrastructure","title":"Add vendor-agnostic git hooks via Husky","timestamp":"2026-01-19T11:14:48.833Z"}
+{"type":"complete","wuId":"WU-1017","timestamp":"2026-01-19T11:29:00.333Z"}
