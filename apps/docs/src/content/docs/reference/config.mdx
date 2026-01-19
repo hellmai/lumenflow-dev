@@ -33,8 +33,8 @@ project: my-project
 # Lane enforcement settings
 lanes:
   enforcement:
-    require_parent: true   # Enforce Parent: Sublane format
-    allow_custom: false    # Only taxonomy lanes allowed
+    require_parent: true # Enforce Parent: Sublane format
+    allow_custom: false # Only taxonomy lanes allowed
 
   # Lane definitions with Parent: Sublane format
   definitions:
@@ -124,30 +124,30 @@ project: my-awesome-app
 ```yaml
 lanes:
   enforcement:
-    require_parent: true   # Require Parent: Sublane format
-    allow_custom: false    # Only taxonomy lanes allowed
+    require_parent: true # Require Parent: Sublane format
+    allow_custom: false # Only taxonomy lanes allowed
 
   definitions:
-    - name: 'Framework: Core'  # Parent: Sublane format
-      wip_limit: 1              # Max WUs in progress (default: 1)
-      code_paths:               # File paths for auto-detection
+    - name: 'Framework: Core' # Parent: Sublane format
+      wip_limit: 1 # Max WUs in progress (default: 1)
+      code_paths: # File paths for auto-detection
         - 'packages/@lumenflow/core/**'
 ```
 
 #### lanes.enforcement
 
-| Field            | Type    | Default | Description                           |
-| ---------------- | ------- | ------- | ------------------------------------- |
-| `require_parent` | boolean | false   | Require `Parent: Sublane` format      |
-| `allow_custom`   | boolean | true    | Allow lanes outside defined taxonomy  |
+| Field            | Type    | Default | Description                          |
+| ---------------- | ------- | ------- | ------------------------------------ |
+| `require_parent` | boolean | false   | Require `Parent: Sublane` format     |
+| `allow_custom`   | boolean | true    | Allow lanes outside defined taxonomy |
 
 #### lanes.definitions[]
 
-| Field        | Type     | Default  | Description                      |
-| ------------ | -------- | -------- | -------------------------------- |
-| `name`       | string   | required | Lane identifier (Parent: Sublane)|
-| `wip_limit`  | number   | 1        | Max concurrent WUs               |
-| `code_paths` | string[] | []       | Glob patterns for lane detection |
+| Field        | Type     | Default  | Description                       |
+| ------------ | -------- | -------- | --------------------------------- |
+| `name`       | string   | required | Lane identifier (Parent: Sublane) |
+| `wip_limit`  | number   | 1        | Max concurrent WUs                |
+| `code_paths` | string[] | []       | Glob patterns for lane detection  |
 
 ### gates
 

@@ -21,8 +21,18 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import type { GitShimConfig, BannedPatternResult, ProtectedContextResult, WorktreeRemoveCheckResult } from './types.js';
-import { GitShimConfigSchema, UserType, CommandOutcome, WORKTREE_REMOVE_BYPASS_ENV_VAR } from './types.js';
+import type {
+  GitShimConfig,
+  BannedPatternResult,
+  ProtectedContextResult,
+  WorktreeRemoveCheckResult,
+} from './types.js';
+import {
+  GitShimConfigSchema,
+  UserType,
+  CommandOutcome,
+  WORKTREE_REMOVE_BYPASS_ENV_VAR,
+} from './types.js';
 import { getCurrentBranch, isMainWorktree } from './worktree.js';
 import { isAgentBranch, isHeadlessAllowed, getConfig } from '@lumenflow/core';
 
