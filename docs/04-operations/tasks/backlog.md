@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
