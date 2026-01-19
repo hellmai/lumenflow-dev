@@ -2,7 +2,7 @@ id: WU-1025
 title: Block wu:create and wu:claim if spec contains PLACEHOLDER markers
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -32,3 +32,11 @@ acceptance:
   - wu:create fails if description contains PLACEHOLDER
   - wu:claim fails if spec has PLACEHOLDER markers
   - Clear error message tells user what to fix
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-wu-1025
+claimed_at: 2026-01-19T12:30:17.575Z
+baseline_main_sha: b8c395b87aafbf8977a84c47f033a1fb6bc59401
+session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T12:30:17.579Z
