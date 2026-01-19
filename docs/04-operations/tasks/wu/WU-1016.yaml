@@ -51,11 +51,11 @@ description: |
 
   Solution: Read wip_limit from config and enforce it in checkLaneFree().
 acceptance:
-  - wip_limit field from config is read and used
-  - Lane can have multiple in_progress WUs up to wip_limit
-  - Default wip_limit is 1 if not specified
-  - Tests cover multi-WU scenarios
-  - Documentation updated to reflect configurable limits
+  - '[x] wip_limit field from config is read and used'
+  - '[x] Lane can have multiple in_progress WUs up to wip_limit'
+  - '[x] Default wip_limit is 1 if not specified'
+  - '[x] Tests cover multi-WU scenarios'
+  - '[x] Documentation updated to reflect configurable limits'
 claimed_mode: worktree
 worktree_path: worktrees/core-wu-1016
 claimed_at: 2026-01-19T11:55:40.459Z
