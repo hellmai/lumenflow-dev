@@ -15,6 +15,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { FILE_SYSTEM, STDIO } from './wu-constants.js';
+import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 
 /**
  * Check if a file path is a test file
@@ -383,4 +384,155 @@ function formatMockFindings(findings) {
   msg += '\nVerify these are actual implementations, not placeholder code.';
 
   return msg;
+}
+
+// =============================================================================
+// WU-1025: Placeholder Detection for wu:create and wu:claim
+// =============================================================================
+
+/**
+ * Result of placeholder validation
+ */
+export interface PlaceholderValidationResult {
+  /** Whether validation passed (no placeholders found) */
+  valid: boolean;
+  /** List of validation errors */
+  errors: string[];
+  /** Fields that contain placeholders */
+  fieldsWithPlaceholders: string[];
+}
+
+/**
+ * WU-1025: Validate that WU spec content does not contain PLACEHOLDER markers
+ *
+ * Used by wu:create (for inline content) and wu:claim (for full spec).
+ * Provides clear error messages telling the user which fields need to be fixed.
+ *
+ * @param {object} spec - WU spec content to validate
+ * @param {string} [spec.description] - WU description
+ * @param {string[]|object} [spec.acceptance] - Acceptance criteria (array or object)
+ * @returns {PlaceholderValidationResult} Validation result with errors and affected fields
+ *
+ * @example
+ * // wu:create validation (inline content only)
+ * const result = validateNoPlaceholders({ description: args.description });
+ * if (!result.valid) {
+ *   die(`Cannot create WU:\n${result.errors.join('\n')}`);
+ * }
+ *
+ * @example
+ * // wu:claim validation (full spec)
+ * const result = validateNoPlaceholders(wuDoc);
+ * if (!result.valid) {
+ *   die(`Cannot claim WU:\n${result.errors.join('\n')}`);
+ * }
+ */
+export function validateNoPlaceholders(spec: {
+  description?: string;
+  acceptance?: string[] | Record<string, string[]>;
+}): PlaceholderValidationResult {
+  const errors: string[] = [];
+  const fieldsWithPlaceholders: string[] = [];
+
+  // Check description
+  if (spec.description && spec.description.includes(PLACEHOLDER_SENTINEL)) {
+    fieldsWithPlaceholders.push('description');
+    errors.push(
+      `Description contains ${PLACEHOLDER_SENTINEL} marker.\n` +
+        `  Fix: Replace placeholder text with actual description.\n` +
+        `  Example: --description "Implement X feature to enable Y functionality"`,
+    );
+  }
+
+  // Check acceptance criteria (supports both array and object formats)
+  if (spec.acceptance) {
+    const hasPlaceholder = checkForPlaceholderInAcceptance(spec.acceptance);
+    if (hasPlaceholder) {
+      fieldsWithPlaceholders.push('acceptance');
+      errors.push(
+        `Acceptance criteria contain ${PLACEHOLDER_SENTINEL} markers.\n` +
+          `  Fix: Replace placeholder text with actual acceptance criteria.\n` +
+          `  Example: --acceptance "Feature X works as expected" --acceptance "Tests pass"`,
+      );
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    fieldsWithPlaceholders,
+  };
+}
+
+/**
+ * Helper: Recursively check acceptance criteria for placeholder markers
+ *
+ * Supports both formats:
+ * - Flat array: ["criterion 1", "criterion 2"]
+ * - Nested object: { functional: ["criterion"], technical: ["criterion"] }
+ *
+ * @param {string[]|object} acceptance - Acceptance criteria
+ * @returns {boolean} True if any placeholder found
+ */
+function checkForPlaceholderInAcceptance(acceptance: string[] | Record<string, string[]>): boolean {
+  if (Array.isArray(acceptance)) {
+    return acceptance.some(
+      (item) => typeof item === 'string' && item.includes(PLACEHOLDER_SENTINEL),
+    );
+  }
+
+  if (typeof acceptance === 'object' && acceptance !== null) {
+    return Object.values(acceptance).some((value) => {
+      if (Array.isArray(value)) {
+        return value.some(
+          (item) => typeof item === 'string' && item.includes(PLACEHOLDER_SENTINEL),
+        );
+      }
+      return false;
+    });
+  }
+
+  return false;
+}
+
+/**
+ * WU-1025: Build error message for placeholder validation failure
+ *
+ * Creates a user-friendly error message with actionable guidance.
+ *
+ * @param {string} command - Command that failed ('wu:create' or 'wu:claim')
+ * @param {PlaceholderValidationResult} result - Validation result
+ * @param {string} [wuId] - WU ID (for wu:claim error messages)
+ * @returns {string} Formatted error message
+ */
+export function buildPlaceholderErrorMessage(
+  command: string,
+  result: PlaceholderValidationResult,
+  wuId?: string,
+): string {
+  const header =
+    command === 'wu:create'
+      ? `Cannot create WU with placeholder markers`
+      : `Cannot claim ${wuId || 'WU'} - spec contains placeholder markers`;
+
+  const fieldsText = result.fieldsWithPlaceholders.join(', ');
+
+  let message = `
+❌ ${header}
+
+Fields with ${PLACEHOLDER_SENTINEL} markers: ${fieldsText}
+
+${result.errors.join('\n\n')}
+`;
+
+  if (command === 'wu:claim' && wuId) {
+    message += `
+To fix, edit the WU spec:
+  pnpm wu:edit --id ${wuId} --description "..." --acceptance "..."
+
+Or manually edit: docs/04-operations/tasks/wu/${wuId}.yaml
+`;
+  }
+
+  return message;
 }
