@@ -6,8 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
-  - .husky/pre-push
-  - .husky/pre-commit
   - .husky/prepare-commit-msg
   - .husky/commit-msg
   - .husky/hooks/pre-push.mjs
