@@ -49,3 +49,4 @@ sections:
 - [WU-1018 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-1018.yaml)
 - [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml)
 - [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml)
+- [WU-1024 — Pre-push hook should allow CLI tool pushes to main](wu/WU-1024.yaml)
