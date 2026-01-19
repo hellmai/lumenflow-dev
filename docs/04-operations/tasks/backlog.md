@@ -22,7 +22,7 @@ sections:
 
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml) — Operations: Infrastructure
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — Framework: Core
-(No items ready)
+  (No items ready)
 
 ## 🔧 In progress
 

@@ -175,9 +175,9 @@ Add patterns to your config to allow specific branch prefixes:
 git:
   mainBranch: main
   agentBranchPatterns:
-    - "agent/*"      # Default: agent-created branches
-    - "claude/*"     # Optional: Claude-specific branches
-    - "automation/*" # Optional: CI/CD automation
+    - 'agent/*' # Default: agent-created branches
+    - 'claude/*' # Optional: Claude-specific branches
+    - 'automation/*' # Optional: CI/CD automation
 ```
 
 ### How It Works
@@ -189,8 +189,8 @@ When a branch matches an `agentBranchPatterns` glob:
 - **Write/Edit hooks allow file changes** – No worktree check enforced
 
 <Aside type="caution">
-  Protected branches (`mainBranch` and `master`) are **never** bypassed, even if they match a pattern.
-  Lane branches (`lane/*`) also require worktrees regardless of patterns.
+  Protected branches (`mainBranch` and `master`) are **never** bypassed, even if they match a
+  pattern. Lane branches (`lane/*`) also require worktrees regardless of patterns.
 </Aside>
 
 ### Headless Mode for CI/CD
@@ -217,8 +217,8 @@ The system evaluates in this order (first match wins):
 6. Unknown branch → protected (fail-closed)
 
 <Aside>
-  The **fail-closed** design means unknown branches are blocked when worktrees exist.
-  This prevents accidental work in the wrong location.
+  The **fail-closed** design means unknown branches are blocked when worktrees exist. This prevents
+  accidental work in the wrong location.
 </Aside>
 
 ## Multi-Agent Coordination

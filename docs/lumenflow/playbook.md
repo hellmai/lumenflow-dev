@@ -692,8 +692,8 @@ Configuration in `.lumenflow.config.yaml`:
 git:
   mainBranch: main
   agentBranchPatterns:
-    - "agent/*"      # Default: agent-created branches
-    - "claude/*"     # Optional: add vendor-specific patterns
+    - 'agent/*' # Default: agent-created branches
+    - 'claude/*' # Optional: add vendor-specific patterns
 ```
 
 **How it works:**
@@ -706,6 +706,7 @@ git:
 **Guarded headless mode:**
 
 For CI/CD pipelines, set `LUMENFLOW_HEADLESS=1` with one of:
+
 - `LUMENFLOW_ADMIN=1` (explicit admin override)
 - `CI=true` (standard CI environment)
 - `GITHUB_ACTIONS=true` (GitHub Actions)
