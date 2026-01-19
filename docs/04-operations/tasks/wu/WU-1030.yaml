@@ -2,7 +2,7 @@ id: WU-1030
 title: Fix wu:create/wu:edit pre-push block leaving main ahead
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -62,3 +62,5 @@ session_id: 38dbc6c3-6b3e-443c-b73f-fb9e627e3a4e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T21:16:19.358Z
+locked: true
+completed_at: 2026-01-19T21:29:27.007Z

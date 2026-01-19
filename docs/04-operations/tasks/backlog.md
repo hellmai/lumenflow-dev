@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml) — Operations: Infrastructure
-- [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -57,3 +55,4 @@ sections:
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml)
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml)
 - [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml)
+- [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml)
