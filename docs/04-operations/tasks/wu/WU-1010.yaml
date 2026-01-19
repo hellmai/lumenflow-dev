@@ -2,7 +2,7 @@ id: WU-1010
 title: Create example repos (Node/Python/Go)
 lane: Documentation
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-18
 code_paths: []
