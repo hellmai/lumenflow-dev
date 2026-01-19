@@ -931,39 +931,52 @@ async function claimWorktreeMode(ctx) {
     console.log(`${PREFIX} ${EMOJI.SUCCESS} Claim committed: ${commitMsg}`);
   }
 
-  // WU-1443: Auto-symlink node_modules for immediate pnpm usability
-  // WU-2238: Pass mainRepoPath to detect broken worktree-path symlinks
-  const symlinkResult = symlinkNodeModules(worktreePath, console, originalCwd);
-  if (symlinkResult.created) {
-    console.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked for immediate use`);
-  } else if (symlinkResult.refused) {
-    // WU-2238: Symlinking was refused due to worktree-path symlinks
-    // Fall back to running pnpm install in the worktree
-    console.log(
-      `${PREFIX} Running pnpm install in worktree (symlink refused: ${symlinkResult.reason})`,
-    );
+  // WU-1023: Auto-setup worktree dependencies
+  // By default, run pnpm install to ensure all dependencies are built (including CLI dist)
+  // Use --skip-setup to use symlink-only approach for faster claims when deps are already built
+  if (args.skipSetup) {
+    // WU-1443: Symlink-only mode for fast claims
+    // WU-2238: Pass mainRepoPath to detect broken worktree-path symlinks
+    const symlinkResult = symlinkNodeModules(worktreePath, console, originalCwd);
+    if (symlinkResult.created) {
+      console.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked (--skip-setup mode)`);
+    } else if (symlinkResult.refused) {
+      console.warn(`${PREFIX} Warning: symlink refused: ${symlinkResult.reason}`);
+      console.warn(`${PREFIX} Run 'pnpm install' manually in the worktree`);
+    }
+
+    // WU-1579: Auto-symlink nested package node_modules for turbo typecheck
+    if (!symlinkResult.refused) {
+      const nestedResult = symlinkNestedNodeModules(worktreePath, originalCwd);
+      if (nestedResult.created > 0) {
+        console.log(
+          `${PREFIX} ${EMOJI.SUCCESS} ${nestedResult.created} nested node_modules symlinked for typecheck`,
+        );
+      }
+    }
+  } else {
+    // WU-1023: Full setup mode (default) - run pnpm install with progress indicator
+    // This ensures CLI dist is built and all dependencies are properly resolved
+    console.log(`${PREFIX} Installing worktree dependencies (this may take a moment)...`);
     try {
       const { execSync } = await import('node:child_process');
       execSync('pnpm install --frozen-lockfile', {
         cwd: worktreePath,
-        stdio: 'inherit',
-        timeout: 120000, // 2 minute timeout
+        stdio: 'inherit', // Shows progress output from pnpm
+        timeout: 300000, // 5 minute timeout for full install
       });
-      console.log(`${PREFIX} ${EMOJI.SUCCESS} pnpm install completed in worktree`);
+      console.log(`${PREFIX} ${EMOJI.SUCCESS} Worktree dependencies installed`);
     } catch (installError) {
+      // Non-fatal: warn but don't block claim
       console.warn(`${PREFIX} Warning: pnpm install failed: ${installError.message}`);
       console.warn(`${PREFIX} You may need to run 'pnpm install' manually in the worktree`);
-    }
-  }
 
-  // WU-1579: Auto-symlink nested package node_modules for turbo typecheck
-  // WU-2238: Skip nested symlinks if root symlink was refused (pnpm install handles them)
-  if (!symlinkResult.refused) {
-    const nestedResult = symlinkNestedNodeModules(worktreePath, originalCwd);
-    if (nestedResult.created > 0) {
-      console.log(
-        `${PREFIX} ${EMOJI.SUCCESS} ${nestedResult.created} nested node_modules symlinked for typecheck`,
-      );
+      // Fall back to symlink approach so worktree is at least somewhat usable
+      console.log(`${PREFIX} Falling back to symlink approach...`);
+      const symlinkResult = symlinkNodeModules(worktreePath, console, originalCwd);
+      if (symlinkResult.created) {
+        console.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked as fallback`);
+      }
     }
   }
 
@@ -1126,6 +1139,7 @@ async function main() {
       WU_OPTIONS.reason,
       WU_OPTIONS.allowIncomplete,
       WU_OPTIONS.resume, // WU-2411: Agent handoff flag
+      WU_OPTIONS.skipSetup, // WU-1023: Skip auto-setup for fast claims
     ],
     required: ['id', 'lane'],
     allowPositionalId: true,

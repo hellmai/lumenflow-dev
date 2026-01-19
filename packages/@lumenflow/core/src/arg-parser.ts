@@ -412,6 +412,14 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description:
       'Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist.',
   },
+
+  // WU-1023: Skip auto-setup for fast claims
+  skipSetup: {
+    name: 'skipSetup',
+    flags: '--skip-setup',
+    description:
+      'Skip automatic pnpm install in worktree after creation (faster claims when deps already built)',
+  },
 };
 
 /**
