@@ -20,17 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml) — CLI
-- [WU-1024 — Pre-push hook should allow CLI tool pushes to main](wu/WU-1024.yaml) — Infrastructure
-- [WU-1023 — Auto-setup worktree dependencies on wu:claim](wu/WU-1023.yaml) — CLI
-- [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml) — CLI
-- [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml) — CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — Core
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
+- [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 
 ## ⛔ Blocked
 
@@ -51,3 +47,4 @@ sections:
 - [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml)
 - [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml)
 - [WU-1018 — Migrate missing CLI commands from  to @lumenflow/cli](wu/WU-1018.yaml)
+- [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml)

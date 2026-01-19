@@ -2,7 +2,7 @@ id: WU-1020
 title: Fix TypeScript error in metrics-snapshot.ts for readonly array cast
 lane: CLI
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -47,3 +47,5 @@ session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T12:12:00.237Z
+locked: true
+completed_at: 2026-01-19T12:15:42.870Z

@@ -18,6 +18,7 @@ _None_
 
 ## Completed
 
+- [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml) — 2026-01-19
 - [WU-1018 — Migrate missing CLI commands from  to @lumenflow/cli](wu/WU-1018.yaml) — 2026-01-19
 - [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml) — 2026-01-19
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml) — 2026-01-19
