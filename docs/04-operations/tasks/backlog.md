@@ -42,3 +42,4 @@ sections:
 - [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml)
 - [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml)
 - [WU-1012 — Add --docs-only flag to wu:done for documentation WUs](wu/WU-1012.yaml)
+- [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)

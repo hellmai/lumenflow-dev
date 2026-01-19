@@ -2,7 +2,7 @@ id: WU-1010
 title: Create example repos (Node/Python/Go)
 lane: Documentation
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -64,3 +64,5 @@ acceptance:
   - Go example repo with gofmt/golint gates
   - Each repo has sample WU specs
   - Each repo README links to docs
+locked: true
+completed_at: 2026-01-19T10:05:35.545Z
