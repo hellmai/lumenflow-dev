@@ -21,6 +21,13 @@ if (process.env.LUMENFLOW_FORCE === '1') {
   process.exit(0);
 }
 
+// Allow wu:create / wu:edit pushes that originate from micro-worktree automation
+const WU_TOOL_ENV = process.env.LUMENFLOW_WU_TOOL;
+const ALLOWED_WU_TOOLS = new Set(['wu-create', 'wu-edit']);
+if (WU_TOOL_ENV && ALLOWED_WU_TOOLS.has(WU_TOOL_ENV)) {
+  process.exit(0);
+}
+
 // Protected branch refs
 const PROTECTED = /^refs\/heads\/(main|master)$/;
 

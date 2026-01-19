@@ -634,58 +634,68 @@ async function main() {
     const priority = args.priority || DEFAULT_PRIORITY;
     const type = args.type || DEFAULT_TYPE;
 
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: args.id,
-      logPrefix: LOG_PREFIX,
-      execute: async ({ worktreePath }) => {
-        // Create WU YAML in micro-worktree
-        const wuPath = createWUYamlInWorktree(
-          worktreePath,
-          args.id,
-          args.lane,
-          args.title,
-          priority,
-          type,
-          {
-            // Initiative system fields (WU-1247)
-            initiative: args.initiative,
-            phase: args.phase,
-            blockedBy: args.blockedBy,
-            blocks: args.blocks,
-            labels: args.labels,
-            // WU-1368: Assigned to
-            assignedTo,
-            // WU-1364: Full spec inline options
-            description: args.description,
-            acceptance: args.acceptance,
-            codePaths: args.codePaths,
-            testPathsManual: args.testPathsManual,
-            testPathsUnit: args.testPathsUnit,
-            testPathsE2e: args.testPathsE2e,
-            // WU-1998: Exposure field options
-            exposure: args.exposure,
-            userJourney: args.userJourney,
-            uiPairingWus: args.uiPairingWus,
-            // WU-2320: Spec references
-            specRefs: args.specRefs,
-          },
-        );
+    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+    process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+    try {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: args.id,
+        logPrefix: LOG_PREFIX,
+        execute: async ({ worktreePath }) => {
+          // Create WU YAML in micro-worktree
+          const wuPath = createWUYamlInWorktree(
+            worktreePath,
+            args.id,
+            args.lane,
+            args.title,
+            priority,
+            type,
+            {
+              // Initiative system fields (WU-1247)
+              initiative: args.initiative,
+              phase: args.phase,
+              blockedBy: args.blockedBy,
+              blocks: args.blocks,
+              labels: args.labels,
+              // WU-1368: Assigned to
+              assignedTo,
+              // WU-1364: Full spec inline options
+              description: args.description,
+              acceptance: args.acceptance,
+              codePaths: args.codePaths,
+              testPathsManual: args.testPathsManual,
+              testPathsUnit: args.testPathsUnit,
+              testPathsE2e: args.testPathsE2e,
+              // WU-1998: Exposure field options
+              exposure: args.exposure,
+              userJourney: args.userJourney,
+              uiPairingWus: args.uiPairingWus,
+              // WU-2320: Spec references
+              specRefs: args.specRefs,
+            },
+          );
 
-        // Update backlog.md in micro-worktree
-        const backlogPath = updateBacklogInWorktree(worktreePath, args.id, args.lane, args.title);
+          // Update backlog.md in micro-worktree
+          const backlogPath = updateBacklogInWorktree(worktreePath, args.id, args.lane, args.title);
 
-        // Build commit message
-        const shortTitle = truncateTitle(args.title);
-        const commitMessage = COMMIT_FORMATS.CREATE(args.id, shortTitle);
+          // Build commit message
+          const shortTitle = truncateTitle(args.title);
+          const commitMessage = COMMIT_FORMATS.CREATE(args.id, shortTitle);
 
-        // Return commit message and files to commit
-        return {
-          commitMessage,
-          files: [wuPath, backlogPath],
-        };
-      },
-    });
+          // Return commit message and files to commit
+          return {
+            commitMessage,
+            files: [wuPath, backlogPath],
+          };
+        },
+      });
+    } finally {
+      if (previousWuTool === undefined) {
+        delete process.env.LUMENFLOW_WU_TOOL;
+      } else {
+        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      }
+    }
 
     console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
     console.log(`\nWU ${args.id} created successfully:`);

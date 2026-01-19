@@ -951,41 +951,51 @@ async function main() {
     const newInitiative = opts.initiative;
     const initiativeChanged = newInitiative && newInitiative !== oldInitiative;
 
-    await withMicroWorktree({
-      operation: MICRO_WORKTREE_OPERATIONS.WU_EDIT,
-      id: id,
-      logPrefix: PREFIX,
-      execute: async ({ worktreePath }) => {
-        const files = [WU_PATHS.WU(id)];
+    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_EDIT;
+    try {
+      await withMicroWorktree({
+        operation: MICRO_WORKTREE_OPERATIONS.WU_EDIT,
+        id: id,
+        logPrefix: PREFIX,
+        execute: async ({ worktreePath }) => {
+          const files = [WU_PATHS.WU(id)];
 
-        // Write updated WU to micro-worktree (WU-1750: use normalized data)
-        const wuPath = join(worktreePath, WU_PATHS.WU(id));
-        // WU-1442: Normalize dates before dumping to prevent ISO timestamp corruption
-        normalizeWUDates(normalizedWU);
-        // Emergency fix Session 2: Use centralized stringifyYAML helper
-        const yamlContent = stringifyYAML(normalizedWU);
+          // Write updated WU to micro-worktree (WU-1750: use normalized data)
+          const wuPath = join(worktreePath, WU_PATHS.WU(id));
+          // WU-1442: Normalize dates before dumping to prevent ISO timestamp corruption
+          normalizeWUDates(normalizedWU);
+          // Emergency fix Session 2: Use centralized stringifyYAML helper
+          const yamlContent = stringifyYAML(normalizedWU);
 
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
-        writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-        console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
+          // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
+          writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+          console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
 
-        // WU-1929: Handle bidirectional initiative updates
-        if (initiativeChanged) {
-          const initiativeFiles = updateInitiativeWusArrays(
-            worktreePath,
-            id,
-            oldInitiative,
-            newInitiative,
-          );
-          files.push(...initiativeFiles);
-        }
+          // WU-1929: Handle bidirectional initiative updates
+          if (initiativeChanged) {
+            const initiativeFiles = updateInitiativeWusArrays(
+              worktreePath,
+              id,
+              oldInitiative,
+              newInitiative,
+            );
+            files.push(...initiativeFiles);
+          }
 
-        return {
-          commitMessage: COMMIT_FORMATS.EDIT(id),
-          files,
-        };
-      },
-    });
+          return {
+            commitMessage: COMMIT_FORMATS.EDIT(id),
+            files,
+          };
+        },
+      });
+    } finally {
+      if (previousWuTool === undefined) {
+        delete process.env.LUMENFLOW_WU_TOOL;
+      } else {
+        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      }
+    }
 
     console.log(`${PREFIX} ✅ Successfully edited ${id}`);
     console.log(`${PREFIX} Changes pushed to origin/main`);
