@@ -55,12 +55,19 @@ interface LaneConfig {
   name: string;
 }
 
+interface LaneEnforcement {
+  require_parent?: boolean;
+  allow_custom?: boolean;
+}
+
 interface LumenflowConfig {
   lanes?:
     | LaneConfigWithWip[]
     | {
         engineering?: LaneConfigWithWip[];
         business?: LaneConfigWithWip[];
+        enforcement?: LaneEnforcement;
+        definitions?: LaneConfigWithWip[];
       };
 }
 
@@ -312,6 +319,10 @@ export function validateLaneFormat(
 
 /**
  * Check if a parent lane exists in LumenFlow config
+ *
+ * WU-1022: Updated to support lanes.definitions with full "Parent: Sublane" format.
+ * When lanes.definitions exists, parent lanes are extracted from full lane names.
+ *
  * @param {string} parent - Parent lane name to check
  * @param {string} configPath - Path to config file (optional)
  * @returns {boolean} True if parent lane exists
@@ -334,14 +345,26 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
   const config = yaml.load(configContent) as LumenflowConfig;
 
-  // Extract all lane names - handle both flat array and nested engineering/business formats
+  // Extract all lane names - handle multiple config formats
   const allLanes: string[] = [];
+  const parentLanes = new Set<string>();
+
   if (config.lanes) {
     if (Array.isArray(config.lanes)) {
       // Flat array format: lanes: [{name: "Core"}, {name: "CLI"}, ...]
       allLanes.push(...config.lanes.map((l) => l.name));
     } else {
-      // Nested format: lanes: {engineering: [...], business: [...]}
+      // WU-1022: New format with lanes.definitions containing full "Parent: Sublane" names
+      if (config.lanes.definitions) {
+        for (const lane of config.lanes.definitions) {
+          allLanes.push(lane.name);
+          // Extract parent from full lane name for parent validation
+          const extractedParent = extractParent(lane.name);
+          parentLanes.add(extractedParent.toLowerCase().trim());
+        }
+      }
+
+      // Legacy nested format: lanes: {engineering: [...], business: [...]}
       if (config.lanes.engineering) {
         allLanes.push(...config.lanes.engineering.map((l) => l.name));
       }
@@ -353,6 +376,13 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
 
   // Case-insensitive comparison
   const normalizedParent = parent.toLowerCase().trim();
+
+  // WU-1022: If we have extracted parent lanes (from full lane names), check against those
+  if (parentLanes.size > 0) {
+    return parentLanes.has(normalizedParent);
+  }
+
+  // Legacy: check against direct lane names
   return allLanes.some((lane) => lane.toLowerCase().trim() === normalizedParent);
 }
 

@@ -1,14 +1,18 @@
 id: WU-1022
 title: 'Enforce parent:sublane format for lanes (Framework: CLI not CLI)'
-lane: CLI
+lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - 'packages/@lumenflow/core/src/lane-checker.ts'
+  - 'packages/@lumenflow/core/src/__tests__/lane-checker.test.ts'
+  - '.lumenflow.config.yaml'
 tests:
   manual: []
-  unit: []
+  unit:
+    - 'packages/@lumenflow/core/src/__tests__/lane-checker.test.ts'
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1022.done
@@ -17,17 +21,30 @@ risks: []
 notes: ''
 requires_review: false
 assigned_to: tom@hellm.ai
+claimed_at: '2026-01-19T12:30:00.000Z'
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Enforce parent:sublane format for lanes across CLI commands.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: Current implementation allows bare lane names like "CLI", "Core" but
+  the lane taxonomy in .lumenflow.lane-inference.yaml defines parent lanes (Framework,
+  Operations, Content) with sublanes under each.
+
+  Problem: Inconsistency between allowed lane formats and the taxonomy definition
+  creates confusion and prevents proper lane hierarchy enforcement.
+
+  Solution:
+  1. Add lanes.enforcement config to .lumenflow.config.yaml
+  2. Update lane validation to enforce "Parent: Sublane" format when require_parent=true
+  3. Provide backward compatibility mode for existing WUs with bare lane names
+  4. Update CLI commands to output full lane format
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - 'Lane validation enforces "Parent: Sublane" format when configured'
+  - 'Configuration is read from .lumenflow.config.yaml (lanes.enforcement section)'
+  - 'Existing bare lane names work in strict: false mode (backward compatibility)'
+  - 'New tests cover lane validation enforcement scenarios'
+  - 'pnpm format, lint, typecheck → PASS'
