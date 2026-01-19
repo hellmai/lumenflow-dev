@@ -12,7 +12,8 @@ code_paths:
   - .husky/commit-msg
   - .husky/hooks/pre-push.mjs
 tests:
-  manual: []
+  manual:
+    - 'Manual: run pnpm wu:create and pnpm wu:edit without LUMENFLOW_FORCE'
   unit: []
   e2e: []
 artifacts:
