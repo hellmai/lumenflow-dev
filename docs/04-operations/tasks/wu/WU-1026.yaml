@@ -2,7 +2,7 @@ id: WU-1026
 title: Allow agent branches to bypass worktree requirements
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -65,3 +65,5 @@ session_id: c48001e8-6993-4d75-9038-9c1179868bae
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T15:04:04.137Z
+locked: true
+completed_at: 2026-01-19T15:27:20.559Z
