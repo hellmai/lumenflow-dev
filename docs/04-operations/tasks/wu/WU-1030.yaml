@@ -11,8 +11,17 @@ code_paths:
   - .husky/prepare-commit-msg
   - .husky/commit-msg
   - .husky/hooks/pre-push.mjs
+  - .lumenflow/constraints.md
+  - .lumenflow/rules/tdd-workflow.md
+  - .lumenflow/rules/wu-workflow.md
+  - LUMENFLOW.md
+  - ai/onboarding/agent-safety-card.md
+  - ai/onboarding/first-wu-mistakes.md
+  - ai/onboarding/quick-ref-commands.md
+  - ai/onboarding/troubleshooting-wu-done.md
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/__tests__/init.test.ts
   - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
 tests:
   manual:

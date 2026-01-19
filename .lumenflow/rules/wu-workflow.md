@@ -17,13 +17,13 @@ ready -> in_progress -> done
 
 ### States
 
-| State | Description |
-|-------|-------------|
-| `ready` | Approved and waiting for a lane to free up |
+| State         | Description                                       |
+| ------------- | ------------------------------------------------- |
+| `ready`       | Approved and waiting for a lane to free up        |
 | `in_progress` | Actively being implemented (exactly one per lane) |
-| `blocked` | Cannot proceed due to external dependency |
-| `waiting` | Implementation finished, awaiting verification |
-| `done` | Meets Definition of Done, all gates green |
+| `blocked`     | Cannot proceed due to external dependency         |
+| `waiting`     | Implementation finished, awaiting verification    |
+| `done`        | Meets Definition of Done, all gates green         |
 
 ---
 
@@ -103,6 +103,7 @@ pnpm wu:done --id WU-XXX
 6. Pushes to origin
 
 **NEVER:**
+
 - Manually merge branches
 - Manually create stamps
 - Edit docs in main after claiming
