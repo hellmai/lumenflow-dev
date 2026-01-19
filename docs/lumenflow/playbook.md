@@ -476,43 +476,56 @@ cd ../../worktrees/<correct-lane>-wu-<correct-id>
 
 #### Worktree Safety Hooks
 
-Git hooks enforce worktree discipline automatically:
-
-**prepare-commit-msg:**
-
-- Auto-injects WU reference from branch name into commit messages
-- Validates WU reference matches branch (prevents mismatched commits)
-- Warns if committing from worktree without WU reference
+Git hooks (via Husky) enforce worktree discipline automatically. All hooks skip `tmp/*` branches used by CLI micro-worktrees.
 
 **pre-commit:**
 
-- Validates branch naming follows `lane/<lane>/<wu-id>` convention
-- Fails if working on lane branch in the main worktree (immutable worktree law)
-- Note: Main branch protection enforced by commit-msg hook
+- **Blocks direct commits to `main`/`master`** (use `pnpm wu:claim` workflow)
+- Respects Branch-Only mode: checks `claimed_mode: branch-only` in WU YAML
+- Blocks lane branch work in main checkout unless Branch-Only mode is active
 
 **commit-msg:**
 
-- **Blocks ALL commits to `main` unless from wu tools** (pattern-based on commit message)
-- Allowed patterns: `wu(wu-XXX): claim for <lane> lane` or `wu(wu-XXX): done - <description>`
-- Validates conventional commit format and WU metadata
-- Blocks commits that touch locked WUs
-- Fails if a WU commit is attempted from the main checkout or main branch
+- **On main:** Only allows LumenFlow commit formats:
+  - `wu(wu-XXX): claim for <lane> lane`
+  - `wu(wu-XXX): done - <title>`
+  - `docs: create wu-XXX for <title>`
+  - `docs: edit wu-XXX spec`
+  - `wu(wu-XXX): spec update`
+  - `wu(wu-XXX): block` / `wu(wu-XXX): unblock`
+  - `fix(wu-XXX): repair ...`
+  - `chore(repair): ...` / `chore(wu-XXX): ...`
+  - `style: ...`
+- **On lane branches:** Requires WU ID in commit message (e.g., `wu(wu-1017): ...`)
+
+**prepare-commit-msg:**
+
+- Auto-injects `wu(wu-XXX): ` prefix from branch name if not present
+- Skips if source is message/commit/merge (user provided `-m`)
+- Skips if message already has conventional commit prefix with WU ID
 
 **pre-push:**
 
-- Validates WU status is `in_progress` or `waiting` before push
-- Blocks push if WU is `blocked`, `ready`, or `done` (use wu:block/wu:done helpers)
-- Provides helpful error messages with correct helper commands
+- **Blocks direct push to `main`/`master`** (use `pnpm wu:done` to merge)
+- **Allows ALL lane branch pushes** (per WU-1255: protection at merge time)
+- Parses stdin refs to catch bypasses like `git push origin HEAD:main`
+
+**Escape hatch:**
+
+For emergencies, bypass all hooks with:
+
+```bash
+LUMENFLOW_FORCE=1 git commit -m "emergency fix"
+LUMENFLOW_FORCE=1 git push
+```
 
 **Hook setup:**
 
-Hooks are installed automatically via Husky on `pnpm install`. To manually reinstall:
+Hooks are installed automatically via Husky. The `.husky/` directory (including `_/husky.sh`) is tracked in git for worktree compatibility. To manually configure:
 
 ```bash
-pnpm prepare  # Runs husky install
+git config core.hooksPath .husky
 ```
-
-When working in a fresh worktree, ensure `.husky/_` directory is present (usually copied during worktree creation).
 
 ### 4.5 Multi-Agent Workflows
 
