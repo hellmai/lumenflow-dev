@@ -29,8 +29,8 @@ version: '2.0'
 
 lanes:
   enforcement:
-    require_parent: true  # Enforce Parent: Sublane format
-    allow_custom: false   # Only taxonomy lanes allowed
+    require_parent: true # Enforce Parent: Sublane format
+    allow_custom: false # Only taxonomy lanes allowed
 
   definitions:
     - name: 'Framework: Core'
@@ -57,12 +57,12 @@ lanes:
 
 ### Parent Lane Categories
 
-| Parent | Purpose |
-|--------|---------|
-| Framework | Core libraries, CLI, memory, agents |
-| Operations | Infrastructure, CI/CD, tooling |
-| Content | Documentation, guides |
-| Experience | UI components, pages |
+| Parent     | Purpose                             |
+| ---------- | ----------------------------------- |
+| Framework  | Core libraries, CLI, memory, agents |
+| Operations | Infrastructure, CI/CD, tooling      |
+| Content    | Documentation, guides               |
+| Experience | UI components, pages                |
 
 ## WIP Limits
 
@@ -106,7 +106,7 @@ The WU spec should already have a lane assignment:
 # WU-042.yaml
 id: WU-042
 title: Add email validation
-lane: 'Experience: UI'  # ← Full Parent: Sublane format
+lane: 'Experience: UI' # ← Full Parent: Sublane format
 ```
 
 ## Auto-Detection via Paths
