@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1018 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-1018.yaml) — CLI
 - [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml) — Infrastructure
 - [WU-2698 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-2698.yaml) — CLI
   (No items ready)
