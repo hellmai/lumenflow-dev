@@ -57,6 +57,9 @@
     "./lib/*": "./dist/*"
   },
   "main": "./dist/index.js",
+  "bin": {
+    "is-agent-branch": "./dist/cli/is-agent-branch.js"
+  },
   "files": [
     "dist",
     "LICENSE",

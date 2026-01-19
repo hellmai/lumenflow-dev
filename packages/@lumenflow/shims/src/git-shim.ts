@@ -24,11 +24,23 @@ import { spawnSync } from 'node:child_process';
 import type { GitShimConfig, BannedPatternResult, ProtectedContextResult } from './types.js';
 import { GitShimConfigSchema, UserType, CommandOutcome } from './types.js';
 import { getCurrentBranch, isMainWorktree } from './worktree.js';
+import { isAgentBranch, isHeadlessAllowed, getConfig } from '@lumenflow/core';
 
 /**
  * Default configuration.
  */
 const DEFAULT_CONFIG: GitShimConfig = GitShimConfigSchema.parse({});
+
+/**
+ * Get protected branches from core config (single source of truth).
+ * Derives from mainBranch + legacy 'master'.
+ */
+function getProtectedBranchesFromCore(): string[] {
+  const config = getConfig();
+  const mainBranch = config?.git?.mainBranch ?? 'main';
+  const branches = new Set([mainBranch, 'master']);
+  return Array.from(branches);
+}
 
 /**
  * Build context string for protected/unprotected state.
@@ -121,16 +133,33 @@ export function checkBannedPattern(
 /**
  * Check if we're in a protected context (main branch or main worktree).
  *
+ * Updated in WU-1026 to support:
+ * - Agent branches (bypass protection)
+ * - Guarded headless mode (LUMENFLOW_HEADLESS + admin/CI)
+ * - Detached HEAD (fail-closed)
+ * - Core config for protected branches (single source of truth)
+ *
  * @param config - Git shim configuration
  * @returns Object with protected status and context description
  */
 export function checkProtectedContext(
   config: GitShimConfig = DEFAULT_CONFIG,
 ): ProtectedContextResult {
+  // NEW: Check guarded headless mode first
+  if (isHeadlessAllowed()) {
+    return { protected: false, context: 'headless mode (admin/CI)' };
+  }
+
   // Allow TEST_MODE for integration tests
   if (process.env['TEST_MODE'] === 'true') {
     const branch = process.env['TEST_BRANCH'] || config.protectedBranch;
     const inMainWorktree = process.env['TEST_IS_MAIN_WORKTREE'] === 'true';
+
+    // NEW: Check agent branch in test mode
+    if (isAgentBranch(branch)) {
+      return { protected: false, context: `agent branch: ${branch}` };
+    }
+
     const isProtectedBranch = branch === config.protectedBranch;
     const isProtected = isProtectedBranch || inMainWorktree;
     const context = buildContextString(isProtected, inMainWorktree, config.protectedBranch, branch);
@@ -140,11 +169,26 @@ export function checkProtectedContext(
   const branch = getCurrentBranch(config.realGitPath);
   const inMainWorktree = isMainWorktree(config.realGitPath);
 
+  // NEW: Detached HEAD = protected (fail-closed)
+  if (!branch || branch === 'HEAD') {
+    return { protected: true, context: 'detached HEAD' };
+  }
+
+  // NEW: Agent branches bypass protection (regardless of worktree)
+  if (isAgentBranch(branch)) {
+    return { protected: false, context: `agent branch: ${branch}` };
+  }
+
+  // Use core config's mainBranch (single source of truth)
+  const protectedBranches = getProtectedBranchesFromCore();
+  const mainBranch = protectedBranches[0]; // First is always mainBranch from config
+  const isOnProtectedBranch = protectedBranches.includes(branch);
+
   // Protected if:
-  // 1. On protected branch (regardless of worktree)
+  // 1. On protected branch (mainBranch or 'master', regardless of worktree)
   // 2. OR in main worktree (even if on a lane branch)
-  const isProtected = branch === config.protectedBranch || inMainWorktree;
-  const context = buildContextString(isProtected, inMainWorktree, config.protectedBranch, branch);
+  const isProtected = isOnProtectedBranch || inMainWorktree;
+  const context = buildContextString(isProtected, inMainWorktree, mainBranch, branch);
 
   return { protected: isProtected, context };
 }
