@@ -1,6 +1,6 @@
 id: WU-1012
 title: Add --docs-only flag to wu:done for documentation WUs
-lane: Core
+lane: CLI
 type: feature
 status: ready
 priority: P2
@@ -21,7 +21,7 @@ initiative: INIT-001
 phase: 1
 risks:
   - Could be abused to skip gates on non-docs WUs
-notes: |
+notes: |-
   Discovered during WU-1008: --skip-gates requires --fix-wu which
   doesn't make sense for docs-only WUs where no code is broken.
 
@@ -29,6 +29,9 @@ notes: |
   1. Validates WU type is documentation or code_paths are docs/**
   2. Skips code-related gates (lint, typecheck, test)
   3. Still runs format gate on markdown/mdx files
+
+
+  [ADMIN-REPAIR 2026-01-19]: lane changed from 'Core' to 'CLI'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
