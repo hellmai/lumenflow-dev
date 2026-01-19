@@ -43,4 +43,4 @@ sections:
 - [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml)
 - [WU-1012 — Add --docs-only flag to wu:done for documentation WUs](wu/WU-1012.yaml)
 - [WU-1010 — Create example repos (Node/Python/Go)](wu/WU-1010.yaml)
-- [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml)
+- [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml)
