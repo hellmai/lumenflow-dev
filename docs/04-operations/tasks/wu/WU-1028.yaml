@@ -33,49 +33,90 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   Problem: Agents keep forgetting to run wu:done after completing work.
 
-  Evidence: WU-1027 agent wrote "To Complete: pnpm wu:done" instead of
-  actually running it. This pattern repeats across multiple WUs.
 
-  Root Cause: LumenFlow OS repo is missing critical agent documentation
-  that exists in PatientPath. PatientPath agents don't forget because
-  they have 25+ onboarding docs, constraints capsule, and rules.
+  Evidence: WU-1027 agent wrote 'To Complete: pnpm wu:done' instead of actually running it. This
+  pattern repeats across multiple WUs.
 
-  MISSING FROM LUMENFLOW OS (must migrate from PatientPath):
 
-  1. Core docs:
-     - CLAUDE-core.md (has "Always wu:done" as rule #4)
-     - .claude/constraints-capsule.md (320 lines, "Before wu:done mini audit")
+  Root Cause: LumenFlow OS repo is missing critical agent documentation that exists in PatientPath.
+  PatientPath agents don't forget because they have 25+ onboarding docs, constraints capsule, and
+  rules.
 
-  2. .claude/rules/ (5 files):
-     - wu-workflow.md (full WU lifecycle)
-     - git-safety.md
-     - memory-layer.md
-     - agent-activation.md
-     - documentation-routing.md
 
-  3. ai/onboarding/ (25+ files including):
-     - troubleshooting-wu-done.md (!)
-     - first-wu-mistakes.md (!)
-     - agent-safety-card.md
-     - quick-ref-commands.md
-     - bootloader.md
-     - session-handoff.md
-     - context-compaction.md
-     - compaction-recovery.md
+  ARCHITECTURE: Vendor-Agnostic Core + Vendor Integrations
 
-  4. Distribution:
-     - Templates must ship with @lumenflow/cli
-     - pnpm lumenflow init must create full structure
-     - Generic versions (remove PatientPath-specific content)
+
+  LumenFlow is vendor-agnostic. Documentation must separate:
+
+  1. Core workflow docs (work with any AI agent)
+
+  2. Vendor integrations (Claude Code, Cursor, Aider, etc.)
+
+
+  STRUCTURE:
+
+
+  Core (vendor-agnostic):
+
+  - LUMENFLOW.md - Main entry point, links to core docs
+
+  - .lumenflow/rules/ - Workflow rules (wu-workflow.md, git-safety.md, etc.)
+
+  - .lumenflow/constraints.md - Non-negotiable constraints
+
+  - ai/onboarding/ - Agent onboarding docs (25+ files)
+
+
+  Vendor Integrations (optional):
+
+  - .claude/ - Claude Code (CLAUDE.md links to LUMENFLOW.md, hooks, settings.json)
+
+  - .cursor/ - Cursor (rules, settings)
+
+  - .aider.conf.yml - Aider
+
+  - .continue/ - Continue
+
+
+  MIGRATION FROM PATIENTPATH:
+
+
+  1. Core docs (genericize and move to .lumenflow/):
+     - constraints-capsule.md to .lumenflow/constraints.md
+     - rules/*.md to .lumenflow/rules/
+
+  2. ai/onboarding/ (genericize):
+     - troubleshooting-wu-done.md, first-wu-mistakes.md
+     - agent-safety-card.md, quick-ref-commands.md
+     - bootloader.md, session-handoff.md
+     - context-compaction.md, compaction-recovery.md
+
+  3. Vendor templates (packages/@lumenflow/cli/templates/vendors/):
+     - claude/ - CLAUDE.md template pointing to LUMENFLOW.md
+     - cursor/ - Cursor rules template
+     - aider/ - Aider config template
+
+  4. init.ts updates:
+     - Create LUMENFLOW.md (not CLAUDE.md) as core entry
+     - Add --vendor flag (claude, cursor, aider, all, none)
+     - Auto-detect vendor from environment if no flag
+     - Scaffold .lumenflow/ structure
+     - Scaffold vendor-specific files based on flag
 
   Solution:
+
   1. Migrate all docs from PatientPath to LumenFlow OS
+
   2. Genericize PatientPath-specific content (PHI, Beacon, etc.)
-  3. Update init.ts to scaffold full .claude/ and ai/ structure
-  4. LumenFlow OS dogfoods its own docs
+
+  3. Restructure into vendor-agnostic core + vendor integrations
+
+  4. Update init.ts with --vendor flag support
+
+  5. LumenFlow OS dogfoods its own docs
 acceptance:
   - CLAUDE-core.md created with 'Always wu:done' as explicit rule
   - .claude/constraints-capsule.md migrated from PatientPath (genericized)
