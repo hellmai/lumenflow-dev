@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml) — 2026-01-19
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml) — 2026-01-19
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — 2026-01-19
 - [WU-1023 — Auto-setup worktree dependencies on wu:claim](wu/WU-1023.yaml) — 2026-01-19
