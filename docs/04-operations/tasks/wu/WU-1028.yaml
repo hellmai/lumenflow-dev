@@ -1,6 +1,6 @@
 id: WU-1028
 title: Fix agent wu:done amnesia - docs and distribution
-lane: "Content: Documentation"
+lane: 'Content: Documentation'
 type: feature
 status: ready
 priority: P1
