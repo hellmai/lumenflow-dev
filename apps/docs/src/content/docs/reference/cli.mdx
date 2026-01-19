@@ -261,14 +261,15 @@ pnpm wu:unlock-lane --lane Core --reason "Emergency" --force
 pnpm wu:unlock-lane --list
 ```
 
-| Flag       | Description                              |
-| ---------- | ---------------------------------------- |
-| `--lane`   | Lane to unlock                           |
-| `--reason` | Audit reason (required)                  |
-| `--force`  | Force unlock active locks                |
-| `--list`   | List all current locks                   |
+| Flag       | Description               |
+| ---------- | ------------------------- |
+| `--lane`   | Lane to unlock            |
+| `--reason` | Audit reason (required)   |
+| `--force`  | Force unlock active locks |
+| `--list`   | List all current locks    |
 
 Lock types:
+
 - **Zombie locks** (PID not running): Can be unlocked without `--force`
 - **Stale locks** (>24h old): Can be unlocked without `--force`
 - **Active locks**: Require `--force` to unlock
@@ -471,14 +472,15 @@ pnpm mem:cleanup --session-id <uuid> # Close specific session
 pnpm mem:cleanup --json             # Output as JSON
 ```
 
-| Flag           | Description                       |
-| -------------- | --------------------------------- |
-| `--dry-run`    | Preview without making changes    |
-| `--ttl`        | Remove nodes older than duration  |
-| `--session-id` | Close specific session            |
-| `--json`       | Output results as JSON            |
+| Flag           | Description                      |
+| -------------- | -------------------------------- |
+| `--dry-run`    | Preview without making changes   |
+| `--ttl`        | Remove nodes older than duration |
+| `--session-id` | Close specific session           |
+| `--json`       | Output results as JSON           |
 
 Cleanup rules:
+
 - Ephemeral nodes are always discarded
 - Session nodes removed when session closes
 - Summarized nodes archived (marked with `summarized_into`)
@@ -563,13 +565,13 @@ pnpm orchestrate:initiative --initiative INIT-001 --progress
 pnpm orchestrate:initiative --initiative INIT-001 --checkpoint-per-wave
 ```
 
-| Flag                   | Description                           |
-| ---------------------- | ------------------------------------- |
-| `--initiative`         | Initiative ID(s) to orchestrate       |
-| `--dry-run`            | Show execution plan without spawning  |
-| `--progress`           | Show current progress only            |
-| `--checkpoint-per-wave`| Spawn next wave then exit (no polling)|
-| `--no-checkpoint`      | Force polling mode                    |
+| Flag                    | Description                            |
+| ----------------------- | -------------------------------------- |
+| `--initiative`          | Initiative ID(s) to orchestrate        |
+| `--dry-run`             | Show execution plan without spawning   |
+| `--progress`            | Show current progress only             |
+| `--checkpoint-per-wave` | Spawn next wave then exit (no polling) |
+| `--no-checkpoint`       | Force polling mode                     |
 
 ### orchestrate:init-status
 
@@ -588,9 +590,9 @@ pnpm orchestrate:monitor --since 30m
 pnpm orchestrate:monitor --since 1h
 ```
 
-| Flag      | Description                              |
-| --------- | ---------------------------------------- |
-| `--since` | Show signals from this time (e.g., 30m)  |
+| Flag      | Description                             |
+| --------- | --------------------------------------- |
+| `--since` | Show signals from this time (e.g., 30m) |
 
 ---
 
@@ -607,11 +609,11 @@ pnpm agent:session --wu WU-001 --tier 2
 pnpm agent:session --wu WU-001 --tier 2 --agent-type claude-code
 ```
 
-| Flag           | Description                     |
-| -------------- | ------------------------------- |
-| `--wu`         | WU ID to work on (required)     |
-| `--tier`       | Context tier: 1, 2, or 3        |
-| `--agent-type` | Agent type (default: claude-code)|
+| Flag           | Description                       |
+| -------------- | --------------------------------- |
+| `--wu`         | WU ID to work on (required)       |
+| `--tier`       | Context tier: 1, 2, or 3          |
+| `--agent-type` | Agent type (default: claude-code) |
 
 ### agent:session:end
 
