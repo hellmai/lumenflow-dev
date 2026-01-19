@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Skip on tmp/* branches (CLI micro-worktrees in /tmp with no node_modules)
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+case "$BRANCH" in tmp/*) exit 0 ;; esac
+
+node "$(dirname "$0")/hooks/pre-commit.mjs"
