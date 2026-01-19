@@ -156,6 +156,7 @@ export function validateInputs(argv) {
         '  --create-pr         Create PR instead of auto-merge (requires gh CLI)\n' +
         '  --pr-draft          Create PR as draft (use with --create-pr)\n' +
         '  --skip-gates        Skip gates check (USE WITH EXTREME CAUTION)\n' +
+        '  --docs-only         Run docs-only gates (requires exposure: documentation)\n' +
         '  --reason "<text>"   Required with --skip-gates or --override-owner\n' +
         '  --fix-wu WU-{id}    Required with --skip-gates: WU ID that will fix the failures\n' +
         '  --allow-todo        Allow TODO comments in code (requires justification in WU notes)\n' +

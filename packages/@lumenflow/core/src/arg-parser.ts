@@ -150,6 +150,11 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     flags: '--skip-gates',
     description: 'Skip gates check (requires --reason and --fix-wu)',
   },
+  docsOnly: {
+    name: 'docsOnly',
+    flags: '--docs-only',
+    description: 'Run docs-only gates (requires exposure: documentation or docs-only code_paths)',
+  },
   allowTodo: {
     name: 'allowTodo',
     flags: '--allow-todo',
@@ -588,6 +593,7 @@ export function parseWUArgs(argv) {
     WU_OPTIONS.noMerge,
     WU_OPTIONS.help,
     WU_OPTIONS.skipGates,
+    WU_OPTIONS.docsOnly,
     WU_OPTIONS.allowTodo,
     WU_OPTIONS.skipExposureCheck,
     WU_OPTIONS.skipAccessibilityCheck,

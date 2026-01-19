@@ -42,6 +42,8 @@ coverage/
 /.beacon/telemetry/
 /.beacon/skip-gates-audit.log
 /.beacon/checkpoints/
+# Beacon locks anywhere (lane locking system, WU-1012 fix)
+**/.beacon/locks/
 .logs/
 *.tgz
 .npmrc

@@ -10,8 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
 tests:
   manual:
-    - Set wip_limit: 2 in config and verify two WUs can be claimed in same lane
-    - Set wip_limit: 1 and verify only one WU can be claimed
+    - 'Set wip_limit: 2 in config and verify two WUs can be claimed in same lane'
+    - 'Set wip_limit: 1 and verify only one WU can be claimed'
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []

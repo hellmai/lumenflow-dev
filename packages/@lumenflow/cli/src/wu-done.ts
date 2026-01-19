@@ -297,6 +297,124 @@ export function validateAccessibilityOrDie(
   }
 }
 
+/**
+ * WU-1012: Validate --docs-only flag usage.
+ *
+ * The --docs-only flag can only be used when the WU is documentation-focused:
+ * 1. exposure field is 'documentation'
+ * 2. OR all code_paths are documentation paths (docs/, ai/, .claude/, *.md)
+ * 3. OR type is 'documentation'
+ *
+ * @param {object} wu - WU YAML document
+ * @param {object} args - Parsed CLI arguments
+ * @param {boolean} args.docsOnly - Whether --docs-only flag was passed
+ * @returns {{ valid: boolean, errors: string[] }} Validation result
+ */
+interface DocsOnlyArgs {
+  docsOnly?: boolean;
+}
+
+export function validateDocsOnlyFlag(
+  wu: Record<string, unknown>,
+  args: DocsOnlyArgs,
+): { valid: boolean; errors: string[] } {
+  // If --docs-only flag is not used, no validation needed
+  if (!args.docsOnly) {
+    return { valid: true, errors: [] };
+  }
+
+  const wuId = wu.id || 'unknown';
+  const exposure = wu.exposure as string | undefined;
+  const type = wu.type as string | undefined;
+  const codePaths = wu.code_paths as string[] | undefined;
+
+  // Check 1: exposure is 'documentation'
+  if (exposure === 'documentation') {
+    return { valid: true, errors: [] };
+  }
+
+  // Check 2: type is 'documentation'
+  if (type === 'documentation') {
+    return { valid: true, errors: [] };
+  }
+
+  // Check 3: all code_paths are documentation paths
+  const DOCS_ONLY_PREFIXES = ['docs/', 'ai/', '.claude/', 'memory-bank/'];
+  const DOCS_ONLY_ROOT_FILES = ['readme', 'claude'];
+
+  const isDocsPath = (p: string): boolean => {
+    const path = p.trim().toLowerCase();
+    // Check docs prefixes
+    for (const prefix of DOCS_ONLY_PREFIXES) {
+      if (path.startsWith(prefix)) return true;
+    }
+    // Check markdown files
+    if (path.endsWith('.md')) return true;
+    // Check root file patterns
+    for (const pattern of DOCS_ONLY_ROOT_FILES) {
+      if (path.startsWith(pattern)) return true;
+    }
+    return false;
+  };
+
+  if (codePaths && Array.isArray(codePaths) && codePaths.length > 0) {
+    const allDocsOnly = codePaths.every((p) => typeof p === 'string' && isDocsPath(p));
+    if (allDocsOnly) {
+      return { valid: true, errors: [] };
+    }
+  }
+
+  // Validation failed - provide clear error message
+  const currentExposure = exposure || 'not set';
+  const currentType = type || 'not set';
+
+  return {
+    valid: false,
+    errors: [
+      `--docs-only flag used on ${wuId} but WU is not documentation-focused.\n\n` +
+        `Current exposure: ${currentExposure}\n` +
+        `Current type: ${currentType}\n\n` +
+        `--docs-only requires one of:\n` +
+        `  1. exposure: documentation\n` +
+        `  2. type: documentation\n` +
+        `  3. All code_paths under docs/, ai/, .claude/, or *.md files\n\n` +
+        `To fix, either:\n` +
+        `  - Remove --docs-only flag and run full gates\n` +
+        `  - Change WU exposure to 'documentation' if this is truly a docs-only change`,
+    ],
+  };
+}
+
+/**
+ * WU-1012: Build gates command with --docs-only flag support.
+ *
+ * Returns the appropriate gates command based on:
+ * - Explicit --docs-only flag from CLI
+ * - Auto-detected isDocsOnly from code_paths analysis
+ *
+ * @param {object} options - Build options
+ * @param {boolean} options.docsOnly - Explicit --docs-only flag from CLI
+ * @param {boolean} options.isDocsOnly - Auto-detected docs-only from code_paths
+ * @returns {string} Gates command string
+ */
+interface BuildGatesOptions {
+  docsOnly?: boolean;
+  isDocsOnly?: boolean;
+}
+
+export function buildGatesCommand(options: BuildGatesOptions): string {
+  const { docsOnly = false, isDocsOnly = false } = options;
+
+  // Use docs-only gates if either explicit flag or auto-detected
+  const shouldUseDocsOnly = docsOnly || isDocsOnly;
+
+  if (shouldUseDocsOnly) {
+    return `${PKG_MANAGER} ${SCRIPTS.GATES} -- ${CLI_FLAGS.DOCS_ONLY}`;
+  }
+
+  return `${PKG_MANAGER} ${SCRIPTS.GATES}`;
+}
+
 async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   const resolvedWorktreePath = path.resolve(worktreePath);
   const stateDir = path.join(resolvedWorktreePath, '.beacon', 'state');
@@ -1035,17 +1153,33 @@ function checkNodeModulesStaleness(worktreePath) {
   }
 }
 
-function runGatesInWorktree(worktreePath, id, isDocsOnly = false) {
+/**
+ * Run gates in worktree
+ * @param {string} worktreePath - Path to worktree
+ * @param {string} id - WU ID
+ * @param {object} options - Gates options
+ * @param {boolean} options.isDocsOnly - Auto-detected docs-only from code_paths
+ * @param {boolean} options.docsOnly - Explicit --docs-only flag from CLI
+ */
+function runGatesInWorktree(
+  worktreePath: string,
+  id: string,
+  options: { isDocsOnly?: boolean; docsOnly?: boolean } = {},
+) {
+  const { isDocsOnly = false, docsOnly = false } = options;
   console.log(`\n${LOG_PREFIX.DONE} Running gates in worktree: ${worktreePath}`);
 
   // Check for stale node_modules before running gates (prevents confusing failures)
   checkNodeModulesStaleness(worktreePath);
 
-  const gatesCmd = isDocsOnly
-    ? `${PKG_MANAGER} ${SCRIPTS.GATES} -- ${CLI_FLAGS.DOCS_ONLY}`
-    : `${PKG_MANAGER} ${SCRIPTS.GATES}`;
-  if (isDocsOnly) {
+  // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
+  const useDocsOnlyGates = docsOnly || isDocsOnly;
+  const gatesCmd = buildGatesCommand({ docsOnly, isDocsOnly });
+  if (useDocsOnlyGates) {
     console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
+    if (docsOnly) {
+      console.log(`${LOG_PREFIX.DONE} (explicit --docs-only flag)`);
+    }
   }
   const startTime = Date.now();
   try {
@@ -1904,6 +2038,12 @@ async function executePreFlightChecks({
     console.warn(`Use --require-agents to make this a blocking error.\n`);
   }
 
+  // WU-1012: Validate --docs-only flag usage (BLOCKING)
+  const docsOnlyValidation = validateDocsOnlyFlag(docForValidation, { docsOnly: args.docsOnly });
+  if (!docsOnlyValidation.valid) {
+    die(docsOnlyValidation.errors[0]);
+  }
+
   // WU-1999: Exposure validation (NON-BLOCKING warning)
   printExposureWarnings(docForValidation, { skipExposureCheck: args.skipExposureCheck });
 
@@ -2061,11 +2201,14 @@ async function executeGates({
   } else if (isBranchOnly) {
     // Branch-Only mode: run gates in-place (current directory on lane branch)
     console.log(`\n${LOG_PREFIX.DONE} Running gates in Branch-Only mode (in-place on lane branch)`);
-    const gatesCmd = isDocsOnly
-      ? `${PKG_MANAGER} ${SCRIPTS.GATES} -- ${CLI_FLAGS.DOCS_ONLY}`
-      : `${PKG_MANAGER} ${SCRIPTS.GATES}`;
-    if (isDocsOnly) {
+    // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
+    const useDocsOnlyGates = args.docsOnly || isDocsOnly;
+    const gatesCmd = buildGatesCommand({ docsOnly: Boolean(args.docsOnly), isDocsOnly });
+    if (useDocsOnlyGates) {
       console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
+      if (args.docsOnly) {
+        console.log(`${LOG_PREFIX.DONE} (explicit --docs-only flag)`);
+      }
     }
     const startTime = Date.now();
     try {
@@ -2102,7 +2245,8 @@ async function executeGates({
     }
   } else if (worktreePath && existsSync(worktreePath)) {
     // Worktree mode: run gates in the dedicated worktree
-    runGatesInWorktree(worktreePath, id, isDocsOnly);
+    // WU-1012: Pass both auto-detected and explicit docs-only flags
+    runGatesInWorktree(worktreePath, id, { isDocsOnly, docsOnly: Boolean(args.docsOnly) });
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
