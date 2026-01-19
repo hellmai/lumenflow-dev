@@ -47,10 +47,7 @@ const STALE_ROOT_PATHS = [
 /**
  * Invalid test path patterns that reference __tests__ at repo root.
  */
-const INVALID_TEST_PATH_PATTERNS = [
-  '__tests__/unit/**',
-  '__tests__/integration/**',
-];
+const INVALID_TEST_PATH_PATTERNS = ['__tests__/unit/**', '__tests__/integration/**'];
 
 /**
  * Minimum keyword count for reliable inference.
@@ -79,7 +76,10 @@ const LUMENFLOW_TAXONOMY = {
 };
 
 describe.skipIf(!hasConfig)('Lane Taxonomy Validation (WU-1019)', () => {
-  let config: Record<string, Record<string, { description?: string; code_paths?: string[]; keywords?: string[] }>>;
+  let config: Record<
+    string,
+    Record<string, { description?: string; code_paths?: string[]; keywords?: string[] }>
+  >;
 
   beforeAll(() => {
     if (!existsSync(CONFIG_PATH)) {
@@ -329,10 +329,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-1019)', () => {
   it('should infer correctly for Operations: CI/CD', async () => {
     const { inferSubLane } = await import('../lane-inference.js');
 
-    const result = inferSubLane(
-      ['.github/workflows/ci.yml'],
-      'Fix GitHub Actions workflow for CI',
-    );
+    const result = inferSubLane(['.github/workflows/ci.yml'], 'Fix GitHub Actions workflow for CI');
 
     expect(result.lane).toBe('Operations: CI/CD');
     expect(result.confidence).toBeGreaterThan(0);
@@ -341,10 +338,7 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-1019)', () => {
   it('should infer correctly for Content: Documentation', async () => {
     const { inferSubLane } = await import('../lane-inference.js');
 
-    const result = inferSubLane(
-      ['docs/lumenflow/playbook.md'],
-      'Update playbook documentation',
-    );
+    const result = inferSubLane(['docs/lumenflow/playbook.md'], 'Update playbook documentation');
 
     expect(result.lane).toBe('Content: Documentation');
     expect(result.confidence).toBeGreaterThan(0);
