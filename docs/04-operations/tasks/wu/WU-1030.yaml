@@ -11,10 +11,14 @@ code_paths:
   - .husky/prepare-commit-msg
   - .husky/commit-msg
   - .husky/hooks/pre-push.mjs
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
 tests:
   manual:
     - 'Manual: run pnpm wu:create and pnpm wu:edit without LUMENFLOW_FORCE'
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1030.done
