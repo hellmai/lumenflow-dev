@@ -6,50 +6,50 @@
 
 ## WU Management
 
-| Command | Description |
-|---------|-------------|
-| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title"` | Create new WU |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>` | Claim WU and create worktree |
-| `pnpm wu:done --id WU-XXX` | Complete WU (merge, stamp, cleanup) |
-| `pnpm wu:block --id WU-XXX --reason "Reason"` | Block a WU |
-| `pnpm wu:unblock --id WU-XXX` | Unblock a WU |
+| Command                                                    | Description                         |
+| ---------------------------------------------------------- | ----------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title"` | Create new WU                       |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`                  | Claim WU and create worktree        |
+| `pnpm wu:done --id WU-XXX`                                 | Complete WU (merge, stamp, cleanup) |
+| `pnpm wu:block --id WU-XXX --reason "Reason"`              | Block a WU                          |
+| `pnpm wu:unblock --id WU-XXX`                              | Unblock a WU                        |
 
 ---
 
 ## Gates
 
-| Command | Description |
-|---------|-------------|
-| `pnpm gates` | Run all quality gates |
+| Command                  | Description                |
+| ------------------------ | -------------------------- |
+| `pnpm gates`             | Run all quality gates      |
 | `pnpm gates --docs-only` | Run gates for docs changes |
-| `pnpm format` | Format all files |
-| `pnpm lint` | Run linter |
-| `pnpm typecheck` | Run TypeScript check |
-| `pnpm test` | Run tests |
+| `pnpm format`            | Format all files           |
+| `pnpm lint`              | Run linter                 |
+| `pnpm typecheck`         | Run TypeScript check       |
+| `pnpm test`              | Run tests                  |
 
 ---
 
 ## Memory (Session Context)
 
-| Command | Description |
-|---------|-------------|
-| `pnpm mem:init --wu WU-XXX` | Initialize memory for WU |
-| `pnpm mem:checkpoint --wu WU-XXX` | Save progress checkpoint |
-| `pnpm mem:ready --wu WU-XXX` | Check pending nodes |
-| `pnpm mem:inbox --wu WU-XXX` | Check coordination signals |
+| Command                           | Description                |
+| --------------------------------- | -------------------------- |
+| `pnpm mem:init --wu WU-XXX`       | Initialize memory for WU   |
+| `pnpm mem:checkpoint --wu WU-XXX` | Save progress checkpoint   |
+| `pnpm mem:ready --wu WU-XXX`      | Check pending nodes        |
+| `pnpm mem:inbox --wu WU-XXX`      | Check coordination signals |
 
 ---
 
 ## Git (Safe Operations)
 
-| Command | Description |
-|---------|-------------|
-| `git status` | Check working tree status |
-| `git add .` | Stage all changes |
-| `git commit -m "type: message"` | Commit with message |
-| `git push origin lane/<lane>/wu-xxx` | Push to remote |
-| `git fetch origin` | Fetch remote changes |
-| `git rebase origin/main` | Update from main |
+| Command                              | Description               |
+| ------------------------------------ | ------------------------- |
+| `git status`                         | Check working tree status |
+| `git add .`                          | Stage all changes         |
+| `git commit -m "type: message"`      | Commit with message       |
+| `git push origin lane/<lane>/wu-xxx` | Push to remote            |
+| `git fetch origin`                   | Fetch remote changes      |
+| `git rebase origin/main`             | Update from main          |
 
 ---
 
@@ -100,6 +100,7 @@ Types: feat, fix, docs, style, refactor, test, chore
 ```
 
 Examples:
+
 - `feat(api): add user endpoint`
 - `fix(auth): resolve token expiry`
 - `docs: update README`
@@ -109,9 +110,9 @@ Examples:
 
 ## File Paths
 
-| Path | Description |
-|------|-------------|
-| `docs/04-operations/tasks/wu/WU-XXX.yaml` | WU specification |
-| `docs/04-operations/tasks/status.md` | Current status board |
-| `.beacon/stamps/WU-XXX.done` | Completion stamp |
-| `worktrees/<lane>-wu-xxx/` | Worktree directory |
+| Path                                      | Description          |
+| ----------------------------------------- | -------------------- |
+| `docs/04-operations/tasks/wu/WU-XXX.yaml` | WU specification     |
+| `docs/04-operations/tasks/status.md`      | Current status board |
+| `.beacon/stamps/WU-XXX.done`              | Completion stamp     |
+| `worktrees/<lane>-wu-xxx/`                | Worktree directory   |

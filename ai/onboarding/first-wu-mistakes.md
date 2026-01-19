@@ -136,6 +136,7 @@ Re-run: pnpm gates
 ### Wrong
 
 The WU says "Add user profile endpoint" but you also:
+
 - Refactor the database schema
 - Add email notifications
 - Redesign the UI

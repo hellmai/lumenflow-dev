@@ -11,6 +11,7 @@ LumenFlow is a vendor-agnostic workflow framework for AI-native software develop
 **After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
 
 This is the single most forgotten step. Do NOT:
+
 - Write "To Complete: pnpm wu:done" and stop
 - Ask if you should run wu:done
 - Forget to run wu:done

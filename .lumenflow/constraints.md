@@ -14,6 +14,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Work only in worktrees, treat main as read-only, never run destructive git commands on main.
 
 **Enforcement:**
+
 - After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx`
 - Hooks block WU commits from main checkout
 - Forbidden commands on main: `git reset --hard`, `git stash`, `git clean -fd`, `git push --force`
@@ -27,6 +28,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Respect code_paths boundaries, no feature creep, no code blocks in WU YAML files.
 
 **Enforcement:**
+
 - Only modify files listed in `code_paths`
 - WU YAML contains acceptance criteria, not implementation code
 - Scope discipline: implement only what the spec requires
@@ -40,6 +42,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Documentation WUs use `--docs-only` gates, code WUs run full gates.
 
 **Enforcement:**
+
 - `type: documentation` in WU YAML triggers docs-only mode
 - `pnpm gates --docs-only` skips lint/typecheck/tests
 - Path validation prevents code files in docs WUs
@@ -53,6 +56,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Use LLMs for semantic tasks, fall back to safe defaults (never regex/keywords).
 
 **Enforcement:**
+
 - Prompt-based classification for ambiguous inputs
 - Structured output parsing for LLM responses
 - No brittle keyword matching for semantic decisions
@@ -66,6 +70,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Complete via `pnpm wu:done`; skip-gates only for pre-existing failures with `--reason` and `--fix-wu`.
 
 **Enforcement:**
+
 - `pnpm wu:done` runs gates before merge
 - `--skip-gates` requires both `--reason` and `--fix-wu`
 - Skip events logged to `.beacon/skip-gates-audit.log`
@@ -79,6 +84,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 **Rule:** Respect privacy rules, approved sources, security policies; when uncertain, choose safer path.
 
 **Enforcement:**
+
 - No hardcoded secrets (gitleaks scanning)
 - RLS policies on sensitive data
 - Redaction before sending to LLMs
