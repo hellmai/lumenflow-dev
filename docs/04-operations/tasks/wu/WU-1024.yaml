@@ -2,7 +2,7 @@ id: WU-1024
 title: Pre-push hook should allow CLI tool pushes to main
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -31,3 +31,11 @@ acceptance:
   - pre-push allows pushes from tmp/wu-* branches (CLI micro-worktrees)
   - pre-push still blocks manual git push to main
   - wu:create, wu:edit work without LUMENFLOW_FORCE
+claimed_mode: worktree
+worktree_path: worktrees/operations-infrastructure-wu-1024
+claimed_at: 2026-01-19T12:30:21.050Z
+baseline_main_sha: b8c395b87aafbf8977a84c47f033a1fb6bc59401
+session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T12:30:21.058Z
