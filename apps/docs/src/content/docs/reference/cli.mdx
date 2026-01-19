@@ -235,6 +235,44 @@ pnpm wu:infer-lane --id WU-001
 pnpm wu:infer-lane --paths "tools/**" "docs/**" --desc "Tooling improvements"
 ```
 
+### wu:delete
+
+Delete WU files with micro-worktree isolation.
+
+```bash
+pnpm wu:delete --id WU-001
+pnpm wu:delete --id WU-001 --dry-run
+pnpm wu:delete --batch WU-1,WU-2,WU-3
+```
+
+| Flag        | Description                    |
+| ----------- | ------------------------------ |
+| `--id`      | WU to delete                   |
+| `--batch`   | Comma-separated WU IDs         |
+| `--dry-run` | Preview without making changes |
+
+### wu:unlock-lane
+
+Clear lane locks for recovery scenarios.
+
+```bash
+pnpm wu:unlock-lane --lane Core --reason "Process crashed"
+pnpm wu:unlock-lane --lane Core --reason "Emergency" --force
+pnpm wu:unlock-lane --list
+```
+
+| Flag       | Description                              |
+| ---------- | ---------------------------------------- |
+| `--lane`   | Lane to unlock                           |
+| `--reason` | Audit reason (required)                  |
+| `--force`  | Force unlock active locks                |
+| `--list`   | List all current locks                   |
+
+Lock types:
+- **Zombie locks** (PID not running): Can be unlocked without `--force`
+- **Stale locks** (>24h old): Can be unlocked without `--force`
+- **Active locks**: Require `--force` to unlock
+
 ---
 
 ## Initiative Commands
@@ -421,6 +459,31 @@ pnpm mem:triage --archive mem-def456 --reason "Duplicate of WU-100"
 | `--wu`      | Filter by WU ID           |
 | `--tag`     | Filter by tag             |
 
+### mem:cleanup
+
+Prune memory nodes based on lifecycle policy and TTL.
+
+```bash
+pnpm mem:cleanup                    # Cleanup based on lifecycle policy
+pnpm mem:cleanup --dry-run          # Preview without changes
+pnpm mem:cleanup --ttl 30d          # Remove nodes older than 30 days
+pnpm mem:cleanup --session-id <uuid> # Close specific session
+pnpm mem:cleanup --json             # Output as JSON
+```
+
+| Flag           | Description                       |
+| -------------- | --------------------------------- |
+| `--dry-run`    | Preview without making changes    |
+| `--ttl`        | Remove nodes older than duration  |
+| `--session-id` | Close specific session            |
+| `--json`       | Output results as JSON            |
+
+Cleanup rules:
+- Ephemeral nodes are always discarded
+- Session nodes removed when session closes
+- Summarized nodes archived (marked with `summarized_into`)
+- Active sessions are never removed
+
 ---
 
 ## Gate Commands
@@ -487,6 +550,75 @@ Display spawn trees for WUs or initiatives.
 pnpm spawn-list --wu WU-001
 pnpm spawn-list --initiative INIT-001
 pnpm spawn-list --initiative INIT-001 --json
+```
+
+### orchestrate:initiative
+
+Orchestrate initiative execution with parallel agent spawning.
+
+```bash
+pnpm orchestrate:initiative --initiative INIT-001
+pnpm orchestrate:initiative --initiative INIT-001 --dry-run
+pnpm orchestrate:initiative --initiative INIT-001 --progress
+pnpm orchestrate:initiative --initiative INIT-001 --checkpoint-per-wave
+```
+
+| Flag                   | Description                           |
+| ---------------------- | ------------------------------------- |
+| `--initiative`         | Initiative ID(s) to orchestrate       |
+| `--dry-run`            | Show execution plan without spawning  |
+| `--progress`           | Show current progress only            |
+| `--checkpoint-per-wave`| Spawn next wave then exit (no polling)|
+| `--no-checkpoint`      | Force polling mode                    |
+
+### orchestrate:init-status
+
+Compact status view for initiative progress.
+
+```bash
+pnpm orchestrate:init-status --initiative INIT-001
+```
+
+### orchestrate:monitor
+
+Monitor spawned agent progress using mem:inbox signals.
+
+```bash
+pnpm orchestrate:monitor --since 30m
+pnpm orchestrate:monitor --since 1h
+```
+
+| Flag      | Description                              |
+| --------- | ---------------------------------------- |
+| `--since` | Show signals from this time (e.g., 30m)  |
+
+---
+
+## Agent Commands
+
+Commands for managing agent sessions and telemetry.
+
+### agent:session
+
+Start an agent session for tracking WU execution.
+
+```bash
+pnpm agent:session --wu WU-001 --tier 2
+pnpm agent:session --wu WU-001 --tier 2 --agent-type claude-code
+```
+
+| Flag           | Description                     |
+| -------------- | ------------------------------- |
+| `--wu`         | WU ID to work on (required)     |
+| `--tier`       | Context tier: 1, 2, or 3        |
+| `--agent-type` | Agent type (default: claude-code)|
+
+### agent:session:end
+
+End the current agent session.
+
+```bash
+pnpm agent:session:end
 ```
 
 ---

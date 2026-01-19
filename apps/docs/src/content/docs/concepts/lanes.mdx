@@ -26,52 +26,54 @@ With lanes:
 lanes:
   - name: Core
     wip_limit: 1
-    paths:
+    code_paths:
       - src/core/**
       - src/domain/**
 
   - name: UI
-    wip_limit: 2
-    paths:
+    wip_limit: 1
+    code_paths:
       - src/components/**
       - src/pages/**
 
   - name: Infrastructure
     wip_limit: 1
-    paths:
+    code_paths:
       - infra/**
       - .github/**
 
   - name: Documentation
     wip_limit: 1
-    paths:
+    code_paths:
       - docs/**
 ```
 
 ## WIP Limits
 
-WIP (Work-in-Progress) limits cap how many WUs can be active per lane.
+WIP (Work-in-Progress) limits enforce **one active WU per lane** (WIP=1). This prevents:
 
-| wip_limit | Meaning                       |
-| --------- | ----------------------------- |
-| 1         | One WU at a time (focused)    |
-| 2         | Two parallel WUs (small team) |
-| 3+        | Multiple parallel efforts     |
+- Context switching between multiple incomplete tasks
+- Merge conflicts from parallel work in the same domain
+- "Started but not finished" pile-ups
 
-**Recommended:** Start with `wip_limit: 1` and increase only if needed.
+**Current behavior:** WIP=1 is enforced for all lanes. Attempting to claim a WU in an occupied lane will be blocked.
 
-### Why WIP Limits Matter
+**Parallel work:** Use multiple lanes to work in parallel. Each lane can have one active WU, enabling concurrent work across different domains.
+
+### Why WIP=1 Matters
 
 ```
-wip_limit: 5 (too high)
-→ 5 things started, none finished
-→ Context switching
+High WIP (anti-pattern):
+→ Multiple things started, none finished
+→ Context switching overhead
 → Long cycle times
+→ Merge conflicts
 
-wip_limit: 1 (focused)
+WIP=1 (LumenFlow default):
 → Finish one thing
 → Start the next
 → Steady flow
+→ Clean merges
 ```
 
 ## Lane Selection
@@ -123,24 +125,27 @@ Split into:
 
 ## Visualizing Lanes
 
-The backlog shows lane state:
+The status file shows lane state:
 
 ```markdown
-# Backlog
-
-## 🚀 Ready
-
-- [WU-103 — Add dark mode toggle](wu/WU-103.yaml) (lane: UI)
+# Status
 
 ## 🔧 In Progress
 
-- [WU-101 — Add preferences UI](wu/WU-101.yaml) (lane: UI) ← 1/2 WIP
-- [WU-100 — Add preferences API](wu/WU-100.yaml) (lane: Core) ← 1/1 WIP
+- [WU-101 — Add preferences UI](wu/WU-101.yaml) (lane: UI)
+- [WU-100 — Add preferences API](wu/WU-100.yaml) (lane: Core)
+
+## 🚀 Ready
+
+- [WU-103 — Add dark mode toggle](wu/WU-103.yaml) (lane: UI) ← blocked (UI lane occupied)
+- [WU-104 — Add export feature](wu/WU-104.yaml) (lane: Infrastructure) ← can claim
 
 ## ⛔ Blocked
 
 (none)
 ```
+
+Note: WU-103 cannot be claimed because UI lane already has WU-101 in progress.
 
 ## Next Steps
 

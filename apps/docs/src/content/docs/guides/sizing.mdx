@@ -5,40 +5,44 @@ description: How to break work into right-sized units
 
 import { Aside } from '@astrojs/starlight/components';
 
-Right-sizing WUs is critical for flow. Too big = stuck. Too small = overhead. Aim for 1-3 hours of focused work.
+Right-sizing WUs is critical for flow. Too big = stuck. Too small = overhead.
 
-## The 1-3 Hour Rule
+## Complexity Assessment
 
-A well-sized WU should take **1-3 hours** to complete, including:
+Estimate WU "weight" using these heuristics. Agents operate in context windows and tool calls, not clock time.
 
-- Understanding the acceptance criteria
-- Writing the code
-- Writing/updating tests
-- Running gates
+| Complexity    | Files | Tool Calls | Context Budget | Strategy               |
+| ------------- | ----- | ---------- | -------------- | ---------------------- |
+| **Simple**    | <20   | <50        | <30%           | Single Session         |
+| **Medium**    | 20-50 | 50-100     | 30-50%         | Checkpoint-Resume      |
+| **Complex**   | 50+   | 100+       | >50%           | Orchestrator or Split  |
+| **Oversized** | 100+  | 200+       | —              | **Must Split**         |
 
 <Aside type="tip">
-  If you can't estimate within 1-3 hours, the WU is too vague. Clarify requirements or split it.
+  If you can't complete a WU in a single session, it's too large. Split it using the patterns below.
 </Aside>
 
 ## Sizing Heuristics
 
-### ✅ Good Size Indicators
+### Good Size Indicators
 
 - Single clear outcome
-- Touches 1-3 files
+- Touches 1-5 files
 - One test file added/modified
 - Can describe in one sentence
 - No "and then..." in the description
+- Estimated <50 tool calls
 
-### ❌ Too Big Indicators
+### Too Big Indicators
 
 - Multiple outcomes
-- Touches 5+ files
+- Touches 10+ files
 - Requires multiple test suites
 - Description has multiple paragraphs
 - Contains "and", "also", "plus"
+- Estimated 100+ tool calls
 
-### ❌ Too Small Indicators
+### Too Small Indicators
 
 - Just a config change
 - Single line fix
@@ -77,41 +81,43 @@ A well-sized WU should take **1-3 hours** to complete, including:
 - WU-121: Add payment method selection
 - WU-122: Add order confirmation
 
-## Examples
+## Splitting Patterns
 
-### Example 1: Feature
+### Pattern A: Tracer Bullet (Risk Reduction)
 
-**Original:** "Add dark mode support"
+**Best for:** New integrations, unproven libraries.
 
-**Split:**
-| WU | Title | Est. |
-|----|-------|------|
-| WU-200 | Add theme context provider | 2h |
-| WU-201 | Add theme toggle component | 1h |
-| WU-202 | Add dark mode CSS variables | 2h |
-| WU-203 | Persist theme preference | 1h |
+| WU   | Title                              | Tool Calls |
+| ---- | ---------------------------------- | ---------- |
+| WU-A | Port + mock adapter + E2E skeleton | ~30        |
+| WU-B | Real adapter + error handling      | ~40        |
 
-### Example 2: Bug Fix
+### Pattern B: Layer Split (Architectural)
 
-**Original:** "Fix login issues"
+**Best for:** Large backend features, hexagonal architecture.
 
-**Clarify first:** What issues? Then split:
-| WU | Title | Est. |
-|----|-------|------|
-| WU-210 | Fix session expiry redirect | 1h |
-| WU-211 | Fix password field autocomplete | 30m |
-| WU-212 | Fix error message display | 1h |
+| WU   | Title                              | Tool Calls |
+| ---- | ---------------------------------- | ---------- |
+| WU-A | Ports + application + unit tests   | ~40        |
+| WU-B | Infrastructure adapters + int tests| ~40        |
 
-### Example 3: Refactor
+### Pattern C: UI/Logic Split (Lane Separation)
 
-**Original:** "Refactor authentication module"
+**Best for:** Full-stack features.
 
-**Split by concern:**
-| WU | Title | Est. |
-|----|-------|------|
-| WU-220 | Extract auth types to shared module | 2h |
-| WU-221 | Move JWT logic to auth service | 2h |
-| WU-222 | Add auth service tests | 2h |
+| WU   | Title                  | Lane |
+| ---- | ---------------------- | ---- |
+| WU-A | API + DB + backend     | Core |
+| WU-B | Components + UI state  | UI   |
+
+### Pattern D: Feature Flag (Phased Rollout)
+
+**Best for:** High-risk refactoring, breaking changes.
+
+| WU   | Title                                   | Tool Calls |
+| ---- | --------------------------------------- | ---------- |
+| WU-A | New logic behind `ENABLE_NEW=true` flag | ~50        |
+| WU-B | Remove flag + delete old code           | ~30        |
 
 ## When to Combine
 
@@ -138,19 +144,19 @@ dependencies:
   - WU-200 # Needs theme context first
 ```
 
-Execute in order, or work on independent WUs in parallel.
+Execute in order, or work on independent WUs in parallel lanes.
 
-## Estimating
+## Context Safety Triggers
 
-For new WUs:
+If you hit ANY of these during a session, checkpoint and handoff:
 
-1. **Read acceptance criteria** – Clear enough to estimate?
-2. **Mental walkthrough** – What files? What tests?
-3. **Gut check** – Does 1-3 hours feel right?
-4. **Too uncertain?** – Spike first (discovery WU)
+- **Token Limit:** Context usage hits 50% (warning) or 80% (critical)
+- **Tool Volume:** 50+ tool calls in current session
+- **File Volume:** 20+ files modified in `git status`
+- **Performance Degradation:** Redundant queries, forgotten context
 
 <Aside type="caution">
-  If you consistently under/over-estimate, adjust your calibration. Track actual time vs. estimate.
+  When triggers fire: commit work, push branch, document progress in WU notes, then clear context and resume fresh.
 </Aside>
 
 ## Discovery WUs

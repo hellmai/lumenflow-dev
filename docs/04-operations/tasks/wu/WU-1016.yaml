@@ -1,0 +1,58 @@
+id: WU-1016
+title: Implement configurable WIP limits per lane
+lane: Core
+type: feature
+status: ready
+priority: P2
+created: 2026-01-19
+code_paths:
+  - packages/@lumenflow/core/src/lane-checker.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+tests:
+  manual:
+    - Set wip_limit: 2 in config and verify two WUs can be claimed in same lane
+    - Set wip_limit: 1 and verify only one WU can be claimed
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
+  e2e: []
+artifacts:
+  - ._legacy/stamps/WU-1016.done
+dependencies: []
+initiative: INIT-001
+phase: 2
+risks:
+  - Parallel WUs in same lane may cause merge conflicts
+  - Increased complexity in lane occupancy tracking
+notes: |
+  Discovered during doc review: wip_limit field exists in config but is not
+  implemented. Current behavior is hardcoded WIP=1 for all lanes.
+
+  Implementation approach:
+  1. Read wip_limit from .lumenflow.config.yaml per lane
+  2. Modify checkLaneFree() to count in_progress WUs vs wip_limit
+  3. Update wu:claim to respect configurable limit
+  4. Default to wip_limit: 1 if not specified (backward compatible)
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |
+  Implement configurable WIP limits per lane as specified in config.
+
+  Context: The .lumenflow.config.yaml supports wip_limit per lane, but the
+  lane-checker.ts currently hardcodes WIP=1 for all lanes.
+
+  Problem: Users cannot configure higher WIP limits for lanes that need
+  parallel work (e.g., small team working on UI).
+
+  Solution: Read wip_limit from config and enforce it in checkLaneFree().
+acceptance:
+  - wip_limit field from config is read and used
+  - Lane can have multiple in_progress WUs up to wip_limit
+  - Default wip_limit is 1 if not specified
+  - Tests cover multi-WU scenarios
+  - Documentation updated to reflect configurable limits
