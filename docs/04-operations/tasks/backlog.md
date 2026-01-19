@@ -25,6 +25,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — Core
+- [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 
 ## ⛔ Blocked
 
@@ -40,3 +41,4 @@ sections:
 - [WU-1011 — Fix circular dependency between core and memory packages](wu/WU-1011.yaml)
 - [WU-1014 — Add error logging to worktreeRemove fallback rmSync](wu/WU-1014.yaml)
 - [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml)
+- [WU-1012 — Add --docs-only flag to wu:done for documentation WUs](wu/WU-1012.yaml)

@@ -17,3 +17,4 @@
 {"type":"complete","wuId":"WU-1015","timestamp":"2026-01-18T23:30:28.465Z"}
 {"type":"claim","wuId":"WU-1013","lane":"Documentation","title":"Deploy docs to Vercel (lumenflow.dev)","timestamp":"2026-01-18T23:45:27.167Z"}
 {"type":"claim","wuId":"WU-1012","lane":"CLI","title":"Add --docs-only flag to wu:done for documentation WUs","timestamp":"2026-01-19T09:52:21.789Z"}
+{"type":"complete","wuId":"WU-1012","timestamp":"2026-01-19T10:03:06.094Z"}
