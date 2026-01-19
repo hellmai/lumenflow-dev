@@ -86,6 +86,12 @@ git:
   lane_branch_pattern: 'lane/{lane}/{wu_id}' # e.g., "lane/intelligence/wu-123"
   worktree_pattern: 'worktrees/{lane}-{wu_id}' # e.g., "worktrees/intelligence-wu-123"
   fast_forward_only: true # Enforce linear history
+  # Agent branch patterns - branches matching these can bypass worktree requirements
+  # Use for cloud agents (Prompt Studio, GitHub Actions) that manage their own isolation
+  # Default: ['agent/*'] - add vendor-specific patterns as needed
+  agent_branch_patterns:
+    - 'agent/*'
+    # - 'claude/*'  # Uncomment for Claude-created branches
 
 # Optional: Telemetry and metrics (for future governance.metrics)
 telemetry:

@@ -682,6 +682,45 @@ To activate: `export PATH="$(pwd)/tools/shims:$PATH"` before any git commands.
 
 See: [../../../tools/shims/README.md](../../../tools/shims/README.md) for details.
 
+**Agent Branch Bypass (WU-1026):**
+
+Cloud agents (like Prompt Studio or GitHub Actions) that create their own branches can bypass worktree requirements when working on branches matching configured patterns.
+
+Configuration in `.lumenflow.config.yaml`:
+
+```yaml
+git:
+  mainBranch: main
+  agentBranchPatterns:
+    - "agent/*"      # Default: agent-created branches
+    - "claude/*"     # Optional: add vendor-specific patterns
+```
+
+**How it works:**
+
+1. **Fail-closed default**: Unknown branches are blocked when worktrees exist
+2. **Protected branches never bypassed**: `mainBranch` and `master` are always protected
+3. **Lane branches blocked**: `lane/*` branches require worktree workflow
+4. **Agent branches allowed**: Branches matching `agentBranchPatterns` can work in main checkout
+
+**Guarded headless mode:**
+
+For CI/CD pipelines, set `LUMENFLOW_HEADLESS=1` with one of:
+- `LUMENFLOW_ADMIN=1` (explicit admin override)
+- `CI=true` (standard CI environment)
+- `GITHUB_ACTIONS=true` (GitHub Actions)
+
+This bypasses worktree checks for automation that manages its own isolation.
+
+**Detection priority:**
+
+1. Headless mode (if guarded) → bypass
+2. Detached HEAD → protected (fail-closed)
+3. Agent branch pattern match → bypass
+4. Protected branch → protected
+5. Lane branch → protected (use worktree)
+6. Unknown branch → protected (fail-closed)
+
 ---
 
 ## 5. Example Flow: Rolling Out a New Prompt Version
