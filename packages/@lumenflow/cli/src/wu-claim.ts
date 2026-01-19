@@ -622,7 +622,10 @@ function validateLaneFormatWithError(lane) {
 }
 
 /**
- * Handle lane occupancy check and enforce WIP=1 policy
+ * Handle lane occupancy check and enforce WIP limit policy
+ *
+ * WU-1016: Updated to support configurable WIP limits per lane.
+ * The WIP limit is read from .lumenflow.config.yaml and defaults to 1.
  */
 function handleLaneOccupancy(laneCheck, lane, id, force) {
   if (laneCheck.free) return;
@@ -633,20 +636,31 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
 
   if (!laneCheck.occupiedBy) return;
 
+  // WU-1016: Include WIP limit info in messages
+  const wipLimit = laneCheck.wipLimit ?? 1;
+  const currentCount = laneCheck.currentCount ?? 0;
+  const inProgressList = laneCheck.inProgressWUs?.join(', ') || laneCheck.occupiedBy;
+
   if (force) {
-    console.warn(`${PREFIX} ⚠️  WARNING: Lane "${lane}" is occupied by ${laneCheck.occupiedBy}`);
-    console.warn(`${PREFIX} ⚠️  Forcing WIP=2 in same lane. Risk of worktree collision!`);
+    console.warn(
+      `${PREFIX} ⚠️  WARNING: Lane "${lane}" has ${currentCount}/${wipLimit} WUs in progress`,
+    );
+    console.warn(`${PREFIX} ⚠️  In progress: ${inProgressList}`);
+    console.warn(`${PREFIX} ⚠️  Forcing WIP limit override. Risk of worktree collision!`);
     console.warn(`${PREFIX} ⚠️  Use only for P0 emergencies or manual recovery.`);
     return;
   }
 
   die(
-    `Lane "${lane}" is already occupied by ${laneCheck.occupiedBy}.\n\n` +
-      `LumenFlow enforces one-WU-per-lane to maintain focus.\n\n` +
+    `Lane "${lane}" is at WIP limit (${currentCount}/${wipLimit}).\n\n` +
+      `In progress: ${inProgressList}\n\n` +
+      `LumenFlow enforces WIP limits per lane to maintain focus.\n` +
+      `Current limit for "${lane}": ${wipLimit} (configure in .lumenflow.config.yaml)\n\n` +
       `Options:\n` +
-      `  1. Wait for ${laneCheck.occupiedBy} to complete or block\n` +
+      `  1. Wait for a WU to complete or block\n` +
       `  2. Choose a different lane\n` +
-      `  3. Use --force to override (P0 emergencies only)\n\n` +
+      `  3. Increase wip_limit in .lumenflow.config.yaml\n` +
+      `  4. Use --force to override (P0 emergencies only)\n\n` +
       `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
   );
 }

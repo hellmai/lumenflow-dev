@@ -39,7 +39,7 @@ governance:
     # Skip gates for documentation-only WUs
     skip_for_types: ['documentation', 'chore']
 
-# Engineering lanes (WIP=1 per lane)
+# Engineering lanes (WIP limit configurable per lane, default: 1)
 lanes:
   engineering:
     - name: 'Discovery'

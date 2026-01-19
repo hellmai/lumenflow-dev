@@ -31,6 +31,24 @@ interface CheckLaneFreeResult {
   free: boolean;
   occupiedBy: string | null;
   error: string | null;
+  /** WU-1016: List of WU IDs currently in progress in this lane */
+  inProgressWUs?: string[];
+  /** WU-1016: The configured WIP limit for this lane */
+  wipLimit?: number;
+  /** WU-1016: Current count of in-progress WUs in this lane */
+  currentCount?: number;
+}
+
+/** WU-1016: Options for checkLaneFree */
+interface CheckLaneFreeOptions {
+  /** Path to .lumenflow.config.yaml (for testing) */
+  configPath?: string;
+}
+
+/** WU-1016: Options for getWipLimitForLane */
+interface GetWipLimitOptions {
+  /** Path to .lumenflow.config.yaml (for testing) */
+  configPath?: string;
 }
 
 interface LaneConfig {
@@ -39,11 +57,16 @@ interface LaneConfig {
 
 interface LumenflowConfig {
   lanes?:
-    | LaneConfig[]
+    | LaneConfigWithWip[]
     | {
-        engineering?: LaneConfig[];
-        business?: LaneConfig[];
+        engineering?: LaneConfigWithWip[];
+        business?: LaneConfigWithWip[];
       };
+}
+
+/** WU-1016: Extended LaneConfig with wip_limit support */
+interface LaneConfigWithWip extends LaneConfig {
+  wip_limit?: number;
 }
 
 interface WUDoc {
@@ -333,14 +356,92 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   return allLanes.some((lane) => lane.toLowerCase().trim() === normalizedParent);
 }
 
+/** WU-1016: Default WIP limit when not specified in config */
+const DEFAULT_WIP_LIMIT = 1;
+
 /**
- * Check if a lane is free (no in_progress WU currently in that lane)
+ * WU-1016: Get WIP limit for a lane from config
+ *
+ * Reads the wip_limit field from .lumenflow.config.yaml for the specified lane.
+ * Returns DEFAULT_WIP_LIMIT (1) if the lane is not found or wip_limit is not specified.
+ *
+ * @param {string} lane - Lane name (e.g., "Core", "CLI")
+ * @param {GetWipLimitOptions} options - Options including configPath for testing
+ * @returns {number} The WIP limit for the lane (default: 1)
+ */
+export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {}): number {
+  // Determine config path
+  let resolvedConfigPath = options.configPath;
+  if (!resolvedConfigPath) {
+    const projectRoot = findProjectRoot();
+    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  }
+
+  // Check if config file exists
+  if (!existsSync(resolvedConfigPath)) {
+    return DEFAULT_WIP_LIMIT;
+  }
+
+  try {
+    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
+    const config = yaml.load(configContent) as LumenflowConfig;
+
+    if (!config.lanes) {
+      return DEFAULT_WIP_LIMIT;
+    }
+
+    // Normalize lane name for case-insensitive comparison
+    const normalizedLane = lane.toLowerCase().trim();
+
+    // Extract all lanes with their wip_limit
+    let allLanes: LaneConfigWithWip[] = [];
+    if (Array.isArray(config.lanes)) {
+      // Flat array format: lanes: [{name: "Core", wip_limit: 2}, ...]
+      allLanes = config.lanes;
+    } else {
+      // Nested format: lanes: {engineering: [...], business: [...]}
+      if (config.lanes.engineering) {
+        allLanes.push(...config.lanes.engineering);
+      }
+      if (config.lanes.business) {
+        allLanes.push(...config.lanes.business);
+      }
+    }
+
+    // Find matching lane (case-insensitive)
+    const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
+
+    if (!matchingLane) {
+      return DEFAULT_WIP_LIMIT;
+    }
+
+    // Return wip_limit if specified, otherwise default
+    return matchingLane.wip_limit ?? DEFAULT_WIP_LIMIT;
+  } catch {
+    // If config parsing fails, return default
+    return DEFAULT_WIP_LIMIT;
+  }
+}
+
+/**
+ * Check if a lane is free (in_progress WU count is below wip_limit)
+ *
+ * WU-1016: Now respects configurable wip_limit per lane from .lumenflow.config.yaml.
+ * Lane is considered "free" if current in_progress count < wip_limit.
+ * Default wip_limit is 1 if not specified in config (backward compatible).
+ *
  * @param {string} statusPath - Path to status.md
  * @param {string} lane - Lane name (e.g., "Operations", "Intelligence")
  * @param {string} wuid - WU ID being claimed (e.g., "WU-419")
- * @returns {{ free: boolean, occupiedBy: string | null, error: string | null }}
+ * @param {CheckLaneFreeOptions} options - Options including configPath for testing
+ * @returns {{ free: boolean, occupiedBy: string | null, error: string | null, inProgressWUs?: string[], wipLimit?: number, currentCount?: number }}
  */
-export function checkLaneFree(statusPath: string, lane: string, wuid: string): CheckLaneFreeResult {
+export function checkLaneFree(
+  statusPath: string,
+  lane: string,
+  wuid: string,
+  options: CheckLaneFreeOptions = {},
+): CheckLaneFreeResult {
   /** Section heading marker for H2 headings */
   const SECTION_HEADING_PREFIX = '## ';
 
@@ -374,9 +475,19 @@ export function checkLaneFree(statusPath: string, lane: string, wuid: string): C
     // Extract WU links from In Progress section
     const section = lines.slice(inProgressIdx + 1, endIdx).join(STRING_LITERALS.NEWLINE);
 
+    // WU-1016: Get WIP limit for this lane from config
+    const wipLimit = getWipLimitForLane(lane, { configPath: options.configPath });
+
     // Check for "No items" marker
     if (section.includes(NO_ITEMS_MARKER)) {
-      return { free: true, occupiedBy: null, error: null };
+      return {
+        free: true,
+        occupiedBy: null,
+        error: null,
+        inProgressWUs: [],
+        wipLimit,
+        currentCount: 0,
+      };
     }
 
     // Extract WU IDs from links like [WU-334 — Title](wu/WU-334.yaml)
@@ -384,12 +495,23 @@ export function checkLaneFree(statusPath: string, lane: string, wuid: string): C
     const matches = [...section.matchAll(WU_LINK_PATTERN)];
 
     if (matches.length === 0) {
-      return { free: true, occupiedBy: null, error: null };
+      return {
+        free: true,
+        occupiedBy: null,
+        error: null,
+        inProgressWUs: [],
+        wipLimit,
+        currentCount: 0,
+      };
     }
 
     // Get project root from statusPath (docs/04-operations/tasks/status.md)
     // Use path.dirname 4 times: status.md -> tasks -> 04-operations -> docs -> root
     const projectRoot = path.dirname(path.dirname(path.dirname(path.dirname(statusPath))));
+
+    // WU-1016: Collect all WUs in the target lane
+    const inProgressWUs: string[] = [];
+    const targetLane = lane.toString().trim().toLowerCase();
 
     for (const match of matches) {
       const activeWuid = match[1]; // e.g., "WU-334"
@@ -418,11 +540,10 @@ export function checkLaneFree(statusPath: string, lane: string, wuid: string): C
 
         // Normalize lane names for comparison (case-insensitive, trim whitespace)
         const activeLane = wuDoc.lane.toString().trim().toLowerCase();
-        const targetLane = lane.toString().trim().toLowerCase();
 
         if (activeLane === targetLane) {
-          // Lane is occupied!
-          return { free: false, occupiedBy: activeWuid, error: null };
+          // WU-1016: Add to list of in-progress WUs in this lane
+          inProgressWUs.push(activeWuid);
         }
       } catch (e) {
         const errMessage = e instanceof Error ? e.message : String(e);
@@ -431,8 +552,18 @@ export function checkLaneFree(statusPath: string, lane: string, wuid: string): C
       }
     }
 
-    // No WUs found in target lane
-    return { free: true, occupiedBy: null, error: null };
+    // WU-1016: Check if lane is free based on WIP limit
+    const currentCount = inProgressWUs.length;
+    const isFree = currentCount < wipLimit;
+
+    return {
+      free: isFree,
+      occupiedBy: isFree ? null : inProgressWUs[0] || null,
+      error: null,
+      inProgressWUs,
+      wipLimit,
+      currentCount,
+    };
   } catch (error) {
     const errMessage = error instanceof Error ? error.message : String(error);
     return { free: false, occupiedBy: null, error: `Unexpected error: ${errMessage}` };
