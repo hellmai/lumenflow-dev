@@ -20,7 +20,8 @@ tests:
     - Run metrics-snapshot --dry-run and verify output
     - Run initiative-bulk-assign-wus --help and verify output
     - Run agent-issues-query summary --help and verify output
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/flow-report.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1018.done
