@@ -31,6 +31,7 @@
 {"type":"complete","wuId":"WU-1020","timestamp":"2026-01-19T12:15:42.885Z"}
 {"type":"claim","wuId":"WU-1022","lane":"Framework: CLI","title":"Enforce parent:sublane format for lanes (Framework: CLI not CLI)","timestamp":"2026-01-19T12:20:00.000Z"}
 {"type":"complete","wuId":"WU-1022","timestamp":"2026-01-19T12:21:55.545Z"}
+{"type":"claim","wuId":"WU-1023","lane":"Framework: CLI","title":"Auto-setup worktree dependencies on wu:claim","timestamp":"2026-01-19T12:30:17.530Z"}
 {"type":"claim","wuId":"WU-1025","lane":"Framework: Core","title":"Block wu:create and wu:claim if spec contains PLACEHOLDER markers","timestamp":"2026-01-19T12:30:17.590Z"}
 {"type":"claim","wuId":"WU-1024","lane":"Operations: Infrastructure","title":"Pre-push hook should allow CLI tool pushes to main","timestamp":"2026-01-19T12:30:21.075Z"}
 {"type":"complete","wuId":"WU-1024","timestamp":"2026-01-19T12:33:46.538Z"}
