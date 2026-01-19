@@ -51,3 +51,4 @@ sections:
 - [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml)
 - [WU-1024 — Pre-push hook should allow CLI tool pushes to main](wu/WU-1024.yaml)
 - [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml)
+- [WU-1023 — Auto-setup worktree dependencies on wu:claim](wu/WU-1023.yaml)
