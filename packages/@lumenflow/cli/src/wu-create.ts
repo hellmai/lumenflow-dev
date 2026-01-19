@@ -58,6 +58,11 @@ import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validator
 import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
 import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
+// WU-1025: Import placeholder validator for inline content validation
+import {
+  validateNoPlaceholders,
+  buildPlaceholderErrorMessage,
+} from '@lumenflow/core/dist/wu-validator.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';
@@ -608,6 +613,20 @@ async function main() {
     }
 
     console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
+  }
+
+  // WU-1025: Block wu:create if inline content contains PLACEHOLDER markers
+  // Only validate if inline content is provided (don't block template creation)
+  if (args.description || (args.acceptance && args.acceptance.length > 0)) {
+    const placeholderResult = validateNoPlaceholders({
+      description: args.description,
+      acceptance: args.acceptance,
+    });
+
+    if (!placeholderResult.valid) {
+      const errorMsg = buildPlaceholderErrorMessage('wu:create', placeholderResult);
+      die(errorMsg);
+    }
   }
 
   // Transaction: micro-worktree isolation (WU-1439)

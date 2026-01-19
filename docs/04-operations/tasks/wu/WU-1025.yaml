@@ -7,6 +7,7 @@ priority: P1
 created: 2026-01-19
 code_paths:
   - packages/@lumenflow/core/src/wu-validator.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
 tests:
   manual:
     - wu:create with placeholder in description fails
