@@ -10,7 +10,8 @@ code_paths:
 tests:
   manual:
     - wu:done works without manual pnpm install
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1023.done
