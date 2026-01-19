@@ -77,7 +77,11 @@ describe.skipIf(!hasFullConfig)('validateLaneFormat - LumenFlow OS taxonomy', ()
         validateLaneFormat('Framework');
         expect.fail('Should have thrown');
       } catch (err: unknown) {
-        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        const error = err as {
+          code: string;
+          message: string;
+          details: { validSubLanes: string[] };
+        };
         expect(error.code).toBe(ErrorCodes.INVALID_LANE);
         expect(/Sub-lane required/.test(error.message)).toBeTruthy();
         expect(error.details.validSubLanes).toContain('Core');
@@ -90,7 +94,11 @@ describe.skipIf(!hasFullConfig)('validateLaneFormat - LumenFlow OS taxonomy', ()
         validateLaneFormat('Operations');
         expect.fail('Should have thrown');
       } catch (err: unknown) {
-        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        const error = err as {
+          code: string;
+          message: string;
+          details: { validSubLanes: string[] };
+        };
         expect(error.code).toBe(ErrorCodes.INVALID_LANE);
         expect(/Sub-lane required/.test(error.message)).toBeTruthy();
         expect(error.details.validSubLanes).toContain('Infrastructure');
@@ -103,7 +111,11 @@ describe.skipIf(!hasFullConfig)('validateLaneFormat - LumenFlow OS taxonomy', ()
         validateLaneFormat('Content');
         expect.fail('Should have thrown');
       } catch (err: unknown) {
-        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        const error = err as {
+          code: string;
+          message: string;
+          details: { validSubLanes: string[] };
+        };
         expect(error.code).toBe(ErrorCodes.INVALID_LANE);
         expect(/Sub-lane required/.test(error.message)).toBeTruthy();
         expect(error.details.validSubLanes).toContain('Documentation');
@@ -192,15 +204,11 @@ describe.skipIf(!hasFullConfig)('validateLaneFormat - LumenFlow OS taxonomy', ()
     });
 
     it('rejects space before colon', () => {
-      expect(() => validateLaneFormat('Framework : CLI')).toThrow(
-        /has space before colon/,
-      );
+      expect(() => validateLaneFormat('Framework : CLI')).toThrow(/has space before colon/);
     });
 
     it('rejects missing space after colon', () => {
-      expect(() => validateLaneFormat('Framework:CLI')).toThrow(
-        /missing space after colon/,
-      );
+      expect(() => validateLaneFormat('Framework:CLI')).toThrow(/missing space after colon/);
     });
   });
 });

@@ -3,9 +3,11 @@
  * pre-push hook - Block direct push to main/master
  *
  * WU-1017: Vendor-agnostic git workflow enforcement
+ * WU-1024: Allow CLI tool pushes from micro-worktrees (tmp/* branches)
  *
  * Rules:
  * - BLOCK push to refs/heads/main or refs/heads/master
+ * - ALLOW pushes from tmp/* branches (CLI micro-worktree operations)
  * - ALLOW all lane branch pushes (per WU-1255: protection at merge time)
  * - Parse stdin refs to catch bypasses like `git push origin HEAD:main`
  *
@@ -21,6 +23,10 @@ if (process.env.LUMENFLOW_FORCE === '1') {
 
 // Protected branch refs
 const PROTECTED = /^refs\/heads\/(main|master)$/;
+
+// CLI micro-worktree temp branches (WU-1024)
+// Pattern: tmp/wu-create/wu-xxx, tmp/wu-edit/wu-xxx, tmp/initiative-create/xxx, etc.
+const CLI_TEMP_BRANCH = /^refs\/heads\/tmp\//;
 
 // Pre-push receives refs via stdin: "<local ref> <local sha> <remote ref> <remote sha>"
 let stdin;
@@ -45,6 +51,12 @@ for (const line of stdin.split('\n')) {
 
   // Block if pushing to protected branch
   if (PROTECTED.test(remoteRef)) {
+    // WU-1024: Allow if the push is from a CLI micro-worktree temp branch
+    // These are legitimate pushes from wu:create, wu:edit, wu:done, initiative:create, etc.
+    if (CLI_TEMP_BRANCH.test(localRef)) {
+      continue; // Allow this push
+    }
+
     const branchName = remoteRef.replace('refs/heads/', '');
 
     console.error('');
