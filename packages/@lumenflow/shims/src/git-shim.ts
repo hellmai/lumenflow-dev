@@ -181,7 +181,7 @@ export function checkProtectedContext(
 
   // Use core config's mainBranch (single source of truth)
   const protectedBranches = getProtectedBranchesFromCore();
-  const mainBranch = protectedBranches[0]; // First is always mainBranch from config
+  const mainBranch = protectedBranches[0] ?? 'main'; // First is always mainBranch from config
   const isOnProtectedBranch = protectedBranches.includes(branch);
 
   // Protected if:
