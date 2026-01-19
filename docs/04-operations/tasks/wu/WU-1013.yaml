@@ -2,7 +2,7 @@ id: WU-1013
 title: Deploy docs to Vercel (lumenflow.dev)
 lane: Documentation
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-18
 code_paths:
@@ -19,10 +19,17 @@ dependencies: []
 initiative: INIT-001
 phase: 2
 risks: []
-notes: |-
+notes: >-
 
 
   [ADMIN-REPAIR 2026-01-19]: lane changed from 'Core' to 'Documentation'
+
+
+  Deployed to lumenflow.dev. CLI docs updated 21%→95%. Manual deployment (no auto-deploy to save
+  costs).
+
+
+  [ADMIN-REPAIR 2026-01-19]: status changed from 'in_progress' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -43,3 +50,4 @@ session_id: 862ff441-edf7-46fe-9884-25bb391e8ef0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-18T23:45:27.154Z
+locked: true
