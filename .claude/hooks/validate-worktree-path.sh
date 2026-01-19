@@ -26,6 +26,38 @@ fi
 
 WORKTREES_DIR="${MAIN_REPO_PATH}/worktrees"
 
+# Check guarded headless mode first (same logic as TypeScript isHeadlessAllowed)
+# Requires LUMENFLOW_HEADLESS=1 AND (LUMENFLOW_ADMIN=1 OR CI truthy OR GITHUB_ACTIONS truthy)
+if [[ "${LUMENFLOW_HEADLESS:-}" == "1" ]]; then
+  if [[ "${LUMENFLOW_ADMIN:-}" == "1" ]] || [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    exit 0  # Headless mode allowed - bypass worktree check
+  fi
+fi
+
+# Path to built CLI helper - try multiple locations for monorepo compatibility
+# In pnpm monorepos, packages aren't hoisted to root by default
+IS_AGENT_BRANCH_CLI=""
+for candidate in \
+  "${MAIN_REPO_PATH}/node_modules/@lumenflow/core/dist/cli/is-agent-branch.js" \
+  "${MAIN_REPO_PATH}/packages/@lumenflow/core/dist/cli/is-agent-branch.js"; do
+  if [[ -f "$candidate" ]]; then
+    IS_AGENT_BRANCH_CLI="$candidate"
+    break
+  fi
+done
+
+# Get current branch name
+CURRENT_BRANCH=$(git -C "$MAIN_REPO_PATH" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# Check if branch is an agent branch using shared helper
+# This reads .lumenflow.config.yaml for agentBranchPatterns (single source of truth)
+# Prerequisite: @lumenflow/core must be built (pnpm build)
+if [[ -n "$IS_AGENT_BRANCH_CLI" ]] && [[ -n "$CURRENT_BRANCH" ]]; then
+  if node "$IS_AGENT_BRANCH_CLI" "$CURRENT_BRANCH" 2>/dev/null; then
+    exit 0  # Agent branch - allow Write/Edit
+  fi
+fi
+
 # Read JSON input from stdin
 INPUT=$(cat)
 
