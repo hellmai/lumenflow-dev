@@ -34,3 +34,4 @@
 {"type":"claim","wuId":"WU-1025","lane":"Framework: Core","title":"Block wu:create and wu:claim if spec contains PLACEHOLDER markers","timestamp":"2026-01-19T12:30:17.590Z"}
 {"type":"claim","wuId":"WU-1024","lane":"Operations: Infrastructure","title":"Pre-push hook should allow CLI tool pushes to main","timestamp":"2026-01-19T12:30:21.075Z"}
 {"type":"complete","wuId":"WU-1024","timestamp":"2026-01-19T12:33:46.538Z"}
+{"type":"complete","wuId":"WU-1025","timestamp":"2026-01-19T12:37:54.059Z"}

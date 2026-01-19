@@ -2,7 +2,7 @@ id: WU-1025
 title: Block wu:create and wu:claim if spec contains PLACEHOLDER markers
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -41,3 +41,5 @@ session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T12:30:17.579Z
+locked: true
+completed_at: 2026-01-19T12:37:54.033Z
