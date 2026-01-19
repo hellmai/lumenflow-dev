@@ -10,7 +10,8 @@ code_paths:
 tests:
   manual:
     - wu:create with placeholder in description fails
-  unit: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-validator.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1025.done
@@ -24,8 +25,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:create and wu:claim should block if spec contains [PLACEHOLDER] markers. Agents
-  create specs with placeholders and then gates fail later. Validation should happen upfront.
+description: wu:create and wu:claim should block if spec contains unfilled template markers. Agents
+  create specs with template text and gates fail later. Validation should happen upfront at creation
+  time.
 acceptance:
   - wu:create fails if description contains PLACEHOLDER
   - wu:claim fails if spec has PLACEHOLDER markers
