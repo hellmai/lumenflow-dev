@@ -5,10 +5,13 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1029.done
@@ -22,12 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
+description: >-
+  Context: wu:claim installs worktree deps with pnpm; if install fails it falls back to symlinking
+  only the root node_modules.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Problem: the fallback omits nested package node_modules (e.g. packages/@lumenflow/cli), so
+  worktree commands fail with ERR_MODULE_NOT_FOUND.
+
+  Solution: when pnpm install fails, also run symlinkNestedNodeModules and log the result so
+  workspace deps resolve.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - If pnpm install fails during wu:claim, fallback symlinks both root and nested package
+    node_modules so workspace package deps resolve in the worktree.
+  - Add coverage for the fallback path (wu-claim) to ensure nested node_modules symlinks are created.
+  - pnpm format, lint, typecheck -> PASS
