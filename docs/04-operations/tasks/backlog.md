@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — Framework: Core
 (No items ready)
 
 ## 🔧 In progress

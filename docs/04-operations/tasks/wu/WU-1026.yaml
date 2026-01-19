@@ -1,0 +1,59 @@
+id: WU-1026
+title: Allow agent branches to bypass worktree requirements
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-19
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/branch-check.ts
+  - packages/@lumenflow/core/src/cli/is-agent-branch.ts
+  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/shims/package.json
+  - packages/@lumenflow/shims/src/git-shim.ts
+  - .claude/hooks/validate-worktree-path.sh
+tests:
+  manual:
+    - 'On agent/* branch in main checkout, Write/Edit tools work'
+    - 'On main branch with worktrees present, Write/Edit tools blocked'
+  unit:
+    - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1026.done
+dependencies: []
+risks:
+  - "Security: New bypass patterns could weaken worktree discipline if misconfigured"
+  - "Mitigation: Fail-closed design, unknown branches blocked, narrow defaults"
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |
+  Cloud/web agents are blocked by LumenFlow hooks because hooks only detect
+  worktrees, not branch names. This prevents agents from working on ad-hoc
+  branches (e.g., agent/prompt-studio-xyz) in the main checkout.
+
+  Solution: Add configurable agentBranchPatterns to config schema with
+  branch-aware detection. Default pattern: ['agent/*']. Implements fail-closed
+  security (unknown branches blocked when worktrees exist) and guarded headless
+  mode (requires LUMENFLOW_ADMIN=1 or CI context).
+
+  Plan: /home/tom/.claude/plans/eager-brewing-deer.md
+acceptance:
+  - "agentBranchPatterns added to GitConfigSchema (default: agent/*)"
+  - branch-check.ts module with isAgentBranch() and isHeadlessAllowed()
+  - CLI helper is-agent-branch.ts for bash hook
+  - Git shim uses core config for branch detection
+  - Bash hook calls CLI helper with monorepo fallback paths
+  - Unit tests pass with >=90% coverage on new code
+  - agent/* branches bypass worktree requirements
+  - main/master branches remain protected
+  - Unknown branches fail-closed when worktrees exist
+  - pnpm format, lint, typecheck pass
