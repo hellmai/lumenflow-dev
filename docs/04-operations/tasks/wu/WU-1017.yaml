@@ -2,7 +2,7 @@ id: WU-1017
 title: Add vendor-agnostic git hooks via Husky
 lane: Infrastructure
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -98,3 +98,5 @@ session_id: a4ef71e2-4815-4b58-817e-bcd5c6679b71
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T11:14:48.815Z
+locked: true
+completed_at: 2026-01-19T11:29:00.311Z
