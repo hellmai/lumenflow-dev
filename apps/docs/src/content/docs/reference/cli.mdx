@@ -10,21 +10,9 @@ The LumenFlow CLI provides commands for managing work units, initiatives, memory
 ## Installation
 
 <Tabs syncKey="pkg">
-  <TabItem label="pnpm">
-    ```bash
-    pnpm add -D @lumenflow/cli
-    ```
-  </TabItem>
-  <TabItem label="npm">
-    ```bash
-    npm install -D @lumenflow/cli
-    ```
-  </TabItem>
-  <TabItem label="yarn">
-    ```bash
-    yarn add -D @lumenflow/cli
-    ```
-  </TabItem>
+  <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
+  <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
+  <TabItem label="yarn">```bash yarn add -D @lumenflow/cli ```</TabItem>
 </Tabs>
 
 ---
@@ -39,12 +27,12 @@ Create a new work unit spec.
 pnpm wu:create --id WU-001 --title "Add feature" --lane Core
 ```
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--id` | Unique WU identifier | Yes |
-| `--title` | Short description | Yes |
-| `--lane` | Target lane | Yes |
-| `--type` | `feature`, `fix`, `chore`, `discovery` | No (default: `feature`) |
+| Flag      | Description                            | Required                |
+| --------- | -------------------------------------- | ----------------------- |
+| `--id`    | Unique WU identifier                   | Yes                     |
+| `--title` | Short description                      | Yes                     |
+| `--lane`  | Target lane                            | Yes                     |
+| `--type`  | `feature`, `fix`, `chore`, `discovery` | No (default: `feature`) |
 
 ### wu:claim
 
@@ -54,12 +42,13 @@ Claim a WU and create a worktree.
 pnpm wu:claim --id WU-001 --lane Core
 ```
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--id` | WU to claim | Yes |
-| `--lane` | Lane to claim in | Yes |
+| Flag     | Description      | Required |
+| -------- | ---------------- | -------- |
+| `--id`   | WU to claim      | Yes      |
+| `--lane` | Lane to claim in | Yes      |
 
 Creates:
+
 - Worktree at `worktrees/{lane}-{wu-id}`
 - Branch `lane/{lane}/{wu-id}`
 - Updates WU status to `in_progress`
@@ -72,13 +61,14 @@ Complete a WU after gates pass.
 pnpm wu:done --id WU-001
 ```
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--id` | WU to complete | Yes |
-| `--skip-gates` | Skip gate checks (requires `--reason`) | No |
-| `--reason` | Reason for skipping gates | No |
+| Flag           | Description                            | Required |
+| -------------- | -------------------------------------- | -------- |
+| `--id`         | WU to complete                         | Yes      |
+| `--skip-gates` | Skip gate checks (requires `--reason`) | No       |
+| `--reason`     | Reason for skipping gates              | No       |
 
 Actions:
+
 1. Runs gates (unless skipped)
 2. Merges worktree to main
 3. Creates stamp in `._legacy/stamps/`
@@ -95,21 +85,21 @@ pnpm wu:edit --id WU-001 --acceptance "New criterion" --append
 pnpm wu:edit --id WU-001 --initiative INIT-001 --phase 2
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--id` | WU to edit (required) |
-| `--description` | New description (replaces existing) |
-| `--acceptance` | Acceptance criterion (repeatable) |
-| `--notes` | New notes text |
-| `--code-paths` | Code path (repeatable) |
-| `--append` | Append to arrays instead of replacing |
-| `--lane` | New lane assignment |
-| `--type` | New WU type |
-| `--priority` | New priority (P0-P3) |
-| `--initiative` | Link to initiative |
-| `--phase` | Phase number within initiative |
-| `--blocked-by` | Comma-separated blocking WU IDs |
-| `--add-dep` | Add to dependencies array |
+| Flag            | Description                           |
+| --------------- | ------------------------------------- |
+| `--id`          | WU to edit (required)                 |
+| `--description` | New description (replaces existing)   |
+| `--acceptance`  | Acceptance criterion (repeatable)     |
+| `--notes`       | New notes text                        |
+| `--code-paths`  | Code path (repeatable)                |
+| `--append`      | Append to arrays instead of replacing |
+| `--lane`        | New lane assignment                   |
+| `--type`        | New WU type                           |
+| `--priority`    | New priority (P0-P3)                  |
+| `--initiative`  | Link to initiative                    |
+| `--phase`       | Phase number within initiative        |
+| `--blocked-by`  | Comma-separated blocking WU IDs       |
+| `--add-dep`     | Add to dependencies array             |
 
 ### wu:block
 
@@ -119,10 +109,10 @@ Mark a WU as blocked.
 pnpm wu:block --id WU-001 --reason "Waiting for API spec"
 ```
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--id` | WU to block | Yes |
-| `--reason` | Why it's blocked | Yes |
+| Flag       | Description      | Required |
+| ---------- | ---------------- | -------- |
+| `--id`     | WU to block      | Yes      |
+| `--reason` | Why it's blocked | Yes      |
 
 ### wu:unblock
 
@@ -150,11 +140,13 @@ pnpm wu:preflight --id WU-001
 ```
 
 Checks:
+
 - `code_paths` files exist
 - Test file paths exist
 - WU YAML schema is valid
 
 **Recommended workflow:**
+
 1. Implement feature/fix
 2. `pnpm wu:preflight --id WU-XXX` (fast check)
 3. `pnpm gates` (full validation)
@@ -170,12 +162,12 @@ pnpm wu:spawn --id WU-001 --thinking --budget 10000
 pnpm wu:spawn --id WU-001 --parent-wu WU-1000
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--id` | WU to spawn (required) |
-| `--thinking` | Enable extended thinking |
-| `--budget` | Token budget for thinking |
-| `--codex` | Output Codex/GPT-friendly format |
+| Flag          | Description                        |
+| ------------- | ---------------------------------- |
+| `--id`        | WU to spawn (required)             |
+| `--thinking`  | Enable extended thinking           |
+| `--budget`    | Token budget for thinking          |
+| `--codex`     | Output Codex/GPT-friendly format   |
 | `--parent-wu` | Parent WU for orchestrator context |
 
 ### wu:repair
@@ -194,14 +186,14 @@ pnpm wu:repair --claim --id WU-001
 pnpm wu:repair --admin --id WU-001 --lane "New Lane" --status done
 ```
 
-| Flag | Description | Mode |
-|------|-------------|------|
-| `--id` | WU to repair | All |
-| `--check` | Audit only, no changes | Consistency |
-| `--all` | Check/repair all WUs | Consistency |
-| `--claim` | Fix missing claim metadata | Claim |
-| `--admin` | Fix done WUs | Admin |
-| `--repair-state` | Fix corrupted state files | State |
+| Flag             | Description                | Mode        |
+| ---------------- | -------------------------- | ----------- |
+| `--id`           | WU to repair               | All         |
+| `--check`        | Audit only, no changes     | Consistency |
+| `--all`          | Check/repair all WUs       | Consistency |
+| `--claim`        | Fix missing claim metadata | Claim       |
+| `--admin`        | Fix done WUs               | Admin       |
+| `--repair-state` | Fix corrupted state files  | State       |
 
 ### wu:prune
 
@@ -213,6 +205,7 @@ pnpm wu:prune --execute    # Execute cleanup
 ```
 
 Detects:
+
 - Orphan directories (exist but not tracked)
 - Stale worktrees (WU is done/blocked)
 - Invalid branch naming
@@ -256,14 +249,14 @@ Create a new initiative.
 pnpm initiative:create --id INIT-001 --slug my-initiative --title "Big Feature" --priority P1
 ```
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--id` | Initiative ID | Yes |
-| `--slug` | Kebab-case slug | Yes |
-| `--title` | Initiative title | Yes |
-| `--priority` | Priority (P0-P3) | No |
-| `--owner` | Owner (team or individual) | No |
-| `--target-date` | Target date (YYYY-MM-DD) | No |
+| Flag            | Description                | Required |
+| --------------- | -------------------------- | -------- |
+| `--id`          | Initiative ID              | Yes      |
+| `--slug`        | Kebab-case slug            | Yes      |
+| `--title`       | Initiative title           | Yes      |
+| `--priority`    | Priority (P0-P3)           | No       |
+| `--owner`       | Owner (team or individual) | No       |
+| `--target-date` | Target date (YYYY-MM-DD)   | No       |
 
 ### initiative:edit
 
@@ -275,16 +268,16 @@ pnpm initiative:edit --id INIT-001 --add-phase "Phase 3: Rollout"
 pnpm initiative:edit --id INIT-001 --blocked-by INIT-002 --blocked-reason "Waiting for infrastructure"
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--status` | `draft`, `open`, `in_progress`, `done`, `archived` |
-| `--blocked-by` | Blocking initiative ID |
-| `--unblock` | Remove blocked status |
-| `--add-lane` | Add lane (repeatable) |
-| `--remove-lane` | Remove lane (repeatable) |
-| `--notes` | Append to notes |
-| `--add-phase` | Add new phase |
-| `--phase-id` + `--phase-status` | Update phase status |
+| Flag                            | Description                                        |
+| ------------------------------- | -------------------------------------------------- |
+| `--status`                      | `draft`, `open`, `in_progress`, `done`, `archived` |
+| `--blocked-by`                  | Blocking initiative ID                             |
+| `--unblock`                     | Remove blocked status                              |
+| `--add-lane`                    | Add lane (repeatable)                              |
+| `--remove-lane`                 | Remove lane (repeatable)                           |
+| `--notes`                       | Append to notes                                    |
+| `--add-phase`                   | Add new phase                                      |
+| `--phase-id` + `--phase-status` | Update phase status                                |
 
 ### initiative:list
 
@@ -296,11 +289,11 @@ pnpm initiative:list --format json
 pnpm initiative:list --status in_progress
 ```
 
-| Flag | Description |
-|------|-------------|
+| Flag       | Description                         |
+| ---------- | ----------------------------------- |
 | `--format` | `table`, `json`, `ascii`, `mermaid` |
-| `--status` | Filter by status |
-| `--color` | Enable colored output |
+| `--status` | Filter by status                    |
+| `--color`  | Enable colored output               |
 
 ### initiative:status
 
@@ -353,6 +346,7 @@ pnpm mem:ready
 ```
 
 Shows:
+
 - Active WU
 - Last checkpoint
 - Pending signals
@@ -391,14 +385,14 @@ pnpm mem:create "Found a bug in auth flow" --type discovery --wu WU-001
 pnpm mem:create "API changed" --discovered-from mem-abc123 --tags api,breaking
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--type` | `session`, `discovery`, `checkpoint`, `note`, `summary` |
-| `--discovered-from` | Parent node ID for provenance |
-| `--wu` | Link to WU |
-| `--session` | Link to session |
-| `--tags` | Comma-separated tags |
-| `--priority` | P0-P3 |
+| Flag                | Description                                             |
+| ------------------- | ------------------------------------------------------- |
+| `--type`            | `session`, `discovery`, `checkpoint`, `note`, `summary` |
+| `--discovered-from` | Parent node ID for provenance                           |
+| `--wu`              | Link to WU                                              |
+| `--session`         | Link to session                                         |
+| `--tags`            | Comma-separated tags                                    |
+| `--priority`        | P0-P3                                                   |
 
 ### mem:summarize
 
@@ -419,13 +413,13 @@ pnpm mem:triage --promote mem-abc123 --lane Core --title "Fix auth bug"
 pnpm mem:triage --archive mem-def456 --reason "Duplicate of WU-100"
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--list` | List open discoveries |
-| `--promote` | Promote to WU |
+| Flag        | Description               |
+| ----------- | ------------------------- |
+| `--list`    | List open discoveries     |
+| `--promote` | Promote to WU             |
 | `--archive` | Archive without promotion |
-| `--wu` | Filter by WU ID |
-| `--tag` | Filter by tag |
+| `--wu`      | Filter by WU ID           |
+| `--tag`     | Filter by tag             |
 
 ---
 
@@ -443,6 +437,7 @@ pnpm gates --docs-only  # For documentation changes
 ```
 
 Runs:
+
 1. Format check
 2. Lint check
 3. Type check
@@ -507,6 +502,7 @@ pnpm exec lumenflow init
 ```
 
 Creates:
+
 - `.lumenflow.config.yaml`
 - `docs/tasks/backlog.md`
 - `docs/tasks/wu/`
@@ -521,6 +517,7 @@ pnpm exec lumenflow validate
 ```
 
 Checks:
+
 - Config file syntax
 - Lane definitions
 - Gate configuration
@@ -529,21 +526,21 @@ Checks:
 
 ## Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | Command failed (see error message) |
-| 2 | Validation error |
-| 3 | WU not found |
-| 4 | Lane at WIP limit |
+| Code | Meaning                            |
+| ---- | ---------------------------------- |
+| 0    | Success                            |
+| 1    | Command failed (see error message) |
+| 2    | Validation error                   |
+| 3    | WU not found                       |
+| 4    | Lane at WIP limit                  |
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LUMENFLOW_CONFIG` | Config file path | `.lumenflow.config.yaml` |
-| `LUMENFLOW_VERBOSE` | Enable verbose output | `false` |
-| `LUMENFLOW_NO_COLOR` | Disable colored output | `false` |
+| Variable             | Description            | Default                  |
+| -------------------- | ---------------------- | ------------------------ |
+| `LUMENFLOW_CONFIG`   | Config file path       | `.lumenflow.config.yaml` |
+| `LUMENFLOW_VERBOSE`  | Enable verbose output  | `false`                  |
+| `LUMENFLOW_NO_COLOR` | Disable colored output | `false`                  |
 
 ## Next Steps
 
