@@ -115,6 +115,14 @@ export const GitConfigSchema = z.object({
 
   /** Info threshold for branch drift */
   branchDriftInfo: z.number().int().positive().default(10),
+
+  /**
+   * Agent branch patterns that bypass worktree requirements.
+   * Branches matching these glob patterns can work in the main checkout.
+   * Default: ['agent/*'] - narrow default, add vendor patterns as needed.
+   * Protected branches (mainBranch + 'master') are NEVER bypassed.
+   */
+  agentBranchPatterns: z.array(z.string()).default(['agent/*']),
 });
 
 /**
