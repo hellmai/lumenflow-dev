@@ -6,8 +6,6 @@ Current state of all in-flight work.
 
 ## In Progress
 
-- [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml) — Framework: CLI
-
 ---
 
 ## Blocked
@@ -18,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml) — 2026-01-19
 - [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml) — 2026-01-19
 - [WU-1018 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-1018.yaml) — 2026-01-19
 - [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml) — 2026-01-19
