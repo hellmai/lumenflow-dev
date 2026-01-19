@@ -1,53 +1,68 @@
 version: '2.0'
 project: lumenflow
 
+# WU-1022: Lane enforcement configuration
+# Controls how lane format validation behaves
 lanes:
-  - name: 'Core'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/core/**'
+  enforcement:
+    # When true, lanes MUST use "Parent: Sublane" format if parent has taxonomy
+    require_parent: true
+    # When false, only lanes in the taxonomy are allowed. When true, custom lanes can be used.
+    allow_custom: false
 
-  - name: 'CLI'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/cli/**'
+  # Lane definitions with full "Parent: Sublane" format
+  # These map to the taxonomy in .lumenflow.lane-inference.yaml
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
 
-  - name: 'Memory'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/memory/**'
+    - name: 'Framework: CLI'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/**'
 
-  - name: 'Agent'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/agent/**'
+    - name: 'Framework: Memory'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/memory/**'
 
-  - name: 'Metrics'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/metrics/**'
+    - name: 'Framework: Agent'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/agent/**'
 
-  - name: 'Initiatives'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/initiatives/**'
+    - name: 'Framework: Metrics'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/metrics/**'
 
-  - name: 'Shims'
-    wip_limit: 1
-    code_paths:
-      - 'packages/@lumenflow/shims/**'
+    - name: 'Framework: Initiatives'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/initiatives/**'
 
-  - name: 'Infrastructure'
-    wip_limit: 1
-    code_paths:
-      - 'apps/**'
-      - 'actions/**'
-      - '.github/**'
+    - name: 'Framework: Shims'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/shims/**'
 
-  - name: 'Documentation'
-    wip_limit: 1
-    code_paths:
-      - 'docs/**'
+    - name: 'Operations: Infrastructure'
+      wip_limit: 1
+      code_paths:
+        - 'apps/**'
+        - 'actions/**'
+
+    - name: 'Operations: CI/CD'
+      wip_limit: 1
+      code_paths:
+        - '.github/**'
+
+    - name: 'Content: Documentation'
+      wip_limit: 1
+      code_paths:
+        - 'docs/**'
 
 git:
   main_branch: main
