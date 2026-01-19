@@ -24,14 +24,14 @@ The LumenFlow CLI provides commands for managing work units, initiatives, memory
 Create a new work unit spec.
 
 ```bash
-pnpm wu:create --id WU-001 --title "Add feature" --lane Core
+pnpm wu:create --id WU-001 --title "Add feature" --lane "Framework: Core"
 ```
 
 | Flag      | Description                            | Required                |
 | --------- | -------------------------------------- | ----------------------- |
 | `--id`    | Unique WU identifier                   | Yes                     |
 | `--title` | Short description                      | Yes                     |
-| `--lane`  | Target lane                            | Yes                     |
+| `--lane`  | Target lane (Parent: Sublane format)   | Yes                     |
 | `--type`  | `feature`, `fix`, `chore`, `discovery` | No (default: `feature`) |
 
 ### wu:claim
@@ -39,18 +39,20 @@ pnpm wu:create --id WU-001 --title "Add feature" --lane Core
 Claim a WU and create a worktree.
 
 ```bash
-pnpm wu:claim --id WU-001 --lane Core
+pnpm wu:claim --id WU-001 --lane "Framework: Core"
 ```
 
-| Flag     | Description      | Required |
-| -------- | ---------------- | -------- |
-| `--id`   | WU to claim      | Yes      |
-| `--lane` | Lane to claim in | Yes      |
+| Flag           | Description                              | Required |
+| -------------- | ---------------------------------------- | -------- |
+| `--id`         | WU to claim                              | Yes      |
+| `--lane`       | Lane to claim in (Parent: Sublane)       | Yes      |
+| `--skip-setup` | Skip automatic `pnpm install` in worktree| No       |
 
 Creates:
 
 - Worktree at `worktrees/{lane}-{wu-id}`
 - Branch `lane/{lane}/{wu-id}`
+- Runs `pnpm install` in worktree (unless `--skip-setup`)
 - Updates WU status to `in_progress`
 
 ### wu:done

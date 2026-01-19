@@ -21,32 +21,48 @@ With lanes:
 
 ## Defining Lanes
 
+Lanes use a `Parent: Sublane` naming convention to organize work hierarchically:
+
 ```yaml
 # .lumenflow.config.yaml
+version: '2.0'
+
 lanes:
-  - name: Core
-    wip_limit: 1
-    code_paths:
-      - src/core/**
-      - src/domain/**
+  enforcement:
+    require_parent: true  # Enforce Parent: Sublane format
+    allow_custom: false   # Only taxonomy lanes allowed
 
-  - name: UI
-    wip_limit: 1
-    code_paths:
-      - src/components/**
-      - src/pages/**
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
 
-  - name: Infrastructure
-    wip_limit: 1
-    code_paths:
-      - infra/**
-      - .github/**
+    - name: 'Framework: CLI'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/**'
 
-  - name: Documentation
-    wip_limit: 1
-    code_paths:
-      - docs/**
+    - name: 'Operations: Infrastructure'
+      wip_limit: 1
+      code_paths:
+        - 'apps/**'
+        - 'actions/**'
+
+    - name: 'Content: Documentation'
+      wip_limit: 1
+      code_paths:
+        - 'docs/**'
 ```
+
+### Parent Lane Categories
+
+| Parent | Purpose |
+|--------|---------|
+| Framework | Core libraries, CLI, memory, agents |
+| Operations | Infrastructure, CI/CD, tooling |
+| Content | Documentation, guides |
+| Experience | UI components, pages |
 
 ## WIP Limits
 
@@ -78,10 +94,10 @@ WIP=1 (LumenFlow default):
 
 ## Lane Selection
 
-When claiming a WU, specify the lane:
+When claiming a WU, specify the full `Parent: Sublane` format:
 
 ```bash
-pnpm wu:claim --id WU-042 --lane UI
+pnpm wu:claim --id WU-042 --lane "Experience: UI"
 ```
 
 The WU spec should already have a lane assignment:
@@ -90,21 +106,25 @@ The WU spec should already have a lane assignment:
 # WU-042.yaml
 id: WU-042
 title: Add email validation
-lane: UI # ← Lane defined in spec
+lane: 'Experience: UI'  # ← Full Parent: Sublane format
 ```
 
 ## Auto-Detection via Paths
 
-LumenFlow can auto-detect lanes based on file paths:
+LumenFlow can auto-detect lanes based on file paths using the lane inference system:
 
 ```yaml
-lanes:
-  - name: Core
-    paths:
-      - src/core/**
+# .lumenflow.lane-inference.yaml
+Framework:
+  Core:
+    code_paths:
+      - 'packages/@lumenflow/core/**'
+    keywords:
+      - 'core library'
+      - 'wu lifecycle'
 ```
 
-If a WU's `code_paths` match, it's assigned to that lane.
+If a WU's `code_paths` match a pattern, the sublane is suggested automatically.
 
 ## Multiple Lanes
 
@@ -119,9 +139,9 @@ Instead of one WU:
 ❌ "Add user preferences (UI + API + DB)"
 
 Split into:
-✅ WU-100: "Add preferences API" (lane: Core)
-✅ WU-101: "Add preferences UI" (lane: UI)
-✅ WU-102: "Add preferences schema" (lane: Infrastructure)
+✅ WU-100: "Add preferences API" (lane: Framework: Core)
+✅ WU-101: "Add preferences UI" (lane: Experience: UI)
+✅ WU-102: "Add preferences schema" (lane: Operations: Infrastructure)
 
 ## Visualizing Lanes
 
@@ -132,20 +152,20 @@ The status file shows lane state:
 
 ## 🔧 In Progress
 
-- [WU-101 — Add preferences UI](wu/WU-101.yaml) (lane: UI)
-- [WU-100 — Add preferences API](wu/WU-100.yaml) (lane: Core)
+- [WU-101 — Add preferences UI](wu/WU-101.yaml) (lane: Experience: UI)
+- [WU-100 — Add preferences API](wu/WU-100.yaml) (lane: Framework: Core)
 
 ## 🚀 Ready
 
-- [WU-103 — Add dark mode toggle](wu/WU-103.yaml) (lane: UI) ← blocked (UI lane occupied)
-- [WU-104 — Add export feature](wu/WU-104.yaml) (lane: Infrastructure) ← can claim
+- [WU-103 — Add dark mode toggle](wu/WU-103.yaml) (lane: Experience: UI) ← blocked (lane occupied)
+- [WU-104 — Add export feature](wu/WU-104.yaml) (lane: Operations: Infrastructure) ← can claim
 
 ## ⛔ Blocked
 
 (none)
 ```
 
-Note: WU-103 cannot be claimed because UI lane already has WU-101 in progress.
+Note: WU-103 cannot be claimed because Experience: UI lane already has WU-101 in progress.
 
 ## Next Steps
 
