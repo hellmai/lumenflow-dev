@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { validateLaneFormat, extractParent, getSubLanesForParent } from '../lane-checker.js';
 import { ErrorCodes } from '../error-handler.js';
 import { existsSync } from 'node:fs';
@@ -12,219 +12,195 @@ const hasConfig = existsSync(join(projectRoot, '.lumenflow.config.yaml'));
 const hasLaneInference = existsSync(join(projectRoot, '.lumenflow.lane-inference.yaml'));
 const hasFullConfig = hasConfig && hasLaneInference;
 
-describe.skipIf(!hasFullConfig)('validateLaneFormat', () => {
+/**
+ * WU-1022: Tests for LumenFlow OS lane taxonomy
+ *
+ * LumenFlow OS uses:
+ * - Framework: Core, CLI, Memory, Agent, Metrics, Initiatives, Shims
+ * - Operations: Infrastructure, CI/CD
+ * - Content: Documentation
+ */
+describe.skipIf(!hasFullConfig)('validateLaneFormat - LumenFlow OS taxonomy', () => {
   describe('sub-lane validation', () => {
-    it('accepts known sub-lane from taxonomy', () => {
-      const { valid, parent } = validateLaneFormat('Core Systems: API');
+    it('accepts "Framework: Core" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Framework: Core');
       expect(valid).toBe(true);
-      expect(parent).toBe('Core Systems');
+      expect(parent).toBe('Framework');
     });
 
-    it('accepts another known sub-lane from taxonomy', () => {
-      const { valid, parent } = validateLaneFormat('Operations: Tooling');
+    it('accepts "Framework: CLI" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Framework: CLI');
+      expect(valid).toBe(true);
+      expect(parent).toBe('Framework');
+    });
+
+    it('accepts "Framework: Memory" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Framework: Memory');
+      expect(valid).toBe(true);
+      expect(parent).toBe('Framework');
+    });
+
+    it('accepts "Operations: Infrastructure" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Operations: Infrastructure');
       expect(valid).toBe(true);
       expect(parent).toBe('Operations');
     });
 
-    it('accepts Intelligence sub-lanes', () => {
-      const { valid, parent } = validateLaneFormat('Intelligence: Prompts');
+    it('accepts "Operations: CI/CD" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Operations: CI/CD');
       expect(valid).toBe(true);
-      expect(parent).toBe('Intelligence');
+      expect(parent).toBe('Operations');
     });
 
-    it('rejects unknown sub-lane for parent with taxonomy', () => {
-      expect(() => validateLaneFormat('Core Systems: Foo')).toThrow(
-        /Unknown sub-lane: "Foo" for parent lane "Core Systems"/,
+    it('accepts "Content: Documentation" as a valid sub-lane', () => {
+      const { valid, parent } = validateLaneFormat('Content: Documentation');
+      expect(valid).toBe(true);
+      expect(parent).toBe('Content');
+    });
+
+    it('rejects unknown sub-lane for Framework parent', () => {
+      expect(() => validateLaneFormat('Framework: Unknown')).toThrow(
+        /Unknown sub-lane: "Unknown" for parent lane "Framework"/,
       );
     });
 
     it('rejects typo in sub-lane name', () => {
-      expect(() => validateLaneFormat('Operations: Tool')).toThrow(
-        /Unknown sub-lane: "Tool" for parent lane "Operations"/,
-      );
-    });
-
-    it('rejects sub-lane on parent without taxonomy (Discovery)', () => {
-      expect(() => validateLaneFormat('Discovery: Spike')).toThrow(
-        /Parent lane "Discovery" does not support sub-lanes/,
-      );
-    });
-
-    it('rejects sub-lane on parent without taxonomy (Customer)', () => {
-      expect(() => validateLaneFormat('Customer: Research')).toThrow(
-        /Parent lane "Customer" does not support sub-lanes/,
+      expect(() => validateLaneFormat('Framework: Cor')).toThrow(
+        /Unknown sub-lane: "Cor" for parent lane "Framework"/,
       );
     });
   });
 
   describe('parent-only lane validation', () => {
-    it('rejects parent-only lane when taxonomy exists (Core Systems)', () => {
+    it('rejects parent-only "Framework" lane (taxonomy exists)', () => {
       try {
-        validateLaneFormat('Core Systems');
+        validateLaneFormat('Framework');
         expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
-        expect(/Sub-lane required/.test(err.message)).toBeTruthy();
-        expect(err.details.validSubLanes.includes('API')).toBe(true);
-        expect(err.details.validSubLanes.includes('Data')).toBe(true);
-        expect(err.details.validSubLanes.includes('Infra')).toBe(true);
+      } catch (err: unknown) {
+        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        expect(error.code).toBe(ErrorCodes.INVALID_LANE);
+        expect(/Sub-lane required/.test(error.message)).toBeTruthy();
+        expect(error.details.validSubLanes).toContain('Core');
+        expect(error.details.validSubLanes).toContain('CLI');
       }
     });
 
-    it('rejects parent-only Operations lane', () => {
+    it('rejects parent-only "Operations" lane (taxonomy exists)', () => {
       try {
         validateLaneFormat('Operations');
         expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
-        expect(/Sub-lane required/.test(err.message)).toBeTruthy();
-        expect(err.details.validSubLanes.includes('Tooling')).toBe(true);
+      } catch (err: unknown) {
+        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        expect(error.code).toBe(ErrorCodes.INVALID_LANE);
+        expect(/Sub-lane required/.test(error.message)).toBeTruthy();
+        expect(error.details.validSubLanes).toContain('Infrastructure');
+        expect(error.details.validSubLanes).toContain('CI/CD');
       }
     });
 
-    it('rejects parent-only Experience lane', () => {
+    it('rejects parent-only "Content" lane (taxonomy exists)', () => {
       try {
-        validateLaneFormat('Experience');
+        validateLaneFormat('Content');
         expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
-        expect(err.details.validSubLanes.includes('Web')).toBe(true);
-        expect(err.details.validSubLanes.includes('Mobile')).toBe(true);
+      } catch (err: unknown) {
+        const error = err as { code: string; message: string; details: { validSubLanes: string[] } };
+        expect(error.code).toBe(ErrorCodes.INVALID_LANE);
+        expect(/Sub-lane required/.test(error.message)).toBeTruthy();
+        expect(error.details.validSubLanes).toContain('Documentation');
       }
-    });
-
-    it('rejects parent-only Intelligence lane', () => {
-      try {
-        validateLaneFormat('Intelligence');
-        expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
-        expect(err.details.validSubLanes.includes('Prompts')).toBe(true);
-      }
-    });
-
-    it('allows parent-only Discovery (no taxonomy)', () => {
-      const { valid, parent } = validateLaneFormat('Discovery');
-      expect(valid).toBe(true);
-      expect(parent).toBe('Discovery');
-    });
-
-    it('allows parent-only Customer (no taxonomy)', () => {
-      const { valid, parent } = validateLaneFormat('Customer');
-      expect(valid).toBe(true);
-      expect(parent).toBe('Customer');
-    });
-
-    it('allows parent-only Revenue Ops (no taxonomy)', () => {
-      const { valid, parent } = validateLaneFormat('Revenue Ops');
-      expect(valid).toBe(true);
-      expect(parent).toBe('Revenue Ops');
-    });
-
-    it('allows parent-only Comms (no taxonomy)', () => {
-      const { valid, parent } = validateLaneFormat('Comms');
-      expect(valid).toBe(true);
-      expect(parent).toBe('Comms');
     });
   });
 
-  describe('strict option', () => {
+  describe('strict option for backward compatibility', () => {
     it('strict: true (default) throws for parent-only with taxonomy', () => {
       try {
-        validateLaneFormat('Operations');
+        validateLaneFormat('Framework');
         expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
-      }
-    });
-
-    it('strict: true explicit throws for parent-only with taxonomy', () => {
-      try {
-        validateLaneFormat('Operations', null, { strict: true });
-        expect.fail('Should have thrown');
-      } catch (err: any) {
-        expect(err.code).toBe(ErrorCodes.INVALID_LANE);
+      } catch (err: unknown) {
+        const error = err as { code: string };
+        expect(error.code).toBe(ErrorCodes.INVALID_LANE);
       }
     });
 
     it('strict: false warns but does not throw for parent-only with taxonomy', () => {
       // Should not throw - returns valid result but logs warning
-      const { valid, parent } = validateLaneFormat('Operations', null, { strict: false });
+      const { valid, parent } = validateLaneFormat('Framework', null, { strict: false });
       expect(valid).toBe(true);
-      expect(parent).toBe('Operations');
-    });
-
-    it('strict: false still allows lanes without taxonomy', () => {
-      const { valid, parent } = validateLaneFormat('Discovery', null, { strict: false });
-      expect(valid).toBe(true);
-      expect(parent).toBe('Discovery');
+      expect(parent).toBe('Framework');
     });
 
     it('strict option does not affect valid sub-lanes', () => {
-      const result1 = validateLaneFormat('Operations: Tooling', null, { strict: true });
-      const result2 = validateLaneFormat('Operations: Tooling', null, { strict: false });
+      const result1 = validateLaneFormat('Framework: CLI', null, { strict: true });
+      const result2 = validateLaneFormat('Framework: CLI', null, { strict: false });
       expect(result1.valid).toBe(true);
       expect(result2.valid).toBe(true);
     });
   });
 
   describe('getSubLanesForParent', () => {
-    it('returns sub-lanes for Core Systems', () => {
-      const subLanes = getSubLanesForParent('Core Systems');
-      expect(subLanes).toContain('API');
-      expect(subLanes).toContain('Data');
-      expect(subLanes).toContain('Infra');
+    it('returns sub-lanes for Framework', () => {
+      const subLanes = getSubLanesForParent('Framework');
+      expect(subLanes).toContain('Core');
+      expect(subLanes).toContain('CLI');
+      expect(subLanes).toContain('Memory');
+      expect(subLanes).toContain('Agent');
+      expect(subLanes).toContain('Metrics');
+      expect(subLanes).toContain('Initiatives');
+      expect(subLanes).toContain('Shims');
     });
 
     it('returns sub-lanes for Operations', () => {
       const subLanes = getSubLanesForParent('Operations');
-      expect(subLanes).toContain('Tooling');
+      expect(subLanes).toContain('Infrastructure');
       expect(subLanes).toContain('CI/CD');
-      expect(subLanes).toContain('Security');
-      expect(subLanes).toContain('Governance');
     });
 
-    it('returns sub-lanes for Experience', () => {
-      const subLanes = getSubLanesForParent('Experience');
-      expect(subLanes).toContain('Web');
-      expect(subLanes).toContain('Mobile');
-      expect(subLanes).toContain('Design System');
-    });
-
-    it('returns sub-lanes for Intelligence', () => {
-      const subLanes = getSubLanesForParent('Intelligence');
-      expect(subLanes).toContain('Prompts');
-      expect(subLanes).toContain('Classifiers');
-      expect(subLanes).toContain('Orchestrator');
-      expect(subLanes).toContain('Evaluation');
-    });
-
-    it('returns empty array for lane without taxonomy', () => {
-      const subLanes = getSubLanesForParent('Discovery');
-      expect(subLanes).toEqual([]);
+    it('returns sub-lanes for Content', () => {
+      const subLanes = getSubLanesForParent('Content');
+      expect(subLanes).toContain('Documentation');
     });
 
     it('handles case-insensitive parent lookup', () => {
-      const subLanes = getSubLanesForParent('operations');
-      expect(subLanes).toContain('Tooling');
+      const subLanes = getSubLanesForParent('framework');
+      expect(subLanes).toContain('Core');
     });
   });
 
   describe('extractParent', () => {
     it('extracts parent from sub-lane format', () => {
-      expect(extractParent('Operations: Tooling')).toBe('Operations');
+      expect(extractParent('Framework: CLI')).toBe('Framework');
     });
 
-    it('extracts parent from Core Systems sub-lane', () => {
-      expect(extractParent('Core Systems: API')).toBe('Core Systems');
+    it('extracts parent from Operations sub-lane', () => {
+      expect(extractParent('Operations: Infrastructure')).toBe('Operations');
     });
 
     it('returns parent-only lane as-is', () => {
-      expect(extractParent('Operations')).toBe('Operations');
+      expect(extractParent('Framework')).toBe('Framework');
     });
 
     it('handles trimming whitespace', () => {
-      expect(extractParent('  Operations: Tooling  ')).toBe('Operations');
+      expect(extractParent('  Framework: CLI  ')).toBe('Framework');
+    });
+  });
+
+  describe('format validation errors', () => {
+    it('rejects multiple colons', () => {
+      expect(() => validateLaneFormat('Framework: Core: Extra')).toThrow(
+        /contains multiple colons/,
+      );
+    });
+
+    it('rejects space before colon', () => {
+      expect(() => validateLaneFormat('Framework : CLI')).toThrow(
+        /has space before colon/,
+      );
+    });
+
+    it('rejects missing space after colon', () => {
+      expect(() => validateLaneFormat('Framework:CLI')).toThrow(
+        /missing space after colon/,
+      );
     });
   });
 });
