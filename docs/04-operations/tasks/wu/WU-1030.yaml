@@ -2,7 +2,7 @@ id: WU-1030
 title: Fix wu:create/wu:edit pre-push block leaving main ahead
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
     origin.
   - All husky hooks remove deprecated bootstrap lines while preserving their behavior.
   - pnpm format, lint, typecheck -> PASS
+claimed_mode: worktree
+worktree_path: worktrees/operations-infrastructure-wu-1030
+claimed_at: 2026-01-19T21:16:19.350Z
+baseline_main_sha: 80cb79065fb7d6cb3eed15bf09e6c3ef98344b5c
+session_id: 38dbc6c3-6b3e-443c-b73f-fb9e627e3a4e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T21:16:19.358Z
