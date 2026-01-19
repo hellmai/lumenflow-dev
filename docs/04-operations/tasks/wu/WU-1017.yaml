@@ -5,16 +5,40 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - .husky/**
+  - package.json
 tests:
-  manual: []
+  manual:
+    - Direct commit to main is blocked
+    - Direct push to main is blocked
+    - Lane branch commits require WU ID in message
+    - Hooks work in worktrees
+    - tmp/* branches skip all hooks
+    - LUMENFLOW_FORCE=1 bypasses all hooks
+    - Branch-Only mode allows lane work in main checkout
   unit: []
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1017.done
+  - .husky/pre-commit
+  - .husky/commit-msg
+  - .husky/prepare-commit-msg
+  - .husky/pre-push
+  - .husky/hooks/pre-commit.mjs
+  - .husky/hooks/commit-msg.mjs
+  - .husky/hooks/prepare-commit-msg.mjs
+  - .husky/hooks/pre-push.mjs
 dependencies: []
-risks: []
-notes: ''
+risks:
+  - Hooks may break workflows in unexpected edge cases
+  - Worktree compatibility requires tracking .husky/_/husky.sh
+initiative: INIT-001
+phase: 2
+notes: |
+  Sublane configuration gap: Infrastructure lane should have sublanes
+  (e.g., CI/CD, Developer-Tooling, Hooks) but .lumenflow.lane-inference.yaml
+  doesn't exist yet. Sublane enforcement not active. Consider follow-up WU.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -22,12 +46,39 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
+exposure: backend-only
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Implement vendor-agnostic git workflow enforcement via Husky hooks.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: The playbook (lines 477-516) documents git hooks that don't exist.
+  Currently only Claude Code has enforcement via .claude/hooks/validate-worktree-path.sh.
+  Non-Claude agents can bypass workflow enforcement entirely.
+
+  Problem:
+  - Direct commits to main are possible when no worktrees exist
+  - ff-only merges can bypass main protection with bad commit messages
+  - Documentation claims hooks exist but they don't
+
+  Solution: Node.js hooks via Husky with these features:
+  - pre-commit: Block direct commits to main/master, respect Branch-Only mode
+  - commit-msg: Validate format on main, require WU ID on lane branches
+  - prepare-commit-msg: Auto-inject WU ID prefix from branch name
+  - pre-push: Block direct push to main, allow all lane pushes (WU-1255)
+  - All hooks skip tmp/* branches (micro-worktree support)
+  - LUMENFLOW_FORCE=1 escape hatch
+  - Track .husky/ in git for worktree compatibility
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - Husky installed with prepare script
+  - .husky/ tracked in git including _/husky.sh
+  - All hooks skip tmp/* branches
+  - pre-commit blocks direct commits to main/master
+  - pre-commit allows Branch-Only mode (checks claimed_mode)
+  - commit-msg validates format on main using regex patterns
+  - commit-msg requires WU ID in lane branch messages
+  - prepare-commit-msg auto-injects WU ID from branch
+  - pre-push blocks direct push to main/master
+  - pre-push allows ALL lane branch pushes (per WU-1255)
+  - Hooks run correctly inside worktrees/* directories
+  - LUMENFLOW_FORCE=1 bypasses all hooks
+  - Playbook docs updated to match implementation
   - pnpm format, lint, typecheck → PASS
