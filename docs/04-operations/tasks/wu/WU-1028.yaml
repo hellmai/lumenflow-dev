@@ -116,10 +116,13 @@ description: >-
 
   5. LumenFlow OS dogfoods its own docs
 acceptance:
-  - CLAUDE-core.md created with 'Always wu:done' as explicit rule
-  - .claude/constraints-capsule.md migrated from ExampleApp (genericized)
-  - .claude/rules/ directory with 5 rule files migrated
+  - LUMENFLOW.md created as main entry point with 'Always wu:done' as explicit rule
+  - .lumenflow/constraints.md migrated from ExampleApp constraints-capsule.md (genericized)
+  - .lumenflow/rules/ directory with workflow rule files migrated (wu-workflow.md, git-safety.md,
+    etc.)
   - ai/onboarding/ directory created with key files including troubleshooting-wu-done.md
-  - init.ts updated to scaffold full .claude/ and ai/ structure
+  - packages/@lumenflow/cli/templates/ structure with core/ and vendors/ directories
+  - init.ts updated with --vendor flag (claude, cursor, aider, all, none)
+  - 'Vendor templates created: .claude/CLAUDE.md points to LUMENFLOW.md'
   - LumenFlow OS repo uses its own docs (dogfooding)
   - pnpm format, lint, typecheck pass
