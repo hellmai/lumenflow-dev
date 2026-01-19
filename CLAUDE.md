@@ -1,6 +1,6 @@
 # LumenFlow Development Guide
 
-**Last updated:** 2026-01-18
+**Last updated:** 2026-01-19
 
 This repo contains LumenFlow source code. We dogfood LumenFlow to build LumenFlow.
 
@@ -47,17 +47,20 @@ pnpm wu:done --id WU-XXXX
 
 ## Lanes
 
-| Lane           | Packages/Paths                       |
-| -------------- | ------------------------------------ |
-| Core           | `packages/@lumenflow/core/**`        |
-| CLI            | `packages/@lumenflow/cli/**`         |
-| Memory         | `packages/@lumenflow/memory/**`      |
-| Agent          | `packages/@lumenflow/agent/**`       |
-| Metrics        | `packages/@lumenflow/metrics/**`     |
-| Initiatives    | `packages/@lumenflow/initiatives/**` |
-| Shims          | `packages/@lumenflow/shims/**`       |
-| Infrastructure | `apps/**`, `actions/**`              |
-| Documentation  | `docs/**`                            |
+Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.yaml` for full list.
+
+| Lane                        | Packages/Paths                       |
+| --------------------------- | ------------------------------------ |
+| Framework: Core             | `packages/@lumenflow/core/**`        |
+| Framework: CLI              | `packages/@lumenflow/cli/**`         |
+| Framework: Memory           | `packages/@lumenflow/memory/**`      |
+| Framework: Agent            | `packages/@lumenflow/agent/**`       |
+| Framework: Metrics          | `packages/@lumenflow/metrics/**`     |
+| Framework: Initiatives      | `packages/@lumenflow/initiatives/**` |
+| Framework: Shims            | `packages/@lumenflow/shims/**`       |
+| Operations: Infrastructure  | `apps/**`, `actions/**`              |
+| Operations: CI/CD           | `.github/**`                         |
+| Content: Documentation      | `docs/**`                            |
 
 ---
 

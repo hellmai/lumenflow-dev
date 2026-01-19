@@ -6,7 +6,7 @@ Current state of all in-flight work.
 
 ## In Progress
 
-_None_
+- [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml) — Framework: CLI
 
 ---
 
@@ -35,4 +35,4 @@ _None_
 
 ---
 
-**Last Updated:** 2026-01-18
+**Last Updated:** 2026-01-19
