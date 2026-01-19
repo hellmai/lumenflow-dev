@@ -2,7 +2,7 @@ id: WU-1020
 title: Fix TypeScript error in metrics-snapshot.ts for readonly array cast
 lane: CLI
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - TypeScript compilation succeeds without errors in metrics-snapshot.ts
   - pnpm typecheck passes for @lumenflow/cli package
   - pnpm format, lint, typecheck passes
+claimed_mode: worktree
+worktree_path: worktrees/cli-wu-1020
+claimed_at: 2026-01-19T12:12:00.229Z
+baseline_main_sha: 77326ab384fd56742a0cd2786a5c88520abdc32c
+session_id: 4984c6db-7ac0-4ef0-895a-fd00e3581cda
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T12:12:00.237Z
