@@ -3,18 +3,41 @@ title: Migrate missing CLI commands from ExampleApp to @lumenflow/cli
 lane: CLI
 type: feature
 status: ready
-priority: P2
+priority: P1
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/flow-report.ts
+  - packages/@lumenflow/cli/src/flow-bottlenecks.ts
+  - packages/@lumenflow/cli/src/metrics-snapshot.ts
+  - packages/@lumenflow/cli/src/initiative-bulk-assign-wus.ts
+  - packages/@lumenflow/cli/src/agent-issues-query.ts
+  - packages/@lumenflow/cli/package.json
+  - package.json
 tests:
-  manual: []
-  unit: []
+  manual:
+    - Run flow-report --help and verify output
+    - Run flow-bottlenecks --help and verify output
+    - Run metrics-snapshot --dry-run and verify output
+    - Run initiative-bulk-assign-wus --help and verify output
+    - Run agent-issues-query summary --help and verify output
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/flow-report.test.ts
+    - packages/@lumenflow/cli/src/__tests__/flow-bottlenecks.test.ts
+    - packages/@lumenflow/cli/src/__tests__/metrics-snapshot.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1018.done
 dependencies: []
-risks: []
-notes: ''
+risks:
+  - Breaking changes to existing ExampleApp scripts if function signatures differ
+notes: |
+  Follow-up from WU-2697 migration verification (ExampleApp).
+  ExampleApp has local tools that should be using LumenFlow CLI equivalents.
+
+  Analysis showed:
+  - 8 commands already exist in CLI but ExampleApp still uses local versions
+  - 5 commands are true gaps that need to be created in @lumenflow/cli
+  - compliance-parser.ts was orphaned and has been deleted
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -23,11 +46,37 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Complete the CLI migration by creating missing commands in @lumenflow/cli.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context:
+  WU-2697 (ExampleApp) migrated agent tools to use @lumenflow packages. However,
+  verification revealed that several CLI commands exist in @lumenflow/cli but
+  ExampleApp still uses local ./lib/ versions, and 5 commands are true gaps.
+
+  Problem:
+  1. @lumenflow/metrics has library functions but no CLI wrappers:
+     - generateFlowReport() needs flow-report CLI
+     - analyzeBottlenecks() needs flow-bottlenecks CLI
+     - captureMetricsSnapshot() needs metrics-snapshot CLI
+  2. Two genuine gap commands need migration:
+     - initiative-bulk-assign-wus (bulk WU assignment with micro-worktree)
+     - agent-issues-query (incident summary querying)
+
+  Solution:
+  Create 5 new CLI commands in @lumenflow/cli that:
+  - Use @lumenflow/core and @lumenflow/metrics for library functions
+  - Follow existing CLI patterns (commander.js, createWUParser)
+  - Include testability guards (WU-1366 pattern)
+  - Register in package.json bin section
+  - Add pnpm scripts to root package.json
+
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
+  - flow-report CLI command created, wraps generateFlowReport from @lumenflow/metrics
+  - flow-bottlenecks CLI command created, wraps analyzeBottlenecks from @lumenflow/core
+  - metrics-snapshot CLI command created, wraps captureMetricsSnapshot from @lumenflow/metrics
+  - initiative-bulk-assign-wus migrated to CLI using @lumenflow/core imports
+  - agent-issues-query migrated to CLI using @lumenflow/agent imports
+  - All 5 commands registered in @lumenflow/cli/package.json bin section
+  - Root package.json has flow:report, flow:bottlenecks, metrics:snapshot scripts
+  - pnpm build succeeds in packages/@lumenflow/cli
   - pnpm format, lint, typecheck → PASS
