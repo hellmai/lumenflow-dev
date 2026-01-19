@@ -39,4 +39,9 @@ describe('pre-push hook policy (WU-1030)', () => {
     const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-edit' });
     expect(result.status).toBe(0);
   });
+
+  it('allows wu:done pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-done' });
+    expect(result.status).toBe(0);
+  });
 });

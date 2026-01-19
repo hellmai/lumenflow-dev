@@ -23,7 +23,7 @@ if (process.env.LUMENFLOW_FORCE === '1') {
 
 // Allow wu:create / wu:edit pushes that originate from micro-worktree automation
 const WU_TOOL_ENV = process.env.LUMENFLOW_WU_TOOL;
-const ALLOWED_WU_TOOLS = new Set(['wu-create', 'wu-edit']);
+const ALLOWED_WU_TOOLS = new Set(['wu-create', 'wu-edit', 'wu-done']);
 if (WU_TOOL_ENV && ALLOWED_WU_TOOLS.has(WU_TOOL_ENV)) {
   process.exit(0);
 }
