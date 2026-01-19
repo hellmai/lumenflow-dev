@@ -5,7 +5,12 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - .husky/pre-push
+  - .husky/pre-commit
+  - .husky/prepare-commit-msg
+  - .husky/commit-msg
+  - .husky/hooks/pre-push.mjs
 tests:
   manual: []
   unit: []
@@ -22,12 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
+description: >-
+  Context: wu:create and wu:edit use micro-worktrees and push spec changes back to origin/main.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Problem: the pre-push hook blocks direct pushes to main (and emits husky deprecation errors),
+  leaving main ahead of origin and preventing further wu:edit runs.
+
+  Solution: remove deprecated husky bootstrap lines and adjust the pre-push policy to allow
+  wu:create/wu:edit to push successfully without LUMENFLOW_FORCE.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - pnpm wu:create and pnpm wu:edit complete without LUMENFLOW_FORCE and without husky deprecation
+    errors.
+  - Pre-push policy allows micro-worktree pushes for wu:create/wu:edit so main is not left ahead of
+    origin.
+  - All husky hooks remove deprecated bootstrap lines while preserving their behavior.
+  - pnpm format, lint, typecheck -> PASS
