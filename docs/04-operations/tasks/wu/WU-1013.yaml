@@ -1,6 +1,6 @@
 id: WU-1013
 title: Deploy docs to Vercel (lumenflow.dev)
-lane: Core
+lane: Documentation
 type: feature
 status: ready
 priority: P1
@@ -19,7 +19,10 @@ dependencies: []
 initiative: INIT-001
 phase: 2
 risks: []
-notes: ''
+notes: |-
+
+
+  [ADMIN-REPAIR 2026-01-19]: lane changed from 'Core' to 'Documentation'
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
