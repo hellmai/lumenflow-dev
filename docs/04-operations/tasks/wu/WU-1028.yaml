@@ -32,7 +32,8 @@ tests:
     - After lumenflow init, LUMENFLOW.md exists with wu:done warning
     - After lumenflow init --vendor claude, .claude/CLAUDE.md exists and references LUMENFLOW.md
     - After lumenflow init, .lumenflow/constraints.md exists with mini audit section
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1028.done
