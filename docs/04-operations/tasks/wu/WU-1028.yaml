@@ -2,7 +2,7 @@ id: WU-1028
 title: Fix agent wu:done amnesia - docs and distribution
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -130,3 +130,11 @@ acceptance:
   - 'Vendor templates created: .claude/CLAUDE.md points to LUMENFLOW.md'
   - LumenFlow OS repo uses its own docs (dogfooding)
   - pnpm format, lint, typecheck pass
+claimed_mode: worktree
+worktree_path: worktrees/content-documentation-wu-1028
+claimed_at: 2026-01-19T17:18:22.826Z
+baseline_main_sha: a098e9f4d20be055bc93f7297363558702108e58
+session_id: c48001e8-6993-4d75-9038-9c1179868bae
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T17:18:22.830Z
