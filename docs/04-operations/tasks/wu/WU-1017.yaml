@@ -2,7 +2,7 @@ id: WU-1017
 title: Add vendor-agnostic git hooks via Husky
 lane: Infrastructure
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -82,3 +82,11 @@ acceptance:
   - LUMENFLOW_FORCE=1 bypasses all hooks
   - Playbook docs updated to match implementation
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/infrastructure-wu-1017
+claimed_at: 2026-01-19T11:14:48.805Z
+baseline_main_sha: 7bb2b28ef39a8272b061b09f17f32ee3e010201e
+session_id: a4ef71e2-4815-4b58-817e-bcd5c6679b71
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T11:14:48.815Z
