@@ -164,7 +164,7 @@ async function loadGitCommits(weekStart: Date, weekEnd: Date): Promise<GitCommit
 
     const commits: GitCommit[] = [];
 
-    for (const entry of logResult.all as GitLogEntry[]) {
+    for (const entry of [...logResult.all] as GitLogEntry[]) {
       // Filter by date range
       const commitDate = new Date(entry.date);
       if (commitDate < weekStart || commitDate > weekEnd) {
