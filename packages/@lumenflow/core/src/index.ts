@@ -125,3 +125,6 @@ export * from './stamp-utils.js';
 // Configuration
 export * from './lumenflow-config.js';
 export * from './lumenflow-config-schema.js';
+
+// Branch check utilities
+export * from './branch-check.js';
