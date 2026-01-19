@@ -47,4 +47,3 @@ coverage/
 .logs/
 *.tgz
 .npmrc
-# test
