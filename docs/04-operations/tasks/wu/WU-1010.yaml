@@ -5,7 +5,10 @@ type: feature
 status: in_progress
 priority: P2
 created: 2026-01-18
-code_paths: []
+code_paths:
+  - "external:hellmai/lumenflow-example-node"
+  - "external:hellmai/lumenflow-example-python"
+  - "external:hellmai/lumenflow-example-go"
 tests:
   manual:
     - Each example repo has working LumenFlow setup
