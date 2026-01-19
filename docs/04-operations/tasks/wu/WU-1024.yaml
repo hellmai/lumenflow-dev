@@ -1,6 +1,6 @@
 id: WU-1024
 title: Pre-push hook should allow CLI tool pushes to main
-lane: Infrastructure
+lane: 'Operations: Infrastructure'
 type: feature
 status: ready
 priority: P2
