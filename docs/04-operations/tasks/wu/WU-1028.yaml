@@ -13,8 +13,12 @@ code_paths:
   - packages/@lumenflow/cli/templates/**
 tests:
   manual:
-    - After pnpm lumenflow init, CLAUDE.md exists with wu:done warning
-    - After pnpm lumenflow init, .claude/agent-rules.md exists
+    - After lumenflow init
+    - LUMENFLOW.md exists with wu:done warning
+    - After lumenflow init --vendor claude
+    - .claude/CLAUDE.md exists and references LUMENFLOW.md
+    - After lumenflow init
+    - .lumenflow/constraints.md exists with mini audit section
   unit:
     - init command copies template files correctly
   e2e: []
