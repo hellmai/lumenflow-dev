@@ -2,7 +2,7 @@ id: WU-1012
 title: Add --docs-only flag to wu:done for documentation WUs
 lane: CLI
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - Format gate still runs on markdown files
   - Code gates (lint, typecheck, test) are skipped
   - Clear error if used on non-docs WU
+claimed_mode: worktree
+worktree_path: worktrees/cli-wu-1012
+claimed_at: 2026-01-19T09:52:21.768Z
+baseline_main_sha: adee9a0a037e055cb4866a840e11b54bbb35ebe5
+session_id: 862ff441-edf7-46fe-9884-25bb391e8ef0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T09:52:21.773Z
