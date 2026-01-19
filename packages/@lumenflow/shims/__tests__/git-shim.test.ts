@@ -11,6 +11,7 @@ import {
   checkProtectedContext,
   detectUserType,
   formatBlockedError,
+  checkWorktreeRemoveForAgent,
 } from '../src/git-shim.js';
 import { GitShimConfigSchema } from '../src/types.js';
 
@@ -242,6 +243,84 @@ describe('git-shim', () => {
 
       const result = checkBannedPattern(['commit', '--custom-flag'], customConfig);
       expect(result.banned).toBe(true);
+    });
+  });
+
+  describe('checkWorktreeRemoveForAgent (WU-1027)', () => {
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+      process.env = { ...originalEnv };
+      // Clear all agent env vars
+      delete process.env['CLAUDE_SESSION_ID'];
+      delete process.env['CI'];
+      delete process.env['GITHUB_ACTIONS'];
+      delete process.env['ANTHROPIC_API_KEY'];
+      delete process.env['LUMENFLOW_AGENT_SESSION'];
+      delete process.env['LUMENFLOW_WORKTREE_REMOVE_ALLOWED'];
+    });
+
+    afterEach(() => {
+      process.env = originalEnv;
+    });
+
+    it('should block worktree remove for agents', () => {
+      process.env['CLAUDE_SESSION_ID'] = 'test-session';
+
+      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(true);
+      expect(result.reason).toContain('wu:done');
+      expect(result.reason).toContain('wu:prune');
+    });
+
+    it('should allow worktree remove for humans', () => {
+      // No agent env vars set = human
+
+      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(false);
+      expect(result.reason).toBeNull();
+    });
+
+    it('should allow worktree remove with bypass env var', () => {
+      process.env['CLAUDE_SESSION_ID'] = 'test-session';
+      process.env['LUMENFLOW_WORKTREE_REMOVE_ALLOWED'] = '1';
+
+      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(false);
+      expect(result.reason).toBeNull();
+    });
+
+    it('should block worktree remove for agents even with CI env var', () => {
+      process.env['CI'] = 'true';
+
+      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', '/some/path'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(true);
+    });
+
+    it('should not block other worktree commands for agents', () => {
+      process.env['CLAUDE_SESSION_ID'] = 'test-session';
+
+      const addResult = checkWorktreeRemoveForAgent(['worktree', 'add', 'worktrees/test'], DEFAULT_CONFIG);
+      expect(addResult.blocked).toBe(false);
+
+      const listResult = checkWorktreeRemoveForAgent(['worktree', 'list'], DEFAULT_CONFIG);
+      expect(listResult.blocked).toBe(false);
+    });
+
+    it('should not block non-worktree commands', () => {
+      process.env['CLAUDE_SESSION_ID'] = 'test-session';
+
+      const result = checkWorktreeRemoveForAgent(['status'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(false);
+    });
+
+    it('should include helpful error message with workflow guidance', () => {
+      process.env['CLAUDE_SESSION_ID'] = 'test-session';
+
+      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/foo'], DEFAULT_CONFIG);
+      expect(result.blocked).toBe(true);
+      expect(result.reason).toContain('pnpm wu:done');
+      expect(result.reason).toContain('pnpm wu:prune');
     });
   });
 });

@@ -38,7 +38,11 @@
       "Write(~/.aws/**)",
       "Write(~/.ssh/**)",
       "Bash(sudo *)",
-      "Bash(su *)"
+      "Bash(su *)",
+      "Bash(git worktree remove *)",
+      "Bash(/usr/bin/git worktree remove *)",
+      "Bash(git worktree prune *)",
+      "Bash(/usr/bin/git worktree prune *)"
     ],
     "disableBypassPermissionsMode": "disable"
   },

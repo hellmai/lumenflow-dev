@@ -5,10 +5,17 @@ type: feature
 status: in_progress
 priority: P1
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - .claude/settings.json
+  - packages/@lumenflow/shims/src/git-shim.ts
+  - packages/@lumenflow/shims/src/types.ts
 tests:
-  manual: []
-  unit: []
+  manual:
+    - 'Verify agent cannot run: git worktree remove <path>'
+    - 'Verify wu:done can still remove worktrees'
+    - 'Verify wu:prune can still clean up worktrees'
+  unit:
+    - packages/@lumenflow/shims/__tests__/git-shim.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1027.done
