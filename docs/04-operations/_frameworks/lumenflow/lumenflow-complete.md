@@ -43,7 +43,7 @@ All projects must comply with this document. Stack-specific details are included
 
 - **Backlog is Law** – Once a WU (Work Unit) is signed off, it's ready for autonomous execution
 - **Scope Discipline** – Implement only what the WU spec requires. Do not add features, helpers, escape hatches, or "nice to haves" that aren't explicitly requested. If something seems beneficial, note it for future discussion but don't build it.
-- **Lane-Based WIP** – Each delivery lane may run at most one `in_progress` WU; blocked WUs must move to `blocked` before another item starts in that lane
+- **Lane-Based WIP** – Each delivery lane may run WUs up to its configured `wip_limit` (default: 1); blocked WUs must move to `blocked` before another item starts in that lane
 - **TDD First** – Tests define contracts; AI implements to satisfy tests
 - **Ports First** – Define interfaces before implementation
 - **Framework First** – Use approved libraries; avoid custom code unless justified
@@ -158,10 +158,10 @@ Lanes keep focus while enabling parallelism. The default lane set is:
 
 - Typically use docs-only mode (work on main, no worktrees)
 - Focus on processes, content, policies, and metrics
-- Still follow WIP=1 (one active WU per lane)
+- Still follow WIP limits (configurable per lane, default: 1)
 - Still require gates (format checking, link validation, YAML syntax)
 
-Teams may refine or split lanes (e.g., separate Mobile from Web) but must keep the one-WU-per-lane rule. Discovery WUs are time-boxed and typically produce briefs or decision records, after which implementation WUs begin in the relevant lane.
+Teams may refine or split lanes (e.g., separate Mobile from Web) but must respect WIP limits per lane. WIP limits are configured via `wip_limit` in `.lumenflow.config.yaml`. Discovery WUs are time-boxed and typically produce briefs or decision records, after which implementation WUs begin in the relevant lane.
 
 Lanes are published in the backlog header. New lanes require a short rationale in `./operating-manual.md` to keep the taxonomy transparent.
 
@@ -171,7 +171,7 @@ Lanes are published in the backlog header. New lanes require a short rationale i
 
 - After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx/` and stay there until `pnpm wu:done`.
 - Main checkout allowance: read/review, run scripts, or a surgical non-WU typo fix. The instant a change belongs to WU-XXX (code, docs, YAML, prompts, tooling), move it into the worktree.
-- One worktree per active lane WU keeps installs, node_modules, caches, and git history isolated while respecting WIP=1.
+- One worktree per active lane WU keeps installs, node_modules, caches, and git history isolated while respecting WIP limits.
 - Hooks now fail any WU commit attempted from the main checkout and any lane branch pushed from the main directory.
 
 **Why this is not “too restrictive”:**
@@ -260,7 +260,7 @@ pnpm wu:done --id WU-427  # Merges, cleans up, stamps
 1. Breaks lane isolation (changes not on lane branch)
 2. Bypasses `pnpm wu:done` merge safety checks
 3. Leaves worktree orphaned (requires manual cleanup)
-4. Violates WIP=1 enforcement (lane shows occupied but work elsewhere)
+4. Violates WIP limit enforcement (lane shows occupied but work elsewhere)
 
 #### Tool Usage in Worktrees (AI Agent Guidance)
 
@@ -877,7 +877,7 @@ If none of these are present, `wu:done` will **block** completion with an action
 
 1. Read `{PROJECT_ROOT}/tasks/status.md`, `{PROJECT_ROOT}/tasks/backlog.md`, and the relevant WU YAMLs
 2. **Run existing tests first** → `pnpm gates` (let test failures guide diagnosis)
-3. Select one WU that fits an available lane (one active WU per lane)
+3. Select one WU that fits an available lane (respecting WIP limit per lane)
 4. Define `code_paths`, `test_paths`, acceptance criteria
 5. **Diagnostic Workflow** (if investigating issue):
    - Run full test suite
@@ -1422,7 +1422,7 @@ Bug discovered → Classify (P0/P1/P2/P3)
 
 ### 8.8 Why This Fits LumenFlow
 
-- **Respects WIP=1 per lane** and explicit `blocked`/`waiting`/`done` states (§2.4)
+- **Respects WIP limits per lane** and explicit `blocked`/`waiting`/`done` states (§2.4)
 - **Keeps backlog as source of truth** – no hidden work (§2.1)
 - **Preserves small batches & trunk** with test-first safety (§2.1, §2.3)
 - **Aligns with Scope Discipline** – fix-in-place only when it's truly within current WU scope (§2.1)

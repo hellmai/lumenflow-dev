@@ -26,3 +26,4 @@
 {"type":"complete","wuId":"WU-1017","timestamp":"2026-01-19T11:29:00.333Z"}
 {"type":"claim","wuId":"WU-1018","lane":"CLI","title":"Migrate missing CLI commands from ExampleApp to @lumenflow/cli","timestamp":"2026-01-19T11:31:39.369Z"}
 {"type":"complete","wuId":"WU-1018","timestamp":"2026-01-19T11:46:33.368Z"}
+{"type":"claim","wuId":"WU-1016","lane":"Core","title":"Implement configurable WIP limits per lane","timestamp":"2026-01-19T11:55:40.482Z"}

@@ -214,7 +214,7 @@ Use Git worktrees when multiple humans or agents need active WUs at the same tim
 - **Respect WIP** – when a WU moves to `blocked` or `done`, remove its worktree (`git worktree remove worktrees/experience-wu341`) before starting another.
 - **Share conventions** – document lane worktree names in the WU card so teammates know where the branch lives.
 
-This keeps parallel agents from stepping on each other’s builds while still honoring “one WU per lane”.
+This keeps parallel agents from stepping on each other's builds while still honoring WIP limits per lane (configurable via `wip_limit` in `.lumenflow.config.yaml`, default: 1).
 
 #### Helper: Atomic Claim + Worktree
 
@@ -458,7 +458,7 @@ cd ../../worktrees/<correct-lane>-wu-<correct-id>
 
 **Prevention:**
 
-- Only create worktree when claiming WU (respect WIP=1)
+- Only create worktree when claiming WU (respect WIP limits)
 - Run `pnpm wu:prune` regularly to remove stale worktrees
 - Check `git branch --show-current` before starting work
 
@@ -533,7 +533,7 @@ When using Claude Code's Task tool or spawning multiple specialized agents (lume
 **Why This Matters:**
 
 - During WU-509/WU-505-507 rehearsal, agents skipped git discipline, reported "success", and left uncommitted changes behind because verification was not enforced.
-- Task-only prompts (no context) cause agents to work on main instead of worktrees, violate WIP=1 enforcement, and ignore DoD requirements.
+- Task-only prompts (no context) cause agents to work on main instead of worktrees, violate WIP limit enforcement, and ignore DoD requirements.
 
 **Required Reading Before Multi-Agent Work:**
 
@@ -681,7 +681,7 @@ See: [../../../tools/shims/README.md](../../../tools/shims/README.md) for detail
 | Experience   | `Surface inline citations`      | Add UI components, write RTL tests, wire SSE handler to show annotations.                  |
 | Operations   | `Update monitoring dashboards`  | Ensure prompt version and tool usage metrics ship to observability stack.                  |
 
-Each lane runs one active WU. If web_search tool rollout pauses awaiting approval, move that WU to `blocked` and allow Experience lane to continue.
+Each lane runs WUs up to its configured `wip_limit` (default: 1). If web_search tool rollout pauses awaiting approval, move that WU to `blocked` and allow Experience lane to continue. Configure higher limits in `.lumenflow.config.yaml` for lanes that need parallel work.
 
 ---
 
@@ -1101,7 +1101,7 @@ open coverage/index.html
 - `--branch <name>` — Override default branch name (default: `lane/<lane>/<wu-id>`)
 - `--branch-only` — Create branch without worktree (lightweight mode for docs/Codespaces, no parallel WUs)
 - `--no-auto` — Skip auto-updating YAML/backlog/status (you staged manually)
-- `--force` — Override lane WIP=1 enforcement (P0 emergencies only, risk of collision)
+- `--force` — Override lane WIP limit enforcement (P0 emergencies only, risk of collision)
 - `--help, -h` — Show help
 
 **Example:**
@@ -1184,7 +1184,7 @@ pnpm wu:done -- --id WU-420 --skip-gates --reason "Pre-existing test failures in
 | Skip Git hooks                                      | ❌ No    | **Never use `--no-verify` / `--no-gpg-sign`**                     | Hooks guard format, msg, and worktree rules     |
 | Skip running gates because failures pre-exist       | ✅ Yes   | `pnpm wu:done --skip-gates --reason "..." --fix-wu WU-XXX` (rare) | Still runs hooks; forces documentation & fix WU |
 | Complete a WU without `wu:done`                     | ❌ No    | Always use `pnpm wu:done`                                         | Ensures merge, stamps, docs, cleanup            |
-| Work in main after claiming (Worktree mode)         | ❌ No    | Work in `worktrees/<lane>-wu-xxx`                                 | Isolation + WIP=1 enforcement                   |
+| Work in main after claiming (Worktree mode)         | ❌ No    | Work in `worktrees/<lane>-wu-xxx`                                 | Isolation + WIP limit enforcement               |
 | Work in main after claiming (Branch-Only/Docs-Only) | ✅ Yes   | Work on lane branch in main checkout                              | Mode-appropriate workflow                       |
 
 ---
@@ -1235,7 +1235,7 @@ pnpm wu:block -- --id WU-334 --reason "Blocked on design review" --remove-worktr
 - `--worktree <path>` — Override worktree path (default: `worktrees/<lane>-<wu-id>`)
 - `--branch <name>` — Override branch name (default: `lane/<lane>/<wu-id>`)
 - `--no-auto` — Skip auto-updating YAML/backlog/status (you staged manually)
-- `--force` — Override lane WIP=1 enforcement (P0 emergencies only)
+- `--force` — Override lane WIP limit enforcement (P0 emergencies only)
 - `--help, -h` — Show help
 
 **Example:**
