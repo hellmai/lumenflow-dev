@@ -267,7 +267,10 @@ describe('git-shim', () => {
     it('should block worktree remove for agents', () => {
       process.env['CLAUDE_SESSION_ID'] = 'test-session';
 
-      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      const result = checkWorktreeRemoveForAgent(
+        ['worktree', 'remove', 'worktrees/test'],
+        DEFAULT_CONFIG,
+      );
       expect(result.blocked).toBe(true);
       expect(result.reason).toContain('wu:done');
       expect(result.reason).toContain('wu:prune');
@@ -276,7 +279,10 @@ describe('git-shim', () => {
     it('should allow worktree remove for humans', () => {
       // No agent env vars set = human
 
-      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      const result = checkWorktreeRemoveForAgent(
+        ['worktree', 'remove', 'worktrees/test'],
+        DEFAULT_CONFIG,
+      );
       expect(result.blocked).toBe(false);
       expect(result.reason).toBeNull();
     });
@@ -285,7 +291,10 @@ describe('git-shim', () => {
       process.env['CLAUDE_SESSION_ID'] = 'test-session';
       process.env['LUMENFLOW_WORKTREE_REMOVE_ALLOWED'] = '1';
 
-      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/test'], DEFAULT_CONFIG);
+      const result = checkWorktreeRemoveForAgent(
+        ['worktree', 'remove', 'worktrees/test'],
+        DEFAULT_CONFIG,
+      );
       expect(result.blocked).toBe(false);
       expect(result.reason).toBeNull();
     });
@@ -293,14 +302,20 @@ describe('git-shim', () => {
     it('should block worktree remove for agents even with CI env var', () => {
       process.env['CI'] = 'true';
 
-      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', '/some/path'], DEFAULT_CONFIG);
+      const result = checkWorktreeRemoveForAgent(
+        ['worktree', 'remove', '/some/path'],
+        DEFAULT_CONFIG,
+      );
       expect(result.blocked).toBe(true);
     });
 
     it('should not block other worktree commands for agents', () => {
       process.env['CLAUDE_SESSION_ID'] = 'test-session';
 
-      const addResult = checkWorktreeRemoveForAgent(['worktree', 'add', 'worktrees/test'], DEFAULT_CONFIG);
+      const addResult = checkWorktreeRemoveForAgent(
+        ['worktree', 'add', 'worktrees/test'],
+        DEFAULT_CONFIG,
+      );
       expect(addResult.blocked).toBe(false);
 
       const listResult = checkWorktreeRemoveForAgent(['worktree', 'list'], DEFAULT_CONFIG);
@@ -317,7 +332,10 @@ describe('git-shim', () => {
     it('should include helpful error message with workflow guidance', () => {
       process.env['CLAUDE_SESSION_ID'] = 'test-session';
 
-      const result = checkWorktreeRemoveForAgent(['worktree', 'remove', 'worktrees/foo'], DEFAULT_CONFIG);
+      const result = checkWorktreeRemoveForAgent(
+        ['worktree', 'remove', 'worktrees/foo'],
+        DEFAULT_CONFIG,
+      );
       expect(result.blocked).toBe(true);
       expect(result.reason).toContain('pnpm wu:done');
       expect(result.reason).toContain('pnpm wu:prune');
