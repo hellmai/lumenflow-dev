@@ -1,0 +1,27 @@
+# Git Safety Rules
+
+**Last updated:** {{DATE}}
+
+## Forbidden Commands on Main
+
+```bash
+git reset --hard
+git clean -fd
+git stash
+git push --force
+--no-verify
+```
+
+## Safe Commands
+
+```bash
+git status
+git log
+git diff
+git add .
+git commit -m "message"
+```
+
+## Merge Strategy
+
+Use `pnpm wu:done` for all merges. Never merge manually.

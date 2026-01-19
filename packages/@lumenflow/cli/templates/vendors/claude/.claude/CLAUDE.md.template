@@ -1,0 +1,50 @@
+# Claude Code Configuration
+
+**Last updated:** {{DATE}}
+
+This project uses LumenFlow workflow. For workflow documentation, see [LUMENFLOW.md](../LUMENFLOW.md).
+
+---
+
+## Quick Start
+
+```bash
+# 1. Read workflow documentation
+# See LUMENFLOW.md for complete workflow
+
+# 2. Claim a WU
+pnpm wu:claim --id WU-XXXX --lane <Lane>
+cd worktrees/<lane>-wu-xxxx
+
+# 3. Work in worktree, run gates
+pnpm gates
+
+# 4. Complete (ALWAYS run this!)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXXX
+```
+
+---
+
+## Critical: Always wu:done
+
+After completing work, ALWAYS run `pnpm wu:done --id WU-XXXX`.
+
+See [LUMENFLOW.md](../LUMENFLOW.md) and [ai/onboarding/troubleshooting-wu-done.md](../ai/onboarding/troubleshooting-wu-done.md).
+
+---
+
+## Claude-Specific Settings
+
+This directory contains Claude Code-specific configuration:
+
+- `settings.json` - Permissions and hooks
+- `hooks/` - Pre-tool validation hooks
+
+---
+
+## References
+
+- [LUMENFLOW.md](../LUMENFLOW.md) - Main workflow documentation
+- [.lumenflow/constraints.md](../.lumenflow/constraints.md) - Non-negotiable rules
+- [ai/onboarding/](../ai/onboarding/) - Agent onboarding docs

@@ -1,0 +1,78 @@
+# LumenFlow Constraints Capsule
+
+**Version:** 1.0
+**Last updated:** {{DATE}}
+
+This document contains the 6 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
+
+---
+
+## The 6 Non-Negotiable Constraints
+
+### 1. Worktree Discipline and Git Safety
+
+**Rule:** Work only in worktrees, treat main as read-only, never run destructive git commands on main.
+
+**Enforcement:**
+- After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx`
+- Hooks block WU commits from main checkout
+- Forbidden commands on main: `git reset --hard`, `git stash`, `git clean -fd`, `git push --force`
+
+---
+
+### 2. WUs Are Specs, Not Code
+
+**Rule:** Respect code_paths boundaries, no feature creep, no code blocks in WU YAML files.
+
+**Enforcement:**
+- Only modify files listed in `code_paths`
+- WU YAML contains acceptance criteria, not implementation code
+
+---
+
+### 3. Docs-Only vs Code WUs
+
+**Rule:** Documentation WUs use `--docs-only` gates, code WUs run full gates.
+
+---
+
+### 4. LLM-First, Zero-Fallback Inference
+
+**Rule:** Use LLMs for semantic tasks, fall back to safe defaults (never regex/keywords).
+
+---
+
+### 5. Gates and Skip-Gates
+
+**Rule:** Complete via `pnpm wu:done`; skip-gates only for pre-existing failures with `--reason` and `--fix-wu`.
+
+---
+
+### 6. Safety and Governance
+
+**Rule:** Respect privacy rules, approved sources, security policies; when uncertain, choose safer path.
+
+---
+
+## Mini Audit Checklist
+
+Before running `wu:done`, verify:
+
+- [ ] Working in worktree (not main)
+- [ ] Only modified files in `code_paths`
+- [ ] Gates pass (`pnpm gates` or `pnpm gates --docs-only`)
+- [ ] No forbidden git commands used
+- [ ] No secrets committed
+- [ ] Acceptance criteria satisfied
+
+---
+
+## Escalation Triggers
+
+Stop and ask a human when:
+
+- Same error repeats 3 times
+- Auth or permissions changes required
+- PII/PHI/safety issues discovered
+- Cloud spend or secrets involved
+- Policy changes needed
