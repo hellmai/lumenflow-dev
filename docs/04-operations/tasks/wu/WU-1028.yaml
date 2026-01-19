@@ -1,21 +1,31 @@
 id: WU-1028
 title: Fix agent wu:done amnesia - docs and distribution
-lane: 'Content: Documentation'
+lane: "Content: Documentation"
 type: feature
 status: ready
-priority: P2
+priority: P1
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - CLAUDE.md
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-agent-capsule.md
+  - docs/templates/CLAUDE.md
+  - docs/templates/agent-rules.md
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/**
 tests:
-  manual: []
-  unit: []
+  manual:
+    - After pnpm lumenflow init, CLAUDE.md exists with wu:done warning
+    - After pnpm lumenflow init, .claude/agent-rules.md exists
+  unit:
+    - init command copies template files correctly
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1028.done
 dependencies: []
-risks: []
-notes: ''
-requires_review: false
+risks:
+  - Breaking change to init command if templates missing
+notes: "Critical - if LumenFlow can't do LumenFlow, no one can"
+requires_review: true
 assigned_to: tom@hellm.ai
 escalation_triggers: []
 requires_human_escalation: false
@@ -23,11 +33,37 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Problem: Agents keep forgetting to run wu:done after completing work.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Evidence: WU-1027 agent wrote "To Complete: pnpm wu:done" instead of
+  actually running it. This pattern repeats across multiple WUs.
+
+  Root Causes:
+  1. CLAUDE.md mentions wu:done but it's buried in step 6 of a code block
+  2. Agent capsule (lumenflow-agent-capsule.md) has strong language but
+     is never loaded - CLAUDE.md doesn't reference it
+  3. The capsule references constraints-capsule.md which doesn't exist
+  4. No bold/prominent warning that wu:done is MANDATORY
+  5. When users install LumenFlow via npm, they don't get these docs
+
+  Solution:
+  1. Update CLAUDE.md with prominent wu:done warning section
+  2. Create template docs that ship with @lumenflow/cli package
+  3. Update pnpm lumenflow init to copy CLAUDE.md and agent rules
+  4. Ensure all environments (npm install, git clone) get correct rules
+
+  Distribution Requirements:
+  - npm install @lumenflow/cli should include template CLAUDE.md
+  - pnpm lumenflow init should create CLAUDE.md in project root
+  - pnpm lumenflow init should create .claude/agent-rules.md
+  - Templates should be customizable per-project
+
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - CLAUDE.md has prominent WARNING section about wu:done being mandatory
+  - CLAUDE.md states "Work is NOT complete until wu:done runs successfully"
+  - docs/templates/CLAUDE.md exists as distributable template
+  - docs/templates/agent-rules.md exists with non-negotiables
+  - pnpm lumenflow init copies templates to target project
+  - Existing lumenflow-agent-capsule.md content merged into templates
+  - constraints-capsule.md created or reference removed
+  - pnpm format, lint, typecheck pass
