@@ -1,6 +1,6 @@
 id: WU-1023
 title: Auto-setup worktree dependencies on wu:claim
-lane: CLI
+lane: 'Framework: CLI'
 type: feature
 status: ready
 priority: P1
