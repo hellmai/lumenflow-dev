@@ -1,0 +1,2 @@
+# Ignore beacon directories (runtime artifacts)
+.beacon/
