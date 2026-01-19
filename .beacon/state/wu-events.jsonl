@@ -37,5 +37,6 @@
 {"type":"complete","wuId":"WU-1024","timestamp":"2026-01-19T12:33:46.538Z"}
 {"type":"complete","wuId":"WU-1025","timestamp":"2026-01-19T12:37:54.059Z"}
 {"type":"complete","wuId":"WU-1023","timestamp":"2026-01-19T12:40:18.690Z"}
+{"type":"claim","wuId":"WU-1027","lane":"Operations: Infrastructure","title":"Block agents from deleting worktrees","timestamp":"2026-01-19T15:10:34.465Z"}
 {"type":"claim","wuId":"WU-1026","lane":"Framework: Core","title":"Allow agent branches to bypass worktree requirements","timestamp":"2026-01-19T15:04:04.144Z"}
 {"type":"complete","wuId":"WU-1026","timestamp":"2026-01-19T15:27:20.586Z"}

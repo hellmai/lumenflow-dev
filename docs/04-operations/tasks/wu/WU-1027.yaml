@@ -2,7 +2,7 @@ id: WU-1027
 title: Block agents from deleting worktrees
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths: []
@@ -22,8 +22,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Agents must not delete worktrees that belong to other sessions. Only proper workflow (wu:done, wu:prune) should remove worktrees. Add hook or guard to prevent git worktree remove commands from agents.
+description: Agents must not delete worktrees that belong to other sessions. Only proper workflow
+  (wu:done, wu:prune) should remove worktrees. Add hook or guard to prevent git worktree remove
+  commands from agents.
 acceptance:
   - git worktree remove blocked by hook for agents
   - wu:done and wu:prune can still remove worktrees
   - Error message explains proper workflow
+claimed_mode: worktree
+worktree_path: worktrees/operations-infrastructure-wu-1027
+claimed_at: 2026-01-19T15:10:34.434Z
+baseline_main_sha: 1deeffb58f8ee62df050048fdceef19346181139
+session_id: c48001e8-6993-4d75-9038-9c1179868bae
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T15:10:34.446Z
