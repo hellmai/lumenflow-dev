@@ -2,7 +2,7 @@ id: WU-1018
 title: Migrate missing CLI commands from ExampleApp to @lumenflow/cli
 lane: CLI
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-19
 code_paths:
@@ -69,7 +69,6 @@ description: |
   - Include testability guards (WU-1366 pattern)
   - Register in package.json bin section
   - Add pnpm scripts to root package.json
-
 acceptance:
   - flow-report CLI command created, wraps generateFlowReport from @lumenflow/metrics
   - flow-bottlenecks CLI command created, wraps analyzeBottlenecks from @lumenflow/core
@@ -80,3 +79,11 @@ acceptance:
   - Root package.json has flow:report, flow:bottlenecks, metrics:snapshot scripts
   - pnpm build succeeds in packages/@lumenflow/cli
   - pnpm format, lint, typecheck → PASS
+claimed_mode: worktree
+worktree_path: worktrees/cli-wu-1018
+claimed_at: 2026-01-19T11:31:39.344Z
+baseline_main_sha: e308fb74c7df5705136cfd9aa707c4936878c9be
+session_id: 881cde2f-fa09-4106-898b-8918bb338117
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-19T11:31:39.352Z
