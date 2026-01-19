@@ -2,7 +2,7 @@ id: WU-1012
 title: Add --docs-only flag to wu:done for documentation WUs
 lane: CLI
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-18
 code_paths:
@@ -67,3 +67,5 @@ session_id: 862ff441-edf7-46fe-9884-25bb391e8ef0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-19T09:52:21.773Z
+locked: true
+completed_at: 2026-01-19T10:03:06.079Z
