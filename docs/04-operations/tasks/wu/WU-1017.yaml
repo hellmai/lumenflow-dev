@@ -6,7 +6,15 @@ status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
-  - .husky/**
+  - .husky/pre-commit
+  - .husky/commit-msg
+  - .husky/prepare-commit-msg
+  - .husky/pre-push
+  - .husky/_/husky.sh
+  - .husky/hooks/pre-commit.mjs
+  - .husky/hooks/commit-msg.mjs
+  - .husky/hooks/prepare-commit-msg.mjs
+  - .husky/hooks/pre-push.mjs
   - package.json
 tests:
   manual:
