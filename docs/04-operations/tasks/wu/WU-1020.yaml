@@ -1,11 +1,12 @@
 id: WU-1020
 title: Fix TypeScript error in metrics-snapshot.ts for readonly array cast
 lane: CLI
-type: feature
+type: bugfix
 status: ready
 priority: P2
 created: 2026-01-19
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/metrics-snapshot.ts
 tests:
   manual: []
   unit: []
@@ -23,11 +24,17 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Fix TypeScript compilation error in metrics-snapshot.ts caused by readonly array cast.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context: The simple-git library returns `logResult.all` as a readonly array type
+  `readonly (DefaultLogFields & ListLogLine)[]`.
+
+  Problem: Casting directly to `GitLogEntry[]` fails because TypeScript cannot cast
+  a readonly array to a mutable array type.
+
+  Solution: Spread the readonly array into a new mutable array before casting:
+  `[...logResult.all] as GitLogEntry[]`
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - TypeScript compilation succeeds without errors in metrics-snapshot.ts
+  - pnpm typecheck passes for @lumenflow/cli package
+  - pnpm format, lint, typecheck passes
