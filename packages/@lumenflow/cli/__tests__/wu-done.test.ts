@@ -13,7 +13,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Import the functions we're testing from dist (built files)
-import { validateDocsOnlyFlag, buildGatesCommand, computeBranchOnlyFallback } from '../dist/wu-done.js';
+import {
+  validateDocsOnlyFlag,
+  buildGatesCommand,
+  computeBranchOnlyFallback,
+} from '../dist/wu-done.js';
 import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
 
 describe('wu:done --docs-only flag (WU-1012)', () => {
