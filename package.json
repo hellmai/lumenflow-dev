@@ -17,7 +17,7 @@
     "format:check": "prettier --check .",
     "pack:all": "turbo pack:dist",
     "clean": "turbo clean && rm -rf node_modules/.cache",
-    "gates": "node packages/@lumenflow/cli/dist/gates.js",
+    "gates": "node tools/cli-entry.mjs gates",
     "wu:claim": "node packages/@lumenflow/cli/dist/wu-claim.js",
     "wu:done": "node packages/@lumenflow/cli/dist/wu-done.js",
     "wu:create": "node packages/@lumenflow/cli/dist/wu-create.js",
