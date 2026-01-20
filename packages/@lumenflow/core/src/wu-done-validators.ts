@@ -1204,7 +1204,7 @@ After fixing, retry:
   pnpm wu:done --id ${id}
 
 This preflight check runs BEFORE gates to catch YAML mismatches early.
-See: ai/onboarding/troubleshooting-wu-done.md for more recovery options.
+See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md for more recovery options.
 `;
 
   return message;
