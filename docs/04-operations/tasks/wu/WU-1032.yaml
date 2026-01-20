@@ -2,7 +2,7 @@ id: WU-1032
 title: Upgrade Core Dependencies and Fix Documentation
 lane: 'Operations: Infrastructure'
 type: chore
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-20
 code_paths:
@@ -43,11 +43,36 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: The project inventory revealed outdated versions of critical tools (pnpm,
-  Turborepo, Vitest) and inconsistent dependency versions across packages. Documentation previously
-  referenced an older Next.js version. Problem: pnpm, Turborepo, and Vitest need consistent
-  upgrades, and docs must not reference Next.js 15. Solution: upgrade pnpm/turbo/vitest and
-  normalize simple-git/fast-glob versions, then verify docs reference Next.js 16 only.'
+description: >
+  Context: The project inventory revealed outdated versions of critical tools (pnpm, Turborepo,
+  Vitest) and inconsistent dependency versions across packages. Documentation previously referenced
+  an older Next.js version. Problem: pnpm, Turborepo, and Vitest need consistent upgrades, and docs
+  must not reference Next.js 15. Solution: upgrade pnpm/turbo/vitest and normalize
+  simple-git/fast-glob versions, then verify docs reference Next.js 16 only.
+
+
+  Problem:
+
+  - pnpm 9.15.0 misses security/perf improvements in v10
+
+  - Vitest versions are fragmented (4.0.17, 2.1.0, 1.0.0)
+
+  - Simple-git and Fast-glob versions are inconsistent
+
+  - Documentation misleads agents about the Next.js version (15 vs 16)
+
+
+  Solution:
+
+  1. Upgrade pnpm to 10.28.1
+
+  2. Unify Vitest to 4.0.0 across all packages
+
+  3. Upgrade Turborepo to 2.7.5
+
+  4. Unify Simple-git (3.30.0) and Fast-glob (3.3.3)
+
+  5. Update all docs references from "Next.js 15" to "Next.js 16"
 acceptance:
   - pnpm version is 10.28.1 in package.json (engines/packageManager)
   - Turborepo version is 2.7.5
@@ -56,3 +81,23 @@ acceptance:
   - Fast-glob version is ^3.3.3 in all package.json files
   - No references to "Next.js 15" remain in docs/** (rg check)
   - pnpm install, build, and test commands succeed
+description: >
+  Upgrade core infrastructure dependencies to latest stable versions and correct outdated Next.js
+  documentation references.
+
+
+  Context:
+
+  The project inventory revealed outdated versions of critical tools (pnpm, Turborepo, Vitest) and
+  inconsistent dependency versions across packages. Additionally, documentation incorrectly
+  references "Next.js 15" while the project uses Next.js 16.
+
+
+claimed_mode: worktree
+worktree_path: worktrees/operations-infrastructure-wu-1032
+claimed_at: 2026-01-20T13:03:31.703Z
+baseline_main_sha: c90fa6788b801f6a5c9fcaed6ef589ec0ca1803a
+session_id: 38dbc6c3-6b3e-443c-b73f-fb9e627e3a4e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-20T13:03:31.711Z
