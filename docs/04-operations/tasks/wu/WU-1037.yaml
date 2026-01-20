@@ -1,13 +1,17 @@
 id: WU-1037
 title: Update Starlight docs to reference canonical framework paths
 lane: 'Operations: Infrastructure'
-type: feature
+type: documentation
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - apps/docs/src/content/docs/
+  - apps/docs/src/content.config.ts
+  - apps/docs/astro.config.mjs
 tests:
-  manual: []
+  manual:
+    - pnpm -C apps/docs build
   unit: []
   e2e: []
 artifacts:
@@ -22,12 +26,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: The repo docs are being consolidated under
+  docs/04-operations/_frameworks/lumenflow and agent onboarding docs are moving under
+  docs/04-operations/_frameworks/lumenflow/agent/onboarding. Problem: Starlight docs may still
+  reference the old paths (docs/lumenflow or ai/onboarding) or lack links to the canonical framework
+  docs, causing confusion for users of the published site. Solution: audit the Starlight content and
+  update references/links to the canonical operations framework paths.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Starlight content has no references to docs/lumenflow or ai/onboarding paths.
+  - Links to the LumenFlow playbook and agent onboarding point at the canonical
+    docs/04-operations/_frameworks/lumenflow/** paths.
+  - pnpm -C apps/docs build -> PASS
