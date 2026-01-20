@@ -14,17 +14,13 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **ai/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml) — Framework: CLI
-- [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml) — Framework: Core
-
-- [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml) — Content: Documentation
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -62,3 +58,4 @@ sections:
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml)
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
+- [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml)
