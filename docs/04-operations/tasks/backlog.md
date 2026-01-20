@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1037 — Update Starlight docs to reference canonical framework paths](wu/WU-1037.yaml) — Operations: Infrastructure
 - [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml) — Framework: CLI
 - [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml) — Framework: Core
 - [WU-1034 — Move agent onboarding docs into operations framework](wu/WU-1034.yaml) — Content: Documentation
