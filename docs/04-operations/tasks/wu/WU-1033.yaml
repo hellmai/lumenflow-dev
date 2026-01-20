@@ -7,13 +7,21 @@ priority: P2
 created: 2026-01-20
 code_paths:
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - docs/04-operations/_frameworks/lumenflow/
   - docs/lumenflow/
+  - ai/onboarding/
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/
   - README.md
   - LUMENFLOW.md
   - CLAUDE.md
+  - docs/04-operations/tasks/backlog.md
+  - apps/docs/src/content/docs/
+  - apps/docs/src/content.config.ts
+  - apps/docs/astro.config.mjs
 tests:
   manual:
     - pnpm gates --docs-only
+    - pnpm -C apps/docs build
   unit: []
   e2e: []
 artifacts:
@@ -29,14 +37,22 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: LumenFlow framework docs are duplicated in docs/lumenflow and
-  docs/04-operations/_frameworks/lumenflow, and the sizing guide diverged (hours vs tool calls).
-  Problem: duplicate sources cause stale references and confusion about the canonical docs.
-  Solution: make the operations path canonical by removing docs/lumenflow, syncing wu-sizing-guide
-  to the tool-call/context-budget version, and updating top-level doc links.'
+  docs/04-operations/_frameworks/lumenflow, and agent onboarding lives separately in ai/onboarding.
+  Problem: duplicate sources cause stale references and confusion about canonical docs, and
+  Starlight docs may point to old paths. Solution: make the operations path canonical by removing
+  docs/lumenflow, moving agent onboarding to
+  docs/04-operations/_frameworks/lumenflow/agent/onboarding, and updating all doc references
+  including the Starlight site.'
 acceptance:
   - Remove docs/lumenflow directory after migrating any unique content.
+  - Move ai/onboarding contents into docs/04-operations/_frameworks/lumenflow/agent/onboarding and
+    remove the top-level ai/onboarding directory.
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md matches the tool-call/context-budget
     version (no hours).
-  - README.md, LUMENFLOW.md, and CLAUDE.md reference the canonical operations path.
+  - README.md, LUMENFLOW.md, CLAUDE.md, and operations playbook references use the canonical
+    operations paths.
+  - Starlight content has no references to docs/lumenflow or ai/onboarding paths and links to the
+    canonical playbook/agent onboarding.
   - No remaining doc references to docs/lumenflow (rg check).
   - pnpm gates --docs-only -> PASS
+  - pnpm -C apps/docs build -> PASS
