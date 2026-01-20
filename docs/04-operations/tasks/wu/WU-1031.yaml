@@ -1,14 +1,20 @@
 id: WU-1031
 title: Make wu:done resilient to missing worktree
 lane: 'Framework: CLI'
-type: feature
+type: bug
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/core/src/wu-done-validators.ts
+  - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1031.done
@@ -22,12 +28,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: wu:done defaults to worktree mode and requires the lane worktree to exist for
+  gates, metadata updates, and merge. Problem: Missing worktree prevents completion and can leave
+  the WU in an orphaned or partially completed state, even when the lane branch still exists and
+  could be completed in branch-only mode. Solution: Treat missing worktree as recoverable with
+  explicit --branch-only and improve recovery guidance.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - If worktree is missing and --branch-only is provided, wu:done proceeds in branch-only mode with
+    a warning and does not require a worktree to exist.
+  - If worktree is missing and --branch-only is not provided, wu:done fails with a clear recovery
+    message that suggests recreating the worktree or rerunning with --branch-only when the lane
+    branch exists.
+  - Add unit coverage for mode detection / missing-worktree handling.
+  - pnpm format, lint, typecheck -> PASS
