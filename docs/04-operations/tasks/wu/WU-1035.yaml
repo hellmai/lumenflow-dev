@@ -1,14 +1,28 @@
 id: WU-1035
 title: Update core references to new documentation paths
 lane: 'Framework: Core'
-type: feature
+type: chore
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-done-validators.ts
+  - packages/@lumenflow/core/src/backlog-generator.ts
+  - packages/@lumenflow/core/src/orchestration-rules.ts
+  - packages/@lumenflow/core/src/__tests__/risk-detector.test.ts
+  - packages/@lumenflow/core/src/__tests__/file-classifiers.test.ts
+  - packages/@lumenflow/core/src/__tests__/lane-inference-taxonomy.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
+  - packages/@lumenflow/core/src/__tests__/manual-test-validator.test.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/file-classifiers.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
+    - packages/@lumenflow/core/src/__tests__/manual-test-validator.test.ts
+    - packages/@lumenflow/core/src/__tests__/lane-inference-taxonomy.test.ts
+    - packages/@lumenflow/core/src/__tests__/risk-detector.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1035.done
@@ -22,12 +36,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: docs/lumenflow is being removed and ai/onboarding is moving under
+  docs/04-operations/_frameworks/lumenflow/ai/onboarding. Problem: core runtime text and tests still
+  reference the old paths, which will become invalid. Solution: update core references and tests to
+  the new canonical documentation paths.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Update core references to ai/onboarding to the new
+    docs/04-operations/_frameworks/lumenflow/ai/onboarding path.
+  - Update core references to docs/lumenflow to the operations framework path.
+  - Core tests referencing documentation paths updated and passing.
+  - pnpm lint, pnpm typecheck -> PASS
