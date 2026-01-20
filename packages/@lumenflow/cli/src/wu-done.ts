@@ -214,7 +214,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
       `  pnpm wu:repair-claim --id ${id}\n\n` +
       `After repair, retry:\n` +
       `  pnpm wu:done --id ${id}\n\n` +
-      `See: ai/onboarding/troubleshooting-wu-done.md for more recovery options.`,
+      `See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md for more recovery options.`,
   );
 }
 
@@ -2734,7 +2734,7 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
     // Get files changed in this branch vs base
     const diff = await git.raw(['diff', '--name-only', baseBranch]);
     const changedFiles = diff.split('\n').filter(Boolean);
-    // Filter to docs: ai/onboarding/, docs/, CLAUDE.md, README.md, *.md in root
+    // Filter to docs: docs/04-operations/_frameworks/lumenflow/agent/onboarding/, docs/, CLAUDE.md, README.md, *.md in root
     const docPatterns = [
       /^ai\/onboarding\//,
       /^docs\//,

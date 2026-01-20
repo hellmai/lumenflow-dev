@@ -25,7 +25,7 @@
  * Codex Mode:
  *   When --codex is used, outputs a Codex/GPT-friendly Markdown prompt (no antml/XML escaping).
  *
- * @see {@link ai/onboarding/agent-invocation-guide.md} - Context loading templates
+ * @see {@link docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md} - Context loading templates
  */
 
 import { existsSync, readFileSync } from 'node:fs';
@@ -821,7 +821,7 @@ pnpm mem:triage --wu ${id}           # List discoveries for this WU
 pnpm mem:triage --promote <node-id> --lane "<lane>"  # Create Bug WU (human action)
 \`\`\`
 
-See: ai/onboarding/agent-invocation-guide.md §Bug Discovery`;
+See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md §Bug Discovery`;
 }
 
 /**
