@@ -1,14 +1,22 @@
 id: WU-1036
 title: Update CLI references to new documentation paths
 lane: 'Framework: CLI'
-type: feature
+type: chore
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
+  - packages/@lumenflow/cli/__tests__/init.test.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/__tests__/wu-done.test.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/init.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-done.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1036.done
@@ -22,12 +30,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: docs/lumenflow is being removed and ai/onboarding is moving under
+  docs/04-operations/_frameworks/lumenflow/ai/onboarding. Problem: CLI help text, templates, and
+  tests still reference the old paths. Solution: update CLI references and tests to the new
+  canonical documentation paths.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Update CLI init templates and docs references to the new
+    docs/04-operations/_frameworks/lumenflow/ai/onboarding path.
+  - Update CLI test fixtures using docs/lumenflow paths to the operations framework equivalents.
+  - CLI tests that reference documentation paths updated and passing.
+  - pnpm lint, pnpm typecheck -> PASS
