@@ -37,12 +37,12 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: docs/lumenflow is being removed and ai/onboarding is moving under
-  docs/04-operations/_frameworks/lumenflow/ai/onboarding. Problem: core runtime text and tests still
-  reference the old paths, which will become invalid. Solution: update core references and tests to
-  the new canonical documentation paths.'
+  docs/04-operations/_frameworks/lumenflow/agent/onboarding. Problem: core runtime text and tests
+  still reference the old paths, which will become invalid. Solution: update core references and
+  tests to the new canonical documentation paths.'
 acceptance:
   - Update core references to ai/onboarding to the new
-    docs/04-operations/_frameworks/lumenflow/ai/onboarding path.
+    docs/04-operations/_frameworks/lumenflow/agent/onboarding path.
   - Update core references to docs/lumenflow to the operations framework path.
   - Core tests referencing documentation paths updated and passing.
   - pnpm lint, pnpm typecheck -> PASS
