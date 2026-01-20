@@ -1,20 +1,42 @@
 id: WU-1032
 title: Upgrade Core Dependencies and Fix Documentation
 lane: 'Operations: Infrastructure'
-type: feature
+type: chore
 status: ready
-priority: P2
+priority: P1
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - package.json
+  - pnpm-workspace.yaml
+  - turbo.json
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/metrics/package.json
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/shims/package.json
+  - apps/github-app/package.json
+  - docs/lumenflow/lumenflow-complete.md
+  - docs/05-business/lumenflow-saas/06-agent-starting-prompt.md
+  - docs/05-business/lumenflow-saas/05-mvp-work-units.md
+  - docs/02-technical/architecture/tech-stack-lumenflow-saas-reference.md
+  - docs/05-business/lumenflow-saas/README.md
+  - docs/01-product/lumenflow-saas/vision.md
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:
-  manual: []
+  manual:
+    - 'Verify pnpm install works with new version'
+    - 'Verify build succeeds with upgraded Turborepo'
+    - 'Verify gates pass with unified Vitest'
   unit: []
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1032.done
 dependencies: []
-risks: []
-notes: ''
+risks:
+  - 'Major pnpm upgrade (v9 -> v10) may have breaking changes in lifecycle scripts'
+notes: 'High priority security and stability upgrades'
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -23,11 +45,29 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: |
-  [PLACEHOLDER] Describe the work to be done.
+  Upgrade core infrastructure dependencies to latest stable versions and correct outdated Next.js documentation references.
 
-  Context: ...
-  Problem: ...
-  Solution: ...
+  Context:
+  The project inventory revealed outdated versions of critical tools (pnpm, Turborepo, Vitest) and inconsistent dependency versions across packages. Additionally, documentation incorrectly references "Next.js 15" while the project uses Next.js 16.
+
+  Problem:
+  - pnpm 9.15.0 misses security/perf improvements in v10
+  - Vitest versions are fragmented (4.0.17, 2.1.0, 1.0.0)
+  - Simple-git and Fast-glob versions are inconsistent
+  - Documentation misleads agents about the Next.js version (15 vs 16)
+
+  Solution:
+  1. Upgrade pnpm to 10.28.1
+  2. Unify Vitest to 4.0.0 across all packages
+  3. Upgrade Turborepo to 2.7.5
+  4. Unify Simple-git (3.30.0) and Fast-glob (3.3.3)
+  5. Update all docs references from "Next.js 15" to "Next.js 16"
+
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - 'pnpm version is 10.28.1 in package.json (engines/packageManager)'
+  - 'Turborepo version is 2.7.5'
+  - 'Vitest version is 4.0.0 in all package.json files'
+  - 'Simple-git version is 3.30.0 in all package.json files'
+  - 'Fast-glob version is 3.3.3 in all package.json files'
+  - 'All 7 identified doc files reference "Next.js 16" instead of "Next.js 15"'
+  - 'pnpm install, build, and test commands succeed'
