@@ -2,7 +2,7 @@ id: WU-1033
 title: Canonicalize LumenFlow framework docs under operations
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -54,3 +54,11 @@ acceptance:
   - No remaining doc references to docs/lumenflow (rg check).
   - pnpm gates --docs-only -> PASS
   - pnpm -C apps/docs build -> PASS
+claimed_mode: worktree
+worktree_path: worktrees/content-documentation-wu-1033
+claimed_at: 2026-01-20T15:53:58.947Z
+baseline_main_sha: 6b0411896afe56273c2b3fd758b1daa3afad2aca
+session_id: 727106f4-8adf-47b3-a7f5-2b968b2a0d68
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-20T15:53:58.957Z
