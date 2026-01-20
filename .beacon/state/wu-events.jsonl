@@ -45,3 +45,4 @@
 {"type":"complete","wuId":"WU-1028","timestamp":"2026-01-19T17:37:31.743Z"}
 {"type":"claim","wuId":"WU-1030","lane":"Operations: Infrastructure","title":"Fix wu:create/wu:edit pre-push block leaving main ahead","timestamp":"2026-01-19T21:16:19.366Z"}
 {"type":"complete","wuId":"WU-1030","timestamp":"2026-01-19T21:29:27.032Z"}
+{"type":"claim","wuId":"WU-1029","lane":"Framework: CLI","title":"Fix wu:claim fallback to symlink nested node_modules","timestamp":"2026-01-20T13:18:31.229Z"}
