@@ -2,7 +2,7 @@ id: WU-1038
 title: Ensure worktree gates can locate CLI dist
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Running pnpm gates in a fresh worktree without CLI dist succeeds (auto-build or fallback).
   - pnpm wu:done succeeds in a worktree without manual CLI dist build.
   - Existing gates behavior on main remains unchanged.
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1038
+claimed_at: 2026-01-20T23:51:55.095Z
+baseline_main_sha: ca06a581e7a91a6cde0f14db59e8308540e7d9a0
+session_id: 750b2115-a9d1-4e27-b6b1-ccb59768ce21
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-20T23:51:55.106Z

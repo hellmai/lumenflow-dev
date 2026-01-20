@@ -51,3 +51,4 @@
 {"type":"complete","wuId":"WU-1031","timestamp":"2026-01-20T13:36:07.136Z"}
 {"type":"claim","wuId":"WU-1032","lane":"Operations: Infrastructure","title":"Upgrade Core Dependencies and Fix Documentation","timestamp":"2026-01-20T13:03:31.727Z"}
 {"type":"complete","wuId":"WU-1032","timestamp":"2026-01-20T23:51:26.321Z"}
+{"type":"claim","wuId":"WU-1038","lane":"Framework: CLI","title":"Ensure worktree gates can locate CLI dist","timestamp":"2026-01-20T23:51:55.122Z"}
