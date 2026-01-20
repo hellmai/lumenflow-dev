@@ -91,7 +91,9 @@ describe('isDocumentationPath', () => {
   });
 
   it('should detect ai/ directory', () => {
-    expect(isDocumentationPath('docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md')).toBe(true);
+    expect(
+      isDocumentationPath('docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md'),
+    ).toBe(true);
     expect(isDocumentationPath('ai/prompts/safety.txt')).toBe(true);
   });
 

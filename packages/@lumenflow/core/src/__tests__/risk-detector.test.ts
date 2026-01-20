@@ -193,7 +193,10 @@ describe('detectRiskTier', () => {
     });
 
     it('should detect docs-only for ai/ directory changes', () => {
-      const changedFiles = ['docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md', 'ai/prompts/safety.txt'];
+      const changedFiles = [
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md',
+        'ai/prompts/safety.txt',
+      ];
       const result = detectRiskTier({ changedFiles });
       expect(result.tier).toBe(RISK_TIERS.DOCS_ONLY);
     });
