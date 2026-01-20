@@ -5,9 +5,15 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
 tests:
-  manual: []
+  manual:
+    - Create a new worktree
+    - delete packages/@lumenflow/cli/dist
+    - run pnpm gates and pnpm wu:done to confirm no MODULE_NOT_FOUND.
   unit: []
   e2e: []
 artifacts:
@@ -22,12 +28,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: Worktree gates fail when packages/@lumenflow/cli/dist is missing, causing
+  wu:done to abort even for docs-only changes. Problem: worktrees often lack built CLI dist, and
+  gates/wu:done resolve the CLI entrypoint from the worktree path, leading to MODULE_NOT_FOUND.
+  Solution: make gates robust in worktrees by ensuring CLI dist is available (auto-build or fallback
+  to main dist) before running gates.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Running pnpm gates in a fresh worktree without CLI dist succeeds (auto-build or fallback).
+  - pnpm wu:done succeeds in a worktree without manual CLI dist build.
+  - Existing gates behavior on main remains unchanged.
