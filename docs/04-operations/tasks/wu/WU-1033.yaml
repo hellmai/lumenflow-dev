@@ -1,7 +1,7 @@
 id: WU-1033
 title: Canonicalize LumenFlow framework docs under operations
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: ready
 priority: P2
 created: 2026-01-20
