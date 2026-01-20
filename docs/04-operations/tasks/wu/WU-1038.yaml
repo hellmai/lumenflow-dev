@@ -9,12 +9,14 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/__tests__/gates-worktree.test.ts
 tests:
   manual:
     - Create a new worktree
     - delete packages/@lumenflow/cli/dist
     - run pnpm gates and pnpm wu:done to confirm no MODULE_NOT_FOUND.
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/gates-worktree.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1038.done
