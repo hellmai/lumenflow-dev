@@ -2,7 +2,7 @@ id: WU-1035
 title: Update core references to new documentation paths
 lane: 'Framework: Core'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -54,3 +54,5 @@ session_id: 727106f4-8adf-47b3-a7f5-2b968b2a0d68
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-20T17:20:41.211Z
+locked: true
+completed_at: 2026-01-20T17:27:25.259Z
