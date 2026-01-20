@@ -8,13 +8,12 @@ created: 2026-01-20
 code_paths:
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
   - docs/04-operations/_frameworks/lumenflow/
-  - docs/lumenflow/
-  - ai/onboarding/
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/
   - README.md
   - LUMENFLOW.md
   - CLAUDE.md
   - docs/04-operations/tasks/backlog.md
+  - docs/templates/wu-template.yaml
   - apps/docs/src/content/docs/
   - apps/docs/src/content.config.ts
   - apps/docs/astro.config.mjs
