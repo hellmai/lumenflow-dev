@@ -2,7 +2,7 @@
   "name": "hellmai-os",
   "private": true,
   "description": "HellmAI Operating System: LumenFlow workflow framework",
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@10.28.1",
   "type": "module",
   "scripts": {
     "prepare": "husky",
