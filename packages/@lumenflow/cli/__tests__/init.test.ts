@@ -5,7 +5,7 @@
  * Tests scaffolding of new LumenFlow projects:
  * - LUMENFLOW.md main entry point (WU-1028)
  * - .lumenflow/ constraints and rules directory (WU-1028)
- * - ai/onboarding/ agent onboarding docs (WU-1028)
+ * - docs/04-operations/_frameworks/lumenflow/agent/onboarding/ agent onboarding docs (WU-1028)
  * - .lumenflow.yaml configuration
  * - .beacon/ stamps directory
  * - docs/ WU storage structure
@@ -77,7 +77,7 @@ describe('lumenflow init command (WU-1005, WU-1028)', () => {
       expect(fs.statSync(rulesDir).isDirectory()).toBe(true);
     });
 
-    it('should create ai/onboarding/troubleshooting-wu-done.md (WU-1028)', async () => {
+    it('should create docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md (WU-1028)', async () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { force: false, vendor: 'none' });
 
@@ -94,7 +94,7 @@ describe('lumenflow init command (WU-1005, WU-1028)', () => {
       expect(content).toContain('Checklist Before Ending Session');
     });
 
-    it('should create ai/onboarding/agent-safety-card.md (WU-1028)', async () => {
+    it('should create docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md (WU-1028)', async () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { force: false, vendor: 'none' });
 

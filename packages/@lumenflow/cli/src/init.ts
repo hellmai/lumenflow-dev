@@ -7,7 +7,7 @@
  * Scaffolds new projects with:
  * - LUMENFLOW.md main entry point (vendor-agnostic)
  * - .lumenflow/ directory with constraints and rules
- * - ai/onboarding/ agent onboarding docs
+ * - docs/04-operations/_frameworks/lumenflow/agent/onboarding/ agent onboarding docs
  * - .lumenflow.yaml configuration
  * - .beacon/stamps directory
  * - docs/04-operations/tasks/wu directory
@@ -105,7 +105,7 @@ This is the single most forgotten step. Do NOT:
 
 **DO**: Run \`pnpm wu:done --id WU-XXXX\` immediately after gates pass.
 
-See: [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
+See: [docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
 
 ---
 
@@ -151,7 +151,7 @@ pnpm wu:done --id WU-XXXX
 - **LUMENFLOW.md** - This file, main entry point
 - **.lumenflow/constraints.md** - Non-negotiable workflow constraints
 - **.lumenflow/rules/** - Workflow rules
-- **ai/onboarding/** - Agent onboarding documentation
+- **docs/04-operations/_frameworks/lumenflow/agent/onboarding/** - Agent onboarding documentation
 
 ### Vendor Integrations
 
@@ -212,8 +212,8 @@ See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotia
 
 If you're an AI agent, read:
 
-1. [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
-2. [ai/onboarding/agent-safety-card.md](ai/onboarding/agent-safety-card.md)
+1. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
+2. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md)
 `;
 
 // Template for .lumenflow/constraints.md
@@ -265,7 +265,7 @@ Stop and ask a human when:
 - Cloud spend or secrets involved
 `;
 
-// Template for ai/onboarding/troubleshooting-wu-done.md
+// Template for docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
 const TROUBLESHOOTING_WU_DONE_TEMPLATE = `# Troubleshooting: wu:done Not Run
 
 **Last updated:** {{DATE}}
@@ -299,7 +299,7 @@ Do NOT:
 If any answer is "no", you're not done yet.
 `;
 
-// Template for ai/onboarding/agent-safety-card.md
+// Template for docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
 const AGENT_SAFETY_CARD_TEMPLATE = `# Agent Safety Card
 
 **Last updated:** {{DATE}}
@@ -426,7 +426,7 @@ dirty-commits: false
 read:
   - LUMENFLOW.md
   - .lumenflow/constraints.md
-  - ai/onboarding/troubleshooting-wu-done.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
 `;
 
 /**
@@ -513,13 +513,13 @@ export async function scaffoldProject(
     result.created.push('.lumenflow/rules');
   }
 
-  // Create ai/onboarding directory
+  // Create docs/04-operations/_frameworks/lumenflow/agent/onboarding directory
   const onboardingDir = path.join(targetDir, 'ai', 'onboarding');
   if (!fs.existsSync(onboardingDir)) {
     fs.mkdirSync(onboardingDir, { recursive: true });
   }
 
-  // Create ai/onboarding/troubleshooting-wu-done.md
+  // Create docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
   await createFile(
     path.join(onboardingDir, 'troubleshooting-wu-done.md'),
     processTemplate(TROUBLESHOOTING_WU_DONE_TEMPLATE, targetDir),
@@ -527,7 +527,7 @@ export async function scaffoldProject(
     result,
   );
 
-  // Create ai/onboarding/agent-safety-card.md
+  // Create docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
   await createFile(
     path.join(onboardingDir, 'agent-safety-card.md'),
     processTemplate(AGENT_SAFETY_CARD_TEMPLATE, targetDir),
@@ -632,8 +632,10 @@ async function createFile(
       ? filePath.substring(filePath.indexOf('.claude'))
       : filePath.includes('.cursor')
         ? filePath.substring(filePath.indexOf('.cursor'))
-        : filePath.includes('ai/onboarding')
-          ? filePath.substring(filePath.indexOf('ai/onboarding'))
+        : filePath.includes('docs/04-operations/_frameworks/lumenflow/agent/onboarding')
+          ? filePath.substring(
+              filePath.indexOf('docs/04-operations/_frameworks/lumenflow/agent/onboarding'),
+            )
           : path.basename(filePath);
 
   if (fs.existsSync(filePath) && !force) {
