@@ -4,11 +4,10 @@ lane: 'Operations: Infrastructure'
 type: chore
 status: in_progress
 priority: P1
+exposure: documentation
 created: 2026-01-20
 code_paths:
   - package.json
-  - pnpm-workspace.yaml
-  - turbo.json
   - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/core/package.json
   - packages/@lumenflow/agent/package.json
