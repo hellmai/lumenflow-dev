@@ -1,13 +1,19 @@
 id: WU-1033
 title: Canonicalize LumenFlow framework docs under operations
 lane: 'Content: Documentation'
-type: feature
+type: documentation
 status: ready
 priority: P2
 created: 2026-01-20
-code_paths: []
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - docs/lumenflow/
+  - README.md
+  - LUMENFLOW.md
+  - CLAUDE.md
 tests:
-  manual: []
+  manual:
+    - pnpm gates --docs-only
   unit: []
   e2e: []
 artifacts:
@@ -22,12 +28,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: LumenFlow framework docs are duplicated in docs/lumenflow and
+  docs/04-operations/_frameworks/lumenflow, and the sizing guide diverged (hours vs tool calls).
+  Problem: duplicate sources cause stale references and confusion about the canonical docs.
+  Solution: make the operations path canonical by removing docs/lumenflow, syncing wu-sizing-guide
+  to the tool-call/context-budget version, and updating top-level doc links.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - Remove docs/lumenflow directory after migrating any unique content.
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md matches the tool-call/context-budget
+    version (no hours).
+  - README.md, LUMENFLOW.md, and CLAUDE.md reference the canonical operations path.
+  - No remaining doc references to docs/lumenflow (rg check).
+  - pnpm gates --docs-only -> PASS
