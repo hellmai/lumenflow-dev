@@ -132,3 +132,49 @@ describe('auto-setup behavior documentation (WU-1023)', () => {
     expect(true).toBe(true);
   });
 });
+
+describe('fallback symlink behavior (WU-1029)', () => {
+  const worktreePath = '/tmp/worktree-wu-1029';
+  const mainRepoPath = '/tmp/main-wu-1029';
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it('should symlink nested node_modules when fallback symlink succeeds', async () => {
+    const symlinkNodeModules = vi.fn().mockReturnValue({ created: true, refused: false });
+    const symlinkNestedNodeModules = vi.fn().mockReturnValue({ created: 1 });
+
+    vi.resetModules();
+    vi.doMock('@lumenflow/core/dist/worktree-symlink.js', () => ({
+      symlinkNodeModules,
+      symlinkNestedNodeModules,
+    }));
+
+    const { applyFallbackSymlinks } = await import('../dist/wu-claim.js');
+    const logger = { log: vi.fn(), warn: vi.fn() };
+
+    applyFallbackSymlinks(worktreePath, mainRepoPath, logger);
+
+    expect(symlinkNodeModules).toHaveBeenCalledWith(worktreePath, logger, mainRepoPath);
+    expect(symlinkNestedNodeModules).toHaveBeenCalledWith(worktreePath, mainRepoPath);
+  });
+
+  it('should skip nested symlinks when symlink is refused', async () => {
+    const symlinkNodeModules = vi.fn().mockReturnValue({ created: false, refused: true });
+    const symlinkNestedNodeModules = vi.fn().mockReturnValue({ created: 1 });
+
+    vi.resetModules();
+    vi.doMock('@lumenflow/core/dist/worktree-symlink.js', () => ({
+      symlinkNodeModules,
+      symlinkNestedNodeModules,
+    }));
+
+    const { applyFallbackSymlinks } = await import('../dist/wu-claim.js');
+    const logger = { log: vi.fn(), warn: vi.fn() };
+
+    applyFallbackSymlinks(worktreePath, mainRepoPath, logger);
+
+    expect(symlinkNestedNodeModules).not.toHaveBeenCalled();
+  });
+});
