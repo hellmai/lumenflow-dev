@@ -973,10 +973,7 @@ async function claimWorktreeMode(ctx) {
 
       // Fall back to symlink approach so worktree is at least somewhat usable
       console.log(`${PREFIX} Falling back to symlink approach...`);
-      const symlinkResult = symlinkNodeModules(worktreePath, console, originalCwd);
-      if (symlinkResult.created) {
-        console.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked as fallback`);
-      }
+      applyFallbackSymlinks(worktreePath, originalCwd, console);
     }
   }
 
@@ -1032,6 +1029,32 @@ export function printLifecycleNudge(_id) {
   console.log(
     `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`,
   );
+}
+
+/**
+ * WU-1029: Apply symlink fallback (root + nested node_modules) after install failure.
+ *
+ * @param {string} worktreePath - Worktree path
+ * @param {string} mainRepoPath - Main repo path
+ * @param {Console} logger - Logger (console-compatible)
+ */
+export function applyFallbackSymlinks(worktreePath, mainRepoPath, logger = console) {
+  const symlinkResult = symlinkNodeModules(worktreePath, logger, mainRepoPath);
+  if (symlinkResult.created) {
+    logger.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked as fallback`);
+  }
+
+  let nestedResult = null;
+  if (!symlinkResult.refused) {
+    nestedResult = symlinkNestedNodeModules(worktreePath, mainRepoPath);
+    if (nestedResult.created > 0) {
+      logger.log(
+        `${PREFIX} ${EMOJI.SUCCESS} ${nestedResult.created} nested node_modules symlinked for typecheck`,
+      );
+    }
+  }
+
+  return { symlinkResult, nestedResult };
 }
 
 /**
