@@ -59,3 +59,4 @@ sections:
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
 - [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml)
+- [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml)
