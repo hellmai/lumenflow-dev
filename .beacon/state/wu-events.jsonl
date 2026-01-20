@@ -49,3 +49,4 @@
 {"type":"claim","wuId":"WU-1029","lane":"Framework: CLI","title":"Fix wu:claim fallback to symlink nested node_modules","timestamp":"2026-01-20T13:18:31.229Z"}
 {"type":"complete","wuId":"WU-1029","timestamp":"2026-01-20T13:32:34.444Z"}
 {"type":"complete","wuId":"WU-1031","timestamp":"2026-01-20T13:36:07.136Z"}
+{"type":"claim","wuId":"WU-1033","lane":"Content: Documentation","title":"Canonicalize LumenFlow framework docs under operations","timestamp":"2026-01-20T15:53:58.972Z"}
