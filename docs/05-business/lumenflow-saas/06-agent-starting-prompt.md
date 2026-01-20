@@ -89,7 +89,7 @@ Build the LumenFlow SaaS MVP by completing all 12 work units defined in `05-mvp-
 
 lumenflow-saas/
 ├── apps/
-│ ├── web/ # Next.js 15
+│ ├── web/ # Next.js 16
 │ ├── mobile/ # Expo
 │ └── cli/ # Node.js CLI
 ├── packages/
@@ -417,7 +417,7 @@ docs(readme): add setup instructions
 
 ### Documentation
 
-- Next.js 15: https://nextjs.org/docs
+- Next.js 16: https://nextjs.org/docs
 - tRPC: https://trpc.io/docs
 - Supabase: https://supabase.com/docs
 - Tailwind v4: https://tailwindcss.com/docs

@@ -1782,7 +1782,7 @@ When a Bug WU is classified **P0** (production outage/data loss/auth breakage), 
 ```
 patientpath.co.uk/
 ├── apps/
-│   ├── web/               # Next.js 15
+│   ├── web/               # Next.js 16
 │   └── mobile/            # Expo
 ├── packages/
 │   ├── @{PROJECT_NAME}/

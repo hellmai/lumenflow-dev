@@ -145,9 +145,9 @@ USING (
 
 ### Frontend: Web Dashboard
 
-**Stack**: Next.js 15 + React 19 + Tailwind v4 + shadcn/ui
+**Stack**: Next.js 16 + React 19 + Tailwind v4 + shadcn/ui
 
-**Why Next.js 15?**
+**Why Next.js 16?**
 
 - ✅ **App Router**: Modern routing with layouts, loading states, error boundaries
 - ✅ **Server Components**: Reduce client-side JS, faster initial page loads
