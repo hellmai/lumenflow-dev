@@ -22,7 +22,7 @@ sections:
 
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — Operations: Infrastructure
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml) — Framework: CLI
-(No items ready)
+  (No items ready)
 
 ## 🔧 In progress
 
