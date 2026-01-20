@@ -25,6 +25,7 @@ sections:
 
 ## 🔧 In progress
 
+- [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — Operations: Infrastructure
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — Core
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core

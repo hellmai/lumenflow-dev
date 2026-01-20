@@ -63,7 +63,8 @@
     "simple-statistics": "^7.8.8"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.0.0"
+    "@vitest/coverage-v8": "^4.0.0",
+    "vitest": "^4.0.0"
   },
   "engines": {
     "node": ">=22"

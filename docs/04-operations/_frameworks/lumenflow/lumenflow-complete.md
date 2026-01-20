@@ -374,7 +374,7 @@ These patterns were discovered during [WU-218](../tasks/wu/WU-218.yaml) when an 
 
 ### 3.1 Frontend
 
-- **Web**: Next.js 15 (App Router, React 19, TypeScript, Tailwind v4, shadcn/ui, Radix UI)
+- **Web**: Next.js 16 (App Router, React 19, TypeScript, Tailwind v4, shadcn/ui, Radix UI)
 - **Mobile**: Expo (React Native, Expo Router)
 
 ### 3.2 Backend & Infrastructure
