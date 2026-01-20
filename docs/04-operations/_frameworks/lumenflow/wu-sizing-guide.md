@@ -12,14 +12,14 @@
 
 Before claiming a WU, estimate its "weight" using these heuristics.
 
-| Complexity    | Time Est.  | Files | Tool Calls | Strategy                                     |
-| :------------ | :--------- | :---- | :--------- | :------------------------------------------- |
-| **Simple**    | 1-3 hours  | <20   | <50        | **Single Session** (Tier 2 Context)          |
-| **Medium**    | 3-6 hours  | 20-50 | 50-100     | **Checkpoint-Resume** (Standard Handoff)     |
-| **Complex**   | 6-12 hours | 50+   | 100+       | **Orchestrator-Worker** OR **Decomposition** |
-| **Oversized** | >12 hours  | 100+  | —          | **MUST Split** (See Patterns below)          |
+| Complexity    | Files | Tool Calls | Context Budget | Strategy                                     |
+| :------------ | :---- | :--------- | :------------- | :------------------------------------------- |
+| **Simple**    | <20   | <50        | <30%           | **Single Session** (Tier 2 Context)          |
+| **Medium**    | 20-50 | 50-100     | 30-50%         | **Checkpoint-Resume** (Standard Handoff)     |
+| **Complex**   | 50+   | 100+       | >50%           | **Orchestrator-Worker** OR **Decomposition** |
+| **Oversized** | 100+  | 200+       | —              | **MUST Split** (See Patterns below)          |
 
-**Note:** These thresholds are starting heuristics based on WU-1215 failure analysis (80k tokens consumed on analysis alone, zero implementation). We will revise them using data from future telemetry WUs.
+**Note:** These thresholds are starting heuristics based on WU-1215 failure analysis (80k tokens consumed on analysis alone, zero implementation). We will revise them using data from future telemetry WUs. Agents operate in context windows and tool calls, not clock time.
 
 ---
 
@@ -34,8 +34,8 @@ Use this logic to select your approach. If `git status` ever shows >20 modified 
              │
              ▼
       ┌──────────────┐
-      │ Est. Time    │
-      │ > 3 Hours?   │
+      │ Est. Tool    │
+      │ Calls > 50?  │
       └──┬────────┬──┘
          │        │
         No       Yes
@@ -153,12 +153,12 @@ When a WU is Oversized or Complex (Non-Atomic), split it using one of these appr
 
 **Heading:** Default Triggers (Deviations require written justification in WU notes)
 
-If you hit ANY of these triggers during a session, you MUST perform a Standard Session Handoff (see [session-handoff.md](../../../ai/onboarding/session-handoff.md)):
+If you hit ANY of these triggers during a session, you MUST perform a Standard Session Handoff (see [session-handoff.md](./agent/onboarding/session-handoff.md)):
 
 - **Token Limit:** Context usage hits **50% (Warning)** or **80% (Critical)**.
 - **Tool Volume:** **50+ tool calls** in current session.
 - **File Volume:** **20+ files** modified in `git status`.
-- **Time:** Session duration **> 3 hours**.
+- **Session Staleness:** Repeated redundant queries or forgotten context (performance degradation).
 
 **Why these triggers matter:** Ignoring them led to the WU-1215 failure. An agent consumed 40% of context (80k tokens) on analysis alone, violated worktree discipline using absolute paths, and failed to deliver implementation. Preserve your reasoning capability by clearing context before you crash.
 
@@ -184,13 +184,13 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 
 ## 5. Quick Reference
 
-| Scenario                                   | Strategy            | Action                                                        |
-| :----------------------------------------- | :------------------ | :------------------------------------------------------------ |
-| Bug fix, single file, <1hr                 | Simple              | Claim, fix, commit, `wu:done`                                 |
-| Feature spanning 3-6 hours, clear phases   | Checkpoint-Resume   | Phase 1 → checkpoint → Phase 2 → checkpoint → done            |
-| Multi-domain feature, must land atomically | Orchestrator-Worker | Main agent coordinates, spawns test-engineer, beacon-guardian |
-| Large refactor >12 hours                   | Feature Flag Split  | WU-A: New behind flag → WU-B: Remove flag + old code          |
-| New integration, uncertain complexity      | Tracer Bullet       | WU-A: Prove skeleton works → WU-B: Real implementation        |
+| Scenario                                         | Strategy            | Action                                                        |
+| :----------------------------------------------- | :------------------ | :------------------------------------------------------------ |
+| Bug fix, single file, <20 tool calls             | Simple              | Claim, fix, commit, `wu:done`                                 |
+| Feature spanning 50-100 tool calls, clear phases | Checkpoint-Resume   | Phase 1 → checkpoint → Phase 2 → checkpoint → done            |
+| Multi-domain feature, must land atomically       | Orchestrator-Worker | Main agent coordinates, spawns test-engineer, beacon-guardian |
+| Large refactor 100+ tool calls                   | Feature Flag Split  | WU-A: New behind flag → WU-B: Remove flag + old code          |
+| New integration, uncertain complexity            | Tracer Bullet       | WU-A: Prove skeleton works → WU-B: Real implementation        |
 
 ---
 
@@ -216,22 +216,27 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 
 **Recommended strategy for WU-1215:** Feature Flag Split (Pattern D) with 3 WUs:
 
-- WU-1: Extract validation modules + tests (2-3hr)
-- WU-2: Extract orchestration logic + tests (2-3hr)
-- WU-3: Final integration + cleanup (2-3hr)
+- WU-1: Extract validation modules + tests (~40 tool calls)
+- WU-2: Extract orchestration logic + tests (~40 tool calls)
+- WU-3: Final integration + cleanup (~30 tool calls)
 
 ---
 
 ## 7. Related Documentation
 
-- [session-handoff.md](../../../ai/onboarding/session-handoff.md) — Mid-WU checkpoint protocol
-- [agent-safety-card.md](../../../ai/onboarding/agent-safety-card.md) — Quick reference safety thresholds
-- [parallel-session-optimization.md](../../../ai/onboarding/parallel-session-optimization.md) — Running 4-6 WUs concurrently
-- [agent-invocation-guide.md](../../../ai/onboarding/agent-invocation-guide.md) — Orchestrator-worker patterns
+- [session-handoff.md](./agent/onboarding/session-handoff.md) — Mid-WU checkpoint protocol
+- [agent-safety-card.md](./agent/onboarding/agent-safety-card.md) — Quick reference safety thresholds
+- [parallel-session-optimization.md](./agent/onboarding/parallel-session-optimization.md) — Running 4-6 WUs concurrently
+- [agent-invocation-guide.md](./agent/onboarding/agent-invocation-guide.md) — Orchestrator-worker patterns
 - [lumenflow-complete.md](./lumenflow-complete.md) — Full LumenFlow framework
 
 ---
 
-**Version:** 1.0 (2025-11-24)
-**Last Updated:** 2025-11-24
+**Version:** 1.1 (2026-01-17)
+**Last Updated:** 2026-01-19
 **Contributors:** Claude (research), Codex (pragmatic framing), Gemini (trigger enforcement)
+
+**Changelog:**
+
+- v1.1 (2026-01-17): Removed time-based estimates (hours); replaced with tool-call and context-budget heuristics. Agents operate in context windows, not clock time.
+- v1.0 (2025-11-24): Initial version based on WU-1215 post-mortem.

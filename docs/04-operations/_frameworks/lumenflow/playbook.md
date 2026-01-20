@@ -214,7 +214,7 @@ Use Git worktrees when multiple humans or agents need active WUs at the same tim
 - **Respect WIP** – when a WU moves to `blocked` or `done`, remove its worktree (`git worktree remove worktrees/experience-wu341`) before starting another.
 - **Share conventions** – document lane worktree names in the WU card so teammates know where the branch lives.
 
-This keeps parallel agents from stepping on each other's builds while still honoring WIP limits per lane (configurable via `wip_limit` in `.lumenflow.config.yaml`, default: 1).
+This keeps parallel agents from stepping on each other’s builds while still honoring “one WU per lane”.
 
 #### Helper: Atomic Claim + Worktree
 
@@ -458,7 +458,7 @@ cd ../../worktrees/<correct-lane>-wu-<correct-id>
 
 **Prevention:**
 
-- Only create worktree when claiming WU (respect WIP limits)
+- Only create worktree when claiming WU (respect WIP=1)
 - Run `pnpm wu:prune` regularly to remove stale worktrees
 - Check `git branch --show-current` before starting work
 
@@ -476,43 +476,56 @@ cd ../../worktrees/<correct-lane>-wu-<correct-id>
 
 #### Worktree Safety Hooks
 
-Git hooks enforce worktree discipline automatically:
-
-**prepare-commit-msg:**
-
-- Auto-injects WU reference from branch name into commit messages
-- Validates WU reference matches branch (prevents mismatched commits)
-- Warns if committing from worktree without WU reference
+Git hooks (via Husky) enforce worktree discipline automatically. All hooks skip `tmp/*` branches used by CLI micro-worktrees.
 
 **pre-commit:**
 
-- Validates branch naming follows `lane/<lane>/<wu-id>` convention
-- Fails if working on lane branch in the main worktree (immutable worktree law)
-- Note: Main branch protection enforced by commit-msg hook
+- **Blocks direct commits to `main`/`master`** (use `pnpm wu:claim` workflow)
+- Respects Branch-Only mode: checks `claimed_mode: branch-only` in WU YAML
+- Blocks lane branch work in main checkout unless Branch-Only mode is active
 
 **commit-msg:**
 
-- **Blocks ALL commits to `main` unless from wu tools** (pattern-based on commit message)
-- Allowed patterns: `wu(wu-XXX): claim for <lane> lane` or `wu(wu-XXX): done - <description>`
-- Validates conventional commit format and WU metadata
-- Blocks commits that touch locked WUs
-- Fails if a WU commit is attempted from the main checkout or main branch
+- **On main:** Only allows LumenFlow commit formats:
+  - `wu(wu-XXX): claim for <lane> lane`
+  - `wu(wu-XXX): done - <title>`
+  - `docs: create wu-XXX for <title>`
+  - `docs: edit wu-XXX spec`
+  - `wu(wu-XXX): spec update`
+  - `wu(wu-XXX): block` / `wu(wu-XXX): unblock`
+  - `fix(wu-XXX): repair ...`
+  - `chore(repair): ...` / `chore(wu-XXX): ...`
+  - `style: ...`
+- **On lane branches:** Requires WU ID in commit message (e.g., `wu(wu-1017): ...`)
+
+**prepare-commit-msg:**
+
+- Auto-injects `wu(wu-XXX): ` prefix from branch name if not present
+- Skips if source is message/commit/merge (user provided `-m`)
+- Skips if message already has conventional commit prefix with WU ID
 
 **pre-push:**
 
-- Validates WU status is `in_progress` or `waiting` before push
-- Blocks push if WU is `blocked`, `ready`, or `done` (use wu:block/wu:done helpers)
-- Provides helpful error messages with correct helper commands
+- **Blocks direct push to `main`/`master`** (use `pnpm wu:done` to merge)
+- **Allows ALL lane branch pushes** (per WU-1255: protection at merge time)
+- Parses stdin refs to catch bypasses like `git push origin HEAD:main`
+
+**Escape hatch:**
+
+For emergencies, bypass all hooks with:
+
+```bash
+LUMENFLOW_FORCE=1 git commit -m "emergency fix"
+LUMENFLOW_FORCE=1 git push
+```
 
 **Hook setup:**
 
-Hooks are installed automatically via Husky on `pnpm install`. To manually reinstall:
+Hooks are installed automatically via Husky. The `.husky/` directory (including `_/husky.sh`) is tracked in git for worktree compatibility. To manually configure:
 
 ```bash
-pnpm prepare  # Runs husky install
+git config core.hooksPath .husky
 ```
-
-When working in a fresh worktree, ensure `.husky/_` directory is present (usually copied during worktree creation).
 
 ### 4.5 Multi-Agent Workflows
 
@@ -533,7 +546,7 @@ When using Claude Code's Task tool or spawning multiple specialized agents (lume
 **Why This Matters:**
 
 - During WU-509/WU-505-507 rehearsal, agents skipped git discipline, reported "success", and left uncommitted changes behind because verification was not enforced.
-- Task-only prompts (no context) cause agents to work on main instead of worktrees, violate WIP limit enforcement, and ignore DoD requirements.
+- Task-only prompts (no context) cause agents to work on main instead of worktrees, violate WIP=1 enforcement, and ignore DoD requirements.
 
 **Required Reading Before Multi-Agent Work:**
 
@@ -568,7 +581,7 @@ When using Claude Code's Task tool or spawning multiple specialized agents (lume
   reserve it for the author.
 - After creation, use `pnpm wu:edit` to fill placeholders or update the spec.
   Do not manually edit WU YAML on `main`. Manual commits on `main` are blocked.
-  See [workspace-modes.md](../../ai/onboarding/workspace-modes.md) for wu:edit usage.
+  See [workspace-modes.md](./agent/onboarding/workspace-modes.md) for wu:edit usage.
 
 ### 4.6 Encountering Other Agents' Work on Main
 
@@ -654,7 +667,7 @@ If someone accidentally ran `git reset --hard`, `git stash`, or `git clean -fd` 
    ```
 
 4. **Prevent recurrence:**
-   - Ensure git shim is active for all agent sessions (see [ai/onboarding/agent-invocation-guide.md](../../../ai/onboarding/agent-invocation-guide.md))
+   - Ensure git shim is active for all agent sessions (see [agent/onboarding/agent-invocation-guide.md](./agent/onboarding/agent-invocation-guide.md))
    - Update starting prompt to front-load forbidden commands warning (WU-629)
    - Add session command logger for forensics (WU-630)
 
@@ -669,6 +682,46 @@ To activate: `export PATH="$(pwd)/tools/shims:$PATH"` before any git commands.
 
 See: [../../../tools/shims/README.md](../../../tools/shims/README.md) for details.
 
+**Agent Branch Bypass (WU-1026):**
+
+Cloud agents (like Prompt Studio or GitHub Actions) that create their own branches can bypass worktree requirements when working on branches matching configured patterns.
+
+Configuration in `.lumenflow.config.yaml`:
+
+```yaml
+git:
+  mainBranch: main
+  agentBranchPatterns:
+    - 'agent/*' # Default: agent-created branches
+    - 'claude/*' # Optional: add vendor-specific patterns
+```
+
+**How it works:**
+
+1. **Fail-closed default**: Unknown branches are blocked when worktrees exist
+2. **Protected branches never bypassed**: `mainBranch` and `master` are always protected
+3. **Lane branches blocked**: `lane/*` branches require worktree workflow
+4. **Agent branches allowed**: Branches matching `agentBranchPatterns` can work in main checkout
+
+**Guarded headless mode:**
+
+For CI/CD pipelines, set `LUMENFLOW_HEADLESS=1` with one of:
+
+- `LUMENFLOW_ADMIN=1` (explicit admin override)
+- `CI=true` (standard CI environment)
+- `GITHUB_ACTIONS=true` (GitHub Actions)
+
+This bypasses worktree checks for automation that manages its own isolation.
+
+**Detection priority:**
+
+1. Headless mode (if guarded) → bypass
+2. Detached HEAD → protected (fail-closed)
+3. Agent branch pattern match → bypass
+4. Protected branch → protected
+5. Lane branch → protected (use worktree)
+6. Unknown branch → protected (fail-closed)
+
 ---
 
 ## 5. Example Flow: Rolling Out a New Prompt Version
@@ -681,7 +734,7 @@ See: [../../../tools/shims/README.md](../../../tools/shims/README.md) for detail
 | Experience   | `Surface inline citations`      | Add UI components, write RTL tests, wire SSE handler to show annotations.                  |
 | Operations   | `Update monitoring dashboards`  | Ensure prompt version and tool usage metrics ship to observability stack.                  |
 
-Each lane runs WUs up to its configured `wip_limit` (default: 1). If web_search tool rollout pauses awaiting approval, move that WU to `blocked` and allow Experience lane to continue. Configure higher limits in `.lumenflow.config.yaml` for lanes that need parallel work.
+Each lane runs one active WU. If web_search tool rollout pauses awaiting approval, move that WU to `blocked` and allow Experience lane to continue.
 
 ---
 
@@ -1101,7 +1154,7 @@ open coverage/index.html
 - `--branch <name>` — Override default branch name (default: `lane/<lane>/<wu-id>`)
 - `--branch-only` — Create branch without worktree (lightweight mode for docs/Codespaces, no parallel WUs)
 - `--no-auto` — Skip auto-updating YAML/backlog/status (you staged manually)
-- `--force` — Override lane WIP limit enforcement (P0 emergencies only, risk of collision)
+- `--force` — Override lane WIP=1 enforcement (P0 emergencies only, risk of collision)
 - `--help, -h` — Show help
 
 **Example:**
@@ -1184,7 +1237,7 @@ pnpm wu:done -- --id WU-420 --skip-gates --reason "Pre-existing test failures in
 | Skip Git hooks                                      | ❌ No    | **Never use `--no-verify` / `--no-gpg-sign`**                     | Hooks guard format, msg, and worktree rules     |
 | Skip running gates because failures pre-exist       | ✅ Yes   | `pnpm wu:done --skip-gates --reason "..." --fix-wu WU-XXX` (rare) | Still runs hooks; forces documentation & fix WU |
 | Complete a WU without `wu:done`                     | ❌ No    | Always use `pnpm wu:done`                                         | Ensures merge, stamps, docs, cleanup            |
-| Work in main after claiming (Worktree mode)         | ❌ No    | Work in `worktrees/<lane>-wu-xxx`                                 | Isolation + WIP limit enforcement               |
+| Work in main after claiming (Worktree mode)         | ❌ No    | Work in `worktrees/<lane>-wu-xxx`                                 | Isolation + WIP=1 enforcement                   |
 | Work in main after claiming (Branch-Only/Docs-Only) | ✅ Yes   | Work on lane branch in main checkout                              | Mode-appropriate workflow                       |
 
 ---
@@ -1235,7 +1288,7 @@ pnpm wu:block -- --id WU-334 --reason "Blocked on design review" --remove-worktr
 - `--worktree <path>` — Override worktree path (default: `worktrees/<lane>-<wu-id>`)
 - `--branch <name>` — Override branch name (default: `lane/<lane>/<wu-id>`)
 - `--no-auto` — Skip auto-updating YAML/backlog/status (you staged manually)
-- `--force` — Override lane WIP limit enforcement (P0 emergencies only)
+- `--force` — Override lane WIP=1 enforcement (P0 emergencies only)
 - `--help, -h` — Show help
 
 **Example:**
