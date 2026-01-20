@@ -2,7 +2,7 @@ id: WU-1036
 title: Update CLI references to new documentation paths
 lane: 'Framework: CLI'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Update CLI test fixtures using docs/lumenflow paths to the operations framework equivalents.
   - CLI tests that reference documentation paths updated and passing.
   - pnpm lint, pnpm typecheck -> PASS
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1036
+claimed_at: 2026-01-20T18:20:00.751Z
+baseline_main_sha: 3e56de963cadcff92394c189e78ce6bb91cfc272
+session_id: f78c7e83-37a0-40ba-a933-f9ff52226159
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-20T18:20:00.758Z
