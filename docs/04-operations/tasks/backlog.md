@@ -61,3 +61,4 @@ sections:
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
 - [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml)
 - [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml)
+- [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml)
