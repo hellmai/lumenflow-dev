@@ -81,18 +81,6 @@ acceptance:
   - Fast-glob version is ^3.3.3 in all package.json files
   - No references to "Next.js 15" remain in docs/** (rg check)
   - pnpm install, build, and test commands succeed
-description: >
-  Upgrade core infrastructure dependencies to latest stable versions and correct outdated Next.js
-  documentation references.
-
-
-  Context:
-
-  The project inventory revealed outdated versions of critical tools (pnpm, Turborepo, Vitest) and
-  inconsistent dependency versions across packages. Additionally, documentation incorrectly
-  references "Next.js 15" while the project uses Next.js 16.
-
-
 claimed_mode: worktree
 worktree_path: worktrees/operations-infrastructure-wu-1032
 claimed_at: 2026-01-20T13:03:31.703Z
