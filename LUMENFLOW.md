@@ -18,7 +18,7 @@ This is the single most forgotten step. Do NOT:
 
 **DO**: Run `pnpm wu:done --id WU-XXXX` immediately after gates pass.
 
-See: [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md)
+See: [docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
 
 ---
 
@@ -67,7 +67,7 @@ pnpm wu:done --id WU-XXXX
 - **LUMENFLOW.md** - This file, main entry point
 - **.lumenflow/constraints.md** - Non-negotiable workflow constraints
 - **.lumenflow/rules/** - Workflow rules (git-safety.md, wu-workflow.md, etc.)
-- **ai/onboarding/** - Agent onboarding documentation
+- **docs/04-operations/_frameworks/lumenflow/agent/onboarding/** - Agent onboarding documentation
 
 ### Vendor Integrations
 
@@ -139,10 +139,10 @@ See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotia
 
 If you're an AI agent, read the onboarding docs:
 
-1. [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md) - Most common mistake
-2. [ai/onboarding/first-wu-mistakes.md](ai/onboarding/first-wu-mistakes.md) - First WU pitfalls
-3. [ai/onboarding/agent-safety-card.md](ai/onboarding/agent-safety-card.md) - Safety guardrails
-4. [ai/onboarding/quick-ref-commands.md](ai/onboarding/quick-ref-commands.md) - Command reference
+1. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md) - Most common mistake
+2. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md) - First WU pitfalls
+3. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md) - Safety guardrails
+4. [docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) - Command reference
 
 ---
 

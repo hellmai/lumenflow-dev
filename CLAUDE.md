@@ -12,7 +12,7 @@ For complete workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 
 **After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
 
-This is the single most forgotten step. See [ai/onboarding/troubleshooting-wu-done.md](ai/onboarding/troubleshooting-wu-done.md).
+This is the single most forgotten step. See [docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md).
 
 ---
 
@@ -114,7 +114,7 @@ This repo follows the vendor-agnostic LumenFlow documentation structure:
 - **LUMENFLOW.md** - Main workflow entry point
 - **.lumenflow/constraints.md** - Non-negotiable rules
 - **.lumenflow/rules/** - Workflow rules
-- **ai/onboarding/** - Agent onboarding docs
+- **docs/04-operations/_frameworks/lumenflow/agent/onboarding/** - Agent onboarding docs
 - **.claude/** - Claude Code-specific configuration
 
 ---
@@ -123,5 +123,5 @@ This repo follows the vendor-agnostic LumenFlow documentation structure:
 
 - [LUMENFLOW.md](LUMENFLOW.md) - Main workflow documentation
 - [.lumenflow/constraints.md](.lumenflow/constraints.md) - Constraints capsule
-- [ai/onboarding/](ai/onboarding/) - Agent onboarding
+- [docs/04-operations/_frameworks/lumenflow/agent/onboarding/](docs/04-operations/_frameworks/lumenflow/agent/onboarding/) - Agent onboarding
 - [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)

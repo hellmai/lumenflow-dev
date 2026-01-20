@@ -32,10 +32,10 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 
 ## Documentation
 
-- [LumenFlow Complete Guide](docs/lumenflow/lumenflow-complete.md) - Comprehensive framework reference
-- [WU Overview](docs/lumenflow/wu-overview.md) - Work Unit concepts
-- [WU Sizing Guide](docs/lumenflow/wu-sizing-guide.md) - Scoping work appropriately
-- [Invariants](docs/lumenflow/invariants.md) - Non-negotiable system rules
+- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md) - Comprehensive framework reference
+- [WU Overview](docs/04-operations/_frameworks/lumenflow/wu-overview.md) - Work Unit concepts
+- [WU Sizing Guide](docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md) - Scoping work appropriately
+- [Invariants](docs/04-operations/_frameworks/lumenflow/invariants.md) - Non-negotiable system rules
 - [Templates](docs/templates/) - WU and config templates
 - [Distribution Roadmap](docs/DISTRIBUTION.md) - Packaging for consultancy distribution
 
