@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — 2026-01-20
 - [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml) — 2026-01-20
 - [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml) — 2026-01-20
 - [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml) — 2026-01-20
