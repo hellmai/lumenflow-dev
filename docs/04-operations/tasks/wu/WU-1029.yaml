@@ -2,7 +2,7 @@ id: WU-1029
 title: Fix wu:claim fallback to symlink nested node_modules
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-19
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
     node_modules so workspace package deps resolve in the worktree.
   - Add coverage for the fallback path (wu-claim) to ensure nested node_modules symlinks are created.
   - pnpm format, lint, typecheck -> PASS
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1029
+claimed_at: 2026-01-20T13:18:31.202Z
+baseline_main_sha: 44ec28559b5bbc7e054dd7c137c76eea47976e0b
+session_id: 38dbc6c3-6b3e-443c-b73f-fb9e627e3a4e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-20T13:18:31.209Z
