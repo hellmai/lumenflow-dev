@@ -6,9 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-01-20
 code_paths:
-  - packages/@lumenflow/cli/src/gates.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-claim.ts
+  - package.json
+  - tools/cli-entry.mjs
   - packages/@lumenflow/cli/__tests__/gates-worktree.test.ts
 tests:
   manual:
