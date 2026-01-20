@@ -24,7 +24,7 @@ describe('isSkipWebTestsPath', () => {
     });
 
     it('returns true for ai/ paths', () => {
-      expect(isSkipWebTestsPath('ai/onboarding/workspace-modes.md')).toBe(true);
+      expect(isSkipWebTestsPath('docs/04-operations/_frameworks/lumenflow/agent/onboarding/workspace-modes.md')).toBe(true);
     });
 
     it('returns true for .claude/ paths', () => {
@@ -102,7 +102,7 @@ describe('shouldSkipWebTests', () => {
   it('returns true when ALL paths are skip-tests paths', async () => {
     const { shouldSkipWebTests } = await import('../path-classifiers.js');
 
-    const docsOnly = ['docs/README.md', 'ai/onboarding/guide.md'];
+    const docsOnly = ['docs/README.md', 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md'];
     expect(shouldSkipWebTests(docsOnly)).toBe(true);
 
     const toolsOnly = ['tools/wu-done.js', 'tools/lib/helpers.js'];

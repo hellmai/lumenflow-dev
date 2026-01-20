@@ -6,7 +6,7 @@
  *
  * @module orchestration-rules
  * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
- * @see {@link ../../../ai/onboarding/agent-selection-guide.md} - Agent selection rules
+ * @see {@link ../../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-selection-guide.md} - Agent selection rules
  */
 
 import { minimatch } from 'minimatch';
@@ -192,7 +192,7 @@ export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths)
   lines.push('To bypass (NOT RECOMMENDED for PHI/auth work):');
   lines.push('  Remove --require-agents flag from wu:done command');
   lines.push('');
-  lines.push('See: ai/onboarding/agent-selection-guide.md for agent invocation guidance');
+  lines.push('See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-selection-guide.md for agent invocation guidance');
   lines.push('='.repeat(70));
 
   return lines.join('\n');

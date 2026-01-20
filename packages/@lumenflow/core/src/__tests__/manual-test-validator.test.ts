@@ -253,7 +253,7 @@ describe('validateAutomatedTestRequirement', () => {
         id: 'WU-1433',
         lane: 'Operations',
         type: 'feature',
-        code_paths: ['docs/README.md', 'ai/onboarding/guide.md'],
+        code_paths: ['docs/README.md', 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/guide.md'],
         tests: {
           unit: [],
           manual: ['Manual verification: check docs'],
