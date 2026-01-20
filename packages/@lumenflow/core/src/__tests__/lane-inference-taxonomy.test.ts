@@ -338,7 +338,10 @@ describe.skipIf(!hasConfig)('Lane Inference Integration (WU-1019)', () => {
   it('should infer correctly for Content: Documentation', async () => {
     const { inferSubLane } = await import('../lane-inference.js');
 
-    const result = inferSubLane(['docs/04-operations/_frameworks/lumenflow/playbook.md'], 'Update playbook documentation');
+    const result = inferSubLane(
+      ['docs/04-operations/_frameworks/lumenflow/playbook.md'],
+      'Update playbook documentation',
+    );
 
     expect(result.lane).toBe('Content: Documentation');
     expect(result.confidence).toBeGreaterThan(0);
