@@ -51,7 +51,7 @@ acceptance:
 # Required: References to plans, design docs, specs (for traceability)
 # For feature WUs created from plans, link the plan file here.
 # Plans should be stored in docs/04-operations/plans/ for version control.
-# See: ai/onboarding/workspace-modes.md §Plan Linking
+# See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/workspace-modes.md §Plan Linking
 spec_refs:
   - docs/04-operations/plans/WU-XXX-plan.md # Plan file (copy from .claude/plans/)
   - docs/design/feature-spec.md # Design specification
