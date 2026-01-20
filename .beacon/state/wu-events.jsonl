@@ -52,3 +52,4 @@
 {"type":"claim","wuId":"WU-1033","lane":"Content: Documentation","title":"Canonicalize LumenFlow framework docs under operations","timestamp":"2026-01-20T15:53:58.972Z"}
 {"type":"complete","wuId":"WU-1033","timestamp":"2026-01-20T16:16:07.374Z"}
 {"type":"claim","wuId":"WU-1035","lane":"Framework: Core","title":"Update core references to new documentation paths","timestamp":"2026-01-20T17:20:41.233Z"}
+{"type":"complete","wuId":"WU-1035","timestamp":"2026-01-20T17:27:25.285Z"}
