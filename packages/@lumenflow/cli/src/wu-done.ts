@@ -2250,7 +2250,8 @@ async function executeGates({
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
-        `If the worktree was removed, recreate it and retry, or use --skip-gates with justification.`,
+        `If the worktree was removed, recreate it and retry, or rerun with --branch-only when the lane branch exists.\n` +
+        `Use --skip-gates only with justification.`,
     );
   }
 
@@ -2317,6 +2318,25 @@ async function executeGates({
  * @param {string|null} params.derivedWorktree - Derived worktree path
  * @param {string} params.STAMPS_DIR - Stamps directory path
  */
+export function computeBranchOnlyFallback({
+  isBranchOnly,
+  branchOnlyRequested,
+  worktreeExists,
+  derivedWorktree,
+}: {
+  isBranchOnly: boolean;
+  branchOnlyRequested: boolean | undefined;
+  worktreeExists: boolean;
+  derivedWorktree: string | null;
+}) {
+  const allowFallback =
+    Boolean(branchOnlyRequested) && !isBranchOnly && !worktreeExists && Boolean(derivedWorktree);
+  return {
+    allowFallback,
+    effectiveBranchOnly: isBranchOnly || allowFallback,
+  };
+}
+
 function printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree, STAMPS_DIR }) {
   const stampExists = existsSync(path.join(STAMPS_DIR, `${id}.done`)) ? 'yes' : 'no';
   const yamlStatus = docMain.status || 'unknown';
@@ -2354,27 +2374,47 @@ async function main() {
   // Capture main checkout path once. process.cwd() may drift later during recovery flows.
   const mainCheckoutPath = process.cwd();
 
+  // Resolve worktree path early so we can detect missing worktree before pre-flight checks
+  const resolvedWorktreePath =
+    derivedWorktree && !isBranchOnly
+      ? path.isAbsolute(derivedWorktree)
+        ? derivedWorktree
+        : path.resolve(mainCheckoutPath, derivedWorktree)
+      : null;
+  const worktreeExists = resolvedWorktreePath ? existsSync(resolvedWorktreePath) : false;
+  const { allowFallback: allowBranchOnlyFallback, effectiveBranchOnly } = computeBranchOnlyFallback(
+    {
+      isBranchOnly,
+      branchOnlyRequested: args.branchOnly,
+      worktreeExists,
+      derivedWorktree,
+    },
+  );
+  if (allowBranchOnlyFallback) {
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Worktree missing (${resolvedWorktreePath}). Proceeding in branch-only mode because --branch-only was provided.`,
+    );
+  }
+
+  const effectiveDerivedWorktree = effectiveBranchOnly ? null : derivedWorktree;
+  const effectiveWorktreePath = effectiveBranchOnly ? null : resolvedWorktreePath;
+
   // Pre-flight checks (WU-1215: extracted to executePreFlightChecks function)
   const preFlightResult = await executePreFlightChecks({
     id,
     args,
-    isBranchOnly,
+    isBranchOnly: effectiveBranchOnly,
     isDocsOnly,
     docMain,
     docForValidation: initialDocForValidation,
-    derivedWorktree,
+    derivedWorktree: effectiveDerivedWorktree,
   });
   const title = preFlightResult.title;
   // Note: docForValidation is returned but not used after pre-flight checks
   // The metadata transaction uses docForUpdate instead
 
   // Step 0: Run gates (WU-1215: extracted to executeGates function)
-  const worktreePath =
-    derivedWorktree && !isBranchOnly
-      ? path.isAbsolute(derivedWorktree)
-        ? derivedWorktree
-        : path.resolve(mainCheckoutPath, derivedWorktree)
-      : null;
+  const worktreePath = effectiveWorktreePath;
 
   // WU-1943: Check if any checkpoints exist for this WU session
   // Warn (don't block) if no checkpoints - agent should have been checkpointing periodically
@@ -2395,10 +2435,17 @@ async function main() {
     // Non-blocking: checkpoint check failure should not block wu:done
   }
 
-  await executeGates({ id, args, isBranchOnly, isDocsOnly, worktreePath });
+  await executeGates({ id, args, isBranchOnly: effectiveBranchOnly, isDocsOnly, worktreePath });
 
   // Print State HUD for visibility (WU-1215: extracted to printStateHUD function)
-  printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree, STAMPS_DIR });
+  printStateHUD({
+    id,
+    docMain,
+    isBranchOnly: effectiveBranchOnly,
+    isDocsOnly,
+    derivedWorktree: effectiveDerivedWorktree,
+    STAMPS_DIR,
+  });
 
   // Step 0.5: Pre-flight validation - run ALL pre-commit hooks BEFORE merge
   // This prevents partial completion states where merge succeeds but commit fails
@@ -2448,7 +2495,7 @@ async function main() {
     };
 
     try {
-      if (isBranchOnly) {
+      if (effectiveBranchOnly) {
         // Branch-Only mode: merge first, then update metadata on main
         // NOTE: Branch-only still uses old rollback mechanism
         const branchOnlyContext = {

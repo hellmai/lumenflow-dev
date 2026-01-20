@@ -13,7 +13,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Import the functions we're testing from dist (built files)
-import { validateDocsOnlyFlag, buildGatesCommand } from '../dist/wu-done.js';
+import { validateDocsOnlyFlag, buildGatesCommand, computeBranchOnlyFallback } from '../dist/wu-done.js';
 import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
 
 describe('wu:done --docs-only flag (WU-1012)', () => {
@@ -170,5 +170,43 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
       // Should suggest removing the flag or changing the WU type
       expect(result.errors[0]).toMatch(/remove.*--docs-only|change.*exposure/i);
     });
+  });
+});
+
+describe('branch-only fallback (WU-1031)', () => {
+  it('should allow branch-only when worktree is missing and flag is provided', () => {
+    const result = computeBranchOnlyFallback({
+      isBranchOnly: false,
+      branchOnlyRequested: true,
+      worktreeExists: false,
+      derivedWorktree: 'worktrees/framework-cli-wu-1031',
+    });
+
+    expect(result.allowFallback).toBe(true);
+    expect(result.effectiveBranchOnly).toBe(true);
+  });
+
+  it('should not allow branch-only when worktree exists', () => {
+    const result = computeBranchOnlyFallback({
+      isBranchOnly: false,
+      branchOnlyRequested: true,
+      worktreeExists: true,
+      derivedWorktree: 'worktrees/framework-cli-wu-1031',
+    });
+
+    expect(result.allowFallback).toBe(false);
+    expect(result.effectiveBranchOnly).toBe(false);
+  });
+
+  it('should keep branch-only when already in branch-only mode', () => {
+    const result = computeBranchOnlyFallback({
+      isBranchOnly: true,
+      branchOnlyRequested: false,
+      worktreeExists: false,
+      derivedWorktree: null,
+    });
+
+    expect(result.allowFallback).toBe(false);
+    expect(result.effectiveBranchOnly).toBe(true);
   });
 });
