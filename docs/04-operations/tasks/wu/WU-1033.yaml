@@ -2,7 +2,7 @@ id: WU-1033
 title: Canonicalize LumenFlow framework docs under operations
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -62,3 +62,5 @@ session_id: 727106f4-8adf-47b3-a7f5-2b968b2a0d68
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-20T15:53:58.957Z
+locked: true
+completed_at: 2026-01-20T16:16:07.352Z
