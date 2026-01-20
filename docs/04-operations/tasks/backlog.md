@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
