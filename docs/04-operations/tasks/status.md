@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml) — 2026-01-20
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml) — 2026-01-20
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml) — 2026-01-19
 - [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml) — 2026-01-19
