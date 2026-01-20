@@ -7,7 +7,7 @@ priority: P2
 created: 2026-01-20
 code_paths:
   - ai/onboarding/
-  - docs/04-operations/_frameworks/lumenflow/ai/onboarding/
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/
   - docs/04-operations/_frameworks/lumenflow/playbook.md
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
   - docs/04-operations/tasks/backlog.md
@@ -33,10 +33,10 @@ requires_design_approval: false
 description: 'Context: Agent onboarding docs live in a top-level ai/onboarding folder, separate from
   the canonical operations framework docs. Problem: this breaks documentation locality and makes it
   easy to miss updates when reorganizing the LumenFlow framework docs. Solution: move ai/onboarding
-  into docs/04-operations/_frameworks/lumenflow/ai/onboarding and update all documentation
+  into docs/04-operations/_frameworks/lumenflow/agent/onboarding and update all documentation
   references accordingly.'
 acceptance:
-  - Move ai/onboarding contents into docs/04-operations/_frameworks/lumenflow/ai/onboarding.
+  - Move ai/onboarding contents into docs/04-operations/_frameworks/lumenflow/agent/onboarding.
   - Remove the top-level ai/onboarding directory.
   - Update doc references (CLAUDE.md, LUMENFLOW.md, playbook, backlog, sizing guide) to the new path.
   - pnpm gates --docs-only -> PASS
