@@ -20,7 +20,9 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — Operations: Infrastructure
+- [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
@@ -56,4 +58,3 @@ sections:
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml)
 - [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml)
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml)
-- [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
