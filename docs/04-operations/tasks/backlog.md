@@ -20,12 +20,10 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-- [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — Operations: Infrastructure
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml) — Core
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
@@ -60,6 +58,4 @@ sections:
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml)
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
-- [WU-1033 — Canonicalize LumenFlow framework docs under operations](wu/WU-1033.yaml)
-- [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml)
-- [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml)
+- [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml)

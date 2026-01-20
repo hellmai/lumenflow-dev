@@ -2,7 +2,7 @@ id: WU-1032
 title: Upgrade Core Dependencies and Fix Documentation
 lane: 'Operations: Infrastructure'
 type: chore
-status: in_progress
+status: done
 priority: P1
 exposure: documentation
 created: 2026-01-20
@@ -88,3 +88,5 @@ session_id: 38dbc6c3-6b3e-443c-b73f-fb9e627e3a4e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-20T13:03:31.711Z
+locked: true
+completed_at: 2026-01-20T23:51:26.295Z
