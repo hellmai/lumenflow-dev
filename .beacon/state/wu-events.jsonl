@@ -54,3 +54,4 @@
 {"type":"claim","wuId":"WU-1035","lane":"Framework: Core","title":"Update core references to new documentation paths","timestamp":"2026-01-20T17:20:41.233Z"}
 {"type":"complete","wuId":"WU-1035","timestamp":"2026-01-20T17:27:25.285Z"}
 {"type":"claim","wuId":"WU-1036","lane":"Framework: CLI","title":"Update CLI references to new documentation paths","timestamp":"2026-01-20T18:20:00.770Z"}
+{"type":"complete","wuId":"WU-1036","timestamp":"2026-01-20T18:24:19.672Z"}

@@ -2,7 +2,7 @@ id: WU-1036
 title: Update CLI references to new documentation paths
 lane: 'Framework: CLI'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -48,3 +48,5 @@ session_id: f78c7e83-37a0-40ba-a933-f9ff52226159
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-20T18:20:00.758Z
+locked: true
+completed_at: 2026-01-20T18:24:19.643Z
