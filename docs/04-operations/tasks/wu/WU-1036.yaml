@@ -31,12 +31,12 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: docs/lumenflow is being removed and ai/onboarding is moving under
-  docs/04-operations/_frameworks/lumenflow/ai/onboarding. Problem: CLI help text, templates, and
+  docs/04-operations/_frameworks/lumenflow/agent/onboarding. Problem: CLI help text, templates, and
   tests still reference the old paths. Solution: update CLI references and tests to the new
   canonical documentation paths.'
 acceptance:
   - Update CLI init templates and docs references to the new
-    docs/04-operations/_frameworks/lumenflow/ai/onboarding path.
+    docs/04-operations/_frameworks/lumenflow/agent/onboarding path.
   - Update CLI test fixtures using docs/lumenflow paths to the operations framework equivalents.
   - CLI tests that reference documentation paths updated and passing.
   - pnpm lint, pnpm typecheck -> PASS
