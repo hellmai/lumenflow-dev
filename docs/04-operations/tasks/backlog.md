@@ -20,12 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml) — Framework: CLI
-- [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml) — Framework: CLI
-- [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml) — Framework: Core
-- [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — Framework: CLI
-- [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -65,3 +60,4 @@ sections:
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml)
 - [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml)
+- [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml)
