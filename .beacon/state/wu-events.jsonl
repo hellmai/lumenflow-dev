@@ -59,3 +59,4 @@
 {"type":"complete","wuId":"WU-1044","timestamp":"2026-01-21T12:08:07.171Z"}
 {"type":"claim","wuId":"WU-1046","lane":"Framework: Core","title":"Consolidate YAML handling on yaml package (retire js-yaml)","timestamp":"2026-01-21T13:34:04.912Z"}
 {"type":"complete","wuId":"WU-1046","timestamp":"2026-01-21T14:07:27.953Z"}
+{"type":"claim","wuId":"WU-1047","lane":"Framework: Core","title":"Configurable methodology defaults + client blocks for wu:claim/wu:spawn","timestamp":"2026-01-21T14:15:01.143Z"}
