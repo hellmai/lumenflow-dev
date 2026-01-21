@@ -66,3 +66,4 @@
 {"type":"complete","wuId":"WU-1041","timestamp":"2026-01-21T16:56:52.603Z"}
 {"type":"complete","wuId":"WU-1039","timestamp":"2026-01-21T17:03:10.526Z"}
 {"type":"claim","wuId":"WU-1040","lane":"Framework: CLI","title":"Allow safe metadata edits on done WUs (exposure)","timestamp":"2026-01-21T17:29:58.090Z"}
+{"type":"complete","wuId":"WU-1040","timestamp":"2026-01-21T17:32:55.112Z"}

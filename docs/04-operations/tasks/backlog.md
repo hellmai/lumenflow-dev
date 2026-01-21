@@ -66,3 +66,4 @@ sections:
 - [WU-1047 — Configurable methodology defaults + client blocks for wu:claim/wu:spawn](wu/WU-1047.yaml)
 - [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml)
 - [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml)
+- [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml)
