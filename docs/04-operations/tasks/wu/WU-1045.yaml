@@ -2,7 +2,7 @@ id: WU-1045
 title: Define lumenflow:init project scaffolding (minimal + optional full)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -50,3 +50,5 @@ session_id: e40b1c68-a8f2-420f-85f2-345d9c2e8412
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T09:46:47.880Z
+locked: true
+completed_at: 2026-01-21T11:35:26.606Z

@@ -14,15 +14,13 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **ai/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1045 — Define lumenflow:init project scaffolding (minimal + optional full)](wu/WU-1045.yaml) — Framework: CLI
-- [WU-1044 — Vendor-Agnostic wu:spawn Refactor](wu/WU-1044.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -63,3 +61,4 @@ sections:
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml)
 - [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml)
 - [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml)
+- [WU-1045 — Define lumenflow:init project scaffolding (minimal + optional full)](wu/WU-1045.yaml)
