@@ -1,0 +1,55 @@
+id: WU-1047
+title: Configurable methodology defaults + client blocks for wu:claim/wu:spawn
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-21
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/spawn-strategy.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - apps/docs/src/content/docs/reference/config.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - Run wu:claim and confirm Project Defaults are shown to the agent; run wu:spawn with and without --client and verify blocks/skills guidance change accordingly.
+  unit:
+    - packages/@lumenflow/core/__tests__/lumenflow-config-agents.test.ts
+    - packages/@lumenflow/core/__tests__/spawn-strategy.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1047.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/plans/WU-1047-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: Teams want default methodology guidance (TDD, hex, SOLID, DRY, YAGNI, KISS, library-first)
+  while keeping it flexible for different clients and projects.
+  Problem: There is no structured config to express methodology defaults or client-specific agent blocks;
+  wu:claim and wu:spawn do not consistently surface these defaults to agents.
+  Solution: extend config schema with methodology defaults + client blocks, have wu:claim emit an agent-only
+  "Project Defaults" section, and have wu:spawn inject client-specific blocks/skills guidance based on the
+  resolved client, with docs and tests updated.
+acceptance:
+  - Config schema adds methodology defaults and client block definitions with validation and safe defaults.
+  - wu:claim emits an agent-only 'Project Defaults' section derived from config (not user-facing).
+  - wu:spawn injects client-specific blocks and skills guidance based on resolved client (CLI arg, then config default, then fallback).
+  - Docs updated for config fields and CLI behavior in Starlight and internal quick-ref.
+  - Unit tests cover config parsing plus spawn/claim output selection for defaults and overrides.

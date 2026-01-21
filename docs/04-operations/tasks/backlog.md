@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1047 — Configurable methodology defaults + client blocks for wu:claim/wu:spawn](wu/WU-1047.yaml) — Framework: Core
 - [WU-1046 — Consolidate YAML handling on yaml package (retire js-yaml)](wu/WU-1046.yaml) — Framework: Core
   (No items ready)
 
