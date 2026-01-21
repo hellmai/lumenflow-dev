@@ -54,6 +54,7 @@ Creates:
 - Branch `lane/{lane}/{wu-id}`
 - Runs `pnpm install` in worktree (unless `--skip-setup`)
 - Updates WU status to `in_progress`
+- Prints **Project Defaults** (agent-only) when `agents.methodology.enabled` is true
 
 ### wu:done
 
@@ -164,13 +165,17 @@ pnpm wu:spawn --id WU-001 --thinking --budget 10000
 pnpm wu:spawn --id WU-001 --parent-wu WU-1000
 ```
 
-| Flag          | Description                        |
-| ------------- | ---------------------------------- |
-| `--id`        | WU to spawn (required)             |
-| `--thinking`  | Enable extended thinking           |
-| `--budget`    | Token budget for thinking          |
-| `--codex`     | Output Codex/GPT-friendly format   |
-| `--parent-wu` | Parent WU for orchestrator context |
+| Flag          | Description                         |
+| ------------- | ----------------------------------- |
+| `--id`        | WU to spawn (required)              |
+| `--thinking`  | Enable extended thinking            |
+| `--budget`    | Token budget for thinking           |
+| `--client`    | Client profile (defaults to config) |
+| `--codex`     | Output Codex/GPT-friendly format    |
+| `--parent-wu` | Parent WU for orchestrator context  |
+
+Client-specific blocks and skills guidance are pulled from `agents.clients.<name>` in
+`.lumenflow.config.yaml` and injected into the spawn output.
 
 ### wu:repair
 

@@ -70,6 +70,7 @@ import {
 import { emitMandatoryAgentAdvisory } from '@lumenflow/core/dist/orchestration-advisory-loader.js';
 import { validateWU, generateAutoApproval } from '@lumenflow/core/dist/wu-schema.js';
 import { startSessionForWU } from '@lumenflow/agent/dist/auto-session-integration.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import {
   detectFixableIssues,
   applyFixes,
@@ -1014,8 +1015,48 @@ async function claimWorktreeMode(ctx) {
   const codePaths = wuDoc.code_paths || [];
   emitMandatoryAgentAdvisory(codePaths, id);
 
+  // WU-1047: Emit agent-only project defaults from config
+  const config = getConfig();
+  printProjectDefaults(config?.agents?.methodology);
+
   // WU-1763: Print lifecycle nudge with tips for tool adoption
   printLifecycleNudge(id);
+}
+
+/**
+ * WU-1047: Format Project Defaults section (agent-only).
+ *
+ * @param {object} methodology - Methodology defaults config
+ * @returns {string} Formatted output or empty string if disabled
+ */
+export function formatProjectDefaults(methodology) {
+  if (!methodology || methodology.enabled === false) return '';
+
+  const enforcement = methodology.enforcement || 'required';
+  const principles = Array.isArray(methodology.principles) ? methodology.principles : [];
+  const lines = [
+    `${PREFIX} 🧭 Project Defaults (agent-only)`,
+    `  Enforcement: ${enforcement}`,
+    `  Principles: ${principles.length > 0 ? principles.join(', ') : 'None'}`,
+  ];
+
+  if (methodology.notes) {
+    lines.push(`  Notes: ${methodology.notes}`);
+  }
+
+  return `\n${lines.join('\n')}`;
+}
+
+/**
+ * WU-1047: Print Project Defaults section (agent-only).
+ *
+ * @param {object} methodology - Methodology defaults config
+ */
+export function printProjectDefaults(methodology) {
+  const output = formatProjectDefaults(methodology);
+  if (output) {
+    console.log(output);
+  }
 }
 
 /**

@@ -84,6 +84,32 @@ describe('wu-spawn refactoring', () => {
       expect(output).not.toContain('Read GEMINI.md (Gemini-specific workflow overlay)');
       expect(output).toContain('Read LUMENFLOW.md');
     });
+
+    it('injects client blocks and skills guidance when provided', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(mockDoc, id, strategy, {
+        client: {
+          name: 'claude-code',
+          config: {
+            blocks: [
+              {
+                title: 'Claude Code Notes',
+                content: 'Use agent skills for frontend tasks.',
+              },
+            ],
+            skills: {
+              instructions: 'Prefer tooling skills for CLI output.',
+              recommended: ['wu-lifecycle', 'worktree-discipline'],
+            },
+          },
+        },
+      });
+
+      expect(output).toContain('Client Guidance (claude-code)');
+      expect(output).toContain('Claude Code Notes');
+      expect(output).toContain('Client Skills Guidance (claude-code)');
+      expect(output).toContain('Recommended skills');
+    });
   });
 
   describe('generateCodexPrompt', () => {

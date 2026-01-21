@@ -246,6 +246,59 @@ Available variables:
 - `{lane}` – Lane name (lowercase)
 - `{wu_id}` – WU identifier (lowercase)
 
+### agents
+
+**Optional.** Agent defaults used by `wu:claim` and `wu:spawn`.
+
+```yaml
+agents:
+  defaultClient: claude-code
+  methodology:
+    enabled: true
+    enforcement: required
+    principles:
+      - TDD
+      - Hexagonal Architecture
+      - SOLID
+      - DRY
+      - YAGNI
+      - KISS
+      - Library-First
+    notes: 'Apply defaults unless explicitly waived.'
+  clients:
+    claude-code:
+      blocks:
+        - title: Claude Code Notes
+          content: Use .claude/agents overrides when present.
+      skills:
+        instructions: Choose skills based on WU scope.
+        recommended:
+          - wu-lifecycle
+          - tdd-workflow
+```
+
+#### agents.methodology
+
+| Field         | Type     | Default       | Description                             |
+| ------------- | -------- | ------------- | --------------------------------------- |
+| `enabled`     | boolean  | true          | Show Project Defaults in `wu:claim`     |
+| `enforcement` | string   | `required`    | `required` or `recommended`             |
+| `principles`  | string[] | (see example) | Methodology principles to surface       |
+| `notes`       | string   | —             | Optional notes appended to the defaults |
+
+#### agents.clients.\<name\>
+
+Per-client guidance injected by `wu:spawn`.
+
+| Field                 | Type            | Default | Description                                  |
+| --------------------- | --------------- | ------- | -------------------------------------------- |
+| `preamble`            | string\|boolean | —       | Optional overlay preamble path or `false`    |
+| `skillsDir`           | string          | —       | Optional skills directory for the client     |
+| `blocks`              | array           | []      | Client blocks appended under Client Guidance |
+| `skills`              | object          | —       | Client skills guidance configuration         |
+| `skills.instructions` | string          | —       | Freeform guidance text                       |
+| `skills.recommended`  | string[]        | []      | Skills to recommend for the client           |
+
 ### memory
 
 **Optional.** Memory layer configuration.

@@ -50,6 +50,7 @@ import {
 import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
 import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import type { ClientConfig } from '@lumenflow/core/dist/lumenflow-config-schema.js';
 
 import {
   validateSpawnDependencies,
@@ -1037,6 +1038,54 @@ If the skill catalogue is missing or invalid:
 `;
 }
 
+interface ClientContext {
+  name: string;
+  config?: ClientConfig;
+}
+
+interface SpawnOptions {
+  thinking?: boolean;
+  noThinking?: boolean;
+  budget?: string;
+  client?: ClientContext;
+}
+
+function resolveClientConfig(config, clientName) {
+  const clients = config?.agents?.clients || {};
+  if (!clientName) return undefined;
+  if (clients[clientName]) return clients[clientName];
+  const matchKey = Object.keys(clients).find(
+    (key) => key.toLowerCase() === clientName.toLowerCase(),
+  );
+  return matchKey ? clients[matchKey] : undefined;
+}
+
+function generateClientBlocksSection(clientContext) {
+  if (!clientContext?.config?.blocks?.length) return '';
+  const blocks = clientContext.config.blocks
+    .map((block) => `### ${block.title}\n\n${block.content}`)
+    .join('\n\n');
+  return `## Client Guidance (${clientContext.name})\n\n${blocks}`;
+}
+
+function generateClientSkillsGuidance(clientContext) {
+  const skills = clientContext?.config?.skills;
+  if (
+    !skills ||
+    (!skills.instructions && (!skills.recommended || skills.recommended.length === 0))
+  ) {
+    return '';
+  }
+
+  const instructions = skills.instructions ? `${skills.instructions.trim()}\n\n` : '';
+  const recommended =
+    skills.recommended && skills.recommended.length > 0
+      ? `Recommended skills:\n${skills.recommended.map((s) => `- \`${s}\``).join('\n')}\n`
+      : '';
+
+  return `### Client Skills Guidance (${clientContext.name})\n\n${instructions}${recommended}`;
+}
+
 /**
  * Generate the complete Task tool invocation
  *
@@ -1049,13 +1098,17 @@ If the skill catalogue is missing or invalid:
  * @param {string} [options.budget] - Token budget for thinking
  * @returns {string} Complete Task tool invocation
  */
-export function generateTaskInvocation(doc, id, strategy, options = {}) {
+export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
   const tddDirective = generateTDDDirective();
-  const skillsSection = generateSkillsSection(doc, strategy);
+  const clientContext = options.client;
+  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
+  const skillsSection =
+    generateSkillsSection(doc) + (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
+  const clientBlocks = generateClientBlocksSection(clientContext);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
@@ -1143,7 +1196,7 @@ ${thinkingBlock}${skillsSection}
 - **Documentation**: Update tooling docs if changing tools. Keep docs in sync with code
 - **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents (security-auditor for PHI/auth, beacon-guardian for LLM/prompts)
 
-${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
+${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
 ${bugDiscoverySection}
 
@@ -1213,7 +1266,7 @@ ${constraints}`;
   return invocation;
 }
 
-export function generateCodexPrompt(doc, id, strategy, options = {}) {
+export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
@@ -1225,6 +1278,11 @@ export function generateCodexPrompt(doc, id, strategy, options = {}) {
   const implementationContext = generateImplementationContext(doc);
   const action = generateActionSection(doc, id);
   const constraints = generateCodexConstraints(id);
+  const clientContext = options.client;
+  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
+  const skillsSection =
+    generateSkillsSection(doc) + (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
+  const clientBlocks = generateClientBlocksSection(clientContext);
 
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);
@@ -1269,6 +1327,10 @@ ${formatAcceptance(doc.acceptance)}
 
 ---
 
+${skillsSection}
+
+---
+
 ## Action
 
 ${action}
@@ -1282,7 +1344,7 @@ ${action}
 
 ---
 
-${mandatorySection}${implementationContext ? `${implementationContext}\n\n---\n\n` : ''}${thinkingBlock}${bugDiscoverySection}
+${mandatorySection}${implementationContext ? `${implementationContext}\n\n---\n\n` : ''}${clientBlocks ? `${clientBlocks}\n\n---\n\n` : ''}${thinkingBlock}${bugDiscoverySection}
 
 ---
 
@@ -1474,9 +1536,13 @@ async function main() {
 
   // Create strategy
   const strategy = SpawnStrategyFactory.create(clientName);
+  const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
 
   if (clientName === 'codex-cli' || args.codex) {
-    const prompt = generateCodexPrompt(doc, id, strategy, thinkingOptions);
+    const prompt = generateCodexPrompt(doc, id, strategy, {
+      ...thinkingOptions,
+      client: clientContext,
+    });
     console.log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
     console.log(`${LOG_PREFIX} Copy the Markdown below:\n`);
     console.log(prompt.trimEnd());
@@ -1484,7 +1550,10 @@ async function main() {
   }
 
   // Generate and output the Task invocation
-  const invocation = generateTaskInvocation(doc, id, strategy, thinkingOptions);
+  const invocation = generateTaskInvocation(doc, id, strategy, {
+    ...thinkingOptions,
+    client: clientContext,
+  });
 
   console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
   console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
