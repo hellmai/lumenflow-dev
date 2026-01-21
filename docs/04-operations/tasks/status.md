@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1045 — Define lumenflow:init project scaffolding (minimal + optional full)](wu/WU-1045.yaml) — 2026-01-21
 - [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml) — 2026-01-21
 - [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml) — 2026-01-21
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — 2026-01-20
