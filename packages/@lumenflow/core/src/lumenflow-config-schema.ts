@@ -210,9 +210,34 @@ export const UiConfigSchema = z.object({
 /**
  * YAML serialization configuration
  */
+/**
+ * YAML serialization configuration
+ */
 export const YamlConfigSchema = z.object({
   /** Line width for YAML output (default: 100, -1 for no wrap) */
   lineWidth: z.number().int().default(100),
+});
+
+/**
+ * Client configuration (per-client settings)
+ */
+export const ClientConfigSchema = z.object({
+  /** Preamble file path (e.g. 'CLAUDE.md') or false to disable */
+  preamble: z.union([z.string(), z.boolean()]).optional(),
+
+  /** Skills directory path */
+  skillsDir: z.string().optional(),
+});
+
+/**
+ * Agents configuration
+ */
+export const AgentsConfigSchema = z.object({
+  /** Default client to use if not specified (default: 'claude-code') */
+  defaultClient: z.string().default('claude-code'),
+
+  /** Client-specific configurations */
+  clients: z.record(z.string(), ClientConfigSchema).default({}),
 });
 
 /**
@@ -245,6 +270,9 @@ export const LumenFlowConfigSchema = z.object({
 
   /** YAML configuration */
   yaml: YamlConfigSchema.default(() => YamlConfigSchema.parse({})),
+
+  /** Agents configuration */
+  agents: AgentsConfigSchema.default(() => AgentsConfigSchema.parse({})),
 });
 
 /**
@@ -257,7 +285,10 @@ export type WuConfig = z.infer<typeof WuConfigSchema>;
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;
 export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
+
 export type YamlConfig = z.infer<typeof YamlConfigSchema>;
+export type ClientConfig = z.infer<typeof ClientConfigSchema>;
+export type AgentsConfig = z.infer<typeof AgentsConfigSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
 
 /**
