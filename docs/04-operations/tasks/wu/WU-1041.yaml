@@ -2,7 +2,7 @@ id: WU-1041
 title: Auto-assign exposure on wu:done when missing
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - wu:done auto-sets exposure when missing based on lane defaults
   - Existing exposure values are preserved
   - Done WUs no longer emit missing exposure warning when auto-set
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-wu-1041
+claimed_at: 2026-01-21T16:46:15.189Z
+baseline_main_sha: b04e56d1522abaf9e7f6cc90dc7f62afe8aff322
+session_id: 0258ba69-134b-465a-a6e2-32474829f661
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T16:46:15.196Z
