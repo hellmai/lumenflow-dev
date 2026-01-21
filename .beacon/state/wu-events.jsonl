@@ -69,3 +69,4 @@
 {"type":"complete","wuId":"WU-1040","timestamp":"2026-01-21T17:32:55.112Z"}
 {"type":"claim","wuId":"WU-1042","lane":"Framework: CLI","title":"Reduce gates friction (format guidance + worktree cleanup helper)","timestamp":"2026-01-21T17:29:17.146Z"}
 {"type":"complete","wuId":"WU-1042","timestamp":"2026-01-21T18:08:27.650Z"}
+{"type":"claim","wuId":"WU-1049","lane":"Framework: Core","title":"Refactor wu-done validators + standardize errors","timestamp":"2026-01-21T18:16:06.806Z"}
