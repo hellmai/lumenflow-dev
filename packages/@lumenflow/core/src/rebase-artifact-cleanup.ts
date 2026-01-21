@@ -16,8 +16,9 @@
  */
 
 import { readFile, writeFile, unlink, access } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import fg from 'fast-glob';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
 
 import { WU_PATHS } from './wu-paths.js';
@@ -31,6 +32,8 @@ import {
   STATUS_SECTIONS,
   REMOTES,
   BRANCHES,
+  BUILD_ARTIFACT_GLOBS,
+  BUILD_ARTIFACT_IGNORES,
 } from './wu-constants.js';
 import { findSectionBounds, removeBulletFromSection } from './backlog-editor.js';
 
@@ -519,5 +522,49 @@ export async function deduplicateBacklogAfterRebase(worktreePath, wuId) {
     statusCleaned: statusResult.cleaned,
     cleaned: backlogResult.cleaned || statusResult.cleaned,
     errors,
+  };
+}
+
+/**
+ * Clean up build artifacts in a worktree (dist folders + tsbuildinfo files)
+ *
+ * WU-1042: Provide a safe helper for clearing build artifacts that can
+ * trigger TS5055 or stale build issues in worktrees.
+ *
+ * @param {string} worktreePath - Path to the worktree directory
+ * @returns {Promise<object>} Cleanup result
+ * @returns {string[]} result.distDirectories - Removed dist directories (relative paths)
+ * @returns {string[]} result.tsbuildinfoFiles - Removed tsbuildinfo files (relative paths)
+ * @returns {number} result.removedCount - Total removed artifacts
+ */
+export async function cleanupWorktreeBuildArtifacts(worktreePath) {
+  const root = resolve(worktreePath);
+  const distDirectories = await fg(BUILD_ARTIFACT_GLOBS.DIST_DIRS, {
+    cwd: root,
+    onlyDirectories: true,
+    dot: true,
+    followSymbolicLinks: false,
+    ignore: BUILD_ARTIFACT_IGNORES,
+  });
+  const tsbuildinfoFiles = await fg(BUILD_ARTIFACT_GLOBS.TSBUILDINFO_FILES, {
+    cwd: root,
+    onlyFiles: true,
+    dot: true,
+    followSymbolicLinks: false,
+    ignore: BUILD_ARTIFACT_IGNORES,
+  });
+
+  for (const dir of distDirectories) {
+    rmSync(join(root, dir), { recursive: true, force: true });
+  }
+
+  for (const file of tsbuildinfoFiles) {
+    rmSync(join(root, file), { force: true });
+  }
+
+  return {
+    distDirectories,
+    tsbuildinfoFiles,
+    removedCount: distDirectories.length + tsbuildinfoFiles.length,
   };
 }

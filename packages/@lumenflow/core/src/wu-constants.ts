@@ -327,6 +327,33 @@ export const FILE_SYSTEM = {
 };
 
 /**
+ * Build artifact cleanup globs
+ *
+ * Centralized glob patterns for worktree artifact cleanup.
+ */
+export const BUILD_ARTIFACT_GLOBS = {
+  /** Common dist directories inside worktrees */
+  DIST_DIRS: [
+    'packages/*/dist',
+    'packages/**/dist',
+    'apps/*/dist',
+    'apps/**/dist',
+    'tools/*/dist',
+    'tools/**/dist',
+  ],
+
+  /** TypeScript build info files */
+  TSBUILDINFO_FILES: ['**/*.tsbuildinfo'],
+};
+
+/**
+ * Build artifact cleanup ignore patterns
+ *
+ * Centralized ignore globs for artifact cleanup.
+ */
+export const BUILD_ARTIFACT_IGNORES = ['**/node_modules/**', '**/.git/**', '**/.turbo/**'];
+
+/**
  * Process stdio constants
  *
  * Standard values for child_process execSync stdio option.
@@ -1184,6 +1211,8 @@ export const GITLEAKS_ARGS = {
 export const PRETTIER_ARGS = {
   /** Check formatting without writing */
   CHECK: '--check',
+  /** List files with formatting differences */
+  LIST_DIFFERENT: '--list-different',
 };
 
 /**

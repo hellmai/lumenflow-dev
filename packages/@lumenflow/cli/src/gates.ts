@@ -43,6 +43,7 @@ import { execSync, spawnSync } from 'node:child_process';
 import { closeSync, mkdirSync, openSync, readSync, statSync, writeSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import {
@@ -85,53 +86,46 @@ import {
   STDIO_MODES,
   EXIT_CODES,
   FILE_SYSTEM,
+  PRETTIER_ARGS,
+  PRETTIER_FLAGS,
 } from '@lumenflow/core/dist/wu-constants.js';
 
 // WU-2457: Add Commander.js for --help support
-// WU-2465: Pre-filter argv to handle pnpm's `--` separator
-// When invoked via `pnpm gates -- --docs-only`, pnpm passes ["--", "--docs-only"]
-// Commander treats `--` as "everything after is positional", causing errors.
-// Solution: Remove standalone `--` from argv before parsing.
-const filteredArgv = process.argv.filter((arg, index, arr) => {
-  // Keep `--` only if it's followed by a non-option (actual positional arg)
-  // Remove it if it's followed by an option (starts with -)
-  if (arg === '--') {
-    const nextArg = arr[index + 1];
-    return nextArg && !nextArg.startsWith('-');
-  }
-  return true;
-});
+function parseGatesArgs(argv = process.argv) {
+  // WU-2465: Pre-filter argv to handle pnpm's `--` separator
+  // When invoked via `pnpm gates -- --docs-only`, pnpm passes ["--", "--docs-only"]
+  // Commander treats `--` as "everything after is positional", causing errors.
+  // Solution: Remove standalone `--` from argv before parsing.
+  const filteredArgv = argv.filter((arg, index, arr) => {
+    // Keep `--` only if it's followed by a non-option (actual positional arg)
+    // Remove it if it's followed by an option (starts with -)
+    if (arg === '--') {
+      const nextArg = arr[index + 1];
+      return nextArg && !nextArg.startsWith('-');
+    }
+    return true;
+  });
 
-const program = new Command()
-  .name('gates')
-  .description(
-    'Run quality gates with support for docs-only mode, incremental linting, and tiered testing',
-  )
-  .option('--docs-only', 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)')
-  .option('--full-lint', 'Run full lint instead of incremental')
-  .option('--full-tests', 'Run full test suite instead of incremental')
-  .option('--full-coverage', 'Force full test suite and coverage gate (implies --full-tests)')
-  .option(
-    '--coverage-mode <mode>',
-    'Coverage gate mode: "warn" logs warnings, "block" fails gate (default)',
-    'block',
-  )
-  .option('--verbose', 'Stream output in agent mode instead of logging to file')
-  .helpOption('-h, --help', 'Display help for command');
+  const program = new Command()
+    .name('gates')
+    .description(
+      'Run quality gates with support for docs-only mode, incremental linting, and tiered testing',
+    )
+    .option('--docs-only', 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)')
+    .option('--full-lint', 'Run full lint instead of incremental')
+    .option('--full-tests', 'Run full test suite instead of incremental')
+    .option('--full-coverage', 'Force full test suite and coverage gate (implies --full-tests)')
+    .option(
+      '--coverage-mode <mode>',
+      'Coverage gate mode: "warn" logs warnings, "block" fails gate (default)',
+      'block',
+    )
+    .option('--verbose', 'Stream output in agent mode instead of logging to file')
+    .helpOption('-h, --help', 'Display help for command');
 
-program.parse(filteredArgv);
-
-const opts = program.opts();
-
-// Parse command line arguments (now via Commander)
-const isDocsOnly = opts.docsOnly || false;
-const isFullLint = opts.fullLint || false;
-const isFullTests = opts.fullTests || false;
-// WU-2244: Full coverage flag forces full test suite and coverage gate (deterministic)
-const isFullCoverage = opts.fullCoverage || false;
-// WU-1433: Coverage gate mode (warn or block)
-// WU-2334: Default changed from WARN to BLOCK for TDD enforcement
-const coverageMode = opts.coverageMode || COVERAGE_GATE_MODES.BLOCK;
+  program.parse(filteredArgv);
+  return program.opts();
+}
 
 /**
  * Build a pnpm command string
@@ -146,6 +140,74 @@ function pnpmCmd(...parts: string[]) {
 function pnpmRun(script: string, ...args: string[]) {
   const argsStr = args.length > 0 ? ` ${args.join(' ')}` : '';
   return `${PKG_MANAGER} ${SCRIPTS.RUN} ${script}${argsStr}`;
+}
+
+export function parsePrettierListOutput(output: string): string[] {
+  if (!output) return [];
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.replace(/^\[error\]\s*/i, '').trim())
+    .filter(
+      (line) =>
+        !line.toLowerCase().includes('code style issues found') &&
+        !line.toLowerCase().includes('all matched files use prettier') &&
+        !line.toLowerCase().includes('checking formatting'),
+    );
+}
+
+export function buildPrettierWriteCommand(files: string[]): string {
+  const quotedFiles = files.map((file) => `"${file}"`).join(' ');
+  const base = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_FLAGS.WRITE);
+  return quotedFiles ? `${base} ${quotedFiles}` : base;
+}
+
+export function formatFormatCheckGuidance(files: string[]): string[] {
+  if (!files.length) return [];
+  const command = buildPrettierWriteCommand(files);
+  return [
+    '',
+    '❌ format:check failed',
+    'Fix with:',
+    `  ${command}`,
+    '',
+    'Affected files:',
+    ...files.map((file) => `  - ${file}`),
+    '',
+  ];
+}
+
+function collectPrettierListDifferent(cwd: string): string[] {
+  const cmd = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.LIST_DIFFERENT, '.');
+  const result = spawnSync(cmd, [], {
+    shell: true,
+    cwd,
+    encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+  });
+  const output = `${result.stdout || ''}\n${result.stderr || ''}`;
+  return parsePrettierListOutput(output);
+}
+
+function emitFormatCheckGuidance({
+  agentLog,
+  useAgentMode,
+}: {
+  agentLog?: { logFd: number; logPath: string } | null;
+  useAgentMode: boolean;
+}) {
+  const files = collectPrettierListDifferent(process.cwd());
+  if (!files.length) return;
+
+  const lines = formatFormatCheckGuidance(files);
+  const logLine =
+    useAgentMode && agentLog
+      ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
+      : (line: string) => console.log(line);
+
+  for (const line of lines) {
+    logLine(line);
+  }
 }
 
 /**
@@ -603,6 +665,17 @@ const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane }) : n
 // Main execution
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing: main() orchestrates multi-step gate workflow
 async function main() {
+  const opts = parseGatesArgs();
+  // Parse command line arguments (now via Commander)
+  const isDocsOnly = opts.docsOnly || false;
+  const isFullLint = opts.fullLint || false;
+  const isFullTests = opts.fullTests || false;
+  // WU-2244: Full coverage flag forces full test suite and coverage gate (deterministic)
+  const isFullCoverage = opts.fullCoverage || false;
+  // WU-1433: Coverage gate mode (warn or block)
+  // WU-2334: Default changed from WARN to BLOCK for TDD enforcement
+  const coverageMode = opts.coverageMode || COVERAGE_GATE_MODES.BLOCK;
+
   if (useAgentMode) {
     console.log(
       `🧾 gates (agent mode): output -> ${agentLog.logPath} (use --verbose for streaming)\n`,
@@ -804,6 +877,10 @@ async function main() {
         continue;
       }
 
+      if (gate.name === GATE_NAMES.FORMAT_CHECK) {
+        emitFormatCheckGuidance({ agentLog, useAgentMode });
+      }
+
       if (useAgentMode) {
         const tail = readLogTail(agentLog.logPath);
         console.error(`\n❌ ${gate.name} failed (agent mode). Log: ${agentLog.logPath}\n`);
@@ -828,7 +905,9 @@ async function main() {
   process.exit(EXIT_CODES.SUCCESS);
 }
 
-main().catch((error) => {
-  console.error('Gates failed:', error);
-  process.exit(EXIT_CODES.ERROR);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error('Gates failed:', error);
+    process.exit(EXIT_CODES.ERROR);
+  });
+}
