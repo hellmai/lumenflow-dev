@@ -47,6 +47,9 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/dist/wu-spawn-helpers.js';
+import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
+import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 
 import {
   validateSpawnDependencies,
@@ -386,27 +389,15 @@ function generateTDDDirective() {
  * @param {string} id - WU ID
  * @returns {string} Context loading preamble
  */
-function generatePreamble(id) {
-  return `Load the following context in this order:
-
-1. Read CLAUDE.md (workflow fundamentals and critical rules)
-2. Read README.md (project structure and tech stack)
-3. Read docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md sections 1-7 (TDD, gates, Definition of Done)
-4. Read docs/04-operations/tasks/wu/${id}.yaml (the specific WU you're working on)
-
-## WIP=1 Lane Check (BEFORE claiming)
-
-Before running wu:claim, check docs/04-operations/tasks/status.md to ensure the lane is free.
-Only ONE WU can be in_progress per lane at any time.
-
-## Context Recovery (Session Resumption)
-
-Before starting work, check for prior context from previous sessions:
-
-1. \`pnpm mem:ready --wu ${id}\` — Query pending nodes (what's next?)
-2. \`pnpm mem:inbox --wu ${id}\` — Check coordination signals from parallel agents
-
-If prior context exists, resume from the last checkpoint. Otherwise, proceed with the task below.`;
+/**
+ * Generate the context loading preamble using the strategy
+ *
+ * @param {string} id - WU ID
+ * @param {SpawnStrategy} strategy - Client strategy
+ * @returns {string} Context loading preamble
+ */
+function generatePreamble(id, strategy) {
+  return strategy.getPreamble(id);
 }
 
 /**
@@ -1051,19 +1042,20 @@ If the skill catalogue is missing or invalid:
  *
  * @param {object} doc - WU YAML document
  * @param {string} id - WU ID
+ * @param {SpawnStrategy} strategy - Client strategy
  * @param {object} [options={}] - Thinking mode options
  * @param {boolean} [options.thinking] - Whether extended thinking is enabled
  * @param {boolean} [options.noThinking] - Whether thinking is explicitly disabled
  * @param {string} [options.budget] - Token budget for thinking
  * @returns {string} Complete Task tool invocation
  */
-export function generateTaskInvocation(doc, id, options = {}) {
+export function generateTaskInvocation(doc, id, strategy, options = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
-  const preamble = generatePreamble(id);
+  const preamble = generatePreamble(id, strategy);
   const tddDirective = generateTDDDirective();
-  const skillsSection = generateSkillsSection(doc);
+  const skillsSection = generateSkillsSection(doc, strategy);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
@@ -1221,11 +1213,11 @@ ${constraints}`;
   return invocation;
 }
 
-export function generateCodexPrompt(doc, id, options = {}) {
+export function generateCodexPrompt(doc, id, strategy, options = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
-  const preamble = generatePreamble(id);
+  const preamble = generatePreamble(id, strategy);
   const tddDirective = generateTDDDirective();
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
@@ -1369,6 +1361,8 @@ async function main() {
       WU_OPTIONS.budget,
       WU_OPTIONS.codex,
       WU_OPTIONS.parentWu, // WU-1945: Parent WU for spawn registry tracking
+      WU_OPTIONS.client,
+      WU_OPTIONS.vendor,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1455,8 +1449,34 @@ async function main() {
     budget: args.budget,
   };
 
+  // Client Resolution
+  const config = getConfig();
+  let clientName = args.client;
+
+  if (!clientName && args.vendor) {
+    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: --vendor is deprecated. Use --client.`);
+    clientName = args.vendor;
+  }
+
+  // Codex handling (deprecated legacy flag)
   if (args.codex) {
-    const prompt = generateCodexPrompt(doc, id, thinkingOptions);
+    if (!clientName) {
+      console.warn(
+        `${LOG_PREFIX} ${EMOJI.WARNING} Warning: --codex is deprecated. Use --client codex-cli.`,
+      );
+      clientName = 'codex-cli';
+    }
+  }
+
+  if (!clientName) {
+    clientName = config.agents.defaultClient || 'claude-code';
+  }
+
+  // Create strategy
+  const strategy = SpawnStrategyFactory.create(clientName);
+
+  if (clientName === 'codex-cli' || args.codex) {
+    const prompt = generateCodexPrompt(doc, id, strategy, thinkingOptions);
     console.log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
     console.log(`${LOG_PREFIX} Copy the Markdown below:\n`);
     console.log(prompt.trimEnd());
@@ -1464,7 +1484,7 @@ async function main() {
   }
 
   // Generate and output the Task invocation
-  const invocation = generateTaskInvocation(doc, id, thinkingOptions);
+  const invocation = generateTaskInvocation(doc, id, strategy, thinkingOptions);
 
   console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
   console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
