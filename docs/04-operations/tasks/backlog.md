@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1044 — Vendor-Agnostic wu:spawn Refactor](wu/WU-1044.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
