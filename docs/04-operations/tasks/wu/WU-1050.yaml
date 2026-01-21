@@ -2,7 +2,7 @@ id: WU-1050
 title: Restore canonical claim state + global visibility for wu:claim (push-only)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-21
 code_paths:
@@ -42,16 +42,37 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: wu:claim currently updates claim metadata only inside the worktree branch and does not push, so claims are invisible to other agents.
+description: >-
+  Context: wu:claim currently updates claim metadata only inside the worktree branch and does not
+  push, so claims are invisible to other agents.
 
-  Problem: canonical state (status/backlog/WU YAML + state store) is not updated on origin/main at claim time, and the lane-branch lock is local-only. Other agents can mistakenly claim the same WU.
 
-  Solution: make wu:claim a two-step process like wu:create/wu:edit: (1) preflight validate the spec and lane using origin/main (read-only), (2) update canonical claim state via micro-worktree push-only to origin/main (no local main mutation), then (3) create worktree + lane branch from origin/main and push lane branch by default for the global lock. Provide --no-push to skip pushes and warn that the claim is local-only (air-gapped).
+  Problem: canonical state (status/backlog/WU YAML + state store) is not updated on origin/main at
+  claim time, and the lane-branch lock is local-only. Other agents can mistakenly claim the same WU.
+
+
+  Solution: make wu:claim a two-step process like wu:create/wu:edit: (1) preflight validate the spec
+  and lane using origin/main (read-only), (2) update canonical claim state via micro-worktree
+  push-only to origin/main (no local main mutation), then (3) create worktree + lane branch from
+  origin/main and push lane branch by default for the global lock. Provide --no-push to skip pushes
+  and warn that the claim is local-only (air-gapped).
 acceptance:
-  - wu:claim validates the WU spec (schema + completeness) before any claim state changes; on failure no state is modified
-  - Canonical claim state (WU YAML + status.md + backlog.md + wu-events.jsonl) is updated on origin/main via micro-worktree push-only; local main remains unchanged
-  - wu:claim checks remote branch existence via git ls-remote --heads and aborts if the lane branch already exists
+  - wu:claim validates the WU spec (schema + completeness) before any claim state changes; on
+    failure no state is modified
+  - Canonical claim state (WU YAML + status.md + backlog.md + wu-events.jsonl) is updated on
+    origin/main via micro-worktree push-only; local main remains unchanged
+  - wu:claim checks remote branch existence via git ls-remote --heads and aborts if the lane branch
+    already exists
   - Worktree + lane branch are created from origin/main only after canonical state update succeeds
-  - Lane branch is pushed to origin by default; --no-push skips all pushes and emits a warning that the claim is local-only
-  - 'Failure handling is explicit: if canonical update fails claim aborts without creating the worktree; if worktree creation fails after canonical update, emit repair guidance'
+  - Lane branch is pushed to origin by default; --no-push skips all pushes and emits a warning that
+    the claim is local-only
+  - 'Failure handling is explicit: if canonical update fails claim aborts without creating the
+    worktree; if worktree creation fails after canonical update, emit repair guidance'
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1050
+claimed_at: 2026-01-21T21:19:12.125Z
+baseline_main_sha: 7813a8eda39e1d69cbbf61cd695ba72f0f73fa32
+session_id: 8c7e708e-332e-4024-842b-db9d34f3bcd2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T21:19:12.132Z
