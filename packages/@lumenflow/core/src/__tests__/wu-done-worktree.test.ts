@@ -14,7 +14,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { checkEmptyMerge, isBranchAlreadyMerged } from '../wu-done-worktree.js';
+import { checkEmptyMerge } from '../wu-done-worktree.js';
+import { isBranchAlreadyMerged } from '../wu-done-branch-utils.js';
 import { ErrorCodes } from '../error-handler.js';
 
 // Mock git-adapter

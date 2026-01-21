@@ -9,7 +9,7 @@
  * - Documentation: docs/, ai/, .claude/, README*, CLAUDE*.md
  * - Tooling: tools/, scripts/
  *
- * @see {@link tools/lib/wu-done-validators.mjs} - Consumer for detectDocsOnlyByPaths
+ * @see {@link ./wu-done-paths.js} - Consumer for detectDocsOnlyByPaths
  */
 
 /**

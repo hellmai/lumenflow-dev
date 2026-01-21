@@ -1,0 +1,434 @@
+/**
+ * Core validation helpers for wu:done.
+ */
+
+import path from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { getGitForCwd } from './git-adapter.js';
+import { parseYAML } from './wu-yaml.js';
+import {
+  BRANCHES,
+  EMOJI,
+  FILE_SYSTEM,
+  GIT_COMMANDS,
+  LOG_PREFIX,
+  STRING_LITERALS,
+  TEST_TYPES,
+  VALIDATION,
+  WU_TYPES,
+} from './wu-constants.js';
+import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
+import { resolveExposureDefault } from './wu-validation.js';
+import { validateAutomatedTestRequirement } from './manual-test-validator.js';
+import { isDocumentationPath } from './file-classifiers.js';
+
+interface ExposureDefaultResult {
+  applied: boolean;
+  exposure?: string;
+}
+
+export function applyExposureDefaults(doc): ExposureDefaultResult {
+  if (!doc || typeof doc !== 'object') {
+    return { applied: false };
+  }
+
+  if (typeof doc.exposure === 'string' && doc.exposure.trim().length > 0) {
+    return { applied: false, exposure: doc.exposure };
+  }
+
+  const exposureDefault = resolveExposureDefault(doc.lane);
+  if (!exposureDefault) {
+    return { applied: false };
+  }
+
+  doc.exposure = exposureDefault;
+  return { applied: true, exposure: exposureDefault };
+}
+
+/**
+ * WU-1351: Validate code_paths files exist on main branch
+ *
+ * Prevents false completions by ensuring all code_paths entries
+ * actually exist on the target branch (main or lane branch).
+ *
+ * This guards against:
+ * - Stamps being created for WUs where code never merged
+ * - Metadata becoming desynchronized from actual code
+ */
+export interface ValidateCodePathsExistOptions {
+  /** Branch to check files against (default: 'main') */
+  targetBranch?: string;
+  /** Worktree path for worktree mode */
+  worktreePath?: string | null;
+}
+
+export async function validateCodePathsExist(doc, id, options: ValidateCodePathsExistOptions = {}) {
+  const { targetBranch = BRANCHES.MAIN, worktreePath = null } = options;
+  const errors = [];
+  const missing = [];
+  const codePaths = doc.code_paths || [];
+
+  // Skip validation for WUs without code_paths (docs-only, process WUs)
+  if (codePaths.length === 0) {
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} No code_paths to validate for ${id}`);
+    return { valid: true, errors: [], missing: [] };
+  }
+
+  console.log(`${LOG_PREFIX.DONE} Validating ${codePaths.length} code_paths exist...`);
+
+  // For worktree mode, check files exist in the worktree (will be merged)
+  // For branch-only mode or post-merge validation, check files exist on target branch
+  if (worktreePath && existsSync(worktreePath)) {
+    // Worktree mode: validate files exist in worktree
+    for (const filePath of codePaths) {
+      const fullPath = path.join(worktreePath, filePath);
+      if (!existsSync(fullPath)) {
+        missing.push(filePath);
+      }
+    }
+
+    if (missing.length > 0) {
+      errors.push(
+        `code_paths validation failed - ${missing.length} file(s) not found in worktree:\n${missing
+          .map((p) => `  - ${p}`)
+          .join(
+            STRING_LITERALS.NEWLINE,
+          )}\n\nEnsure all files listed in code_paths exist before running wu:done.`,
+      );
+    }
+  } else {
+    // Branch-only or post-merge: use git ls-tree to check files on target branch
+    try {
+      const gitAdapter = getGitForCwd();
+
+      for (const filePath of codePaths) {
+        try {
+          // git ls-tree returns empty for non-existent files
+          const result = await gitAdapter.raw([GIT_COMMANDS.LS_TREE, targetBranch, '--', filePath]);
+
+          if (!result || result.trim() === '') {
+            missing.push(filePath);
+          }
+        } catch {
+          // git ls-tree fails for non-existent paths
+          missing.push(filePath);
+        }
+      }
+
+      if (missing.length > 0) {
+        errors.push(
+          `code_paths validation failed - ${missing.length} file(s) not found on ${targetBranch}:\n${missing
+            .map((p) => `  - ${p}`)
+            .join(STRING_LITERALS.NEWLINE)}\n\n❌ POTENTIAL FALSE COMPLETION DETECTED\n\n` +
+            `These files are listed in code_paths but do not exist on ${targetBranch}.\n` +
+            `This prevents creating a stamp for incomplete work.\n\n` +
+            `Fix options:\n` +
+            `  1. Ensure all code is committed and merged to ${targetBranch}\n` +
+            `  2. Update code_paths in ${id}.yaml to match actual files\n` +
+            `  3. Remove files that were intentionally not created\n\n` +
+            `Context: WU-1351 prevents false completions from INIT-WORKFLOW-INTEGRITY`,
+        );
+      }
+    } catch (err) {
+      // Non-fatal: warn but don't block if git command fails
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${err.message}`,
+      );
+      return { valid: true, errors: [], missing: [] };
+    }
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors, missing };
+  }
+
+  console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All ${codePaths.length} code_paths verified`);
+  return { valid: true, errors: [], missing: [] };
+}
+
+/**
+ * Validate WU spec completeness (WU-1162, WU-1280)
+ *
+ * Ensures WU specifications are complete before allowing wu:done to proceed.
+ * Prevents placeholder WUs from being marked as done.
+ */
+export function validateSpecCompleteness(doc, _id) {
+  const errors = [];
+
+  // Check for placeholder text in description
+  if (doc.description && doc.description.includes(PLACEHOLDER_SENTINEL)) {
+    errors.push(`Description contains ${PLACEHOLDER_SENTINEL} marker`);
+  }
+
+  // Handle both array and object formats for acceptance criteria
+  if (doc.acceptance) {
+    const hasPlaceholder = (value) => {
+      if (typeof value === 'string') {
+        return value.includes(PLACEHOLDER_SENTINEL);
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => hasPlaceholder(item));
+      }
+      if (typeof value === 'object' && value !== null) {
+        return Object.values(value).some((item) => hasPlaceholder(item));
+      }
+      return false;
+    };
+
+    if (hasPlaceholder(doc.acceptance)) {
+      errors.push(`Acceptance criteria contain ${PLACEHOLDER_SENTINEL} markers`);
+    }
+  }
+
+  // Check minimum description length
+  if (!doc.description || doc.description.trim().length < VALIDATION.MIN_DESCRIPTION_LENGTH) {
+    errors.push(
+      `Description too short (${doc.description?.trim().length || 0} chars, minimum ${VALIDATION.MIN_DESCRIPTION_LENGTH})`,
+    );
+  }
+
+  // Check code_paths for non-documentation WUs
+  if (doc.type !== WU_TYPES.DOCUMENTATION && doc.type !== WU_TYPES.PROCESS) {
+    if (!doc.code_paths || doc.code_paths.length === 0) {
+      errors.push('Code paths required for non-documentation WUs');
+    }
+
+    // WU-1280: Check tests array for non-documentation WUs
+    // Support both tests: (current) and test_paths: (legacy)
+    const testObj = doc.tests || doc.test_paths || {};
+
+    // Helper to check if array has items
+    const hasItems = (arr) => Array.isArray(arr) && arr.length > 0;
+
+    const hasUnitTests = hasItems(testObj[TEST_TYPES.UNIT]);
+    const hasE2ETests = hasItems(testObj[TEST_TYPES.E2E]);
+    const hasManualTests = hasItems(testObj[TEST_TYPES.MANUAL]);
+    const hasIntegrationTests = hasItems(testObj[TEST_TYPES.INTEGRATION]);
+
+    if (!(hasUnitTests || hasE2ETests || hasManualTests || hasIntegrationTests)) {
+      errors.push('At least one test path required (unit, e2e, integration, or manual)');
+    }
+
+    // WU-2332: Require automated tests for code file changes
+    // Manual-only tests are not sufficient when code_paths contain actual code files
+    const automatedTestResult = validateAutomatedTestRequirement(doc);
+    if (!automatedTestResult.valid) {
+      errors.push(...automatedTestResult.errors);
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * WU-1617: Post-mutation validation for wu:done
+ *
+ * Validates that metadata files written by tx.commit() are valid:
+ * 1. WU YAML has completed_at field with valid ISO datetime
+ * 2. WU YAML has locked: true
+ * 3. Stamp file exists
+ */
+export function validatePostMutation({ id, wuPath, stampPath }) {
+  const errors = [];
+
+  // Check stamp file exists
+  if (!existsSync(stampPath)) {
+    errors.push(`Stamp file not created: ${stampPath}`);
+  }
+
+  // Read and validate WU YAML after mutation
+  if (!existsSync(wuPath)) {
+    errors.push(`WU YAML not found after mutation: ${wuPath}`);
+    return { valid: false, errors };
+  }
+
+  try {
+    const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+    const doc = parseYAML(content);
+
+    // Verify completed_at exists and is valid ISO datetime
+    if (!doc.completed_at) {
+      errors.push(`Missing required field 'completed_at' in ${id}.yaml`);
+    } else {
+      // Validate ISO datetime format (YYYY-MM-DDTHH:mm:ss.sssZ or similar)
+      const timestamp = new Date(doc.completed_at);
+      if (isNaN(timestamp.getTime())) {
+        errors.push(`Invalid completed_at timestamp: ${doc.completed_at}`);
+      }
+    }
+
+    // Verify locked is true
+    if (doc.locked !== true) {
+      errors.push(
+        `Missing or invalid 'locked' field in ${id}.yaml (expected: true, got: ${doc.locked})`,
+      );
+    }
+
+    // Verify status is done
+    if (doc.status !== 'done') {
+      errors.push(`Invalid status in ${id}.yaml (expected: 'done', got: '${doc.status}')`);
+    }
+  } catch (err) {
+    errors.push(`Failed to parse WU YAML after mutation: ${err.message}`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * WU-2242: Validate that test_paths is required for non-doc WUs
+ *
+ * Enforces that WUs with code changes (non-documentation types with code_paths
+ * that contain actual code) have at least one test path specified.
+ */
+export function validateTestPathsRequired(wu) {
+  // Skip validation for documentation and process WUs
+  if (wu.type === WU_TYPES.DOCUMENTATION || wu.type === WU_TYPES.PROCESS) {
+    return { valid: true };
+  }
+
+  // Skip if code_paths is empty or undefined
+  const codePaths = wu.code_paths || [];
+  if (codePaths.length === 0) {
+    return { valid: true };
+  }
+
+  // Skip if all code_paths are documentation paths
+  const hasCodeChanges = codePaths.some((p) => !isDocumentationPath(p));
+  if (!hasCodeChanges) {
+    return { valid: true };
+  }
+
+  // Check if tests object exists and has at least one test
+  const testObj = wu.tests || {};
+
+  // Helper to check if array has items
+  const hasItems = (arr) => Array.isArray(arr) && arr.length > 0;
+
+  const hasUnitTests = hasItems(testObj[TEST_TYPES.UNIT]);
+  const hasE2ETests = hasItems(testObj[TEST_TYPES.E2E]);
+  const hasManualTests = hasItems(testObj[TEST_TYPES.MANUAL]);
+  const hasIntegrationTests = hasItems(testObj[TEST_TYPES.INTEGRATION]);
+
+  // No tests at all - fail
+  if (!(hasUnitTests || hasE2ETests || hasManualTests || hasIntegrationTests)) {
+    return {
+      valid: false,
+      error: `${wu.id} requires test_paths: WU has code_paths but no tests specified. Add unit, e2e, integration, or manual tests.`,
+    };
+  }
+
+  // WU-2332: If we have tests, also check automated test requirement for code files
+  // Manual-only tests are not sufficient for code changes
+  const automatedTestResult = validateAutomatedTestRequirement(wu);
+  if (!automatedTestResult.valid) {
+    // Extract the first error line for the single-error format of this function
+    const errorSummary =
+      automatedTestResult.errors[0]?.split('\n')[0] || 'Automated tests required';
+    return {
+      valid: false,
+      error: `${wu.id}: ${errorSummary}`,
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * WU-2310: Allowed path patterns for documentation WUs.
+ * Mirrors the patterns in gates-pre-commit.mjs gateDocsOnlyPathEnforcement()
+ * to enable early validation at preflight (before transaction starts).
+ *
+ * @constant {RegExp[]}
+ */
+const DOCS_ONLY_ALLOWED_PATTERNS = [
+  /^memory-bank\//i,
+  /^docs\//i,
+  /\.md$/i,
+  /^\.beacon\/stamps\//i,
+  /^\.claude\//i,
+  /^ai\//i,
+  /^README\.md$/i,
+  /^CLAUDE\.md$/i,
+];
+
+/**
+ * WU-2310: Check if a path is allowed for documentation WUs.
+ *
+ * @param {string} filePath - File path to check
+ * @returns {boolean} True if path is allowed for docs WUs
+ */
+function isAllowedDocsPath(filePath) {
+  if (!filePath || typeof filePath !== 'string') return false;
+  return DOCS_ONLY_ALLOWED_PATTERNS.some((pattern) => pattern.test(filePath));
+}
+
+/**
+ * WU-2310: Validate type vs code_paths at preflight (before transaction starts).
+ */
+export function validateTypeVsCodePathsPreflight(wu) {
+  const errors = [];
+  const blockedPaths = [];
+
+  // Only validate documentation WUs
+  if (wu.type !== WU_TYPES.DOCUMENTATION) {
+    return { valid: true, errors: [], blockedPaths: [], abortedBeforeTransaction: false };
+  }
+
+  // Skip if no code_paths
+  const codePaths = wu.code_paths;
+  if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
+    return { valid: true, errors: [], blockedPaths: [], abortedBeforeTransaction: false };
+  }
+
+  // Check each code_path against allowed patterns
+  for (const filePath of codePaths) {
+    if (!isAllowedDocsPath(filePath)) {
+      blockedPaths.push(filePath);
+    }
+  }
+
+  if (blockedPaths.length > 0) {
+    const pathsList = blockedPaths.map((p) => `  - ${p}`).join('\n');
+    errors.push(
+      `Documentation WU ${wu.id} has code_paths that would fail pre-commit hook:\n${pathsList}`,
+    );
+    return { valid: false, errors, blockedPaths, abortedBeforeTransaction: true };
+  }
+
+  return { valid: true, errors: [], blockedPaths: [], abortedBeforeTransaction: false };
+}
+
+/**
+ * WU-2310: Build error message for type vs code_paths preflight failure.
+ */
+export function buildTypeVsCodePathsErrorMessage(id, blockedPaths) {
+  return `
+PREFLIGHT VALIDATION FAILED (WU-2310)
+
+WU ${id} is type: documentation but has code_paths that are not allowed:
+
+${blockedPaths.map((p) => `  - ${p}`).join('\n')}
+
+This would fail at git commit time (pre-commit hook: gateDocsOnlyPathEnforcement).
+Aborting BEFORE transaction to prevent inconsistent state.
+
+Fix options:
+
+  1. Change WU type to 'engineering' (or 'feature', 'bug', etc.):
+     pnpm wu:edit --id ${id} --type engineering
+
+  2. Update code_paths to only include documentation files:
+     pnpm wu:edit --id ${id} --code-paths "docs/..." "*.md"
+
+Allowed paths for documentation WUs:
+  - docs/
+  - ai/
+  - .claude/
+  - memory-bank/
+  - .beacon/stamps/
+  - *.md files
+
+After fixing, retry: pnpm wu:done --id ${id}
+`;
+}
