@@ -2,7 +2,7 @@ id: WU-1039
 title: Allow exposure edits on completed WUs
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - wu:edit allows --exposure on done WUs without error
   - Done WUs still reject edits to description/acceptance/code_paths and other fields
   - Exposure values are validated against the schema (ui|api|backend-only|documentation)
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1039
+claimed_at: 2026-01-21T12:40:47.006Z
+baseline_main_sha: 8735fadee4b32f07cef92694090dd609c71af3d7
+session_id: 9843da4d-1190-4b05-b60e-30f6a80ec53f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T12:40:47.014Z
