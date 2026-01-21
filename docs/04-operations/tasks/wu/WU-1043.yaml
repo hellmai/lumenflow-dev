@@ -2,7 +2,7 @@ id: WU-1043
 title: Enforce complete specs at wu:create (schema + templates + docs)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - wu:create validates specs against the WU schema (same as wu:edit)
   - WU templates (docs/templates/wu-template.yaml) match enforced schema fields
   - Docs updated to reflect that wu:create must be fully specified and validated
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1043
+claimed_at: 2026-01-21T08:48:58.308Z
+baseline_main_sha: 56b3b76b094579735a85867e7ec31fb994890f0d
+session_id: 62caf671-7f97-4faf-b57e-aa0cc35186cd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T08:48:58.315Z
