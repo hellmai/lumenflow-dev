@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml) — Framework: Core
-- [WU-1048 — Fix Vitest coverage provider gaps](wu/WU-1048.yaml) — Operations: Infrastructure
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -66,3 +64,4 @@ sections:
 - [WU-1044 — Vendor-Agnostic wu:spawn Refactor](wu/WU-1044.yaml)
 - [WU-1046 — Consolidate YAML handling on yaml package (retire js-yaml)](wu/WU-1046.yaml)
 - [WU-1047 — Configurable methodology defaults + client blocks for wu:claim/wu:spawn](wu/WU-1047.yaml)
+- [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml)
