@@ -62,3 +62,4 @@
 {"type":"claim","wuId":"WU-1047","lane":"Framework: Core","title":"Configurable methodology defaults + client blocks for wu:claim/wu:spawn","timestamp":"2026-01-21T14:15:01.143Z"}
 {"type":"complete","wuId":"WU-1047","timestamp":"2026-01-21T14:58:35.295Z"}
 {"type":"claim","wuId":"WU-1041","lane":"Framework: Core","title":"Auto-assign exposure on wu:done when missing","timestamp":"2026-01-21T16:46:15.213Z"}
+{"type":"complete","wuId":"WU-1041","timestamp":"2026-01-21T16:56:52.603Z"}

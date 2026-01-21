@@ -2,7 +2,7 @@ id: WU-1041
 title: Auto-assign exposure on wu:done when missing
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -44,3 +44,5 @@ session_id: 0258ba69-134b-465a-a6e2-32474829f661
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T16:46:15.196Z
+locked: true
+completed_at: 2026-01-21T16:56:52.583Z
