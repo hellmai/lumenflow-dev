@@ -17,17 +17,13 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-branch-utils.ts
   - packages/@lumenflow/core/src/wu-done-validators.ts
   - packages/@lumenflow/core/src/wu-done-worktree.ts
-  - packages/@lumenflow/core/src/wu-done-branch-only.ts
-  - packages/@lumenflow/core/src/manual-test-validator.ts
-  - packages/@lumenflow/core/src/code-path-validator.ts
   - packages/@lumenflow/core/src/path-classifiers.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
-  - packages/@lumenflow/core/src/__tests__/code-path-validator.golden.test.ts
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:
   manual:
-    - Run pnpm test --filter wu-done-validators
+    - Run pnpm test --filter @lumenflow/core -- wu-done-validators.test.ts
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
     - packages/@lumenflow/core/src/__tests__/code-path-validator.golden.test.ts
