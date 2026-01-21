@@ -67,6 +67,7 @@ import { isDocumentationPath } from './file-classifiers.js';
 import { validateWorktreeOwnership } from './worktree-ownership.js';
 // WU-2278: Import cleanup install config for timeout and CI mode
 import { getCleanupInstallConfig, CLEANUP_INSTALL_TIMEOUT_MS } from './cleanup-install-config.js';
+import { resolveExposureDefault } from './wu-validation.js';
 
 /**
  * Prefixes for paths that qualify as "docs-only" (no code changes).
@@ -83,6 +84,29 @@ const DOCS_ONLY_PREFIXES = Object.freeze(['docs/', 'ai/', '.claude/', 'memory-ba
  * @constant {string[]}
  */
 const DOCS_ONLY_ROOT_FILES = Object.freeze(['readme', 'claude']);
+
+interface ExposureDefaultResult {
+  applied: boolean;
+  exposure?: string;
+}
+
+export function applyExposureDefaults(doc): ExposureDefaultResult {
+  if (!doc || typeof doc !== 'object') {
+    return { applied: false };
+  }
+
+  if (typeof doc.exposure === 'string' && doc.exposure.trim().length > 0) {
+    return { applied: false, exposure: doc.exposure };
+  }
+
+  const exposureDefault = resolveExposureDefault(doc.lane);
+  if (!exposureDefault) {
+    return { applied: false };
+  }
+
+  doc.exposure = exposureDefault;
+  return { applied: true, exposure: exposureDefault };
+}
 
 /**
  * WU-1234 + WU-1255 + WU-1539: Detect docs-only WU from code_paths
@@ -526,6 +550,13 @@ export async function updateMetadataFiles({ id, title, doc, wuPath, statusPath, 
   // WU-1275: Fail fast before any mutations
   validateMetadataFilesExist({ statusPath, backlogPath });
 
+  const exposureUpdate = applyExposureDefaults(doc);
+  if (exposureUpdate.applied) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-set exposure to ${exposureUpdate.exposure} for ${id}`,
+    );
+  }
+
   // Update WU YAML (mark as done, lock, set completion timestamp)
   doc.status = 'done';
   doc.locked = true;
@@ -583,6 +614,13 @@ export async function collectMetadataToTransaction({
 }) {
   // WU-1369: Fail fast before any computations
   validateMetadataFilesExist({ statusPath, backlogPath });
+
+  const exposureUpdate = applyExposureDefaults(doc);
+  if (exposureUpdate.applied) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-set exposure to ${exposureUpdate.exposure} for ${id}`,
+    );
+  }
 
   // Compute WU YAML content (mutates doc, returns YAML string)
   const wuYAMLContent = computeWUYAMLContent(doc);
