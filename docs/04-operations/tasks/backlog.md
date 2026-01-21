@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1048 — Fix Vitest coverage provider gaps](wu/WU-1048.yaml) — Operations: Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
