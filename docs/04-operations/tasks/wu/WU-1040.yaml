@@ -6,8 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
-  - packages/@lumenflow/cli/src/wu-edit.ts
-  - packages/@lumenflow/cli/__tests__/wu-edit.test.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
