@@ -2,7 +2,7 @@ id: WU-1043
 title: Enforce complete specs at wu:create (schema + templates + docs)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 exposure: backend-only
 created: 2026-01-21
@@ -47,3 +47,5 @@ session_id: 62caf671-7f97-4faf-b57e-aa0cc35186cd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T08:48:58.315Z
+locked: true
+completed_at: 2026-01-21T09:00:38.822Z
