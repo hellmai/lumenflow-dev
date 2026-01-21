@@ -2,7 +2,7 @@ id: WU-1042
 title: Reduce gates friction (format guidance + worktree cleanup helper)
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -49,3 +49,6 @@ session_id: 16458ea4-d3ca-471f-a92f-d63b077aec14
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T17:29:17.128Z
+exposure: backend-only
+locked: true
+completed_at: 2026-01-21T18:08:27.628Z

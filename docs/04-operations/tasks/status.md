@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml) — 2026-01-21
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — 2026-01-21
 - [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml) — 2026-01-21
 - [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml) — 2026-01-21
