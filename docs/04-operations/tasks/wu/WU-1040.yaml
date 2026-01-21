@@ -2,7 +2,7 @@ id: WU-1040
 title: Allow safe metadata edits on done WUs (exposure)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - wu:edit permits --exposure updates on done WUs
   - Done WUs still reject edits to description/acceptance/code_paths/notes/type/priority/tests
   - Exposure values are validated against schema (ui|api|backend-only|documentation)
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1040
+claimed_at: 2026-01-21T17:29:58.065Z
+baseline_main_sha: 7cf0cf58fe966c66b21be8309aa3b3dda9c1b5b7
+session_id: 16458ea4-d3ca-471f-a92f-d63b077aec14
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T17:29:58.073Z
