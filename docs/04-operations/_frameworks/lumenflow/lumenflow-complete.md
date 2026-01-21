@@ -66,6 +66,7 @@ All projects must comply with this document. Stack-specific details are included
 
 - **Testing Pyramid**: unit > integration > e2e
 - **Coverage Threshold**: ≥90% for `@{PROJECT_NAME}/application`
+- **Coverage Provider**: Vitest coverage uses the v8 provider; packages running `pnpm test -- --coverage` must include `@vitest/coverage-v8` in devDependencies
 - **Mock Everything**: Use Vitest mocks for all external dependencies
 - **Test Behaviors**: Focus on what the system does, not how
 - **Arrange-Act-Assert**: Clear test structure with descriptive names

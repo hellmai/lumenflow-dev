@@ -71,6 +71,7 @@ This project uses:
 - **Prettier 3.8** for code formatting
 - **TypeScript 5.7** for type checking
 - **Vitest 4** for testing
+- **Vitest coverage** uses the v8 provider and requires `@vitest/coverage-v8` in any package running `pnpm test -- --coverage`
 - **Turbo 2.7** for monorepo build orchestration
 
 ### Architecture
