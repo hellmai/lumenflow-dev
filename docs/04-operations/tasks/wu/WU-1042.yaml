@@ -2,7 +2,7 @@ id: WU-1042
 title: Reduce gates friction (format guidance + worktree cleanup helper)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
     affected file paths
   - New CLI helper can safely remove dist artifacts in the current worktree
   - Docs updated with new cleanup helper usage
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1042
+claimed_at: 2026-01-21T17:29:17.121Z
+baseline_main_sha: 7cf0cf58fe966c66b21be8309aa3b3dda9c1b5b7
+session_id: 16458ea4-d3ca-471f-a92f-d63b077aec14
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T17:29:17.128Z
