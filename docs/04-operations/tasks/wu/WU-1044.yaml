@@ -5,10 +5,16 @@ type: feature
 status: ready
 priority: P2
 created: 2026-01-21
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/spawn-strategy.ts
 tests:
   manual: []
-  unit: []
+  unit:
+    - packages/@lumenflow/core/__tests__/spawn-strategy.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1044.done
@@ -22,12 +28,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: Refactor wu:spawn to be client-agnostic with minimal config. Replace Claude-centric
+  defaults with a configurable client strategy system. Use .lumenflow.config.yaml for preferences
+  while keeping logic in code.
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - wu:spawn supports --client arg (replaces --vendor)
