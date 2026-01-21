@@ -2,6 +2,9 @@
 #
 # Copy this template when creating new WUs. Fill in all required fields and
 # remove optional fields if not needed.
+#
+# If you used "lumenflow init --full", this template lives at:
+# docs/04-operations/tasks/templates/wu-template.yaml
 
 # Required: Unique work unit identifier (format: WU-NNN)
 id: WU-XXX

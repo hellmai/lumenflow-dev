@@ -5,6 +5,10 @@ description: LumenFlow configuration file reference
 
 LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
 
+`lumenflow init` writes this file. The default scaffold sets `directories.agentsDir` to
+`.lumenflow/agents` for vendor-agnostic agent guidance, with optional overlays like
+`.claude/agents` for Claude Code.
+
 ## Minimal Config
 
 ```yaml
