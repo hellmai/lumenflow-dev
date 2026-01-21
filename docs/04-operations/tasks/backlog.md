@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1047 — Test wu:create failure](wu/WU-1047.yaml) — Framework: CLI
 - [WU-1046 — Test wu:create full spec enforcement](wu/WU-1046.yaml) — Framework: CLI
 - [WU-1045 — Define lumenflow:init project scaffolding (minimal + optional full)](wu/WU-1045.yaml) — Framework: CLI
 - [WU-1044 — Vendor-Agnostic wu:spawn Refactor](wu/WU-1044.yaml) — Framework: Core
