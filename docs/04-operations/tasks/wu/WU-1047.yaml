@@ -2,7 +2,7 @@ id: WU-1047
 title: Configurable methodology defaults + client blocks for wu:claim/wu:spawn
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -72,3 +72,5 @@ session_id: b9e1f92c-3fb8-4d3f-af64-ca95aedc5086
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T14:15:01.133Z
+locked: true
+completed_at: 2026-01-21T14:58:35.264Z
