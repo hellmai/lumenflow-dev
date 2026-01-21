@@ -1,6 +1,17 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-01-19
+**Last updated:** 2026-01-21
+
+---
+
+## Project Setup
+
+| Command                                       | Description                             |
+| --------------------------------------------- | --------------------------------------- |
+| `pnpm exec lumenflow init`                    | Scaffold minimal LumenFlow core         |
+| `pnpm exec lumenflow init --full`             | Add docs/04-operations task scaffolding |
+| `pnpm exec lumenflow init --framework <name>` | Add framework hint + overlay docs       |
+| `pnpm exec lumenflow init --force`            | Overwrite existing files                |
 
 ---
 

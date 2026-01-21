@@ -637,12 +637,26 @@ Initialize LumenFlow in a new project.
 pnpm exec lumenflow init
 ```
 
-Creates:
+Creates (minimal):
 
 - `.lumenflow.config.yaml`
-- `docs/tasks/backlog.md`
-- `docs/tasks/wu/`
-- `.beacon/stamps/`
+- `LUMENFLOW.md`
+- `.lumenflow/constraints.md`
+- `.lumenflow/agents/`
+
+Optional flags:
+
+```bash
+pnpm exec lumenflow init --full
+pnpm exec lumenflow init --framework nextjs
+pnpm exec lumenflow init --force
+```
+
+- `--full` adds `docs/04-operations/tasks/` (backlog, status, WU templates)
+- `--framework <name>` adds `.lumenflow.framework.yaml` + `docs/04-operations/_frameworks/<name>/`
+- `--force` overwrites existing files
+
+If Claude Code is the default client, init also adds `CLAUDE.md` and `.claude/agents/`.
 
 ### lumenflow validate
 

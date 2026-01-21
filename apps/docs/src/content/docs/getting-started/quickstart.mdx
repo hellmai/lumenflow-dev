@@ -121,11 +121,15 @@ For the complete experience with automated workflows:
    npx lumenflow init
    ```
 
-   This creates:
+   This creates (minimal):
    - `.lumenflow.config.yaml` – Your configuration
-   - `docs/tasks/backlog.md` – Your task board
-   - `docs/tasks/wu/` – Where WU specs live
-   - `.beacon/stamps/` – Completion proofs
+   - `LUMENFLOW.md` – Workflow entry point
+   - `.lumenflow/constraints.md` – Non-negotiable constraints
+   - `.lumenflow/agents/` – Vendor-agnostic agent guidance
+
+   Optional:
+   - `npx lumenflow init --full` – Add `docs/04-operations/tasks/` (backlog, status, templates)
+   - `npx lumenflow init --framework nextjs` – Add framework hint + overlay docs
 
 3. **Add scripts to package.json**
 
