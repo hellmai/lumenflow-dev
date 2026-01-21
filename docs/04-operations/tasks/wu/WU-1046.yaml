@@ -2,7 +2,7 @@ id: WU-1046
 title: Consolidate YAML handling on yaml package (retire js-yaml)
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -63,3 +63,5 @@ session_id: 9843da4d-1190-4b05-b60e-30f6a80ec53f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T13:34:04.895Z
+locked: true
+completed_at: 2026-01-21T14:07:27.930Z
