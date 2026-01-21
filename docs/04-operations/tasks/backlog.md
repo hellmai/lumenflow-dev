@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — Framework: CLI
 - [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml) — Framework: CLI
   (No items ready)
 
