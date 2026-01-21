@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml) — 2026-01-21
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml) — 2026-01-21
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — 2026-01-21
 - [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml) — 2026-01-21
