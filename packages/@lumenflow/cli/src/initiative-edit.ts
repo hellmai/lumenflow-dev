@@ -36,7 +36,7 @@ import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
 import {
@@ -264,7 +264,7 @@ function loadInitiative(id) {
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
   const content = readFileSync(initPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-  return yaml.load(content as string);
+  return parseYAML(content as string);
 }
 
 /**
@@ -493,7 +493,7 @@ async function main() {
     execute: async ({ worktreePath }) => {
       // Write updated Initiative to micro-worktree
       const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
-      const yamlContent = yaml.dump(updatedInit, { lineWidth: 100 });
+      const yamlContent = stringifyYAML(updatedInit);
 
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
       writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });

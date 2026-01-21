@@ -31,7 +31,7 @@ import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import yaml from 'js-yaml';
+import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
 import {
@@ -39,7 +39,7 @@ import {
   INIT_COMMIT_FORMATS,
   INIT_DEFAULTS,
 } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { FILE_SYSTEM, YAML_OPTIONS } from '@lumenflow/core/dist/wu-constants.js';
+import { FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
@@ -136,11 +136,7 @@ function createInitiativeYamlInWorktree(
     labels: [],
   };
 
-  const yamlContent = yaml.dump(initContent, {
-    lineWidth: YAML_OPTIONS.LINE_WIDTH,
-    quotingType: '"',
-    forceQuotes: false,
-  });
+  const yamlContent = stringifyYAML(initContent);
 
   writeFileSync(initAbsolutePath, yamlContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${LOG_PREFIX} ✅ Created ${id}.yaml in micro-worktree`);

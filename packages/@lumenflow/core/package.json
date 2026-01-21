@@ -81,7 +81,6 @@
     "fast-glob": "^3.3.3",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
-    "js-yaml": "^4.1.0",
     "micromatch": "^4.0.8",
     "minimatch": "^10.1.1",
     "picocolors": "^1.1.1",

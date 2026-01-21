@@ -1,7 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { createError, ErrorCodes } from '@lumenflow/core/dist/error-handler.js';
 import { validateInitiative } from './initiative-schema.js';
 import { INIT_PATHS } from './initiative-paths.js';
@@ -97,7 +97,7 @@ export function readInitiative(initPath: string, expectedId: string): Initiative
   let rawDoc: unknown;
 
   try {
-    rawDoc = yaml.load(text);
+    rawDoc = parseYAML(text);
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : String(e);
     throw createError(
@@ -144,7 +144,7 @@ export function readInitiative(initPath: string, expectedId: string): Initiative
  * @param {object} doc - YAML document to write
  */
 export function writeInitiative(initPath: string, doc: InitiativeDoc): void {
-  const out = yaml.dump(doc, { lineWidth: 100 });
+  const out = stringifyYAML(doc);
   writeFileSync(initPath, out, { encoding: 'utf-8' });
 }
 

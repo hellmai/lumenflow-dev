@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import yaml from 'js-yaml';
+import { stringify } from 'yaml';
 
 // We need to test with controlled directory structure
 // These tests use manual file creation to avoid circular dependencies
@@ -52,7 +52,7 @@ describe('initiative-yaml', () => {
     };
 
     const filePath = join(testDir, 'docs/04-operations/tasks/initiatives', `${id}.yaml`);
-    writeFileSync(filePath, yaml.dump(initiative, { lineWidth: 100 }), 'utf8');
+    writeFileSync(filePath, stringify(initiative, { lineWidth: 100 }), 'utf8');
     return initiative;
   }
 
@@ -74,7 +74,7 @@ describe('initiative-yaml', () => {
     };
 
     const filePath = join(testDir, 'docs/04-operations/tasks/wu', `${id}.yaml`);
-    writeFileSync(filePath, yaml.dump(wu, { lineWidth: 100 }), 'utf8');
+    writeFileSync(filePath, stringify(wu, { lineWidth: 100 }), 'utf8');
     return wu;
   }
 
@@ -128,7 +128,7 @@ describe('initiative-yaml', () => {
     it('should throw error if Initiative fails schema validation', async () => {
       // Create initiative missing required fields
       const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-003.yaml');
-      writeFileSync(filePath, yaml.dump({ id: 'INIT-003' }), 'utf8');
+      writeFileSync(filePath, stringify({ id: 'INIT-003' }), 'utf8');
 
       const mod = await import('../src/initiative-yaml.js');
       readInitiative = mod.readInitiative;
@@ -163,6 +163,28 @@ describe('initiative-yaml', () => {
       expect(result.slug).toBe('write-test');
       expect(result.title).toBe('Write Test');
     });
+  });
+
+  it('should keep date fields as strings when unquoted', async () => {
+    const filePath = join(testDir, 'docs/04-operations/tasks/initiatives/INIT-004.yaml');
+    writeFileSync(
+      filePath,
+      [
+        'id: INIT-004',
+        'slug: test-init',
+        'title: Date Coercion Check',
+        'status: open',
+        'owner: tester',
+        'created: 2025-01-01',
+        'description: Check date type',
+      ].join('\n'),
+      'utf8',
+    );
+
+    const mod = await import('../src/initiative-yaml.js');
+    const result = mod.readInitiative(filePath, 'INIT-004');
+    expect(result.created).toBe('2025-01-01');
+    expect(typeof result.created).toBe('string');
   });
 
   describe('listInitiatives', async () => {
@@ -215,7 +237,7 @@ describe('initiative-yaml', () => {
 
       // Create file with wrong pattern
       const wrongPath = join(testDir, 'docs/04-operations/tasks/initiatives/not-an-init.yaml');
-      writeFileSync(wrongPath, yaml.dump({ id: 'not-an-init', slug: 'test' }), 'utf8');
+      writeFileSync(wrongPath, stringify({ id: 'not-an-init', slug: 'test' }), 'utf8');
 
       const mod = await import('../src/initiative-yaml.js');
       const { listInitiatives } = mod;

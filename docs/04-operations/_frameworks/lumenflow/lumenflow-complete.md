@@ -160,6 +160,7 @@ Lanes keep focus while enabling parallelism. The default lane set is:
 - Focus on processes, content, policies, and metrics
 - Still follow WIP=1 (one active WU per lane)
 - Still require gates (format checking, link validation, YAML syntax)
+- YAML tooling uses the `yaml` package via core helpers; unquoted YYYY-MM-DD values remain strings (avoid js-yaml).
 
 Teams may refine or split lanes (e.g., separate Mobile from Web) but must keep the one-WU-per-lane rule. Discovery WUs are time-boxed and typically produce briefs or decision records, after which implementation WUs begin in the relevant lane.
 

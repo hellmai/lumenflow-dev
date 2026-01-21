@@ -18,7 +18,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import yaml from 'js-yaml';
+import { stringify } from 'yaml';
 
 describe('orchestrate-initiative checkpoint-per-wave', () => {
   let testDir: string;
@@ -59,7 +59,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     };
 
     const filePath = join(testDir, 'docs/04-operations/tasks/initiatives', `${id}.yaml`);
-    writeFileSync(filePath, yaml.dump(initiative, { lineWidth: 100 }), 'utf8');
+    writeFileSync(filePath, stringify(initiative, { lineWidth: 100 }), 'utf8');
     return initiative;
   }
 
@@ -88,7 +88,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     };
 
     const filePath = join(testDir, 'docs/04-operations/tasks/wu', `${id}.yaml`);
-    writeFileSync(filePath, yaml.dump(wu, { lineWidth: 100 }), 'utf8');
+    writeFileSync(filePath, stringify(wu, { lineWidth: 100 }), 'utf8');
     return wu;
   }
 

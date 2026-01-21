@@ -10,7 +10,7 @@
 import { Tiktoken, get_encoding } from 'tiktoken';
 import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
-import { load as loadYAML } from 'js-yaml';
+import { parseYAML } from './wu-yaml.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
 
@@ -74,7 +74,7 @@ export function loadPrompt(promptPath) {
     const raw = readFileSync(promptPath, { encoding: 'utf-8' });
 
     // Parse YAML to access prompt structure
-    const parsed = loadYAML(raw) as
+    const parsed = parseYAML(raw) as
       | { prompt?: string; system?: string; content?: string }
       | string
       | null;

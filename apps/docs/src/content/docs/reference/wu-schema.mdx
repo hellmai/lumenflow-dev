@@ -5,6 +5,11 @@ description: Work Unit YAML specification
 
 Work Units are defined in YAML files under `docs/04-operations/tasks/wu/`.
 
+## YAML parsing notes
+
+- LumenFlow tooling parses and serializes WU YAML using the `yaml` library.
+- Unquoted YYYY-MM-DD values are treated as strings (no Date coercion).
+
 ## Minimal (Claim-Ready) WU
 
 ```yaml
