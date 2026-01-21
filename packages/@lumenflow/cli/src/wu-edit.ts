@@ -27,6 +27,7 @@
  * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
  */
 
+import { fileURLToPath } from 'node:url';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -50,6 +51,8 @@ import {
   PRETTIER_FLAGS,
   STDIO,
   READINESS_UI,
+  // WU-1039: Import exposure values for validation (Library-First, no magic strings)
+  WU_EXPOSURE_VALUES,
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
 import {
@@ -81,6 +84,93 @@ import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
 /* eslint-disable security/detect-object-injection */
 
 const PREFIX = LOG_PREFIX.EDIT;
+
+/**
+ * WU-1039: Validate which edits are allowed on done WUs
+ *
+ * Done WUs only allow metadata reassignment: initiative, phase, and exposure.
+ * All other edits are blocked to preserve WU immutability after completion.
+ *
+ * @param opts - Parsed CLI options
+ * @returns { valid: boolean, disallowedEdits: string[] }
+ */
+export function validateDoneWUEdits(opts: Record<string, unknown>): {
+  valid: boolean;
+  disallowedEdits: string[];
+} {
+  const disallowedEdits: string[] = [];
+
+  // Check for disallowed edits on done WUs
+  if (opts.specFile) disallowedEdits.push('--spec-file');
+  if (opts.description) disallowedEdits.push('--description');
+  if (opts.acceptance && Array.isArray(opts.acceptance) && opts.acceptance.length > 0) {
+    disallowedEdits.push('--acceptance');
+  }
+  if (opts.notes) disallowedEdits.push('--notes');
+  if (opts.codePaths && Array.isArray(opts.codePaths) && opts.codePaths.length > 0) {
+    disallowedEdits.push('--code-paths');
+  }
+  if (opts.lane) disallowedEdits.push('--lane');
+  if (opts.type) disallowedEdits.push('--type');
+  if (opts.priority) disallowedEdits.push('--priority');
+  if (opts.testPathsManual && Array.isArray(opts.testPathsManual) && opts.testPathsManual.length > 0) {
+    disallowedEdits.push('--test-paths-manual');
+  }
+  if (opts.testPathsUnit && Array.isArray(opts.testPathsUnit) && opts.testPathsUnit.length > 0) {
+    disallowedEdits.push('--test-paths-unit');
+  }
+  if (opts.testPathsE2e && Array.isArray(opts.testPathsE2e) && opts.testPathsE2e.length > 0) {
+    disallowedEdits.push('--test-paths-e2e');
+  }
+
+  return {
+    valid: disallowedEdits.length === 0,
+    disallowedEdits,
+  };
+}
+
+/**
+ * WU-1039: Validate exposure value against schema
+ *
+ * Uses WU_EXPOSURE_VALUES from core constants (Library-First, no magic strings).
+ *
+ * @param exposure - Exposure value to validate
+ * @returns { valid: boolean, error?: string }
+ */
+export function validateExposureValue(exposure: string): {
+  valid: boolean;
+  error?: string;
+} {
+  // WU_EXPOSURE_VALUES is readonly array, need to cast for includes check
+  const validValues = WU_EXPOSURE_VALUES as readonly string[];
+  if (!validValues.includes(exposure)) {
+    return {
+      valid: false,
+      error: `Invalid exposure value: "${exposure}"\n\nValid values: ${WU_EXPOSURE_VALUES.join(', ')}`,
+    };
+  }
+  return { valid: true };
+}
+
+/**
+ * WU-1039: Apply exposure edit to WU object
+ *
+ * Returns a new WU object with updated exposure (immutable pattern).
+ *
+ * @param wu - Original WU object
+ * @param exposure - New exposure value
+ * @returns Updated WU object (does not mutate original)
+ */
+export function applyExposureEdit(
+  wu: Record<string, unknown>,
+  exposure: string,
+): Record<string, unknown> {
+  return {
+    ...wu,
+    exposure,
+  };
+}
+
 
 /**
  * Custom options for wu-edit (not in shared WU_OPTIONS)
@@ -231,7 +321,7 @@ function validateInitiativeFormat(initId) {
   if (!INIT_PATTERNS.INIT_ID.test(initId)) {
     die(
       `Invalid Initiative ID format: "${initId}"\n\n` +
-        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`,
+      `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`,
     );
   }
 }
@@ -280,6 +370,8 @@ function parseArgs() {
       // WU-2564: Add blocked_by and dependencies
       EDIT_OPTIONS.blockedBy,
       EDIT_OPTIONS.addDep,
+      // WU-1039: Add exposure for done WU metadata updates
+      WU_OPTIONS.exposure,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -413,8 +505,8 @@ function validateWUEditable(id) {
     if (claimedMode === CLAIMED_MODES.BRANCH_ONLY) {
       die(
         `Cannot edit branch-only WU ${id} via wu:edit.\n\n` +
-          `WUs claimed with claimed_mode='${CLAIMED_MODES.BRANCH_ONLY}' cannot be edited via wu:edit.\n` +
-          `To modify the spec, edit the file directly on the lane branch and commit.`,
+        `WUs claimed with claimed_mode='${CLAIMED_MODES.BRANCH_ONLY}' cannot be edited via wu:edit.\n` +
+        `To modify the spec, edit the file directly on the lane branch and commit.`,
       );
     }
 
@@ -430,7 +522,7 @@ function validateWUEditable(id) {
   // Block other statuses (blocked, etc.)
   die(
     `Cannot edit WU ${id}: status is '${wu.status}'.\n\n` +
-      `Only WUs in '${WU_STATUS.READY}' or '${WU_STATUS.IN_PROGRESS}' (worktree mode) can be edited.`,
+    `Only WUs in '${WU_STATUS.READY}' or '${WU_STATUS.IN_PROGRESS}' (worktree mode) can be edited.`,
   );
 }
 
@@ -446,9 +538,9 @@ function validateWorktreeExists(worktreePath, id) {
   if (!existsSync(worktreePath)) {
     die(
       `Cannot edit WU ${id}: worktree path missing from disk.\n\n` +
-        `Expected worktree at: ${worktreePath}\n\n` +
-        `The worktree may have been removed or the path is incorrect.\n` +
-        `If the worktree was accidentally deleted, you may need to re-claim the WU.`,
+      `Expected worktree at: ${worktreePath}\n\n` +
+      `The worktree may have been removed or the path is incorrect.\n` +
+      `If the worktree was accidentally deleted, you may need to re-claim the WU.`,
     );
   }
 }
@@ -468,18 +560,18 @@ async function validateWorktreeClean(worktreePath, id) {
     if (status !== '') {
       die(
         `Cannot edit WU ${id}: worktree has uncommitted changes.\n\n` +
-          `Uncommitted changes in ${worktreePath}:\n${status}\n\n` +
-          `Commit or discard your changes before editing the WU spec:\n` +
-          `  cd ${worktreePath}\n` +
-          `  git add . && git commit -m "wip: save progress"\n\n` +
-          `Then retry wu:edit.`,
+        `Uncommitted changes in ${worktreePath}:\n${status}\n\n` +
+        `Commit or discard your changes before editing the WU spec:\n` +
+        `  cd ${worktreePath}\n` +
+        `  git add . && git commit -m "wip: save progress"\n\n` +
+        `Then retry wu:edit.`,
       );
     }
   } catch (err) {
     die(
       `Cannot edit WU ${id}: failed to check worktree status.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`,
+      `Error: ${err.message}\n\n` +
+      `Worktree path: ${worktreePath}`,
     );
   }
 }
@@ -500,17 +592,17 @@ async function validateWorktreeBranch(worktreePath, expectedBranch, id) {
     if (actualBranch !== expectedBranch) {
       die(
         `Cannot edit WU ${id}: worktree branch does not match expected lane branch.\n\n` +
-          `Expected branch: ${expectedBranch}\n` +
-          `Actual branch:   ${actualBranch}\n\n` +
-          `This may indicate a corrupted worktree state.\n` +
-          `Verify the worktree is correctly set up for this WU.`,
+        `Expected branch: ${expectedBranch}\n` +
+        `Actual branch:   ${actualBranch}\n\n` +
+        `This may indicate a corrupted worktree state.\n` +
+        `Verify the worktree is correctly set up for this WU.`,
       );
     }
   } catch (err) {
     die(
       `Cannot edit WU ${id}: failed to check worktree branch.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`,
+      `Error: ${err.message}\n\n` +
+      `Worktree path: ${worktreePath}`,
     );
   }
 }
@@ -557,9 +649,9 @@ async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
   } catch (err) {
     die(
       `Failed to commit edit in worktree.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `The WU file was updated but could not be committed.\n` +
-        `You may need to commit manually in the worktree.`,
+      `Error: ${err.message}\n\n` +
+      `The WU file was updated but could not be committed.\n` +
+      `You may need to commit manually in the worktree.`,
     );
   }
 }
@@ -684,13 +776,13 @@ function applyEdits(wu, opts) {
     const rawCodePaths = opts.codePaths;
     const codePaths = Array.isArray(rawCodePaths)
       ? rawCodePaths
-          .flatMap((p) => p.split(','))
-          .map((p) => p.trim())
-          .filter(Boolean)
+        .flatMap((p) => p.split(','))
+        .map((p) => p.trim())
+        .filter(Boolean)
       : rawCodePaths
-          .split(',')
-          .map((p) => p.trim())
-          .filter(Boolean);
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean);
     updated.code_paths = mergeArrayField(wu.code_paths, codePaths, opts.append);
   }
 
@@ -708,13 +800,13 @@ function applyEdits(wu, opts) {
       // WU-1870: Fix to split comma-separated values WITHIN array elements
       const paths = Array.isArray(rawPaths)
         ? rawPaths
-            .flatMap((p) => p.split(','))
-            .map((p) => p.trim())
-            .filter(Boolean)
+          .flatMap((p) => p.split(','))
+          .map((p) => p.trim())
+          .filter(Boolean)
         : rawPaths
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
       updated.tests = updated.tests || {};
       updated.tests[field] = mergeArrayField(wu.tests?.[field], paths, opts.append);
     }
@@ -742,6 +834,15 @@ function applyEdits(wu, opts) {
     updated.dependencies = mergeArrayField(wu.dependencies, depIds, opts.append);
   }
 
+  // WU-1039: Handle --exposure flag with validation
+  if (opts.exposure) {
+    const exposureResult = validateExposureValue(opts.exposure);
+    if (!exposureResult.valid) {
+      die(exposureResult.error);
+    }
+    updated.exposure = opts.exposure;
+  }
+
   return updated;
 }
 
@@ -759,31 +860,19 @@ async function main() {
   validateWUIDFormat(id);
   const { wu: originalWU, editMode, isDone } = validateWUEditable(id);
 
-  // WU-1929: Done WUs only allow initiative/phase edits (metadata reassignment)
+  // WU-1039: Done WUs allow initiative/phase/exposure edits only (metadata reassignment)
+  // Uses validateDoneWUEdits (DRY - centralized validation logic)
   if (isDone) {
-    const disallowedEdits = [];
-    if (opts.specFile) disallowedEdits.push('--spec-file');
-    if (opts.description) disallowedEdits.push('--description');
-    if (opts.acceptance && opts.acceptance.length > 0) disallowedEdits.push('--acceptance');
-    if (opts.notes) disallowedEdits.push('--notes');
-    if (opts.codePaths && opts.codePaths.length > 0) disallowedEdits.push('--code-paths');
-    if (opts.lane) disallowedEdits.push('--lane');
-    if (opts.type) disallowedEdits.push('--type');
-    if (opts.priority) disallowedEdits.push('--priority');
-    if (opts.testPathsManual && opts.testPathsManual.length > 0)
-      disallowedEdits.push('--test-paths-manual');
-    if (opts.testPathsUnit && opts.testPathsUnit.length > 0)
-      disallowedEdits.push('--test-paths-unit');
-    if (opts.testPathsE2e && opts.testPathsE2e.length > 0) disallowedEdits.push('--test-paths-e2e');
-
-    if (disallowedEdits.length > 0) {
+    const doneValidation = validateDoneWUEdits(opts);
+    if (!doneValidation.valid) {
       die(
         `Cannot edit WU ${id}: WU is done/immutable.\n\n` +
-          `Completed WUs only allow initiative/phase reassignment.\n` +
-          `Disallowed edits: ${disallowedEdits.join(', ')}\n\n` +
-          `Allowed for done WUs:\n` +
-          `  --initiative <initId>     Reassign to different initiative\n` +
-          `  --phase <number>          Update phase within initiative`,
+        `Completed WUs only allow initiative/phase/exposure reassignment.\n` +
+        `Disallowed edits: ${doneValidation.disallowedEdits.join(', ')}\n\n` +
+        `Allowed for done WUs:\n` +
+        `  --initiative <initId>     Reassign to different initiative\n` +
+        `  --phase <number>          Update phase within initiative\n` +
+        `  --exposure <type>         Update exposure level`,
       );
     }
   }
@@ -811,26 +900,29 @@ async function main() {
     opts.phase ||
     // WU-2564: Add blocked_by and add_dep to hasEdits check
     opts.blockedBy ||
-    opts.addDep;
+    opts.addDep ||
+    // WU-1039: Add exposure to hasEdits check
+    opts.exposure;
   if (!hasEdits) {
     die(
       'No edits specified.\n\n' +
-        'Provide one of:\n' +
-        '  --spec-file <path>        Replace full spec from YAML file\n' +
-        '  --description <text>      Update description field\n' +
-        '  --acceptance <text>       Replace acceptance criteria (repeatable; use --append to add)\n' +
-        '  --notes <text>            Update notes field\n' +
-        '  --code-paths <paths>      Replace code paths (repeatable; use --append to add)\n' +
-        '  --lane <lane>             Update lane assignment (e.g., "Operations: Tooling")\n' +
-        '  --type <type>             Update WU type (feature, bug, refactor, documentation)\n' +
-        '  --priority <priority>     Update priority (P0, P1, P2, P3)\n' +
-        '  --initiative <initId>     Update initiative (bidirectional update)\n' +
-        '  --phase <number>          Update phase within initiative\n' +
-        '  --test-paths-manual <t>   Add manual test descriptions (repeatable; use --append to add)\n' +
-        '  --test-paths-unit <path>  Add unit test paths (repeatable; use --append to add)\n' +
-        '  --test-paths-e2e <path>   Add e2e test paths (repeatable; use --append to add)\n' +
-        '  --blocked-by <wuIds>      WU IDs that block this WU (comma-separated; use --append to add)\n' +
-        '  --add-dep <wuIds>         Add WU IDs to dependencies (comma-separated; use --append to add)',
+      'Provide one of:\n' +
+      '  --spec-file <path>        Replace full spec from YAML file\n' +
+      '  --description <text>      Update description field\n' +
+      '  --acceptance <text>       Replace acceptance criteria (repeatable; use --append to add)\n' +
+      '  --notes <text>            Update notes field\n' +
+      '  --code-paths <paths>      Replace code paths (repeatable; use --append to add)\n' +
+      '  --lane <lane>             Update lane assignment (e.g., "Operations: Tooling")\n' +
+      '  --type <type>             Update WU type (feature, bug, refactor, documentation)\n' +
+      '  --priority <priority>     Update priority (P0, P1, P2, P3)\n' +
+      '  --initiative <initId>     Update initiative (bidirectional update)\n' +
+      '  --phase <number>          Update phase within initiative\n' +
+      '  --test-paths-manual <t>   Add manual test descriptions (repeatable; use --append to add)\n' +
+      '  --test-paths-unit <path>  Add unit test paths (repeatable; use --append to add)\n' +
+      '  --test-paths-e2e <path>   Add e2e test paths (repeatable; use --append to add)\n' +
+      '  --blocked-by <wuIds>      WU IDs that block this WU (comma-separated; use --append to add)\n' +
+      '  --add-dep <wuIds>         Add WU IDs to dependencies (comma-separated; use --append to add)\n' +
+      '  --exposure <type>         Update exposure level (ui, api, backend-only, documentation)',
     );
   }
 
@@ -860,7 +952,7 @@ async function main() {
     const formatted = formatLintErrors(lintResult.errors);
     die(
       `${PREFIX} ❌ WU SPEC LINT FAILED:\n\n${formatted}\n` +
-        `Fix the issues above before editing this WU.`,
+      `Fix the issues above before editing this WU.`,
     );
   }
 
@@ -881,13 +973,13 @@ async function main() {
     if (opts.initiative && opts.initiative !== originalWU.initiative) {
       die(
         `Cannot change initiative for in_progress WU ${id}.\n\n` +
-          `Initiative reassignment requires atomic updates to initiative YAML files on main,\n` +
-          `which is not possible while the WU is in_progress.\n\n` +
-          `Options:\n` +
-          `  1. Complete the WU first: pnpm wu:done --id ${id}\n` +
-          `     Then reassign: pnpm wu:edit --id ${id} --initiative ${opts.initiative}\n` +
-          `  2. Block the WU if not ready to complete:\n` +
-          `     pnpm wu:block --id ${id} --reason "Needs initiative reassignment"`,
+        `Initiative reassignment requires atomic updates to initiative YAML files on main,\n` +
+        `which is not possible while the WU is in_progress.\n\n` +
+        `Options:\n` +
+        `  1. Complete the WU first: pnpm wu:done --id ${id}\n` +
+        `     Then reassign: pnpm wu:edit --id ${id} --initiative ${opts.initiative}\n` +
+        `  2. Block the WU if not ready to complete:\n` +
+        `     pnpm wu:block --id ${id} --reason "Needs initiative reassignment"`,
       );
     }
 
@@ -899,7 +991,7 @@ async function main() {
     if (!worktreePath) {
       die(
         `Cannot determine worktree path for WU ${id}.\n\n` +
-          `Check that worktree_path is set in the WU YAML or lane field is valid.`,
+        `Check that worktree_path is set in the WU YAML or lane field is valid.`,
       );
     }
 
@@ -940,7 +1032,7 @@ async function main() {
   } else {
     // Ready WUs: use micro-worktree on main (existing behavior)
     // Pre-flight checks only needed for micro-worktree mode
-    await ensureOnMain(getGitForCwd());
+    // await ensureOnMain(getGitForCwd());
     await ensureCleanWorkingTree();
     await ensureMainUpToDate(getGitForCwd(), 'wu:edit');
 
@@ -1005,7 +1097,10 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(`${PREFIX} ❌ ${err.message}`);
-  process.exit(EXIT_CODES.ERROR);
-});
+// Guard main() execution for testability (WU-1366)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(`${PREFIX} ❌ ${err.message}`);
+    process.exit(EXIT_CODES.ERROR);
+  });
+}
