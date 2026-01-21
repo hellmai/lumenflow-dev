@@ -2,7 +2,7 @@ id: WU-1044
 title: Vendor-Agnostic wu:spawn Refactor
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -33,3 +33,11 @@ description: Refactor wu:spawn to be client-agnostic with minimal config. Replac
   while keeping logic in code.
 acceptance:
   - wu:spawn supports --client arg (replaces --vendor)
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-wu-1044
+claimed_at: 2026-01-21T09:33:36.078Z
+baseline_main_sha: 99dc030c5cb7273e60f024dea1dd5356ebcc0131
+session_id: e40b1c68-a8f2-420f-85f2-345d9c2e8412
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T09:33:36.084Z
