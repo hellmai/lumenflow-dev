@@ -2,7 +2,7 @@ id: WU-1049
 title: Refactor wu-done validators + standardize errors
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -37,8 +37,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu-done-validators.ts is large and mixes validation, error handling, and orchestration logic. Problem: file size and mixed responsibilities make changes risky and error messaging inconsistent. Solution: split validators into focused modules, standardize error handling patterns, and update documentation as needed.'
+description: 'Context: wu-done-validators.ts is large and mixes validation, error handling, and
+  orchestration logic. Problem: file size and mixed responsibilities make changes risky and error
+  messaging inconsistent. Solution: split validators into focused modules, standardize error
+  handling patterns, and update documentation as needed.'
 acceptance:
-  - Refactor wu-done-validators.ts into focused modules without changing behavior (golden tests still pass).
-  - Standardize error handling patterns across wu-done validator paths (consistent error codes/messages).
+  - Refactor wu-done-validators.ts into focused modules without changing behavior (golden tests
+    still pass).
+  - Standardize error handling patterns across wu-done validator paths (consistent error
+    codes/messages).
   - Update relevant docs if validation tooling behavior or file structure changes.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-wu-1049
+claimed_at: 2026-01-21T18:16:06.783Z
+baseline_main_sha: 4a2b6db78b4d14057bea2e49394c6e386ab04ec2
+session_id: cef0e3c7-ad6d-471b-8b32-06eeb8c4c11a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T18:16:06.790Z
