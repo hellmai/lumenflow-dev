@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml) — Framework: Core
 - [WU-1048 — Fix Vitest coverage provider gaps](wu/WU-1048.yaml) — Operations: Infrastructure
   (No items ready)
 
