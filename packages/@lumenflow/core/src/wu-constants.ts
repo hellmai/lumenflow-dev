@@ -1114,7 +1114,6 @@ export const ESLINT_DEFAULTS = {
    *
    * WU-1866: Temporarily increased from 0 to 100 to unblock gates.
    * There are ~82 pre-existing warnings that need proper fixes.
-   * TODO: Create follow-up WU to fix warnings and restore zero-warnings policy.
    */
   MAX_WARNINGS: '100',
 };
