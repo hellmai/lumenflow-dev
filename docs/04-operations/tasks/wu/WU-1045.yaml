@@ -2,14 +2,15 @@ id: WU-1045
 title: Define lumenflow:init project scaffolding (minimal + optional full)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
   - docs/templates/wu-template.yaml
 tests:
   manual:
-    - Run init --full --framework nextjs and confirm docs/04-operations scaffolding and framework hint are created
+    - Run init --full --framework nextjs and confirm docs/04-operations scaffolding and framework
+      hint are created
   unit:
     - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
@@ -28,11 +29,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow init should provide a predictable, vendor-agnostic baseline for new projects while allowing richer scaffolding when requested. Problem: current init behavior is not explicitly defined, leading to inconsistent setups and confusion around overlays, docs, and constraints. Solution: define and implement a minimal, idempotent init that always scaffolds the core and optional client overlays, with --full and --framework flags for expanded docs/templates.'
+description: 'Context: LumenFlow init should provide a predictable, vendor-agnostic baseline for new
+  projects while allowing richer scaffolding when requested. Problem: current init behavior is not
+  explicitly defined, leading to inconsistent setups and confusion around overlays, docs, and
+  constraints. Solution: define and implement a minimal, idempotent init that always scaffolds the
+  core and optional client overlays, with --full and --framework flags for expanded docs/templates.'
 acceptance:
-  - Default init creates vendor-agnostic core (LUMENFLOW.md, .lumenflow/constraints.md, .lumenflow/agents) and writes .lumenflow.config.yaml
+  - Default init creates vendor-agnostic core (LUMENFLOW.md, .lumenflow/constraints.md,
+    .lumenflow/agents) and writes .lumenflow.config.yaml
   - 'Init is idempotent: existing files are not overwritten without --force'
   - If default client is claude-code, init scaffolds CLAUDE.md and .claude/agents overlay
   - --full scaffolds docs/04-operations tasks/templates/backlog/status
   - --framework <name> writes a framework hint file and doc overlay
   - Docs updated to describe init modes and flags
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-wu-1045
+claimed_at: 2026-01-21T09:46:47.873Z
+baseline_main_sha: 51aa5b12aa4c6e0c7913501635d159a6b43655d5
+session_id: e40b1c68-a8f2-420f-85f2-345d9c2e8412
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T09:46:47.880Z

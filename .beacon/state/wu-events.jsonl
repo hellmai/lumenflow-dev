@@ -55,3 +55,4 @@
 {"type":"complete","wuId":"WU-1038","timestamp":"2026-01-21T00:00:23.318Z"}
 {"type":"claim","wuId":"WU-1043","lane":"Framework: CLI","title":"Enforce complete specs at wu:create (schema + templates + docs)","timestamp":"2026-01-21T08:48:58.332Z"}
 {"type":"complete","wuId":"WU-1043","timestamp":"2026-01-21T09:00:38.840Z"}
+{"type":"claim","wuId":"WU-1045","lane":"Framework: CLI","title":"Define lumenflow:init project scaffolding (minimal + optional full)","timestamp":"2026-01-21T09:46:47.896Z"}
