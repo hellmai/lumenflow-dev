@@ -4,10 +4,10 @@ lane: 'Framework: CLI'
 type: feature
 status: in_progress
 priority: P2
+exposure: backend-only
 created: 2026-01-21
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/core/src/wu-schema.ts
   - docs/templates/wu-template.yaml
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - apps/docs/src/content/docs/reference/wu-schema.mdx
