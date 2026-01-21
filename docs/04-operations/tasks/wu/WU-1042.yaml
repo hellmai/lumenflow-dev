@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/wu-cleanup.ts
   - packages/@lumenflow/core/src/rebase-artifact-cleanup.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - apps/docs/src/content/docs/reference/cli.mdx
 tests:
   manual:
     - Run new cleanup helper in a worktree with dist artifacts and confirm build succeeds
