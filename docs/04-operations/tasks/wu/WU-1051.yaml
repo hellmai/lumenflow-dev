@@ -1,0 +1,52 @@
+id: WU-1051
+title: Make wu:spawn skills guidance config-driven and vendor-agnostic
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-21
+code_paths:
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/spawn-strategy.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/__tests__/wu-spawn-refactor.test.ts
+  - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - LUMENFLOW.md
+tests:
+  manual:
+    - Run wu:spawn with --client claude-code
+    - codex-cli
+    - and default client; verify skills guidance matches config and warns when paths missing
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn-refactor.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1051.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/plans/WU-1051-wu-spawn-skills-config.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: wu:spawn currently emits hard-coded skill/agent path guidance (e.g. .claude/skills) and auto-load language that does not reflect actual configuration or repo state.
+
+  Problem: guidance is inaccurate in vendor-agnostic installs, and CLI/core outputs diverge. The prompt should be configuration-driven, robust, and truthful for any installation.
+
+  Solution: resolve skills/agents paths from .lumenflow.config.yaml (with per-client overrides), emit guidance based on actual config and path existence, and make CLI/core output consistent. Provide clear fallback when no skills are configured.
+acceptance:
+  - wu:spawn resolves skills/agents paths from config (client override -> directories default -> known existing fallback) and uses those paths in prompt output
+  - If no skills directories are configured or found, wu:spawn emits a clear ‘no skills configured’ guidance instead of misleading vendor-specific paths
+  - CLI and core wu:spawn outputs are consistent for skills guidance (single source of truth or shared helper)
+  - Auto-load skills section is either removed or re-enabled with real parsing, and behavior matches documentation
+  - Unit tests cover path resolution and prompt output for claude-code, codex-cli, and generic clients

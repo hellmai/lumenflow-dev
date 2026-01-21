@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1051 — Make wu:spawn skills guidance config-driven and vendor-agnostic](wu/WU-1051.yaml) — Framework: Core
 - [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml) — Framework: CLI
   (No items ready)
 
