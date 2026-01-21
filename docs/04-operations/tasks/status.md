@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml) — 2026-01-21
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — 2026-01-20
 - [WU-1036 — Update CLI references to new documentation paths](wu/WU-1036.yaml) — 2026-01-20
 - [WU-1035 — Update core references to new documentation paths](wu/WU-1035.yaml) — 2026-01-20
