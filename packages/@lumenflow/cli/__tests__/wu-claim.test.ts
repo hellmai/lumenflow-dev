@@ -13,7 +13,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Import from built files
-import { printLifecycleNudge, getWorktreeCommitFiles } from '../dist/wu-claim.js';
+import {
+  printLifecycleNudge,
+  getWorktreeCommitFiles,
+  formatProjectDefaults,
+} from '../dist/wu-claim.js';
 import { WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 
 describe('wu:claim --skip-setup flag (WU-1023)', () => {
@@ -81,6 +85,28 @@ describe('wu:claim --skip-setup flag (WU-1023)', () => {
       expect(loggedText).toContain('Tip');
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('formatProjectDefaults', () => {
+    it('returns empty string when disabled', () => {
+      const output = formatProjectDefaults({ enabled: false });
+      expect(output).toBe('');
+    });
+
+    it('formats enforcement and principles when enabled', () => {
+      const output = formatProjectDefaults({
+        enabled: true,
+        enforcement: 'required',
+        principles: ['TDD', 'Library-First'],
+        notes: 'Default approach unless explicitly waived.',
+      });
+
+      expect(output).toContain('Project Defaults');
+      expect(output).toContain('Enforcement: required');
+      expect(output).toContain('TDD');
+      expect(output).toContain('Library-First');
+      expect(output).toContain('Default approach unless explicitly waived.');
     });
   });
 });

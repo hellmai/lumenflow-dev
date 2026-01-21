@@ -219,6 +219,55 @@ export const YamlConfigSchema = z.object({
 });
 
 /**
+ * Methodology defaults (agent-facing project defaults)
+ */
+export const DEFAULT_METHODOLOGY_PRINCIPLES = [
+  'TDD',
+  'Hexagonal Architecture',
+  'SOLID',
+  'DRY',
+  'YAGNI',
+  'KISS',
+  'Library-First',
+];
+
+export const MethodologyDefaultsSchema = z.object({
+  /** Enable or disable project defaults output */
+  enabled: z.boolean().default(true),
+
+  /** Whether defaults are required or recommended */
+  enforcement: z.enum(['required', 'recommended']).default('required'),
+
+  /** Default methodology principles to apply */
+  principles: z.array(z.string()).default(DEFAULT_METHODOLOGY_PRINCIPLES),
+
+  /** Optional notes appended to Project Defaults */
+  notes: z.string().optional(),
+});
+
+/**
+ * Client-specific blocks (agent-facing spawn blocks)
+ */
+export const ClientBlockSchema = z.object({
+  /** Block title */
+  title: z.string(),
+
+  /** Block content (markdown allowed) */
+  content: z.string(),
+});
+
+/**
+ * Client-specific skills guidance
+ */
+export const ClientSkillsSchema = z.object({
+  /** Optional skills selection guidance text */
+  instructions: z.string().optional(),
+
+  /** Recommended skills to load for this client */
+  recommended: z.array(z.string()).default([]),
+});
+
+/**
  * Client configuration (per-client settings)
  */
 export const ClientConfigSchema = z.object({
@@ -227,6 +276,12 @@ export const ClientConfigSchema = z.object({
 
   /** Skills directory path */
   skillsDir: z.string().optional(),
+
+  /** Client-specific blocks injected into wu:spawn output */
+  blocks: z.array(ClientBlockSchema).default([]),
+
+  /** Client-specific skills guidance for wu:spawn */
+  skills: ClientSkillsSchema.optional(),
 });
 
 /**
@@ -238,6 +293,9 @@ export const AgentsConfigSchema = z.object({
 
   /** Client-specific configurations */
   clients: z.record(z.string(), ClientConfigSchema).default({}),
+
+  /** Project methodology defaults (agent-facing) */
+  methodology: MethodologyDefaultsSchema.default(() => MethodologyDefaultsSchema.parse({})),
 });
 
 /**
@@ -287,6 +345,9 @@ export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
 
 export type YamlConfig = z.infer<typeof YamlConfigSchema>;
+export type MethodologyDefaults = z.infer<typeof MethodologyDefaultsSchema>;
+export type ClientBlock = z.infer<typeof ClientBlockSchema>;
+export type ClientSkills = z.infer<typeof ClientSkillsSchema>;
 export type ClientConfig = z.infer<typeof ClientConfigSchema>;
 export type AgentsConfig = z.infer<typeof AgentsConfigSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
