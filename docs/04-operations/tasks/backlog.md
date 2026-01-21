@@ -68,3 +68,4 @@ sections:
 - [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml)
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml)
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml)
+- [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml)
