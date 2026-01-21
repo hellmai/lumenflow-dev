@@ -1,14 +1,19 @@
 id: WU-1039
 title: Allow exposure edits on completed WUs
 lane: 'Framework: CLI'
-type: feature
+type: bug
 status: ready
 priority: P2
 created: 2026-01-21
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/__tests__/wu-edit.test.ts
 tests:
-  manual: []
-  unit: []
+  manual:
+    - Run pnpm wu:edit --id WU-1038 --exposure backend-only and confirm it updates exposure while
+      other edits remain blocked
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-edit.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1039.done
@@ -22,12 +27,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: Completed WUs currently cannot be updated to add exposure metadata, leaving
+  WU-1999 warnings unresolved. Problem: wu:edit blocks all edits for done WUs except
+  initiative/phase, even for safe metadata like exposure. Solution: allow wu:edit to update exposure
+  on done WUs while keeping other fields immutable and validating exposure values.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - wu:edit allows --exposure on done WUs without error
+  - Done WUs still reject edits to description/acceptance/code_paths and other fields
+  - Exposure values are validated against the schema (ui|api|backend-only|documentation)
