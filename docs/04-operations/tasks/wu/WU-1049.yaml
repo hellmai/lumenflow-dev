@@ -6,6 +6,15 @@ status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
+  - packages/@lumenflow/core/src/wu-done-errors.ts
+  - packages/@lumenflow/core/src/wu-done-docs-only.ts
+  - packages/@lumenflow/core/src/wu-done-inputs.ts
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/wu-done-cleanup.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
+  - packages/@lumenflow/core/src/wu-done-validation.ts
+  - packages/@lumenflow/core/src/wu-done-branch-utils.ts
   - packages/@lumenflow/core/src/wu-done-validators.ts
   - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/core/src/wu-done-branch-only.ts
@@ -13,6 +22,7 @@ code_paths:
   - packages/@lumenflow/core/src/code-path-validator.ts
   - packages/@lumenflow/core/src/path-classifiers.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
   - packages/@lumenflow/core/src/__tests__/code-path-validator.golden.test.ts
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:

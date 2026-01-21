@@ -49,6 +49,7 @@ import {
 import { RECOVERY, REBASE, PREFLIGHT, MERGE } from './wu-done-messages.js';
 import { getDriftLevel, DRIFT_LEVELS } from './branch-drift.js';
 import { createError, ErrorCodes } from './error-handler.js';
+import { createRecoveryError, createValidationError } from './wu-done-errors.js';
 import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
 import { assertTransition } from './state-machine.js';
 import {
@@ -61,6 +62,7 @@ import {
   MAX_RECOVERY_ATTEMPTS,
 } from './wu-recovery.js';
 import { isPRModeEnabled, createPR, printPRCreatedMessage } from './wu-done-pr.js';
+import { isBranchAlreadyMerged } from './wu-done-branch-utils.js';
 // WU-1371: Import rebase artifact cleanup functions
 import { detectRebasedArtifacts, cleanupRebasedArtifacts } from './rebase-artifact-cleanup.js';
 import { WUTransaction, createTransactionSnapshot, restoreFromSnapshot } from './wu-transaction.js';
@@ -178,8 +180,7 @@ export async function executeWorktreeCompletion(context) {
       console.log(`${BOX.SIDE}  rm .beacon/recovery/${id}.recovery`);
       console.log(BOX.BOT);
 
-      throw createError(
-        ErrorCodes.RECOVERY_ERROR,
+      throw createRecoveryError(
         `Recovery loop detected for ${id} after ${attemptCount} attempts. Manual intervention required.`,
         { wuId: id, attemptCount, maxAttempts: MAX_RECOVERY_ATTEMPTS },
       );
@@ -276,8 +277,7 @@ export async function executeWorktreeCompletion(context) {
     // This catches schema issues early and auto-fixes normalizable problems
     const normalizeResult = validateAndNormalizeWUYAML(docForUpdate);
     if (!normalizeResult.valid) {
-      throw createError(
-        ErrorCodes.VALIDATION_ERROR,
+      throw createValidationError(
         `WU YAML validation failed:\n  - ${normalizeResult.errors.join('\n  - ')}\n\nNext step: Fix the validation errors in ${workingWUPath} and rerun wu:done`,
         { wuId: id },
       );
@@ -297,8 +297,7 @@ export async function executeWorktreeCompletion(context) {
     // Validate done-specific completeness (uses normalized data)
     const completenessResult = validateDoneWU(normalizeResult.normalized);
     if (!completenessResult.valid) {
-      throw createError(
-        ErrorCodes.VALIDATION_ERROR,
+      throw createValidationError(
         `Cannot mark WU as done - spec incomplete:\n  ${completenessResult.errors.join('\n  ')}\n\nNext step: Update ${workingWUPath} to meet completion requirements and rerun wu:done`,
         { wuId: id },
       );
@@ -374,8 +373,7 @@ export async function executeWorktreeCompletion(context) {
     });
 
     if (!postMutationResult.valid) {
-      throw createError(
-        ErrorCodes.VALIDATION_ERROR,
+      throw createValidationError(
         `Post-mutation validation failed:\n  ${postMutationResult.errors.join('\n  ')}`,
         { wuId: id, errors: postMutationResult.errors },
       );
@@ -1176,11 +1174,12 @@ export async function checkEmptyMerge(branch, doc = null) {
 
       if (missingCodePaths.length > 0) {
         // BLOCK: code_paths defined but files not modified
-        throw createError(
-          ErrorCodes.VALIDATION_ERROR,
-          PREFLIGHT.CODE_PATHS_NOT_MODIFIED(missingCodePaths),
-          { branch, codePaths, missingCodePaths, modifiedFiles },
-        );
+        throw createValidationError(PREFLIGHT.CODE_PATHS_NOT_MODIFIED(missingCodePaths), {
+          branch,
+          codePaths,
+          missingCodePaths,
+          modifiedFiles,
+        });
       }
 
       // All code_paths files were modified
@@ -1196,41 +1195,6 @@ export async function checkEmptyMerge(branch, doc = null) {
     // Re-throw validation errors (WU-1460 blocker)
     if (e.code === ErrorCodes.VALIDATION_ERROR) throw e;
     console.warn(`${LOG_PREFIX.DONE} Warning: Could not check for empty merge: ${e.message}`);
-  }
-}
-
-/**
- * Check if branch is already merged to main
- *
- * @param {string} branch - Lane branch name
- * @returns {Promise<boolean>} Whether branch is already merged
- */
-/** @constant {number} SHA_SHORT_LENGTH - Length of shortened git SHA hashes for display */
-const SHA_SHORT_LENGTH = 8;
-
-export async function isBranchAlreadyMerged(branch) {
-  const gitAdapter = getGitForCwd();
-  try {
-    const branchTip = (await gitAdapter.getCommitHash(branch)).trim();
-    const mergeBase = (await gitAdapter.mergeBase(BRANCHES.MAIN, branch)).trim();
-    const mainHead = (await gitAdapter.getCommitHash(BRANCHES.MAIN)).trim();
-
-    if (branchTip === mergeBase) {
-      console.log(
-        PREFLIGHT.BRANCH_INFO(
-          branch,
-          branchTip.substring(0, SHA_SHORT_LENGTH),
-          mergeBase.substring(0, SHA_SHORT_LENGTH),
-          mainHead.substring(0, SHA_SHORT_LENGTH),
-        ),
-      );
-      return true;
-    }
-
-    return false;
-  } catch (e) {
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check if branch is merged: ${e.message}`);
-    return false;
   }
 }
 

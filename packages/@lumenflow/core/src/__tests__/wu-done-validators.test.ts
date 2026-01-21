@@ -18,6 +18,8 @@ import { applyExposureDefaults } from '../wu-done-validators.js';
 import { validateExposure } from '../wu-validation.js';
 import { WU_EXPOSURE } from '../wu-constants.js';
 import { rollbackFiles, RollbackResult } from '../rollback-utils.js';
+import { createValidationError, createFileNotFoundError } from '../wu-done-errors.js';
+import { ErrorCodes } from '../error-handler.js';
 
 describe('isSkipWebTestsPath', () => {
   describe('documentation paths', () => {
@@ -246,6 +248,22 @@ describe('rollbackFiles', () => {
     expect(error.name).toBe('backlog.md');
     expect(error.path.includes('backlog.md')).toBe(true);
     expect(typeof error.error === 'string').toBeTruthy();
+  });
+});
+
+describe('wu-done error helpers', () => {
+  it('creates validation errors with consistent error codes', () => {
+    const err = createValidationError('bad input', { wuId: 'WU-TEST' });
+    expect(err.code).toBe(ErrorCodes.VALIDATION_ERROR);
+    expect(err.message).toBe('bad input');
+    expect(err.details).toEqual({ wuId: 'WU-TEST' });
+  });
+
+  it('creates file-not-found errors with consistent error codes', () => {
+    const err = createFileNotFoundError('missing file', { path: 'docs/missing.md' });
+    expect(err.code).toBe(ErrorCodes.FILE_NOT_FOUND);
+    expect(err.message).toBe('missing file');
+    expect(err.details).toEqual({ path: 'docs/missing.md' });
   });
 });
 
