@@ -40,6 +40,16 @@ interface WUOption {
 
 export const WU_OPTIONS: Record<string, WUOption> = {
   // String options (require values)
+  client: {
+    name: 'client',
+    flags: '--client <client>',
+    description: 'Client name (claude-code, gemini-cli, etc)',
+  },
+  vendor: {
+    name: 'vendor',
+    flags: '--vendor <vendor>',
+    description: 'Deprecated alias for --client',
+  },
   id: {
     name: 'id',
     flags: '-i, --id <wuId>',
@@ -609,7 +619,10 @@ export function parseWUArgs(argv) {
     WU_OPTIONS.createPr,
     WU_OPTIONS.overrideOwner,
     WU_OPTIONS.noAutoRebase,
+
     WU_OPTIONS.requireAgents,
+    WU_OPTIONS.client,
+    WU_OPTIONS.vendor,
   ];
 
   for (const opt of allOptions) {
