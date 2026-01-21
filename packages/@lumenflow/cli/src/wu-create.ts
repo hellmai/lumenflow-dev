@@ -41,7 +41,7 @@ import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
 import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { PLACEHOLDER_SENTINEL, validateReadyWU } from '@lumenflow/core/dist/wu-schema.js';
+import { validateWU } from '@lumenflow/core/dist/wu-schema.js';
 import {
   COMMIT_FORMATS,
   FILE_SYSTEM,
@@ -250,6 +250,180 @@ interface CreateWUOptions {
   specRefs?: string;
 }
 
+// Helper to parse comma-separated strings into arrays (DRY)
+const parseCommaSeparated = (value?: string) =>
+  value
+    ? value
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+function buildWUContent({
+  id,
+  lane,
+  title,
+  priority,
+  type,
+  created,
+  opts,
+}: {
+  id: string;
+  lane: string;
+  title: string;
+  priority: string;
+  type: string;
+  created: string;
+  opts: CreateWUOptions;
+}) {
+  const {
+    description,
+    acceptance,
+    codePaths,
+    testPathsManual,
+    testPathsUnit,
+    testPathsE2e,
+    initiative,
+    phase,
+    blockedBy,
+    blocks,
+    labels,
+    assignedTo,
+    exposure,
+    userJourney,
+    uiPairingWus,
+    specRefs,
+  } = opts;
+
+  const code_paths = parseCommaSeparated(codePaths);
+
+  const tests = {
+    manual: parseCommaSeparated(testPathsManual),
+    unit: parseCommaSeparated(testPathsUnit),
+    e2e: parseCommaSeparated(testPathsE2e),
+  };
+
+  return {
+    id,
+    title,
+    lane,
+    type,
+    status: 'ready',
+    priority,
+    created,
+    description,
+    acceptance,
+    code_paths,
+    tests,
+    artifacts: [`.beacon/stamps/${id}.done`],
+    dependencies: [],
+    risks: [],
+    notes: '',
+    requires_review: false,
+    ...(initiative && { initiative }),
+    ...(phase && { phase: parseInt(phase, 10) }),
+    ...(blockedBy && { blocked_by: blockedBy.split(',').map((s) => s.trim()) }),
+    ...(blocks && { blocks: blocks.split(',').map((s) => s.trim()) }),
+    ...(labels && { labels: labels.split(',').map((s) => s.trim()) }),
+    ...(assignedTo && { assigned_to: assignedTo }),
+    ...(exposure && { exposure }),
+    ...(userJourney && { user_journey: userJourney }),
+    ...(uiPairingWus && { ui_pairing_wus: parseCommaSeparated(uiPairingWus) }),
+    ...(specRefs && { spec_refs: parseCommaSeparated(specRefs) }),
+  };
+}
+
+export function validateCreateSpec({
+  id,
+  lane,
+  title,
+  priority,
+  type,
+  opts,
+}: {
+  id: string;
+  lane: string;
+  title: string;
+  priority: string;
+  type: string;
+  opts: CreateWUOptions;
+}) {
+  const errors = [];
+  const effectiveType = type || DEFAULT_TYPE;
+
+  if (!opts.description) {
+    errors.push('--description is required');
+  }
+
+  if (!opts.acceptance || opts.acceptance.length === 0) {
+    errors.push('--acceptance is required (repeatable)');
+  }
+
+  if (!opts.exposure) {
+    errors.push('--exposure is required');
+  }
+
+  const hasTestPaths = opts.testPathsManual || opts.testPathsUnit || opts.testPathsE2e;
+
+  if (effectiveType !== 'documentation' && effectiveType !== 'process') {
+    if (!opts.codePaths) {
+      errors.push('--code-paths is required for non-documentation WUs');
+    }
+
+    if (!hasTestPaths) {
+      errors.push(
+        'At least one test path flag is required (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
+      );
+    }
+  }
+
+  if (effectiveType === 'feature' && !opts.specRefs) {
+    errors.push('--spec-refs is required for type: feature WUs');
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors };
+  }
+
+  const placeholderResult = validateNoPlaceholders({
+    description: opts.description,
+    acceptance: opts.acceptance,
+  });
+
+  if (!placeholderResult.valid) {
+    return {
+      valid: false,
+      errors: [buildPlaceholderErrorMessage('wu:create', placeholderResult)],
+    };
+  }
+
+  const today = todayISO();
+  const wuContent = buildWUContent({
+    id,
+    lane,
+    title,
+    priority,
+    type: effectiveType,
+    created: today,
+    opts,
+  });
+
+  const schemaResult = validateWU(wuContent);
+  if (!schemaResult.success) {
+    const schemaErrors = schemaResult.error.issues.map(
+      (issue) => `${issue.path.join('.')}: ${issue.message}`,
+    );
+    return { valid: false, errors: schemaErrors };
+  }
+
+  const completeness = validateSpecCompleteness(wuContent, id);
+  if (!completeness.valid) {
+    return { valid: false, errors: completeness.errors };
+  }
+
+  return { valid: true, errors: [] };
+}
+
 /**
  * Create WU YAML file in micro-worktree
  *
@@ -280,98 +454,19 @@ function createWUYamlInWorktree(
   // WU-1428: Use todayISO() for consistent YYYY-MM-DD format (library-first)
   const today = todayISO();
 
-  // Parse initiative system fields from opts (WU-1247) and assigned_to (WU-1368)
-  const { initiative, phase, blockedBy, blocks, labels, assignedTo } = opts;
-
-  // WU-1364: Parse full spec inline options
-  const {
-    description: inlineDescription,
-    acceptance: inlineAcceptance,
-    codePaths,
-    testPathsManual,
-    testPathsUnit,
-    testPathsE2e,
-  } = opts;
-
-  // WU-1998: Parse exposure field options
-  const { exposure, userJourney, uiPairingWus } = opts;
-
-  // WU-2320: Parse spec_refs option
-  const { specRefs } = opts;
-
-  // Helper to parse comma-separated strings into arrays (DRY)
-  const parseCommaSeparated = (value) =>
-    value
-      ? value
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
-
-  // WU-1364: Build description (inline or placeholder)
-  const description = inlineDescription
-    ? inlineDescription
-    : `${PLACEHOLDER_SENTINEL} Describe the work to be done.\n\nContext: ...\nProblem: ...\nSolution: ...\n`;
-
-  // WU-1364: Build acceptance (inline array or placeholder)
-  const acceptance =
-    inlineAcceptance && inlineAcceptance.length > 0
-      ? inlineAcceptance
-      : [
-          `${PLACEHOLDER_SENTINEL} Define acceptance criteria`,
-          'pnpm format, lint, typecheck → PASS',
-        ];
-
-  // WU-1364: Build code_paths from inline flag
-  const code_paths = parseCommaSeparated(codePaths);
-
-  // WU-1364: Build tests object from inline flags
-  const tests = {
-    manual: parseCommaSeparated(testPathsManual),
-    unit: parseCommaSeparated(testPathsUnit),
-    e2e: parseCommaSeparated(testPathsE2e),
-  };
-
-  const wuContent = {
+  const wuContent = buildWUContent({
     id,
-    title,
     lane,
-    type,
-    status: 'ready',
+    title,
     priority,
+    type,
     created: today,
-    description,
-    acceptance,
-    code_paths,
-    tests,
-    artifacts: [`.beacon/stamps/${id}.done`],
-    dependencies: [],
-    risks: [],
-    notes: '',
-    requires_review: false,
+    opts,
+  });
 
-    // Initiative system fields - only include if provided (WU-1247)
-    ...(initiative && { initiative }),
-    ...(phase && { phase: parseInt(phase, 10) }),
-    ...(blockedBy && { blocked_by: blockedBy.split(',').map((s) => s.trim()) }),
-    ...(blocks && { blocks: blocks.split(',').map((s) => s.trim()) }),
-    ...(labels && { labels: labels.split(',').map((s) => s.trim()) }),
-
-    // WU-1368: Default assigned_to from git config user.email
-    ...(assignedTo && { assigned_to: assignedTo }),
-
-    // WU-1998: Exposure field options - only include if provided
-    ...(exposure && { exposure }),
-    ...(userJourney && { user_journey: userJourney }),
-    ...(uiPairingWus && { ui_pairing_wus: parseCommaSeparated(uiPairingWus) }),
-
-    // WU-2320: Spec references - only include if provided
-    ...(specRefs && { spec_refs: parseCommaSeparated(specRefs) }),
-  };
-
-  // WU-1539: Validate WU structure before writing (fail-fast, allows placeholders)
+  // WU-1539: Validate WU structure before writing (fail-fast, no placeholders)
   // WU-1750: Zod transforms normalize embedded newlines in arrays and strings
-  const validationResult = validateReadyWU(wuContent);
+  const validationResult = validateWU(wuContent);
   if (!validationResult.success) {
     const errors = validationResult.error.issues
       .map((issue) => `  • ${issue.path.join('.')}: ${issue.message}`)
@@ -379,6 +474,17 @@ function createWUYamlInWorktree(
     die(
       `${LOG_PREFIX} ❌ WU YAML validation failed:\n\n${errors}\n\n` +
         `Fix the issues above and retry.`,
+    );
+  }
+
+  const completenessResult = validateSpecCompleteness(wuContent, id);
+  if (!completenessResult.valid) {
+    const errorList = completenessResult.errors
+      .map((error) => `  • ${error}`)
+      .join(STRING_LITERALS.NEWLINE);
+    die(
+      `${LOG_PREFIX} ❌ WU SPEC INCOMPLETE:\n\n${errorList}\n\n` +
+        `Provide the missing fields and retry.`,
     );
   }
 
@@ -577,57 +683,40 @@ async function main() {
     console.warn(`${LOG_PREFIX} ⚠️  No assigned_to set - WU will need manual assignment`);
   }
 
-  // WU-1364: Validate spec completeness when --validate is set
-  if (args.validate) {
-    const validationErrors = [];
-
-    if (!args.description) {
-      validationErrors.push('--description is required when --validate is set');
-    }
-
-    // acceptance is an array from repeatable flag (empty array if not provided)
-    if (!args.acceptance || args.acceptance.length === 0) {
-      validationErrors.push('--acceptance is required when --validate is set (use multiple times)');
-    }
-
-    const hasTestPaths = args.testPathsManual || args.testPathsUnit || args.testPathsE2e;
-    if (!hasTestPaths) {
-      validationErrors.push(
-        '--validate requires at least one test path flag (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
-      );
-    }
-
-    // WU-2320: spec_refs required for feature WUs (type defaults to feature)
-    const effectiveType = args.type || DEFAULT_TYPE;
-    if (effectiveType === 'feature' && !args.specRefs) {
-      validationErrors.push(
-        '--spec-refs is required for type: feature WUs (link to plan file in docs/04-operations/plans/)',
-      );
-    }
-
-    if (validationErrors.length > 0) {
-      const errorList = validationErrors.map((e) => `  • ${e}`).join(STRING_LITERALS.NEWLINE);
-      die(
-        `Spec validation failed:\n\n${errorList}\n\nTo create without validation, omit the --validate flag.`,
-      );
-    }
-
-    console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
-  }
-
-  // WU-1025: Block wu:create if inline content contains PLACEHOLDER markers
-  // Only validate if inline content is provided (don't block template creation)
-  if (args.description || (args.acceptance && args.acceptance.length > 0)) {
-    const placeholderResult = validateNoPlaceholders({
+  const createSpecValidation = validateCreateSpec({
+    id: args.id,
+    lane: args.lane,
+    title: args.title,
+    priority: args.priority || DEFAULT_PRIORITY,
+    type: args.type || DEFAULT_TYPE,
+    opts: {
       description: args.description,
       acceptance: args.acceptance,
-    });
+      codePaths: args.codePaths,
+      testPathsManual: args.testPathsManual,
+      testPathsUnit: args.testPathsUnit,
+      testPathsE2e: args.testPathsE2e,
+      exposure: args.exposure,
+      userJourney: args.userJourney,
+      uiPairingWus: args.uiPairingWus,
+      specRefs: args.specRefs,
+      initiative: args.initiative,
+      phase: args.phase,
+      blockedBy: args.blockedBy,
+      blocks: args.blocks,
+      labels: args.labels,
+      assignedTo,
+    },
+  });
 
-    if (!placeholderResult.valid) {
-      const errorMsg = buildPlaceholderErrorMessage('wu:create', placeholderResult);
-      die(errorMsg);
-    }
+  if (!createSpecValidation.valid) {
+    const errorList = createSpecValidation.errors
+      .map((error) => `  • ${error}`)
+      .join(STRING_LITERALS.NEWLINE);
+    die(`${LOG_PREFIX} ❌ Spec validation failed:\n\n${errorList}`);
   }
+
+  console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
 
   // Transaction: micro-worktree isolation (WU-1439)
   try {
