@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
