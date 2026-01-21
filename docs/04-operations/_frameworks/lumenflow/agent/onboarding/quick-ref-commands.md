@@ -6,13 +6,13 @@
 
 ## WU Management
 
-| Command                                                    | Description                         |
-| ---------------------------------------------------------- | ----------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title"` | Create new WU                       |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`                  | Claim WU and create worktree        |
-| `pnpm wu:done --id WU-XXX`                                 | Complete WU (merge, stamp, cleanup) |
-| `pnpm wu:block --id WU-XXX --reason "Reason"`              | Block a WU                          |
-| `pnpm wu:unblock --id WU-XXX`                              | Unblock a WU                        |
+| Command                                                                                                                                                                                                                      | Description                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "path" --test-paths-unit "path" --exposure backend-only --spec-refs "docs/04-operations/plans/WU-XXX-plan.md"` | Create new WU (fully specified)     |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                                                                    | Claim WU and create worktree        |
+| `pnpm wu:done --id WU-XXX`                                                                                                                                                                                                   | Complete WU (merge, stamp, cleanup) |
+| `pnpm wu:block --id WU-XXX --reason "Reason"`                                                                                                                                                                                | Block a WU                          |
+| `pnpm wu:unblock --id WU-XXX`                                                                                                                                                                                                | Unblock a WU                        |
 
 ---
 
@@ -69,9 +69,15 @@ cd /path/to/main
 
 ```bash
 # 1. Create and claim
-pnpm wu:create --id WU-001 --lane Core --title "Add feature"
-pnpm wu:claim --id WU-001 --lane Core
-cd worktrees/core-wu-001
+pnpm wu:create --id WU-001 --lane "Framework: Core" --title "Add feature" \
+  --description "Context: ...\nProblem: ...\nSolution: ..." \
+  --acceptance "Criterion 1" --acceptance "Criterion 2" \
+  --code-paths "packages/@lumenflow/core/src/example.ts" \
+  --test-paths-unit "packages/@lumenflow/core/__tests__/example.test.ts" \
+  --exposure backend-only \
+  --spec-refs "docs/04-operations/plans/WU-001-plan.md"
+pnpm wu:claim --id WU-001 --lane "Framework: Core"
+cd worktrees/framework-core-wu-001
 
 # 2. Work (TDD)
 # ... write tests first, then code ...
@@ -79,7 +85,7 @@ cd worktrees/core-wu-001
 # 3. Commit
 git add .
 git commit -m "feat: add feature"
-git push origin lane/core/wu-001
+git push origin lane/framework-core/wu-001
 
 # 4. Gates
 pnpm gates

@@ -1,4 +1,4 @@
-# Work Unit Template (WU Schema v2.0)
+# Work Unit Template (LumenFlow WU Schema)
 #
 # Copy this template when creating new WUs. Fill in all required fields and
 # remove optional fields if not needed.
@@ -9,141 +9,84 @@ id: WU-XXX
 # Required: Short, descriptive title (max 80 chars)
 title: 'Your WU title here'
 
-# Required: Engineering lane (Discovery, Intelligence, Main, Operations)
-lane: 'Main'
+# Required: Lane (Parent: Sublane format)
+lane: 'Framework: CLI'
 
-# Required: Type of work (feature, bugfix, refactor, documentation, chore, infrastructure, spike)
-type: 'feature'
+# Required: Type of work
+type: 'feature' # feature | bug | documentation | process | tooling | chore | refactor
 
-# Required: Current status (ready, in_progress, done, blocked, cancelled)
-status: 'ready'
+# Required: Current status
+status: 'ready' # ready | in_progress | blocked | done | cancelled
 
-# Required: Priority (P0=critical, P1=high, P2=medium, P3=low)
-priority: P2
+# Required: Priority
+priority: P2 # P0 | P1 | P2 | P3
 
-# Required: Creation date (ISO 8601 format)
-created: 2025-10-23T00:00:00.000Z
+# Required: Creation date (YYYY-MM-DD)
+created: 2026-01-21
 
-# Required: Owner (email or "unassigned")
-owner: 'unassigned'
+# Required: Owner/assignee (email)
+assigned_to: 'unassigned@example.com'
 
-# Required: Brief summary of what this WU delivers (2-3 sentences)
-summary: |
-  Brief description of the work unit deliverable.
-  Include the problem being solved and expected outcome.
-  Keep it concise and user-focused.
+# Required: Description
+description: |
+  Context: ...
+  Problem: ...
+  Solution: ...
 
-# Required: Context explaining why this work is needed
-context: |
-  Business or technical context for this WU.
-  Why is this important? What problem does it solve?
-  Link to related user stories, incidents, or strategic initiatives.
-
-# Required: Acceptance criteria (testable, binary pass/fail)
+# Required: Acceptance criteria (testable, binary)
 acceptance:
   - Criterion 1 (specific, measurable, testable)
   - Criterion 2 (binary pass/fail)
-  - Criterion 3 (linked to deliverable)
-  - All tests pass
   - Documentation updated
-  - Code reviewed
 
-# Required: References to plans, design docs, specs (for traceability)
-# For feature WUs created from plans, link the plan file here.
-# Plans should be stored in docs/04-operations/plans/ for version control.
-# See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/workspace-modes.md §Plan Linking
+# Required: References to plans/specs (required for type: feature)
 spec_refs:
-  - docs/04-operations/plans/WU-XXX-plan.md # Plan file (copy from .claude/plans/)
-  - docs/design/feature-spec.md # Design specification
-  - ADR-XXX # Architecture decision record
+  - docs/04-operations/plans/WU-XXX-plan.md
 
-# Required: Code files changed or created (for test coverage tracking)
+# Required: Code files changed or created (empty only for docs/process WUs)
 code_paths:
-  - path/to/main/file.ts
-  - path/to/secondary/file.ts
+  - path/to/file.ts
 
-# Required: Test files (unit and manual tests)
-test_paths:
+# Required: Test paths (at least one of manual/unit/e2e/integration for non-doc WUs)
+tests:
+  manual:
+    - Manual test: Verify behavior
   unit:
     - path/to/test.test.ts
-  manual:
-    - Manual test: Verify feature works in browser
-    - Manual test: Check accessibility with screen reader
+  e2e: []
+  integration: []
 
-# Required: Hexagonal architecture ports (empty list if none)
-ports:
-  - port: 'IUserRepository'
-    path: 'packages/core/ports/IUserRepository.ts'
-  # Leave empty list [] if no ports are modified
+# Required: Exposure level
+exposure: 'backend-only' # ui | api | backend-only | documentation
 
-# Required: Deliverable artifacts (files, docs, deployed services)
-artifacts:
-  - path/to/deliverable/file
-  - URL to deployed service (if applicable)
-  - Link to documentation
-
-# Required: Risk assessment and mitigation strategy
-risks: |
-  Identify technical and business risks.
-  For each risk, state the mitigation strategy.
-  Examples: "Breaking change - mitigation: feature flag + gradual rollout"
-
-# Required: Additional notes, decisions, and context
-notes: |
-  Any important notes about implementation approach.
-  Design decisions made during development.
-  Links to related WUs or external resources.
-  Known limitations or future improvements.
-
-# Required: Dependencies (other WUs that must complete first)
-dependencies:
-  - WU-XXX # Required dependency
-# Use empty list [] if no dependencies
-
-# Required: Blockers (WUs or external factors blocking this work)
-blocked_by:
-  - WU-YYY # Blocking WU
-  - 'External API not ready' # External blocker
-# Use empty list [] if not blocked
-
-# ============================================================================
-# EXPOSURE BLOCK (WU Schema v2.2 - WU-1998, WU-2022)
-# ============================================================================
-# Required: How this WU exposes functionality to users.
-# Ensures backend features have corresponding UI coverage.
-# WU-2022: wu:done validates UI accessibility for exposure=ui WUs.
-
-# Required: Exposure level (ui, api, backend-only, documentation)
-#   - ui: User-facing UI changes (pages, components, widgets)
-#   - api: API endpoints called by UI or external clients
-#   - backend-only: Backend-only changes (no user visibility)
-#   - documentation: Documentation changes only
-exposure: 'ui'
-
-# WU-2022: Navigation path for exposure=ui WUs
-# Specifies the route where the UI feature is accessible.
-# Required if exposure=ui and code_paths doesn't include a page.tsx file.
-# wu:done will BLOCK if exposure=ui and no accessibility proof is provided.
-# Accessibility is verified by ANY of:
-#   1. navigation_path is specified (this field)
-#   2. code_paths includes a page.tsx file (Next.js page)
-#   3. tests.manual includes navigation/accessibility verification
-navigation_path: '/settings'
-
-# Recommended for exposure: ui, api
-# Describes the end-user interaction flow affected by this WU.
+# Optional: User journey (recommended for ui/api)
 # user_journey: |
-#   User navigates to /settings page.
-#   User clicks "Update profile" button.
-#   User sees confirmation message.
+#   User navigates to ...
+#   User performs ...
 
-# Recommended for exposure: api
-# Lists UI WUs that consume this API, ensuring UI coverage.
+# Optional: UI pairing WUs (for api exposure)
 # ui_pairing_wus:
-#   - WU-1234  # Frontend form that calls this API
-#   - WU-5678  # Dashboard widget that displays API data
+#   - WU-1234
 
-# ============================================================================
+# Optional: Navigation path (required when exposure=ui and no page file)
+# navigation_path: '/settings'
+
+# Required: Deliverable artifacts (stamps, docs, etc.)
+artifacts:
+  - .beacon/stamps/WU-XXX.done
+
+# Optional: Dependencies (other WUs that must complete first)
+dependencies: []
+
+# Optional: Risks
+risks:
+  - Risk 1
+
+# Optional: Notes
+notes: ''
+
+# Optional: Requires human review
+requires_review: false
 
 # Optional: Claimed mode (worktree or branch-only)
 # Automatically set by wu:claim, usually don't need to specify
