@@ -64,3 +64,4 @@
 {"type":"complete","wuId":"WU-1047","timestamp":"2026-01-21T14:58:35.295Z"}
 {"type":"claim","wuId":"WU-1041","lane":"Framework: Core","title":"Auto-assign exposure on wu:done when missing","timestamp":"2026-01-21T16:46:15.213Z"}
 {"type":"complete","wuId":"WU-1041","timestamp":"2026-01-21T16:56:52.603Z"}
+{"type":"complete","wuId":"WU-1039","timestamp":"2026-01-21T17:03:10.526Z"}

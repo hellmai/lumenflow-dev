@@ -65,3 +65,4 @@ sections:
 - [WU-1046 — Consolidate YAML handling on yaml package (retire js-yaml)](wu/WU-1046.yaml)
 - [WU-1047 — Configurable methodology defaults + client blocks for wu:claim/wu:spawn](wu/WU-1047.yaml)
 - [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml)
+- [WU-1039 — Allow exposure edits on completed WUs](wu/WU-1039.yaml)
