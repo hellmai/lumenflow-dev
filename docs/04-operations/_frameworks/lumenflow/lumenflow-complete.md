@@ -429,6 +429,7 @@ The shared `main` checkout is for documentation changes only (`docs/**`, `docs/*
 
 - `tools/validate.mjs` - CI check for done WUs (blocks merge if placeholders found)
 - `tools/wu-done.mjs` - Pre-gates validation (fails immediately if spec incomplete)
+- `packages/@lumenflow/core/src/wu-done-*.ts` - Modular wu:done validators and preflight helpers
 
 **Error example:**
 
