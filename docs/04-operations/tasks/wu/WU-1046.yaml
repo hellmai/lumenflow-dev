@@ -2,7 +2,7 @@ id: WU-1046
 title: Consolidate YAML handling on yaml package (retire js-yaml)
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -47,8 +47,17 @@ description: |-
   Solution: consolidate all YAML parsing/serialization on the yaml package (or shared
   core helpers), migrate imports, remove js-yaml deps, and verify round-trip behavior.
 acceptance:
-  - All YAML parsing/serialization in core, CLI, initiatives, and memory uses the yaml package (no js-yaml imports in production code).
+  - All YAML parsing/serialization in core, CLI, initiatives, and memory uses the yaml package (no
+    js-yaml imports in production code).
   - js-yaml and @types/js-yaml are removed where no longer needed, with lockfile updates.
   - Date fields remain strings; YAML round-trips are stable (tests pass).
   - Unit tests updated/added for YAML round-trip and initiative YAML behavior.
   - No schema changes beyond intended normalization of YAML output.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-wu-1046
+claimed_at: 2026-01-21T13:34:04.887Z
+baseline_main_sha: c0cc15c312fe40a214f2474eb03b9816570dfe78
+session_id: 9843da4d-1190-4b05-b60e-30f6a80ec53f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-21T13:34:04.895Z
