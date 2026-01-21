@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml) — Framework: CLI
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml) — Framework: CLI
 - [WU-1041 — Auto-assign exposure on wu:done when missing](wu/WU-1041.yaml) — Framework: Core
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — Framework: CLI
