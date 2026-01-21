@@ -7,7 +7,7 @@
  */
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
 import { extractParent } from './lane-checker.js';
 import {
@@ -32,7 +32,7 @@ function hasSubLaneTaxonomy(parent, projectRoot) {
 
   try {
     const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = yaml.load(taxonomyContent);
+    const taxonomy = parseYAML(taxonomyContent);
 
     const normalizedParent = parent.trim().toLowerCase();
     return Object.keys(taxonomy).some((key) => key.toLowerCase().trim() === normalizedParent);
@@ -155,7 +155,7 @@ export function validateBacklogSync(backlogPath) {
 
     try {
       const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
-      const wuDoc = yaml.load(wuContent) as { lane?: string } | null;
+      const wuDoc = parseYAML(wuContent) as { lane?: string } | null;
 
       if (wuDoc && wuDoc.lane) {
         const lane = wuDoc.lane.toString().trim();

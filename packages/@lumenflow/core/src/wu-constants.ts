@@ -418,13 +418,13 @@ export const DEFAULTS = {
  * YAML serialization options
  *
  * Centralized from duplicated { lineWidth: 100 } across wu-* scripts (WU-1256).
- * Use with js-yaml dump() function.
+ * Use with yaml stringify() options.
  */
 export const YAML_OPTIONS = {
   /** Standard line width for YAML dump (100 chars) */
   LINE_WIDTH: 100,
 
-  /** No line wrapping (-1 disables wrapping in js-yaml) */
+  /** No line wrapping (-1 disables wrapping) */
   NO_WRAP: -1,
 };
 

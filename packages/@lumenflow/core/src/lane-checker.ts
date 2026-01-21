@@ -8,7 +8,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML } from './wu-yaml.js';
 import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
@@ -122,7 +122,7 @@ function hasSubLaneTaxonomy(parent: string): boolean {
 
   try {
     const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = yaml.load(taxonomyContent) as Record<string, unknown>;
+    const taxonomy = parseYAML(taxonomyContent) as Record<string, unknown>;
 
     // Check if parent exists as top-level key in taxonomy
     const normalizedParent = parent.trim();
@@ -150,7 +150,7 @@ function isValidSubLane(parent: string, subdomain: string): boolean {
 
   try {
     const taxonomyContent = readFileSync(taxonomyPath, { encoding: 'utf-8' });
-    const taxonomy = yaml.load(taxonomyContent) as Record<string, Record<string, unknown>>;
+    const taxonomy = parseYAML(taxonomyContent) as Record<string, Record<string, unknown>>;
 
     // Find parent key (case-insensitive)
     const normalizedParent = parent.trim().toLowerCase();
@@ -343,7 +343,7 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   }
 
   const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-  const config = yaml.load(configContent) as LumenflowConfig;
+  const config = parseYAML(configContent) as LumenflowConfig;
 
   // Extract all lane names - handle multiple config formats
   const allLanes: string[] = [];
@@ -414,7 +414,7 @@ export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {
 
   try {
     const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-    const config = yaml.load(configContent) as LumenflowConfig;
+    const config = parseYAML(configContent) as LumenflowConfig;
 
     if (!config.lanes) {
       return DEFAULT_WIP_LIMIT;
@@ -561,7 +561,7 @@ export function checkLaneFree(
 
       try {
         const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
-        const wuDoc = yaml.load(wuContent) as WUDoc;
+        const wuDoc = parseYAML(wuContent) as WUDoc;
 
         if (!wuDoc || !wuDoc.lane) {
           console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);

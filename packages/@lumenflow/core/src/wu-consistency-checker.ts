@@ -16,7 +16,7 @@
 import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import {
   CONSISTENCY_TYPES,
@@ -53,7 +53,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   }
 
   const wuContent = await readFile(wuPath, { encoding: 'utf-8' });
-  const wuDoc = yaml.load(wuContent) as { status?: string; lane?: string; title?: string } | null;
+  const wuDoc = parseYAML(wuContent) as { status?: string; lane?: string; title?: string } | null;
   const yamlStatus = wuDoc?.status || 'unknown';
   const lane = wuDoc?.lane || '';
   const title = wuDoc?.title || '';
@@ -230,7 +230,7 @@ export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = pr
 
     let wuDoc;
     try {
-      wuDoc = yaml.load(wuContent);
+      wuDoc = parseYAML(wuContent);
     } catch {
       // Skip malformed YAML files - they're a separate issue
       continue;
@@ -416,7 +416,7 @@ async function updateYamlToDone(id, projectRoot) {
 
   // Read current YAML
   const content = await readFile(wuPath, { encoding: 'utf-8' });
-  const wuDoc = yaml.load(content) as {
+  const wuDoc = parseYAML(content) as {
     status?: string;
     locked?: boolean;
     completed?: string;
@@ -435,7 +435,7 @@ async function updateYamlToDone(id, projectRoot) {
   }
 
   // Write updated YAML
-  const updatedContent = yaml.dump(wuDoc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
+  const updatedContent = stringifyYAML(wuDoc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
   await writeFile(wuPath, updatedContent, { encoding: 'utf-8' });
 }
 

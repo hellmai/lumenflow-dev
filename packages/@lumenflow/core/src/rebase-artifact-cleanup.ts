@@ -18,7 +18,7 @@
 import { readFile, writeFile, unlink, access } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML, stringifyYAML } from './wu-yaml.js';
 
 import { WU_PATHS } from './wu-paths.js';
 import {
@@ -82,7 +82,7 @@ async function yamlIsDoneOnMain(gitAdapter, wuId) {
       'show',
       `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${WU_PATHS.WU(wuId)}`,
     ]);
-    const doc = yaml.load(content) as { status?: string } | null;
+    const doc = parseYAML(content) as { status?: string } | null;
     return doc && doc.status === WU_STATUS.DONE;
   } catch {
     return false;
@@ -183,7 +183,7 @@ export async function detectRebasedArtifacts(worktreePath, wuId, gitAdapter) {
   if (await fileExists(wuYamlPath)) {
     try {
       const content = await readFile(wuYamlPath, { encoding: 'utf-8' });
-      const doc = yaml.load(content) as { status?: string } | null;
+      const doc = parseYAML(content) as { status?: string } | null;
       if (doc && doc.status === WU_STATUS.DONE) {
         localYamlDone = true;
       }
@@ -265,7 +265,7 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
   try {
     if (await fileExists(wuYamlPath)) {
       const content = await readFile(wuYamlPath, { encoding: 'utf-8' });
-      const doc = yaml.load(content) as {
+      const doc = parseYAML(content) as {
         status?: string;
         locked?: boolean;
         completed_at?: string;
@@ -280,7 +280,7 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
         delete doc.completed_at;
 
         // Write back
-        const updatedContent = yaml.dump(doc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
+        const updatedContent = stringifyYAML(doc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
         await writeFile(wuYamlPath, updatedContent, { encoding: 'utf-8' });
 
         yamlReset = true;

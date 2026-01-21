@@ -20,9 +20,12 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-infer-lane.ts
   - packages/@lumenflow/initiatives/src/initiative-yaml.ts
   - packages/@lumenflow/memory/src/mem-init-core.ts
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - apps/docs/src/content/docs/reference/wu-schema.mdx
 tests:
   manual:
     - Run wu:claim and wu:spawn on a sample WU and confirm YAML output is stable (no date coercion).
+    - Confirm internal + Starlight docs mention YAML library usage and date handling.
   unit:
     - packages/@lumenflow/core/src/__tests__/yaml-roundtrip.test.ts
     - packages/@lumenflow/initiatives/__tests__/initiative-yaml.test.ts
@@ -52,6 +55,7 @@ acceptance:
   - js-yaml and @types/js-yaml are removed where no longer needed, with lockfile updates.
   - Date fields remain strings; YAML round-trips are stable (tests pass).
   - Unit tests updated/added for YAML round-trip and initiative YAML behavior.
+  - Internal and Starlight docs updated to reflect yaml library usage and date handling.
   - No schema changes beyond intended normalization of YAML output.
 claimed_mode: worktree
 worktree_path: worktrees/framework-core-wu-1046

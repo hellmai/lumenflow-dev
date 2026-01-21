@@ -17,7 +17,7 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { FILE_SYSTEM, EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
@@ -92,7 +92,7 @@ function loadWuYaml(id: string): WUYamlDoc {
   }
 
   try {
-    const doc = yaml.load(content) as WUYamlDoc;
+    const doc = parseYAML(content) as WUYamlDoc;
     return doc;
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);

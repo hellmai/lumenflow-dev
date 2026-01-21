@@ -10,7 +10,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
+import { parseYAML } from './wu-yaml.js';
 import fg from 'fast-glob';
 import micromatch from 'micromatch';
 import { STATUS_SECTIONS, BACKLOG_SECTIONS, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
@@ -190,7 +190,7 @@ export function detectConflicts(statusPath, claimingPaths, claimingWU) {
     }
 
     const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
-    const wuDoc = yaml.load(wuContent) as { code_paths?: string[] } | null;
+    const wuDoc = parseYAML(wuContent) as { code_paths?: string[] } | null;
 
     // Extract code_paths (skip if not defined)
     const existingPaths = wuDoc?.code_paths;
