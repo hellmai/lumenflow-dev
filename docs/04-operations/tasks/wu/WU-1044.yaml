@@ -7,14 +7,13 @@ priority: P2
 created: 2026-01-21
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
   - packages/@lumenflow/core/src/spawn-strategy.ts
+  - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/__tests__/spawn-strategy.test.ts
-    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1044.done

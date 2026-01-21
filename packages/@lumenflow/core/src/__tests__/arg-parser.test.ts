@@ -116,6 +116,16 @@ describe('parseWUArgs', () => {
       const result = parseWUArgs(['node', 'script.js', '--override-owner']);
       expect(result.overrideOwner).toBe(true);
     });
+
+    it('should parse --client flag', () => {
+      const result = parseWUArgs(['node', 'script.js', '--client', 'gemini-cli']);
+      expect(result.client).toBe('gemini-cli');
+    });
+
+    it('should parse --vendor flag', () => {
+      const result = parseWUArgs(['node', 'script.js', '--vendor', 'claude']);
+      expect(result.vendor).toBe('claude');
+    });
   });
 
   describe('combined flags', () => {

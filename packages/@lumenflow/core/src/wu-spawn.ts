@@ -29,6 +29,7 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createWUParser, WU_OPTIONS } from './arg-parser.js';
 import { WU_PATHS } from './wu-paths.js';
@@ -38,6 +39,8 @@ import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from './wu-constants.js';
 // WU-1603: Check lane lock status before spawning
 import { checkLaneLock } from './lane-lock.js';
 import { minimatch } from 'minimatch';
+import { SpawnStrategyFactory, SpawnStrategy } from './spawn-strategy.js';
+import { getConfig } from './lumenflow-config.js';
 // WU-2252: Import invariants loader for spawn output injection
 import { loadInvariants, INVARIANT_TYPES } from './invariants-runner.js';
 import {
@@ -383,27 +386,15 @@ function generateTDDDirective() {
  * @param {string} id - WU ID
  * @returns {string} Context loading preamble
  */
-function generatePreamble(id) {
-  return `Load the following context in this order:
-
-1. Read CLAUDE.md (workflow fundamentals and critical rules)
-2. Read README.md (project structure and tech stack)
-3. Read docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md sections 1-7 (TDD, gates, Definition of Done)
-4. Read docs/04-operations/tasks/wu/${id}.yaml (the specific WU you're working on)
-
-## WIP=1 Lane Check (BEFORE claiming)
-
-Before running wu:claim, check docs/04-operations/tasks/status.md to ensure the lane is free.
-Only ONE WU can be in_progress per lane at any time.
-
-## Context Recovery (Session Resumption)
-
-Before starting work, check for prior context from previous sessions:
-
-1. \`pnpm mem:ready --wu ${id}\` — Query pending nodes (what's next?)
-2. \`pnpm mem:inbox --wu ${id}\` — Check coordination signals from parallel agents
-
-If prior context exists, resume from the last checkpoint. Otherwise, proceed with the task below.`;
+/**
+ * Generate the context loading preamble using the strategy
+ *
+ * @param {string} id - WU ID
+ * @param {import('./spawn-strategy.js').SpawnStrategy} strategy - Client strategy
+ * @returns {string} Context loading preamble
+ */
+function generatePreamble(id, strategy) {
+  return strategy.getPreamble(id);
 }
 
 /**
@@ -906,11 +897,12 @@ Then implement following all standards above.
  * are auto-loaded at the top.
  *
  * @param {object} doc - WU YAML document
+ * @param {import('./spawn-strategy.js').SpawnStrategy} strategy - Client strategy
  * @param {string} [agentName='general-purpose'] - Agent to spawn
  * @returns {string} Skills Selection section
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- WU-2025: Pre-existing complexity, refactor tracked
-function generateSkillsSection(doc, agentName = 'general-purpose') {
+function generateSkillsSection(doc, strategy, agentName = 'general-purpose') {
   const lane = doc.lane || '';
   const type = doc.type || 'feature';
   const laneParent = lane.split(':')[0].trim();
@@ -986,9 +978,7 @@ ${contextHints.join('\n')}
 
 ${autoLoadSection}### How to Select Skills
 
-1. Read the skill catalogue frontmatter from \`.claude/skills/*/SKILL.md\`
-2. Match skills to WU context (lane, type, code_paths, description)
-3. Load selected skills via \`/skill <skill-name>\`
+${strategy ? strategy.getSkillLoadingInstruction() : ''}
 
 ${softPolicySection}### Additional Skills (load if needed)
 
@@ -1017,19 +1007,20 @@ If the skill catalogue is missing or invalid:
  *
  * @param {object} doc - WU YAML document
  * @param {string} id - WU ID
+ * @param {SpawnStrategy} strategy - Client strategy
  * @param {object} [options={}] - Thinking mode options
  * @param {boolean} [options.thinking] - Whether extended thinking is enabled
  * @param {boolean} [options.noThinking] - Whether thinking is explicitly disabled
  * @param {string} [options.budget] - Token budget for thinking
  * @returns {string} Complete Task tool invocation
  */
-export function generateTaskInvocation(doc, id, options = {}) {
+export function generateTaskInvocation(doc, id, strategy, options = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
-  const preamble = generatePreamble(id);
+  const preamble = generatePreamble(id, strategy);
   const tddDirective = generateTDDDirective();
-  const skillsSection = generateSkillsSection(doc);
+  const skillsSection = generateSkillsSection(doc, strategy);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
@@ -1187,11 +1178,11 @@ ${constraints}`;
   return invocation;
 }
 
-export function generateCodexPrompt(doc, id, options = {}) {
+export function generateCodexPrompt(doc, id, strategy, options = {}) {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
-  const preamble = generatePreamble(id);
+  const preamble = generatePreamble(id, strategy);
   const tddDirective = generateTDDDirective();
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
@@ -1337,7 +1328,14 @@ async function main() {
       WU_OPTIONS.noThinking,
       WU_OPTIONS.budget,
       WU_OPTIONS.codex,
+      WU_OPTIONS.id,
+      WU_OPTIONS.thinking,
+      WU_OPTIONS.noThinking,
+      WU_OPTIONS.budget,
+      WU_OPTIONS.codex,
       WU_OPTIONS.parentWu, // WU-1945: Parent WU for spawn registry tracking
+      WU_OPTIONS.client,
+      WU_OPTIONS.vendor,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1424,41 +1422,65 @@ async function main() {
     budget: args.budget,
   };
 
-  if (args.codex) {
-    const prompt = generateCodexPrompt(doc, id, thinkingOptions);
-    console.log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
-    console.log(`${LOG_PREFIX} Copy the Markdown below:\n`);
-    console.log(prompt.trimEnd());
-    return;
+  // Client Resolution
+  const config = getConfig();
+  let clientName = args.client;
+
+  if (!clientName && args.vendor) {
+    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: --vendor is deprecated. Use --client.`);
+    clientName = args.vendor;
   }
 
-  // Generate and output the Task invocation
-  const invocation = generateTaskInvocation(doc, id, thinkingOptions);
+  // Codex handling (deprecated legacy flag)
+  if (args.codex) {
+    if (!clientName) {
+      console.warn(
+        `${LOG_PREFIX} ${EMOJI.WARNING} Warning: --codex is deprecated. Use --client codex-cli.`,
+      );
+      clientName = 'codex-cli';
+    }
+  }
 
-  console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
-  console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
-  console.log(invocation);
+  if (!clientName) {
+    clientName = config.agents.defaultClient || 'claude-code';
+  }
 
-  // WU-1945: Record spawn event to registry (non-blocking)
-  // Only record if --parent-wu is provided (orchestrator context)
-  if (args.parentWu) {
-    const registryResult = await recordSpawnToRegistry({
-      parentWuId: args.parentWu,
-      targetWuId: id,
-      lane: doc.lane || 'Unknown',
-      baseDir: '.beacon/state',
-    });
+  // Create strategy
+  const strategy = SpawnStrategyFactory.create(clientName);
 
-    const registryMessage = formatSpawnRecordedMessage(
-      registryResult.spawnId,
-      registryResult.error,
-    );
-    console.log(`\n${registryMessage}`);
+  if (clientName === 'codex-cli' || args.codex) {
+    const prompt = generateCodexPrompt(doc, id, strategy, thinkingOptions);
+    console.log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
+    console.log(`${LOG_PREFIX} Copy the Markdown below:\n`);
+    // ...
+
+    // Generate and output the Task invocation
+    const invocation = generateTaskInvocation(doc, id, strategy, thinkingOptions);
+
+    console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
+    console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
+    console.log(invocation);
+
+    // WU-1945: Record spawn event to registry (non-blocking)
+    // Only record if --parent-wu is provided (orchestrator context)
+    if (args.parentWu) {
+      const registryResult = await recordSpawnToRegistry({
+        parentWuId: args.parentWu,
+        targetWuId: id,
+        lane: doc.lane || 'Unknown',
+        baseDir: '.beacon/state',
+      });
+
+      const registryMessage = formatSpawnRecordedMessage(
+        registryResult.spawnId,
+        registryResult.error,
+      );
+      console.log(`\n${registryMessage}`);
+    }
   }
 }
 
 // Guard main() for testability
-import { fileURLToPath } from 'node:url';
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main();
 }

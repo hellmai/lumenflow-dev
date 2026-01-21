@@ -151,6 +151,7 @@ import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.js';
 import { parseYAML } from '@lumenflow/core/lib/wu-yaml.js';
 // WU-2027: Import spawn generation for embedding in orchestration output
 import { generateTaskInvocation } from '@lumenflow/core/lib/wu-spawn.js';
+import { SpawnStrategyFactory } from '@lumenflow/core/lib/spawn-strategy.js';
 
 /**
  * Wave manifest directory path (gitignored).
@@ -1227,7 +1228,7 @@ export function generateEmbeddedSpawnPrompt(wuId: string): string {
 
   // Generate the full Task invocation (includes XML wrapper)
   // The prompt is already XML-escaped in generateTaskInvocation
-  return generateTaskInvocation(doc, wuId, {});
+  return generateTaskInvocation(doc, wuId, SpawnStrategyFactory.create('claude-code'));
 }
 
 /**
@@ -1241,7 +1242,7 @@ export function generateEmbeddedSpawnPrompt(wuId: string): string {
  */
 export function formatTaskInvocationWithEmbeddedSpawn(wu: WUEntry): string {
   // Generate the full Task invocation for this WU
-  return generateTaskInvocation(wu.doc, wu.id, {});
+  return generateTaskInvocation(wu.doc, wu.id, SpawnStrategyFactory.create('claude-code'));
 }
 
 /**
@@ -1290,7 +1291,11 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
     xmlLines.push(openTag);
 
     for (const wu of wave) {
-      const fullInvocation = generateTaskInvocation(wu.doc, wu.id, {});
+      const fullInvocation = generateTaskInvocation(
+        wu.doc,
+        wu.id,
+        SpawnStrategyFactory.create('claude-code'),
+      );
 
       // Extract just the inner invoke block (remove outer function_calls wrapper)
       // Use indexOf for reliable extraction (regex can have escaping issues)
