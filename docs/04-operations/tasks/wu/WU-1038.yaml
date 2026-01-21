@@ -2,7 +2,7 @@ id: WU-1038
 title: Ensure worktree gates can locate CLI dist
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-20
 code_paths:
@@ -46,3 +46,5 @@ session_id: 750b2115-a9d1-4e27-b6b1-ccb59768ce21
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-20T23:51:55.106Z
+locked: true
+completed_at: 2026-01-21T00:00:23.298Z

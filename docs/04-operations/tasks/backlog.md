@@ -59,3 +59,4 @@ sections:
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml)
+- [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml)
