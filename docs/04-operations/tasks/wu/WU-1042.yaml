@@ -1,14 +1,20 @@
 id: WU-1042
 title: Reduce gates friction (format guidance + worktree cleanup helper)
 lane: 'Framework: CLI'
-type: feature
+type: bug
 status: ready
 priority: P2
 created: 2026-01-21
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/wu-cleanup.ts
+  - packages/@lumenflow/core/src/rebase-artifact-cleanup.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
-  manual: []
-  unit: []
+  manual:
+    - Run new cleanup helper in a worktree with dist artifacts and confirm build succeeds
+  unit:
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1042.done
@@ -22,12 +28,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |
-  [PLACEHOLDER] Describe the work to be done.
-
-  Context: ...
-  Problem: ...
-  Solution: ...
+description: 'Context: Gates failures often require manual investigation (format errors), and
+  worktrees can accumulate build artifacts that break builds (TS5055). Problem: gates output doesn’t
+  always surface the exact fix command, and there’s no first-class cleanup helper for worktree dist
+  artifacts. Solution: improve gates error messaging for format:check (print exact prettier command
+  with file list) and add a CLI cleanup helper to remove build artifacts in a worktree safely,
+  documented for agents.'
 acceptance:
-  - '[PLACEHOLDER] Define acceptance criteria'
-  - pnpm format, lint, typecheck → PASS
+  - When format:check fails in gates, output includes the exact prettier --write command and
+    affected file paths
+  - New CLI helper can safely remove dist artifacts in the current worktree
+  - Docs updated with new cleanup helper usage
