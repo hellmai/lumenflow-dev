@@ -1,6 +1,6 @@
 # Troubleshooting: wu:done Not Run
 
-**Last updated:** 2026-01-19
+**Last updated:** 2026-01-21
 
 This is the most common mistake agents make. This document explains why it happens and how to fix it.
 
@@ -69,6 +69,17 @@ When you run `pnpm wu:done --id WU-XXX`:
 7. Pushes to origin
 
 **This is the ONLY way to complete a WU.** Manual steps will leave things in an inconsistent state.
+
+---
+
+## Exposure Auto-Fill (WU-1041)
+
+If a WU is missing `exposure`, `wu:done` auto-sets a safe default:
+
+- **Content lanes** → `documentation`
+- **Framework/Operations lanes** → `backend-only`
+
+Existing exposure values are preserved.
 
 ---
 

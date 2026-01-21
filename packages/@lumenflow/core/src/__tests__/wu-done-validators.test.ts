@@ -14,6 +14,9 @@ import { join } from 'node:path';
 
 // Import the functions to test
 import { isSkipWebTestsPath } from '../path-classifiers.js';
+import { applyExposureDefaults } from '../wu-done-validators.js';
+import { validateExposure } from '../wu-validation.js';
+import { WU_EXPOSURE } from '../wu-constants.js';
 import { rollbackFiles, RollbackResult } from '../rollback-utils.js';
 
 describe('isSkipWebTestsPath', () => {
@@ -543,5 +546,51 @@ status: in_progress
     expect(result.valid).toBe(false);
     // Should report at least 3 errors: stamp file, completed_at, locked, status
     expect(result.errors.length >= 3).toBeTruthy();
+  });
+});
+
+describe('exposure defaults (WU-1041)', () => {
+  it('applies backend-only for Framework and Operations lanes', () => {
+    const frameworkDoc = { id: 'WU-1', lane: 'Framework: Core' };
+    const operationsDoc = { id: 'WU-2', lane: 'Operations: Tooling' };
+
+    const frameworkResult = applyExposureDefaults(frameworkDoc);
+    const operationsResult = applyExposureDefaults(operationsDoc);
+
+    expect(frameworkResult.applied).toBe(true);
+    expect(frameworkDoc.exposure).toBe(WU_EXPOSURE.BACKEND_ONLY);
+    expect(operationsResult.applied).toBe(true);
+    expect(operationsDoc.exposure).toBe(WU_EXPOSURE.BACKEND_ONLY);
+  });
+
+  it('applies documentation for Content lanes', () => {
+    const doc = { id: 'WU-3', lane: 'Content: Documentation' };
+    const result = applyExposureDefaults(doc);
+
+    expect(result.applied).toBe(true);
+    expect(doc.exposure).toBe(WU_EXPOSURE.DOCUMENTATION);
+  });
+
+  it('does not override existing exposure', () => {
+    const doc = { id: 'WU-4', lane: 'Framework: Core', exposure: WU_EXPOSURE.API };
+    const result = applyExposureDefaults(doc);
+
+    expect(result.applied).toBe(false);
+    expect(doc.exposure).toBe(WU_EXPOSURE.API);
+  });
+
+  it('does not apply defaults for other lanes', () => {
+    const doc = { id: 'WU-5', lane: 'Experience: Web' };
+    const result = applyExposureDefaults(doc);
+
+    expect(result.applied).toBe(false);
+    expect(doc.exposure).toBeUndefined();
+  });
+
+  it('suppresses missing exposure warnings when defaults apply', () => {
+    const doc = { id: 'WU-6', lane: 'Framework: Core' };
+    const result = validateExposure(doc);
+
+    expect(result.warnings.length).toBe(0);
   });
 });

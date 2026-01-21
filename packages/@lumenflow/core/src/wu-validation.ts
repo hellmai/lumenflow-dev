@@ -16,6 +16,28 @@
 
 import { WU_EXPOSURE } from './wu-constants.js';
 
+const LANE_PARENTS = {
+  CONTENT: 'content',
+  FRAMEWORK: 'framework',
+  OPERATIONS: 'operations',
+};
+
+function getLaneParent(lane) {
+  if (!lane || typeof lane !== 'string') return '';
+  return lane.split(':')[0].trim().toLowerCase();
+}
+
+export function resolveExposureDefault(lane) {
+  const parent = getLaneParent(lane);
+  if (parent === LANE_PARENTS.CONTENT) {
+    return WU_EXPOSURE.DOCUMENTATION;
+  }
+  if (parent === LANE_PARENTS.FRAMEWORK || parent === LANE_PARENTS.OPERATIONS) {
+    return WU_EXPOSURE.BACKEND_ONLY;
+  }
+  return undefined;
+}
+
 /**
  * UI verification keywords to search for in acceptance criteria.
  * Case-insensitive patterns that indicate the acceptance criteria
@@ -142,7 +164,7 @@ export function validateExposure(wu, options: ValidateExposureOptions = {}) {
   }
 
   const wuId = wu.id || 'WU-???';
-  const exposure = wu.exposure;
+  const exposure = wu.exposure || resolveExposureDefault(wu.lane);
 
   // Check 1: exposure field presence
   if (!exposure) {
