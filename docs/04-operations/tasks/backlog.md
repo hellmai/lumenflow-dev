@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1047 — Configurable methodology defaults + client blocks for wu:claim/wu:spawn](wu/WU-1047.yaml) — Framework: Core
-- [WU-1046 — Consolidate YAML handling on yaml package (retire js-yaml)](wu/WU-1046.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -64,3 +62,4 @@ sections:
 - [WU-1038 — Ensure worktree gates can locate CLI dist](wu/WU-1038.yaml)
 - [WU-1043 — Enforce complete specs at wu:create (schema + templates + docs)](wu/WU-1043.yaml)
 - [WU-1044 — Vendor-Agnostic wu:spawn Refactor](wu/WU-1044.yaml)
+- [WU-1046 — Consolidate YAML handling on yaml package (retire js-yaml)](wu/WU-1046.yaml)
