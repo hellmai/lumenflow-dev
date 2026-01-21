@@ -2,7 +2,7 @@ id: WU-1044
 title: Vendor-Agnostic wu:spawn Refactor
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -40,3 +40,5 @@ session_id: e40b1c68-a8f2-420f-85f2-345d9c2e8412
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T09:33:36.084Z
+locked: true
+completed_at: 2026-01-21T12:08:07.154Z
