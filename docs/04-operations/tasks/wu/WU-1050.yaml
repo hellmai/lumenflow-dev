@@ -1,0 +1,57 @@
+id: WU-1050
+title: Restore canonical claim state + global visibility for wu:claim (push-only)
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-21
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/git-adapter.ts
+  - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
+  - packages/@lumenflow/core/src/__tests__/git-adapter.test.ts
+  - docs/04-operations/_frameworks/lumenflow/playbook.md
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - .lumenflow/rules/wu-workflow.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - LUMENFLOW.md
+tests:
+  manual:
+    - Run wu:claim on a ready WU and confirm origin/main updates while local main remains unchanged
+    - Verify lane branch is pushed to origin by default and visible to another clone
+    - Run wu:claim with --no-push and confirm no pushes and warning is emitted
+    - Attempt claim when remote lane branch exists and confirm wu:claim aborts before changes
+    - Attempt claim with invalid or incomplete WU spec and confirm no state changes
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/core/src/__tests__/git-adapter.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1050.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/plans/WU-1050-claim-global-state.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: wu:claim currently updates claim metadata only inside the worktree branch and does not push, so claims are invisible to other agents.
+
+  Problem: canonical state (status/backlog/WU YAML + state store) is not updated on origin/main at claim time, and the lane-branch lock is local-only. Other agents can mistakenly claim the same WU.
+
+  Solution: make wu:claim a two-step process like wu:create/wu:edit: (1) preflight validate the spec and lane using origin/main (read-only), (2) update canonical claim state via micro-worktree push-only to origin/main (no local main mutation), then (3) create worktree + lane branch from origin/main and push lane branch by default for the global lock. Provide --no-push to skip pushes and warn that the claim is local-only (air-gapped).
+acceptance:
+  - wu:claim validates the WU spec (schema + completeness) before any claim state changes; on failure no state is modified
+  - Canonical claim state (WU YAML + status.md + backlog.md + wu-events.jsonl) is updated on origin/main via micro-worktree push-only; local main remains unchanged
+  - wu:claim checks remote branch existence via git ls-remote --heads and aborts if the lane branch already exists
+  - Worktree + lane branch are created from origin/main only after canonical state update succeeds
+  - Lane branch is pushed to origin by default; --no-push skips all pushes and emits a warning that the claim is local-only
+  - 'Failure handling is explicit: if canonical update fails claim aborts without creating the worktree; if worktree creation fails after canonical update, emit repair guidance'
