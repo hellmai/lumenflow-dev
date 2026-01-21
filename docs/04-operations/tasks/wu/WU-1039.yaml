@@ -2,7 +2,7 @@ id: WU-1039
 title: Allow exposure edits on completed WUs
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -43,3 +43,6 @@ session_id: 9843da4d-1190-4b05-b60e-30f6a80ec53f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T12:40:47.014Z
+exposure: backend-only
+locked: true
+completed_at: 2026-01-21T17:03:10.509Z
