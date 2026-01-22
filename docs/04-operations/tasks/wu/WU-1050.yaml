@@ -2,7 +2,7 @@ id: WU-1050
 title: Restore canonical claim state + global visibility for wu:claim (push-only)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-21
 code_paths:
@@ -76,3 +76,5 @@ session_id: 8c7e708e-332e-4024-842b-db9d34f3bcd2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T21:19:12.132Z
+locked: true
+completed_at: 2026-01-22T10:09:47.652Z
