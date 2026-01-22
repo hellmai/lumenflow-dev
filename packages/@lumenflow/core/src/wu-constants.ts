@@ -46,6 +46,10 @@ export const GIT_REFS = {
   ORIGIN_MAIN: 'origin/main',
   /** Current HEAD ref */
   HEAD: 'HEAD',
+  /** Upstream ref */
+  UPSTREAM: '@{u}',
+  /** Range of upstream..HEAD */
+  UPSTREAM_RANGE: '@{u}..HEAD',
   /** Fetch head ref */
   FETCH_HEAD: 'FETCH_HEAD',
 };
@@ -311,6 +315,26 @@ export const CONSISTENCY_TYPES = {
 
   /** Stamp file exists but WU YAML status is not 'done' (partial wu:done failure) */
   STAMP_EXISTS_YAML_NOT_DONE: 'STAMP_EXISTS_YAML_NOT_DONE',
+
+  /** WU is claimed but its worktree directory is missing */
+  MISSING_WORKTREE_CLAIMED: 'MISSING_WORKTREE_CLAIMED',
+};
+
+/**
+ * Consistency check messages
+ */
+export const CONSISTENCY_MESSAGES = {
+  MISSING_WORKTREE_CLAIMED: (id, status, worktreePath) =>
+    `WU ${id} is '${status}' but worktree path is missing (${worktreePath})`,
+  MISSING_WORKTREE_CLAIMED_REPAIR: 'Recover worktree or re-claim WU',
+};
+
+/**
+ * Worktree warning messages
+ */
+export const WORKTREE_WARNINGS = {
+  MISSING_TRACKED_HEADER: 'Tracked worktrees missing on disk (possible manual deletion):',
+  MISSING_TRACKED_LINE: (worktreePath) => `Missing: ${worktreePath}`,
 };
 
 /**
@@ -489,6 +513,63 @@ export const BOX = {
 };
 
 /**
+ * Cleanup guard constants
+ */
+export const CLEANUP_GUARD = {
+  REASONS: {
+    UNCOMMITTED_CHANGES: 'UNCOMMITTED_CHANGES',
+    UNPUSHED_COMMITS: 'UNPUSHED_COMMITS',
+    STATUS_NOT_DONE: 'STATUS_NOT_DONE',
+    MISSING_STAMP: 'MISSING_STAMP',
+    PR_NOT_MERGED: 'PR_NOT_MERGED',
+  },
+  TITLES: {
+    BLOCKED: 'CLEANUP BLOCKED',
+    NEXT_STEPS: 'Next steps:',
+  },
+  MESSAGES: {
+    UNCOMMITTED_CHANGES: 'Worktree has uncommitted changes. Refusing to delete.',
+    UNPUSHED_COMMITS: 'Worktree has unpushed commits. Refusing to delete.',
+    STATUS_NOT_DONE: 'WU YAML status is not done. Refusing to delete.',
+    MISSING_STAMP: 'WU stamp is missing. Refusing to delete.',
+    PR_NOT_MERGED: 'PR is not merged (or cannot be verified). Refusing to delete.',
+  },
+  NEXT_STEPS: {
+    DEFAULT: [
+      { text: '1. Resolve the issue above', appendId: false },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+    UNCOMMITTED_CHANGES: [
+      { text: '1. Commit or stash changes in the worktree', appendId: false },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+    UNPUSHED_COMMITS: [
+      { text: '1. Push the lane branch to origin', appendId: false },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+    STATUS_NOT_DONE: [
+      {
+        text: `1. Complete the WU with ${LOG_PREFIX.DONE} (creates stamp + done status)`,
+        appendId: false,
+      },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+    MISSING_STAMP: [
+      { text: '1. Run wu:done to create the stamp file', appendId: false },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+    PR_NOT_MERGED: [
+      { text: '1. Merge the PR in GitHub', appendId: false },
+      { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
+    ],
+  },
+  PR_CHECK: {
+    START: 'Verifying PR merge status...',
+    RESULT: 'PR merge verification via',
+  },
+};
+
+/**
  * Git display constants
  *
  * Emergency fix (Session 2): Centralized from hardcoded magic numbers
@@ -572,6 +653,9 @@ export const GIT_FLAGS = {
 
   /** No GPG sign flag (skip commit signing) */
   NO_GPG_SIGN: '--no-gpg-sign',
+
+  /** One-line log format */
+  ONELINE: '--oneline',
 };
 
 /**
@@ -592,6 +676,9 @@ export const GIT_COMMANDS = {
 
   /** Git diff command */
   DIFF: 'diff',
+
+  /** Git log command */
+  LOG: 'log',
 
   /** Git merge-base command */
   MERGE_BASE: 'merge-base',

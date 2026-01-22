@@ -19,7 +19,7 @@
 
 import { simpleGit, type SimpleGit } from 'simple-git';
 import { existsSync, rmSync } from 'node:fs';
-import { GIT_FLAGS } from './wu-constants.js';
+import { GIT_COMMANDS, GIT_FLAGS, GIT_REFS } from './wu-constants.js';
 
 // Type definitions
 interface GitAdapterOptions {
@@ -157,6 +157,17 @@ export class GitAdapter {
    */
   async getStatus() {
     const result = await this.git.raw(['status', GIT_FLAGS.PORCELAIN]);
+    return result.trim();
+  }
+
+  /**
+   * Get unpushed commits (compared to upstream)
+   * @returns {Promise<string>} Oneline log output for unpushed commits
+   * @example
+   * await git.getUnpushedCommits(); // "abc123 fix: ...\n"
+   */
+  async getUnpushedCommits() {
+    const result = await this.git.raw([GIT_COMMANDS.LOG, GIT_REFS.UPSTREAM_RANGE, GIT_FLAGS.ONELINE]);
     return result.trim();
   }
 
