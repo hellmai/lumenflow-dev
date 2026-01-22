@@ -2,7 +2,7 @@ id: WU-1056
 title: Harden wu:cleanup + add worktree-loss safeguards
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - If gh CLI is unavailable, wu:cleanup still refuses without stamp+done
   - Missing worktree directories for claimed WUs trigger a warning/incident
   - Safeguards covered by unit tests
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1056
+claimed_at: 2026-01-22T15:15:06.326Z
+baseline_main_sha: 123f37f87f4dc8dda16a265cccb7aa0b8b5fe5bf
+session_id: 7d4dd477-0c08-4b9b-a34f-c664bff4bcc6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T15:15:06.333Z

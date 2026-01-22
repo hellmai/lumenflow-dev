@@ -84,3 +84,4 @@
 {"type":"complete","wuId":"WU-1054","timestamp":"2026-01-22T13:00:26.996Z"}
 {"type":"claim","wuId":"WU-1055","lane":"Content: Documentation","title":"Fix Starlight docs - remove custom CSS, use defaults","timestamp":"2026-01-22T13:23:07.068Z"}
 {"type":"complete","wuId":"WU-1055","timestamp":"2026-01-22T13:25:54.627Z"}
+{"type":"claim","wuId":"WU-1056","lane":"Framework: Core","title":"Harden wu:cleanup + add worktree-loss safeguards","timestamp":"2026-01-22T15:15:06.351Z"}
