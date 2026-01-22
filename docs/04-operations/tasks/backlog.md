@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
