@@ -2,7 +2,7 @@ id: WU-1062
 title: External plan storage and no-main-write mode for wu:create
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -53,15 +53,15 @@ notes: >-
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
-claimed_at: 2026-01-22T20:32:03.819Z
+claimed_at: 2026-01-22T21:51:04.425Z
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1062
-session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
+session_id: cc8575fb-4c8b-4414-93da-abd3dd153cae
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-01-22T20:32:03.826Z
+approved_at: 2026-01-22T21:51:04.434Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -89,3 +89,4 @@ acceptance:
   - quick-ref-commands.md updated with new flags
 locked: false
 completed_at: 2026-01-22T20:49:37.895Z
+baseline_main_sha: cce25500d9113f3f2891093cda86709173bac736
