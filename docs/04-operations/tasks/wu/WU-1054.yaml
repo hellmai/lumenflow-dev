@@ -2,7 +2,7 @@ id: WU-1054
 title: Fix npm publish and document release process
 lane: 'Operations: CI/CD'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -25,10 +25,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix npm publish workflow failure (github-app missing private:true) and document the complete release process for agents including versioning, npm publishing, Starlight docs sync, and GitHub App deployment. Also fix inappropriate private repo links in public docs.
+description: Fix npm publish workflow failure (github-app missing private:true) and document the
+  complete release process for agents including versioning, npm publishing, Starlight docs sync, and
+  GitHub App deployment. Also fix inappropriate private repo links in public docs.
 acceptance:
   - GitHub App package marked as private (not publishable to npm)
   - Release process documentation created for agent onboarding
-  - 'Documentation covers: version bumping, npm publish workflow, Starlight deployment, GitHub App sync'
+  - 'Documentation covers: version bumping, npm publish workflow, Starlight deployment, GitHub App
+    sync'
   - Private repo links in Starlight docs replaced with appropriate public links
   - npm publish workflow succeeds on re-run
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1054
+claimed_at: 2026-01-22T12:40:34.875Z
+baseline_main_sha: f5fb1fe461e1cb20bf125947914a11d7dc258486
+session_id: d01167d5-9ca7-4ea8-a37a-ec06e343e7de
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T12:40:34.880Z
