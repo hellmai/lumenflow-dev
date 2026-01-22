@@ -3,11 +3,10 @@ title: Configuration
 description: LumenFlow configuration file reference
 ---
 
-LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
+{/* AUTO-GENERATED FILE - DO NOT EDIT DIRECTLY */}
+{/* Run `pnpm docs:generate` to regenerate from source */}
 
-`lumenflow init` writes this file. The default scaffold sets `directories.agentsDir` to
-`.lumenflow/agents` for vendor-agnostic agent guidance, with optional overlays like
-`.claude/agents` for Claude Code.
+LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
 
 ## Minimal Config
 
@@ -26,319 +25,157 @@ gates:
   test: true
 ```
 
-## Full Config
-
-```yaml
-version: '2.0'
-
-# Optional: Project name
-project: my-project
-
-# Lane enforcement settings
-lanes:
-  enforcement:
-    require_parent: true # Enforce Parent: Sublane format
-    allow_custom: false # Only taxonomy lanes allowed
-
-  # Lane definitions with Parent: Sublane format
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-
-    - name: 'Experience: UI'
-      wip_limit: 2
-      code_paths:
-        - 'src/components/**'
-        - 'src/pages/**'
-
-    - name: 'Operations: Infrastructure'
-      wip_limit: 1
-      code_paths:
-        - 'apps/**'
-        - 'actions/**'
-
-# Gate configuration
-gates:
-  format: true
-  lint: true
-  typecheck: true
-  test: true
-
-# Or with custom commands:
-# gates:
-#   format:
-#     command: pnpm prettier --check .
-#   lint:
-#     command: pnpm eslint src/
-#   typecheck:
-#     command: pnpm tsc --noEmit
-#   test:
-#     command: pnpm vitest run
-
-# Directory locations
-directories:
-  wu_specs: docs/04-operations/tasks/wu
-  backlog: docs/04-operations/tasks/backlog.md
-  status: docs/04-operations/tasks/status.md
-  stamps: .beacon/stamps
-
-# Git settings
-git:
-  main_branch: main
-  branch_pattern: 'lane/{lane}/{wu_id}'
-
-# Worktree settings
-worktree_pattern: 'worktrees/{lane}-{wu_id}'
-
-# Memory layer settings
-memory:
-  checkpoint_interval: 30 # minutes
-  max_checkpoints: 10
-  auto_checkpoint: true
-```
-
-## Config Reference
-
-### version
-
-**Required.** Config schema version.
-
-```yaml
-version: '2.0'
-```
-
-### project
-
-**Optional.** Project name for display.
-
-```yaml
-project: my-awesome-app
-```
-
-### lanes
-
-**Required.** Lane configuration with enforcement rules and definitions.
-
-```yaml
-lanes:
-  enforcement:
-    require_parent: true # Require Parent: Sublane format
-    allow_custom: false # Only taxonomy lanes allowed
-
-  definitions:
-    - name: 'Framework: Core' # Parent: Sublane format
-      wip_limit: 1 # Max WUs in progress (default: 1)
-      code_paths: # File paths for auto-detection
-        - 'packages/@lumenflow/core/**'
-```
-
-#### lanes.enforcement
-
-| Field            | Type    | Default | Description                          |
-| ---------------- | ------- | ------- | ------------------------------------ |
-| `require_parent` | boolean | false   | Require `Parent: Sublane` format     |
-| `allow_custom`   | boolean | true    | Allow lanes outside defined taxonomy |
-
-#### lanes.definitions[]
-
-| Field        | Type     | Default  | Description                       |
-| ------------ | -------- | -------- | --------------------------------- |
-| `name`       | string   | required | Lane identifier (Parent: Sublane) |
-| `wip_limit`  | number   | 1        | Max concurrent WUs                |
-| `code_paths` | string[] | []       | Glob patterns for lane detection  |
-
-### gates
-
-**Required.** Quality gate configuration.
-
-#### Simple (auto-detect)
-
-```yaml
-gates:
-  format: true
-  lint: true
-  typecheck: true
-  test: true
-```
-
-#### Custom commands
-
-```yaml
-gates:
-  format:
-    command: pnpm prettier --check .
-    required: true
-  lint:
-    command: pnpm eslint src/
-    required: true
-  typecheck:
-    command: pnpm tsc --noEmit
-    required: true
-  test:
-    command: pnpm vitest run
-    required: true
-```
-
-#### Additional gates
-
-```yaml
-gates:
-  format: true
-  lint: true
-  typecheck: true
-  test: true
-  security:
-    command: pnpm audit --audit-level=high
-    required: false # Warning only
-  e2e:
-    command: pnpm playwright test
-    required: true
-```
+## Config Sections
 
 ### directories
 
-**Optional.** Override default directories.
+Directory paths configuration
 
-```yaml
-directories:
-  wu_specs: docs/04-operations/tasks/wu # Where WU YAMLs live
-  backlog: docs/04-operations/tasks/backlog.md # Backlog file
-  status: docs/04-operations/tasks/status.md # Status file
-  stamps: .beacon/stamps # Completion stamps
-  skillsDir: .claude/skills # Skills directory
-  agentsDir: .claude/agents # Agents directory
-```
 
-| Field       | Default                               | Description            |
-| ----------- | ------------------------------------- | ---------------------- |
-| `wu_specs`  | `docs/04-operations/tasks/wu`         | WU YAML directory      |
-| `backlog`   | `docs/04-operations/tasks/backlog.md` | Backlog file path      |
-| `status`    | `docs/04-operations/tasks/status.md`  | Status file path       |
-| `stamps`    | `.beacon/stamps`                      | Stamp directory        |
-| `skillsDir` | `.claude/skills`                      | Agent skills directory |
-| `agentsDir` | `.claude/agents`                      | Agent definitions      |
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `appsWeb` | string | `"apps/web/"` |  |
+| `worktrees` | string | `"worktrees/"` |  |
+| `ai` | string | `"ai/"` |  |
+| `claude` | string | `".claude/"` |  |
+| `docs` | string | `"docs/"` |  |
+| `packages` | string | `"packages/"` |  |
+| `tools` | string | `"tools/"` |  |
+| `memoryBank` | string | `"memory-bank/"` |  |
+| `wuDir` | string | `"docs/04-operations/tasks/wu"` |  |
+| `initiativesDir` | string | `"docs/04-operations/tasks/i...` |  |
+| `backlogPath` | string | `"docs/04-operations/tasks/b...` |  |
+| `statusPath` | string | `"docs/04-operations/tasks/s...` |  |
+| `skillsDir` | string | `".claude/skills"` |  |
+| `agentsDir` | string | `".claude/agents"` |  |
+
+### beacon
+
+Beacon paths configuration (.beacon directory structure)
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `base` | string | `".beacon"` |  |
+| `stateDir` | string | `".beacon/state"` |  |
+| `stampsDir` | string | `".beacon/stamps"` |  |
+| `mergeLock` | string | `".beacon/merge.lock"` |  |
+| `telemetry` | string | `".beacon/telemetry"` |  |
+| `flowLog` | string | `".beacon/flow.log"` |  |
+| `sessions` | string | `".beacon/sessions"` |  |
+| `incidents` | string | `".beacon/incidents"` |  |
+| `commandsLog` | string | `".beacon/commands.log"` |  |
 
 ### git
 
-**Optional.** Git configuration.
+Git configuration
 
-```yaml
-git:
-  main_branch: main
-  branch_pattern: 'lane/{lane}/{wu_id}'
-```
 
-| Field            | Default               | Description           |
-| ---------------- | --------------------- | --------------------- |
-| `main_branch`    | `main`                | Primary branch name   |
-| `branch_pattern` | `lane/{lane}/{wu_id}` | Branch naming pattern |
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mainBranch` | string | `"main"` |  |
+| `defaultRemote` | string | `"origin"` |  |
+| `laneBranchPrefix` | string | `"lane/"` |  |
+| `tempBranchPrefix` | string | `"tmp/"` |  |
+| `realGitPath` | string | `"/usr/bin/git"` |  |
+| `maxBranchDrift` | integer | `20` |  |
+| `branchDriftWarning` | integer | `15` |  |
+| `branchDriftInfo` | integer | `10` |  |
+| `agentBranchPatterns` | string[] | `["agent/*"]` |  |
 
-### worktree_pattern
+### wu
 
-**Optional.** Worktree directory pattern.
+WU (Work Unit) configuration
 
-```yaml
-worktree_pattern: 'worktrees/{lane}-{wu_id}'
-```
 
-Available variables:
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `idPattern` | string | `"^WU-\d+$"` |  |
+| `minDescriptionLength` | integer | `50` |  |
+| `maxCommitSubject` | integer | `100` |  |
+| `defaultPriority` | string | `"P2"` |  |
+| `defaultStatus` | string | `"ready"` |  |
+| `defaultType` | string | `"feature"` |  |
 
-- `{lane}` – Lane name (lowercase)
-- `{wu_id}` – WU identifier (lowercase)
+### gates
 
-### agents
+Quality gates configuration
 
-**Optional.** Agent defaults used by `wu:claim` and `wu:spawn`.
 
-```yaml
-agents:
-  defaultClient: claude-code
-  methodology:
-    enabled: true
-    enforcement: required
-    principles:
-      - TDD
-      - Hexagonal Architecture
-      - SOLID
-      - DRY
-      - YAGNI
-      - KISS
-      - Library-First
-    notes: 'Apply defaults unless explicitly waived.'
-  clients:
-    claude-code:
-      blocks:
-        - title: Claude Code Notes
-          content: Use .claude/agents overrides when present.
-      skills:
-        instructions: Choose skills based on WU scope.
-        recommended:
-          - wu-lifecycle
-          - tdd-workflow
-```
-
-#### agents.methodology
-
-| Field         | Type     | Default       | Description                             |
-| ------------- | -------- | ------------- | --------------------------------------- |
-| `enabled`     | boolean  | true          | Show Project Defaults in `wu:claim`     |
-| `enforcement` | string   | `required`    | `required` or `recommended`             |
-| `principles`  | string[] | (see example) | Methodology principles to surface       |
-| `notes`       | string   | —             | Optional notes appended to the defaults |
-
-#### agents.clients.\<name\>
-
-Per-client guidance injected by `wu:spawn`.
-
-| Field                 | Type            | Default | Description                                  |
-| --------------------- | --------------- | ------- | -------------------------------------------- |
-| `preamble`            | string\|boolean | —       | Optional overlay preamble path or `false`    |
-| `skillsDir`           | string          | —       | Optional skills directory for the client     |
-| `agentsDir`           | string          | —       | Optional agents directory for the client     |
-| `blocks`              | array           | []      | Client blocks appended under Client Guidance |
-| `skills`              | object          | —       | Client skills guidance configuration         |
-| `skills.instructions` | string          | —       | Freeform guidance text                       |
-| `skills.recommended`  | string[]        | []      | Skills to recommend for the client           |
-| `skills.byLane`       | object          | {}      | Lane-specific skill recommendations          |
-
-##### skills.byLane
-
-Map lane names to additional skills:
-
-```yaml
-agents:
-  clients:
-    claude-code:
-      skills:
-        recommended:
-          - wu-lifecycle
-        byLane:
-          'Framework: Core':
-            - tdd-workflow
-            - lumenflow-gates
-          'Content: Documentation':
-            - worktree-discipline
-```
-
-When a WU is spawned for a specific lane, the lane's skills are merged with the recommended skills.
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `maxEslintWarnings` | integer | `100` |  |
+| `enableCoverage` | boolean | `true` |  |
+| `minCoverage` | number | `90` |  |
+| `enableSafetyCriticalTests` | boolean | `true` |  |
+| `enableInvariants` | boolean | `true` |  |
 
 ### memory
 
-**Optional.** Memory layer configuration.
+Memory layer configuration
 
-```yaml
-memory:
-  checkpoint_interval: 30 # Auto-checkpoint interval (minutes)
-  max_checkpoints: 10 # Max checkpoints per WU
-  auto_checkpoint: true # Enable auto-checkpointing
-```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `directory` | string | `"memory-bank/"` |  |
+| `sessionTtl` | integer | `604800000` |  |
+| `checkpointTtl` | integer | `2592000000` |  |
+| `enableAutoCleanup` | boolean | `true` |  |
+
+### ui
+
+UI configuration
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `errorBoxWidth` | integer | `70` |  |
+| `statusPreviewLines` | integer | `5` |  |
+| `readinessBoxWidth` | integer | `50` |  |
+
+### yaml
+
+YAML serialization configuration
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `lineWidth` | integer | `100` |  |
+
+### agents
+
+Agents configuration
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `defaultClient` | string | `"claude-code"` |  |
+| `clients` | object | `[object Object]` |  |
+| `methodology` | object | `[object Object]` |  |
+
+### agents.methodology
+
+Methodology defaults (agent-facing project defaults)
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | boolean | `true` |  |
+| `enforcement` | "required" | "recommended" | `"required"` |  |
+| `principles` | string[] | `["TDD","Hexagonal Architect...` |  |
+| `notes` | string | `-` |  |
+
+### agents.clients.*
+
+Client configuration (per-client settings)
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `preamble` | unknown | `-` |  |
+| `skillsDir` | string | `-` |  |
+| `blocks` | object[] | `[]` |  |
+| `skills` | object | `-` |  |
 
 ## Environment Overrides
 
@@ -348,11 +185,11 @@ Config values can be overridden via environment variables:
 LUMENFLOW_MAIN_BRANCH=develop pnpm wu:done --id WU-001
 ```
 
-| Variable                | Overrides              |
-| ----------------------- | ---------------------- |
-| `LUMENFLOW_CONFIG`      | Config file path       |
-| `LUMENFLOW_MAIN_BRANCH` | `git.main_branch`      |
-| `LUMENFLOW_WU_SPECS`    | `directories.wu_specs` |
+| Variable | Overrides |
+|----------|-----------|
+| `LUMENFLOW_CONFIG` | Config file path |
+| `LUMENFLOW_MAIN_BRANCH` | `git.mainBranch` |
+| `LUMENFLOW_WU_SPECS` | `directories.wuDir` |
 
 ## Validation
 
@@ -362,14 +199,9 @@ Validate your config:
 pnpm exec lumenflow validate
 ```
 
-Checks:
-
-- YAML syntax
-- Required fields present
-- Lane names unique
-- Paths are valid globs
+---
 
 ## Next Steps
 
+- [CLI Commands](/reference/cli) – All commands
 - [WU Schema](/reference/wu-schema) – WU YAML structure
-- [CLI Reference](/reference/cli) – All commands

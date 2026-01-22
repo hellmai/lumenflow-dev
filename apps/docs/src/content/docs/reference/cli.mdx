@@ -1,809 +1,638 @@
 ---
 title: CLI Commands
-description: Complete reference for all LumenFlow CLI commands
+description: Complete CLI reference for LumenFlow
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+{/* AUTO-GENERATED FILE - DO NOT EDIT DIRECTLY */}
+{/* Run `pnpm docs:generate` to regenerate from source */}
 
-The LumenFlow CLI provides commands for managing work units, initiatives, memory, and quality gates.
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-## Installation
+LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiatives, and more.
 
-<Tabs syncKey="pkg">
-  <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
-  <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
-  <TabItem label="yarn">```bash yarn add -D @lumenflow/cli ```</TabItem>
-</Tabs>
+<Aside type="tip">
+All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).
+</Aside>
 
----
+## Commands Overview
 
-## Work Unit Commands
+| Category | Commands |
+|----------|----------|
+| Agent Lifecycle | [`agent:issues:query`](#agentissuesquery), [`agent:log:issue`](#agentlogissue), [`agent:session`](#agentsession), [`agent:session:end`](#agentsessionend) |
+| Flow Metrics | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport) |
+| Initiatives | [`initiative:add:wu`](#initiativeaddwu), [`initiative:bulk:assign:wus`](#initiativebulkassignwus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:status`](#initiativestatus) |
+| Memory Layer | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:create`](#memcreate), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage) |
+| Metrics | [`metrics:snapshot`](#metricssnapshot) |
+| Orchestration | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor) |
+| Quality Gates | [`gates`](#gates) |
+| Setup | [`lumenflow`](#lumenflow), [`lumenflow:init`](#lumenflowinit) |
+| Sub-Agents | [`spawn:list`](#spawnlist) |
+| Work Units | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prune`](#wuprune), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate) |
 
-### wu:create
+## Agent Lifecycle
 
-Create a new work unit spec.
+### agent:issues:query
 
-```bash
-pnpm wu:create \
-  --id WU-001 \
-  --title "Add feature" \
-  --lane "Framework: Core" \
-  --type feature \
-  --exposure backend-only \
-  --description "Implement the feature" \
-  --acceptance "Feature works correctly" \
-  --acceptance "Unit tests pass" \
-  --code-paths "src/feature/" \
-  --test-paths-unit "src/feature/__tests__/"
-```
-
-| Flag                  | Description                                  | Required               |
-| --------------------- | -------------------------------------------- | ---------------------- |
-| `--id`                | Unique WU identifier                         | Yes                    |
-| `--title`             | Short description                            | Yes                    |
-| `--lane`              | Target lane (Parent: Sublane format)         | Yes                    |
-| `--type`              | `feature`, `fix`, `chore`, `discovery`       | Yes                    |
-| `--exposure`          | `ui`, `api`, `backend-only`, `documentation` | Yes                    |
-| `--description`       | Full description                             | Yes                    |
-| `--acceptance`        | Acceptance criterion (repeatable)            | Yes (at least one)     |
-| `--code-paths`        | Code path (repeatable)                       | Yes (non-docs WUs)     |
-| `--test-paths-unit`   | Unit test path (repeatable)                  | At least one test type |
-| `--test-paths-e2e`    | E2E test path (repeatable)                   | At least one test type |
-| `--test-paths-manual` | Manual test description (repeatable)         | At least one test type |
-| `--priority`          | Priority (P0-P3)                             | No (default: `P2`)     |
-| `--spec-refs`         | Spec references (for feature WUs)            | Feature WUs only       |
-| `--user-journey`      | User journey (for ui exposure)               | No                     |
-| `--ui-pairing-wus`    | Related UI WUs                               | No                     |
-| `--validate`          | Additional validation rules                  | No                     |
-
-### wu:claim
-
-Claim a WU and create a worktree.
+Query logged issues from agent sessions
 
 ```bash
-pnpm wu:claim --id WU-001 --lane "Framework: Core"
-pnpm wu:claim --id WU-001 --lane "Framework: Core" --skip-setup
-pnpm wu:claim --id WU-001 --lane "Framework: Core" --resume  # Continue from checkpoint
+pnpm agent:issues:query
 ```
 
-| Flag                 | Description                                  | Required |
-| -------------------- | -------------------------------------------- | -------- |
-| `--id`               | WU to claim                                  | Yes      |
-| `--lane`             | Lane to claim in (Parent: Sublane)           | Yes      |
-| `--skip-setup`       | Skip automatic `pnpm install` in worktree    | No       |
-| `--no-auto`          | Disable auto-approval (force escalation)     | No       |
-| `--force`            | Force claim even if lane at WIP limit        | No       |
-| `--force-overlap`    | Allow claiming WU already in progress        | No       |
-| `--allow-incomplete` | Allow claiming WU with incomplete spec       | No       |
-| `--resume`           | Resume from previous session (agent handoff) | No       |
-| `--branch-only`      | Create branch without worktree               | No       |
-| `--pr-mode`          | Use PR-based workflow instead of trunk       | No       |
-| `--fix`              | Auto-fix detected issues                     | No       |
-| `--no-push`          | Don't push to remote                         | No       |
+### agent:log:issue
 
-Creates:
-
-- Worktree at `worktrees/{lane}-{wu-id}`
-- Branch `lane/{lane}/{wu-id}`
-- Runs `pnpm install` in worktree (unless `--skip-setup`)
-- Updates WU status to `in_progress`
-- Prints **Project Defaults** (agent-only) when `agents.methodology.enabled` is true
-
-### wu:done
-
-Complete a WU after gates pass.
+Log an issue encountered during agent work
 
 ```bash
-pnpm wu:done --id WU-001
+pnpm agent:log:issue
 ```
-
-| Flag           | Description                            | Required |
-| -------------- | -------------------------------------- | -------- |
-| `--id`         | WU to complete                         | Yes      |
-| `--skip-gates` | Skip gate checks (requires `--reason`) | No       |
-| `--reason`     | Reason for skipping gates              | No       |
-
-Actions:
-
-1. Runs gates (unless skipped)
-2. Merges worktree to main
-3. Creates stamp in `.beacon/stamps/`
-4. Cleans up worktree
-5. Updates WU status to `done`
-
-### wu:edit
-
-Edit WU spec files with micro-worktree isolation.
-
-```bash
-pnpm wu:edit --id WU-001 --description "Updated description"
-pnpm wu:edit --id WU-001 --acceptance "New criterion" --append
-pnpm wu:edit --id WU-001 --initiative INIT-001 --phase 2
-```
-
-| Flag            | Description                           |
-| --------------- | ------------------------------------- |
-| `--id`          | WU to edit (required)                 |
-| `--description` | New description (replaces existing)   |
-| `--acceptance`  | Acceptance criterion (repeatable)     |
-| `--notes`       | New notes text                        |
-| `--code-paths`  | Code path (repeatable)                |
-| `--append`      | Append to arrays instead of replacing |
-| `--lane`        | New lane assignment                   |
-| `--type`        | New WU type                           |
-| `--priority`    | New priority (P0-P3)                  |
-| `--initiative`  | Link to initiative                    |
-| `--phase`       | Phase number within initiative        |
-| `--blocked-by`  | Comma-separated blocking WU IDs       |
-| `--add-dep`     | Add to dependencies array             |
-
-### wu:block
-
-Mark a WU as blocked.
-
-```bash
-pnpm wu:block --id WU-001 --reason "Waiting for API spec"
-```
-
-| Flag       | Description      | Required |
-| ---------- | ---------------- | -------- |
-| `--id`     | WU to block      | Yes      |
-| `--reason` | Why it's blocked | Yes      |
-
-### wu:unblock
-
-Unblock a WU.
-
-```bash
-pnpm wu:unblock --id WU-001
-```
-
-### wu:validate
-
-Validate WU YAML against schema.
-
-```bash
-pnpm wu:validate --id WU-001
-pnpm wu:validate --all
-```
-
-### wu:preflight
-
-Fast validation before running full gates. Completes in under 5 seconds.
-
-```bash
-pnpm wu:preflight --id WU-001
-```
-
-Checks:
-
-- `code_paths` files exist
-- Test file paths exist
-- WU YAML schema is valid
-
-**Recommended workflow:**
-
-1. Implement feature/fix
-2. `pnpm wu:preflight --id WU-XXX` (fast check)
-3. `pnpm gates` (full validation)
-4. `pnpm wu:done --id WU-XXX`
-
-### wu:spawn
-
-Generate Task tool invocation for sub-agent WU execution.
-
-```bash
-pnpm wu:spawn --id WU-001
-pnpm wu:spawn --id WU-001 --thinking --budget 10000
-pnpm wu:spawn --id WU-001 --parent-wu WU-1000
-```
-
-| Flag          | Description                         |
-| ------------- | ----------------------------------- |
-| `--id`        | WU to spawn (required)              |
-| `--thinking`  | Enable extended thinking            |
-| `--budget`    | Token budget for thinking           |
-| `--client`    | Client profile (defaults to config) |
-| `--codex`     | Output Codex/GPT-friendly format    |
-| `--parent-wu` | Parent WU for orchestrator context  |
-
-Client-specific blocks and skills guidance are pulled from `agents.clients.<name>` in
-`.lumenflow.config.yaml` and injected into the spawn output.
-
-### wu:repair
-
-Detect and fix WU state issues.
-
-```bash
-# Consistency repair (default)
-pnpm wu:repair --id WU-001
-pnpm wu:repair --all --check
-
-# Claim repair
-pnpm wu:repair --claim --id WU-001
-
-# Admin repair
-pnpm wu:repair --admin --id WU-001 --lane "New Lane" --status done
-```
-
-| Flag             | Description                | Mode        |
-| ---------------- | -------------------------- | ----------- |
-| `--id`           | WU to repair               | All         |
-| `--check`        | Audit only, no changes     | Consistency |
-| `--all`          | Check/repair all WUs       | Consistency |
-| `--claim`        | Fix missing claim metadata | Claim       |
-| `--admin`        | Fix done WUs               | Admin       |
-| `--repair-state` | Fix corrupted state files  | State       |
-
-### wu:prune
-
-Maintain worktree hygiene.
-
-```bash
-pnpm wu:prune              # Dry-run (shows issues)
-pnpm wu:prune --execute    # Execute cleanup
-```
-
-Detects:
-
-- Orphan directories (exist but not tracked)
-- Stale worktrees (WU is done/blocked)
-- Invalid branch naming
-
-### wu:cleanup
-
-Clean up worktree and branch after PR merge.
-
-```bash
-pnpm wu:cleanup --id WU-001
-pnpm wu:cleanup --artifacts
-```
-
-Use `--artifacts` from inside a worktree to remove dist folders and tsbuildinfo files.
-
-### wu:deps
-
-Show WU dependency graph.
-
-```bash
-pnpm wu:deps --id WU-001
-```
-
-### wu:infer-lane
-
-Suggest sub-lane for a WU based on paths and description.
-
-```bash
-pnpm wu:infer-lane --id WU-001
-pnpm wu:infer-lane --paths "tools/**" "docs/**" --desc "Tooling improvements"
-```
-
-### wu:delete
-
-Delete WU files with micro-worktree isolation.
-
-```bash
-pnpm wu:delete --id WU-001
-pnpm wu:delete --id WU-001 --dry-run
-pnpm wu:delete --batch WU-1,WU-2,WU-3
-```
-
-| Flag        | Description                    |
-| ----------- | ------------------------------ |
-| `--id`      | WU to delete                   |
-| `--batch`   | Comma-separated WU IDs         |
-| `--dry-run` | Preview without making changes |
-
-### wu:unlock-lane
-
-Clear lane locks for recovery scenarios.
-
-```bash
-pnpm wu:unlock-lane --lane Core --reason "Process crashed"
-pnpm wu:unlock-lane --lane Core --reason "Emergency" --force
-pnpm wu:unlock-lane --list
-```
-
-| Flag       | Description               |
-| ---------- | ------------------------- |
-| `--lane`   | Lane to unlock            |
-| `--reason` | Audit reason (required)   |
-| `--force`  | Force unlock active locks |
-| `--list`   | List all current locks    |
-
-Lock types:
-
-- **Zombie locks** (PID not running): Can be unlocked without `--force`
-- **Stale locks** (>24h old): Can be unlocked without `--force`
-- **Active locks**: Require `--force` to unlock
-
----
-
-## Initiative Commands
-
-Initiatives group related WUs into phased execution plans.
-
-### initiative:create
-
-Create a new initiative.
-
-```bash
-pnpm initiative:create --id INIT-001 --slug my-initiative --title "Big Feature" --priority P1
-```
-
-| Flag            | Description                | Required |
-| --------------- | -------------------------- | -------- |
-| `--id`          | Initiative ID              | Yes      |
-| `--slug`        | Kebab-case slug            | Yes      |
-| `--title`       | Initiative title           | Yes      |
-| `--priority`    | Priority (P0-P3)           | No       |
-| `--owner`       | Owner (team or individual) | No       |
-| `--target-date` | Target date (YYYY-MM-DD)   | No       |
-
-### initiative:edit
-
-Edit initiative YAML files.
-
-```bash
-pnpm initiative:edit --id INIT-001 --status in_progress
-pnpm initiative:edit --id INIT-001 --add-phase "Phase 3: Rollout"
-pnpm initiative:edit --id INIT-001 --blocked-by INIT-002 --blocked-reason "Waiting for infrastructure"
-```
-
-| Flag                            | Description                                        |
-| ------------------------------- | -------------------------------------------------- |
-| `--status`                      | `draft`, `open`, `in_progress`, `done`, `archived` |
-| `--blocked-by`                  | Blocking initiative ID                             |
-| `--unblock`                     | Remove blocked status                              |
-| `--add-lane`                    | Add lane (repeatable)                              |
-| `--remove-lane`                 | Remove lane (repeatable)                           |
-| `--notes`                       | Append to notes                                    |
-| `--add-phase`                   | Add new phase                                      |
-| `--phase-id` + `--phase-status` | Update phase status                                |
-
-### initiative:list
-
-List all initiatives with progress.
-
-```bash
-pnpm initiative:list
-pnpm initiative:list --format json
-pnpm initiative:list --status in_progress
-```
-
-| Flag       | Description                         |
-| ---------- | ----------------------------------- |
-| `--format` | `table`, `json`, `ascii`, `mermaid` |
-| `--status` | Filter by status                    |
-| `--color`  | Enable colored output               |
-
-### initiative:status
-
-Show detailed initiative view with phases and WUs.
-
-```bash
-pnpm initiative:status --id INIT-001
-pnpm initiative:status --id INIT-001 --format mermaid
-```
-
-### initiative:add-wu
-
-Link a WU to an initiative bidirectionally.
-
-```bash
-pnpm initiative:add-wu --initiative INIT-001 --wu WU-123
-```
-
-### initiative:bulk-assign-wus
-
-Bulk assign multiple WUs to an initiative.
-
-```bash
-pnpm initiative:bulk-assign-wus --initiative INIT-001 --wus WU-100,WU-101,WU-102
-pnpm initiative:bulk-assign-wus --initiative INIT-001 --wus WU-100,WU-101 --phase 2
-```
-
-| Flag           | Description                       |
-| -------------- | --------------------------------- |
-| `--initiative` | Target initiative ID (required)   |
-| `--wus`        | Comma-separated WU IDs (required) |
-| `--phase`      | Phase number to assign WUs to     |
-| `--dry-run`    | Preview without making changes    |
-
----
-
-## Memory Commands
-
-The memory layer provides persistent context for AI agents across sessions.
-
-### mem:init
-
-Initialize memory layer.
-
-```bash
-pnpm mem:init
-```
-
-Creates `.beacon/memory/` directory structure.
-
-### mem:start
-
-Start a new agent session.
-
-```bash
-pnpm mem:start
-pnpm mem:start --wu WU-001
-```
-
-### mem:ready
-
-Check pending work and context.
-
-```bash
-pnpm mem:ready
-```
-
-Shows:
-
-- Active WU
-- Last checkpoint
-- Pending signals
-- Next steps
-
-### mem:checkpoint
-
-Create a checkpoint to save session state.
-
-```bash
-pnpm mem:checkpoint
-```
-
-### mem:signal
-
-Signal progress to other agents.
-
-```bash
-pnpm mem:signal "Completed validation logic"
-```
-
-### mem:inbox
-
-Check for messages/signals from other sessions.
-
-```bash
-pnpm mem:inbox
-```
-
-### mem:create
-
-Create a memory node with provenance tracking.
-
-```bash
-pnpm mem:create "Found a bug in auth flow" --type discovery --wu WU-001
-pnpm mem:create "API changed" --discovered-from mem-abc123 --tags api,breaking
-```
-
-| Flag                | Description                                             |
-| ------------------- | ------------------------------------------------------- |
-| `--type`            | `session`, `discovery`, `checkpoint`, `note`, `summary` |
-| `--discovered-from` | Parent node ID for provenance                           |
-| `--wu`              | Link to WU                                              |
-| `--session`         | Link to session                                         |
-| `--tags`            | Comma-separated tags                                    |
-| `--priority`        | P0-P3                                                   |
-
-### mem:summarize
-
-Rollup older memory nodes into summary nodes.
-
-```bash
-pnpm mem:summarize --wu WU-001
-pnpm mem:summarize --wu WU-001 --dry-run
-```
-
-### mem:triage
-
-Review discovery nodes and promote to WUs or archive.
-
-```bash
-pnpm mem:triage --list
-pnpm mem:triage --promote mem-abc123 --lane Core --title "Fix auth bug"
-pnpm mem:triage --archive mem-def456 --reason "Duplicate of WU-100"
-```
-
-| Flag        | Description               |
-| ----------- | ------------------------- |
-| `--list`    | List open discoveries     |
-| `--promote` | Promote to WU             |
-| `--archive` | Archive without promotion |
-| `--wu`      | Filter by WU ID           |
-| `--tag`     | Filter by tag             |
-
-### mem:cleanup
-
-Prune memory nodes based on lifecycle policy and TTL.
-
-```bash
-pnpm mem:cleanup                    # Cleanup based on lifecycle policy
-pnpm mem:cleanup --dry-run          # Preview without changes
-pnpm mem:cleanup --ttl 30d          # Remove nodes older than 30 days
-pnpm mem:cleanup --session-id <uuid> # Close specific session
-pnpm mem:cleanup --json             # Output as JSON
-```
-
-| Flag           | Description                      |
-| -------------- | -------------------------------- |
-| `--dry-run`    | Preview without making changes   |
-| `--ttl`        | Remove nodes older than duration |
-| `--session-id` | Close specific session           |
-| `--json`       | Output results as JSON           |
-
-Cleanup rules:
-
-- Ephemeral nodes are always discarded
-- Session nodes removed when session closes
-- Summarized nodes archived (marked with `summarized_into`)
-- Active sessions are never removed
-
----
-
-## Gate Commands
-
-Quality gates ensure code meets standards before completion.
-
-### gates
-
-Run all quality gates.
-
-```bash
-pnpm gates                    # Run all gates
-pnpm gates --docs-only        # For documentation changes (skips tests)
-pnpm gates --format           # Run only format check
-pnpm gates --lint             # Run only lint check
-pnpm gates --typecheck        # Run only type check
-pnpm gates --test             # Run only test suite
-pnpm gates --skip-format      # Skip format check
-pnpm gates --skip-lint        # Skip lint check
-pnpm gates --skip-typecheck   # Skip typecheck
-pnpm gates --skip-test        # Skip tests
-```
-
-| Flag               | Description                            |
-| ------------------ | -------------------------------------- |
-| `--docs-only`      | Skip tests (for documentation changes) |
-| `--format`         | Run only format check                  |
-| `--lint`           | Run only lint check                    |
-| `--typecheck`      | Run only type check                    |
-| `--test`           | Run only test suite                    |
-| `--skip-format`    | Skip format check                      |
-| `--skip-lint`      | Skip lint check                        |
-| `--skip-typecheck` | Skip typecheck                         |
-| `--skip-test`      | Skip tests                             |
-
-Default gate order:
-
-1. Format check (`prettier --check`)
-2. Lint check (`eslint`)
-3. Type check (`tsc --noEmit`)
-4. Test suite (`vitest run`)
-
----
-
-## Orchestration Commands
-
-### spawn:list
-
-Display spawn trees for WUs or initiatives.
-
-```bash
-pnpm spawn:list --wu WU-001
-pnpm spawn:list --initiative INIT-001
-pnpm spawn:list --initiative INIT-001 --json
-```
-
-### orchestrate:initiative
-
-Orchestrate initiative execution with parallel agent spawning.
-
-```bash
-pnpm orchestrate:initiative --initiative INIT-001
-pnpm orchestrate:initiative --initiative INIT-001 --dry-run
-pnpm orchestrate:initiative --initiative INIT-001 --progress
-pnpm orchestrate:initiative --initiative INIT-001 --checkpoint-per-wave
-```
-
-| Flag                    | Description                            |
-| ----------------------- | -------------------------------------- |
-| `--initiative`          | Initiative ID(s) to orchestrate        |
-| `--dry-run`             | Show execution plan without spawning   |
-| `--progress`            | Show current progress only             |
-| `--checkpoint-per-wave` | Spawn next wave then exit (no polling) |
-| `--no-checkpoint`       | Force polling mode                     |
-
-### orchestrate:init-status
-
-Compact status view for initiative progress.
-
-```bash
-pnpm orchestrate:init-status --initiative INIT-001
-```
-
-### orchestrate:monitor
-
-Monitor spawned agent progress using mem:inbox signals.
-
-```bash
-pnpm orchestrate:monitor --since 30m
-pnpm orchestrate:monitor --since 1h
-```
-
-| Flag      | Description                             |
-| --------- | --------------------------------------- |
-| `--since` | Show signals from this time (e.g., 30m) |
-
----
-
-## Metrics Commands
-
-Commands for tracking flow metrics and identifying bottlenecks.
-
-### flow:report
-
-Generate flow metrics report.
-
-```bash
-pnpm flow:report
-pnpm flow:report --format json
-```
-
-### flow:bottlenecks
-
-Identify workflow bottlenecks.
-
-```bash
-pnpm flow:bottlenecks
-```
-
-### metrics:snapshot
-
-Capture current metrics snapshot.
-
-```bash
-pnpm metrics:snapshot
-```
-
----
-
-## Agent Commands
-
-Commands for managing agent sessions and telemetry.
 
 ### agent:session
 
-Start an agent session for tracking WU execution.
+Start an agent session for a WU
 
 ```bash
-pnpm agent:session --wu WU-001 --tier 2
-pnpm agent:session --wu WU-001 --tier 2 --agent-type claude-code
+pnpm agent:session
 ```
-
-| Flag           | Description                       |
-| -------------- | --------------------------------- |
-| `--wu`         | WU ID to work on (required)       |
-| `--tier`       | Context tier: 1, 2, or 3          |
-| `--agent-type` | Agent type (default: claude-code) |
 
 ### agent:session:end
 
-End the current agent session.
+End an agent session
 
 ```bash
 pnpm agent:session:end
 ```
 
-### agent:log-issue
+## Flow Metrics
 
-Log an issue discovered during agent execution.
+### flow:bottlenecks
 
-```bash
-pnpm agent:log-issue --type bug --description "Found race condition in auth flow"
-pnpm agent:log-issue --type blocker --description "API returns 500" --wu WU-001
-```
-
-| Flag            | Description                                           |
-| --------------- | ----------------------------------------------------- |
-| `--type`        | Issue type: `bug`, `blocker`, `question`, `discovery` |
-| `--description` | Issue description (required)                          |
-| `--wu`          | Related WU ID                                         |
-| `--severity`    | `low`, `medium`, `high`, `critical`                   |
-
-### agent:issues-query
-
-Query issues logged during agent sessions.
+Identify workflow bottlenecks and critical path
 
 ```bash
-pnpm agent:issues-query
-pnpm agent:issues-query --wu WU-001
-pnpm agent:issues-query --type bug --status open
-pnpm agent:issues-query --format json
+pnpm flow:bottlenecks
 ```
 
-| Flag       | Description                                     |
-| ---------- | ----------------------------------------------- |
-| `--wu`     | Filter by WU ID                                 |
-| `--type`   | Filter by issue type                            |
-| `--status` | Filter by status: `open`, `resolved`, `wontfix` |
-| `--format` | Output format: `table`, `json`                  |
-| `--since`  | Filter by time (e.g., `24h`, `7d`)              |
+### flow:report
+
+Generate DORA metrics flow report
+
+```bash
+pnpm flow:report
+```
+
+## Initiatives
+
+### initiative:add:wu
+
+Link a WU to an initiative bidirectionally
+
+```bash
+pnpm initiative:add:wu
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+
+### initiative:bulk:assign:wus
+
+Bulk-assign orphaned WUs to initiatives based on lane prefix rules
+
+```bash
+pnpm initiative:bulk:assign:wus
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--config &lt;path&gt;` | Path to config file (tool-specific) | No |
+| `--apply` | Apply changes (default is dry-run) | No |
+| `--sync-from-initiative` | Ensure WU initiative fields exist for WUs listed in initiatives | No |
+
+### initiative:create
+
+Create a new Initiative with micro-worktree isolation (race-safe)
+
+```bash
+pnpm initiative:create
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `-s, --slug &lt;slug&gt;` | Initiative slug (kebab-case) | Yes |
+| `-t, --title &lt;title&gt;` | Work Unit title | Yes |
+| `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3) | No |
+| `-o, --owner &lt;owner&gt;` | Initiative owner (team or individual) | No |
+| `--target-date &lt;date&gt;` | Target completion date (YYYY-MM-DD) | No |
+
+### initiative:edit
+
+Edit Initiative YAML files with micro-worktree isolation
+
+```bash
+pnpm initiative:edit
+```
+
+### initiative:list
+
+List all initiatives with progress percentages
+
+```bash
+pnpm initiative:list
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
+| `--status &lt;status&gt;` | Filter by status | No |
+| `--color` | Enable colored output | No |
+
+### initiative:status
+
+Show detailed initiative view with phases and WUs
+
+```bash
+pnpm initiative:status
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | No |
+| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
+| `--color` | Enable colored output | No |
+
+## Memory Layer
+
+### mem:checkpoint
+
+Create a checkpoint node for context snapshots
+
+```bash
+pnpm mem:checkpoint
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+
+### mem:cleanup
+
+Prune closed memory nodes based on lifecycle policy and TTL
+
+```bash
+pnpm mem:cleanup
+```
+
+### mem:create
+
+Create a memory node with optional provenance tracking
+
+```bash
+pnpm mem:create
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+
+### mem:inbox
+
+Read coordination signals from other agents
+
+```bash
+pnpm mem:inbox
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
+
+### mem:init
+
+Initialize memory layer in repository
+
+```bash
+pnpm mem:init
+```
+
+### mem:ready
+
+Query ready nodes for a WU (deterministic ordering)
+
+```bash
+pnpm mem:ready
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+
+### mem:signal
+
+Send a coordination signal to other agents
+
+```bash
+pnpm mem:signal
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
+
+### mem:start
+
+Create a session node linked to a WU
+
+```bash
+pnpm mem:start
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+
+### mem:summarize
+
+Rollup older memory nodes into summary nodes for compaction
+
+```bash
+pnpm mem:summarize
+```
+
+### mem:triage
+
+Review discovery nodes and promote to WUs or archive
+
+```bash
+pnpm mem:triage
+```
+
+## Metrics
+
+### metrics:snapshot
+
+Capture current metrics snapshot for dashboards
+
+```bash
+pnpm metrics:snapshot
+```
+
+## Orchestration
+
+### orchestrate:init:status
+
+Show initiative orchestration status
+
+```bash
+pnpm orchestrate:init:status
+```
+
+### orchestrate:initiative
+
+Orchestrate initiative execution with agents
+
+```bash
+pnpm orchestrate:initiative
+```
+
+### orchestrate:monitor
+
+Monitor spawned agent progress and signals
+
+```bash
+pnpm orchestrate:monitor
+```
+
+## Quality Gates
+
+### gates
+
+Run quality gates (format, lint, typecheck, test)
+
+```bash
+pnpm gates
+```
+
+## Setup
+
+### lumenflow
+
+Initialize LumenFlow in a project
+
+```bash
+pnpm lumenflow
+```
+
+### lumenflow:init
+
+Initialize LumenFlow in a project
+
+```bash
+pnpm lumenflow:init
+```
+
+## Sub-Agents
+
+### spawn:list
+
+Display spawn trees for WUs or initiatives
+
+```bash
+pnpm spawn:list
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+
+## Work Units
+
+### wu:block
+
+Block a work unit and move it from in-progress to blocked status
+
+```bash
+pnpm wu:block
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
+| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
+| `--remove-worktree` | Remove worktree when blocking | No |
+| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
+
+### wu:claim
+
+Claim a work unit by creating a worktree/branch and updating status
+
+```bash
+pnpm wu:claim
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | Yes |
+| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
+| `-b, --branch &lt;branch&gt;` | Override branch name | No |
+| `--branch-only` | Use branch-only mode (no worktree) | No |
+| `--pr-mode` | Use PR mode (create PR instead of auto-merge) | No |
+| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
+| `-f, --force` | Force operation | No |
+| `--force-overlap` | Force claiming despite overlap (requires --reason) | No |
+| `--fix` | Auto-fix common YAML validation issues (WU-1359) | No |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
+| `--allow-incomplete` | Allow claiming with incomplete spec (bypasses spec completeness, NOT schema errors) | No |
+| `--resume` | Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist. | No |
+| `--skip-setup` | Skip automatic pnpm install in worktree after creation (faster claims when deps already built) | No |
+| `--no-push` | Skip pushing claim branch or canonical updates (air-gapped/offline) | No |
+
+### wu:cleanup
+
+Clean up worktree and branch after PR merge (PR-based completion workflow)
+
+```bash
+pnpm wu:cleanup
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | No |
+
+### wu:create
+
+Create a new Work Unit with micro-worktree isolation (race-safe)
+
+```bash
+pnpm wu:create
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | Yes |
+| `-t, --title &lt;title&gt;` | Work Unit title | Yes |
+| `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3) | No |
+| `--type &lt;type&gt;` | WU type (feature, bug, refactor, documentation) | No |
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | No |
+| `--phase &lt;number&gt;` | Phase number within initiative | No |
+| `--blocked-by &lt;wuIds&gt;` | Comma-separated WU IDs that block this WU | No |
+| `--blocks &lt;wuIds&gt;` | Comma-separated WU IDs this WU blocks | No |
+| `--labels &lt;labels&gt;` | Comma-separated labels | No |
+| `--assigned-to &lt;email&gt;` | Override assigned_to (defaults to git config user.email) | No |
+| `--description &lt;text&gt;` | WU description text (Context/Problem/Solution) | No |
+| `--acceptance &lt;criterion&gt;` | Acceptance criterion (repeatable, use multiple times) | No |
+| `--code-paths &lt;paths&gt;` | Code paths (comma-separated) | No |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (comma-separated) | No |
+| `--test-paths-unit &lt;paths&gt;` | Unit test file paths (comma-separated) | No |
+| `--test-paths-e2e &lt;paths&gt;` | E2E test file paths (comma-separated) | No |
+| `--validate` | Validate spec completeness (requires description, acceptance, test paths) | No |
+| `--spec-refs &lt;paths&gt;` | Spec/plan references (comma-separated paths to docs, required for type: feature) | No |
+| `--exposure &lt;type&gt;` | Exposure level (ui, api, backend-only, documentation) | No |
+| `--user-journey &lt;text&gt;` | User journey description (recommended for ui/api exposure) | No |
+| `--ui-pairing-wus &lt;wuIds&gt;` | Comma-separated UI WU IDs that consume this API (for api exposure) | No |
+
+### wu:delete
+
+Safely delete WU YAML files with micro-worktree isolation
+
+```bash
+pnpm wu:delete
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | No |
+
+### wu:deps
+
+Visualize WU dependency graph
+
+```bash
+pnpm wu:deps
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | No |
+| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
+| `-d, --depth &lt;number&gt;` | Maximum traversal depth | No |
+| `--direction &lt;dir&gt;` | Graph direction (up, down, both) | No |
+
+### wu:done
+
+WU Done Helper
+
+```bash
+pnpm wu:done
+```
+
+### wu:edit
+
+Edit WU spec files with micro-worktree isolation
+
+```bash
+pnpm wu:edit
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (comma-separated) | No |
+| `--test-paths-unit &lt;paths&gt;` | Unit test file paths (comma-separated) | No |
+| `--test-paths-e2e &lt;paths&gt;` | E2E test file paths (comma-separated) | No |
+| `--exposure &lt;type&gt;` | Exposure level (ui, api, backend-only, documentation) | No |
+
+### wu:infer:lane
+
+WU Lane Inference CLI (WU-908)
+
+```bash
+pnpm wu:infer:lane
+```
+
+### wu:preflight
+
+WU Preflight Validation
+
+```bash
+pnpm wu:preflight
+```
+
+### wu:prune
+
+WU Prune Utility
+
+```bash
+pnpm wu:prune
+```
+
+### wu:repair
+
+WU State Repair Tool (Unified - WU-1826, WU-2240)
+
+```bash
+pnpm wu:repair
+```
+
+### wu:spawn
+
+Generate Task tool invocation for sub-agent WU execution
+
+```bash
+pnpm wu:spawn
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `--thinking` | Enable extended thinking for sub-agent WU execution | No |
+| `--no-thinking` | Explicitly disable extended thinking (default behavior) | No |
+| `--budget &lt;tokens&gt;` | Token budget for extended thinking (requires --thinking) | No |
+| `--codex` | Output a Codex/GPT-friendly Markdown prompt (instead of Claude Task antml) | No |
+| `--parent-wu &lt;wuId&gt;` | Parent WU ID for orchestrator context (e.g., WU-1000) | No |
+| `--client &lt;client&gt;` | Client name (claude-code, gemini-cli, etc) | No |
+| `--vendor &lt;vendor&gt;` | Deprecated alias for --client | No |
+
+### wu:unblock
+
+Unblock a work unit and move it from blocked to in-progress status
+
+```bash
+pnpm wu:unblock
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
+| `--create-worktree` | Create worktree when unblocking | No |
+| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
+| `-b, --branch &lt;branch&gt;` | Override branch name | No |
+| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
+| `-f, --force` | Force operation | No |
+
+### wu:unlock:lane
+
+Safely unlock a lane lock with audit logging
+
+```bash
+pnpm wu:unlock:lane
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
+| `-f, --force` | Force operation | No |
+
+### wu:validate
+
+Validate WU YAML files against schema
+
+```bash
+pnpm wu:validate
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | No |
 
 ---
-
-## Initialization
-
-### lumenflow init
-
-Initialize LumenFlow in a new project.
-
-```bash
-pnpm exec lumenflow init
-```
-
-Creates (minimal):
-
-- `.lumenflow.config.yaml`
-- `LUMENFLOW.md`
-- `.lumenflow/constraints.md`
-- `.lumenflow/agents/`
-
-Optional flags:
-
-```bash
-pnpm exec lumenflow init --full
-pnpm exec lumenflow init --framework nextjs
-pnpm exec lumenflow init --force
-```
-
-- `--full` adds `docs/04-operations/tasks/` (backlog, status, WU templates)
-- `--framework <name>` adds `.lumenflow.framework.yaml` + `docs/04-operations/_frameworks/<name>/`
-- `--force` overwrites existing files
-
-If Claude Code is the default client, init also adds `CLAUDE.md` and `.claude/agents/`.
-
-### lumenflow validate
-
-Validate configuration.
-
-```bash
-pnpm exec lumenflow validate
-```
-
-Checks:
-
-- Config file syntax
-- Lane definitions
-- Gate configuration
-
----
-
-## Exit Codes
-
-| Code | Meaning                            |
-| ---- | ---------------------------------- |
-| 0    | Success                            |
-| 1    | Command failed (see error message) |
-| 2    | Validation error                   |
-| 3    | WU not found                       |
-| 4    | Lane at WIP limit                  |
-
-## Environment Variables
-
-| Variable             | Description            | Default                  |
-| -------------------- | ---------------------- | ------------------------ |
-| `LUMENFLOW_CONFIG`   | Config file path       | `.lumenflow.config.yaml` |
-| `LUMENFLOW_VERBOSE`  | Enable verbose output  | `false`                  |
-| `LUMENFLOW_NO_COLOR` | Disable colored output | `false`                  |
 
 ## Next Steps
 
-- [Configuration Reference](/reference/config) – Config file options
-- [WU Schema](/reference/wu-schema) – WU YAML structure
+- [Configuration](/reference/config) – Configure LumenFlow
+- [WU Schema](/reference/wu-schema) – Work Unit YAML structure
