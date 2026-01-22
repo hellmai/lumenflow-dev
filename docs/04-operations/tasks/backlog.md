@@ -28,7 +28,6 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from PatientPath tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
-- [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -74,3 +73,4 @@ sections:
 - [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml)
 - [WU-1048 — Fix Vitest coverage provider gaps](wu/WU-1048.yaml)
 - [WU-1051 — Make wu:spawn skills guidance config-driven and vendor-agnostic](wu/WU-1051.yaml)
+- [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml)
