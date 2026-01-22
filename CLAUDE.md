@@ -125,3 +125,4 @@ This repo follows the vendor-agnostic LumenFlow documentation structure:
 - [.lumenflow/constraints.md](.lumenflow/constraints.md) - Constraints capsule
 - [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/](docs/04-operations/_frameworks/lumenflow/agent/onboarding/) - Agent onboarding
 - [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)
+- [Release Process](docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md) - Versioning, npm publish, Starlight docs, GitHub App

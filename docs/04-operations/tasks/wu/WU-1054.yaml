@@ -6,7 +6,21 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - .github/workflows/publish.yml
+  - apps/github-app/package.json
+  - apps/docs/package.json
+  - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/index.mdx
+  - apps/docs/src/content/docs/guides/ai-agents.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+  - CLAUDE.md
+  - package.json
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/metrics/package.json
+  - packages/@lumenflow/shims/package.json
 tests:
   manual:
     - Verify Starlight docs have no private repo links
@@ -34,6 +48,7 @@ acceptance:
   - 'Documentation covers: version bumping, npm publish workflow, Starlight deployment, GitHub App
     sync'
   - Private repo links in Starlight docs replaced with appropriate public links
+  - Dependencies updated to latest stable versions
   - npm publish workflow succeeds on re-run
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/operations-ci-cd-wu-1054

@@ -76,7 +76,7 @@
     "change-case": "^5.4.4",
     "cli-progress": "^3.12.0",
     "cli-table3": "^0.6.5",
-    "commander": "^12.1.0",
+    "commander": "^14.0.2",
     "date-fns": "^4.1.0",
     "fast-glob": "^3.3.3",
     "glob": "^11.0.0",
@@ -88,13 +88,13 @@
     "ps-list": "^8.1.1",
     "simple-git": "^3.30.0",
     "tiktoken": "^1.0.21",
-    "yaml": "^2.7.0",
+    "yaml": "^2.8.2",
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.0.0",
-    "typescript": "^5.7.0",
-    "vitest": "^4.0.0"
+    "@vitest/coverage-v8": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
   },
   "peerDependencies": {
     "@lumenflow/memory": "workspace:*",
