@@ -14,14 +14,13 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -31,6 +30,7 @@ sections:
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — Framework: Core
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml) — Framework: CLI
+- [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -83,4 +83,4 @@ sections:
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml)
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml)
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml)

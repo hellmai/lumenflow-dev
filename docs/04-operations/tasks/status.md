@@ -10,6 +10,7 @@ _Last updated: 2026-01-22_
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
+- [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
 
 ## Completed
 
@@ -58,4 +59,4 @@ _Last updated: 2026-01-22_
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml) — 2026-01-22
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml) — 2026-01-22
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml) — 2026-01-22
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml) — 2026-01-22
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml) — 2026-01-22

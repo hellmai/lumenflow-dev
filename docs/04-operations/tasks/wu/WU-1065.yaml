@@ -2,7 +2,7 @@ id: WU-1065
 title: 'Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "mem:inbox command fails at runtime with 'Missing packages: ms' error despite ms being declared in package.json. The dependency is not being installed to node_modules."
+description: "mem:inbox command fails at runtime with 'Missing packages: ms' error despite ms being
+  declared in package.json. The dependency is not being installed to node_modules."
 acceptance:
   - mem:inbox --since 30m runs without dependency errors
   - ms package is properly installed when pnpm install runs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1065
+claimed_at: 2026-01-22T21:57:07.682Z
+baseline_main_sha: 11958350bf5576e01cea744a28247dda4fc25a8b
+session_id: cc8575fb-4c8b-4414-93da-abd3dd153cae
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T21:57:07.687Z
