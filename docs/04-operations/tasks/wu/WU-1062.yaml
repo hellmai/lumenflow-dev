@@ -6,27 +6,17 @@ status: ready
 priority: P1
 created: 2026-01-22
 code_paths:
-  # New core helper
   - packages/@lumenflow/core/src/lumenflow-home.ts
-  # CLI entry point
   - packages/@lumenflow/cli/src/wu-create.ts
-  # Validation logic
   - packages/@lumenflow/core/src/wu-create-validators.ts
-  # Worktree helpers (spec branch creation)
   - packages/@lumenflow/core/src/micro-worktree.ts
-  # spec_refs validation
   - packages/@lumenflow/core/src/wu-schema.ts
-  # spec_refs warning in spawn output
   - packages/@lumenflow/core/src/wu-spawn.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  # CLI flags (--plan, --direct)
   - packages/@lumenflow/core/src/arg-parser.ts
-  # Export new helpers
   - packages/@lumenflow/core/src/index.ts
-  # wu:claim spec branch handling
   - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/core/src/wu-claim-helpers.ts
-  # Documentation updates
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/playbook.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
@@ -43,14 +33,12 @@ tests:
 artifacts:
   - .beacon/stamps/WU-1062.done
 dependencies: []
-spec_refs:
-  - $LUMENFLOW_HOME/plans/WU-1062-external-plan-storage.md
 risks:
   - External plans not version-controlled by default
   - Breaking change if wu:claim assumes WU always on main
 notes: 'Bootstrap WU: spec created on spec/wu-1062 branch, plan stored externally'
 requires_review: false
-assigned_to: ''
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -58,31 +46,24 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: >
-  Define $LUMENFLOW_HOME for external storage (~/.lumenflow/). Store plans in
-  $LUMENFLOW_HOME/plans/ instead of repo. Make wu:create operate in spec branch
-  by default (spec/wu-XXXX), never writing to main directly. Update wu:claim to
-  merge spec branch to main before creating worktree. Add --direct flag for
-  legacy main-write behavior.
+  Define $LUMENFLOW_HOME for external storage (~/.lumenflow/). Store plans in $LUMENFLOW_HOME/plans/
+  instead of repo. Make wu:create operate in spec branch by default (spec/wu-XXXX), never writing to
+  main directly. Update wu:claim to merge spec branch to main before creating worktree. Add --direct
+  flag for legacy main-write behavior.
 acceptance:
-  # Core helpers
   - $LUMENFLOW_HOME env var defined with default ~/.lumenflow/
   - getLumenflowHome() and getPlansDir() helpers exported from @lumenflow/core
-  # spec_refs validation
   - spec_refs validation accepts external paths (~/.lumenflow/..., $LUMENFLOW_HOME/...)
   - spec_refs warning in wu-spawn updated to handle external paths
-  # wu:create changes
   - wu:create defaults to spec branch mode (creates spec/wu-XXXX branch, no main writes)
   - wu:create --plan creates plan template in $LUMENFLOW_HOME/plans/
   - wu:create --direct preserves current main-write behavior (legacy/emergency)
   - arg-parser.ts defines WU_CREATE_OPTIONS with --plan and --direct flags
-  # wu:claim changes
   - wu:claim detects if WU exists only on spec branch (not main)
   - wu:claim merges spec/wu-XXXX to main before creating worktree
   - wu:claim fails gracefully if spec branch doesn't exist and WU not on main
-  # Backwards compatibility
   - Existing in-repo plans remain valid (no breaking change)
   - WUs already on main work without spec branch merge
-  # Documentation
   - LUMENFLOW.md updated with new wu:create flow
   - playbook.md updated with spec branch pattern
   - quick-ref-commands.md updated with new flags
