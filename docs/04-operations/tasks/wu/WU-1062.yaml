@@ -23,8 +23,10 @@ tests:
     - wu:claim --id WU-TEST merges spec branch before creating worktree
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-home.test.ts
-    - packages/@lumenflow/core/src/__tests__/spec-refs-validation.test.ts
+    - packages/@lumenflow/core/src/__tests__/spec-branch.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-claim-spec-branch.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser-wu-create.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1062.done
