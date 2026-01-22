@@ -2,7 +2,7 @@ id: WU-1056
 title: Harden wu:cleanup + add worktree-loss safeguards
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -55,3 +55,5 @@ session_id: 7d4dd477-0c08-4b9b-a34f-c664bff4bcc6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T15:15:06.333Z
+locked: true
+completed_at: 2026-01-22T16:40:32.973Z
