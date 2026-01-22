@@ -9,6 +9,7 @@ _Last updated: 2026-01-22_
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
+- [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
 
 ## Completed
 
