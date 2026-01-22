@@ -10,7 +10,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/docs-generate.test.ts
+    - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1059.done
