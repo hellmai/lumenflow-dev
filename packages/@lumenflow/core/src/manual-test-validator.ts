@@ -22,7 +22,7 @@ import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
  * Code file extensions that require automated tests.
  * @constant {string[]}
  */
-const CODE_EXTENSIONS = Object.freeze(['.js', '.ts', '.tsx', '.js']);
+const CODE_EXTENSIONS = Object.freeze(['.js', '.ts', '.tsx', '.mjs']);
 
 /**
  * Non-code file extensions (documentation, data, config).
