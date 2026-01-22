@@ -2,7 +2,7 @@ id: WU-1065
 title: 'Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -39,3 +39,5 @@ session_id: cc8575fb-4c8b-4414-93da-abd3dd153cae
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T21:57:07.687Z
+locked: true
+completed_at: 2026-01-22T22:03:54.514Z
