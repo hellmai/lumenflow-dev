@@ -6,11 +6,12 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - packages/@lumenflow/cli/__tests__/
+  - packages/@lumenflow/agent/__tests__/
+  - packages/@lumenflow/core/src/__tests__/
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/__tests__/*.test.ts
+    - packages/@lumenflow/agent/__tests__/agent-incidents.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1052.done
@@ -36,7 +37,7 @@ acceptance:
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1052
 claimed_at: 2026-01-22T11:30:50.140Z
-baseline_main_sha: 2f4ddd601024fb97c806793bc2df2fb479f56cdf
+baseline_main_sha: ebbc4a9a43b9e1a25b3f25f13b59cdfdfca0dc9c
 session_id: f85ec460-c2ee-45fe-8872-ce7ab6530ae8
 approved_by:
   - tom@hellm.ai

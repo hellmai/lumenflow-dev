@@ -1,0 +1,10 @@
+# LumenFlow Invariants Configuration
+# Business logic validation rules for WU workflow
+
+invariants:
+  - id: INV-AUTOMATED-TESTS-FOR-CODE
+    type: wu-automated-tests
+    description: WUs with code files must have automated tests (unit, e2e, or integration)
+    enabled: true
+    severity: error
+    message: 'Code changes require automated tests - manual-only tests are not allowed'
