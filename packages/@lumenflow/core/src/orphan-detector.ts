@@ -103,6 +103,32 @@ export async function getTrackedWorktreePaths(projectRoot) {
 }
 
 /**
+ * Identify tracked worktrees that are missing on disk
+ *
+ * @param {string[]} trackedPaths - Absolute paths from git worktree list
+ * @param {(path: string) => boolean} [existsFn] - Optional fs.existsSync override
+ * @returns {string[]} Missing worktree paths
+ */
+export function getMissingWorktreesFromTracked(trackedPaths, existsFn = existsSync) {
+  if (!Array.isArray(trackedPaths)) {
+    return [];
+  }
+  return trackedPaths.filter((trackedPath) => !existsFn(trackedPath));
+}
+
+/**
+ * Detect tracked worktrees that are missing on disk
+ *
+ * @param {string} [projectRoot] - Project root directory (defaults to cwd)
+ * @returns {Promise<string[]>} Missing tracked worktree paths
+ */
+export async function detectMissingTrackedWorktrees(projectRoot) {
+  const root = projectRoot || process.cwd();
+  const tracked = await getTrackedWorktreePaths(root);
+  return getMissingWorktreesFromTracked([...tracked]);
+}
+
+/**
  * Get list of directories in worktrees/ folder
  *
  * @param {string} projectRoot - Absolute path to project root
