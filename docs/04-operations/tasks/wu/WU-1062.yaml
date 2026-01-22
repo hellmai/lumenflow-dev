@@ -1,0 +1,50 @@
+id: WU-1062
+title: External plan storage and no-main-write mode for wu:create
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-22
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-home.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - .lumenflow.config.yaml
+tests:
+  manual:
+    - wu:create --id WU-TEST --plan creates spec branch + external plan
+    - wu:create --id WU-TEST --direct writes to main (legacy behavior)
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lumenflow-home.test.ts
+    - packages/@lumenflow/core/src/__tests__/spec-refs-validation.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1062.done
+dependencies: []
+spec_refs:
+  - ~/.lumenflow/plans/WU-1062-external-plan-storage.md
+risks:
+  - External plans not version-controlled by default
+notes: 'Bootstrap WU: spec created on spec/wu-1062 branch, plan stored externally'
+requires_review: false
+assigned_to: ''
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: >
+  Define $LUMENFLOW_HOME for external storage (~/.lumenflow/). Store plans in
+  $LUMENFLOW_HOME/plans/ instead of repo. Make wu:create operate in spec branch
+  by default, never writing to main directly. Add --direct flag for legacy behavior.
+acceptance:
+  - $LUMENFLOW_HOME env var defined with default ~/.lumenflow/
+  - getLumenflowHome() and getPlansDir() helpers exported from @lumenflow/core
+  - spec_refs validation accepts lumenflow://plans/... URI scheme
+  - spec_refs validation accepts absolute external paths (~/.lumenflow/...)
+  - wu:create defaults to spec branch mode (no main writes)
+  - wu:create --plan creates plan in $LUMENFLOW_HOME/plans/
+  - wu:create --direct preserves current main-write behavior
+  - Existing in-repo plans remain valid (backwards compatible)
