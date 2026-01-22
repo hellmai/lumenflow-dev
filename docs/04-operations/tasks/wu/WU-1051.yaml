@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
   - packages/@lumenflow/core/src/spawn-strategy.ts
   - packages/@lumenflow/core/src/wu-spawn-skills.ts
-  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/core/src/__tests__/wu-spawn-refactor.test.ts
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
