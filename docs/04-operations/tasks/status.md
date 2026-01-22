@@ -59,4 +59,4 @@ _Last updated: 2026-01-22_
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml) — 2026-01-22
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml) — 2026-01-22
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml) — 2026-01-22
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml) — 2026-01-22
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml) — 2026-01-22
