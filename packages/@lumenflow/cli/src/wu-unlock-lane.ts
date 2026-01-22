@@ -189,4 +189,9 @@ async function main() {
   console.log(`${PREFIX} Reason: ${result.reason}`);
 }
 
-main();
+// Guard main() for testability (WU-1064)
+import { fileURLToPath } from 'node:url';
+import { runCLI } from './cli-entry-point.js';
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runCLI(main);
+}

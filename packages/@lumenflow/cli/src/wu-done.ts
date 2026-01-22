@@ -2752,6 +2752,7 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
 // Guard main() execution for testability (WU-1366)
 // When imported as a module for testing, main() should not auto-run
 import { fileURLToPath } from 'node:url';
+import { runCLI } from './cli-entry-point.js';
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main();
+  runCLI(main);
 }
