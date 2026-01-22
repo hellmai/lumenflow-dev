@@ -28,7 +28,6 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
-- [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -82,3 +81,4 @@ sections:
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml)
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
 - [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
+- [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
