@@ -2,7 +2,7 @@ id: WU-1058
 title: Documentation overhaul - fix critical gaps and inaccuracies
 lane: 'Content: Documentation'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -48,3 +48,5 @@ session_id: ec2f4ddc-4227-4d96-bf68-ee74495bac47
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T16:40:52.328Z
+locked: true
+completed_at: 2026-01-22T16:50:08.067Z
