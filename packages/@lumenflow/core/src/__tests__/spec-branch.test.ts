@@ -90,8 +90,9 @@ describe('spec-branch-helpers', () => {
         merge: vi.fn().mockRejectedValue(new Error('merge conflict')),
       };
 
-      await expect(mergeSpecBranchToMain('WU-1062', mockGit as any))
-        .rejects.toThrow('merge conflict');
+      await expect(mergeSpecBranchToMain('WU-1062', mockGit as any)).rejects.toThrow(
+        'merge conflict',
+      );
     });
   });
 });

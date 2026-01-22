@@ -149,7 +149,9 @@ describe('wu:claim spec branch helpers (WU-1062)', () => {
   describe('isWUOnMain', () => {
     it('should return true when ls-tree succeeds', async () => {
       const mockGit = {
-        raw: vi.fn().mockResolvedValue('100644 blob abc123\tdocs/04-operations/tasks/wu/WU-1062.yaml'),
+        raw: vi
+          .fn()
+          .mockResolvedValue('100644 blob abc123\tdocs/04-operations/tasks/wu/WU-1062.yaml'),
       };
 
       const result = await isWUOnMain('WU-1062', mockGit as any);

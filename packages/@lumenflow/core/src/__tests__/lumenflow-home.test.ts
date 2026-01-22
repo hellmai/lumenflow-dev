@@ -20,7 +20,12 @@ vi.mock('node:os', async () => {
 });
 
 // Import after mocking
-import { getLumenflowHome, getPlansDir, isExternalPath, normalizeSpecRef } from '../lumenflow-home.js';
+import {
+  getLumenflowHome,
+  getPlansDir,
+  isExternalPath,
+  normalizeSpecRef,
+} from '../lumenflow-home.js';
 
 describe('lumenflow-home', () => {
   const originalEnv = process.env;

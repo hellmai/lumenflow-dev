@@ -102,9 +102,9 @@ describe('wu-create-validators', () => {
     });
 
     it('should return true for mixed paths with external', () => {
-      expect(
-        hasExternalSpecRefs(['docs/plans/plan.md', 'lumenflow://plans/external.md']),
-      ).toBe(true);
+      expect(hasExternalSpecRefs(['docs/plans/plan.md', 'lumenflow://plans/external.md'])).toBe(
+        true,
+      );
     });
   });
 
