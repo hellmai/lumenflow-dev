@@ -2,7 +2,7 @@ id: WU-1059
 title: Auto-generate CLI and config documentation from source
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -27,7 +27,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement doc-sync automation to prevent documentation drift. Generate CLI reference and config docs from source code, with CI validation to detect when docs fall out of sync with the npm packages.
+description: Implement doc-sync automation to prevent documentation drift. Generate CLI reference
+  and config docs from source code, with CI validation to detect when docs fall out of sync with the
+  npm packages.
 acceptance:
   - docs:generate command creates accurate CLI reference from WU_OPTIONS registry
   - docs:generate creates config reference from Zod schema
@@ -35,3 +37,11 @@ acceptance:
   - CI gate fails when documentation is out of sync
   - Pre-commit hook auto-regenerates docs
   - Generated docs match quality of hand-written WU-1058 docs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1059
+claimed_at: 2026-01-22T17:51:04.337Z
+baseline_main_sha: a93464c17b373ad71e35851c84f769f808e23916
+session_id: add4a998-081a-414d-97a2-8f10287e1318
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T17:51:04.347Z
