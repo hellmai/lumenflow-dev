@@ -45,6 +45,15 @@ pnpm mem:init
 
 Creates `.beacon/memory/` directory for storing checkpoints.
 
+### Start Session
+
+```bash
+pnpm mem:start
+pnpm mem:start --wu WU-001
+```
+
+Start a new memory session, optionally linked to a WU.
+
 ### Check Pending Work
 
 ```bash
@@ -64,6 +73,73 @@ Saves current session state:
 - Active WU
 - Recent changes
 - Decision context
+
+### Signal Progress
+
+```bash
+pnpm mem:signal "Completed validation logic"
+```
+
+Send a progress signal that other sessions can see.
+
+### Check Inbox
+
+```bash
+pnpm mem:inbox
+```
+
+Check for signals from other sessions or agents.
+
+### Create Memory Node
+
+```bash
+pnpm mem:create "Found a bug in auth flow" --type discovery --wu WU-001
+pnpm mem:create "API changed" --discovered-from mem-abc123 --tags api,breaking
+```
+
+Create a memory node with provenance tracking:
+
+| Flag                | Description                                             |
+| ------------------- | ------------------------------------------------------- |
+| `--type`            | `session`, `discovery`, `checkpoint`, `note`, `summary` |
+| `--discovered-from` | Parent node ID for provenance chain                     |
+| `--wu`              | Link to WU                                              |
+| `--session`         | Link to session                                         |
+| `--tags`            | Comma-separated tags                                    |
+| `--priority`        | P0-P3                                                   |
+
+### Triage Discoveries
+
+```bash
+pnpm mem:triage --list                     # List open discoveries
+pnpm mem:triage --promote mem-abc --lane "Framework: Core" --title "Fix auth bug"
+pnpm mem:triage --archive mem-def --reason "Duplicate of WU-100"
+```
+
+Review discovery nodes and either:
+
+- **Promote** to a new WU
+- **Archive** if not actionable
+
+### Summarize Memory
+
+```bash
+pnpm mem:summarize --wu WU-001
+pnpm mem:summarize --wu WU-001 --dry-run
+```
+
+Roll up older memory nodes into summary nodes. Use when context is getting large.
+
+### Cleanup Memory
+
+```bash
+pnpm mem:cleanup                      # Cleanup based on lifecycle policy
+pnpm mem:cleanup --dry-run            # Preview without changes
+pnpm mem:cleanup --ttl 30d            # Remove nodes older than 30 days
+pnpm mem:cleanup --session-id <uuid>  # Close specific session
+```
+
+Prune memory nodes based on lifecycle policy.
 
 ## Memory Structure
 
