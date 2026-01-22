@@ -40,6 +40,6 @@ acceptance:
   - wu:done runs turbo docs:generate when source changed (Turbo handles build deps + caching)
   - turbo.json has docs:generate task with dependsOn @lumenflow/core#build and precise inputs/outputs
   - Doc outputs staged before stageAndFormatMetadata(), included in single atomic commit
-  - Pre-commit docs-sync hook removed (.husky/hooks/docs-sync.mjs deleted)
+  - Pre-commit docs-sync hook removed (delete .husky/hooks/docs-sync.mjs AND remove its call from .husky/pre-commit)
   - Works in both worktree and branch-only modes
   - CI docs:validate remains as safety net
