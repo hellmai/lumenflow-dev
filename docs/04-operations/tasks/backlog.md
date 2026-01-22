@@ -14,7 +14,7 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
@@ -83,4 +83,4 @@ sections:
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml)
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml)
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml)
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
