@@ -1,0 +1,44 @@
+id: WU-1061
+title: Integrate docs:generate into wu:done for @lumenflow/* changes
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-22
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - turbo.json
+  - package.json
+  - .husky/pre-commit
+  - .husky/hooks/docs-sync.mjs
+tests:
+  manual:
+    - Modify only apps/docs content and run wu:done - verify ~0ms overhead
+  unit:
+    - packages/@lumenflow/core/__tests__/wu-done-docs-detection.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1061.done
+dependencies: []
+spec_refs:
+  - WU-1059
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Move docs regeneration from pre-commit hook to wu:done. After gates pass, detect if doc-source files changed using cheap git diff. If yes, run turbo docs:generate (cached), stage outputs, include in metadata commit. Zero overhead when no doc-source changes.
+acceptance:
+  - wu:done detects doc-source changes using git diff with pathspecs (tools/generate-cli-docs.ts, arg-parser.ts, lumenflow-config-schema.ts, index.ts, CLI src/, CLI package.json)
+  - Detection uses defaultBranchFrom(docMain) with fallback to branch resolver (no hardcoded main)
+  - wu:done runs turbo docs:generate when source changed (Turbo handles build deps + caching)
+  - turbo.json has docs:generate task with dependsOn @lumenflow/core#build and precise inputs/outputs
+  - Doc outputs staged before stageAndFormatMetadata(), included in single atomic commit
+  - Pre-commit docs-sync hook removed (.husky/hooks/docs-sync.mjs deleted)
+  - Works in both worktree and branch-only modes
+  - CI docs:validate remains as safety net
