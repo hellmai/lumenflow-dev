@@ -167,7 +167,11 @@ export class GitAdapter {
    * await git.getUnpushedCommits(); // "abc123 fix: ...\n"
    */
   async getUnpushedCommits() {
-    const result = await this.git.raw([GIT_COMMANDS.LOG, GIT_REFS.UPSTREAM_RANGE, GIT_FLAGS.ONELINE]);
+    const result = await this.git.raw([
+      GIT_COMMANDS.LOG,
+      GIT_REFS.UPSTREAM_RANGE,
+      GIT_FLAGS.ONELINE,
+    ]);
     return result.trim();
   }
 
