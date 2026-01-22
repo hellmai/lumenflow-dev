@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - apps/docs/src/styles/custom.css
+  - apps/docs/astro.config.mjs
 tests:
   manual:
     - Verify theme picker works in browser
