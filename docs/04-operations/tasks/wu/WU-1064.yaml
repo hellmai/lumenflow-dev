@@ -2,7 +2,7 @@ id: WU-1064
 title: Fix CLI silent failure - async main() without catch handler
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -26,8 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix critical bug where async main() is called without .catch() handler, causing silent failures in 21 CLI commands
+description: Fix critical bug where async main() is called without .catch() handler, causing silent
+  failures in 21 CLI commands
 acceptance:
   - All CLI entry points have .catch() error handler
   - pnpm wu:claim --help shows usage
   - pnpm wu:done --id INVALID shows error not silent failure
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1064
+claimed_at: 2026-01-22T21:52:08.451Z
+baseline_main_sha: 39de4801e02797dec3faa9e00e267afbe630f445
+session_id: cc8575fb-4c8b-4414-93da-abd3dd153cae
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T21:52:08.459Z
