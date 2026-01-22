@@ -99,4 +99,26 @@ describe('GitAdapter', () => {
       expect(rmSync).toHaveBeenCalled();
     });
   });
+
+  describe('remoteBranchExists', () => {
+    it('should return true when ls-remote finds a match', async () => {
+      const git = createGitForPath('/test/project');
+      mockRaw.mockResolvedValueOnce('abc123\trefs/heads/lane/operations/wu-123\n');
+
+      await expect(git.remoteBranchExists('origin', 'lane/operations/wu-123')).resolves.toBe(true);
+      expect(mockRaw).toHaveBeenCalledWith([
+        'ls-remote',
+        '--heads',
+        'origin',
+        'lane/operations/wu-123',
+      ]);
+    });
+
+    it('should return false when ls-remote returns empty', async () => {
+      const git = createGitForPath('/test/project');
+      mockRaw.mockResolvedValueOnce('');
+
+      await expect(git.remoteBranchExists('origin', 'lane/ops/wu-999')).resolves.toBe(false);
+    });
+  });
 });

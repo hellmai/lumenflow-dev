@@ -60,6 +60,19 @@ pnpm wu:done --id WU-XXXX
 
 ---
 
+## Global State
+
+Canonical global state is defined by:
+
+- `origin/main` (WU YAML + status.md + backlog.md + state store)
+- Remote lane branches (e.g., `origin/lane/<lane>/wu-<id>`)
+
+`wu:claim` updates canonical claim state on `origin/main` using a push-only micro-worktree, then
+creates the lane branch and pushes it by default for global visibility. Use `--no-push` only for
+air-gapped/offline work; it creates a local-only claim and warns explicitly.
+
+---
+
 ## Documentation Structure
 
 ### Core (Vendor-Agnostic)
@@ -112,13 +125,13 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ## Commands Reference
 
-| Command               | Description                         |
-| --------------------- | ----------------------------------- |
-| `pnpm wu:create`      | Create new WU spec                  |
-| `pnpm wu:claim`       | Claim WU and create worktree        |
-| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup) |
-| `pnpm gates`          | Run quality gates                   |
-| `pnpm mem:checkpoint` | Save memory checkpoint              |
+| Command               | Description                                       |
+| --------------------- | ------------------------------------------------- |
+| `pnpm wu:create`      | Create new WU spec                                |
+| `pnpm wu:claim`       | Claim WU, update canonical state, create worktree |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)               |
+| `pnpm gates`          | Run quality gates                                 |
+| `pnpm mem:checkpoint` | Save memory checkpoint                            |
 
 ---
 
