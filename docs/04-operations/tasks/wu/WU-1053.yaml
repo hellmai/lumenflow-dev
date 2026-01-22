@@ -2,7 +2,7 @@ id: WU-1053
 title: Claude Code Full Optimization - Skills, Agents, Docs, Release
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -37,6 +37,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate skills and agents from ExampleApp, optimize per Anthropic guidelines, update documentation, and release
+description: Migrate skills and agents from ExampleApp, optimize per Anthropic guidelines, update
+  documentation, and release
 acceptance:
-  - Skills migrated from ExampleApp (12 skills), Agents migrated (7 agents + README), Content generalized (no ExampleApp references), .lumenflow.config.yaml updated with agents section, Starlight docs updated, Internal docs updated, wu:spawn optimized, Version bumped (minor), Gates pass, Tag pushed, GitHub release created
+  - Skills migrated from ExampleApp (12 skills), Agents migrated (7 agents + README), Content
+    generalized (no ExampleApp references), .lumenflow.config.yaml updated with agents section,
+    Starlight docs updated, Internal docs updated, wu:spawn optimized, Version bumped (minor), Gates
+    pass, Tag pushed, GitHub release created
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1053
+claimed_at: 2026-01-22T12:03:58.994Z
+baseline_main_sha: 89fedd6b33f1efa693c6f34675a434574bd6ea54
+session_id: b6c14ce8-17db-4cc5-8695-0639dced3738
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T12:03:59.001Z
