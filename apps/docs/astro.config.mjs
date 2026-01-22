@@ -1,12 +1,14 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightThemeNova from 'starlight-theme-nova';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://lumenflow.dev',
   integrations: [
     starlight({
+      plugins: [starlightThemeNova()],
       title: 'LumenFlow',
       description: 'AI-native workflow for software teams',
       social: [
