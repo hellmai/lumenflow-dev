@@ -29,7 +29,6 @@ sections:
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml) — Framework: Core
-- [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -78,3 +77,4 @@ sections:
 - [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml)
 - [WU-1054 — Fix npm publish and document release process](wu/WU-1054.yaml)
 - [WU-1055 — Fix Starlight docs - remove custom CSS, use defaults](wu/WU-1055.yaml)
+- [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml)
