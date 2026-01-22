@@ -27,24 +27,31 @@ tests:
     - wu:claim --id WU-TEST merges spec branch before creating worktree
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-home.test.ts
-    - packages/@lumenflow/core/src/__tests__/spec-refs-validation.test.ts
+    - packages/@lumenflow/core/src/__tests__/spec-branch.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-claim-spec-branch.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser-wu-create.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1062.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/WU-1062-external-plan-storage.md
 risks:
   - External plans not version-controlled by default
   - Breaking change if wu:claim assumes WU always on main
 notes: 'Bootstrap WU: external plan stored in lumenflow://plans/; spec_refs intentionally external
   until validator updated in WU-1062.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-22T20:32:03.819Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1062
+session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T20:32:03.826Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -70,11 +77,3 @@ acceptance:
   - LUMENFLOW.md updated with new wu:create flow
   - playbook.md updated with spec branch pattern
   - quick-ref-commands.md updated with new flags
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1062
-claimed_at: 2026-01-22T20:32:03.819Z
-baseline_main_sha: 4db35bffdc4fc04acec123c64608b5137231834b
-session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-22T20:32:03.826Z
