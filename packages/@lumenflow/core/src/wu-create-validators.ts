@@ -150,9 +150,7 @@ export function validateSpecRefs(specRefs: string[]): {
     // External paths are valid (will be resolved at runtime)
     if (isExternalPath(ref)) {
       // Add informational warning about external paths
-      warnings.push(
-        `External spec_ref: "${ref}" - ensure plan exists at ${normalizeSpecRef(ref)}`,
-      );
+      warnings.push(`External spec_ref: "${ref}" - ensure plan exists at ${normalizeSpecRef(ref)}`);
       continue;
     }
 
