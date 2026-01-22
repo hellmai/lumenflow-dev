@@ -47,13 +47,13 @@
   },
   "dependencies": {
     "@lumenflow/core": "workspace:*",
-    "yaml": "^2.8.0",
+    "yaml": "^2.8.2",
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.0.0",
-    "typescript": "^5.8.3",
-    "vitest": "^4.0.0"
+    "@vitest/coverage-v8": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
   },
   "engines": {
     "node": ">=22"
