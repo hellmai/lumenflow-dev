@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1054 — Fix npm publish and document release process](wu/WU-1054.yaml) — Operations: CI/CD
+  (No items ready)
 
 ## 🔧 In progress
 
