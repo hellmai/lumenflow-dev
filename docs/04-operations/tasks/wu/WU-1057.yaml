@@ -2,7 +2,7 @@ id: WU-1057
 title: Update LumenFlow docs - Nova theme, logos, and content audit
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -27,9 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add Starlight Nova theme, LumenFlow logos (light/dark), and audit docs to ensure they accurately represent current CLI tooling
+description: Add Starlight Nova theme, LumenFlow logos (light/dark), and audit docs to ensure they
+  accurately represent current CLI tooling
 acceptance:
   - Nova theme installed and configured
   - LumenFlow logos added with light/dark variants
   - Documentation content audited against current CLI commands
   - Docs deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1057
+claimed_at: 2026-01-22T15:32:45.558Z
+baseline_main_sha: 2b4e6fd48f865baf124fe6002ebf5ff2bf89e067
+session_id: 7d4dd477-0c08-4b9b-a34f-c664bff4bcc6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T15:32:45.565Z
