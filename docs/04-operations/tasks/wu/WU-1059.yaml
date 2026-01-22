@@ -2,7 +2,7 @@ id: WU-1059
 title: Auto-generate CLI and config documentation from source
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -45,3 +45,5 @@ session_id: add4a998-081a-414d-97a2-8f10287e1318
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T17:51:04.347Z
+locked: true
+completed_at: 2026-01-22T18:18:12.124Z
