@@ -2,7 +2,7 @@ id: WU-1051
 title: Make wu:spawn skills guidance config-driven and vendor-agnostic
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-21
 code_paths:
@@ -71,3 +71,5 @@ session_id: f85ec460-c2ee-45fe-8872-ce7ab6530ae8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T11:15:58.220Z
+locked: true
+completed_at: 2026-01-22T11:34:42.846Z

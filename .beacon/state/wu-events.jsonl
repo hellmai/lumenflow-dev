@@ -76,4 +76,5 @@
 {"type":"complete","wuId":"WU-1050","timestamp":"2026-01-22T10:09:47.671Z"}
 {"type":"complete","wuId":"WU-1048","timestamp":"2026-01-22T10:37:42.814Z"}
 {"type":"claim","wuId":"WU-1051","lane":"Framework: Core","title":"Make wu:spawn skills guidance config-driven and vendor-agnostic","timestamp":"2026-01-22T11:15:58.237Z"}
+{"type":"complete","wuId":"WU-1051","timestamp":"2026-01-22T11:34:42.879Z"}
 {"type":"claim","wuId":"WU-1052","lane":"Framework: Core","title":"Migrate remaining tests from ExampleApp tools/ to hellmai/os packages","timestamp":"2026-01-22T11:30:50.165Z"}
