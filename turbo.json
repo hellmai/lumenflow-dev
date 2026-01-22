@@ -35,6 +35,21 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "docs:generate": {
+      "dependsOn": ["@lumenflow/core#build"],
+      "inputs": [
+        "tools/generate-cli-docs.ts",
+        "packages/@lumenflow/core/src/arg-parser.ts",
+        "packages/@lumenflow/core/src/lumenflow-config-schema.ts",
+        "packages/@lumenflow/core/src/index.ts",
+        "packages/@lumenflow/cli/src/**/*.ts",
+        "packages/@lumenflow/cli/package.json"
+      ],
+      "outputs": [
+        "apps/docs/src/content/docs/reference/cli.mdx",
+        "apps/docs/src/content/docs/reference/config.mdx"
+      ]
     }
   }
 }

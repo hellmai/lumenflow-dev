@@ -65,6 +65,8 @@ import { isPRModeEnabled, createPR, printPRCreatedMessage } from './wu-done-pr.j
 import { isBranchAlreadyMerged } from './wu-done-branch-utils.js';
 // WU-1371: Import rebase artifact cleanup functions
 import { detectRebasedArtifacts, cleanupRebasedArtifacts } from './rebase-artifact-cleanup.js';
+// WU-1061: Import docs regeneration utilities
+import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 import { WUTransaction, createTransactionSnapshot, restoreFromSnapshot } from './wu-transaction.js';
 // WU-1506: Import backlog invariant repair
 // WU-1574: Removed repairBacklogInvariants - no longer needed with state store architecture
@@ -385,6 +387,17 @@ export async function executeWorktreeCompletion(context) {
     // PHASE 4: GIT OPERATIONS (stage, format, commit)
     // Files are now written - proceed with git operations
     // ======================================================================
+
+    // ======================================================================
+    // WU-1061: Regenerate docs if doc-source files changed
+    // This runs BEFORE stageAndFormatMetadata to include doc outputs
+    // in the single atomic commit
+    // Uses main as base to detect changes introduced by this WU
+    // ======================================================================
+    await maybeRegenerateAndStageDocs({
+      baseBranch: BRANCHES.MAIN,
+      repoRoot: worktreePath,
+    });
 
     // Stage and format files
     await stageAndFormatMetadata({

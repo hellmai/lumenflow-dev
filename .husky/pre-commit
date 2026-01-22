@@ -4,7 +4,6 @@
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 case "$BRANCH" in tmp/*) exit 0 ;; esac
 
-# Auto-regenerate docs when source changes (WU-1059)
-node "$(dirname "$0")/hooks/docs-sync.mjs"
+# WU-1061: docs-sync hook removed - docs regeneration now handled by wu:done
 
 node "$(dirname "$0")/hooks/pre-commit.mjs"
