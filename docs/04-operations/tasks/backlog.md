@@ -29,7 +29,6 @@ sections:
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — Framework: Core
-- [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -84,3 +83,4 @@ sections:
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
 - [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
+- [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)

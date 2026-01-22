@@ -9,10 +9,10 @@ _Last updated: 2026-01-22_
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
-- [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
 
 ## Completed
 
+- [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml) — 2026-01-22
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — 2026-01-22
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
