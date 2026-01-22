@@ -554,14 +554,14 @@ pnpm gates:test
 
 ## Orchestration Commands
 
-### spawn-list
+### spawn:list
 
 Display spawn trees for WUs or initiatives.
 
 ```bash
-pnpm spawn-list --wu WU-001
-pnpm spawn-list --initiative INIT-001
-pnpm spawn-list --initiative INIT-001 --json
+pnpm spawn:list --wu WU-001
+pnpm spawn:list --initiative INIT-001
+pnpm spawn:list --initiative INIT-001 --json
 ```
 
 ### orchestrate:initiative
@@ -603,6 +603,37 @@ pnpm orchestrate:monitor --since 1h
 | Flag      | Description                             |
 | --------- | --------------------------------------- |
 | `--since` | Show signals from this time (e.g., 30m) |
+
+---
+
+## Metrics Commands
+
+Commands for tracking flow metrics and identifying bottlenecks.
+
+### flow:report
+
+Generate flow metrics report.
+
+```bash
+pnpm flow:report
+pnpm flow:report --format json
+```
+
+### flow:bottlenecks
+
+Identify workflow bottlenecks.
+
+```bash
+pnpm flow:bottlenecks
+```
+
+### metrics:snapshot
+
+Capture current metrics snapshot.
+
+```bash
+pnpm metrics:snapshot
+```
 
 ---
 
