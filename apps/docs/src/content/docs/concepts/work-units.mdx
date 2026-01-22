@@ -24,9 +24,11 @@ WUs are:
 ```yaml
 id: WU-042
 title: Add email validation to login form
-lane: UI
+lane: 'Experience: UI'
 type: feature
 status: ready
+priority: P2
+exposure: ui
 
 description: |
   Add client-side email validation before form submission.
@@ -38,7 +40,7 @@ acceptance:
   - Valid emails allow form submission
   - Unit test covers validation logic
 
-tests:
+test_paths:
   unit:
     - src/components/__tests__/login-form.test.ts
   e2e:
@@ -48,6 +50,11 @@ code_paths:
   - src/components/LoginForm.tsx
   - src/utils/validation.ts
 ```
+
+:::note[Lane Format]
+Lane names must use the "Parent: Sublane" format. Examples: `Framework: Core`, `Experience: UI`, `Operations: CI/CD`.
+This is enforced by the `lanes.enforcement.require_parent` config setting.
+:::
 
 ## WU Lifecycle
 
@@ -106,18 +113,21 @@ This audit trail is valuable for:
 ## Creating WUs
 
 ```bash
-# Interactive creation
-pnpm wu:create
-
-# With flags
+# With required flags
 pnpm wu:create \
   --id WU-043 \
   --title "Add password strength meter" \
-  --lane UI \
-  --type feature
+  --lane "Experience: UI" \
+  --type feature \
+  --exposure ui \
+  --description "Show password strength indicator during registration" \
+  --acceptance "Strength meter shows weak/medium/strong" \
+  --acceptance "Meter updates in real-time as user types" \
+  --code-paths "src/components/PasswordStrength.tsx" \
+  --test-paths-unit "src/components/__tests__/password-strength.test.ts"
 ```
 
-The created WU goes into `docs/tasks/wu/WU-043.yaml` with status `ready`.
+The created WU goes into `docs/04-operations/tasks/wu/WU-043.yaml` with status `ready`.
 
 ## Next Steps
 
