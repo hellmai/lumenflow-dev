@@ -292,9 +292,101 @@ Explores and documents:
 3. **Audit trails** – Log all decisions and actions
 4. **Kill switch** – Ability to pause/stop agent work
 
+## Skills
+
+LumenFlow supports **agent skills** — modular knowledge bundles that provide domain expertise and validation checklists. Skills are stored in `.claude/skills/` (for Claude Code) or `.lumenflow/skills/` (vendor-agnostic).
+
+### Available Skills
+
+| Skill                      | Purpose                                      |
+| -------------------------- | -------------------------------------------- |
+| `wu-lifecycle`             | WU claim/block/done workflow automation      |
+| `worktree-discipline`      | Prevent absolute path trap in worktrees      |
+| `tdd-workflow`             | RED-GREEN-REFACTOR, test-driven development  |
+| `lumenflow-gates`          | Gate troubleshooting (format/lint/typecheck) |
+| `library-first`            | Validate libraries exist before custom code  |
+| `context-management`       | Session checkpoints, sub-agent spawning      |
+| `bug-classification`       | P0-P3 triage, fix-in-place vs Bug WU         |
+| `code-quality`             | SOLID/DRY patterns, TypeScript standards     |
+| `multi-agent-coordination` | Git branch locking for parallel WUs          |
+| `orchestration`            | Agent dashboard, initiative execution        |
+| `execution-memory`         | Session tracking, context recovery           |
+| `initiative-management`    | Multi-phase INIT-XXX coordination            |
+| `frontend-design`          | React/UI component patterns                  |
+| `ops-maintenance`          | Maintenance tasks, metrics, validation       |
+
+### Loading Skills
+
+Skills are loaded automatically by `wu:spawn` based on WU context, or manually:
+
+```bash
+# Claude Code
+/skill wu-lifecycle
+/skill tdd-workflow
+
+# View available skills
+ls .claude/skills/
+```
+
+### Skill Structure
+
+Each skill has a `SKILL.md` with YAML frontmatter:
+
+```yaml
+---
+name: skill-name
+description: One-line description for skill selection
+version: 1.0.0
+source: path/to/canonical/source.md
+last_updated: YYYY-MM-DD
+allowed-tools: Read, Bash, Grep
+---
+```
+
+### Configuration
+
+Skills per lane can be configured in `.lumenflow.config.yaml`:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      skills:
+        instructions: 'Load skills based on WU context:'
+        recommended:
+          - wu-lifecycle
+          - worktree-discipline
+        byLane:
+          'Framework: Core':
+            - tdd-workflow
+            - lumenflow-gates
+```
+
+## Agents
+
+Pre-configured agent definitions for Task tool orchestration live in `.claude/agents/`:
+
+| Agent                | Model | Purpose                          |
+| -------------------- | ----- | -------------------------------- |
+| `general-purpose`    | opus  | Standard WU implementation       |
+| `lumenflow-pm`       | opus  | WU lifecycle, backlog management |
+| `test-engineer`      | opus  | TDD, coverage gaps               |
+| `code-reviewer`      | opus  | PR review, quality checks        |
+| `lumenflow-enforcer` | haiku | WU validation, gates enforcement |
+| `bug-triage`         | haiku | Bug classification (P0-P3)       |
+| `lumenflow-doc-sync` | haiku | Documentation synchronization    |
+
+### Spawning Agents
+
+Use `wu:spawn` to generate Task tool invocations with proper context:
+
+```bash
+pnpm wu:spawn --id WU-001 --client claude-code
+```
+
 ## Canonical Internal Docs
 
-The repo’s authoritative agent workflow docs live here:
+The repo's authoritative agent workflow docs live here:
 
 - [LumenFlow Playbook](https://github.com/hellmai/os/blob/main/docs/04-operations/_frameworks/lumenflow/playbook.md)
 - [Agent Onboarding](https://github.com/hellmai/os/blob/main/docs/04-operations/_frameworks/lumenflow/agent/onboarding/)

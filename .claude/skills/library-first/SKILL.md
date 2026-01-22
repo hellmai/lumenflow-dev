@@ -1,0 +1,98 @@
+---
+name: library-first
+description: Validate well-known libraries solve your problem before custom code. Use when implementing parsing, dates, validation, or any non-trivial logic.
+version: 1.0.0
+source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/library-first-toolkit.md
+source_sections: Validation Protocol, Decision Tree, Context7 Query Templates
+last_updated: 2026-01-22
+allowed-tools: Read, mcp__context7__*
+---
+
+# Library-First Skill
+
+**Source**: `docs/04-operations/_frameworks/lumenflow/agent/onboarding/library-first-toolkit.md` (canonical)
+
+Search for libraries BEFORE writing custom code. Custom implementations create debt, violate DRY/SOLID, and introduce bugs that libraries have already solved.
+
+## Quick Reference: Validation Protocol
+
+1. **Search context7**: `"<use case> library <language>"`
+2. **Check npm trends**: >10k weekly downloads
+3. **Verify maintenance**: Last commit <12 months, issue response <7 days
+4. **Document in WU notes**: Libraries considered + justification
+
+## Context7 Query Patterns
+
+```
+# Generic
+"<functionality> library <language>"
+"<language> <functionality> npm package"
+
+# Common use cases
+"markdown parser library JavaScript"       → remark, marked
+"date manipulation library TypeScript"     → date-fns, dayjs
+"YAML validation library Node.js"          → zod, ajv, joi
+"schema validation library TypeScript"     → zod
+"git operations library Node.js"           → simple-git
+```
+
+## Decision Tree
+
+```
+Found library covering ≥70%?
+├─ YES, covers 100% → Use directly ✅
+├─ YES, covers 70-99% → Thin wrapper pattern ✅
+│   └─ Document gaps in WU notes
+└─ NO → Check requirements:
+    ├─ Searched ≥3 libraries? NO → STOP, search more ⛔
+    ├─ Complex logic (parsing, dates, crypto)? → STOP, find library ⛔
+    └─ Simple (<50 LOC, no edge cases)? → Custom OK with justification ✅
+```
+
+## Anti-Patterns (NEVER DO)
+
+| Anti-Pattern                      | Use Instead                                   |
+| --------------------------------- | --------------------------------------------- |
+| Regex for markdown/HTML/JSON/YAML | Grammar-based parsers (remark, cheerio, yaml) |
+| Custom date/time parsing          | date-fns, dayjs, luxon                        |
+| Reimplementing array/object utils | lodash or native methods                      |
+| Custom HTTP clients               | axios, fetch with thin adapter                |
+| Custom cryptography               | Node.js crypto, bcrypt                        |
+
+## Validation Criteria
+
+| Criterion        | Threshold                        |
+| ---------------- | -------------------------------- |
+| Weekly downloads | >10k (npm trends)                |
+| Last updated     | <12 months                       |
+| Issue response   | <7 days                          |
+| TypeScript types | Available (`@types/*` or native) |
+| Security         | Documented policy or audit       |
+
+## MCP Tool Reference
+
+| Tool                                | Use Case                         |
+| ----------------------------------- | -------------------------------- |
+| `mcp__context7__resolve-library-id` | Find library ID from name        |
+| `mcp__context7__query-docs`         | Get documentation for validation |
+
+**Note**: MCP tools provide connectivity; this skill provides procedural knowledge for using them correctly.
+
+## WU Notes Template
+
+```yaml
+library_decisions:
+  - use_case: 'YAML validation'
+    libraries_considered: ['ajv', 'joi', 'zod']
+    selected: 'zod'
+    reason: 'TypeScript-native, 100KB smaller, composable'
+```
+
+## Integration with Other Skills
+
+- **tdd-workflow**: Library selection happens BEFORE writing tests
+- **code-quality**: Library-first prevents DRY violations
+
+---
+
+**Red Flags**: If you're writing regex for structured formats, date parsing, or reimplementing utilities — STOP and search for a library.

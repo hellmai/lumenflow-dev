@@ -1,0 +1,164 @@
+---
+name: initiative-management
+description: Create, track, and coordinate multi-phase initiatives spanning multiple WUs and lanes. Use when working with INIT-NNN IDs, multi-phase projects, cross-lane coordination, or asking about initiative status.
+version: 1.1.0
+source: packages/@lumenflow/cli/src/initiative-*.ts
+last_updated: 2026-01-22
+allowed-tools: Read, Bash, Grep
+---
+
+# Initiative Management Skill
+
+Guides agents through creating, tracking, and coordinating multi-phase initiatives.
+
+## When This Skill Activates
+
+- User mentions "initiative", "INIT-", or initiative IDs
+- User asks about multi-phase projects or cross-lane coordination
+- User wants to group related WUs under a common goal
+- User asks about initiative status or progress
+
+## Available Commands
+
+### Create an Initiative
+
+```bash
+pnpm initiative:create --id INIT-001 --title "Initiative Title" --description "Description" --wus WU-001,WU-002,WU-003
+```
+
+Creates a new initiative that groups multiple WUs together.
+
+### List All Initiatives
+
+```bash
+pnpm initiative:list
+```
+
+Shows all active initiatives with their status and linked WUs.
+
+### Check Initiative Status
+
+```bash
+pnpm initiative:status --id INIT-001
+```
+
+Shows detailed status of a specific initiative including:
+
+- Linked WUs and their completion status
+- Overall progress percentage
+- Cross-lane dependencies
+- Blockers affecting the initiative
+
+### Link a WU to an Initiative
+
+```bash
+pnpm initiative:add-wu --initiative INIT-001 --wu WU-123
+```
+
+Links an existing WU to an initiative bidirectionally:
+
+- Adds `initiative: INIT-001` field to WU YAML
+- Adds WU ID to initiative `wus:` array
+- Idempotent: no error if link already exists
+- Errors if WU is already linked to a different initiative
+
+### Edit an Initiative
+
+```bash
+# Update status
+pnpm initiative:edit --id INIT-001 --status in_progress
+
+# Set blocking initiative
+pnpm initiative:edit --id INIT-001 --blocked-by INIT-002 --blocked-reason "Waiting for Phase 1"
+
+# Remove blocking
+pnpm initiative:edit --id INIT-001 --unblock
+
+# Add lane
+pnpm initiative:edit --id INIT-001 --add-lane "Operations: Tooling"
+
+# Append note
+pnpm initiative:edit --id INIT-001 --notes "Phase 2 started"
+
+# Combine multiple edits
+pnpm initiative:edit --id INIT-001 --status in_progress --add-lane "Operations: Tooling" --notes "Work started"
+```
+
+Edits initiative YAML fields atomically using micro-worktree isolation:
+
+- `--status`: Update status (draft, open, in_progress, done, archived)
+- `--blocked-by` + `--blocked-reason`: Set blocking initiative (reason required)
+- `--unblock`: Remove blocked_by and blocked_reason fields
+- `--add-lane`: Append lane (no duplicates, repeatable)
+- `--notes`: Append note to notes array
+
+## Initiative Structure
+
+Initiatives are defined in `docs/04-operations/tasks/initiatives/INIT-001.yaml`:
+
+```yaml
+id: INIT-001
+slug: initiative-slug
+title: 'Initiative Title'
+description: |
+  Multi-line description of the initiative goal
+status: draft # draft | open | in_progress | done | archived
+priority: P2 # P0 | P1 | P2 | P3
+owner: team-or-individual # optional
+created: 2025-MM-DD
+target_date: 2025-MM-DD # optional
+phases: [] # optional ordered phases
+success_metrics: [] # optional completion criteria
+labels: [] # optional cross-cutting tags
+wus: # Linked WU IDs (bidirectional with WU.initiative field)
+  - WU-001
+  - WU-002
+  - WU-003
+```
+
+## Cross-Lane Coordination
+
+Initiatives often span multiple lanes. Key coordination patterns:
+
+1. **Phase dependencies**: WU-002 in one lane depends on WU-001 in another
+2. **Parallel execution**: Multiple lanes work simultaneously on independent WUs
+3. **Integration points**: Final WU combines work from all lanes
+
+## Spawning Sub-Agents for Initiative WUs (MANDATORY)
+
+When orchestrating an initiative with multiple WUs, use `wu:spawn` to generate complete Task invocations:
+
+```bash
+# For each WU being delegated to a sub-agent:
+pnpm wu:spawn --id WU-1501   # Generates Task invocation with full context
+pnpm wu:spawn --id WU-1502
+pnpm wu:spawn --id WU-1503
+```
+
+### Orchestration Pattern
+
+1. **Generate prompts**: Run `pnpm wu:spawn --id WU-XXX` for each WU
+2. **Spawn in parallel**: Use Task tool with `run_in_background: true`
+3. **Monitor progress**: Use `pnpm mem:inbox --since 30m` (NOT TaskOutput - causes context explosion)
+4. **Synthesise**: Combine results from all sub-agents
+
+### What wu:spawn Provides
+
+- Context loading preamble (LUMENFLOW.md, README, lumenflow-complete, WU YAML)
+- Full acceptance criteria from WU spec
+- Constraints block at end (per "Lost in the Middle" research)
+
+### When NOT to Use wu:spawn
+
+- Helper agents for the orchestrator's own WU (use inline context)
+- Validation agents checking orchestrator's work
+- Explore agents for codebase research
+
+See [agent-invocation-guide.md](../../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md) for decision tree.
+
+## Best Practices
+
+1. **Keep initiatives focused**: 3-10 WUs per initiative
+2. **Clear dependencies**: Document which WUs block others
+3. **Regular status updates**: Update initiative notes as work progresses
+4. **Lane alignment**: Ensure each WU is in the appropriate lane

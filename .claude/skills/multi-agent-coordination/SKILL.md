@@ -1,0 +1,84 @@
+---
+name: multi-agent-coordination
+description: Coordinate multiple agents on parallel WUs using git branch locking. Use when spawning sub-agents, coordinating parallel WUs, or handling abandoned WU recovery.
+version: 2.1.0
+source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
+last_updated: 2026-01-22
+allowed-tools: Read, Bash, Grep
+---
+
+# Multi-Agent Coordination Skill
+
+## When to Use
+
+Activate this skill when:
+
+- Spawning sub-agents for WU delegation
+- Coordinating parallel WUs across different lanes
+- Handling abandoned WU recovery
+- Using memory layer for inter-agent signals
+
+**Use skill first**: Follow the coordination patterns for spawning and signalling.
+
+## Git Branch Locking
+
+- Branch `lane/operations/wu-700` exists = WU claimed
+- Git prevents duplicate branches = automatic locking
+- No heartbeats, no session files
+
+## Spawning Sub-Agents
+
+**Use wu:spawn** when delegating entire WU:
+
+```bash
+pnpm wu:spawn --id WU-XXX              # Standard
+pnpm wu:spawn --id WU-XXX --thinking   # Complex WUs
+```
+
+**DON'T use wu:spawn** for helper agents (code-reviewer, test-engineer) on YOUR WU.
+
+## Parallel Spawning
+
+**Different lanes**: Safe to parallelize (`run_in_background: true`)
+**Same lane**: Sequential only (WIP=1 rule)
+
+```typescript
+// Parallel validation (single message)
+Task({ subagent_type: 'code-reviewer', run_in_background: true, prompt: '...' });
+Task({ subagent_type: 'test-engineer', run_in_background: true, prompt: '...' });
+```
+
+## Handling Abandoned WUs
+
+```bash
+# Check dashboard for abandoned work
+pnpm orchestrate:status
+
+# Review checkpoints
+pnpm mem:ready --wu WU-XXX
+
+# Take over (requires coordination)
+cd worktrees/<lane>-wu-XXX
+# Review uncommitted changes, commit, continue
+```
+
+## Memory Layer Coordination
+
+```bash
+pnpm mem:signal "WU-XXX complete" --wu WU-XXX  # Broadcast
+pnpm mem:inbox --lane Operations               # Check updates
+pnpm mem:checkpoint "Ready for handoff" --wu WU-XXX  # Handoff
+```
+
+## Common Patterns
+
+| Scenario           | Approach                                   |
+| ------------------ | ------------------------------------------ |
+| Sequential handoff | Block WU, other agent unblocks             |
+| Parallel subtasks  | Create separate WUs, work in parallel      |
+| Multi-lane feature | Create dependency WUs, complete deps first |
+| Research spike     | `type: spike`, `lane: Discovery`           |
+
+---
+
+**Full docs**: [agent-invocation-guide.md](../../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md) | [execution-memory skill](../execution-memory/SKILL.md)

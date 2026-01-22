@@ -1,0 +1,138 @@
+---
+name: worktree-discipline
+description: Prevents the "absolute path trap" in Write/Edit/Read tools. Use when working in worktrees, before file operations, or when changes don't appear in git status.
+version: 2.0.0
+source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+source_sections: §2.4 (Worktree Discipline), §4.1 (Tool Usage)
+last_updated: 2026-01-22
+allowed-tools: Read, Bash, Grep
+---
+
+# Worktree Discipline: Absolute Path Trap Prevention
+
+**Purpose**: Prevent AI agents from bypassing worktree isolation via absolute file paths.
+
+**For full worktree workflow**: See `wu-lifecycle` skill or `lumenflow-complete.md` §2.4.
+
+## The Absolute Path Trap
+
+**Problem**: AI agents using Write/Edit/Read tools can bypass worktree isolation by passing absolute paths. Even when your shell is in the worktree, absolute paths target the main checkout.
+
+### Example
+
+```typescript
+// Shell: cd worktrees/operations-wu-427
+
+// WRONG - Absolute path bypasses worktree
+Write({
+  file_path: '/home/user/source/project/apps/web/src/validator.ts',
+  content: '...',
+});
+// Result: Written to MAIN checkout, not worktree!
+
+// RIGHT - Relative path respects worktree
+Write({
+  file_path: 'apps/web/src/validator.ts',
+  content: '...',
+});
+// Result: Written to worktree correctly
+```
+
+## Pre-Operation Checklist
+
+**Before ANY Write/Edit/Read operation:**
+
+1. **Verify working directory**:
+
+   ```bash
+   pwd
+   # Must show: .../worktrees/<lane>-wu-xxx
+   ```
+
+2. **Check file path format**:
+
+   | Pattern                           | Safe? | Example                  |
+   | --------------------------------- | ----- | ------------------------ |
+   | Starts with `/home/` or `/Users/` | NO    | `/home/user/.../file.ts` |
+   | Contains full repo path           | NO    | `/source/project/...`    |
+   | Starts with package name          | YES   | `apps/web/src/...`       |
+   | Starts with `./` or `../`         | YES   | `./src/lib/...`          |
+   | Just filename                     | YES   | `README.md`              |
+
+3. **Use relative paths for ALL file operations**
+
+## Quick Detection
+
+**Red flags** (you're about to fall into the trap):
+
+- Path starts with `/home/` or `/Users/`
+- Path contains organisation/project name
+- Path length > 50 characters (suspiciously long)
+
+**Safe patterns**:
+
+- `apps/web/src/...`
+- `packages/@lumenflow/...`
+- `tools/...`
+- `docs/...`
+
+## Troubleshooting
+
+### "Changes not showing in git status"
+
+**Cause**: Absolute paths wrote to main instead of worktree.
+
+**Fix**:
+
+```bash
+# Check where changes landed
+cd /path/to/main && git status
+
+# If changes are in main, move them
+git stash
+cd worktrees/<lane>-wu-xxx
+git stash pop
+
+# Re-apply with relative paths
+```
+
+### "Pre-commit hook blocked my commit"
+
+**Cause**: Attempted WU commit from main checkout.
+
+**Fix**: Move to worktree, commit there:
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git add . && git commit -m "..."
+```
+
+## Decision Tree
+
+```
+About to use Write/Edit/Read?
+├─ Check: Am I in a worktree?
+│   ├─ YES → Use RELATIVE paths only
+│   └─ NO → Did I claim a WU?
+│       ├─ YES → cd worktrees/<lane>-wu-xxx first
+│       └─ NO → Claim WU or use docs-only paths
+└─ Path starts with "/" ?
+    ├─ YES → STOP! Convert to relative path
+    └─ NO → Safe to proceed
+```
+
+## Golden Rules
+
+1. **Always verify pwd** before file operations
+2. **Never use absolute paths** in Write/Edit/Read tools
+3. **When in doubt, use relative paths**
+
+## Cross-References
+
+- **Full worktree workflow**: `wu-lifecycle` skill
+- **Git command restrictions**: `lumenflow-complete.md` §2.4
+
+## Version History
+
+- **v2.0.0** (2025-12-05): Refactored to focus on absolute path trap (per Anthropic one-capability-per-skill guideline)
+- **v1.0.0** (2025-10-26): Initial skill from lumenflow-complete.md

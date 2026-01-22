@@ -73,5 +73,45 @@ directories:
   backlog: 'docs/04-operations/tasks/backlog.md'
   status: 'docs/04-operations/tasks/status.md'
   stamps: '.beacon/stamps'
+  skillsDir: '.claude/skills'
+  agentsDir: '.claude/agents'
 
 worktree_pattern: 'worktrees/{lane}-{wu_id}'
+
+# WU-1053: Agent and skill configuration for AI clients
+agents:
+  defaultClient: 'claude-code'
+  clients:
+    claude-code:
+      preamble: true
+      skillsDir: '.claude/skills'
+      agentsDir: '.claude/agents'
+      skills:
+        instructions: 'Load skills based on WU context:'
+        recommended:
+          - wu-lifecycle
+          - worktree-discipline
+        byLane:
+          'Framework: Core':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: CLI':
+            - tdd-workflow
+            - lumenflow-gates
+          'Content: Documentation':
+            - worktree-discipline
+          'Operations: Infrastructure':
+            - orchestration
+      blocks:
+        - title: 'Claude Code Best Practices'
+          content: |
+            - Use TodoWrite for multi-step tasks
+            - Run gates before wu:done
+            - Never use --no-verify
+            - Load skills via /skill <name>
+    codex-cli:
+      preamble: true
+      skillsDir: '.claude/skills'
+    gemini-cli:
+      preamble: true
+      skillsDir: '.claude/skills'

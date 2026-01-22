@@ -159,7 +159,43 @@ If you're an AI agent, read the onboarding docs:
 
 ---
 
+## Skills & Agents
+
+LumenFlow provides modular skills and agent definitions for AI assistants.
+
+### Skills
+
+Skills are knowledge bundles in `.claude/skills/` (Claude Code) or `.lumenflow/skills/` (vendor-agnostic):
+
+| Skill                 | Purpose                                     |
+| --------------------- | ------------------------------------------- |
+| `wu-lifecycle`        | WU claim/block/done automation              |
+| `worktree-discipline` | Prevent absolute path trap                  |
+| `tdd-workflow`        | RED-GREEN-REFACTOR, test-driven development |
+| `lumenflow-gates`     | Gate troubleshooting                        |
+| `bug-classification`  | P0-P3 triage, fix-in-place decisions        |
+
+Load skills in Claude Code: `/skill wu-lifecycle`
+
+### Agents
+
+Pre-configured agent definitions in `.claude/agents/`:
+
+| Agent             | Purpose                    |
+| ----------------- | -------------------------- |
+| `general-purpose` | Standard WU implementation |
+| `lumenflow-pm`    | Backlog & lifecycle        |
+| `test-engineer`   | TDD, coverage              |
+| `code-reviewer`   | Quality checks             |
+| `bug-triage`      | Bug classification         |
+
+Generate spawn prompts: `pnpm wu:spawn --id WU-XXX --client claude-code`
+
+---
+
 ## References
 
 - [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)
 - [WU Sizing Guide](docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md)
+- [Skills Index](.claude/skills/INDEX.md)
+- [Agents README](.claude/agents/README.md)

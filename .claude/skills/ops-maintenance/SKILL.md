@@ -1,0 +1,254 @@
+---
+name: ops-maintenance
+description: Run maintenance tasks, generate metrics reports, validate configurations, and manage agent sessions. Use for wu:prune, metrics reports, validation failures, agent sessions, backlog health checks, or bottleneck analysis.
+version: 1.1.0
+source: packages/@lumenflow/cli/src/
+last_updated: 2026-01-22
+allowed-tools: Read, Bash, Grep
+---
+
+# Operations & Maintenance Skill
+
+Guides agents through maintenance tasks, metrics reporting, validation, and agent session management.
+
+## When This Skill Activates
+
+- User mentions maintenance, cleanup, or pruning
+- User asks about metrics, DORA, or flow reports
+- User encounters validation errors (tasks:validate, spec:linter)
+- User asks about agent sessions
+- User wants to check backlog health
+
+## Maintenance Commands
+
+### Worktree Cleanup
+
+```bash
+# Dry-run (shows what would be pruned)
+pnpm wu:prune
+
+# Execute cleanup
+pnpm wu:prune --execute
+```
+
+Removes stale/orphaned worktrees from completed or abandoned WUs.
+
+### Backlog Cleanup
+
+```bash
+# Dry-run
+pnpm backlog:prune
+
+# Execute
+pnpm backlog:prune --execute
+```
+
+Identifies stale WUs (>60 days inactive) for review or archival.
+
+### Documentation Link Check
+
+```bash
+pnpm docs:linkcheck
+```
+
+Validates all internal links in documentation files.
+
+## Metrics & Reporting
+
+### Lane Metrics
+
+```bash
+pnpm metrics:lanes
+```
+
+Shows per-lane statistics:
+
+- WUs completed per lane
+- Average cycle time
+- Current WIP status
+
+### DORA Metrics
+
+```bash
+pnpm metrics:dora
+```
+
+Shows DevOps Research and Assessment metrics:
+
+- Deployment frequency (WUs/week)
+- Lead time (ready → done)
+- Change failure rate
+- Mean time to recovery (MTTR)
+
+### Flow Metrics
+
+```bash
+pnpm metrics:flow
+```
+
+Shows flow efficiency:
+
+- Cycle time distribution
+- Blocked time percentage
+- Throughput trends
+
+### Flow Report
+
+```bash
+pnpm flow:report
+```
+
+Generates comprehensive flow analysis report.
+
+### Flow Bottlenecks
+
+```bash
+# Show top 10 bottleneck WUs (ranked by downstream impact)
+pnpm flow:bottlenecks
+
+# Output in JSON format for scripting
+pnpm flow:bottlenecks --json
+
+# Show critical path (longest dependency chain)
+pnpm flow:bottlenecks --critical-path
+
+# Scope analysis to specific initiative
+pnpm flow:bottlenecks --initiative INIT-010
+
+# Adjust number of results (default: 10)
+pnpm flow:bottlenecks --limit 20
+```
+
+Identifies WUs that block the most downstream work:
+
+- **Impact score**: Count of WUs directly and indirectly blocked
+- **Critical path**: Longest chain of dependencies (schedule risk)
+- **Bottleneck ranking**: Prioritise completing these for maximum unblocking
+
+Use with `orchestrate:suggest` which incorporates impact scores into WU recommendations, or `orchestrate:initiative` which highlights bottlenecks in execution plans.
+
+## Validation Commands
+
+### Task Validation
+
+```bash
+pnpm tasks:validate
+```
+
+Validates all WU YAML files:
+
+- Required fields present
+- Status transitions valid
+- Lane assignments correct
+
+### Backlog Sync Validation
+
+```bash
+pnpm tasks:validate:backlog
+```
+
+Ensures backlog.md and status.md are synchronized with WU YAMLs.
+
+### Spec Linter
+
+```bash
+pnpm spec:linter
+```
+
+Validates specification files against schema.
+
+### Board Validation
+
+```bash
+pnpm board:validate
+```
+
+Validates kanban board state consistency.
+
+### Context Validation
+
+```bash
+pnpm validate:context
+```
+
+Checks for redundancy and reference integrity in context files.
+
+## Agent Session Management
+
+### Start Session
+
+```bash
+pnpm agent:session start --wu WU-XXX --tier 2
+```
+
+Starts telemetry session for a WU. Tier options:
+
+- `1`: Quick context (~500 tokens)
+- `2`: Standard context (~2,800 tokens)
+- `3`: Full context (~18,000 tokens)
+
+### End Session
+
+```bash
+pnpm agent:session:end
+```
+
+Ends current session and appends metadata to WU YAML.
+
+### Log Issue
+
+```bash
+pnpm agent:log-issue \
+  --category confusion \
+  --severity minor \
+  --title "Issue title" \
+  --description "Detailed description"
+```
+
+Categories: `confusion`, `tooling_error`, `doc_gap`, `workflow_violation`, `unexpected_failure`
+Severities: `minor`, `moderate`, `major`
+
+### Query Issues
+
+```bash
+# Summary of recent issues
+pnpm agent:issues summary --since 7d
+
+# List all issues
+pnpm agent:issues list
+```
+
+### Session Status
+
+```bash
+pnpm session:status
+```
+
+Shows current active sessions across agents.
+
+### Session Recommendations
+
+```bash
+pnpm session:recommend
+```
+
+Suggests optimal context tier based on task complexity.
+
+## Common Maintenance Workflows
+
+### Weekly Health Check
+
+```bash
+pnpm wu:prune              # Check for stale worktrees
+pnpm backlog:prune         # Check for stale WUs
+pnpm metrics:lanes         # Review lane performance
+pnpm docs:linkcheck        # Verify documentation links
+```
+
+### Before WU Completion
+
+```bash
+pnpm tasks:validate        # Validate WU YAML
+pnpm board:validate        # Check board state
+pnpm validate:context      # Check context integrity
+```

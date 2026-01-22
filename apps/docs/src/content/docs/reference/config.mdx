@@ -210,13 +210,17 @@ directories:
   wu_specs: docs/tasks/wu # Where WU YAMLs live
   backlog: docs/tasks/backlog.md # Backlog file
   stamps: .beacon/stamps # Completion stamps
+  skillsDir: .claude/skills # Skills directory
+  agentsDir: .claude/agents # Agents directory
 ```
 
-| Field      | Default                 | Description       |
-| ---------- | ----------------------- | ----------------- |
-| `wu_specs` | `docs/tasks/wu`         | WU YAML directory |
-| `backlog`  | `docs/tasks/backlog.md` | Backlog file path |
-| `stamps`   | `.beacon/stamps`        | Stamp directory   |
+| Field       | Default                 | Description            |
+| ----------- | ----------------------- | ---------------------- |
+| `wu_specs`  | `docs/tasks/wu`         | WU YAML directory      |
+| `backlog`   | `docs/tasks/backlog.md` | Backlog file path      |
+| `stamps`    | `.beacon/stamps`        | Stamp directory        |
+| `skillsDir` | `.claude/skills`        | Agent skills directory |
+| `agentsDir` | `.claude/agents`        | Agent definitions      |
 
 ### git
 
@@ -294,10 +298,33 @@ Per-client guidance injected by `wu:spawn`.
 | --------------------- | --------------- | ------- | -------------------------------------------- |
 | `preamble`            | string\|boolean | —       | Optional overlay preamble path or `false`    |
 | `skillsDir`           | string          | —       | Optional skills directory for the client     |
+| `agentsDir`           | string          | —       | Optional agents directory for the client     |
 | `blocks`              | array           | []      | Client blocks appended under Client Guidance |
 | `skills`              | object          | —       | Client skills guidance configuration         |
 | `skills.instructions` | string          | —       | Freeform guidance text                       |
 | `skills.recommended`  | string[]        | []      | Skills to recommend for the client           |
+| `skills.byLane`       | object          | {}      | Lane-specific skill recommendations          |
+
+##### skills.byLane
+
+Map lane names to additional skills:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      skills:
+        recommended:
+          - wu-lifecycle
+        byLane:
+          'Framework: Core':
+            - tdd-workflow
+            - lumenflow-gates
+          'Content: Documentation':
+            - worktree-discipline
+```
+
+When a WU is spawned for a specific lane, the lane's skills are merged with the recommended skills.
 
 ### memory
 
