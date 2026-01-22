@@ -121,4 +121,14 @@ describe('GitAdapter', () => {
       await expect(git.remoteBranchExists('origin', 'lane/ops/wu-999')).resolves.toBe(false);
     });
   });
+
+  describe('getUnpushedCommits', () => {
+    it('should return trimmed oneline log output', async () => {
+      const git = createGitForPath('/test/project');
+      mockRaw.mockResolvedValueOnce('abc123 fix: test\n');
+
+      await expect(git.getUnpushedCommits()).resolves.toBe('abc123 fix: test');
+      expect(mockRaw).toHaveBeenCalledWith(['log', '@{u}..HEAD', '--oneline']);
+    });
+  });
 });
