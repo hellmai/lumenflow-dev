@@ -21,8 +21,6 @@ tests:
 artifacts:
   - .beacon/stamps/WU-1061.done
 dependencies: []
-spec_refs:
-  - docs/04-operations/plans/WU-1061-docs-generate-integration.md
 risks: []
 notes: ''
 requires_review: false
@@ -33,13 +31,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Move docs regeneration from pre-commit hook to wu:done. After gates pass, detect if doc-source files changed using cheap git diff. If yes, run turbo docs:generate (cached), stage outputs, include in metadata commit. Zero overhead when no doc-source changes.
+description: Move docs regeneration from pre-commit hook to wu:done. After gates pass, detect if
+  doc-source files changed using cheap git diff. If yes, run turbo docs:generate (cached), stage
+  outputs, include in metadata commit. Zero overhead when no doc-source changes.
 acceptance:
-  - wu:done detects doc-source changes using git diff with pathspecs (tools/generate-cli-docs.ts, arg-parser.ts, lumenflow-config-schema.ts, index.ts, CLI src/, CLI package.json)
+  - wu:done detects doc-source changes using git diff with pathspecs (tools/generate-cli-docs.ts,
+    arg-parser.ts, lumenflow-config-schema.ts, index.ts, CLI src/, CLI package.json)
   - Detection uses defaultBranchFrom(docMain) with fallback to branch resolver (no hardcoded main)
   - wu:done runs turbo docs:generate when source changed (Turbo handles build deps + caching)
   - turbo.json has docs:generate task with dependsOn @lumenflow/core#build and precise inputs/outputs
   - Doc outputs staged before stageAndFormatMetadata(), included in single atomic commit
-  - Pre-commit docs-sync hook removed (delete .husky/hooks/docs-sync.mjs AND remove its call from .husky/pre-commit)
+  - Pre-commit docs-sync hook removed (delete .husky/hooks/docs-sync.mjs AND remove its call from
+    .husky/pre-commit)
   - Works in both worktree and branch-only modes
   - CI docs:validate remains as safety net
