@@ -31,6 +31,8 @@ import { die, createError, ErrorCodes } from './error-handler.js';
 import { validateWU, validateDoneWU } from './wu-schema.js';
 import { assertTransition } from './state-machine.js';
 import { detectZombieState, recoverZombieState } from './wu-recovery.js';
+// WU-1061: Import docs regeneration utilities
+import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 
 /**
  * @typedef {Object} BranchOnlyContext
@@ -177,6 +179,14 @@ export async function executeBranchOnlyCompletion(context) {
       wuPath: metadataWUPath,
       statusPath: metadataStatusPath,
       backlogPath: metadataBacklogPath,
+    });
+
+    // WU-1061: Regenerate docs if doc-source files changed
+    // This runs BEFORE stageAndFormatMetadata to include doc outputs
+    // in the single atomic commit
+    await maybeRegenerateAndStageDocs({
+      baseBranch: BRANCHES.MAIN,
+      repoRoot: metadataBasePath,
     });
 
     // Step 7: Stage and format files
