@@ -2,7 +2,7 @@ id: WU-1062
 title: External plan storage and no-main-write mode for wu:create
 lane: 'Framework: Core'
 type: feature
-status: done
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -34,8 +34,16 @@ dependencies: []
 risks:
   - External plans not version-controlled by default
   - Breaking change if wu:claim assumes WU always on main
-notes: 'Bootstrap WU: external plan stored in lumenflow://plans/; spec_refs intentionally external
-  until validator updated in WU-1062.'
+notes: >-
+  Bootstrap WU: external plan stored in lumenflow://plans/; spec_refs intentionally external until
+  validator updated in WU-1062.
+
+
+  Reopened: CLI integration incomplete; finishing spec-branch + external plan workflow.
+
+
+  [ADMIN-REPAIR 2026-01-22]: status changed from 'done' to 'in_progress'; locked changed from true
+  to false
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
@@ -73,5 +81,5 @@ acceptance:
   - LUMENFLOW.md updated with new wu:create flow
   - playbook.md updated with spec branch pattern
   - quick-ref-commands.md updated with new flags
-locked: true
+locked: false
 completed_at: 2026-01-22T20:49:37.895Z
