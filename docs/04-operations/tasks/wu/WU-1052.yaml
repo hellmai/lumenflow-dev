@@ -2,7 +2,7 @@ id: WU-1052
 title: Migrate remaining tests from ExampleApp tools/ to hellmai/os packages
 lane: 'Framework: Core'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -42,3 +42,5 @@ session_id: f85ec460-c2ee-45fe-8872-ce7ab6530ae8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T11:30:50.147Z
+locked: true
+completed_at: 2026-01-22T19:03:08.469Z
