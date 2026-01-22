@@ -2,7 +2,7 @@ id: WU-1057
 title: Update LumenFlow docs - Nova theme, logos, and content audit
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -43,3 +43,5 @@ acceptance:
   - LumenFlow logos added with light/dark variants
   - Documentation content audited against current CLI commands
   - Docs deployed to lumenflow.dev
+locked: true
+completed_at: 2026-01-22T16:24:04.001Z
