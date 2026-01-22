@@ -6,21 +6,19 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - packages/@lumenflow/core/src/wu-spawn*.ts
-  - .claude/skills/**
-  - .claude/agents/**
+  - .claude/skills/INDEX.md
+  - .claude/agents/README.md
   - .lumenflow.config.yaml
-  - apps/docs/src/content/docs/**
+  - apps/docs/src/content/docs/guides/ai-agents.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
   - LUMENFLOW.md
-  - CLAUDE.md
   - .claude/CLAUDE.md
 tests:
   manual:
     - Verify skills load via /skill command
     - Verify wu:spawn output includes skill recommendations
     - Verify docs build and preview correctly
-  unit:
-    - packages/@lumenflow/core/src/__tests__/wu-spawn*.test.ts
+  unit: []
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1053.done
