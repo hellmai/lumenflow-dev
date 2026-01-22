@@ -20,7 +20,7 @@
 import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
 
 import { existsSync, readFileSync, rmSync } from 'node:fs';
-import { access, readFile, writeFile } from 'node:fs/promises';
+import { access, readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isOrphanWorktree } from '@lumenflow/core/dist/orphan-detector.js';
 // WU-1352: Use centralized YAML functions from wu-yaml.mjs
@@ -54,6 +54,7 @@ import {
   PATTERNS,
   toKebab,
   LOG_PREFIX,
+  GIT_REFS,
   MICRO_WORKTREE_OPERATIONS,
   COMMIT_FORMATS,
   EMOJI,
@@ -61,7 +62,7 @@ import {
   STRING_LITERALS,
 } from '@lumenflow/core/dist/wu-constants.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
+import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
 import { emitWUFlowEvent } from '@lumenflow/core/dist/telemetry.js';
 import {
   checkLaneForOrphanDoneWU,
@@ -245,6 +246,7 @@ async function updateWUYaml(
   claimedMode = 'worktree',
   worktreePath = null,
   sessionId = null,
+  gitAdapter = null,
 ) {
   // Check file exists
 
@@ -311,16 +313,16 @@ async function updateWUYaml(
   if (worktreePath) {
     doc.worktree_path = worktreePath;
   }
+  const git = gitAdapter || getGitForCwd();
   // WU-1423: Record owner using validated email (no silent username fallback)
   // Fallback chain: git config user.email > GIT_AUTHOR_EMAIL > error
   // WU-1427: getAssignedEmail is now async to properly await gitAdapter.getConfigValue
-  doc.assigned_to = await getAssignedEmail(getGitForCwd());
+  doc.assigned_to = await getAssignedEmail(git);
   // Record claim timestamp for duration tracking (WU-637)
   doc.claimed_at = new Date().toISOString();
   // WU-1382: Store baseline main SHA for parallel agent detection
   // wu:done will compare against this to detect if other WUs were merged during work
-  const git = getGitForCwd();
-  doc.baseline_main_sha = await git.getCommitHash('origin/main');
+  doc.baseline_main_sha = await git.getCommitHash(GIT_REFS.ORIGIN_MAIN);
   // WU-1438: Store agent session ID for tracking
   if (sessionId) {
     doc.session_id = sessionId;
@@ -452,6 +454,122 @@ export function getWorktreeCommitFiles(wuId) {
     // - docs/04-operations/tasks/status.md
     // These generated files cause merge conflicts when main advances
   ];
+}
+
+function parseStagedChangeLine(line) {
+  const parts = line.trim().split(/\s+/);
+  const status = parts[0];
+  if (!status) return null;
+  if (status.startsWith('R') || status.startsWith('C')) {
+    return { status, from: parts[1], filePath: parts[2] };
+  }
+  return { status, filePath: parts.slice(1).join(' ') };
+}
+
+async function getStagedChanges() {
+  const diff = await getGitForCwd().raw(['diff', '--cached', '--name-status']);
+  if (!diff.trim()) return [];
+  return diff
+    .split(STRING_LITERALS.NEWLINE)
+    .filter(Boolean)
+    .map(parseStagedChangeLine)
+    .filter(Boolean);
+}
+
+async function applyStagedChangesToMicroWorktree(worktreePath, stagedChanges) {
+  for (const change of stagedChanges) {
+    const filePath = change.filePath;
+    if (!filePath) continue;
+    const targetPath = path.join(worktreePath, filePath);
+    if (change.status.startsWith('D')) {
+      rmSync(targetPath, { recursive: true, force: true });
+      continue;
+    }
+    const sourcePath = path.join(process.cwd(), filePath);
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool applies staged files
+    const contents = await readFile(sourcePath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+    await mkdir(path.dirname(targetPath), { recursive: true });
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool applies staged files
+    await writeFile(targetPath, contents, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  }
+}
+
+/**
+ * Update canonical claim state on origin/main using push-only micro-worktree.
+ * Ensures canonical state stays global while local main remains unchanged.
+ */
+async function applyCanonicalClaimUpdate(ctx, sessionId) {
+  const {
+    args,
+    id,
+    laneK,
+    worktree,
+    WU_PATH,
+    STATUS_PATH,
+    BACKLOG_PATH,
+    claimedMode,
+    fixableIssues,
+    stagedChanges,
+  } = ctx;
+  const commitMsg = COMMIT_FORMATS.CLAIM(id.toLowerCase(), laneK);
+  const worktreePathForYaml =
+    claimedMode === CLAIMED_MODES.BRANCH_ONLY ? null : path.resolve(worktree);
+  let updatedTitle = '';
+  const filesToCommit =
+    args.noAuto && stagedChanges.length > 0
+      ? stagedChanges.map((change) => change.filePath).filter(Boolean)
+      : [WU_PATHS.WU(id), WU_PATHS.STATUS(), WU_PATHS.BACKLOG(), '.beacon/state/wu-events.jsonl'];
+
+  console.log(`${PREFIX} Updating canonical claim state (push-only)...`);
+
+  await withMicroWorktree({
+    operation: MICRO_WORKTREE_OPERATIONS.WU_CLAIM,
+    id,
+    logPrefix: PREFIX,
+    pushOnly: true,
+    execute: async ({ worktreePath }) => {
+      const microWUPath = path.join(worktreePath, WU_PATH);
+      const microStatusPath = path.join(worktreePath, STATUS_PATH);
+      const microBacklogPath = path.join(worktreePath, BACKLOG_PATH);
+
+      if (args.noAuto) {
+        await applyStagedChangesToMicroWorktree(worktreePath, stagedChanges);
+      } else {
+        if (fixableIssues && fixableIssues.length > 0) {
+          console.log(`${PREFIX} Applying ${fixableIssues.length} YAML fix(es)...`);
+          autoFixWUYaml(microWUPath);
+          console.log(`${PREFIX} YAML fixes applied successfully`);
+        }
+
+        const microGit = createGitForPath(worktreePath);
+        updatedTitle =
+          (await updateWUYaml(
+            microWUPath,
+            id,
+            args.lane,
+            claimedMode,
+            worktreePathForYaml,
+            sessionId,
+            microGit,
+          )) || updatedTitle;
+        await addOrReplaceInProgressStatus(microStatusPath, id, updatedTitle);
+        await removeFromReadyAndAddToInProgressBacklog(
+          microBacklogPath,
+          id,
+          updatedTitle,
+          args.lane,
+        );
+      }
+
+      return {
+        commitMessage: commitMsg,
+        files: filesToCommit,
+      };
+    },
+  });
+
+  console.log(`${PREFIX} Canonical claim state updated on origin/main`);
+  return updatedTitle;
 }
 
 async function readWUTitle(id) {
@@ -758,55 +876,64 @@ async function validateBranchOnlyMode(STATUS_PATH, id) {
  * Execute branch-only mode claim workflow
  */
 async function claimBranchOnlyMode(ctx) {
-  const { args, id, laneK, title, branch, WU_PATH, STATUS_PATH, BACKLOG_PATH, claimedMode } = ctx;
+  const {
+    args,
+    id,
+    laneK,
+    title,
+    branch,
+    WU_PATH,
+    STATUS_PATH,
+    BACKLOG_PATH,
+    claimedMode,
+    sessionId,
+    updatedTitle,
+  } = ctx;
 
-  // WU-1438: Start agent session BEFORE metadata update to include session_id in YAML
-  let sessionId = null;
+  // Create branch and switch to it from origin/main (avoids local main mutation)
   try {
-    const sessionResult = await startSessionForWU({
-      wuId: id,
-      tier: 2,
-    });
-    sessionId = sessionResult.sessionId;
-    if (sessionResult.alreadyActive) {
-      console.log(`${PREFIX} Agent session already active (${sessionId.slice(0, 8)}...)`);
-    } else {
-      console.log(`${PREFIX} ${EMOJI.SUCCESS} Agent session started (${sessionId.slice(0, 8)}...)`);
-    }
-  } catch (err) {
-    // Non-blocking: session start failure should not block claim
-    console.warn(`${PREFIX} Warning: Could not start agent session: ${err.message}`);
-  }
-
-  // Create branch and switch to it (LEGACY - for constrained environments only)
-  await getGitForCwd().createBranch(branch, BRANCHES.MAIN);
-
-  // Update metadata in branch-only mode (on main checkout)
-  let updatedTitle = title;
-  if (args.noAuto) {
-    await ensureCleanOrClaimOnlyWhenNoAuto();
-  } else {
-    updatedTitle =
-      (await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId)) || title;
-    await addOrReplaceInProgressStatus(STATUS_PATH, id, updatedTitle);
-    await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, updatedTitle, args.lane);
-    await getGitForCwd().add(
-      `${JSON.stringify(WU_PATH)} ${JSON.stringify(STATUS_PATH)} ${JSON.stringify(BACKLOG_PATH)}`,
+    await getGitForCwd().createBranch(branch, `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+  } catch (error) {
+    die(
+      `Canonical claim state may be updated, but branch creation failed.\n\n` +
+        `Error: ${error.message}\n\n` +
+        `Recovery:\n` +
+        `  1. Run: git fetch ${REMOTES.ORIGIN} ${BRANCHES.MAIN}\n` +
+        `  2. Retry: pnpm wu:claim --id ${id} --lane "${args.lane}"\n` +
+        `  3. If needed, delete local branch: git branch -D ${branch}`,
     );
   }
 
-  // Commit and push
+  let finalTitle = updatedTitle || title;
   const msg = COMMIT_FORMATS.CLAIM(id.toLowerCase(), laneK);
-  await getGitForCwd().commit(msg);
-  await getGitForCwd().push(REMOTES.ORIGIN, branch);
+
+  if (args.noPush) {
+    if (args.noAuto) {
+      await ensureCleanOrClaimOnlyWhenNoAuto();
+    } else {
+      finalTitle =
+        (await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId)) || finalTitle;
+      await addOrReplaceInProgressStatus(STATUS_PATH, id, finalTitle);
+      await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, finalTitle, args.lane);
+      await getGitForCwd().add(
+        `${JSON.stringify(WU_PATH)} ${JSON.stringify(STATUS_PATH)} ${JSON.stringify(BACKLOG_PATH)}`,
+      );
+    }
+
+    await getGitForCwd().commit(msg);
+    console.warn(
+      `${PREFIX} Warning: --no-push enabled. Claim is local-only and NOT visible to other agents.`,
+    );
+  } else {
+    await getGitForCwd().push(REMOTES.ORIGIN, branch, { setUpstream: true });
+  }
 
   // Summary
   console.log(`\n${PREFIX} Claim recorded in Branch-Only mode.`);
-  console.log(`- WU: ${id}${updatedTitle ? ` — ${updatedTitle}` : ''}`);
+  console.log(`- WU: ${id}${finalTitle ? ` — ${finalTitle}` : ''}`);
   console.log(`- Lane: ${args.lane}`);
   console.log(`- Mode: Branch-Only (no worktree)`);
-  console.log(`- Commit: ${msg}`);
-  console.log(`- Branch: ${branch}`);
+  console.log(`${args.noPush ? `- Commit: ${msg}` : `- Branch: ${branch}`}`);
   console.log(
     '\n⚠️  LIMITATION: Branch-Only mode does not support parallel WUs (WIP=1 across ALL lanes)',
   );
@@ -868,68 +995,60 @@ async function claimWorktreeMode(ctx) {
     BACKLOG_PATH,
     claimedMode,
     fixableIssues, // Fixable issues from pre-flight validation
+    sessionId,
+    updatedTitle,
+    stagedChanges,
   } = ctx;
 
   const originalCwd = process.cwd();
   const worktreePath = path.resolve(worktree);
-  let updatedTitle = title;
+  let finalTitle = updatedTitle || title;
   const commitMsg = COMMIT_FORMATS.CLAIM(id.toLowerCase(), laneK);
-
-  // WU-1438: Start agent session BEFORE metadata update to include session_id in YAML
-  let sessionId = null;
-  try {
-    const sessionResult = await startSessionForWU({
-      wuId: id,
-      tier: 2,
-    });
-    sessionId = sessionResult.sessionId;
-    if (sessionResult.alreadyActive) {
-      console.log(`${PREFIX} Agent session already active (${sessionId.slice(0, 8)}...)`);
-    } else {
-      console.log(`${PREFIX} ${EMOJI.SUCCESS} Agent session started (${sessionId.slice(0, 8)}...)`);
-    }
-  } catch (err) {
-    // Non-blocking: session start failure should not block claim
-    console.warn(`${PREFIX} Warning: Could not start agent session: ${err.message}`);
-  }
 
   // WU-1741: Step 1 - Create work worktree+branch from main
   // Branch creation IS the coordination lock (git prevents duplicate branch names)
   console.log(`${PREFIX} Creating worktree (branch = coordination lock)...`);
-  await getGitForCwd().worktreeAdd(worktree, branch, BRANCHES.MAIN);
+  const startPoint = args.noPush ? BRANCHES.MAIN : `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`;
+  await getGitForCwd().worktreeAdd(worktree, branch, startPoint);
   console.log(`${PREFIX} ${EMOJI.SUCCESS} Worktree created at ${worktree}`);
 
-  // WU-1741: Step 2 - Update metadata IN the work worktree (not main)
-  if (!args.noAuto) {
-    // Build paths relative to work worktree
-    const wtWUPath = path.join(worktreePath, WU_PATH);
-    const wtBacklogPath = path.join(worktreePath, BACKLOG_PATH);
+  if (!args.noPush) {
+    const wtGit = createGitForPath(worktreePath);
+    await wtGit.push(REMOTES.ORIGIN, branch, { setUpstream: true });
+  }
 
-    // Apply YAML fixes in worktree (not on main)
-    if (fixableIssues && fixableIssues.length > 0) {
-      console.log(`${PREFIX} Applying ${fixableIssues.length} YAML fix(es)...`);
-      autoFixWUYaml(wtWUPath);
-      console.log(`${PREFIX} YAML fixes applied successfully`);
+  if (args.noPush) {
+    // Local-only claim (air-gapped) - update metadata inside worktree branch
+    if (args.noAuto) {
+      await applyStagedChangesToMicroWorktree(worktreePath, stagedChanges);
+    } else {
+      const wtWUPath = path.join(worktreePath, WU_PATH);
+      const wtBacklogPath = path.join(worktreePath, BACKLOG_PATH);
+
+      if (fixableIssues && fixableIssues.length > 0) {
+        console.log(`${PREFIX} Applying ${fixableIssues.length} YAML fix(es)...`);
+        autoFixWUYaml(wtWUPath);
+        console.log(`${PREFIX} YAML fixes applied successfully`);
+      }
+
+      finalTitle =
+        (await updateWUYaml(wtWUPath, id, args.lane, claimedMode, worktree, sessionId)) ||
+        finalTitle;
+
+      // WU-1746: Only append claim event to state store - don't regenerate backlog.md/status.md
+      const wtStateDir = getStateStoreDirFromBacklog(wtBacklogPath);
+      await appendClaimEventOnly(wtStateDir, id, finalTitle, args.lane);
     }
 
-    // Update metadata files in worktree (WU-1438: include session_id)
-    updatedTitle =
-      (await updateWUYaml(wtWUPath, id, args.lane, claimedMode, worktree, sessionId)) || title;
-
-    // WU-1746: Only append claim event to state store - don't regenerate backlog.md/status.md
-    // These generated files cause merge conflicts when committed to worktrees
-    const wtStateDir = getStateStoreDirFromBacklog(wtBacklogPath);
-    await appendClaimEventOnly(wtStateDir, id, updatedTitle, args.lane);
-
-    // WU-1741: Step 3 - Commit metadata in worktree (NOT on main)
-    // This commit stays on the lane branch until wu:done merges to main
     console.log(`${PREFIX} Committing claim metadata in worktree...`);
     const wtGit = createGitForPath(worktreePath);
-    // WU-1746: Use getWorktreeCommitFiles which excludes backlog.md and status.md
     const filesToCommit = getWorktreeCommitFiles(id);
     await wtGit.add(filesToCommit);
     await wtGit.commit(commitMsg);
     console.log(`${PREFIX} ${EMOJI.SUCCESS} Claim committed: ${commitMsg}`);
+    console.warn(
+      `${PREFIX} Warning: --no-push enabled. Claim is local-only and NOT visible to other agents.`,
+    );
   }
 
   // WU-1023: Auto-setup worktree dependencies
@@ -979,7 +1098,7 @@ async function claimWorktreeMode(ctx) {
   }
 
   console.log(`${PREFIX} Claim recorded in worktree`);
-  console.log(`- WU: ${id}${updatedTitle ? ` — ${updatedTitle}` : ''}`);
+  console.log(`- WU: ${id}${finalTitle ? ` — ${finalTitle}` : ''}`);
   console.log(`- Lane: ${args.lane}`);
   console.log(`- Worktree: ${worktreePath}`);
   console.log(`- Branch: ${branch}`);
@@ -1204,6 +1323,7 @@ async function main() {
       WU_OPTIONS.allowIncomplete,
       WU_OPTIONS.resume, // WU-2411: Agent handoff flag
       WU_OPTIONS.skipSetup, // WU-1023: Skip auto-setup for fast claims
+      WU_OPTIONS.noPush, // Skip pushing claim state/branch (air-gapped)
     ],
     required: ['id', 'lane'],
     allowPositionalId: true,
@@ -1234,10 +1354,21 @@ async function main() {
       );
     }
   }
+  let stagedChanges = [];
+  if (args.noAuto) {
+    await ensureCleanOrClaimOnlyWhenNoAuto();
+    stagedChanges = await getStagedChanges();
+  }
 
-  // WU-1361: Fetch and pull FIRST - validate on fresh data, not stale pre-pull data
-  await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-  await getGitForCwd().pull(REMOTES.ORIGIN, BRANCHES.MAIN);
+  // WU-1361: Fetch latest remote before validation (no local main mutation)
+  if (!args.noPush) {
+    await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    await ensureMainUpToDate(getGitForCwd(), 'wu:claim');
+  } else {
+    console.warn(
+      `${PREFIX} Warning: --no-push enabled. Skipping origin/main sync; local state may be stale.`,
+    );
+  }
 
   const WU_PATH = WU_PATHS.WU(id);
   const STATUS_PATH = WU_PATHS.STATUS();
@@ -1349,7 +1480,21 @@ async function main() {
       await validateBranchOnlyMode(STATUS_PATH, id);
     }
 
-    // Check if branch already exists (prevents duplicate claims)
+    // Check if remote branch already exists (prevents duplicate global claims)
+    if (!args.noPush) {
+      const remoteExists = await getGitForCwd().remoteBranchExists(REMOTES.ORIGIN, branch);
+      if (remoteExists) {
+        die(
+          `Remote branch ${REMOTES.ORIGIN}/${branch} already exists. WU may already be claimed.\n\n` +
+            `Options:\n` +
+            `  1. Coordinate with the owning agent or wait for completion\n` +
+            `  2. Choose a different WU\n` +
+            `  3. Use --no-push for local-only claims (offline)`,
+        );
+      }
+    }
+
+    // Check if branch already exists locally (prevents duplicate claims)
     const branchAlreadyExists = await getGitForCwd().branchExists(branch);
     if (branchAlreadyExists) {
       die(
@@ -1379,8 +1524,28 @@ async function main() {
       }
     }
 
+    // WU-1438: Start agent session BEFORE metadata update to include session_id in YAML
+    let sessionId = null;
+    try {
+      const sessionResult = await startSessionForWU({
+        wuId: id,
+        tier: 2,
+      });
+      sessionId = sessionResult.sessionId;
+      if (sessionResult.alreadyActive) {
+        console.log(`${PREFIX} Agent session already active (${sessionId.slice(0, 8)}...)`);
+      } else {
+        console.log(
+          `${PREFIX} ${EMOJI.SUCCESS} Agent session started (${sessionId.slice(0, 8)}...)`,
+        );
+      }
+    } catch (err) {
+      // Non-blocking: session start failure should not block claim
+      console.warn(`${PREFIX} Warning: Could not start agent session: ${err.message}`);
+    }
+
     // Execute claim workflow
-    const ctx = {
+    const baseCtx = {
       args,
       id,
       laneK,
@@ -1392,6 +1557,19 @@ async function main() {
       BACKLOG_PATH,
       claimedMode,
       fixableIssues, // WU-1361: Pass fixable issues for worktree application
+      stagedChanges,
+    };
+    let updatedTitle = title;
+    if (!args.noPush) {
+      updatedTitle = (await applyCanonicalClaimUpdate(baseCtx, sessionId)) || updatedTitle;
+
+      // Refresh origin/main after push-only update so worktrees start from canonical state
+      await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    }
+    const ctx = {
+      ...baseCtx,
+      sessionId,
+      updatedTitle,
     };
     if (args.branchOnly) {
       await claimBranchOnlyMode(ctx);

@@ -42,6 +42,19 @@ describe('wu:claim --skip-setup flag (WU-1023)', () => {
     });
   });
 
+  describe('WU_OPTIONS.noPush definition', () => {
+    it('should have noPush option defined', () => {
+      expect(WU_OPTIONS.noPush).toBeDefined();
+      expect(WU_OPTIONS.noPush.name).toBe('noPush');
+      expect(WU_OPTIONS.noPush.flags).toBe('--no-push');
+    });
+
+    it('should have meaningful description', () => {
+      expect(WU_OPTIONS.noPush.description.toLowerCase()).toContain('push');
+      expect(WU_OPTIONS.noPush.description.toLowerCase()).toContain('skip');
+    });
+  });
+
   describe('getWorktreeCommitFiles', () => {
     it('should return WU YAML and state store files', () => {
       const files = getWorktreeCommitFiles('WU-1023');

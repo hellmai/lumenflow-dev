@@ -196,6 +196,12 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     flags: '--fix',
     description: 'Auto-fix common YAML validation issues (WU-1359)',
   },
+  noPush: {
+    name: 'noPush',
+    flags: '--no-push',
+    description: 'Skip pushing claim branch or canonical updates (air-gapped/offline)',
+    isNegated: true,
+  },
   createPr: {
     name: 'createPr',
     flags: '--create-pr',
@@ -436,7 +442,7 @@ export const WU_OPTIONS: Record<string, WUOption> = {
  * Negated options that commander handles specially.
  * --no-foo creates opts.foo = false. We convert to noFoo = true.
  */
-const NEGATED_OPTIONS = ['auto', 'remove', 'merge', 'autoRebase'];
+const NEGATED_OPTIONS = ['auto', 'remove', 'merge', 'autoRebase', 'push'];
 
 /**
  * Post-process commander opts to handle negated boolean options.

@@ -181,6 +181,23 @@ export class GitAdapter {
   }
 
   /**
+   * Check if a remote branch exists via git ls-remote --heads
+   * @param {string} remote - Remote name (e.g., 'origin')
+   * @param {string} branch - Branch name
+   * @returns {Promise<boolean>} True if remote branch exists
+   * @throws {TypeError} If remote or branch is not a string
+   * @throws {Error} If remote or branch is empty
+   * @example
+   * await git.remoteBranchExists('origin', 'lane/operations/wu-123'); // true/false
+   */
+  async remoteBranchExists(remote: string, branch: string): Promise<boolean> {
+    assertNonEmptyString(remote, 'remote');
+    assertNonEmptyString(branch, 'branch');
+    const result = await this.git.raw(['ls-remote', '--heads', remote, branch]);
+    return result.trim().length > 0;
+  }
+
+  /**
    * Fetch from remote
    * @param {string} [remote] - Remote name (defaults to fetching all)
    * @param {string} [branch] - Branch name
