@@ -2,7 +2,7 @@ id: WU-1062
 title: External plan storage and no-main-write mode for wu:create
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -38,7 +38,8 @@ spec_refs:
 risks:
   - External plans not version-controlled by default
   - Breaking change if wu:claim assumes WU always on main
-notes: 'Bootstrap WU: external plan stored in lumenflow://plans/; spec_refs intentionally external until validator updated in WU-1062.'
+notes: 'Bootstrap WU: external plan stored in lumenflow://plans/; spec_refs intentionally external
+  until validator updated in WU-1062.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -69,3 +70,11 @@ acceptance:
   - LUMENFLOW.md updated with new wu:create flow
   - playbook.md updated with spec branch pattern
   - quick-ref-commands.md updated with new flags
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1062
+claimed_at: 2026-01-22T20:32:03.819Z
+baseline_main_sha: 4db35bffdc4fc04acec123c64608b5137231834b
+session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T20:32:03.826Z
