@@ -6,7 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - apps/docs/**
+  - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/index.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/assets/logo-dark.png
+  - apps/docs/src/assets/logo-light.png
 tests:
   manual:
     - Visual inspection of deployed site
@@ -15,15 +19,20 @@ tests:
 artifacts:
   - .beacon/stamps/WU-1057.done
 dependencies: []
-spec_refs:
-  - https://starlight-theme-nova.pages.dev
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-22T15:32:45.558Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1057
+session_id: 7d4dd477-0c08-4b9b-a34f-c664bff4bcc6
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T15:32:45.565Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +43,3 @@ acceptance:
   - LumenFlow logos added with light/dark variants
   - Documentation content audited against current CLI commands
   - Docs deployed to lumenflow.dev
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1057
-claimed_at: 2026-01-22T15:32:45.558Z
-baseline_main_sha: 2b4e6fd48f865baf124fe6002ebf5ff2bf89e067
-session_id: 7d4dd477-0c08-4b9b-a34f-c664bff4bcc6
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-22T15:32:45.565Z
