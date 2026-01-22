@@ -2,7 +2,7 @@ id: WU-1055
 title: Fix Starlight docs - remove custom CSS, use defaults
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -25,9 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Remove custom CSS from Starlight docs to fix broken light mode theme. Use out-of-the-box Starlight defaults.
+description: Remove custom CSS from Starlight docs to fix broken light mode theme. Use
+  out-of-the-box Starlight defaults.
 acceptance:
   - Custom CSS file removed from docs
   - customCss reference removed from astro.config.mjs
   - Light and dark themes both work correctly
   - Theme picker visible and functional
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1055
+claimed_at: 2026-01-22T13:23:07.044Z
+baseline_main_sha: 977cc7b94b03d32f337921aac2a112f948d16fc1
+session_id: 1123e558-a185-4805-a53f-b5ee911b53a4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T13:23:07.051Z
