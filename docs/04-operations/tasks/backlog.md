@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1055 — Fix Starlight docs - remove custom CSS, use defaults](wu/WU-1055.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
