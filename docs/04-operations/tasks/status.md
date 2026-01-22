@@ -8,10 +8,10 @@ _Last updated: 2026-01-22_
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml)
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
 - [WU-1052 — Migrate remaining tests from  tools/ to hellmai/os packages](wu/WU-1052.yaml)
-- [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml)
 
 ## Completed
 
+- [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml) — 2026-01-22
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
