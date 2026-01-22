@@ -1,14 +1,21 @@
 /**
- * WU Create Validators (WU-2107)
+ * WU Create Validators (WU-2107, WU-1062)
  *
- * Validation helpers for wu:create, including lane inference surfacing.
+ * Validation helpers for wu:create, including:
+ * - Lane inference surfacing (WU-2107)
+ * - External spec_refs validation (WU-1062)
  *
  * When agents create WUs, this module helps surface lane inference suggestions
  * to guide better lane selection and improve parallelization.
  *
+ * WU-1062: Validates spec_refs paths, accepting both repo-relative paths
+ * and external paths (lumenflow://, ~/.lumenflow/, $LUMENFLOW_HOME/).
+ *
  * NOTE: This is domain-specific WU workflow code, not a general utility.
  * No external library exists for LumenFlow lane inference validation.
  */
+
+import { isExternalPath, normalizeSpecRef } from './lumenflow-home.js';
 
 /** Confidence threshold for showing suggestion (percentage) */
 const CONFIDENCE_THRESHOLD_LOW = 30;
@@ -107,4 +114,90 @@ export function validateLaneWithInference(providedLane, codePaths, description, 
     // Inference failed, don't block creation
     return { shouldWarn: false, warning: '' };
   }
+}
+
+/**
+ * WU-1062: Validate spec_refs paths
+ *
+ * Accepts:
+ * - Repo-relative paths: docs/04-operations/plans/WU-XXX-plan.md
+ * - External paths: lumenflow://plans/WU-XXX-plan.md
+ * - Tilde paths: ~/.lumenflow/plans/WU-XXX-plan.md
+ * - Env var paths: $LUMENFLOW_HOME/plans/WU-XXX-plan.md
+ *
+ * @param {string[]} specRefs - Array of spec reference paths
+ * @returns {{ valid: boolean, errors: string[], warnings: string[] }} Validation result
+ */
+export function validateSpecRefs(specRefs: string[]): {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+} {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!specRefs || specRefs.length === 0) {
+    return { valid: true, errors, warnings };
+  }
+
+  for (const ref of specRefs) {
+    // Check for empty refs
+    if (!ref || ref.trim().length === 0) {
+      errors.push('Empty spec_ref detected');
+      continue;
+    }
+
+    // External paths are valid (will be resolved at runtime)
+    if (isExternalPath(ref)) {
+      // Add informational warning about external paths
+      warnings.push(
+        `External spec_ref: "${ref}" - ensure plan exists at ${normalizeSpecRef(ref)}`,
+      );
+      continue;
+    }
+
+    // Repo-relative paths should follow conventions
+    const isValidRepoPath =
+      ref.startsWith('docs/') || ref.startsWith('./docs/') || ref.endsWith('.md');
+
+    if (!isValidRepoPath) {
+      warnings.push(
+        `Unconventional spec_ref path: "${ref}" - consider using docs/04-operations/plans/ or lumenflow://plans/`,
+      );
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * WU-1062: Check if spec_refs contains external paths
+ *
+ * @param {string[]} specRefs - Array of spec reference paths
+ * @returns {boolean} True if any spec_ref is an external path
+ */
+export function hasExternalSpecRefs(specRefs: string[]): boolean {
+  if (!specRefs || specRefs.length === 0) {
+    return false;
+  }
+  return specRefs.some((ref) => isExternalPath(ref));
+}
+
+/**
+ * WU-1062: Normalize all spec_refs paths
+ *
+ * Expands external paths to absolute paths while keeping repo-relative paths unchanged.
+ *
+ * @param {string[]} specRefs - Array of spec reference paths
+ * @returns {string[]} Normalized paths
+ */
+export function normalizeSpecRefs(specRefs: string[]): string[] {
+  if (!specRefs || specRefs.length === 0) {
+    return [];
+  }
+  return specRefs.map((ref) => normalizeSpecRef(ref));
 }

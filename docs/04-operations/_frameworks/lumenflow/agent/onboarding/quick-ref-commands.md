@@ -17,16 +17,18 @@
 
 ## WU Management
 
-| Command                                                                                                                                                                                                                      | Description                                          |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "path" --test-paths-unit "path" --exposure backend-only --spec-refs "docs/04-operations/plans/WU-XXX-plan.md"` | Create new WU (fully specified)                      |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                                                                    | Claim WU, update canonical state, create worktree    |
-| `pnpm wu:spawn --id WU-XXX --client <client>`                                                                                                                                                                                | Spawn sub-agent prompt with client guidance          |
-| `pnpm wu:edit --id WU-1039 --exposure backend-only`                                                                                                                                                                          | Edit WU spec (supports exposure updates on done WUs) |
-| `pnpm wu:done --id WU-XXX`                                                                                                                                                                                                   | Complete WU (merge, stamp, cleanup)                  |
-| `pnpm wu:block --id WU-XXX --reason "Reason"`                                                                                                                                                                                | Block a WU                                           |
-| `pnpm wu:unblock --id WU-XXX`                                                                                                                                                                                                | Unblock a WU                                         |
-| `pnpm wu:cleanup --artifacts`                                                                                                                                                                                                | Remove build artifacts in current worktree           |
+| Command                                                                                                                                                                                                                          | Description                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "path" --test-paths-unit "path" --exposure backend-only --spec-refs "lumenflow://plans/WU-XXX-plan.md"`            | Create new WU (default: spec branch mode)              |
+| `pnpm wu:create ... --direct`                                                                                                                                                                                                    | Create WU directly on main (legacy/emergency)          |
+| `pnpm wu:create ... --plan`                                                                                                                                                                                                      | Also create plan template in $LUMENFLOW_HOME/plans/    |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                                                                        | Claim WU (auto-merges spec branch if needed)           |
+| `pnpm wu:spawn --id WU-XXX --client <client>`                                                                                                                                                                                    | Spawn sub-agent prompt with client guidance            |
+| `pnpm wu:edit --id WU-1039 --exposure backend-only`                                                                                                                                                                              | Edit WU spec (supports exposure updates on done WUs)   |
+| `pnpm wu:done --id WU-XXX`                                                                                                                                                                                                       | Complete WU (merge, stamp, cleanup)                    |
+| `pnpm wu:block --id WU-XXX --reason "Reason"`                                                                                                                                                                                    | Block a WU                                             |
+| `pnpm wu:unblock --id WU-XXX`                                                                                                                                                                                                    | Unblock a WU                                           |
+| `pnpm wu:cleanup --artifacts`                                                                                                                                                                                                    | Remove build artifacts in current worktree             |
 
 ---
 
@@ -82,29 +84,31 @@ cd /path/to/main
 ## Workflow Sequence
 
 ```bash
-# 1. Create and claim
+# 1. Create (default: spec branch mode, never writes to main)
 pnpm wu:create --id WU-001 --lane "Framework: Core" --title "Add feature" \
   --description "Context: ...\nProblem: ...\nSolution: ..." \
   --acceptance "Criterion 1" --acceptance "Criterion 2" \
   --code-paths "packages/@lumenflow/core/src/example.ts" \
   --test-paths-unit "packages/@lumenflow/core/__tests__/example.test.ts" \
   --exposure backend-only \
-  --spec-refs "docs/04-operations/plans/WU-001-plan.md"
+  --spec-refs "lumenflow://plans/WU-001-plan.md"
+
+# 2. Claim (auto-merges spec/wu-001 to main, creates worktree)
 pnpm wu:claim --id WU-001 --lane "Framework: Core"
 cd worktrees/framework-core-wu-001
 
-# 2. Work (TDD)
+# 3. Work (TDD)
 # ... write tests first, then code ...
 
-# 3. Commit
+# 4. Commit
 git add .
 git commit -m "feat: add feature"
 git push origin lane/framework-core/wu-001
 
-# 4. Gates
+# 5. Gates
 pnpm gates
 
-# 5. Complete
+# 6. Complete
 cd /path/to/main
 pnpm wu:done --id WU-001
 ```
