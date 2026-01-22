@@ -439,6 +439,36 @@ export const WU_OPTIONS: Record<string, WUOption> = {
 };
 
 /**
+ * WU-1062: Additional options for wu:create command
+ *
+ * These options control how wu:create handles spec storage and branch creation.
+ */
+export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
+  /**
+   * Create plan template in $LUMENFLOW_HOME/plans/
+   * Used with spec branch mode to store plans externally.
+   */
+  plan: {
+    name: 'plan',
+    flags: '--plan',
+    description:
+      'Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage for traceability)',
+  },
+
+  /**
+   * Direct main-write mode (legacy behavior)
+   * Writes WU spec directly to main branch instead of spec branch.
+   * Use for emergency/hotfix scenarios or when spec branch workflow is not desired.
+   */
+  direct: {
+    name: 'direct',
+    flags: '--direct',
+    description:
+      'Write to main directly (legacy behavior). Default is spec branch mode (spec/wu-XXXX)',
+  },
+};
+
+/**
  * Negated options that commander handles specially.
  * --no-foo creates opts.foo = false. We convert to noFoo = true.
  */

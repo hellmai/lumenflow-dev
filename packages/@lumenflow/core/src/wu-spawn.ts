@@ -112,6 +112,9 @@ function formatAcceptance(acceptance) {
 /**
  * Format spec_refs as markdown links
  *
+ * WU-1062: Handles external paths (lumenflow://, ~/.lumenflow/, $LUMENFLOW_HOME/)
+ * by expanding them to absolute paths and adding a note about reading them.
+ *
  * @param {string[]|undefined} specRefs - Spec references array
  * @returns {string} Formatted references or empty string if none
  */
@@ -119,7 +122,21 @@ function formatSpecRefs(specRefs) {
   if (!specRefs || specRefs.length === 0) {
     return '';
   }
-  return specRefs.map((ref) => `- ${ref}`).join('\n');
+
+  const formattedRefs = specRefs.map((ref) => {
+    // WU-1062: Add note for external paths
+    if (
+      ref.startsWith('lumenflow://') ||
+      ref.startsWith('~/') ||
+      ref.startsWith('$LUMENFLOW_HOME') ||
+      (ref.startsWith('/') && ref.includes('.lumenflow'))
+    ) {
+      return `- ${ref} (external - read with filesystem access)`;
+    }
+    return `- ${ref}`;
+  });
+
+  return formattedRefs.join('\n');
 }
 
 /**

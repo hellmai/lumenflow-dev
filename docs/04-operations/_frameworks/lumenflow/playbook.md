@@ -576,12 +576,45 @@ When using Claude Code's Task tool or spawning multiple specialized agents (lume
 - Capture follow-up ideas inside the `notes` field of the WU you already own.
 - Flesh out the description + acceptance criteria there. Only run `pnpm wu:create`
   once the spec is ready for anyone to claim immediately.
-- Never leave partially written WU YAML files or backlog entries on `main`. `wu:create`
-  is the publication step, not the drafting step, and creating a WU does **not**
-  reserve it for the author.
 - After creation, use `pnpm wu:edit` to fill placeholders or update the spec.
   Do not manually edit WU YAML on `main`. Manual commits on `main` are blocked.
   See [workspace-modes.md](./agent/onboarding/workspace-modes.md) for wu:edit usage.
+
+**Spec Branch Mode (Default):**
+
+By default, `wu:create` operates in spec branch mode, which creates a `spec/wu-xxxx` branch
+instead of writing directly to main. This pattern:
+
+- Keeps main clean of in-progress specs
+- Allows spec review before publication
+- Prevents partial WUs from blocking lane coordination
+
+```bash
+# Default: creates spec/wu-1234 branch (never touches main)
+pnpm wu:create --id WU-1234 --lane "Framework: Core" --title "..."
+
+# Legacy: write directly to main (use only for emergency/bootstrap)
+pnpm wu:create --id WU-1234 --lane "Framework: Core" --title "..." --direct
+```
+
+When you run `wu:claim`, it automatically detects if the WU exists only on a spec branch
+and merges it to main before creating the worktree.
+
+**External Plan Storage:**
+
+For traceability without polluting the repo, store detailed plans externally:
+
+```bash
+# Create WU with external plan in $LUMENFLOW_HOME/plans/
+pnpm wu:create --id WU-1234 --lane "Framework: Core" --title "..." --plan
+
+# Reference external plans in spec_refs
+--spec-refs "lumenflow://plans/WU-1234-plan.md"
+--spec-refs "~/.lumenflow/plans/WU-1234-plan.md"
+```
+
+The `$LUMENFLOW_HOME` environment variable defaults to `~/.lumenflow/`. External spec_refs
+are validated but not version-controlled, making them ideal for verbose planning documents.
 
 ### 4.6 Encountering Other Agents' Work on Main
 
