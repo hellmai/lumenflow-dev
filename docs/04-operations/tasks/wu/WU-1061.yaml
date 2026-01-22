@@ -15,13 +15,13 @@ tests:
   manual:
     - Modify only apps/docs content and run wu:done - verify ~0ms overhead
   unit:
-    - packages/@lumenflow/core/__tests__/wu-done-docs-detection.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-docs-detection.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1061.done
 dependencies: []
 spec_refs:
-  - WU-1059
+  - docs/04-operations/plans/WU-1061-docs-generate-integration.md
 risks: []
 notes: ''
 requires_review: false
