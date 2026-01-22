@@ -7,6 +7,7 @@ priority: P2
 created: 2026-01-22
 code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-branch-only.ts
   - turbo.json
   - package.json
   - .husky/pre-commit
