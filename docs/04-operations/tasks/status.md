@@ -16,6 +16,7 @@ _None_
 
 ## Completed
 
+- [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml) — 2026-01-22
 - [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml) — 2026-01-21
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml) — 2026-01-21
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml) — 2026-01-21

@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1051 — Make wu:spawn skills guidance config-driven and vendor-agnostic](wu/WU-1051.yaml) — Framework: Core
-- [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -71,3 +69,4 @@ sections:
 - [WU-1040 — Allow safe metadata edits on done WUs (exposure)](wu/WU-1040.yaml)
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml)
 - [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml)
+- [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml)
