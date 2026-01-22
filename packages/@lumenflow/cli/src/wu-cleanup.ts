@@ -290,8 +290,7 @@ async function main() {
     console.error(`${BOX.SIDE}  ${CLEANUP_GUARD.MESSAGES[guardResult.reason]}`);
     console.error(`${BOX.SIDE}`);
     console.error(`${BOX.SIDE}  ${CLEANUP_GUARD.TITLES.NEXT_STEPS}`);
-    const steps =
-      CLEANUP_GUARD.NEXT_STEPS[guardResult.reason] || CLEANUP_GUARD.NEXT_STEPS.DEFAULT;
+    const steps = CLEANUP_GUARD.NEXT_STEPS[guardResult.reason] || CLEANUP_GUARD.NEXT_STEPS.DEFAULT;
     for (const step of steps) {
       const line = step.appendId ? `${step.text} ${args.id}` : step.text;
       console.error(`${BOX.SIDE}  ${line}`);
