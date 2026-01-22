@@ -8,15 +8,15 @@ created: 2026-01-22
 code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/core/src/wu-done-branch-only.ts
+  - packages/@lumenflow/core/src/wu-done-docs-generate.ts
   - turbo.json
-  - package.json
   - .husky/pre-commit
-  - .husky/hooks/docs-sync.mjs
 tests:
   manual:
     - Modify only apps/docs content and run wu:done - verify ~0ms overhead
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-docs-detection.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-docs-integration.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1061.done

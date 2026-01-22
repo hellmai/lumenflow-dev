@@ -64,7 +64,10 @@ const DOC_SOURCE_PATHSPECS = [
 async function hasDocSourceChanges(baseBranch: string): Promise<boolean> {
   const gitAdapter = getGitForCwd();
   const diff = await gitAdapter.raw([
-    'diff', `${baseBranch}...HEAD`, '--name-only', '--',
+    'diff',
+    `${baseBranch}...HEAD`,
+    '--name-only',
+    '--',
     ...DOC_SOURCE_PATHSPECS,
   ]);
   return diff.trim().length > 0;
@@ -75,7 +78,7 @@ async function hasDocSourceChanges(baseBranch: string): Promise<boolean> {
 
 ```typescript
 // In executeWorktreeCompletion(), after gates pass:
-const baseBranch = defaultBranchFrom(config, 'docMain') ?? await resolveBranchFallback();
+const baseBranch = defaultBranchFrom(config, 'docMain') ?? (await resolveBranchFallback());
 
 if (await hasDocSourceChanges(baseBranch)) {
   logger.info('Doc-source files changed, regenerating documentation...');
@@ -98,6 +101,7 @@ Delete `.husky/hooks/docs-sync.mjs` - no longer needed since docs regenerate in 
 ### 5. Branch-only mode
 
 Same detection logic applies to `wu-done-branch-only.ts`. Both files need:
+
 - `hasDocSourceChanges()` check after gates pass
 - `turbo docs:generate` execution when source changed
 - Doc output staging before metadata commit
