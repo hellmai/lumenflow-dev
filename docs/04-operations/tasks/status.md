@@ -9,6 +9,7 @@ _Last updated: 2026-01-22_
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1056 — Harden wu:cleanup + add worktree-loss safeguards](wu/WU-1056.yaml)
+- [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml)
 
 ## Completed
 
