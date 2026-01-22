@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
