@@ -97,7 +97,12 @@ Delete `.husky/hooks/docs-sync.mjs` - no longer needed since docs regenerate in 
 
 ### 5. Branch-only mode
 
-Same logic applies - detection uses `git diff` against base branch, works regardless of worktree vs branch-only mode.
+Same detection logic applies to `wu-done-branch-only.ts`. Both files need:
+- `hasDocSourceChanges()` check after gates pass
+- `turbo docs:generate` execution when source changed
+- Doc output staging before metadata commit
+
+The detection uses `git diff` against base branch, works regardless of mode.
 
 ## Tests
 
