@@ -2,7 +2,7 @@ id: WU-1062
 title: External plan storage and no-main-write mode for wu:create
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: ready
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -44,6 +44,12 @@ notes: >-
 
   [ADMIN-REPAIR 2026-01-22]: status changed from 'done' to 'in_progress'; locked changed from true
   to false
+
+
+  Reset to ready for re-claim after reopen.
+
+
+  [ADMIN-REPAIR 2026-01-22]: status changed from 'in_progress' to 'ready'
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
