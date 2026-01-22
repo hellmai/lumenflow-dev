@@ -2,7 +2,7 @@ id: WU-1058
 title: Documentation overhaul - fix critical gaps and inaccuracies
 lane: 'Content: Documentation'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -25,7 +25,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Comprehensive documentation audit found 30+ undocumented CLI commands, wrong config version/paths in quickstart, inconsistent lane format, phantom commands, and missing package documentation. This WU fixes all critical issues to ensure lumenflow.dev accurately represents the npm packages.
+description: Comprehensive documentation audit found 30+ undocumented CLI commands, wrong config
+  version/paths in quickstart, inconsistent lane format, phantom commands, and missing package
+  documentation. This WU fixes all critical issues to ensure lumenflow.dev accurately represents the
+  npm packages.
 acceptance:
   - quickstart.mdx uses version 2.0 and correct directory paths
   - 'All examples use Parent: Sublane format for lanes'
@@ -37,3 +40,11 @@ acceptance:
   - Initiatives guide created documenting multi-phase projects
   - Memory concept updated with triage and summarize commands
   - Docs build successfully and deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1058
+claimed_at: 2026-01-22T16:40:52.323Z
+baseline_main_sha: 3e9b59bf41693c396845c77fc3edfa1376c66373
+session_id: ec2f4ddc-4227-4d96-bf68-ee74495bac47
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T16:40:52.328Z
