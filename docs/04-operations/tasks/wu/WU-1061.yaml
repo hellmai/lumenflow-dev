@@ -2,7 +2,7 @@ id: WU-1061
 title: Integrate docs:generate into wu:done for @lumenflow/* changes
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
     .husky/pre-commit)
   - Works in both worktree and branch-only modes
   - CI docs:validate remains as safety net
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1061
+claimed_at: 2026-01-22T20:26:21.196Z
+baseline_main_sha: fa22d7ca577247c95431b97ba83494645c91ea09
+session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-22T20:26:21.203Z
