@@ -26,6 +26,7 @@ import { die } from '@lumenflow/core/dist/error-handler.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import {
   detectOrphanWorktrees,
+  detectMissingTrackedWorktrees,
   removeOrphanDirectory,
 } from '@lumenflow/core/dist/orphan-detector.js';
 import {
@@ -36,6 +37,7 @@ import {
   STRING_LITERALS,
   EMOJI,
   LOG_PREFIX,
+  WORKTREE_WARNINGS,
 } from '@lumenflow/core/dist/wu-constants.js';
 /* eslint-disable security/detect-object-injection, security/detect-non-literal-fs-filename */
 
@@ -193,6 +195,15 @@ This tool:
 
   console.log(`${PREFIX} Worktree Hygiene Check`);
   console.log(`${PREFIX} =====================\n`);
+
+  const missingTracked = await detectMissingTrackedWorktrees(process.cwd());
+  if (missingTracked.length > 0) {
+    console.warn(`${PREFIX} ${EMOJI.WARNING} ${WORKTREE_WARNINGS.MISSING_TRACKED_HEADER}`);
+    for (const missingPath of missingTracked) {
+      console.warn(`${PREFIX} ${WORKTREE_WARNINGS.MISSING_TRACKED_LINE(missingPath)}`);
+    }
+    console.warn('');
+  }
 
   if (args.dryRun) {
     console.log(`${PREFIX} ${EMOJI.INFO} DRY-RUN MODE (use --execute to apply changes)\n`);

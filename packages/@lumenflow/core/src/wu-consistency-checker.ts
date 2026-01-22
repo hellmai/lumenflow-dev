@@ -20,6 +20,7 @@ import { parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import {
   CONSISTENCY_TYPES,
+  CONSISTENCY_MESSAGES,
   FILE_SYSTEM,
   LOG_PREFIX,
   REMOTES,
@@ -53,10 +54,16 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   }
 
   const wuContent = await readFile(wuPath, { encoding: 'utf-8' });
-  const wuDoc = parseYAML(wuContent) as { status?: string; lane?: string; title?: string } | null;
+  const wuDoc = parseYAML(wuContent) as {
+    status?: string;
+    lane?: string;
+    title?: string;
+    worktree_path?: string;
+  } | null;
   const yamlStatus = wuDoc?.status || 'unknown';
   const lane = wuDoc?.lane || '';
   const title = wuDoc?.title || '';
+  const worktreePathFromYaml = wuDoc?.worktree_path || '';
 
   // Check stamp existence
   let hasStamp = false;
@@ -90,6 +97,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
 
   // Check for worktree
   const hasWorktree = await checkWorktreeExists(id, projectRoot);
+  const worktreePathExists = await checkWorktreePathExists(worktreePathFromYaml);
 
   // Detection logic
 
@@ -152,6 +160,26 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
     });
   }
 
+  // 6. Claimed WU missing worktree directory
+  if (
+    worktreePathFromYaml &&
+    !worktreePathExists &&
+    (yamlStatus === WU_STATUS.IN_PROGRESS || yamlStatus === WU_STATUS.BLOCKED)
+  ) {
+    errors.push({
+      type: CONSISTENCY_TYPES.MISSING_WORKTREE_CLAIMED,
+      wuId: id,
+      title,
+      description: CONSISTENCY_MESSAGES.MISSING_WORKTREE_CLAIMED(
+        id,
+        yamlStatus,
+        worktreePathFromYaml,
+      ),
+      repairAction: CONSISTENCY_MESSAGES.MISSING_WORKTREE_CLAIMED_REPAIR,
+      canAutoRepair: false,
+    });
+  }
+
   return {
     valid: errors.length === 0,
     errors,
@@ -162,6 +190,7 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
       backlogInProgress,
       statusInProgress,
       hasWorktree,
+      worktreePathExists,
     },
   };
 }
@@ -658,6 +687,24 @@ async function checkWorktreeExists(id, projectRoot) {
     // false positives (e.g., wu-204 matching wu-2049)
     const pattern = new RegExp(`${id.toLowerCase()}(?![0-9])`, 'i');
     return pattern.test(output);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check whether a worktree path exists on disk
+ *
+ * @param {string} worktreePath - Worktree path from WU YAML
+ * @returns {Promise<boolean>} True if path exists
+ */
+async function checkWorktreePathExists(worktreePath) {
+  if (!worktreePath) {
+    return false;
+  }
+  try {
+    await access(worktreePath, constants.R_OK);
+    return true;
   } catch {
     return false;
   }
