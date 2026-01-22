@@ -93,3 +93,4 @@
 {"type":"claim","wuId":"WU-1059","lane":"Framework: CLI","title":"Auto-generate CLI and config documentation from source","timestamp":"2026-01-22T17:51:04.367Z"}
 {"type":"complete","wuId":"WU-1059","timestamp":"2026-01-22T18:18:12.143Z"}
 {"type":"claim","wuId":"WU-1061","lane":"Framework: CLI","title":"Integrate docs:generate into wu:done for @lumenflow/* changes","timestamp":"2026-01-22T20:26:21.212Z"}
+{"type":"claim","wuId":"WU-1062","lane":"Framework: Core","title":"External plan storage and no-main-write mode for wu:create","timestamp":"2026-01-22T20:32:03.847Z"}
