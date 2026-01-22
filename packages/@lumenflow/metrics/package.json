@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/metrics",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "DORA/SPACE analytics and flow metrics for LumenFlow workflow framework",
   "keywords": [
     "lumenflow",
