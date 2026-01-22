@@ -28,10 +28,13 @@ See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting
 # 1. Setup (first time only)
 pnpm setup
 
-# 2. Create a WU
-pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"
+# 2. Create a WU (default: creates spec/wu-xxxx branch, never writes to main)
+pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title" \
+  --description "..." --acceptance "..." --code-paths "..." \
+  --test-paths-unit "..." --exposure backend-only \
+  --spec-refs "lumenflow://plans/WU-XXXX-plan.md"
 
-# 3. Edit WU spec with acceptance criteria, then claim:
+# 3. Claim (auto-merges spec branch to main if needed)
 pnpm wu:claim --id WU-XXXX --lane <Lane>
 cd worktrees/<lane>-wu-xxxx
 

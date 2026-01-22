@@ -956,11 +956,13 @@ export function validateWUCompleteness(wu) {
   }
 
   // Check for spec_refs (features should link to plans/specs)
+  // WU-1062: Accepts both repo-relative paths (docs/04-operations/plans/) and
+  // external paths (~/.lumenflow/plans/, $LUMENFLOW_HOME/plans/, lumenflow://plans/)
   if (type === 'feature') {
     const hasSpecRefs = wu.spec_refs && wu.spec_refs.length > 0;
     if (!hasSpecRefs) {
       warnings.push(
-        `${wu.id}: Missing 'spec_refs' field. Link to plan file in docs/04-operations/plans/ for traceability.`,
+        `${wu.id}: Missing 'spec_refs' field. Link to plan file (docs/04-operations/plans/, lumenflow://plans/, or ~/.lumenflow/plans/) for traceability.`,
       );
     }
   }

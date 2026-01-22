@@ -128,3 +128,7 @@ export * from './lumenflow-config-schema.js';
 
 // Branch check utilities
 export * from './branch-check.js';
+
+// WU-1062: External plan storage and spec branch helpers
+export * from './lumenflow-home.js';
+export * from './spec-branch-helpers.js';
