@@ -44,3 +44,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Validate docs sync
+        run: pnpm docs:validate
