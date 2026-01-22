@@ -2,7 +2,7 @@ id: WU-1061
 title: Integrate docs:generate into wu:done for @lumenflow/* changes
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-22
 code_paths:
@@ -24,7 +24,7 @@ dependencies: []
 spec_refs:
   - docs/04-operations/plans/WU-1061-docs-generate-integration.md
 risks: []
-notes: 'Docs regeneration now runs in wu:done (cached); no pre-commit hook.'
+notes: Docs regeneration now runs in wu:done (cached); no pre-commit hook.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -55,3 +55,5 @@ session_id: d306dc42-ef0b-427e-b08a-e7218a371d47
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-22T20:26:21.203Z
+locked: true
+completed_at: 2026-01-22T20:41:05.537Z
