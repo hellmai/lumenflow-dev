@@ -74,3 +74,4 @@
 {"type":"complete","wuId":"WU-1049","timestamp":"2026-01-21T18:44:26.785Z"}
 {"type":"claim","wuId":"WU-1050","lane":"Framework: CLI","title":"Restore canonical claim state + global visibility for wu:claim (push-only)","timestamp":"2026-01-21T21:19:12.149Z"}
 {"type":"complete","wuId":"WU-1050","timestamp":"2026-01-22T10:09:47.671Z"}
+{"type":"complete","wuId":"WU-1048","timestamp":"2026-01-22T10:37:42.814Z"}

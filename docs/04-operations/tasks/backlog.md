@@ -70,3 +70,4 @@ sections:
 - [WU-1042 — Reduce gates friction (format guidance + worktree cleanup helper)](wu/WU-1042.yaml)
 - [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml)
 - [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml)
+- [WU-1048 — Fix Vitest coverage provider gaps](wu/WU-1048.yaml)
