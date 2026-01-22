@@ -6,12 +6,30 @@ status: in_progress
 priority: P2
 created: 2026-01-22
 code_paths:
-  - packages/@lumenflow/cli/src/initiative-*.ts
+  - packages/@lumenflow/cli/src/cli-entry-point.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-cleanup.ts
+  - packages/@lumenflow/cli/src/wu-deps.ts
+  - packages/@lumenflow/cli/src/wu-infer-lane.ts
+  - packages/@lumenflow/cli/src/wu-preflight.ts
+  - packages/@lumenflow/cli/src/wu-prune.ts
+  - packages/@lumenflow/cli/src/wu-repair.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
+  - packages/@lumenflow/cli/src/wu-unlock-lane.ts
+  - packages/@lumenflow/cli/src/initiative-add-wu.ts
+  - packages/@lumenflow/cli/src/initiative-create.ts
+  - packages/@lumenflow/cli/src/initiative-list.ts
+  - packages/@lumenflow/cli/src/initiative-status.ts
+  - packages/@lumenflow/cli/package.json
 tests:
   manual:
     - Run pnpm wu:claim --help and verify output
   unit:
     - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
+    - packages/@lumenflow/cli/src/__tests__/cli-subprocess.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1064.done
