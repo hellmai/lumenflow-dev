@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
