@@ -1,0 +1,39 @@
+id: WU-1058
+title: Documentation overhaul - fix critical gaps and inaccuracies
+lane: 'Content: Documentation'
+type: chore
+status: ready
+priority: P2
+created: 2026-01-22
+code_paths:
+  - apps/docs/src/content/docs/
+tests:
+  manual:
+    - Build docs and verify deployment
+  unit: []
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1058.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Comprehensive documentation audit found 30+ undocumented CLI commands, wrong config version/paths in quickstart, inconsistent lane format, phantom commands, and missing package documentation. This WU fixes all critical issues to ensure lumenflow.dev accurately represents the npm packages.
+acceptance:
+  - quickstart.mdx uses version 2.0 and correct directory paths
+  - 'All examples use Parent: Sublane format for lanes'
+  - Phantom commands (gates:format/lint/typecheck/test) removed from cli.mdx
+  - All 46 CLI commands documented with correct flags
+  - Config defaults in docs match actual schema defaults
+  - lanes.enforcement section documented in config.mdx
+  - Metrics guide created documenting DORA metrics and flow analysis
+  - Initiatives guide created documenting multi-phase projects
+  - Memory concept updated with triage and summarize commands
+  - Docs build successfully and deployed to lumenflow.dev
