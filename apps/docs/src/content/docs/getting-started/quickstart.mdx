@@ -26,17 +26,21 @@ The fastest way to start using LumenFlow is with just the GitHub App.
    Create `.lumenflow.config.yaml` in your repo root:
 
    ```yaml
-   version: 1
-   project:
-     name: my-project
-     tasksDir: docs/tasks
-     stampsDir: .beacon/stamps
+   version: '2.0'
+
+   directories:
+     wu_specs: docs/04-operations/tasks/wu
+     stamps: .beacon/stamps
 
    lanes:
-     - id: Core
-       description: Core application features
-     - id: Ops
-       description: DevOps and infrastructure
+     enforcement:
+       require_parent: true
+       allow_custom: false
+     definitions:
+       - name: 'Framework: Core'
+         wip_limit: 3
+       - name: 'Operations: Infrastructure'
+         wip_limit: 2
 
    gates:
      lint: npm run lint
@@ -46,7 +50,7 @@ The fastest way to start using LumenFlow is with just the GitHub App.
 
 3. **Create the tasks directory**
 
-   Create `docs/tasks/backlog.md`:
+   Create `docs/04-operations/tasks/backlog.md`:
 
    ```markdown
    # Backlog
@@ -62,12 +66,12 @@ The fastest way to start using LumenFlow is with just the GitHub App.
 
 4. **Create your first Work Unit**
 
-   Create `docs/tasks/wu/WU-001.yaml`:
+   Create `docs/04-operations/tasks/wu/WU-001.yaml`:
 
    ```yaml
    id: WU-001
    title: My first task
-   lane: Core
+   lane: 'Framework: Core'
    type: feature
    status: ready
    priority: P2
@@ -78,6 +82,11 @@ The fastest way to start using LumenFlow is with just the GitHub App.
    code_paths:
      - src/
    ```
+
+   <Aside type="tip">
+     Lane names must use the "Parent: Sublane" format (e.g., `Framework: Core`, `Operations:
+     Infrastructure`). This is enforced by the `lanes.enforcement.require_parent` setting.
+   </Aside>
 
 5. **Open a Pull Request**
 
@@ -150,14 +159,21 @@ For the complete experience with automated workflows:
    npx wu-create \
      --id WU-001 \
      --title "Add user authentication" \
-     --lane Core
+     --lane "Framework: Core" \
+     --type feature \
+     --exposure backend-only \
+     --description "Implement user authentication with JWT" \
+     --acceptance "Users can log in with email/password" \
+     --acceptance "JWT tokens are issued on successful login" \
+     --code-paths "src/auth/" \
+     --test-paths-unit "src/auth/__tests__/"
    ```
 
 5. **Claim and start work**
 
    ```bash
-   npx wu-claim --id WU-001 --lane Core
-   cd worktrees/core-wu-001
+   npx wu-claim --id WU-001 --lane "Framework: Core"
+   cd worktrees/framework-core-wu-001
    ```
 
 </Steps>
@@ -168,19 +184,24 @@ Once set up, your daily workflow is:
 
 ```bash
 # 1. Claim a WU from the backlog
-npx wu-claim --id WU-XXX --lane Core
+npx wu-claim --id WU-XXX --lane "Framework: Core"
 
 # 2. Work in the worktree (isolated branch)
-cd worktrees/core-wu-xxx
+cd worktrees/framework-core-wu-xxx
 # ... make changes ...
 
 # 3. Run gates (checks your work)
 npx gates
 
-# 4. Complete the WU (merges to main)
-cd ../..
+# 4. Complete the WU (merges to main, from repo root)
+cd /path/to/repo
 npx wu-done --id WU-XXX
 ```
+
+<Aside type="caution">
+  Always run `wu:done` from the main repository checkout, not from the worktree. The worktree is
+  automatically cleaned up after completion.
+</Aside>
 
   </TabItem>
 </Tabs>
@@ -199,33 +220,44 @@ After your first PR or `wu:done`, you should see:
 Here's a complete `.lumenflow.config.yaml` for reference:
 
 ```yaml
-version: 1
+version: '2.0'
 
-project:
-  name: my-project
-  tasksDir: docs/tasks
-  stampsDir: .beacon/stamps
+directories:
+  wu_specs: docs/04-operations/tasks/wu
+  backlog: docs/04-operations/tasks/backlog.md
+  status: docs/04-operations/tasks/status.md
+  stamps: .beacon/stamps
+
+worktree_pattern: 'worktrees/{lane}-{wu_id}'
 
 lanes:
-  - id: Core
-    description: Core application features
-    gates: [lint, typecheck, test]
-  - id: UI
-    description: Frontend components
-    gates: [lint, typecheck, test]
-  - id: Ops
-    description: DevOps and infrastructure
-    gates: [lint]
+  enforcement:
+    require_parent: true # Lanes must be "Parent: Sublane" format
+    allow_custom: false # Only predefined lanes allowed
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 3
+      code_paths:
+        - packages/core/**
+    - name: 'Experience: UI'
+      wip_limit: 2
+      code_paths:
+        - apps/web/**
+        - packages/components/**
+    - name: 'Operations: Infrastructure'
+      wip_limit: 2
+      code_paths:
+        - .github/**
+        - infra/**
 
 gates:
+  format: npx prettier --check .
   lint: npm run lint
   typecheck: npm run typecheck
   test: npm test
-  build: npm run build
 
-defaults:
-  requiresReview: true
-  exposure: backend-only
+git:
+  main_branch: main
 ```
 
 ## Next Steps

@@ -17,12 +17,12 @@ LumenFlow is an open, stack-agnostic delivery methodology for AI-augmented teams
 
 ## Core Concepts
 
-| Concept              | What it Does                                                |
-| -------------------- | ----------------------------------------------------------- |
-| **Work Units (WUs)** | Tiny, testable jobs with clear acceptance criteria          |
-| **Lanes**            | Parallel tracks for different domains (e.g., Core, UI, Ops) |
-| **Gates**            | Automated quality checks (lint, test, typecheck)            |
-| **Memory**           | Context recovery for long-running sessions                  |
+| Concept              | What it Does                                                                      |
+| -------------------- | --------------------------------------------------------------------------------- |
+| **Work Units (WUs)** | Tiny, testable jobs with clear acceptance criteria                                |
+| **Lanes**            | Parallel tracks for different domains (e.g., `Framework: Core`, `Experience: UI`) |
+| **Gates**            | Automated quality checks (lint, test, typecheck)                                  |
+| **Memory**           | Context recovery for long-running sessions                                        |
 
 ## How It Works
 
@@ -40,31 +40,38 @@ Done (stamp committed)
 
 ```yaml
 # .lumenflow.config.yaml
-version: '1.0'
+version: '2.0'
 lanes:
-  - name: Core
-    paths: ['src/core/**']
-  - name: UI
-    paths: ['src/components/**']
+  enforcement:
+    require_parent: true
+  definitions:
+    - name: 'Framework: Core'
+      code_paths: ['src/core/**']
+    - name: 'Experience: UI'
+      code_paths: ['src/components/**']
 gates:
-  format: true
-  lint: true
-  typecheck: true
-  test: true
+  format: npx prettier --check .
+  lint: npm run lint
+  typecheck: npm run typecheck
+  test: npm test
 ```
 
 ```bash
 # Create and claim a work unit
-pnpm wu:create --id WU-001 --title "Add user auth"
-pnpm wu:claim --id WU-001 --lane Core
+pnpm wu:create --id WU-001 --title "Add user auth" --lane "Framework: Core" \
+  --type feature --exposure backend-only \
+  --description "Add authentication" --acceptance "Users can log in" \
+  --code-paths "src/auth/" --test-paths-unit "src/auth/__tests__/"
+
+pnpm wu:claim --id WU-001 --lane "Framework: Core"
 
 # Work in the worktree
-cd worktrees/core-wu-001
+cd worktrees/framework-core-wu-001
 # ... make changes ...
 
-# Run gates and complete
+# Run gates and complete (from repo root)
 pnpm gates
-pnpm wu:done --id WU-001
+cd /path/to/repo && pnpm wu:done --id WU-001
 ```
 
 ## Next Steps

@@ -1,0 +1,290 @@
+---
+title: Initiatives
+description: Coordinate multi-phase projects spanning multiple WUs
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Initiatives are multi-phase projects that coordinate multiple Work Units across lanes.
+
+## When to Use Initiatives
+
+Use an initiative when:
+
+- A feature spans **multiple WUs** (more than 3-4)
+- Work spans **multiple lanes** (Framework + UI + Ops)
+- There are **dependencies between WUs**
+- You need **phased rollout** (Phase 1: Backend, Phase 2: Frontend, Phase 3: Launch)
+
+<Aside type="tip">
+  If a task can be done in a single WU, don't create an initiative. Initiatives add coordination
+  overhead.
+</Aside>
+
+## Creating an Initiative
+
+```bash
+pnpm initiative:create \
+  --id INIT-001 \
+  --slug user-authentication \
+  --title "User Authentication System" \
+  --priority P1 \
+  --owner "Team Alpha" \
+  --target-date 2026-02-01
+```
+
+This creates `docs/04-operations/tasks/initiatives/INIT-001.yaml`:
+
+```yaml
+id: INIT-001
+slug: user-authentication
+title: User Authentication System
+status: draft
+priority: P1
+owner: Team Alpha
+target_date: '2026-02-01'
+
+phases:
+  - id: 1
+    name: 'Phase 1: Backend'
+    status: pending
+  - id: 2
+    name: 'Phase 2: Frontend'
+    status: pending
+  - id: 3
+    name: 'Phase 3: Launch'
+    status: pending
+
+lanes:
+  - 'Framework: Core'
+  - 'Experience: UI'
+  - 'Operations: Infrastructure'
+
+wus: []
+
+notes: ''
+```
+
+## Initiative Lifecycle
+
+```
+draft → open → in_progress → done → archived
+```
+
+| Status        | Description                     |
+| ------------- | ------------------------------- |
+| `draft`       | Planning phase, defining scope  |
+| `open`        | Approved, ready to start        |
+| `in_progress` | Active work underway            |
+| `done`        | All phases complete             |
+| `archived`    | Closed (cancelled or completed) |
+
+## Adding WUs to an Initiative
+
+### Link a single WU
+
+```bash
+pnpm initiative:add-wu --initiative INIT-001 --wu WU-100
+```
+
+### Bulk assign WUs
+
+```bash
+pnpm initiative:bulk-assign-wus \
+  --initiative INIT-001 \
+  --wus WU-100,WU-101,WU-102 \
+  --phase 1
+```
+
+### Edit WU to add initiative
+
+```bash
+pnpm wu:edit --id WU-100 --initiative INIT-001 --phase 1
+```
+
+## Phased Execution
+
+Initiatives support **wave-based execution** where WUs in each phase are completed before moving to the next:
+
+```
+Phase 1: Backend
+├── WU-100: Auth API (done)
+├── WU-101: JWT tokens (done)
+└── WU-102: Session store (in_progress)
+
+Phase 2: Frontend (blocked by Phase 1)
+├── WU-103: Login form
+├── WU-104: Password reset
+└── WU-105: Session UI
+
+Phase 3: Launch (blocked by Phase 2)
+├── WU-106: Deploy to production
+└── WU-107: Monitoring setup
+```
+
+### Viewing Initiative Status
+
+```bash
+pnpm initiative:status --id INIT-001
+```
+
+Output:
+
+```
+Initiative: User Authentication System
+Status: in_progress
+Progress: 33% (4/12 WUs done)
+
+Phase 1: Backend [████████░░] 80%
+  ✓ WU-100: Auth API (done)
+  ✓ WU-101: JWT tokens (done)
+  → WU-102: Session store (in_progress)
+
+Phase 2: Frontend [░░░░░░░░░░] 0%
+  ○ WU-103: Login form (ready)
+  ○ WU-104: Password reset (ready)
+  ○ WU-105: Session UI (ready)
+
+Phase 3: Launch [░░░░░░░░░░] 0%
+  ○ WU-106: Deploy to production (blocked)
+  ○ WU-107: Monitoring setup (blocked)
+```
+
+### Mermaid Visualization
+
+```bash
+pnpm initiative:status --id INIT-001 --format mermaid
+```
+
+## Orchestrating Initiatives
+
+For AI-assisted execution, use the orchestration commands:
+
+### Dry Run (Preview)
+
+```bash
+pnpm orchestrate:initiative --initiative INIT-001 --dry-run
+```
+
+Shows the execution plan without spawning agents.
+
+### Execute with Checkpoints
+
+```bash
+pnpm orchestrate:initiative --initiative INIT-001 --checkpoint-per-wave
+```
+
+This spawns agents for the current wave, then exits. Run again to process the next wave.
+
+### Continuous Execution
+
+```bash
+pnpm orchestrate:initiative --initiative INIT-001
+```
+
+Spawns agents for all ready WUs and polls for completion.
+
+### Monitor Progress
+
+```bash
+pnpm orchestrate:monitor --since 30m
+```
+
+Shows signals from spawned agents.
+
+## Editing Initiatives
+
+### Update Status
+
+```bash
+pnpm initiative:edit --id INIT-001 --status in_progress
+```
+
+### Add/Remove Lanes
+
+```bash
+pnpm initiative:edit --id INIT-001 --add-lane "Content: Documentation"
+pnpm initiative:edit --id INIT-001 --remove-lane "Operations: Infrastructure"
+```
+
+### Add Phases
+
+```bash
+pnpm initiative:edit --id INIT-001 --add-phase "Phase 4: Documentation"
+```
+
+### Update Phase Status
+
+```bash
+pnpm initiative:edit --id INIT-001 --phase-id 1 --phase-status done
+```
+
+### Block Initiative
+
+```bash
+pnpm initiative:edit --id INIT-001 \
+  --blocked-by INIT-002 \
+  --blocked-reason "Waiting for infrastructure"
+```
+
+## Listing Initiatives
+
+```bash
+# List all
+pnpm initiative:list
+
+# Filter by status
+pnpm initiative:list --status in_progress
+
+# JSON output
+pnpm initiative:list --format json
+
+# Mermaid diagram
+pnpm initiative:list --format mermaid
+```
+
+## Best Practices
+
+<Steps>
+
+1. **Keep initiatives focused**
+
+   An initiative should have a clear outcome. "Improve performance" is too vague; "Reduce API latency to under 100ms" is better.
+
+2. **Limit phases to 3-5**
+
+   More phases create coordination overhead. If you need more, consider splitting into multiple initiatives.
+
+3. **Define dependencies upfront**
+
+   Before starting, map out which WUs block which. This prevents surprises mid-execution.
+
+4. **Use checkpointing for AI agents**
+
+   The `--checkpoint-per-wave` flag prevents context exhaustion when orchestrating large initiatives.
+
+5. **Review progress regularly**
+
+   Run `initiative:status` at least daily to catch blockers early.
+
+</Steps>
+
+## CLI Reference
+
+| Command                           | Description            |
+| --------------------------------- | ---------------------- |
+| `pnpm initiative:create`          | Create new initiative  |
+| `pnpm initiative:edit`            | Edit initiative YAML   |
+| `pnpm initiative:list`            | List all initiatives   |
+| `pnpm initiative:status`          | Detailed status view   |
+| `pnpm initiative:add-wu`          | Link WU to initiative  |
+| `pnpm initiative:bulk-assign-wus` | Bulk assign WUs        |
+| `pnpm orchestrate:initiative`     | Orchestrate execution  |
+| `pnpm orchestrate:init-status`    | Compact status view    |
+| `pnpm orchestrate:monitor`        | Monitor agent progress |
+
+## Next Steps
+
+- [Flow Metrics](/guides/metrics) – Track delivery performance
+- [AI Agents](/guides/ai-agents) – Agent orchestration
+- [Work Units](/concepts/work-units) – WU fundamentals

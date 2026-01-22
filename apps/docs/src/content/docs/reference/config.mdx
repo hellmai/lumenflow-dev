@@ -84,8 +84,9 @@ gates:
 
 # Directory locations
 directories:
-  wu_specs: docs/tasks/wu
-  backlog: docs/tasks/backlog.md
+  wu_specs: docs/04-operations/tasks/wu
+  backlog: docs/04-operations/tasks/backlog.md
+  status: docs/04-operations/tasks/status.md
   stamps: .beacon/stamps
 
 # Git settings
@@ -207,20 +208,22 @@ gates:
 
 ```yaml
 directories:
-  wu_specs: docs/tasks/wu # Where WU YAMLs live
-  backlog: docs/tasks/backlog.md # Backlog file
+  wu_specs: docs/04-operations/tasks/wu # Where WU YAMLs live
+  backlog: docs/04-operations/tasks/backlog.md # Backlog file
+  status: docs/04-operations/tasks/status.md # Status file
   stamps: .beacon/stamps # Completion stamps
   skillsDir: .claude/skills # Skills directory
   agentsDir: .claude/agents # Agents directory
 ```
 
-| Field       | Default                 | Description            |
-| ----------- | ----------------------- | ---------------------- |
-| `wu_specs`  | `docs/tasks/wu`         | WU YAML directory      |
-| `backlog`   | `docs/tasks/backlog.md` | Backlog file path      |
-| `stamps`    | `.beacon/stamps`        | Stamp directory        |
-| `skillsDir` | `.claude/skills`        | Agent skills directory |
-| `agentsDir` | `.claude/agents`        | Agent definitions      |
+| Field       | Default                               | Description            |
+| ----------- | ------------------------------------- | ---------------------- |
+| `wu_specs`  | `docs/04-operations/tasks/wu`         | WU YAML directory      |
+| `backlog`   | `docs/04-operations/tasks/backlog.md` | Backlog file path      |
+| `status`    | `docs/04-operations/tasks/status.md`  | Status file path       |
+| `stamps`    | `.beacon/stamps`                      | Stamp directory        |
+| `skillsDir` | `.claude/skills`                      | Agent skills directory |
+| `agentsDir` | `.claude/agents`                      | Agent definitions      |
 
 ### git
 

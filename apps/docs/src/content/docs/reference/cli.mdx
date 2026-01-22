@@ -24,15 +24,37 @@ The LumenFlow CLI provides commands for managing work units, initiatives, memory
 Create a new work unit spec.
 
 ```bash
-pnpm wu:create --id WU-001 --title "Add feature" --lane "Framework: Core"
+pnpm wu:create \
+  --id WU-001 \
+  --title "Add feature" \
+  --lane "Framework: Core" \
+  --type feature \
+  --exposure backend-only \
+  --description "Implement the feature" \
+  --acceptance "Feature works correctly" \
+  --acceptance "Unit tests pass" \
+  --code-paths "src/feature/" \
+  --test-paths-unit "src/feature/__tests__/"
 ```
 
-| Flag      | Description                            | Required                |
-| --------- | -------------------------------------- | ----------------------- |
-| `--id`    | Unique WU identifier                   | Yes                     |
-| `--title` | Short description                      | Yes                     |
-| `--lane`  | Target lane (Parent: Sublane format)   | Yes                     |
-| `--type`  | `feature`, `fix`, `chore`, `discovery` | No (default: `feature`) |
+| Flag                  | Description                                  | Required               |
+| --------------------- | -------------------------------------------- | ---------------------- |
+| `--id`                | Unique WU identifier                         | Yes                    |
+| `--title`             | Short description                            | Yes                    |
+| `--lane`              | Target lane (Parent: Sublane format)         | Yes                    |
+| `--type`              | `feature`, `fix`, `chore`, `discovery`       | Yes                    |
+| `--exposure`          | `ui`, `api`, `backend-only`, `documentation` | Yes                    |
+| `--description`       | Full description                             | Yes                    |
+| `--acceptance`        | Acceptance criterion (repeatable)            | Yes (at least one)     |
+| `--code-paths`        | Code path (repeatable)                       | Yes (non-docs WUs)     |
+| `--test-paths-unit`   | Unit test path (repeatable)                  | At least one test type |
+| `--test-paths-e2e`    | E2E test path (repeatable)                   | At least one test type |
+| `--test-paths-manual` | Manual test description (repeatable)         | At least one test type |
+| `--priority`          | Priority (P0-P3)                             | No (default: `P2`)     |
+| `--spec-refs`         | Spec references (for feature WUs)            | Feature WUs only       |
+| `--user-journey`      | User journey (for ui exposure)               | No                     |
+| `--ui-pairing-wus`    | Related UI WUs                               | No                     |
+| `--validate`          | Additional validation rules                  | No                     |
 
 ### wu:claim
 
@@ -40,13 +62,24 @@ Claim a WU and create a worktree.
 
 ```bash
 pnpm wu:claim --id WU-001 --lane "Framework: Core"
+pnpm wu:claim --id WU-001 --lane "Framework: Core" --skip-setup
+pnpm wu:claim --id WU-001 --lane "Framework: Core" --resume  # Continue from checkpoint
 ```
 
-| Flag           | Description                               | Required |
-| -------------- | ----------------------------------------- | -------- |
-| `--id`         | WU to claim                               | Yes      |
-| `--lane`       | Lane to claim in (Parent: Sublane)        | Yes      |
-| `--skip-setup` | Skip automatic `pnpm install` in worktree | No       |
+| Flag                 | Description                                  | Required |
+| -------------------- | -------------------------------------------- | -------- |
+| `--id`               | WU to claim                                  | Yes      |
+| `--lane`             | Lane to claim in (Parent: Sublane)           | Yes      |
+| `--skip-setup`       | Skip automatic `pnpm install` in worktree    | No       |
+| `--no-auto`          | Disable auto-approval (force escalation)     | No       |
+| `--force`            | Force claim even if lane at WIP limit        | No       |
+| `--force-overlap`    | Allow claiming WU already in progress        | No       |
+| `--allow-incomplete` | Allow claiming WU with incomplete spec       | No       |
+| `--resume`           | Resume from previous session (agent handoff) | No       |
+| `--branch-only`      | Create branch without worktree               | No       |
+| `--pr-mode`          | Use PR-based workflow instead of trunk       | No       |
+| `--fix`              | Auto-fix detected issues                     | No       |
+| `--no-push`          | Don't push to remote                         | No       |
 
 Creates:
 
@@ -361,6 +394,22 @@ Link a WU to an initiative bidirectionally.
 pnpm initiative:add-wu --initiative INIT-001 --wu WU-123
 ```
 
+### initiative:bulk-assign-wus
+
+Bulk assign multiple WUs to an initiative.
+
+```bash
+pnpm initiative:bulk-assign-wus --initiative INIT-001 --wus WU-100,WU-101,WU-102
+pnpm initiative:bulk-assign-wus --initiative INIT-001 --wus WU-100,WU-101 --phase 2
+```
+
+| Flag           | Description                       |
+| -------------- | --------------------------------- |
+| `--initiative` | Target initiative ID (required)   |
+| `--wus`        | Comma-separated WU IDs (required) |
+| `--phase`      | Phase number to assign WUs to     |
+| `--dry-run`    | Preview without making changes    |
+
 ---
 
 ## Memory Commands
@@ -507,48 +556,36 @@ Quality gates ensure code meets standards before completion.
 Run all quality gates.
 
 ```bash
-pnpm gates
-pnpm gates --docs-only  # For documentation changes
+pnpm gates                    # Run all gates
+pnpm gates --docs-only        # For documentation changes (skips tests)
+pnpm gates --format           # Run only format check
+pnpm gates --lint             # Run only lint check
+pnpm gates --typecheck        # Run only type check
+pnpm gates --test             # Run only test suite
+pnpm gates --skip-format      # Skip format check
+pnpm gates --skip-lint        # Skip lint check
+pnpm gates --skip-typecheck   # Skip typecheck
+pnpm gates --skip-test        # Skip tests
 ```
 
-Runs:
+| Flag               | Description                            |
+| ------------------ | -------------------------------------- |
+| `--docs-only`      | Skip tests (for documentation changes) |
+| `--format`         | Run only format check                  |
+| `--lint`           | Run only lint check                    |
+| `--typecheck`      | Run only type check                    |
+| `--test`           | Run only test suite                    |
+| `--skip-format`    | Skip format check                      |
+| `--skip-lint`      | Skip lint check                        |
+| `--skip-typecheck` | Skip typecheck                         |
+| `--skip-test`      | Skip tests                             |
 
-1. Format check
-2. Lint check
-3. Type check
-4. Test suite
+Default gate order:
 
-### gates:format
-
-Run only format gate.
-
-```bash
-pnpm gates:format
-```
-
-### gates:lint
-
-Run only lint gate.
-
-```bash
-pnpm gates:lint
-```
-
-### gates:typecheck
-
-Run only typecheck gate.
-
-```bash
-pnpm gates:typecheck
-```
-
-### gates:test
-
-Run only test gate.
-
-```bash
-pnpm gates:test
-```
+1. Format check (`prettier --check`)
+2. Lint check (`eslint`)
+3. Type check (`tsc --noEmit`)
+4. Test suite (`vitest run`)
 
 ---
 
@@ -663,6 +700,41 @@ End the current agent session.
 ```bash
 pnpm agent:session:end
 ```
+
+### agent:log-issue
+
+Log an issue discovered during agent execution.
+
+```bash
+pnpm agent:log-issue --type bug --description "Found race condition in auth flow"
+pnpm agent:log-issue --type blocker --description "API returns 500" --wu WU-001
+```
+
+| Flag            | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| `--type`        | Issue type: `bug`, `blocker`, `question`, `discovery` |
+| `--description` | Issue description (required)                          |
+| `--wu`          | Related WU ID                                         |
+| `--severity`    | `low`, `medium`, `high`, `critical`                   |
+
+### agent:issues-query
+
+Query issues logged during agent sessions.
+
+```bash
+pnpm agent:issues-query
+pnpm agent:issues-query --wu WU-001
+pnpm agent:issues-query --type bug --status open
+pnpm agent:issues-query --format json
+```
+
+| Flag       | Description                                     |
+| ---------- | ----------------------------------------------- |
+| `--wu`     | Filter by WU ID                                 |
+| `--type`   | Filter by issue type                            |
+| `--status` | Filter by status: `open`, `resolved`, `wontfix` |
+| `--format` | Output format: `table`, `json`                  |
+| `--since`  | Filter by time (e.g., `24h`, `7d`)              |
 
 ---
 

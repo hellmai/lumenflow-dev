@@ -1,0 +1,163 @@
+---
+title: Flow Metrics & Analytics
+description: Track delivery performance with DORA metrics and flow analysis
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+LumenFlow tracks flow metrics to help teams identify bottlenecks and improve delivery performance.
+
+## Overview
+
+The `@lumenflow/metrics` package provides:
+
+- **DORA Metrics** – Industry-standard delivery performance indicators
+- **Flow Analysis** – Bottleneck detection and critical path calculation
+- **Telemetry** – Event tracking for observability
+
+## DORA Metrics
+
+LumenFlow tracks the [DORA (DevOps Research and Assessment)](https://dora.dev/) metrics:
+
+| Metric                           | Description                                | Target             |
+| -------------------------------- | ------------------------------------------ | ------------------ |
+| **Deployment Frequency**         | How often you deploy to production         | Daily to weekly    |
+| **Lead Time for Changes**        | Time from commit to production             | Less than one day  |
+| **Change Failure Rate (CFR)**    | Percentage of deployments causing failures | Less than 15%      |
+| **Mean Time to Recovery (MTTR)** | Time to restore service after failure      | Less than one hour |
+
+### Viewing DORA Metrics
+
+```bash
+pnpm flow:report
+pnpm flow:report --format json
+```
+
+Example output:
+
+```
+Flow Metrics Report (Last 30 days)
+==================================
+
+Deployment Frequency: 12 deploys/week (Elite)
+Lead Time:            4.2 hours (Elite)
+Change Failure Rate:  8% (Elite)
+MTTR:                 45 minutes (Elite)
+
+Overall Performance: Elite (4/4 metrics)
+```
+
+## Flow Analysis
+
+### Identifying Bottlenecks
+
+```bash
+pnpm flow:bottlenecks
+```
+
+This analyzes your WU flow to identify:
+
+- **Lane Congestion** – Lanes exceeding WIP limits
+- **Blocked WUs** – Work units waiting on dependencies
+- **Stale WUs** – WUs in progress for too long
+- **Critical Path** – WUs blocking the most downstream work
+
+Example output:
+
+```
+Flow Bottlenecks Analysis
+=========================
+
+Lane Congestion:
+  - Framework: Core: 3/2 WIP (150% capacity)
+  - Experience: UI: 2/2 WIP (100% capacity)
+
+Blocked WUs (3):
+  - WU-145: Blocked by WU-142 (3 days)
+  - WU-148: Blocked by API spec (5 days)
+  - WU-150: Blocked by WU-148 (chain)
+
+Critical Path:
+  WU-142 → WU-145 → WU-150 → WU-155
+  (Unblocking WU-142 would unblock 3 downstream WUs)
+
+Recommendations:
+  1. Prioritize WU-142 to unblock critical path
+  2. Consider splitting Framework: Core lane
+  3. Escalate WU-148's external dependency
+```
+
+### Metrics Snapshots
+
+Capture point-in-time metrics for dashboards or CI:
+
+```bash
+pnpm metrics:snapshot
+pnpm metrics:snapshot --format json > metrics.json
+```
+
+## Telemetry Events
+
+LumenFlow emits telemetry events for observability:
+
+| Event              | Description          |
+| ------------------ | -------------------- |
+| `wu.created`       | New WU created       |
+| `wu.claimed`       | WU claimed by agent  |
+| `wu.blocked`       | WU marked as blocked |
+| `wu.completed`     | WU completed (done)  |
+| `gate.passed`      | Gate check passed    |
+| `gate.failed`      | Gate check failed    |
+| `deploy.started`   | Deployment started   |
+| `deploy.completed` | Deployment completed |
+
+### Telemetry Integration
+
+Events are written to `.beacon/telemetry/` as JSONL files. Integrate with your observability stack:
+
+```bash
+# Stream to Datadog
+tail -f .beacon/telemetry/events.jsonl | datadog-agent
+
+# Export to Prometheus
+pnpm metrics:export --format prometheus
+```
+
+## Best Practices
+
+<Steps>
+
+1. **Review metrics weekly**
+
+   Schedule a weekly review of flow metrics to identify trends before they become problems.
+
+2. **Set WIP limits appropriately**
+
+   If a lane is consistently at 100%+ capacity, consider:
+   - Splitting the lane into sub-lanes
+   - Adding more capacity
+   - Reducing scope of WUs
+
+3. **Address blockers quickly**
+
+   Blocked WUs create cascading delays. Prioritize unblocking over new work.
+
+4. **Track DORA trends, not absolutes**
+
+   The goal is continuous improvement, not hitting specific numbers.
+
+</Steps>
+
+## CLI Reference
+
+| Command                 | Description                   |
+| ----------------------- | ----------------------------- |
+| `pnpm flow:report`      | Generate DORA metrics report  |
+| `pnpm flow:bottlenecks` | Identify workflow bottlenecks |
+| `pnpm metrics:snapshot` | Capture current metrics       |
+
+## Next Steps
+
+- [Initiatives](/guides/initiatives) – Multi-phase project coordination
+- [Team Workflow](/guides/team-workflow) – Team practices and conventions
+- [Configuration](/reference/config) – Configure metrics settings
