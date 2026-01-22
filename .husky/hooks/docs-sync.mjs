@@ -66,6 +66,24 @@ function regenerateDocs() {
 }
 
 /**
+ * Format regenerated doc files with Prettier
+ */
+function formatDocFiles() {
+  const filesToFormat = DOC_OUTPUT_FILES.filter((f) => existsSync(f));
+  if (filesToFormat.length > 0) {
+    try {
+      execSync(`pnpm prettier --write ${filesToFormat.join(' ')}`, {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      });
+      console.log('[docs-sync] Formatted documentation files');
+    } catch (error) {
+      console.error('[docs-sync] Failed to format doc files:', error.message);
+    }
+  }
+}
+
+/**
  * Stage regenerated doc files
  */
 function stageDocFiles() {
@@ -83,6 +101,7 @@ function stageDocFiles() {
 // Main execution
 if (hasDocSourceChanges()) {
   if (regenerateDocs()) {
+    formatDocFiles();
     stageDocFiles();
   }
 }
