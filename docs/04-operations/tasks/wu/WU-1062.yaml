@@ -7,16 +7,12 @@ priority: P1
 created: 2026-01-22
 code_paths:
   - packages/@lumenflow/core/src/lumenflow-home.ts
-  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/core/src/spec-branch-helpers.ts
   - packages/@lumenflow/core/src/wu-create-validators.ts
-  - packages/@lumenflow/core/src/micro-worktree.ts
   - packages/@lumenflow/core/src/wu-schema.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/cli/src/wu-spawn.ts
   - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/core/src/index.ts
-  - packages/@lumenflow/cli/src/wu-claim.ts
-  - packages/@lumenflow/core/src/wu-claim-helpers.ts
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/playbook.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
@@ -27,10 +23,8 @@ tests:
     - wu:claim --id WU-TEST merges spec branch before creating worktree
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-home.test.ts
-    - packages/@lumenflow/core/src/__tests__/spec-branch.test.ts
+    - packages/@lumenflow/core/src/__tests__/spec-refs-validation.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-claim-spec-branch.test.ts
-    - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
-    - packages/@lumenflow/core/src/__tests__/arg-parser-wu-create.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1062.done
