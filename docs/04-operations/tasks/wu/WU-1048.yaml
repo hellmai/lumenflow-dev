@@ -2,7 +2,7 @@ id: WU-1048
 title: Fix Vitest coverage provider gaps
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-21
 code_paths:
@@ -49,3 +49,5 @@ session_id: 5034804d-fe2a-46d1-81fe-b6924e27422c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-21T16:57:18.511Z
+locked: true
+completed_at: 2026-01-22T10:37:42.800Z
