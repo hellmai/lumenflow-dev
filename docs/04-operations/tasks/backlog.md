@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
