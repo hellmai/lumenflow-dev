@@ -9,7 +9,13 @@ export default defineConfig({
     starlight({
       title: 'LumenFlow',
       description: 'AI-native workflow for software teams',
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/hellmai/os' }],
+      social: [
+        {
+          icon: 'github',
+          label: 'GitHub App',
+          href: 'https://github.com/apps/lumenflow-by-hellmai',
+        },
+      ],
       sidebar: [
         {
           label: 'Getting Started',
