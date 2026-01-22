@@ -185,8 +185,9 @@ async function main() {
 }
 
 // Guard main() for testability
+import { runCLI } from './cli-entry-point.js';
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main();
+  runCLI(main);
 }
 
 // Export for testing

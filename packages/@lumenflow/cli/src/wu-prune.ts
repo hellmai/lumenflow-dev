@@ -325,6 +325,7 @@ This tool:
 
 // Guard main() for testability (WU-1366)
 import { fileURLToPath } from 'node:url';
+import { runCLI } from './cli-entry-point.js';
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main();
+  runCLI(main);
 }
