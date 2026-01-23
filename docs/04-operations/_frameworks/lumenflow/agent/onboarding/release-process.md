@@ -1,6 +1,6 @@
 # LumenFlow Release Process
 
-**Last updated:** 2026-01-22
+**Last updated:** 2026-01-23
 
 This document covers the complete release process for LumenFlow, including versioning, npm publishing, documentation updates, and the GitHub App.
 
@@ -18,7 +18,62 @@ LumenFlow has several components that need to stay in sync:
 
 ---
 
-## Version Bumping
+## Release Command
+
+The `pnpm release` command automates the entire release process:
+
+```bash
+pnpm release --version 1.3.0
+```
+
+### What It Does
+
+1. Validates semver version format
+2. Ensures clean working directory on main branch
+3. Bumps all `@lumenflow/*` package versions using micro-worktree isolation
+4. Builds all packages
+5. Creates and pushes git tag `vX.Y.Z`
+6. Publishes to npm
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `--version <X.Y.Z>` | **Required.** Semver version to release |
+| `--dry-run` | Preview changes without making them |
+| `--skip-publish` | Bump and tag only (no npm publish) |
+| `--skip-build` | Skip build step (use existing dist) |
+
+### Examples
+
+```bash
+# Full release
+pnpm release --version 1.3.0
+
+# Preview what would happen
+pnpm release --version 1.3.0 --dry-run
+
+# Version bump and tag only (CI will publish)
+pnpm release --version 1.3.0 --skip-publish
+```
+
+### Authentication
+
+For npm publish, set one of these environment variables:
+
+```bash
+export NPM_TOKEN=<your-npm-token>
+# or
+export NODE_AUTH_TOKEN=<your-npm-token>
+```
+
+Get a token at: https://www.npmjs.com/settings/tokens
+
+---
+
+## Version Bumping (Manual)
+
+If you need to bump versions manually without the release command:
 
 All `@lumenflow/*` packages share the same version number for simplicity.
 
@@ -34,10 +89,10 @@ packages/@lumenflow/initiatives/package.json
 packages/@lumenflow/shims/package.json
 ```
 
-### Version Bump Command
+### Manual Version Bump
 
 ```bash
-# Manual approach - update all package.json files
+# Update all package.json files
 # Change "version": "1.2.0" to "1.3.0" in each file
 
 # Verify versions match
@@ -181,10 +236,25 @@ The `apps/github-app/package.json` must have `"private": true` to prevent npm pu
 
 - [ ] All acceptance criteria met
 - [ ] Gates pass (`pnpm gates`)
-- [ ] Version bumped in all `@lumenflow/*` packages
 - [ ] CHANGELOG updated (if maintained)
 
-### Release Steps
+### Release Steps (Automated)
+
+Use the release command for the standard workflow:
+
+```bash
+# Preview first
+pnpm release --version 1.3.0 --dry-run
+
+# Execute release
+pnpm release --version 1.3.0
+```
+
+This handles version bump, build, tag, and npm publish automatically.
+
+### Release Steps (Manual)
+
+If you need more control:
 
 1. **Complete WU** (includes version bump commit)
 
