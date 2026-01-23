@@ -101,3 +101,4 @@
 {"type":"complete","wuId":"WU-1065","timestamp":"2026-01-22T22:03:54.537Z"}
 {"type":"complete","wuId":"WU-1064","timestamp":"2026-01-22T22:09:57.204Z"}
 {"type":"claim","wuId":"WU-1062","lane":"Framework: Core","title":"External plan storage and no-main-write mode for wu:create","timestamp":"2026-01-23T09:03:00.000Z"}
+{"type":"complete","wuId":"WU-1062","timestamp":"2026-01-23T09:08:00.305Z"}
