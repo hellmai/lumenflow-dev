@@ -2,7 +2,7 @@ id: WU-1068
 title: LumenFlow Framework Cleanup - Remove PatientPath leakage and fix code smells
 lane: 'Framework: Core'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - PHI scanning gated behind config flag
   - ARGV_INDICES and DISPLAY_LIMITS constants added
   - Memory/agent/CLI packages import from wu-constants instead of local redefinitions
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1068
+claimed_at: 2026-01-23T09:53:10.707Z
+baseline_main_sha: ce4943cb6cf446515529a0d58bba4c35701fa370
+session_id: 685f767e-a25e-4b8e-9511-bf96be168b3b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T09:53:10.715Z
