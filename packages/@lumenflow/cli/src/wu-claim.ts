@@ -81,6 +81,12 @@ import {
 import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
 import { getAssignedEmail } from '@lumenflow/core/dist/wu-claim-helpers.js';
 import {
+  getSpecBranchName,
+  getWUSource,
+  mergeSpecBranchToMain,
+  WU_SOURCE,
+} from '@lumenflow/core/dist/spec-branch-helpers.js';
+import {
   symlinkNodeModules,
   symlinkNestedNodeModules,
 } from '@lumenflow/core/dist/worktree-symlink.js';
@@ -179,6 +185,39 @@ function preflightValidateWU(WU_PATH, id) {
   }
 
   return doc;
+}
+
+async function handleSpecBranchMergeIfNeeded(id, args) {
+  if (args.noPush) {
+    console.warn(
+      `${PREFIX} Warning: --no-push enabled. Skipping spec branch detection/merge.`,
+    );
+    return;
+  }
+
+  const git = getGitForCwd();
+  const source = await getWUSource(id, git);
+
+  if (source === WU_SOURCE.SPEC_BRANCH) {
+    const specBranch = getSpecBranchName(id);
+    console.log(`${PREFIX} Found ${id} on ${specBranch}. Merging to ${BRANCHES.MAIN}...`);
+    try {
+      await mergeSpecBranchToMain(id, git);
+    } catch (error) {
+      die(
+        `Failed to merge ${specBranch} into ${BRANCHES.MAIN}\n\n` +
+          `Reason: ${error.message}\n\n` +
+          `Resolve the spec branch or merge manually before retrying.`,
+      );
+    }
+
+    await git.push(REMOTES.ORIGIN, BRANCHES.MAIN);
+    console.log(`${PREFIX} ✅ Merged ${specBranch} to ${BRANCHES.MAIN}`);
+  } else if (source === WU_SOURCE.BOTH) {
+    console.warn(
+      `${PREFIX} Warning: WU ${id} exists on ${BRANCHES.MAIN} and spec branch. Continuing with main.`,
+    );
+  }
 }
 
 /**
@@ -1369,6 +1408,8 @@ async function main() {
       `${PREFIX} Warning: --no-push enabled. Skipping origin/main sync; local state may be stale.`,
     );
   }
+
+  await handleSpecBranchMergeIfNeeded(id, args);
 
   const WU_PATH = WU_PATHS.WU(id);
   const STATUS_PATH = WU_PATHS.STATUS();

@@ -13,6 +13,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-spawn.ts
   - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/playbook.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
