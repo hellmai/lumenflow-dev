@@ -2,7 +2,7 @@ id: WU-1070
 title: Add audit logging and guarding for LUMENFLOW_FORCE bypass
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -56,3 +56,11 @@ acceptance:
   - Agent constraint includes escalation path (ask user, get explicit approval)
   - Audit logging is fail-open (if logging fails, bypass still works)
   - Unit tests verify log format and content
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1070
+claimed_at: 2026-01-23T09:54:08.506Z
+baseline_main_sha: 5228f0ef6d2f808dd9b02e686caee5893d6a679a
+session_id: 685f767e-a25e-4b8e-9511-bf96be168b3b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T09:54:08.512Z
