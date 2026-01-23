@@ -20,6 +20,40 @@ import { isExternalPath, normalizeSpecRef } from './lumenflow-home.js';
 /** Confidence threshold for showing suggestion (percentage) */
 const CONFIDENCE_THRESHOLD_LOW = 30;
 
+/** Prefixes that indicate repo-internal paths (WU-1069) */
+const REPO_INTERNAL_PREFIXES = ['./', '.lumenflow/'];
+
+/**
+ * WU-1069: Check if a path is a repo-internal path that should be rejected
+ *
+ * Repo-internal paths start with ./ or .lumenflow/ and indicate the agent
+ * is attempting to store plans inside the repository instead of externally.
+ *
+ * @param {string} path - Path to check
+ * @returns {boolean} True if path is repo-internal and should be rejected
+ */
+export function isRepoInternalPath(path: string): boolean {
+  return REPO_INTERNAL_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
+/**
+ * WU-1069: Build error message for repo-internal path rejection
+ *
+ * @param {string} path - The rejected path
+ * @returns {string} Error message with correct format examples
+ */
+export function buildRepoInternalPathError(path: string): string {
+  return (
+    `Rejected repo-internal spec_ref path: "${path}"\n` +
+    `Plans must be stored externally, not inside the repository.\n\n` +
+    `Valid path formats:\n` +
+    `  - lumenflow://plans/WU-XXXX-plan.md (recommended)\n` +
+    `  - ~/.lumenflow/plans/WU-XXXX-plan.md\n` +
+    `  - $LUMENFLOW_HOME/plans/WU-XXXX-plan.md\n\n` +
+    `Use --plan flag to auto-create: pnpm wu:create --plan --id WU-XXXX ...`
+  );
+}
+
 /**
  * Generate a warning message when provided lane differs from inferred lane.
  *
@@ -147,6 +181,13 @@ export function validateSpecRefs(specRefs: string[]): {
       continue;
     }
 
+    // WU-1069: Reject repo-internal paths (paths starting with ./ or .lumenflow/)
+    // This prevents agents from storing plans inside the repository
+    if (isRepoInternalPath(ref)) {
+      errors.push(buildRepoInternalPathError(ref));
+      continue;
+    }
+
     // External paths are valid (will be resolved at runtime)
     if (isExternalPath(ref)) {
       // Add informational warning about external paths
@@ -154,9 +195,8 @@ export function validateSpecRefs(specRefs: string[]): {
       continue;
     }
 
-    // Repo-relative paths should follow conventions
-    const isValidRepoPath =
-      ref.startsWith('docs/') || ref.startsWith('./docs/') || ref.endsWith('.md');
+    // Repo-relative paths should follow conventions (docs/ without ./ prefix)
+    const isValidRepoPath = ref.startsWith('docs/') || ref.endsWith('.md');
 
     if (!isValidRepoPath) {
       warnings.push(
