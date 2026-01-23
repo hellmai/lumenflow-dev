@@ -15,15 +15,20 @@ tests:
 artifacts:
   - .beacon/stamps/WU-1074.done
 dependencies: []
-spec_refs:
-  - file://~/.lumenflow/plans/WU-1074-release-command.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-23T12:34:44.145Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1074
+session_id: 25df3817-2382-4e4e-8914-95143534ede0
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T12:34:44.152Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +43,6 @@ acceptance:
   - Command publishes to npm with proper auth
   - Command creates git tag vX.Y.Z
   - Gates pass
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1074
-claimed_at: 2026-01-23T12:34:44.145Z
-baseline_main_sha: a1964c6c351b31130dacbe5d4a29539a4cabd583
-session_id: 25df3817-2382-4e4e-8914-95143534ede0
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-23T12:34:44.152Z
+  - CLI reference docs updated with release command usage
+  - Command reads npm auth from ~/.npmrc or NODE_AUTH_TOKEN env var
+  - Error message if no npm auth found
