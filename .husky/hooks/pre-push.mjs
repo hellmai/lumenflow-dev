@@ -4,6 +4,7 @@
  *
  * WU-1017: Vendor-agnostic git workflow enforcement
  * WU-1024: Allow CLI tool pushes from micro-worktrees (tmp/* branches)
+ * WU-1070: Audit logging for LUMENFLOW_FORCE bypass
  *
  * Rules:
  * - BLOCK push to refs/heads/main or refs/heads/master
@@ -11,13 +12,61 @@
  * - ALLOW all lane branch pushes (per WU-1255: protection at merge time)
  * - Parse stdin refs to catch bypasses like `git push origin HEAD:main`
  *
- * Escape hatch: LUMENFLOW_FORCE=1
+ * Escape hatch: LUMENFLOW_FORCE=1 (logged to .beacon/force-bypasses.log)
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { dirname, join } from 'node:path';
 
-// Escape hatch
+// WU-1070: Inline audit logging (fail-open, no external imports for hook reliability)
+function logForceBypass(hookName, projectRoot) {
+  if (process.env.LUMENFLOW_FORCE !== '1') return;
+
+  const reason = process.env.LUMENFLOW_FORCE_REASON;
+  if (!reason) {
+    console.warn(
+      `[${hookName}] Warning: LUMENFLOW_FORCE_REASON not set. ` +
+        'Consider: LUMENFLOW_FORCE_REASON="reason" LUMENFLOW_FORCE=1 git ...',
+    );
+  }
+
+  try {
+    const timestamp = new Date().toISOString();
+    let user = 'unknown';
+    let branch = 'unknown';
+    try {
+      user = execSync('git config user.name', { encoding: 'utf8' }).trim();
+    } catch {}
+    try {
+      branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+    } catch {}
+
+    const logLine = `${timestamp} | ${hookName} | ${user} | ${branch} | ${reason || '(no reason provided)'} | ${projectRoot}\n`;
+    const beaconDir = join(projectRoot, '.beacon');
+    const logPath = join(beaconDir, 'force-bypasses.log');
+
+    if (!existsSync(beaconDir)) {
+      mkdirSync(beaconDir, { recursive: true });
+    }
+    appendFileSync(logPath, logLine);
+  } catch (error) {
+    console.error(`[${hookName}] Warning: Failed to write audit log: ${error.message}`);
+  }
+}
+
+// Find project root
+let projectRoot = process.cwd();
+for (let i = 0; i < 10; i++) {
+  if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) break;
+  const parent = dirname(projectRoot);
+  if (parent === projectRoot) break;
+  projectRoot = parent;
+}
+
+// Escape hatch with audit logging (WU-1070)
 if (process.env.LUMENFLOW_FORCE === '1') {
+  logForceBypass('pre-push', projectRoot);
   process.exit(0);
 }
 

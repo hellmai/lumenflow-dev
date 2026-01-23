@@ -135,3 +135,6 @@ export * from './branch-check.js';
 // WU-1062: External plan storage and spec branch helpers
 export * from './lumenflow-home.js';
 export * from './spec-branch-helpers.js';
+
+// WU-1070: Force bypass audit logging
+export * from './force-bypass-audit.js';
