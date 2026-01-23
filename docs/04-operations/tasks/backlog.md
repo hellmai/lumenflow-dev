@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
