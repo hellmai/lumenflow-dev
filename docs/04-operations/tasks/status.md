@@ -10,6 +10,7 @@ _Last updated: 2026-01-23_
 - [WU-1052 — Migrate remaining tests from  tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml)
 - [WU-1068 — LumenFlow Framework Cleanup - Remove  leakage and fix code smells](wu/WU-1068.yaml)
+- [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml)
 
 ## Completed
 
