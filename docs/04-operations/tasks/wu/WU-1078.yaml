@@ -6,11 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
-  - packages/@lumenflow/cli/src/wu-repair.ts
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-repair.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-repair.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1078.done
