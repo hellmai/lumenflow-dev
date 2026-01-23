@@ -11,7 +11,8 @@ code_paths:
 tests:
   manual:
     - Verify documentation explains wu:cleanup is PR-only
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done-staging-whitelist.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1072.done
