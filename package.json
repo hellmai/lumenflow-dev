@@ -62,7 +62,8 @@
     "docs:validate": "npx tsx tools/generate-cli-docs.ts --validate",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish",
+    "release": "node packages/@lumenflow/cli/dist/release.js",
+    "release:changeset": "pnpm build && changeset publish",
     "prerelease": "changeset pre enter next"
   },
   "devDependencies": {
