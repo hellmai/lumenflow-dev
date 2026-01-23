@@ -2,7 +2,7 @@ id: WU-1076
 title: Block direct main branch commits for agents
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -45,3 +45,5 @@ session_id: 5094a10d-3521-4d59-939d-66c85edf182f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T13:40:08.975Z
+locked: true
+completed_at: 2026-01-23T13:48:58.666Z

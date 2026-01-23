@@ -28,7 +28,6 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1075 — Rename .beacon to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml) — Framework: Core
-- [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -93,3 +92,4 @@ sections:
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml)
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml)
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
+- [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml)
