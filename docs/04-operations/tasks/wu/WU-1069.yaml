@@ -1,7 +1,7 @@
 id: WU-1069
 title: Validate spec-refs rejects repo-internal plan paths
 lane: 'Framework: CLI'
-type: enhancement
+type: feature
 status: ready
 priority: P2
 created: 2026-01-23
