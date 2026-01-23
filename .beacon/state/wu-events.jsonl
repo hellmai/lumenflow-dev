@@ -110,3 +110,4 @@
 {"type":"complete","wuId":"WU-1069","timestamp":"2026-01-23T09:57:26.964Z"}
 {"type":"complete","wuId":"WU-1068","timestamp":"2026-01-23T10:02:48.731Z"}
 {"type":"complete","wuId":"WU-1070","timestamp":"2026-01-23T10:01:24.377Z"}
+{"type":"claim","wuId":"WU-1072","lane":"Framework: CLI","title":"Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior","timestamp":"2026-01-23T11:58:47.660Z"}
