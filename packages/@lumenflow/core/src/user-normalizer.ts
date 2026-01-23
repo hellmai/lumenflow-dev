@@ -4,17 +4,21 @@
  * Provides email normalization and domain inference for WU ownership.
  * Converts plain usernames (e.g., "tom") to email format (e.g., "tom@hellm.ai")
  * using domain from git config or .lumenflow.config.yaml.
+ *
+ * WU-1068: Removed hardcoded patientpath.co.uk domain. Domain is now inferred
+ * from git config user.email or .lumenflow.config.yaml OWNER_EMAIL.
  */
 
 import { readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { getGitForCwd } from './git-adapter.js';
-import { FILE_SYSTEM } from './wu-constants.js';
+import { DEFAULTS } from './wu-constants.js';
 
 /**
  * Default domain fallback when git config and lumenflow config unavailable
+ * WU-1068: Changed from hardcoded 'patientpath.co.uk' to generic default
  */
-export const DEFAULT_DOMAIN = 'patientpath.co.uk';
+export const DEFAULT_DOMAIN = DEFAULTS.EMAIL_DOMAIN;
 
 /**
  * Minimum length for a valid email local part

@@ -818,7 +818,7 @@ function generateLaneGuidance(lane) {
 - Follow prompt versioning guidelines in ai/prompts/README.md`,
     Experience: `## Lane-Specific: Experience
 
-- Follow design system tokens in packages/@patientpath/design-system
+- Follow design system tokens defined in the project
 - Ensure accessibility compliance (WCAG 2.1 AA)`,
     Core: `## Lane-Specific: Core
 

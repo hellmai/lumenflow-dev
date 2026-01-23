@@ -16,7 +16,7 @@
 
 import { readFileSync, writeFileSync, copyFileSync } from 'node:fs';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
-import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { DEFAULTS, STRING_LITERALS } from './wu-constants.js';
 
 // Valid type values from wu-schema.mjs
 const VALID_TYPES = ['feature', 'bug', 'documentation', 'process', 'tooling', 'chore', 'refactor'];
@@ -34,8 +34,11 @@ const TYPE_ALIASES = {
   proc: 'process',
 };
 
-// Default email domain for username → email conversion
-const DEFAULT_EMAIL_DOMAIN = 'patientpath.co.uk';
+/**
+ * Default email domain for username -> email conversion
+ * WU-1068: Changed from hardcoded 'patientpath.co.uk' to configurable default
+ */
+const DEFAULT_EMAIL_DOMAIN = DEFAULTS.EMAIL_DOMAIN;
 
 /**
  * Issue types that can be detected and auto-fixed

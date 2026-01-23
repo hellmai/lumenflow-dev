@@ -463,6 +463,58 @@ export const DEFAULTS = {
 
   /** Parent directory traversal depth from tools/lib to project root */
   PROJECT_ROOT_DEPTH: 2,
+
+  /**
+   * Default email domain for username -> email conversion
+   * WU-1068: Made configurable, no longer hardcoded to patientpath.co.uk
+   * @see user-normalizer.ts - Infers from git config first
+   */
+  EMAIL_DOMAIN: 'example.com',
+};
+
+/**
+ * Process argv indices (WU-1068)
+ *
+ * Centralized indices for process.argv access to eliminate magic numbers.
+ * In Node.js: argv[0] = node, argv[1] = script, argv[2+] = args
+ */
+export const ARGV_INDICES = {
+  /** Node executable path */
+  NODE: 0,
+  /** Script path */
+  SCRIPT: 1,
+  /** First user argument */
+  FIRST_ARG: 2,
+  /** Second user argument */
+  SECOND_ARG: 3,
+};
+
+/**
+ * Display limits for CLI output (WU-1068)
+ *
+ * Centralized limits for truncating display strings to avoid magic numbers.
+ */
+export const DISPLAY_LIMITS = {
+  /** Maximum items to show in lists before truncating */
+  LIST_ITEMS: 5,
+  /** Maximum items to show in short lists */
+  SHORT_LIST: 3,
+  /** Maximum characters for content preview */
+  CONTENT_PREVIEW: 200,
+  /** Maximum characters for short preview */
+  SHORT_PREVIEW: 60,
+  /** Maximum characters for title display */
+  TITLE: 50,
+  /** Maximum characters for truncated title */
+  TRUNCATED_TITLE: 40,
+  /** Maximum characters for command preview */
+  CMD_PREVIEW: 60,
+  /** Maximum lines to preview from files */
+  FILE_LINES: 10,
+  /** Maximum commits to show in lists */
+  COMMITS: 50,
+  /** Maximum overlaps to display */
+  OVERLAPS: 3,
 };
 
 /**
@@ -905,6 +957,9 @@ export const WU_DEFAULTS = {
  *
  * Validation is advisory only - never blocks wu:claim or wu:done.
  *
+ * WU-1068: Removed hardcoded @patientpath references. These patterns
+ * should be configured in .lumenflow.config.yaml per-project.
+ *
  * @see {@link tools/lib/lane-validator.mjs} - Validation logic
  */
 export const LANE_PATH_PATTERNS = {
@@ -913,7 +968,7 @@ export const LANE_PATH_PATTERNS = {
    * These paths belong to the Intelligence lane.
    */
   Operations: {
-    exclude: ['ai/prompts/**', 'packages/@patientpath/prompts/**', 'apps/web/src/lib/prompts/**'],
+    exclude: ['ai/prompts/**', 'apps/web/src/lib/prompts/**'],
     allowExceptions: [],
   },
 
@@ -1127,12 +1182,14 @@ export const PKG_COMMANDS = {
  * Package names (monorepo workspaces)
  *
  * Centralized package names for --filter usage.
+ * WU-1068: Changed from @patientpath to @lumenflow for framework reusability.
+ * Project-specific packages should be configured in .lumenflow.config.yaml.
  */
 export const PACKAGES = {
   WEB: 'web',
-  APPLICATION: '@patientpath/application',
-  DOMAIN: '@patientpath/domain',
-  INFRASTRUCTURE: '@patientpath/infrastructure',
+  APPLICATION: '@lumenflow/core',
+  DOMAIN: '@lumenflow/core',
+  INFRASTRUCTURE: '@lumenflow/cli',
 };
 
 /**
@@ -1585,6 +1642,9 @@ export const FILE_TOOLS = {
  *
  * Error codes for PHI detection in file tools.
  * Used by file:write and file:edit to block PHI leakage.
+ *
+ * WU-1068: PHI scanning is healthcare-specific functionality.
+ * Enable via PHI_CONFIG.ENABLED flag or .lumenflow.config.yaml phi.enabled: true
  */
 export const PHI_ERRORS = {
   /** PHI detected in content - write blocked */
@@ -1592,6 +1652,31 @@ export const PHI_ERRORS = {
 
   /** PHI override requested - audit logged */
   PHI_OVERRIDE_ALLOWED: 'PHI_OVERRIDE_ALLOWED',
+};
+
+/**
+ * PHI scanning configuration (WU-1068)
+ *
+ * Controls whether PHI (Protected Health Information) scanning is enabled.
+ * This is healthcare-specific functionality (NHS numbers, UK postcodes)
+ * that should only be enabled for healthcare projects.
+ *
+ * Projects can enable via:
+ * 1. Setting PHI_CONFIG.ENABLED = true in code
+ * 2. Setting LUMENFLOW_PHI_ENABLED=1 environment variable
+ * 3. Adding phi.enabled: true to .lumenflow.config.yaml
+ */
+export const PHI_CONFIG = {
+  /**
+   * Whether PHI scanning is enabled
+   * Default: false - projects must explicitly opt-in
+   */
+  ENABLED: process.env.LUMENFLOW_PHI_ENABLED === '1',
+
+  /**
+   * Whether to block on PHI detection (true) or just warn (false)
+   */
+  BLOCKING: process.env.LUMENFLOW_PHI_BLOCKING === '1',
 };
 
 /**

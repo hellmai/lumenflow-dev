@@ -45,12 +45,15 @@ const CONFIG_PATTERNS = Object.freeze([
  * Path prefixes for hex core code requiring automated tests.
  * These are the critical application layer paths.
  *
+ * WU-1068: Changed from @patientpath to @lumenflow for framework reusability.
+ * Project-specific patterns should be configured in .lumenflow.config.yaml.
+ *
  * @constant {string[]}
  */
 export const HEX_CORE_CODE_PATTERNS = Object.freeze([
-  'packages/@patientpath/application/',
-  'packages/@patientpath/prompts/',
-  'packages/@patientpath/ports/',
+  'packages/@lumenflow/core/',
+  'packages/@lumenflow/cli/',
+  'packages/@lumenflow/agent/',
 ]);
 
 /**

@@ -105,7 +105,9 @@ async function monitor() {
   console.log('\n🌙 Nightly Prompt Monitor Starting...\n');
 
   // Find all prompt files
-  const pattern = 'packages/@patientpath/prompts/**/*.yaml';
+  // WU-1068: Changed from @patientpath to generic ai/prompts for framework reusability
+  // Projects should configure prompt paths in .lumenflow.config.yaml
+  const pattern = 'ai/prompts/**/*.yaml';
   const promptFiles = await glob(pattern, { cwd: ROOT_DIR, absolute: true });
 
   console.log(`Found ${promptFiles.length} prompt files to analyze\n`);

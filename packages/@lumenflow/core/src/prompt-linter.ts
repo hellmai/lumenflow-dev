@@ -316,7 +316,8 @@ export async function lintPrompts(
 
   // If no files provided, find all orchestrator prompt files (WU-676 scope only)
   if (filePaths.length === 0) {
-    const pattern = 'packages/@patientpath/prompts/orchestrator-*/**/*.yaml';
+    // WU-1068: Changed from @patientpath to generic ai/prompts for framework reusability
+    const pattern = 'ai/prompts/orchestrator-*/**/*.yaml';
     filePaths = await glob(pattern, { cwd: ROOT_DIR, absolute: true });
   }
 

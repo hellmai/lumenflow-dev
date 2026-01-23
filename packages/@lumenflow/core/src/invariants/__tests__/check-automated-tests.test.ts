@@ -216,12 +216,12 @@ lane: 'Core Systems'
 type: feature
 status: in_progress
 code_paths:
-  - packages/@patientpath/application/src/usecases/foo.ts
+  - packages/@lumenflow/core/src/usecases/foo.ts
 tests:
   unit: []
   manual: []
   integration:
-    - packages/@patientpath/application/src/__tests__/integration/foo.test.ts
+    - packages/@lumenflow/core/src/__tests__/integration/foo.test.ts
 `;
         writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-008.yaml'), wuYaml);
 
@@ -305,7 +305,7 @@ lane: 'Core Systems'
 type: feature
 status: in_progress
 code_paths:
-  - packages/@patientpath/application/src/usecase.ts
+  - packages/@lumenflow/core/src/usecase.ts
 tests:
   manual:
     - Manual check
@@ -575,7 +575,7 @@ lane: 'Core Systems'
 type: feature
 status: in_progress
 code_paths:
-  - packages/@patientpath/application/src/usecase.ts
+  - packages/@lumenflow/core/src/usecase.ts
 tests:
   manual:
     - Manual check

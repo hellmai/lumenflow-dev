@@ -49,30 +49,24 @@ const PNPM_DIR = '.pnpm';
  * pnpm monorepos create node_modules in each package with symlinks
  * to the .pnpm store. turbo typecheck and tests need these to resolve imports.
  *
+ * WU-1068: Removed @patientpath references. Only @lumenflow packages are
+ * relevant to the LumenFlow framework. Project-specific paths should be
+ * configured in .lumenflow.config.yaml.
+ *
  * @type {string[]}
  */
 export const NESTED_PACKAGE_PATHS = [
-  // Packages - supabase
-  'packages/supabase',
-  // Packages - @patientpath/*
-  'packages/@patientpath/prompts',
-  'packages/@patientpath/shared',
-  'packages/@patientpath/application',
-  'packages/@patientpath/ports',
-  'packages/@patientpath/infrastructure',
-  // Packages - @lumenflow/* (WU-2427: added for typecheck resolution)
-  'packages/@lumenflow/api',
-  'packages/@lumenflow/application',
-  'packages/@lumenflow/infrastructure',
-  // Packages - lumenflow-*
-  'packages/lumenflow-cli',
-  'packages/lumenflow-tools',
-  // Packages - beacon-explainer (WU-2427: added for typecheck resolution)
-  'packages/beacon-explainer',
-  // Apps
+  // Packages - @lumenflow/*
+  'packages/@lumenflow/core',
+  'packages/@lumenflow/cli',
+  'packages/@lumenflow/memory',
+  'packages/@lumenflow/agent',
+  'packages/@lumenflow/metrics',
+  'packages/@lumenflow/initiatives',
+  'packages/@lumenflow/shims',
+  // Apps (generic placeholders)
   'apps/web',
-  'apps/mobile',
-  'apps/hellm-ai', // WU-2427: added for typecheck resolution
+  'apps/docs',
 ];
 
 /**

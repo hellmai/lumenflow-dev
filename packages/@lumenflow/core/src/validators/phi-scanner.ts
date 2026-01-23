@@ -24,6 +24,7 @@ import {
   EXCLUDED_PATH_PATTERNS,
   NHS_CANDIDATE_PATTERN,
 } from './phi-constants.js';
+import { PHI_CONFIG } from '../wu-constants.js';
 
 /**
  * Check if a file path should be excluded from PHI scanning
@@ -196,6 +197,12 @@ export function scanForPHI(content: string, options: ScanForPHIOptions = {}) {
     matches: [],
     warnings: [],
   };
+
+  // WU-1068: PHI scanning is gated behind config flag
+  // Projects must explicitly opt-in via LUMENFLOW_PHI_ENABLED=1 or config
+  if (!PHI_CONFIG.ENABLED) {
+    return result;
+  }
 
   // Handle null/undefined/empty content
   if (!content || typeof content !== 'string' || content.trim() === '') {

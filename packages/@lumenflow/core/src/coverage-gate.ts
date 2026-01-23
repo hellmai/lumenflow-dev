@@ -32,11 +32,14 @@ export const COVERAGE_GATE_MODES = Object.freeze({
  * Glob patterns for hex core files that require ≥90% coverage.
  * These are the critical application layer files.
  *
+ * WU-1068: Changed from @patientpath to @lumenflow for framework reusability.
+ * Project-specific patterns should be configured in .lumenflow.config.yaml.
+ *
  * @constant {string[]}
  */
 export const HEX_CORE_PATTERNS = Object.freeze([
-  'packages/@patientpath/application/',
-  'packages/@patientpath/prompts/',
+  'packages/@lumenflow/core/',
+  'packages/@lumenflow/cli/',
 ]);
 
 /**
@@ -167,7 +170,7 @@ export function formatCoverageDelta(coverageData) {
       const metrics = metricsValue as { lines?: { pct: number } };
       const pct = metrics.lines?.pct ?? 0;
       const status = pct >= COVERAGE_THRESHOLD ? EMOJI.SUCCESS : EMOJI.FAILURE;
-      const shortFile = file.replace('packages/@patientpath/', '');
+      const shortFile = file.replace('packages/@lumenflow/', '');
       lines.push(`  ${status} ${shortFile}: ${pct.toFixed(1)}%`);
     }
   }
@@ -229,7 +232,7 @@ export async function runCoverageGate(options: CoverageGateOptions = {}) {
   if (!pass) {
     logger.log(`\n${EMOJI.FAILURE} Coverage below ${COVERAGE_THRESHOLD}% for hex core files:`);
     for (const failure of failures) {
-      const shortFile = failure.file.replace('packages/@patientpath/', '');
+      const shortFile = failure.file.replace('packages/@lumenflow/', '');
       logger.log(
         `  - ${shortFile}: ${failure.actual.toFixed(1)}% (requires ${failure.threshold}%)`,
       );

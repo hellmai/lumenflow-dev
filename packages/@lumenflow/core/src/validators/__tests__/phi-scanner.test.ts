@@ -6,12 +6,26 @@
  * and UK postcode detection with medical context using postcode library.
  *
  * Part of WU-1404: PHI Scanner Integration
+ * WU-1068: PHI scanning now gated behind PHI_CONFIG.ENABLED
  */
 
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it, beforeEach, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { scanForPHI, isPathExcluded } from '../phi-scanner.js';
 import { PHI_TYPES } from '../phi-constants.js';
+import { PHI_CONFIG } from '../../wu-constants.js';
+
+// Store original value to restore after tests
+const originalEnabled = PHI_CONFIG.ENABLED;
+
+// Enable PHI scanning for tests (WU-1068)
+before(() => {
+  PHI_CONFIG.ENABLED = true;
+});
+
+after(() => {
+  PHI_CONFIG.ENABLED = originalEnabled;
+});
 
 describe('PHI Scanner', () => {
   describe('scanForPHI', () => {
