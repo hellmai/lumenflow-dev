@@ -138,6 +138,10 @@ const ALLOWED_ON_MAIN = [
 
   // Merge commits
   /^Merge /i,
+
+  // WU-1076: Emergency/hotfix commits (human override for agents)
+  /\[emergency\]/i,
+  /\[hotfix\]/i,
 ];
 
 // Validate on main/master
@@ -163,6 +167,8 @@ if (MAIN_BRANCHES.includes(branch)) {
     console.error('  chore(repair): <description>');
     console.error('  chore(wu-123): <description>');
     console.error('  style: <description>');
+    console.error('  [emergency] <description>');
+    console.error('  [hotfix] <description>');
     console.error('');
     console.error('Use pnpm wu:* commands to create properly formatted commits.');
     console.error('');

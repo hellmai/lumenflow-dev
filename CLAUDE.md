@@ -54,6 +54,10 @@ pnpm wu:done --id WU-XXXX
 7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
 8. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
 
+## Branch Safety
+
+**NEVER edit files on main branch.** Run `git branch --show-current` before edits.
+
 ---
 
 ## Lanes
