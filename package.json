@@ -64,8 +64,7 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "node packages/@lumenflow/cli/dist/release.js",
-    "release:changeset": "pnpm build && changeset publish",
-    "prerelease": "changeset pre enter next"
+    "release:changeset": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",

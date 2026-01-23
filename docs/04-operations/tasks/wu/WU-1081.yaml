@@ -6,6 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
+  - package.json
   - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual: []
