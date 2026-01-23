@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
