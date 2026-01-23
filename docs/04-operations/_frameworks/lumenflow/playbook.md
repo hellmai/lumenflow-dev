@@ -1333,6 +1333,40 @@ cd worktrees/experience-wu-334  # Resume work in fresh worktree
 
 ---
 
+#### `pnpm wu:release -- --id WU-123 --reason "<reason>"`
+
+**What:** Releases an orphaned WU from `in_progress` back to `ready` state
+
+**When:** Agent was interrupted mid-WU with no complete event recorded. The WU is stuck in `in_progress` with no way to reclaim it. Use `wu:release` to make it available for reclaiming.
+
+**Flags:**
+
+- `--id WU-123` — (Required) WU ID to release
+- `--reason "<text>"` — (Required) Reason for releasing (logged in WU notes)
+- `--help, -h` — Show help
+
+**State Transition:** `in_progress` → `ready`
+
+**Example:**
+
+```bash
+# Release an orphaned WU that was interrupted
+pnpm wu:release -- --id WU-1080 --reason "Agent session terminated unexpectedly"
+
+# Now the WU can be reclaimed by any agent
+pnpm wu:claim --id WU-1080 --lane "Framework: Core"
+```
+
+**When NOT to use:**
+
+- If WU is `blocked`: Use `wu:unblock` instead
+- If WU is `ready`: No action needed, just claim it
+- If WU is `done`: WU is already complete
+
+**Lane Lock:** Releasing a WU also releases the lane lock, allowing another WU to be claimed in the same lane.
+
+---
+
 ### 10.2 Quality & Formatting Commands
 
 #### `pnpm gates [-- --docs-only]`

@@ -24,6 +24,7 @@
     "wu:edit": "node packages/@lumenflow/cli/dist/wu-edit.js",
     "wu:block": "node packages/@lumenflow/cli/dist/wu-block.js",
     "wu:unblock": "node packages/@lumenflow/cli/dist/wu-unblock.js",
+    "wu:release": "node packages/@lumenflow/cli/dist/wu-release.js",
     "wu:validate": "node packages/@lumenflow/cli/dist/wu-validate.js",
     "wu:spawn": "node packages/@lumenflow/cli/dist/wu-spawn.js",
     "wu:preflight": "node packages/@lumenflow/cli/dist/wu-preflight.js",
