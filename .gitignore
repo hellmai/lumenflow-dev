@@ -43,8 +43,7 @@ coverage/
 /.beacon/telemetry/
 /.beacon/skip-gates-audit.log
 /.beacon/checkpoints/
-# WU-1070: Force bypass audit log is git-tracked for accountability
-!/.beacon/force-bypasses.log
+/.beacon/force-bypasses.log
 # Beacon locks anywhere (lane locking system, WU-1012 fix)
 **/.beacon/locks/
 .logs/
