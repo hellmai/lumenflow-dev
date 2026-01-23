@@ -2,7 +2,7 @@ id: WU-1077
 title: Fix release script to work entirely in micro-worktree
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -25,9 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Release script from WU-1074 has bugs that required manual intervention on main branch, defeating the micro-worktree isolation purpose
+description: Release script from WU-1074 has bugs that required manual intervention on main branch,
+  defeating the micro-worktree isolation purpose
 acceptance:
   - hasNpmAuth() detects auth from ~/.npmrc not just env vars
   - Changeset pre mode is detected and exited in micro-worktree
   - Tag push bypasses pre-push hooks via LUMENFLOW_FORCE
   - No manual commands required on main branch during release
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1077
+claimed_at: 2026-01-23T14:30:05.476Z
+baseline_main_sha: 399e1a2bbca683715956b5e4ddd8bba4a6494211
+session_id: 8587d3b5-2023-4c7e-b5ea-6f62f5ad3995
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T14:30:05.479Z
