@@ -42,17 +42,17 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ```yaml
 # 1. Define your lanes
 lanes:
-  - name: Core
+  - name: 'Framework: Core'
     wip_limit: 1
-  - name: UI
+  - name: 'Experience: UI'
     wip_limit: 2
 
 # 2. Create a Work Unit
-# pnpm wu:create --id WU-001 --title "Add auth" --lane Core
+# pnpm wu:create --id WU-001 --title "Add auth" --lane "Framework: Core"
 
 # 3. Claim and work
-# pnpm wu:claim --id WU-001 --lane Core
-# cd worktrees/core-wu-001
+# pnpm wu:claim --id WU-001 --lane "Framework: Core"
+# cd worktrees/framework-core-wu-001
 
 # 4. Complete with gates
 # pnpm gates && pnpm wu:done --id WU-001

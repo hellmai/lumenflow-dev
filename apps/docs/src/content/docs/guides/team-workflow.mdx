@@ -24,11 +24,11 @@ LumenFlow scales from solo developers to teams. This guide covers team-specific 
 
 ```yaml
 lanes:
-  - name: Frontend
+  - name: 'Experience: Frontend'
     wip_limit: 2
-  - name: Backend
+  - name: 'Framework: Backend'
     wip_limit: 2
-  - name: Infrastructure
+  - name: 'Operations: Infrastructure'
     wip_limit: 1
 ```
 
@@ -36,11 +36,11 @@ lanes:
 
 ```yaml
 lanes:
-  - name: Team-Alpha
+  - name: 'Team: Alpha'
     wip_limit: 3
-  - name: Team-Beta
+  - name: 'Team: Beta'
     wip_limit: 3
-  - name: Platform
+  - name: 'Operations: Platform'
     wip_limit: 1
 ```
 
@@ -48,11 +48,11 @@ lanes:
 
 ```yaml
 lanes:
-  - name: Checkout
+  - name: 'Product: Checkout'
     wip_limit: 2
-  - name: Search
+  - name: 'Product: Search'
     wip_limit: 2
-  - name: User-Profile
+  - name: 'Product: User-Profile'
     wip_limit: 1
 ```
 
@@ -63,7 +63,7 @@ lanes:
 Simple: whoever claims first, owns it.
 
 ```bash
-pnpm wu:claim --id WU-100 --lane Frontend
+pnpm wu:claim --id WU-100 --lane "Experience: Frontend"
 # If already claimed → error
 ```
 
@@ -95,7 +95,7 @@ If you need to hand off a WU:
 pnpm wu:release --id WU-100
 
 # New owner claims
-pnpm wu:claim --id WU-100 --lane Frontend
+pnpm wu:claim --id WU-100 --lane "Experience: Frontend"
 ```
 
 <Aside type="caution">
@@ -148,7 +148,7 @@ Focus on:
 GitHub App enforces WIP limits:
 
 ```
-❌ Cannot claim WU-105 for lane "Frontend"
+❌ Cannot claim WU-105 for lane "Experience: Frontend"
    Lane already at WIP limit (2/2):
    - WU-100 (Alice)
    - WU-101 (Bob)
@@ -209,13 +209,13 @@ For larger organizations:
 ```yaml
 # Separate config per team
 lanes:
-  - name: Team-A-Core
+  - name: 'Team-A: Core'
     wip_limit: 2
-  - name: Team-A-UI
+  - name: 'Team-A: UI'
     wip_limit: 2
-  - name: Team-B-Core
+  - name: 'Team-B: Core'
     wip_limit: 2
-  - name: Team-B-UI
+  - name: 'Team-B: UI'
     wip_limit: 2
 ```
 
