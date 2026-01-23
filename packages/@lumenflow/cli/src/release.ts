@@ -248,8 +248,8 @@ async function main(): Promise<void> {
   await ensureOnMain(git);
 
   // Check for uncommitted changes
-  const status = await git.status();
-  if (!status.isClean()) {
+  const isClean = await git.isClean();
+  if (!isClean) {
     die(
       `Working directory has uncommitted changes.\n\n` +
         `Commit or stash changes before releasing:\n` +
@@ -330,7 +330,7 @@ async function main(): Promise<void> {
     console.log(`${LOG_PREFIX} Would push tag to ${REMOTES.ORIGIN}`);
   } else {
     console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
-    await git.createTag(tagName, `Release ${tagName}`);
+    await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
     console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
 
     console.log(`${LOG_PREFIX} Pushing tag to ${REMOTES.ORIGIN}...`);
