@@ -43,6 +43,7 @@ import {
   FILE_SYSTEM,
   STDIO_MODES,
 } from './wu-constants.js';
+import type { GitAdapter } from './git-adapter.js';
 
 /**
  * Maximum retry attempts for ff-only merge when main moves
@@ -51,6 +52,20 @@ import {
  * concurrently. Each retry fetches latest main and rebases.
  */
 export const MAX_MERGE_RETRIES = 3;
+
+/**
+ * Environment variable name for LUMENFLOW_FORCE bypass
+ *
+ * WU-1081: Exported for use in micro-worktree push operations.
+ */
+export const LUMENFLOW_FORCE_ENV = 'LUMENFLOW_FORCE';
+
+/**
+ * Environment variable name for LUMENFLOW_FORCE_REASON audit trail
+ *
+ * WU-1081: Exported for use in micro-worktree push operations.
+ */
+export const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /**
  * Default log prefix for micro-worktree operations
@@ -391,6 +406,58 @@ export async function mergeWithRetry(
 }
 
 /**
+ * Push using refspec with LUMENFLOW_FORCE to bypass pre-push hooks
+ *
+ * WU-1081: Micro-worktree pushes to origin/main need to bypass pre-push hooks
+ * because they operate from temp branches in /tmp directories, which would
+ * otherwise be blocked by hook validation.
+ *
+ * Sets LUMENFLOW_FORCE=1 and LUMENFLOW_FORCE_REASON during the push,
+ * then restores original environment values (even on error).
+ *
+ * @param {GitAdapter} gitAdapter - GitAdapter instance to use for push
+ * @param {string} remote - Remote name (e.g., 'origin')
+ * @param {string} localRef - Local ref to push (e.g., 'tmp/wu-claim/wu-123')
+ * @param {string} remoteRef - Remote ref to update (e.g., 'main')
+ * @param {string} reason - Audit reason for the LUMENFLOW_FORCE bypass
+ * @returns {Promise<void>}
+ * @throws {Error} If push fails (env vars still restored)
+ */
+export async function pushRefspecWithForce(
+  gitAdapter: GitAdapter,
+  remote: string,
+  localRef: string,
+  remoteRef: string,
+  reason: string,
+): Promise<void> {
+  // Save original env values
+  const originalForce = process.env[LUMENFLOW_FORCE_ENV];
+  const originalReason = process.env[LUMENFLOW_FORCE_REASON_ENV];
+
+  try {
+    // Set LUMENFLOW_FORCE for the push
+    process.env[LUMENFLOW_FORCE_ENV] = '1';
+    process.env[LUMENFLOW_FORCE_REASON_ENV] = reason;
+
+    // Perform the push
+    await gitAdapter.pushRefspec(remote, localRef, remoteRef);
+  } finally {
+    // Restore original env values
+    if (originalForce === undefined) {
+      delete process.env[LUMENFLOW_FORCE_ENV];
+    } else {
+      process.env[LUMENFLOW_FORCE_ENV] = originalForce;
+    }
+
+    if (originalReason === undefined) {
+      delete process.env[LUMENFLOW_FORCE_REASON_ENV];
+    } else {
+      process.env[LUMENFLOW_FORCE_REASON_ENV] = originalReason;
+    }
+  }
+}
+
+/**
  * Execute an operation in a micro-worktree with full isolation
  *
  * This is the main entry point for micro-worktree operations.
@@ -457,10 +524,17 @@ export async function withMicroWorktree(options) {
     // Step 6: Push to origin (different paths for pushOnly vs standard)
     if (pushOnly) {
       // WU-1435: Push directly to origin/main without touching local main
+      // WU-1081: Use LUMENFLOW_FORCE to bypass pre-push hooks for micro-worktree pushes
       console.log(
         `${logPrefix} Pushing directly to ${REMOTES.ORIGIN}/${BRANCHES.MAIN} (push-only)...`,
       );
-      await gitWorktree.pushRefspec(REMOTES.ORIGIN, tempBranchName, BRANCHES.MAIN);
+      await pushRefspecWithForce(
+        gitWorktree,
+        REMOTES.ORIGIN,
+        tempBranchName,
+        BRANCHES.MAIN,
+        `micro-worktree push for ${operation} (automated)`,
+      );
       console.log(`${logPrefix} ✅ Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
 
       // Fetch to update remote tracking ref (FETCH_HEAD)
