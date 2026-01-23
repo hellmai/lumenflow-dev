@@ -2,7 +2,7 @@ id: WU-1070
 title: Add audit logging and guarding for LUMENFLOW_FORCE bypass
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -64,3 +64,5 @@ session_id: 685f767e-a25e-4b8e-9511-bf96be168b3b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T09:54:08.512Z
+locked: true
+completed_at: 2026-01-23T10:01:24.358Z
