@@ -114,3 +114,4 @@
 {"type":"claim","wuId":"WU-1071","lane":"Framework: CLI","title":"Fix CLI entry guard for pnpm symlink resolution","timestamp":"2026-01-23T12:18:17.534Z"}
 {"type":"complete","wuId":"WU-1071","timestamp":"2026-01-23T12:25:58.047Z"}
 {"type":"complete","wuId":"WU-1072","timestamp":"2026-01-23T12:25:00.685Z"}
+{"type":"claim","wuId":"WU-1074","lane":"Framework: CLI","title":"Add release command for npm publishing","timestamp":"2026-01-23T12:34:44.172Z"}
