@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1075 — Rename .beacon to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml) — Framework: Core
-- [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -30,6 +28,7 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
+- [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -90,4 +89,5 @@ sections:
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml)
 - [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml)
 - [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml)
+- [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml)
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml)
