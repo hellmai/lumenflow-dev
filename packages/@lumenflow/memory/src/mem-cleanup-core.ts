@@ -35,7 +35,7 @@ import path from 'node:path';
 const ms = require('ms') as (value: string) => number;
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Lifecycle policy definition
@@ -420,7 +420,7 @@ export async function cleanupMemory(
   options: CleanupOptions = {},
 ): Promise<CleanupResult> {
   const { dryRun = false, sessionId, ttl, ttlMs: providedTtlMs, now = Date.now() } = options;
-  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
 
   // WU-1554: Parse TTL if provided as string
   let ttlMs = providedTtlMs;
