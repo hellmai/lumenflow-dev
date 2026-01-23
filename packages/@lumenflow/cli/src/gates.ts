@@ -68,6 +68,13 @@ import {
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
 import { Command } from 'commander';
+// WU-1067: Config-driven gates support
+import {
+  loadGatesConfig,
+  resolveGatesConfig,
+  parseGateCommand,
+  type GatesExecutionConfig,
+} from '@lumenflow/core/dist/gates-config.js';
 import {
   BRANCHES,
   PACKAGES,
