@@ -2,7 +2,7 @@ id: WU-1067
 title: Make gates language-agnostic via config-driven execution
 lane: 'Operations: CI/CD'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -67,3 +67,5 @@ session_id: 7bf33a6f-4308-4795-b2c4-79a97e8a5fb5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T09:14:23.728Z
+locked: true
+completed_at: 2026-01-23T09:35:32.296Z
