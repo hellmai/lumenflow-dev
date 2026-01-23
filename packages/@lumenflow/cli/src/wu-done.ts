@@ -2751,8 +2751,10 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
 
 // Guard main() execution for testability (WU-1366)
 // When imported as a module for testing, main() should not auto-run
-import { fileURLToPath } from 'node:url';
+// WU-1071: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   runCLI(main);
 }
