@@ -97,13 +97,60 @@ WU (Work Unit) configuration
 
 Quality gates configuration
 
-| Field                       | Type    | Default | Description |
-| --------------------------- | ------- | ------- | ----------- |
-| `maxEslintWarnings`         | integer | `100`   |             |
-| `enableCoverage`            | boolean | `true`  |             |
-| `minCoverage`               | number  | `90`    |             |
-| `enableSafetyCriticalTests` | boolean | `true`  |             |
-| `enableInvariants`          | boolean | `true`  |             |
+| Field                       | Type    | Default | Description                      |
+| --------------------------- | ------- | ------- | -------------------------------- |
+| `maxEslintWarnings`         | integer | `100`   | Max ESLint warnings allowed      |
+| `enableCoverage`            | boolean | `true`  | Enable coverage gate             |
+| `minCoverage`               | number  | `90`    | Minimum coverage percentage      |
+| `enableSafetyCriticalTests` | boolean | `true`  | Enable safety-critical tests     |
+| `enableInvariants`          | boolean | `true`  | Enable invariants check          |
+| `execution`                 | object  | `-`     | Config-driven gate commands      |
+
+### gates.execution
+
+Config-driven gate commands (WU-1067). When set, gates runner uses these commands instead of hardcoded defaults.
+
+| Field       | Type            | Default | Description                                      |
+| ----------- | --------------- | ------- | ------------------------------------------------ |
+| `preset`    | string          | `-`     | Preset name: `node`, `python`, `go`, `rust`, `dotnet` |
+| `setup`     | string/object   | `-`     | Setup command (e.g., install dependencies)       |
+| `format`    | string/object   | `-`     | Format check command                             |
+| `lint`      | string/object   | `-`     | Lint command                                     |
+| `typecheck` | string/object   | `-`     | Type check command                               |
+| `test`      | string/object   | `-`     | Test command                                     |
+| `coverage`  | string/object   | `-`     | Coverage configuration                           |
+
+Each gate field accepts either a string (shell command) or an object:
+
+```yaml
+gates:
+  execution:
+    # String form
+    format: 'pnpm format:check'
+
+    # Object form with options
+    test:
+      command: 'pnpm test'
+      timeout: 300000       # 5 minutes
+      continueOnError: false
+```
+
+#### Preset Examples
+
+```yaml
+# Node.js preset with override
+gates:
+  execution:
+    preset: 'node'
+    lint: 'pnpm eslint . --max-warnings 0'
+
+# Custom .NET setup
+gates:
+  execution:
+    preset: 'dotnet'
+    setup: 'dotnet restore'
+    test: 'dotnet test --no-restore'
+```
 
 ### memory
 

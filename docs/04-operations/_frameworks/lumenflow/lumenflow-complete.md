@@ -950,6 +950,31 @@ pnpm gates
 # Runs: format:check → lint → typecheck → spec:linter → tests
 ```
 
+#### Config-Driven Gates (WU-1067)
+
+Gates can be configured via `.lumenflow.config.yaml` for any language/toolchain:
+
+```yaml
+# .lumenflow.config.yaml
+gates:
+  execution:
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    typecheck: 'pnpm typecheck'
+    test: 'pnpm test'
+```
+
+Use presets for common languages:
+
+```yaml
+gates:
+  execution:
+    preset: 'python'    # node, python, go, rust, dotnet
+    lint: 'ruff check . && mypy .'  # Override specific commands
+```
+
+When no `gates.execution` config is present, the CLI falls back to auto-detection and hardcoded defaults (backwards compatible).
+
 **IMPORTANT**: When using `pnpm wu:done`, gates are run in the lane worktree context (the code being merged), NOT on main. This ensures "gates must pass" validates the actual change and keeps trunk always releasable per LumenFlow canon. The sequence is:
 
 1. Run gates in lane worktree
