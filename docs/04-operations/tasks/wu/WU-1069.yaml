@@ -6,8 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
-  - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/core/src/__tests__/wu-create-validation.test.ts
+  - packages/@lumenflow/core/src/wu-create-validators.ts
+  - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
 tests:
   manual:
     - Run wu:create with --spec-refs pointing to ./plans/foo.md; should fail with helpful error
@@ -16,7 +16,7 @@ tests:
     - Run wu:create with --spec-refs using lumenflow://plans/foo.md; should succeed
     - Run wu:create with --spec-refs using ~/.lumenflow/plans/foo.md; should succeed
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-create-validation.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1069.done
