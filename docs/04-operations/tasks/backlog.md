@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
