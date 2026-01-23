@@ -2,7 +2,7 @@ id: WU-1081
 title: Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WU-1077 fixed release.ts internals but left the prerelease npm script in package.json which runs changeset pre enter on main. Also micro-worktree push in @lumenflow/core doesn't set LUMENFLOW_FORCE.
+description: WU-1077 fixed release.ts internals but left the prerelease npm script in package.json
+  which runs changeset pre enter on main. Also micro-worktree push in @lumenflow/core doesn't set
+  LUMENFLOW_FORCE.
 acceptance:
   - Remove prerelease npm script from package.json
   - Add LUMENFLOW_FORCE to micro-worktree push in packages/@lumenflow/core/src/micro-worktree.ts
   - pnpm release creates no local changes on main
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1081
+claimed_at: 2026-01-23T18:16:17.708Z
+baseline_main_sha: 711e7f726cd342bcccb550447ebfbeb134b5f869
+session_id: 0934cbc4-9638-4936-ab3a-7f979ae18c4e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T18:16:17.714Z

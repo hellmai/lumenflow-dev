@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
