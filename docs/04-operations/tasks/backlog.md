@@ -25,7 +25,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — Framework: CLI
-- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — Framework: CLI
 - [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -35,3 +34,4 @@ sections:
 ## ✅ Done
 
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml)
+- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml)
