@@ -28,7 +28,7 @@ import {
   validateRelationship,
   type MemoryNode,
 } from './memory-schema.js';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Relationships file name
@@ -160,7 +160,7 @@ interface SessionData {
  * @returns Session data or null
  */
 async function readCurrentSession(baseDir: string): Promise<SessionData | null> {
-  const sessionPath = path.join(baseDir, LUMENFLOW_PATHS.SESSION_CURRENT);
+  const sessionPath = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.SESSION_CURRENT);
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known session path
     const content = await fs.readFile(sessionPath, { encoding: 'utf-8' as BufferEncoding });
@@ -234,7 +234,7 @@ function isValidMemoryId(memId: string): boolean {
  * @returns Memory directory path
  */
 async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
   return memoryDir;

@@ -12,16 +12,16 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'yaml';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Memory layer file/directory paths
  *
- * Uses LUMENFLOW_PATHS from @lumenflow/core for base directory.
+ * Uses LUMENFLOW_MEMORY_PATHS from local paths.ts to avoid circular dependency.
  */
 export const MEMORY_PATHS = {
   /** Memory directory relative to project root */
-  MEMORY_DIR: LUMENFLOW_PATHS.MEMORY_DIR,
+  MEMORY_DIR: LUMENFLOW_MEMORY_PATHS.MEMORY_DIR,
 
   /** Memory JSONL file name */
   MEMORY_FILE: 'memory.jsonl',
