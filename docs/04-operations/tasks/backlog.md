@@ -20,12 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — Framework: CLI
+- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
