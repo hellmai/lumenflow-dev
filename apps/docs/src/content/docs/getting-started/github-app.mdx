@@ -44,7 +44,7 @@ When you open a PR:
 
 1. **App validates** the PR title/body for WU reference
 2. **App checks** WIP limits for the target lane
-3. **App adds** labels (e.g., `lane:core`, `status:in-progress`)
+3. **App adds** labels (e.g., `lane:framework-core`, `status:in-progress`)
 4. **On merge**, app creates a completion stamp
 
 ## Configuration
@@ -58,12 +58,13 @@ The app reads your `.lumenflow.config.yaml` for:
 ```yaml
 # Example config
 lanes:
-  - name: Core
-    wip_limit: 1
-    paths: ['src/core/**']
-  - name: UI
-    wip_limit: 2
-    paths: ['src/components/**']
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths: ['src/core/**']
+    - name: 'Experience: UI'
+      wip_limit: 1
+      code_paths: ['src/components/**']
 ```
 
 ## CLI vs App
