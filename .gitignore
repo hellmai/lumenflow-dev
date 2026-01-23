@@ -36,6 +36,7 @@ coverage/
 # LumenFlow
 /worktrees/
 # Legacy state directory (allow state/wu-events.jsonl for completion tracking)
+/._legacy/state/*.backup*
 /._legacy/memory/
 /._legacy/locks/
 /._legacy/sessions/
