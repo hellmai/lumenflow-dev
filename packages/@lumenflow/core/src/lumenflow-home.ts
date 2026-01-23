@@ -14,11 +14,7 @@
 
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import {
-  PATH_LITERALS,
-  PATH_SLICE_LENGTHS,
-  STRING_LITERALS,
-} from './wu-constants.js';
+import { PATH_LITERALS, PATH_SLICE_LENGTHS, STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Environment variable name for LumenFlow home directory

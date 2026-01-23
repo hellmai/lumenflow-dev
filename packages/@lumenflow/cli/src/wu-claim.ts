@@ -189,9 +189,7 @@ function preflightValidateWU(WU_PATH, id) {
 
 async function handleSpecBranchMergeIfNeeded(id, args) {
   if (args.noPush) {
-    console.warn(
-      `${PREFIX} Warning: --no-push enabled. Skipping spec branch detection/merge.`,
-    );
+    console.warn(`${PREFIX} Warning: --no-push enabled. Skipping spec branch detection/merge.`);
     return;
   }
 

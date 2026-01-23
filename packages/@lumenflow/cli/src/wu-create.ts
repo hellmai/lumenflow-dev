@@ -717,15 +717,7 @@ async function createSpecBranchWU({
 
     const gitWorktree = createGitForPath(microWorktreePath);
 
-    const wuPath = createWUYamlInWorktree(
-      microWorktreePath,
-      id,
-      lane,
-      title,
-      priority,
-      type,
-      opts,
-    );
+    const wuPath = createWUYamlInWorktree(microWorktreePath, id, lane, title, priority, type, opts);
 
     const backlogPath = updateBacklogInWorktree(microWorktreePath, id, lane, title);
     const shortTitle = truncateTitle(title);
