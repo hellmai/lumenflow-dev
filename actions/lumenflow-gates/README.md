@@ -1,107 +1,180 @@
 # LumenFlow Gates Action
 
-AI-native quality gates with automatic language detection.
+Config-driven quality gates for any language.
 
-## Usage
+## Overview
 
-### Basic (Auto-detect)
+LumenFlow Gates reads your gate commands from `.lumenflow.config.yaml`, allowing you to define custom format, lint, and test commands for any language or toolchain. No more hardcoded presets.
 
-```yaml
-- uses: hellmai/lumenflow-gates@v1
-```
+## Quick Start
 
-Automatically detects your project type from:
-
-- `package.json` → Node.js/TypeScript
-- `pyproject.toml` / `setup.py` → Python
-- `go.mod` → Go
-- `Cargo.toml` → Rust
-
-### Specify Preset
+### 1. Add gates configuration to `.lumenflow.config.yaml`
 
 ```yaml
-- uses: hellmai/lumenflow-gates@v1
-  with:
-    preset: python
-    python-version: '3.11'
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    typecheck: 'pnpm typecheck'
+    test: 'pnpm test'
 ```
 
-### Skip Specific Gates
+### 2. Use the action
 
 ```yaml
 - uses: hellmai/lumenflow-gates@v1
   with:
-    skip-typecheck: true # For JS projects without TypeScript
+    token: ${{ secrets.LUMENFLOW_TOKEN }}
 ```
 
-## Presets
+## Configuration
 
-### Node.js (`node`)
+### Using Presets
 
-| Gate      | Command                | Fallback             |
-| --------- | ---------------------- | -------------------- |
-| Format    | `npm run format:check` | `prettier --check .` |
-| Lint      | `npm run lint`         | `eslint .`           |
-| Typecheck | `npm run typecheck`    | `tsc --noEmit`       |
-| Test      | `npm test`             | -                    |
+For common languages, use a preset to get sensible defaults:
 
-Supports: npm, pnpm, yarn, bun (auto-detected from lockfile)
+```yaml
+# .lumenflow.config.yaml
+gates:
+  execution:
+    preset: 'python'
+    # Override specific commands
+    lint: 'mypy . && ruff check .'
+```
 
-### Python (`python`)
+Available presets: `node`, `python`, `go`, `rust`, `dotnet`
 
-| Gate      | Command                 | Fallback                      |
-| --------- | ----------------------- | ----------------------------- |
-| Format    | `ruff format --check .` | `black --check .`             |
-| Lint      | `ruff check .`          | `flake8 .`                    |
-| Typecheck | `mypy .`                | -                             |
-| Test      | `pytest`                | `python -m unittest discover` |
+### Custom Commands
 
-### Go (`go`)
+Define any commands for your toolchain:
 
-| Gate      | Command             |
-| --------- | ------------------- |
-| Format    | `gofmt -l .`        |
-| Lint      | `golangci-lint run` |
-| Typecheck | `go vet ./...`      |
-| Test      | `go test ./...`     |
+```yaml
+# .lumenflow.config.yaml
+gates:
+  execution:
+    setup: 'pnpm install'
+    format: 'pnpm prettier --check .'
+    lint: 'pnpm eslint .'
+    typecheck: 'pnpm tsc --noEmit'
+    test: 'pnpm vitest run'
+```
 
-### Rust (`rust`)
+### Command Options
 
-| Gate      | Command                       |
-| --------- | ----------------------------- |
-| Format    | `cargo fmt --check`           |
-| Lint      | `cargo clippy -- -D warnings` |
-| Typecheck | `cargo check`                 |
-| Test      | `cargo test`                  |
+Commands can be strings or objects with options:
+
+```yaml
+gates:
+  execution:
+    format: 'dotnet format --verify-no-changes'
+    test:
+      command: 'dotnet test --no-restore'
+      timeout: 300000 # 5 minutes
+      continueOnError: false
+```
+
+## Language Examples
+
+### Node.js / TypeScript
+
+```yaml
+gates:
+  execution:
+    preset: 'node'
+    # Or custom:
+    setup: 'pnpm install --frozen-lockfile'
+    format: 'pnpm prettier --check .'
+    lint: 'pnpm eslint . --max-warnings 0'
+    typecheck: 'pnpm tsc --noEmit'
+    test: 'pnpm vitest run'
+```
+
+### Python
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Or custom:
+    setup: 'pip install -e ".[dev]"'
+    format: 'ruff format --check .'
+    lint: 'ruff check . && mypy .'
+    test: 'pytest -v'
+```
+
+### .NET
+
+```yaml
+gates:
+  execution:
+    preset: 'dotnet'
+    # Or custom:
+    setup: 'dotnet restore'
+    format: 'dotnet format --verify-no-changes'
+    lint: 'dotnet build --no-restore -warnaserror'
+    test: 'dotnet test --no-restore --logger "console;verbosity=normal"'
+```
+
+### Go
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    # Or custom:
+    format: 'test -z "$(gofmt -l .)"'
+    lint: 'golangci-lint run'
+    typecheck: 'go vet ./...'
+    test: 'go test -v ./...'
+```
+
+### Rust
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    # Or custom:
+    format: 'cargo fmt --check'
+    lint: 'cargo clippy -- -D warnings'
+    typecheck: 'cargo check'
+    test: 'cargo test'
+```
 
 ## Inputs
 
-| Input               | Description         | Default |
-| ------------------- | ------------------- | ------- |
-| `preset`            | Language preset     | `auto`  |
-| `working-directory` | Directory to run in | `.`     |
-| `node-version`      | Node.js version     | `20`    |
-| `python-version`    | Python version      | `3.12`  |
-| `go-version`        | Go version          | `1.22`  |
-| `skip-format`       | Skip format check   | `false` |
-| `skip-lint`         | Skip lint check     | `false` |
-| `skip-typecheck`    | Skip type check     | `false` |
-| `skip-test`         | Skip tests          | `false` |
+| Input               | Description             | Default |
+| ------------------- | ----------------------- | ------- |
+| `token`             | LumenFlow API token     | -       |
+| `working-directory` | Directory to run in     | `.`     |
+| `skip-format`       | Skip format check       | `false` |
+| `skip-lint`         | Skip lint check         | `false` |
+| `skip-typecheck`    | Skip type check         | `false` |
+| `skip-test`         | Skip tests              | `false` |
 
 ## Outputs
 
-| Output            | Description              |
-| ----------------- | ------------------------ |
-| `preset-detected` | The preset that was used |
-| `gates-passed`    | Whether all gates passed |
+| Output            | Description                     |
+| ----------------- | ------------------------------- |
+| `preset-detected` | Preset/config mode used         |
+| `gates-passed`    | Whether all gates passed (true/false) |
 
-## Full Example
+## Backwards Compatibility
+
+If no `gates.execution` config is present, the action falls back to auto-detecting your project type based on files present (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, etc.) and uses the corresponding preset defaults.
+
+## Full Workflow Example
 
 ```yaml
 name: LumenFlow Gates
 
 on:
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 jobs:
@@ -110,9 +183,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: hellmai/lumenflow-gates@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          preset: auto
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+
+      - name: Check result
+        if: always()
+        run: |
+          echo "Gates passed: ${{ steps.gates.outputs.gates-passed }}"
+          echo "Preset used: ${{ steps.gates.outputs.preset-detected }}"
 ```
 
 ## Monorepo Support
@@ -125,8 +214,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hellmai/lumenflow-gates@v1
         with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
           working-directory: packages/frontend
-          preset: node
 
   backend:
     runs-on: ubuntu-latest
@@ -134,8 +223,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hellmai/lumenflow-gates@v1
         with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
           working-directory: packages/backend
-          preset: python
 ```
 
 ## License

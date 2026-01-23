@@ -43,9 +43,11 @@ The fastest way to start using LumenFlow is with just the GitHub App.
          wip_limit: 2
 
    gates:
-     lint: npm run lint
-     typecheck: npm run typecheck
-     test: npm test
+     execution:
+       format: 'npm run format:check'
+       lint: 'npm run lint'
+       typecheck: 'npm run typecheck'
+       test: 'npm test'
    ```
 
 3. **Create the tasks directory**
@@ -251,10 +253,12 @@ lanes:
         - infra/**
 
 gates:
-  format: npx prettier --check .
-  lint: npm run lint
-  typecheck: npm run typecheck
-  test: npm test
+  execution:
+    preset: 'node'  # Or use custom commands
+    format: 'npx prettier --check .'
+    lint: 'npm run lint'
+    typecheck: 'npm run typecheck'
+    test: 'npm test'
 
 git:
   main_branch: main

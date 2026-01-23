@@ -9,6 +9,9 @@
 
 import { z } from 'zod';
 
+// WU-1067: Import gates execution schema from canonical source
+import { GatesExecutionConfigSchema } from './gates-config.js';
+
 /**
  * Directory paths configuration
  */
@@ -150,6 +153,7 @@ export const WuConfigSchema = z.object({
 
 /**
  * Gates configuration
+ * Note: GatesExecutionConfigSchema is imported from gates-config.ts
  */
 export const GatesConfigSchema = z.object({
   /** Maximum ESLint warnings allowed (default: 100) */
@@ -166,6 +170,13 @@ export const GatesConfigSchema = z.object({
 
   /** Enable invariants check (default: true) */
   enableInvariants: z.boolean().default(true),
+
+  /**
+   * WU-1067: Config-driven gates execution
+   * Custom commands for each gate, with optional preset expansion.
+   * When set, gates runner uses these instead of hardcoded commands.
+   */
+  execution: GatesExecutionConfigSchema.optional(),
 });
 
 /**
@@ -341,6 +352,7 @@ export type BeaconPaths = z.infer<typeof BeaconPathsSchema>;
 export type GitConfig = z.infer<typeof GitConfigSchema>;
 export type WuConfig = z.infer<typeof WuConfigSchema>;
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;
+// GatesExecutionConfig exported from gates-config.js
 export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
 

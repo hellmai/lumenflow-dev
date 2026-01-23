@@ -1,0 +1,32 @@
+{
+  "name": "@lumenflow/gates-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LumenFlow config-driven quality gates GitHub Action",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "keywords": [
+    "github-action",
+    "lumenflow",
+    "quality-gates",
+    "ci-cd"
+  ],
+  "author": "HellmAI",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/glob": "^0.5.0",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vercel/ncc": "^0.38.3",
+    "typescript": "^5.7.0"
+  }
+}

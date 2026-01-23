@@ -1,6 +1,6 @@
 ---
 title: Gates
-description: Automated quality enforcement
+description: Config-driven quality gates for any language
 ---
 
 Gates are automated quality checks that must pass before a WU can be completed. They replace manual code review with consistent, automated enforcement.
@@ -19,16 +19,48 @@ Gates:
 - Consistent (same checks every time)
 - Fast feedback (run locally before pushing)
 
-## Default Gates
+## Config-Driven Gates
+
+Define your gate commands in `.lumenflow.config.yaml`:
 
 ```yaml
 # .lumenflow.config.yaml
+version: '2.0'
+
 gates:
-  format: true # prettier, etc.
-  lint: true # eslint, ruff, etc.
-  typecheck: true # tsc, mypy, etc.
-  test: true # jest, pytest, etc.
+  execution:
+    setup: 'pnpm install'
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    typecheck: 'pnpm typecheck'
+    test: 'pnpm test'
 ```
+
+This approach works with any language and toolchain.
+
+## Using Presets
+
+For common languages, use a preset to get sensible defaults:
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Override specific commands
+    lint: 'mypy . && ruff check .'
+```
+
+Available presets: `node`, `python`, `go`, `rust`, `dotnet`
+
+### Preset Defaults
+
+| Preset   | Format                      | Lint              | Typecheck       | Test          |
+| -------- | --------------------------- | ----------------- | --------------- | ------------- |
+| `node`   | `prettier --check .`        | `eslint .`        | `tsc --noEmit`  | `npm test`    |
+| `python` | `ruff format --check .`     | `ruff check .`    | `mypy .`        | `pytest`      |
+| `go`     | `gofmt -l .`                | `golangci-lint`   | `go vet ./...`  | `go test`     |
+| `rust`   | `cargo fmt --check`         | `cargo clippy`    | `cargo check`   | `cargo test`  |
+| `dotnet` | `dotnet format --verify`    | `dotnet build`    | -               | `dotnet test` |
 
 ## Running Gates
 
@@ -37,58 +69,94 @@ gates:
 pnpm gates
 
 # Output
-> Format check... ✅
-> Lint check... ✅
-> Type check... ✅
-> Test suite... ✅
+> Format check... pass
+> Lint check... pass
+> Type check... pass
+> Test suite... pass
 > All gates passed!
 ```
 
 If any gate fails, `wu:done` is blocked until fixed.
 
-## Gate Configuration
+## Command Options
 
-### Per-Project Detection
-
-LumenFlow auto-detects your stack:
-
-| File Detected               | Gates Run                                  |
-| --------------------------- | ------------------------------------------ |
-| `package.json` + TypeScript | `prettier`, `eslint`, `tsc`, `vitest/jest` |
-| `pyproject.toml`            | `ruff`, `mypy`, `pytest`                   |
-| `go.mod`                    | `gofmt`, `golint`, `go test`               |
-
-### Custom Gate Commands
-
-Override auto-detection with explicit commands:
+Commands can be strings or objects with options:
 
 ```yaml
 gates:
-  format:
-    command: pnpm prettier --check .
-  lint:
-    command: pnpm eslint src/
-  typecheck:
-    command: pnpm tsc --noEmit
-  test:
-    command: pnpm vitest run
+  execution:
+    format: 'dotnet format --verify-no-changes'
+    test:
+      command: 'dotnet test --no-restore'
+      timeout: 300000 # 5 minutes
+      continueOnError: false
 ```
 
-### Additional Gates
+## Language Examples
 
-Add project-specific gates:
+### Node.js / TypeScript
 
 ```yaml
 gates:
-  format: true
-  lint: true
-  typecheck: true
-  test: true
-  # Custom gates
-  security:
-    command: pnpm audit --audit-level=high
-  a11y:
-    command: pnpm test:a11y
+  execution:
+    preset: 'node'
+    # Or custom:
+    setup: 'pnpm install --frozen-lockfile'
+    format: 'pnpm prettier --check .'
+    lint: 'pnpm eslint . --max-warnings 0'
+    typecheck: 'pnpm tsc --noEmit'
+    test: 'pnpm vitest run'
+```
+
+### Python
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Or custom:
+    setup: 'pip install -e ".[dev]"'
+    format: 'ruff format --check .'
+    lint: 'ruff check . && mypy .'
+    test: 'pytest -v'
+```
+
+### .NET
+
+```yaml
+gates:
+  execution:
+    preset: 'dotnet'
+    # Or custom:
+    setup: 'dotnet restore'
+    format: 'dotnet format --verify-no-changes'
+    lint: 'dotnet build --no-restore -warnaserror'
+    test: 'dotnet test --no-restore'
+```
+
+### Go
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    # Or custom:
+    format: 'test -z "$(gofmt -l .)"'
+    lint: 'golangci-lint run'
+    typecheck: 'go vet ./...'
+    test: 'go test -v ./...'
+```
+
+### Rust
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    format: 'cargo fmt --check'
+    lint: 'cargo clippy -- -D warnings'
+    typecheck: 'cargo check'
+    test: 'cargo test'
 ```
 
 ## Gate Behavior
@@ -117,8 +185,8 @@ pnpm gates
 When you `wu:done`:
 
 1. Gates run automatically
-2. If any fail → error, WU stays `in_progress`
-3. If all pass → WU marked `done`, stamp created
+2. If any fail, error, WU stays `in_progress`
+3. If all pass, WU marked `done`, stamp created
 
 ## Gate Failures
 
@@ -126,7 +194,7 @@ When you `wu:done`:
 pnpm wu:done --id WU-042
 
 > Running gates...
-> Format check... ❌
+> Format check... FAILED
 >   src/utils/validation.ts - needs formatting
 >
 > Fix the issues above before completing.
@@ -137,33 +205,30 @@ Fix and retry:
 ```bash
 pnpm prettier --write src/utils/validation.ts
 pnpm wu:done --id WU-042
-# ✅ Success
+# Success
 ```
 
-## Safety-Critical Gates
+## Skip Flags
 
-For healthcare/compliance contexts, add mandatory gates:
+Skip specific gates when needed:
+
+```bash
+pnpm gates --skip-test
+```
+
+Or in configuration:
 
 ```yaml
 gates:
-  # Standard
-  format: true
-  lint: true
-  typecheck: true
-  test: true
-
-  # Safety-critical
-  spec-linter:
-    command: pnpm spec:lint
-    required: true
-  phi-check:
-    command: pnpm phi:audit
-    required: true
+  execution:
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    # No typecheck or test for this project
 ```
 
 ## CI Integration
 
-Gates can run in CI for team enforcement:
+Use the LumenFlow Gates GitHub Action:
 
 ```yaml
 # .github/workflows/gates.yml
@@ -174,12 +239,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - run: pnpm install
-      - run: pnpm gates
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
 ```
+
+The action reads your `gates.execution` config automatically. See [GitHub Action docs](/reference/github-action) for details.
+
+## Backwards Compatibility
+
+If no `gates.execution` config is present, LumenFlow falls back to auto-detecting your project type based on files present and uses preset defaults.
 
 ## Next Steps
 
-- [Memory Layer](/concepts/memory) – Context persistence
-- [CLI Reference](/reference/cli) – All gate commands
+- [Configuration Reference](/reference/config) - Full gates schema
+- [Memory Layer](/concepts/memory) - Context persistence
+- [CLI Reference](/reference/cli) - All gate commands

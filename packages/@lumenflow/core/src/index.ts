@@ -126,6 +126,9 @@ export * from './stamp-utils.js';
 export * from './lumenflow-config.js';
 export * from './lumenflow-config-schema.js';
 
+// Gates configuration (WU-1067)
+export * from './gates-config.js';
+
 // Branch check utilities
 export * from './branch-check.js';
 
