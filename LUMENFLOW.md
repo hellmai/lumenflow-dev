@@ -129,13 +129,16 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ## Commands Reference
 
-| Command               | Description                                       |
-| --------------------- | ------------------------------------------------- |
-| `pnpm wu:create`      | Create new WU spec                                |
-| `pnpm wu:claim`       | Claim WU, update canonical state, create worktree |
-| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)               |
-| `pnpm gates`          | Run quality gates                                 |
-| `pnpm mem:checkpoint` | Save memory checkpoint                            |
+| Command               | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| `pnpm wu:create`      | Create new WU spec                                     |
+| `pnpm wu:claim`       | Claim WU, update canonical state, create worktree      |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)                    |
+| `pnpm wu:block`       | Block WU (transitions to blocked, frees lane)          |
+| `pnpm wu:unblock`     | Unblock WU (transitions to in_progress)                |
+| `pnpm wu:release`     | Release orphaned WU (in_progress to ready for reclaim) |
+| `pnpm gates`          | Run quality gates                                      |
+| `pnpm mem:checkpoint` | Save memory checkpoint                                 |
 
 ---
 

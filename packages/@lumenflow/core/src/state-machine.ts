@@ -9,6 +9,7 @@
  * - in_progress → blocked (block)
  * - in_progress → waiting (implementation complete, awaiting sign-off)
  * - in_progress → done (direct completion)
+ * - in_progress → ready (release - WU-1080: orphan recovery)
  * - blocked → in_progress (unblock)
  * - blocked → done (blocker resolved, direct completion)
  * - waiting → in_progress (changes requested)
@@ -29,7 +30,7 @@ const VALID_STATES = new Set(['ready', 'in_progress', 'blocked', 'waiting', 'don
  */
 const TRANSITIONS = {
   ready: ['in_progress'],
-  in_progress: ['blocked', 'waiting', 'done'],
+  in_progress: ['blocked', 'waiting', 'done', 'ready'], // WU-1080: 'ready' via release for orphan recovery
   blocked: ['in_progress', 'done'],
   waiting: ['in_progress', 'done'],
   done: [], // Terminal state - no outgoing transitions

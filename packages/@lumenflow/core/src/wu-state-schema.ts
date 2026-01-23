@@ -19,6 +19,7 @@ import { z } from 'zod';
  * - complete: WU completed (transitions to done)
  * - checkpoint: Progress checkpoint (WU-1748: cross-agent visibility)
  * - spawn: WU spawned from parent (WU-1947: parent-child relationships)
+ * - release: WU released (WU-1080: transitions from in_progress to ready for orphan recovery)
  */
 export const WU_EVENT_TYPES = [
   'create',
@@ -28,6 +29,7 @@ export const WU_EVENT_TYPES = [
   'complete',
   'checkpoint',
   'spawn',
+  'release',
 ] as const;
 
 /** Type for WU event types */
@@ -148,6 +150,17 @@ export const SpawnEventSchema = BaseEventSchema.extend({
 });
 
 /**
+ * Release event schema (WU-1080: orphan recovery)
+ * Releases an in_progress WU back to ready state when agent is interrupted.
+ * Allows another agent to reclaim the orphaned WU.
+ */
+export const ReleaseEventSchema = BaseEventSchema.extend({
+  type: z.literal('release'),
+  /** Reason for releasing the WU */
+  reason: z.string().min(1, { message: ERROR_MESSAGES.REASON_REQUIRED }),
+});
+
+/**
  * Union schema for all event types
  */
 export const WUEventSchema = z.discriminatedUnion('type', [
@@ -158,6 +171,7 @@ export const WUEventSchema = z.discriminatedUnion('type', [
   CompleteEventSchema,
   CheckpointEventSchema,
   SpawnEventSchema,
+  ReleaseEventSchema,
 ]);
 
 /**
@@ -170,6 +184,7 @@ export type UnblockEvent = z.infer<typeof UnblockEventSchema>;
 export type CompleteEvent = z.infer<typeof CompleteEventSchema>;
 export type CheckpointEvent = z.infer<typeof CheckpointEventSchema>;
 export type SpawnEvent = z.infer<typeof SpawnEventSchema>;
+export type ReleaseEvent = z.infer<typeof ReleaseEventSchema>;
 export type WUEvent = z.infer<typeof WUEventSchema>;
 
 /**
