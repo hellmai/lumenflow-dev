@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
