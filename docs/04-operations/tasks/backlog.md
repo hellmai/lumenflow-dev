@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
