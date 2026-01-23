@@ -92,7 +92,6 @@
 {"type":"complete","wuId":"WU-1058","timestamp":"2026-01-22T16:50:08.085Z"}
 {"type":"claim","wuId":"WU-1059","lane":"Framework: CLI","title":"Auto-generate CLI and config documentation from source","timestamp":"2026-01-22T17:51:04.367Z"}
 {"type":"complete","wuId":"WU-1059","timestamp":"2026-01-22T18:18:12.143Z"}
-{"type":"complete","wuId":"WU-1052","timestamp":"2026-01-22T19:03:08.488Z"}
 {"type":"claim","wuId":"WU-1061","lane":"Framework: CLI","title":"Integrate docs:generate into wu:done for @lumenflow/* changes","timestamp":"2026-01-22T20:26:21.212Z"}
 {"type":"claim","wuId":"WU-1062","lane":"Framework: Core","title":"External plan storage and no-main-write mode for wu:create","timestamp":"2026-01-22T20:32:03.847Z"}
 {"type":"complete","wuId":"WU-1061","timestamp":"2026-01-22T20:41:05.558Z"}
@@ -116,4 +115,6 @@
 {"type":"complete","wuId":"WU-1071","timestamp":"2026-01-23T12:25:58.047Z"}
 {"type":"complete","wuId":"WU-1072","timestamp":"2026-01-23T12:25:00.685Z"}
 {"type":"claim","wuId":"WU-1074","lane":"Framework: CLI","title":"Add release command for npm publishing","timestamp":"2026-01-23T12:34:44.172Z"}
+{"type":"complete","wuId":"WU-1074","timestamp":"2026-01-23T13:20:03.229Z"}
+{"type":"complete","wuId":"WU-1052","timestamp":"2026-01-22T19:03:08.488Z"}
 {"type":"claim","wuId":"WU-1075","lane":"Framework: Core","title":"Rename .beacon to .lumenflow - remove ExampleApp branding","timestamp":"2026-01-23T12:40:30.562Z"}
