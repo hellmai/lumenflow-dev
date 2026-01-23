@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml) — Framework: Core
-- [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml) — Operations: CI/CD
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -30,7 +28,6 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
-- [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -86,3 +83,4 @@ sections:
 - [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
+- [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)

@@ -11,6 +11,7 @@ _Last updated: 2026-01-22_
 
 ## Completed
 
+- [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — 2026-01-23
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml) — 2026-01-22
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — 2026-01-22
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
