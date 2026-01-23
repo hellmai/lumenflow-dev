@@ -2,7 +2,7 @@ id: WU-1076
 title: Block direct main branch commits for agents
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -27,7 +27,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Agents sometimes accidentally work on main instead of their worktree, causing dirty state or unwanted commits. Add instruction layer (CLAUDE.md) and enforcement layer (pre-commit hook) following industry patterns from GitHub Copilot and Block's Goose.
+description: Agents sometimes accidentally work on main instead of their worktree, causing dirty
+  state or unwanted commits. Add instruction layer (CLAUDE.md) and enforcement layer (pre-commit
+  hook) following industry patterns from GitHub Copilot and Block's Goose.
 acceptance:
   - Pre-commit hook blocks commits on main unless LUMENFLOW_FORCE=1
   - CLAUDE.md has 2-line branch safety rule
@@ -35,3 +37,11 @@ acceptance:
   - Hook shows clear error message directing to wu:claim
   - Existing wu:done and pnpm release workflows still work
   - Gates pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1076
+claimed_at: 2026-01-23T13:40:08.968Z
+baseline_main_sha: f6889d0e4cdcfe11675cf8488197ddd41a02f555
+session_id: 5094a10d-3521-4d59-939d-66c85edf182f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T13:40:08.975Z
