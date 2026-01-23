@@ -7,11 +7,9 @@ _Last updated: 2026-01-23_
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml)
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
+- [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml)
-
-## Blocked
-
-- [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Worktree missing, blocked to free lane
+- [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml)
 
 ## Completed
 
