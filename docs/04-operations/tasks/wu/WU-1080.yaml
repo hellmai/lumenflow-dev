@@ -6,7 +6,11 @@ status: ready
 priority: P2
 created: 2026-01-23
 code_paths:
+  - packages/@lumenflow/core/src/wu-state-schema.ts
+  - packages/@lumenflow/core/src/wu-state-store.ts
   - packages/@lumenflow/cli/src/wu-release.ts
+  - docs/04-operations/_frameworks/lumenflow/
+  - apps/docs/
 tests:
   manual: []
   unit:
@@ -25,9 +29,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When an agent is interrupted mid-WU, no complete event is recorded. The WU becomes stuck in in_progress state with no recovery path. Need a wu:release command that adds a release event type to allow reclaiming orphaned WUs.
+description: When an agent is interrupted mid-WU, no complete event is recorded. The WU becomes
+  stuck in in_progress state with no recovery path. Need a wu:release command that adds a release
+  event type to allow reclaiming orphaned WUs.
 acceptance:
   - Add release event type to wu-state-schema.ts
   - wu:release command appends release event transitioning WU from in_progress to ready
   - State store handles release event correctly on replay
   - Cannot release a WU that is not in_progress
+  - Update internal docs (docs/04-operations/_frameworks/lumenflow/)
+  - Update Starlight/Astro public docs with wu:release usage
