@@ -134,9 +134,7 @@ export const GATE_PRESETS: Record<string, Partial<GatesExecutionConfig>> = {
  * @param config - Gate command configuration (string or object)
  * @returns Parsed command with defaults applied, or null if undefined
  */
-export function parseGateCommand(
-  config: GateCommandConfig | undefined,
-): ParsedGateCommand | null {
+export function parseGateCommand(config: GateCommandConfig | undefined): ParsedGateCommand | null {
   if (config === undefined) {
     return null;
   }
@@ -162,9 +160,7 @@ export function parseGateCommand(
  * @param preset - Preset name (node, python, go, rust, dotnet) or undefined
  * @returns Partial gates config with preset defaults, or empty object if unknown
  */
-export function expandPreset(
-  preset: string | undefined,
-): Partial<GatesExecutionConfig> {
+export function expandPreset(preset: string | undefined): Partial<GatesExecutionConfig> {
   if (!preset) {
     return {};
   }
@@ -178,9 +174,7 @@ export function expandPreset(
  * @param projectRoot - Project root directory
  * @returns Gates execution config, or null if not configured
  */
-export function loadGatesConfig(
-  projectRoot: string,
-): GatesExecutionConfig | null {
+export function loadGatesConfig(projectRoot: string): GatesExecutionConfig | null {
   const configPath = path.join(projectRoot, '.lumenflow.config.yaml');
 
   if (!fs.existsSync(configPath)) {
@@ -231,7 +225,8 @@ export function loadGatesConfig(
  */
 export function getDefaultGatesConfig(): GatesExecutionConfig {
   return {
-    format: 'npm run format:check 2>/dev/null || npx prettier --check . 2>/dev/null || echo "No formatter configured"',
+    format:
+      'npm run format:check 2>/dev/null || npx prettier --check . 2>/dev/null || echo "No formatter configured"',
     lint: 'npm run lint 2>/dev/null || npx eslint . 2>/dev/null || echo "No linter configured"',
     typecheck:
       'npm run typecheck 2>/dev/null || npx tsc --noEmit 2>/dev/null || echo "No type checker configured"',

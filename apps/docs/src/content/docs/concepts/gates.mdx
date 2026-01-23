@@ -54,13 +54,13 @@ Available presets: `node`, `python`, `go`, `rust`, `dotnet`
 
 ### Preset Defaults
 
-| Preset   | Format                      | Lint              | Typecheck       | Test          |
-| -------- | --------------------------- | ----------------- | --------------- | ------------- |
-| `node`   | `prettier --check .`        | `eslint .`        | `tsc --noEmit`  | `npm test`    |
-| `python` | `ruff format --check .`     | `ruff check .`    | `mypy .`        | `pytest`      |
-| `go`     | `gofmt -l .`                | `golangci-lint`   | `go vet ./...`  | `go test`     |
-| `rust`   | `cargo fmt --check`         | `cargo clippy`    | `cargo check`   | `cargo test`  |
-| `dotnet` | `dotnet format --verify`    | `dotnet build`    | -               | `dotnet test` |
+| Preset   | Format                   | Lint            | Typecheck      | Test          |
+| -------- | ------------------------ | --------------- | -------------- | ------------- |
+| `node`   | `prettier --check .`     | `eslint .`      | `tsc --noEmit` | `npm test`    |
+| `python` | `ruff format --check .`  | `ruff check .`  | `mypy .`       | `pytest`      |
+| `go`     | `gofmt -l .`             | `golangci-lint` | `go vet ./...` | `go test`     |
+| `rust`   | `cargo fmt --check`      | `cargo clippy`  | `cargo check`  | `cargo test`  |
+| `dotnet` | `dotnet format --verify` | `dotnet build`  | -              | `dotnet test` |
 
 ## Running Gates
 
