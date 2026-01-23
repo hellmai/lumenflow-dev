@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml) — Framework: Core
 - [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml) — Operations: CI/CD
   (No items ready)
 
