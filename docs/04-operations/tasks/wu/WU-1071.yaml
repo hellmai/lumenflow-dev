@@ -2,7 +2,7 @@ id: WU-1071
 title: Fix CLI entry guard for pnpm symlink resolution
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-01-23
 code_paths:
@@ -50,3 +50,5 @@ session_id: 941c42a8-d1b5-4c4b-9eaa-a71aa899ed6e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T12:18:17.513Z
+locked: true
+completed_at: 2026-01-23T12:25:58.026Z
