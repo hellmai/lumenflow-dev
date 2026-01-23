@@ -2,7 +2,7 @@ id: WU-1079
 title: Migrate stamps from .beacon to .lumenflow
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -39,3 +39,5 @@ session_id: fbb4ba19-4878-4055-b239-c42316664ba7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T14:38:11.278Z
+locked: true
+completed_at: 2026-01-23T14:45:05.838Z
