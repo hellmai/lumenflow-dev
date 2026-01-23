@@ -1,0 +1,33 @@
+id: WU-1072
+title: Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-23
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - Verify documentation explains wu:cleanup is PR-only
+  unit: []
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1072.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: wu:done fails with 'Unexpected files staged' when turbo docs:generate creates MDX files in apps/docs/. The staging whitelist in wu-done.ts needs to include apps/docs/**/*.mdx. Additionally, agents don't know wu:cleanup is PR-only (requires merged PR when gh CLI available), causing confusion when they try to use it after wu:done failures.
+acceptance:
+  - Staging whitelist includes apps/docs/**/*.mdx pattern
+  - wu:done succeeds when docs:generate creates new MDX files
+  - 'Documentation updated: agents understand wu:cleanup is PR-only'
+  - quick-ref-commands.md clarifies wu:done vs wu:cleanup usage
