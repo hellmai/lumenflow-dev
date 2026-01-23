@@ -57,9 +57,10 @@ pnpm wu:done --id WU-XXXX
 2. **Library-First**: Search existing libraries before custom code
 3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
 4. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-5. **Gates Before Done**: All gates must pass before `wu:done`
-6. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-7. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+5. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
+6. **Gates Before Done**: All gates must pass before `wu:done`
+7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+8. **Always wu:done**: Complete every WU by running `pnpm wu:done`
 
 ---
 
