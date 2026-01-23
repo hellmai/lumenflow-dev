@@ -1,1 +1,2 @@
 {"type":"claim","wuId":"WU-1077","lane":"Framework: CLI","title":"Fix release script to work entirely in micro-worktree","timestamp":"2026-01-23T14:30:05.484Z"}
+{"type":"claim","wuId":"WU-1078","lane":"Framework: CLI","title":"Fix wu:repair to use micro-worktree isolation","timestamp":"2026-01-23T14:36:07.067Z"}
