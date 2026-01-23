@@ -20,7 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — Framework: Core
 
 ## 🔧 In progress
 
