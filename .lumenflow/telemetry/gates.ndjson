@@ -65,3 +65,5 @@
 {"timestamp":"2026-01-23T13:38:09.543Z","wu_id":"WU-1075","lane":"Framework-core","gate_name":"prompts:lint","passed":true,"duration_ms":323}
 {"timestamp":"2026-01-23T13:38:09.601Z","wu_id":"WU-1075","lane":"Framework-core","gate_name":"backlog-sync","passed":true,"duration_ms":57}
 {"timestamp":"2026-01-23T13:38:09.658Z","wu_id":"WU-1075","lane":"Framework-core","gate_name":"system-map:validate","passed":true,"duration_ms":57}
+{"timestamp":"2026-01-23T13:57:07.961Z","wu_id":"WU-1075","lane":"Framework-core","gate_name":"invariants","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-23T13:57:18.397Z","wu_id":"WU-1075","lane":"Framework-core","gate_name":"format:check","passed":false,"duration_ms":10436}
