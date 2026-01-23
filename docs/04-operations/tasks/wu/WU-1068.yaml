@@ -6,15 +6,23 @@ status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
-  - packages/@lumenflow/cli/src/**
-  - packages/@lumenflow/core/src/**
-  - packages/@lumenflow/memory/src/**
-  - packages/@lumenflow/agent/src/**
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/coverage-gate.ts
+  - packages/@lumenflow/core/src/manual-test-validator.ts
+  - packages/@lumenflow/core/src/prompt-linter.ts
+  - packages/@lumenflow/core/src/prompt-monitor.ts
+  - packages/@lumenflow/core/src/user-normalizer.ts
+  - packages/@lumenflow/core/src/validators/phi-scanner.ts
+  - packages/@lumenflow/core/src/worktree-symlink.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-yaml-fixer.ts
 tests:
-  manual: []
+  manual:
+    - Verify PHI scanning is disabled by default (no NHS number detection without LUMENFLOW_PHI_ENABLED=1)
   unit:
-    - packages/@lumenflow/core/src/__tests__/**
+    - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
+    - packages/@lumenflow/core/src/validators/__tests__/phi-scanner.test.ts
   e2e: []
 artifacts:
   - .beacon/stamps/WU-1068.done
