@@ -21,9 +21,17 @@
  */
 
 import { Command } from 'commander';
-import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
+} from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { homedir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
@@ -62,6 +70,21 @@ const NPM_TOKEN_ENV = 'NPM_TOKEN';
 
 /** Environment variable for alternative npm auth */
 const NODE_AUTH_TOKEN_ENV = 'NODE_AUTH_TOKEN';
+
+/** Pattern to detect npm auth token in .npmrc files */
+const NPMRC_AUTH_TOKEN_PATTERN = /_authToken=/;
+
+/** Changeset pre.json filename */
+const CHANGESET_PRE_JSON = 'pre.json';
+
+/** Changeset directory name */
+const CHANGESET_DIR = '.changeset';
+
+/** Environment variable to force bypass hooks */
+const LUMENFLOW_FORCE_ENV = 'LUMENFLOW_FORCE';
+
+/** Environment variable to provide reason for force bypass */
+const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /**
  * Release command options
@@ -207,10 +230,101 @@ function runCommand(
 /**
  * Check if npm authentication is available
  *
- * @returns true if NPM_TOKEN or NODE_AUTH_TOKEN is set
+ * Checks for auth in this order:
+ * 1. NPM_TOKEN environment variable
+ * 2. NODE_AUTH_TOKEN environment variable
+ * 3. Auth token in specified .npmrc file (or ~/.npmrc by default)
+ *
+ * @param npmrcPath - Optional path to .npmrc file (defaults to ~/.npmrc)
+ * @returns true if any auth method is found
  */
-function hasNpmAuth(): boolean {
-  return Boolean(process.env[NPM_TOKEN_ENV] || process.env[NODE_AUTH_TOKEN_ENV]);
+export function hasNpmAuth(npmrcPath?: string): boolean {
+  // Check environment variables first
+  if (process.env[NPM_TOKEN_ENV] || process.env[NODE_AUTH_TOKEN_ENV]) {
+    return true;
+  }
+
+  // Check .npmrc file
+  const npmrcFile = npmrcPath ?? join(homedir(), '.npmrc');
+  if (existsSync(npmrcFile)) {
+    try {
+      const content = readFileSync(npmrcFile, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+      // Look for authToken lines (e.g., //registry.npmjs.org/:_authToken=...)
+      return NPMRC_AUTH_TOKEN_PATTERN.test(content);
+    } catch {
+      // If we can't read the file, assume no auth
+      return false;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if the project is in changeset pre-release mode
+ *
+ * Changeset pre mode is indicated by the presence of .changeset/pre.json
+ *
+ * @param baseDir - Base directory to check (defaults to cwd)
+ * @returns true if in pre-release mode
+ */
+export function isInChangesetPreMode(baseDir: string = process.cwd()): boolean {
+  const preJsonPath = join(baseDir, CHANGESET_DIR, CHANGESET_PRE_JSON);
+  return existsSync(preJsonPath);
+}
+
+/**
+ * Exit changeset pre-release mode by removing .changeset/pre.json
+ *
+ * This is safe to call even if not in pre mode (no-op if file doesn't exist)
+ *
+ * @param baseDir - Base directory to operate in (defaults to cwd)
+ */
+export function exitChangesetPreMode(baseDir: string = process.cwd()): void {
+  const preJsonPath = join(baseDir, CHANGESET_DIR, CHANGESET_PRE_JSON);
+  if (existsSync(preJsonPath)) {
+    unlinkSync(preJsonPath);
+  }
+}
+
+/**
+ * Push a git tag to origin, bypassing pre-push hooks via LUMENFLOW_FORCE
+ *
+ * This is necessary because the release script runs in a micro-worktree context
+ * and pre-push hooks may block tag pushes. The force is logged and requires
+ * a reason for audit purposes.
+ *
+ * @param git - SimpleGit instance
+ * @param tagName - Name of the tag to push
+ * @param reason - Reason for bypassing hooks (for audit log)
+ */
+export async function pushTagWithForce(
+  git: ReturnType<typeof getGitForCwd>,
+  tagName: string,
+  reason: string = 'release: tag push from micro-worktree',
+): Promise<void> {
+  // Set environment variables to bypass hooks
+  const originalForce = process.env[LUMENFLOW_FORCE_ENV];
+  const originalReason = process.env[LUMENFLOW_FORCE_REASON_ENV];
+
+  try {
+    process.env[LUMENFLOW_FORCE_ENV] = '1';
+    process.env[LUMENFLOW_FORCE_REASON_ENV] = reason;
+
+    await git.push(REMOTES.ORIGIN, tagName);
+  } finally {
+    // Restore original environment
+    if (originalForce === undefined) {
+      delete process.env[LUMENFLOW_FORCE_ENV];
+    } else {
+      process.env[LUMENFLOW_FORCE_ENV] = originalForce;
+    }
+    if (originalReason === undefined) {
+      delete process.env[LUMENFLOW_FORCE_REASON_ENV];
+    } else {
+      process.env[LUMENFLOW_FORCE_REASON_ENV] = originalReason;
+    }
+  }
 }
 
 /**
@@ -295,6 +409,13 @@ async function main(): Promise<void> {
       id: `v${version}`,
       logPrefix: LOG_PREFIX,
       execute: async ({ worktreePath }) => {
+        // Check and exit changeset pre mode if active
+        if (isInChangesetPreMode(worktreePath)) {
+          console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
+          exitChangesetPreMode(worktreePath);
+          console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
+        }
+
         // Find package paths within the worktree
         const worktreePackagePaths = findPackageJsonPaths(worktreePath);
 
@@ -305,11 +426,17 @@ async function main(): Promise<void> {
         // Get relative paths for commit
         const relativePaths = worktreePackagePaths.map((p) => getRelativePath(p, worktreePath));
 
+        // If we exited pre mode, include the deleted pre.json in files to commit
+        // (the deletion will be staged automatically by git add -A behavior)
+        const changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
+        const filesToCommit = [...relativePaths];
+        // Note: Deletion of pre.json is handled by git detecting the missing file
+
         console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
 
         return {
           commitMessage: buildCommitMessage(version),
-          files: relativePaths,
+          files: filesToCommit,
         };
       },
     });
@@ -336,7 +463,7 @@ async function main(): Promise<void> {
     console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
 
     console.log(`${LOG_PREFIX} Pushing tag to ${REMOTES.ORIGIN}...`);
-    await git.push(REMOTES.ORIGIN, tagName);
+    await pushTagWithForce(git, tagName, 'release: pushing version tag');
     console.log(`${LOG_PREFIX} ✅ Tag pushed`);
   }
 
