@@ -48,7 +48,7 @@ description: |
   4. Log includes: timestamp, hook name, git user, reason, branch, working directory
 acceptance:
   - All 4 husky hooks log to .beacon/force-bypasses.log when LUMENFLOW_FORCE=1
-  - Log format: ISO timestamp | hook name | git user.name | branch | reason | cwd
+  - 'Log format: ISO timestamp | hook name | git user.name | branch | reason | cwd'
   - LUMENFLOW_FORCE_REASON env var documented and logged (warn to stderr if missing)
   - Shared audit function in packages/@lumenflow/core/src/force-bypass-audit.ts
   - .beacon/force-bypasses.log is git-tracked (NOT in .gitignore)
