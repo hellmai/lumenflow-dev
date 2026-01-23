@@ -2,7 +2,7 @@ id: WU-1074
 title: Add release command for npm publishing
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -27,7 +27,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'The npm release process currently requires manual steps: sed for version bumps, LUMENFLOW_FORCE commits, manual build and publish. Should have a proper release command that uses micro-worktree isolation like wu:create does.'
+description: 'The npm release process currently requires manual steps: sed for version bumps,
+  LUMENFLOW_FORCE commits, manual build and publish. Should have a proper release command that uses
+  micro-worktree isolation like wu:create does.'
 acceptance:
   - pnpm release --version X.Y.Z command exists
   - Command bumps all @lumenflow/* package versions
@@ -36,3 +38,11 @@ acceptance:
   - Command publishes to npm with proper auth
   - Command creates git tag vX.Y.Z
   - Gates pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1074
+claimed_at: 2026-01-23T12:34:44.145Z
+baseline_main_sha: a1964c6c351b31130dacbe5d4a29539a4cabd583
+session_id: 25df3817-2382-4e4e-8914-95143534ede0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T12:34:44.152Z
