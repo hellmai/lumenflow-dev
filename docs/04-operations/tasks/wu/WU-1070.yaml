@@ -1,6 +1,6 @@
 id: WU-1070
 title: Add audit logging and guarding for LUMENFLOW_FORCE bypass
-lane: 'Framework: Core'
+lane: 'Operations: Infrastructure'
 type: feature
 status: ready
 priority: P1
