@@ -2,7 +2,7 @@ id: WU-1074
 title: Add release command for npm publishing
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -46,3 +46,5 @@ acceptance:
   - CLI reference docs updated with release command usage
   - Command reads npm auth from ~/.npmrc or NODE_AUTH_TOKEN env var
   - Error message if no npm auth found
+locked: true
+completed_at: 2026-01-23T13:20:03.207Z
