@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+/**
+ * WU Release Command (WU-1080)
+ *
+ * Releases an orphaned WU from in_progress back to ready state.
+ * Use when an agent is interrupted mid-WU and the WU needs to be reclaimed.
+ *
+ * Sequence (micro-worktree pattern):
+ * 1) Validate WU is in_progress
+ * 2) Create micro-worktree from main
+ * 3) Append release event to state store
+ * 4) Regenerate backlog.md and status.md
+ * 5) Commit in micro-worktree, push directly to origin/main
+ * 6) Optionally remove the work worktree
+ *
+ * Usage:
+ *   pnpm wu:release --id WU-1080 --reason "Agent interrupted"
+ */
+
+import { writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { die } from '@lumenflow/core/dist/error-handler.js';
+import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
+import { todayISO } from '@lumenflow/core/dist/date-utils.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { readWU, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
+import {
+  REMOTES,
+  BRANCHES,
+  WU_STATUS,
+  PATTERNS,
+  LOG_PREFIX,
+  FILE_SYSTEM,
+  EXIT_CODES,
+  MICRO_WORKTREE_OPERATIONS,
+} from '@lumenflow/core/dist/wu-constants.js';
+import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
+import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
+
+const PREFIX = '[wu-release]';
+
+async function main() {
+  const args = createWUParser({
+    name: 'wu-release',
+    description: 'Release an orphaned WU from in_progress back to ready state for reclaiming',
+    options: [WU_OPTIONS.id, WU_OPTIONS.reason],
+    required: ['id', 'reason'],
+    allowPositionalId: true,
+  });
+
+  const id = args.id.toUpperCase();
+  if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
+
+  if (!args.reason) {
+    die('Reason is required for releasing a WU. Use --reason "..."');
+  }
+
+  await ensureOnMain(getGitForCwd());
+
+  // Read WU doc from main to validate state
+  const mainWUPath = WU_PATHS.WU(id);
+  let doc;
+  try {
+    doc = readWU(mainWUPath, id);
+  } catch (error) {
+    die(
+      `Failed to read WU ${id}: ${error.message}\n\n` +
+        `Options:\n` +
+        `  1. Check if WU file exists: ls -la ${mainWUPath}\n` +
+        `  2. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
+        `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`,
+    );
+  }
+  const title = doc.title || '';
+  const lane = doc.lane || 'Unknown';
+
+  // Validate current status is in_progress
+  const currentStatus = doc.status || WU_STATUS.READY;
+  if (currentStatus !== WU_STATUS.IN_PROGRESS) {
+    die(
+      `Cannot release WU ${id}: current status is '${currentStatus}', expected 'in_progress'.\n\n` +
+        `The wu:release command is only for releasing orphaned WUs that are stuck in in_progress state.\n\n` +
+        `Current state transitions:\n` +
+        `  - If status is 'ready': WU has not been claimed yet\n` +
+        `  - If status is 'blocked': Use wu:unblock to resume work\n` +
+        `  - If status is 'done': WU is already complete`,
+    );
+  }
+
+  const baseMsg = `wu(${id.toLowerCase()}): release`;
+  const commitMsg = `${baseMsg} — ${args.reason}`;
+
+  // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
+  await withMicroWorktree({
+    operation: MICRO_WORKTREE_OPERATIONS.WU_BLOCK, // Reuse block operation type
+    id,
+    logPrefix: PREFIX,
+    pushOnly: true, // Push directly to origin/main without touching local main
+    execute: async ({ worktreePath }) => {
+      // Build paths relative to micro-worktree
+      const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
+      const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
+      const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
+
+      // Update WU YAML in micro-worktree - set status back to ready
+      const microDoc = readWU(microWUPath, id);
+      microDoc.status = WU_STATUS.READY;
+      const noteLine = `Released (${todayISO()}): ${args.reason}`;
+      appendNote(microDoc, noteLine);
+      writeWU(microWUPath, microDoc);
+
+      // Append release event to WUStateStore
+      const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+      const store = new WUStateStore(stateDir);
+      await store.load();
+      await store.release(id, args.reason);
+
+      // Generate backlog.md and status.md from state store
+      const backlogContent = await generateBacklog(store);
+      writeFileSync(microBacklogPath, backlogContent, {
+        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+      });
+
+      const statusContent = await generateStatus(store);
+      writeFileSync(microStatusPath, statusContent, {
+        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+      });
+
+      return {
+        commitMessage: commitMsg,
+        files: [
+          WU_PATHS.WU(id),
+          WU_PATHS.STATUS(),
+          WU_PATHS.BACKLOG(),
+          '.lumenflow/state/wu-events.jsonl',
+        ],
+      };
+    },
+  });
+
+  // Fetch to update local main tracking
+  await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+
+  // Release lane lock so another WU can be claimed
+  try {
+    if (lane) {
+      const releaseResult = releaseLaneLock(lane, { wuId: id });
+      if (releaseResult.released && !releaseResult.notFound) {
+        console.log(`${PREFIX} Lane lock released for "${lane}"`);
+      }
+    }
+  } catch (err) {
+    // Non-blocking: lock release failure should not block the release operation
+    console.warn(`${PREFIX} Warning: Could not release lane lock: ${err.message}`);
+  }
+
+  console.log(`\n${PREFIX} WU released and pushed.`);
+  console.log(`- WU: ${id} — ${title}`);
+  console.log(`- Status: in_progress → ready`);
+  console.log(`- Reason: ${args.reason}`);
+  console.log(
+    `\n${PREFIX} The WU can now be reclaimed with: pnpm wu:claim --id ${id} --lane "${lane}"`,
+  );
+}
+
+main().catch((e) => {
+  console.error(e.message);
+  process.exit(EXIT_CODES.ERROR);
+});
