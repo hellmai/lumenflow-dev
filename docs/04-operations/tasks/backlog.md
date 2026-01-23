@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
