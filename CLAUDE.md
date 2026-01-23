@@ -54,7 +54,6 @@ pnpm wu:done --id WU-XXXX
 7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
 8. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
 
-
 ## Lanes
 
 Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.yaml` for full list.
