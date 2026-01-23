@@ -7,11 +7,11 @@ _Last updated: 2026-01-23_
 - [WU-1008 — Create lumenflow.dev docs site](wu/WU-1008.yaml)
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml)
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
-- [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
+- [WU-1075 — Rename .beacon to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml)
+- [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml)
 
 ## Completed
 
-- [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — 2026-01-23
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -67,3 +67,5 @@ _Last updated: 2026-01-23_
 - [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml) — 2026-01-23
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — 2026-01-23
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml) — 2026-01-23
+- [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — 2026-01-23
+- [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — 2026-01-22
