@@ -636,6 +636,9 @@ export const GIT_FLAGS = {
   /** Delete branch (force - even if not merged) */
   DELETE_FORCE: '-D',
 
+  /** Delete remote branch flag (for git push --delete) */
+  DELETE_REMOTE: '--delete',
+
   /** Hard reset flag */
   HARD: '--hard',
 
@@ -656,6 +659,9 @@ export const GIT_FLAGS = {
 
   /** One-line log format */
   ONELINE: '--oneline',
+
+  /** List heads only (for ls-remote) */
+  HEADS: '--heads',
 };
 
 /**
@@ -673,6 +679,12 @@ export const GIT_COMMANDS = {
 
   /** List tree objects (check file existence on branch) */
   LS_TREE: 'ls-tree',
+
+  /** List remote references */
+  LS_REMOTE: 'ls-remote',
+
+  /** Push command */
+  PUSH: 'push',
 
   /** Git diff command */
   DIFF: 'diff',
@@ -1449,6 +1461,38 @@ export const STRING_LITERALS = {
 
   /** Forward slash */
   SLASH: '/',
+};
+
+/**
+ * Path-related constants
+ *
+ * WU-1062: Centralized path literals for lumenflow-home and spec-branch operations.
+ */
+export const PATH_LITERALS = {
+  /** Tilde prefix for home directory expansion (e.g., ~/path) */
+  TILDE_PREFIX: '~/',
+
+  /** Tilde character for home directory */
+  TILDE: '~',
+
+  /** Plan file suffix for WU plans */
+  PLAN_FILE_SUFFIX: '-plan.md',
+
+  /** Trailing slash regex pattern */
+  TRAILING_SLASH_REGEX: /\/+$/,
+};
+
+/**
+ * Slice lengths for path operations
+ *
+ * WU-1062: Magic numbers extracted for path manipulation.
+ */
+export const PATH_SLICE_LENGTHS = {
+  /** Length of '~/' prefix for tilde expansion */
+  TILDE_PREFIX_LENGTH: 2,
+
+  /** Length of '/' for leading slash removal */
+  LEADING_SLASH_LENGTH: 1,
 };
 
 /**

@@ -9,8 +9,9 @@
  * @module
  */
 
-import type { SimpleGit } from 'simple-git';
+import type { GitAdapter } from './git-adapter.js';
 import { WU_PATHS } from './wu-paths.js';
+import { REMOTES, GIT_REFS, GIT_COMMANDS, GIT_FLAGS } from './wu-constants.js';
 
 /**
  * Spec branch prefix
@@ -53,7 +54,7 @@ export function getSpecBranchName(wuId: string): string {
  * @returns {string} Origin-qualified branch name (e.g., 'origin/spec/wu-1062')
  */
 export function getOriginSpecBranch(wuId: string): string {
-  return `origin/${getSpecBranchName(wuId)}`;
+  return GIT_REFS.remote(REMOTES.ORIGIN, getSpecBranchName(wuId));
 }
 
 /**
@@ -66,7 +67,7 @@ export function getOriginSpecBranch(wuId: string): string {
  * @example
  * const exists = await specBranchExists('WU-1062', git);
  */
-export async function specBranchExists(wuId: string, git: SimpleGit): Promise<boolean> {
+export async function specBranchExists(wuId: string, git: GitAdapter): Promise<boolean> {
   try {
     const originBranch = getOriginSpecBranch(wuId);
     // Use branchExists if available, otherwise check with ls-remote
@@ -74,7 +75,12 @@ export async function specBranchExists(wuId: string, git: SimpleGit): Promise<bo
       return await (git as any).branchExists(originBranch);
     }
     // Fallback: use ls-remote to check if branch exists
-    const result = await git.raw(['ls-remote', '--heads', 'origin', getSpecBranchName(wuId)]);
+    const result = await git.raw([
+      GIT_COMMANDS.LS_REMOTE,
+      GIT_FLAGS.HEADS,
+      REMOTES.ORIGIN,
+      getSpecBranchName(wuId),
+    ]);
     return result.trim().length > 0;
   } catch {
     return false;
@@ -88,11 +94,11 @@ export async function specBranchExists(wuId: string, git: SimpleGit): Promise<bo
  * @param {SimpleGit} git - Git adapter instance
  * @returns {Promise<boolean>} True if WU YAML exists on main
  */
-export async function isWUOnMain(wuId: string, git: SimpleGit): Promise<boolean> {
+export async function isWUOnMain(wuId: string, git: GitAdapter): Promise<boolean> {
   try {
     const wuPath = WU_PATHS.WU(wuId);
     // Check if file exists on origin/main
-    await git.raw(['ls-tree', 'origin/main', '--', wuPath]);
+    await git.raw([GIT_COMMANDS.LS_TREE, GIT_REFS.ORIGIN_MAIN, '--', wuPath]);
     return true;
   } catch {
     return false;
@@ -112,15 +118,15 @@ export async function isWUOnMain(wuId: string, git: SimpleGit): Promise<boolean>
  * @example
  * await mergeSpecBranchToMain('WU-1062', git);
  */
-export async function mergeSpecBranchToMain(wuId: string, git: SimpleGit): Promise<void> {
+export async function mergeSpecBranchToMain(wuId: string, git: GitAdapter): Promise<void> {
   const specBranch = getSpecBranchName(wuId);
   const originSpecBranch = getOriginSpecBranch(wuId);
 
   // Fetch the spec branch
-  await git.fetch('origin', specBranch);
+  await git.fetch(REMOTES.ORIGIN, specBranch);
 
   // Merge with fast-forward only (safe merge)
-  await git.merge([originSpecBranch, '--ff-only']);
+  await git.merge(originSpecBranch, { ffOnly: true });
 }
 
 /**
@@ -129,19 +135,19 @@ export async function mergeSpecBranchToMain(wuId: string, git: SimpleGit): Promi
  * @param {string} wuId - Work Unit ID
  * @param {SimpleGit} git - Git adapter instance
  */
-export async function deleteSpecBranch(wuId: string, git: SimpleGit): Promise<void> {
+export async function deleteSpecBranch(wuId: string, git: GitAdapter): Promise<void> {
   const specBranch = getSpecBranchName(wuId);
 
   try {
     // Delete local branch if exists
-    await git.branch(['-d', specBranch]);
+    await git.deleteBranch(specBranch);
   } catch {
     // Ignore if local branch doesn't exist
   }
 
   try {
     // Delete remote branch
-    await git.push(['origin', '--delete', specBranch]);
+    await git.raw([GIT_COMMANDS.PUSH, REMOTES.ORIGIN, GIT_FLAGS.DELETE_REMOTE, specBranch]);
   } catch {
     // Ignore if remote branch doesn't exist
   }
@@ -162,7 +168,7 @@ export async function deleteSpecBranch(wuId: string, git: SimpleGit): Promise<vo
  *   await mergeSpecBranchToMain('WU-1062', git);
  * }
  */
-export async function getWUSource(wuId: string, git: SimpleGit): Promise<WUSourceType> {
+export async function getWUSource(wuId: string, git: GitAdapter): Promise<WUSourceType> {
   // Check both locations in parallel for efficiency
   const [onMain, hasSpecBranch] = await Promise.all([
     isWUOnMain(wuId, git),
@@ -192,11 +198,11 @@ export async function getWUSource(wuId: string, git: SimpleGit): Promise<WUSourc
  * @param {string} wuId - Work Unit ID
  * @param {SimpleGit} git - Git adapter instance
  */
-export async function createSpecBranch(wuId: string, git: SimpleGit): Promise<void> {
+export async function createSpecBranch(wuId: string, git: GitAdapter): Promise<void> {
   const specBranch = getSpecBranchName(wuId);
 
-  // Create local branch
-  await git.checkoutLocalBranch(specBranch);
+  // Create local branch and checkout
+  await git.createBranch(specBranch);
 }
 
 /**
@@ -205,9 +211,9 @@ export async function createSpecBranch(wuId: string, git: SimpleGit): Promise<vo
  * @param {string} wuId - Work Unit ID
  * @param {SimpleGit} git - Git adapter instance
  */
-export async function pushSpecBranch(wuId: string, git: SimpleGit): Promise<void> {
+export async function pushSpecBranch(wuId: string, git: GitAdapter): Promise<void> {
   const specBranch = getSpecBranchName(wuId);
 
   // Push to origin
-  await git.push(['origin', specBranch]);
+  await git.push(REMOTES.ORIGIN, specBranch);
 }

@@ -14,6 +14,11 @@
 
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import {
+  PATH_LITERALS,
+  PATH_SLICE_LENGTHS,
+  STRING_LITERALS,
+} from './wu-constants.js';
 
 /**
  * Environment variable name for LumenFlow home directory
@@ -47,10 +52,10 @@ export const LUMENFLOW_HOME_VAR_PREFIX = '$LUMENFLOW_HOME';
  * @returns {string} Expanded path
  */
 function expandTilde(path: string): string {
-  if (path.startsWith('~/')) {
-    return join(homedir(), path.slice(2));
+  if (path.startsWith(PATH_LITERALS.TILDE_PREFIX)) {
+    return join(homedir(), path.slice(PATH_SLICE_LENGTHS.TILDE_PREFIX_LENGTH));
   }
-  if (path === '~') {
+  if (path === PATH_LITERALS.TILDE) {
     return homedir();
   }
   return path;
@@ -63,7 +68,7 @@ function expandTilde(path: string): string {
  * @returns {string} Path without trailing slashes
  */
 function removeTrailingSlash(path: string): string {
-  return path.replace(/\/+$/, '');
+  return path.replace(PATH_LITERALS.TRAILING_SLASH_REGEX, STRING_LITERALS.EMPTY);
 }
 
 /**
@@ -133,7 +138,7 @@ export function getPlansDir(): string {
  */
 export function isExternalPath(path: string): boolean {
   // Check for tilde-prefixed paths
-  if (path.startsWith('~/')) {
+  if (path.startsWith(PATH_LITERALS.TILDE_PREFIX)) {
     return true;
   }
 
@@ -148,7 +153,7 @@ export function isExternalPath(path: string): boolean {
   }
 
   // Check for absolute paths (starting with /)
-  if (path.startsWith('/')) {
+  if (path.startsWith(STRING_LITERALS.SLASH)) {
     return true;
   }
 
@@ -187,12 +192,14 @@ export function normalizeSpecRef(specRef: string): string {
   if (specRef.startsWith(LUMENFLOW_HOME_VAR_PREFIX)) {
     const relativePath = specRef.slice(LUMENFLOW_HOME_VAR_PREFIX.length);
     // Remove leading slash if present
-    const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+    const cleanPath = relativePath.startsWith(STRING_LITERALS.SLASH)
+      ? relativePath.slice(PATH_SLICE_LENGTHS.LEADING_SLASH_LENGTH)
+      : relativePath;
     return join(getLumenflowHome(), cleanPath);
   }
 
   // Handle tilde expansion
-  if (specRef.startsWith('~/')) {
+  if (specRef.startsWith(PATH_LITERALS.TILDE_PREFIX)) {
     return expandTilde(specRef);
   }
 
@@ -211,7 +218,7 @@ export function normalizeSpecRef(specRef: string): string {
  * // '/home/user/.lumenflow/plans/WU-1062-plan.md'
  */
 export function getPlanPath(wuId: string): string {
-  const filename = `${wuId}-plan.md`;
+  const filename = `${wuId}${PATH_LITERALS.PLAN_FILE_SUFFIX}`;
   return join(getPlansDir(), filename);
 }
 
@@ -226,6 +233,6 @@ export function getPlanPath(wuId: string): string {
  * // 'lumenflow://plans/WU-1062-plan.md'
  */
 export function getPlanProtocolRef(wuId: string): string {
-  const filename = `${wuId}-plan.md`;
-  return `${LUMENFLOW_PROTOCOL}${PLANS_SUBDIR}/${filename}`;
+  const filename = `${wuId}${PATH_LITERALS.PLAN_FILE_SUFFIX}`;
+  return `${LUMENFLOW_PROTOCOL}${PLANS_SUBDIR}${STRING_LITERALS.SLASH}${filename}`;
 }
