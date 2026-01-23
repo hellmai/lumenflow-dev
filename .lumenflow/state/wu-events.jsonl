@@ -3,3 +3,4 @@
 {"type":"claim","wuId":"WU-1079","lane":"Framework: Core","title":"Migrate stamps from .beacon to .lumenflow","timestamp":"2026-01-23T14:38:11.289Z"}
 {"type":"complete","wuId":"WU-1079","timestamp":"2026-01-23T14:45:05.845Z"}
 {"type":"claim","wuId":"WU-1080","lane":"Framework: Core","title":"Add wu:release command to recover orphaned WUs","timestamp":"2026-01-23T14:48:09.073Z"}
+{"type":"complete","wuId":"WU-1078","timestamp":"2026-01-23T14:51:38.848Z"}
