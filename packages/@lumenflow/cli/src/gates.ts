@@ -43,7 +43,6 @@ import { execSync, spawnSync } from 'node:child_process';
 import { closeSync, mkdirSync, openSync, readSync, statSync, writeSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import {
@@ -912,7 +911,10 @@ async function main() {
   process.exit(EXIT_CODES.SUCCESS);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// WU-1071: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
+if (import.meta.main) {
   main().catch((error) => {
     console.error('Gates failed:', error);
     process.exit(EXIT_CODES.ERROR);
