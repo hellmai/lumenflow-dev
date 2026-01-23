@@ -2,7 +2,7 @@ id: WU-1062
 title: External plan storage and no-main-write mode for wu:create
 lane: 'Framework: Core'
 type: feature
-status: done
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -87,7 +87,7 @@ acceptance:
   - LUMENFLOW.md updated with new wu:create flow
   - playbook.md updated with spec branch pattern
   - quick-ref-commands.md updated with new flags
-locked: true
+locked: false
 completed_at: 2026-01-22T20:49:37.895Z
 baseline_main_sha: cce25500d9113f3f2891093cda86709173bac736
 completed: 2026-01-23
