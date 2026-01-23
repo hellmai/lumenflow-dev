@@ -7,6 +7,11 @@ priority: P0
 created: 2026-01-23
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/cli-entry-point.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
 tests:
   manual:
     - Run pnpm wu:spawn in consumer project after publishing fix
@@ -26,10 +31,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'All CLI commands produce silent zero output in pnpm consumer projects. Root cause: ESM entry guard path comparison fails with pnpm symlinks. process.argv[1] is symlink path but import.meta.url is real path - these never match so main() is never called. Fix: Replace with import.meta.main (Node.js 22.16.0+ built-in).'
+description: 'All CLI commands produce silent zero output in pnpm consumer projects. Root cause: ESM
+  entry guard path comparison fails with pnpm symlinks. process.argv[1] is symlink path but
+  import.meta.url is real path - these never match so main() is never called. Fix: Replace with
+  import.meta.main (Node.js 22.16.0+ built-in).'
 acceptance:
   - All CLI entry points use import.meta.main pattern
   - cli-entry-point.ts JSDoc example updated
   - Unused fileURLToPath imports removed
   - pnpm wu:spawn works in consumer projects using npm package
   - Gates pass
+  - Force bypass audit log is staged automatically with bypass commits
