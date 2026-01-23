@@ -1,0 +1,42 @@
+id: WU-1067
+title: Make gates language-agnostic via config-driven execution
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-23
+code_paths:
+  - actions/lumenflow-gates/action.yml
+tests:
+  manual:
+    - Test preset expansion via lumenflow init --preset dotnet
+  unit:
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1067.done
+dependencies: []
+spec_refs:
+  - .lumenflow.config.yaml
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Refactor gates to be fully language-agnostic and config-driven. Instead of hardcoding language presets (node, python, go, rust) in the GitHub Action, gates should read commands from .lumenflow.config.yaml. Users define their own format, lint, test commands. Optional presets expand to sensible defaults but are not hardcoded logic. This aligns with LumenFlow's vendor-agnostic, frictionless philosophy. Uses well-known libraries: yaml for parsing, zod for validation, @actions/toolkit for the TypeScript GitHub Action."
+acceptance:
+  - gates section added to .lumenflow.config.yaml schema with setup, format, lint, test, coverage fields
+  - Each gate field accepts a string (shell command) or object with command and options
+  - Gates runner in CLI reads commands from config instead of hardcoding eslint/vitest/prettier
+  - GitHub Action converted from composite YAML to TypeScript action using @actions/toolkit
+  - GitHub Action reads .lumenflow.config.yaml and executes configured commands via @actions/exec
+  - Preset field in config expands to default commands (lumenflow init --preset dotnet populates defaults)
+  - Existing hardcoded presets removed from action.yml (node, python, go, rust sections deleted)
+  - Skip flags (skip-format, skip-lint, skip-test) still work by skipping configured command
+  - 'Backwards compatible: action falls back to auto-detect if no gates config present'
+  - Documentation updated with examples for .NET, Python, Go, Rust, and custom configurations
