@@ -1,6 +1,6 @@
 id: WU-1067
 title: Make gates language-agnostic via config-driven execution
-lane: 'Framework: Core'
+lane: 'Operations: CI/CD'
 type: feature
 status: ready
 priority: P1
