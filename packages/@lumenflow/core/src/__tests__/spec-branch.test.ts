@@ -55,15 +55,24 @@ describe('spec-branch-helpers', () => {
   describe('isWUOnMain', () => {
     it('should return true if WU YAML exists on main', async () => {
       const mockGit = {
-        raw: vi.fn().mockResolvedValue('WU-1062.yaml'),
+        raw: vi.fn().mockResolvedValue('100644 blob abc123\tdocs/04-operations/tasks/wu/WU-1062.yaml'),
       };
       const result = await isWUOnMain('WU-1062', mockGit as any);
       expect(result).toBe(true);
     });
 
-    it('should return false if WU YAML does not exist on main', async () => {
+    it('should return false if git ls-tree returns empty output (file not found)', async () => {
+      // git ls-tree returns exit 0 with empty output when file doesn't exist
       const mockGit = {
-        raw: vi.fn().mockRejectedValue(new Error('file not found')),
+        raw: vi.fn().mockResolvedValue(''),
+      };
+      const result = await isWUOnMain('WU-1062', mockGit as any);
+      expect(result).toBe(false);
+    });
+
+    it('should return false if git ls-tree throws an error', async () => {
+      const mockGit = {
+        raw: vi.fn().mockRejectedValue(new Error('fatal: not a git repository')),
       };
       const result = await isWUOnMain('WU-1062', mockGit as any);
       expect(result).toBe(false);

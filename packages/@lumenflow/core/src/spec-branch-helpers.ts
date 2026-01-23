@@ -98,8 +98,9 @@ export async function isWUOnMain(wuId: string, git: GitAdapter): Promise<boolean
   try {
     const wuPath = WU_PATHS.WU(wuId);
     // Check if file exists on origin/main
-    await git.raw([GIT_COMMANDS.LS_TREE, GIT_REFS.ORIGIN_MAIN, '--', wuPath]);
-    return true;
+    // git ls-tree returns exit 0 with empty output if file doesn't exist
+    const result = await git.raw([GIT_COMMANDS.LS_TREE, GIT_REFS.ORIGIN_MAIN, GIT_FLAGS.PATH_SEPARATOR, wuPath]);
+    return result.trim().length > 0;
   } catch {
     return false;
   }
