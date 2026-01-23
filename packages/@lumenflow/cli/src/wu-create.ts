@@ -359,7 +359,7 @@ function buildWUContent({
     acceptance,
     code_paths,
     tests,
-    artifacts: [`.beacon/stamps/${id}.done`],
+    artifacts: [`.lumenflow/stamps/${id}.done`],
     dependencies: [],
     risks: [],
     notes: '',

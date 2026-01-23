@@ -2,12 +2,12 @@
  * WU-1070: Force Bypass Audit Logging
  *
  * Provides audit logging for LUMENFLOW_FORCE bypass usage.
- * All hooks log bypass events to .beacon/force-bypasses.log for accountability.
+ * All hooks log bypass events to .lumenflow/force-bypasses.log for accountability.
  *
  * Key principles:
  * - FAIL-OPEN: Audit logging must never block the bypass itself
  * - WARN ON MISSING REASON: stderr warning if LUMENFLOW_FORCE_REASON not set
- * - GIT-TRACKED: .beacon/force-bypasses.log is version controlled
+ * - GIT-TRACKED: .lumenflow/force-bypasses.log is version controlled
  *
  * Log format:
  *   ISO_TIMESTAMP | HOOK_NAME | GIT_USER | BRANCH | REASON | CWD
@@ -19,6 +19,7 @@
 import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join } from 'node:path';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Environment variable names for force bypass
@@ -29,7 +30,7 @@ export const FORCE_REASON_ENV_VAR = 'LUMENFLOW_FORCE_REASON';
 /**
  * Log file path relative to project root
  */
-const LOG_FILE_NAME = '.beacon/force-bypasses.log';
+const LOG_FILE_NAME = LUMENFLOW_PATHS.FORCE_BYPASSES;
 
 /**
  * Represents a parsed audit log entry
@@ -126,11 +127,11 @@ export function logForceBypass(hookName: string, projectRoot: string): void {
   // Write to log file (fail-open)
   try {
     const logPath = getAuditLogPath(projectRoot);
-    const beaconDir = join(projectRoot, '.beacon');
+    const lumenflowDir = join(projectRoot, LUMENFLOW_PATHS.BASE);
 
-    // Ensure .beacon directory exists
-    if (!existsSync(beaconDir)) {
-      mkdirSync(beaconDir, { recursive: true });
+    // Ensure .lumenflow directory exists
+    if (!existsSync(lumenflowDir)) {
+      mkdirSync(lumenflowDir, { recursive: true });
     }
 
     appendFileSync(logPath, logLine);

@@ -16,9 +16,8 @@ import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { startSession as startMemorySession } from '@lumenflow/memory/start';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
 
-// Default session directory (same as agent-session.mjs)
-const DEFAULT_SESSION_DIR = '.beacon/sessions';
 const SESSION_FILENAME = 'current.json';
 
 // Default context tier for auto-started sessions
@@ -101,7 +100,7 @@ export async function startSessionForWU(options: StartSessionOptions): Promise<S
     baseDir = process.cwd(),
   } = options;
 
-  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? LUMENFLOW_PATHS.SESSIONS;
   const sessionFile = getSessionFilePath(sessDir);
 
   // Check for existing session - return it instead of throwing
@@ -201,7 +200,7 @@ interface EndSessionResult {
 export function endSessionForWU(options: EndSessionOptions = {}): EndSessionResult {
   const { sessionDir } = options;
 
-  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? LUMENFLOW_PATHS.SESSIONS;
   const sessionFile = getSessionFilePath(sessDir);
 
   // Check for active session - return early if none
@@ -255,7 +254,7 @@ interface GetSessionOptions {
 export function getCurrentSessionForWU(options: GetSessionOptions = {}): SessionFileData | null {
   const { sessionDir } = options;
 
-  const sessDir = sessionDir ?? DEFAULT_SESSION_DIR;
+  const sessDir = sessionDir ?? LUMENFLOW_PATHS.SESSIONS;
   const sessionFile = getSessionFilePath(sessDir);
 
   if (!existsSync(sessionFile)) {

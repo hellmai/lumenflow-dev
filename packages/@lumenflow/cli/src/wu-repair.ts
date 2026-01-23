@@ -184,12 +184,12 @@ function validateModeRequirements(options) {
  * Run state file repair mode (WU-2240)
  *
  * @param {object} options - CLI options
- * @param {string} [options.path] - Path to state file (defaults to .beacon/state/wu-events.jsonl)
+ * @param {string} [options.path] - Path to state file (defaults to .lumenflow/state/wu-events.jsonl)
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
 async function runStateRepairMode(options) {
-  // Default path is .beacon/state/wu-events.jsonl relative to cwd
-  const defaultPath = path.join(process.cwd(), '.beacon', 'state', WU_EVENTS_FILE_NAME);
+  // Default path is .lumenflow/state/wu-events.jsonl relative to cwd
+  const defaultPath = path.join(process.cwd(), '.lumenflow', 'state', WU_EVENTS_FILE_NAME);
   const filePath = options.path || defaultPath;
 
   console.log(`${PREFIX} Repairing state file: ${filePath}`);

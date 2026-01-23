@@ -225,7 +225,7 @@ async function main() {
         await regenerateBacklogFromState(microBacklogPath);
 
         // Append block event to WUStateStore (WU-1573)
-        const stateDir = path.join(worktreePath, '.beacon', 'state');
+        const stateDir = path.join(worktreePath, '.lumenflow', 'state');
         const store = new WUStateStore(stateDir);
         await store.load();
         await store.block(id, args.reason || 'No reason provided');
@@ -236,7 +236,7 @@ async function main() {
             WU_PATHS.WU(id),
             WU_PATHS.STATUS(),
             WU_PATHS.BACKLOG(),
-            '.beacon/state/wu-events.jsonl',
+            '.lumenflow/state/wu-events.jsonl',
           ],
         };
       },

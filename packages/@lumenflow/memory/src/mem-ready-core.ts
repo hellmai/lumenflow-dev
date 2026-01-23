@@ -24,6 +24,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Relationships file name
@@ -237,7 +238,7 @@ export interface QueryOptions {
  * 2. CreatedAt (oldest first for same priority)
  * 3. ID (alphabetical for stable sort)
  *
- * @param baseDir - Base directory containing .beacon/memory
+ * @param baseDir - Base directory containing .lumenflow/memory
  * @param options - Query options
  * @returns Deterministically ordered ready nodes
  * @throws If WU ID format is invalid or file contains malformed JSON
@@ -262,7 +263,7 @@ export async function queryReadyNodes(
   // Validate WU ID
   validateWuId(wuId);
 
-  const memoryDir = path.join(baseDir, '.beacon', 'memory');
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   // Load memory and relationships
   const memory = await loadMemory(memoryDir);

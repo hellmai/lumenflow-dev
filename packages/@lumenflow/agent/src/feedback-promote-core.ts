@@ -11,16 +11,19 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { stringifyYAML, parseYAML } from '@lumenflow/core/lib/wu-yaml.js';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
 
 /**
  * Directory for draft WU specs
+ * @deprecated Use LUMENFLOW_PATHS.FEEDBACK_DRAFTS instead
  */
-export const DRAFT_DIRECTORY = '.beacon/feedback-drafts';
+export const DRAFT_DIRECTORY = LUMENFLOW_PATHS.FEEDBACK_DRAFTS;
 
 /**
  * Path to feedback index (incident-to-WU mappings)
+ * @deprecated Use LUMENFLOW_PATHS.FEEDBACK_INDEX instead
  */
-export const FEEDBACK_INDEX_PATH = '.beacon/feedback-index.ndjson';
+export const FEEDBACK_INDEX_PATH = LUMENFLOW_PATHS.FEEDBACK_INDEX;
 
 /**
  * Feedback index entry status
@@ -220,7 +223,7 @@ export async function generateDraft(
 }
 
 /**
- * Load all draft files from .beacon/feedback-drafts/
+ * Load all draft files from .lumenflow/feedback-drafts/
  *
  * @param baseDir - Base directory
  * @returns Array of draft objects with filePath

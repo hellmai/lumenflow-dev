@@ -155,7 +155,7 @@ function writeMarkdownFile(filePath, frontmatter, lines) {
  * lane branch itself) should NOT be cleaned - this was the WU-1816 bug.
  *
  * Checks for:
- * 1. Stamp files (.beacon/stamps/WU-{id}.done) that exist on origin/main
+ * 1. Stamp files (.lumenflow/stamps/WU-{id}.done) that exist on origin/main
  * 2. WU YAML with status=done that also has status=done on origin/main
  *
  * @param {string} worktreePath - Path to the worktree directory

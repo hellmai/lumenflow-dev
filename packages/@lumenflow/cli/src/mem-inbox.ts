@@ -6,7 +6,7 @@
  * of parallel agent progress. Filter by lane, WU, or time range.
  * Supports watch mode for continuous monitoring.
  *
- * Includes audit logging to .beacon/telemetry/tools.ndjson.
+ * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
  * WU-2202: Added dependency validation before operations to prevent silent
  * failures when node_modules is corrupted or incomplete.
@@ -23,7 +23,7 @@ import path from 'node:path';
 import ms from 'ms';
 import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/dist/mem-signal-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 import {
   validateInboxDependencies,
   formatDependencyError,
@@ -38,11 +38,6 @@ const LOG_PREFIX = '[mem:inbox]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:inbox';
-
-/**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
 
 /**
  * Watch mode polling interval in milliseconds
@@ -89,7 +84,7 @@ const CLI_OPTIONS = {
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory

@@ -5,7 +5,7 @@
  * Create a session node linked to a WU.
  * Called by wu:claim enhancement for context restoration after /clear.
  *
- * Includes audit logging to .beacon/telemetry/tools.ndjson.
+ * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
  * Usage:
  *   pnpm mem:start --wu WU-1234 [--agent-type <type>] [--context-tier <tier>] [--quiet]
@@ -18,7 +18,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { startSession } from '@lumenflow/memory/dist/mem-start-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
 /**
  * Log prefix for mem:start output
@@ -31,11 +31,6 @@ const LOG_PREFIX = '[mem:start]';
 const TOOL_NAME = 'mem:start';
 
 /**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
-
-/**
  * Write audit log entry for tool execution
  *
  * @param {string} baseDir - Base directory
@@ -43,7 +38,7 @@ const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // Ensure telemetry directory exists

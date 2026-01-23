@@ -19,7 +19,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1048.done
+  - .lumenflow/stamps/WU-1048.done
 dependencies: []
 spec_refs:
   - docs/04-operations/plans/WU-1048-plan.md

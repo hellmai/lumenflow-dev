@@ -208,7 +208,7 @@ export function emitLLMClassificationError(data, logPath = LLM_CLASSIFICATION_LO
 }
 
 /**
- * Emit WU flow telemetry event to .beacon/flow.log
+ * Emit WU flow telemetry event to .lumenflow/flow.log
  *
  * Used by wu-claim, wu-done, wu-unblock for workflow tracking.
  * Centralized from duplicated emitTelemetry() functions (WU-1256).

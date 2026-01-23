@@ -18,11 +18,7 @@ import { loadMemory, appendNode } from './memory-store.js';
 import { generateMemId } from './mem-id.js';
 import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 import path from 'node:path';
-
-/**
- * Memory directory path relative to base directory
- */
-const MEMORY_DIR = '.beacon/memory';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Node types that can be summarized
@@ -273,7 +269,7 @@ function createCleanupMarkers(nodes: MemoryNode[], summaryId: string): MemoryNod
  * summary node. Original nodes are marked for cleanup (unless
  * they have project lifecycle).
  *
- * @param baseDir - Base directory containing .beacon/memory/
+ * @param baseDir - Base directory containing .lumenflow/memory/
  * @param options - Summarization options
  * @returns Result with summary and cleanup info
  * @throws If no summarizable nodes found for WU
@@ -296,7 +292,7 @@ export async function summarizeWu(
   options: SummarizeOptions,
 ): Promise<SummarizeResult> {
   const { wuId, dryRun = false } = options;
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   // Load existing memory
   const memory = await loadMemory(memoryDir);

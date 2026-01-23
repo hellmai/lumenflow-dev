@@ -4,7 +4,7 @@
  * Monitors all prompts for token budget drift and hash changes.
  * Designed to run as a GitHub Actions cron job (nightly at 2 AM).
  *
- * Logs to .beacon/telemetry/prompt-nightly.ndjson and Axiom.
+ * Logs to .lumenflow/telemetry/prompt-nightly.ndjson and Axiom.
  * Alerts if:
  * - Any prompt ≥400 tokens (approaching cap)
  * - Any delta >50 tokens since yesterday
@@ -18,16 +18,20 @@ import { readFile, writeFile, mkdir, appendFile, access } from 'node:fs/promises
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
-import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = resolve(__dirname, '../..');
 
 // Paths
-const YESTERDAY_METRICS_PATH = resolve(ROOT_DIR, '.beacon/telemetry/prompt-metrics-yesterday.json');
-const TODAY_METRICS_PATH = resolve(ROOT_DIR, '.beacon/telemetry/prompt-metrics.json');
-const NDJSON_LOG_PATH = resolve(ROOT_DIR, '.beacon/telemetry/prompt-nightly.ndjson');
+const YESTERDAY_METRICS_PATH = resolve(
+  ROOT_DIR,
+  LUMENFLOW_PATHS.TELEMETRY,
+  'prompt-metrics-yesterday.json',
+);
+const TODAY_METRICS_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.TELEMETRY, 'prompt-metrics.json');
+const NDJSON_LOG_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.TELEMETRY, 'prompt-nightly.ndjson');
 
 // Alert thresholds
 const WARN_THRESHOLD = 400;

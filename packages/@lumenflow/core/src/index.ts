@@ -12,6 +12,9 @@ export * from './date-utils.js';
 export * from './error-handler.js';
 export * from './retry-strategy.js';
 
+// Migration utilities (WU-1075)
+export * from './beacon-migration.js';
+
 // User normalizer (explicit exports to avoid conflicts)
 export {
   DEFAULT_DOMAIN,
@@ -137,3 +140,6 @@ export * from './lumenflow-home.js';
 
 // WU-1070: Force bypass audit logging
 export * from './force-bypass-audit.js';
+
+// WU-1075: LumenFlow directory paths (exported from wu-constants)
+export { LUMENFLOW_PATHS, BEACON_PATHS } from './wu-constants.js';

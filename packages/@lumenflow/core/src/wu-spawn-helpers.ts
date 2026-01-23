@@ -13,6 +13,7 @@
 
 import { Command } from 'commander';
 import { SpawnRegistryStore } from './spawn-registry-store.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Option definitions for thinking mode configuration.
@@ -232,7 +233,7 @@ const LOG_PREFIX = '[wu:spawn]';
  * @param {string} options.parentWuId - Parent WU ID (orchestrator)
  * @param {string} options.targetWuId - Target WU ID (spawned work)
  * @param {string} options.lane - Lane for the spawned work
- * @param {string} [options.baseDir] - Base directory for registry (defaults to .beacon/state)
+ * @param {string} [options.baseDir] - Base directory for registry (defaults to LUMENFLOW_PATHS.STATE_DIR)
  * @returns {Promise<{success: boolean, spawnId: string|null, error?: string}>}
  *
  * @example
@@ -247,7 +248,7 @@ const LOG_PREFIX = '[wu:spawn]';
  * }
  */
 export async function recordSpawnToRegistry(options) {
-  const { parentWuId, targetWuId, lane, baseDir = '.beacon/state' } = options;
+  const { parentWuId, targetWuId, lane, baseDir = LUMENFLOW_PATHS.STATE_DIR } = options;
 
   try {
     const store = new SpawnRegistryStore(baseDir);

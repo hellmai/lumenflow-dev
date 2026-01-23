@@ -19,7 +19,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/gates.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1042.done
+  - .lumenflow/stamps/WU-1042.done
 dependencies: []
 risks: []
 notes: ''

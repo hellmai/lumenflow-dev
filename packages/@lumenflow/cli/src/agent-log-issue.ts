@@ -10,7 +10,11 @@
 
 import { Command } from 'commander';
 import { logIncident, getCurrentSession } from '@lumenflow/agent';
-import { EXIT_CODES, INCIDENT_SEVERITY } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  EXIT_CODES,
+  INCIDENT_SEVERITY,
+  LUMENFLOW_PATHS,
+} from '@lumenflow/core/dist/wu-constants.js';
 import chalk from 'chalk';
 
 const program = new Command()
@@ -51,7 +55,7 @@ const program = new Command()
       console.log(chalk.green(`✓ Issue logged`));
       console.log(`  Category: ${chalk.cyan(opts.category)}`);
       console.log(`  Severity: ${chalk.cyan(opts.severity)}`);
-      console.log(`  File: ${chalk.gray(`.beacon/incidents/${opts.category}.ndjson`)}`);
+      console.log(`  File: ${chalk.gray(`${LUMENFLOW_PATHS.INCIDENTS}/${opts.category}.ndjson`)}`);
 
       if (
         opts.severity === INCIDENT_SEVERITY.MAJOR ||

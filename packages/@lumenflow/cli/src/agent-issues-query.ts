@@ -20,6 +20,7 @@ import { join } from 'node:path';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[agent:issues-query]';
@@ -27,8 +28,8 @@ const LOG_PREFIX = '[agent:issues-query]';
 /** Default days to query */
 const DEFAULT_SINCE_DAYS = 7;
 
-/** Issues log file path */
-const ISSUES_LOG_PATH = '.beacon/agent-issues.ndjson';
+/** Issues log file path - under base .lumenflow directory */
+const ISSUES_LOG_PATH = `${LUMENFLOW_PATHS.BASE}/agent-issues.ndjson`;
 
 /** Valid severity levels */
 const SEVERITY_LEVELS = ['blocker', 'major', 'minor', 'trivial'] as const;

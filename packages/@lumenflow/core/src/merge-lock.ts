@@ -16,7 +16,7 @@
 import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
 /**
@@ -31,7 +31,7 @@ export const MERGE_LOCK_TIMEOUT_MS = 30000; // 30 seconds
  */
 export const MERGE_LOCK_STALE_MS = 60000; // 60 seconds
 
-/** Lock file name within .beacon directory */
+/** Lock file name within .lumenflow directory */
 const LOCK_FILE_NAME = 'merge.lock';
 
 /**
@@ -72,7 +72,7 @@ interface MergeLockBaseDirOptions {
  */
 function getLockPath(options: MergeLockBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
-  return path.join(baseDir, '.beacon', LOCK_FILE_NAME);
+  return path.join(baseDir, LUMENFLOW_PATHS.BASE, LOCK_FILE_NAME);
 }
 
 /**
@@ -103,11 +103,11 @@ function readLockFile(options: MergeLockBaseDirOptions = {}) {
  */
 function writeLockFile(lockInfo, options: MergeLockBaseDirOptions = {}) {
   const lockPath = getLockPath(options);
-  const beaconDir = path.dirname(lockPath);
+  const lumenflowDir = path.dirname(lockPath);
 
-  // Ensure .beacon directory exists
-  if (!existsSync(beaconDir)) {
-    mkdirSync(beaconDir, { recursive: true });
+  // Ensure .lumenflow directory exists
+  if (!existsSync(lumenflowDir)) {
+    mkdirSync(lumenflowDir, { recursive: true });
   }
 
   writeFileSync(lockPath, JSON.stringify(lockInfo, null, 2));

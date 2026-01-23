@@ -101,7 +101,7 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 - Acceptance criteria satisfied
 - Gates green (`pnpm gates` or `pnpm gates --docs-only`)
 - WU YAML status = `done`
-- `.beacon/stamps/WU-<id>.done` exists
+- `.lumenflow/stamps/WU-<id>.done` exists
 - **wu:done has been run** (not just documented)
 
 ---

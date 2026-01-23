@@ -31,7 +31,7 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
 /**
@@ -47,7 +47,7 @@ export const CLEANUP_LOCK_TIMEOUT_MS = 30000; // 30 seconds
  */
 export const CLEANUP_LOCK_STALE_MS = 5 * 60 * 1000; // 5 minutes
 
-/** Lock file name within .beacon directory */
+/** Lock file name within .lumenflow directory */
 const LOCK_FILE_NAME = 'cleanup.lock';
 
 /**
@@ -89,7 +89,7 @@ interface BaseDirOptions {
  */
 function getLockPath(options: BaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
-  return path.join(baseDir, '.beacon', LOCK_FILE_NAME);
+  return path.join(baseDir, LUMENFLOW_PATHS.BASE, LOCK_FILE_NAME);
 }
 
 /**

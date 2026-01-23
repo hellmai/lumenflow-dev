@@ -17,7 +17,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/lane-inference-taxonomy.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1019.done
+  - .lumenflow/stamps/WU-1019.done
 dependencies: []
 risks: []
 notes: Follow-up from WU-1017 notes about missing sublane config. Adapted from ExampleApp pattern.

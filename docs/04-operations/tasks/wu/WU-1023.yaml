@@ -15,7 +15,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1023.done
+  - .lumenflow/stamps/WU-1023.done
 dependencies: []
 risks: []
 notes: 'Repeated friction: WU-1017 and WU-1016 both hit bootstrap issue where agents must figure out

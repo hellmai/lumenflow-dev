@@ -22,16 +22,7 @@ import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS } from './memory-schema.js';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
-
-/**
- * Memory directory path relative to base directory
- */
-const MEMORY_DIR = '.beacon/memory';
-
-/**
- * WU state directory path relative to base directory (WU-1748)
- */
-const STATE_DIR = '.beacon/state';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Error messages for validation
@@ -70,7 +61,7 @@ function isValidWuId(wuId: string | undefined): boolean {
  * @returns Memory directory path
  */
 async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
   return memoryDir;
@@ -147,7 +138,7 @@ export interface CreateCheckpointResult {
  * - Optional session and WU linking
  * - Progress summary and next steps in metadata
  *
- * @param baseDir - Base directory containing .beacon/memory/
+ * @param baseDir - Base directory containing .lumenflow/memory/
  * @param options - Checkpoint options
  * @returns Result with created checkpoint node
  * @throws If note is missing or WU ID is invalid
@@ -230,7 +221,7 @@ export async function createCheckpoint(
   // WU-1748: Also persist to wu-events.jsonl for cross-agent visibility
   if (wuId) {
     try {
-      const stateDir = path.join(baseDir, STATE_DIR);
+      const stateDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
       const store = new WUStateStore(stateDir);
       await store.checkpoint(wuId, note, {
         sessionId,

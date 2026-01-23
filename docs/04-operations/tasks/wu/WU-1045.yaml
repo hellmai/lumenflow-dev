@@ -15,7 +15,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1045.done
+  - .lumenflow/stamps/WU-1045.done
 dependencies: []
 spec_refs:
   - docs/04-operations/plans/WU-1045-plan.md

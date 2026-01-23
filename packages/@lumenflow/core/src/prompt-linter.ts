@@ -28,7 +28,7 @@ const ROOT_DIR = resolve(__dirname, '../..');
 const DEFAULT_CONFIG_PATH = resolve(ROOT_DIR, 'config/prompts/linter.yml');
 
 // Telemetry cache path (for storing previous metrics)
-const METRICS_CACHE_PATH = resolve(ROOT_DIR, '.beacon/telemetry/prompt-metrics.json');
+const METRICS_CACHE_PATH = resolve(ROOT_DIR, '.lumenflow/telemetry/prompt-metrics.json');
 
 /**
  * Load config from YAML file with fallback to defaults
@@ -160,8 +160,8 @@ async function log(level, event, data, output: LogOutputOptions = {}) {
     ...data,
   };
 
-  // For CLI, write to .beacon/telemetry/prompt-lint.ndjson
-  const ndjsonPath = resolve(ROOT_DIR, '.beacon/telemetry/prompt-lint.ndjson');
+  // For CLI, write to .lumenflow/telemetry/prompt-lint.ndjson
+  const ndjsonPath = resolve(ROOT_DIR, '.lumenflow/telemetry/prompt-lint.ndjson');
   const line = `${JSON.stringify(entry)}${STRING_LITERALS.NEWLINE}`;
 
   try {

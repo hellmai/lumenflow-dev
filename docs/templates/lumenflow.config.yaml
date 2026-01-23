@@ -77,7 +77,7 @@ directories:
   wu_files: 'docs/04-operations/tasks/wu'
   backlog: 'docs/04-operations/tasks/backlog.md'
   status: 'docs/04-operations/tasks/status.md'
-  stamps: '.beacon/stamps'
+  stamps: '.lumenflow/stamps'
   worktrees: 'worktrees'
 
 # Git workflow

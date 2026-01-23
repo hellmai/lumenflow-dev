@@ -15,7 +15,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/wu-done-staging-whitelist.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1072.done
+  - .lumenflow/stamps/WU-1072.done
 dependencies: []
 risks: []
 notes: ''

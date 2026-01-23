@@ -35,7 +35,7 @@ describe('verifyWUComplete', () => {
 
       expect(result.complete).toBe(false);
       expect(result.failures).toHaveLength(2);
-      expect(result.failures[0]).toContain('Missing stamp .beacon/stamps/WU-1234.done');
+      expect(result.failures[0]).toContain('Missing stamp .lumenflow/stamps/WU-1234.done');
       expect(result.failures[1]).toContain('No commit on main');
     });
 
@@ -89,7 +89,7 @@ describe('verifyWUComplete', () => {
   describe('Stamp check', () => {
     it('should pass when stamp exists', () => {
       const mockRun = vi.fn(() => '');
-      const mockExists = vi.fn((path) => path.includes('.beacon/stamps/WU-1234.done'));
+      const mockExists = vi.fn((path) => path.includes('.lumenflow/stamps/WU-1234.done'));
 
       const result = verifyWUComplete('WU-1234', {
         run: mockRun,
@@ -108,7 +108,7 @@ describe('verifyWUComplete', () => {
         exists: mockExists,
       });
 
-      expect(result.failures[1]).toContain('Missing stamp .beacon/stamps/WU-1234.done');
+      expect(result.failures[1]).toContain('Missing stamp .lumenflow/stamps/WU-1234.done');
     });
   });
 
@@ -149,7 +149,7 @@ describe('verifyWUComplete', () => {
       });
       const mockExists = vi.fn((path) => {
         // Stamp exists for WU-1234
-        return path.includes('.beacon/stamps/WU-1234.done');
+        return path.includes('.lumenflow/stamps/WU-1234.done');
       });
 
       const result = verifyWUComplete('WU-1234', {

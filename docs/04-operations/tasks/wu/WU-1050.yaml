@@ -28,7 +28,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/git-adapter.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1050.done
+  - .lumenflow/stamps/WU-1050.done
 dependencies: []
 spec_refs:
   - docs/04-operations/plans/WU-1050-claim-global-state.md

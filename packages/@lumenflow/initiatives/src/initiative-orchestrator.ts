@@ -156,12 +156,12 @@ import { SpawnStrategyFactory } from '@lumenflow/core/lib/spawn-strategy.js';
 /**
  * Wave manifest directory path (gitignored).
  */
-const WAVE_MANIFEST_DIR = '.beacon/artifacts/waves';
+const WAVE_MANIFEST_DIR = '.lumenflow/artifacts/waves';
 
 /**
  * Stamps directory path.
  */
-const STAMPS_DIR = '.beacon/stamps';
+const STAMPS_DIR = '.lumenflow/stamps';
 
 /**
  * Log prefix for orchestrator messages.
@@ -985,7 +985,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
  * Implements idempotency: skips WUs with stamps or already in previous manifests.
  *
  * Idempotency precedence (single source of truth):
- * 1. Stamp (highest): .beacon/stamps/WU-XXXX.done exists → WU is done
+ * 1. Stamp (highest): .lumenflow/stamps/WU-XXXX.done exists → WU is done
  * 2. Manifest: WU already in previous wave manifest → skip
  * 3. Status: Only spawn status: ready WUs
  *
@@ -1077,7 +1077,7 @@ export function buildCheckpointWave(
       status: 'spawned',
     })),
     lane_validation: 'pass',
-    done_criteria: 'All stamps exist in .beacon/stamps/',
+    done_criteria: 'All stamps exist in .lumenflow/stamps/',
   };
 
   // WU-2277: Skip file creation in dry-run mode

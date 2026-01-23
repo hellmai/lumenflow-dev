@@ -22,7 +22,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1026.done
+  - .lumenflow/stamps/WU-1026.done
 dependencies: []
 risks:
   - 'Security: New bypass patterns could weaken worktree discipline if misconfigured'

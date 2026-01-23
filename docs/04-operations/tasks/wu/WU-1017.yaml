@@ -28,7 +28,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1017.done
+  - .lumenflow/stamps/WU-1017.done
   - .husky/pre-commit
   - .husky/commit-msg
   - .husky/prepare-commit-msg

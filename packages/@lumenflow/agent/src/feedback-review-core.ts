@@ -1,7 +1,7 @@
 /**
  * Feedback Review Core Logic (WU-1598)
  *
- * Aggregates .beacon/incidents/*.ndjson and .beacon/memory/memory.jsonl,
+ * Aggregates .lumenflow/incidents/*.ndjson and .lumenflow/memory/memory.jsonl,
  * clusters by title similarity, scores patterns (frequency x severity x recency),
  * and outputs prioritised patterns for human review.
  *
@@ -11,7 +11,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { INCIDENT_SEVERITY } from '@lumenflow/core/lib/wu-constants.js';
+import { INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
 
 /**
  * Severity weights for scoring
@@ -107,13 +107,13 @@ async function loadNdjson(filePath: string): Promise<NdjsonRecord[]> {
 }
 
 /**
- * Load all incidents from .beacon/incidents/*.ndjson
+ * Load all incidents from .lumenflow/incidents/*.ndjson
  *
  * @param baseDir - Base directory
  * @returns All incident objects
  */
 async function loadIncidents(baseDir: string): Promise<NdjsonRecord[]> {
-  const incidentsDir = path.join(baseDir, '.beacon', 'incidents');
+  const incidentsDir = path.join(baseDir, LUMENFLOW_PATHS.INCIDENTS);
   let files: string[];
 
   try {
@@ -138,13 +138,13 @@ async function loadIncidents(baseDir: string): Promise<NdjsonRecord[]> {
 }
 
 /**
- * Load memory nodes from .beacon/memory/memory.jsonl
+ * Load memory nodes from .lumenflow/memory/memory.jsonl
  *
  * @param baseDir - Base directory
  * @returns Memory node objects
  */
 async function loadMemoryNodes(baseDir: string): Promise<NdjsonRecord[]> {
-  const memoryFile = path.join(baseDir, '.beacon', 'memory', 'memory.jsonl');
+  const memoryFile = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_JSONL);
   return loadNdjson(memoryFile);
 }
 
@@ -370,7 +370,7 @@ interface ReviewResult {
  *
  * Main entry point for feedback review logic.
  *
- * @param baseDir - Base directory containing .beacon
+ * @param baseDir - Base directory containing .lumenflow
  * @param options - Review options
  * @returns Review result
  */

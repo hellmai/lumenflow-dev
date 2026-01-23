@@ -13,7 +13,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync, readdirSync } from 'node:
 import { join } from 'node:path';
 
 // Test constants
-const STAMPS_DIR = '.beacon/stamps';
+const STAMPS_DIR = '.lumenflow/stamps';
 
 // Helper functions
 function createDir(dir: string) {
@@ -265,7 +265,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-2280A', lane: 'Test Lane A' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -290,7 +290,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-2280B', lane: 'Test Lane B' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -311,7 +311,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-2280C', lane: 'Test Lane C' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -329,7 +329,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-2280D', lane: 'Test Lane D' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -348,7 +348,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-2280E', lane: 'Test Lane E' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -373,7 +373,7 @@ acceptance:
  */
 describe('WU-2430: dry-run suppression and ready-only filtering', () => {
   const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
-  const WAVE_MANIFEST_DIR = '.beacon/artifacts/waves';
+  const WAVE_MANIFEST_DIR = '.lumenflow/artifacts/waves';
 
   function createDir(dir: string) {
     if (!existsSync(dir)) {
@@ -462,7 +462,7 @@ acceptance:
         initiative: 'INIT-TEST-2430',
         wave: 0,
         wus: [{ id: 'WU-TEST-2430A', lane: 'Test Lane A' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-2430-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-2430-wave-0.json',
         dryRun: true,
       };
 
@@ -504,7 +504,7 @@ acceptance:
         initiative: 'INIT-TEST-2430',
         wave: 0,
         wus: [{ id: 'WU-TEST-2430C', lane: 'Test Lane C' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-2430-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-2430-wave-0.json',
         dryRun: true,
       };
 
@@ -854,7 +854,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-1', lane: 'Test Lane' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -875,7 +875,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-TASK1', lane: 'Task Test Lane' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);
@@ -897,7 +897,7 @@ acceptance:
         initiative: 'INIT-TEST',
         wave: 0,
         wus: [{ id: 'WU-TEST-TASK2', lane: 'Task Test Lane 2' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-TEST-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-TEST-wave-0.json',
       };
 
       const output = formatCheckpointOutput(waveData);

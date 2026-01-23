@@ -30,7 +30,7 @@ The fastest way to start using LumenFlow is with just the GitHub App.
 
    directories:
      wu_specs: docs/04-operations/tasks/wu
-     stamps: .beacon/stamps
+     stamps: .lumenflow/stamps
 
    lanes:
      enforcement:
@@ -213,7 +213,7 @@ npx wu-done --id WU-XXX
 After your first PR or `wu:done`, you should see:
 
 - ✅ WU status changed to `done`
-- ✅ Stamp file created in `.beacon/stamps/`
+- ✅ Stamp file created in `.lumenflow/stamps/`
 - ✅ PR checks pass (if using GitHub App)
 - ✅ Backlog updated
 
@@ -228,7 +228,7 @@ directories:
   wu_specs: docs/04-operations/tasks/wu
   backlog: docs/04-operations/tasks/backlog.md
   status: docs/04-operations/tasks/status.md
-  stamps: .beacon/stamps
+  stamps: .lumenflow/stamps
 
 worktree_pattern: 'worktrees/{lane}-{wu_id}'
 

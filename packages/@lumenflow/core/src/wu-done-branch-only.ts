@@ -25,7 +25,14 @@ import {
 } from './wu-done-validators.js';
 import { getGitForCwd } from './git-adapter.js';
 import { readWU } from './wu-yaml.js';
-import { BRANCHES, REMOTES, LOG_PREFIX, EMOJI, STRING_LITERALS } from './wu-constants.js';
+import {
+  BRANCHES,
+  REMOTES,
+  LOG_PREFIX,
+  EMOJI,
+  STRING_LITERALS,
+  LUMENFLOW_PATHS,
+} from './wu-constants.js';
 import { RECOVERY } from './wu-done-messages.js';
 import { die, createError, ErrorCodes } from './error-handler.js';
 import { validateWU, validateDoneWU } from './wu-schema.js';
@@ -121,7 +128,7 @@ export async function executeBranchOnlyCompletion(context) {
     'tasks',
     'backlog.md',
   );
-  const metadataStampsDir = path.join(metadataBasePath, '.beacon', 'stamps');
+  const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
   const metadataStampPath = path.join(metadataStampsDir, `${id}.done`);
 
   // Step 3: Read WU YAML and validate current state

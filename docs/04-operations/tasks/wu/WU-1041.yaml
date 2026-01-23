@@ -17,7 +17,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/wu-done-validators.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1041.done
+  - .lumenflow/stamps/WU-1041.done
 dependencies: []
 risks: []
 notes: ''

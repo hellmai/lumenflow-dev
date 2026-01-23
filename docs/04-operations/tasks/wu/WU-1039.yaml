@@ -16,7 +16,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/wu-edit.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1039.done
+  - .lumenflow/stamps/WU-1039.done
 dependencies: []
 risks: []
 notes: ''

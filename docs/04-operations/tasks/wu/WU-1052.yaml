@@ -14,7 +14,7 @@ tests:
     - packages/@lumenflow/agent/__tests__/agent-incidents.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1052.done
+  - .lumenflow/stamps/WU-1052.done
 dependencies: []
 risks: []
 notes: |-

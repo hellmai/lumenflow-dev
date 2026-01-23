@@ -28,8 +28,8 @@ describe('feedback-review-core', () => {
 
   beforeEach(async () => {
     testDir = await mkdtemp(join(tmpdir(), 'feedback-review-test-'));
-    await mkdir(join(testDir, '.beacon', 'incidents'), { recursive: true });
-    await mkdir(join(testDir, '.beacon', 'memory'), { recursive: true });
+    await mkdir(join(testDir, '.lumenflow', 'incidents'), { recursive: true });
+    await mkdir(join(testDir, '.lumenflow', 'memory'), { recursive: true });
   });
 
   afterEach(async () => {
@@ -218,7 +218,7 @@ describe('feedback-review-core', () => {
 
       // Write incident NDJSON files
       await writeFile(
-        join(testDir, '.beacon', 'incidents', 'test.ndjson'),
+        join(testDir, '.lumenflow', 'incidents', 'test.ndjson'),
         incidents
           .filter((inc) => inc.category === 'test')
           .map((inc) => JSON.stringify(inc))
@@ -227,7 +227,7 @@ describe('feedback-review-core', () => {
       );
 
       await writeFile(
-        join(testDir, '.beacon', 'incidents', 'docs.ndjson'),
+        join(testDir, '.lumenflow', 'incidents', 'docs.ndjson'),
         incidents
           .filter((inc) => inc.category === 'docs')
           .map((inc) => JSON.stringify(inc))
@@ -258,7 +258,7 @@ describe('feedback-review-core', () => {
       ];
 
       await writeFile(
-        join(testDir, '.beacon', 'memory', 'memory.jsonl'),
+        join(testDir, '.lumenflow', 'memory', 'memory.jsonl'),
         memoryNodes.map((node) => JSON.stringify(node)).join('\n') + '\n',
         'utf8',
       );
@@ -343,7 +343,7 @@ describe('feedback-review-core', () => {
     it('should handle malformed data gracefully', async () => {
       // Add malformed data to incident file
       await writeFile(
-        join(testDir, '.beacon', 'incidents', 'malformed.ndjson'),
+        join(testDir, '.lumenflow', 'incidents', 'malformed.ndjson'),
         'invalid json\n{"id":"valid","title":"Valid","category":"test","severity":"minor","created_at":"2025-12-01T10:00:00.000Z"}\n',
         'utf8',
       );

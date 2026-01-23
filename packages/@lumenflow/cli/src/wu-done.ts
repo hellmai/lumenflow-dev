@@ -7,7 +7,7 @@
  * 2) Pre-flight validation: run ALL pre-commit hooks before merge (prevents partial completion)
  * 3) cd into worktree
  * 4) Auto-update WU YAML/backlog/status to Done in worktree (unless --no-auto)
- * 5) Create `.beacon/stamps/WU-{id}.done` in worktree
+ * 5) Create `.lumenflow/stamps/WU-{id}.done` in worktree
  * 6) Validate staged files against whitelist
  * 7) Commit metadata changes in worktree (on lane branch)
  * 8) cd back to main
@@ -15,7 +15,7 @@
  * 10) Push to `main`
  * 11) Remove the associated worktree (unless --no-remove)
  * 12) Optionally delete the lane branch (with --delete-branch)
- * 13) Emit telemetry to .beacon/flow.log
+ * 13) Emit telemetry to .lumenflow/flow.log
  *
  * Canonical sequence (Branch-Only mode - LEGACY):
  * 1) Run gates on lane branch (in main checkout)
@@ -155,7 +155,7 @@ const MEMORY_CHECKPOINT_NOTES = {
 const MEMORY_SIGNAL_WINDOW_MS = 60 * 60 * 1000; // 1 hour for recent signals
 
 // Path constant for wu-events.jsonl (used in multiple places)
-const WU_EVENTS_PATH = '.beacon/state/wu-events.jsonl';
+const WU_EVENTS_PATH = '.lumenflow/state/wu-events.jsonl';
 
 /**
  * WU-1804: Preflight validation for claim metadata before gates.
@@ -182,7 +182,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
 
   // Check 2: State store must show WU as in_progress
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = path.join(resolvedWorktreePath, '.beacon', 'state');
+  const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
   const eventsPath = path.join(resolvedWorktreePath, WU_EVENTS_PATH);
 
   try {
@@ -417,7 +417,7 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
 
 async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = path.join(resolvedWorktreePath, '.beacon', 'state');
+  const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
   const eventsPath = path.join(resolvedWorktreePath, WU_EVENTS_PATH);
 
   const store = new WUStateStore(stateDir);
@@ -555,12 +555,12 @@ async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
  * - Any error during update
  *
  * @param {string} id - WU ID being completed
- * @param {string} baseDir - Base directory containing .beacon/state/
+ * @param {string} baseDir - Base directory containing .lumenflow/state/
  * @returns {Promise<void>}
  */
 export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd()) {
   try {
-    const store = new SpawnRegistryStore(path.join(baseDir, '.beacon', 'state'));
+    const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
     await store.load();
 
     const spawnEntry = store.getByTarget(id);
@@ -929,7 +929,7 @@ async function ensureMainUpToDate() {
 /**
  * Tripwire check: Scan commands log for violations (WU-630 detective layer)
  *
- * Scans .beacon/commands.log for destructive git commands executed during
+ * Scans .lumenflow/commands.log for destructive git commands executed during
  * this agent session. If violations are found, aborts wu:done and displays
  * remediation guidance.
  *
@@ -1031,7 +1031,7 @@ async function ensureNoAutoStagedOrNoop(paths) {
 }
 
 export function emitTelemetry(event) {
-  const logPath = path.join('.beacon', 'flow.log');
+  const logPath = path.join('.lumenflow', 'flow.log');
   const logDir = path.dirname(logPath);
   if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
   const line = JSON.stringify({ timestamp: new Date().toISOString(), ...event });
@@ -1039,7 +1039,7 @@ export function emitTelemetry(event) {
 }
 
 async function auditSkipGates(id, reason, fixWU, worktreePath) {
-  const auditPath = path.join('.beacon', 'skip-gates-audit.log');
+  const auditPath = path.join('.lumenflow', 'skip-gates-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const gitAdapter = getGitForCwd();
@@ -1064,7 +1064,7 @@ async function auditSkipGates(id, reason, fixWU, worktreePath) {
  * Audit trail for --skip-cos-gates (COS v1.3 §7)
  */
 async function auditSkipCosGates(id, reason) {
-  const auditPath = path.join('.beacon', 'skip-cos-gates-audit.log');
+  const auditPath = path.join('.lumenflow', 'skip-cos-gates-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const gitAdapter = getGitForCwd();
@@ -1237,8 +1237,8 @@ async function validateStagedFiles(id, isDocsOnly = false) {
   const unexpected = staged.filter((file) => {
     // Whitelist exact matches
     if (whitelist.includes(file)) return false;
-    // Whitelist .beacon/stamps/** pattern
-    if (file.startsWith('.beacon/stamps/')) return false;
+    // Whitelist .lumenflow/stamps/** pattern
+    if (file.startsWith('.lumenflow/stamps/')) return false;
     // WU-1072: Whitelist apps/docs/**/*.mdx for auto-generated docs from turbo docs:generate
     if (file.startsWith('apps/docs/') && file.endsWith('.mdx')) return false;
     return true;
@@ -1254,7 +1254,7 @@ async function validateStagedFiles(id, isDocsOnly = false) {
       );
     } else {
       die(
-        `Unexpected files staged (only current WU YAML, status.md, backlog.md, .beacon/stamps/<id>.done allowed):\n  ${unexpected.join(`${STRING_LITERALS.NEWLINE}  `)}`,
+        `Unexpected files staged (only current WU YAML, status.md, backlog.md, .lumenflow/stamps/<id>.done allowed):\n  ${unexpected.join(`${STRING_LITERALS.NEWLINE}  `)}`,
       );
     }
   }
@@ -1696,7 +1696,7 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
  * @param {object} auditEntry - Audit entry to log
  */
 function auditOwnershipOverride(auditEntry) {
-  const auditPath = path.join('.beacon', 'ownership-override-audit.log');
+  const auditPath = path.join('.lumenflow', 'ownership-override-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const line = JSON.stringify(auditEntry);
@@ -2703,13 +2703,13 @@ export function printDocValidationNudge(id, changedDocPaths) {
  * WU-1763: Load discoveries for a WU from memory store.
  * Non-blocking - returns empty array on errors.
  *
- * @param {string} baseDir - Base directory containing .beacon/memory/
+ * @param {string} baseDir - Base directory containing .lumenflow/memory/
  * @param {string} wuId - WU ID to load discoveries for
  * @returns {Promise<{count: number, ids: string[]}>} Discovery count and IDs
  */
 async function loadDiscoveriesForWU(baseDir, wuId) {
   try {
-    const memory = await loadMemory(path.join(baseDir, '.beacon/memory'));
+    const memory = await loadMemory(path.join(baseDir, '.lumenflow/memory'));
     const wuNodes = memory.byWu.get(wuId) || [];
     const discoveries = wuNodes.filter((node) => node.type === 'discovery');
     return {

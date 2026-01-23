@@ -12,8 +12,8 @@
  * - ai/**
  * - .claude/**
  * - *.md (markdown files anywhere)
- * - .beacon/stamps/**
- * - .beacon/state/wu-events.jsonl (tooling-managed metadata)
+ * - .lumenflow/stamps/**
+ * - .lumenflow/state/wu-events.jsonl (tooling-managed metadata)
  *
  * Forbidden paths:
  * - apps/**
@@ -97,8 +97,8 @@ export function getAllowedPathsDescription() {
   - .claude/** (agent configuration and skills)
   - docs/** (technical documentation)
   - *.md (markdown files)
-  - .beacon/stamps/** (completion stamps)
-  - .beacon/state/${WU_EVENTS_FILE_NAME} (WU lifecycle event log)
+  - .lumenflow/stamps/** (completion stamps)
+  - .lumenflow/state/${WU_EVENTS_FILE_NAME} (WU lifecycle event log)
   - tools/__tests__/** (test files only)
   - packages/**/__tests__/** (test files only)`;
 }

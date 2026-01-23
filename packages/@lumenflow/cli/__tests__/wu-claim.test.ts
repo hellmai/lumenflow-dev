@@ -60,7 +60,7 @@ describe('wu:claim --skip-setup flag (WU-1023)', () => {
       const files = getWorktreeCommitFiles('WU-1023');
 
       expect(files).toContain('docs/04-operations/tasks/wu/WU-1023.yaml');
-      expect(files).toContain('.beacon/state/wu-events.jsonl');
+      expect(files).toContain('.lumenflow/state/wu-events.jsonl');
     });
 
     it('should NOT include backlog.md or status.md (WU-1746)', () => {

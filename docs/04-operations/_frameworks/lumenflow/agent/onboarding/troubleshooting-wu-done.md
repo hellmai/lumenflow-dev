@@ -88,7 +88,7 @@ Existing exposure values are preserved.
 If wu:done wasn't run, you'll see:
 
 - Worktree still exists: `ls worktrees/`
-- No stamp: `ls .beacon/stamps/WU-XXX.done` returns nothing
+- No stamp: `ls .lumenflow/stamps/WU-XXX.done` returns nothing
 - Status unchanged: WU still shows as `in_progress`
 - Branch not merged: Changes only on lane branch
 

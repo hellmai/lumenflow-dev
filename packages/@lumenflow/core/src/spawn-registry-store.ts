@@ -2,7 +2,7 @@
  * Spawn Registry Store (WU-1944)
  *
  * Event-sourced state store for tracking sub-agent spawns.
- * Stores events in .beacon/state/spawn-registry.jsonl (append-only, git-friendly).
+ * Stores events in .lumenflow/state/spawn-registry.jsonl (append-only, git-friendly).
  *
  * Features:
  * - Event sourcing with replay for current state
@@ -41,7 +41,7 @@ export class SpawnRegistryStore {
   private readonly byTarget: Map<string, string>;
 
   /**
-   * @param {string} baseDir - Directory containing .beacon/state/
+   * @param {string} baseDir - Directory containing .lumenflow/state/
    */
   constructor(baseDir: string) {
     this.baseDir = baseDir;

@@ -17,16 +17,12 @@
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Signal file name constant
  */
 export const SIGNAL_FILE_NAME = 'signals.jsonl';
-
-/**
- * Memory directory path within project
- */
-const MEMORY_DIR = '.beacon/memory';
 
 /**
  * WU ID validation pattern (from memory-schema.mjs)
@@ -141,7 +137,7 @@ interface NodeFsError extends Error {
  * @returns Full path to memory directory
  */
 function getMemoryDir(baseDir: string): string {
-  return path.join(baseDir, MEMORY_DIR);
+  return path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 }
 
 /**

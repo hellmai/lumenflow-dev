@@ -128,7 +128,7 @@ export const FILESYSTEM_PATHS = {
   WU_DIR: 'docs/04-operations/tasks/wu',
   STATUS_FILE: 'docs/04-operations/tasks/status.md',
   BACKLOG_FILE: 'docs/04-operations/tasks/backlog.md',
-  TELEMETRY_DIR: '.beacon/telemetry',
-  STAMPS_DIR: '.beacon/stamps',
-  SESSION_FILE: '.beacon/sessions/current.json',
+  TELEMETRY_DIR: '.lumenflow/telemetry',
+  STAMPS_DIR: '.lumenflow/stamps',
+  SESSION_FILE: '.lumenflow/sessions/current.json',
 };

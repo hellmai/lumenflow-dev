@@ -26,7 +26,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1051.done
+  - .lumenflow/stamps/WU-1051.done
 dependencies: []
 spec_refs:
   - docs/04-operations/plans/WU-1051-wu-spawn-skills-config.md

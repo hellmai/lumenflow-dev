@@ -226,7 +226,7 @@ async function main() {
         writeWU(microWUPath, microDoc);
 
         // WU-1574: Update state store first, then regenerate backlog.md from state
-        const stateDir = path.join(worktreePath, '.beacon', 'state');
+        const stateDir = path.join(worktreePath, '.lumenflow', 'state');
         const store = new WUStateStore(stateDir);
         await store.load();
         await store.unblock(id);
@@ -248,7 +248,7 @@ async function main() {
             WU_PATHS.WU(id),
             WU_PATHS.STATUS(),
             WU_PATHS.BACKLOG(),
-            '.beacon/state/wu-events.jsonl',
+            '.lumenflow/state/wu-events.jsonl',
           ],
         };
       },

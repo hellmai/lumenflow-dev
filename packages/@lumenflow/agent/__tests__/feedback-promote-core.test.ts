@@ -30,9 +30,9 @@ describe('feedback-promote-core', () => {
 
   beforeEach(async () => {
     testDir = await mkdtemp(join(tmpdir(), 'feedback-promote-test-'));
-    await mkdir(join(testDir, '.beacon', 'incidents'), { recursive: true });
-    await mkdir(join(testDir, '.beacon', 'memory'), { recursive: true });
-    await mkdir(join(testDir, '.beacon', 'feedback-drafts'), { recursive: true });
+    await mkdir(join(testDir, '.lumenflow', 'incidents'), { recursive: true });
+    await mkdir(join(testDir, '.lumenflow', 'memory'), { recursive: true });
+    await mkdir(join(testDir, '.lumenflow', 'feedback-drafts'), { recursive: true });
   });
 
   afterEach(async () => {

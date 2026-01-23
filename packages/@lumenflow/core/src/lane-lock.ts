@@ -9,7 +9,7 @@
  * which fails if the file already exists. This prevents the race condition where
  * parallel agents could both read status.md before either updates it.
  *
- * Lock file location: .beacon/locks/<lane-kebab>.lock
+ * Lock file location: .lumenflow/locks/<lane-kebab>.lock
  * Lock file format: JSON with wuId, timestamp, agentSession, pid
  *
  * @see WU-1603 - Race condition fix for wu:claim
@@ -26,8 +26,7 @@ import {
 } from 'node:fs';
 import type { WriteFileOptions } from 'node:fs';
 import path from 'node:path';
-import { toKebab, FILE_SYSTEM } from './wu-constants.js';
-import { getProjectRoot } from './wu-constants.js';
+import { toKebab, FILE_SYSTEM, LUMENFLOW_PATHS, getProjectRoot } from './wu-constants.js';
 
 // Type definitions (exported for declaration generation)
 export interface LockMetadata {
@@ -82,7 +81,7 @@ interface AuditedUnlockOptions {
 const LOG_PREFIX = '[lane-lock]';
 
 /** Directory for lock files relative to project root */
-const LOCKS_DIR = '.beacon/locks';
+const LOCKS_DIR = LUMENFLOW_PATHS.LOCKS_DIR;
 
 /** Default stale lock threshold in hours (WU-1949: reduced from 24h to 2h) */
 const DEFAULT_STALE_LOCK_THRESHOLD_HOURS = 2;

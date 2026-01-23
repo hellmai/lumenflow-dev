@@ -1306,8 +1306,8 @@ export const PATH_PATTERNS = {
   /** Matches WU YAML paths in both legacy and current locations */
   WU_YAML: /(?:memory-bank|docs\/04-operations)\/tasks\/wu\/(WU-\d+)\.ya?ml$/i,
 
-  /** Matches stamp file paths */
-  STAMP: /\.beacon\/stamps\/(WU-\d+)\.done$/i,
+  /** Matches stamp file paths (supports both .beacon and .lumenflow for migration) */
+  STAMP: /\.(?:beacon|lumenflow)\/stamps\/(WU-\d+)\.done$/i,
 };
 
 /**
@@ -1435,36 +1435,73 @@ export const ERROR_CODES = {
 };
 
 /**
- * Beacon directory paths
+ * LumenFlow directory paths
  *
- * Centralized paths for .beacon directory structure to eliminate hardcoded strings.
- * Used by telemetry, agent-session, agent-incidents, and commands-logger modules.
+ * Centralized paths for .lumenflow directory structure to eliminate hardcoded strings.
+ * Used by telemetry, agent-session, agent-incidents, memory, and commands-logger modules.
+ *
+ * @since 1.4.0 Renamed from BEACON_PATHS (WU-1075)
  */
-export const BEACON_PATHS = {
+export const LUMENFLOW_PATHS = {
+  /** Base directory for all LumenFlow runtime data */
+  BASE: '.lumenflow',
+
   /** WU state store directory */
-  STATE_DIR: '.beacon/state',
+  STATE_DIR: '.lumenflow/state',
 
   /** Stamp directory (WU completion markers) */
-  STAMPS_DIR: '.beacon/stamps',
+  STAMPS_DIR: '.lumenflow/stamps',
 
   /** Merge lock file (runtime coordination, WU-1747) */
-  MERGE_LOCK: '.beacon/merge.lock',
+  MERGE_LOCK: '.lumenflow/merge.lock',
 
   /** Base telemetry directory */
-  TELEMETRY: '.beacon/telemetry',
+  TELEMETRY: '.lumenflow/telemetry',
 
   /** Flow log file (WU flow events) */
-  FLOW_LOG: '.beacon/flow.log',
+  FLOW_LOG: '.lumenflow/flow.log',
 
   /** Agent sessions directory */
-  SESSIONS: '.beacon/sessions',
+  SESSIONS: '.lumenflow/sessions',
 
   /** Agent incidents directory */
-  INCIDENTS: '.beacon/incidents',
+  INCIDENTS: '.lumenflow/incidents',
 
   /** Git commands log file */
-  COMMANDS_LOG: '.beacon/commands.log',
+  COMMANDS_LOG: '.lumenflow/commands.log',
+
+  /** Memory layer directory */
+  MEMORY_DIR: '.lumenflow/memory',
+
+  /** Memory layer JSONL file */
+  MEMORY_JSONL: '.lumenflow/memory/memory.jsonl',
+
+  /** Audit log for tool calls */
+  AUDIT_LOG: '.lumenflow/telemetry/tools.ndjson',
+
+  /** Feedback drafts directory */
+  FEEDBACK_DRAFTS: '.lumenflow/feedback-drafts',
+
+  /** Feedback index file */
+  FEEDBACK_INDEX: '.lumenflow/feedback-index.ndjson',
+
+  /** Current session file */
+  SESSION_CURRENT: '.lumenflow/sessions/current.json',
+
+  /** WU events log */
+  WU_EVENTS: '.lumenflow/state/wu-events.jsonl',
+
+  /** Lock files directory */
+  LOCKS_DIR: '.lumenflow/locks',
+
+  /** Force bypass audit log */
+  FORCE_BYPASSES: '.lumenflow/force-bypasses.log',
 };
+
+/**
+ * @deprecated Use LUMENFLOW_PATHS instead. Will be removed in v2.0.
+ */
+export const BEACON_PATHS = LUMENFLOW_PATHS;
 
 /**
  * File extensions

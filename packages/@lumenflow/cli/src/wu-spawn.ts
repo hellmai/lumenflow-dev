@@ -719,7 +719,7 @@ git rev-parse --show-toplevel
 
 ### Stamp Creation
 
-When creating \`.beacon/\` stamps or other artifacts:
+When creating \`.lumenflow/\` stamps or other artifacts:
 
 1. **ALWAYS** create stamps in the **worktree**, not main
 2. Use \`git rev-parse --show-toplevel\` to get the correct base path
@@ -728,11 +728,11 @@ When creating \`.beacon/\` stamps or other artifacts:
 \`\`\`bash
 # CORRECT: Create stamp in worktree
 WORKTREE_ROOT=$(git rev-parse --show-toplevel)
-mkdir -p "$WORKTREE_ROOT/.beacon/agent-runs"
-touch "$WORKTREE_ROOT/.beacon/agent-runs/beacon-guardian.stamp"
+mkdir -p "$WORKTREE_ROOT/.lumenflow/agent-runs"
+touch "$WORKTREE_ROOT/.lumenflow/agent-runs/beacon-guardian.stamp"
 
 # WRONG: Hardcoded path to main
-# touch /path/to/main/.beacon/agent-runs/beacon-guardian.stamp
+# touch /path/to/main/.lumenflow/agent-runs/beacon-guardian.stamp
 \`\`\`
 
 ### Why This Matters
@@ -866,7 +866,7 @@ cd worktrees/${laneSlug}-${id.toLowerCase()}
 Then implement following all standards above.
 
 **CRITICAL:** Never use \`git worktree add\` directly. Always use \`pnpm wu:claim\` to ensure:
-- Event tracking in .beacon/state/wu-events.jsonl
+- Event tracking in .lumenflow/state/wu-events.jsonl
 - Lane lock acquisition (WIP=1 enforcement)
 - Session tracking for context recovery`;
 }
@@ -1409,7 +1409,7 @@ async function main() {
       parentWuId: args.parentWu,
       targetWuId: id,
       lane: doc.lane || 'Unknown',
-      baseDir: '.beacon/state',
+      baseDir: '.lumenflow/state',
     });
 
     const registryMessage = formatSpawnRecordedMessage(

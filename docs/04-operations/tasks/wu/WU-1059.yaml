@@ -13,7 +13,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1059.done
+  - .lumenflow/stamps/WU-1059.done
 dependencies: []
 spec_refs:
   - WU-1058

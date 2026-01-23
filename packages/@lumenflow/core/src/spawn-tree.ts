@@ -171,7 +171,7 @@ export function formatSpawnTree(tree) {
  * @returns {Promise<import('./spawn-registry-schema.js').SpawnEvent[]>} Array of spawn events
  *
  * @example
- * const spawns = await getSpawnsByWU('WU-1000', '.beacon/state');
+ * const spawns = await getSpawnsByWU('WU-1000', '.lumenflow/state');
  */
 export async function getSpawnsByWU(wuId, baseDir) {
   const store = new SpawnRegistryStore(baseDir);
@@ -229,7 +229,7 @@ export async function getSpawnsByWU(wuId, baseDir) {
  * @returns {Promise<import('./spawn-registry-schema.js').SpawnEvent[]>} Array of spawn events
  *
  * @example
- * const spawns = await getSpawnsByInitiative('INIT-001', '.beacon/state', 'docs/04-operations/tasks/wu');
+ * const spawns = await getSpawnsByInitiative('INIT-001', '.lumenflow/state', 'docs/04-operations/tasks/wu');
  */
 export async function getSpawnsByInitiative(initiativeId, registryDir, wuDir) {
   // Get all WUs belonging to initiative

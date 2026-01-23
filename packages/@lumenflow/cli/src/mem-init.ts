@@ -3,9 +3,9 @@
  * Memory Init CLI (WU-1464)
  *
  * Initialize memory layer in the repository.
- * Creates .beacon/memory/ directory with memory.jsonl and config.yaml.
+ * Creates .lumenflow/memory/ directory with memory.jsonl and config.yaml.
  *
- * Includes audit logging to .beacon/telemetry/tools.ndjson.
+ * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
  * Usage:
  *   pnpm mem:init [--base-dir <path>] [--quiet]
@@ -17,7 +17,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { initMemory } from '@lumenflow/memory/dist/mem-init-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, STRING_LITERALS } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
 /**
  * Log prefix for mem:init output
@@ -30,11 +30,6 @@ const LOG_PREFIX = '[mem:init]';
 const TOOL_NAME = 'mem:init';
 
 /**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
-
-/**
  * Write audit log entry for tool execution
  *
  * @param {string} baseDir - Base directory
@@ -42,7 +37,7 @@ const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // Ensure telemetry directory exists
@@ -146,7 +141,7 @@ async function main() {
     console.log('');
     console.log('Created:');
     if (result.created.directory) {
-      console.log('  - .beacon/memory/ directory');
+      console.log('  - .lumenflow/memory/ directory');
     }
     if (result.created.memoryJsonl) {
       console.log('  - memory.jsonl (empty)');

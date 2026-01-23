@@ -11,7 +11,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1004.done
+  - .lumenflow/stamps/WU-1004.done
 dependencies: []
 risks: []
 notes: ''

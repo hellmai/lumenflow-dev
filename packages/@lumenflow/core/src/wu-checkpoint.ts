@@ -17,7 +17,7 @@
 import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Schema version for checkpoint files
@@ -26,7 +26,7 @@ import { LOG_PREFIX, EMOJI } from './wu-constants.js';
 export const CHECKPOINT_SCHEMA_VERSION = 1;
 
 /**
- * Checkpoint directory within .beacon
+ * Checkpoint directory within .lumenflow
  */
 const CHECKPOINT_DIR = 'checkpoints';
 
@@ -65,7 +65,7 @@ interface CheckpointBaseDirOptions {
  */
 function getCheckpointPath(wuId, options: CheckpointBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
-  return path.join(baseDir, '.beacon', CHECKPOINT_DIR, `${wuId}.checkpoint.json`);
+  return path.join(baseDir, LUMENFLOW_PATHS.BASE, CHECKPOINT_DIR, `${wuId}.checkpoint.json`);
 }
 
 /**
@@ -75,7 +75,7 @@ function getCheckpointPath(wuId, options: CheckpointBaseDirOptions = {}) {
  */
 function ensureCheckpointDir(options: CheckpointBaseDirOptions = {}) {
   const baseDir = options.baseDir || process.cwd();
-  const checkpointDir = path.join(baseDir, '.beacon', CHECKPOINT_DIR);
+  const checkpointDir = path.join(baseDir, LUMENFLOW_PATHS.BASE, CHECKPOINT_DIR);
   if (!existsSync(checkpointDir)) {
     mkdirSync(checkpointDir, { recursive: true });
   }

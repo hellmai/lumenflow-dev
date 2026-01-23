@@ -16,7 +16,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1016.done
+  - .lumenflow/stamps/WU-1016.done
 dependencies: []
 initiative: INIT-001
 phase: 2

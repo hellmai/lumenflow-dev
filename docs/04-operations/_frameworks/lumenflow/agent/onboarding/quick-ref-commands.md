@@ -157,5 +157,5 @@ Examples:
 | ----------------------------------------- | -------------------- |
 | `docs/04-operations/tasks/wu/WU-XXX.yaml` | WU specification     |
 | `docs/04-operations/tasks/status.md`      | Current status board |
-| `.beacon/stamps/WU-XXX.done`              | Completion stamp     |
+| `.lumenflow/stamps/WU-XXX.done`           | Completion stamp     |
 | `worktrees/<lane>-wu-xxx/`                | Worktree directory   |

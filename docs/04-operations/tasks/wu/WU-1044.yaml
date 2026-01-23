@@ -16,7 +16,7 @@ tests:
     - packages/@lumenflow/core/__tests__/spawn-strategy.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1044.done
+  - .lumenflow/stamps/WU-1044.done
 dependencies: []
 risks: []
 notes: ''

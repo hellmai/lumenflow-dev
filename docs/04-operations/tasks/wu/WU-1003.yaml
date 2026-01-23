@@ -17,7 +17,7 @@ tests:
     - apps/github-app/src/lib/__tests__/billing.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1003.done
+  - .lumenflow/stamps/WU-1003.done
 dependencies:
   - WU-1002
 risks:

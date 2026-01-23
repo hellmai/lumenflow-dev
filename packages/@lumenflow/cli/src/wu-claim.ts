@@ -448,7 +448,7 @@ async function appendClaimEventOnly(stateDir, id, title, lane) {
 export function getWorktreeCommitFiles(wuId) {
   return [
     `docs/04-operations/tasks/wu/${wuId}.yaml`,
-    '.beacon/state/wu-events.jsonl', // WU-1740: Event store is source of truth
+    '.lumenflow/state/wu-events.jsonl', // WU-1740: Event store is source of truth
     // WU-1746: Explicitly NOT including:
     // - docs/04-operations/tasks/backlog.md
     // - docs/04-operations/tasks/status.md
@@ -518,7 +518,12 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
   const filesToCommit =
     args.noAuto && stagedChanges.length > 0
       ? stagedChanges.map((change) => change.filePath).filter(Boolean)
-      : [WU_PATHS.WU(id), WU_PATHS.STATUS(), WU_PATHS.BACKLOG(), '.beacon/state/wu-events.jsonl'];
+      : [
+          WU_PATHS.WU(id),
+          WU_PATHS.STATUS(),
+          WU_PATHS.BACKLOG(),
+          '.lumenflow/state/wu-events.jsonl',
+        ];
 
   console.log(`${PREFIX} Updating canonical claim state (push-only)...`);
 
@@ -702,8 +707,8 @@ async function handleOrphanCheck(lane, id) {
           files: [
             WU_PATHS.BACKLOG(),
             WU_PATHS.STATUS(),
-            `.beacon/stamps/${orphanId}.done`,
-            '.beacon/state/wu-events.jsonl',
+            `.lumenflow/stamps/${orphanId}.done`,
+            '.lumenflow/state/wu-events.jsonl',
           ],
         };
       },

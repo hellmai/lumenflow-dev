@@ -2,7 +2,7 @@
  * Memory Init Core (WU-1464)
  *
  * Core logic for initializing memory layer in a repository.
- * Creates .beacon/memory/ directory with empty memory.jsonl and config.yaml.
+ * Creates .lumenflow/memory/ directory with empty memory.jsonl and config.yaml.
  *
  * @see {@link tools/__tests__/mem-init.test.mjs} - Tests
  * @see {@link tools/lib/memory-store.mjs} - Memory store operations
@@ -12,13 +12,16 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'yaml';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Memory layer file/directory paths
+ *
+ * Uses LUMENFLOW_PATHS from @lumenflow/core for base directory.
  */
 export const MEMORY_PATHS = {
   /** Memory directory relative to project root */
-  MEMORY_DIR: '.beacon/memory',
+  MEMORY_DIR: LUMENFLOW_PATHS.MEMORY_DIR,
 
   /** Memory JSONL file name */
   MEMORY_FILE: 'memory.jsonl',
@@ -110,7 +113,7 @@ export interface InitMemoryResult {
  * Initialize memory layer in a repository.
  *
  * Creates:
- * - .beacon/memory/ directory
+ * - .lumenflow/memory/ directory
  * - memory.jsonl (empty if not exists)
  * - config.yaml (default settings if not exists)
  *
@@ -156,7 +159,7 @@ export async function initMemory(baseDir: string): Promise<InitMemoryResult> {
 
   // Create directory if needed
   if (!dirExists) {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates .beacon/memory/ directory
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates .lumenflow/memory/ directory
     await fs.mkdir(memoryDir, { recursive: true });
     result.created.directory = true;
   }

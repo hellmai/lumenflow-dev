@@ -29,7 +29,7 @@ tests:
     - packages/@lumenflow/initiatives/__tests__/initiative-yaml.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1046.done
+  - .lumenflow/stamps/WU-1046.done
 dependencies: []
 risks: []
 notes: ''

@@ -113,11 +113,11 @@ LumenFlow emits telemetry events for observability:
 
 ### Telemetry Integration
 
-Events are written to `.beacon/telemetry/` as JSONL files. Integrate with your observability stack:
+Events are written to `.lumenflow/telemetry/` as JSONL files. Integrate with your observability stack:
 
 ```bash
 # Stream to Datadog
-tail -f .beacon/telemetry/events.jsonl | datadog-agent
+tail -f .lumenflow/telemetry/events.jsonl | datadog-agent
 
 # Export to Prometheus
 pnpm metrics:export --format prometheus

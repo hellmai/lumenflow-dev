@@ -35,11 +35,7 @@ import path from 'node:path';
 const ms = require('ms') as (value: string) => number;
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
-
-/**
- * Memory directory path relative to base directory
- */
-const MEMORY_DIR = '.beacon/memory';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Lifecycle policy definition
@@ -397,7 +393,7 @@ async function writeRetainedNodes(memoryDir: string, retainedNodes: MemoryNode[]
  * In dry-run mode, no modifications are made but the result shows
  * what would be removed.
  *
- * @param {string} baseDir - Base directory containing .beacon/memory/
+ * @param {string} baseDir - Base directory containing .lumenflow/memory/
  * @param {CleanupOptions} options - Cleanup options
  * @returns {Promise<CleanupResult>} Result with removed nodes and metrics
  *
@@ -424,7 +420,7 @@ export async function cleanupMemory(
   options: CleanupOptions = {},
 ): Promise<CleanupResult> {
   const { dryRun = false, sessionId, ttl, ttlMs: providedTtlMs, now = Date.now() } = options;
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   // WU-1554: Parse TTL if provided as string
   let ttlMs = providedTtlMs;

@@ -22,7 +22,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1002.done
+  - .lumenflow/stamps/WU-1002.done
 dependencies:
   - WU-1001
 risks:

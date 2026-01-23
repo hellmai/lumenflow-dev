@@ -2,7 +2,7 @@
  * WU State Store (WU-1570, WU-2240)
  *
  * Event-sourced state store for WU lifecycle following INIT-007 pattern.
- * Stores events in .beacon/state/wu-events.jsonl (append-only, git-friendly).
+ * Stores events in .lumenflow/state/wu-events.jsonl (append-only, git-friendly).
  *
  * Features:
  * - Event sourcing with replay for current state
@@ -706,7 +706,7 @@ export function releaseLock(lockPath: string): void {
  * - Returns detailed repair statistics
  *
  * @example
- * const stateFilePath = path.join(process.cwd(), '.beacon', 'state', 'wu-events.jsonl');
+ * const stateFilePath = path.join(process.cwd(), '.lumenflow', 'state', 'wu-events.jsonl');
  * const result = await repairStateFile(stateFilePath);
  * if (result.success) {
  *   console.log(`Repaired: kept ${result.linesKept}, removed ${result.linesRemoved}`);

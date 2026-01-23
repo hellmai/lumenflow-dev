@@ -22,7 +22,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/orphan-detector.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1056.done
+  - .lumenflow/stamps/WU-1056.done
 dependencies: []
 risks:
   - Overly strict cleanup could block legitimate cleanup when merge evidence is missing

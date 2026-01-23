@@ -24,7 +24,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/flow-report.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1018.done
+  - .lumenflow/stamps/WU-1018.done
 dependencies: []
 risks:
   - Breaking changes to existing ExampleApp scripts if function signatures differ

@@ -39,7 +39,7 @@ export function validateInputs(argv) {
         '    • A separate WU exists to fix those failures (specify with --fix-wu)\n' +
         '    • Your WU work is genuinely complete\n\n' +
         '  NEVER use --skip-gates for failures introduced by your WU!\n' +
-        '  All skip-gates events are logged to .beacon/skip-gates-audit.log\n\n' +
+        '  All skip-gates events are logged to .lumenflow/skip-gates-audit.log\n\n' +
         '📝 WU VALIDATOR:\n' +
         '  Automatically scans code_paths for:\n' +
         '    • TODO/FIXME/HACK/XXX comments (fails validation unless --allow-todo)\n' +

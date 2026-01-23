@@ -12,12 +12,11 @@
 import { Command } from 'commander';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 import chalk from 'chalk';
 import ms from 'ms';
 
 const LOG_PREFIX = '[orchestrate:monitor]';
-const MEMORY_DIR = '.beacon/memory';
 
 interface Signal {
   timestamp: string;
@@ -41,14 +40,14 @@ function parseTimeString(timeStr: string): Date {
 function loadRecentSignals(since: Date): Signal[] {
   const signals: Signal[] = [];
 
-  if (!existsSync(MEMORY_DIR)) {
+  if (!existsSync(LUMENFLOW_PATHS.MEMORY_DIR)) {
     return signals;
   }
 
-  const files = readdirSync(MEMORY_DIR).filter((f) => f.endsWith('.ndjson'));
+  const files = readdirSync(LUMENFLOW_PATHS.MEMORY_DIR).filter((f) => f.endsWith('.ndjson'));
 
   for (const file of files) {
-    const filePath = join(MEMORY_DIR, file);
+    const filePath = join(LUMENFLOW_PATHS.MEMORY_DIR, file);
     const content = readFileSync(filePath, 'utf-8');
     const lines = content.trim().split('\n').filter(Boolean);
 

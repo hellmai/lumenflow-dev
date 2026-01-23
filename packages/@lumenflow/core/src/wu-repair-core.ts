@@ -26,7 +26,14 @@ import { readWU, writeWU, parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
-import { EXIT_CODES, LOG_PREFIX, EMOJI, WU_STATUS, FILE_SYSTEM } from './wu-constants.js';
+import {
+  EXIT_CODES,
+  LOG_PREFIX,
+  EMOJI,
+  WU_STATUS,
+  FILE_SYSTEM,
+  LUMENFLOW_PATHS,
+} from './wu-constants.js';
 import { die } from './error-handler.js';
 import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from './wu-helpers.js';
 import { withMicroWorktree } from './micro-worktree.js';
@@ -126,7 +133,7 @@ export async function checkClaimMetadata(id, worktreePath) {
   }
 
   // Check state store
-  const stateDir = path.join(worktreePath, '.beacon', 'state');
+  const stateDir = path.join(worktreePath, LUMENFLOW_PATHS.STATE_DIR);
   const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
   if (existsSync(eventsPath)) {
     try {
@@ -199,7 +206,7 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
   // Repair 2: Add claim event to state store if missing
   if (!checkResult.stateStoreHasClaim) {
     try {
-      const stateDir = path.join(worktreePath, '.beacon', 'state');
+      const stateDir = path.join(worktreePath, LUMENFLOW_PATHS.STATE_DIR);
       const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
 
       // Ensure directory exists
@@ -230,7 +237,7 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
 
       // Stage repaired files
       const filesToStage = [wuPath];
-      const stateDir = path.join(worktreePath, '.beacon', 'state');
+      const stateDir = path.join(worktreePath, LUMENFLOW_PATHS.STATE_DIR);
       const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
       if (existsSync(eventsPath)) {
         filesToStage.push(eventsPath);

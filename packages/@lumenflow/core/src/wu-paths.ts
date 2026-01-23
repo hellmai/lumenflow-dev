@@ -21,7 +21,7 @@ const PATH_DEPTHS = {
   STATUS: 4,
   /** WU YAML files are 5 levels deep: docs/04-operations/tasks/wu/{id}.yaml */
   WU_YAML: 5,
-  /** State store is 3 levels deep: .beacon/state/wu-events.jsonl */
+  /** State store is 3 levels deep: .lumenflow/state/wu-events.jsonl */
   STATE_STORE: 3,
 };
 

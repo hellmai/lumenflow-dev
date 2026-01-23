@@ -17,7 +17,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/stamp-utils.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1006.done
+  - .lumenflow/stamps/WU-1006.done
 dependencies:
   - WU-1005
 risks:

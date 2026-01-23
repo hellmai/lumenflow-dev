@@ -60,35 +60,35 @@ export const DirectoriesSchema = z.object({
 });
 
 /**
- * Beacon paths configuration (.beacon directory structure)
+ * Beacon paths configuration (.lumenflow directory structure)
  */
 export const BeaconPathsSchema = z.object({
-  /** Base beacon directory (default: '.beacon') */
-  base: z.string().default('.beacon'),
+  /** Base beacon directory (default: '.lumenflow') */
+  base: z.string().default('.lumenflow'),
 
-  /** State directory (default: '.beacon/state') */
-  stateDir: z.string().default('.beacon/state'),
+  /** State directory (default: '.lumenflow/state') */
+  stateDir: z.string().default('.lumenflow/state'),
 
-  /** Stamps directory (default: '.beacon/stamps') */
-  stampsDir: z.string().default('.beacon/stamps'),
+  /** Stamps directory (default: '.lumenflow/stamps') */
+  stampsDir: z.string().default('.lumenflow/stamps'),
 
-  /** Merge lock file (default: '.beacon/merge.lock') */
-  mergeLock: z.string().default('.beacon/merge.lock'),
+  /** Merge lock file (default: '.lumenflow/merge.lock') */
+  mergeLock: z.string().default('.lumenflow/merge.lock'),
 
-  /** Telemetry directory (default: '.beacon/telemetry') */
-  telemetry: z.string().default('.beacon/telemetry'),
+  /** Telemetry directory (default: '.lumenflow/telemetry') */
+  telemetry: z.string().default('.lumenflow/telemetry'),
 
-  /** Flow log file (default: '.beacon/flow.log') */
-  flowLog: z.string().default('.beacon/flow.log'),
+  /** Flow log file (default: '.lumenflow/flow.log') */
+  flowLog: z.string().default('.lumenflow/flow.log'),
 
-  /** Sessions directory (default: '.beacon/sessions') */
-  sessions: z.string().default('.beacon/sessions'),
+  /** Sessions directory (default: '.lumenflow/sessions') */
+  sessions: z.string().default('.lumenflow/sessions'),
 
-  /** Incidents directory (default: '.beacon/incidents') */
-  incidents: z.string().default('.beacon/incidents'),
+  /** Incidents directory (default: '.lumenflow/incidents') */
+  incidents: z.string().default('.lumenflow/incidents'),
 
-  /** Commands log file (default: '.beacon/commands.log') */
-  commandsLog: z.string().default('.beacon/commands.log'),
+  /** Commands log file (default: '.lumenflow/commands.log') */
+  commandsLog: z.string().default('.lumenflow/commands.log'),
 });
 
 /**

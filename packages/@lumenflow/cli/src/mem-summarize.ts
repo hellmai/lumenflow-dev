@@ -24,7 +24,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { summarizeWu } from '@lumenflow/memory/dist/mem-summarize-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
 /**
  * Log prefix for mem:summarize output
@@ -35,11 +35,6 @@ const LOG_PREFIX = '[mem:summarize]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:summarize';
-
-/**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
 
 /**
  * CLI argument options specific to mem:summarize
@@ -80,7 +75,7 @@ const CLI_OPTIONS = {
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory

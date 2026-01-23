@@ -14,7 +14,7 @@ tests:
     - Gates run in worktrees
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1011.done
+  - .lumenflow/stamps/WU-1011.done
 dependencies: []
 risks:
   - May require significant refactoring

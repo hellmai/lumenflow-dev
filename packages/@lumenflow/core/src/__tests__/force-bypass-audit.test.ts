@@ -78,7 +78,7 @@ describe('force-bypass-audit', () => {
   describe('getAuditLogPath', () => {
     it('returns path relative to project root', () => {
       const logPath = getAuditLogPath('/project/root');
-      expect(logPath).toBe('/project/root/.beacon/force-bypasses.log');
+      expect(logPath).toBe('/project/root/.lumenflow/force-bypasses.log');
     });
   });
 
@@ -93,7 +93,7 @@ describe('force-bypass-audit', () => {
       expect(fs.appendFileSync).toHaveBeenCalledOnce();
       const [logPath, content] = vi.mocked(fs.appendFileSync).mock.calls[0];
 
-      expect(logPath).toBe('/project/root/.beacon/force-bypasses.log');
+      expect(logPath).toBe('/project/root/.lumenflow/force-bypasses.log');
       expect(content).toContain('pre-commit');
       expect(content).toContain('Test User');
       expect(content).toContain('lane/operations/wu-1070');
@@ -118,14 +118,14 @@ describe('force-bypass-audit', () => {
       consoleSpy.mockRestore();
     });
 
-    it('creates .beacon directory if it does not exist', () => {
+    it('creates .lumenflow directory if it does not exist', () => {
       process.env.LUMENFLOW_FORCE = '1';
       process.env.LUMENFLOW_FORCE_REASON = 'Test reason';
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       logForceBypass('commit-msg', '/project/root');
 
-      expect(fs.mkdirSync).toHaveBeenCalledWith('/project/root/.beacon', { recursive: true });
+      expect(fs.mkdirSync).toHaveBeenCalledWith('/project/root/.lumenflow', { recursive: true });
     });
 
     it('is fail-open: does not throw when logging fails', () => {

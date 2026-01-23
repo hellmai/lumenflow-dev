@@ -179,7 +179,7 @@ export async function executeWorktreeCompletion(context) {
       console.log(`${BOX.SIDE}  4. Return to main and retry wu:done`);
       console.log(BOX.SIDE);
       console.log(`${BOX.SIDE}  Or reset the recovery counter:`);
-      console.log(`${BOX.SIDE}  rm .beacon/recovery/${id}.recovery`);
+      console.log(`${BOX.SIDE}  rm .lumenflow/recovery/${id}.recovery`);
       console.log(BOX.BOT);
 
       throw createRecoveryError(
@@ -343,7 +343,7 @@ export async function executeWorktreeCompletion(context) {
     // WU-2310: Capture file state before transaction commit
     // This allows rollback if git commit fails AFTER files are written
     // Note: We use the relative paths since we're already chdir'd into the worktree
-    const workingEventsPath = path.join('.beacon', 'state', WU_EVENTS_FILE_NAME);
+    const workingEventsPath = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
     const pathsToSnapshot = [
       workingWUPath,
       workingStatusPath,
@@ -731,13 +731,13 @@ export async function checkBranchDrift(branch) {
  */
 const APPEND_ONLY_FILES = [
   // State store events file (append-only by design)
-  path.join('.beacon', 'state', WU_EVENTS_FILE_NAME),
+  path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME),
   // Status and backlog are generated from state store but may conflict during rebase
   WU_PATHS.STATUS(),
   WU_PATHS.BACKLOG(),
 ];
 
-const WU_EVENTS_PATH = path.join('.beacon', 'state', WU_EVENTS_FILE_NAME);
+const WU_EVENTS_PATH = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
 
 function normalizeEventForKey(event) {
   const normalized = {};

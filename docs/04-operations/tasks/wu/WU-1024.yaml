@@ -13,7 +13,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1024.done
+  - .lumenflow/stamps/WU-1024.done
 dependencies: []
 risks: []
 notes: Bug from WU-1017. CLI tools use micro-worktrees that merge to main - they need to push.

@@ -8,6 +8,7 @@ import {
   BRANCHES,
   STRING_LITERALS,
   EXIT_CODES,
+  LUMENFLOW_PATHS,
 } from '@lumenflow/core/lib/wu-constants.js';
 
 function run(cmd: string): string {
@@ -48,12 +49,12 @@ function checkGitStatus(runFn: RunFn = run): string | null {
 }
 
 function stampPath(wuId: string): string {
-  return path.join('.beacon', 'stamps', `${wuId}.done`);
+  return path.join(LUMENFLOW_PATHS.STAMPS_DIR, `${wuId}.done`);
 }
 
 function checkStamp(wuId: string, existsFn: ExistsFn = existsSync): string | null {
   if (existsFn(stampPath(wuId))) return null;
-  return `Missing stamp .beacon/stamps/${wuId}.done`;
+  return `Missing stamp ${LUMENFLOW_PATHS.STAMPS_DIR}/${wuId}.done`;
 }
 
 function checkCommit(wuId: string, runFn: RunFn = run): string | null {

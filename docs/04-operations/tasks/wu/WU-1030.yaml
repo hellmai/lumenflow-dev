@@ -29,7 +29,7 @@ tests:
     - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1030.done
+  - .lumenflow/stamps/WU-1030.done
 dependencies: []
 risks: []
 notes: ''

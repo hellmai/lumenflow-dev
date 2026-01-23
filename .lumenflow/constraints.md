@@ -73,7 +73,7 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 
 - `pnpm wu:done` runs gates before merge
 - `--skip-gates` requires both `--reason` and `--fix-wu`
-- Skip events logged to `.beacon/skip-gates-audit.log`
+- Skip events logged to `.lumenflow/skip-gates-audit.log`
 
 **Why:** Gates ensure quality. Skipping requires accountability and a fix plan.
 

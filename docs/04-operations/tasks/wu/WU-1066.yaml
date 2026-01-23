@@ -15,7 +15,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1066.done
+  - .lumenflow/stamps/WU-1066.done
 dependencies: []
 risks: []
 notes: 'SUPERSEDED: See WU-1067 which implements config-driven gates instead of hardcoded language

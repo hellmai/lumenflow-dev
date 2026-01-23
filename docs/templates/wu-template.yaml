@@ -76,7 +76,7 @@ exposure: 'backend-only' # ui | api | backend-only | documentation
 
 # Required: Deliverable artifacts (stamps, docs, etc.)
 artifacts:
-  - .beacon/stamps/WU-XXX.done
+  - .lumenflow/stamps/WU-XXX.done
 
 # Optional: Dependencies (other WUs that must complete first)
 dependencies: []

@@ -18,7 +18,7 @@ tests:
     - packages/@lumenflow/shims/__tests__/git-shim.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1027.done
+  - .lumenflow/stamps/WU-1027.done
 dependencies: []
 risks: []
 notes: ''

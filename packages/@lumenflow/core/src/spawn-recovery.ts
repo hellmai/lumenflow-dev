@@ -9,7 +9,7 @@
  * 2. Stale lock (>2h) -> auto-release, mark spawn timeout
  * 3. Active lock + no checkpoint in 1h -> mark stuck, escalate
  *
- * All recovery actions are logged to .beacon/recovery/ for audit.
+ * All recovery actions are logged to .lumenflow/recovery/ for audit.
  *
  * Library-First Note: This is project-specific spawn recovery code for
  * ExampleApp's custom spawn-registry.jsonl, lane-lock, and memory-store.
@@ -31,7 +31,7 @@ import {
   getLockFilePath,
   releaseLaneLock,
 } from './lane-lock.js';
-import { toKebab } from './wu-constants.js';
+import { toKebab, LUMENFLOW_PATHS } from './wu-constants.js';
 
 // Optional import from @lumenflow/memory
 let loadMemory:
@@ -110,10 +110,10 @@ function laneToKebab(lane) {
  * Gets the recovery directory path
  *
  * @param {string} baseDir - Base directory
- * @returns {string} Path to .beacon/recovery/
+ * @returns {string} Path to .lumenflow/recovery/
  */
 function getRecoveryDir(baseDir) {
-  return path.join(baseDir, '.beacon', RECOVERY_DIR_NAME);
+  return path.join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_DIR_NAME);
 }
 
 /**
@@ -151,7 +151,7 @@ async function getLastCheckpoint(
     return null;
   }
 
-  const memoryDir = path.join(baseDir, '.beacon', 'state');
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
   try {
     const memory = await loadMemory(memoryDir, wuId);
@@ -215,13 +215,13 @@ function isCheckpointRecent(checkpointTimestamp) {
  * }
  */
 export interface RecoverStuckSpawnOptions {
-  /** Base directory for .beacon/ */
+  /** Base directory for .lumenflow/ */
   baseDir?: string;
 }
 
 export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptions = {}) {
   const { baseDir = process.cwd() } = options;
-  const registryDir = path.join(baseDir, '.beacon', 'state');
+  const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
   // Load spawn registry
   const store = new SpawnRegistryStore(registryDir);

@@ -3,7 +3,7 @@
  * Part of WU-630: Detective layer (Layer 3 of 4-layer defense)
  * Part of WU-1552: Complete logging integration with user/outcome tracking
  *
- * Logs all git commands to .beacon/commands.log for post-execution analysis.
+ * Logs all git commands to .lumenflow/commands.log for post-execution analysis.
  * Provides defense-in-depth even if git shim is bypassed.
  *
  * Log format (v2): timestamp | command | branch | worktree | user | outcome
@@ -18,13 +18,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getCurrentBranch, isMainWorktree } from './wu-helpers.js';
-import { BEACON_PATHS, FILE_SYSTEM, GIT_FLAGS, STRING_LITERALS } from './wu-constants.js';
+import { FILE_SYSTEM, GIT_FLAGS, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Default log path (can be overridden for testing)
-const DEFAULT_LOG_PATH = path.resolve(__dirname, '../..', BEACON_PATHS.COMMANDS_LOG);
+const DEFAULT_LOG_PATH = path.resolve(__dirname, '../..', LUMENFLOW_PATHS.COMMANDS_LOG);
 
 // Banned patterns (same as git shim)
 const BANNED_PATTERNS = [
@@ -70,7 +70,7 @@ export interface LogGitCommandOptions {
 /**
  * Log a git command to the commands log
  * @param {string[]} args - Git command arguments (e.g., ['status'], ['add', '.'])
- * @param {string} logPath - Path to log file (defaults to .beacon/commands.log)
+ * @param {string} logPath - Path to log file (defaults to .lumenflow/commands.log)
  * @param {LogGitCommandOptions} options - Additional logging options (WU-1552)
  */
 export function logGitCommand(
@@ -99,7 +99,7 @@ export function logGitCommand(
     // New format (v2): timestamp | command | branch | worktree | user | outcome
     const logEntry = `${timestamp} | ${command} | ${branch} | ${worktree} | ${user} | ${outcome}\n`;
 
-    // Ensure .beacon directory exists
+    // Ensure .lumenflow directory exists
     const logDir = path.dirname(logPath);
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });

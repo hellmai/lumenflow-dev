@@ -6,7 +6,7 @@
  * - Input validation via Zod schemas (tool.schemas.ts)
  * - Worktree context detection (worktree-guard.mjs)
  * - Scope validation against code_paths (scope-checker.mjs)
- * - Audit logging for telemetry (.beacon/telemetry/tools.ndjson)
+ * - Audit logging for telemetry (.lumenflow/telemetry/tools.ndjson)
  * - Consistent error handling with agent-friendly messages
  *
  * Usage:
@@ -166,7 +166,7 @@ function createAuditLogger(): (entry: unknown) => void {
   return (entry: unknown) => {
     // Write to NDJSON telemetry file
     // Implementation deferred - currently no-op for testing
-    // Will integrate with .beacon/telemetry/tools.ndjson in future WU
+    // Will integrate with .lumenflow/telemetry/tools.ndjson in future WU
     void entry;
   };
 }

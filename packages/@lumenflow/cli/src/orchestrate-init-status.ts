@@ -12,20 +12,19 @@
 import { Command } from 'commander';
 import { existsSync, readdirSync } from 'node:fs';
 import { loadInitiativeWUs, calculateProgress, formatProgress } from '@lumenflow/initiatives';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 import chalk from 'chalk';
 
 const LOG_PREFIX = '[orchestrate:init-status]';
-const STAMPS_DIR = '.beacon/stamps';
 
 function getCompletedWUs(wuIds: string[]): Set<string> {
   const completed = new Set<string>();
 
-  if (!existsSync(STAMPS_DIR)) {
+  if (!existsSync(LUMENFLOW_PATHS.STAMPS_DIR)) {
     return completed;
   }
 
-  const files = readdirSync(STAMPS_DIR);
+  const files = readdirSync(LUMENFLOW_PATHS.STAMPS_DIR);
   for (const wuId of wuIds) {
     if (files.includes(`${wuId}.done`)) {
       completed.add(wuId);

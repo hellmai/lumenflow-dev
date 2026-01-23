@@ -38,13 +38,13 @@ import { die } from '@lumenflow/core/dist/error-handler.js';
 const LOG_PREFIX = '[metrics:snapshot]';
 
 /** Default snapshot output path */
-const DEFAULT_OUTPUT = '.beacon/snapshots/metrics-latest.json';
+const DEFAULT_OUTPUT = '.lumenflow/snapshots/metrics-latest.json';
 
 /** WU directory relative to repo root */
 const WU_DIR = 'docs/04-operations/tasks/wu';
 
 /** Skip-gates audit file path */
-const SKIP_GATES_PATH = '.beacon/skip-gates-audit.ndjson';
+const SKIP_GATES_PATH = '.lumenflow/skip-gates-audit.ndjson';
 
 /** Snapshot type options */
 const SNAPSHOT_TYPES: MetricsSnapshotType[] = ['all', 'dora', 'lanes', 'flow'];

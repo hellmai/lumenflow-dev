@@ -15,7 +15,7 @@ Make `wu:claim` update canonical state on `origin/main` without touching local m
 ## Approach
 
 1. **Preflight (read-only)**: validate WU YAML schema + spec completeness, lane format/WIP, and code path overlaps on an up-to-date `origin/main` (no local main mutation).
-2. **Canonical update (push-only micro-worktree)**: update WU YAML, status/backlog, and `.beacon/state/wu-events.jsonl` on `origin/main`.
+2. **Canonical update (push-only micro-worktree)**: update WU YAML, status/backlog, and `.lumenflow/state/wu-events.jsonl` on `origin/main`.
 3. **Worktree creation**: create lane branch/worktree from `origin/main` and push lane branch (global claim lock).
 4. **No-push path**: skip remote checks and pushes; update claim metadata inside the worktree only and warn that the claim is local-only.
 

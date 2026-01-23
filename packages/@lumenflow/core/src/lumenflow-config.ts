@@ -261,7 +261,7 @@ directories:
   # Agents directory
   agentsDir: "${defaultConfig.directories.agentsDir}"
 
-# Beacon paths (.beacon directory structure)
+# Beacon paths (.lumenflow directory structure)
 beacon:
   base: "${defaultConfig.beacon.base}"
   stampsDir: "${defaultConfig.beacon.stampsDir}"

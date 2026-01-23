@@ -8,7 +8,7 @@
  * Usage:
  *   pnpm mem:ready --wu WU-1234 [--type <type>] [--format <json|human>] [--quiet]
  *
- * Includes audit logging to .beacon/telemetry/tools.ndjson.
+ * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
  * @see {@link tools/lib/mem-ready-core.mjs} - Core logic
  * @see {@link tools/__tests__/mem-ready.test.mjs} - Tests
@@ -18,7 +18,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { queryReadyNodes } from '@lumenflow/memory/dist/mem-ready-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 import { MEMORY_NODE_TYPES } from '@lumenflow/memory/dist/memory-schema.js';
 
 /**
@@ -30,11 +30,6 @@ const LOG_PREFIX = '[mem:ready]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:ready';
-
-/**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
 
 /**
  * CLI argument options specific to mem:ready
@@ -70,7 +65,7 @@ const CLI_OPTIONS = {
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory

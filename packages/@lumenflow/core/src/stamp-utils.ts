@@ -6,7 +6,7 @@
  *
  * WU-2242: Added format validation for corrupted stamp detection
  *
- * Stamp files (.beacon/stamps/WU-{id}.done) serve as completion markers
+ * Stamp files (.lumenflow/stamps/WU-{id}.done) serve as completion markers
  * Used by wu:done, wu:recovery, and validation tools
  */
 

@@ -32,8 +32,8 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
     // Create standard directory structure
     mkdirSync(join(testDir, 'docs/04-operations/tasks/initiatives'), { recursive: true });
     mkdirSync(join(testDir, 'docs/04-operations/tasks/wu'), { recursive: true });
-    mkdirSync(join(testDir, '.beacon/stamps'), { recursive: true });
-    mkdirSync(join(testDir, '.beacon/artifacts/waves'), { recursive: true });
+    mkdirSync(join(testDir, '.lumenflow/stamps'), { recursive: true });
+    mkdirSync(join(testDir, '.lumenflow/artifacts/waves'), { recursive: true });
   });
 
   afterEach(() => {
@@ -96,7 +96,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
    * Helper to create a stamp file
    */
   function createStamp(wuId: string) {
-    const stampPath = join(testDir, '.beacon/stamps', `${wuId}.done`);
+    const stampPath = join(testDir, '.lumenflow/stamps', `${wuId}.done`);
     writeFileSync(stampPath, `${wuId} completed\n`, 'utf8');
   }
 
@@ -104,7 +104,11 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
    * Helper to read wave manifest
    */
   function readWaveManifest(initId: string, waveNum: number) {
-    const manifestPath = join(testDir, '.beacon/artifacts/waves', `${initId}-wave-${waveNum}.json`);
+    const manifestPath = join(
+      testDir,
+      '.lumenflow/artifacts/waves',
+      `${initId}-wave-${waveNum}.json`,
+    );
     if (!existsSync(manifestPath)) return null;
     return JSON.parse(readFileSync(manifestPath, 'utf8'));
   }
@@ -196,7 +200,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-001', { initiative: 'INIT-001', status: 'ready' });
 
       // Pre-create wave 0 manifest
-      const wave0ManifestPath = join(testDir, '.beacon/artifacts/waves', 'INIT-001-wave-0.json');
+      const wave0ManifestPath = join(testDir, '.lumenflow/artifacts/waves', 'INIT-001-wave-0.json');
       writeFileSync(
         wave0ManifestPath,
         JSON.stringify({ initiative: 'INIT-001', wave: 0, wus: [] }),
@@ -245,7 +249,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       // But manifest file should NOT exist
       const manifestPath = join(
         testDir,
-        '.beacon/artifacts/waves',
+        '.lumenflow/artifacts/waves',
         `INIT-001-wave-${result.wave}.json`,
       );
       expect(existsSync(manifestPath)).toBe(false);
@@ -285,7 +289,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
           { id: 'WU-001', lane: 'Operations' },
           { id: 'WU-002', lane: 'Intelligence' },
         ],
-        manifestPath: '.beacon/artifacts/waves/INIT-001-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-001-wave-0.json',
       });
 
       // Verify key structural elements are present
@@ -303,7 +307,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
         initiative: 'INIT-001',
         wave: 0,
         wus: [{ id: 'WU-001', lane: 'Operations' }],
-        manifestPath: '.beacon/artifacts/waves/INIT-001-wave-0.json',
+        manifestPath: '.lumenflow/artifacts/waves/INIT-001-wave-0.json',
       });
 
       // Should include instructions on how to resume
@@ -344,7 +348,7 @@ describe('orchestrate-initiative checkpoint-per-wave', () => {
       createWU('WU-002', { initiative: 'INIT-001', status: 'ready', lane: 'Intelligence' });
 
       // Create wave 0 manifest that already has WU-001
-      const wave0ManifestPath = join(testDir, '.beacon/artifacts/waves', 'INIT-001-wave-0.json');
+      const wave0ManifestPath = join(testDir, '.lumenflow/artifacts/waves', 'INIT-001-wave-0.json');
       writeFileSync(
         wave0ManifestPath,
         JSON.stringify({

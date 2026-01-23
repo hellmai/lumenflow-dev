@@ -26,7 +26,14 @@ import { moveWUToDoneBacklog } from './wu-backlog-updater.js';
 import { getGitForCwd } from './git-adapter.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { rollbackFiles } from './rollback-utils.js';
-import { LOG_PREFIX, EMOJI, WU_STATUS, FILE_SYSTEM, getProjectRoot } from './wu-constants.js';
+import {
+  LOG_PREFIX,
+  EMOJI,
+  WU_STATUS,
+  FILE_SYSTEM,
+  getProjectRoot,
+  LUMENFLOW_PATHS,
+} from './wu-constants.js';
 
 import { RETRY_PRESETS } from './retry-strategy.js';
 
@@ -37,7 +44,7 @@ import { RETRY_PRESETS } from './retry-strategy.js';
 export const MAX_RECOVERY_ATTEMPTS = RETRY_PRESETS.recovery.maxAttempts;
 
 /**
- * WU-1335: Recovery marker subdirectory within .beacon
+ * WU-1335: Recovery marker subdirectory within .lumenflow
  */
 const RECOVERY_MARKER_DIR = 'recovery';
 
@@ -45,18 +52,18 @@ const RECOVERY_MARKER_DIR = 'recovery';
  * WU-1335: Get the path to the recovery marker file for a WU
  *
  * @param {string} id - WU ID
- * @param {string} [baseDir=process.cwd()] - Base directory for .beacon
+ * @param {string} [baseDir=process.cwd()] - Base directory for .lumenflow
  * @returns {string} Path to recovery marker file
  */
 export function getRecoveryMarkerPath(id, baseDir = process.cwd()) {
-  return join(baseDir, '.beacon', RECOVERY_MARKER_DIR, `${id}.recovery`);
+  return join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_MARKER_DIR, `${id}.recovery`);
 }
 
 /**
  * WU-1335: Get the current recovery attempt count for a WU
  *
  * @param {string} id - WU ID
- * @param {string} [baseDir=process.cwd()] - Base directory for .beacon
+ * @param {string} [baseDir=process.cwd()] - Base directory for .lumenflow
  * @returns {number} Current attempt count (0 if no marker exists)
  */
 export function getRecoveryAttemptCount(id, baseDir = process.cwd()) {
@@ -77,12 +84,12 @@ export function getRecoveryAttemptCount(id, baseDir = process.cwd()) {
  * WU-1335: Increment recovery attempt count for a WU
  *
  * @param {string} id - WU ID
- * @param {string} [baseDir=process.cwd()] - Base directory for .beacon
+ * @param {string} [baseDir=process.cwd()] - Base directory for .lumenflow
  * @returns {number} New attempt count
  */
 export function incrementRecoveryAttempt(id, baseDir = process.cwd()) {
   const markerPath = getRecoveryMarkerPath(id, baseDir);
-  const markerDir = join(baseDir, '.beacon', RECOVERY_MARKER_DIR);
+  const markerDir = join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_MARKER_DIR);
 
   // Ensure directory exists
   if (!existsSync(markerDir)) {
@@ -106,7 +113,7 @@ export function incrementRecoveryAttempt(id, baseDir = process.cwd()) {
  * WU-1335: Clear recovery attempts for a WU (called on successful recovery)
  *
  * @param {string} id - WU ID
- * @param {string} [baseDir=process.cwd()] - Base directory for .beacon
+ * @param {string} [baseDir=process.cwd()] - Base directory for .lumenflow
  */
 export function clearRecoveryAttempts(id, baseDir = process.cwd()) {
   const markerPath = getRecoveryMarkerPath(id, baseDir);

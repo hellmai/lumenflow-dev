@@ -3,7 +3,7 @@ import { existsSync, rmSync, mkdirSync, readFileSync, writeFileSync } from 'node
 import { join } from 'node:path';
 import { IncidentLogSchema, appendIncident, readIncidents } from '../src/agent-incidents.js';
 
-const TEST_INCIDENTS_DIR = '.beacon/incidents-test';
+const TEST_INCIDENTS_DIR = '.lumenflow/incidents-test';
 
 describe('IncidentLogSchema', () => {
   it('validates a complete incident log entry', () => {

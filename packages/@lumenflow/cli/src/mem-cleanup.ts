@@ -31,7 +31,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
 /**
  * Log prefix for mem:cleanup output
@@ -42,11 +42,6 @@ const LOG_PREFIX = '[mem:cleanup]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:cleanup';
-
-/**
- * Audit log file path
- */
-const AUDIT_LOG_PATH = '.beacon/telemetry/tools.ndjson';
 
 /**
  * Bytes per KB for formatting
@@ -98,7 +93,7 @@ const CLI_OPTIONS = {
  */
 async function writeAuditLog(baseDir, entry) {
   try {
-    const logPath = path.join(baseDir, AUDIT_LOG_PATH);
+    const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory

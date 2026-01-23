@@ -21,7 +21,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1053.done
+  - .lumenflow/stamps/WU-1053.done
 dependencies: []
 spec_refs:
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md

@@ -4,8 +4,8 @@
  * Core library for unified log aggregation following Anthropic's agent logging patterns.
  * Aggregates logs from multiple sources:
  * - .logs/web.log (structured JSON from Next.js)
- * - .beacon/commands.log (git command audit trail)
- * - .beacon/flow.log (WU flow events)
+ * - .lumenflow/commands.log (git command audit trail)
+ * - .lumenflow/flow.log (WU flow events)
  * - .logs/tool-audit.ndjson (Claude Code tool usage audit)
  *
  * LIBRARY-FIRST: No general-purpose library exists for project-specific log
@@ -17,6 +17,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Log source configurations
@@ -56,8 +57,8 @@ interface LevelColors {
 
 export const LOG_SOURCES = [
   { path: '.logs/web.log', source: 'web.log' },
-  { path: '.beacon/commands.log', source: 'commands.log' },
-  { path: '.beacon/flow.log', source: 'flow.log' },
+  { path: LUMENFLOW_PATHS.COMMANDS_LOG, source: 'commands.log' },
+  { path: LUMENFLOW_PATHS.FLOW_LOG, source: 'flow.log' },
   { path: '.logs/tool-audit.ndjson', source: 'tool-audit.ndjson' },
 ];
 

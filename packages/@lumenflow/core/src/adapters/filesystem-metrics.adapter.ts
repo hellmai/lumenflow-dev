@@ -5,7 +5,7 @@
  * Implements MetricsCollector port by reading from filesystem:
  * - WU YAML files (docs/04-operations/tasks/wu/)
  * - status.md (active/blocked WUs)
- * - telemetry files (.beacon/telemetry/)
+ * - telemetry files (.lumenflow/telemetry/)
  *
  * Library-First Approach:
  * - fast-glob: File discovery

@@ -19,7 +19,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/wu-create-validators.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1069.done
+  - .lumenflow/stamps/WU-1069.done
 dependencies: []
 risks: []
 notes: Prevents agents from storing plans inside repo. Part of vendor-agnostic enforcement layer.

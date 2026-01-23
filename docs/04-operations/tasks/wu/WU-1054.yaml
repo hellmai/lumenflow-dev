@@ -27,7 +27,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1054.done
+  - .lumenflow/stamps/WU-1054.done
 dependencies: []
 risks: []
 notes: ''

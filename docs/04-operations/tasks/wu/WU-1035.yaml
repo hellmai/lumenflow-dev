@@ -25,7 +25,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/risk-detector.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1035.done
+  - .lumenflow/stamps/WU-1035.done
 dependencies: []
 risks: []
 notes: ''

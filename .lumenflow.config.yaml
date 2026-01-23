@@ -72,7 +72,7 @@ directories:
   wu_specs: 'docs/04-operations/tasks/wu'
   backlog: 'docs/04-operations/tasks/backlog.md'
   status: 'docs/04-operations/tasks/status.md'
-  stamps: '.beacon/stamps'
+  stamps: '.lumenflow/stamps'
   skillsDir: '.claude/skills'
   agentsDir: '.claude/agents'
 

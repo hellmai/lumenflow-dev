@@ -21,7 +21,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/force-bypass-audit.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1070.done
+  - .lumenflow/stamps/WU-1070.done
 dependencies: []
 risks:
   - Audit logging must not block the bypass (fail-open for audit, fail-closed would defeat purpose)

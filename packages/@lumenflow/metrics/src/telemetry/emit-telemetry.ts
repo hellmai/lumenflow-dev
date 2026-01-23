@@ -18,9 +18,9 @@ import type {
 
 /** Default telemetry paths */
 export const TELEMETRY_PATHS = {
-  GATES: '.beacon/telemetry/gates.ndjson',
-  LLM_CLASSIFICATION: '.beacon/telemetry/llm-classification.ndjson',
-  FLOW_LOG: '.beacon/flow.log',
+  GATES: '.lumenflow/telemetry/gates.ndjson',
+  LLM_CLASSIFICATION: '.lumenflow/telemetry/llm-classification.ndjson',
+  FLOW_LOG: '.lumenflow/flow.log',
 } as const;
 
 /**

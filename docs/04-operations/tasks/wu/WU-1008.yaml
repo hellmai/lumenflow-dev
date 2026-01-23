@@ -15,7 +15,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1008.done
+  - .lumenflow/stamps/WU-1008.done
 dependencies: []
 risks:
   - Domain registration if not already owned

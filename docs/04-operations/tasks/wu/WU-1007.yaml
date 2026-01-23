@@ -14,7 +14,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1007.done
+  - .lumenflow/stamps/WU-1007.done
 dependencies:
   - WU-1008
   - WU-1009

@@ -3,7 +3,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { VALIDATION_LIMITS } from '@lumenflow/core/lib/wu-validation-constants.js';
 import {
-  BEACON_PATHS,
+  LUMENFLOW_PATHS,
   FILE_EXTENSIONS,
   STRING_LITERALS,
 } from '@lumenflow/core/lib/wu-constants.js';
@@ -20,7 +20,7 @@ const CATEGORY_VALUES = ['workflow', 'tooling', 'confusion', 'violation', 'error
 
 /**
  * IncidentLog schema for structured issue tracking
- * Stored as NDJSON in .beacon/incidents/<category>.ndjson
+ * Stored as NDJSON in .lumenflow/incidents/<category>.ndjson
  */
 export const IncidentLogSchema = z.object({
   timestamp: z.string().datetime(), // ISO 8601 with timezone
@@ -63,7 +63,7 @@ export type IncidentLog = z.infer<typeof IncidentLogSchema>;
  */
 export function appendIncident(
   incident: unknown,
-  incidentsDir: string = BEACON_PATHS.INCIDENTS,
+  incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS,
 ): void {
   // Validate against schema
   const validated = IncidentLogSchema.parse(incident);
@@ -88,7 +88,7 @@ export function appendIncident(
 export function readIncidents(
   categories: readonly string[] | null = null,
   since: Date | null = null,
-  incidentsDir: string = BEACON_PATHS.INCIDENTS,
+  incidentsDir: string = LUMENFLOW_PATHS.INCIDENTS,
 ): IncidentLog[] {
   if (!existsSync(incidentsDir)) return [];
 

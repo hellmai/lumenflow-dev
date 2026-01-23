@@ -21,11 +21,7 @@ import path from 'node:path';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
-
-/**
- * Memory directory path relative to base directory
- */
-const MEMORY_DIR = '.beacon/memory';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * Default values for session metadata
@@ -60,7 +56,7 @@ function isValidWuId(wuId: string): boolean {
  * @returns Memory directory path
  */
 async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
   return memoryDir;
@@ -126,7 +122,7 @@ export interface StartSessionResult {
  * - Agent type and context tier in metadata
  * - UUID session_id for unique identification
  *
- * @param baseDir - Base directory containing .beacon/memory/
+ * @param baseDir - Base directory containing .lumenflow/memory/
  * @param options - Session options
  * @returns Result with created session node
  * @throws If wuId is missing or invalid

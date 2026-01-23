@@ -17,11 +17,7 @@ import path from 'node:path';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
-
-/**
- * Memory directory path relative to base
- */
-const MEMORY_DIR = '.beacon/memory';
+import { LUMENFLOW_PATHS } from '@lumenflow/core';
 
 /**
  * WU directory path relative to base
@@ -247,7 +243,7 @@ export async function listOpenDiscoveries(
   baseDir: string,
   options: ListOptions = {},
 ): Promise<TriageMemoryNode[]> {
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   const memory = await loadMemory(memoryDir);
   const relationships = await loadRelationships(memoryDir);
@@ -316,7 +312,7 @@ export async function archiveDiscovery(
   options: ArchiveOptions,
 ): Promise<ArchiveResult> {
   const { nodeId, reason } = options;
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   const memory = await loadMemory(memoryDir);
   const node = memory.byId.get(nodeId) as TriageMemoryNode | undefined;
@@ -459,7 +455,7 @@ export async function promoteDiscovery(
   options: PromoteOptions,
 ): Promise<PromoteResult> {
   const { nodeId, lane, title, wuId, priority, dryRun: _dryRun = false } = options;
-  const memoryDir = path.join(baseDir, MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   // Validate lane format
   try {

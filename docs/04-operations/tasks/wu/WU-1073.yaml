@@ -13,7 +13,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1073.done
+  - .lumenflow/stamps/WU-1073.done
 dependencies: []
 risks: []
 notes: ''

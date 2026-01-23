@@ -17,7 +17,7 @@ import {
 } from '../src/auto-session-integration.js';
 
 // Test directories
-const TEST_SESSION_DIR = '.beacon/sessions-test';
+const TEST_SESSION_DIR = '.lumenflow/sessions-test';
 const TEST_SESSION_FILE = join(TEST_SESSION_DIR, 'current.json');
 
 describe('Auto-Session Integration', () => {
@@ -53,7 +53,7 @@ describe('Auto-Session Integration', () => {
       );
     });
 
-    it('should create session file in .beacon/sessions', async () => {
+    it('should create session file in .lumenflow/sessions', async () => {
       await startSessionForWU({
         wuId: 'WU-1234',
         tier: 2,
