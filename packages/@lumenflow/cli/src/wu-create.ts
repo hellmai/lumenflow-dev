@@ -27,7 +27,7 @@
  *          WU-1439 (refactor to shared helper)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { createGitForPath, getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -39,19 +39,35 @@ import { validateLaneFormat, extractParent } from '@lumenflow/core/dist/lane-che
 // WU-2330: Import lane inference for sub-lane suggestions
 import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
 import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { createWUParser, WU_CREATE_OPTIONS, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { validateWU } from '@lumenflow/core/dist/wu-schema.js';
 import {
+  getPlanPath,
+  getPlanProtocolRef,
+  getPlansDir,
+} from '@lumenflow/core/dist/lumenflow-home.js';
+import { validateSpecRefs } from '@lumenflow/core/dist/wu-create-validators.js';
+import {
+  BRANCHES,
   COMMIT_FORMATS,
   FILE_SYSTEM,
-  STRING_LITERALS,
   READINESS_UI,
+  REMOTES,
+  STRING_LITERALS,
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
 // WU-1439: Use shared micro-worktree helper
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import {
+  cleanupMicroWorktree,
+  cleanupOrphanedMicroWorktree,
+  createMicroWorktreeDir,
+  formatFiles,
+  getTempBranchName,
+  stageChangesWithDeletions,
+  withMicroWorktree,
+} from '@lumenflow/core/dist/micro-worktree.js';
 // WU-1620: Import spec completeness validator for readiness summary
 import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
 // WU-1620: Import readWU to read back created YAML for validation
@@ -63,6 +79,11 @@ import {
   validateNoPlaceholders,
   buildPlaceholderErrorMessage,
 } from '@lumenflow/core/dist/wu-validator.js';
+import {
+  getSpecBranchName,
+  isWUOnMain,
+  specBranchExists,
+} from '@lumenflow/core/dist/spec-branch-helpers.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';
@@ -140,7 +161,7 @@ export function warnIfBetterLaneExists(providedLane, codePathsRaw, title, descri
  * Check if WU already exists
  * @param {string} id - WU ID to check
  */
-function checkWUExists(id) {
+async function checkWUExists(id: string, options: { checkSpecBranch?: boolean } = {}) {
   const wuPath = WU_PATHS.WU(id);
   if (existsSync(wuPath)) {
     die(
@@ -150,6 +171,30 @@ function checkWUExists(id) {
         `  2. Edit existing WU: pnpm wu:edit --id ${id} --title "..." --acceptance "..."\n` +
         `  3. Delete existing WU: pnpm wu:delete --id ${id} (if obsolete)`,
     );
+  }
+
+  const git = getGitForCwd();
+  const existsOnMain = await isWUOnMain(id, git);
+  if (existsOnMain) {
+    die(
+      `WU already exists on ${BRANCHES.MAIN}: ${wuPath}\n\n` +
+        `Options:\n` +
+        `  1. Choose a different WU ID\n` +
+        `  2. Edit existing WU: pnpm wu:edit --id ${id} --title "..." --acceptance "..."`,
+    );
+  }
+
+  if (options.checkSpecBranch) {
+    const hasSpecBranch = await specBranchExists(id, git);
+    if (hasSpecBranch) {
+      const specBranch = getSpecBranchName(id);
+      die(
+        `WU already exists on spec branch: ${specBranch}\n\n` +
+          `Options:\n` +
+          `  1. Claim existing WU: pnpm wu:claim --id ${id} --lane "<lane>"\n` +
+          `  2. Choose a different WU ID`,
+      );
+    }
   }
 }
 
@@ -258,6 +303,44 @@ const parseCommaSeparated = (value?: string) =>
         .map((s) => s.trim())
         .filter(Boolean)
     : [];
+
+function mergeSpecRefs(specRefs?: string, extraRef?: string): string | undefined {
+  const refs = parseCommaSeparated(specRefs);
+  if (extraRef && !refs.includes(extraRef)) {
+    refs.push(extraRef);
+  }
+  return refs.length > 0 ? refs.join(',') : undefined;
+}
+
+function createPlanTemplate(wuId: string, title: string): string {
+  const plansDir = getPlansDir();
+  mkdirSync(plansDir, { recursive: true });
+
+  const planPath = getPlanPath(wuId);
+  if (existsSync(planPath)) {
+    die(
+      `Plan already exists: ${planPath}\n\n` +
+        `Options:\n` +
+        `  1. Open the existing plan and continue editing\n` +
+        `  2. Delete or rename the existing plan before retrying\n` +
+        `  3. Run wu:create without --plan`,
+    );
+  }
+
+  const today = todayISO();
+  const content =
+    `# ${wuId} Plan — ${title}\n\n` +
+    `Created: ${today}\n\n` +
+    `## Goal\n\n` +
+    `## Scope\n\n` +
+    `## Approach\n\n` +
+    `## Risks\n\n` +
+    `## Open Questions\n`;
+
+  writeFileSync(planPath, content, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  console.log(`${LOG_PREFIX} ✅ Created plan template: ${planPath}`);
+  return planPath;
+}
 
 function buildWUContent({
   id,
@@ -598,6 +681,74 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
   return backlogRelativePath;
 }
 
+async function createSpecBranchWU({
+  id,
+  lane,
+  title,
+  priority,
+  type,
+  opts,
+}: {
+  id: string;
+  lane: string;
+  title: string;
+  priority: string;
+  type: string;
+  opts: CreateWUOptions;
+}): Promise<string> {
+  const mainGit = getGitForCwd();
+  await cleanupOrphanedMicroWorktree(OPERATION_NAME, id, mainGit, LOG_PREFIX);
+
+  const tempBranchName = getTempBranchName(OPERATION_NAME, id);
+  const microWorktreePath = createMicroWorktreeDir(`${OPERATION_NAME}-`);
+  const specBranchName = getSpecBranchName(id);
+
+  console.log(`${LOG_PREFIX} Using spec branch workflow (no main writes)`);
+  console.log(`${LOG_PREFIX} Spec branch: ${specBranchName}`);
+  console.log(`${LOG_PREFIX} Temp branch: ${tempBranchName}`);
+  console.log(`${LOG_PREFIX} Micro-worktree: ${microWorktreePath}`);
+
+  try {
+    console.log(`${LOG_PREFIX} Creating temp branch...`);
+    await mainGit.createBranchNoCheckout(tempBranchName, BRANCHES.MAIN);
+
+    console.log(`${LOG_PREFIX} Creating micro-worktree...`);
+    await mainGit.worktreeAddExisting(microWorktreePath, tempBranchName);
+
+    const gitWorktree = createGitForPath(microWorktreePath);
+
+    const wuPath = createWUYamlInWorktree(
+      microWorktreePath,
+      id,
+      lane,
+      title,
+      priority,
+      type,
+      opts,
+    );
+
+    const backlogPath = updateBacklogInWorktree(microWorktreePath, id, lane, title);
+    const shortTitle = truncateTitle(title);
+    const commitMessage = COMMIT_FORMATS.CREATE(id, shortTitle);
+    const files = [wuPath, backlogPath];
+
+    await formatFiles(files, microWorktreePath, LOG_PREFIX);
+    console.log(`${LOG_PREFIX} Staging changes (including deletions)...`);
+    await stageChangesWithDeletions(gitWorktree, files);
+    console.log(`${LOG_PREFIX} Committing in micro-worktree...`);
+    await gitWorktree.commit(commitMessage);
+    console.log(`${LOG_PREFIX} ✅ Committed: ${commitMessage}`);
+
+    console.log(`${LOG_PREFIX} Pushing spec branch to ${REMOTES.ORIGIN}/${specBranchName}...`);
+    await gitWorktree.pushRefspec(REMOTES.ORIGIN, tempBranchName, specBranchName);
+    console.log(`${LOG_PREFIX} ✅ Pushed ${specBranchName}`);
+  } finally {
+    await cleanupMicroWorktree(microWorktreePath, tempBranchName, LOG_PREFIX);
+  }
+
+  return specBranchName;
+}
+
 /**
  * Get default assigned_to value from git config user.email (WU-1368)
  * @returns {Promise<string>} User email or empty string if not configured
@@ -644,6 +795,9 @@ async function main() {
       WU_OPTIONS.exposure,
       WU_OPTIONS.userJourney,
       WU_OPTIONS.uiPairingWus,
+      // WU-1062: Spec branch / external plan options for wu:create
+      WU_CREATE_OPTIONS.plan,
+      WU_CREATE_OPTIONS.direct,
     ],
     required: ['id', 'lane', 'title'],
     allowPositionalId: false,
@@ -674,14 +828,18 @@ async function main() {
   // WU-2330: Warn if a more specific sub-lane matches code_paths or description
   warnIfBetterLaneExists(args.lane, args.codePaths, args.title, args.description);
 
-  checkWUExists(args.id);
   await ensureOnMain(getGitForCwd());
+  const useDirect = Boolean(args.direct);
+  await checkWUExists(args.id, { checkSpecBranch: !useDirect });
 
   // WU-1368: Get assigned_to from flag or git config user.email
   const assignedTo = args.assignedTo || (await getDefaultAssignedTo());
   if (!assignedTo) {
     console.warn(`${LOG_PREFIX} ⚠️  No assigned_to set - WU will need manual assignment`);
   }
+
+  const planSpecRef = args.plan ? getPlanProtocolRef(args.id) : undefined;
+  const mergedSpecRefs = mergeSpecRefs(args.specRefs, planSpecRef);
 
   const createSpecValidation = validateCreateSpec({
     id: args.id,
@@ -699,7 +857,7 @@ async function main() {
       exposure: args.exposure,
       userJourney: args.userJourney,
       uiPairingWus: args.uiPairingWus,
-      specRefs: args.specRefs,
+      specRefs: mergedSpecRefs,
       initiative: args.initiative,
       phase: args.phase,
       blockedBy: args.blockedBy,
@@ -718,6 +876,24 @@ async function main() {
 
   console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
 
+  const specRefsList = parseCommaSeparated(mergedSpecRefs);
+  const specRefsValidation = validateSpecRefs(specRefsList);
+  if (!specRefsValidation.valid) {
+    const errorList = specRefsValidation.errors
+      .map((error) => `  • ${error}`)
+      .join(STRING_LITERALS.NEWLINE);
+    die(`${LOG_PREFIX} ❌ Spec reference validation failed:\n\n${errorList}`);
+  }
+  if (specRefsValidation.warnings.length > 0) {
+    for (const warning of specRefsValidation.warnings) {
+      console.warn(`${LOG_PREFIX} ⚠️  ${warning}`);
+    }
+  }
+
+  if (args.plan) {
+    createPlanTemplate(args.id, args.title);
+  }
+
   // Transaction: micro-worktree isolation (WU-1439)
   try {
     const priority = args.priority || DEFAULT_PRIORITY;
@@ -726,58 +902,96 @@ async function main() {
     const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
     process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
     try {
-      await withMicroWorktree({
-        operation: OPERATION_NAME,
-        id: args.id,
-        logPrefix: LOG_PREFIX,
-        execute: async ({ worktreePath }) => {
-          // Create WU YAML in micro-worktree
-          const wuPath = createWUYamlInWorktree(
-            worktreePath,
-            args.id,
-            args.lane,
-            args.title,
-            priority,
-            type,
-            {
-              // Initiative system fields (WU-1247)
-              initiative: args.initiative,
-              phase: args.phase,
-              blockedBy: args.blockedBy,
-              blocks: args.blocks,
-              labels: args.labels,
-              // WU-1368: Assigned to
-              assignedTo,
-              // WU-1364: Full spec inline options
-              description: args.description,
-              acceptance: args.acceptance,
-              codePaths: args.codePaths,
-              testPathsManual: args.testPathsManual,
-              testPathsUnit: args.testPathsUnit,
-              testPathsE2e: args.testPathsE2e,
-              // WU-1998: Exposure field options
-              exposure: args.exposure,
-              userJourney: args.userJourney,
-              uiPairingWus: args.uiPairingWus,
-              // WU-2320: Spec references
-              specRefs: args.specRefs,
-            },
-          );
+      if (useDirect) {
+        await withMicroWorktree({
+          operation: OPERATION_NAME,
+          id: args.id,
+          logPrefix: LOG_PREFIX,
+          execute: async ({ worktreePath }) => {
+            // Create WU YAML in micro-worktree
+            const wuPath = createWUYamlInWorktree(
+              worktreePath,
+              args.id,
+              args.lane,
+              args.title,
+              priority,
+              type,
+              {
+                // Initiative system fields (WU-1247)
+                initiative: args.initiative,
+                phase: args.phase,
+                blockedBy: args.blockedBy,
+                blocks: args.blocks,
+                labels: args.labels,
+                // WU-1368: Assigned to
+                assignedTo,
+                // WU-1364: Full spec inline options
+                description: args.description,
+                acceptance: args.acceptance,
+                codePaths: args.codePaths,
+                testPathsManual: args.testPathsManual,
+                testPathsUnit: args.testPathsUnit,
+                testPathsE2e: args.testPathsE2e,
+                // WU-1998: Exposure field options
+                exposure: args.exposure,
+                userJourney: args.userJourney,
+                uiPairingWus: args.uiPairingWus,
+                // WU-2320: Spec references
+                specRefs: mergedSpecRefs,
+              },
+            );
 
-          // Update backlog.md in micro-worktree
-          const backlogPath = updateBacklogInWorktree(worktreePath, args.id, args.lane, args.title);
+            // Update backlog.md in micro-worktree
+            const backlogPath = updateBacklogInWorktree(
+              worktreePath,
+              args.id,
+              args.lane,
+              args.title,
+            );
 
-          // Build commit message
-          const shortTitle = truncateTitle(args.title);
-          const commitMessage = COMMIT_FORMATS.CREATE(args.id, shortTitle);
+            // Build commit message
+            const shortTitle = truncateTitle(args.title);
+            const commitMessage = COMMIT_FORMATS.CREATE(args.id, shortTitle);
 
-          // Return commit message and files to commit
-          return {
-            commitMessage,
-            files: [wuPath, backlogPath],
-          };
-        },
-      });
+            // Return commit message and files to commit
+            return {
+              commitMessage,
+              files: [wuPath, backlogPath],
+            };
+          },
+        });
+      } else {
+        await createSpecBranchWU({
+          id: args.id,
+          lane: args.lane,
+          title: args.title,
+          priority,
+          type,
+          opts: {
+            // Initiative system fields (WU-1247)
+            initiative: args.initiative,
+            phase: args.phase,
+            blockedBy: args.blockedBy,
+            blocks: args.blocks,
+            labels: args.labels,
+            // WU-1368: Assigned to
+            assignedTo,
+            // WU-1364: Full spec inline options
+            description: args.description,
+            acceptance: args.acceptance,
+            codePaths: args.codePaths,
+            testPathsManual: args.testPathsManual,
+            testPathsUnit: args.testPathsUnit,
+            testPathsE2e: args.testPathsE2e,
+            // WU-1998: Exposure field options
+            exposure: args.exposure,
+            userJourney: args.userJourney,
+            uiPairingWus: args.uiPairingWus,
+            // WU-2320: Spec references
+            specRefs: mergedSpecRefs,
+          },
+        });
+      }
     } finally {
       if (previousWuTool === undefined) {
         delete process.env.LUMENFLOW_WU_TOOL;
@@ -788,12 +1002,18 @@ async function main() {
 
     console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
     console.log(`\nWU ${args.id} created successfully:`);
-    console.log(`  File: ${WU_PATHS.WU(args.id)}`);
     console.log(`  Lane: ${args.lane}`);
     console.log(`  Status: ready`);
 
-    // WU-1620: Display readiness summary
-    displayReadinessSummary(args.id);
+    if (useDirect) {
+      console.log(`  File: ${WU_PATHS.WU(args.id)}`);
+
+      // WU-1620: Display readiness summary
+      displayReadinessSummary(args.id);
+    } else {
+      console.log(`  Spec branch: ${getSpecBranchName(args.id)}`);
+      console.log(`\nNext: pnpm wu:claim --id ${args.id} --lane "${args.lane}"`);
+    }
   } catch (error) {
     die(
       `Transaction failed: ${error.message}\n\n` +
