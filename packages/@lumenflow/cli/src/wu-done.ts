@@ -1239,6 +1239,8 @@ async function validateStagedFiles(id, isDocsOnly = false) {
     if (whitelist.includes(file)) return false;
     // Whitelist .beacon/stamps/** pattern
     if (file.startsWith('.beacon/stamps/')) return false;
+    // WU-1072: Whitelist apps/docs/**/*.mdx for auto-generated docs from turbo docs:generate
+    if (file.startsWith('apps/docs/') && file.endsWith('.mdx')) return false;
     return true;
   });
 
