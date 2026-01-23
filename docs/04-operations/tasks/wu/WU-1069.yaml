@@ -2,7 +2,7 @@ id: WU-1069
 title: Validate spec-refs rejects repo-internal plan paths
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -56,3 +56,5 @@ session_id: 685f767e-a25e-4b8e-9511-bf96be168b3b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T09:45:40.095Z
+locked: true
+completed_at: 2026-01-23T09:57:26.941Z
