@@ -137,6 +137,42 @@ git worktree prune
 
 ---
 
+## Agent LUMENFLOW_FORCE Usage Policy (WU-1070)
+
+**Rule:** AI agents MUST NOT use LUMENFLOW_FORCE without explicit user approval.
+
+**Rationale:** LUMENFLOW_FORCE bypasses all git hook protections (pre-commit, pre-push, commit-msg). While legitimate for emergency human interventions, agents using it autonomously undermines the entire workflow enforcement model.
+
+**Enforcement:**
+
+- All LUMENFLOW_FORCE usage is logged to `.beacon/force-bypasses.log` (git-tracked)
+- Log format: `ISO_TIMESTAMP | HOOK_NAME | USER | BRANCH | REASON | CWD`
+- Missing `LUMENFLOW_FORCE_REASON` triggers stderr warning
+
+**Agent Escalation Path:**
+
+1. **Detect need:** Agent encounters hook blocking operation
+2. **Stop and ask:** Present situation to user with context
+3. **Get approval:** User must explicitly approve bypass with reason
+4. **Execute with audit:** Use `LUMENFLOW_FORCE_REASON="user-approved: <reason>" LUMENFLOW_FORCE=1`
+5. **Document:** Note the bypass in commit message or WU notes
+
+**Legitimate bypass scenarios:**
+
+- Fixing YAML parsing bugs in WU specs (spec infrastructure issue)
+- Emergency production hotfixes (with user present)
+- Recovering from corrupted workflow state
+- Bootstrap operations when CLI not yet built
+
+**Never bypass for:**
+
+- Skipping failing tests
+- Avoiding code review
+- Working around gate failures
+- Convenience or speed
+
+---
+
 ## Escalation Triggers
 
 Stop and ask a human when:
