@@ -2,7 +2,7 @@ id: WU-1071
 title: Fix CLI entry guard for pnpm symlink resolution
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-01-23
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - pnpm wu:spawn works in consumer projects using npm package
   - Gates pass
   - Force bypass audit log is staged automatically with bypass commits
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1071
+claimed_at: 2026-01-23T12:18:17.508Z
+baseline_main_sha: c1606f6592b4cd2b1d375ee0c9a92d24353dff57
+session_id: 941c42a8-d1b5-4c4b-9eaa-a71aa899ed6e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T12:18:17.513Z

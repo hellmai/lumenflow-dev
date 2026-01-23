@@ -20,9 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — Framework: CLI
-- [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -31,6 +29,7 @@ sections:
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml) — Framework: CLI
+- [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

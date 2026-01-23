@@ -9,6 +9,7 @@ _Last updated: 2026-01-23_
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml)
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml)
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml)
+- [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml)
 
 ## Completed
 
