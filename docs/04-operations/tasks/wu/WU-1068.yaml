@@ -2,7 +2,7 @@ id: WU-1068
 title: LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells
 lane: 'Framework: Core'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -19,7 +19,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-yaml-fixer.ts
 tests:
   manual:
-    - Verify PHI scanning is disabled by default (no NHS number detection without LUMENFLOW_PHI_ENABLED=1)
+    - Verify PHI scanning is disabled by default (no NHS number detection without
+      LUMENFLOW_PHI_ENABLED=1)
   unit:
     - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
     - packages/@lumenflow/core/src/validators/__tests__/phi-scanner.test.ts
@@ -53,3 +54,5 @@ session_id: 685f767e-a25e-4b8e-9511-bf96be168b3b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T09:53:10.715Z
+locked: true
+completed_at: 2026-01-23T10:02:48.706Z
