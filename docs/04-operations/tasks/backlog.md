@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — Framework: CLI
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — Framework: CLI
   (No items ready)
 
