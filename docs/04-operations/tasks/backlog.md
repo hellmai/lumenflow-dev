@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1075 — Rename ._legacy to .lumenflow - remove  branding](wu/WU-1075.yaml) — Framework: Core
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — Framework: CLI
   (No items ready)
 
