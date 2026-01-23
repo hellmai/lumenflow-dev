@@ -36,6 +36,7 @@ coverage/
 # LumenFlow
 /worktrees/
 # Beacon state directory (allow state/wu-events.jsonl for completion tracking)
+/.beacon/state/*.backup*
 /.beacon/memory/
 /.beacon/locks/
 /.beacon/sessions/
