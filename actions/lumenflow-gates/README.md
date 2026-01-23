@@ -146,20 +146,20 @@ gates:
 
 ## Inputs
 
-| Input               | Description             | Default |
-| ------------------- | ----------------------- | ------- |
-| `token`             | LumenFlow API token     | -       |
-| `working-directory` | Directory to run in     | `.`     |
-| `skip-format`       | Skip format check       | `false` |
-| `skip-lint`         | Skip lint check         | `false` |
-| `skip-typecheck`    | Skip type check         | `false` |
-| `skip-test`         | Skip tests              | `false` |
+| Input               | Description         | Default |
+| ------------------- | ------------------- | ------- |
+| `token`             | LumenFlow API token | -       |
+| `working-directory` | Directory to run in | `.`     |
+| `skip-format`       | Skip format check   | `false` |
+| `skip-lint`         | Skip lint check     | `false` |
+| `skip-typecheck`    | Skip type check     | `false` |
+| `skip-test`         | Skip tests          | `false` |
 
 ## Outputs
 
-| Output            | Description                     |
-| ----------------- | ------------------------------- |
-| `preset-detected` | Preset/config mode used         |
+| Output            | Description                           |
+| ----------------- | ------------------------------------- |
+| `preset-detected` | Preset/config mode used               |
 | `gates-passed`    | Whether all gates passed (true/false) |
 
 ## Backwards Compatibility

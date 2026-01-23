@@ -969,8 +969,8 @@ Use presets for common languages:
 ```yaml
 gates:
   execution:
-    preset: 'python'    # node, python, go, rust, dotnet
-    lint: 'ruff check . && mypy .'  # Override specific commands
+    preset: 'python' # node, python, go, rust, dotnet
+    lint: 'ruff check . && mypy .' # Override specific commands
 ```
 
 When no `gates.execution` config is present, the CLI falls back to auto-detection and hardcoded defaults (backwards compatible).
