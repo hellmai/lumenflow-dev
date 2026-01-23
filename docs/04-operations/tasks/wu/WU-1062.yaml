@@ -8,16 +8,9 @@ created: 2026-01-22
 code_paths:
   - packages/@lumenflow/core/src/lumenflow-home.ts
   - packages/@lumenflow/core/src/spec-branch-helpers.ts
-  - packages/@lumenflow/core/src/wu-create-validators.ts
-  - packages/@lumenflow/core/src/wu-schema.ts
-  - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/arg-parser.ts
-  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-claim.ts
-  - LUMENFLOW.md
-  - docs/04-operations/_frameworks/lumenflow/playbook.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
     - wu:create --id WU-TEST --plan creates spec branch + external plan
