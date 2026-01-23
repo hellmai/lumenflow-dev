@@ -714,6 +714,9 @@ export const GIT_FLAGS = {
 
   /** List heads only (for ls-remote) */
   HEADS: '--heads',
+
+  /** Path separator (separates git options from file paths) */
+  PATH_SEPARATOR: '--',
 };
 
 /**
