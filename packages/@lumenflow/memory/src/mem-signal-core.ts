@@ -17,7 +17,7 @@
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Signal file name constant
@@ -137,7 +137,7 @@ interface NodeFsError extends Error {
  * @returns Full path to memory directory
  */
 function getMemoryDir(baseDir: string): string {
-  return path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  return path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
 }
 
 /**

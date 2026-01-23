@@ -21,7 +21,7 @@ import path from 'node:path';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Default values for session metadata
@@ -56,7 +56,7 @@ function isValidWuId(wuId: string): boolean {
  * @returns Memory directory path
  */
 async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
   return memoryDir;

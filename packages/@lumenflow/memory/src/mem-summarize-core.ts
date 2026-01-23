@@ -18,7 +18,7 @@ import { loadMemory, appendNode } from './memory-store.js';
 import { generateMemId } from './mem-id.js';
 import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 import path from 'node:path';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Node types that can be summarized
@@ -292,7 +292,7 @@ export async function summarizeWu(
   options: SummarizeOptions,
 ): Promise<SummarizeResult> {
   const { wuId, dryRun = false } = options;
-  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
 
   // Load existing memory
   const memory = await loadMemory(memoryDir);

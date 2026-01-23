@@ -22,7 +22,7 @@ import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS } from './memory-schema.js';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
-import { LUMENFLOW_PATHS } from '@lumenflow/core';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Error messages for validation
@@ -61,7 +61,7 @@ function isValidWuId(wuId: string | undefined): boolean {
  * @returns Memory directory path
  */
 async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
   await fs.mkdir(memoryDir, { recursive: true });
   return memoryDir;
@@ -221,7 +221,7 @@ export async function createCheckpoint(
   // WU-1748: Also persist to wu-events.jsonl for cross-agent visibility
   if (wuId) {
     try {
-      const stateDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
+      const stateDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.STATE_DIR);
       const store = new WUStateStore(stateDir);
       await store.checkpoint(wuId, note, {
         sessionId,
