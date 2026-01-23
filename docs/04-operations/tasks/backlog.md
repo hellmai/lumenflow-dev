@@ -28,6 +28,7 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
+- [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml) — Operations: CI/CD
 
 ## ⛔ Blocked
 

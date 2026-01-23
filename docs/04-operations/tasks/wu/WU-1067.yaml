@@ -2,7 +2,7 @@ id: WU-1067
 title: Make gates language-agnostic via config-driven execution
 lane: 'Operations: CI/CD'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-23
 code_paths:
@@ -59,3 +59,11 @@ acceptance:
   - 'Starlight docs updated: quickstart.mdx shows language-agnostic setup'
   - 'Internal docs updated: DISTRIBUTION.md preset table replaced with config examples'
   - 'Internal docs updated: lumenflow-complete.md gates section revised'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1067
+claimed_at: 2026-01-23T09:14:23.723Z
+baseline_main_sha: 8230324a0a64858bcd37d2d49194bf4df7708a97
+session_id: 7bf33a6f-4308-4795-b2c4-79a97e8a5fb5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T09:14:23.728Z
