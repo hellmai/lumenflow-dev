@@ -1,0 +1,43 @@
+id: WU-1066
+title: Add .NET/C# preset to lumenflow-gates GitHub Action
+lane: 'Operations: CI/CD'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-23
+code_paths:
+  - docs/DISTRIBUTION.md
+tests:
+  manual:
+    - Verify skip-format
+    - skip-lint
+    - skip-test flags work with dotnet preset
+  unit: []
+  e2e: []
+artifacts:
+  - .beacon/stamps/WU-1066.done
+dependencies: []
+spec_refs:
+  - actions/lumenflow-gates/action.yml
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Add a dotnet preset to the lumenflow-gates GitHub Action to support .NET/C# projects. This enables polyglot teams and .NET shops to use LumenFlow without custom gate configuration. The preset follows the established pattern: auto-detection via *.csproj or *.sln files, SDK setup via actions/setup-dotnet, dependency restore, format check via dotnet format, build with warnings as errors, and tests via dotnet test.'
+acceptance:
+  - Auto-detection recognizes *.csproj and *.sln files and selects dotnet preset
+  - New input dotnet-version with default 8.0 (current LTS)
+  - Input preset description updated to include dotnet option
+  - Setup step uses actions/setup-dotnet@v4 with configurable version
+  - Restore step runs dotnet restore for dependency installation
+  - Format gate runs dotnet format --verify-no-changes
+  - Lint/build gate runs dotnet build -warnaserror --no-restore
+  - Test gate runs dotnet test --no-build --no-restore
+  - All skip-* flags work with dotnet preset
+  - docs/DISTRIBUTION.md updated to list dotnet in presets table
