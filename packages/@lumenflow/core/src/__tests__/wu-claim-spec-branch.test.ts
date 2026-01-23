@@ -120,7 +120,7 @@ describe('wu:claim spec branch helpers (WU-1062)', () => {
       await mergeSpecBranchToMain('WU-1062', mockGit as any);
 
       expect(mockGit.fetch).toHaveBeenCalledWith('origin', 'spec/wu-1062');
-      expect(mockGit.merge).toHaveBeenCalledWith(['origin/spec/wu-1062', '--ff-only']);
+      expect(mockGit.merge).toHaveBeenCalledWith('origin/spec/wu-1062', { ffOnly: true });
     });
   });
 
