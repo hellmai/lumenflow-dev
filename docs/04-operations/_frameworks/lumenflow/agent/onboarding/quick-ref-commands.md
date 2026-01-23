@@ -35,14 +35,15 @@
 
 **IMPORTANT:** Use `wu:done` for completing WUs. `wu:cleanup` is NOT a replacement for `wu:done`.
 
-| Command        | Purpose                                      | When to Use                              |
-| -------------- | -------------------------------------------- | ---------------------------------------- |
-| `wu:done`      | Complete WU: run gates, merge, stamp, push   | Always use this to finish a WU           |
-| `wu:cleanup`   | Remove worktree/branch after PR merge        | PR-based workflows only (rare)           |
+| Command      | Purpose                                    | When to Use                    |
+| ------------ | ------------------------------------------ | ------------------------------ |
+| `wu:done`    | Complete WU: run gates, merge, stamp, push | Always use this to finish a WU |
+| `wu:cleanup` | Remove worktree/branch after PR merge      | PR-based workflows only (rare) |
 
 **wu:cleanup is PR-only:** When `gh` CLI is available, `wu:cleanup` requires the PR to be merged before it will run. It checks the PR merge status via GitHub API and blocks if the PR is not merged. This prevents accidental cleanup of work-in-progress WUs.
 
 **Common mistake:** Agents sometimes try to run `wu:cleanup` after `wu:done` fails. This is incorrect. If `wu:done` fails:
+
 1. Fix the underlying issue (gate failures, merge conflicts, etc.)
 2. Re-run `wu:done --id WU-XXX`
 
