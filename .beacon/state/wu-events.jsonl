@@ -103,3 +103,4 @@
 {"type":"claim","wuId":"WU-1062","lane":"Framework: Core","title":"External plan storage and no-main-write mode for wu:create","timestamp":"2026-01-23T09:03:00.000Z"}
 {"type":"complete","wuId":"WU-1062","timestamp":"2026-01-23T09:08:00.305Z"}
 {"type":"claim","wuId":"WU-1067","lane":"Operations: CI/CD","title":"Make gates language-agnostic via config-driven execution","timestamp":"2026-01-23T09:14:23.745Z"}
+{"type":"complete","wuId":"WU-1067","timestamp":"2026-01-23T09:35:32.321Z"}
