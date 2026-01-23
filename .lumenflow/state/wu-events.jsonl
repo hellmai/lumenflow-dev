@@ -5,3 +5,4 @@
 {"type":"claim","wuId":"WU-1080","lane":"Framework: Core","title":"Add wu:release command to recover orphaned WUs","timestamp":"2026-01-23T14:48:09.073Z"}
 {"type":"complete","wuId":"WU-1078","timestamp":"2026-01-23T14:51:38.848Z"}
 {"type":"complete","wuId":"WU-1077","timestamp":"2026-01-23T14:59:23.735Z"}
+{"type":"complete","wuId":"WU-1080","timestamp":"2026-01-23T15:01:45.937Z"}

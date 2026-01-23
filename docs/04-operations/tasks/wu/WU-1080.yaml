@@ -2,7 +2,7 @@ id: WU-1080
 title: Add wu:release command to recover orphaned WUs
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -47,3 +47,5 @@ session_id: 8ebc55b8-9bac-4388-955b-ed5808afb4c8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T14:48:09.056Z
+locked: true
+completed_at: 2026-01-23T15:01:45.921Z
