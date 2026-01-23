@@ -43,8 +43,7 @@ coverage/
 /._legacy/telemetry/
 /._legacy/skip-gates-audit.log
 /._legacy/checkpoints/
-# WU-1070: Force bypass audit log is git-tracked for accountability
-!/._legacy/force-bypasses.log
+/._legacy/force-bypasses.log
 # Legacy locks anywhere (lane locking system, WU-1012 fix)
 **/._legacy/locks/
 .logs/
