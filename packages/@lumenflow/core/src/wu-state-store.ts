@@ -243,6 +243,12 @@ export class WUStateStore {
         this.byParent.set(parentWuId, new Set());
       }
       this.byParent.get(parentWuId)!.add(wuId);
+      return;
+    }
+
+    // WU-1080: Handle release event - transitions from in_progress to ready
+    if (type === 'release') {
+      this._transitionToStatus(wuId, 'ready');
     }
   }
 
@@ -548,6 +554,64 @@ export class WUStateStore {
 
     await this._appendEvent(event as WUEvent);
     this._applyEvent(event as WUEvent);
+  }
+
+  /**
+   * Releases an in_progress WU back to ready state (WU-1080: orphan recovery).
+   *
+   * Use this when an agent is interrupted mid-WU and the WU needs to be
+   * made available for reclaiming by another agent.
+   *
+   * @throws Error If WU is not in_progress
+   *
+   * @example
+   * await store.release('WU-1080', 'Agent interrupted mid-WU');
+   */
+  async release(wuId: string, reason: string): Promise<void> {
+    // Check state machine: can only release if in_progress
+    const currentState = this.wuState.get(wuId);
+    if (!currentState || currentState.status !== 'in_progress') {
+      throw new Error(`WU ${wuId} is not in_progress`);
+    }
+
+    const event = {
+      type: 'release' as const,
+      wuId,
+      reason,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this._appendEvent(event as WUEvent);
+    this._applyEvent(event as WUEvent);
+  }
+
+  /**
+   * Create a release event without writing to disk.
+   *
+   * Used by transactional flows where event log writes are staged and committed atomically.
+   * WU-1080: Orphan recovery support.
+   *
+   * @throws Error If WU is not in_progress or event fails validation
+   */
+  createReleaseEvent(
+    wuId: string,
+    reason: string,
+    timestamp: string = new Date().toISOString(),
+  ): WUEvent {
+    const currentState = this.wuState.get(wuId);
+    if (!currentState || currentState.status !== 'in_progress') {
+      throw new Error(`WU ${wuId} is not in_progress`);
+    }
+
+    const event = { type: 'release' as const, wuId, reason, timestamp };
+    const validation = validateWUEvent(event);
+    if (!validation.success) {
+      const issues = validation.error.issues
+        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ');
+      throw new Error(`Validation error: ${issues}`);
+    }
+    return validation.data;
   }
 }
 
