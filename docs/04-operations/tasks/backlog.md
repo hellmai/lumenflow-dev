@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -29,6 +28,7 @@ sections:
 - [WU-1013 — Deploy docs to Vercel (lumenflow.dev)](wu/WU-1013.yaml) — Documentation
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — Core
 - [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — Framework: Core
+- [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
