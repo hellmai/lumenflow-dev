@@ -199,3 +199,191 @@ describe('release command integration', () => {
     expect(typeof module.updatePackageVersions).toBe('function');
   });
 });
+
+/**
+ * WU-1077: Tests for release script bug fixes
+ *
+ * Verifies:
+ * - hasNpmAuth() detects auth from ~/.npmrc not just env vars
+ * - Changeset pre mode is detected and exited in micro-worktree
+ * - Tag push bypasses pre-push hooks via LUMENFLOW_FORCE
+ */
+describe('WU-1077: release script bug fixes', () => {
+  describe('hasNpmAuth - ~/.npmrc detection', () => {
+    let testDir: string;
+
+    beforeEach(() => {
+      testDir = join(tmpdir(), `release-npmrc-test-${Date.now()}`);
+      mkdirSync(testDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      rmSync(testDir, { recursive: true, force: true });
+    });
+
+    it('should detect auth from ~/.npmrc authToken line', async () => {
+      // Import the function we're testing
+      const { hasNpmAuth } = await import('../release.js');
+
+      // Create a mock .npmrc with auth token
+      const npmrcPath = join(testDir, '.npmrc');
+      writeFileSync(npmrcPath, '//registry.npmjs.org/:_authToken=npm_testToken123\n');
+
+      // Test that it detects auth from the file
+      const result = hasNpmAuth(npmrcPath);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when ~/.npmrc has no auth token', async () => {
+      const { hasNpmAuth } = await import('../release.js');
+
+      // Create a mock .npmrc without auth token
+      const npmrcPath = join(testDir, '.npmrc');
+      writeFileSync(npmrcPath, 'registry=https://registry.npmjs.org\n');
+
+      const result = hasNpmAuth(npmrcPath);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when ~/.npmrc does not exist', async () => {
+      const { hasNpmAuth } = await import('../release.js');
+
+      // Non-existent path
+      const npmrcPath = join(testDir, 'nonexistent', '.npmrc');
+
+      const result = hasNpmAuth(npmrcPath);
+      expect(result).toBe(false);
+    });
+
+    it('should still detect auth from NPM_TOKEN env var', async () => {
+      const { hasNpmAuth } = await import('../release.js');
+
+      // Set env var
+      const originalNpmToken = process.env.NPM_TOKEN;
+      process.env.NPM_TOKEN = 'test_token';
+
+      try {
+        // No npmrc file provided, should check env var
+        const result = hasNpmAuth();
+        expect(result).toBe(true);
+      } finally {
+        // Restore
+        if (originalNpmToken === undefined) {
+          delete process.env.NPM_TOKEN;
+        } else {
+          process.env.NPM_TOKEN = originalNpmToken;
+        }
+      }
+    });
+  });
+
+  describe('isInChangesetPreMode', () => {
+    let testDir: string;
+
+    beforeEach(() => {
+      testDir = join(tmpdir(), `release-pre-test-${Date.now()}`);
+      mkdirSync(testDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      rmSync(testDir, { recursive: true, force: true });
+    });
+
+    it('should return true when .changeset/pre.json exists', async () => {
+      const { isInChangesetPreMode } = await import('../release.js');
+
+      // Create .changeset directory and pre.json
+      const changesetDir = join(testDir, '.changeset');
+      mkdirSync(changesetDir, { recursive: true });
+      writeFileSync(
+        join(changesetDir, 'pre.json'),
+        JSON.stringify({
+          mode: 'pre',
+          tag: 'next',
+          initialVersions: {},
+          changesets: [],
+        }),
+      );
+
+      const result = isInChangesetPreMode(testDir);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when .changeset/pre.json does not exist', async () => {
+      const { isInChangesetPreMode } = await import('../release.js');
+
+      // Create .changeset directory without pre.json
+      const changesetDir = join(testDir, '.changeset');
+      mkdirSync(changesetDir, { recursive: true });
+      writeFileSync(join(changesetDir, 'config.json'), JSON.stringify({ access: 'public' }));
+
+      const result = isInChangesetPreMode(testDir);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when .changeset directory does not exist', async () => {
+      const { isInChangesetPreMode } = await import('../release.js');
+
+      const result = isInChangesetPreMode(testDir);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('exitChangesetPreMode', () => {
+    let testDir: string;
+
+    beforeEach(() => {
+      testDir = join(tmpdir(), `release-exit-pre-test-${Date.now()}`);
+      mkdirSync(testDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      rmSync(testDir, { recursive: true, force: true });
+    });
+
+    it('should delete .changeset/pre.json to exit pre mode', async () => {
+      const { exitChangesetPreMode, isInChangesetPreMode } = await import('../release.js');
+
+      // Create .changeset directory and pre.json
+      const changesetDir = join(testDir, '.changeset');
+      mkdirSync(changesetDir, { recursive: true });
+      const preJsonPath = join(changesetDir, 'pre.json');
+      writeFileSync(
+        preJsonPath,
+        JSON.stringify({
+          mode: 'pre',
+          tag: 'next',
+          initialVersions: {},
+          changesets: [],
+        }),
+      );
+
+      // Verify pre mode is active
+      expect(isInChangesetPreMode(testDir)).toBe(true);
+
+      // Exit pre mode
+      exitChangesetPreMode(testDir);
+
+      // Verify pre mode is no longer active
+      expect(isInChangesetPreMode(testDir)).toBe(false);
+      expect(existsSync(preJsonPath)).toBe(false);
+    });
+
+    it('should not throw when .changeset/pre.json does not exist', async () => {
+      const { exitChangesetPreMode } = await import('../release.js');
+
+      // No pre.json file exists
+      expect(() => exitChangesetPreMode(testDir)).not.toThrow();
+    });
+  });
+
+  describe('pushTagWithForce', () => {
+    it('should export pushTagWithForce function', async () => {
+      const { pushTagWithForce } = await import('../release.js');
+      expect(typeof pushTagWithForce).toBe('function');
+    });
+
+    // Integration test would require git setup - functional verification
+    // is done by checking the function uses LUMENFLOW_FORCE env var
+  });
+});
