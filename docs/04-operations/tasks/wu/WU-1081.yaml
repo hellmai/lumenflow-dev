@@ -2,7 +2,7 @@ id: WU-1081
 title: Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -41,3 +41,5 @@ session_id: 0934cbc4-9638-4936-ab3a-7f979ae18c4e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-23T18:16:17.714Z
+locked: true
+completed_at: 2026-01-23T18:23:09.659Z
