@@ -2,7 +2,7 @@ id: WU-1080
 title: Add wu:release command to recover orphaned WUs
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Cannot release a WU that is not in_progress
   - Update internal docs (docs/04-operations/_frameworks/lumenflow/)
   - Update Starlight/Astro public docs with wu:release usage
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1080
+claimed_at: 2026-01-23T14:48:09.049Z
+baseline_main_sha: 84476586303a0c991b2c0956b367292acf3bb805
+session_id: 8ebc55b8-9bac-4388-955b-ed5808afb4c8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-23T14:48:09.056Z
