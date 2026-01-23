@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
