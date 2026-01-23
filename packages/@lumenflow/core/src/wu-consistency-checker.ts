@@ -14,7 +14,7 @@
  */
 
 import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';
-import { constants } from 'node:fs';
+import { constants, existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
@@ -31,6 +31,7 @@ import {
 } from './wu-constants.js';
 import { todayISO } from './date-utils.js';
 import { createGitForPath } from './git-adapter.js';
+import { withMicroWorktree } from './micro-worktree.js';
 
 /**
  * Check a single WU for state inconsistencies
@@ -291,36 +292,139 @@ export interface RepairWUInconsistencyOptions {
 }
 
 /**
- * Repair WU inconsistencies
+ * Error object structure from checkWUConsistency()
+ */
+interface ConsistencyError {
+  type: string;
+  wuId: string;
+  title?: string;
+  lane?: string;
+  description?: string;
+  repairAction?: string;
+  canAutoRepair: boolean;
+}
+
+/**
+ * Categorize errors into file-based repairs (need micro-worktree) and git-only repairs
+ */
+function categorizeErrors(errors: ConsistencyError[]): {
+  fileRepairs: ConsistencyError[];
+  gitOnlyRepairs: ConsistencyError[];
+  nonRepairable: ConsistencyError[];
+} {
+  const fileRepairs: ConsistencyError[] = [];
+  const gitOnlyRepairs: ConsistencyError[] = [];
+  const nonRepairable: ConsistencyError[] = [];
+
+  for (const error of errors) {
+    if (!error.canAutoRepair) {
+      nonRepairable.push(error);
+      continue;
+    }
+
+    // Git-only repairs: worktree/branch cleanup doesn't need micro-worktree
+    if (error.type === CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE) {
+      gitOnlyRepairs.push(error);
+    } else {
+      // All file-based repairs need micro-worktree isolation
+      fileRepairs.push(error);
+    }
+  }
+
+  return { fileRepairs, gitOnlyRepairs, nonRepairable };
+}
+
+/**
+ * Repair WU inconsistencies using micro-worktree isolation (WU-1078)
+ *
+ * All file modifications (stamps, YAML, markdown) are made atomically
+ * in a micro-worktree, then committed and pushed to origin/main.
+ * This prevents direct writes to the main checkout.
  *
  * @param {object} report - Report from checkWUConsistency()
  * @param {RepairWUInconsistencyOptions} [options={}] - Repair options
  * @returns {Promise<object>} Result with repaired, skipped, and failed counts
  */
-export async function repairWUInconsistency(report, options: RepairWUInconsistencyOptions = {}) {
+export async function repairWUInconsistency(
+  report: { valid: boolean; errors: ConsistencyError[] },
+  options: RepairWUInconsistencyOptions = {},
+) {
   const { dryRun = false, projectRoot = process.cwd() } = options;
 
   if (report.valid) {
     return { repaired: 0, skipped: 0, failed: 0 };
   }
 
+  const { fileRepairs, gitOnlyRepairs, nonRepairable } = categorizeErrors(report.errors);
+
   let repaired = 0;
-  let skipped = 0;
+  let skipped = nonRepairable.length;
   let failed = 0;
 
-  for (const error of report.errors) {
-    if (!error.canAutoRepair) {
-      skipped++;
-      continue;
-    }
+  // Dry run mode: just count
+  if (dryRun) {
+    return {
+      repaired: fileRepairs.length + gitOnlyRepairs.length,
+      skipped,
+      failed: 0,
+    };
+  }
 
-    if (dryRun) {
-      repaired++;
-      continue;
-    }
-
+  // Step 1: Process file-based repairs via micro-worktree (batched)
+  if (fileRepairs.length > 0) {
     try {
-      const result = await repairSingleError(error, projectRoot);
+      // Generate a batch ID from the WU IDs being repaired
+      const batchId = `batch-${fileRepairs.map((e) => e.wuId).join('-')}`.slice(0, 50);
+
+      await withMicroWorktree({
+        operation: 'wu-repair',
+        id: batchId,
+        logPrefix: LOG_PREFIX.REPAIR,
+        execute: async ({ worktreePath }) => {
+          const filesModified: string[] = [];
+
+          for (const error of fileRepairs) {
+            try {
+              const result = await repairSingleErrorInWorktree(error, worktreePath, projectRoot);
+              if (result.success && result.files) {
+                filesModified.push(...result.files);
+                repaired++;
+              } else if (result.skipped) {
+                skipped++;
+                if (result.reason) {
+                  console.warn(`${LOG_PREFIX.REPAIR} Skipped ${error.type}: ${result.reason}`);
+                }
+              } else {
+                failed++;
+              }
+            } catch (err) {
+              const errMessage = err instanceof Error ? err.message : String(err);
+              console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${errMessage}`);
+              failed++;
+            }
+          }
+
+          // Deduplicate files
+          const uniqueFiles = [...new Set(filesModified)];
+
+          return {
+            commitMessage: `fix: repair ${repaired} WU inconsistencies`,
+            files: uniqueFiles,
+          };
+        },
+      });
+    } catch (err) {
+      // If micro-worktree fails, mark all file repairs as failed
+      const errMessage = err instanceof Error ? err.message : String(err);
+      console.error(`${LOG_PREFIX.REPAIR} Micro-worktree operation failed: ${errMessage}`);
+      failed += fileRepairs.length - repaired;
+    }
+  }
+
+  // Step 2: Process git-only repairs (worktree/branch cleanup) directly
+  for (const error of gitOnlyRepairs) {
+    try {
+      const result = await repairGitOnlyError(error, projectRoot);
       if (result.success) {
         repaired++;
       } else if (result.skipped) {
@@ -350,46 +454,61 @@ interface RepairResult {
   success?: boolean;
   skipped?: boolean;
   reason?: string;
+  files?: string[];
 }
 
 /**
- * Repair a single inconsistency error
+ * Repair a single file-based error inside a micro-worktree (WU-1078)
  *
- * @param {object} error - Error object from checkWUConsistency()
- * @param {string} projectRoot - Project root directory
- * @returns {Promise<RepairResult>} Result with success, skipped, and reason
+ * This function performs file modifications inside the worktree path,
+ * which is then committed and pushed atomically by withMicroWorktree.
+ *
+ * @param {ConsistencyError} error - Error object from checkWUConsistency()
+ * @param {string} worktreePath - Path to the micro-worktree
+ * @param {string} projectRoot - Original project root (for reading source files)
+ * @returns {Promise<RepairResult>} Result with success, skipped, reason, and files modified
  */
-async function repairSingleError(
-  error: { type: string; wuId: string; title?: string; lane?: string },
+async function repairSingleErrorInWorktree(
+  error: ConsistencyError,
+  worktreePath: string,
   projectRoot: string,
 ): Promise<RepairResult> {
   switch (error.type) {
-    case CONSISTENCY_TYPES.YAML_DONE_NO_STAMP:
-      await createStampInProject(error.wuId, error.title || `WU ${error.wuId}`, projectRoot);
-      return { success: true };
+    case CONSISTENCY_TYPES.YAML_DONE_NO_STAMP: {
+      const files = await createStampInWorktree(
+        error.wuId,
+        error.title || `WU ${error.wuId}`,
+        worktreePath,
+      );
+      return { success: true, files };
+    }
 
-    case CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS:
-      await removeWUFromSection(
-        path.join(projectRoot, WU_PATHS.STATUS()),
+    case CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS: {
+      const files = await removeWUFromSectionInWorktree(
+        WU_PATHS.STATUS(),
         error.wuId,
         '## In Progress',
+        worktreePath,
+        projectRoot,
       );
-      return { success: true };
+      return { success: true, files };
+    }
 
-    case CONSISTENCY_TYPES.BACKLOG_DUAL_SECTION:
-      await removeWUFromSection(
-        path.join(projectRoot, WU_PATHS.BACKLOG()),
+    case CONSISTENCY_TYPES.BACKLOG_DUAL_SECTION: {
+      const files = await removeWUFromSectionInWorktree(
+        WU_PATHS.BACKLOG(),
         error.wuId,
         '## 🔧 In progress',
+        worktreePath,
+        projectRoot,
       );
-      return { success: true };
+      return { success: true, files };
+    }
 
-    case CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE:
-      return await removeOrphanWorktree(error.wuId, error.lane, projectRoot);
-
-    case CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE:
-      await updateYamlToDone(error.wuId, projectRoot);
-      return { success: true };
+    case CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE: {
+      const files = await updateYamlToDoneInWorktree(error.wuId, worktreePath, projectRoot);
+      return { success: true, files };
+    }
 
     default:
       return { skipped: true, reason: `Unknown error type: ${error.type}` };
@@ -397,14 +516,73 @@ async function repairSingleError(
 }
 
 /**
- * Create stamp file in a specific project root
+ * Repair git-only errors (worktree/branch cleanup) without micro-worktree
+ *
+ * These operations don't modify files in the repo, they only manage git worktrees
+ * and branches, so they can run directly.
+ *
+ * @param {ConsistencyError} error - Error object
+ * @param {string} projectRoot - Project root directory
+ * @returns {Promise<RepairResult>} Result with success, skipped, and reason
+ */
+async function repairGitOnlyError(
+  error: ConsistencyError,
+  projectRoot: string,
+): Promise<RepairResult> {
+  switch (error.type) {
+    case CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE:
+      return await removeOrphanWorktree(error.wuId, error.lane, projectRoot);
+
+    default:
+      return { skipped: true, reason: `Unknown git-only error type: ${error.type}` };
+  }
+}
+
+/**
+ * Create stamp file inside a micro-worktree (WU-1078)
+ *
+ * @param {string} id - WU ID
+ * @param {string} title - WU title
+ * @param {string} worktreePath - Path to the micro-worktree
+ * @returns {Promise<string[]>} List of files created (relative paths)
+ */
+async function createStampInWorktree(
+  id: string,
+  title: string,
+  worktreePath: string,
+): Promise<string[]> {
+  const stampsDir = path.join(worktreePath, WU_PATHS.STAMPS_DIR());
+  const stampRelPath = WU_PATHS.STAMP(id);
+  const stampAbsPath = path.join(worktreePath, stampRelPath);
+
+  // Ensure stamps directory exists
+  if (!existsSync(stampsDir)) {
+    mkdirSync(stampsDir, { recursive: true });
+  }
+
+  // Don't overwrite existing stamp
+  if (existsSync(stampAbsPath)) {
+    return []; // Stamp already exists
+  }
+
+  // Create stamp file
+  const body = `WU ${id} — ${title}\nCompleted: ${todayISO()}\n`;
+  writeFileSync(stampAbsPath, body, { encoding: 'utf-8' });
+
+  return [stampRelPath];
+}
+
+/**
+ * Create stamp file in a specific project root (DEPRECATED - use createStampInWorktree)
+ *
+ * Kept for backwards compatibility with code that doesn't use micro-worktree.
  *
  * @param {string} id - WU ID
  * @param {string} title - WU title
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<void>}
  */
-async function createStampInProject(id, title, projectRoot) {
+async function createStampInProject(id: string, title: string, projectRoot: string) {
   const stampsDir = path.join(projectRoot, WU_PATHS.STAMPS_DIR());
   const stampPath = path.join(projectRoot, WU_PATHS.STAMP(id));
 
@@ -429,7 +607,7 @@ async function createStampInProject(id, title, projectRoot) {
 }
 
 /**
- * Update WU YAML to done+locked+completed state (WU-2412)
+ * Update WU YAML to done+locked+completed state inside a micro-worktree (WU-1078)
  *
  * Repairs STAMP_EXISTS_YAML_NOT_DONE by setting:
  * - status: done
@@ -437,10 +615,62 @@ async function createStampInProject(id, title, projectRoot) {
  * - completed: YYYY-MM-DD (today, unless already set)
  *
  * @param {string} id - WU ID
+ * @param {string} worktreePath - Path to the micro-worktree
+ * @param {string} projectRoot - Original project root (for reading source file)
+ * @returns {Promise<string[]>} List of files modified (relative paths)
+ */
+async function updateYamlToDoneInWorktree(
+  id: string,
+  worktreePath: string,
+  projectRoot: string,
+): Promise<string[]> {
+  const wuRelPath = WU_PATHS.WU(id);
+  const wuSrcPath = path.join(projectRoot, wuRelPath);
+  const wuDestPath = path.join(worktreePath, wuRelPath);
+
+  // Read current YAML from project root
+  const content = readFileSync(wuSrcPath, { encoding: 'utf-8' });
+  const wuDoc = parseYAML(content) as {
+    status?: string;
+    locked?: boolean;
+    completed?: string;
+  } | null;
+
+  if (!wuDoc) {
+    throw new Error(`Failed to parse WU YAML: ${wuSrcPath}`);
+  }
+
+  // Update fields
+  wuDoc.status = WU_STATUS.DONE;
+  wuDoc.locked = true;
+  // Preserve existing completed date if present, otherwise set to today
+  if (!wuDoc.completed) {
+    wuDoc.completed = todayISO();
+  }
+
+  // Ensure directory exists in worktree
+  const wuDir = path.dirname(wuDestPath);
+  if (!existsSync(wuDir)) {
+    mkdirSync(wuDir, { recursive: true });
+  }
+
+  // Write updated YAML to worktree
+  const updatedContent = stringifyYAML(wuDoc, { lineWidth: YAML_OPTIONS.LINE_WIDTH });
+  writeFileSync(wuDestPath, updatedContent, { encoding: 'utf-8' });
+
+  return [wuRelPath];
+}
+
+/**
+ * Update WU YAML to done+locked+completed state (DEPRECATED - use updateYamlToDoneInWorktree)
+ *
+ * Kept for backwards compatibility.
+ *
+ * @param {string} id - WU ID
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<void>}
  */
-async function updateYamlToDone(id, projectRoot) {
+async function updateYamlToDone(id: string, projectRoot: string) {
   const wuPath = path.join(projectRoot, WU_PATHS.WU(id));
 
   // Read current YAML
@@ -469,14 +699,93 @@ async function updateYamlToDone(id, projectRoot) {
 }
 
 /**
- * Remove WU entry from a specific section in a markdown file
+ * Remove WU entry from a specific section in a markdown file inside a micro-worktree (WU-1078)
+ *
+ * @param {string} relFilePath - Relative path to the markdown file
+ * @param {string} id - WU ID to remove
+ * @param {string} sectionHeading - Section heading to target
+ * @param {string} worktreePath - Path to the micro-worktree
+ * @param {string} projectRoot - Original project root (for reading source file)
+ * @returns {Promise<string[]>} List of files modified (relative paths)
+ */
+async function removeWUFromSectionInWorktree(
+  relFilePath: string,
+  id: string,
+  sectionHeading: string,
+  worktreePath: string,
+  projectRoot: string,
+): Promise<string[]> {
+  const srcPath = path.join(projectRoot, relFilePath);
+  const destPath = path.join(worktreePath, relFilePath);
+
+  // Check if source file exists
+  if (!existsSync(srcPath)) {
+    return []; // File doesn't exist
+  }
+
+  const content = readFileSync(srcPath, { encoding: 'utf-8' });
+  const lines = content.split(/\r?\n/);
+
+  let inTargetSection = false;
+  let nextSectionIdx = -1;
+  let sectionStartIdx = -1;
+
+  // Normalize heading for comparison (lowercase, trim)
+  const normalizedHeading = sectionHeading.toLowerCase().trim();
+
+  // Find section boundaries
+  for (let i = 0; i < lines.length; i++) {
+    const normalizedLine = lines[i].toLowerCase().trim();
+    if (normalizedLine === normalizedHeading || normalizedLine.startsWith(normalizedHeading)) {
+      inTargetSection = true;
+      sectionStartIdx = i;
+      continue;
+    }
+    if (inTargetSection && lines[i].trim().startsWith('## ')) {
+      nextSectionIdx = i;
+      break;
+    }
+  }
+
+  if (sectionStartIdx === -1) return [];
+
+  const endIdx = nextSectionIdx === -1 ? lines.length : nextSectionIdx;
+
+  // Filter out lines containing the WU ID in the target section
+  const newLines = [];
+  let modified = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (i > sectionStartIdx && i < endIdx && lines[i].includes(id)) {
+      modified = true;
+      continue; // Skip this line
+    }
+    newLines.push(lines[i]);
+  }
+
+  if (!modified) return [];
+
+  // Ensure directory exists in worktree
+  const destDir = path.dirname(destPath);
+  if (!existsSync(destDir)) {
+    mkdirSync(destDir, { recursive: true });
+  }
+
+  writeFileSync(destPath, newLines.join(STRING_LITERALS.NEWLINE), { encoding: 'utf-8' });
+
+  return [relFilePath];
+}
+
+/**
+ * Remove WU entry from a specific section in a markdown file (DEPRECATED)
+ *
+ * Kept for backwards compatibility.
  *
  * @param {string} filePath - Path to the markdown file
  * @param {string} id - WU ID to remove
  * @param {string} sectionHeading - Section heading to target
  * @returns {Promise<void>}
  */
-async function removeWUFromSection(filePath, id, sectionHeading) {
+async function removeWUFromSection(filePath: string, id: string, sectionHeading: string) {
   try {
     await access(filePath, constants.R_OK);
   } catch {
