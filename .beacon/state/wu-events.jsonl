@@ -118,3 +118,4 @@
 {"type":"complete","wuId":"WU-1074","timestamp":"2026-01-23T13:20:03.229Z"}
 {"type":"complete","wuId":"WU-1052","timestamp":"2026-01-22T19:03:08.488Z"}
 {"type":"claim","wuId":"WU-1075","lane":"Framework: Core","title":"Rename .beacon to .lumenflow - remove ExampleApp branding","timestamp":"2026-01-23T12:40:30.562Z"}
+{"type":"claim","wuId":"WU-1076","lane":"Framework: CLI","title":"Block direct main branch commits for agents","timestamp":"2026-01-23T13:40:08.984Z"}
