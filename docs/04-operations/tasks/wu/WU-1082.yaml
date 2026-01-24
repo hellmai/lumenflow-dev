@@ -2,7 +2,7 @@ id: WU-1082
 title: Agent branch patterns registry with fetch + cache
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -53,3 +53,5 @@ session_id: 3d55ce11-ce5d-4bc7-b6c2-e72446867a72
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T11:28:20.649Z
+locked: true
+completed_at: 2026-01-24T11:44:13.381Z
