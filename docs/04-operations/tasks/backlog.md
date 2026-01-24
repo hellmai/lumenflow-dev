@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
