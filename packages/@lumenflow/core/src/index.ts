@@ -157,6 +157,7 @@ export * from './color-support.js';
 export * from './context/index.js';
 export * from './validation/index.js';
 export * from './recovery/index.js';
+export * from './context-validation-integration.js';
 
 // WU-1090: Context validation constants
 export { CONTEXT_VALIDATION } from './wu-constants.js';
