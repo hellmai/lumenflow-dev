@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml) — Framework: Core
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -45,3 +45,4 @@ sections:
 - [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml)
 - [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml)
 - [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml)
+- [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml)
