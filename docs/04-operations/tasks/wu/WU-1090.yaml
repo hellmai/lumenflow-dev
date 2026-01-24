@@ -6,18 +6,24 @@ status: ready
 priority: P2
 created: 2026-01-24
 code_paths:
+  - packages/@lumenflow/core/src/context/
+  - packages/@lumenflow/core/src/validation/
+  - packages/@lumenflow/core/src/guidance/
+  - packages/@lumenflow/core/src/recovery/
+  - packages/@lumenflow/cli/src/wu-status.ts
   - packages/@lumenflow/cli/src/wu-recover.ts
 tests:
   manual: []
   unit:
+    - packages/@lumenflow/core/src/__tests__/context/
+    - packages/@lumenflow/core/src/__tests__/validation/
+    - packages/@lumenflow/core/src/__tests__/guidance/
     - packages/@lumenflow/core/src/__tests__/recovery/
   e2e:
     - packages/@lumenflow/cli/__tests__/wu-lifecycle-validation.e2e.test.ts
 artifacts:
   - .lumenflow/stamps/WU-1090.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/WU-1090-plan.md
 risks: []
 notes: ''
 requires_review: false
@@ -28,7 +34,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement a context-aware state machine for WU lifecycle commands to eliminate agents executing commands without understanding their current context (location, WU state, git state), leading to failures, retry loops, and corrupted repository states.
+description: Implement a context-aware state machine for WU lifecycle commands to eliminate agents
+  executing commands without understanding their current context (location, WU state, git state),
+  leading to failures, retry loops, and corrupted repository states.
 acceptance:
   - WuContext interface captures location, git, wu, lane, and session state
   - resolveLocation() correctly detects main vs worktree using simple-git
