@@ -51,6 +51,24 @@
 
 Do NOT use `wu:cleanup` to work around `wu:done` failures.
 
+### wu:edit Write Modes
+
+`wu:edit` has two distinct modes depending on WU status:
+
+| WU Status     | Write Mode     | Target Location                   |
+| ------------- | -------------- | --------------------------------- |
+| `ready`       | MICRO_WORKTREE | main (via temp branch + ff-merge) |
+| `in_progress` | WORKTREE       | Active worktree directly          |
+
+**Key behavior:**
+
+- **Ready WUs**: Edits go to main via a micro-worktree transaction (same as `wu:create`)
+- **In-progress WUs**: Edits write directly to the active worktree's WU YAML file
+
+This means `wu:edit` on an `in_progress` WU automatically propagates to the worktree - no manual sync needed. When `wu:done` runs, it uses `readWUPreferWorktree()` which reads from the worktree first, ensuring your edits are preserved.
+
+**Common confusion:** Agents sometimes think they need to manually sync edits to the worktree. This is unnecessary - `wu:edit` handles it automatically based on WU status.
+
 ---
 
 ## Gates
