@@ -51,6 +51,8 @@
     "wu-delete": "./dist/wu-delete.js",
     "wu-unlock-lane": "./dist/wu-unlock-lane.js",
     "wu-release": "./dist/wu-release.js",
+    "wu-status": "./dist/wu-status.js",
+    "wu-recover": "./dist/wu-recover.js",
     "mem-init": "./dist/mem-init.js",
     "mem-checkpoint": "./dist/mem-checkpoint.js",
     "mem-start": "./dist/mem-start.js",
