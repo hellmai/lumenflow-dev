@@ -2,7 +2,7 @@ id: WU-1085
 title: 'CLI best practices audit: --help, --no-color, exports'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -48,3 +48,5 @@ session_id: 195ef2c3-949a-4f41-805c-4a448b05374f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T15:59:06.979Z
+locked: true
+completed_at: 2026-01-24T16:15:42.926Z
