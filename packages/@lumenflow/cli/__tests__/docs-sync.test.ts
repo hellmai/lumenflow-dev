@@ -1,9 +1,10 @@
 /**
  * @file docs-sync.test.ts
  * Test suite for lumenflow docs:sync command (WU-1083)
+ * WU-1085: Added --help support tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -144,6 +145,66 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
     it('should export main function for CLI', async () => {
       const mod = await import('../src/docs-sync.js');
       expect(typeof mod.main).toBe('function');
+    });
+  });
+
+  // WU-1085: CLI argument parsing with --help support
+  describe('CLI argument parsing (WU-1085)', () => {
+    let mockExit: ReturnType<typeof vi.spyOn>;
+    let originalArgv: string[];
+
+    beforeEach(() => {
+      originalArgv = process.argv;
+      mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    });
+
+    afterEach(() => {
+      process.argv = originalArgv;
+      mockExit.mockRestore();
+      vi.resetModules();
+    });
+
+    it('should show help when --help flag is passed and not run sync', async () => {
+      process.argv = ['node', 'lumenflow-docs-sync', '--help'];
+
+      const { parseDocsSyncOptions } = await import('../src/docs-sync.js');
+
+      // Should throw/exit when --help is passed (Commander behavior)
+      expect(() => parseDocsSyncOptions()).toThrow();
+    });
+
+    it('should show help when -h flag is passed', async () => {
+      process.argv = ['node', 'lumenflow-docs-sync', '-h'];
+
+      const { parseDocsSyncOptions } = await import('../src/docs-sync.js');
+
+      expect(() => parseDocsSyncOptions()).toThrow();
+    });
+
+    it('should show version when --version flag is passed', async () => {
+      process.argv = ['node', 'lumenflow-docs-sync', '--version'];
+
+      const { parseDocsSyncOptions } = await import('../src/docs-sync.js');
+
+      expect(() => parseDocsSyncOptions()).toThrow();
+    });
+
+    it('should parse --force flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-docs-sync', '--force'];
+
+      const { parseDocsSyncOptions } = await import('../src/docs-sync.js');
+      const opts = parseDocsSyncOptions();
+
+      expect(opts.force).toBe(true);
+    });
+
+    it('should parse --vendor flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-docs-sync', '--vendor', 'claude'];
+
+      const { parseDocsSyncOptions } = await import('../src/docs-sync.js');
+      const opts = parseDocsSyncOptions();
+
+      expect(opts.vendor).toBe('claude');
     });
   });
 });

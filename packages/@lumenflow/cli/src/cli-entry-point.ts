@@ -10,6 +10,8 @@
  * path but import.meta.url resolves to the real path - they never match
  * so main() is never called.
  *
+ * WU-1085: Initializes color support respecting NO_COLOR/FORCE_COLOR/--no-color
+ *
  * @example
  * ```typescript
  * // At the bottom of each CLI file:
@@ -21,14 +23,19 @@
  * ```
  */
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { initColorSupport } from '@lumenflow/core';
 
 /**
  * Wraps an async main function with proper error handling.
+ * WU-1085: Also initializes color support based on NO_COLOR/FORCE_COLOR/--no-color
  *
  * @param main - The async main function to execute
  * @returns Promise that resolves when main completes (or after error handling)
  */
 export async function runCLI(main: () => Promise<void>): Promise<void> {
+  // WU-1085: Initialize color support before running command
+  initColorSupport();
+
   try {
     await main();
   } catch (err: unknown) {

@@ -13,9 +13,12 @@
  * - Creates git tag vX.Y.Z
  *
  * Usage:
- *   pnpm release --version 1.3.0
- *   pnpm release --version 1.3.0 --dry-run     # Preview without making changes
- *   pnpm release --version 1.3.0 --skip-publish # Bump and tag only (no npm publish)
+ *   pnpm release --release-version 1.3.0
+ *   pnpm release --release-version 1.3.0 --dry-run     # Preview without making changes
+ *   pnpm release --release-version 1.3.0 --skip-publish # Bump and tag only (no npm publish)
+ *
+ * WU-1085: The --release-version flag was renamed from --version to avoid conflict
+ * with the standard CLI --version flag that shows the CLI version.
  *
  * WU-1074: Add release command for npm publishing
  */
@@ -88,9 +91,10 @@ const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /**
  * Release command options
+ * WU-1085: Renamed version to releaseVersion to avoid CLI --version conflict
  */
 export interface ReleaseOptions {
-  version: string;
+  releaseVersion: string;
   dryRun?: boolean;
   skipPublish?: boolean;
   skipBuild?: boolean;
@@ -329,12 +333,14 @@ export async function pushTagWithForce(
 
 /**
  * Main release function
+ * WU-1085: Renamed --version to --release-version to avoid conflict with CLI --version flag
  */
 async function main(): Promise<void> {
   const program = new Command()
-    .name('release')
+    .name('lumenflow-release')
     .description('Release @lumenflow/* packages to npm with version bump, tag, and publish')
-    .requiredOption('-v, --version <version>', 'Semver version to release (e.g., 1.3.0)')
+    .version('1.0.0', '-V, --version', 'Output the CLI version')
+    .requiredOption('-v, --release-version <version>', 'Semver version to release (e.g., 1.3.0)')
     .option('--dry-run', 'Preview changes without making them', false)
     .option('--skip-publish', 'Skip npm publish (only bump and tag)', false)
     .option('--skip-build', 'Skip build step (use existing dist)', false)
@@ -343,7 +349,8 @@ async function main(): Promise<void> {
   program.parse();
   const opts = program.opts() as ReleaseOptions;
 
-  const { version, dryRun, skipPublish, skipBuild } = opts;
+  // WU-1085: Use releaseVersion instead of version (renamed to avoid CLI --version conflict)
+  const { releaseVersion: version, dryRun, skipPublish, skipBuild } = opts;
 
   console.log(`${LOG_PREFIX} Starting release process for v${version}`);
   if (dryRun) {

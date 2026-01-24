@@ -146,3 +146,6 @@ export * from './force-bypass-audit.js';
 
 // WU-1075: LumenFlow directory paths (exported from wu-constants)
 export { LUMENFLOW_PATHS, BEACON_PATHS } from './wu-constants.js';
+
+// WU-1085: Color support for NO_COLOR/FORCE_COLOR/--no-color
+export * from './color-support.js';
