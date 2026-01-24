@@ -70,7 +70,8 @@
     "lumenflow-gates": "./dist/gates.js",
     "lumenflow-init": "./dist/init.js",
     "lumenflow": "./dist/init.js",
-    "lumenflow-release": "./dist/release.js"
+    "lumenflow-release": "./dist/release.js",
+    "lumenflow-docs-sync": "./dist/docs-sync.js"
   },
   "files": [
     "dist",

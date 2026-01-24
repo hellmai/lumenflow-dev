@@ -59,6 +59,7 @@
     "initiative:bulk-assign": "node packages/@lumenflow/cli/dist/initiative-bulk-assign-wus.js",
     "agent:issues-query": "node packages/@lumenflow/cli/dist/agent-issues-query.js",
     "lumenflow:init": "node packages/@lumenflow/cli/dist/init.js",
+    "docs:sync": "node packages/@lumenflow/cli/dist/docs-sync.js",
     "docs:generate": "npx tsx tools/generate-cli-docs.ts",
     "docs:validate": "npx tsx tools/generate-cli-docs.ts --validate",
     "changeset": "changeset",

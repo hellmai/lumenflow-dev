@@ -189,4 +189,136 @@ describe('lumenflow init command (WU-1045)', () => {
       expect(fs.existsSync(path.join(tempDir, 'CLAUDE.md'))).toBe(false);
     });
   });
+
+  // WU-1083: Agent onboarding docs and skills scaffolding
+  describe('agent onboarding docs (WU-1083)', () => {
+    const onboardingDir = 'docs/04-operations/_frameworks/lumenflow/agent/onboarding';
+
+    it('should scaffold agent onboarding docs with --full', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, full: true });
+
+      const quickRefPath = path.join(tempDir, onboardingDir, 'quick-ref-commands.md');
+      const firstMistakesPath = path.join(tempDir, onboardingDir, 'first-wu-mistakes.md');
+      const troubleshootingPath = path.join(tempDir, onboardingDir, 'troubleshooting-wu-done.md');
+      const safetyCardPath = path.join(tempDir, onboardingDir, 'agent-safety-card.md');
+      const checklistPath = path.join(tempDir, onboardingDir, 'wu-create-checklist.md');
+
+      expect(fs.existsSync(quickRefPath)).toBe(true);
+      expect(fs.existsSync(firstMistakesPath)).toBe(true);
+      expect(fs.existsSync(troubleshootingPath)).toBe(true);
+      expect(fs.existsSync(safetyCardPath)).toBe(true);
+      expect(fs.existsSync(checklistPath)).toBe(true);
+    });
+
+    it('should include wu-create-checklist.md with required fields table', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, full: true });
+
+      const checklistPath = path.join(tempDir, onboardingDir, 'wu-create-checklist.md');
+      const content = fs.readFileSync(checklistPath, 'utf-8');
+
+      // Verify required content per acceptance criteria
+      expect(content).toContain('Required Fields');
+      expect(content).toContain('--id');
+      expect(content).toContain('--lane');
+      expect(content).toContain('--title');
+      expect(content).toContain('--description');
+      expect(content).toContain('--acceptance');
+    });
+
+    it('should include lane format rules in wu-create-checklist.md', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, full: true });
+
+      const checklistPath = path.join(tempDir, onboardingDir, 'wu-create-checklist.md');
+      const content = fs.readFileSync(checklistPath, 'utf-8');
+
+      // Verify lane format documentation
+      expect(content).toContain('Parent: Sublane');
+      expect(content).toContain('.lumenflow.config.yaml');
+    });
+
+    it('should include plan storage locations in wu-create-checklist.md', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, full: true });
+
+      const checklistPath = path.join(tempDir, onboardingDir, 'wu-create-checklist.md');
+      const content = fs.readFileSync(checklistPath, 'utf-8');
+
+      // Verify plan storage documentation
+      expect(content).toContain('~/.lumenflow/plans');
+      expect(content).toContain('--spec-refs');
+    });
+
+    it('should scaffold onboarding docs for Claude vendor even without --full', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
+
+      // Agent onboarding docs should be created when Claude vendor is detected
+      const checklistPath = path.join(tempDir, onboardingDir, 'wu-create-checklist.md');
+      expect(fs.existsSync(checklistPath)).toBe(true);
+    });
+  });
+
+  describe('Claude skills scaffolding (WU-1083)', () => {
+    it('should scaffold .claude/skills/ with wu-lifecycle, worktree-discipline, lumenflow-gates', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
+
+      const wuLifecyclePath = path.join(tempDir, '.claude', 'skills', 'wu-lifecycle', 'SKILL.md');
+      const worktreePath = path.join(tempDir, '.claude', 'skills', 'worktree-discipline', 'SKILL.md');
+      const gatesPath = path.join(tempDir, '.claude', 'skills', 'lumenflow-gates', 'SKILL.md');
+
+      expect(fs.existsSync(wuLifecyclePath)).toBe(true);
+      expect(fs.existsSync(worktreePath)).toBe(true);
+      expect(fs.existsSync(gatesPath)).toBe(true);
+    });
+
+    it('should create wu-lifecycle skill with state machine and core commands', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
+
+      const skillPath = path.join(tempDir, '.claude', 'skills', 'wu-lifecycle', 'SKILL.md');
+      const content = fs.readFileSync(skillPath, 'utf-8');
+
+      expect(content).toContain('wu:claim');
+      expect(content).toContain('wu:done');
+      expect(content).toContain('ready');
+      expect(content).toContain('in_progress');
+    });
+
+    it('should create worktree-discipline skill with absolute path trap prevention', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
+
+      const skillPath = path.join(tempDir, '.claude', 'skills', 'worktree-discipline', 'SKILL.md');
+      const content = fs.readFileSync(skillPath, 'utf-8');
+
+      expect(content).toContain('absolute path');
+      expect(content).toContain('worktree');
+      expect(content).toContain('relative');
+    });
+
+    it('should create lumenflow-gates skill with gate sequence', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
+
+      const skillPath = path.join(tempDir, '.claude', 'skills', 'lumenflow-gates', 'SKILL.md');
+      const content = fs.readFileSync(skillPath, 'utf-8');
+
+      expect(content).toContain('pnpm gates');
+      expect(content).toContain('format');
+      expect(content).toContain('lint');
+      expect(content).toContain('typecheck');
+    });
+
+    it('should not scaffold skills when default client is none', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions });
+
+      const skillsDir = path.join(tempDir, '.claude', 'skills');
+      expect(fs.existsSync(skillsDir)).toBe(false);
+    });
+  });
 });
