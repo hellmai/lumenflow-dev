@@ -2,7 +2,7 @@ id: WU-1089
 title: 'Agent branch patterns: merge mode, override, and airgapped support'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -51,3 +51,5 @@ session_id: 92c13a4d-1ac2-45e7-9b32-ae10bccf888b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T17:35:48.100Z
+locked: true
+completed_at: 2026-01-24T17:45:43.479Z
