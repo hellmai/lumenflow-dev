@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 

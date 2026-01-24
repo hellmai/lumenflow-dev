@@ -1,0 +1,45 @@
+id: WU-1082
+title: Agent branch patterns registry with fetch + cache
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-24
+code_paths:
+  - packages/@lumenflow/core/src/agent-patterns-registry.ts
+  - packages/@lumenflow/core/src/branch-check.ts
+  - packages/@lumenflow/core/src/cli/is-agent-branch.ts
+  - apps/docs/public/registry/agent-patterns.json
+  - apps/docs/src/content/docs/guides/agent-patterns.mdx
+  - apps/docs/astro.config.mjs
+  - packages/@lumenflow/core/README.md
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/agent-patterns-registry.test.ts
+    - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1082.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1082-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Implement a central registry for AI agent branch patterns (claude/*, codex/*, copilot/*, cursor/*, etc.) that bypasses worktree requirements. Static JSON served from lumenflow.dev, cached locally for 7 days with fallback to defaults.
+acceptance:
+  - 1. Static JSON registry at apps/docs/public/registry/agent-patterns.json
+  - 2. New agent-patterns-registry.ts module with fetch + 7-day cache + fallback defaults
+  - 3. isAgentBranch() becomes async and uses registry patterns
+  - 4. CLI is-agent-branch.ts updated to await async function
+  - 5. Starlight documentation guide created
+  - 6. Package README updated with usage example
+  - 7. All gates pass
