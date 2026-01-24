@@ -2,7 +2,7 @@ id: WU-1085
 title: 'CLI best practices audit: --help, --no-color, exports'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -27,11 +27,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Ensure all CLI commands follow Node.js CLI best practices: proper --help support via createWUParser, NO_COLOR/FORCE_COLOR/--no-color color control, package.json exports field, README badges. See ~/.lumenflow/plans/WU-1084-cli-best-practices.md for full plan.'
+description: 'Ensure all CLI commands follow Node.js CLI best practices: proper --help support via
+  createWUParser, NO_COLOR/FORCE_COLOR/--no-color color control, package.json exports field, README
+  badges. See ~/.lumenflow/plans/WU-1084-cli-best-practices.md for full plan.'
 acceptance:
-  - All 15 commands without createWUParser are migrated (init, docs-sync, gates, release, agent-*, orchestrate-*, flow-*, metrics-snapshot, wu-repair)
+  - All 15 commands without createWUParser are migrated (init, docs-sync, gates, release, agent-*,
+    orchestrate-*, flow-*, metrics-snapshot, wu-repair)
   - NO_COLOR/FORCE_COLOR environment variables respected
   - --no-color flag available on all commands
   - package.json has exports and types fields
   - README.md has npm/license/node badges
   - release.ts uses --release-version instead of --version
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1085
+claimed_at: 2026-01-24T15:59:06.975Z
+baseline_main_sha: cedf7f0529f5c8f0f598c548c1a3a7b0e0dfc2fa
+session_id: 195ef2c3-949a-4f41-805c-4a448b05374f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T15:59:06.979Z
