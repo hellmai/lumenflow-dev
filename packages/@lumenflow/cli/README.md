@@ -1,6 +1,11 @@
 # @lumenflow/cli
 
-Command-line interface for LumenFlow workflow management.
+[![npm version](https://img.shields.io/npm/v/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
+[![npm downloads](https://img.shields.io/npm/dm/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
+[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/os/blob/main/LICENSE)
+[![node](https://img.shields.io/node/v/@lumenflow/cli.svg)](https://nodejs.org)
+
+> Command-line interface for LumenFlow workflow framework
 
 ## Installation
 
@@ -105,6 +110,23 @@ npx wu-claim --id WU-123 --lane operations
 npx gates
 ```
 
+## Global Flags
+
+All commands support these flags:
+
+| Flag              | Description               |
+| ----------------- | ------------------------- |
+| `--help`, `-h`    | Show help for the command |
+| `--version`, `-V` | Show version number       |
+| `--no-color`      | Disable colored output    |
+
+## Environment Variables
+
+| Variable      | Description                                                                            |
+| ------------- | -------------------------------------------------------------------------------------- |
+| `NO_COLOR`    | Disable colored output when set (any value, per [no-color.org](https://no-color.org/)) |
+| `FORCE_COLOR` | Override color level: `0` (disabled), `1` (basic), `2` (256 colors), `3` (16m colors)  |
+
 ## Integration
 
 The CLI integrates with other LumenFlow packages:
@@ -116,7 +138,7 @@ The CLI integrates with other LumenFlow packages:
 
 ## Documentation
 
-For complete documentation, see the [LumenFlow documentation](https://github.com/hellmai/os).
+For complete documentation, see [lumenflow.dev](https://lumenflow.dev/reference/cli).
 
 ## License
 

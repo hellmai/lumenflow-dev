@@ -1,12 +1,48 @@
 /**
  * @file docs-sync.ts
  * LumenFlow docs:sync command for syncing agent docs to existing projects (WU-1083)
+ * WU-1085: Added createWUParser for proper --help support
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
 
 export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
+
+/**
+ * WU-1085: CLI option definitions for docs-sync command
+ */
+const DOCS_SYNC_OPTIONS = {
+  vendor: {
+    name: 'vendor',
+    flags: '--vendor <type>',
+    description: 'Vendor type (claude, cursor, aider, all, none)',
+    default: 'claude',
+  },
+  force: WU_OPTIONS.force,
+};
+
+/**
+ * WU-1085: Parse docs-sync command options using createWUParser
+ * Provides proper --help, --version, and option parsing
+ */
+export function parseDocsSyncOptions(): {
+  force: boolean;
+  vendor: VendorType;
+} {
+  const opts = createWUParser({
+    name: 'lumenflow-docs-sync',
+    description:
+      'Sync agent onboarding docs to existing projects (skips existing files by default)',
+    options: Object.values(DOCS_SYNC_OPTIONS),
+  });
+
+  return {
+    force: opts.force ?? false,
+    vendor: (opts.vendor as VendorType) ?? 'claude',
+  };
+}
 
 export interface SyncOptions {
   force: boolean;
@@ -522,34 +558,19 @@ export async function syncSkills(targetDir: string, options: SyncOptions): Promi
 }
 
 /**
- * Parse vendor flag from arguments
- */
-function parseVendorArg(args: string[]): VendorType | undefined {
-  const vendorIndex = args.findIndex((arg) => arg === '--vendor');
-  if (vendorIndex !== -1 && args[vendorIndex + 1]) {
-    const vendor = args[vendorIndex + 1].toLowerCase();
-    if (['claude', 'cursor', 'aider', 'all', 'none'].includes(vendor)) {
-      return vendor as VendorType;
-    }
-  }
-  return undefined;
-}
-
-/**
  * CLI entry point for docs:sync command
+ * WU-1085: Updated to use parseDocsSyncOptions for proper --help support
  */
 export async function main(): Promise<void> {
-  const args = process.argv.slice(2);
-  const force = args.includes('--force') || args.includes('-f');
-  const vendor = parseVendorArg(args) ?? 'claude'; // Default to claude
+  const opts = parseDocsSyncOptions();
   const targetDir = process.cwd();
 
   console.log('[lumenflow docs:sync] Syncing agent documentation...');
-  console.log(`  Vendor: ${vendor}`);
-  console.log(`  Force: ${force}`);
+  console.log(`  Vendor: ${opts.vendor}`);
+  console.log(`  Force: ${opts.force}`);
 
-  const docsResult = await syncAgentDocs(targetDir, { force });
-  const skillsResult = await syncSkills(targetDir, { force, vendor });
+  const docsResult = await syncAgentDocs(targetDir, { force: opts.force });
+  const skillsResult = await syncSkills(targetDir, { force: opts.force, vendor: opts.vendor });
 
   const created = [...docsResult.created, ...skillsResult.created];
   const skipped = [...docsResult.skipped, ...skillsResult.skipped];

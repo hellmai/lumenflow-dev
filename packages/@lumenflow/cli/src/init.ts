@@ -3,14 +3,68 @@
  * LumenFlow project scaffolding command (WU-1045)
  * WU-1006: Library-First - use core defaults for config generation
  * WU-1028: Vendor-agnostic core + vendor overlays
+ * WU-1085: Added createWUParser for proper --help support
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
-import { getDefaultConfig } from '@lumenflow/core';
+import { getDefaultConfig, createWUParser, WU_OPTIONS } from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
 import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
+
+/**
+ * WU-1085: CLI option definitions for init command
+ */
+const INIT_OPTIONS = {
+  full: {
+    name: 'full',
+    flags: '--full',
+    description: 'Add docs + agent onboarding + task scaffolding',
+  },
+  framework: {
+    name: 'framework',
+    flags: '--framework <name>',
+    description: 'Add framework hint + overlay docs',
+  },
+  vendor: {
+    name: 'vendor',
+    flags: '--vendor <type>',
+    description: 'Vendor type (claude, cursor, aider, all, none)',
+  },
+  preset: {
+    name: 'preset',
+    flags: '--preset <preset>',
+    description: 'Gate preset for config (node, python, go, rust, dotnet)',
+  },
+  force: WU_OPTIONS.force,
+};
+
+/**
+ * WU-1085: Parse init command options using createWUParser
+ * Provides proper --help, --version, and option parsing
+ */
+export function parseInitOptions(): {
+  force: boolean;
+  full: boolean;
+  framework?: string;
+  vendor?: VendorType;
+  preset?: GatePresetType;
+} {
+  const opts = createWUParser({
+    name: 'lumenflow-init',
+    description: 'Initialize LumenFlow in a project',
+    options: Object.values(INIT_OPTIONS),
+  });
+
+  return {
+    force: opts.force ?? false,
+    full: opts.full ?? false,
+    framework: opts.framework,
+    vendor: opts.vendor as VendorType | undefined,
+    preset: opts.preset as GatePresetType | undefined,
+  };
+}
 
 /**
  * Supported vendor integrations
@@ -1390,28 +1444,24 @@ async function createFile(
 
 /**
  * CLI entry point
+ * WU-1085: Updated to use parseInitOptions for proper --help support
  */
 export async function main(): Promise<void> {
-  const args = process.argv.slice(2);
-  const force = args.includes('--force') || args.includes('-f');
-  const full = args.includes('--full');
-  const vendor = parseVendorArg(args);
-  const framework = parseFrameworkArg(args);
-  const gatePreset = parsePresetArg(args); // WU-1067
+  const opts = parseInitOptions();
   const targetDir = process.cwd();
 
   console.log('[lumenflow init] Scaffolding LumenFlow project...');
-  console.log(`  Mode: ${full ? 'full' : 'minimal'}`);
-  console.log(`  Framework: ${framework ?? 'none'}`);
-  console.log(`  Vendor overlays: ${vendor ?? 'auto'}`);
-  console.log(`  Gate preset: ${gatePreset ?? 'none (manual config)'}`);
+  console.log(`  Mode: ${opts.full ? 'full' : 'minimal'}`);
+  console.log(`  Framework: ${opts.framework ?? 'none'}`);
+  console.log(`  Vendor overlays: ${opts.vendor ?? 'auto'}`);
+  console.log(`  Gate preset: ${opts.preset ?? 'none (manual config)'}`);
 
   const result = await scaffoldProject(targetDir, {
-    force,
-    full,
-    vendor,
-    framework,
-    gatePreset,
+    force: opts.force,
+    full: opts.full,
+    vendor: opts.vendor,
+    framework: opts.framework,
+    gatePreset: opts.preset,
   });
 
   if (result.created.length > 0) {
