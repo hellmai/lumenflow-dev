@@ -111,6 +111,8 @@ function extractCommandMetadata(): CommandMetadata[] {
     'orchestrate-initiative': 'Orchestrate initiative execution with agents',
     'orchestrate-init-status': 'Show initiative orchestration status',
     'orchestrate-monitor': 'Monitor spawned agent progress and signals',
+    'lumenflow-docs-sync':
+      'Sync agent onboarding docs to existing projects (skips existing files by default, use --force to overwrite)',
   };
 
   for (const [binName, binPath] of Object.entries(binEntries)) {
