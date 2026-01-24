@@ -42,6 +42,7 @@ export default defineConfig({
             { label: 'Sizing WUs', slug: 'guides/sizing' },
             { label: 'Team Workflow', slug: 'guides/team-workflow' },
             { label: 'AI Agent Integration', slug: 'guides/ai-agents' },
+            { label: 'Agent Branch Patterns', slug: 'guides/agent-patterns' },
             { label: 'Initiatives', slug: 'guides/initiatives' },
             { label: 'Flow Metrics', slug: 'guides/metrics' },
           ],

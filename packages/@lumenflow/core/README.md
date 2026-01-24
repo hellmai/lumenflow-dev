@@ -68,6 +68,29 @@ const exists = await worktrees.exists('/path/to/worktree');
 await worktrees.remove('worktrees/operations-wu-123');
 ```
 
+### Agent Branch Patterns
+
+Check if a branch is an agent branch that can bypass worktree requirements. Patterns are fetched from a central registry with 7-day caching.
+
+```typescript
+import { isAgentBranch, getAgentPatterns } from '@lumenflow/core';
+
+// Check if branch can bypass worktree requirements (async, uses registry)
+if (await isAgentBranch('claude/session-12345')) {
+  console.log('Agent branch - bypass allowed');
+}
+
+// Get the current list of agent patterns
+const patterns = await getAgentPatterns();
+// ['agent/*', 'claude/*', 'codex/*', 'copilot/*', 'cursor/*', ...]
+
+// Synchronous version (uses local config only, no registry fetch)
+import { isAgentBranchSync } from '@lumenflow/core';
+const result = isAgentBranchSync('agent/task-123');
+```
+
+Protected branches (main, master, lane/\*) are **never** bypassed, regardless of patterns.
+
 ## API Reference
 
 ### GitAdapter

@@ -9,9 +9,7 @@
 
 import micromatch from 'micromatch';
 import { getConfig } from './lumenflow-config.js';
-
-/** Default agent branch patterns (narrow: just agent/*) */
-const DEFAULT_AGENT_BRANCH_PATTERNS = ['agent/*'];
+import { getAgentPatterns, DEFAULT_AGENT_PATTERNS } from './agent-patterns-registry.js';
 
 /** Legacy protected branch (always protected regardless of mainBranch setting) */
 const LEGACY_PROTECTED = 'master';
@@ -42,12 +40,22 @@ function getProtectedBranches(): string[] {
 
 /**
  * Check if branch is an agent branch that can bypass worktree requirements.
- * Uses the existing config loader (which handles caching/validation).
+ *
+ * Uses the central registry for agent patterns (fetched from lumenflow.dev
+ * with 7-day cache), falling back to config patterns if specified, then
+ * to defaults.
  *
  * @param branch - Branch name to check
- * @returns True if branch matches agent patterns
+ * @returns Promise<true> if branch matches agent patterns
+ *
+ * @example
+ * ```typescript
+ * if (await isAgentBranch('claude/session-123')) {
+ *   // Allow bypass for agent branch
+ * }
+ * ```
  */
-export function isAgentBranch(branch: string | null | undefined): boolean {
+export async function isAgentBranch(branch: string | null | undefined): Promise<boolean> {
   // Fail-closed: no branch = protected
   if (!branch) return false;
 
@@ -57,16 +65,60 @@ export function isAgentBranch(branch: string | null | undefined): boolean {
   // Load config (uses existing loader with caching)
   const config = getConfig();
   const protectedBranches = getProtectedBranches();
-  const patterns =
-    config?.git?.agentBranchPatterns?.length > 0
-      ? config.git.agentBranchPatterns
-      : DEFAULT_AGENT_BRANCH_PATTERNS;
 
   // Protected branches are NEVER bypassed (mainBranch + 'master')
   if (protectedBranches.includes(branch)) return false;
 
   // LumenFlow lane branches require worktrees (uses config's laneBranchPrefix)
   if (getLaneBranchPattern().test(branch)) return false;
+
+  // Get patterns: prefer config override, then registry, then defaults
+  let patterns: string[];
+  if (config?.git?.agentBranchPatterns?.length > 0) {
+    // Config has explicit patterns - use those
+    patterns = config.git.agentBranchPatterns;
+  } else {
+    // Fetch from registry (with caching and fallback to defaults)
+    patterns = await getAgentPatterns();
+  }
+
+  // Use micromatch for proper glob matching
+  return micromatch.isMatch(branch, patterns);
+}
+
+/**
+ * Synchronous version of isAgentBranch for backwards compatibility.
+ *
+ * Uses only local config patterns or defaults - does NOT fetch from registry.
+ * Prefer async isAgentBranch() when possible.
+ *
+ * @param branch - Branch name to check
+ * @returns True if branch matches agent patterns
+ *
+ * @deprecated Use async isAgentBranch() instead for registry support
+ */
+export function isAgentBranchSync(branch: string | null | undefined): boolean {
+  // Fail-closed: no branch = protected
+  if (!branch) return false;
+
+  // Detached HEAD = protected (fail-closed)
+  if (branch === 'HEAD') return false;
+
+  // Load config (uses existing loader with caching)
+  const config = getConfig();
+  const protectedBranches = getProtectedBranches();
+
+  // Protected branches are NEVER bypassed (mainBranch + 'master')
+  if (protectedBranches.includes(branch)) return false;
+
+  // LumenFlow lane branches require worktrees (uses config's laneBranchPrefix)
+  if (getLaneBranchPattern().test(branch)) return false;
+
+  // Use config patterns or defaults (no registry fetch in sync version)
+  const patterns =
+    config?.git?.agentBranchPatterns?.length > 0
+      ? config.git.agentBranchPatterns
+      : DEFAULT_AGENT_PATTERNS;
 
   // Use micromatch for proper glob matching
   return micromatch.isMatch(branch, patterns);

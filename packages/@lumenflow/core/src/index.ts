@@ -135,6 +135,9 @@ export * from './gates-config.js';
 // Branch check utilities
 export * from './branch-check.js';
 
+// WU-1082: Agent patterns registry (fetch + cache)
+export * from './agent-patterns-registry.js';
+
 // WU-1062: External plan storage
 export * from './lumenflow-home.js';
 

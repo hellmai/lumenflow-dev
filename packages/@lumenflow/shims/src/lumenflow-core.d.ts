@@ -11,7 +11,8 @@ declare module '@lumenflow/core' {
     };
   }
 
-  export function isAgentBranch(branch: string | null | undefined): boolean;
+  export function isAgentBranch(branch: string | null | undefined): Promise<boolean>;
+  export function isAgentBranchSync(branch: string | null | undefined): boolean;
   export function isHeadlessAllowed(): boolean;
   export function getConfig(): LumenFlowConfig;
 }

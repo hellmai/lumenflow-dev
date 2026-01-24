@@ -34,7 +34,7 @@ import {
   WORKTREE_REMOVE_BYPASS_ENV_VAR,
 } from './types.js';
 import { getCurrentBranch, isMainWorktree } from './worktree.js';
-import { isAgentBranch, isHeadlessAllowed, getConfig } from '@lumenflow/core';
+import { isAgentBranchSync, isHeadlessAllowed, getConfig } from '@lumenflow/core';
 
 /**
  * Default configuration.
@@ -166,7 +166,7 @@ export function checkProtectedContext(
     const inMainWorktree = process.env['TEST_IS_MAIN_WORKTREE'] === 'true';
 
     // NEW: Check agent branch in test mode
-    if (isAgentBranch(branch)) {
+    if (isAgentBranchSync(branch)) {
       return { protected: false, context: `agent branch: ${branch}` };
     }
 
@@ -185,7 +185,7 @@ export function checkProtectedContext(
   }
 
   // NEW: Agent branches bypass protection (regardless of worktree)
-  if (isAgentBranch(branch)) {
+  if (isAgentBranchSync(branch)) {
     return { protected: false, context: `agent branch: ${branch}` };
   }
 

@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "description": "Central registry of AI agent branch patterns that can bypass worktree requirements",
+  "patterns": [
+    "agent/*",
+    "claude/*",
+    "codex/*",
+    "copilot/*",
+    "cursor/*",
+    "aider/*",
+    "cline/*",
+    "continue/*",
+    "devin/*",
+    "windsurf/*",
+    "bolt/*",
+    "replit/*",
+    "tabnine/*",
+    "codeium/*",
+    "ai/*",
+    "bot/*",
+    "automation/*"
+  ],
+  "documentation": "https://lumenflow.dev/guides/agent-patterns",
+  "updated": "2026-01-24"
+}
