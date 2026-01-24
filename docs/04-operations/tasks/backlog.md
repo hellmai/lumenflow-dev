@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
