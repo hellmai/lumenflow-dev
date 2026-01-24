@@ -2,7 +2,7 @@ id: WU-1082
 title: Agent branch patterns registry with fetch + cache
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -34,7 +34,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement a central registry for AI agent branch patterns (claude/*, codex/*, copilot/*, cursor/*, etc.) that bypasses worktree requirements. Static JSON served from lumenflow.dev, cached locally for 7 days with fallback to defaults.
+description: Implement a central registry for AI agent branch patterns (claude/*, codex/*,
+  copilot/*, cursor/*, etc.) that bypasses worktree requirements. Static JSON served from
+  lumenflow.dev, cached locally for 7 days with fallback to defaults.
 acceptance:
   - 1. Static JSON registry at apps/docs/public/registry/agent-patterns.json
   - 2. New agent-patterns-registry.ts module with fetch + 7-day cache + fallback defaults
@@ -43,3 +45,11 @@ acceptance:
   - 5. Starlight documentation guide created
   - 6. Package README updated with usage example
   - 7. All gates pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1082
+claimed_at: 2026-01-24T11:28:20.644Z
+baseline_main_sha: 391da4c021f50c7761e6a7a73adfc6bb6007dcbc
+session_id: 3d55ce11-ce5d-4bc7-b6c2-e72446867a72
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T11:28:20.649Z
