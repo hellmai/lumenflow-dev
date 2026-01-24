@@ -13,3 +13,4 @@
 {"type":"complete","wuId":"WU-1082","timestamp":"2026-01-24T11:44:13.388Z"}
 {"type":"complete","wuId":"WU-1083","timestamp":"2026-01-24T11:53:57.793Z"}
 {"type":"claim","wuId":"WU-1084","lane":"Framework: CLI","title":"wu:done should fail if main has uncommitted changes after merge","timestamp":"2026-01-24T12:19:27.650Z"}
+{"type":"complete","wuId":"WU-1084","timestamp":"2026-01-24T12:27:11.099Z"}

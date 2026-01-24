@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -39,3 +39,4 @@ sections:
 - [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml)
 - [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml)
 - [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml)
+- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml)
