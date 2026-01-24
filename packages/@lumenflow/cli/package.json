@@ -21,6 +21,18 @@
     "url": "https://hellm.ai"
   },
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cli-entry-point": {
+      "types": "./dist/cli-entry-point.d.ts",
+      "import": "./dist/cli-entry-point.js"
+    }
+  },
   "bin": {
     "wu-claim": "./dist/wu-claim.js",
     "wu-done": "./dist/wu-done.js",

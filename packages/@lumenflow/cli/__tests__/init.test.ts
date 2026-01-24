@@ -1,9 +1,10 @@
 /**
  * @file init.test.ts
  * Test suite for lumenflow init command (WU-1045)
+ * WU-1085: Added --help support tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -325,6 +326,98 @@ describe('lumenflow init command (WU-1045)', () => {
 
       const skillsDir = path.join(tempDir, '.claude', 'skills');
       expect(fs.existsSync(skillsDir)).toBe(false);
+    });
+  });
+
+  // WU-1085: CLI argument parsing with --help support
+  describe('CLI argument parsing (WU-1085)', () => {
+    let mockExit: ReturnType<typeof vi.spyOn>;
+    let mockConsoleLog: ReturnType<typeof vi.spyOn>;
+    let originalArgv: string[];
+
+    beforeEach(() => {
+      originalArgv = process.argv;
+      mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+      mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.argv = originalArgv;
+      mockExit.mockRestore();
+      mockConsoleLog.mockRestore();
+      vi.resetModules();
+    });
+
+    it('should show help when --help flag is passed and not run scaffolding', async () => {
+      // Simulate --help flag
+      process.argv = ['node', 'lumenflow-init', '--help'];
+
+      // Import the module - the --help should trigger help display and exit
+      const { parseInitOptions } = await import('../src/init.js');
+
+      // Should throw/exit when --help is passed (Commander behavior)
+      expect(() => parseInitOptions()).toThrow();
+    });
+
+    it('should show help when -h flag is passed', async () => {
+      process.argv = ['node', 'lumenflow-init', '-h'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+
+      expect(() => parseInitOptions()).toThrow();
+    });
+
+    it('should show version when --version flag is passed', async () => {
+      process.argv = ['node', 'lumenflow-init', '--version'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+
+      expect(() => parseInitOptions()).toThrow();
+    });
+
+    it('should parse --full flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-init', '--full'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.full).toBe(true);
+    });
+
+    it('should parse --force flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-init', '--force'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.force).toBe(true);
+    });
+
+    it('should parse --framework flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-init', '--framework', 'Next.js'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.framework).toBe('Next.js');
+    });
+
+    it('should parse --vendor flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-init', '--vendor', 'claude'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.vendor).toBe('claude');
+    });
+
+    it('should parse --preset flag correctly', async () => {
+      process.argv = ['node', 'lumenflow-init', '--preset', 'node'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.preset).toBe('node');
     });
   });
 });
