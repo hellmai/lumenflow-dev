@@ -2,7 +2,7 @@ id: WU-1084
 title: wu:done should fail if main has uncommitted changes after merge
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -32,3 +32,11 @@ acceptance:
   - wu:done fails with clear error if main has uncommitted changes after merge
   - Error message lists the dirty files
   - All existing wu:done tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1084
+claimed_at: 2026-01-24T12:19:27.630Z
+baseline_main_sha: 59ea8ff0692696024f6159b7169d6f5c55bc289e
+session_id: c4f403a7-d1fd-42e3-a6ba-a5bf88c2dc91
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T12:19:27.635Z

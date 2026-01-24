@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
