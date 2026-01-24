@@ -15,6 +15,9 @@ export * from './retry-strategy.js';
 // Migration utilities (WU-1075)
 export * from './beacon-migration.js';
 
+// Cycle detection (WU-1088 - extracted from initiatives to break circular dependency)
+export * from './cycle-detector.js';
+
 // User normalizer (explicit exports to avoid conflicts)
 export {
   DEFAULT_DOMAIN,
