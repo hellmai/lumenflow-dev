@@ -109,7 +109,9 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
 
       const result = await syncAgentDocs(tempDir, { force: false });
 
-      expect(result.skipped).toContain('docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md');
+      expect(result.skipped).toContain(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+      );
       expect(result.created.length).toBeGreaterThan(0);
     });
   });
