@@ -267,7 +267,13 @@ describe('lumenflow init command (WU-1045)', () => {
       await scaffoldProject(tempDir, { ...baseOptions, defaultClient: 'claude-code' });
 
       const wuLifecyclePath = path.join(tempDir, '.claude', 'skills', 'wu-lifecycle', 'SKILL.md');
-      const worktreePath = path.join(tempDir, '.claude', 'skills', 'worktree-discipline', 'SKILL.md');
+      const worktreePath = path.join(
+        tempDir,
+        '.claude',
+        'skills',
+        'worktree-discipline',
+        'SKILL.md',
+      );
       const gatesPath = path.join(tempDir, '.claude', 'skills', 'lumenflow-gates', 'SKILL.md');
 
       expect(fs.existsSync(wuLifecyclePath)).toBe(true);

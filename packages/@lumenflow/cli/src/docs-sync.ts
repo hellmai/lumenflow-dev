@@ -400,10 +400,7 @@ pnpm gates = format:check -> lint -> typecheck -> spec:linter -> tests
 /**
  * Sync agent onboarding docs to an existing project
  */
-export async function syncAgentDocs(
-  targetDir: string,
-  options: SyncOptions,
-): Promise<SyncResult> {
+export async function syncAgentDocs(targetDir: string, options: SyncOptions): Promise<SyncResult> {
   const result: SyncResult = {
     created: [],
     skipped: [],
@@ -471,10 +468,7 @@ export async function syncAgentDocs(
 /**
  * Sync Claude skills to an existing project
  */
-export async function syncSkills(
-  targetDir: string,
-  options: SyncOptions,
-): Promise<SyncResult> {
+export async function syncSkills(targetDir: string, options: SyncOptions): Promise<SyncResult> {
   const result: SyncResult = {
     created: [],
     skipped: [],
