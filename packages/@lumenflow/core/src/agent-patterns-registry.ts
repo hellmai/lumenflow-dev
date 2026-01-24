@@ -5,6 +5,8 @@
  * that bypass worktree requirements. Static JSON served from lumenflow.dev,
  * cached locally for 7 days with fallback to defaults.
  *
+ * WU-1089: Added merge/override/airgapped modes via resolveAgentPatterns()
+ *
  * @module agent-patterns-registry
  */
 
@@ -53,10 +55,55 @@ interface CacheData {
 /**
  * Options for getAgentPatterns
  */
-interface GetAgentPatternsOptions {
+export interface GetAgentPatternsOptions {
   /** Override cache directory (default: ~/.lumenflow/cache) */
   cacheDir?: string;
   /** Fetch timeout in milliseconds (default: 5000) */
+  timeoutMs?: number;
+}
+
+/**
+ * Source of agent patterns for observability
+ */
+export type AgentPatternSource = 'registry' | 'merged' | 'override' | 'config' | 'defaults';
+
+/**
+ * Result of resolveAgentPatterns with observability fields
+ */
+export interface AgentPatternResult {
+  /** Resolved patterns to use for agent branch matching */
+  patterns: string[];
+  /** Source of the patterns for observability */
+  source: AgentPatternSource;
+  /** Whether the registry was successfully fetched */
+  registryFetched: boolean;
+}
+
+/**
+ * Type for injectable registry fetcher function
+ */
+export type RegistryFetcher = (options: GetAgentPatternsOptions) => Promise<string[]>;
+
+/**
+ * Options for resolveAgentPatterns (WU-1089)
+ */
+export interface ResolveAgentPatternsOptions {
+  /** Injectable registry fetcher for testing (uses getAgentPatterns by default) */
+  registryFetcher?: RegistryFetcher;
+
+  /** Patterns from config.git.agentBranchPatterns (merged with registry by default) */
+  configPatterns?: string[];
+
+  /** Patterns from config.git.agentBranchPatternsOverride (replaces everything if set) */
+  overridePatterns?: string[];
+
+  /** config.git.disableAgentPatternRegistry - skips network fetch (airgapped mode) */
+  disableAgentPatternRegistry?: boolean;
+
+  /** Override cache directory (passed to fetcher) */
+  cacheDir?: string;
+
+  /** Fetch timeout in milliseconds (passed to fetcher) */
   timeoutMs?: number;
 }
 
@@ -230,6 +277,145 @@ export async function getAgentPatterns(options: GetAgentPatternsOptions = {}): P
 
   // No cache, no network - use defaults
   return DEFAULT_AGENT_PATTERNS;
+}
+
+/**
+ * Resolve agent branch patterns based on config with merge/override/airgapped support
+ *
+ * Behavior matrix (WU-1089):
+ *
+ * | disableRegistry | override patterns | config patterns | Result                 | Source        |
+ * |-----------------|-------------------|-----------------|------------------------|---------------|
+ * | false           | undefined         | undefined/[]    | registry               | 'registry'    |
+ * | false           | undefined         | ['custom/*']    | config + registry      | 'merged'      |
+ * | false           | ['only/*']        | any             | override only          | 'override'    |
+ * | true            | undefined         | undefined/[]    | defaults               | 'defaults'    |
+ * | true            | undefined         | ['custom/*']    | config only            | 'config'      |
+ * | true            | ['only/*']        | any             | override only          | 'override'    |
+ *
+ * When registry fetch fails:
+ * - Falls back to config patterns if provided, source = 'config'
+ * - Falls back to defaults if no config, source = 'defaults'
+ *
+ * @param options - Resolution options
+ * @returns Result with patterns, source, and registryFetched flag
+ *
+ * @example Default (fetch from registry)
+ * ```typescript
+ * const result = await resolveAgentPatterns({});
+ * // result.patterns = ['claude/*', 'codex/*', ...] (from registry)
+ * // result.source = 'registry'
+ * // result.registryFetched = true
+ * ```
+ *
+ * @example Merge mode (config + registry)
+ * ```typescript
+ * const result = await resolveAgentPatterns({
+ *   configPatterns: ['my-agent/*'],
+ * });
+ * // result.patterns = ['my-agent/*', 'claude/*', 'codex/*', ...]
+ * // result.source = 'merged'
+ * // result.registryFetched = true
+ * ```
+ *
+ * @example Override mode (explicit replacement)
+ * ```typescript
+ * const result = await resolveAgentPatterns({
+ *   overridePatterns: ['only-this/*'],
+ * });
+ * // result.patterns = ['only-this/*']
+ * // result.source = 'override'
+ * // result.registryFetched = false
+ * ```
+ *
+ * @example Airgapped mode (no network)
+ * ```typescript
+ * const result = await resolveAgentPatterns({
+ *   disableAgentPatternRegistry: true,
+ *   configPatterns: ['my-agent/*'],
+ * });
+ * // result.patterns = ['my-agent/*']
+ * // result.source = 'config'
+ * // result.registryFetched = false
+ * ```
+ */
+export async function resolveAgentPatterns(
+  options: ResolveAgentPatternsOptions = {},
+): Promise<AgentPatternResult> {
+  const {
+    registryFetcher = getAgentPatterns,
+    configPatterns,
+    overridePatterns,
+    disableAgentPatternRegistry = false,
+    cacheDir,
+    timeoutMs,
+  } = options;
+
+  // Scenario 3/6: Override mode - overridePatterns replaces everything
+  if (overridePatterns && overridePatterns.length > 0) {
+    return {
+      patterns: overridePatterns,
+      source: 'override',
+      registryFetched: false,
+    };
+  }
+
+  // Scenario 4/5: Airgapped mode - disableAgentPatternRegistry skips network
+  if (disableAgentPatternRegistry) {
+    const hasConfigPatterns = configPatterns && configPatterns.length > 0;
+    return {
+      patterns: hasConfigPatterns ? configPatterns : DEFAULT_AGENT_PATTERNS,
+      source: hasConfigPatterns ? 'config' : 'defaults',
+      registryFetched: false,
+    };
+  }
+
+  // Scenario 1/2: Normal mode - fetch from registry, optionally merge with config
+  const hasConfigPatterns = configPatterns && configPatterns.length > 0;
+
+  // Try to fetch from registry
+  let registryPatterns: string[] | null = null;
+  let fetchedSuccessfully = false;
+
+  try {
+    registryPatterns = await registryFetcher({ cacheDir, timeoutMs });
+    fetchedSuccessfully = registryPatterns !== null && registryPatterns.length > 0;
+  } catch {
+    // Fetch failed - will use fallback below
+    fetchedSuccessfully = false;
+  }
+
+  // If registry fetch succeeded
+  if (fetchedSuccessfully && registryPatterns) {
+    if (hasConfigPatterns) {
+      // Scenario 2: Merge mode - config first, then registry (deduplicated)
+      const merged = [...configPatterns];
+      for (const pattern of registryPatterns) {
+        if (!merged.includes(pattern)) {
+          merged.push(pattern);
+        }
+      }
+      return {
+        patterns: merged,
+        source: 'merged',
+        registryFetched: true,
+      };
+    }
+
+    // Scenario 1: Registry only
+    return {
+      patterns: registryPatterns,
+      source: 'registry',
+      registryFetched: true,
+    };
+  }
+
+  // Registry fetch failed - fallback to config or defaults
+  return {
+    patterns: hasConfigPatterns ? configPatterns : DEFAULT_AGENT_PATTERNS,
+    source: hasConfigPatterns ? 'config' : 'defaults',
+    registryFetched: false,
+  };
 }
 
 /**

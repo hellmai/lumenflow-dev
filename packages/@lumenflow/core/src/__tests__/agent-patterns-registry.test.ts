@@ -5,6 +5,7 @@
  * - Fetch from remote registry (lumenflow.dev)
  * - 7-day local cache
  * - Fallback to defaults when offline/error
+ * - WU-1089: Merge mode, override mode, airgapped mode
  *
  * @module __tests__/agent-patterns-registry.test
  */
@@ -22,6 +23,9 @@ import {
   REGISTRY_URL,
   DEFAULT_AGENT_PATTERNS,
   CACHE_TTL_MS,
+  resolveAgentPatterns,
+  type AgentPatternResult,
+  type ResolveAgentPatternsOptions,
 } from '../agent-patterns-registry.js';
 
 describe('agent-patterns-registry', () => {
@@ -325,6 +329,286 @@ describe('agent-patterns-registry', () => {
       // Second call should fetch again
       await getAgentPatterns({ cacheDir: tempDir });
       expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  // WU-1089: Tests for resolveAgentPatterns() with merge/override/airgapped modes
+  describe('resolveAgentPatterns (WU-1089)', () => {
+    /**
+     * Behavior matrix:
+     *
+     * | disableRegistry | override patterns | config patterns | Result                 | Source        |
+     * |-----------------|-------------------|-----------------|------------------------|---------------|
+     * | false           | undefined         | undefined       | registry               | 'registry'    |
+     * | false           | undefined         | ['custom/*']    | registry + config      | 'merged'      |
+     * | false           | ['only/*']        | any             | override only          | 'override'    |
+     * | true            | undefined         | undefined       | defaults               | 'defaults'    |
+     * | true            | undefined         | ['custom/*']    | config only            | 'config'      |
+     * | true            | ['only/*']        | any             | override only          | 'override'    |
+     */
+
+    const mockRegistryPatterns = ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'];
+    const mockConfigPatterns = ['custom/*', 'my-agent/*'];
+    const mockOverridePatterns = ['only/*', 'these/*'];
+
+    // Helper to create a mock fetcher
+    const createMockFetcher = (patterns: string[] = mockRegistryPatterns) => {
+      return vi.fn().mockResolvedValue(patterns);
+    };
+
+    describe('scenario 1: default mode (no config, no override, no disable)', () => {
+      it('should fetch from registry and return registry patterns', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).toHaveBeenCalled();
+        expect(result.patterns).toEqual(mockRegistryPatterns);
+        expect(result.source).toBe('registry');
+        expect(result.registryFetched).toBe(true);
+      });
+    });
+
+    describe('scenario 2: merge mode (config patterns + registry patterns)', () => {
+      it('should merge registry patterns with config patterns (config first)', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: mockConfigPatterns,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).toHaveBeenCalled();
+        // Config patterns come first, then registry
+        expect(result.patterns).toEqual([...mockConfigPatterns, ...mockRegistryPatterns]);
+        expect(result.source).toBe('merged');
+        expect(result.registryFetched).toBe(true);
+      });
+
+      it('should deduplicate merged patterns', async () => {
+        const mockFetcher = createMockFetcher(['claude/*', 'shared/*']);
+        const configWithOverlap = ['shared/*', 'my-agent/*'];
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: configWithOverlap,
+          cacheDir: tempDir,
+        });
+
+        // Should deduplicate 'shared/*'
+        expect(result.patterns).toEqual(['shared/*', 'my-agent/*', 'claude/*']);
+        expect(result.source).toBe('merged');
+      });
+    });
+
+    describe('scenario 3: override mode (agentBranchPatternsOverride)', () => {
+      it('should use override patterns only, ignoring registry and config', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: mockConfigPatterns,
+          overridePatterns: mockOverridePatterns,
+          cacheDir: tempDir,
+        });
+
+        // Should NOT call registry
+        expect(mockFetcher).not.toHaveBeenCalled();
+        expect(result.patterns).toEqual(mockOverridePatterns);
+        expect(result.source).toBe('override');
+        expect(result.registryFetched).toBe(false);
+      });
+
+      it('should use override even with disableAgentPatternRegistry', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          overridePatterns: mockOverridePatterns,
+          disableAgentPatternRegistry: true,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).not.toHaveBeenCalled();
+        expect(result.patterns).toEqual(mockOverridePatterns);
+        expect(result.source).toBe('override');
+        expect(result.registryFetched).toBe(false);
+      });
+    });
+
+    describe('scenario 4: airgapped mode (disableAgentPatternRegistry = true)', () => {
+      it('should return defaults when no config patterns', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          disableAgentPatternRegistry: true,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).not.toHaveBeenCalled();
+        expect(result.patterns).toEqual(DEFAULT_AGENT_PATTERNS);
+        expect(result.source).toBe('defaults');
+        expect(result.registryFetched).toBe(false);
+      });
+
+      it('should return config patterns only when provided', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: mockConfigPatterns,
+          disableAgentPatternRegistry: true,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).not.toHaveBeenCalled();
+        expect(result.patterns).toEqual(mockConfigPatterns);
+        expect(result.source).toBe('config');
+        expect(result.registryFetched).toBe(false);
+      });
+    });
+
+    describe('registry failure fallback', () => {
+      it('should fall back to config patterns when registry fetch fails', async () => {
+        const mockFetcher = vi.fn().mockRejectedValue(new Error('Network error'));
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: mockConfigPatterns,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).toHaveBeenCalled();
+        expect(result.patterns).toEqual(mockConfigPatterns);
+        expect(result.source).toBe('config');
+        expect(result.registryFetched).toBe(false);
+      });
+
+      it('should fall back to defaults when registry fails and no config', async () => {
+        const mockFetcher = vi.fn().mockRejectedValue(new Error('Network error'));
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).toHaveBeenCalled();
+        expect(result.patterns).toEqual(DEFAULT_AGENT_PATTERNS);
+        expect(result.source).toBe('defaults');
+        expect(result.registryFetched).toBe(false);
+      });
+    });
+
+    describe('observability fields', () => {
+      it('should include source field indicating pattern origin', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: tempDir,
+        });
+
+        expect(result).toHaveProperty('source');
+        expect(['registry', 'merged', 'override', 'config', 'defaults']).toContain(result.source);
+      });
+
+      it('should include registryFetched boolean for observability', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: tempDir,
+        });
+
+        expect(result).toHaveProperty('registryFetched');
+        expect(typeof result.registryFetched).toBe('boolean');
+      });
+    });
+
+    describe('backwards compatibility', () => {
+      it('should work without any options (uses defaults)', async () => {
+        // When called with no options, should fetch from registry using internal fetcher
+        globalThis.fetch = vi.fn().mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({ version: '1.0.0', patterns: mockRegistryPatterns }),
+        });
+
+        const result = await resolveAgentPatterns({ cacheDir: tempDir });
+
+        expect(result.patterns).toEqual(mockRegistryPatterns);
+        expect(result.source).toBe('registry');
+        expect(result.registryFetched).toBe(true);
+      });
+
+      it('should work with empty config patterns', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: [],
+          cacheDir: tempDir,
+        });
+
+        // Empty config = registry only
+        expect(result.patterns).toEqual(mockRegistryPatterns);
+        expect(result.source).toBe('registry');
+      });
+
+      it('should treat undefined configPatterns same as empty', async () => {
+        const mockFetcher = createMockFetcher(mockRegistryPatterns);
+
+        const resultWithUndefined = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: undefined,
+          cacheDir: tempDir,
+        });
+
+        clearCache();
+
+        const resultWithEmpty = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          configPatterns: [],
+          cacheDir: tempDir,
+        });
+
+        expect(resultWithUndefined.patterns).toEqual(resultWithEmpty.patterns);
+        expect(resultWithUndefined.source).toEqual(resultWithEmpty.source);
+      });
+    });
+
+    describe('injectable fetcher', () => {
+      it('should use provided registryFetcher instead of default', async () => {
+        const customPatterns = ['injected/*', 'patterns/*'];
+        const mockFetcher = vi.fn().mockResolvedValue(customPatterns);
+
+        const result = await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: tempDir,
+        });
+
+        expect(mockFetcher).toHaveBeenCalled();
+        expect(result.patterns).toEqual(customPatterns);
+      });
+
+      it('should pass cacheDir and timeoutMs to fetcher', async () => {
+        const mockFetcher = vi.fn().mockResolvedValue(['test/*']);
+
+        await resolveAgentPatterns({
+          registryFetcher: mockFetcher,
+          cacheDir: '/custom/cache',
+          timeoutMs: 3000,
+        });
+
+        expect(mockFetcher).toHaveBeenCalledWith({
+          cacheDir: '/custom/cache',
+          timeoutMs: 3000,
+        });
+      });
     });
   });
 });
