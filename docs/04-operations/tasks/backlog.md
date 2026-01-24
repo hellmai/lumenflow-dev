@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
