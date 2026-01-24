@@ -8,19 +8,18 @@ created: 2026-01-24
 code_paths:
   - packages/@lumenflow/core/src/context/
   - packages/@lumenflow/core/src/validation/
-  - packages/@lumenflow/core/src/guidance/
   - packages/@lumenflow/core/src/recovery/
-  - packages/@lumenflow/cli/src/wu-status.ts
-  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - CLAUDE.md
+  - LUMENFLOW.md
 tests:
-  manual: []
+  manual:
+    - CLI integration (wu:status, wu:recover) deferred to follow-up WU
   unit:
     - packages/@lumenflow/core/src/__tests__/context/
     - packages/@lumenflow/core/src/__tests__/validation/
-    - packages/@lumenflow/core/src/__tests__/guidance/
     - packages/@lumenflow/core/src/__tests__/recovery/
-  e2e:
-    - packages/@lumenflow/cli/__tests__/wu-lifecycle-validation.e2e.test.ts
 artifacts:
   - .lumenflow/stamps/WU-1090.done
 dependencies: []
