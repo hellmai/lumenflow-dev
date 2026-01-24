@@ -99,14 +99,10 @@
     "vitest": "^4.0.17"
   },
   "peerDependencies": {
-    "@lumenflow/initiatives": "workspace:*",
     "@lumenflow/memory": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@lumenflow/memory": {
-      "optional": true
-    },
-    "@lumenflow/initiatives": {
       "optional": true
     }
   },
