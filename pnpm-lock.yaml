@@ -179,9 +179,6 @@ importers:
 
   packages/@lumenflow/core:
     dependencies:
-      '@lumenflow/initiatives':
-        specifier: workspace:*
-        version: link:../initiatives
       '@lumenflow/memory':
         specifier: workspace:*
         version: link:../memory
