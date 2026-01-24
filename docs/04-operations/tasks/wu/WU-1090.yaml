@@ -24,9 +24,20 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1090.done
 dependencies: []
-risks: []
-notes: ''
-requires_review: false
+risks:
+  - Performance regression if context computation exceeds 100ms threshold
+  - Breaking change if validation_mode defaults to error too early
+notes: |
+  ## Library-First Mandate
+  Use existing dependencies only: zod, simple-git, chalk, change-case.
+  Do NOT add XState - extend existing state-machine.ts pattern.
+
+  ## Code Quality Mandates
+  - TDD: Write failing tests FIRST (red-green-refactor)
+  - SOLID: Single responsibility per module
+  - DRY: All constants in wu-constants.ts
+  - KISS/YAGNI: Simplest solution that works
+requires_review: true
 assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
@@ -34,22 +45,46 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement a context-aware state machine for WU lifecycle commands to eliminate agents
+description: |
+  Implement a context-aware state machine for WU lifecycle commands to eliminate agents
   executing commands without understanding their current context (location, WU state, git state),
   leading to failures, retry loops, and corrupted repository states.
+
+  The solution provides:
+  1. Unified context model capturing all relevant environmental state
+  2. Declarative command requirements specifying what each command needs
+  3. Smart validation that guides rather than just rejects
+  4. Recovery paths for every failure mode
+  5. Vendor-agnostic design with no agent-specific assumptions
 acceptance:
   - WuContext interface captures location, git, wu, lane, and session state
   - resolveLocation() correctly detects main vs worktree using simple-git
+  - resolveLocation() extracts WU ID from worktree path using PATTERNS constant
   - readGitState() returns branch, dirty, staged, ahead/behind using simple-git
-  - computeContext() completes in < 100ms
-  - COMMAND_REGISTRY contains all wu:* commands
+  - readWuState() queries both YAML and state store, detects inconsistencies
+  - computeContext() completes in < 100ms (performance budget)
+  - CommandDefinition interface with requiredLocation, requiredWuStatus, predicates
+  - COMMAND_REGISTRY contains all wu:* commands (create, claim, done, block, unblock, status,
+    recover)
   - validateCommand() returns ValidationResult with errors, warnings, context
   - Location validation rejects wrong location with copy-paste fix command
+  - Status validation rejects wrong WU status with guidance
+  - Predicate system supports custom checks with severity (error/warning)
   - Fix commands are copy-paste ready with actual paths from context
-  - analyzeRecovery() detects partial claim, orphan claim, inconsistent state
+  - getValidCommandsForContext() returns commands valid for current state
+  - Success output includes relevant next steps
+  - analyzeRecovery() detects partial claim, orphan claim, inconsistent state, orphan branch, stale
+    lock
+  - Recovery actions resume (preserves work), reset (discards worktree), nuke (requires --force)
+  - All recovery actions are idempotent
   - wu:status shows location, WU state, git state, valid commands
   - wu:recover analyzes issues and offers recovery actions
-  - Feature flags in .lumenflow.config.yaml (context_validation, validation_mode)
+  - Feature flags in .lumenflow.config.yaml (context_validation, validation_mode, show_next_steps)
+  - Validation integrated into wu:create, wu:claim, wu:done
+  - validation_mode supports off, warn, error
   - All git operations use simple-git (NOT execSync)
   - All constants in wu-constants.ts CONTEXT_VALIDATION section
+  - No magic numbers or hardcoded strings in implementation
   - 95%+ unit test coverage on context, validation, recovery modules
+  - CLAUDE.md updated with wu:status and wu:recover commands
+  - LUMENFLOW.md updated with validation behavior description
