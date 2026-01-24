@@ -120,8 +120,8 @@ await isAgentBranch('lane/operations/wu-123'); // false
 
 | Scenario             | Behavior                                        |
 | -------------------- | ----------------------------------------------- |
-| Fresh cache (<7d)    | Use cached patterns, no network request         |
-| Stale cache (>=7d)   | Attempt fetch, use fresh if successful          |
+| Fresh cache (&lt;7d)   | Use cached patterns, no network request         |
+| Stale cache (&gt;=7d)  | Attempt fetch, use fresh if successful          |
 | Fetch fails          | Use stale cache if available, else use defaults |
 | No cache, no network | Use defaults (`['agent/*']`)                    |
 
