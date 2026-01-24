@@ -246,10 +246,10 @@ Use the release command for the standard workflow:
 
 ```bash
 # Preview first
-pnpm release --version 1.3.0 --dry-run
+pnpm release --release-version 1.3.0 --dry-run
 
 # Execute release
-pnpm release --version 1.3.0
+pnpm release --release-version 1.3.0
 ```
 
 This handles version bump, build, tag, and npm publish automatically.
