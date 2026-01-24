@@ -8,7 +8,8 @@ created: 2026-01-24
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/docs-sync.ts
-  - packages/@lumenflow/cli/src/index.ts
+  - packages/@lumenflow/cli/package.json
+  - package.json
 tests:
   manual: []
   unit:
@@ -18,15 +19,20 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1083.done
 dependencies: []
-spec_refs:
-  - ~/.lumenflow/plans/WU-1083-agent-onboarding-scaffolding.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-24T11:37:31.469Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1083
+session_id: 3d55ce11-ce5d-4bc7-b6c2-e72446867a72
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T11:37:31.475Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -53,11 +59,3 @@ acceptance:
   - lumenflow docs:sync command syncs agent docs to existing projects
   - LUMENFLOW.md template only references docs that get scaffolded
   - Agent can successfully run wu:create on first attempt with new docs
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1083
-claimed_at: 2026-01-24T11:37:31.469Z
-baseline_main_sha: 1622174abedf89b6ff067a24420947de257a0ac3
-session_id: 3d55ce11-ce5d-4bc7-b6c2-e72446867a72
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-24T11:37:31.475Z
