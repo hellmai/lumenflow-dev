@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml) — Framework: CLI
 - [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml) — Framework: Core
   (No items ready)
 
