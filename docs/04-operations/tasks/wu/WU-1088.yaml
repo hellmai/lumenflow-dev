@@ -2,7 +2,7 @@ id: WU-1088
 title: Fix circular dependency in dependency-graph.ts causing top-level await warning
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -27,14 +27,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: dependency-graph.ts dynamically imports @lumenflow/initiatives at the top level to avoid circular dependencies at build time.
+description: >-
+  Context: dependency-graph.ts dynamically imports @lumenflow/initiatives at the top level to avoid
+  circular dependencies at build time.
 
-  Problem: At runtime, this creates a top-level await warning: 'Detected unsettled top-level await at dependency-graph.js:10'. This blocks orchestrate:initiative and other commands that depend on dependency-graph.ts. The circular dependency exists because @lumenflow/core imports @lumenflow/initiatives which imports @lumenflow/core.
 
-  Solution: Refactor to break the circular dependency - either move shared types to a separate package, use lazy imports only where needed, or restructure the module graph to eliminate the cycle.
+  Problem: At runtime, this creates a top-level await warning: 'Detected unsettled top-level await
+  at dependency-graph.js:10'. This blocks orchestrate:initiative and other commands that depend on
+  dependency-graph.ts. The circular dependency exists because @lumenflow/core imports
+  @lumenflow/initiatives which imports @lumenflow/core.
+
+
+  Solution: Refactor to break the circular dependency - either move shared types to a separate
+  package, use lazy imports only where needed, or restructure the module graph to eliminate the
+  cycle.
 acceptance:
   - orchestrate:initiative command runs without top-level await warnings
   - No circular dependency between @lumenflow/core and @lumenflow/initiatives
   - All existing tests pass
   - pnpm turbo build completes without warnings
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1088
+claimed_at: 2026-01-24T16:37:43.909Z
+baseline_main_sha: 624515db140f1727dda8ce36b3e24a1b7e78594e
+session_id: ef187951-82b5-4e8c-95d1-307f5092ada7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T16:37:43.914Z

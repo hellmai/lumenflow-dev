@@ -5,6 +5,7 @@ _Last updated: 2026-01-24_
 ## In Progress
 
 - [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml)
+- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml)
 
 ## Completed
 
