@@ -2,7 +2,7 @@ id: WU-1087
 title: 'CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -50,3 +50,5 @@ session_id: ef187951-82b5-4e8c-95d1-307f5092ada7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T16:31:35.693Z
+locked: true
+completed_at: 2026-01-24T16:40:16.002Z
