@@ -24,7 +24,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — Framework: CLI
 - [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -41,3 +40,4 @@ sections:
 - [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml)
 - [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml)
 - [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml)
+- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml)
