@@ -63,3 +63,4 @@ coverage/
 .npmrc
 # test
 # force test
+.vercel
