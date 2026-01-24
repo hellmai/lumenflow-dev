@@ -275,6 +275,13 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     flags: '--color',
     description: 'Enable colored output',
   },
+  // WU-1085: NO_COLOR standard support (https://no-color.org/)
+  noColor: {
+    name: 'noColor',
+    flags: '--no-color',
+    description: 'Disable colored output (respects NO_COLOR env var)',
+    isNegated: true,
+  },
   status: {
     name: 'status',
     flags: '--status <status>',

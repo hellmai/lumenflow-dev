@@ -23,7 +23,7 @@ LumenFlow has several components that need to stay in sync:
 The `pnpm release` command automates the entire release process:
 
 ```bash
-pnpm release --version 1.3.0
+pnpm release --release-version 1.3.0
 ```
 
 ### What It Does
@@ -37,24 +37,26 @@ pnpm release --version 1.3.0
 
 ### Options
 
-| Flag                | Description                             |
-| ------------------- | --------------------------------------- |
-| `--version <X.Y.Z>` | **Required.** Semver version to release |
-| `--dry-run`         | Preview changes without making them     |
-| `--skip-publish`    | Bump and tag only (no npm publish)      |
-| `--skip-build`      | Skip build step (use existing dist)     |
+| Flag                        | Description                             |
+| --------------------------- | --------------------------------------- |
+| `--release-version <X.Y.Z>` | **Required.** Semver version to release |
+| `--dry-run`                 | Preview changes without making them     |
+| `--skip-publish`            | Bump and tag only (no npm publish)      |
+| `--skip-build`              | Skip build step (use existing dist)     |
+| `--version`, `-V`           | Show CLI version                        |
+| `--help`, `-h`              | Show help                               |
 
 ### Examples
 
 ```bash
 # Full release
-pnpm release --version 1.3.0
+pnpm release --release-version 1.3.0
 
 # Preview what would happen
-pnpm release --version 1.3.0 --dry-run
+pnpm release --release-version 1.3.0 --dry-run
 
 # Version bump and tag only (CI will publish)
-pnpm release --version 1.3.0 --skip-publish
+pnpm release --release-version 1.3.0 --skip-publish
 ```
 
 ### Authentication
