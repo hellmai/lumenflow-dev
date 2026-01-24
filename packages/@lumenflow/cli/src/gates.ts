@@ -66,7 +66,7 @@ import {
 } from '@lumenflow/core/dist/risk-detector.js';
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
-import { Command } from 'commander';
+import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 // WU-1067: Config-driven gates support
 import {
   loadGatesConfig,
@@ -96,15 +96,64 @@ import {
   PRETTIER_FLAGS,
 } from '@lumenflow/core/dist/wu-constants.js';
 
-// WU-2457: Add Commander.js for --help support
-function parseGatesArgs(argv = process.argv) {
+/**
+ * WU-1087: Gates-specific option definitions for createWUParser.
+ * Exported for testing and consistency with other CLI commands.
+ */
+export const GATES_OPTIONS = {
+  docsOnly: {
+    name: 'docsOnly',
+    flags: '--docs-only',
+    description: 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)',
+  },
+  fullLint: {
+    name: 'fullLint',
+    flags: '--full-lint',
+    description: 'Run full lint instead of incremental',
+  },
+  fullTests: {
+    name: 'fullTests',
+    flags: '--full-tests',
+    description: 'Run full test suite instead of incremental',
+  },
+  fullCoverage: {
+    name: 'fullCoverage',
+    flags: '--full-coverage',
+    description: 'Force full test suite and coverage gate (implies --full-tests)',
+  },
+  coverageMode: {
+    name: 'coverageMode',
+    flags: '--coverage-mode <mode>',
+    description: 'Coverage gate mode: "warn" logs warnings, "block" fails gate',
+    default: 'block',
+  },
+  verbose: {
+    name: 'verbose',
+    flags: '--verbose',
+    description: 'Stream output in agent mode instead of logging to file',
+  },
+};
+
+/**
+ * WU-1087: Parse gates options using createWUParser for consistency.
+ * Handles pnpm's `--` separator and provides automatic --help support.
+ *
+ * @returns Parsed options object
+ */
+export function parseGatesOptions(): {
+  docsOnly?: boolean;
+  fullLint?: boolean;
+  fullTests?: boolean;
+  fullCoverage?: boolean;
+  coverageMode: string;
+  verbose?: boolean;
+} {
   // WU-2465: Pre-filter argv to handle pnpm's `--` separator
   // When invoked via `pnpm gates -- --docs-only`, pnpm passes ["--", "--docs-only"]
-  // Commander treats `--` as "everything after is positional", causing errors.
-  // Solution: Remove standalone `--` from argv before parsing.
-  const filteredArgv = argv.filter((arg, index, arr) => {
-    // Keep `--` only if it's followed by a non-option (actual positional arg)
-    // Remove it if it's followed by an option (starts with -)
+  // createWUParser's default filtering removes all `--`, but we need smarter handling:
+  // Remove `--` only if it's followed by an option (starts with -)
+  const originalArgv = process.argv;
+  const filteredArgv = originalArgv.filter((arg, index, arr) => {
     if (arg === '--') {
       const nextArg = arr[index + 1];
       return nextArg && !nextArg.startsWith('-');
@@ -112,25 +161,37 @@ function parseGatesArgs(argv = process.argv) {
     return true;
   });
 
-  const program = new Command()
-    .name('gates')
-    .description(
-      'Run quality gates with support for docs-only mode, incremental linting, and tiered testing',
-    )
-    .option('--docs-only', 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)')
-    .option('--full-lint', 'Run full lint instead of incremental')
-    .option('--full-tests', 'Run full test suite instead of incremental')
-    .option('--full-coverage', 'Force full test suite and coverage gate (implies --full-tests)')
-    .option(
-      '--coverage-mode <mode>',
-      'Coverage gate mode: "warn" logs warnings, "block" fails gate (default)',
-      'block',
-    )
-    .option('--verbose', 'Stream output in agent mode instead of logging to file')
-    .helpOption('-h, --help', 'Display help for command');
+  // Temporarily replace process.argv for createWUParser
+  process.argv = filteredArgv;
 
-  program.parse(filteredArgv);
-  return program.opts();
+  try {
+    const opts = createWUParser({
+      name: 'gates',
+      description:
+        'Run quality gates with support for docs-only mode, incremental linting, and tiered testing',
+      options: Object.values(GATES_OPTIONS),
+    });
+
+    return {
+      docsOnly: opts.docsOnly,
+      fullLint: opts.fullLint,
+      fullTests: opts.fullTests,
+      fullCoverage: opts.fullCoverage,
+      coverageMode: opts.coverageMode ?? 'block',
+      verbose: opts.verbose,
+    };
+  } finally {
+    // Restore original process.argv
+    process.argv = originalArgv;
+  }
+}
+
+/**
+ * @deprecated Use parseGatesOptions() instead (WU-1087)
+ * Kept for backward compatibility during migration.
+ */
+function parseGatesArgs(argv = process.argv) {
+  return parseGatesOptions();
 }
 
 /**

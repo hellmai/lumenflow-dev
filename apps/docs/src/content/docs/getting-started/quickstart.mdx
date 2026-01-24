@@ -8,11 +8,128 @@ import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 
 <Tabs>
-  <TabItem label="Free (GitHub App Only)">
+  <TabItem label="npm CLI (Recommended)">
 
-## Quick Setup (No CLI Required)
+## Full Setup with CLI
 
-The fastest way to start using LumenFlow is with just the GitHub App.
+The CLI provides the complete LumenFlow experience with automated workflows, worktree isolation, and 40+ commands for managing your development process.
+
+### Prerequisites
+
+- Node.js 18+ or 22+
+- pnpm (recommended) or npm
+- A Git repository
+
+<Steps>
+
+1. **Install the CLI**
+
+   <Tabs syncKey="pkg">
+     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
+     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
+   </Tabs>
+
+2. **Initialize LumenFlow**
+
+   ```bash
+   npx lumenflow-init
+   ```
+
+   This creates:
+   - `.lumenflow.config.yaml` – Your configuration
+   - `LUMENFLOW.md` – Workflow entry point
+   - `.lumenflow/constraints.md` – Non-negotiable constraints
+   - `.lumenflow/agents/` – Vendor-agnostic agent guidance
+
+   Optional flags:
+   - `--full` – Add `docs/04-operations/tasks/` (backlog, status, templates)
+   - `--framework nextjs` – Add framework hint + overlay docs
+
+3. **Add scripts to package.json**
+
+   ```json
+   {
+     "scripts": {
+       "wu:create": "wu-create",
+       "wu:claim": "wu-claim",
+       "wu:done": "wu-done",
+       "gates": "gates"
+     }
+   }
+   ```
+
+4. **Create your first Work Unit**
+
+   ```bash
+   npx wu-create \
+     --id WU-001 \
+     --title "Add user authentication" \
+     --lane "Framework: Core" \
+     --type feature \
+     --exposure backend-only \
+     --description "Implement user authentication with JWT" \
+     --acceptance "Users can log in with email/password" \
+     --acceptance "JWT tokens are issued on successful login" \
+     --code-paths "src/auth/" \
+     --test-paths-unit "src/auth/__tests__/"
+   ```
+
+5. **Claim and start work**
+
+   ```bash
+   npx wu-claim --id WU-001 --lane "Framework: Core"
+   cd worktrees/framework-core-wu-001
+   ```
+
+</Steps>
+
+### Daily CLI Workflow
+
+```bash
+# 1. Claim a WU from the backlog
+npx wu-claim --id WU-XXX --lane "Framework: Core"
+
+# 2. Work in the worktree (isolated branch)
+cd worktrees/framework-core-wu-xxx
+# ... make changes ...
+
+# 3. Run gates (checks your work)
+npx gates
+
+# 4. Complete the WU (merges to main, from repo root)
+cd /path/to/repo
+npx wu-done --id WU-XXX
+```
+
+<Aside type="caution">
+  Always run `wu:done` from the main repository checkout, not from the worktree. The worktree is
+  automatically cleaned up after completion.
+</Aside>
+
+### Key CLI Commands
+
+| Command          | Description                       |
+| ---------------- | --------------------------------- |
+| `lumenflow-init` | Initialize LumenFlow in a project |
+| `wu-create`      | Create a new Work Unit            |
+| `wu-claim`       | Claim a WU and create worktree    |
+| `wu-done`        | Complete WU, merge, and cleanup   |
+| `gates`          | Run quality gates                 |
+| `flow-report`    | Generate DORA metrics report      |
+
+Run any command with `--help` to see all options:
+
+```bash
+npx wu-create --help
+npx gates --help
+```
+
+  </TabItem>
+  <TabItem label="GitHub App Only">
+
+## Lightweight Setup (No CLI)
+
+If you prefer not to install the CLI, you can use LumenFlow with just the GitHub App. You'll manage WU YAML files manually, and the GitHub App handles PR validation and gate enforcement.
 
 <Steps>
 
@@ -100,109 +217,8 @@ The fastest way to start using LumenFlow is with just the GitHub App.
 </Steps>
 
 <Aside>
-  With the Free tier, you manage WU YAML files manually. The GitHub App handles PR validation and
-  gate enforcement.
-</Aside>
-
-  </TabItem>
-  <TabItem label="Pro (With CLI)">
-
-## Full Setup with CLI
-
-For the complete experience with automated workflows:
-
-### Prerequisites
-
-- Node.js 18+ or 22+
-- pnpm (recommended) or npm
-- A Git repository
-
-<Steps>
-
-1. **Install the CLI**
-
-   <Tabs syncKey="pkg">
-     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
-     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
-   </Tabs>
-
-2. **Initialize LumenFlow**
-
-   ```bash
-   npx lumenflow init
-   ```
-
-   This creates (minimal):
-   - `.lumenflow.config.yaml` – Your configuration
-   - `LUMENFLOW.md` – Workflow entry point
-   - `.lumenflow/constraints.md` – Non-negotiable constraints
-   - `.lumenflow/agents/` – Vendor-agnostic agent guidance
-
-   Optional:
-   - `npx lumenflow init --full` – Add `docs/04-operations/tasks/` (backlog, status, templates)
-   - `npx lumenflow init --framework nextjs` – Add framework hint + overlay docs
-
-3. **Add scripts to package.json**
-
-   ```json
-   {
-     "scripts": {
-       "wu:create": "wu-create",
-       "wu:claim": "wu-claim",
-       "wu:done": "wu-done",
-       "gates": "gates"
-     }
-   }
-   ```
-
-4. **Create your first Work Unit**
-
-   ```bash
-   npx wu-create \
-     --id WU-001 \
-     --title "Add user authentication" \
-     --lane "Framework: Core" \
-     --type feature \
-     --exposure backend-only \
-     --description "Implement user authentication with JWT" \
-     --acceptance "Users can log in with email/password" \
-     --acceptance "JWT tokens are issued on successful login" \
-     --code-paths "src/auth/" \
-     --test-paths-unit "src/auth/__tests__/"
-   ```
-
-5. **Claim and start work**
-
-   ```bash
-   npx wu-claim --id WU-001 --lane "Framework: Core"
-   cd worktrees/framework-core-wu-001
-   ```
-
-</Steps>
-
-### CLI Workflow
-
-Once set up, your daily workflow is:
-
-```bash
-# 1. Claim a WU from the backlog
-npx wu-claim --id WU-XXX --lane "Framework: Core"
-
-# 2. Work in the worktree (isolated branch)
-cd worktrees/framework-core-wu-xxx
-# ... make changes ...
-
-# 3. Run gates (checks your work)
-npx gates
-
-# 4. Complete the WU (merges to main, from repo root)
-cd /path/to/repo
-npx wu-done --id WU-XXX
-```
-
-<Aside type="caution">
-  Always run `wu:done` from the main repository checkout, not from the worktree. The worktree is
-  automatically cleaned up after completion.
+  With the GitHub App only approach, you manage WU YAML files manually. Consider upgrading to the
+  CLI for automated worktree management, metrics, and agent coordination features.
 </Aside>
 
   </TabItem>
