@@ -182,6 +182,15 @@ export const PATTERNS = {
   /** Extract WU ID from text: captures "WU-123" */
   WU_ID_EXTRACT: /WU-\d+/,
 
+  /**
+   * Extract WU ID from worktree paths (case-insensitive)
+   *
+   * WU-1090: Worktree names use lowercase like 'framework-core-wu-1090'
+   * This pattern matches both 'WU-123' and 'wu-123' to support
+   * extracting WU IDs from worktree paths.
+   */
+  WU_ID_EXTRACT_CI: /wu-\d+/i,
+
   /** Lane branch format: lane/<lane-kebab>/wu-<id> */
   LANE_BRANCH: /^lane\/[\w-]+\/wu-\d+$/,
 
@@ -1883,3 +1892,152 @@ export async function validateSafetyTestsExist(options: DiscoverSafetyTestsOptio
     error: valid ? undefined : `Missing safety-critical tests: ${missingTests.join('; ')}`,
   };
 }
+
+/**
+ * Context validation constants (WU-1090)
+ *
+ * Constants for the context-aware state machine for WU lifecycle commands.
+ * Supports unified context model, declarative command requirements,
+ * smart validation, and recovery paths.
+ */
+export const CONTEXT_VALIDATION = {
+  /** Location types for WU operations */
+  LOCATION_TYPES: {
+    /** Main checkout (not a worktree) */
+    MAIN: 'main',
+    /** Inside a worktree */
+    WORKTREE: 'worktree',
+    /** Detached HEAD state */
+    DETACHED: 'detached',
+    /** Unknown location (not a git repo or error) */
+    UNKNOWN: 'unknown',
+  } as const,
+
+  /** Validation error codes */
+  ERROR_CODES: {
+    /** Command run from wrong location type */
+    WRONG_LOCATION: 'WRONG_LOCATION',
+    /** Target WU does not exist */
+    WU_NOT_FOUND: 'WU_NOT_FOUND',
+    /** WU with this ID already exists */
+    WU_ALREADY_EXISTS: 'WU_ALREADY_EXISTS',
+    /** WU in unexpected status for command */
+    WRONG_WU_STATUS: 'WRONG_WU_STATUS',
+    /** Lane already has WU in progress */
+    LANE_OCCUPIED: 'LANE_OCCUPIED',
+    /** Worktree already exists for WU */
+    WORKTREE_EXISTS: 'WORKTREE_EXISTS',
+    /** Expected worktree not found */
+    WORKTREE_MISSING: 'WORKTREE_MISSING',
+    /** Gates haven't run or failed */
+    GATES_NOT_PASSED: 'GATES_NOT_PASSED',
+    /** Uncommitted changes exist */
+    DIRTY_GIT: 'DIRTY_GIT',
+    /** Cannot reach origin remote */
+    REMOTE_UNAVAILABLE: 'REMOTE_UNAVAILABLE',
+    /** YAML and state store disagree */
+    INCONSISTENT_STATE: 'INCONSISTENT_STATE',
+  } as const,
+
+  /** Recovery action types */
+  RECOVERY_ACTIONS: {
+    /** Reconcile state and continue working (preserves work) */
+    RESUME: 'resume',
+    /** Discard worktree, reset WU to ready */
+    RESET: 'reset',
+    /** Remove all artifacts completely (requires --force) */
+    NUKE: 'nuke',
+    /** Remove leftover worktree (for done WUs) */
+    CLEANUP: 'cleanup',
+  } as const,
+
+  /** Recovery issue codes */
+  RECOVERY_ISSUES: {
+    /** Worktree exists but WU status is "ready" */
+    PARTIAL_CLAIM: 'PARTIAL_CLAIM',
+    /** WU is "in_progress" but worktree does not exist */
+    ORPHAN_CLAIM: 'ORPHAN_CLAIM',
+    /** YAML status differs from state store */
+    INCONSISTENT_STATE: 'INCONSISTENT_STATE',
+    /** Branch exists but worktree does not */
+    ORPHAN_BRANCH: 'ORPHAN_BRANCH',
+    /** Lock file from different WU */
+    STALE_LOCK: 'STALE_LOCK',
+    /** WU is done but worktree was not cleaned up */
+    LEFTOVER_WORKTREE: 'LEFTOVER_WORKTREE',
+  } as const,
+
+  /** Predicate severity levels */
+  SEVERITY: {
+    /** Blocks command execution */
+    ERROR: 'error',
+    /** Shows warning but allows execution */
+    WARNING: 'warning',
+  } as const,
+
+  /** Performance thresholds */
+  THRESHOLDS: {
+    /** Max context computation time (ms) - acceptance criterion */
+    CONTEXT_COMPUTATION_MS: 100,
+    /** Max stale lock age (hours) */
+    STALE_LOCK_HOURS: 24,
+  },
+
+  /** Feature flag keys for .lumenflow.config.yaml */
+  FEATURE_FLAGS: {
+    /** Enable context-aware validation */
+    CONTEXT_VALIDATION: 'context_validation',
+    /** Validation behavior: 'off' | 'warn' | 'error' */
+    VALIDATION_MODE: 'validation_mode',
+    /** Show next steps after successful commands */
+    SHOW_NEXT_STEPS: 'show_next_steps',
+    /** Enable wu:recover command */
+    RECOVERY_COMMAND: 'recovery_command',
+  } as const,
+
+  /** Validation modes */
+  VALIDATION_MODES: {
+    /** No validation (legacy behavior) */
+    OFF: 'off',
+    /** Show warnings but proceed */
+    WARN: 'warn',
+    /** Block on validation failures */
+    ERROR: 'error',
+  } as const,
+
+  /** Command names for the registry */
+  COMMANDS: {
+    WU_CREATE: 'wu:create',
+    WU_CLAIM: 'wu:claim',
+    WU_DONE: 'wu:done',
+    WU_BLOCK: 'wu:block',
+    WU_UNBLOCK: 'wu:unblock',
+    WU_STATUS: 'wu:status',
+    WU_RECOVER: 'wu:recover',
+    GATES: 'gates',
+  } as const,
+} as const;
+
+/** Type for location types */
+export type LocationType =
+  (typeof CONTEXT_VALIDATION.LOCATION_TYPES)[keyof typeof CONTEXT_VALIDATION.LOCATION_TYPES];
+
+/** Type for validation error codes */
+export type ValidationErrorCode =
+  (typeof CONTEXT_VALIDATION.ERROR_CODES)[keyof typeof CONTEXT_VALIDATION.ERROR_CODES];
+
+/** Type for recovery action types */
+export type RecoveryActionType =
+  (typeof CONTEXT_VALIDATION.RECOVERY_ACTIONS)[keyof typeof CONTEXT_VALIDATION.RECOVERY_ACTIONS];
+
+/** Type for recovery issue codes */
+export type RecoveryIssueCode =
+  (typeof CONTEXT_VALIDATION.RECOVERY_ISSUES)[keyof typeof CONTEXT_VALIDATION.RECOVERY_ISSUES];
+
+/** Type for predicate severity levels */
+export type PredicateSeverity =
+  (typeof CONTEXT_VALIDATION.SEVERITY)[keyof typeof CONTEXT_VALIDATION.SEVERITY];
+
+/** Type for validation modes */
+export type ValidationMode =
+  (typeof CONTEXT_VALIDATION.VALIDATION_MODES)[keyof typeof CONTEXT_VALIDATION.VALIDATION_MODES];

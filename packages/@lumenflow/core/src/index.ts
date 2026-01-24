@@ -152,3 +152,18 @@ export { LUMENFLOW_PATHS, LUMENFLOW_PATHS } from './wu-constants.js';
 
 // WU-1085: Color support for NO_COLOR/FORCE_COLOR/--no-color
 export * from './color-support.js';
+
+// WU-1090: Context-aware state machine for WU lifecycle commands
+export * from './context/index.js';
+export * from './validation/index.js';
+
+// WU-1090: Context validation constants
+export { CONTEXT_VALIDATION } from './wu-constants.js';
+export type {
+  LocationType,
+  ValidationErrorCode,
+  RecoveryActionType,
+  RecoveryIssueCode,
+  PredicateSeverity,
+  ValidationMode,
+} from './wu-constants.js';
