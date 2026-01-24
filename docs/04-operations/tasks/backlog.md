@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
