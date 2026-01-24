@@ -1,0 +1,42 @@
+id: WU-1087
+title: 'CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish'
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-24
+code_paths:
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1087.done
+dependencies: []
+spec_refs:
+  - https://github.com/lirantal/nodejs-cli-apps-best-practices
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Complete remaining work from WU-1085: migrate 12 commands to createWUParser, fix release-process.md, rebalance lumenflow.dev docs to showcase CLI properly, add agent-friendly help examples, publish npm package'
+acceptance:
+  - gates.ts uses createWUParser with --help
+  - release.ts uses createWUParser (keeping --release-version)
+  - agent-session.ts uses createWUParser
+  - orchestrate-initiative.ts uses createWUParser
+  - flow-report.ts uses createWUParser
+  - metrics-snapshot.ts uses createWUParser
+  - release-process.md updated to --release-version
+  - Create dedicated CLI setup guide in Starlight docs
+  - Update quickstart to remove Free/Pro tier framing
+  - All --help output includes working examples
+  - npm package published
