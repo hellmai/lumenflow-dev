@@ -5,6 +5,7 @@ _Last updated: 2026-01-24_
 ## In Progress
 
 - [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml)
+- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml)
 
 ## Completed
 

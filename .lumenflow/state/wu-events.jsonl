@@ -15,3 +15,4 @@
 {"type":"claim","wuId":"WU-1084","lane":"Framework: CLI","title":"wu:done should fail if main has uncommitted changes after merge","timestamp":"2026-01-24T12:19:27.650Z"}
 {"type":"complete","wuId":"WU-1084","timestamp":"2026-01-24T12:27:11.099Z"}
 {"type":"claim","wuId":"WU-1085","lane":"Framework: CLI","title":"CLI best practices audit: --help, --no-color, exports","timestamp":"2026-01-24T15:59:06.987Z"}
+{"type":"claim","wuId":"WU-1086","lane":"Framework: Core","title":"Fix gates-pre-commit module resolution to support .mjs extension","timestamp":"2026-01-24T16:10:19.392Z"}

@@ -2,7 +2,7 @@ id: WU-1086
 title: Fix gates-pre-commit module resolution to support .mjs extension
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -27,14 +27,28 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: wu:done pre-flight validation runs validateAllPreCommitHooks() which executes the gates-pre-commit script in the consuming repo's tools/ directory.
+description: >-
+  Context: wu:done pre-flight validation runs validateAllPreCommitHooks() which executes the
+  gates-pre-commit script in the consuming repo's tools/ directory.
 
-  Problem: Line 222 of wu-done-preflight.ts hardcodes 'node tools/gates-pre-commit.js' but downstream repos may use .mjs extension for ES modules. This causes wu:done to fail when only a .mjs file exists. Documentation in 5 files references .mjs but execution uses .js.
 
-  Solution: Check for .mjs first using existsSync (already used elsewhere in core), fall back to .js for backwards compatibility.
+  Problem: Line 222 of wu-done-preflight.ts hardcodes 'node tools/gates-pre-commit.js' but
+  downstream repos may use .mjs extension for ES modules. This causes wu:done to fail when only a
+  .mjs file exists. Documentation in 5 files references .mjs but execution uses .js.
+
+
+  Solution: Check for .mjs first using existsSync (already used elsewhere in core), fall back to .js
+  for backwards compatibility.
 acceptance:
   - validateAllPreCommitHooks() checks for .mjs extension first, falls back to .js
   - Backwards compatible - repos with .js gate scripts continue to work
   - New support - repos with .mjs gate scripts now work
   - Unit test covers both extension resolution paths
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1086
+claimed_at: 2026-01-24T16:10:19.376Z
+baseline_main_sha: 0c24e22050493be671ac614eda5f1aba72a5adf3
+session_id: 195ef2c3-949a-4f41-805c-4a448b05374f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T16:10:19.383Z
