@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
