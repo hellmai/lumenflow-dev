@@ -3,18 +3,7 @@ import path from 'node:path';
 import { readWU } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
-
-// Optional import from @lumenflow/initiatives - if not available, provide stub
-let detectCycles: (wuMap: Map<string, unknown>) => { hasCycle: boolean; cycles: string[][] };
-
-try {
-  // Dynamic import for optional peer dependency
-  const module = await import('@lumenflow/initiatives');
-  detectCycles = module.detectCycles;
-} catch {
-  // Fallback stub if @lumenflow/initiatives is not available
-  detectCycles = () => ({ hasCycle: false, cycles: [] });
-}
+import { detectCycles } from './cycle-detector.js';
 
 /**
  * Dependency Graph Module (WU-1247, WU-1568)

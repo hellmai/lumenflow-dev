@@ -7,10 +7,14 @@ priority: P1
 created: 2026-01-24
 code_paths:
   - packages/@lumenflow/core/src/dependency-graph.ts
+  - packages/@lumenflow/core/src/cycle-detector.ts
+  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/initiatives/src/initiative-validator.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/dependency-graph.test.ts
+    - packages/@lumenflow/core/src/__tests__/cycle-detector.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1088.done
@@ -18,7 +22,12 @@ dependencies: []
 spec_refs:
   - lumenflow://constraints/bug-fix
 risks: []
-notes: ''
+notes: |
+  Solution: Extracted detectCycles function from @lumenflow/initiatives to @lumenflow/core
+  as a new cycle-detector.ts module. This breaks the circular dependency because:
+  - @lumenflow/core no longer imports from @lumenflow/initiatives (removed top-level await)
+  - @lumenflow/initiatives imports detectCycles from @lumenflow/core (one-way dependency)
+  - Backward compatibility maintained via re-exports
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
