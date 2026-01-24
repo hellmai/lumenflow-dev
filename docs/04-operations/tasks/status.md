@@ -5,6 +5,7 @@ _Last updated: 2026-01-24_
 ## In Progress
 
 - [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml)
+- [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml)
 
 ## Completed
 
