@@ -2,7 +2,7 @@ id: WU-1083
 title: Scaffold agent onboarding docs and skills in lumenflow init
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -59,3 +59,5 @@ acceptance:
   - lumenflow docs:sync command syncs agent docs to existing projects
   - LUMENFLOW.md template only references docs that get scaffolded
   - Agent can successfully run wu:create on first attempt with new docs
+locked: true
+completed_at: 2026-01-24T11:53:57.779Z
