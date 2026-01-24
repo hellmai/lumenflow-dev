@@ -1,17 +1,19 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-01-23
+**Last updated:** 2026-01-24
 
 ---
 
 ## Project Setup
 
-| Command                                       | Description                             |
-| --------------------------------------------- | --------------------------------------- |
-| `pnpm exec lumenflow init`                    | Scaffold minimal LumenFlow core         |
-| `pnpm exec lumenflow init --full`             | Add docs/04-operations task scaffolding |
-| `pnpm exec lumenflow init --framework <name>` | Add framework hint + overlay docs       |
-| `pnpm exec lumenflow init --force`            | Overwrite existing files                |
+| Command                                       | Description                                        |
+| --------------------------------------------- | -------------------------------------------------- |
+| `pnpm exec lumenflow init`                    | Scaffold minimal LumenFlow core                    |
+| `pnpm exec lumenflow init --full`             | Add docs + agent onboarding + task scaffolding     |
+| `pnpm exec lumenflow init --framework <name>` | Add framework hint + overlay docs                  |
+| `pnpm exec lumenflow init --force`            | Overwrite existing files                           |
+| `pnpm exec lumenflow docs:sync`               | Sync agent docs to existing project (for upgrades) |
+| `pnpm exec lumenflow docs:sync --force`       | Overwrite existing agent docs                      |
 
 ---
 

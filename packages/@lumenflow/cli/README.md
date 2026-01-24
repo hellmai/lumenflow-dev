@@ -63,6 +63,13 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `initiative-status` | Show initiative status and progress |
 | `initiative-add-wu` | Link a WU to an initiative          |
 
+### Setup Commands
+
+| Command     | Description                                         |
+| ----------- | --------------------------------------------------- |
+| `init`      | Scaffold LumenFlow into a project                   |
+| `docs-sync` | Sync agent onboarding docs (for upgrading projects) |
+
 ### Other Commands
 
 | Command      | Description                                        |
