@@ -2,7 +2,7 @@ id: WU-1088
 title: Fix circular dependency in dependency-graph.ts causing top-level await warning
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -63,3 +63,5 @@ session_id: ef187951-82b5-4e8c-95d1-307f5092ada7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T16:37:43.914Z
+locked: true
+completed_at: 2026-01-24T16:51:37.592Z

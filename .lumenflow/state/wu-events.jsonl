@@ -21,3 +21,4 @@
 {"type":"claim","wuId":"WU-1087","lane":"Framework: CLI","title":"CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish","timestamp":"2026-01-24T16:31:35.700Z"}
 {"type":"claim","wuId":"WU-1088","lane":"Framework: Core","title":"Fix circular dependency in dependency-graph.ts causing top-level await warning","timestamp":"2026-01-24T16:37:43.924Z"}
 {"type":"complete","wuId":"WU-1087","timestamp":"2026-01-24T16:40:16.024Z"}
+{"type":"complete","wuId":"WU-1088","timestamp":"2026-01-24T16:51:37.611Z"}

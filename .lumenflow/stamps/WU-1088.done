@@ -1,0 +1,2 @@
+WU WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning
+Completed: 2026-01-24

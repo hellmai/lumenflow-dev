@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml) — Framework: Core
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -43,3 +43,4 @@ sections:
 - [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml)
 - [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml)
 - [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml)
+- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml)
