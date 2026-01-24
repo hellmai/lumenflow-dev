@@ -3,6 +3,7 @@
  */
 
 import { execSync as execSyncImport } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { validatePreflight } from './wu-preflight-validators.js';
 import { LOG_PREFIX, EMOJI, STDIO } from './wu-constants.js';
 
@@ -218,8 +219,15 @@ export function validateAllPreCommitHooks(
       execOptions.cwd = worktreePath;
     }
 
+    // WU-1086: Check for .mjs extension first, fall back to .js for backwards compatibility
+    const basePath = worktreePath || '.';
+    const mjsPath = `${basePath}/tools/gates-pre-commit.mjs`;
+    const gateScript = existsSync(mjsPath)
+      ? 'tools/gates-pre-commit.mjs'
+      : 'tools/gates-pre-commit.js';
+
     // Run the gates-pre-commit script that contains all validation gates
-    execSyncFn('node tools/gates-pre-commit.js', execOptions);
+    execSyncFn(`node ${gateScript}`, execOptions);
 
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All pre-commit hooks passed`);
     return { valid: true, errors: [] };
