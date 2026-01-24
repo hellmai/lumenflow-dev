@@ -1,0 +1,47 @@
+id: WU-1090
+title: Context-aware state machine for WU lifecycle commands
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-24
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/recovery/
+  e2e:
+    - packages/@lumenflow/cli/__tests__/wu-lifecycle-validation.e2e.test.ts
+artifacts:
+  - .lumenflow/stamps/WU-1090.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1090-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Implement a context-aware state machine for WU lifecycle commands to eliminate agents executing commands without understanding their current context (location, WU state, git state), leading to failures, retry loops, and corrupted repository states.
+acceptance:
+  - WuContext interface captures location, git, wu, lane, and session state
+  - resolveLocation() correctly detects main vs worktree using simple-git
+  - readGitState() returns branch, dirty, staged, ahead/behind using simple-git
+  - computeContext() completes in < 100ms
+  - COMMAND_REGISTRY contains all wu:* commands
+  - validateCommand() returns ValidationResult with errors, warnings, context
+  - Location validation rejects wrong location with copy-paste fix command
+  - Fix commands are copy-paste ready with actual paths from context
+  - analyzeRecovery() detects partial claim, orphan claim, inconsistent state
+  - wu:status shows location, WU state, git state, valid commands
+  - wu:recover analyzes issues and offers recovery actions
+  - Feature flags in .lumenflow.config.yaml (context_validation, validation_mode)
+  - All git operations use simple-git (NOT execSync)
+  - All constants in wu-constants.ts CONTEXT_VALIDATION section
+  - 95%+ unit test coverage on context, validation, recovery modules
