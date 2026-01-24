@@ -2,7 +2,7 @@ id: WU-1089
 title: 'Agent branch patterns: merge mode, override, and airgapped support'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-24
 code_paths:
@@ -27,7 +27,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Implement robust agent pattern resolution with merge/override/offline modes. Registry patterns are merged with config by default. New options: agentBranchPatternsOverride (replace registry), disableAgentPatternRegistry (airgapped). Fixes bug where schema default prevented registry from being used.'
+description: 'Implement robust agent pattern resolution with merge/override/offline modes. Registry
+  patterns are merged with config by default. New options: agentBranchPatternsOverride (replace
+  registry), disableAgentPatternRegistry (airgapped). Fixes bug where schema default prevented
+  registry from being used.'
 acceptance:
   - resolveAgentPatterns() function with injectable registry fetcher
   - AgentPatternResult includes source and registryFetched for observability
@@ -40,3 +43,11 @@ acceptance:
   - Starlight config reference updated with new git options
   - Package README updated with usage examples
   - JSDoc on all public functions
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1089
+claimed_at: 2026-01-24T17:35:48.093Z
+baseline_main_sha: 32a097cd571f830b517b50c769cc8c9f82afce79
+session_id: 92c13a4d-1ac2-45e7-9b32-ae10bccf888b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T17:35:48.100Z

@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
