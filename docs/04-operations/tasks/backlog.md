@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
