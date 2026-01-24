@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
