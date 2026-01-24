@@ -25,7 +25,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Sub-agents can leave dirty state on main after wu:done. When pnpm format touches files outside the WU code_paths, those changes remain uncommitted after worktree cleanup. wu:done should detect and fail on this.
+description: Sub-agents can leave dirty state on main after wu:done. When pnpm format touches files
+  outside the WU code_paths, those changes remain uncommitted after worktree cleanup. wu:done should
+  detect and fail on this.
 acceptance:
   - wu:done fails with clear error if main has uncommitted changes after merge
   - Error message lists the dirty files
