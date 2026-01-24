@@ -2,7 +2,7 @@ id: WU-1086
 title: Fix gates-pre-commit module resolution to support .mjs extension
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -52,3 +52,5 @@ session_id: 195ef2c3-949a-4f41-805c-4a448b05374f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-24T16:10:19.383Z
+locked: true
+completed_at: 2026-01-24T16:21:04.237Z
