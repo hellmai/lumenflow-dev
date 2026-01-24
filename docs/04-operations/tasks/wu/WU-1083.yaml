@@ -1,0 +1,45 @@
+id: WU-1083
+title: Scaffold agent onboarding docs and skills in lumenflow init
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-24
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/index.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/init.test.ts
+    - packages/@lumenflow/cli/__tests__/docs-sync.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1083.done
+dependencies: []
+spec_refs:
+  - ~/.lumenflow/plans/WU-1083-agent-onboarding-scaffolding.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: Agents using LumenFlow in external projects (e.g., exampleapp.co.uk v1.3.6) make 8+ failed attempts at wu:create because the onboarding docs don't exist in their project.
+
+  Problem: lumenflow init scaffolds LUMENFLOW.md which references onboarding docs at docs/04-operations/_frameworks/lumenflow/agent/onboarding/, but doesn't create those files. Same for .claude/skills/. Agents are told to read docs that don't exist.
+
+  Solution: Update lumenflow init to scaffold agent onboarding docs when --full flag is used or Claude vendor is detected. Add skills scaffolding for Claude vendor. Create new wu-create-checklist.md with pre-flight validation steps. Add lumenflow docs:sync command for existing projects to get updated docs.
+acceptance:
+  - lumenflow init --full creates docs/04-operations/_frameworks/lumenflow/agent/onboarding/ files
+  - lumenflow init with Claude vendor creates .claude/skills/ with wu-lifecycle, worktree-discipline, lumenflow-gates
+  - New wu-create-checklist.md exists with required fields table, lane format rules, plan storage locations
+  - lumenflow docs:sync command syncs agent docs to existing projects
+  - LUMENFLOW.md template only references docs that get scaffolded
+  - Agent can successfully run wu:create on first attempt with new docs
