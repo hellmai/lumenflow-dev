@@ -70,23 +70,54 @@ await worktrees.remove('worktrees/operations-wu-123');
 
 ### Agent Branch Patterns
 
-Check if a branch is an agent branch that can bypass worktree requirements. Patterns are fetched from a central registry with 7-day caching.
+Check if a branch is an agent branch that can bypass worktree requirements. Patterns are fetched from a central registry with 7-day caching, and can be configured via `.lumenflow.config.yaml`.
 
 ```typescript
-import { isAgentBranch, getAgentPatterns } from '@lumenflow/core';
+import { isAgentBranch, isAgentBranchWithDetails, resolveAgentPatterns } from '@lumenflow/core';
 
 // Check if branch can bypass worktree requirements (async, uses registry)
 if (await isAgentBranch('claude/session-12345')) {
   console.log('Agent branch - bypass allowed');
 }
 
-// Get the current list of agent patterns
-const patterns = await getAgentPatterns();
-// ['agent/*', 'claude/*', 'codex/*', 'copilot/*', 'cursor/*', ...]
+// Get detailed result for observability
+const result = await isAgentBranchWithDetails('claude/session-123');
+if (result.isMatch) {
+  console.log(`Matched via ${result.patternResult.source}`); // 'registry', 'merged', 'override', 'config', 'defaults'
+  console.log(`Registry fetched: ${result.patternResult.registryFetched}`);
+}
+
+// Resolve patterns with custom options (useful for testing)
+const resolved = await resolveAgentPatterns({
+  configPatterns: ['my-agent/*'], // Merge with registry
+  // overridePatterns: ['only-this/*'], // Replace registry entirely
+  // disableAgentPatternRegistry: true, // Airgapped mode
+});
+console.log(resolved.patterns, resolved.source);
 
 // Synchronous version (uses local config only, no registry fetch)
 import { isAgentBranchSync } from '@lumenflow/core';
-const result = isAgentBranchSync('agent/task-123');
+const syncResult = isAgentBranchSync('agent/task-123');
+```
+
+#### Configuration Options
+
+In `.lumenflow.config.yaml`:
+
+```yaml
+git:
+  # Patterns to MERGE with registry (default: [])
+  agentBranchPatterns:
+    - 'my-custom-agent/*'
+    - 'internal-tool/*'
+
+  # Patterns that REPLACE registry entirely (optional)
+  # agentBranchPatternsOverride:
+  #   - 'claude/*'
+  #   - 'codex/*'
+
+  # Disable registry fetch for airgapped environments (default: false)
+  # disableAgentPatternRegistry: true
 ```
 
 Protected branches (main, master, lane/\*) are **never** bypassed, regardless of patterns.

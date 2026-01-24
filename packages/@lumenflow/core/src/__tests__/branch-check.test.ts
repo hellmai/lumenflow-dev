@@ -1,26 +1,24 @@
 /**
  * @fileoverview Tests for branch-check module
  *
- * Tests the async isAgentBranch() function that uses the registry patterns.
+ * Tests the async isAgentBranch() function that uses resolveAgentPatterns.
+ * WU-1089: Updated to mock resolveAgentPatterns instead of getAgentPatterns.
  *
  * @module __tests__/branch-check.test
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
 
-// Will need to mock the registry module
+// Mock the registry module with resolveAgentPatterns (WU-1089)
 vi.mock('../agent-patterns-registry.js', () => ({
-  getAgentPatterns: vi.fn(),
+  resolveAgentPatterns: vi.fn(),
   DEFAULT_AGENT_PATTERNS: ['agent/*'],
   clearCache: vi.fn(),
 }));
 
 // Module under test
-import { isAgentBranch, isHeadlessAllowed } from '../branch-check.js';
-import { getAgentPatterns } from '../agent-patterns-registry.js';
+import { isAgentBranch, isAgentBranchWithDetails, isHeadlessAllowed } from '../branch-check.js';
+import { resolveAgentPatterns } from '../agent-patterns-registry.js';
 
 // Mock getConfig
 vi.mock('../lumenflow-config.js', () => ({
@@ -29,6 +27,8 @@ vi.mock('../lumenflow-config.js', () => ({
       mainBranch: 'main',
       laneBranchPrefix: 'lane/',
       agentBranchPatterns: [], // Empty to use registry
+      agentBranchPatternsOverride: undefined,
+      disableAgentPatternRegistry: false,
     },
   })),
 }));
@@ -48,7 +48,11 @@ describe('branch-check', () => {
   describe('isAgentBranch (async)', () => {
     describe('protected branches', () => {
       it('should return false for null branch', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['claude/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch(null);
 
@@ -56,7 +60,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for undefined branch', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['claude/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch(undefined);
 
@@ -64,7 +72,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for empty string branch', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['claude/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('');
 
@@ -72,7 +84,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for detached HEAD', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['claude/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('HEAD');
 
@@ -80,7 +96,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for main branch', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['main/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['main/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('main');
 
@@ -88,7 +108,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for master branch', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['master/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['master/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('master');
 
@@ -96,7 +120,11 @@ describe('branch-check', () => {
       });
 
       it('should return false for lane branches', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['lane/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['lane/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('lane/operations/wu-123');
 
@@ -106,13 +134,11 @@ describe('branch-check', () => {
 
     describe('agent branch patterns from registry', () => {
       it('should match claude/* branches', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue([
-          'claude/*',
-          'codex/*',
-          'copilot/*',
-          'cursor/*',
-          'agent/*',
-        ]);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('claude/session-12345');
 
@@ -120,13 +146,11 @@ describe('branch-check', () => {
       });
 
       it('should match codex/* branches', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue([
-          'claude/*',
-          'codex/*',
-          'copilot/*',
-          'cursor/*',
-          'agent/*',
-        ]);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('codex/workspace-abc');
 
@@ -134,13 +158,11 @@ describe('branch-check', () => {
       });
 
       it('should match copilot/* branches', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue([
-          'claude/*',
-          'codex/*',
-          'copilot/*',
-          'cursor/*',
-          'agent/*',
-        ]);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('copilot/pr-fix-123');
 
@@ -148,13 +170,11 @@ describe('branch-check', () => {
       });
 
       it('should match cursor/* branches', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue([
-          'claude/*',
-          'codex/*',
-          'copilot/*',
-          'cursor/*',
-          'agent/*',
-        ]);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('cursor/composer-session');
 
@@ -162,7 +182,11 @@ describe('branch-check', () => {
       });
 
       it('should match agent/* branches (default pattern)', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['agent/*'],
+          source: 'defaults',
+          registryFetched: false,
+        });
 
         const result = await isAgentBranch('agent/automation-task');
 
@@ -170,7 +194,11 @@ describe('branch-check', () => {
       });
 
       it('should not match branches outside patterns', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['claude/*', 'agent/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['claude/*', 'agent/*'],
+          source: 'registry',
+          registryFetched: true,
+        });
 
         const result = await isAgentBranch('feature/my-feature');
 
@@ -180,14 +208,22 @@ describe('branch-check', () => {
 
     describe('glob pattern matching', () => {
       it('should support ** glob patterns', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['ai/**']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['ai/**'],
+          source: 'config',
+          registryFetched: false,
+        });
 
         expect(await isAgentBranch('ai/agent/claude/session')).toBe(true);
         expect(await isAgentBranch('ai/task')).toBe(true);
       });
 
       it('should support multiple glob patterns', async () => {
-        vi.mocked(getAgentPatterns).mockResolvedValue(['bot/*', 'automation/*']);
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['bot/*', 'automation/*'],
+          source: 'config',
+          registryFetched: false,
+        });
 
         expect(await isAgentBranch('bot/task-123')).toBe(true);
         expect(await isAgentBranch('automation/deploy')).toBe(true);
@@ -195,28 +231,93 @@ describe('branch-check', () => {
       });
     });
 
-    describe('config override', () => {
-      it('should use config patterns when specified', async () => {
-        // Re-mock with config patterns
-        vi.doMock('../lumenflow-config.js', () => ({
-          getConfig: vi.fn(() => ({
-            git: {
-              mainBranch: 'main',
-              laneBranchPrefix: 'lane/',
-              agentBranchPatterns: ['custom/*'], // Config override
-            },
-          })),
-        }));
+    describe('WU-1089: merge/override/airgapped modes', () => {
+      it('should pass config to resolveAgentPatterns', async () => {
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['merged/*'],
+          source: 'merged',
+          registryFetched: true,
+        });
 
-        // Note: This test verifies the behavior when config has patterns
-        // The actual logic falls back to registry when config is empty
-        vi.mocked(getAgentPatterns).mockResolvedValue(['registry/*']);
+        await isAgentBranch('merged/branch');
 
-        // With empty config patterns, should use registry
-        const result = await isAgentBranch('registry/branch');
-
-        expect(result).toBe(true);
+        // Verify resolveAgentPatterns was called with config values
+        expect(resolveAgentPatterns).toHaveBeenCalledWith({
+          configPatterns: [],
+          overridePatterns: undefined,
+          disableAgentPatternRegistry: false,
+        });
       });
+
+      it('should use merged patterns from registry + config', async () => {
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['custom/*', 'claude/*', 'codex/*'],
+          source: 'merged',
+          registryFetched: true,
+        });
+
+        expect(await isAgentBranch('custom/branch')).toBe(true);
+        expect(await isAgentBranch('claude/session')).toBe(true);
+      });
+
+      it('should use override patterns when specified', async () => {
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['only-this/*'],
+          source: 'override',
+          registryFetched: false,
+        });
+
+        expect(await isAgentBranch('only-this/branch')).toBe(true);
+        expect(await isAgentBranch('claude/session')).toBe(false);
+      });
+
+      it('should use defaults in airgapped mode', async () => {
+        vi.mocked(resolveAgentPatterns).mockResolvedValue({
+          patterns: ['agent/*'],
+          source: 'defaults',
+          registryFetched: false,
+        });
+
+        expect(await isAgentBranch('agent/task')).toBe(true);
+        expect(await isAgentBranch('claude/session')).toBe(false);
+      });
+    });
+  });
+
+  describe('isAgentBranchWithDetails', () => {
+    it('should return full pattern result for observability', async () => {
+      vi.mocked(resolveAgentPatterns).mockResolvedValue({
+        patterns: ['claude/*', 'agent/*'],
+        source: 'registry',
+        registryFetched: true,
+      });
+
+      const result = await isAgentBranchWithDetails('claude/session-123');
+
+      expect(result.isMatch).toBe(true);
+      expect(result.patternResult.source).toBe('registry');
+      expect(result.patternResult.registryFetched).toBe(true);
+      expect(result.patternResult.patterns).toContain('claude/*');
+    });
+
+    it('should return isMatch false for protected branches', async () => {
+      const result = await isAgentBranchWithDetails('main');
+
+      expect(result.isMatch).toBe(false);
+      expect(result.patternResult.patterns).toEqual([]);
+    });
+
+    it('should return isMatch false for lane branches', async () => {
+      const result = await isAgentBranchWithDetails('lane/ops/wu-123');
+
+      expect(result.isMatch).toBe(false);
+      expect(result.patternResult.patterns).toEqual([]);
+    });
+
+    it('should return isMatch false for null branch', async () => {
+      const result = await isAgentBranchWithDetails(null);
+
+      expect(result.isMatch).toBe(false);
     });
   });
 

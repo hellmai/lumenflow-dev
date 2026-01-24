@@ -120,12 +120,57 @@ export const GitConfigSchema = z.object({
   branchDriftInfo: z.number().int().positive().default(10),
 
   /**
-   * Agent branch patterns that bypass worktree requirements.
-   * Branches matching these glob patterns can work in the main checkout.
-   * Default: ['agent/*'] - narrow default, add vendor patterns as needed.
+   * Agent branch patterns to MERGE with the registry patterns.
+   * These patterns are merged with patterns from lumenflow.dev/registry/agent-patterns.json.
+   * Use this to add custom patterns that should work alongside the standard vendor patterns.
    * Protected branches (mainBranch + 'master') are NEVER bypassed.
+   *
+   * WU-1089: Changed default from ['agent/*'] to [] to allow registry to be used by default.
+   *
+   * @example
+   * ```yaml
+   * git:
+   *   agentBranchPatterns:
+   *     - 'my-custom-agent/*'
+   *     - 'internal-tool/*'
+   * ```
    */
-  agentBranchPatterns: z.array(z.string()).default(['agent/*']),
+  agentBranchPatterns: z.array(z.string()).default([]),
+
+  /**
+   * Agent branch patterns that REPLACE the registry patterns entirely.
+   * When set, these patterns are used instead of fetching from the registry.
+   * The agentBranchPatterns field is ignored when this is set.
+   *
+   * Use this for strict control over which agent patterns are allowed.
+   *
+   * @example
+   * ```yaml
+   * git:
+   *   agentBranchPatternsOverride:
+   *     - 'claude/*'
+   *     - 'codex/*'
+   * ```
+   */
+  agentBranchPatternsOverride: z.array(z.string()).optional(),
+
+  /**
+   * Disable fetching agent patterns from the registry (airgapped mode).
+   * When true, only uses agentBranchPatterns from config or defaults to ['agent/*'].
+   * Useful for environments without network access or strict security requirements.
+   *
+   * @default false
+   *
+   * @example
+   * ```yaml
+   * git:
+   *   disableAgentPatternRegistry: true
+   *   agentBranchPatterns:
+   *     - 'claude/*'
+   *     - 'cursor/*'
+   * ```
+   */
+  disableAgentPatternRegistry: z.boolean().default(false),
 });
 
 /**

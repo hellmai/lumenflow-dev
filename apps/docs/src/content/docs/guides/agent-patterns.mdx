@@ -3,7 +3,7 @@ title: Agent Branch Patterns
 description: Central registry for AI agent branch patterns
 ---
 
-import { Aside, Steps } from '@astrojs/starlight/components';
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 LumenFlow maintains a **central registry** of AI agent branch patterns that can bypass worktree requirements. This enables cloud-hosted agents and automation tools to work in the main checkout while still enforcing worktree discipline for human developers.
 
@@ -13,7 +13,7 @@ LumenFlow maintains a **central registry** of AI agent branch patterns that can 
 
 1. **Fetch from Registry** - The `isAgentBranch()` function fetches patterns from `lumenflow.dev/registry/agent-patterns.json`
 2. **Cache Locally** - Patterns are cached for 7 days in `~/.lumenflow/cache/`
-3. **Fall Back Gracefully** - If fetch fails, uses stale cache or defaults to `agent/*`
+3. **Merge with Config** - Registry patterns are merged with any custom patterns from config
 4. **Check Branch Name** - Branch names are matched against glob patterns using `micromatch`
 
 </Steps>
@@ -51,11 +51,19 @@ The registry includes patterns for popular AI agents:
 ### In TypeScript
 
 ```typescript
-import { isAgentBranch } from '@lumenflow/core';
+import { isAgentBranch, isAgentBranchWithDetails } from '@lumenflow/core';
 
 // Check if a branch can bypass worktree requirements
 if (await isAgentBranch('claude/session-12345')) {
   console.log('Agent branch detected - bypass allowed');
+}
+
+// Get detailed result for observability
+const result = await isAgentBranchWithDetails('claude/session-123');
+if (result.isMatch) {
+  console.log(`Matched via ${result.patternResult.source}`);
+  // source: 'registry' | 'merged' | 'override' | 'config' | 'defaults'
+  console.log(`Registry fetched: ${result.patternResult.registryFetched}`);
 }
 ```
 
@@ -86,20 +94,80 @@ const result = isAgentBranchSync('agent/task-123');
   full registry support.
 </Aside>
 
-## Configuration Override
+## Configuration
 
-Projects can override registry patterns in `.lumenflow.config.yaml`:
+Configure agent patterns in `.lumenflow.config.yaml`. There are three modes:
 
-```yaml
-# .lumenflow.config.yaml
-git:
-  mainBranch: main
-  agentBranchPatterns:
-    - 'custom-agent/*'
-    - 'internal-bot/*'
-```
+<Tabs>
+  <TabItem label="Merge Mode (Default)">
+    Custom patterns are merged with registry patterns:
 
-When config patterns are specified, the registry is **not** fetched.
+    ```yaml
+    # .lumenflow.config.yaml
+    git:
+      # These patterns are ADDED to registry patterns
+      agentBranchPatterns:
+        - 'my-custom-agent/*'
+        - 'internal-tool/*'
+    ```
+
+    Result: Your patterns + registry patterns (deduplicated)
+
+  </TabItem>
+
+  <TabItem label="Override Mode">
+    Replace registry patterns entirely:
+
+    ```yaml
+    # .lumenflow.config.yaml
+    git:
+      # These patterns REPLACE registry patterns
+      agentBranchPatternsOverride:
+        - 'claude/*'
+        - 'codex/*'
+        - 'internal/*'
+    ```
+
+    Result: Only your override patterns (no registry fetch)
+
+  </TabItem>
+
+  <TabItem label="Airgapped Mode">
+    Disable network fetch for isolated environments:
+
+    ```yaml
+    # .lumenflow.config.yaml
+    git:
+      disableAgentPatternRegistry: true
+      agentBranchPatterns:
+        - 'claude/*'
+        - 'codex/*'
+        - 'internal/*'
+    ```
+
+    Result: Only your config patterns (or defaults if none specified)
+
+  </TabItem>
+</Tabs>
+
+### Configuration Options
+
+| Option                        | Type     | Default     | Description                         |
+| ----------------------------- | -------- | ----------- | ----------------------------------- |
+| `agentBranchPatterns`         | string[] | `[]`        | Patterns to **merge** with registry |
+| `agentBranchPatternsOverride` | string[] | `undefined` | Patterns that **replace** registry  |
+| `disableAgentPatternRegistry` | boolean  | `false`     | Skip network fetch (airgapped mode) |
+
+### Behavior Matrix
+
+| Registry Disabled | Override Set | Config Patterns | Result                   | Source     |
+| ----------------- | ------------ | --------------- | ------------------------ | ---------- |
+| false             | no           | none            | Registry patterns        | `registry` |
+| false             | no           | `['custom/*']`  | Config + Registry        | `merged`   |
+| false             | yes          | any             | Override only            | `override` |
+| true              | no           | none            | Defaults (`['agent/*']`) | `defaults` |
+| true              | no           | `['custom/*']`  | Config only              | `config`   |
+| true              | yes          | any             | Override only            | `override` |
 
 ## Protected Branches
 
@@ -152,6 +220,39 @@ To clear disk cache, delete the cache file:
 
 ```bash
 rm ~/.lumenflow/cache/agent-patterns-cache.json
+```
+
+## Advanced: Programmatic Resolution
+
+Use `resolveAgentPatterns()` for testing or custom resolution:
+
+```typescript
+import { resolveAgentPatterns } from '@lumenflow/core';
+
+// Resolve with custom options
+const result = await resolveAgentPatterns({
+  configPatterns: ['my-agent/*'],
+  // overridePatterns: ['only-this/*'],  // Optional
+  // disableAgentPatternRegistry: true,   // Optional
+});
+
+console.log(result.patterns); // ['my-agent/*', 'claude/*', ...]
+console.log(result.source); // 'merged'
+console.log(result.registryFetched); // true
+```
+
+### Injectable Fetcher
+
+For testing, inject a custom fetcher:
+
+```typescript
+const mockFetcher = async () => ['test/*'];
+
+const result = await resolveAgentPatterns({
+  registryFetcher: mockFetcher,
+});
+
+expect(result.patterns).toEqual(['test/*']);
 ```
 
 ## Registry API

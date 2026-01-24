@@ -4,12 +4,18 @@
  * Provides functions to check if a branch is an agent branch that can
  * bypass worktree requirements, and if headless mode is allowed.
  *
+ * WU-1089: Updated to use resolveAgentPatterns with merge/override/airgapped support.
+ *
  * @module branch-check
  */
 
 import micromatch from 'micromatch';
 import { getConfig } from './lumenflow-config.js';
-import { getAgentPatterns, DEFAULT_AGENT_PATTERNS } from './agent-patterns-registry.js';
+import {
+  resolveAgentPatterns,
+  DEFAULT_AGENT_PATTERNS,
+  type AgentPatternResult,
+} from './agent-patterns-registry.js';
 
 /** Legacy protected branch (always protected regardless of mainBranch setting) */
 const LEGACY_PROTECTED = 'master';
@@ -41,9 +47,11 @@ function getProtectedBranches(): string[] {
 /**
  * Check if branch is an agent branch that can bypass worktree requirements.
  *
- * Uses the central registry for agent patterns (fetched from lumenflow.dev
- * with 7-day cache), falling back to config patterns if specified, then
- * to defaults.
+ * WU-1089: Now uses resolveAgentPatterns with proper merge/override/airgapped support:
+ * - Default: Fetches from registry (lumenflow.dev) with 7-day cache
+ * - Config patterns merge with registry patterns (config first)
+ * - Override patterns (agentBranchPatternsOverride) replace everything
+ * - Airgapped mode (disableAgentPatternRegistry) skips network fetch
  *
  * @param branch - Branch name to check
  * @returns Promise<true> if branch matches agent patterns
@@ -72,18 +80,84 @@ export async function isAgentBranch(branch: string | null | undefined): Promise<
   // LumenFlow lane branches require worktrees (uses config's laneBranchPrefix)
   if (getLaneBranchPattern().test(branch)) return false;
 
-  // Get patterns: prefer config override, then registry, then defaults
-  let patterns: string[];
-  if (config?.git?.agentBranchPatterns?.length > 0) {
-    // Config has explicit patterns - use those
-    patterns = config.git.agentBranchPatterns;
-  } else {
-    // Fetch from registry (with caching and fallback to defaults)
-    patterns = await getAgentPatterns();
-  }
+  // WU-1089: Use resolveAgentPatterns with full merge/override/airgapped support
+  const result = await resolveAgentPatterns({
+    configPatterns: config?.git?.agentBranchPatterns,
+    overridePatterns: config?.git?.agentBranchPatternsOverride,
+    disableAgentPatternRegistry: config?.git?.disableAgentPatternRegistry,
+  });
 
   // Use micromatch for proper glob matching
-  return micromatch.isMatch(branch, patterns);
+  return micromatch.isMatch(branch, result.patterns);
+}
+
+/**
+ * Check if branch is an agent branch with full result details.
+ *
+ * Same as isAgentBranch but returns the full AgentPatternResult
+ * for observability and debugging.
+ *
+ * @param branch - Branch name to check
+ * @returns Promise with match result and pattern resolution details
+ *
+ * @example
+ * ```typescript
+ * const result = await isAgentBranchWithDetails('claude/session-123');
+ * if (result.isMatch) {
+ *   console.log(`Matched via ${result.patternResult.source}`);
+ *   console.log(`Registry fetched: ${result.patternResult.registryFetched}`);
+ * }
+ * ```
+ */
+export async function isAgentBranchWithDetails(
+  branch: string | null | undefined,
+): Promise<{ isMatch: boolean; patternResult: AgentPatternResult }> {
+  // Fail-closed: no branch = protected
+  if (!branch) {
+    return {
+      isMatch: false,
+      patternResult: { patterns: [], source: 'defaults', registryFetched: false },
+    };
+  }
+
+  // Detached HEAD = protected (fail-closed)
+  if (branch === 'HEAD') {
+    return {
+      isMatch: false,
+      patternResult: { patterns: [], source: 'defaults', registryFetched: false },
+    };
+  }
+
+  // Load config
+  const config = getConfig();
+  const protectedBranches = getProtectedBranches();
+
+  // Protected branches are NEVER bypassed
+  if (protectedBranches.includes(branch)) {
+    return {
+      isMatch: false,
+      patternResult: { patterns: [], source: 'defaults', registryFetched: false },
+    };
+  }
+
+  // Lane branches require worktrees
+  if (getLaneBranchPattern().test(branch)) {
+    return {
+      isMatch: false,
+      patternResult: { patterns: [], source: 'defaults', registryFetched: false },
+    };
+  }
+
+  // Resolve patterns with full details
+  const patternResult = await resolveAgentPatterns({
+    configPatterns: config?.git?.agentBranchPatterns,
+    overridePatterns: config?.git?.agentBranchPatternsOverride,
+    disableAgentPatternRegistry: config?.git?.disableAgentPatternRegistry,
+  });
+
+  const isMatch = micromatch.isMatch(branch, patternResult.patterns);
+
+  return { isMatch, patternResult };
 }
 
 /**
@@ -91,6 +165,8 @@ export async function isAgentBranch(branch: string | null | undefined): Promise<
  *
  * Uses only local config patterns or defaults - does NOT fetch from registry.
  * Prefer async isAgentBranch() when possible.
+ *
+ * WU-1089: Updated to respect override and disable flags, but cannot fetch from registry.
  *
  * @param branch - Branch name to check
  * @returns True if branch matches agent patterns
@@ -114,7 +190,13 @@ export function isAgentBranchSync(branch: string | null | undefined): boolean {
   // LumenFlow lane branches require worktrees (uses config's laneBranchPrefix)
   if (getLaneBranchPattern().test(branch)) return false;
 
-  // Use config patterns or defaults (no registry fetch in sync version)
+  // WU-1089: Check override first
+  if (config?.git?.agentBranchPatternsOverride?.length) {
+    return micromatch.isMatch(branch, config.git.agentBranchPatternsOverride);
+  }
+
+  // Use config patterns if provided, otherwise defaults
+  // Note: sync version cannot fetch from registry
   const patterns =
     config?.git?.agentBranchPatterns?.length > 0
       ? config.git.agentBranchPatterns
