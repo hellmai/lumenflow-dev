@@ -2,7 +2,7 @@ id: WU-1090
 title: Context-aware state machine for WU lifecycle commands
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-24
 code_paths:
@@ -88,3 +88,11 @@ acceptance:
   - 95%+ unit test coverage on context, validation, recovery modules
   - CLAUDE.md updated with wu:status and wu:recover commands
   - LUMENFLOW.md updated with validation behavior description
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1090
+claimed_at: 2026-01-24T19:26:37.883Z
+baseline_main_sha: d6b7bce9afbb223ceab66f5b05e7d84a818831d1
+session_id: 575b550d-dc23-4924-ad87-f5848b704a94
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-24T19:26:37.890Z

@@ -24,3 +24,4 @@
 {"type":"complete","wuId":"WU-1088","timestamp":"2026-01-24T16:51:37.611Z"}
 {"type":"claim","wuId":"WU-1089","lane":"Framework: Core","title":"Agent branch patterns: merge mode, override, and airgapped support","timestamp":"2026-01-24T17:35:48.116Z"}
 {"type":"complete","wuId":"WU-1089","timestamp":"2026-01-24T17:45:43.502Z"}
+{"type":"claim","wuId":"WU-1090","lane":"Framework: Core","title":"Context-aware state machine for WU lifecycle commands","timestamp":"2026-01-24T19:26:37.900Z"}
