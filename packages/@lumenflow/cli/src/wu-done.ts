@@ -749,6 +749,40 @@ async function ensureCleanWorkingTree() {
 }
 
 /**
+ * WU-1084: Check for uncommitted changes on main after merge completes.
+ *
+ * This catches cases where pnpm format (or other tooling) touched files
+ * outside the WU's code_paths during worktree work. These changes survive
+ * the merge and would be silently left behind when the worktree is removed.
+ *
+ * @param gitStatus - Output from git status (porcelain format)
+ * @param wuId - The WU ID for error messaging
+ * @returns Object with isDirty flag and optional error message
+ */
+export function checkPostMergeDirtyState(
+  gitStatus: string,
+  wuId: string,
+): { isDirty: boolean; error?: string } {
+  const trimmedStatus = gitStatus.trim();
+
+  if (!trimmedStatus) {
+    return { isDirty: false };
+  }
+
+  const error =
+    `Main branch has uncommitted changes after merge:\n\n${trimmedStatus}\n\n` +
+    `This indicates files were modified outside the WU's code_paths.\n` +
+    `Common cause: pnpm format touched files outside the WU scope.\n\n` +
+    `The worktree has NOT been removed to allow investigation.\n\n` +
+    `Options:\n` +
+    `  1. Review and commit the changes: git add . && git commit -m "format: fix formatting"\n` +
+    `  2. Discard if unwanted: git checkout -- .\n` +
+    `  3. Then re-run: pnpm wu:done --id ${wuId} --skip-worktree-completion`;
+
+  return { isDirty: true, error };
+}
+
+/**
  * Extract completed WU IDs from git log output.
  * @param {string} logOutput - Git log output (one commit per line)
  * @param {string} currentId - Current WU ID to exclude
@@ -2546,6 +2580,14 @@ async function main() {
     }
   } else {
     await ensureNoAutoStagedOrNoop([WU_PATH, STATUS_PATH, BACKLOG_PATH, STAMPS_DIR]);
+  }
+
+  // WU-1084: Check for uncommitted changes on main after merge
+  // This catches cases where pnpm format touched files outside code_paths
+  const postMergeStatus = await getGitForCwd().getStatus();
+  const dirtyCheck = checkPostMergeDirtyState(postMergeStatus, id);
+  if (dirtyCheck.isDirty) {
+    die(dirtyCheck.error);
   }
 
   // Step 6 & 7: Cleanup (remove worktree, delete branch) - WU-1215
