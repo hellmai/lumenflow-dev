@@ -20,12 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — Framework: CLI
+- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
