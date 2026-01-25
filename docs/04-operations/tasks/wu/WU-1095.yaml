@@ -2,7 +2,7 @@ id: WU-1095
 title: 'INIT-002 Phase 3: ADR for hex architecture + migration guide'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - Updated README with DI examples
   - API documentation reflects new interfaces
   - 'Documentation: Publish ADR to Astral Starlight architecture section'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1095
+claimed_at: 2026-01-25T12:41:56.990Z
+baseline_main_sha: 512a788bb9a74a91beb8e109c4a747060f728136
+session_id: 9a627aa4-a900-4d19-ab33-38cfe22a2d0d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T12:41:56.993Z
