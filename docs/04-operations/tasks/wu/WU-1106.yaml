@@ -1,0 +1,39 @@
+id: WU-1106
+title: 'INIT-003 Phase 3b: Migrate backlog:prune command'
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/cli/src/**
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/**
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1106.done
+dependencies: []
+initiative: INIT-003
+phase: 3
+blocked_by:
+  - WU-1101
+  - WU-1102
+spec_refs:
+  - lumenflow://plans/unified-rolling-music.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Migrate backlog-prune.mjs from ExampleApp tools/. Auto-tag stale WUs, archive old completed WUs. Convert to TypeScript, add bin entry, write tests.
+acceptance:
+  - backlog-prune.ts exists in packages/@lumenflow/cli/src/
+  - bin entry added to CLI package.json
+  - Tests written with >80% coverage
