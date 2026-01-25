@@ -2,7 +2,7 @@ id: WU-1091
 title: 'P1: Fix ensureOnMain() blocking all web agent commands'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-25
 code_paths:
@@ -29,7 +29,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'ensureOnMain() in wu-helpers.ts unconditionally throws if branch !== main. The isAgentBranch() detection code exists but is never called. This blocks 14 CLI commands for web agents: wu-create, wu-claim, wu-done, wu-edit, wu-delete, wu-block, wu-unblock, wu-release, release, initiative-create, initiative-edit, initiative-add-wu.'
+description: 'ensureOnMain() in wu-helpers.ts unconditionally throws if branch !== main. The
+  isAgentBranch() detection code exists but is never called. This blocks 14 CLI commands for web
+  agents: wu-create, wu-claim, wu-done, wu-edit, wu-delete, wu-block, wu-unblock, wu-release,
+  release, initiative-create, initiative-edit, initiative-add-wu.'
 acceptance:
   - ensureOnMain() calls isAgentBranchWithDetails() before throwing
   - Agent branches (claude/*, codex/*, copilot/*, cursor/*) bypass main requirement
@@ -37,3 +40,11 @@ acceptance:
   - Protected branches (main/master) remain protected
   - Log message emitted when bypassing for agent branch (observability)
   - Unit tests cover all bypass scenarios
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1091
+claimed_at: 2026-01-25T11:20:03.122Z
+baseline_main_sha: 22dfad14b3a40b959a1c13bb9820cc7a3c105d71
+session_id: e215ef5a-f653-48ac-bdda-5cbd371c320f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T11:20:03.130Z

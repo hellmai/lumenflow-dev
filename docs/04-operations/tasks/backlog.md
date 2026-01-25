@@ -25,6 +25,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — Framework: CLI
+- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
