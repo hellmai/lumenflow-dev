@@ -175,6 +175,18 @@ export type { ILocationResolver, IGitStateReader, IWuStateReader } from './ports
 export type { ICommandRegistry } from './ports/validation.ports.js';
 export type { IRecoveryAnalyzer } from './ports/recovery.ports.js';
 
+// WU-1102: Port interfaces for WU helper modules (hexagonal architecture)
+export type {
+  IWuGitAdapter,
+  IWuStatusCheckResult,
+  IBranchValidationResult,
+  IWuYamlReader,
+  IWuYamlWriter,
+  IWuStateStore,
+  IWuCheckpointManager,
+  IWuPaths,
+} from './ports/wu-helpers.ports.js';
+
 // WU-1093: Domain schemas for context-aware validation (Zod schemas)
 // Note: Types like LocationContext, GitState are already exported from context/index.js
 // so we only export the Zod schemas, not the inferred types.

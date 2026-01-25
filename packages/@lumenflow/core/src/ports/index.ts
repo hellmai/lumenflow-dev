@@ -16,3 +16,4 @@ export * from './recovery.ports.js';
 export * from './metrics-collector.port.js';
 export * from './dashboard-renderer.port.js';
 export * from './core-tools.ports.js';
+export * from './wu-helpers.ports.js';
