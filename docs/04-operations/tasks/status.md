@@ -4,11 +4,10 @@ _Last updated: 2026-01-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml)
 
 ## Completed
 
-- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -25,3 +24,4 @@ _Last updated: 2026-01-25_
 - [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml) — 2026-01-24
 - [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — 2026-01-25
 - [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — 2026-01-25
+- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — 2026-01-25
