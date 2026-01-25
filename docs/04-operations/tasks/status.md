@@ -5,10 +5,10 @@ _Last updated: 2026-01-25_
 ## In Progress
 
 - [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml)
-- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml)
 
 ## Completed
 
+- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23

@@ -25,7 +25,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — Framework: CLI
-- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -47,3 +46,4 @@ sections:
 - [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml)
 - [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml)
 - [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml)
+- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml)

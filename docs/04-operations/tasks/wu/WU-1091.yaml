@@ -2,7 +2,7 @@ id: WU-1091
 title: 'P1: Fix ensureOnMain() blocking all web agent commands'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-25
 code_paths:
@@ -48,3 +48,5 @@ session_id: e215ef5a-f653-48ac-bdda-5cbd371c320f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T11:20:03.130Z
+locked: true
+completed_at: 2026-01-25T11:26:37.618Z
