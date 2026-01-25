@@ -19,12 +19,22 @@ const { LOCATION_TYPES, COMMANDS, SEVERITY } = CONTEXT_VALIDATION;
 
 /**
  * Predicate: Check if worktree is clean (no uncommitted changes).
+ *
+ * WU-1092: Checks worktreeGit.isDirty when available (running from main),
+ * falls back to git.isDirty otherwise (running from worktree itself).
  */
 const worktreeCleanPredicate: CommandPredicate = {
   id: 'worktree-clean',
   description: 'Worktree must not have uncommitted changes',
   severity: SEVERITY.ERROR,
-  check: (context: WuContext) => !context.git.isDirty,
+  check: (context: WuContext) => {
+    // WU-1092: Prefer worktreeGit when available (running wu:done from main)
+    if (context.worktreeGit !== undefined) {
+      return !context.worktreeGit.isDirty;
+    }
+    // Fallback: check current git state (running from worktree itself)
+    return !context.git.isDirty;
+  },
   getFixMessage: (context: WuContext) => {
     const worktreePath = context.location.worktreeName
       ? `worktrees/${context.location.worktreeName}`
