@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
