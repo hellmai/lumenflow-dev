@@ -24,7 +24,7 @@ All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).
 | Memory Layer | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:create`](#memcreate), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage) |
 | Metrics | [`metrics:snapshot`](#metricssnapshot) |
 | Orchestration | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor) |
-| Other | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite) |
+| Other | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`init:plan`](#initplan) |
 | Quality Gates | [`gates`](#gates) |
 | Setup | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:release`](#lumenflowrelease) |
 | Sub-Agents | [`spawn:list`](#spawnlist) |
@@ -371,6 +371,20 @@ File Write CLI Tool
 ```bash
 pnpm file:write
 ```
+
+### init:plan
+
+Link a plan file to an initiative
+
+```bash
+pnpm init:plan
+```
+
+**Options:**
+
+| Flag | Description | Required |
+|------|-------------|----------|
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes |
 
 ## Quality Gates
 
