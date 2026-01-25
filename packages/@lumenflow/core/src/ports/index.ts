@@ -2,8 +2,10 @@
  * Ports Index
  *
  * WU-1093: INIT-002 Phase 1 - Define ports and domain schemas
+ * WU-1101: INIT-003 Phase 2a - Add core tools ports
  *
- * Re-exports all port interfaces for the context-aware validation system.
+ * Re-exports all port interfaces for the context-aware validation system
+ * and core tools (tool-runner, worktree-guard, scope-checker).
  *
  * @module ports
  */
@@ -13,3 +15,4 @@ export * from './validation.ports.js';
 export * from './recovery.ports.js';
 export * from './metrics-collector.port.js';
 export * from './dashboard-renderer.port.js';
+export * from './core-tools.ports.js';
