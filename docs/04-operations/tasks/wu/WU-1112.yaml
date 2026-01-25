@@ -67,10 +67,7 @@ acceptance:
   - All bin entries added
   - '>80% coverage on migrated code'
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1112
-claimed_at: 2026-01-25T23:42:41.361Z
 baseline_main_sha: 70ed93111831940577493b5f599e09984acd0c68
-session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T23:42:41.364Z
