@@ -24,8 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — Framework: Core
-- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — Content: Documentation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -52,3 +51,4 @@ sections:
 - [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml)
 - [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml)
 - [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml)
+- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml)
