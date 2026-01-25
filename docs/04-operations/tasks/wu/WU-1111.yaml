@@ -2,7 +2,7 @@ id: WU-1111
 title: 'INIT-003 Phase 5b: Migrate guards & validation (7 tools)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -33,7 +33,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate guard-worktree-commit, guard-locked, validate.mjs, validate-agent-skills, validate-agent-sync, validate-backlog-sync, validate-skills-spec from . Most have existing tests.
+description: Migrate guard-worktree-commit, guard-locked, validate.mjs, validate-agent-skills,
+  validate-agent-sync, validate-backlog-sync, validate-skills-spec from . Most have
+  existing tests.
 acceptance:
   - guard-worktree-commit.ts exists
   - guard-locked.ts exists with tests
@@ -44,3 +46,11 @@ acceptance:
   - validate-skills-spec.ts exists with tests
   - All bin entries added
   - '>80% coverage'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1111
+claimed_at: 2026-01-25T23:44:49.274Z
+baseline_main_sha: 89fe7f5c96a48b20bcd1b7c7402a4995890e3845
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:44:49.282Z
