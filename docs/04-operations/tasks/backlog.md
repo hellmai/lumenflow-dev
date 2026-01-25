@@ -25,7 +25,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
-- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -58,3 +57,4 @@ sections:
 - [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml)
 - [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml)
 - [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml)
+- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml)

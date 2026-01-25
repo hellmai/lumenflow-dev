@@ -2,7 +2,7 @@ id: WU-1106
 title: 'INIT-003 Phase 3b: Migrate backlog:prune command'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -49,3 +49,5 @@ session_id: 82929060-b714-4977-a09a-502153897b4b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T21:50:55.045Z
+locked: true
+completed_at: 2026-01-25T22:04:39.071Z

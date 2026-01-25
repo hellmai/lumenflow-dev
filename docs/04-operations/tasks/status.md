@@ -5,10 +5,10 @@ _Last updated: 2026-01-25_
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
-- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml)
 
 ## Completed
 
+- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml) — 2026-01-25
 - [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from ._legacy to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
