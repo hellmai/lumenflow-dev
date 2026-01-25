@@ -1,12 +1,37 @@
 id: INIT-003
 slug: patientpath-tools-migration
 title: PatientPath Tools Migration to @lumenflow/cli
-description: ''
-status: draft
+description: Migrate 23+ generic tools from PatientPath tools/ to @lumenflow/cli. Follow hex
+  architecture from INIT-002. Sync docs at each phase.
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-25
 target_date: 2026-03-01
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Documentation Sync
+    status: pending
+  - id: 2
+    title: Library Migration
+    status: pending
+  - id: 3
+    title: Priority Tools (init:plan)
+    status: pending
+  - id: 4
+    title: File & Git Operations
+    status: pending
+  - id: 5
+    title: Metrics & Validation
+    status: pending
+  - id: 6
+    title: Remaining Tools
+    status: pending
+  - id: 7
+    title: Integration & Publish
+    status: pending
+success_metrics:
+  - All 23 Tier 1 tools migrated
+  - Hex architecture compliance
+  - pnpm docs:generate runs without drift
 labels: []
