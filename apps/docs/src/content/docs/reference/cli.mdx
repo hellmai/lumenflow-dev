@@ -24,9 +24,9 @@ All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).
 | Memory Layer | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:create`](#memcreate), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage) |
 | Metrics | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot) |
 | Orchestration | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor) |
-| Other | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`init:plan`](#initplan) |
+| Other | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`guard:locked`](#guardlocked), [`guard:worktree:commit`](#guardworktreecommit), [`init:plan`](#initplan), [`validate`](#validate), [`validate:agent:skills`](#validateagentskills), [`validate:agent:sync`](#validateagentsync), [`validate:backlog:sync`](#validatebacklogsync), [`validate:skills:spec`](#validateskillsspec) |
 | Quality Gates | [`gates`](#gates) |
-| Setup | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease) |
+| Setup | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:validate`](#lumenflowvalidate) |
 | Sub-Agents | [`spawn:list`](#spawnlist) |
 | Work Units | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate) |
 
@@ -380,6 +380,22 @@ File Write CLI Tool
 pnpm file:write
 ```
 
+### guard:locked
+
+
+
+```bash
+pnpm guard:locked
+```
+
+### guard:worktree:commit
+
+
+
+```bash
+pnpm guard:worktree:commit
+```
+
 ### init:plan
 
 Link a plan file to an initiative
@@ -393,6 +409,46 @@ pnpm init:plan
 | Flag | Description | Required |
 |------|-------------|----------|
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes |
+
+### validate
+
+
+
+```bash
+pnpm validate
+```
+
+### validate:agent:skills
+
+
+
+```bash
+pnpm validate:agent:skills
+```
+
+### validate:agent:sync
+
+
+
+```bash
+pnpm validate:agent:sync
+```
+
+### validate:backlog:sync
+
+
+
+```bash
+pnpm validate:backlog:sync
+```
+
+### validate:skills:spec
+
+
+
+```bash
+pnpm validate:skills:spec
+```
 
 ## Quality Gates
 
@@ -444,6 +500,14 @@ Release Command
 
 ```bash
 pnpm lumenflow:release
+```
+
+### lumenflow:validate
+
+
+
+```bash
+pnpm lumenflow:validate
 ```
 
 ## Sub-Agents
