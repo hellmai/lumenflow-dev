@@ -31,3 +31,4 @@
 {"type":"complete","wuId":"WU-1091","timestamp":"2026-01-25T11:26:37.636Z"}
 {"type":"complete","wuId":"WU-1097","timestamp":"2026-01-25T11:32:54.766Z"}
 {"type":"claim","wuId":"WU-1092","lane":"Framework: Core","title":"P2: Fix worktreeCleanPredicate checking wrong git state","timestamp":"2026-01-25T11:54:50.080Z"}
+{"type":"complete","wuId":"WU-1092","timestamp":"2026-01-25T12:01:47.293Z"}

@@ -2,7 +2,7 @@ id: WU-1092
 title: 'P2: Fix worktreeCleanPredicate checking wrong git state'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -52,3 +52,5 @@ session_id: 995e1325-1c1f-4545-afdd-9e6f1a729c47
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T11:54:50.062Z
+locked: true
+completed_at: 2026-01-25T12:01:47.277Z
