@@ -2,7 +2,7 @@ id: WU-1110
 title: 'INIT-003 Phase 5a: Migrate metrics commands'
 lane: 'Framework: Metrics'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -33,9 +33,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate metrics/cli.mjs and all metrics/application/*.mjs modules from PatientPath. Includes DORA metrics, lane health, flow state calculations. Has existing tests.
+description: Migrate metrics/cli.mjs and all metrics/application/*.mjs modules from PatientPath.
+  Includes DORA metrics, lane health, flow state calculations. Has existing tests.
 acceptance:
   - metrics-cli.ts exists with subcommands (lanes, dora, flow)
   - All metrics/application modules migrated
   - Existing tests ported to Vitest
   - '>80% coverage'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-metrics-wu-1110
+claimed_at: 2026-01-25T23:22:19.822Z
+baseline_main_sha: a47cb0d2a6fbc2d17b93dc6bba755261838bead8
+session_id: b0938c18-3b04-4770-bb9e-cbe2b2ed2d42
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:22:19.828Z
