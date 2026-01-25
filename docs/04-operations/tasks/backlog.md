@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
