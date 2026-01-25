@@ -6,11 +6,14 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/backlog-prune.ts
+  - packages/@lumenflow/cli/package.json
+test_paths:
+  - packages/@lumenflow/cli/src/__tests__/backlog-prune.test.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/**
+    - packages/@lumenflow/cli/src/__tests__/backlog-prune.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1106.done
