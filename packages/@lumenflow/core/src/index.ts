@@ -187,6 +187,20 @@ export type {
   IWuPaths,
 } from './ports/wu-helpers.ports.js';
 
+// WU-1103: Port interfaces for git adapter and PHI scanner (hexagonal architecture)
+export type {
+  IGitAdapter,
+  IPhiScanner,
+  PHIMatch,
+  PHIScanResult,
+  PHIScanOptions,
+  MergeOptions,
+  MergeResult,
+  PushOptions,
+  DeleteBranchOptions,
+  WorktreeRemoveOptions,
+} from './ports/git-validator.ports.js';
+
 // WU-1093: Domain schemas for context-aware validation (Zod schemas)
 // Note: Types like LocationContext, GitState are already exported from context/index.js
 // so we only export the Zod schemas, not the inferred types.
