@@ -35,5 +35,4 @@ success_metrics:
   - Hex architecture compliance
   - pnpm docs:generate runs without drift
 labels: []
-wus:
-  - WU-1099
+wus: []
