@@ -5,6 +5,7 @@ _Last updated: 2026-01-25_
 ## In Progress
 
 - [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml)
+- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml)
 
 ## Completed
 
