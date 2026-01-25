@@ -34,6 +34,7 @@ export default defineConfig({
             { label: 'Lanes', slug: 'concepts/lanes' },
             { label: 'Gates', slug: 'concepts/gates' },
             { label: 'Memory Layer', slug: 'concepts/memory' },
+            { label: 'Hexagonal Architecture', slug: 'concepts/architecture' },
           ],
         },
         {
@@ -53,6 +54,7 @@ export default defineConfig({
             { label: 'CLI Commands', slug: 'reference/cli' },
             { label: 'Configuration', slug: 'reference/config' },
             { label: 'WU Schema', slug: 'reference/wu-schema' },
+            { label: 'Port Interfaces', slug: 'reference/ports' },
           ],
         },
       ],

@@ -8,6 +8,45 @@ Core WU lifecycle tools for the LumenFlow workflow framework.
 pnpm add @lumenflow/core
 ```
 
+## Architecture
+
+This package follows **hexagonal architecture** (ports and adapters) to enable dependency injection and testing.
+
+```
++---------------------------+
+|        Use Cases          |  Application layer
+|  ComputeContextUseCase    |
+|  ValidateCommandUseCase   |
+|  AnalyzeRecoveryUseCase   |
++------------+--------------+
+             |
+             | depends on
+             v
++---------------------------+
+|      Port Interfaces      |  Abstractions
+|    ILocationResolver      |
+|    IGitStateReader        |
+|    IWuStateReader         |
++------------+--------------+
+             ^
+             | implements
+             |
++---------------------------+
+|     Adapter Classes       |  Infrastructure
+|  SimpleGitLocationAdapter |
+|  FileSystemWuStateAdapter |
++---------------------------+
+```
+
+**Key Benefits:**
+
+- **Testability**: Inject mock adapters for deterministic testing
+- **Extensibility**: Replace adapters for different environments (CI/CD, testing)
+- **Maintainability**: Clear separation of concerns
+- **Backwards Compatible**: Original functions still work unchanged
+
+See [ADR-001: Hexagonal Architecture](../../docs/04-operations/adr/ADR-001-hexagonal-architecture.md) for the full decision record.
+
 ## Usage
 
 ### Git Operations
@@ -329,13 +368,118 @@ if (result.success) {
 }
 ```
 
+## Testing with Custom Adapters
+
+The hexagonal architecture makes testing straightforward. Inject mock adapters to create deterministic tests without file system or git dependencies.
+
+### Example: Testing with Mock Adapters
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { createComputeContextUseCase } from '@lumenflow/core';
+import type { ILocationResolver, IGitStateReader, IWuStateReader } from '@lumenflow/core';
+
+describe('ComputeContextUseCase', () => {
+  it('should detect worktree context', async () => {
+    // Create mock adapters
+    const mockLocation: ILocationResolver = {
+      resolveLocation: async () => ({
+        type: 'worktree',
+        cwd: '/test/worktrees/ops-wu-1095',
+        gitRoot: '/test/worktrees/ops-wu-1095',
+        mainCheckout: '/test',
+        worktreeName: 'ops-wu-1095',
+        worktreeWuId: 'WU-1095',
+      }),
+    };
+
+    const mockGitState: IGitStateReader = {
+      readGitState: async () => ({
+        branch: 'lane/operations/wu-1095',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 1,
+        behind: 0,
+        tracking: 'origin/lane/operations/wu-1095',
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      }),
+    };
+
+    const mockWuState: IWuStateReader = {
+      readWuState: async () => ({
+        id: 'WU-1095',
+        status: 'in_progress',
+        lane: 'Content: Documentation',
+        title: 'Test WU',
+        yamlPath: '/test/docs/04-operations/tasks/wu/WU-1095.yaml',
+        isConsistent: true,
+        inconsistencyReason: null,
+      }),
+    };
+
+    // Create use case with mocks
+    const useCase = createComputeContextUseCase({
+      locationResolver: mockLocation,
+      gitStateReader: mockGitState,
+      wuStateReader: mockWuState,
+    });
+
+    // Execute
+    const context = await useCase.execute({ wuId: 'WU-1095' });
+
+    // Assert - fully deterministic
+    expect(context.location.type).toBe('worktree');
+    expect(context.location.worktreeWuId).toBe('WU-1095');
+    expect(context.wu?.status).toBe('in_progress');
+  });
+});
+```
+
+### Example: CI/CD Custom Adapter
+
+```typescript
+import type { ILocationResolver, LocationContext } from '@lumenflow/core';
+import { createComputeContextUseCase } from '@lumenflow/core';
+
+// CI environments always run in main checkout
+class CILocationResolver implements ILocationResolver {
+  constructor(private readonly repoPath: string) {}
+
+  async resolveLocation(cwd?: string): Promise<LocationContext> {
+    return {
+      type: 'main',
+      cwd: cwd || this.repoPath,
+      gitRoot: this.repoPath,
+      mainCheckout: this.repoPath,
+      worktreeName: null,
+      worktreeWuId: null,
+    };
+  }
+}
+
+// Usage in CI
+const useCase = createComputeContextUseCase({
+  locationResolver: new CILocationResolver('/github/workspace'),
+});
+```
+
 ## Features
 
 - **Type-safe**: Full TypeScript support with detailed type definitions
-- **Dependency injection**: Easy to test with mock git instances
+- **Dependency injection**: Easy to test with mock adapters
 - **Hexagonal architecture**: Port interfaces for external injection
 - **Safe worktree cleanup**: Handles orphan directories and corrupted metadata
 - **Modern**: Node 22+, ESM-only, strict TypeScript
+- **Zod schemas**: Runtime validation for all domain types
+
+## Further Reading
+
+- [ADR-001: Hexagonal Architecture](../../docs/04-operations/adr/ADR-001-hexagonal-architecture.md)
+- [Migration Guide](../../docs/04-operations/adr/migration-guide-hexagonal-architecture.md)
+- [Port Interfaces Reference](https://lumenflow.dev/reference/ports/)
 
 ## Status
 
@@ -343,6 +487,8 @@ This package is under active development. Current features:
 
 - Git operations (GitAdapter)
 - Worktree management (WorktreeManager)
+- Context-aware validation (WU-1090)
+- Hexagonal architecture with DI (INIT-002)
 - Modern tooling (Node 22, ESLint 9, TypeScript 5.7, Vitest 4)
 - Security and code quality linting
 
