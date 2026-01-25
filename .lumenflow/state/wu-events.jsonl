@@ -47,3 +47,4 @@
 {"type":"complete","wuId":"WU-1101","timestamp":"2026-01-25T20:41:45.026Z"}
 {"type":"claim","wuId":"WU-1102","lane":"Framework: Core","title":"INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core","timestamp":"2026-01-25T20:58:36.142Z"}
 {"type":"complete","wuId":"WU-1102","timestamp":"2026-01-25T21:17:08.832Z"}
+{"type":"claim","wuId":"WU-1103","lane":"Framework: Core","title":"INIT-003 Phase 2c: Migrate git & validator modules","timestamp":"2026-01-25T21:50:07.671Z"}
