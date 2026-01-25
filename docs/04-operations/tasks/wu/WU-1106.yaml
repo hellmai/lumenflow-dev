@@ -2,7 +2,7 @@ id: WU-1106
 title: 'INIT-003 Phase 3b: Migrate backlog:prune command'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -32,8 +32,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate backlog-prune.mjs from ExampleApp tools/. Auto-tag stale WUs, archive old completed WUs. Convert to TypeScript, add bin entry, write tests.
+description: Migrate backlog-prune.mjs from ExampleApp tools/. Auto-tag stale WUs, archive old
+  completed WUs. Convert to TypeScript, add bin entry, write tests.
 acceptance:
   - backlog-prune.ts exists in packages/@lumenflow/cli/src/
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1106
+claimed_at: 2026-01-25T21:50:55.040Z
+baseline_main_sha: a5eeb165141dc7bc1ddebf40e832db4cc4b05912
+session_id: 82929060-b714-4977-a09a-502153897b4b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T21:50:55.045Z
