@@ -223,4 +223,120 @@ describe('computeContext', () => {
       expect(result.context.wu?.inconsistencyReason).toContain('YAML says ready');
     });
   });
+
+  /**
+   * WU-1092: Tests for worktreeGit field population.
+   *
+   * When running wu:done from main checkout, we need to check the worktree's
+   * git state, not main's git state. These tests verify that worktreeGit is
+   * computed when applicable.
+   */
+  describe('worktreeGit population (WU-1092)', () => {
+    it('populates worktreeGit when running from main with in_progress WU that has worktree', async () => {
+      // Arrange: Running from main, WU is in_progress (implying worktree exists)
+      const mainLocation = {
+        type: LOCATION_TYPES.MAIN,
+        cwd: '/repo',
+        gitRoot: '/repo',
+        mainCheckout: '/repo',
+        worktreeName: null,
+        worktreeWuId: null,
+      };
+      vi.mocked(resolveLocation).mockResolvedValue(mainLocation);
+
+      // WU is in_progress with a lane
+      const inProgressWu = {
+        ...mockWuState,
+        status: 'in_progress',
+        lane: 'Framework: Core',
+      };
+      vi.mocked(readWuState).mockResolvedValue(inProgressWu);
+
+      // Main is clean, but worktree is dirty
+      const mainGitState = { ...mockGitState, isDirty: false };
+      const worktreeGitState = { ...mockGitState, isDirty: true, modifiedFiles: ['src/file.ts'] };
+
+      // readGitState is called twice: once for cwd (main), once for worktree
+      vi.mocked(readGitState)
+        .mockResolvedValueOnce(mainGitState) // First call: main checkout
+        .mockResolvedValueOnce(worktreeGitState); // Second call: worktree
+
+      // Act
+      const result = await computeContext({ wuId: 'WU-1090' });
+
+      // Assert
+      expect(result.context.git).toEqual(mainGitState);
+      expect(result.context.worktreeGit).toBeDefined();
+      expect(result.context.worktreeGit?.isDirty).toBe(true);
+      expect(result.context.worktreeGit?.modifiedFiles).toContain('src/file.ts');
+    });
+
+    it('does NOT populate worktreeGit when running from worktree', async () => {
+      // Arrange: Running from worktree
+      const worktreeLocation = {
+        type: LOCATION_TYPES.WORKTREE,
+        cwd: '/repo/worktrees/framework-core-wu-1090',
+        gitRoot: '/repo/worktrees/framework-core-wu-1090',
+        mainCheckout: '/repo',
+        worktreeName: 'framework-core-wu-1090',
+        worktreeWuId: 'WU-1090',
+      };
+      vi.mocked(resolveLocation).mockResolvedValue(worktreeLocation);
+
+      // Act
+      const result = await computeContext();
+
+      // Assert: worktreeGit should not be populated when already in worktree
+      expect(result.context.worktreeGit).toBeUndefined();
+    });
+
+    it('does NOT populate worktreeGit when WU is not in_progress', async () => {
+      // Arrange: WU is ready (no worktree exists yet)
+      const readyWu = {
+        ...mockWuState,
+        status: 'ready',
+      };
+      vi.mocked(readWuState).mockResolvedValue(readyWu);
+
+      // Act
+      const result = await computeContext({ wuId: 'WU-1090' });
+
+      // Assert: worktreeGit should not be populated for non-active WUs
+      expect(result.context.worktreeGit).toBeUndefined();
+    });
+
+    it('does NOT populate worktreeGit when no WU specified', async () => {
+      // Act
+      const result = await computeContext();
+
+      // Assert
+      expect(result.context.worktreeGit).toBeUndefined();
+    });
+
+    it('handles worktree path not existing gracefully', async () => {
+      // Arrange: WU is in_progress but worktree path doesn't exist
+      const inProgressWu = {
+        ...mockWuState,
+        status: 'in_progress',
+        lane: 'Framework: Core',
+      };
+      vi.mocked(readWuState).mockResolvedValue(inProgressWu);
+
+      // readGitState throws for worktree (path doesn't exist)
+      vi.mocked(readGitState)
+        .mockResolvedValueOnce(mockGitState) // Main checkout
+        .mockResolvedValueOnce({
+          // Worktree - returns error state
+          ...mockGitState,
+          hasError: true,
+          errorMessage: 'Not a git repository',
+        });
+
+      // Act
+      const result = await computeContext({ wuId: 'WU-1090' });
+
+      // Assert: worktreeGit should show error state, not throw
+      expect(result.context.worktreeGit?.hasError).toBe(true);
+    });
+  });
 });

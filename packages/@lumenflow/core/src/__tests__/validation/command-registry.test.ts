@@ -850,3 +850,141 @@ describe('predicate getFixMessage', () => {
     expect(fixMessage?.toLowerCase()).toContain('inconsistent');
   });
 });
+
+/**
+ * WU-1092: Tests for worktreeCleanPredicate checking worktreeGit.
+ *
+ * The worktreeCleanPredicate must check context.worktreeGit.isDirty when available,
+ * NOT context.git.isDirty. When running wu:done from main, context.git reflects
+ * main's state while context.worktreeGit reflects the worktree's state.
+ */
+describe('worktreeCleanPredicate checks worktreeGit (WU-1092)', () => {
+  const baseGitState = {
+    branch: 'main',
+    isDetached: false,
+    isDirty: false,
+    hasStaged: false,
+    ahead: 0,
+    behind: 0,
+    tracking: null,
+    modifiedFiles: [],
+    hasError: false,
+    errorMessage: null,
+  };
+
+  const baseContext: WuContext = {
+    location: {
+      type: LOCATION_TYPES.MAIN,
+      cwd: '/repo',
+      gitRoot: '/repo',
+      mainCheckout: '/repo',
+      worktreeName: null,
+      worktreeWuId: null,
+    },
+    git: baseGitState,
+    wu: {
+      id: 'WU-1092',
+      status: 'in_progress',
+      lane: 'Framework: Core',
+      title: 'Test',
+      yamlPath: '/repo/wu.yaml',
+      isConsistent: true,
+      inconsistencyReason: null,
+    },
+    session: { isActive: true, sessionId: 'session-123' },
+  };
+
+  it('fails when worktreeGit is dirty even if main git is clean', () => {
+    const def = getCommandDefinition(COMMANDS.WU_DONE);
+    const cleanPredicate = def?.predicates?.find((p) => p.id === 'worktree-clean');
+    expect(cleanPredicate).toBeDefined();
+
+    // Main is clean, but worktree is dirty
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: false },
+      worktreeGit: { ...baseGitState, isDirty: true, modifiedFiles: ['src/dirty.ts'] },
+    };
+
+    // Predicate should FAIL (return false) because worktree is dirty
+    expect(cleanPredicate?.check(context)).toBe(false);
+  });
+
+  it('passes when worktreeGit is clean even if main git happens to be dirty', () => {
+    const def = getCommandDefinition(COMMANDS.WU_DONE);
+    const cleanPredicate = def?.predicates?.find((p) => p.id === 'worktree-clean');
+    expect(cleanPredicate).toBeDefined();
+
+    // Main has some unrelated changes, but worktree is clean
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: true, modifiedFiles: ['unrelated.md'] },
+      worktreeGit: { ...baseGitState, isDirty: false },
+    };
+
+    // Predicate should PASS (return true) because worktree is clean
+    expect(cleanPredicate?.check(context)).toBe(true);
+  });
+
+  it('falls back to git.isDirty when worktreeGit is undefined', () => {
+    const def = getCommandDefinition(COMMANDS.WU_DONE);
+    const cleanPredicate = def?.predicates?.find((p) => p.id === 'worktree-clean');
+    expect(cleanPredicate).toBeDefined();
+
+    // No worktreeGit (e.g., running from worktree itself)
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: true },
+      // worktreeGit: undefined (not set)
+    };
+
+    // Should fall back to checking git.isDirty
+    expect(cleanPredicate?.check(context)).toBe(false);
+  });
+
+  it('passes when both git and worktreeGit are clean', () => {
+    const def = getCommandDefinition(COMMANDS.WU_DONE);
+    const cleanPredicate = def?.predicates?.find((p) => p.id === 'worktree-clean');
+    expect(cleanPredicate).toBeDefined();
+
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: false },
+      worktreeGit: { ...baseGitState, isDirty: false },
+    };
+
+    expect(cleanPredicate?.check(context)).toBe(true);
+  });
+
+  it('excludes wu:done from valid commands when worktreeGit is dirty', () => {
+    // Context: main is clean, worktree is dirty
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: false, ahead: 1 }, // ahead=1 to satisfy has-commits
+      worktreeGit: { ...baseGitState, isDirty: true },
+    };
+
+    const validCommands = getValidCommandsForContext(context);
+    const commandNames = validCommands.map((c) => c.name);
+
+    // wu:done should NOT be valid because worktree is dirty
+    expect(commandNames).not.toContain(COMMANDS.WU_DONE);
+    // wu:block should still be valid
+    expect(commandNames).toContain(COMMANDS.WU_BLOCK);
+  });
+
+  it('includes wu:done in valid commands when worktreeGit is clean', () => {
+    // Context: both main and worktree are clean
+    const context: WuContext = {
+      ...baseContext,
+      git: { ...baseGitState, isDirty: false, ahead: 1 }, // ahead=1 to satisfy has-commits
+      worktreeGit: { ...baseGitState, isDirty: false },
+    };
+
+    const validCommands = getValidCommandsForContext(context);
+    const commandNames = validCommands.map((c) => c.name);
+
+    // wu:done SHOULD be valid because worktree is clean
+    expect(commandNames).toContain(COMMANDS.WU_DONE);
+  });
+});

@@ -57,6 +57,18 @@ export interface WuContext {
   wu: WuState | null;
   /** Session state */
   session: SessionState;
+  /**
+   * Git state of the WU's worktree (WU-1092).
+   *
+   * When running wu:done from main checkout, we need to check the worktree's
+   * git state, not main's. This field is populated when:
+   * - Running from main checkout (location.type === 'main')
+   * - A WU is specified (wu !== null)
+   * - WU has an active worktree (status === 'in_progress')
+   *
+   * If undefined, predicates should fall back to checking `git.isDirty`.
+   */
+  worktreeGit?: GitState;
 }
 
 /**
