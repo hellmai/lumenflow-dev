@@ -7,6 +7,7 @@ _Last updated: 2026-01-25_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml)
 - [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml)
+- [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml)
 
 ## Completed
 
