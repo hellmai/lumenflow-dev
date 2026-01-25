@@ -35,3 +35,4 @@
 {"type":"claim","wuId":"WU-1093","lane":"Framework: Core","title":"INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery","timestamp":"2026-01-25T12:05:23.120Z"}
 {"type":"complete","wuId":"WU-1093","timestamp":"2026-01-25T12:24:15.500Z"}
 {"type":"claim","wuId":"WU-1094","lane":"Framework: Core","title":"INIT-002 Phase 2: Implement adapters and dependency injection","timestamp":"2026-01-25T12:28:35.731Z"}
+{"type":"complete","wuId":"WU-1094","timestamp":"2026-01-25T12:38:53.355Z"}
