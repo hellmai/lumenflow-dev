@@ -68,6 +68,7 @@
     "initiative-list": "./dist/initiative-list.js",
     "initiative-status": "./dist/initiative-status.js",
     "initiative-add-wu": "./dist/initiative-add-wu.js",
+    "init-plan": "./dist/init-plan.js",
     "agent-session": "./dist/agent-session.js",
     "agent-session-end": "./dist/agent-session-end.js",
     "agent-log-issue": "./dist/agent-log-issue.js",
