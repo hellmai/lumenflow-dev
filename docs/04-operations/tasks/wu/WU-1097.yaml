@@ -2,7 +2,7 @@ id: WU-1097
 title: 'P3: Fix shell escaping in wu-recover CLI'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-25
 code_paths:
@@ -30,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu-recover.ts uses JSON.stringify() for shell path escaping at lines 179, 225, 237, 278. JSON escaping is not shell escaping - paths with spaces or special characters will break. Should use proper shell-escape library or git argument array syntax.
+description: wu-recover.ts uses JSON.stringify() for shell path escaping at lines 179, 225, 237,
+  278. JSON escaping is not shell escaping - paths with spaces or special characters will break.
+  Should use proper shell-escape library or git argument array syntax.
 acceptance:
   - Shell escaping in wu-recover.ts uses shell-escape library or git argument array syntax
   - Paths with spaces handled correctly
   - Unit tests verify special character handling
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1097
+claimed_at: 2026-01-25T11:19:33.608Z
+baseline_main_sha: 89ef06c0871c01b303b694138627b4d27f0ed6b6
+session_id: e215ef5a-f653-48ac-bdda-5cbd371c320f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T11:19:33.612Z
