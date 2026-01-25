@@ -28,12 +28,14 @@ notes: |
   KNOWN ISSUE: lumenflow:upgrade modifies package.json on main via micro-worktree,
   but subsequent pnpm install is blocked by worktree hooks.
 
-  Options to address:
-  A) Add LUMENFLOW_UPGRADE=1 env var that whitelists pnpm install during upgrade
-  B) Run install inside the micro-worktree before merge
-  C) Document as two-phase: upgrade commits, user runs install with LUMENFLOW_FORCE
+  SOLUTION: Use worktree pattern consistent with wu:* tooling:
+  1. Create temp upgrade worktree (like wu:claim creates worktrees)
+  2. Update package.json in worktree
+  3. Run pnpm install in worktree (no hooks blocking - worktrees allow this)
+  4. Commit package.json + pnpm-lock.yaml
+  5. Merge to main via micro-worktree pattern (like wu:done)
 
-  Recommended: Option A - detect upgrade context and whitelist install.
+  This maintains worktree discipline consistency across all tooling.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -48,7 +50,7 @@ acceptance:
   - session-coordinator.ts exists
   - rotate-progress.ts exists
   - lumenflow-upgrade.ts exists with tests
-  - lumenflow-upgrade handles pnpm install workflow (no blocked-on-main issue)
+  - lumenflow-upgrade uses worktree pattern (install runs in worktree, not main)
   - trace-gen.ts exists
   - All bin entries added
   - '>80% coverage on migrated code'
