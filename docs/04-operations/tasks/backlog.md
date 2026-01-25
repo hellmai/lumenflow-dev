@@ -26,6 +26,7 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml) — Framework: Core
+- [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
