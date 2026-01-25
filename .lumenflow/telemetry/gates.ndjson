@@ -85,3 +85,9 @@
 {"timestamp":"2026-01-25T11:23:59.237Z","wu_id":"WU-1091","lane":"Framework-core","gate_name":"coverage","passed":true,"duration_ms":1}
 {"timestamp":"2026-01-25T11:24:45.828Z","wu_id":"WU-1091","lane":"Framework-core","gate_name":"invariants","passed":true,"duration_ms":0}
 {"timestamp":"2026-01-25T11:24:56.743Z","wu_id":"WU-1091","lane":"Framework-core","gate_name":"format:check","passed":false,"duration_ms":10915}
+{"timestamp":"2026-01-25T12:17:25.326Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"invariants","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T12:17:36.103Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"format:check","passed":false,"duration_ms":10777}
+{"timestamp":"2026-01-25T12:18:01.329Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"invariants","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T12:18:11.933Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"format:check","passed":true,"duration_ms":10604}
+{"timestamp":"2026-01-25T12:18:11.934Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"lint","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T12:18:16.975Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"typecheck","passed":false,"duration_ms":5041}

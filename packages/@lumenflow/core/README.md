@@ -152,10 +152,116 @@ Protected branches (main, master, lane/\*) are **never** bypassed, regardless of
 | `list()`                 | List all worktrees              |
 | `exists(path)`           | Check if worktree exists        |
 
+### Context-Aware Validation Ports (WU-1093)
+
+Port interfaces for context-aware validation system. These abstractions allow external users to inject custom implementations.
+
+```typescript
+import type {
+  ILocationResolver,
+  IGitStateReader,
+  IWuStateReader,
+  ICommandRegistry,
+  IRecoveryAnalyzer,
+} from '@lumenflow/core';
+
+// Default implementations
+import {
+  resolveLocation,
+  readGitState,
+  readWuState,
+  getCommandDefinition,
+  getValidCommandsForContext,
+  COMMAND_REGISTRY,
+  analyzeRecovery,
+} from '@lumenflow/core';
+
+// Create a location resolver adapter using the default implementation
+const locationResolver: ILocationResolver = {
+  resolveLocation,
+};
+
+// Custom implementation for testing
+const mockLocationResolver: ILocationResolver = {
+  resolveLocation: async (cwd) => ({
+    type: 'main',
+    cwd: cwd || '/repo',
+    gitRoot: '/repo',
+    mainCheckout: '/repo',
+    worktreeName: null,
+    worktreeWuId: null,
+  }),
+};
+
+// Git state reader
+const gitStateReader: IGitStateReader = {
+  readGitState,
+};
+
+// WU state reader
+const wuStateReader: IWuStateReader = {
+  readWuState,
+};
+
+// Command registry
+const commandRegistry: ICommandRegistry = {
+  getCommandDefinition,
+  getValidCommandsForContext,
+  getAllCommands: () => Array.from(COMMAND_REGISTRY.values()),
+};
+
+// Recovery analyzer
+const recoveryAnalyzer: IRecoveryAnalyzer = {
+  analyzeRecovery,
+};
+```
+
+### Domain Schemas (Zod)
+
+Runtime validation schemas for domain types. Types are inferred from Zod schemas using `z.infer<>`.
+
+```typescript
+import {
+  // Context schemas
+  LocationContextSchema,
+  GitStateSchema,
+  WuStateResultSchema,
+  SessionStateSchema,
+  WuContextSchema,
+
+  // Validation schemas
+  ValidationErrorSchema,
+  ValidationWarningSchema,
+  ValidationResultSchema,
+  CommandPredicateConfigSchema,
+  CommandDefinitionConfigSchema,
+
+  // Recovery schemas
+  RecoveryIssueSchema,
+  RecoveryActionSchema,
+  RecoveryAnalysisSchema,
+
+  // Types (inferred from schemas)
+  type LocationContext,
+  type GitState,
+  type WuStateResult,
+  type ValidationError,
+  type RecoveryAnalysis,
+} from '@lumenflow/core';
+
+// Validate runtime data
+const result = LocationContextSchema.safeParse(unknownData);
+if (result.success) {
+  const location: LocationContext = result.data;
+  console.log(`Type: ${location.type}, CWD: ${location.cwd}`);
+}
+```
+
 ## Features
 
 - **Type-safe**: Full TypeScript support with detailed type definitions
 - **Dependency injection**: Easy to test with mock git instances
+- **Hexagonal architecture**: Port interfaces for external injection
 - **Safe worktree cleanup**: Handles orphan directories and corrupted metadata
 - **Modern**: Node 22+, ESM-only, strict TypeScript
 
