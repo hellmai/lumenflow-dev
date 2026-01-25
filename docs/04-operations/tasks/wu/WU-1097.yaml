@@ -1,0 +1,37 @@
+id: WU-1097
+title: 'P3: Fix shell escaping in wu-recover CLI'
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P3
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-recover.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1097.done
+dependencies: []
+labels:
+  - cleanup
+  - wu-1090
+  - p3
+  - cli
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: wu-recover.ts uses JSON.stringify() for shell path escaping at lines 179, 225, 237, 278. JSON escaping is not shell escaping - paths with spaces or special characters will break. Should use proper shell-escape library or git argument array syntax.
+acceptance:
+  - Shell escaping in wu-recover.ts uses shell-escape library or git argument array syntax
+  - Paths with spaces handled correctly
+  - Unit tests verify special character handling
