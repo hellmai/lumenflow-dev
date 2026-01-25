@@ -6,12 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/core/src/arg-parser.ts
-  - packages/@lumenflow/core/src/date-utils.ts
-  - packages/@lumenflow/core/src/error-handler.ts
-  - packages/@lumenflow/core/src/lane-lock.ts
-  - packages/@lumenflow/core/src/dependency-guard.ts
-  - packages/@lumenflow/core/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  - packages/@lumenflow/core/src/__tests__/date-utils.test.ts
+  - packages/@lumenflow/core/src/__tests__/error-handler.test.ts
+  - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
+  - packages/@lumenflow/core/src/__tests__/dependency-guard.test.ts
 tests:
   manual: []
   unit:
@@ -20,7 +19,6 @@ tests:
     - packages/@lumenflow/core/src/__tests__/error-handler.test.ts
     - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
     - packages/@lumenflow/core/src/__tests__/dependency-guard.test.ts
-    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1104.done
