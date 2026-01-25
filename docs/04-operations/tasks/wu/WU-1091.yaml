@@ -1,0 +1,39 @@
+id: WU-1091
+title: 'P1: Fix ensureOnMain() blocking all web agent commands'
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/core/src/wu-helpers.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-helpers.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1091.done
+dependencies: []
+labels:
+  - blocker
+  - web-agents
+  - p1
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'ensureOnMain() in wu-helpers.ts unconditionally throws if branch !== main. The isAgentBranch() detection code exists but is never called. This blocks 14 CLI commands for web agents: wu-create, wu-claim, wu-done, wu-edit, wu-delete, wu-block, wu-unblock, wu-release, release, initiative-create, initiative-edit, initiative-add-wu.'
+acceptance:
+  - ensureOnMain() calls isAgentBranchWithDetails() before throwing
+  - Agent branches (claude/*, codex/*, copilot/*, cursor/*) bypass main requirement
+  - Lane branches still require worktree workflow (no bypass)
+  - Protected branches (main/master) remain protected
+  - Log message emitted when bypassing for agent branch (observability)
+  - Unit tests cover all bypass scenarios
