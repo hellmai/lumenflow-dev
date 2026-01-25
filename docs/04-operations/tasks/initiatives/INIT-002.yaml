@@ -1,0 +1,39 @@
+id: INIT-002
+slug: hex-architecture-refactor
+title: Hexagonal Architecture Refactor for @lumenflow/core
+description: >-
+  Refactor @lumenflow/core to follow the hexagonal architecture mandated in
+  lumenflow-complete.md (§2.2, §4). Currently only ~4% of the codebase follows
+  hex patterns. This initiative will establish proper ports, application layer
+  (use cases), and infrastructure adapters to make LumenFlow a sellable,
+  well-architected product.
+status: open
+priority: P1
+owner: tom@hellm.ai
+created: '2026-01-25'
+phases:
+  - id: 1
+    title: Foundation - Domain Ports
+    status: pending
+  - id: 2
+    title: Application Layer - Use Cases
+    status: pending
+  - id: 3
+    title: Infrastructure - Adapters
+    status: pending
+  - id: 4
+    title: Migration - Update Consumers
+    status: pending
+  - id: 5
+    title: Cleanup - Remove Legacy Code
+    status: pending
+success_metrics:
+  - All @lumenflow/core modules follow hexagonal architecture
+  - Zero direct infrastructure dependencies in application layer
+  - 100% of existing tests passing after refactor
+  - Architecture documentation updated in lumenflow-complete.md
+labels:
+  - architecture
+  - refactor
+  - core
+wus: []
