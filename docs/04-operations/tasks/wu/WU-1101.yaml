@@ -2,7 +2,7 @@ id: WU-1101
 title: 'INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -29,9 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate core library modules from ExampleApp tools/lib/core/. Convert tool-runner, worktree-guard, scope-checker to TypeScript with hexagonal architecture patterns per INIT-002.
+description: Migrate core library modules from ExampleApp tools/lib/core/. Convert tool-runner,
+  worktree-guard, scope-checker to TypeScript with hexagonal architecture patterns per INIT-002.
 acceptance:
   - tool-runner.ts exists with port interface and tests
   - worktree-guard.ts exists with port interface and tests
   - scope-checker.ts exists with port interface and tests
   - '>80% coverage on migrated code'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1101
+claimed_at: 2026-01-25T20:33:17.078Z
+baseline_main_sha: ced19334a696077692f61a4ef05f0336a2279e78
+session_id: 361e04a5-e283-4afb-a9c0-eb73830dafd8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T20:33:17.084Z
