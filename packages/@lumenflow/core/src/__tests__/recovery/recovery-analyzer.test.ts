@@ -343,6 +343,102 @@ describe('analyzeRecovery', () => {
     });
   });
 
+  describe('recovery command suggestions (WU-1096)', () => {
+    it('suggests wu:recover --action cleanup instead of wu:cleanup for leftover worktree', async () => {
+      // Arrange
+      vi.mocked(existsSync).mockReturnValue(true); // Worktree exists
+
+      const context: WuContext = {
+        location: {
+          type: LOCATION_TYPES.MAIN,
+          cwd: '/repo',
+          gitRoot: '/repo',
+          mainCheckout: '/repo',
+          worktreeName: null,
+          worktreeWuId: null,
+        },
+        git: {
+          branch: 'main',
+          isDetached: false,
+          isDirty: false,
+          hasStaged: false,
+          ahead: 0,
+          behind: 0,
+          tracking: null,
+          modifiedFiles: [],
+          hasError: false,
+          errorMessage: null,
+        },
+        wu: {
+          id: 'WU-1096',
+          status: WU_STATUS.DONE,
+          lane: 'Framework: Core',
+          title: 'Test WU',
+          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1096.yaml',
+          isConsistent: true,
+          inconsistencyReason: null,
+        },
+        session: { isActive: false, sessionId: null },
+      };
+
+      // Act
+      const result = await analyzeRecovery(context);
+
+      // Assert - command should use wu:recover --action cleanup, NOT wu:cleanup
+      const cleanupAction = result.actions.find((a) => a.type === RECOVERY_ACTIONS.CLEANUP);
+      expect(cleanupAction).toBeDefined();
+      expect(cleanupAction?.command).toBe('pnpm wu:recover --id WU-1096 --action cleanup');
+      expect(cleanupAction?.command).not.toContain('wu:cleanup --id');
+    });
+
+    it('suggests wu:recover --action reset instead of wu:repair for inconsistent state', async () => {
+      // Arrange
+      vi.mocked(existsSync).mockReturnValue(false);
+
+      const context: WuContext = {
+        location: {
+          type: LOCATION_TYPES.MAIN,
+          cwd: '/repo',
+          gitRoot: '/repo',
+          mainCheckout: '/repo',
+          worktreeName: null,
+          worktreeWuId: null,
+        },
+        git: {
+          branch: 'main',
+          isDetached: false,
+          isDirty: false,
+          hasStaged: false,
+          ahead: 0,
+          behind: 0,
+          tracking: null,
+          modifiedFiles: [],
+          hasError: false,
+          errorMessage: null,
+        },
+        wu: {
+          id: 'WU-1096',
+          status: WU_STATUS.READY,
+          lane: 'Framework: Core',
+          title: 'Test WU',
+          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1096.yaml',
+          isConsistent: false,
+          inconsistencyReason: 'YAML status differs from state store',
+        },
+        session: { isActive: false, sessionId: null },
+      };
+
+      // Act
+      const result = await analyzeRecovery(context);
+
+      // Assert - command should use wu:recover --action reset, NOT wu:repair
+      const resetAction = result.actions.find((a) => a.type === RECOVERY_ACTIONS.RESET);
+      expect(resetAction).toBeDefined();
+      expect(resetAction?.command).toBe('pnpm wu:recover --id WU-1096 --action reset');
+      expect(resetAction?.command).not.toContain('wu:repair');
+    });
+  });
+
   describe('healthy state detection', () => {
     it('returns no issues for healthy in_progress state', async () => {
       // Arrange - worktree exists, status is in_progress - all good

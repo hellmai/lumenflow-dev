@@ -71,8 +71,11 @@ export async function resolveLocation(cwd: string = process.cwd()): Promise<Loca
     const worktreeName = isWorktree ? parseWorktreeName(gitRoot, mainCheckout) : null;
     const worktreeWuId = worktreeName ? parseWuIdFromWorktree(worktreeName) : null;
 
+    // Check if HEAD is detached (WU-1096)
+    const isDetached = await isHeadDetached(git);
+
     // Determine location type
-    const type = determineLocationType(gitRoot, mainCheckout, isWorktree);
+    const type = determineLocationType(gitRoot, mainCheckout, isWorktree, isDetached);
 
     return {
       type,
@@ -170,14 +173,41 @@ function parseWuIdFromWorktree(worktreeName: string): string | null {
 }
 
 /**
+ * Check if HEAD is detached using git symbolic-ref
+ *
+ * WU-1096: Detect detached HEAD state and return DETACHED location type.
+ *
+ * When HEAD is attached to a branch, `git symbolic-ref HEAD` returns
+ * the ref name (e.g., 'refs/heads/main'). When detached, it fails
+ * with 'fatal: ref HEAD is not a symbolic ref'.
+ *
+ * @param git - SimpleGit instance
+ * @returns Promise<boolean> - true if HEAD is detached
+ */
+async function isHeadDetached(git: SimpleGit): Promise<boolean> {
+  try {
+    // git symbolic-ref HEAD succeeds when HEAD is attached to a branch
+    await git.raw(['symbolic-ref', 'HEAD']);
+    return false; // HEAD is attached
+  } catch {
+    // git symbolic-ref HEAD fails when HEAD is detached
+    return true;
+  }
+}
+
+/**
  * Determine location type from context
+ *
+ * WU-1096: Added isDetached parameter to detect detached HEAD state.
  */
 function determineLocationType(
   gitRoot: string,
   mainCheckout: string,
   isWorktree: boolean,
+  isDetached: boolean = false,
 ): LocationType {
   if (isWorktree) return LOCATION_TYPES.WORKTREE;
+  if (isDetached) return LOCATION_TYPES.DETACHED;
   if (gitRoot === mainCheckout) return LOCATION_TYPES.MAIN;
   return LOCATION_TYPES.UNKNOWN;
 }

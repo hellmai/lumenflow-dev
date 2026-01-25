@@ -166,7 +166,7 @@ export async function analyzeRecovery(context: WuContext): Promise<RecoveryAnaly
     actions.push({
       type: RECOVERY_ACTIONS.CLEANUP,
       description: 'Remove leftover worktree for completed WU',
-      command: `pnpm wu:cleanup --id ${wu.id}`,
+      command: `pnpm wu:recover --id ${wu.id} --action cleanup`,
       requiresForce: false,
     });
   }
@@ -182,7 +182,7 @@ export async function analyzeRecovery(context: WuContext): Promise<RecoveryAnaly
     actions.push({
       type: RECOVERY_ACTIONS.RESET,
       description: 'Reconcile YAML and state store',
-      command: `pnpm wu:repair --id ${wu.id}`,
+      command: `pnpm wu:recover --id ${wu.id} --action reset`,
       requiresForce: false,
     });
   }

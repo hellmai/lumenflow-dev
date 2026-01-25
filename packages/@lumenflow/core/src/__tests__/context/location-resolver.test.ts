@@ -210,6 +210,53 @@ describe('resolveLocation', () => {
     });
   });
 
+  describe('detached HEAD detection (WU-1096)', () => {
+    it('detects detached HEAD state and returns DETACHED location type', async () => {
+      // Arrange - HEAD is detached (rev-parse --abbrev-ref HEAD returns 'HEAD')
+      mockGit.revparse
+        .mockResolvedValueOnce('/home/user/repo\n') // --show-toplevel
+        .mockResolvedValueOnce('.git\n'); // --git-dir
+
+      // In main checkout, .git is a directory
+      vi.mocked(statSync).mockReturnValue({
+        isFile: () => false,
+        isDirectory: () => true,
+      } as ReturnType<typeof statSync>);
+
+      // Mock git symbolic-ref to throw (indicates detached HEAD)
+      mockGit.raw.mockRejectedValueOnce(new Error('fatal: ref HEAD is not a symbolic ref'));
+
+      // Act
+      const result = await resolveLocation('/home/user/repo');
+
+      // Assert
+      expect(result.type).toBe(LOCATION_TYPES.DETACHED);
+      expect(result.mainCheckout).toBe('/home/user/repo');
+      expect(result.worktreeName).toBeNull();
+    });
+
+    it('does not falsely detect detached HEAD when on a normal branch', async () => {
+      // Arrange - HEAD is attached to a branch
+      mockGit.revparse
+        .mockResolvedValueOnce('/home/user/repo\n') // --show-toplevel
+        .mockResolvedValueOnce('.git\n'); // --git-dir
+
+      vi.mocked(statSync).mockReturnValue({
+        isFile: () => false,
+        isDirectory: () => true,
+      } as ReturnType<typeof statSync>);
+
+      // Mock git symbolic-ref to succeed (indicates attached HEAD)
+      mockGit.raw.mockResolvedValueOnce('refs/heads/main\n');
+
+      // Act
+      const result = await resolveLocation('/home/user/repo');
+
+      // Assert
+      expect(result.type).toBe(LOCATION_TYPES.MAIN);
+    });
+  });
+
   describe('edge cases', () => {
     it('returns unknown type when git root cannot be determined', async () => {
       // Arrange - git revparse throws error
