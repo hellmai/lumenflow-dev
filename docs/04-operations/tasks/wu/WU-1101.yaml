@@ -1,0 +1,37 @@
+id: WU-1101
+title: 'INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core'
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/core/src/**
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/**
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1101.done
+dependencies: []
+initiative: INIT-003
+phase: 2
+spec_refs:
+  - lumenflow://plans/unified-rolling-music.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Migrate core library modules from PatientPath tools/lib/core/. Convert tool-runner, worktree-guard, scope-checker to TypeScript with hexagonal architecture patterns per INIT-002.
+acceptance:
+  - tool-runner.ts exists with port interface and tests
+  - worktree-guard.ts exists with port interface and tests
+  - scope-checker.ts exists with port interface and tests
+  - '>80% coverage on migrated code'
