@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — Framework: CLI
 - [WU-1096 — P3: Cleanup minor bugs from WU-1090 review](wu/WU-1096.yaml) — Framework: Core
 - [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — Content: Documentation
 - [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml) — Framework: Core
