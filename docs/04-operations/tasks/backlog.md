@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
