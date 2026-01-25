@@ -2,7 +2,7 @@ id: WU-1105
 title: 'INIT-003 Phase 3a: Migrate init:plan command'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-25
 code_paths:
@@ -48,3 +48,5 @@ acceptance:
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
   - pnpm docs:generate includes init:plan in CLI reference
+locked: true
+completed_at: 2026-01-25T23:33:54.465Z
