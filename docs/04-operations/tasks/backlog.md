@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1098 — BUG: Fix Starlight docs formatting issues](wu/WU-1098.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
