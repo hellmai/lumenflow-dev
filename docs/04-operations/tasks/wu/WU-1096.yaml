@@ -2,7 +2,7 @@ id: WU-1096
 title: 'P3: Fix recovery commands and DETACHED location type in Core'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-25
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - DETACHED location type detected and returned when HEAD is detached
   - Unit tests cover both fixes
   - 'Documentation: Update LUMENFLOW.md recovery section if command suggestions change'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1096
+claimed_at: 2026-01-25T12:41:17.273Z
+baseline_main_sha: 71f84fb1a1991ce16a8d8a83de918e690bba1daa
+session_id: 9a627aa4-a900-4d19-ab33-38cfe22a2d0d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T12:41:17.276Z

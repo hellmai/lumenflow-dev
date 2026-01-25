@@ -36,3 +36,4 @@
 {"type":"complete","wuId":"WU-1093","timestamp":"2026-01-25T12:24:15.500Z"}
 {"type":"claim","wuId":"WU-1094","lane":"Framework: Core","title":"INIT-002 Phase 2: Implement adapters and dependency injection","timestamp":"2026-01-25T12:28:35.731Z"}
 {"type":"complete","wuId":"WU-1094","timestamp":"2026-01-25T12:38:53.355Z"}
+{"type":"claim","wuId":"WU-1096","lane":"Framework: Core","title":"P3: Fix recovery commands and DETACHED location type in Core","timestamp":"2026-01-25T12:41:17.284Z"}
