@@ -91,3 +91,17 @@
 {"timestamp":"2026-01-25T12:18:11.933Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"format:check","passed":true,"duration_ms":10604}
 {"timestamp":"2026-01-25T12:18:11.934Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"lint","passed":true,"duration_ms":0}
 {"timestamp":"2026-01-25T12:18:16.975Z","wu_id":"WU-1093","lane":"Framework-core","gate_name":"typecheck","passed":false,"duration_ms":5041}
+{"timestamp":"2026-01-25T23:29:26.888Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"invariants","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T23:29:38.922Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"format:check","passed":false,"duration_ms":12033}
+{"timestamp":"2026-01-25T23:30:05.388Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"invariants","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T23:30:16.711Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"format:check","passed":true,"duration_ms":11323}
+{"timestamp":"2026-01-25T23:30:16.712Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"lint","passed":true,"duration_ms":0}
+{"timestamp":"2026-01-25T23:30:17.973Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"typecheck","passed":true,"duration_ms":1260}
+{"timestamp":"2026-01-25T23:30:19.922Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"spec:linter","passed":true,"duration_ms":1949}
+{"timestamp":"2026-01-25T23:30:20.214Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"prompts:lint","passed":true,"duration_ms":291}
+{"timestamp":"2026-01-25T23:30:20.247Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"backlog-sync","passed":true,"duration_ms":33}
+{"timestamp":"2026-01-25T23:30:20.311Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"supabase-docs:linter","passed":true,"duration_ms":64}
+{"timestamp":"2026-01-25T23:30:20.343Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"system-map:validate","passed":true,"duration_ms":32}
+{"timestamp":"2026-01-25T23:30:20.344Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"safety-critical-test","passed":true,"duration_ms":1}
+{"timestamp":"2026-01-25T23:31:04.926Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"test","passed":true,"duration_ms":44582}
+{"timestamp":"2026-01-25T23:31:04.927Z","wu_id":"WU-1105","lane":"Framework-cli","gate_name":"coverage","passed":true,"duration_ms":0}
