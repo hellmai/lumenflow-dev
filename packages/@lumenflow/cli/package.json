@@ -79,6 +79,8 @@
     "flow-report": "./dist/flow-report.js",
     "flow-bottlenecks": "./dist/flow-bottlenecks.js",
     "metrics-snapshot": "./dist/metrics-snapshot.js",
+    "metrics": "./dist/metrics-cli.js",
+    "lumenflow-metrics": "./dist/metrics-cli.js",
     "initiative-bulk-assign-wus": "./dist/initiative-bulk-assign-wus.js",
     "agent-issues-query": "./dist/agent-issues-query.js",
     "gates": "./dist/gates.js",
