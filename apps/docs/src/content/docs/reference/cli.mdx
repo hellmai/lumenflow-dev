@@ -20,11 +20,11 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 | Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Initiatives     | [`initiative:add:wu`](#initiativeaddwu), [`initiative:bulk:assign:wus`](#initiativebulkassignwus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                          |
 | Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:create`](#memcreate), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                               |
-| Metrics         | [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Orchestration   | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                      |
-| Other           | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`init:plan`](#initplan)                                                                                                                                                                                                                                                                                                                                                   |
+| Other           | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite)                                                                                                                                                                                                                                                                                                                                                                             |
 | Quality Gates   | [`gates`](#gates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:release`](#lumenflowrelease)                                                                                                                                                                                                                                                                                                                                                                       |
+| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease)                                                                                                                                                                                                                                                                                                                             |
 | Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate) |
 
@@ -294,6 +294,14 @@ pnpm mem:triage
 
 ## Metrics
 
+### metrics
+
+Unified Metrics CLI with subcommands (WU-1110)
+
+```bash
+pnpm metrics
+```
+
 ### metrics:snapshot
 
 Capture current metrics snapshot for dashboards
@@ -370,20 +378,6 @@ File Write CLI Tool
 pnpm file:write
 ```
 
-### init:plan
-
-Link a plan file to an initiative
-
-```bash
-pnpm init:plan
-```
-
-**Options:**
-
-| Flag                       | Description                          | Required |
-| -------------------------- | ------------------------------------ | -------- |
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
-
 ## Quality Gates
 
 ### gates
@@ -418,6 +412,14 @@ Initialize LumenFlow in a project
 
 ```bash
 pnpm lumenflow:init
+```
+
+### lumenflow:metrics
+
+Unified Metrics CLI with subcommands (WU-1110)
+
+```bash
+pnpm lumenflow:metrics
 ```
 
 ### lumenflow:release
