@@ -6,11 +6,24 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/core/src/**
+  - packages/@lumenflow/core/src/wu-yaml.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-helpers.ts
+  - packages/@lumenflow/core/src/wu-state-store.ts
+  - packages/@lumenflow/core/src/wu-checkpoint.ts
+  - packages/@lumenflow/core/src/ports/wu-helpers.ports.ts
+  - packages/@lumenflow/core/src/ports/index.ts
+  - packages/@lumenflow/core/src/index.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/**
+    - packages/@lumenflow/core/src/__tests__/wu-yaml.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-helpers.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-state-store.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-checkpoint.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1102.done
