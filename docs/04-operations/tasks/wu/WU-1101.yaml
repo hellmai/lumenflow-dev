@@ -2,7 +2,7 @@ id: WU-1101
 title: 'INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -21,13 +21,21 @@ phase: 2
 spec_refs:
   - lumenflow://plans/unified-rolling-music.md
 risks: []
-notes: |
+notes: >
   Implementation complete:
-  - tool-runner.ts: Unified tool execution with validation, worktree guards, scope checks (97.84% coverage)
+
+  - tool-runner.ts: Unified tool execution with validation, worktree guards, scope checks (97.84%
+  coverage)
+
   - worktree-guard.ts: WU context detection and main branch protection (95.55% coverage)
+
   - scope-checker.ts: WU code_paths enforcement with glob support (91.66% coverage)
-  - Port interfaces defined in ports/core-tools.ports.ts (IToolRunner, IWorktreeGuard, IScopeChecker)
+
+  - Port interfaces defined in ports/core-tools.ports.ts (IToolRunner, IWorktreeGuard,
+  IScopeChecker)
+
   - Comprehensive test suite in src/__tests__/core-tools-ports.test.ts (56 tests, all passing)
+
   - Overall coverage: 96.29% statements, 84.37% branches, 92.59% functions
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -52,3 +60,5 @@ session_id: 361e04a5-e283-4afb-a9c0-eb73830dafd8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T20:33:17.084Z
+locked: true
+completed_at: 2026-01-25T20:41:45.014Z
