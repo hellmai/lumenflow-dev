@@ -58,3 +58,4 @@
 {"type":"claim","wuId":"WU-1105","lane":"Framework: CLI","title":"INIT-003 Phase 3a: Migrate init:plan command","timestamp":"2026-01-25T23:19:57.104Z"}
 {"type":"claim","wuId":"WU-1110","lane":"Framework: Metrics","title":"INIT-003 Phase 5a: Migrate metrics commands","timestamp":"2026-01-25T23:22:19.835Z"}
 {"type":"complete","wuId":"WU-1105","timestamp":"2026-01-25T23:33:54.479Z"}
+{"type":"complete","wuId":"WU-1110","timestamp":"2026-01-25T23:36:37.483Z"}
