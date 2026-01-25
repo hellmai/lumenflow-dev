@@ -2,7 +2,7 @@ id: WU-1105
 title: 'INIT-003 Phase 3a: Migrate init:plan command'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-25
 code_paths:
@@ -34,9 +34,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate init-plan.mjs from ExampleApp tools/. The missing command for linking plan files to initiatives. Convert to TypeScript, add to CLI package bin entries, write tests.
+description: Migrate init-plan.mjs from ExampleApp tools/. The missing command for linking plan
+  files to initiatives. Convert to TypeScript, add to CLI package bin entries, write tests.
 acceptance:
   - init-plan.ts exists in packages/@lumenflow/cli/src/
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
   - pnpm docs:generate includes init:plan in CLI reference
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1105
+claimed_at: 2026-01-25T23:19:57.079Z
+baseline_main_sha: 6afa78b16df39939f264de909927d94f5aecada2
+session_id: b0938c18-3b04-4770-bb9e-cbe2b2ed2d42
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:19:57.086Z
