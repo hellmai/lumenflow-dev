@@ -6,7 +6,13 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/guard-locked.ts
+  - packages/@lumenflow/cli/src/guard-worktree-commit.ts
+  - packages/@lumenflow/cli/src/validate.ts
+  - packages/@lumenflow/cli/src/validate-agent-skills.ts
+  - packages/@lumenflow/cli/src/validate-agent-sync.ts
+  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
+  - packages/@lumenflow/cli/src/validate-skills-spec.ts
 tests:
   manual: []
   unit:
@@ -21,15 +27,20 @@ blocked_by:
   - WU-1101
   - WU-1102
   - WU-1103
-spec_refs:
-  - lumenflow://plans/unified-rolling-music.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-25T23:44:49.274Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1111
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:44:49.282Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +57,3 @@ acceptance:
   - validate-skills-spec.ts exists with tests
   - All bin entries added
   - '>80% coverage'
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1111
-claimed_at: 2026-01-25T23:44:49.274Z
-baseline_main_sha: 89fe7f5c96a48b20bcd1b7c7402a4995890e3845
-session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-25T23:44:49.282Z
