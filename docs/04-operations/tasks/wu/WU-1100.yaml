@@ -2,7 +2,7 @@ id: WU-1100
 title: 'INIT-003 Phase 1: Sync CLI docs to lumenflow.dev'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths: []
@@ -39,3 +39,5 @@ session_id: 361e04a5-e283-4afb-a9c0-eb73830dafd8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T20:32:41.326Z
+locked: true
+completed_at: 2026-01-25T20:39:18.533Z

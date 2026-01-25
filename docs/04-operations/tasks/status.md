@@ -5,11 +5,11 @@ _Last updated: 2026-01-25_
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
-- [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml)
 - [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml)
 
 ## Completed
 
+- [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
