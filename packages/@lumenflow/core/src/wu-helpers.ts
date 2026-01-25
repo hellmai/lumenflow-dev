@@ -14,6 +14,7 @@ import path from 'node:path';
 import { parse } from 'yaml';
 import { BRANCHES, REMOTES, FILE_SYSTEM, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
 import { die } from './error-handler.js';
+import { isAgentBranchWithDetails } from './branch-check.js';
 
 /**
  * Validate WU ID format
@@ -235,12 +236,24 @@ export function extractWUFromCommitMessage(message) {
  * Centralized from duplicated ensureOnMain() functions across wu-* scripts (WU-1256).
  * Async version - accepts a git adapter with async getCurrentBranch() method.
  *
+ * WU-1091: Agent branches (claude/*, codex/*, copilot/*, cursor/*, agent/*) bypass
+ * the main branch requirement for web agent commands. Lane branches still require
+ * worktree workflow (no bypass). Protected branches (main/master) remain protected.
+ *
  * @param {object} git - Git adapter with async getCurrentBranch() method
- * @throws {Error} If not on main branch
+ * @throws {Error} If not on main branch and not an agent branch
  */
 export async function ensureOnMain(git) {
   const branch = await git.getCurrentBranch();
   if (branch !== BRANCHES.MAIN) {
+    // WU-1091: Check if this is an agent branch that can bypass the main requirement
+    const agentResult = await isAgentBranchWithDetails(branch);
+    if (agentResult.isMatch) {
+      console.log(
+        `[ensureOnMain] Bypassing for agent branch '${branch}' (${agentResult.patternResult.source})`,
+      );
+      return;
+    }
     throw new Error(`Run from shared checkout on '${BRANCHES.MAIN}' (found '${branch}')`);
   }
 }
