@@ -64,3 +64,4 @@ coverage/
 # test
 # force test
 .vercel
+/.lumenflow/artifacts/
