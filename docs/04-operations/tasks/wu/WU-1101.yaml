@@ -20,7 +20,14 @@ phase: 2
 spec_refs:
   - lumenflow://plans/unified-rolling-music.md
 risks: []
-notes: ''
+notes: |
+  Implementation complete:
+  - tool-runner.ts: Unified tool execution with validation, worktree guards, scope checks (97.84% coverage)
+  - worktree-guard.ts: WU context detection and main branch protection (95.55% coverage)
+  - scope-checker.ts: WU code_paths enforcement with glob support (91.66% coverage)
+  - Port interfaces defined in ports/core-tools.ports.ts (IToolRunner, IWorktreeGuard, IScopeChecker)
+  - Comprehensive test suite in src/__tests__/core-tools-ports.test.ts (56 tests, all passing)
+  - Overall coverage: 96.29% statements, 84.37% branches, 92.59% functions
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
