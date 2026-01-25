@@ -2,7 +2,7 @@ id: WU-1099
 title: 'INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths: []
@@ -24,8 +24,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Run pnpm docs:generate to sync CLI reference with current code. Create INIT-003 initiative file. Deploy to lumenflow.dev.
+description: Run pnpm docs:generate to sync CLI reference with current code. Create INIT-003
+  initiative file. Deploy to lumenflow.dev.
 acceptance:
   - pnpm docs:validate passes (no drift)
   - INIT-003.yaml created in initiatives folder
   - wu:status and wu:recover visible on lumenflow.dev CLI reference
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1099
+claimed_at: 2026-01-25T14:04:17.573Z
+baseline_main_sha: 6dcdfc6e677c270e05aaf3d4bf1150cdbe4bf023
+session_id: 361e04a5-e283-4afb-a9c0-eb73830dafd8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T14:04:17.578Z

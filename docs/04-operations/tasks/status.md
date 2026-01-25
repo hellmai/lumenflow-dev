@@ -4,12 +4,10 @@ _Last updated: 2026-01-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 
 ## Completed
 
-- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — 2026-01-25
-- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from ._legacy to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -29,3 +27,5 @@ _Last updated: 2026-01-25_
 - [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — 2026-01-25
 - [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — 2026-01-25
 - [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml) — 2026-01-25
+- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — 2026-01-25
+- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — 2026-01-25
