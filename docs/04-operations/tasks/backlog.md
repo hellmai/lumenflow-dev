@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — Framework: Core
 - [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml) — Framework: Core
 - [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml) — Framework: Core
 - [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml) — Content: Documentation
