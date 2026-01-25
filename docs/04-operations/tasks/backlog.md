@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml) — Framework: CLI
 - [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml) — Framework: Core
 - [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — Framework: Core
 - [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml) — Framework: Core
