@@ -2,7 +2,7 @@ id: WU-1109
 title: 'INIT-003 Phase 4b: Migrate git operations (5 tools)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -32,7 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate git-status, git-diff, git-log, git-branch, guard-main-branch from  tools/. These provide WU-aware git operations with safety checks. Most have existing tests to port.
+description: Migrate git-status, git-diff, git-log, git-branch, guard-main-branch from 
+  tools/. These provide WU-aware git operations with safety checks. Most have existing tests to
+  port.
 acceptance:
   - git-status.ts exists with tests
   - git-diff.ts exists with tests
@@ -41,3 +43,11 @@ acceptance:
   - guard-main-branch.ts exists with tests
   - All bin entries added to CLI package.json
   - '>80% coverage'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1109
+claimed_at: 2026-01-25T23:43:37.501Z
+baseline_main_sha: fc3edbc3f5f3ce92099e888351dc366c98173795
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:43:37.506Z
