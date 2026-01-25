@@ -2,7 +2,7 @@ id: WU-1104
 title: 'INIT-003 Phase 2d: Migrate utility modules'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -31,8 +31,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate utility modules from ExampleApp tools/lib/. Convert argument-parser, date-utils, error-handler, memory-store, lane-lock, dependency-guard, micro-worktree to TypeScript.
+description: Migrate utility modules from ExampleApp tools/lib/. Convert argument-parser,
+  date-utils, error-handler, memory-store, lane-lock, dependency-guard, micro-worktree to
+  TypeScript.
 acceptance:
   - All utility modules migrated to TypeScript
   - Existing tests from ExampleApp ported to Vitest
   - '>80% coverage on migrated code'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1104
+claimed_at: 2026-01-25T22:56:31.765Z
+baseline_main_sha: b201af01f344f68df9ed66c124d82c6bc8db6241
+session_id: 93d4d468-6747-4d11-aa75-9b9e61ca1cea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T22:56:31.772Z
