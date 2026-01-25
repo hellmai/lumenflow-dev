@@ -41,3 +41,4 @@
 {"type":"claim","wuId":"WU-1095","lane":"Content: Documentation","title":"INIT-002 Phase 3: ADR for hex architecture + migration guide","timestamp":"2026-01-25T12:41:57.005Z"}
 {"type":"complete","wuId":"WU-1095","timestamp":"2026-01-25T12:48:59.123Z"}
 {"type":"claim","wuId":"WU-1099","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev","timestamp":"2026-01-25T14:04:17.595Z"}
+{"type":"claim","wuId":"WU-1100","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI docs to lumenflow.dev","timestamp":"2026-01-25T20:32:41.344Z"}
