@@ -2,7 +2,7 @@ id: WU-1097
 title: 'P3: Fix shell escaping in wu-recover CLI'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-01-25
 code_paths:
@@ -45,3 +45,5 @@ session_id: e215ef5a-f653-48ac-bdda-5cbd371c320f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T11:19:33.612Z
+locked: true
+completed_at: 2026-01-25T11:32:54.741Z
