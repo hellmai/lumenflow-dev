@@ -1,6 +1,6 @@
 id: WU-1107
 title: 'INIT-003 Phase 3c: Migrate state:bootstrap command'
-lane: 'Framework: CLI'
+lane: 'Framework: Core'
 type: feature
 status: ready
 priority: P2
