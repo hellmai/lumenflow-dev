@@ -67,6 +67,13 @@ lanes:
 git:
   main_branch: main
   branch_pattern: 'lane/{lane}/{wu_id}'
+  # WU-1091: Agent branch patterns for web agents to bypass worktree requirements
+  agentBranchPatterns:
+    - 'claude/*'
+    - 'codex/*'
+    - 'copilot/*'
+    - 'cursor/*'
+    - 'agent/*'
 
 directories:
   wu_specs: 'docs/04-operations/tasks/wu'
