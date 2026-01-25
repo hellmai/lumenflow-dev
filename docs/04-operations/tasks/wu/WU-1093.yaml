@@ -26,9 +26,6 @@ labels:
   - hex-architecture
   - ports
   - domain
-spec_refs:
-  - lumenflow://plans/drifting-swimming-orbit.md
-  - lumenflow://plans/WU-1093-plan.md
 risks: []
 notes: ''
 requires_review: false
@@ -39,11 +36,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Define port interfaces and Zod schemas for the context-aware validation system. Establishes abstraction layer for external users to inject custom implementations. Uses Pattern B (Layer Split) from wu-sizing-guide.md.
+description: Define port interfaces and Zod schemas for the context-aware validation system.
+  Establishes abstraction layer for external users to inject custom implementations. Uses Pattern B
+  (Layer Split) from wu-sizing-guide.md.
 acceptance:
-  - 'Port interfaces defined: ILocationResolver, IGitStateReader, IWuStateReader, ICommandRegistry, IRecoveryAnalyzer'
+  - 'Port interfaces defined: ILocationResolver, IGitStateReader, IWuStateReader, ICommandRegistry,
+    IRecoveryAnalyzer'
   - 'Zod schemas created: context.schemas.ts, validation.schemas.ts, recovery.schemas.ts'
   - Types inferred from Zod using z.infer<>
   - Existing functions updated to implement port interfaces
   - All unit tests pass
   - No breaking changes to existing public API
+  - 'Documentation: Update Astral Starlight reference docs for new port interfaces'
+  - 'Documentation: Update @lumenflow/core README with port usage examples'
+  - 'Documentation: Update CHANGELOG.md for npm release notes'
