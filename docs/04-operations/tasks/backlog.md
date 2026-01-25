@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1098 — BUG: Fix Starlight docs formatting issues](wu/WU-1098.yaml) — Content: Documentation
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -53,3 +52,4 @@ sections:
 - [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml)
 - [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml)
 - [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml)
+- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml)

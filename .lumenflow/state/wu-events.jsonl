@@ -39,3 +39,4 @@
 {"type":"claim","wuId":"WU-1096","lane":"Framework: Core","title":"P3: Fix recovery commands and DETACHED location type in Core","timestamp":"2026-01-25T12:41:17.284Z"}
 {"type":"complete","wuId":"WU-1096","timestamp":"2026-01-25T12:47:23.033Z"}
 {"type":"claim","wuId":"WU-1095","lane":"Content: Documentation","title":"INIT-002 Phase 3: ADR for hex architecture + migration guide","timestamp":"2026-01-25T12:41:57.005Z"}
+{"type":"complete","wuId":"WU-1095","timestamp":"2026-01-25T12:48:59.123Z"}

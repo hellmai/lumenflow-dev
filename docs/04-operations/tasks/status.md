@@ -8,6 +8,7 @@ _Last updated: 2026-01-25_
 
 ## Completed
 
+- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — 2026-01-25
 - [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — 2026-01-25
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23

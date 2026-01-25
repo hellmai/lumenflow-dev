@@ -2,7 +2,7 @@ id: WU-1095
 title: 'INIT-002 Phase 3: ADR for hex architecture + migration guide'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -50,3 +50,5 @@ session_id: 9a627aa4-a900-4d19-ab33-38cfe22a2d0d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T12:41:56.993Z
+locked: true
+completed_at: 2026-01-25T12:48:59.108Z
