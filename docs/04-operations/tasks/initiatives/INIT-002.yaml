@@ -1,0 +1,12 @@
+id: INIT-002
+slug: hex-architecture-core
+title: Hexagonal Architecture for @lumenflow/core Public API
+description: ''
+status: draft
+priority: P2
+owner: tom@hellm.ai
+created: 2026-01-25
+target_date: 2026-02-15
+phases: []
+success_metrics: []
+labels: []
