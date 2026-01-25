@@ -173,10 +173,12 @@ async function executeReset(wuId: string): Promise<boolean> {
   const worktreePath = getWorktreePath(wuId, doc.lane || '');
 
   // Remove worktree if exists
+  // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
+  // This properly handles paths with spaces and special characters
   if (existsSync(worktreePath)) {
     try {
       const git = getGitForCwd();
-      git.run(`git worktree remove ${JSON.stringify(worktreePath)} --force`);
+      await git.worktreeRemove(worktreePath, { force: true });
       console.log(`${LOG_PREFIX} Removed worktree: ${worktreePath}`);
     } catch (e) {
       // Try manual removal if git command fails
@@ -219,10 +221,11 @@ async function executeNuke(wuId: string): Promise<boolean> {
     const worktreePath = getWorktreePath(wuId, doc.lane || '');
 
     // Remove worktree if exists
+    // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
     if (existsSync(worktreePath)) {
       try {
         const git = getGitForCwd();
-        git.run(`git worktree remove ${JSON.stringify(worktreePath)} --force`);
+        await git.worktreeRemove(worktreePath, { force: true });
       } catch {
         rmSync(worktreePath, { recursive: true, force: true });
       }
@@ -230,11 +233,12 @@ async function executeNuke(wuId: string): Promise<boolean> {
     }
 
     // Try to delete branch
+    // WU-1097: Use deleteBranch() instead of deprecated run() with shell strings
     try {
       const git = getGitForCwd();
       const laneKebab = toKebab(doc.lane || '');
       const branchName = `lane/${laneKebab}/${wuId.toLowerCase()}`;
-      git.run(`git branch -D ${JSON.stringify(branchName)}`);
+      await git.deleteBranch(branchName, { force: true });
       console.log(`${LOG_PREFIX} Deleted branch: ${branchName}`);
     } catch {
       // Branch may not exist, that's fine
@@ -273,9 +277,10 @@ async function executeCleanup(wuId: string): Promise<boolean> {
     return true;
   }
 
+  // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
   try {
     const git = getGitForCwd();
-    git.run(`git worktree remove ${JSON.stringify(worktreePath)} --force`);
+    await git.worktreeRemove(worktreePath, { force: true });
     console.log(`${LOG_PREFIX} ${EMOJI.SUCCESS} Removed leftover worktree: ${worktreePath}`);
   } catch (e) {
     rmSync(worktreePath, { recursive: true, force: true });
