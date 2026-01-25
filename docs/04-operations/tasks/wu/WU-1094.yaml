@@ -26,9 +26,6 @@ labels:
   - hex-architecture
   - adapters
   - di
-spec_refs:
-  - lumenflow://plans/drifting-swimming-orbit.md
-  - lumenflow://plans/WU-1094-plan.md
 risks: []
 notes: ''
 requires_review: false
@@ -39,11 +36,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement concrete adapters for the port interfaces and create factory functions for dependency injection. The DI file becomes the composition root where concrete implementations are wired to abstractions.
+description: Implement concrete adapters for the port interfaces and create factory functions for
+  dependency injection. The DI file becomes the composition root where concrete implementations are
+  wired to abstractions.
 acceptance:
-  - 'Adapters implement port interfaces: SimpleGitLocationAdapter, SimpleGitStateAdapter, FileSystemWuStateAdapter'
-  - 'Use case classes with constructor injection: ComputeContextUseCase, ValidateCommandUseCase, AnalyzeRecoveryUseCase'
+  - 'Adapters implement port interfaces: SimpleGitLocationAdapter, SimpleGitStateAdapter,
+    FileSystemWuStateAdapter'
+  - 'Use case classes with constructor injection: ComputeContextUseCase, ValidateCommandUseCase,
+    AnalyzeRecoveryUseCase'
   - Factory functions in context-di.ts for wiring
   - Existing exports maintained (backwards compatible)
   - Integration tests pass
   - External users can instantiate use cases with custom adapters
+  - 'Documentation: Update Astral Starlight docs with DI and adapter examples'
+  - 'Documentation: Update @lumenflow/core README with usecase examples'
+  - 'Documentation: Update CHANGELOG.md for npm release notes'
