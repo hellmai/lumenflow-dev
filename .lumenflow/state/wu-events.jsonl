@@ -29,3 +29,4 @@
 {"type":"claim","wuId":"WU-1097","lane":"Framework: CLI","title":"P3: Fix shell escaping in wu-recover CLI","timestamp":"2026-01-25T11:19:33.621Z"}
 {"type":"claim","wuId":"WU-1091","lane":"Framework: Core","title":"P1: Fix ensureOnMain() blocking all web agent commands","timestamp":"2026-01-25T11:20:03.148Z"}
 {"type":"complete","wuId":"WU-1091","timestamp":"2026-01-25T11:26:37.636Z"}
+{"type":"complete","wuId":"WU-1097","timestamp":"2026-01-25T11:32:54.766Z"}
