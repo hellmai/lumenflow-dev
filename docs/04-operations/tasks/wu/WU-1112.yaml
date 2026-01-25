@@ -2,7 +2,7 @@ id: WU-1112
 title: 'INIT-003 Phase 6: Migrate remaining Tier 1 tools'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-25
 code_paths:
@@ -23,7 +23,8 @@ blocked_by:
 spec_refs:
   - lumenflow://plans/unified-rolling-music.md
 risks:
-  - 'lumenflow:upgrade workflow gap: updates package.json on main but pnpm install blocked by worktree discipline'
+  - 'lumenflow:upgrade workflow gap: updates package.json on main but pnpm install blocked by
+    worktree discipline'
   - 'lumenflow:upgrade missing packages: only checks 4 of 7 @lumenflow/* packages'
 notes: |
   KNOWN ISSUE 1: lumenflow:upgrade modifies package.json on main via micro-worktree,
@@ -52,7 +53,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate deps-add, deps-remove, session-coordinator, rotate-progress, lumenflow-upgrade, trace-gen from ExampleApp. These are the remaining generic tools. Some have existing tests.
+description: Migrate deps-add, deps-remove, session-coordinator, rotate-progress, lumenflow-upgrade,
+  trace-gen from ExampleApp. These are the remaining generic tools. Some have existing tests.
 acceptance:
   - deps-add.ts and deps-remove.ts exist with tests
   - session-coordinator.ts exists
@@ -63,3 +65,11 @@ acceptance:
   - trace-gen.ts exists
   - All bin entries added
   - '>80% coverage on migrated code'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1112
+claimed_at: 2026-01-25T23:42:41.361Z
+baseline_main_sha: 70ed93111831940577493b5f599e09984acd0c68
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:42:41.364Z
