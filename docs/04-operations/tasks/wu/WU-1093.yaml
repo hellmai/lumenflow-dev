@@ -2,7 +2,7 @@ id: WU-1093
 title: 'INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -58,3 +58,5 @@ session_id: c5cdce68-a4c6-4f54-8563-431e4524df24
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T12:05:23.106Z
+locked: true
+completed_at: 2026-01-25T12:24:15.480Z
