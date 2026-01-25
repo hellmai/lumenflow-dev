@@ -2,7 +2,7 @@ id: WU-1103
 title: 'INIT-003 Phase 2c: Migrate git & validator modules'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -31,8 +31,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate git and validator modules from PatientPath tools/lib/. Convert git-adapter, git-diff-parser, git-status-parser, phi-scanner, schema-validators to TypeScript with port interfaces.
+description: Migrate git and validator modules from PatientPath tools/lib/. Convert git-adapter,
+  git-diff-parser, git-status-parser, phi-scanner, schema-validators to TypeScript with port
+  interfaces.
 acceptance:
   - All git modules migrated to TypeScript with IGitAdapter port
   - All validator modules migrated with IPhiScanner port
   - Existing tests from PatientPath ported to Vitest
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1103
+claimed_at: 2026-01-25T21:50:07.657Z
+baseline_main_sha: e4005aa21b068e131af854e0defec5e80b33ac66
+session_id: 82929060-b714-4977-a09a-502153897b4b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T21:50:07.662Z
