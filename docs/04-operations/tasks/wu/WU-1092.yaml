@@ -2,7 +2,7 @@ id: WU-1092
 title: 'P2: Fix worktreeCleanPredicate checking wrong git state'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - Unit tests verify worktree state is checked, not main state
   - 'Documentation: Update LUMENFLOW.md context-validation section if WuContext changes affect CLI
     behavior'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1092
+claimed_at: 2026-01-25T11:54:50.055Z
+baseline_main_sha: e650769b85bd0342cd3c4a6bd99c41ac8dfafb1a
+session_id: 995e1325-1c1f-4545-afdd-9e6f1a729c47
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T11:54:50.062Z
