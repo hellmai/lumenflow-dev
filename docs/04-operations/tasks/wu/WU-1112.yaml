@@ -2,7 +2,7 @@ id: WU-1112
 title: 'INIT-003 Phase 6: Migrate remaining Tier 1 tools'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: ready
 priority: P3
 created: 2026-01-25
 code_paths:
@@ -26,7 +26,7 @@ risks:
   - 'lumenflow:upgrade workflow gap: updates package.json on main but pnpm install blocked by
     worktree discipline'
   - 'lumenflow:upgrade missing packages: only checks 4 of 7 @lumenflow/* packages'
-notes: |
+notes: |-
   KNOWN ISSUE 1: lumenflow:upgrade modifies package.json on main via micro-worktree,
   but subsequent pnpm install is blocked by worktree hooks.
 
@@ -45,6 +45,7 @@ notes: |
   - Has: @lumenflow/core, @lumenflow/memory, @lumenflow/metrics, @lumenflow/shims
 
   SOLUTION: Migration must include all 7 packages in LUMENFLOW_PACKAGES constant.
+  Released (2026-01-25): Releasing to work on WU-1109 as instructed by user
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
