@@ -1,0 +1,186 @@
+#!/usr/bin/env node
+/**
+ * @file guard-locked.ts
+ * @description Guard that prevents changes to locked WUs (WU-1111)
+ *
+ * Validates that a WU is not locked before allowing modifications.
+ * Used by git hooks and wu: commands to enforce workflow discipline.
+ *
+ * Usage:
+ *   guard-locked WU-123        # Check if WU-123 is locked
+ *   guard-locked --wu WU-123   # Same with explicit flag
+ *
+ * Exit codes:
+ *   0 - WU is not locked (safe to proceed)
+ *   1 - WU is locked (block operation)
+ *
+ * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - WU lifecycle
+ */
+
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { PATTERNS, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
+
+const LOG_PREFIX = '[guard-locked]';
+
+/**
+ * Check if a WU is locked
+ *
+ * @param wuPath - Path to WU YAML file
+ * @returns true if WU has locked: true, false otherwise
+ * @throws Error if WU file does not exist or cannot be parsed
+ *
+ * @example
+ * if (isWULocked('/path/to/WU-123.yaml')) {
+ *   console.log('WU is locked, cannot modify');
+ * }
+ */
+export function isWULocked(wuPath: string): boolean {
+  if (!existsSync(wuPath)) {
+    throw new Error(`WU file not found: ${wuPath}`);
+  }
+
+  const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  const doc = parseYAML(content);
+
+  return doc.locked === true;
+}
+
+/**
+ * Assert that a WU is not locked
+ *
+ * @param wuPath - Path to WU YAML file
+ * @throws Error if WU is locked, with actionable fix instructions
+ *
+ * @example
+ * try {
+ *   assertWUNotLocked('/path/to/WU-123.yaml');
+ *   // Safe to modify
+ * } catch (error) {
+ *   console.error(error.message);
+ *   process.exit(1);
+ * }
+ */
+export function assertWUNotLocked(wuPath: string): void {
+  if (!existsSync(wuPath)) {
+    throw new Error(`WU file not found: ${wuPath}`);
+  }
+
+  const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
+  const doc = parseYAML(content);
+
+  if (doc.locked === true) {
+    const wuId = doc.id || path.basename(wuPath, '.yaml');
+    throw new Error(
+      `${LOG_PREFIX} WU ${wuId} is locked.
+
+Locked WUs cannot be modified. This prevents accidental changes to completed work.
+
+If you need to modify this WU:
+  1. Check if modification is really necessary (locked WUs are done)
+  2. Use wu:unlock to unlock the WU first:
+     pnpm wu:unlock --id ${wuId} --reason "reason for unlocking"
+
+For more information:
+  See docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+`,
+    );
+  }
+}
+
+/**
+ * Check if a WU ID is locked by looking up the YAML file
+ *
+ * @param wuId - WU ID (e.g., "WU-123")
+ * @returns true if WU has locked: true, false otherwise
+ * @throws Error if WU file does not exist
+ */
+export function isWUIdLocked(wuId: string): boolean {
+  const wuPath = WU_PATHS.WU(wuId);
+  return isWULocked(wuPath);
+}
+
+/**
+ * Assert that a WU ID is not locked
+ *
+ * @param wuId - WU ID (e.g., "WU-123")
+ * @throws Error if WU is locked
+ */
+export function assertWUIdNotLocked(wuId: string): void {
+  const wuPath = WU_PATHS.WU(wuId);
+  assertWUNotLocked(wuPath);
+}
+
+/**
+ * Main CLI entry point
+ */
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+
+  // Parse arguments
+  let wuId: string | undefined;
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--wu' || arg === '--id') {
+      wuId = args[++i];
+    } else if (arg === '--help' || arg === '-h') {
+      console.log(`Usage: guard-locked [--wu] WU-XXX
+
+Check if a WU is locked. Exits with code 1 if locked.
+
+Options:
+  --wu, --id WU-XXX  WU ID to check
+  -h, --help         Show this help message
+
+Examples:
+  guard-locked WU-123
+  guard-locked --wu WU-123
+`);
+      process.exit(0);
+    } else if (PATTERNS.WU_ID.test(arg.toUpperCase())) {
+      wuId = arg.toUpperCase();
+    }
+  }
+
+  if (!wuId) {
+    console.error(`${LOG_PREFIX} Error: WU ID required`);
+    console.error('Usage: guard-locked [--wu] WU-XXX');
+    process.exit(1);
+  }
+
+  // Normalize WU ID
+  wuId = wuId.toUpperCase();
+  if (!PATTERNS.WU_ID.test(wuId)) {
+    console.error(`${LOG_PREFIX} Invalid WU ID: ${wuId}`);
+    console.error('Expected format: WU-123');
+    process.exit(1);
+  }
+
+  try {
+    if (isWUIdLocked(wuId)) {
+      console.error(`${LOG_PREFIX} ${wuId} is locked`);
+      console.error('');
+      console.error('Locked WUs cannot be modified.');
+      console.error(`To unlock: pnpm wu:unlock --id ${wuId} --reason "your reason"`);
+      process.exit(1);
+    }
+
+    console.log(`${LOG_PREFIX} ${wuId} is not locked (OK)`);
+    process.exit(0);
+  } catch (error) {
+    console.error(`${LOG_PREFIX} Error: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+// Guard main() for testability
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(`${LOG_PREFIX} Unexpected error:`, error);
+    process.exit(1);
+  });
+}
