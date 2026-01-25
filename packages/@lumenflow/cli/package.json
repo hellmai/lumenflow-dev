@@ -85,7 +85,8 @@
     "lumenflow-init": "./dist/init.js",
     "lumenflow": "./dist/init.js",
     "lumenflow-release": "./dist/release.js",
-    "lumenflow-docs-sync": "./dist/docs-sync.js"
+    "lumenflow-docs-sync": "./dist/docs-sync.js",
+    "backlog-prune": "./dist/backlog-prune.js"
   },
   "files": [
     "dist",
