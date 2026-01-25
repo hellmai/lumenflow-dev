@@ -220,3 +220,163 @@ if (result.success) {
 ```
 
 See `@lumenflow/core` package exports for all available schemas and types.
+
+## Adapter Classes
+
+WU-1094 introduces concrete adapter implementations that wrap the existing functions:
+
+### Context Adapters
+
+```typescript
+import {
+  SimpleGitLocationAdapter,
+  SimpleGitStateAdapter,
+  FileSystemWuStateAdapter,
+} from '@lumenflow/core';
+
+// Create adapters implementing port interfaces
+const locationResolver = new SimpleGitLocationAdapter();
+const gitStateReader = new SimpleGitStateAdapter();
+const wuStateReader = new FileSystemWuStateAdapter();
+
+// Use adapters
+const location = await locationResolver.resolveLocation();
+const gitState = await gitStateReader.readGitState();
+const wuState = await wuStateReader.readWuState('WU-1094', '/repo');
+```
+
+### Validation Adapters
+
+```typescript
+import { CommandRegistryAdapter } from '@lumenflow/core';
+
+const registry = new CommandRegistryAdapter();
+const definition = registry.getCommandDefinition('wu:done');
+const validCommands = registry.getValidCommandsForContext(context);
+```
+
+### Recovery Adapters
+
+```typescript
+import { RecoveryAnalyzerAdapter } from '@lumenflow/core';
+
+const analyzer = new RecoveryAnalyzerAdapter();
+const analysis = await analyzer.analyzeRecovery(context);
+```
+
+## Use Cases with Dependency Injection
+
+WU-1094 introduces use case classes with constructor injection for all dependencies:
+
+### ComputeContextUseCase
+
+Orchestrates context computation using injected adapters.
+
+```typescript
+import {
+  ComputeContextUseCase,
+  SimpleGitLocationAdapter,
+  SimpleGitStateAdapter,
+  FileSystemWuStateAdapter,
+} from '@lumenflow/core';
+
+// Manual wiring
+const useCase = new ComputeContextUseCase(
+  new SimpleGitLocationAdapter(),
+  new SimpleGitStateAdapter(),
+  new FileSystemWuStateAdapter(),
+);
+
+const context = await useCase.execute({ wuId: 'WU-1094' });
+console.log(context.location.type); // 'main' or 'worktree'
+```
+
+### ValidateCommandUseCase
+
+Validates commands against WU context.
+
+```typescript
+import { ValidateCommandUseCase, CommandRegistryAdapter } from '@lumenflow/core';
+
+const useCase = new ValidateCommandUseCase(new CommandRegistryAdapter());
+
+const result = await useCase.execute('wu:done', context);
+if (!result.valid) {
+  console.error(result.errors[0].message);
+  console.log('Fix:', result.errors[0].fixCommand);
+}
+```
+
+### AnalyzeRecoveryUseCase
+
+Analyzes WU state for recovery issues.
+
+```typescript
+import { AnalyzeRecoveryUseCase, RecoveryAnalyzerAdapter } from '@lumenflow/core';
+
+const useCase = new AnalyzeRecoveryUseCase(new RecoveryAnalyzerAdapter());
+
+const analysis = await useCase.execute(context);
+if (analysis.hasIssues) {
+  for (const action of analysis.actions) {
+    console.log(`Action: ${action.description}`);
+    console.log(`Command: ${action.command}`);
+  }
+}
+```
+
+## Factory Functions (DI Container)
+
+For convenience, factory functions create fully wired use cases with default or custom adapters:
+
+```typescript
+import {
+  createComputeContextUseCase,
+  createValidateCommandUseCase,
+  createAnalyzeRecoveryUseCase,
+  createContextAdapters,
+  createValidationAdapters,
+  createRecoveryAdapters,
+} from '@lumenflow/core';
+
+// Use defaults
+const computeContext = createComputeContextUseCase();
+const validateCommand = createValidateCommandUseCase();
+const analyzeRecovery = createAnalyzeRecoveryUseCase();
+
+// Or inject custom adapters (useful for testing)
+const mockLocationResolver = {
+  resolveLocation: async () => ({
+    type: 'main' as const,
+    cwd: '/test',
+    gitRoot: '/test',
+    mainCheckout: '/test',
+    worktreeName: null,
+    worktreeWuId: null,
+  }),
+};
+
+const testUseCase = createComputeContextUseCase({
+  locationResolver: mockLocationResolver,
+  // gitStateReader and wuStateReader use defaults
+});
+```
+
+## Backwards Compatible Functions
+
+For simple use cases, convenience functions are available:
+
+```typescript
+import { computeWuContext, validateCommand, analyzeRecoveryIssues } from '@lumenflow/core';
+
+// Compute context (uses default adapters internally)
+const context = await computeWuContext({ wuId: 'WU-1094' });
+
+// Validate a command
+const validation = await validateCommand('wu:done', context);
+
+// Analyze for recovery issues
+const recovery = await analyzeRecoveryIssues(context);
+```
+
+These wrap the use case factories for drop-in use.

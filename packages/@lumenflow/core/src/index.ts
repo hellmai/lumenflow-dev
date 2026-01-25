@@ -214,3 +214,49 @@ export {
   RecoveryActionSchema,
   RecoveryAnalysisSchema,
 } from './domain/recovery.schemas.js';
+
+// WU-1094: Adapters - Concrete implementations of port interfaces
+export {
+  // Context adapters
+  SimpleGitLocationAdapter,
+  SimpleGitStateAdapter,
+  FileSystemWuStateAdapter,
+  // Validation adapters
+  CommandRegistryAdapter,
+  // Recovery adapters
+  RecoveryAnalyzerAdapter,
+} from './adapters/index.js';
+
+// WU-1094: Use Cases - Application layer business logic
+export {
+  // Context use cases
+  ComputeContextUseCase,
+  type ComputeContextOptions,
+  // Validation use cases
+  ValidateCommandUseCase,
+  // Recovery use cases
+  AnalyzeRecoveryUseCase,
+} from './usecases/index.js';
+
+// WU-1094: Dependency Injection - Factory functions for wiring
+export {
+  // Adapter factory functions
+  createContextAdapters,
+  createValidationAdapters,
+  createRecoveryAdapters,
+  // Use case factory functions
+  createComputeContextUseCase,
+  createValidateCommandUseCase,
+  createAnalyzeRecoveryUseCase,
+  // Backwards compatible convenience functions
+  computeWuContext,
+  validateCommand,
+  analyzeRecoveryIssues,
+  // Types
+  type ContextAdapters,
+  type ValidationAdapters,
+  type RecoveryAdapters,
+  type CreateComputeContextOptions,
+  type CreateValidateCommandOptions,
+  type CreateAnalyzeRecoveryOptions,
+} from './context-di.js';
