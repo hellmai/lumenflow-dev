@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — Framework: Core
 - [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — Framework: Core
 - [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — Framework: Core
   (No items ready)
