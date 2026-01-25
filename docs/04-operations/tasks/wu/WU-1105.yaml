@@ -6,11 +6,13 @@ status: in_progress
 priority: P1
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/init-plan.ts
+  - packages/@lumenflow/cli/package.json
+  - package.json
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/**
+    - packages/@lumenflow/cli/src/__tests__/init-plan.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1105.done
@@ -22,15 +24,20 @@ blocked_by:
   - WU-1102
   - WU-1103
   - WU-1104
-spec_refs:
-  - lumenflow://plans/unified-rolling-music.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-25T23:19:57.079Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1105
+session_id: b0938c18-3b04-4770-bb9e-cbe2b2ed2d42
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:19:57.086Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +48,3 @@ acceptance:
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
   - pnpm docs:generate includes init:plan in CLI reference
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1105
-claimed_at: 2026-01-25T23:19:57.079Z
-baseline_main_sha: 6afa78b16df39939f264de909927d94f5aecada2
-session_id: b0938c18-3b04-4770-bb9e-cbe2b2ed2d42
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-25T23:19:57.086Z
