@@ -2,7 +2,7 @@ id: WU-1107
 title: 'INIT-003 Phase 3c: Migrate state:bootstrap command'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -32,8 +32,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate state-bootstrap.mjs from PatientPath tools/. One-time migration utility from WU YAMLs to state store. Convert to TypeScript, add bin entry, write tests.
+description: Migrate state-bootstrap.mjs from PatientPath tools/. One-time migration utility from WU
+  YAMLs to state store. Convert to TypeScript, add bin entry, write tests.
 acceptance:
   - state-bootstrap.ts exists in packages/@lumenflow/cli/src/
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1107
+claimed_at: 2026-01-25T23:50:28.499Z
+baseline_main_sha: 27c42237dd5ac7cdfce794c3fdc919944b485ce6
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:50:28.504Z

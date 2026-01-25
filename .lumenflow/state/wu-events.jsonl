@@ -63,3 +63,4 @@
 {"type":"release","wuId":"WU-1112","reason":"Releasing to work on WU-1109 as instructed by user","timestamp":"2026-01-25T23:43:23.481Z"}
 {"type":"claim","wuId":"WU-1109","lane":"Framework: CLI","title":"INIT-003 Phase 4b: Migrate git operations (5 tools)","timestamp":"2026-01-25T23:43:37.524Z"}
 {"type":"claim","wuId":"WU-1111","lane":"Framework: CLI","title":"INIT-003 Phase 5b: Migrate guards & validation (7 tools)","timestamp":"2026-01-25T23:44:49.302Z"}
+{"type":"claim","wuId":"WU-1107","lane":"Framework: Core","title":"INIT-003 Phase 3c: Migrate state:bootstrap command","timestamp":"2026-01-25T23:50:28.527Z"}
