@@ -86,7 +86,11 @@
     "lumenflow": "./dist/init.js",
     "lumenflow-release": "./dist/release.js",
     "lumenflow-docs-sync": "./dist/docs-sync.js",
-    "backlog-prune": "./dist/backlog-prune.js"
+    "backlog-prune": "./dist/backlog-prune.js",
+    "file-read": "./dist/file-read.js",
+    "file-write": "./dist/file-write.js",
+    "file-edit": "./dist/file-edit.js",
+    "file-delete": "./dist/file-delete.js"
   },
   "files": [
     "dist",
