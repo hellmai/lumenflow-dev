@@ -2,7 +2,7 @@ id: WU-1094
 title: 'INIT-002 Phase 2: Implement adapters and dependency injection'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -59,3 +59,5 @@ session_id: 2d594681-c1bd-439e-be76-c49f710688a5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-25T12:28:35.714Z
+locked: true
+completed_at: 2026-01-25T12:38:53.338Z
