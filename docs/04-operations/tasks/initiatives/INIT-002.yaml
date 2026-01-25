@@ -1,14 +1,42 @@
 id: INIT-002
 slug: hex-architecture-core
 title: Hexagonal Architecture for @lumenflow/core Public API
-description: ''
-status: draft
+description: >-
+  Refactor WU-1090 modules (context, validation, recovery) to hexagonal
+  architecture pattern. Required for public npm package: external users
+  need injectable interfaces and swappable implementations. Currently only
+  ~4% of @lumenflow/core uses hex (orchestration layer); this initiative
+  extends it to the context-aware validation system.
+status: open
 priority: P2
 owner: tom@hellm.ai
 created: 2026-01-25
 target_date: 2026-02-15
-phases: []
-success_metrics: []
-labels: []
+phases:
+  - id: 1
+    title: Ports & Domain Layer
+    status: pending
+    description: Define port interfaces and Zod schemas for context/validation/recovery
+  - id: 2
+    title: Adapters & DI
+    status: pending
+    description: Implement adapters and dependency injection with factory functions
+  - id: 3
+    title: Documentation & ADR
+    status: pending
+    description: Create ADR documenting hex as target architecture plus migration guide
+success_metrics:
+  - All context/validation/recovery exports have port interfaces
+  - External users can inject custom implementations
+  - Zod schemas as single source of truth for domain types
+  - ADR documents hex as target architecture
+  - Zero breaking changes to existing public API
+labels:
+  - architecture
+  - public-api
+  - hex
 wus:
   - WU-1093
+  - WU-1094
+  - WU-1095
+related_plan: lumenflow://plans/drifting-swimming-orbit.md
