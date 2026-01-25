@@ -33,9 +33,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create Architecture Decision Record documenting hexagonal architecture as the target pattern for @lumenflow/core. Include migration guide for external consumers showing how to inject custom implementations.
+description: Create Architecture Decision Record documenting hexagonal architecture as the target
+  pattern for @lumenflow/core. Include migration guide for external consumers showing how to inject
+  custom implementations.
 acceptance:
   - 'ADR-001: Hexagonal Architecture Decision created in docs/04-operations/adr/'
   - Migration guide for external consumers documented
   - Updated README with DI examples
   - API documentation reflects new interfaces
+  - 'Documentation: Publish ADR to Astral Starlight architecture section'
