@@ -1,0 +1,41 @@
+id: WU-1096
+title: 'P3: Cleanup minor bugs from WU-1090 review'
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P3
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/core/src/recovery/recovery-analyzer.ts
+  - packages/@lumenflow/core/src/context/location-resolver.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-recover.test.ts
+    - packages/@lumenflow/core/src/__tests__/recovery/recovery-analyzer.test.ts
+    - packages/@lumenflow/core/src/__tests__/context/location-resolver.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1096.done
+dependencies: []
+labels:
+  - cleanup
+  - wu-1090
+  - p3
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Fix minor bugs discovered in WU-1090 code review: (1) Shell escaping uses JSON.stringify() instead of proper shell escaping in wu-recover.ts (2) Recovery analyzer suggests non-existent wu:cleanup and wu:repair commands (3) DETACHED location type is defined but never returned by location-resolver.ts.'
+acceptance:
+  - Shell escaping in wu-recover.ts uses proper shell-escape library or git argument array syntax
+  - Recovery analyzer suggests wu:recover --action X instead of wu:cleanup/wu:repair
+  - DETACHED location type detected and returned when HEAD is detached
+  - Unit tests cover all three fixes
