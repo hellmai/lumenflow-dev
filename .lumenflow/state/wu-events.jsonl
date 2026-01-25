@@ -55,3 +55,4 @@
 {"type":"claim","wuId":"WU-1108","lane":"Framework: CLI","title":"INIT-003 Phase 4a: Migrate file operations (4 tools)","timestamp":"2026-01-25T22:56:46.528Z"}
 {"type":"complete","wuId":"WU-1104","timestamp":"2026-01-25T23:08:40.041Z"}
 {"type":"complete","wuId":"WU-1108","timestamp":"2026-01-25T23:10:20.612Z"}
+{"type":"claim","wuId":"WU-1105","lane":"Framework: CLI","title":"INIT-003 Phase 3a: Migrate init:plan command","timestamp":"2026-01-25T23:19:57.104Z"}
