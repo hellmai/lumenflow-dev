@@ -1,6 +1,6 @@
 id: WU-1110
 title: 'INIT-003 Phase 5a: Migrate metrics commands'
-lane: 'Framework: CLI'
+lane: 'Framework: Metrics'
 type: feature
 status: ready
 priority: P2
