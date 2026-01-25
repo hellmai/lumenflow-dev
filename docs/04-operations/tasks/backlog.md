@@ -20,18 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — Framework: CLI
-- [WU-1096 — P3: Cleanup minor bugs from WU-1090 review](wu/WU-1096.yaml) — Framework: Core
-- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — Content: Documentation
-- [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml) — Framework: Core
-- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — Framework: Core
-- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — Framework: Core
-- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
