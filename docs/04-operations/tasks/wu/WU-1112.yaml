@@ -24,8 +24,9 @@ spec_refs:
   - lumenflow://plans/unified-rolling-music.md
 risks:
   - 'lumenflow:upgrade workflow gap: updates package.json on main but pnpm install blocked by worktree discipline'
+  - 'lumenflow:upgrade missing packages: only checks 4 of 7 @lumenflow/* packages'
 notes: |
-  KNOWN ISSUE: lumenflow:upgrade modifies package.json on main via micro-worktree,
+  KNOWN ISSUE 1: lumenflow:upgrade modifies package.json on main via micro-worktree,
   but subsequent pnpm install is blocked by worktree hooks.
 
   SOLUTION: Use worktree pattern consistent with wu:* tooling:
@@ -36,6 +37,13 @@ notes: |
   5. Merge to main via micro-worktree pattern (like wu:done)
 
   This maintains worktree discipline consistency across all tooling.
+
+  KNOWN ISSUE 2: ExampleApp lumenflow-upgrade.mjs LUMENFLOW_PACKAGES array (line 34-39)
+  only includes 4 packages but there are 7 @lumenflow/* packages:
+  - Missing: @lumenflow/agent, @lumenflow/cli, @lumenflow/initiatives
+  - Has: @lumenflow/core, @lumenflow/memory, @lumenflow/metrics, @lumenflow/shims
+
+  SOLUTION: Migration must include all 7 packages in LUMENFLOW_PACKAGES constant.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -51,6 +59,7 @@ acceptance:
   - rotate-progress.ts exists
   - lumenflow-upgrade.ts exists with tests
   - lumenflow-upgrade uses worktree pattern (install runs in worktree, not main)
+  - lumenflow-upgrade checks all 7 @lumenflow/* packages (not just 4)
   - trace-gen.ts exists
   - All bin entries added
   - '>80% coverage on migrated code'
