@@ -2,7 +2,7 @@ id: WU-1100
 title: 'INIT-003 Phase 1: Sync CLI docs to lumenflow.dev'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths: []
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Run pnpm docs:generate to sync CLI reference with current code. Verify wu:status and wu:recover appear on lumenflow.dev. Ensure pnpm docs:validate passes.
+description: Run pnpm docs:generate to sync CLI reference with current code. Verify wu:status and
+  wu:recover appear on lumenflow.dev. Ensure pnpm docs:validate passes.
 acceptance:
   - pnpm docs:validate passes (no drift)
   - wu:status documented on lumenflow.dev/reference/cli
   - wu:recover documented on lumenflow.dev/reference/cli
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1100
+claimed_at: 2026-01-25T20:32:41.318Z
+baseline_main_sha: 25444e15388cfe82aceebe993aff3b9bf72d99b4
+session_id: 361e04a5-e283-4afb-a9c0-eb73830dafd8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T20:32:41.326Z
