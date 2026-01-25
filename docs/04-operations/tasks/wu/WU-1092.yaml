@@ -1,0 +1,41 @@
+id: WU-1092
+title: 'P2: Fix worktreeCleanPredicate checking wrong git state'
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-25
+code_paths:
+  - packages/@lumenflow/core/src/validation/types.ts
+  - packages/@lumenflow/core/src/context/context-computer.ts
+  - packages/@lumenflow/core/src/validation/command-registry.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/validation/command-registry.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1092.done
+dependencies: []
+blocked_by:
+  - WU-1091
+labels:
+  - validation
+  - wu-1090
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: worktreeCleanPredicate in command-registry.ts checks context.git.isDirty which reflects the main checkout git state, not the worktree. When wu:done runs from main (as required), the predicate may pass even if the worktree is dirty. Need to extend WuContext with worktreeGit and check that instead.
+acceptance:
+  - WuContext type extended with optional worktreeGit field
+  - computeContext() reads worktree git state when WU has a worktree
+  - worktreeCleanPredicate checks worktreeGit.isDirty when available
+  - Validation correctly fails when worktree has uncommitted changes
+  - Unit tests verify worktree state is checked, not main state
