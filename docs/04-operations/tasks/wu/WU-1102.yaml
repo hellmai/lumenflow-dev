@@ -2,7 +2,7 @@ id: WU-1102
 title: 'INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -31,8 +31,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate WU helper modules from ExampleApp tools/lib/. Convert wu-yaml, wu-constants, wu-paths, wu-helpers, wu-state-store, wu-checkpoint to TypeScript.
+description: Migrate WU helper modules from ExampleApp tools/lib/. Convert wu-yaml, wu-constants,
+  wu-paths, wu-helpers, wu-state-store, wu-checkpoint to TypeScript.
 acceptance:
   - All WU helpers migrated to TypeScript
   - Existing tests from ExampleApp ported to Vitest
   - '>80% coverage on migrated code'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1102
+claimed_at: 2026-01-25T20:58:36.130Z
+baseline_main_sha: e45854e6e0fd00f5fc0ffa9d53c69cb041254b2d
+session_id: 733c754c-63aa-485f-b300-0f2863b8a047
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T20:58:36.134Z
