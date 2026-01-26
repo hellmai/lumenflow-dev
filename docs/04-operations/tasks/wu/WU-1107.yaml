@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/state-bootstrap.ts
 tests:
   manual: []
   unit:
@@ -20,15 +20,20 @@ phase: 3
 blocked_by:
   - WU-1101
   - WU-1104
-spec_refs:
-  - lumenflow://plans/unified-rolling-music.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-25T23:50:28.499Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1107
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:50:28.504Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +43,3 @@ acceptance:
   - state-bootstrap.ts exists in packages/@lumenflow/cli/src/
   - bin entry added to CLI package.json
   - Tests written with >80% coverage
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1107
-claimed_at: 2026-01-25T23:50:28.499Z
-baseline_main_sha: 27c42237dd5ac7cdfce794c3fdc919944b485ce6
-session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-25T23:50:28.504Z
