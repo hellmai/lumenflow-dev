@@ -79,6 +79,8 @@ Claude Code can fail after noisy commands if their full output accumulates in th
 - For long sessions, checkpoint and summarise:
   - `pnpm mem:checkpoint "…" --wu WU-XXX`
   - `pnpm mem:summarize --wu WU-XXX`
+- If your client supports hooks, add a pre-clear checkpoint hook to auto-run `pnpm mem:checkpoint`
+  before `/clear` or `/compact`.
 
 ---
 
