@@ -1,0 +1,117 @@
+# WU Creation Checklist
+
+**Last updated:** {{DATE}}
+
+Before running `pnpm wu:create`, verify these items.
+
+---
+
+## Step 1: Check Valid Lanes
+
+```bash
+grep -A 30 "lanes:" .lumenflow.config.yaml
+```
+
+**Format:** `"Parent: Sublane"` (colon + single space)
+
+Examples:
+
+- `"Framework: CLI"`
+- `"Framework: Core"`
+- `"Operations: CI/CD"`
+- `"Content: Documentation"`
+
+---
+
+## Step 2: Required Fields
+
+| Field              | Required For | Example                                          |
+| ------------------ | ------------ | ------------------------------------------------ |
+| `--id`             | All          | `WU-1234`                                        |
+| `--lane`           | All          | `"Experience: Chat"`                             |
+| `--title`          | All          | `"Add feature"`                                  |
+| `--description`    | All          | `"Context: ... Problem: ... Solution: ..."`      |
+| `--acceptance`     | All          | `--acceptance "Works"` (repeatable)              |
+| `--exposure`       | All          | `ui`, `api`, `backend-only`, `documentation`     |
+| `--code-paths`     | Code WUs     | `"src/a.ts,src/b.ts"`                            |
+| `--test-paths-unit`| Code WUs     | `"src/__tests__/a.test.ts"`                      |
+| `--spec-refs`      | Feature WUs  | `"lumenflow://plans/WU-XXX-plan.md"`             |
+
+---
+
+## Step 3: Plan Storage
+
+Plans go in `$LUMENFLOW_HOME/plans/` (NOT in project):
+
+```bash
+mkdir -p $LUMENFLOW_HOME/plans
+# or if LUMENFLOW_HOME is not set:
+mkdir -p ~/.lumenflow/plans
+
+# Create your plan
+vim ~/.lumenflow/plans/WU-XXX-plan.md
+```
+
+Reference in wu:create:
+
+```bash
+--spec-refs "lumenflow://plans/WU-XXX-plan.md"
+```
+
+---
+
+## Step 4: Validate First
+
+```bash
+pnpm wu:create --id WU-XXX ... --validate
+```
+
+Fix errors, then remove `--validate` to create.
+
+---
+
+## Complete Example
+
+```bash
+pnpm wu:create \
+  --id WU-1234 \
+  --lane "Framework: CLI" \
+  --title "Add feature X" \
+  --description "Context: Users need X. Problem: X doesn't exist. Solution: Add X." \
+  --acceptance "Feature X works as specified" \
+  --acceptance "Unit tests pass with >90% coverage" \
+  --code-paths "packages/@lumenflow/cli/src/x.ts" \
+  --test-paths-unit "packages/@lumenflow/cli/__tests__/x.test.ts" \
+  --exposure backend-only \
+  --spec-refs "lumenflow://plans/WU-1234-plan.md"
+```
+
+---
+
+## Common Errors
+
+### "Lane format invalid"
+
+**Cause:** Missing colon or space in lane format.
+
+**Fix:** Use `"Parent: Sublane"` format (colon + space).
+
+### "Missing required field"
+
+**Cause:** Required field not provided.
+
+**Fix:** Add the missing `--field` argument.
+
+### "WU already exists"
+
+**Cause:** WU with this ID already exists.
+
+**Fix:** Use a different ID or check existing WUs.
+
+---
+
+## After Creation
+
+1. Review the created YAML: `cat docs/04-operations/tasks/wu/WU-XXX.yaml`
+2. Claim the WU: `pnpm wu:claim --id WU-XXX --lane "Lane"`
+3. cd to worktree: `cd worktrees/<lane>-wu-xxx`
