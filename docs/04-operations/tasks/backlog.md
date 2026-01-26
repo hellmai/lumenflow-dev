@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
