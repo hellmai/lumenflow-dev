@@ -1,12 +1,15 @@
 id: WU-1128
 title: Add upgrade guide to lumenflow.dev
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
   - apps/docs/src/content/docs/getting-started/upgrade.mdx
+  - apps/docs/src/content/docs/reference/changelog.mdx
+  - apps/docs/src/content/docs/reference/compatibility.mdx
+  - apps/docs/astro.config.mjs
 tests:
   manual:
     - Verify upgrade page renders correctly on lumenflow.dev
