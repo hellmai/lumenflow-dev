@@ -5,10 +5,10 @@ _Last updated: 2026-01-26_
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml)
 
 ## Completed
 
-- [WU-1113 — INIT-003 Phase 7: Publish @lumenflow/cli update](wu/WU-1113.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -43,3 +43,4 @@ _Last updated: 2026-01-26_
 - [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
 - [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
 - [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — 2026-01-26
+- [WU-1113 — INIT-003 Phase 7: Publish @lumenflow/cli update](wu/WU-1113.yaml) — 2026-01-26
