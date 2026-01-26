@@ -15,6 +15,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1135.done
 dependencies: []
+initiative: INIT-005
+phase: 4
 risks: []
 notes: ''
 requires_review: false
@@ -25,7 +27,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update constraints.md with mandatory pre-write check. Add same check to agent templates. Include docs-only exception for documentation WUs.
+description: Update constraints.md with mandatory pre-write check. Add same check to agent
+  templates. Include docs-only exception for documentation WUs.
 acceptance:
   - constraints.md Constraint 1 includes MANDATORY PRE-WRITE CHECK section
   - Pre-write check verifies relative paths and worktree location
