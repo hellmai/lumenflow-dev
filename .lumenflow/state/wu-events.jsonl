@@ -79,6 +79,7 @@
 {"type":"complete","wuId":"WU-1115","timestamp":"2026-01-26T10:29:31.785Z"}
 {"type":"claim","wuId":"WU-1116","lane":"Content: Documentation","title":"Docs Audit: Internal to Public - Agent onboarding + constraints","timestamp":"2026-01-26T10:30:53.819Z"}
 {"type":"claim","wuId":"WU-1122","lane":"Content: Documentation","title":"Docs Audit: Language Support - Java, Ruby, and PHP guides","timestamp":"2026-01-26T10:41:54.945Z"}
+{"type":"complete","wuId":"WU-1122","timestamp":"2026-01-26T10:50:04.290Z"}
 {"type":"claim","wuId":"WU-1117","lane":"Content: Documentation","title":"Docs Audit: Language Support - Python and .NET guides","timestamp":"2026-01-26T10:42:14.488Z"}
 {"type":"claim","wuId":"WU-1121","lane":"Content: Documentation","title":"Docs Audit: Language Support - Go and Rust guides","timestamp":"2026-01-26T10:42:34.137Z"}
 {"type":"complete","wuId":"WU-1121","timestamp":"2026-01-26T10:49:42.299Z"}

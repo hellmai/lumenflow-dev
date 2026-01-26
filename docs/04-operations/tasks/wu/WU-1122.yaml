@@ -2,7 +2,7 @@ id: WU-1122
 title: 'Docs Audit: Language Support - Java, Ruby, and PHP guides'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -41,3 +41,5 @@ acceptance:
   - Ruby language guide with Bundler and RSpec examples
   - PHP language guide with Composer and PHPUnit examples
   - pnpm docs:build succeeds
+locked: true
+completed_at: 2026-01-26T10:50:04.273Z

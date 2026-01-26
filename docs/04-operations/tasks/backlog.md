@@ -26,8 +26,6 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — Content: Documentation
-- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — Content: Documentation
-- [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -73,4 +71,4 @@ sections:
 - [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml)
 - [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml)
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml)
-- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml)
+- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml)
