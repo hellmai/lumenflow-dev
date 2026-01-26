@@ -25,7 +25,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
-- [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -80,3 +79,4 @@ sections:
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml)
 - [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml)
 - [WU-1124 — INIT-004 Phase 2: Refactor docs-sync to read from templates](wu/WU-1124.yaml)
+- [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml)

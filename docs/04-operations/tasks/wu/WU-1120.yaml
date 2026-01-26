@@ -2,7 +2,7 @@ id: WU-1120
 title: 'Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-01-26
 code_paths:
@@ -15,8 +15,8 @@ code_paths:
   - apps/docs/astro.config.mjs
 tests:
   manual:
-    - 'pnpm docs:build succeeds without errors'
-    - 'All new pages render in sidebar navigation'
+    - pnpm docs:build succeeds without errors
+    - All new pages render in sidebar navigation
   unit: []
   e2e: []
 artifacts:
@@ -61,3 +61,5 @@ session_id: 79054159-30d9-49ee-86b8-4d6aff16d98f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T11:27:16.850Z
+locked: true
+completed_at: 2026-01-26T11:37:24.320Z
