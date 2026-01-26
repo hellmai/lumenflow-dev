@@ -2,7 +2,7 @@ id: WU-1125
 title: 'INIT-004 Phase 3: Document upgrade path'
 lane: 'Framework: CLI'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -31,3 +31,11 @@ description: Create UPGRADING.md and document npm update workflow
 acceptance:
   - UPGRADING.md.template created
   - README updated with upgrade section
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1125
+claimed_at: 2026-01-26T11:07:21.104Z
+baseline_main_sha: 974feaa89a9732dc83c31c04df72dfa075dd5ef2
+session_id: 0ab7c2e7-9c12-417c-88e6-1b61f3b08fa6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T11:07:21.109Z

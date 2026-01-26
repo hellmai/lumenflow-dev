@@ -88,3 +88,4 @@
 {"type":"complete","wuId":"WU-1126","timestamp":"2026-01-26T11:02:46.611Z"}
 {"type":"claim","wuId":"WU-1123","lane":"Framework: CLI","title":"INIT-004 Phase 1: Template sync script","timestamp":"2026-01-26T10:52:23.396Z"}
 {"type":"complete","wuId":"WU-1123","timestamp":"2026-01-26T11:05:31.092Z"}
+{"type":"claim","wuId":"WU-1125","lane":"Framework: CLI","title":"INIT-004 Phase 3: Document upgrade path","timestamp":"2026-01-26T11:07:21.121Z"}
