@@ -1,0 +1,33 @@
+id: WU-1121
+title: 'Docs Audit: Language Support - Go and Rust guides'
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-26
+code_paths:
+  - apps/docs/src/content/docs/language-guides/rust.mdx
+tests:
+  manual:
+    - pnpm docs:build succeeds
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1121.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Create language guides for Go and Rust - systems programming languages with existing presets. These guides complement WU-1117 (Python/.NET).
+acceptance:
+  - Go language guide with quickstart
+  - Rust language guide with quickstart
+  - Examples of gates.preset configuration
+  - pnpm docs:build succeeds
