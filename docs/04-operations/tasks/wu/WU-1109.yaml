@@ -2,7 +2,7 @@ id: WU-1109
 title: 'INIT-003 Phase 4b: Migrate git operations (5 tools)'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -52,3 +52,5 @@ acceptance:
   - guard-main-branch.ts exists with tests
   - All bin entries added to CLI package.json
   - '>80% coverage'
+locked: true
+completed_at: 2026-01-26T00:08:29.147Z
