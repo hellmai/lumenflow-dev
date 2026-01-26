@@ -1,0 +1,392 @@
+---
+title: API Documentation
+description: TypeScript API reference for LumenFlow packages
+---
+
+import { Aside, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+LumenFlow provides TypeScript API documentation generated from source code using TypeDoc.
+
+## Package APIs
+
+<CardGrid>
+  <Card title="@lumenflow/core" icon="setting">
+    WU lifecycle, state machine, validators, configuration
+  </Card>
+  <Card title="@lumenflow/cli" icon="laptop">
+    Command implementations, argument parsing
+  </Card>
+  <Card title="@lumenflow/memory" icon="document">
+    Session tracking, checkpoints, signals
+  </Card>
+  <Card title="@lumenflow/agent" icon="rocket">
+    Skill loading, agent definitions, verification
+  </Card>
+</CardGrid>
+
+## Core Package API
+
+### WU Lifecycle
+
+```typescript
+import {
+  createWu,
+  claimWu,
+  completeWu,
+  blockWu,
+  unblockWu,
+  type WuSpec,
+  type WuStatus,
+} from '@lumenflow/core';
+
+// Create a new WU
+const wu = await createWu({
+  id: 'WU-042',
+  title: 'Add email validation',
+  lane: 'Framework: Core',
+  description: 'Add validation for email fields',
+  acceptance: ['Email validates on blur', 'Unit tests pass'],
+  codePaths: ['src/validation/email.ts'],
+});
+
+// Claim for work
+await claimWu({
+  wuId: 'WU-042',
+  lane: 'Framework: Core',
+});
+
+// Complete when done
+await completeWu({
+  wuId: 'WU-042',
+  skipGates: false,
+});
+```
+
+### State Machine
+
+```typescript
+import {
+  WuStateMachine,
+  WuStatus,
+  WuTransition,
+  canTransition,
+} from '@lumenflow/core';
+
+// Check if transition is valid
+const canClaim = canTransition(WuStatus.READY, WuStatus.IN_PROGRESS);
+// true
+
+// Get valid transitions
+const machine = new WuStateMachine();
+const validTransitions = machine.getValidTransitions(WuStatus.IN_PROGRESS);
+// [WuStatus.BLOCKED, WuStatus.WAITING, WuStatus.DONE]
+```
+
+### Configuration
+
+```typescript
+import {
+  loadConfig,
+  validateConfig,
+  type LumenFlowConfig,
+} from '@lumenflow/core';
+
+// Load config from file
+const config = await loadConfig('/path/to/.lumenflow.config.yaml');
+
+// Validate config
+const issues = validateConfig(config);
+if (issues.length > 0) {
+  console.error('Config issues:', issues);
+}
+```
+
+### Context Validation
+
+```typescript
+import {
+  resolveLocation,
+  readGitState,
+  readWuState,
+  validateContext,
+  LocationType,
+} from '@lumenflow/core';
+
+// Resolve current location
+const location = await resolveLocation();
+if (location.type === LocationType.WORKTREE) {
+  console.log(`In worktree: ${location.worktreeName}`);
+}
+
+// Read git state
+const gitState = await readGitState();
+if (gitState.isDirty) {
+  console.log('Uncommitted changes present');
+}
+
+// Full context validation
+const result = await validateContext({
+  command: 'wu:done',
+  wuId: 'WU-042',
+});
+```
+
+### Agent Branch Detection
+
+```typescript
+import {
+  isAgentBranch,
+  isAgentBranchWithDetails,
+  resolveAgentPatterns,
+} from '@lumenflow/core';
+
+// Check if branch is an agent branch
+const isAgent = await isAgentBranch('claude/session-12345');
+// true
+
+// Get detailed result
+const result = await isAgentBranchWithDetails('claude/session-12345');
+console.log(result.patternResult.source);
+// 'registry' | 'merged' | 'override' | 'config' | 'defaults'
+```
+
+## Memory Package API
+
+### Session Tracking
+
+```typescript
+import {
+  startSession,
+  endSession,
+  getActiveSession,
+  type AgentSession,
+} from '@lumenflow/memory';
+
+// Start a session
+const session = await startSession({
+  wuId: 'WU-042',
+  agentType: 'claude-code',
+});
+
+// Get active session
+const active = await getActiveSession('WU-042');
+
+// End session
+await endSession(session.id);
+```
+
+### Checkpoints
+
+```typescript
+import {
+  createCheckpoint,
+  loadCheckpoint,
+  listCheckpoints,
+} from '@lumenflow/memory';
+
+// Create checkpoint
+await createCheckpoint({
+  wuId: 'WU-042',
+  message: 'Tests passing, starting implementation',
+  context: {
+    filesModified: ['src/validation/email.ts'],
+    testsAdded: ['src/__tests__/email.test.ts'],
+  },
+});
+
+// Load latest checkpoint
+const checkpoint = await loadCheckpoint('WU-042');
+
+// List all checkpoints
+const checkpoints = await listCheckpoints({ wuId: 'WU-042' });
+```
+
+### Signals
+
+```typescript
+import {
+  sendSignal,
+  getInbox,
+  type Signal,
+} from '@lumenflow/memory';
+
+// Send progress signal
+await sendSignal({
+  wuId: 'WU-042',
+  message: 'Implementation complete',
+  type: 'progress',
+});
+
+// Check inbox
+const signals = await getInbox({
+  since: '1h',
+  lane: 'Framework: Core',
+});
+```
+
+## Agent Package API
+
+### Skill Loading
+
+```typescript
+import {
+  loadSkill,
+  listSkills,
+  validateSkill,
+  type Skill,
+} from '@lumenflow/agent';
+
+// Load a skill
+const skill = await loadSkill('wu-lifecycle');
+console.log(skill.name);
+console.log(skill.allowedTools);
+
+// List available skills
+const skills = await listSkills();
+
+// Validate skill definition
+const issues = await validateSkill('.claude/skills/my-skill/SKILL.md');
+```
+
+### Agent Verification
+
+```typescript
+import {
+  verifyCompletion,
+  type VerificationResult,
+} from '@lumenflow/agent';
+
+// Verify WU completion
+const result = await verifyCompletion('WU-042');
+if (result.passed) {
+  console.log('All acceptance criteria met');
+} else {
+  console.log('Failed:', result.failures);
+}
+```
+
+## CLI Package API
+
+The CLI package is primarily used via commands, but exports some utilities:
+
+```typescript
+import {
+  parseArgs,
+  formatOutput,
+  printTable,
+} from '@lumenflow/cli';
+
+// Parse command arguments
+const args = parseArgs(['--id', 'WU-042', '--lane', 'Core']);
+
+// Format output for display
+const output = formatOutput({
+  status: 'success',
+  message: 'WU completed',
+});
+
+// Print formatted table
+printTable([
+  { id: 'WU-042', status: 'done' },
+  { id: 'WU-043', status: 'ready' },
+]);
+```
+
+## Type Definitions
+
+### WuSpec
+
+```typescript
+interface WuSpec {
+  id: string;
+  title: string;
+  lane: string;
+  type: 'feature' | 'bug' | 'documentation' | 'refactor';
+  status: WuStatus;
+  priority: 'P0' | 'P1' | 'P2' | 'P3';
+  description: string;
+  acceptance: string[];
+  code_paths: string[];
+  test_paths?: {
+    unit?: string[];
+    integration?: string[];
+    e2e?: string[];
+  };
+  dependencies?: string[];
+  blocked_by?: string[];
+  created: string;
+  assigned_to?: string;
+  notes?: string;
+}
+```
+
+### WuStatus
+
+```typescript
+enum WuStatus {
+  READY = 'ready',
+  IN_PROGRESS = 'in_progress',
+  BLOCKED = 'blocked',
+  WAITING = 'waiting',
+  DONE = 'done',
+}
+```
+
+### LocationContext
+
+```typescript
+interface LocationContext {
+  type: LocationType;
+  cwd: string;
+  gitRoot: string;
+  mainCheckout: string;
+  worktreeName: string | null;
+  worktreeWuId: string | null;
+}
+
+enum LocationType {
+  MAIN = 'main',
+  WORKTREE = 'worktree',
+  DETACHED = 'detached',
+  UNKNOWN = 'unknown',
+}
+```
+
+### GitState
+
+```typescript
+interface GitState {
+  branch: string | null;
+  isDetached: boolean;
+  isDirty: boolean;
+  hasStaged: boolean;
+  ahead: number;
+  behind: number;
+  tracking: string | null;
+  modifiedFiles: string[];
+  hasError: boolean;
+  errorMessage: string | null;
+}
+```
+
+## Generating Documentation
+
+To generate TypeDoc documentation locally:
+
+```bash
+# Install TypeDoc (if not already)
+pnpm add -D typedoc typedoc-plugin-markdown
+
+# Generate docs
+pnpm typedoc --out docs/api packages/@lumenflow/*/src/index.ts
+```
+
+<Aside type="note">
+  Full TypeDoc API documentation is available at [api.lumenflow.dev](https://api.lumenflow.dev) (coming soon).
+</Aside>
+
+## See Also
+
+- [Port Interfaces](/reference/ports) - Detailed port interface documentation
+- [Configuration](/reference/config) - Full config reference
+- [CLI Commands](/reference/cli) - Command reference

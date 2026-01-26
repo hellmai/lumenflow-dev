@@ -1,0 +1,544 @@
+---
+title: Cookbook
+description: Common patterns and recipes for LumenFlow workflows
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+This cookbook provides copy-paste solutions for common LumenFlow scenarios.
+
+## WU Lifecycle Patterns
+
+### Quick Bug Fix
+
+For small, urgent fixes that don't need full WU ceremony:
+
+```bash
+# Create and claim in one flow
+pnpm wu:create \
+  --id WU-999 \
+  --title "Fix null check in auth handler" \
+  --lane "Framework: Core" \
+  --description "Hotfix: Auth handler crashes on null user" \
+  --acceptance "Auth handler gracefully handles null user" \
+  --code-paths "src/auth/handler.ts"
+
+pnpm wu:claim --id WU-999 --lane "Framework: Core"
+cd worktrees/framework-core-wu-999
+
+# Make fix, test, complete
+# ... edit files ...
+pnpm gates
+cd ../..
+pnpm wu:done --id WU-999
+```
+
+### Parallel WUs (Different Lanes)
+
+Work on multiple WUs simultaneously using different lanes:
+
+```bash
+# Terminal 1: Framework work
+pnpm wu:claim --id WU-100 --lane "Framework: Core"
+cd worktrees/framework-core-wu-100
+# Work here...
+
+# Terminal 2: Documentation work
+pnpm wu:claim --id WU-101 --lane "Content: Documentation"
+cd worktrees/content-documentation-wu-101
+# Work here...
+
+# Complete each from main
+cd /path/to/main
+pnpm wu:done --id WU-100
+pnpm wu:done --id WU-101
+```
+
+### Blocked WU
+
+When a WU can't proceed due to external dependency:
+
+```bash
+# Block the WU
+pnpm wu:block --id WU-042 --reason "Waiting for API spec from backend team"
+
+# Later, when unblocked
+pnpm wu:unblock --id WU-042
+
+# Resume work
+cd worktrees/framework-core-wu-042
+```
+
+### Resume Orphaned WU
+
+If a WU was abandoned mid-work:
+
+```bash
+# Check WU state
+pnpm wu:status --id WU-042
+
+# If worktree exists but state is inconsistent
+pnpm wu:recover --id WU-042
+
+# Follow suggested fix
+pnpm wu:recover --id WU-042 --action resume
+```
+
+## Git Patterns
+
+### Commit Message Format
+
+```bash
+git commit -m "wu(wu-042): add email validation
+
+- Add validateEmail function
+- Cover edge cases for empty strings
+- Include unit tests with 95% coverage"
+```
+
+### Undo Uncommitted Changes
+
+If you made changes in the wrong place:
+
+```bash
+# Check where changes are
+git status
+
+# If in main checkout
+git stash
+cd worktrees/lane-wu-xxx
+git stash pop
+```
+
+### Sync Worktree with Main
+
+If main has updates you need:
+
+```bash
+cd worktrees/lane-wu-xxx
+
+# Fetch latest
+git fetch origin main
+
+# Rebase your changes on top
+git rebase origin/main
+```
+
+### Fix Diverged Branch
+
+If your lane branch diverged from main:
+
+```bash
+cd worktrees/lane-wu-xxx
+
+# Check divergence
+git log --oneline --left-right HEAD...origin/main
+
+# Rebase to fix
+git fetch origin main
+git rebase origin/main
+
+# Force push lane branch (safe for lane branches)
+git push origin lane/framework-core/wu-042 --force-with-lease
+```
+
+## Gate Patterns
+
+### Fix Format Failures
+
+```bash
+# Auto-fix formatting
+pnpm format
+
+# Stage and amend
+git add -A
+git commit --amend --no-edit
+
+# Re-run gates
+pnpm gates
+```
+
+### Fix Lint Failures
+
+```bash
+# Check lint issues
+pnpm lint
+
+# Auto-fix what's possible
+pnpm lint -- --fix
+
+# Manual fixes for remaining issues
+# Then re-run gates
+pnpm gates
+```
+
+### Fix Type Errors
+
+```bash
+# Run typecheck
+pnpm typecheck
+
+# Fix first error first (often cascades)
+# Then re-run
+pnpm typecheck
+```
+
+### Skip Gates (Emergency Only)
+
+<Aside type="danger">
+  Only use when failures are pre-existing, not caused by your changes.
+</Aside>
+
+```bash
+# Verify failure exists on main
+git checkout main
+pnpm gates
+# Confirm same failure exists
+
+# Return to worktree
+cd worktrees/lane-wu-xxx
+
+# Skip with reason and fix WU
+cd ../..
+pnpm wu:done --id WU-042 --skip-gates \
+  --reason "Pre-existing lint failure in unrelated file" \
+  --fix-wu WU-050
+```
+
+## Testing Patterns
+
+### Run Tests for Single Package
+
+```bash
+pnpm test --filter @lumenflow/core
+```
+
+### Run Tests with Coverage
+
+```bash
+pnpm test --filter @lumenflow/core -- --coverage
+```
+
+### Run Specific Test File
+
+```bash
+pnpm test --filter @lumenflow/core -- src/__tests__/validation/email.test.ts
+```
+
+### Watch Mode During Development
+
+```bash
+pnpm test --filter @lumenflow/core -- --watch
+```
+
+### Update Snapshots
+
+```bash
+pnpm test --filter @lumenflow/core -- --update-snapshots
+```
+
+## Memory Layer Patterns
+
+### Start Agent Session
+
+```bash
+# Begin tracking work
+pnpm agent:session --id WU-042
+
+# Signal progress
+pnpm mem:signal "Tests written, starting implementation"
+
+# Create checkpoint before risky changes
+pnpm mem:checkpoint --wu WU-042
+```
+
+### Recover Context After Break
+
+```bash
+# Check what's pending
+pnpm mem:ready
+
+# Output shows:
+# - Active WUs
+# - Last signals
+# - Files touched
+# - Next steps
+```
+
+### Coordinate Multiple Agents
+
+```bash
+# Agent 1 signals
+pnpm mem:signal "Completed API routes" --wu WU-100
+
+# Agent 2 checks inbox
+pnpm mem:inbox --since 1h
+
+# Agent 2 sees signal and can proceed
+```
+
+## Initiative Patterns
+
+### Link WU to Initiative
+
+```bash
+pnpm initiative:add:wu --initiative INIT-007 --wu WU-042
+```
+
+### Check Initiative Status
+
+```bash
+pnpm initiative:status --id INIT-007
+```
+
+### Bulk Assign WUs
+
+```bash
+pnpm initiative:bulk:assign:wus \
+  --initiative INIT-007 \
+  --wus WU-042,WU-043,WU-044
+```
+
+## Debugging Patterns
+
+### Check WU Status
+
+```bash
+# Full status with suggested commands
+pnpm wu:status --id WU-042
+```
+
+### List All Active WUs
+
+```bash
+# All in progress
+pnpm wu:list --status in_progress
+
+# By lane
+pnpm wu:list --lane "Framework: Core"
+```
+
+### View Event History
+
+```bash
+# Recent events for a WU
+cat .lumenflow/state/wu-events.jsonl | grep WU-042
+```
+
+### Clean Up Stale Worktrees
+
+```bash
+# Preview what would be cleaned
+pnpm wu:prune
+
+# Execute cleanup
+pnpm wu:prune --execute
+```
+
+## Configuration Patterns
+
+### Minimal Config for Solo Dev
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+lanes:
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+
+gates:
+  execution:
+    preset: 'node'
+```
+
+### Full Team Config
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+directories:
+  wu_specs: docs/04-operations/tasks/wu
+  stamps: .lumenflow/stamps
+
+lanes:
+  enforcement:
+    require_parent: true
+    allow_custom: false
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths: ['packages/@app/core/**']
+    - name: 'Experience: Web'
+      wip_limit: 1
+      code_paths: ['apps/web/**']
+    - name: 'Content: Documentation'
+      wip_limit: 2
+      code_paths: ['docs/**']
+
+gates:
+  execution:
+    preset: 'node'
+    format: 'pnpm prettier --check .'
+    lint: 'pnpm eslint .'
+    typecheck: 'pnpm tsc --noEmit'
+    test: 'pnpm vitest run'
+
+git:
+  mainBranch: main
+  defaultRemote: origin
+```
+
+### Python Project Config
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    preset: 'python'
+    format: 'ruff format --check .'
+    lint: 'ruff check . && mypy .'
+    test: 'pytest'
+```
+
+### Multi-Language Monorepo
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    # Custom script that runs appropriate gates per package
+    format: './scripts/format-check.sh'
+    lint: './scripts/lint-all.sh'
+    typecheck: './scripts/typecheck-all.sh'
+    test: './scripts/test-all.sh'
+```
+
+## CI/CD Patterns
+
+### GitHub Action for Gates
+
+```yaml
+# .github/workflows/gates.yml
+name: LumenFlow Gates
+on: [push, pull_request]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          preset: node
+```
+
+### Gate with Custom Steps
+
+```yaml
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          format: 'pnpm prettier --check .'
+          lint: 'pnpm eslint . --max-warnings 0'
+          typecheck: 'pnpm tsc --noEmit'
+          test: 'pnpm vitest run --coverage'
+```
+
+## Troubleshooting Recipes
+
+### "Not in a worktree"
+
+```bash
+# Check current location
+pwd
+
+# If in main
+cd worktrees/lane-wu-xxx
+
+# If worktree doesn't exist
+pnpm wu:claim --id WU-XXX --lane "Your Lane"
+cd worktrees/lane-wu-xxx
+```
+
+### "WU already claimed"
+
+```bash
+# Check who/what claimed it
+pnpm wu:status --id WU-042
+
+# If stale, release it
+pnpm wu:release --id WU-042
+
+# Then reclaim
+pnpm wu:claim --id WU-042 --lane "Your Lane"
+```
+
+### "Merge conflict in wu:done"
+
+```bash
+# Stay in worktree
+cd worktrees/lane-wu-xxx
+
+# Fetch and rebase
+git fetch origin main
+git rebase origin/main
+
+# Resolve conflicts
+# Then force push lane branch
+git push origin lane/lane-name/wu-xxx --force-with-lease
+
+# Retry wu:done
+cd ../..
+pnpm wu:done --id WU-XXX
+```
+
+### "Gates pass locally but fail in CI"
+
+```bash
+# Common causes:
+# 1. Node version mismatch
+node --version  # Check matches CI
+
+# 2. Missing dependencies
+rm -rf node_modules
+pnpm install
+
+# 3. Cached build artifacts
+pnpm clean
+pnpm build
+
+# Re-run gates
+pnpm gates
+```
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Create WU | `pnpm wu:create --id WU-XXX ...` |
+| Claim WU | `pnpm wu:claim --id WU-XXX --lane "Lane"` |
+| Complete WU | `pnpm wu:done --id WU-XXX` |
+| Block WU | `pnpm wu:block --id WU-XXX --reason "..."` |
+| Check status | `pnpm wu:status --id WU-XXX` |
+| Run gates | `pnpm gates` |
+| Fix format | `pnpm format` |
+| Run tests | `pnpm test` |
+| Memory checkpoint | `pnpm mem:checkpoint` |
+| Check ready work | `pnpm mem:ready` |
+
+## Next Steps
+
+- [A Day with LumenFlow](/guides/a-day-with-lumenflow) - Complete workflow walkthrough
+- [Troubleshooting](/guides/troubleshooting) - More detailed solutions
+- [CLI Reference](/reference/cli) - Full command documentation

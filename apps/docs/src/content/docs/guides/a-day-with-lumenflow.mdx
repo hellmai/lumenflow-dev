@@ -1,0 +1,464 @@
+---
+title: A Day with LumenFlow
+description: Follow a complete development workflow from morning standup to deployment
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+This walkthrough follows a realistic day of development using LumenFlow, showing both AI-assisted and traditional developer workflows side by side.
+
+## Morning: Review and Plan
+
+### Check What's Ready
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    ```bash
+    # AI agent starts by checking memory
+    pnpm mem:ready
+    # Output: 2 WUs ready in your lanes
+
+    # Review backlog
+    pnpm wu:list --status ready --lane "Framework: Core"
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    ```bash
+    # Developer checks the backlog
+    cat docs/04-operations/tasks/backlog.md
+
+    # Or use the list command
+    pnpm wu:list --status ready
+    ```
+  </TabItem>
+</Tabs>
+
+### Pick a Work Unit
+
+Today we'll work on WU-042: "Add email validation to user signup".
+
+```yaml
+# docs/04-operations/tasks/wu/WU-042.yaml
+id: WU-042
+title: Add email validation to user signup
+lane: 'Framework: Core'
+status: ready
+acceptance:
+  - Email field validates format on blur
+  - Invalid emails show error message
+  - Valid emails allow form submission
+  - Unit tests cover validation logic with 90% coverage
+code_paths:
+  - packages/@lumenflow/core/src/validation/email.ts
+  - packages/@lumenflow/core/src/__tests__/validation/email.test.ts
+```
+
+## Mid-Morning: Claim and Setup
+
+### Claim the WU
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    ```bash
+    # Agent claims with full context
+    pnpm wu:claim --id WU-042 --lane "Framework: Core"
+    cd worktrees/framework-core-wu-042
+
+    # Agent loads relevant skills
+    # /skill tdd-workflow
+    # /skill code-quality
+
+    # Start agent session for memory tracking
+    pnpm agent:session --id WU-042
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    ```bash
+    # Developer claims the WU
+    pnpm wu:claim --id WU-042 --lane "Framework: Core"
+
+    # IMMEDIATELY cd into the worktree
+    cd worktrees/framework-core-wu-042
+
+    # Verify you're in the right place
+    pwd
+    # /home/user/project/worktrees/framework-core-wu-042
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  Always `cd` into the worktree immediately after claiming. Working in the main checkout will cause hook failures and state inconsistencies.
+</Aside>
+
+### Understand the Task
+
+Review the acceptance criteria:
+
+1. **Email field validates format on blur** - Need validation function
+2. **Invalid emails show error message** - Need error handling
+3. **Valid emails allow form submission** - Need success path
+4. **Unit tests cover validation logic** - TDD approach
+
+## Late Morning: Test-First Development
+
+### Write Failing Tests (RED)
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    The AI agent follows TDD workflow skill and writes tests first:
+
+    ```typescript
+    // packages/@lumenflow/core/src/__tests__/validation/email.test.ts
+    import { describe, it, expect } from 'vitest';
+    import { validateEmail } from '../../validation/email';
+
+    describe('validateEmail', () => {
+      it('should accept valid email formats', () => {
+        expect(validateEmail('user@example.com').valid).toBe(true);
+        expect(validateEmail('user.name@domain.co.uk').valid).toBe(true);
+        expect(validateEmail('user+tag@example.com').valid).toBe(true);
+      });
+
+      it('should reject invalid email formats', () => {
+        expect(validateEmail('invalid').valid).toBe(false);
+        expect(validateEmail('missing@domain').valid).toBe(false);
+        expect(validateEmail('@nodomain.com').valid).toBe(false);
+        expect(validateEmail('spaces in@email.com').valid).toBe(false);
+      });
+
+      it('should return error message for invalid emails', () => {
+        const result = validateEmail('invalid');
+        expect(result.valid).toBe(false);
+        expect(result.error).toBe('Please enter a valid email address');
+      });
+
+      it('should handle edge cases', () => {
+        expect(validateEmail('').valid).toBe(false);
+        expect(validateEmail('   ').valid).toBe(false);
+      });
+    });
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    Developer creates test file first:
+
+    ```bash
+    # Create test file
+    mkdir -p packages/@lumenflow/core/src/__tests__/validation
+    touch packages/@lumenflow/core/src/__tests__/validation/email.test.ts
+    ```
+
+    Then writes tests covering all acceptance criteria.
+  </TabItem>
+</Tabs>
+
+### Verify Tests Fail
+
+```bash
+pnpm test --filter @lumenflow/core
+# Expected: 4 tests fail (module not found)
+```
+
+<Aside type="tip">
+  This confirms our tests actually test something. If tests pass before implementation, they're not testing the right thing.
+</Aside>
+
+## Early Afternoon: Implementation (GREEN)
+
+### Write Minimal Implementation
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    Agent implements just enough to pass tests:
+
+    ```typescript
+    // packages/@lumenflow/core/src/validation/email.ts
+    export interface EmailValidationResult {
+      valid: boolean;
+      error?: string;
+    }
+
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    export function validateEmail(email: string): EmailValidationResult {
+      const trimmed = email.trim();
+
+      if (!trimmed) {
+        return { valid: false, error: 'Please enter a valid email address' };
+      }
+
+      if (!EMAIL_REGEX.test(trimmed)) {
+        return { valid: false, error: 'Please enter a valid email address' };
+      }
+
+      return { valid: true };
+    }
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    Developer creates implementation file:
+
+    ```bash
+    mkdir -p packages/@lumenflow/core/src/validation
+    touch packages/@lumenflow/core/src/validation/email.ts
+    ```
+
+    Then writes the validation function.
+  </TabItem>
+</Tabs>
+
+### Verify Tests Pass
+
+```bash
+pnpm test --filter @lumenflow/core
+# Expected: 4 tests pass
+```
+
+### Check Coverage
+
+```bash
+pnpm test --filter @lumenflow/core -- --coverage
+# Verify >= 90% coverage on new code
+```
+
+## Mid-Afternoon: Refactor and Polish
+
+### Refactor (Keep Tests Green)
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    Agent improves code quality while keeping tests green:
+
+    ```typescript
+    // packages/@lumenflow/core/src/validation/email.ts
+
+    // Extract constants
+    const VALIDATION_MESSAGES = {
+      INVALID_EMAIL: 'Please enter a valid email address',
+    } as const;
+
+    // More robust regex from established library pattern
+    const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    export interface EmailValidationResult {
+      valid: boolean;
+      error?: string;
+    }
+
+    export function validateEmail(email: string): EmailValidationResult {
+      const trimmed = email.trim();
+
+      if (!trimmed || !EMAIL_REGEX.test(trimmed)) {
+        return {
+          valid: false,
+          error: VALIDATION_MESSAGES.INVALID_EMAIL,
+        };
+      }
+
+      return { valid: true };
+    }
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    Developer refactors:
+    - Extract magic strings to constants
+    - Improve regex pattern
+    - Add JSDoc comments
+    - Run tests after each change
+  </TabItem>
+</Tabs>
+
+### Run Tests Again
+
+```bash
+pnpm test --filter @lumenflow/core
+# All tests still pass
+```
+
+## Late Afternoon: Gates and Completion
+
+### Run Quality Gates
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    ```bash
+    # Agent runs gates in worktree
+    pnpm gates
+
+    # Output:
+    # [gates] Running format check...
+    # [gates] Running lint...
+    # [gates] Running typecheck...
+    # [gates] Running tests...
+    # [gates] All gates passed
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    ```bash
+    # Developer runs gates
+    pnpm gates
+
+    # If format fails:
+    pnpm format
+    # Then re-run gates
+    ```
+  </TabItem>
+</Tabs>
+
+### Commit Changes
+
+```bash
+# Stage changes
+git add packages/@lumenflow/core/src/validation/
+git add packages/@lumenflow/core/src/__tests__/validation/
+
+# Commit with WU reference
+git commit -m "wu(wu-042): add email validation with tests
+
+- Add validateEmail function with format validation
+- Return error messages for invalid inputs
+- 100% test coverage on validation logic"
+```
+
+### Complete the WU
+
+<Tabs syncKey="workflow">
+  <TabItem label="AI-Assisted">
+    ```bash
+    # Agent signals completion
+    pnpm mem:signal "Implementation complete, gates passing"
+
+    # Return to main and complete
+    cd /home/user/project
+    pnpm wu:done --id WU-042
+
+    # Output:
+    # [wu:done] Running gates in worktree...
+    # [wu:done] Gates passed
+    # [wu:done] Merging to main (fast-forward)...
+    # [wu:done] Creating stamp...
+    # [wu:done] Cleaning up worktree...
+    # [wu:done] WU-042 completed successfully
+    ```
+  </TabItem>
+  <TabItem label="Traditional">
+    ```bash
+    # Return to main checkout
+    cd /home/user/project
+
+    # Complete the WU
+    pnpm wu:done --id WU-042
+
+    # This:
+    # 1. Runs gates in worktree
+    # 2. Fast-forward merges to main
+    # 3. Creates .lumenflow/stamps/WU-042.done
+    # 4. Updates backlog.md and status.md
+    # 5. Removes the worktree
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  Always run `wu:done` from the main checkout, not from within the worktree.
+</Aside>
+
+## End of Day: Review
+
+### Check Completion
+
+```bash
+# Verify stamp exists
+ls .lumenflow/stamps/WU-042.done
+
+# Check git log
+git log --oneline -3
+# abc1234 wu(wu-042): done - add email validation
+# def5678 wu(wu-042): claim for framework-core lane
+# ...
+```
+
+### Update Memory (AI-Assisted)
+
+```bash
+# End agent session
+pnpm agent:session:end
+
+# Create checkpoint for context recovery
+pnpm mem:checkpoint --wu WU-042
+```
+
+## Complete Timeline
+
+| Time | Activity | Commands |
+|------|----------|----------|
+| 9:00 | Review ready WUs | `pnpm wu:list --status ready` |
+| 9:15 | Claim WU-042 | `pnpm wu:claim --id WU-042` |
+| 9:20 | cd to worktree | `cd worktrees/framework-core-wu-042` |
+| 10:00 | Write failing tests | TDD RED phase |
+| 10:30 | Run tests (fail) | `pnpm test` |
+| 11:00 | Implement feature | TDD GREEN phase |
+| 11:30 | Run tests (pass) | `pnpm test` |
+| 14:00 | Refactor | TDD REFACTOR phase |
+| 14:30 | Check coverage | `pnpm test -- --coverage` |
+| 15:00 | Run gates | `pnpm gates` |
+| 15:30 | Commit changes | `git commit` |
+| 16:00 | Complete WU | `pnpm wu:done --id WU-042` |
+
+## Common Issues
+
+### "Gates failing on format"
+
+```bash
+pnpm format
+git add -A
+git commit --amend --no-edit
+pnpm gates
+```
+
+### "Working in wrong directory"
+
+If you made changes in main instead of worktree:
+
+```bash
+# Check where changes are
+git status
+
+# If in main, stash and apply to worktree
+git stash
+cd worktrees/framework-core-wu-042
+git stash pop
+```
+
+### "wu:done from worktree"
+
+```
+ERROR: WRONG_LOCATION - wu:done must be run from main checkout
+
+FIX: cd /home/user/project && pnpm wu:done --id WU-042
+```
+
+## Key Takeaways
+
+<CardGrid>
+  <Card title="Claim then cd" icon="rocket">
+    Always `cd` into the worktree immediately after claiming.
+  </Card>
+  <Card title="Test first" icon="pencil">
+    Write failing tests before implementation (RED-GREEN-REFACTOR).
+  </Card>
+  <Card title="Gates before done" icon="approve-check">
+    Run `pnpm gates` before `wu:done` to catch issues early.
+  </Card>
+  <Card title="Complete from main" icon="setting">
+    Run `pnpm wu:done` from the main checkout, not the worktree.
+  </Card>
+</CardGrid>
+
+## Next Steps
+
+- [Solo Developer Workflow](/guides/solo-workflow) - Simplified flow for individual work
+- [Team Workflow](/guides/team-workflow) - Coordinating with teammates
+- [AI Agent Integration](/guides/ai-agents) - Deep dive on AI workflows
+- [Troubleshooting](/guides/troubleshooting) - Common issues and solutions

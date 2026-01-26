@@ -1,0 +1,358 @@
+---
+title: Custom Skills Tutorial
+description: Build custom skills to extend AI agent capabilities in LumenFlow
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+Skills are knowledge bundles that give AI agents domain-specific expertise. This tutorial shows you how to create, test, and deploy custom skills for your project.
+
+## What is a Skill?
+
+A skill is a focused markdown document with YAML frontmatter that:
+
+- Provides **domain knowledge** to AI agents
+- Defines **when to activate** (triggers)
+- Specifies **allowed tools** for the task
+- References **canonical sources** for accuracy
+
+<CardGrid>
+  <Card title="Focused" icon="pencil">
+    One capability per skill. If it does two things, split it.
+  </Card>
+  <Card title="Actionable" icon="rocket">
+    Contains commands, patterns, and decision trees.
+  </Card>
+  <Card title="Sourced" icon="document">
+    Points to canonical documentation for full context.
+  </Card>
+  <Card title="Versioned" icon="setting">
+    Frontmatter tracks updates and compatibility.
+  </Card>
+</CardGrid>
+
+## Skill Structure
+
+Every skill follows this structure:
+
+```
+.claude/skills/
+  my-skill/
+    SKILL.md       # The skill definition
+```
+
+### SKILL.md Anatomy
+
+```markdown
+---
+name: my-skill
+description: One-line description for skill selection
+version: 1.0.0
+source: docs/path/to/canonical-source.md
+source_sections: Section 2.3, Appendix A
+last_updated: 2026-01-15
+allowed-tools: Read, Bash, Grep, Write
+---
+
+# My Skill Name
+
+**Source**: `docs/path/to/canonical-source.md` (canonical)
+
+## When to Use
+
+Activate this skill when:
+
+- Trigger condition 1
+- Trigger condition 2
+
+**Use skill first**: What to try before escalating.
+
+**Spawn sub-agent when**: When to delegate to specialized agent.
+
+## Core Content
+
+The main knowledge for this skill...
+
+## Commands
+
+\`\`\`bash
+# Key commands the agent should know
+command --example
+\`\`\`
+
+## Decision Tree
+
+When X, do Y...
+
+---
+
+**Full spec**: [link to canonical source](path/to/source.md)
+```
+
+## Creating a Skill
+
+<Steps>
+
+1. **Identify the capability**
+
+   What single thing should this skill enable? Examples:
+   - Database migration workflow
+   - API documentation generation
+   - Security audit checklist
+   - Performance profiling
+
+2. **Find the canonical source**
+
+   Skills should reference existing documentation, not duplicate it:
+   ```bash
+   # Check for existing docs
+   ls docs/**/*.md
+   grep -r "topic" docs/
+   ```
+
+3. **Create the skill directory**
+
+   ```bash
+   mkdir -p .claude/skills/my-skill
+   ```
+
+4. **Write the skill definition**
+
+   ```bash
+   cat > .claude/skills/my-skill/SKILL.md << 'EOF'
+   ---
+   name: my-skill
+   description: Brief description for AI to understand when to use
+   version: 1.0.0
+   source: docs/reference/my-topic.md
+   last_updated: 2026-01-15
+   allowed-tools: Read, Bash
+   ---
+
+   # My Skill
+
+   Content here...
+   EOF
+   ```
+
+5. **Add to the index**
+
+   Update `.claude/skills/INDEX.md`:
+   ```markdown
+   | [my-skill](my-skill/SKILL.md) | Trigger phrase | Brief description |
+   ```
+
+</Steps>
+
+## Example: Database Migration Skill
+
+Here's a complete example for database migrations:
+
+```markdown
+---
+name: database-migration
+description: Database schema migration workflow. Use when creating migrations, running migrations, or handling migration conflicts.
+version: 1.0.0
+source: docs/database/migrations.md
+last_updated: 2026-01-15
+allowed-tools: Read, Bash, Write
+---
+
+# Database Migration Skill
+
+**Source**: `docs/database/migrations.md` (canonical)
+
+## When to Use
+
+Activate this skill when:
+
+- Creating new database tables or columns
+- Modifying existing schema
+- Handling migration conflicts
+- Rolling back failed migrations
+
+**Use skill first**: Follow the migration checklist below.
+
+**Spawn database-expert agent when**: Complex multi-table migrations, data transformations, or production rollbacks.
+
+## Migration Checklist
+
+1. Check current migration status
+2. Create migration file with descriptive name
+3. Write idempotent up/down migrations
+4. Test locally with fresh database
+5. Run in staging before production
+
+## Commands
+
+\`\`\`bash
+# Check status
+pnpm db:migrate:status
+
+# Create new migration
+pnpm db:migrate:create add_user_preferences
+
+# Run pending migrations
+pnpm db:migrate:up
+
+# Rollback last migration
+pnpm db:migrate:down
+\`\`\`
+
+## Migration File Pattern
+
+\`\`\`sql
+-- Up migration
+CREATE TABLE IF NOT EXISTS user_preferences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  theme VARCHAR(20) DEFAULT 'system',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Down migration
+DROP TABLE IF EXISTS user_preferences;
+\`\`\`
+
+## Decision Tree
+
+**Adding a column?**
+- Nullable? Add with default, no downtime
+- Non-nullable? Add nullable, backfill, add constraint
+
+**Removing a column?**
+- First: Stop reading from it in code
+- Then: Remove in next migration
+
+---
+
+**Full spec**: [migrations.md](docs/database/migrations.md)
+```
+
+## Skill Best Practices
+
+### Do
+
+- **One capability per skill** - Split if doing multiple things
+- **Include decision trees** - Help agents make good choices
+- **Reference canonical sources** - Don't duplicate documentation
+- **Provide runnable commands** - Agents learn by doing
+- **Version appropriately** - Update version when content changes
+
+### Don't
+
+- **Don't include implementation code** - Skills guide, code implements
+- **Don't be too broad** - "JavaScript development" is not a skill
+- **Don't skip the source** - Without a canonical source, drift happens
+- **Don't forget allowed-tools** - Restricts what agents can do with this skill
+
+## Allowed Tools Reference
+
+| Tool | Use For |
+|------|---------|
+| `Read` | Reading files (always safe) |
+| `Bash` | Running commands, scripts |
+| `Write` | Creating new files |
+| `Edit` | Modifying existing files |
+| `Grep` | Searching codebase |
+| `Glob` | Finding files by pattern |
+
+<Aside type="tip">
+  Most skills only need `Read, Bash, Grep`. Add `Write` and `Edit` only if the skill involves file creation or modification.
+</Aside>
+
+## Testing Skills
+
+### Manual Testing
+
+Load the skill and verify it works:
+
+```bash
+# In Claude Code
+/skill my-skill
+
+# Then ask a related question
+"How do I create a database migration?"
+```
+
+### Validation
+
+Run the skill validator:
+
+```bash
+pnpm validate:agent:skills
+```
+
+This checks:
+- Frontmatter schema validity
+- Source file existence
+- Required sections present
+- Tool restrictions valid
+
+## Skill Loading
+
+### In Claude Code
+
+```bash
+/skill my-skill
+```
+
+### Programmatic
+
+```typescript
+import { loadSkill } from '@lumenflow/agent';
+
+const skill = await loadSkill('my-skill');
+console.log(skill.content);
+```
+
+### Via wu:spawn
+
+When spawning agents, skills are auto-suggested based on WU context:
+
+```bash
+pnpm wu:spawn --id WU-123
+# Output includes recommended skills
+```
+
+## Organizing Skills
+
+### By Domain
+
+```
+.claude/skills/
+  database-migration/
+  database-seeding/
+  api-documentation/
+  security-audit/
+```
+
+### By Team
+
+```
+.claude/skills/
+  platform-deploy/
+  platform-monitoring/
+  frontend-components/
+  frontend-testing/
+```
+
+## Sharing Skills
+
+Skills can be shared across projects by publishing to a registry or copying the skill directory.
+
+### Local Copy
+
+```bash
+cp -r project-a/.claude/skills/my-skill project-b/.claude/skills/
+```
+
+### Via lumenflow.dev Registry
+
+Coming soon: Central skill registry at `lumenflow.dev/skills/`.
+
+## Next Steps
+
+- Review existing skills: `ls .claude/skills/`
+- Read the [Skills Index](/reference/skills) for built-in skills
+- Learn about [Agent Integration](/guides/ai-agents) for full agent workflows
