@@ -2,7 +2,7 @@ id: WU-1132
 title: Harden worktree validation hook to fail-closed
 lane: 'Operations: CI/CD'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -34,3 +34,11 @@ acceptance:
   - Hook blocks on empty tool_name for Write/Edit
   - Hook blocks on missing file_path for Write/Edit
   - Audit logging added to .claude/audit/main-write-blocks.log
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1132
+claimed_at: 2026-01-26T23:34:42.377Z
+baseline_main_sha: 013728b994ecba505c3e1805ee5c9cac62323fc4
+session_id: 8c16a1bc-e9c7-4814-837d-be4f38b746da
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:34:42.382Z

@@ -7,6 +7,7 @@ _Last updated: 2026-01-26_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml)
 - [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml)
+- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml)
 
 ## Completed
 
