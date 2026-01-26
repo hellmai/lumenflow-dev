@@ -81,13 +81,14 @@ After upgrading, sync your agent documentation to get the latest skills and guid
 
 </Steps>
 
-## Upgrading to v2.1.1
+## Upgrading to v2.1.2
 
 <Badge text="Current" variant="success" />
 
-Version 2.1.1 includes these key improvements:
+Version 2.1.2 includes these key improvements:
 
 - **Micro-worktree upgrade** — The `lumenflow:upgrade` command now uses micro-worktree isolation, so you can upgrade without creating a WU
+- **Guard worktree detection** — `guard-main-branch` now correctly allows operations when running from inside a worktree on a lane branch
 - **Skills tutorial** — New documentation for creating custom skills
 - **TypeDoc API docs** — Auto-generated API documentation
 - **Cookbook examples** — Real-world usage patterns
@@ -102,7 +103,7 @@ pnpm lumenflow:upgrade --latest
 pnpm exec lumenflow docs:sync --force
 
 # 3. Verify
-pnpm lumenflow --version  # Should show 2.1.1
+pnpm lumenflow --version  # Should show 2.1.2
 ```
 
 ## Upgrading from v1.x to v2.x
@@ -121,13 +122,13 @@ All `@lumenflow/*` packages (except metrics) should be at the same version for b
 
 | Package                  | Current |
 | ------------------------ | ------- |
-| `@lumenflow/core`        | 2.1.1   |
-| `@lumenflow/cli`         | 2.1.1   |
-| `@lumenflow/memory`      | 2.1.1   |
-| `@lumenflow/agent`       | 2.1.1   |
-| `@lumenflow/initiatives` | 2.1.1   |
-| `@lumenflow/shims`       | 2.1.1   |
-| `@lumenflow/metrics`     | 2.1.1   |
+| `@lumenflow/core`        | 2.1.2   |
+| `@lumenflow/cli`         | 2.1.2   |
+| `@lumenflow/memory`      | 2.1.2   |
+| `@lumenflow/agent`       | 2.1.2   |
+| `@lumenflow/initiatives` | 2.1.2   |
+| `@lumenflow/shims`       | 2.1.2   |
+| `@lumenflow/metrics`     | 2.1.2   |
 
 See the [Compatibility Matrix](/reference/compatibility) for full version details.
 
