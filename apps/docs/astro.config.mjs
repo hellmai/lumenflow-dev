@@ -23,8 +23,10 @@ export default defineConfig({
           label: 'Getting Started',
           items: [
             { label: 'What is LumenFlow?', slug: 'getting-started/introduction' },
+            { label: 'Why LumenFlow?', slug: 'getting-started/why-lumenflow' },
             { label: 'Quickstart', slug: 'getting-started/quickstart' },
             { label: 'Install GitHub App', slug: 'getting-started/github-app' },
+            { label: 'FAQ', slug: 'getting-started/faq' },
           ],
         },
         {
@@ -46,6 +48,7 @@ export default defineConfig({
             { label: 'Agent Branch Patterns', slug: 'guides/agent-patterns' },
             { label: 'Initiatives', slug: 'guides/initiatives' },
             { label: 'Flow Metrics', slug: 'guides/metrics' },
+            { label: 'Troubleshooting', slug: 'guides/troubleshooting' },
           ],
         },
         {
@@ -55,6 +58,7 @@ export default defineConfig({
             { label: 'Configuration', slug: 'reference/config' },
             { label: 'WU Schema', slug: 'reference/wu-schema' },
             { label: 'Port Interfaces', slug: 'reference/ports' },
+            { label: 'GitHub Action', slug: 'reference/github-action' },
           ],
         },
       ],

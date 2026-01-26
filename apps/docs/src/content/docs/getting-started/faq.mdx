@@ -1,0 +1,235 @@
+---
+title: FAQ
+description: Frequently asked questions about LumenFlow
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## General
+
+### What is LumenFlow?
+
+LumenFlow is an open-source delivery methodology for AI-augmented software teams. It provides a structured workflow where humans and AI agents collaborate using Work Units (WUs), automated gates, and lane-based flow.
+
+### Is LumenFlow a project management tool?
+
+No. LumenFlow is a methodology with CLI tooling. It integrates with your existing Git workflow and CI/CD pipeline. You can use it alongside tools like Jira, Linear, or GitHub Projects for higher-level planning.
+
+### Do I need AI agents to use LumenFlow?
+
+No. LumenFlow works for human-only teams too. The workflow (WUs, gates, lanes) benefits any team that wants faster feedback and evidence-based completion. AI integration is a bonus, not a requirement.
+
+### Is LumenFlow free?
+
+The CLI and methodology are open source (Apache-2.0). The GitHub App has free and paid tiers based on usage.
+
+## Work Units (WUs)
+
+### What's the difference between a WU and a ticket?
+
+A WU is an executable specification. It includes:
+
+- Acceptance criteria that define "done"
+- Code paths that scope what can be changed
+- Test paths for verification
+
+A ticket is typically just a description. A WU is a contract.
+
+### How big should a WU be?
+
+Small enough to complete in a single session (2-4 hours for humans, faster for AI). If a WU takes longer, split it.
+
+Rule of thumb:
+
+- 1-3 acceptance criteria
+- Touches 1-2 code paths
+- Has clear, testable outcomes
+
+### Can multiple people work on the same WU?
+
+No. WIP=1 per lane means one WU per lane at a time. If you need parallel work, use multiple lanes or split the WU.
+
+### What if I find a bug while working on a WU?
+
+If the bug is in your `code_paths` and small (under 10 lines), fix it in place. Otherwise, create a new WU for the bug and finish your current work first.
+
+## Lanes
+
+### What are lanes?
+
+Lanes are parallel tracks for different domains of work. Examples:
+
+- `Framework: Core` - Core business logic
+- `Experience: UI` - User interface
+- `Operations: Infrastructure` - DevOps and CI/CD
+
+Each lane can have one WU in progress at a time (WIP=1).
+
+### How do I choose lane names?
+
+Use the "Parent: Sublane" format. Common parents:
+
+- Framework (code packages)
+- Experience (UI/UX)
+- Operations (infrastructure, CI/CD)
+- Content (documentation, marketing)
+
+### Can I have custom lanes?
+
+Yes, define them in `.lumenflow.config.yaml`:
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Framework: Payments'
+      code_paths: ['src/payments/**']
+    - name: 'Experience: Mobile'
+      code_paths: ['apps/mobile/**']
+```
+
+## Gates
+
+### What are gates?
+
+Gates are automated quality checks that run before a WU can be completed:
+
+- Format check (Prettier, gofmt)
+- Lint check (ESLint, ruff)
+- Type check (TypeScript, mypy)
+- Tests (Vitest, pytest)
+
+### Can I skip gates?
+
+Only for pre-existing failures with proper documentation:
+
+```bash
+pnpm wu:done --id WU-042 --skip-gates \
+  --reason "Pre-existing lint failure" \
+  --fix-wu WU-050
+```
+
+Never skip gates for failures introduced by your own work.
+
+### Do gates replace code review?
+
+For most changes, yes. Gates provide faster, more consistent feedback than human review. For critical changes (auth, payments, PHI), use escalation triggers to require human approval.
+
+## Worktrees
+
+### What is a worktree?
+
+A Git worktree is a separate working directory linked to the same repository. LumenFlow creates a worktree for each WU, isolating your work from other changes.
+
+### Why use worktrees instead of branches?
+
+Worktrees provide true isolation:
+
+- Your in-progress changes don't affect others
+- You can switch WUs without stashing
+- Multiple WUs can run in parallel (one per lane)
+
+### What happens to my worktree when I finish?
+
+`pnpm wu:done` automatically:
+
+1. Runs gates in the worktree
+2. Merges to main (fast-forward)
+3. Creates the stamp
+4. Deletes the worktree
+
+## CLI
+
+### Do I need to install the CLI?
+
+The CLI provides the full LumenFlow experience (worktrees, gates, memory). Without it, you can still use LumenFlow with manual WU YAML management and the GitHub App.
+
+### What Node.js version do I need?
+
+Node.js 18 or higher. We recommend Node.js 22.
+
+### Does the CLI work with npm?
+
+Yes. We recommend pnpm, but npm works too:
+
+```bash
+npm install -D @lumenflow/cli
+npx wu-create --id WU-001 ...
+```
+
+## GitHub App
+
+### What does the GitHub App do?
+
+The GitHub App:
+
+- Validates WU specs on PRs
+- Runs gates in CI
+- Enforces WIP limits
+- Reports usage metrics
+
+### Do I need the GitHub App?
+
+No. The CLI works standalone. The GitHub App adds enforcement and team visibility.
+
+### How do I get a LUMENFLOW_TOKEN?
+
+Sign up at [lumenflow.dev](https://lumenflow.dev), create an organization, and generate a token in settings.
+
+## AI Agents
+
+### Which AI tools work with LumenFlow?
+
+Any AI coding assistant that can:
+
+- Read files (WU specs, code)
+- Write code
+- Run commands
+
+Popular options: Claude Code, Cursor, GitHub Copilot, Aider, Continue.
+
+### How do AI agents know what to do?
+
+They read the WU spec:
+
+```yaml
+acceptance:
+  - Users can log in with email/password
+  - JWT tokens issued with 1-hour expiry
+code_paths:
+  - src/auth/
+```
+
+The spec tells them what to build and where to put it.
+
+### Can AI agents run wu:done?
+
+Yes. AI agents can run the full workflow:
+
+```bash
+pnpm wu:claim --id WU-042 --lane "Framework: Core"
+cd worktrees/framework-core-wu-042
+# ... implement ...
+cd /path/to/repo
+pnpm wu:done --id WU-042
+```
+
+<Aside type="caution">
+  AI agents should not use `--skip-gates` without explicit human approval.
+</Aside>
+
+## Troubleshooting
+
+### See [Troubleshooting Guide](/guides/troubleshooting)
+
+Common issues:
+
+- Gate failures
+- WU state issues
+- Worktree problems
+- Git conflicts
+
+## More Questions?
+
+- [GitHub Discussions](https://github.com/hellmai/os/discussions) - Ask the community
+- [Discord](https://discord.gg/lumenflow) - Real-time chat
+- [Documentation](/) - Full reference

@@ -1,0 +1,170 @@
+---
+title: Why LumenFlow?
+description: How LumenFlow compares to Kanban, Scrum, and Shape Up
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+LumenFlow is not another project management tool. It is a delivery methodology designed for AI-augmented software teams, where both humans and AI agents collaborate on the same codebase.
+
+## The Problem with Traditional Methodologies
+
+Most software teams use methodologies designed for human-only workflows:
+
+| Method       | Assumes                              | Breaks When                                   |
+| ------------ | ------------------------------------ | --------------------------------------------- |
+| **Scrum**    | 2-week sprints, ceremonies, velocity | AI can ship 10x faster, sprints feel slow     |
+| **Kanban**   | Visual board, WIP limits, flow       | AI agents overwhelm boards with parallel work |
+| **Shape Up** | 6-week cycles, appetite, betting     | AI makes "betting" obsolete, cycles too long  |
+
+These methodologies were designed when humans were the only workers. They assume:
+
+- Work takes days or weeks
+- Context is held in human heads
+- Progress is measured in story points or cycle time
+
+AI agents change all of this.
+
+## How LumenFlow Is Different
+
+### 1. Work Units, Not Stories or Tickets
+
+Traditional tickets are vague: "Add user authentication"
+
+LumenFlow Work Units are executable specifications:
+
+```yaml
+id: WU-042
+title: Add JWT authentication
+lane: 'Framework: Core'
+type: feature
+acceptance:
+  - Users can authenticate with email/password
+  - JWT tokens issued with 1-hour expiry
+  - Refresh tokens stored in httpOnly cookies
+code_paths:
+  - src/auth/
+test_paths:
+  unit:
+    - src/auth/__tests__/
+```
+
+An AI agent can read this spec and implement it autonomously. A human can verify completion by checking the acceptance criteria.
+
+### 2. Lanes, Not Sprints
+
+Scrum batches work into time-boxed sprints. LumenFlow flows work through parallel lanes.
+
+```
+Lane: Framework: Core     [WU-042 in_progress] [WU-043 ready] [WU-044 ready]
+Lane: Experience: UI      [WU-045 in_progress] [WU-046 blocked]
+Lane: Operations: Infra   [WU-047 done] [WU-048 ready]
+```
+
+Each lane has a WIP limit (typically 1 for solo work, 3 for teams). Work flows continuously instead of waiting for sprint boundaries.
+
+### 3. Gates, Not Reviews
+
+Code review is a bottleneck. Reviewers are busy. PRs sit for days.
+
+LumenFlow replaces manual review with automated gates:
+
+```bash
+pnpm gates
+# Format check... pass
+# Lint check... pass
+# Type check... pass
+# Tests... pass
+# All gates passed!
+```
+
+If gates pass, work is done. No waiting. No negotiation. No "LGTM" comments.
+
+<Aside type="note">
+  Gates don't eliminate human oversight. Critical changes (auth, payments, PHI) can require human
+  approval via escalation triggers in the WU spec.
+</Aside>
+
+### 4. Memory, Not Standups
+
+Daily standups exist because humans forget context overnight. AI agents need explicit context recovery.
+
+LumenFlow's memory layer:
+
+```bash
+# Before stopping work
+pnpm mem:checkpoint --wu WU-042
+
+# Next session (human or AI)
+pnpm mem:ready --wu WU-042
+# Shows: last state, pending work, blockers
+```
+
+No need to ask "what was I working on?" or "where did I leave off?"
+
+### 5. Stamps, Not Done Columns
+
+Kanban boards have "Done" columns. Items move there when someone decides they're done.
+
+LumenFlow creates immutable stamps:
+
+```
+.lumenflow/stamps/WU-042.done
+```
+
+A stamp is created only when:
+
+- All acceptance criteria pass
+- All gates pass
+- Work is merged to main
+
+No ambiguity. No "is this really done?" debates.
+
+## Comparison Table
+
+| Aspect      | Scrum              | Kanban      | Shape Up       | LumenFlow       |
+| ----------- | ------------------ | ----------- | -------------- | --------------- |
+| Time unit   | 2-week sprints     | Continuous  | 6-week cycles  | Continuous      |
+| Work item   | User story         | Card        | Pitch          | Work Unit (WU)  |
+| Progress    | Story points       | Cycle time  | Hill charts    | Gates + stamps  |
+| Parallelism | Team velocity      | WIP limits  | Team per pitch | Lane-based WIP  |
+| Reviews     | Sprint review + PR | PR review   | Demo           | Automated gates |
+| AI-ready    | No                 | Partially   | No             | Yes             |
+| Context     | Human memory       | Board state | Write-up       | Memory layer    |
+
+## When to Use LumenFlow
+
+**LumenFlow is ideal when:**
+
+- You use AI coding assistants (Claude, Cursor, GitHub Copilot)
+- You want faster feedback than code review provides
+- You need multiple streams of work in parallel
+- You value evidence (tests, gates) over process (ceremonies, meetings)
+
+**LumenFlow may not fit when:**
+
+- Your team relies on manual code review for knowledge sharing
+- You need sprint-based planning for stakeholder communication
+- You prefer visual Kanban boards for work visibility
+
+<Aside type="tip">
+  LumenFlow can complement existing methodologies. Use Scrum for planning and stakeholder
+  communication, but execute the actual work with LumenFlow's WU/gates/stamps flow.
+</Aside>
+
+## Philosophy
+
+LumenFlow is built on four beliefs:
+
+1. **Backlog is law** - If a WU is approved, it can be executed autonomously
+2. **Evidence over claims** - Tests and artifacts prove work is done
+3. **Flow over batching** - Continuous delivery beats sprint cycles
+4. **AI as collaborator** - Agents are first-class team members
+
+## Getting Started
+
+Ready to try LumenFlow?
+
+- [Quickstart](/getting-started/quickstart) - Set up in 5 minutes
+- [Work Units](/concepts/work-units) - Deep dive on WUs
+- [Gates](/concepts/gates) - How automated quality works
