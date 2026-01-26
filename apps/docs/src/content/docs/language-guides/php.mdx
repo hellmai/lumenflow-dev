@@ -1,0 +1,441 @@
+---
+title: PHP
+description: Configure LumenFlow for PHP projects
+---
+
+import { Aside, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+
+This guide covers setting up LumenFlow for PHP projects using Composer and PHPUnit.
+
+## Quick Setup
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    preset: 'php'
+    # Custom overrides:
+    setup: 'composer install'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse'
+    test: 'vendor/bin/phpunit'
+```
+
+## PHP Preset Defaults
+
+The `php` preset provides these default commands:
+
+| Gate      | Default Command |
+| --------- | --------------- |
+| Format    | `php-cs-fixer`  |
+| Lint      | `phpstan`       |
+| Typecheck | (none)          |
+| Test      | `phpunit`       |
+
+<Aside type="note">
+  PHP is dynamically typed, so there is no separate typecheck gate. PHPStan provides static analysis that catches type-related issues at the lint stage.
+</Aside>
+
+## Recommended Tooling
+
+### Code Formatting (PHP-CS-Fixer)
+
+[PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) is the standard formatter for PHP code.
+
+Install via Composer:
+
+```bash
+composer require --dev friendsofphp/php-cs-fixer
+```
+
+Create `.php-cs-fixer.dist.php`:
+
+```php
+<?php
+
+$finder = (new PhpCsFixer\Finder())
+    ->in(__DIR__)
+    ->exclude('vendor');
+
+return (new PhpCsFixer\Config())
+    ->setRules([
+        '@PSR12' => true,
+        '@PHP83Migration' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'ordered_imports' => ['sort_algorithm' => 'alpha'],
+        'no_unused_imports' => true,
+    ])
+    ->setFinder($finder);
+```
+
+Run format check:
+
+```bash
+vendor/bin/php-cs-fixer fix --dry-run --diff
+```
+
+Auto-fix formatting:
+
+```bash
+vendor/bin/php-cs-fixer fix
+```
+
+<Aside type="tip">
+  Use `--dry-run --diff` in CI to report issues without modifying files. Use `--diff` alone for verbose output showing what would change.
+</Aside>
+
+### Static Analysis (PHPStan)
+
+[PHPStan](https://phpstan.org/) provides static analysis that catches bugs before runtime.
+
+Install:
+
+```bash
+composer require --dev phpstan/phpstan
+```
+
+Create `phpstan.neon`:
+
+```neon
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor
+```
+
+Run analysis:
+
+```bash
+vendor/bin/phpstan analyse
+```
+
+PHPStan levels range from 0 (loose) to 9 (strictest). Start at level 5 and increase gradually.
+
+### Additional PHPStan Extensions
+
+For frameworks and libraries, add relevant extensions:
+
+```bash
+# Laravel
+composer require --dev larastan/larastan
+
+# Symfony
+composer require --dev phpstan/phpstan-symfony
+
+# Doctrine
+composer require --dev phpstan/phpstan-doctrine
+
+# PHPUnit
+composer require --dev phpstan/phpstan-phpunit
+```
+
+Update `phpstan.neon`:
+
+```neon
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+        - tests
+```
+
+### Testing (PHPUnit)
+
+[PHPUnit](https://phpunit.de/) is the standard testing framework for PHP.
+
+Install:
+
+```bash
+composer require --dev phpunit/phpunit
+```
+
+Create `phpunit.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <report>
+            <html outputDirectory="coverage"/>
+            <text outputFile="php://stdout"/>
+        </report>
+    </coverage>
+</phpunit>
+```
+
+Run tests:
+
+```bash
+vendor/bin/phpunit
+```
+
+Run with coverage:
+
+```bash
+XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
+```
+
+<Aside>
+  Coverage requires Xdebug or PCOV. For faster coverage, use [PCOV](https://github.com/krakjoe/pcov): `pecl install pcov`.
+</Aside>
+
+### Pest Alternative
+
+[Pest](https://pestphp.com/) is a modern testing framework with expressive syntax:
+
+```bash
+composer require --dev pestphp/pest --with-all-dependencies
+vendor/bin/pest --init
+```
+
+```yaml
+gates:
+  execution:
+    preset: 'php'
+    test: 'vendor/bin/pest'
+```
+
+## Full Configuration Example
+
+Here is a complete `.lumenflow.config.yaml` for a PHP project:
+
+```yaml
+version: '2.0'
+
+directories:
+  wu_specs: docs/tasks/wu
+  stamps: .lumenflow/stamps
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths:
+        - src/**/*.php
+        - tests/**/*.php
+    - name: 'Operations: Infrastructure'
+      code_paths:
+        - config/**/*.php
+
+gates:
+  execution:
+    preset: 'php'
+    setup: 'composer install --no-interaction --prefer-dist'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse --memory-limit=512M'
+    test: 'vendor/bin/phpunit --colors=always'
+```
+
+## Running Gates
+
+Once configured, run gates as usual:
+
+```bash
+# Run all gates
+pnpm gates
+
+# Or if using the CLI directly
+npx gates
+```
+
+Output:
+
+```
+> Setup... done
+> Format check... pass
+> Lint check... pass
+> Test suite... pass
+> All gates passed!
+```
+
+## Laravel Projects
+
+For Laravel applications, extend the configuration:
+
+```yaml
+gates:
+  execution:
+    preset: 'php'
+    setup: 'composer install && php artisan key:generate --env=testing'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse'
+    test: 'php artisan test'
+```
+
+Install Larastan for Laravel-specific analysis:
+
+```bash
+composer require --dev larastan/larastan
+```
+
+Create `phpstan.neon`:
+
+```neon
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - config
+        - routes
+        - tests
+```
+
+## Symfony Projects
+
+For Symfony applications:
+
+```yaml
+gates:
+  execution:
+    preset: 'php'
+    setup: 'composer install && bin/console cache:warmup --env=test'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse'
+    test: 'bin/phpunit'
+```
+
+Install PHPStan Symfony extension:
+
+```bash
+composer require --dev phpstan/phpstan-symfony
+```
+
+## CI Integration
+
+Use the LumenFlow Gates GitHub Action:
+
+```yaml
+# .github/workflows/gates.yml
+name: Gates
+on: [pull_request]
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl
+          coverage: pcov
+      - uses: ramsey/composer-install@v3
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+For Laravel with database:
+
+```yaml
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: pcov
+      - uses: ramsey/composer-install@v3
+      - run: php artisan migrate --seed
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+## Troubleshooting
+
+### PHP-CS-Fixer reports many changes
+
+Auto-fix and commit:
+
+```bash
+vendor/bin/php-cs-fixer fix
+git add -A && git commit -m "style: apply php-cs-fixer"
+```
+
+### PHPStan reports too many errors
+
+Start at a lower level and gradually increase:
+
+```neon
+parameters:
+    level: 5  # Start here, increase to 8 over time
+```
+
+Generate a baseline to ignore existing errors:
+
+```bash
+vendor/bin/phpstan analyse --generate-baseline
+```
+
+This creates `phpstan-baseline.neon`. Include it in your config and gradually fix errors.
+
+### Tests are slow
+
+Use parallel testing with [ParaTest](https://github.com/paratestphp/paratest):
+
+```bash
+composer require --dev brianium/paratest
+vendor/bin/paratest --processes 4
+```
+
+Update your gates config:
+
+```yaml
+test: 'vendor/bin/paratest --processes 4'
+```
+
+### Composer install fails in CI
+
+Ensure `composer.lock` is committed and use `--no-interaction`:
+
+```bash
+composer install --no-interaction --prefer-dist --optimize-autoloader
+```
+
+## Next Steps
+
+- [Gates Reference](/concepts/gates) - All gate configuration options
+- [Configuration](/reference/config) - Full config schema
+- [GitHub Action](/reference/github-action) - CI integration details

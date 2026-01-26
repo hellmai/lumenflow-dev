@@ -1,0 +1,428 @@
+---
+title: Java / JVM
+description: Configure LumenFlow for Java and JVM projects
+---
+
+import { Aside, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+
+This guide covers setting up LumenFlow for Java/JVM projects using Maven or Gradle.
+
+## Quick Setup
+
+<Tabs>
+  <TabItem label="Maven">
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    preset: 'java'
+    # Maven-specific overrides:
+    setup: 'mvn dependency:resolve'
+    format: 'mvn spotless:check'
+    lint: 'mvn checkstyle:check'
+    typecheck: 'mvn compile -DskipTests'
+    test: 'mvn test'
+```
+
+  </TabItem>
+  <TabItem label="Gradle">
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    preset: 'java'
+    # Gradle-specific overrides:
+    setup: './gradlew dependencies'
+    format: './gradlew spotlessCheck'
+    lint: './gradlew checkstyleMain'
+    typecheck: './gradlew compileJava'
+    test: './gradlew test'
+```
+
+  </TabItem>
+</Tabs>
+
+## Java Preset Defaults
+
+The `java` preset provides these default commands:
+
+| Gate      | Default Command    |
+| --------- | ------------------ |
+| Format    | `spotless:check`   |
+| Lint      | `checkstyle`       |
+| Typecheck | `mvn compile`      |
+| Test      | `mvn test`         |
+
+<Aside type="tip">
+  The Java preset defaults assume Maven. Override with Gradle commands as shown above if using Gradle.
+</Aside>
+
+## Recommended Tooling
+
+### Code Formatting (Spotless)
+
+[Spotless](https://github.com/diffplug/spotless) is the recommended formatter for Java. It integrates with Maven and Gradle, supporting Google Java Format or custom styles.
+
+<Tabs>
+  <TabItem label="Maven">
+
+Add to `pom.xml`:
+
+```xml
+<plugin>
+  <groupId>com.diffplug.spotless</groupId>
+  <artifactId>spotless-maven-plugin</artifactId>
+  <version>2.43.0</version>
+  <configuration>
+    <java>
+      <googleJavaFormat>
+        <version>1.19.1</version>
+        <style>GOOGLE</style>
+      </googleJavaFormat>
+    </java>
+  </configuration>
+</plugin>
+```
+
+Run format check:
+
+```bash
+mvn spotless:check
+```
+
+Auto-fix formatting:
+
+```bash
+mvn spotless:apply
+```
+
+  </TabItem>
+  <TabItem label="Gradle">
+
+Add to `build.gradle`:
+
+```groovy
+plugins {
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.19.1').aosp()
+    }
+}
+```
+
+Run format check:
+
+```bash
+./gradlew spotlessCheck
+```
+
+Auto-fix formatting:
+
+```bash
+./gradlew spotlessApply
+```
+
+  </TabItem>
+</Tabs>
+
+### Linting (Checkstyle)
+
+[Checkstyle](https://checkstyle.org/) enforces coding standards and catches common issues.
+
+<Tabs>
+  <TabItem label="Maven">
+
+Add to `pom.xml`:
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-checkstyle-plugin</artifactId>
+  <version>3.3.1</version>
+  <configuration>
+    <configLocation>google_checks.xml</configLocation>
+    <consoleOutput>true</consoleOutput>
+    <failsOnError>true</failsOnError>
+  </configuration>
+</plugin>
+```
+
+Run lint:
+
+```bash
+mvn checkstyle:check
+```
+
+  </TabItem>
+  <TabItem label="Gradle">
+
+Add to `build.gradle`:
+
+```groovy
+plugins {
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("config/checkstyle/checkstyle.xml")
+}
+```
+
+Run lint:
+
+```bash
+./gradlew checkstyleMain
+```
+
+  </TabItem>
+</Tabs>
+
+<Aside>
+  Use Google's checkstyle configuration (`google_checks.xml`) or Sun's (`sun_checks.xml`) as a starting point. Customize rules in your own `checkstyle.xml`.
+</Aside>
+
+### Static Analysis (SpotBugs)
+
+For deeper static analysis beyond Checkstyle, consider [SpotBugs](https://spotbugs.github.io/):
+
+<Tabs>
+  <TabItem label="Maven">
+
+```xml
+<plugin>
+  <groupId>com.github.spotbugs</groupId>
+  <artifactId>spotbugs-maven-plugin</artifactId>
+  <version>4.8.3.0</version>
+</plugin>
+```
+
+```bash
+mvn spotbugs:check
+```
+
+  </TabItem>
+  <TabItem label="Gradle">
+
+```groovy
+plugins {
+    id 'com.github.spotbugs' version '6.0.7'
+}
+```
+
+```bash
+./gradlew spotbugsMain
+```
+
+  </TabItem>
+</Tabs>
+
+### Testing (JUnit 5)
+
+JUnit 5 is the standard testing framework for Java:
+
+<Tabs>
+  <TabItem label="Maven">
+
+```xml
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>5.10.1</version>
+  <scope>test</scope>
+</dependency>
+```
+
+Run tests:
+
+```bash
+mvn test
+```
+
+Run with coverage (JaCoCo):
+
+```bash
+mvn test jacoco:report
+```
+
+  </TabItem>
+  <TabItem label="Gradle">
+
+```groovy
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+```
+
+Run tests:
+
+```bash
+./gradlew test
+```
+
+  </TabItem>
+</Tabs>
+
+## Full Configuration Example
+
+Here is a complete `.lumenflow.config.yaml` for a Maven-based Java project:
+
+```yaml
+version: '2.0'
+
+directories:
+  wu_specs: docs/tasks/wu
+  stamps: .lumenflow/stamps
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths:
+        - src/main/java/**
+        - src/test/java/**
+
+gates:
+  execution:
+    preset: 'java'
+    setup: 'mvn dependency:resolve -q'
+    format: 'mvn spotless:check'
+    lint: 'mvn checkstyle:check -q'
+    typecheck: 'mvn compile -DskipTests -q'
+    test: 'mvn test -q'
+```
+
+And for Gradle:
+
+```yaml
+version: '2.0'
+
+directories:
+  wu_specs: docs/tasks/wu
+  stamps: .lumenflow/stamps
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths:
+        - src/main/java/**
+        - src/test/java/**
+
+gates:
+  execution:
+    preset: 'java'
+    setup: './gradlew dependencies --quiet'
+    format: './gradlew spotlessCheck'
+    lint: './gradlew checkstyleMain'
+    typecheck: './gradlew compileJava'
+    test: './gradlew test'
+```
+
+## Running Gates
+
+Once configured, run gates as usual:
+
+```bash
+# Run all gates
+pnpm gates
+
+# Or if using the CLI directly
+npx gates
+```
+
+Output:
+
+```
+> Setup... done
+> Format check... pass
+> Lint check... pass
+> Type check (compile)... pass
+> Test suite... pass
+> All gates passed!
+```
+
+## Kotlin Projects
+
+The Java preset works well for Kotlin projects. Adjust the format and lint commands:
+
+```yaml
+gates:
+  execution:
+    preset: 'java'
+    format: './gradlew ktlintCheck'
+    lint: './gradlew detekt'
+    typecheck: './gradlew compileKotlin'
+    test: './gradlew test'
+```
+
+[ktlint](https://pinterest.github.io/ktlint/) handles formatting, and [detekt](https://detekt.dev/) provides static analysis.
+
+## CI Integration
+
+Use the LumenFlow Gates GitHub Action:
+
+```yaml
+# .github/workflows/gates.yml
+name: Gates
+on: [pull_request]
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven' # or 'gradle'
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+## Troubleshooting
+
+### Spotless fails with "needs formatting"
+
+Run `mvn spotless:apply` (or `./gradlew spotlessApply`) to auto-fix, then commit.
+
+### Checkstyle reports many violations
+
+Start with a lenient configuration and gradually tighten rules. Use `<failsOnError>false</failsOnError>` during migration.
+
+### Tests take too long
+
+Consider parallel test execution:
+
+```xml
+<!-- Maven Surefire -->
+<configuration>
+  <parallel>methods</parallel>
+  <threadCount>4</threadCount>
+</configuration>
+```
+
+```groovy
+// Gradle
+test {
+    maxParallelForks = 4
+}
+```
+
+## Next Steps
+
+- [Gates Reference](/concepts/gates) - All gate configuration options
+- [Configuration](/reference/config) - Full config schema
+- [GitHub Action](/reference/github-action) - CI integration details
