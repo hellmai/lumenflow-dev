@@ -1,0 +1,382 @@
+---
+title: Agent Onboarding Guide
+description: Get AI agents productive with LumenFlow quickly
+---
+
+import { Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+This guide helps AI agents get productive with LumenFlow quickly, covering common mistakes and essential safety practices.
+
+## Quick Start Checklist
+
+Before starting any WU:
+
+- [ ] Read the full WU spec (not just the title)
+- [ ] Understand all acceptance criteria
+- [ ] Claim the WU with `pnpm wu:claim`
+- [ ] cd to the worktree IMMEDIATELY
+- [ ] Work only in the worktree
+- [ ] Stay within `code_paths`
+- [ ] Follow TDD (failing test first)
+- [ ] Run gates before wu:done
+- [ ] ALWAYS run wu:done
+
+## The Most Common Mistake
+
+<Card title="Not Running wu:done" icon="warning">
+  The single most common mistake agents make is completing work, then stopping without running `pnpm
+  wu:done`. This leaves the WU incomplete.
+</Card>
+
+### Why This Happens
+
+1. **Confusion about scope** - Agent thinks completion is a "next step" for humans
+2. **Fear of overstepping** - Agent hesitates to take "final" actions
+3. **Token limits** - Agent runs out of context and summarizes remaining steps
+4. **Missing context** - Agent doesn't realize wu:done should run immediately
+
+### The Fix
+
+After gates pass, you MUST run:
+
+```bash
+cd /path/to/main
+pnpm wu:done --id WU-XXX
+```
+
+Do NOT:
+
+- Ask "Should I run wu:done?"
+- Write "To Complete: pnpm wu:done"
+- Wait for permission
+- Treat it as a "future step"
+
+### Correct Flow
+
+```bash
+# 1. In worktree, run gates
+pnpm gates
+
+# 2. If gates pass, return to main
+cd /path/to/main
+
+# 3. IMMEDIATELY run wu:done
+pnpm wu:done --id WU-XXX
+
+# 4. Report success with the wu:done output
+```
+
+## Top 10 First WU Mistakes
+
+### Mistake 1: Not Using Worktrees
+
+**Wrong:**
+
+```bash
+# Working directly in main
+vim src/feature.ts
+git commit -m "feat: add feature"
+git push origin main
+```
+
+**Right:**
+
+```bash
+# Claim first, then work in worktree
+pnpm wu:claim --id WU-123 --lane Core
+cd worktrees/core-wu-123
+vim src/feature.ts
+git commit -m "feat: add feature"
+git push origin lane/core/wu-123
+cd /path/to/main
+pnpm wu:done --id WU-123
+```
+
+### Mistake 2: Working Outside code_paths
+
+The WU says `code_paths: [src/api/**]` but you edit `src/ui/component.ts`.
+
+**Fix:** Only edit files within the specified `code_paths`. If you need other files, that's a different WU.
+
+### Mistake 3: Skipping TDD
+
+**Wrong:**
+
+```
+1. Write the feature
+2. Maybe write tests later
+3. Tests are hard, skip them
+```
+
+**Right:**
+
+```
+1. Write failing test
+2. Run test (confirm RED)
+3. Write minimum code
+4. Run test (confirm GREEN)
+5. Refactor if needed
+```
+
+### Mistake 4: Using Forbidden Git Commands
+
+**Wrong:**
+
+```bash
+git reset --hard HEAD
+git push --force
+git commit --no-verify
+```
+
+**Right:**
+
+```bash
+git add .
+git commit -m "feat: description"
+git push origin lane/core/wu-123
+```
+
+### Mistake 5: Scope Creep
+
+The WU says "Add user profile endpoint" but you also:
+
+- Refactor the database schema
+- Add email notifications
+- Redesign the UI
+
+**Fix:** Implement exactly what the acceptance criteria specify. Create new WUs for other changes.
+
+### Mistake 6: Not Reading the WU Spec
+
+**Wrong:** Start coding immediately based on the title.
+
+**Right:**
+
+<Steps>
+
+1. Read the full WU YAML
+2. Understand acceptance criteria
+3. Review code_paths
+4. Check dependencies
+5. Then start
+
+</Steps>
+
+### Mistake 7: Editing Main After Claim
+
+**Wrong:**
+
+```bash
+pnpm wu:claim --id WU-123 --lane Core
+# Still in main directory
+vim src/feature.ts  # WRONG!
+```
+
+**Right:**
+
+```bash
+pnpm wu:claim --id WU-123 --lane Core
+cd worktrees/core-wu-123  # IMMEDIATELY
+vim src/feature.ts  # Now it's safe
+```
+
+### Mistake 8: Ignoring Gate Failures
+
+**Wrong:**
+
+```
+Gates failed but I think the code is fine.
+Let me use --skip-gates.
+```
+
+**Right:**
+
+```
+Gates failed. Let me read the error:
+- TypeScript error in src/api/handler.ts
+- Missing return type
+
+Fix: Add the return type.
+Re-run: pnpm gates
+```
+
+### Mistake 9: Working After Hours Without Committing
+
+If you need to pause:
+
+```bash
+# Commit your work
+git add .
+git commit -m "wip: partial progress"
+git push origin lane/core/wu-123
+```
+
+Do NOT leave uncommitted changes in the worktree.
+
+### Mistake 10: Using Absolute Paths
+
+**Wrong:**
+
+```typescript
+// Using absolute paths bypasses worktree isolation
+Write({
+  file_path: '/home/user/project/src/feature.ts', // WRONG!
+  content: '...',
+});
+```
+
+**Right:**
+
+```typescript
+// Relative paths respect worktree context
+Write({
+  file_path: 'src/feature.ts', // Correct
+  content: '...',
+});
+```
+
+## Agent Safety Card
+
+Quick reference for safe LumenFlow operation.
+
+### Stop and Ask When
+
+| Trigger                     | Action    |
+| --------------------------- | --------- |
+| Same error repeats 3 times  | Stop, ask |
+| Auth or permissions changes | Stop, ask |
+| PII/secrets involved        | Stop, ask |
+| Cloud spend decisions       | Stop, ask |
+| Policy changes required     | Stop, ask |
+| Anything feels irreversible | Stop, ask |
+
+### Never Do
+
+| Action                   | Why               |
+| ------------------------ | ----------------- |
+| `git reset --hard`       | Data loss risk    |
+| `git push --force`       | History rewrite   |
+| `--no-verify`            | Bypasses safety   |
+| `git stash` (on main)    | Hides work        |
+| `git clean -fd`          | Deletes files     |
+| Work in main after claim | Breaks isolation  |
+| Skip wu:done             | Incomplete WU     |
+| Use absolute paths       | Bypasses worktree |
+
+### Always Do
+
+| Action                     | Why              |
+| -------------------------- | ---------------- |
+| Read WU spec first         | Understand scope |
+| cd to worktree after claim | Isolation        |
+| Write tests before code    | TDD              |
+| Run gates before wu:done   | Quality          |
+| Run wu:done                | Complete WU      |
+| Stay within code_paths     | Scope discipline |
+| Use relative paths         | Respect worktree |
+| Verify pwd before file ops | Avoid path trap  |
+
+### Error Handling
+
+**Max 3 Attempts Rule:**
+
+If the same error happens 3 times:
+
+1. Stop trying
+2. Document what happened
+3. Ask for help
+
+**Gate Failures:**
+
+1. Read the error message
+2. Fix the underlying issue
+3. Re-run gates
+4. Never use `--skip-gates` for new failures
+
+### Quick Commands
+
+```bash
+# Check lane availability
+cat docs/04-operations/tasks/status.md
+
+# Claim a WU
+pnpm wu:claim --id WU-XXX --lane <Lane>
+
+# Work in worktree
+cd worktrees/<lane>-wu-xxx
+
+# Run gates
+pnpm gates          # Code changes
+pnpm gates --docs-only  # Docs changes
+
+# Complete WU
+cd /path/to/main
+pnpm wu:done --id WU-XXX
+```
+
+### When Uncertain
+
+Choose the safer path:
+
+- Don't modify files outside code_paths
+- Don't bypass hooks
+- Don't skip gates
+- Ask rather than assume
+
+## Completion Checklist
+
+Before ending any session, verify:
+
+- [ ] Did I run `pnpm gates` in the worktree?
+- [ ] Did gates pass?
+- [ ] Did I `cd` back to main?
+- [ ] Did I run `pnpm wu:done --id WU-XXX`?
+- [ ] Did wu:done complete successfully?
+
+If any answer is "no", you're not done yet.
+
+## Symptoms of Incomplete WU
+
+If wu:done wasn't run, you'll see:
+
+- Worktree still exists: `ls worktrees/`
+- No stamp: `ls .lumenflow/stamps/WU-XXX.done` returns nothing
+- Status unchanged: WU still shows as `in_progress`
+- Branch not merged: Changes only on lane branch
+
+## Recovery
+
+If a previous session forgot to run wu:done:
+
+```bash
+# 1. Check worktree exists
+ls worktrees/
+
+# 2. If it does, run wu:done
+pnpm wu:done --id WU-XXX
+
+# 3. If worktree was deleted but branch exists
+# This is a bad state - may need manual recovery
+pnpm wu:recover --id WU-XXX
+```
+
+## What wu:done Does
+
+When you run `pnpm wu:done --id WU-XXX`:
+
+1. Validates the worktree exists and has commits
+2. Runs gates in the worktree (not main)
+3. Fast-forward merges to main
+4. Creates the done stamp
+5. Updates status and backlog docs
+6. Removes the worktree
+7. Pushes to origin
+
+This is the ONLY way to complete a WU. Manual steps leave things inconsistent.
+
+## Next Steps
+
+- [AI Agent Integration](/guides/ai-agents) - Full agent capabilities
+- [Constraints](/concepts/constraints) - The 6 non-negotiable rules
+- [Troubleshooting](/guides/troubleshooting) - Common issue fixes
+- [Memory Layer](/concepts/memory) - Context recovery

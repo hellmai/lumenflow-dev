@@ -1,0 +1,303 @@
+---
+title: Constraints
+description: The 6 non-negotiable rules of LumenFlow
+---
+
+import { Aside, Card, CardGrid, Steps, Badge } from '@astrojs/starlight/components';
+
+The **Constraints Capsule** contains six non-negotiable rules that every agent and developer must follow. These rules are designed to prevent common mistakes and ensure consistent, safe workflow execution.
+
+## Why Constraints?
+
+LumenFlow is designed to give AI agents and developers autonomy. But autonomy without guardrails leads to chaos. Constraints provide:
+
+- **Safety** - Prevent irreversible mistakes
+- **Consistency** - Same workflow everywhere
+- **Auditability** - Know what happened and why
+- **Recoverability** - When things go wrong, fix them
+
+<Aside type="tip">
+  Think of constraints as "rules that protect you from yourself" - they prevent the mistakes that
+  seem obvious in hindsight.
+</Aside>
+
+## The 6 Non-Negotiable Constraints
+
+### 1. Worktree Discipline and Git Safety
+
+<Card title="Rule" icon="document">
+  Work only in worktrees, treat main as read-only, never run destructive git commands on main.
+</Card>
+
+**Enforcement:**
+
+- After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx`
+- Hooks block WU commits from main checkout
+- Forbidden commands on main: `git reset --hard`, `git stash`, `git clean -fd`, `git push --force`
+
+**Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch from accidental damage.
+
+**Example:**
+
+```bash
+# WRONG: Working in main
+pnpm wu:claim --id WU-123 --lane Core
+vim src/feature.ts  # Still in main!
+
+# RIGHT: Working in worktree
+pnpm wu:claim --id WU-123 --lane Core
+cd worktrees/core-wu-123  # Immediately move here
+vim src/feature.ts  # Now you're isolated
+```
+
+### 2. WUs Are Specs, Not Code
+
+<Card title="Rule" icon="document">
+  Respect code_paths boundaries, no feature creep, no code blocks in WU YAML files.
+</Card>
+
+**Enforcement:**
+
+- Only modify files listed in `code_paths`
+- WU YAML contains acceptance criteria, not implementation code
+- Scope discipline: implement only what the spec requires
+
+**Why:** WUs define WHAT to build, not HOW. Implementation decisions belong in code, not specs. This keeps specs clean and prevents scope creep.
+
+**Example:**
+
+```yaml
+# WRONG: Code in WU YAML
+acceptance:
+  - |
+    function validate(email) {
+      return email.includes('@');
+    }
+
+# RIGHT: Behavior specification
+acceptance:
+  - Email field validates format on blur
+  - Invalid emails show "Please enter a valid email"
+  - Validation uses standard email regex pattern
+```
+
+### 3. Docs-Only vs Code WUs
+
+<Card title="Rule" icon="document">
+  Documentation WUs use `--docs-only` gates, code WUs run full gates.
+</Card>
+
+**Enforcement:**
+
+- `type: documentation` in WU YAML triggers docs-only mode
+- `pnpm gates --docs-only` skips lint/typecheck/tests
+- Path validation prevents code files in docs WUs
+
+**Why:** Documentation changes shouldn't require the full test suite. Code changes must pass all gates. Mixing them causes friction.
+
+**Example:**
+
+```bash
+# Documentation WU
+pnpm gates --docs-only
+
+# Code WU
+pnpm gates
+```
+
+```yaml
+# WU YAML for docs
+type: documentation
+code_paths:
+  - docs/**
+  - '*.md'
+```
+
+### 4. LLM-First, Zero-Fallback Inference
+
+<Card title="Rule" icon="document">
+  Use LLMs for semantic tasks, fall back to safe defaults (never regex/keywords).
+</Card>
+
+**Enforcement:**
+
+- Prompt-based classification for ambiguous inputs
+- Structured output parsing for LLM responses
+- No brittle keyword matching for semantic decisions
+
+**Why:** Regex and keyword matching are brittle and fail on edge cases. LLMs handle natural language variation better. When the LLM fails, use safe defaults - never fall back to keyword hacks.
+
+**Example:**
+
+```typescript
+// WRONG: Keyword matching
+function classifyIntent(input: string) {
+  if (input.includes('cancel')) return 'cancellation';
+  if (input.includes('refund')) return 'refund';
+  return 'unknown';
+}
+
+// RIGHT: LLM-first with safe default
+async function classifyIntent(input: string) {
+  const result = await llm.classify(input, {
+    schema: IntentSchema,
+    fallback: 'needs_human_review', // Safe default, not keyword hack
+  });
+  return result;
+}
+```
+
+### 5. Gates and Skip-Gates
+
+<Card title="Rule" icon="document">
+  Complete via `pnpm wu:done`; skip-gates only for pre-existing failures with `--reason` and
+  `--fix-wu`.
+</Card>
+
+**Enforcement:**
+
+- `pnpm wu:done` runs gates before merge
+- `--skip-gates` requires both `--reason` and `--fix-wu`
+- Skip events logged to `.lumenflow/skip-gates-audit.log`
+
+**Why:** Gates ensure quality. Skipping requires accountability and a plan to fix the underlying issue. Without this, quality degrades over time.
+
+**Example:**
+
+```bash
+# WRONG: Skipping gates without justification
+pnpm wu:done --id WU-123 --skip-gates
+
+# RIGHT: Skipping with full accountability
+pnpm wu:done --id WU-123 \
+  --skip-gates \
+  --reason "Pre-existing test failure in legacy module" \
+  --fix-wu WU-150
+```
+
+**Only skip when ALL are true:**
+
+1. Test failures existed before your WU
+2. Your WU work is genuinely complete
+3. A separate WU exists to fix the failures
+4. Failures are unrelated to your code
+
+### 6. Safety and Governance
+
+<Card title="Rule" icon="document">
+  Respect privacy rules, approved sources, security policies; when uncertain, choose the safer path.
+</Card>
+
+**Enforcement:**
+
+- No hardcoded secrets (gitleaks scanning)
+- RLS policies on sensitive data
+- Redaction before sending to LLMs
+- Stop-and-ask for auth/PII/spend changes
+
+**Why:** Safety first. Some mistakes are irreversible. When in doubt, stop and ask rather than proceed and regret.
+
+**Stop and ask when:**
+
+| Trigger                  | Action    |
+| ------------------------ | --------- |
+| Same error 3 times       | Stop, ask |
+| Auth/permission changes  | Stop, ask |
+| PII/PHI/secrets involved | Stop, ask |
+| Cloud spend decisions    | Stop, ask |
+| Policy changes needed    | Stop, ask |
+
+## Mini Audit Checklist
+
+Before running `wu:done`, verify:
+
+- [ ] Working in worktree (not main)
+- [ ] Only modified files in `code_paths`
+- [ ] Gates pass (`pnpm gates` or `pnpm gates --docs-only`)
+- [ ] No forbidden git commands used
+- [ ] No secrets committed
+- [ ] Acceptance criteria satisfied
+
+## Forbidden Commands Reference
+
+These commands are blocked on main checkout:
+
+```bash
+# Data destruction
+git reset --hard
+git clean -fd
+
+# Hidden work
+git stash
+
+# History rewrite
+git push --force
+git push -f
+git rebase -i main
+
+# Bypass safety
+--no-verify
+```
+
+<Aside type="caution">
+  Hooks enforce these restrictions. If you find yourself wanting to bypass them, stop and think
+  about why. There's usually a better way.
+</Aside>
+
+**Allowed in worktrees:** Most commands are safe in isolated worktrees on lane branches. The restrictions apply specifically to the main checkout.
+
+## Force Bypass Policy
+
+<Aside type="caution">
+  AI agents MUST NOT use force bypass mechanisms without explicit user approval.
+</Aside>
+
+**Why:** Force bypass mechanisms circumvent all git hook protections. While legitimate for emergency human interventions, agents using them autonomously undermines the entire workflow enforcement model.
+
+**Agent Escalation Path:**
+
+<Steps>
+
+1. **Detect need:** Agent encounters hook blocking operation
+2. **Stop and ask:** Present situation to user with context
+3. **Get approval:** User must explicitly approve bypass with reason
+4. **Execute with audit:** Document the reason
+5. **Document:** Note the bypass in commit message or WU notes
+
+</Steps>
+
+**Legitimate bypass scenarios:**
+
+- Fixing YAML parsing bugs in WU specs
+- Emergency production hotfixes (with user present)
+- Recovering from corrupted workflow state
+- Bootstrap operations when CLI not yet built
+
+**Never bypass for:**
+
+- Skipping failing tests
+- Avoiding code review
+- Working around gate failures
+- Convenience or speed
+
+## Escalation Triggers
+
+Stop and ask a human when:
+
+- Same error repeats 3 times
+- Auth or permissions changes required
+- PII/PHI/safety issues discovered
+- Cloud spend or secrets involved
+- Policy changes needed
+
+## Context Limits
+
+When approaching context limits (high token usage, 50+ tool calls), spawn a fresh agent instead of continuing after compaction.
+
+**Why:** Context compaction causes agents to lose critical rules. Starting fresh ensures constraints remain in working memory.
+
+## Next Steps
+
+- [Agent Onboarding](/guides/agent-onboarding) - Get productive quickly
+- [Gates](/concepts/gates) - Quality enforcement
+- [Troubleshooting](/guides/troubleshooting) - When things go wrong
