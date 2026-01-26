@@ -6,7 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/cli/src/git-status.ts
+  - packages/@lumenflow/cli/src/git-diff.ts
+  - packages/@lumenflow/cli/src/git-log.ts
+  - packages/@lumenflow/cli/src/git-branch.ts
+  - packages/@lumenflow/cli/src/guard-main-branch.ts
 tests:
   manual: []
   unit:
@@ -20,15 +24,20 @@ phase: 4
 blocked_by:
   - WU-1101
   - WU-1103
-spec_refs:
-  - lumenflow://plans/unified-rolling-music.md
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-25T23:43:37.501Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1109
+session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-25T23:43:37.506Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +52,3 @@ acceptance:
   - guard-main-branch.ts exists with tests
   - All bin entries added to CLI package.json
   - '>80% coverage'
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1109
-claimed_at: 2026-01-25T23:43:37.501Z
-baseline_main_sha: fc3edbc3f5f3ce92099e888351dc366c98173795
-session_id: b778b848-e0b2-40a9-96ce-31921b336ecd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-25T23:43:37.506Z
