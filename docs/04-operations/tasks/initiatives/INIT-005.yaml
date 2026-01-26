@@ -7,29 +7,33 @@ description: |
 
   Primary root cause: wu:spawn output truncation causes ~90% context loss.
   Secondary factors: Fail-open hook bugs, missing recovery guidance.
-status: active
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-26
 phases:
   - id: 1
-    name: Critical Fix
+    title: Critical Fix
     description: Fix wu:spawn truncation (root cause)
+    status: pending
     wus:
       - WU-1131
   - id: 2
-    name: Hook Hardening
+    title: Hook Hardening
     description: Fix fail-open hooks + add audit logging
+    status: pending
     wus:
       - WU-1132
   - id: 3
-    name: Doc Alignment
+    title: Doc Alignment
     description: Fix broken references + align docs-only language
+    status: pending
     wus:
       - WU-1133
   - id: 4
-    name: Recovery & Enforcement
+    title: Recovery & Enforcement
     description: Add recovery guidance and prompt-level enforcement
+    status: pending
     wus:
       - WU-1134
       - WU-1135
