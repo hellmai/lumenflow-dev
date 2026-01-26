@@ -1,0 +1,569 @@
+---
+title: .NET
+description: Using LumenFlow with .NET projects
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+LumenFlow integrates seamlessly with .NET projects. This guide covers setup, configuration, and best practices for ASP.NET Core, Blazor, and other .NET frameworks.
+
+## Quickstart
+
+<Steps>
+
+1. **Install LumenFlow CLI**
+
+   Install as a .NET global tool:
+
+   ```bash
+   dotnet tool install -g LumenFlow.Cli
+   ```
+
+   Or use the Node.js CLI:
+
+   ```bash
+   npm install -g @lumenflow/cli
+   ```
+
+2. **Initialize LumenFlow**
+
+   ```bash
+   lumenflow init
+   ```
+
+   This creates `.lumenflow.config.yaml` with .NET-optimized defaults.
+
+3. **Configure gates**
+
+   ```yaml
+   # .lumenflow.config.yaml
+   version: '2.0'
+
+   gates:
+     execution:
+       preset: 'dotnet'
+   ```
+
+4. **Create your first WU**
+
+   ```bash
+   lumenflow wu create \
+     --id WU-001 \
+     --title "Add user authentication" \
+     --lane "Framework: Core" \
+     --type feature \
+     --exposure api \
+     --description "Implement JWT-based authentication" \
+     --acceptance "Users can log in with email/password" \
+     --code-paths "src/Auth/" \
+     --test-paths-unit "tests/Auth.Tests/"
+   ```
+
+5. **Claim and start work**
+
+   ```bash
+   lumenflow wu claim --id WU-001 --lane "Framework: Core"
+   cd worktrees/framework-core-wu-001
+   ```
+
+</Steps>
+
+## Gate Configuration
+
+### Using the .NET Preset
+
+The `dotnet` preset provides sensible defaults for .NET projects:
+
+```yaml
+gates:
+  execution:
+    preset: 'dotnet'
+```
+
+This is equivalent to:
+
+```yaml
+gates:
+  execution:
+    format: 'dotnet format --verify-no-changes'
+    lint: 'dotnet build --warnaserror'
+    # typecheck: not needed (.NET has built-in compilation checking)
+    test: 'dotnet test'
+```
+
+<Aside>
+  In .NET, the `lint` gate uses `dotnet build --warnaserror` because the compiler catches most
+  issues that linters catch in dynamic languages. For additional static analysis, configure
+  Roslyn analyzers.
+</Aside>
+
+### Customizing Gate Commands
+
+Override specific gates while keeping the preset defaults:
+
+<Tabs>
+  <TabItem label="Standard">
+    ```yaml
+    gates:
+      execution:
+        preset: 'dotnet'
+        format: 'dotnet format --verify-no-changes --severity info'
+        test: 'dotnet test --collect:"XPlat Code Coverage"'
+    ```
+  </TabItem>
+  <TabItem label="With Analyzers">
+    ```yaml
+    gates:
+      execution:
+        preset: 'dotnet'
+        lint: 'dotnet build --warnaserror && dotnet format analyzers --verify-no-changes'
+        test: 'dotnet test --logger "trx;LogFileName=test-results.trx"'
+    ```
+  </TabItem>
+  <TabItem label="With Stryker">
+    ```yaml
+    gates:
+      execution:
+        preset: 'dotnet'
+        test: 'dotnet test && dotnet stryker --threshold-high 80'
+    ```
+  </TabItem>
+</Tabs>
+
+### Framework-Specific Configurations
+
+<Tabs>
+  <TabItem label="ASP.NET Core API">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Framework: Core'
+          code_paths: ['src/Domain/**', 'src/Application/**']
+        - name: 'Framework: API'
+          code_paths: ['src/Api/**']
+        - name: 'Framework: Infrastructure'
+          code_paths: ['src/Infrastructure/**']
+
+    gates:
+      execution:
+        preset: 'dotnet'
+        test: 'dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage'
+    ```
+
+    **Clean architecture structure:**
+
+    ```
+    src/
+    ├── Domain/              # Entities, value objects, domain events
+    ├── Application/         # Use cases, DTOs, interfaces
+    ├── Api/                 # Controllers, middleware
+    └── Infrastructure/      # EF Core, external services
+    tests/
+    ├── Domain.Tests/
+    ├── Application.Tests/
+    └── Api.Tests/
+    ```
+
+  </TabItem>
+  <TabItem label="Blazor">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Experience: UI'
+          code_paths: ['src/Client/**']
+        - name: 'Framework: Core'
+          code_paths: ['src/Shared/**']
+        - name: 'Framework: API'
+          code_paths: ['src/Server/**']
+
+    gates:
+      execution:
+        preset: 'dotnet'
+        test: 'dotnet test && npx playwright test'
+    ```
+  </TabItem>
+  <TabItem label="Minimal API">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Framework: Core'
+          code_paths: ['src/**']
+
+    gates:
+      execution:
+        preset: 'dotnet'
+        format: 'dotnet format --verify-no-changes'
+        lint: 'dotnet build --warnaserror'
+        test: 'dotnet test --collect:"XPlat Code Coverage"'
+    ```
+  </TabItem>
+</Tabs>
+
+## GitHub Actions
+
+Complete workflow for .NET projects:
+
+```yaml
+# .github/workflows/gates.yml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+### With Code Coverage
+
+```yaml
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/**/coverage.cobertura.xml
+```
+
+## Testing Strategy
+
+LumenFlow encourages test-driven development. For .NET projects:
+
+### Unit Tests
+
+Fast, isolated tests using xUnit and Moq:
+
+```csharp
+// tests/Application.Tests/AuthenticateUserTests.cs
+public class AuthenticateUserTests
+{
+    private readonly Mock<IUserRepository> _userRepoMock;
+    private readonly Mock<ITokenService> _tokenServiceMock;
+    private readonly AuthenticateUserHandler _handler;
+
+    public AuthenticateUserTests()
+    {
+        _userRepoMock = new Mock<IUserRepository>();
+        _tokenServiceMock = new Mock<ITokenService>();
+        _handler = new AuthenticateUserHandler(
+            _userRepoMock.Object,
+            _tokenServiceMock.Object);
+    }
+
+    [Fact]
+    public async Task ValidCredentials_ReturnsToken()
+    {
+        // Arrange
+        var user = new User { Email = "test@example.com" };
+        _userRepoMock
+            .Setup(r => r.FindByEmailAsync("test@example.com"))
+            .ReturnsAsync(user);
+        _tokenServiceMock
+            .Setup(t => t.GenerateToken(user))
+            .Returns("jwt-token");
+
+        // Act
+        var result = await _handler.Handle(
+            new AuthenticateUserCommand("test@example.com", "password"),
+            CancellationToken.None);
+
+        // Assert
+        result.Should().BeSuccess();
+        result.Value.Token.Should().Be("jwt-token");
+    }
+
+    [Fact]
+    public async Task InvalidEmail_ReturnsError()
+    {
+        // Arrange
+        _userRepoMock
+            .Setup(r => r.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        var result = await _handler.Handle(
+            new AuthenticateUserCommand("unknown@example.com", "password"),
+            CancellationToken.None);
+
+        // Assert
+        result.Should().BeFailure();
+        result.Error.Should().Be("User not found");
+    }
+}
+```
+
+### Integration Tests
+
+Tests using WebApplicationFactory:
+
+```csharp
+// tests/Api.Tests/AuthControllerTests.cs
+public class AuthControllerTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+
+    public AuthControllerTests(WebApplicationFactory<Program> factory)
+    {
+        _client = factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task Login_WithValidCredentials_ReturnsToken()
+    {
+        // Arrange
+        var request = new { Email = "test@example.com", Password = "password123" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/auth/login", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        content!.AccessToken.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Login_WithInvalidCredentials_Returns401()
+    {
+        // Arrange
+        var request = new { Email = "test@example.com", Password = "wrong" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/auth/login", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+}
+```
+
+### Coverage Configuration
+
+Configure coverage thresholds in your test project:
+
+```xml
+<!-- tests/Application.Tests/Application.Tests.csproj -->
+<PropertyGroup>
+  <CollectCoverage>true</CollectCoverage>
+  <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+  <ThresholdType>line</ThresholdType>
+  <Threshold>90</Threshold>
+</PropertyGroup>
+```
+
+## Code Style
+
+### EditorConfig
+
+Create a `.editorconfig` for consistent code style:
+
+```ini
+# .editorconfig
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+charset = utf-8-bom
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Naming conventions
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_with_underscore
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = error
+```
+
+### Analyzers
+
+Add Roslyn analyzers for additional code quality checks:
+
+```xml
+<!-- Directory.Build.props -->
+<ItemGroup>
+  <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>analyzers</IncludeAssets>
+  </PackageReference>
+  <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>analyzers</IncludeAssets>
+  </PackageReference>
+</ItemGroup>
+```
+
+## Hexagonal Architecture
+
+LumenFlow aligns well with Clean Architecture / Hexagonal Architecture in .NET:
+
+```
+src/
+├── Domain/                      # Core business logic
+│   ├── Entities/
+│   ├── ValueObjects/
+│   └── DomainEvents/
+├── Application/                 # Use cases and interfaces
+│   ├── Common/
+│   │   └── Interfaces/          # Port definitions
+│   ├── Features/
+│   │   └── Auth/
+│   │       ├── Commands/
+│   │       └── Queries/
+│   └── DependencyInjection.cs
+├── Infrastructure/              # Adapters
+│   ├── Persistence/
+│   │   └── EfCore/
+│   └── ExternalServices/
+└── Api/                         # Primary adapter
+    ├── Controllers/
+    └── Middleware/
+```
+
+Configure lanes to match this structure:
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Framework: Domain'
+      code_paths: ['src/Domain/**']
+    - name: 'Framework: Application'
+      code_paths: ['src/Application/**']
+    - name: 'Framework: Infrastructure'
+      code_paths: ['src/Infrastructure/**']
+    - name: 'Framework: API'
+      code_paths: ['src/Api/**']
+```
+
+## Monorepo Support
+
+For .NET solutions with multiple projects:
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths: ['src/Core/**']
+    - name: 'Framework: Web'
+      code_paths: ['src/Web/**']
+    - name: 'Framework: Workers'
+      code_paths: ['src/Workers/**']
+```
+
+Run gates for specific projects:
+
+```bash
+lumenflow gates --working-directory src/Web
+```
+
+## Troubleshooting
+
+### Format gate fails
+
+Ensure `dotnet format` is available (included in .NET SDK 6+):
+
+```bash
+# Check version
+dotnet format --version
+
+# Auto-fix formatting issues
+dotnet format
+```
+
+### Build warnings treated as errors
+
+To allow specific warnings during migration:
+
+```xml
+<!-- Directory.Build.props -->
+<PropertyGroup>
+  <NoWarn>$(NoWarn);CS1591</NoWarn>  <!-- Missing XML comment -->
+</PropertyGroup>
+```
+
+### Tests not discovering
+
+Ensure test projects reference the test SDK:
+
+```xml
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+<PackageReference Include="xunit" Version="2.7.0" />
+<PackageReference Include="xunit.runner.visualstudio" Version="2.5.7" />
+```
+
+### Slow restore in CI
+
+Use Central Package Management and cache properly:
+
+```xml
+<!-- Directory.Packages.props -->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="MediatR" Version="12.2.0" />
+    <!-- ... other packages ... -->
+  </ItemGroup>
+</Project>
+```
+
+## Next Steps
+
+- [Gates Concepts](/concepts/gates) - Understanding quality gates
+- [Work Units](/concepts/work-units) - Structuring work effectively
+- [GitHub Action Reference](/reference/github-action) - CI/CD configuration
