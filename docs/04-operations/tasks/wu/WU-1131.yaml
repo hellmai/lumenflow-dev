@@ -11,7 +11,8 @@ code_paths:
 tests:
   manual:
     - pnpm wu:spawn --id WU-XXX | head -20 shows warning banner
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1131.done
