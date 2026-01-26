@@ -74,6 +74,30 @@ const MANDATORY_TRIGGERS = {
 const LOG_PREFIX = '[wu:spawn]';
 
 /**
+ * WU-1131: Truncation prevention constants
+ *
+ * These constants help detect when spawn output has been truncated during
+ * copy-paste operations or context loading. The warning banner alerts users
+ * to the truncation risk, and the end sentinel allows verification that
+ * the full output was received.
+ */
+export const TRUNCATION_WARNING_BANNER = `<!-- LUMENFLOW_TRUNCATION_WARNING -->
+<!--
+  ⚠️ CRITICAL: DO NOT TRUNCATE THIS OUTPUT
+
+  This spawn prompt MUST be copied verbatim. Truncation causes:
+  - Missing constraints (agents ignore safety rules)
+  - Missing TDD directives (agents skip tests)
+  - Degraded agent performance
+
+  VERIFICATION: The output MUST end with: <!-- LUMENFLOW_SPAWN_END -->
+  If you don't see that sentinel at the end, the output was truncated.
+-->
+`;
+
+export const SPAWN_END_SENTINEL = '<!-- LUMENFLOW_SPAWN_END -->';
+
+/**
  * Detect mandatory agents based on code paths.
  *
  * @param {string[]} codePaths - Array of file paths
@@ -986,8 +1010,9 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
 
   // Build the task prompt
+  // WU-1131: Warning banner at start, end sentinel after constraints
   // TDD directive appears immediately after </task> per "Lost in the Middle" research (WU-1585)
-  const taskPrompt = `<task>
+  const taskPrompt = `${TRUNCATION_WARNING_BANNER}<task>
 ${preamble}
 </task>
 
@@ -1077,7 +1102,9 @@ ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}## Action
 
 ${generateActionSection(doc, id)}
 
-${constraints}`;
+${constraints}
+
+${SPAWN_END_SENTINEL}`;
 
   // Escape special characters for XML output
   const escapedPrompt = taskPrompt
@@ -1132,7 +1159,8 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
     .join('\n\n---\n\n');
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
 
-  return `# ${id}: ${doc.title || 'Untitled'}
+  // WU-1131: Warning banner at start, end sentinel after constraints
+  return `${TRUNCATION_WARNING_BANNER}# ${id}: ${doc.title || 'Untitled'}
 
 ${tddDirective}
 
@@ -1190,6 +1218,8 @@ ${mandatorySection}${implementationContext ? `${implementationContext}\n\n---\n\
 ---
 
 ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}${constraints}
+
+${SPAWN_END_SENTINEL}
 `;
 }
 
