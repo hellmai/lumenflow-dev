@@ -75,3 +75,4 @@ sections:
 - [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml)
 - [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml)
 - [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml)
+- [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml)
