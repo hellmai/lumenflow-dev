@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
