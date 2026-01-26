@@ -2,7 +2,7 @@ id: WU-1125
 title: 'INIT-004 Phase 3: Document upgrade path'
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -40,3 +40,5 @@ session_id: 0ab7c2e7-9c12-417c-88e6-1b61f3b08fa6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T11:07:21.109Z
+locked: true
+completed_at: 2026-01-26T11:11:23.749Z
