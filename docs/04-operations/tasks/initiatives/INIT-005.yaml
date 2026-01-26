@@ -14,29 +14,16 @@ created: 2026-01-26
 phases:
   - id: 1
     title: Critical Fix
-    description: Fix wu:spawn truncation (root cause)
     status: pending
-    wus:
-      - WU-1131
   - id: 2
     title: Hook Hardening
-    description: Fix fail-open hooks + add audit logging
     status: pending
-    wus:
-      - WU-1132
   - id: 3
     title: Doc Alignment
-    description: Fix broken references + align docs-only language
     status: pending
-    wus:
-      - WU-1133
   - id: 4
     title: Recovery & Enforcement
-    description: Add recovery guidance and prompt-level enforcement
     status: pending
-    wus:
-      - WU-1134
-      - WU-1135
 success_metrics:
   - Spawned agents receive full 23-section prompt (end sentinel present)
   - Hook blocks are audited to .claude/audit/main-write-blocks.log
@@ -45,3 +32,5 @@ labels:
   - agent-quality
   - worktree-discipline
   - truncation-fix
+wus:
+  - WU-1131
