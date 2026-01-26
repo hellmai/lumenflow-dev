@@ -2,7 +2,7 @@ id: WU-1126
 title: Export constants/enums for string literals in port interfaces
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -48,3 +48,5 @@ session_id: 2b572b52-7f5e-4035-bef6-39a00e9f851e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T10:51:04.769Z
+locked: true
+completed_at: 2026-01-26T11:02:46.595Z
