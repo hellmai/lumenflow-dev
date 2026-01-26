@@ -24,7 +24,7 @@ All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).
 | Memory Layer | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:create`](#memcreate), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage) |
 | Metrics | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot) |
 | Orchestration | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor) |
-| Other | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`guard:locked`](#guardlocked), [`guard:main:branch`](#guardmainbranch), [`guard:worktree:commit`](#guardworktreecommit), [`init:plan`](#initplan), [`rotate:progress`](#rotateprogress), [`session:coordinator`](#sessioncoordinator), [`trace:gen`](#tracegen), [`validate`](#validate), [`validate:agent:skills`](#validateagentskills), [`validate:agent:sync`](#validateagentsync), [`validate:backlog:sync`](#validatebacklogsync), [`validate:skills:spec`](#validateskillsspec) |
+| Other | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`guard:locked`](#guardlocked), [`guard:main:branch`](#guardmainbranch), [`guard:worktree:commit`](#guardworktreecommit), [`init:plan`](#initplan), [`rotate:progress`](#rotateprogress), [`session:coordinator`](#sessioncoordinator), [`state:bootstrap`](#statebootstrap), [`trace:gen`](#tracegen), [`validate`](#validate), [`validate:agent:skills`](#validateagentskills), [`validate:agent:sync`](#validateagentsync), [`validate:backlog:sync`](#validatebacklogsync), [`validate:skills:spec`](#validateskillsspec) |
 | Quality Gates | [`gates`](#gates) |
 | Setup | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate) |
 | Sub-Agents | [`spawn:list`](#spawnlist) |
@@ -528,6 +528,14 @@ pnpm validate:backlog:sync
 
 ```bash
 pnpm validate:skills:spec
+```
+
+### state:bootstrap
+
+State Bootstrap Command
+
+```bash
+pnpm state:bootstrap
 ```
 
 ## Quality Gates
