@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
