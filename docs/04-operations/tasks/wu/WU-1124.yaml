@@ -15,8 +15,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1124.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/INIT-003-template-auto-sync.md
+initiative: INIT-004
+phase: 2
 risks: []
 notes: ''
 requires_review: false
@@ -32,4 +32,3 @@ acceptance:
   - Hardcoded template strings removed from docs-sync.ts
   - Templates read from bundled files
   - docs-sync command works correctly after refactor
-initiative: INIT-004
