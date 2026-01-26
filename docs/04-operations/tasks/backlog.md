@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — Operations: CI/CD
 - [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — Framework: CLI
   (No items ready)
 
