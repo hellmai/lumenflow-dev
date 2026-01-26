@@ -2,7 +2,7 @@ id: WU-1123
 title: 'INIT-004 Phase 1: Template sync script'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -34,3 +34,11 @@ acceptance:
   - Onboarding docs sync to templates
   - Claude skills sync to templates/vendors/claude
   - Core docs sync with template variables
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1123
+claimed_at: 2026-01-26T10:52:23.383Z
+baseline_main_sha: d89b16a4634d400eb4aa3884223b88bc357917f4
+session_id: 2b572b52-7f5e-4035-bef6-39a00e9f851e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:52:23.387Z
