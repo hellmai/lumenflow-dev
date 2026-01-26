@@ -14,7 +14,9 @@ code_paths:
   - apps/docs/src/content/docs/reference/compatibility.mdx
   - apps/docs/astro.config.mjs
 tests:
-  manual: []
+  manual:
+    - 'pnpm docs:build succeeds without errors'
+    - 'All new pages render in sidebar navigation'
   unit: []
   e2e: []
 artifacts:
@@ -23,7 +25,16 @@ dependencies: []
 blocked_by:
   - WU-1119
 risks: []
-notes: ''
+notes: |
+  Manual verification complete:
+  - pnpm docs:build runs successfully (43 pages built)
+  - All new pages appear in sidebar navigation
+  - Custom Skills tutorial: /guides/custom-skills/
+  - A Day with LumenFlow: /guides/a-day-with-lumenflow/
+  - Cookbook: /guides/cookbook/
+  - Changelog: /reference/changelog/
+  - Compatibility Matrix: /reference/compatibility/
+  - API Documentation: /reference/api/
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
