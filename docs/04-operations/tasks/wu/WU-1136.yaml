@@ -15,15 +15,21 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1136.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/WU-1136-plan.md
 risks: []
-notes: ''
+notes: Docs-only gates failed due to pre-existing prettier issues in apps/docs reference pages;
+  tracked as WU-1138.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-26T23:40:30.649Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1136
+session_id: fee745b4-0e84-4d53-9ac8-32077399f873
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:40:30.655Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +42,3 @@ acceptance:
   - agent-invocation-guide.md exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/
     with context-loading and spawn-prompt guidance
   - context-management skill includes optional pre-clear checkpoint hook guidance
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1136
-claimed_at: 2026-01-26T23:40:30.649Z
-baseline_main_sha: 24f05272038c43638a0893258632c7b614e4fc58
-session_id: fee745b4-0e84-4d53-9ac8-32077399f873
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-26T23:40:30.655Z
