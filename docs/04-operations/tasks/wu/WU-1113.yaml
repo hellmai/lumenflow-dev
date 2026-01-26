@@ -6,7 +6,10 @@ status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
-  - packages/@lumenflow/cli/**
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/CHANGELOG.md
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/core/CHANGELOG.md
 tests:
   manual:
     - Verify npm publish succeeded
@@ -30,10 +33,17 @@ blocked_by:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-26T09:16:13.359Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1113
+session_id: 7af25141-2006-4333-a6b1-e417616342a5
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T09:16:13.364Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +56,3 @@ acceptance:
   - ExampleApp local tools/*.mjs marked deprecated with pointers to npm commands
   - Final pnpm docs:generate with all 80+ commands
   - lumenflow.dev deployed with complete CLI reference
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1113
-claimed_at: 2026-01-26T09:16:13.359Z
-baseline_main_sha: 770dac63134b6f72307e915feb4cc6df9846e52e
-session_id: 7af25141-2006-4333-a6b1-e417616342a5
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-26T09:16:13.364Z
