@@ -25,7 +25,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
-- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -83,3 +82,4 @@ sections:
 - [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml)
 - [WU-1127 — lumenflow:upgrade must use micro-worktree (users blocked from upgrading)](wu/WU-1127.yaml)
 - [WU-1128 — Add upgrade guide to lumenflow.dev](wu/WU-1128.yaml)
+- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml)
