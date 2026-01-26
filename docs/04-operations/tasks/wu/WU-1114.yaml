@@ -1,0 +1,38 @@
+id: WU-1114
+title: Enforce context exhaustion prevention via WU sizing and spawn-fresh policy
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-26
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - .lumenflow/constraints.md
+  - LUMENFLOW.md
+  - .claude/skills/context-management/SKILL.md
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1114.done
+dependencies: []
+spec_refs:
+  - ~/.lumenflow/plans/WU-1114-context-exhaustion-prevention.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: When agents compact/summarize context, they lose critical rules and start making mistakes. Problem: Current approach attempts complex recovery (hooks, agent frontmatter) which is vendor-specific and high effort. Solution: Prevention over recovery - enforce existing sizing guide thresholds as mandatory limits and document spawn-fresh as the standard pattern.'
+acceptance:
+  - wu-sizing-guide.md updated with mandatory thresholds (not guidelines)
+  - wu-sizing-guide.md includes spawn-fresh policy section
+  - constraints.md has brief note about context limits
+  - LUMENFLOW.md has one-line reminder about spawn-fresh at top
+  - context-management skill updated with spawn-fresh as primary strategy
