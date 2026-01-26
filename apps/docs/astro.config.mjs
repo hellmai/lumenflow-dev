@@ -54,6 +54,9 @@ export default defineConfig({
         {
           label: 'Language Guides',
           items: [
+            { label: 'Overview', slug: 'language-guides' },
+            { label: 'Python', slug: 'language-guides/python' },
+            { label: '.NET', slug: 'language-guides/dotnet' },
             { label: 'Go', slug: 'language-guides/go' },
             { label: 'Rust', slug: 'language-guides/rust' },
           ],
