@@ -65,12 +65,7 @@ await completeWu({
 ### State Machine
 
 ```typescript
-import {
-  WuStateMachine,
-  WuStatus,
-  WuTransition,
-  canTransition,
-} from '@lumenflow/core';
+import { WuStateMachine, WuStatus, WuTransition, canTransition } from '@lumenflow/core';
 
 // Check if transition is valid
 const canClaim = canTransition(WuStatus.READY, WuStatus.IN_PROGRESS);
@@ -85,11 +80,7 @@ const validTransitions = machine.getValidTransitions(WuStatus.IN_PROGRESS);
 ### Configuration
 
 ```typescript
-import {
-  loadConfig,
-  validateConfig,
-  type LumenFlowConfig,
-} from '@lumenflow/core';
+import { loadConfig, validateConfig, type LumenFlowConfig } from '@lumenflow/core';
 
 // Load config from file
 const config = await loadConfig('/path/to/.lumenflow.config.yaml');
@@ -134,11 +125,7 @@ const result = await validateContext({
 ### Agent Branch Detection
 
 ```typescript
-import {
-  isAgentBranch,
-  isAgentBranchWithDetails,
-  resolveAgentPatterns,
-} from '@lumenflow/core';
+import { isAgentBranch, isAgentBranchWithDetails, resolveAgentPatterns } from '@lumenflow/core';
 
 // Check if branch is an agent branch
 const isAgent = await isAgentBranch('claude/session-12345');
@@ -155,12 +142,7 @@ console.log(result.patternResult.source);
 ### Session Tracking
 
 ```typescript
-import {
-  startSession,
-  endSession,
-  getActiveSession,
-  type AgentSession,
-} from '@lumenflow/memory';
+import { startSession, endSession, getActiveSession, type AgentSession } from '@lumenflow/memory';
 
 // Start a session
 const session = await startSession({
@@ -178,11 +160,7 @@ await endSession(session.id);
 ### Checkpoints
 
 ```typescript
-import {
-  createCheckpoint,
-  loadCheckpoint,
-  listCheckpoints,
-} from '@lumenflow/memory';
+import { createCheckpoint, loadCheckpoint, listCheckpoints } from '@lumenflow/memory';
 
 // Create checkpoint
 await createCheckpoint({
@@ -204,11 +182,7 @@ const checkpoints = await listCheckpoints({ wuId: 'WU-042' });
 ### Signals
 
 ```typescript
-import {
-  sendSignal,
-  getInbox,
-  type Signal,
-} from '@lumenflow/memory';
+import { sendSignal, getInbox, type Signal } from '@lumenflow/memory';
 
 // Send progress signal
 await sendSignal({
@@ -229,12 +203,7 @@ const signals = await getInbox({
 ### Skill Loading
 
 ```typescript
-import {
-  loadSkill,
-  listSkills,
-  validateSkill,
-  type Skill,
-} from '@lumenflow/agent';
+import { loadSkill, listSkills, validateSkill, type Skill } from '@lumenflow/agent';
 
 // Load a skill
 const skill = await loadSkill('wu-lifecycle');
@@ -251,10 +220,7 @@ const issues = await validateSkill('.claude/skills/my-skill/SKILL.md');
 ### Agent Verification
 
 ```typescript
-import {
-  verifyCompletion,
-  type VerificationResult,
-} from '@lumenflow/agent';
+import { verifyCompletion, type VerificationResult } from '@lumenflow/agent';
 
 // Verify WU completion
 const result = await verifyCompletion('WU-042');
@@ -270,11 +236,7 @@ if (result.passed) {
 The CLI package is primarily used via commands, but exports some utilities:
 
 ```typescript
-import {
-  parseArgs,
-  formatOutput,
-  printTable,
-} from '@lumenflow/cli';
+import { parseArgs, formatOutput, printTable } from '@lumenflow/cli';
 
 // Parse command arguments
 const args = parseArgs(['--id', 'WU-042', '--lane', 'Core']);
@@ -382,7 +344,8 @@ pnpm typedoc --out docs/api packages/@lumenflow/*/src/index.ts
 ```
 
 <Aside type="note">
-  Full TypeDoc API documentation is available at [api.lumenflow.dev](https://api.lumenflow.dev) (coming soon).
+  Full TypeDoc API documentation is available at [api.lumenflow.dev](https://api.lumenflow.dev)
+  (coming soon).
 </Aside>
 
 ## See Also

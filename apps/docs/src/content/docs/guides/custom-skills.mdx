@@ -76,7 +76,9 @@ The main knowledge for this skill...
 ## Commands
 
 \`\`\`bash
+
 # Key commands the agent should know
+
 command --example
 \`\`\`
 
@@ -104,6 +106,7 @@ When X, do Y...
 2. **Find the canonical source**
 
    Skills should reference existing documentation, not duplicate it:
+
    ```bash
    # Check for existing docs
    ls docs/**/*.md
@@ -138,6 +141,7 @@ When X, do Y...
 5. **Add to the index**
 
    Update `.claude/skills/INDEX.md`:
+
    ```markdown
    | [my-skill](my-skill/SKILL.md) | Trigger phrase | Brief description |
    ```
@@ -186,16 +190,21 @@ Activate this skill when:
 ## Commands
 
 \`\`\`bash
+
 # Check status
+
 pnpm db:migrate:status
 
 # Create new migration
+
 pnpm db:migrate:create add_user_preferences
 
 # Run pending migrations
+
 pnpm db:migrate:up
 
 # Rollback last migration
+
 pnpm db:migrate:down
 \`\`\`
 
@@ -204,10 +213,10 @@ pnpm db:migrate:down
 \`\`\`sql
 -- Up migration
 CREATE TABLE IF NOT EXISTS user_preferences (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  theme VARCHAR(20) DEFAULT 'system',
-  created_at TIMESTAMPTZ DEFAULT now()
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID NOT NULL REFERENCES users(id),
+theme VARCHAR(20) DEFAULT 'system',
+created_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- Down migration
@@ -217,10 +226,12 @@ DROP TABLE IF EXISTS user_preferences;
 ## Decision Tree
 
 **Adding a column?**
+
 - Nullable? Add with default, no downtime
 - Non-nullable? Add nullable, backfill, add constraint
 
 **Removing a column?**
+
 - First: Stop reading from it in code
 - Then: Remove in next migration
 
@@ -248,17 +259,18 @@ DROP TABLE IF EXISTS user_preferences;
 
 ## Allowed Tools Reference
 
-| Tool | Use For |
-|------|---------|
-| `Read` | Reading files (always safe) |
-| `Bash` | Running commands, scripts |
-| `Write` | Creating new files |
-| `Edit` | Modifying existing files |
-| `Grep` | Searching codebase |
-| `Glob` | Finding files by pattern |
+| Tool    | Use For                     |
+| ------- | --------------------------- |
+| `Read`  | Reading files (always safe) |
+| `Bash`  | Running commands, scripts   |
+| `Write` | Creating new files          |
+| `Edit`  | Modifying existing files    |
+| `Grep`  | Searching codebase          |
+| `Glob`  | Finding files by pattern    |
 
 <Aside type="tip">
-  Most skills only need `Read, Bash, Grep`. Add `Write` and `Edit` only if the skill involves file creation or modification.
+  Most skills only need `Read, Bash, Grep`. Add `Write` and `Edit` only if the skill involves file
+  creation or modification.
 </Aside>
 
 ## Testing Skills
@@ -284,6 +296,7 @@ pnpm validate:agent:skills
 ```
 
 This checks:
+
 - Frontmatter schema validity
 - Source file existence
 - Required sections present

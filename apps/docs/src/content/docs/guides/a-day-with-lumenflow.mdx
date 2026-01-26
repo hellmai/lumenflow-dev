@@ -21,6 +21,7 @@ This walkthrough follows a realistic day of development using LumenFlow, showing
     # Review backlog
     pnpm wu:list --status ready --lane "Framework: Core"
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     ```bash
@@ -30,6 +31,7 @@ This walkthrough follows a realistic day of development using LumenFlow, showing
     # Or use the list command
     pnpm wu:list --status ready
     ```
+
   </TabItem>
 </Tabs>
 
@@ -71,6 +73,7 @@ code_paths:
     # Start agent session for memory tracking
     pnpm agent:session --id WU-042
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     ```bash
@@ -84,11 +87,13 @@ code_paths:
     pwd
     # /home/user/project/worktrees/framework-core-wu-042
     ```
+
   </TabItem>
 </Tabs>
 
 <Aside type="caution">
-  Always `cd` into the worktree immediately after claiming. Working in the main checkout will cause hook failures and state inconsistencies.
+  Always `cd` into the worktree immediately after claiming. Working in the main checkout will cause
+  hook failures and state inconsistencies.
 </Aside>
 
 ### Understand the Task
@@ -139,6 +144,7 @@ Review the acceptance criteria:
       });
     });
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     Developer creates test file first:
@@ -150,6 +156,7 @@ Review the acceptance criteria:
     ```
 
     Then writes tests covering all acceptance criteria.
+
   </TabItem>
 </Tabs>
 
@@ -161,7 +168,8 @@ pnpm test --filter @lumenflow/core
 ```
 
 <Aside type="tip">
-  This confirms our tests actually test something. If tests pass before implementation, they're not testing the right thing.
+  This confirms our tests actually test something. If tests pass before implementation, they're not
+  testing the right thing.
 </Aside>
 
 ## Early Afternoon: Implementation (GREEN)
@@ -195,6 +203,7 @@ pnpm test --filter @lumenflow/core
       return { valid: true };
     }
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     Developer creates implementation file:
@@ -205,6 +214,7 @@ pnpm test --filter @lumenflow/core
     ```
 
     Then writes the validation function.
+
   </TabItem>
 </Tabs>
 
@@ -259,6 +269,7 @@ pnpm test --filter @lumenflow/core -- --coverage
       return { valid: true };
     }
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     Developer refactors:
@@ -293,6 +304,7 @@ pnpm test --filter @lumenflow/core
     # [gates] Running tests...
     # [gates] All gates passed
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     ```bash
@@ -303,6 +315,7 @@ pnpm test --filter @lumenflow/core
     pnpm format
     # Then re-run gates
     ```
+
   </TabItem>
 </Tabs>
 
@@ -341,6 +354,7 @@ git commit -m "wu(wu-042): add email validation with tests
     # [wu:done] Cleaning up worktree...
     # [wu:done] WU-042 completed successfully
     ```
+
   </TabItem>
   <TabItem label="Traditional">
     ```bash
@@ -357,6 +371,7 @@ git commit -m "wu(wu-042): add email validation with tests
     # 4. Updates backlog.md and status.md
     # 5. Removes the worktree
     ```
+
   </TabItem>
 </Tabs>
 
@@ -391,20 +406,20 @@ pnpm mem:checkpoint --wu WU-042
 
 ## Complete Timeline
 
-| Time | Activity | Commands |
-|------|----------|----------|
-| 9:00 | Review ready WUs | `pnpm wu:list --status ready` |
-| 9:15 | Claim WU-042 | `pnpm wu:claim --id WU-042` |
-| 9:20 | cd to worktree | `cd worktrees/framework-core-wu-042` |
-| 10:00 | Write failing tests | TDD RED phase |
-| 10:30 | Run tests (fail) | `pnpm test` |
-| 11:00 | Implement feature | TDD GREEN phase |
-| 11:30 | Run tests (pass) | `pnpm test` |
-| 14:00 | Refactor | TDD REFACTOR phase |
-| 14:30 | Check coverage | `pnpm test -- --coverage` |
-| 15:00 | Run gates | `pnpm gates` |
-| 15:30 | Commit changes | `git commit` |
-| 16:00 | Complete WU | `pnpm wu:done --id WU-042` |
+| Time  | Activity            | Commands                             |
+| ----- | ------------------- | ------------------------------------ |
+| 9:00  | Review ready WUs    | `pnpm wu:list --status ready`        |
+| 9:15  | Claim WU-042        | `pnpm wu:claim --id WU-042`          |
+| 9:20  | cd to worktree      | `cd worktrees/framework-core-wu-042` |
+| 10:00 | Write failing tests | TDD RED phase                        |
+| 10:30 | Run tests (fail)    | `pnpm test`                          |
+| 11:00 | Implement feature   | TDD GREEN phase                      |
+| 11:30 | Run tests (pass)    | `pnpm test`                          |
+| 14:00 | Refactor            | TDD REFACTOR phase                   |
+| 14:30 | Check coverage      | `pnpm test -- --coverage`            |
+| 15:00 | Run gates           | `pnpm gates`                         |
+| 15:30 | Commit changes      | `git commit`                         |
+| 16:00 | Complete WU         | `pnpm wu:done --id WU-042`           |
 
 ## Common Issues
 
