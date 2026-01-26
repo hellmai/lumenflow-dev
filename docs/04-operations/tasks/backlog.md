@@ -26,7 +26,6 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1124 — INIT-004 Phase 2: Refactor docs-sync to read from templates](wu/WU-1124.yaml) — Framework: CLI
-- [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -79,3 +78,4 @@ sections:
 - [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml)
 - [WU-1125 — INIT-004 Phase 3: Document upgrade path](wu/WU-1125.yaml)
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml)
+- [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml)
