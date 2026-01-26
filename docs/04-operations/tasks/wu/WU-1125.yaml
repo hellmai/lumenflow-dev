@@ -7,6 +7,7 @@ priority: P2
 created: 2026-01-26
 code_paths:
   - packages/@lumenflow/cli/README.md
+  - packages/@lumenflow/cli/templates/core/UPGRADING.md.template
 tests:
   manual:
     - Review content

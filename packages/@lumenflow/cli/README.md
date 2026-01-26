@@ -140,6 +140,25 @@ The CLI integrates with other LumenFlow packages:
 
 For complete documentation, see [lumenflow.dev](https://lumenflow.dev/reference/cli).
 
+## Upgrading
+
+To upgrade LumenFlow packages:
+
+```bash
+# Check for available updates
+pnpm outdated @lumenflow/*
+
+# Update all LumenFlow packages
+pnpm update @lumenflow/cli @lumenflow/core @lumenflow/memory @lumenflow/agent @lumenflow/initiatives
+
+# Sync documentation and templates
+pnpm exec lumenflow docs:sync
+```
+
+**Important**: Always run `docs:sync` after upgrading to update agent onboarding documentation, workflow rules, and vendor-specific configurations.
+
+For detailed upgrade instructions, migration guides, and troubleshooting, see [UPGRADING.md](https://lumenflow.dev/upgrading).
+
 ## License
 
 Apache-2.0

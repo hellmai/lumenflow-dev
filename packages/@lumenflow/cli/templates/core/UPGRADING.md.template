@@ -1,0 +1,121 @@
+# Upgrading LumenFlow
+
+This guide covers upgrading LumenFlow packages in your project.
+
+## Quick Upgrade
+
+```bash
+# Check for available updates
+pnpm outdated @lumenflow/*
+
+# Update all LumenFlow packages
+pnpm update @lumenflow/cli @lumenflow/core @lumenflow/memory @lumenflow/agent @lumenflow/initiatives
+
+# Sync documentation and templates
+pnpm exec lumenflow docs:sync
+```
+
+## Version Compatibility
+
+LumenFlow follows semantic versioning:
+
+- **Major versions** (e.g., 1.x to 2.x): Breaking changes, require migration steps
+- **Minor versions** (e.g., 1.1 to 1.2): New features, backwards compatible
+- **Patch versions** (e.g., 1.1.0 to 1.1.1): Bug fixes, backwards compatible
+
+All `@lumenflow/*` packages are versioned together. Always upgrade them as a group.
+
+## Step-by-Step Upgrade Process
+
+### 1. Check Current Versions
+
+```bash
+pnpm list @lumenflow/*
+```
+
+### 2. Review Changelog
+
+Before upgrading, review the changelog for breaking changes:
+
+- [GitHub Releases](https://github.com/hellmai/os/releases)
+- [lumenflow.dev/changelog](https://lumenflow.dev/changelog)
+
+### 3. Update Packages
+
+```bash
+# Update to latest versions
+pnpm update @lumenflow/cli @lumenflow/core @lumenflow/memory @lumenflow/agent @lumenflow/initiatives
+
+# Or update to a specific version
+pnpm add @lumenflow/cli@^1.2.0 @lumenflow/core@^1.2.0
+```
+
+### 4. Sync Documentation
+
+After upgrading, sync agent onboarding documentation:
+
+```bash
+pnpm exec lumenflow docs:sync
+```
+
+This updates:
+
+- `.lumenflow/` - Workflow rules and constraints
+- `.claude/` - Claude Code skills and settings (if used)
+- `.cursor/` - Cursor rules (if used)
+- Agent onboarding documentation
+
+### 5. Verify Installation
+
+```bash
+# Run gates to verify everything works
+pnpm gates
+
+# Check CLI version
+pnpm exec lumenflow --version
+```
+
+## Troubleshooting
+
+### Package Resolution Errors
+
+If you encounter dependency resolution errors:
+
+```bash
+# Clear pnpm cache and reinstall
+pnpm store prune
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+### CLI Not Found
+
+If `lumenflow` command is not found after upgrade:
+
+```bash
+# Rebuild CLI
+pnpm --filter @lumenflow/cli build
+
+# Or reinstall
+pnpm install
+```
+
+### Template Conflicts
+
+If `docs:sync` reports conflicts:
+
+1. Review the diff for each conflicting file
+2. Merge manually or accept incoming changes
+3. Run `pnpm gates` to verify
+
+## Migration Guides
+
+For major version upgrades, see version-specific migration guides:
+
+- [Migrating to v2.0](https://lumenflow.dev/migration/v2)
+- [Migrating to v1.0](https://lumenflow.dev/migration/v1)
+
+## Getting Help
+
+- [GitHub Issues](https://github.com/hellmai/os/issues)
+- [lumenflow.dev/docs](https://lumenflow.dev/docs)
