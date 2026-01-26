@@ -6,6 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
+  - apps/docs/src/content/docs/language-guides/java.mdx
+  - apps/docs/src/content/docs/language-guides/ruby.mdx
   - apps/docs/src/content/docs/language-guides/php.mdx
 tests:
   manual:
