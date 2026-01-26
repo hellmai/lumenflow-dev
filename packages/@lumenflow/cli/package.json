@@ -107,7 +107,12 @@
     "session-coordinator": "./dist/session-coordinator.js",
     "rotate-progress": "./dist/rotate-progress.js",
     "lumenflow-upgrade": "./dist/lumenflow-upgrade.js",
-    "trace-gen": "./dist/trace-gen.js"
+    "trace-gen": "./dist/trace-gen.js",
+    "git-status": "./dist/git-status.js",
+    "git-diff": "./dist/git-diff.js",
+    "git-log": "./dist/git-log.js",
+    "git-branch": "./dist/git-branch.js",
+    "guard-main-branch": "./dist/guard-main-branch.js"
   },
   "files": [
     "dist",
