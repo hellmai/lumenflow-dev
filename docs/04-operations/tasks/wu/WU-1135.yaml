@@ -6,7 +6,12 @@ status: ready
 priority: P2
 created: 2026-01-26
 code_paths:
+  - .lumenflow/constraints.md
+  - .claude/agents/general-purpose.md
+  - .claude/agents/test-engineer.md
   - .claude/agents/code-reviewer.md
+  - .claude/agents/lumenflow-doc-sync.md
+  - .claude/skills/worktree-discipline/SKILL.md
 tests:
   manual:
     - grep MANDATORY PRE-WRITE CHECK in constraints.md
@@ -32,5 +37,4 @@ description: Update constraints.md with mandatory pre-write check. Add same chec
 acceptance:
   - constraints.md Constraint 1 includes MANDATORY PRE-WRITE CHECK section
   - Pre-write check verifies relative paths and worktree location
-  - Docs-only exception documented for type documentation WUs
   - Agent templates updated with pre-write validation
