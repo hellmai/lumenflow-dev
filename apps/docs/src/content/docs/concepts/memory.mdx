@@ -3,6 +3,8 @@ title: Memory Layer
 description: Context recovery for long-running sessions
 ---
 
+import { Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+
 The Memory Layer preserves context across sessions, enabling AI agents and humans to resume work without losing track.
 
 ## Why Memory?
@@ -18,20 +20,21 @@ With memory:
 - Automatic checkpoints capture state
 - Session context is recoverable
 - Decisions are documented
+- Discoveries become WUs
 
 ## How It Works
 
 ```
 Session Start
-     ↓
+     |
 mem:ready (check pending work)
-     ↓
+     |
 Work (changes, decisions)
-     ↓
+     |
 mem:checkpoint (periodic save)
-     ↓
+     |
 Session End
-     ↓
+     |
 Next Session: mem:ready (resume)
 ```
 
@@ -179,6 +182,164 @@ Each session captures:
 }
 ```
 
+## Practical Examples
+
+### Example 1: Agent Session Handoff
+
+A common scenario: one agent works on a WU, hits context limits, and hands off to a fresh agent.
+
+**Agent 1 (hitting context limits):**
+
+```bash
+# Agent 1 is running low on context
+# Save state before ending session
+pnpm mem:checkpoint
+
+# Signal where we left off
+pnpm mem:signal "Tests written for auth flow, starting integration tests"
+
+# Document the key decision made
+pnpm mem:decide \
+  --question "How to handle token refresh?" \
+  --answer "Silent refresh with retry queue" \
+  --reason "Better UX, handles race conditions"
+```
+
+**Agent 2 (resuming):**
+
+```bash
+# New agent checks what's pending
+pnpm mem:ready
+
+# Output:
+# Session: abc123
+# WU: WU-042 (in_progress)
+# Lane: Framework: Core
+# Last signal: "Tests written for auth flow, starting integration tests"
+# Files touched:
+#   - src/utils/auth.ts
+#   - src/components/LoginForm.tsx
+#   - tests/auth.test.ts
+#
+# Pending decisions: 1
+#   - Token refresh: Silent refresh with retry queue
+
+# Resume work with full context
+cd worktrees/framework-core-wu-042
+```
+
+### Example 2: Discovery to WU Pipeline
+
+Finding bugs or improvements during work and converting them to WUs.
+
+```bash
+# During WU-042, agent finds a bug in unrelated code
+pnpm mem:create "Found race condition in session manager" \
+  --type discovery \
+  --wu WU-042 \
+  --priority P1 \
+  --tags bug,auth,race-condition
+
+# Later, triage the discovery
+pnpm mem:triage --list
+# Output:
+# mem-def456: Found race condition in session manager
+#   Type: discovery
+#   Priority: P1
+#   Discovered during: WU-042
+#   Tags: bug, auth, race-condition
+
+# Promote to a new WU
+pnpm mem:triage --promote mem-def456 \
+  --lane "Framework: Core" \
+  --title "BUG: Fix race condition in session manager"
+
+# Creates WU-043 with:
+# - Type: bug
+# - Priority: P1
+# - discovered_in: WU-042
+# - Linked to memory node for context
+```
+
+### Example 3: Long-Running Research Session
+
+For discovery or research WUs that span multiple days.
+
+```bash
+# Day 1: Start research
+pnpm mem:start --wu WU-050
+
+# Make progress, save decisions
+pnpm mem:decide \
+  --question "Which observability platform?" \
+  --answer "OpenTelemetry + Grafana" \
+  --reason "Vendor neutral, good ecosystem"
+
+pnpm mem:signal "Evaluated 3 platforms, OTel winning"
+pnpm mem:checkpoint
+
+# Day 2: Continue
+pnpm mem:ready
+# Shows: Last checkpoint from Day 1, decision context preserved
+
+# Add more findings
+pnpm mem:create "OTel has better trace propagation" \
+  --type note \
+  --wu WU-050 \
+  --tags observability,decision
+
+# Day 3: Wrap up
+pnpm mem:summarize --wu WU-050
+# Creates summary node:
+# "Research on observability platforms. Decision: OpenTelemetry + Grafana.
+#  Key factors: vendor neutral, trace propagation, ecosystem maturity."
+```
+
+### Example 4: Multi-Agent Coordination
+
+Multiple agents working on related WUs in different lanes.
+
+```bash
+# Agent A working on Core (WU-100)
+pnpm mem:signal "New validation port added: ValidationService"
+
+# Agent B working on UI (WU-101) checks inbox
+pnpm mem:inbox
+# Output:
+# From: session-abc (WU-100, Framework: Core)
+#   Signal: "New validation port added: ValidationService"
+#   Time: 5 minutes ago
+
+# Agent B can now use the new port
+# No need for synchronous coordination
+```
+
+### Example 5: Checkpoint Before Context Limit
+
+<Aside type="caution">
+  When approaching context limits (high token usage, 50+ tool calls), create a checkpoint and spawn
+  a fresh agent instead of continuing.
+</Aside>
+
+```bash
+# Agent detects high context usage
+# Before spawning new agent:
+
+# 1. Checkpoint current state
+pnpm mem:checkpoint
+
+# 2. Signal detailed progress
+pnpm mem:signal "Auth flow 80% complete. Remaining: integration tests for refresh token. Files ready: src/auth/*.ts"
+
+# 3. Document any in-progress decisions
+pnpm mem:decide \
+  --question "Error handling strategy?" \
+  --answer "Pending - need to decide between throw vs Result type"
+
+# 4. Now safe to spawn fresh agent
+# New agent will have full context via mem:ready
+```
+
 ## AI Agent Integration
 
 For AI agents, memory is critical:
@@ -198,7 +359,7 @@ pnpm mem:checkpoint
 
 # Later, agent resumes
 pnpm mem:ready
-# → Shows: "WU-042 in progress, last: 'starting tests'"
+# Shows: "WU-042 in progress, last: 'starting tests'"
 ```
 
 ## Decision Logging
@@ -228,17 +389,77 @@ memory:
 
 ### For Humans
 
+<Steps>
+
 1. Run `mem:ready` at session start
 2. Create checkpoints before long breaks
 3. Log non-obvious decisions
+4. Triage discoveries weekly
+
+</Steps>
 
 ### For AI Agents
+
+<Steps>
 
 1. Always start with `mem:start`
 2. Signal progress frequently
 3. Checkpoint before context limits
+4. Use discoveries for out-of-scope findings
+
+</Steps>
+
+### Checkpoint Triggers
+
+Create a checkpoint when:
+
+- Completing a significant milestone
+- Before switching to a different task
+- Before a long break or end of day
+- When context usage is high
+- Before spawning a sub-agent
+
+### Discovery Guidelines
+
+Use discoveries for:
+
+- Bugs found in unrelated code
+- Improvement ideas outside current scope
+- Technical debt observations
+- Questions for later research
+
+Do NOT use discoveries for:
+
+- Things you'll fix in the current WU
+- Obvious next steps already in backlog
+- Personal notes (use `--type note` instead)
+
+## Memory Lifecycle
+
+<Card title="Lifecycle Stages" icon="information">
+
+**Active** (during WU work)
+
+- Checkpoints created frequently
+- Signals sent on milestones
+- Decisions logged as made
+
+**Archive** (after WU completion)
+
+- Checkpoints summarized
+- Discoveries triaged
+- Session closed
+
+**Cleanup** (periodic maintenance)
+
+- Old checkpoints pruned
+- Archived sessions cleaned
+- Summary nodes preserved
+
+</Card>
 
 ## Next Steps
 
-- [AI Agent Integration](/guides/ai-agents) – Using memory with agents
-- [CLI Reference](/reference/cli) – All memory commands
+- [AI Agent Integration](/guides/ai-agents) - Using memory with agents
+- [Agent Onboarding](/guides/agent-onboarding) - Getting started
+- [CLI Reference](/reference/cli) - All memory commands
