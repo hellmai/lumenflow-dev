@@ -13,7 +13,9 @@ code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
-  manual: []
+  manual:
+    - 'pnpm build in apps/docs succeeds without errors'
+    - 'All new pages render correctly in dev server'
   unit: []
   e2e: []
 artifacts:
