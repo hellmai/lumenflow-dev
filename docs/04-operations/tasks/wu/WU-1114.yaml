@@ -2,7 +2,7 @@ id: WU-1114
 title: Enforce context exhaustion prevention via WU sizing and spawn-fresh policy
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -47,3 +47,5 @@ session_id: 6fcda05f-96d5-43b2-8190-38666549b03f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T09:33:29.048Z
+locked: true
+completed_at: 2026-01-26T09:38:41.001Z
