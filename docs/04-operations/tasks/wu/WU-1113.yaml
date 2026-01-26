@@ -2,7 +2,7 @@ id: WU-1113
 title: 'INIT-003 Phase 7: Publish @lumenflow/cli update'
 lane: 'Framework: CLI'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -56,3 +56,5 @@ acceptance:
   - ExampleApp local tools/*.mjs marked deprecated with pointers to npm commands
   - Final pnpm docs:generate with all 80+ commands
   - lumenflow.dev deployed with complete CLI reference
+locked: true
+completed_at: 2026-01-26T09:22:02.885Z
