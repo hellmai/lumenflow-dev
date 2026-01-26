@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
