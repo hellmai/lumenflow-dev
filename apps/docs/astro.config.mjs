@@ -52,6 +52,13 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Language Guides',
+          items: [
+            { label: 'Go', slug: 'language-guides/go' },
+            { label: 'Rust', slug: 'language-guides/rust' },
+          ],
+        },
+        {
           label: 'Reference',
           items: [
             { label: 'CLI Commands', slug: 'reference/cli' },

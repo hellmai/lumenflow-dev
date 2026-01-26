@@ -1,0 +1,249 @@
+---
+title: Go
+description: LumenFlow gates configuration for Go projects
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Go is a statically typed, compiled language known for simplicity and excellent tooling. LumenFlow's `go` preset provides sensible defaults for Go projects.
+
+## Quickstart
+
+<Steps>
+
+1. **Add preset to your configuration**
+
+   ```yaml
+   # .lumenflow.config.yaml
+   version: '2.0'
+
+   gates:
+     execution:
+       preset: 'go'
+   ```
+
+2. **Run gates**
+
+   ```bash
+   pnpm gates
+   # Or with the GitHub Action
+   ```
+
+3. **Done!**
+
+   The preset runs `gofmt`, `golangci-lint`, `go vet`, and `go test` automatically.
+
+</Steps>
+
+## Preset Defaults
+
+The `go` preset uses these commands:
+
+| Gate      | Command           | Description                       |
+| --------- | ----------------- | --------------------------------- |
+| Format    | `gofmt -l .`      | Check formatting (list unformatted files) |
+| Lint      | `golangci-lint run` | Run comprehensive linter suite   |
+| Typecheck | `go vet ./...`    | Report likely mistakes in code    |
+| Test      | `go test ./...`   | Run all tests                     |
+
+## Custom Configuration
+
+Override specific commands while keeping preset defaults for others:
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    # Override format check to fail on unformatted files
+    format: 'test -z "$(gofmt -l .)"'
+    # Add race detection to tests
+    test: 'go test -race -v ./...'
+```
+
+## Full Custom Configuration
+
+For complete control, omit the preset and define all commands:
+
+```yaml
+gates:
+  execution:
+    format: 'test -z "$(gofmt -l .)"'
+    lint: 'golangci-lint run --timeout 5m'
+    typecheck: 'go vet ./...'
+    test: 'go test -race -coverprofile=coverage.out ./...'
+```
+
+## Common Patterns
+
+### With golangci-lint
+
+The recommended linting tool for Go projects:
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    lint: 'golangci-lint run --timeout 5m'
+```
+
+Configure golangci-lint with `.golangci.yml`:
+
+```yaml
+# .golangci.yml
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+    - ineffassign
+
+run:
+  timeout: 5m
+```
+
+### With Coverage
+
+Add test coverage reporting:
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    test: 'go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out'
+```
+
+### With Build Verification
+
+Include build in your gates:
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    lint: 'go build ./... && golangci-lint run'
+```
+
+## GitHub Action Example
+
+```yaml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+## Module Structure
+
+LumenFlow works well with standard Go module layouts:
+
+```
+myproject/
+├── .lumenflow.config.yaml
+├── go.mod
+├── go.sum
+├── cmd/
+│   └── myapp/
+│       └── main.go
+├── internal/
+│   ├── domain/
+│   │   └── domain.go
+│   └── handler/
+│       └── handler.go
+└── pkg/
+    └── client/
+        └── client.go
+```
+
+<Aside type="tip">
+  Go's `internal/` packages automatically enforce import boundaries, complementing LumenFlow's hexagonal architecture patterns.
+</Aside>
+
+## Monorepo Support
+
+For Go monorepos or workspaces:
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    # Run from repo root, tests all modules
+    test: 'go test ./...'
+    lint: 'golangci-lint run ./...'
+```
+
+Or run gates per-module with the GitHub Action:
+
+```yaml
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+          working-directory: services/api
+```
+
+## Troubleshooting
+
+### gofmt reports files but gate passes
+
+The default `gofmt -l .` lists unformatted files but returns exit code 0. Use:
+
+```yaml
+format: 'test -z "$(gofmt -l .)"'
+```
+
+This fails if any files need formatting.
+
+### golangci-lint timeout
+
+For large projects, increase the timeout:
+
+```yaml
+lint: 'golangci-lint run --timeout 10m'
+```
+
+### Vendored dependencies
+
+If using `vendor/`, exclude it from checks:
+
+```yaml
+format: 'test -z "$(gofmt -l $(find . -name "*.go" -not -path "./vendor/*"))"'
+lint: 'golangci-lint run --skip-dirs vendor'
+```
+
+## Next Steps
+
+- [Gates Concepts](/concepts/gates) - Understanding gates
+- [Configuration Reference](/reference/config) - Full config schema
+- [GitHub Action](/reference/github-action) - CI/CD integration
