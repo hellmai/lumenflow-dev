@@ -2,7 +2,7 @@ id: WU-1137
 title: Add mem:export CLI for human-readable memory output
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -27,8 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add mem:export core + CLI to render memory.jsonl as markdown or JSON with basic filters (wu/type/lifecycle). Expose binary + pnpm script and document in quick-ref commands.
+description: Add mem:export core + CLI to render memory.jsonl as markdown or JSON with basic filters
+  (wu/type/lifecycle). Expose binary + pnpm script and document in quick-ref commands.
 acceptance:
   - mem:export outputs markdown by default and JSON when --format json is provided
   - mem:export supports filtering by --wu and --type (and ignores unmatched filters)
   - quick-ref commands list mem:export
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1137
+claimed_at: 2026-01-26T23:48:20.258Z
+baseline_main_sha: 20fc7e826fe68142cd24ccb34abde16cddf9a922
+session_id: 34bbd006-3e83-47f4-8722-26125798fdde
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:48:20.261Z
