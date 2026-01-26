@@ -20,12 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
+- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

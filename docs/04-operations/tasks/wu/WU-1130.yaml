@@ -2,7 +2,7 @@ id: WU-1130
 title: Fix guard-* commands to recognize worktree context
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -25,9 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: ExampleApp reported guard-locked, guard-main-branch, guard-worktree-commit CLI commands don't recognize worktree context properly. Problem: Commands fail to detect when running from a worktree. Solution: Update guards to use proper worktree detection like other CLI commands."
+description: "Context: ExampleApp reported guard-locked, guard-main-branch, guard-worktree-commit
+  CLI commands don't recognize worktree context properly. Problem: Commands fail to detect when
+  running from a worktree. Solution: Update guards to use proper worktree detection like other CLI
+  commands."
 acceptance:
   - guard-locked recognizes worktree context
   - guard-main-branch recognizes worktree context
   - guard-worktree-commit recognizes worktree context
   - Tests cover worktree detection
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1130
+claimed_at: 2026-01-26T17:03:49.808Z
+baseline_main_sha: 14eb4997ebbcf2da9d57d52cefbf84c183448271
+session_id: 77547c51-f286-4e1e-8ffd-9d994486cea9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T17:03:49.813Z
