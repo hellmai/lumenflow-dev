@@ -2,7 +2,7 @@ id: WU-1124
 title: 'INIT-004 Phase 2: Refactor docs-sync to read from templates'
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -39,3 +39,5 @@ acceptance:
   - Hardcoded template strings removed from docs-sync.ts
   - Templates read from bundled files
   - docs-sync command works correctly after refactor
+locked: true
+completed_at: 2026-01-26T11:28:47.392Z
