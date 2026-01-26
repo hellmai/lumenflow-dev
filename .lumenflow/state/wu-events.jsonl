@@ -101,3 +101,4 @@
 {"type":"complete","wuId":"WU-1127","timestamp":"2026-01-26T12:29:26.591Z"}
 {"type":"claim","wuId":"WU-1128","lane":"Content: Documentation","title":"Add upgrade guide to lumenflow.dev","timestamp":"2026-01-26T15:03:42.830Z"}
 {"type":"complete","wuId":"WU-1128","timestamp":"2026-01-26T15:10:17.548Z"}
+{"type":"claim","wuId":"WU-1130","lane":"Framework: CLI","title":"Fix guard-* commands to recognize worktree context","timestamp":"2026-01-26T17:03:49.831Z"}
