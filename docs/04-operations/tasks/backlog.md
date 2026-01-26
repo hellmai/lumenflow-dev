@@ -20,7 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — Framework: CLI
+(No items ready)
 
 ## 🔧 In progress
 
@@ -65,3 +65,4 @@ sections:
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml)
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml)
 - [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml)
+- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml)
