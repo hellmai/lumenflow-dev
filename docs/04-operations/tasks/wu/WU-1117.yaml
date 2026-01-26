@@ -2,7 +2,7 @@ id: WU-1117
 title: 'Docs Audit: Language Support - Python and .NET guides'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -32,3 +32,11 @@ acceptance:
   - .NET language guide with quickstart
   - Stack-agnostic architecture emphasized in intro
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1117
+claimed_at: 2026-01-26T10:42:14.474Z
+baseline_main_sha: 4256ce084d1ad87b3dca2d973b86194696830e28
+session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:42:14.479Z
