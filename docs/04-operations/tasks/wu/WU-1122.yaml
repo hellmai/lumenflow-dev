@@ -1,13 +1,11 @@
 id: WU-1122
 title: 'Docs Audit: Language Support - Java, Ruby, and PHP guides'
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
-  - apps/docs/src/content/docs/language-guides/java.mdx
-  - apps/docs/src/content/docs/language-guides/ruby.mdx
   - apps/docs/src/content/docs/language-guides/php.mdx
 tests:
   manual:
@@ -20,10 +18,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-26T10:41:54.928Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1122
+session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:41:54.935Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +39,3 @@ acceptance:
   - Ruby language guide with Bundler and RSpec examples
   - PHP language guide with Composer and PHPUnit examples
   - pnpm docs:build succeeds
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1122
-claimed_at: 2026-01-26T10:41:54.928Z
-baseline_main_sha: edaacdf9554802aeef28faee6686b843234a71e0
-session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-26T10:41:54.935Z
