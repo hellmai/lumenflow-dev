@@ -13,7 +13,7 @@ Resolves the current working directory context to determine main checkout vs wor
 
 ```typescript
 import type { ILocationResolver } from '@lumenflow/core';
-import { resolveLocation } from '@lumenflow/core';
+import { resolveLocation, LocationType } from '@lumenflow/core';
 
 // Default implementation
 const resolver: ILocationResolver = { resolveLocation };
@@ -21,7 +21,7 @@ const resolver: ILocationResolver = { resolveLocation };
 // Custom implementation for testing
 const mockResolver: ILocationResolver = {
   resolveLocation: async (cwd) => ({
-    type: 'main',
+    type: LocationType.MAIN,
     cwd: cwd || '/repo',
     gitRoot: '/repo',
     mainCheckout: '/repo',
@@ -35,7 +35,7 @@ const mockResolver: ILocationResolver = {
 
 Returns:
 
-- `type`: `'main'` | `'worktree'` | `'detached'` | `'unknown'`
+- `type`: `LocationType.MAIN` | `LocationType.WORKTREE` | `LocationType.DETACHED` | `LocationType.UNKNOWN`
 - `cwd`: Absolute path to current working directory
 - `gitRoot`: Git root (top-level of working tree)
 - `mainCheckout`: Path to main checkout (primary repo)
@@ -183,21 +183,80 @@ Returns:
 - `actions`: Array of suggested `RecoveryAction` objects
 - `wuId`: WU ID analyzed
 
-Issue codes:
+Issue codes (use `RecoveryIssueCode` enum):
 
-- `PARTIAL_CLAIM`: Worktree exists but status is ready
-- `ORPHAN_CLAIM`: Status is in_progress but worktree missing
-- `INCONSISTENT_STATE`: YAML and state store disagree
-- `ORPHAN_BRANCH`: Branch exists but worktree missing
-- `STALE_LOCK`: Lock file from old session
-- `LEFTOVER_WORKTREE`: WU is done but worktree exists
+- `RecoveryIssueCode.PARTIAL_CLAIM`: Worktree exists but status is ready
+- `RecoveryIssueCode.ORPHAN_CLAIM`: Status is in_progress but worktree missing
+- `RecoveryIssueCode.INCONSISTENT_STATE`: YAML and state store disagree
+- `RecoveryIssueCode.ORPHAN_BRANCH`: Branch exists but worktree missing
+- `RecoveryIssueCode.STALE_LOCK`: Lock file from old session
+- `RecoveryIssueCode.LEFTOVER_WORKTREE`: WU is done but worktree exists
 
-Action types:
+Action types (use `RecoveryActionType` enum):
 
-- `resume`: Reconcile state and continue (preserves work)
-- `reset`: Discard worktree, reset to ready
-- `nuke`: Remove all artifacts (requires --force)
-- `cleanup`: Remove leftover worktree
+- `RecoveryActionType.RESUME`: Reconcile state and continue (preserves work)
+- `RecoveryActionType.RESET`: Discard worktree, reset to ready
+- `RecoveryActionType.NUKE`: Remove all artifacts (requires --force)
+- `RecoveryActionType.CLEANUP`: Remove leftover worktree
+
+## Exported Constants
+
+To avoid magic string literals in code, use the exported enum-style constants:
+
+### LocationType
+
+```typescript
+import { LocationType } from '@lumenflow/core';
+
+// Use constants instead of string literals
+if (location.type === LocationType.MAIN) {
+  // In main checkout
+} else if (location.type === LocationType.WORKTREE) {
+  // In a worktree
+}
+
+// Available values:
+// LocationType.MAIN      - 'main'
+// LocationType.WORKTREE  - 'worktree'
+// LocationType.DETACHED  - 'detached'
+// LocationType.UNKNOWN   - 'unknown'
+```
+
+### RecoveryIssueCode
+
+```typescript
+import { RecoveryIssueCode } from '@lumenflow/core';
+
+// Check issue codes
+if (issue.code === RecoveryIssueCode.PARTIAL_CLAIM) {
+  // Handle partial claim
+}
+
+// Available values:
+// RecoveryIssueCode.PARTIAL_CLAIM      - Worktree exists but status is ready
+// RecoveryIssueCode.ORPHAN_CLAIM       - Status is in_progress but worktree missing
+// RecoveryIssueCode.INCONSISTENT_STATE - YAML and state store disagree
+// RecoveryIssueCode.ORPHAN_BRANCH      - Branch exists but worktree missing
+// RecoveryIssueCode.STALE_LOCK         - Lock file from old session
+// RecoveryIssueCode.LEFTOVER_WORKTREE  - WU is done but worktree exists
+```
+
+### RecoveryActionType
+
+```typescript
+import { RecoveryActionType } from '@lumenflow/core';
+
+// Check action types
+if (action.type === RecoveryActionType.RESUME) {
+  // Resume the WU
+}
+
+// Available values:
+// RecoveryActionType.RESUME  - Reconcile state and continue (preserves work)
+// RecoveryActionType.RESET   - Discard worktree, reset to ready
+// RecoveryActionType.NUKE    - Remove all artifacts (requires --force)
+// RecoveryActionType.CLEANUP - Remove leftover worktree
+```
 
 ## Domain Schemas
 
@@ -278,6 +337,7 @@ import {
   SimpleGitLocationAdapter,
   SimpleGitStateAdapter,
   FileSystemWuStateAdapter,
+  LocationType,
 } from '@lumenflow/core';
 
 // Manual wiring
@@ -288,7 +348,12 @@ const useCase = new ComputeContextUseCase(
 );
 
 const context = await useCase.execute({ wuId: 'WU-1094' });
-console.log(context.location.type); // 'main' or 'worktree'
+// Use LocationType constant for comparison
+if (context.location.type === LocationType.MAIN) {
+  console.log('Running from main checkout');
+} else if (context.location.type === LocationType.WORKTREE) {
+  console.log('Running from worktree');
+}
 ```
 
 ### ValidateCommandUseCase
@@ -345,9 +410,11 @@ const validateCommand = createValidateCommandUseCase();
 const analyzeRecovery = createAnalyzeRecoveryUseCase();
 
 // Or inject custom adapters (useful for testing)
+import { LocationType } from '@lumenflow/core';
+
 const mockLocationResolver = {
   resolveLocation: async () => ({
-    type: 'main' as const,
+    type: LocationType.MAIN,
     cwd: '/test',
     gitRoot: '/test',
     mainCheckout: '/test',

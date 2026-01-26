@@ -19,6 +19,29 @@ import { z } from 'zod';
 export const LOCATION_TYPE_VALUES = ['main', 'worktree', 'detached', 'unknown'] as const;
 
 /**
+ * LocationType enum for use in code
+ *
+ * Provides named constants for location types to avoid magic string literals.
+ *
+ * @example
+ * import { LocationType } from '@lumenflow/core';
+ *
+ * if (location.type === LocationType.MAIN) {
+ *   // In main checkout
+ * }
+ */
+export const LocationType = {
+  /** Main checkout (not a worktree) */
+  MAIN: 'main',
+  /** Inside a worktree */
+  WORKTREE: 'worktree',
+  /** Detached HEAD state */
+  DETACHED: 'detached',
+  /** Unknown location (not a git repo or error) */
+  UNKNOWN: 'unknown',
+} as const;
+
+/**
  * Schema for location types
  */
 export const LocationTypeSchema = z.enum(LOCATION_TYPE_VALUES);
@@ -134,7 +157,8 @@ export const WuContextSchema = z.object({
 });
 
 // Type inference from Zod schemas
-export type LocationType = z.infer<typeof LocationTypeSchema>;
+// LocationType is both a const object (for enum-style access) and a type (for type annotations)
+export type LocationType = (typeof LocationType)[keyof typeof LocationType];
 export type LocationContext = z.infer<typeof LocationContextSchema>;
 export type GitState = z.infer<typeof GitStateSchema>;
 export type WuStateResult = z.infer<typeof WuStateResultSchema>;

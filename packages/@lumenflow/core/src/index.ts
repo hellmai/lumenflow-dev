@@ -161,14 +161,13 @@ export * from './context-validation-integration.js';
 
 // WU-1090: Context validation constants
 export { CONTEXT_VALIDATION } from './wu-constants.js';
-export type {
-  LocationType,
-  ValidationErrorCode,
-  RecoveryActionType,
-  RecoveryIssueCode,
-  PredicateSeverity,
-  ValidationMode,
-} from './wu-constants.js';
+export type { ValidationErrorCode, PredicateSeverity, ValidationMode } from './wu-constants.js';
+
+// WU-1126: Enum-style constants for port interfaces (const + type pairs)
+// These provide named constants to avoid magic string literals in code
+// The const objects serve as both runtime values AND types via TypeScript's const/type pattern
+export { LocationType } from './domain/context.schemas.js';
+export { RecoveryIssueCode, RecoveryActionType } from './domain/recovery.schemas.js';
 
 // WU-1093: Port interfaces for context-aware validation (external injection points)
 export type { ILocationResolver, IGitStateReader, IWuStateReader } from './ports/context.ports.js';

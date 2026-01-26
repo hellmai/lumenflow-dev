@@ -21,19 +21,15 @@ import {
   WuStateResultSchema,
   SessionStateSchema,
   LOCATION_TYPE_VALUES,
+  LocationType,
   type LocationContext,
   type GitState,
   type WuStateResult,
   type SessionState,
 } from '../../domain/context.schemas.js';
 
-// Use schema constants for test values
-const LOCATION_TYPES = {
-  MAIN: 'main' as const,
-  WORKTREE: 'worktree' as const,
-  DETACHED: 'detached' as const,
-  UNKNOWN: 'unknown' as const,
-};
+// Use exported LocationType enum for test values
+const LOCATION_TYPES = LocationType;
 
 describe('LocationContextSchema', () => {
   describe('valid inputs', () => {
@@ -352,5 +348,30 @@ describe('SessionStateSchema', () => {
       const schema: z.ZodType<SessionState> = SessionStateSchema;
       expect(schema).toBeDefined();
     });
+  });
+});
+
+describe('LocationType enum', () => {
+  it('exports MAIN constant', () => {
+    expect(LocationType.MAIN).toBe('main');
+  });
+
+  it('exports WORKTREE constant', () => {
+    expect(LocationType.WORKTREE).toBe('worktree');
+  });
+
+  it('exports DETACHED constant', () => {
+    expect(LocationType.DETACHED).toBe('detached');
+  });
+
+  it('exports UNKNOWN constant', () => {
+    expect(LocationType.UNKNOWN).toBe('unknown');
+  });
+
+  it('contains all LOCATION_TYPE_VALUES', () => {
+    const enumValues = Object.values(LocationType);
+    for (const value of LOCATION_TYPE_VALUES) {
+      expect(enumValues).toContain(value);
+    }
   });
 });
