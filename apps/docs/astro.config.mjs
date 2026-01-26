@@ -42,6 +42,9 @@ export default defineConfig({
         {
           label: 'Guides',
           items: [
+            { label: 'Solo Developer Workflow', slug: 'guides/solo-workflow' },
+            { label: 'Existing Projects', slug: 'guides/existing-projects' },
+            { label: 'Migration Guide', slug: 'guides/migration' },
             { label: 'Sizing WUs', slug: 'guides/sizing' },
             { label: 'Team Workflow', slug: 'guides/team-workflow' },
             { label: 'AI Agent Integration', slug: 'guides/ai-agents' },
