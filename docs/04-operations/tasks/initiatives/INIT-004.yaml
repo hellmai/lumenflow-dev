@@ -1,0 +1,38 @@
+id: INIT-004
+slug: template-auto-sync
+title: Build-Time Template Sync for External Users
+description: >-
+  Ensure internal documentation improvements reach external users who install
+  LumenFlow via npm. Templates sync during release cycles via pnpm sync:templates.
+status: open
+priority: P1
+owner: tom@hellm.ai
+created: 2026-01-26
+target_date: 2026-02-15
+phases:
+  - id: 1
+    title: Template Sync Script
+    status: pending
+    description: Create pnpm sync:templates command
+  - id: 2
+    title: Refactor docs-sync Command
+    status: pending
+    description: Remove hardcoded strings, read from bundled templates
+  - id: 3
+    title: Upgrade Documentation
+    status: pending
+    description: Document upgrade path for existing users
+success_metrics:
+  - pnpm sync:templates copies internal docs to templates
+  - docs-sync reads from templates, not hardcoded strings
+  - Users can upgrade via npm update && docs:sync --force
+  - All 14 skills synced for Claude vendor
+  - All 5 onboarding docs synced
+labels:
+  - documentation
+  - public-api
+related_plan: lumenflow://plans/INIT-003-template-auto-sync.md
+wus:
+  - WU-1123
+  - WU-1124
+  - WU-1125
