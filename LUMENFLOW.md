@@ -91,9 +91,8 @@ air-gapped/offline work; it creates a local-only claim and warns explicitly.
 ### Vendor Integrations
 
 - **.claude/** - Claude Code (settings.json, hooks, .claude/CLAUDE.md)
-- **.cursor/** - Cursor (rules, settings)
-- **.aider.conf.yml** - Aider configuration
-- **.continue/** - Continue configuration
+
+Additional vendor integrations are available via CLI templates (see `packages/@lumenflow/cli/templates/vendors/`).
 
 ---
 

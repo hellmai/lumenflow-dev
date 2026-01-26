@@ -19,7 +19,7 @@ For the full framework (rationale, extended examples, ceremonies), see:
    - Code WUs: `pnpm gates`
    - Docs-only WUs: `pnpm gates -- --docs-only`
 
-If you forget anything, load `.claude/constraints-capsule.md` and restate the six constraints before continuing.
+If you forget anything, load `.lumenflow/constraints.md` and restate the six constraints before continuing.
 
 ---
 
