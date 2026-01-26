@@ -2,7 +2,7 @@ id: WU-1127
 title: lumenflow:upgrade must use micro-worktree (users blocked from upgrading)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-01-26
 code_paths:
@@ -25,10 +25,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "REAL USER IMPACT: ExampleApp agent tried to upgrade to 2.1.0 and hit massive friction - hook blocked pnpm up on main, had to create WU (3 attempts), claim failed once, virtual store issues, etc. All just to upgrade packages\\! The lumenflow:upgrade command requires users to be inside a worktree but doesn't use micro-worktree isolation. This creates a paradox: users must break LumenFlow rules to upgrade LumenFlow. Command should use micro-worktree like wu:create/wu:edit do."
+description: "REAL USER IMPACT: ExampleApp agent tried to upgrade to 2.1.0 and hit massive friction
+  - hook blocked pnpm up on main, had to create WU (3 attempts), claim failed once, virtual store
+  issues, etc. All just to upgrade packages\\! The lumenflow:upgrade command requires users to be
+  inside a worktree but doesn't use micro-worktree isolation. This creates a paradox: users must
+  break LumenFlow rules to upgrade LumenFlow. Command should use micro-worktree like
+  wu:create/wu:edit do."
 acceptance:
   - lumenflow:upgrade uses micro-worktree isolation pattern
   - Command runs from main checkout without requiring user worktree
   - Changes to package.json and lockfile are atomic via micro-worktree
   - Existing --dry-run and --latest flags still work
   - Unit tests verify micro-worktree behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1127
+claimed_at: 2026-01-26T12:10:55.422Z
+baseline_main_sha: eab24480472d91f635baaab9374d5340f8900d84
+session_id: c9b33232-b1d0-4c92-bed8-9e9c502a7ad0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T12:10:55.425Z
