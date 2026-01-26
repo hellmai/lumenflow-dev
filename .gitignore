@@ -36,6 +36,9 @@ coverage/
 # LumenFlow
 /worktrees/
 
+# Claude Code audit logs (runtime artifacts)
+/.claude/audit/
+
 # LumenFlow runtime state (allow state/wu-events.jsonl for completion tracking)
 /.lumenflow/state/*.backup*
 /.lumenflow/memory/
