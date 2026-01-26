@@ -2,7 +2,7 @@ id: WU-1116
 title: 'Docs Audit: Internal to Public - Agent onboarding + constraints'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -28,10 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Adapt battle-tested internal documentation for public consumption. Publish agent onboarding docs, constraints capsule, and expand memory layer docs.
+description: Adapt battle-tested internal documentation for public consumption. Publish agent
+  onboarding docs, constraints capsule, and expand memory layer docs.
 acceptance:
   - Agent onboarding guide published with common mistakes and safety card
   - Constraints page documents the 6 non-negotiable rules
   - Memory layer section expanded with practical examples
   - All HellmAI-specific references sanitized for public use
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1116
+claimed_at: 2026-01-26T10:30:53.793Z
+baseline_main_sha: 9b3196e3b10e16a34366b654a4984177c0de5f2d
+session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:30:53.802Z
