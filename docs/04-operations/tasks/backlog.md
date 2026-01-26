@@ -26,6 +26,7 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — Content: Documentation
+- [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
