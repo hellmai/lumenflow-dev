@@ -2,7 +2,7 @@ id: WU-1128
 title: Add upgrade guide to lumenflow.dev
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -49,3 +49,5 @@ acceptance:
   - Changelog updated to show 2.1.0 as latest
   - Compatibility matrix shows 2.1.0 versions
   - Upgrade page linked in Getting Started nav
+locked: true
+completed_at: 2026-01-26T15:10:17.531Z
