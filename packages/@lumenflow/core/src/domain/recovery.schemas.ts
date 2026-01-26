@@ -26,6 +26,33 @@ export const RECOVERY_ISSUE_CODE_VALUES = [
 ] as const;
 
 /**
+ * RecoveryIssueCode enum for use in code
+ *
+ * Provides named constants for recovery issue codes to avoid magic string literals.
+ *
+ * @example
+ * import { RecoveryIssueCode } from '@lumenflow/core';
+ *
+ * if (issue.code === RecoveryIssueCode.PARTIAL_CLAIM) {
+ *   // Handle partial claim issue
+ * }
+ */
+export const RecoveryIssueCode = {
+  /** Worktree exists but WU status is "ready" */
+  PARTIAL_CLAIM: 'PARTIAL_CLAIM',
+  /** WU is "in_progress" but worktree does not exist */
+  ORPHAN_CLAIM: 'ORPHAN_CLAIM',
+  /** YAML status differs from state store */
+  INCONSISTENT_STATE: 'INCONSISTENT_STATE',
+  /** Branch exists but worktree does not */
+  ORPHAN_BRANCH: 'ORPHAN_BRANCH',
+  /** Lock file from different WU */
+  STALE_LOCK: 'STALE_LOCK',
+  /** WU is done but worktree was not cleaned up */
+  LEFTOVER_WORKTREE: 'LEFTOVER_WORKTREE',
+} as const;
+
+/**
  * Schema for recovery issue codes
  */
 export const RecoveryIssueCodeSchema = z.enum(RECOVERY_ISSUE_CODE_VALUES);
@@ -36,6 +63,29 @@ export const RecoveryIssueCodeSchema = z.enum(RECOVERY_ISSUE_CODE_VALUES);
  * Mirrors CONTEXT_VALIDATION.RECOVERY_ACTIONS from wu-constants.ts
  */
 export const RECOVERY_ACTION_TYPE_VALUES = ['resume', 'reset', 'nuke', 'cleanup'] as const;
+
+/**
+ * RecoveryActionType enum for use in code
+ *
+ * Provides named constants for recovery action types to avoid magic string literals.
+ *
+ * @example
+ * import { RecoveryActionType } from '@lumenflow/core';
+ *
+ * if (action.type === RecoveryActionType.RESUME) {
+ *   // Resume the WU
+ * }
+ */
+export const RecoveryActionType = {
+  /** Reconcile state and continue working (preserves work) */
+  RESUME: 'resume',
+  /** Discard worktree, reset WU to ready */
+  RESET: 'reset',
+  /** Remove all artifacts completely (requires --force) */
+  NUKE: 'nuke',
+  /** Remove leftover worktree (for done WUs) */
+  CLEANUP: 'cleanup',
+} as const;
 
 /**
  * Schema for recovery action types
@@ -91,8 +141,10 @@ export const RecoveryAnalysisSchema = z.object({
 });
 
 // Type inference from Zod schemas
-export type RecoveryIssueCode = z.infer<typeof RecoveryIssueCodeSchema>;
-export type RecoveryActionType = z.infer<typeof RecoveryActionTypeSchema>;
+// RecoveryIssueCode is both a const object (for enum-style access) and a type (for type annotations)
+export type RecoveryIssueCode = (typeof RecoveryIssueCode)[keyof typeof RecoveryIssueCode];
+// RecoveryActionType is both a const object (for enum-style access) and a type (for type annotations)
+export type RecoveryActionType = (typeof RecoveryActionType)[keyof typeof RecoveryActionType];
 export type RecoveryIssue = z.infer<typeof RecoveryIssueSchema>;
 export type RecoveryAction = z.infer<typeof RecoveryActionSchema>;
 export type RecoveryAnalysis = z.infer<typeof RecoveryAnalysisSchema>;

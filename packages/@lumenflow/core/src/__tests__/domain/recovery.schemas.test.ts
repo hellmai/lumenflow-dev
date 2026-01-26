@@ -21,27 +21,16 @@ import {
   RecoveryAnalysisSchema,
   RECOVERY_ISSUE_CODE_VALUES,
   RECOVERY_ACTION_TYPE_VALUES,
+  RecoveryIssueCode,
+  RecoveryActionType,
   type RecoveryIssue,
   type RecoveryAction,
   type RecoveryAnalysis,
 } from '../../domain/recovery.schemas.js';
 
-// Use schema constants for test values
-const RECOVERY_ISSUES = {
-  PARTIAL_CLAIM: 'PARTIAL_CLAIM' as const,
-  ORPHAN_CLAIM: 'ORPHAN_CLAIM' as const,
-  INCONSISTENT_STATE: 'INCONSISTENT_STATE' as const,
-  ORPHAN_BRANCH: 'ORPHAN_BRANCH' as const,
-  STALE_LOCK: 'STALE_LOCK' as const,
-  LEFTOVER_WORKTREE: 'LEFTOVER_WORKTREE' as const,
-};
-
-const RECOVERY_ACTIONS = {
-  RESUME: 'resume' as const,
-  RESET: 'reset' as const,
-  NUKE: 'nuke' as const,
-  CLEANUP: 'cleanup' as const,
-};
+// Use exported enums for test values
+const RECOVERY_ISSUES = RecoveryIssueCode;
+const RECOVERY_ACTIONS = RecoveryActionType;
 
 describe('RecoveryIssueSchema', () => {
   describe('valid inputs', () => {
@@ -368,5 +357,63 @@ describe('RecoveryAnalysisSchema', () => {
       const schema: z.ZodType<RecoveryAnalysis> = RecoveryAnalysisSchema;
       expect(schema).toBeDefined();
     });
+  });
+});
+
+describe('RecoveryIssueCode enum', () => {
+  it('exports PARTIAL_CLAIM constant', () => {
+    expect(RecoveryIssueCode.PARTIAL_CLAIM).toBe('PARTIAL_CLAIM');
+  });
+
+  it('exports ORPHAN_CLAIM constant', () => {
+    expect(RecoveryIssueCode.ORPHAN_CLAIM).toBe('ORPHAN_CLAIM');
+  });
+
+  it('exports INCONSISTENT_STATE constant', () => {
+    expect(RecoveryIssueCode.INCONSISTENT_STATE).toBe('INCONSISTENT_STATE');
+  });
+
+  it('exports ORPHAN_BRANCH constant', () => {
+    expect(RecoveryIssueCode.ORPHAN_BRANCH).toBe('ORPHAN_BRANCH');
+  });
+
+  it('exports STALE_LOCK constant', () => {
+    expect(RecoveryIssueCode.STALE_LOCK).toBe('STALE_LOCK');
+  });
+
+  it('exports LEFTOVER_WORKTREE constant', () => {
+    expect(RecoveryIssueCode.LEFTOVER_WORKTREE).toBe('LEFTOVER_WORKTREE');
+  });
+
+  it('contains all RECOVERY_ISSUE_CODE_VALUES', () => {
+    const enumValues = Object.values(RecoveryIssueCode);
+    for (const value of RECOVERY_ISSUE_CODE_VALUES) {
+      expect(enumValues).toContain(value);
+    }
+  });
+});
+
+describe('RecoveryActionType enum', () => {
+  it('exports RESUME constant', () => {
+    expect(RecoveryActionType.RESUME).toBe('resume');
+  });
+
+  it('exports RESET constant', () => {
+    expect(RecoveryActionType.RESET).toBe('reset');
+  });
+
+  it('exports NUKE constant', () => {
+    expect(RecoveryActionType.NUKE).toBe('nuke');
+  });
+
+  it('exports CLEANUP constant', () => {
+    expect(RecoveryActionType.CLEANUP).toBe('cleanup');
+  });
+
+  it('contains all RECOVERY_ACTION_TYPE_VALUES', () => {
+    const enumValues = Object.values(RecoveryActionType);
+    for (const value of RECOVERY_ACTION_TYPE_VALUES) {
+      expect(enumValues).toContain(value);
+    }
   });
 });
