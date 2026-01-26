@@ -6,7 +6,9 @@ status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
+  - apps/docs/src/content/docs/language-guides/go.mdx
   - apps/docs/src/content/docs/language-guides/rust.mdx
+  - apps/docs/astro.config.mjs
 tests:
   manual:
     - pnpm docs:build succeeds
