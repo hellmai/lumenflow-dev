@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — Operations: Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
