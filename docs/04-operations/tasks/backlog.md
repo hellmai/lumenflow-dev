@@ -20,8 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
@@ -73,3 +72,5 @@ sections:
 - [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml)
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml)
 - [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml)
+- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml)
+- [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml)

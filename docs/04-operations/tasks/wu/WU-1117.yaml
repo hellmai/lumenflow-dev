@@ -2,18 +2,18 @@ id: WU-1117
 title: 'Docs Audit: Language Support - Python and .NET guides'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
   - apps/docs/src/content/docs/language-guides/
 tests:
   manual:
-    - 'pnpm --filter @lumenflow/docs build completes successfully'
-    - 'Language Guides section appears in sidebar navigation'
-    - 'Python guide at /language-guides/python/ renders correctly'
-    - '.NET guide at /language-guides/dotnet/ renders correctly'
-    - 'Overview page at /language-guides/ emphasizes stack-agnostic architecture'
+    - pnpm --filter @lumenflow/docs build completes successfully
+    - Language Guides section appears in sidebar navigation
+    - Python guide at /language-guides/python/ renders correctly
+    - .NET guide at /language-guides/dotnet/ renders correctly
+    - Overview page at /language-guides/ emphasizes stack-agnostic architecture
   unit: []
   e2e: []
 artifacts:
@@ -45,3 +45,5 @@ session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T10:42:14.479Z
+locked: true
+completed_at: 2026-01-26T10:50:35.026Z
