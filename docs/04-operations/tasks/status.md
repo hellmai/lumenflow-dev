@@ -5,10 +5,10 @@ _Last updated: 2026-01-26_
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
-- [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml)
 
 ## Completed
 
+- [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — 2026-01-26
 - [WU-1125 — INIT-004 Phase 3: Document upgrade path](wu/WU-1125.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
