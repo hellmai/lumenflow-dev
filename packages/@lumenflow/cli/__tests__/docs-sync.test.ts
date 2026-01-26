@@ -2,12 +2,14 @@
  * @file docs-sync.test.ts
  * Test suite for lumenflow docs:sync command (WU-1083)
  * WU-1085: Added --help support tests
+ * WU-1124: Added template loading tests (INIT-004 Phase 2)
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 describe('lumenflow docs:sync command (WU-1083)', () => {
   let tempDir: string;
@@ -145,6 +147,92 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
     it('should export main function for CLI', async () => {
       const mod = await import('../src/docs-sync.js');
       expect(typeof mod.main).toBe('function');
+    });
+  });
+
+  // WU-1124: Template loading tests (INIT-004 Phase 2)
+  describe('Template loading (WU-1124)', () => {
+    it('should load templates from bundled files', async () => {
+      const { loadTemplate, getTemplatesDir } = await import('../src/docs-sync.js');
+
+      // Verify templates directory exists
+      const templatesDir = getTemplatesDir();
+      expect(fs.existsSync(templatesDir)).toBe(true);
+
+      // Load a template and verify content comes from file
+      const quickRefTemplate = loadTemplate('core/ai/onboarding/quick-ref-commands.md.template');
+      expect(quickRefTemplate).toContain('Quick Reference');
+      expect(quickRefTemplate).toContain('{{DATE}}'); // Should contain template placeholder
+    });
+
+    it('should load skill templates from vendor templates', async () => {
+      const { loadTemplate } = await import('../src/docs-sync.js');
+
+      const wuLifecycleTemplate = loadTemplate(
+        'vendors/claude/.claude/skills/wu-lifecycle/SKILL.md.template',
+      );
+      expect(wuLifecycleTemplate).toContain('wu-lifecycle');
+      expect(wuLifecycleTemplate).toContain('{{DATE}}');
+    });
+
+    it('should throw error for non-existent template', async () => {
+      const { loadTemplate } = await import('../src/docs-sync.js');
+
+      expect(() => loadTemplate('non-existent-template.md.template')).toThrow();
+    });
+
+    it('should have no hardcoded template strings in docs-sync module', async () => {
+      // Read the docs-sync.ts source file and verify no large template strings
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const docsSyncPath = path.join(__dirname, '..', 'src', 'docs-sync.ts');
+      const sourceCode = fs.readFileSync(docsSyncPath, 'utf-8');
+
+      // Should not contain hardcoded template content markers
+      // The old code had templates like "# Quick Reference: LumenFlow Commands"
+      expect(sourceCode).not.toContain('# Quick Reference: LumenFlow Commands');
+      expect(sourceCode).not.toContain('# First WU Mistakes');
+      expect(sourceCode).not.toContain('# Troubleshooting: wu:done Not Run');
+      expect(sourceCode).not.toContain('# Agent Safety Card');
+      expect(sourceCode).not.toContain('# WU Creation Checklist');
+
+      // Should not contain skill template content
+      expect(sourceCode).not.toContain('name: wu-lifecycle');
+      expect(sourceCode).not.toContain('name: worktree-discipline');
+      expect(sourceCode).not.toContain('name: lumenflow-gates');
+    });
+
+    it('should sync docs using content from template files', async () => {
+      const { syncAgentDocs, loadTemplate } = await import('../src/docs-sync.js');
+
+      const result = await syncAgentDocs(tempDir, { force: false });
+
+      // Verify content comes from templates (not hardcoded)
+      const onboardingDir = path.join(
+        tempDir,
+        'docs',
+        '04-operations',
+        '_frameworks',
+        'lumenflow',
+        'agent',
+        'onboarding',
+      );
+
+      const quickRefContent = fs.readFileSync(
+        path.join(onboardingDir, 'quick-ref-commands.md'),
+        'utf-8',
+      );
+
+      // Load template directly to compare
+      const templateContent = loadTemplate('core/ai/onboarding/quick-ref-commands.md.template');
+
+      // Both should have the same structural content (after placeholder replacement)
+      expect(quickRefContent).toContain('Quick Reference');
+      expect(quickRefContent).toContain('WU Management');
+      // Template placeholders should be replaced
+      expect(quickRefContent).not.toContain('{{DATE}}');
+
+      expect(result.created.length).toBeGreaterThan(0);
     });
   });
 

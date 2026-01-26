@@ -2,10 +2,12 @@
  * @file docs-sync.ts
  * LumenFlow docs:sync command for syncing agent docs to existing projects (WU-1083)
  * WU-1085: Added createWUParser for proper --help support
+ * WU-1124: Refactored to read templates from bundled files (INIT-004 Phase 2)
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
 
 export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
@@ -52,6 +54,47 @@ export interface SyncOptions {
 export interface SyncResult {
   created: string[];
   skipped: string[];
+}
+
+/**
+ * WU-1124: Get the templates directory path
+ * Templates are bundled with the CLI package at dist/templates/
+ * Falls back to src/templates/ for development
+ */
+export function getTemplatesDir(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  // In production: dist/docs-sync.js -> templates/
+  // In development: src/docs-sync.ts -> ../templates/
+  const distTemplates = path.join(__dirname, '..', 'templates');
+  if (fs.existsSync(distTemplates)) {
+    return distTemplates;
+  }
+
+  // Fallback for tests running from src
+  const srcTemplates = path.join(__dirname, '..', 'templates');
+  if (fs.existsSync(srcTemplates)) {
+    return srcTemplates;
+  }
+
+  throw new Error(`Templates directory not found at ${distTemplates}`);
+}
+
+/**
+ * WU-1124: Load a template file from the bundled templates directory
+ * @param templatePath - Relative path from templates directory (e.g., 'core/ai/onboarding/quick-ref-commands.md.template')
+ * @returns Template content as string
+ */
+export function loadTemplate(templatePath: string): string {
+  const templatesDir = getTemplatesDir();
+  const fullPath = path.join(templatesDir, templatePath);
+
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Template not found: ${templatePath} (looked at ${fullPath})`);
+  }
+
+  return fs.readFileSync(fullPath, 'utf-8');
 }
 
 /**
@@ -116,325 +159,31 @@ async function createFile(
   result.created.push(relativePath);
 }
 
-// Agent onboarding docs templates (duplicated from init.ts for modularity)
-const QUICK_REF_COMMANDS_TEMPLATE = `# Quick Reference: LumenFlow Commands
-
-**Last updated:** {{DATE}}
-
----
-
-## Project Setup
-
-| Command                                       | Description                             |
-| --------------------------------------------- | --------------------------------------- |
-| \`pnpm exec lumenflow init\`                    | Scaffold minimal LumenFlow core         |
-| \`pnpm exec lumenflow init --full\`             | Add docs/04-operations task scaffolding |
-| \`pnpm exec lumenflow init --framework <name>\` | Add framework hint + overlay docs       |
-| \`pnpm exec lumenflow init --force\`            | Overwrite existing files                |
-
----
-
-## WU Management
-
-| Command                                                                                                                                                                                                               | Description                                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| \`pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "path" --test-paths-unit "path" --exposure backend-only --spec-refs "~/.lumenflow/plans/WU-XXX.md"\` | Create new WU                                 |
-| \`pnpm wu:claim --id WU-XXX --lane <Lane>\`                                                                                                                                                                             | Claim WU (creates worktree)                   |
-| \`pnpm wu:done --id WU-XXX\`                                                                                                                                                                                            | Complete WU (merge, stamp, cleanup)           |
-| \`pnpm wu:block --id WU-XXX --reason "Reason"\`                                                                                                                                                                         | Block a WU                                    |
-| \`pnpm wu:unblock --id WU-XXX\`                                                                                                                                                                                         | Unblock a WU                                  |
-
----
-
-## Gates
-
-| Command                  | Description                |
-| ------------------------ | -------------------------- |
-| \`pnpm gates\`             | Run all quality gates      |
-| \`pnpm gates --docs-only\` | Run gates for docs changes |
-| \`pnpm format\`            | Format all files           |
-| \`pnpm lint\`              | Run linter                 |
-| \`pnpm typecheck\`         | Run TypeScript check       |
-
----
-
-## File Paths
-
-| Path                                      | Description          |
-| ----------------------------------------- | -------------------- |
-| \`docs/04-operations/tasks/wu/WU-XXX.yaml\` | WU specification     |
-| \`docs/04-operations/tasks/status.md\`      | Current status board |
-| \`.lumenflow/stamps/WU-XXX.done\`           | Completion stamp     |
-| \`worktrees/<lane>-wu-xxx/\`                | Worktree directory   |
-`;
-
-const FIRST_WU_MISTAKES_TEMPLATE = `# First WU Mistakes
-
-**Last updated:** {{DATE}}
-
-Common mistakes agents make on their first WU, and how to avoid them.
-
----
-
-## Mistake 1: Not Using Worktrees
-
-### Wrong
-
-\`\`\`bash
-# Working directly in main
-vim src/feature.ts
-git commit -m "feat: add feature"
-git push origin main
-\`\`\`
-
-### Right
-
-\`\`\`bash
-# Claim first, then work in worktree
-pnpm wu:claim --id WU-123 --lane Core
-cd worktrees/core-wu-123
-vim src/feature.ts
-git commit -m "feat: add feature"
-git push origin lane/core/wu-123
-cd /path/to/main
-pnpm wu:done --id WU-123
-\`\`\`
-
----
-
-## Mistake 2: Forgetting to Run wu:done
-
-**TL;DR:** After gates pass, ALWAYS run \`pnpm wu:done --id WU-XXX\`.
-
----
-
-## Mistake 3: Working Outside code_paths
-
-Only edit files within the specified \`code_paths\`.
-
----
-
-## Quick Checklist
-
-- [ ] Claim the WU with \`pnpm wu:claim\`
-- [ ] cd to the worktree IMMEDIATELY
-- [ ] Work only in the worktree
-- [ ] Run gates before wu:done
-- [ ] ALWAYS run wu:done
-`;
-
-const TROUBLESHOOTING_WU_DONE_TEMPLATE = `# Troubleshooting: wu:done Not Run
-
-**Last updated:** {{DATE}}
-
-This is the most common mistake agents make.
-
----
-
-## The Fix
-
-### Rule: ALWAYS Run wu:done
-
-After gates pass, you MUST run:
-
-\`\`\`bash
-cd /path/to/main
-pnpm wu:done --id WU-XXX
-\`\`\`
-
-Do NOT:
-
-- Ask "Should I run wu:done?"
-- Write "To Complete: pnpm wu:done"
-- Wait for permission
-
----
-
-## What wu:done Does
-
-1. Validates the worktree exists and has commits
-2. Runs gates in the worktree (not main)
-3. Fast-forward merges to main
-4. Creates the done stamp
-5. Updates status and backlog docs
-6. Removes the worktree
-7. Pushes to origin
-`;
-
-const AGENT_SAFETY_CARD_TEMPLATE = `# Agent Safety Card
-
-**Last updated:** {{DATE}}
-
-Quick reference for AI agents working in LumenFlow projects.
-
----
-
-## Stop and Ask When
-
-- Same error repeats 3 times
-- Auth or permissions changes needed
-- PII/PHI/secrets involved
-- Cloud spend decisions
-
----
-
-## Never Do
-
-| Action                   | Why              |
-| ------------------------ | ---------------- |
-| \`git reset --hard\`       | Data loss        |
-| \`git push --force\`       | History rewrite  |
-| \`--no-verify\`            | Bypasses safety  |
-| Work in main after claim | Breaks isolation |
-| Skip wu:done             | Incomplete WU    |
-
----
-
-## Always Do
-
-| Action                     | Why              |
-| -------------------------- | ---------------- |
-| Read WU spec first         | Understand scope |
-| cd to worktree after claim | Isolation        |
-| Write tests before code    | TDD              |
-| Run gates before wu:done   | Quality          |
-| Run wu:done                | Complete WU      |
-`;
-
-const WU_CREATE_CHECKLIST_TEMPLATE = `# WU Creation Checklist
-
-**Last updated:** {{DATE}}
-
-Before running \`pnpm wu:create\`, verify these items.
-
----
-
-## Step 1: Check Valid Lanes
-
-\`\`\`bash
-grep -A 30 "lanes:" .lumenflow.config.yaml
-\`\`\`
-
-**Format:** \`"Parent: Sublane"\` (colon + single space)
-
----
-
-## Step 2: Required Fields
-
-| Field | Required For | Example |
-|-------|--------------|---------|
-| \`--id\` | All | \`WU-1234\` |
-| \`--lane\` | All | \`"Experience: Chat"\` |
-| \`--title\` | All | \`"Add feature"\` |
-| \`--description\` | All | \`"Context: ... Problem: ... Solution: ..."\` |
-| \`--acceptance\` | All | \`--acceptance "Works"\` (repeatable) |
-| \`--exposure\` | All | \`ui\`, \`api\`, \`backend-only\`, \`documentation\` |
-| \`--code-paths\` | Code WUs | \`"src/a.ts,src/b.ts"\` |
-| \`--test-paths-unit\` | Code WUs | \`"src/__tests__/a.test.ts"\` |
-| \`--spec-refs\` | Feature WUs | \`"~/.lumenflow/plans/WU-XXX.md"\` |
-
----
-
-## Step 3: Plan Storage
-
-Plans go in \`~/.lumenflow/plans/\` (NOT in project):
-
-\`\`\`bash
-mkdir -p ~/.lumenflow/plans
-vim ~/.lumenflow/plans/WU-XXX-plan.md
-\`\`\`
-
-Reference in wu:create:
-\`\`\`bash
---spec-refs "~/.lumenflow/plans/WU-XXX-plan.md"
-\`\`\`
-
----
-
-## Step 4: Validate First
-
-\`\`\`bash
-pnpm wu:create --id WU-XXX ... --validate
-\`\`\`
-
-Fix errors, then remove \`--validate\` to create.
-`;
-
-// Claude skills templates
-const WU_LIFECYCLE_SKILL_TEMPLATE = `---
-name: wu-lifecycle
-description: Work Unit claim/block/done workflow automation.
-version: 1.0.0
----
-
-# WU Lifecycle Skill
-
-## State Machine
-
-\`\`\`
-ready -> in_progress -> waiting/blocked -> done
-\`\`\`
-
-## Core Commands
-
-\`\`\`bash
-# Claim WU
-pnpm wu:claim --id WU-XXX --lane <lane>
-cd worktrees/<lane>-wu-xxx   # IMMEDIATELY
-
-# Complete WU (from main)
-cd ../..
-pnpm wu:done --id WU-XXX
-\`\`\`
-`;
-
-const WORKTREE_DISCIPLINE_SKILL_TEMPLATE = `---
-name: worktree-discipline
-description: Prevents the "absolute path trap" in Write/Edit/Read tools.
-version: 1.0.0
----
-
-# Worktree Discipline: Absolute Path Trap Prevention
-
-**Purpose**: Prevent AI agents from bypassing worktree isolation via absolute file paths.
-
-## The Absolute Path Trap
-
-**Problem**: AI agents using Write/Edit/Read tools can bypass worktree isolation by passing absolute paths.
-
-## Golden Rules
-
-1. **Always verify pwd** before file operations
-2. **Never use absolute paths** in Write/Edit/Read tools
-3. **When in doubt, use relative paths**
-`;
-
-const LUMENFLOW_GATES_SKILL_TEMPLATE = `---
-name: lumenflow-gates
-description: Quality gates troubleshooting (format, lint, typecheck, tests).
-version: 1.0.0
----
-
-# LumenFlow Gates Skill
-
-## Gate Sequence
-
-\`\`\`
-pnpm gates = format:check -> lint -> typecheck -> spec:linter -> tests
-\`\`\`
-
-## Fix Patterns
-
-| Gate      | Auto-fix        | Manual                              |
-| --------- | --------------- | ----------------------------------- |
-| Format    | \`pnpm format\`   | -                                   |
-| Lint      | \`pnpm lint:fix\` | Fix reported issues                 |
-| Typecheck | -               | Fix type errors (first error first) |
-| Tests     | -               | Debug, fix mocks, update snapshots  |
-`;
+/**
+ * WU-1124: Template paths for agent onboarding docs
+ * Maps output file names to template paths
+ */
+const ONBOARDING_TEMPLATE_PATHS: Record<string, string> = {
+  'quick-ref-commands.md': 'core/ai/onboarding/quick-ref-commands.md.template',
+  'first-wu-mistakes.md': 'core/ai/onboarding/first-wu-mistakes.md.template',
+  'troubleshooting-wu-done.md': 'core/ai/onboarding/troubleshooting-wu-done.md.template',
+  'agent-safety-card.md': 'core/ai/onboarding/agent-safety-card.md.template',
+  'wu-create-checklist.md': 'core/ai/onboarding/wu-create-checklist.md.template',
+};
+
+/**
+ * WU-1124: Template paths for Claude skills
+ * Maps skill names to template paths
+ */
+const SKILL_TEMPLATE_PATHS: Record<string, string> = {
+  'wu-lifecycle': 'vendors/claude/.claude/skills/wu-lifecycle/SKILL.md.template',
+  'worktree-discipline': 'vendors/claude/.claude/skills/worktree-discipline/SKILL.md.template',
+  'lumenflow-gates': 'vendors/claude/.claude/skills/lumenflow-gates/SKILL.md.template',
+};
 
 /**
  * Sync agent onboarding docs to an existing project
+ * WU-1124: Now reads templates from bundled files instead of hardcoded strings
  */
 export async function syncAgentDocs(targetDir: string, options: SyncOptions): Promise<SyncResult> {
   const result: SyncResult = {
@@ -458,51 +207,26 @@ export async function syncAgentDocs(targetDir: string, options: SyncOptions): Pr
 
   await createDirectory(onboardingDir, result, targetDir);
 
-  await createFile(
-    path.join(onboardingDir, 'quick-ref-commands.md'),
-    processTemplate(QUICK_REF_COMMANDS_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
+  // WU-1124: Load and process templates from bundled files
+  for (const [outputFile, templatePath] of Object.entries(ONBOARDING_TEMPLATE_PATHS)) {
+    const templateContent = loadTemplate(templatePath);
+    const processedContent = processTemplate(templateContent, tokens);
 
-  await createFile(
-    path.join(onboardingDir, 'first-wu-mistakes.md'),
-    processTemplate(FIRST_WU_MISTAKES_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
-
-  await createFile(
-    path.join(onboardingDir, 'troubleshooting-wu-done.md'),
-    processTemplate(TROUBLESHOOTING_WU_DONE_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
-
-  await createFile(
-    path.join(onboardingDir, 'agent-safety-card.md'),
-    processTemplate(AGENT_SAFETY_CARD_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
-
-  await createFile(
-    path.join(onboardingDir, 'wu-create-checklist.md'),
-    processTemplate(WU_CREATE_CHECKLIST_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
+    await createFile(
+      path.join(onboardingDir, outputFile),
+      processedContent,
+      options.force,
+      result,
+      targetDir,
+    );
+  }
 
   return result;
 }
 
 /**
  * Sync Claude skills to an existing project
+ * WU-1124: Now reads templates from bundled files instead of hardcoded strings
  */
 export async function syncSkills(targetDir: string, options: SyncOptions): Promise<SyncResult> {
   const result: SyncResult = {
@@ -521,38 +245,22 @@ export async function syncSkills(targetDir: string, options: SyncOptions): Promi
 
   const skillsDir = path.join(targetDir, '.claude', 'skills');
 
-  // wu-lifecycle skill
-  const wuLifecycleDir = path.join(skillsDir, 'wu-lifecycle');
-  await createDirectory(wuLifecycleDir, result, targetDir);
-  await createFile(
-    path.join(wuLifecycleDir, 'SKILL.md'),
-    processTemplate(WU_LIFECYCLE_SKILL_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
+  // WU-1124: Load and process skill templates from bundled files
+  for (const [skillName, templatePath] of Object.entries(SKILL_TEMPLATE_PATHS)) {
+    const skillDir = path.join(skillsDir, skillName);
+    await createDirectory(skillDir, result, targetDir);
 
-  // worktree-discipline skill
-  const worktreeDir = path.join(skillsDir, 'worktree-discipline');
-  await createDirectory(worktreeDir, result, targetDir);
-  await createFile(
-    path.join(worktreeDir, 'SKILL.md'),
-    processTemplate(WORKTREE_DISCIPLINE_SKILL_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
+    const templateContent = loadTemplate(templatePath);
+    const processedContent = processTemplate(templateContent, tokens);
 
-  // lumenflow-gates skill
-  const gatesDir = path.join(skillsDir, 'lumenflow-gates');
-  await createDirectory(gatesDir, result, targetDir);
-  await createFile(
-    path.join(gatesDir, 'SKILL.md'),
-    processTemplate(LUMENFLOW_GATES_SKILL_TEMPLATE, tokens),
-    options.force,
-    result,
-    targetDir,
-  );
+    await createFile(
+      path.join(skillDir, 'SKILL.md'),
+      processedContent,
+      options.force,
+      result,
+      targetDir,
+    );
+  }
 
   return result;
 }
