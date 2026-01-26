@@ -26,7 +26,6 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — Framework: CLI
-- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — Framework: CLI
 - [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -65,3 +64,4 @@ sections:
 - [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml)
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml)
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml)
+- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml)

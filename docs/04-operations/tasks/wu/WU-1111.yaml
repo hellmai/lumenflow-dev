@@ -2,7 +2,7 @@ id: WU-1111
 title: 'INIT-003 Phase 5b: Migrate guards & validation (7 tools)'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -57,3 +57,5 @@ acceptance:
   - validate-skills-spec.ts exists with tests
   - All bin entries added
   - '>80% coverage'
+locked: true
+completed_at: 2026-01-26T00:02:34.402Z
