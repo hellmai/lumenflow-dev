@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
