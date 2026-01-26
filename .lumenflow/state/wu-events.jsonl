@@ -75,3 +75,4 @@
 {"type":"complete","wuId":"WU-1114","timestamp":"2026-01-26T09:38:41.013Z"}
 {"type":"claim","wuId":"WU-1115","lane":"Content: Documentation","title":"Docs Audit: What & Why - Fix broken link + positioning","timestamp":"2026-01-26T10:20:04.396Z"}
 {"type":"claim","wuId":"WU-1118","lane":"Framework: CLI","title":"Docs Audit: CLI Presets - Java/Ruby/PHP gate presets","timestamp":"2026-01-26T10:20:31.525Z"}
+{"type":"complete","wuId":"WU-1118","timestamp":"2026-01-26T10:25:39.132Z"}
