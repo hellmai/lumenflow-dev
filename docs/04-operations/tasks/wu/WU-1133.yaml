@@ -6,6 +6,8 @@ status: ready
 priority: P2
 created: 2026-01-26
 code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/lumenflow-agent-capsule.md
+  - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:
   manual:
