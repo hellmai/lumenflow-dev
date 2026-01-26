@@ -2,7 +2,7 @@ id: WU-1123
 title: 'INIT-004 Phase 1: Template sync script'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -42,3 +42,5 @@ session_id: 2b572b52-7f5e-4035-bef6-39a00e9f851e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T10:52:23.387Z
+locked: true
+completed_at: 2026-01-26T11:05:31.073Z

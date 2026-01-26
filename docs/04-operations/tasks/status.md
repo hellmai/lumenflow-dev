@@ -9,6 +9,7 @@ _Last updated: 2026-01-26_
 
 ## Completed
 
+- [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml) — 2026-01-26
 - [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
