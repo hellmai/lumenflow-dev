@@ -60,9 +60,10 @@ lanes:
         - '.github/**'
 
     - name: 'Content: Documentation'
-      wip_limit: 1
+      wip_limit: 4
       code_paths:
         - 'docs/**'
+        - 'apps/docs/**'
 
 git:
   main_branch: main
