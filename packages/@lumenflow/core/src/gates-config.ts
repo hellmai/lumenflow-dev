@@ -126,6 +126,25 @@ export const GATE_PRESETS: Record<string, Partial<GatesExecutionConfig>> = {
     lint: 'dotnet build --no-restore -warnaserror',
     test: 'dotnet test --no-restore',
   },
+  // WU-1118: Java/JVM, Ruby, and PHP presets
+  java: {
+    format: 'mvn spotless:check || ./gradlew spotlessCheck',
+    lint: 'mvn checkstyle:check || ./gradlew checkstyleMain',
+    typecheck: 'mvn compile -DskipTests || ./gradlew compileJava',
+    test: 'mvn test || ./gradlew test',
+  },
+  ruby: {
+    setup: 'bundle install',
+    format: 'bundle exec rubocop --format simple --fail-level W',
+    lint: 'bundle exec rubocop',
+    test: 'bundle exec rspec',
+  },
+  php: {
+    setup: 'composer install',
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff',
+    lint: 'vendor/bin/phpstan analyse',
+    test: 'vendor/bin/phpunit',
+  },
 };
 
 /**
