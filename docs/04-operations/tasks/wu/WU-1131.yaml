@@ -11,6 +11,8 @@ code_paths:
 tests:
   manual:
     - pnpm wu:spawn --id WU-XXX | head -20 shows warning banner
+    - pnpm wu:spawn --id WU-XXX | tail -5 shows LUMENFLOW_SPAWN_END sentinel
+    - pnpm wu:spawn --id WU-XXX | grep -c Constraints Block returns 1
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-spawn.test.ts
   e2e: []
