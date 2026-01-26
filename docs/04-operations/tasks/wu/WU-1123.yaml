@@ -34,3 +34,4 @@ acceptance:
   - Onboarding docs sync to templates
   - Claude skills sync to templates/vendors/claude
   - Core docs sync with template variables
+initiative: INIT-004
