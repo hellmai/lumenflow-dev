@@ -105,3 +105,4 @@
 {"type":"complete","wuId":"WU-1130","timestamp":"2026-01-26T17:10:43.571Z"}
 {"type":"claim","wuId":"WU-1133","lane":"Content: Documentation","title":"Fix doc alignment: constraints-capsule reference and vendor overlays","timestamp":"2026-01-26T23:34:16.029Z"}
 {"type":"claim","wuId":"WU-1131","lane":"Framework: CLI","title":"Fix wu:spawn output truncation causing agent degradation","timestamp":"2026-01-26T23:34:29.706Z"}
+{"type":"claim","wuId":"WU-1132","lane":"Operations: CI/CD","title":"Harden worktree validation hook to fail-closed","timestamp":"2026-01-26T23:34:42.391Z"}
