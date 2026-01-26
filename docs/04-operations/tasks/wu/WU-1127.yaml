@@ -2,7 +2,7 @@ id: WU-1127
 title: lumenflow:upgrade must use micro-worktree (users blocked from upgrading)
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-01-26
 code_paths:
@@ -45,3 +45,5 @@ session_id: c9b33232-b1d0-4c92-bed8-9e9c502a7ad0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T12:10:55.425Z
+locked: true
+completed_at: 2026-01-26T12:29:26.584Z
