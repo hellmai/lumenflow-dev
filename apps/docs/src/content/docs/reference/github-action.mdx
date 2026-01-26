@@ -1,0 +1,328 @@
+---
+title: GitHub Action
+description: LumenFlow Gates GitHub Action reference
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+The LumenFlow Gates GitHub Action runs your quality gates in CI/CD pipelines. It reads your gate configuration from `.lumenflow.config.yaml` and executes the appropriate checks.
+
+## Quick Start
+
+<Steps>
+
+1. **Add configuration** (if not already present)
+
+   ```yaml
+   # .lumenflow.config.yaml
+   version: '2.0'
+
+   gates:
+     execution:
+       format: 'pnpm format:check'
+       lint: 'pnpm lint'
+       typecheck: 'pnpm typecheck'
+       test: 'pnpm test'
+   ```
+
+2. **Add the workflow**
+
+   ```yaml
+   # .github/workflows/gates.yml
+   name: LumenFlow Gates
+
+   on:
+     pull_request:
+       branches: [main]
+     push:
+       branches: [main]
+
+   jobs:
+     gates:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: hellmai/lumenflow-gates@v1
+           with:
+             token: ${{ secrets.LUMENFLOW_TOKEN }}
+   ```
+
+3. **Get your token**
+
+   Sign up at [lumenflow.dev](https://lumenflow.dev) and add your `LUMENFLOW_TOKEN` to repository secrets.
+
+</Steps>
+
+## Inputs
+
+| Input               | Description                            | Required | Default |
+| ------------------- | -------------------------------------- | -------- | ------- |
+| `token`             | LumenFlow API token for usage tracking | Yes      | -       |
+| `working-directory` | Directory to run commands in           | No       | `.`     |
+| `skip-format`       | Skip format check                      | No       | `false` |
+| `skip-lint`         | Skip lint check                        | No       | `false` |
+| `skip-typecheck`    | Skip type check                        | No       | `false` |
+| `skip-test`         | Skip tests                             | No       | `false` |
+
+## Outputs
+
+| Output            | Description                               |
+| ----------------- | ----------------------------------------- |
+| `preset-detected` | The preset or config mode that was used   |
+| `gates-passed`    | Whether all gates passed (`true`/`false`) |
+
+## Using Presets
+
+For common languages, specify a preset instead of individual commands:
+
+```yaml
+gates:
+  execution:
+    preset: 'node' # or 'python', 'go', 'rust', 'dotnet'
+```
+
+### Preset Defaults
+
+| Preset   | Format                   | Lint            | Typecheck      | Test            |
+| -------- | ------------------------ | --------------- | -------------- | --------------- |
+| `node`   | `prettier --check .`     | `eslint .`      | `tsc --noEmit` | `npm test`      |
+| `python` | `ruff format --check .`  | `ruff check .`  | `mypy .`       | `pytest`        |
+| `go`     | `gofmt -l .`             | `golangci-lint` | `go vet ./...` | `go test ./...` |
+| `rust`   | `cargo fmt --check`      | `cargo clippy`  | `cargo check`  | `cargo test`    |
+| `dotnet` | `dotnet format --verify` | `dotnet build`  | -              | `dotnet test`   |
+
+## Overriding Preset Commands
+
+You can use a preset and override specific commands:
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Override just the lint command
+    lint: 'mypy . && ruff check . && pylint src/'
+```
+
+## Command Options
+
+Commands can be strings or objects with additional options:
+
+```yaml
+gates:
+  execution:
+    format: 'pnpm format:check'
+    test:
+      command: 'pnpm test -- --coverage'
+      timeout: 300000 # 5 minutes
+      continueOnError: false
+```
+
+## Full Workflow Examples
+
+### Node.js with pnpm
+
+```yaml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+### Python with Poetry
+
+```yaml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+### .NET
+
+```yaml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+## Monorepo Support
+
+Run gates on specific packages in a monorepo:
+
+```yaml
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+          working-directory: packages/frontend
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+          working-directory: packages/backend
+```
+
+<Aside type="tip">
+  Each package can have its own `.lumenflow.config.yaml` with different gate commands, or you can
+  use a shared config at the repo root.
+</Aside>
+
+## Skipping Gates
+
+Skip specific gates when needed:
+
+```yaml
+- uses: hellmai/lumenflow-gates@v1
+  with:
+    token: ${{ secrets.LUMENFLOW_TOKEN }}
+    skip-test: 'true' # Skip tests for docs-only changes
+```
+
+Or conditionally based on changed files:
+
+```yaml
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for code changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            code:
+              - 'src/**'
+              - 'packages/**'
+
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+          skip-test: ${{ steps.changes.outputs.code != 'true' }}
+```
+
+## Auto-Detection Fallback
+
+If no `gates.execution` config is present, the action auto-detects your project type based on files:
+
+| File             | Detected Language |
+| ---------------- | ----------------- |
+| `package.json`   | Node.js           |
+| `pyproject.toml` | Python            |
+| `go.mod`         | Go                |
+| `Cargo.toml`     | Rust              |
+| `*.csproj`       | .NET              |
+
+## Troubleshooting
+
+### Gate fails but works locally
+
+Ensure your CI environment matches local:
+
+- Same Node/Python/Go version
+- Same package manager (pnpm vs npm)
+- Dependencies installed before gates run
+
+### Token issues
+
+1. Verify `LUMENFLOW_TOKEN` is set in repository secrets
+2. Check the token is valid at [lumenflow.dev/settings](https://lumenflow.dev/settings)
+3. Ensure the token has access to the repository
+
+### Timeout errors
+
+Increase the timeout for slow commands:
+
+```yaml
+gates:
+  execution:
+    test:
+      command: 'pnpm test'
+      timeout: 600000 # 10 minutes
+```
+
+## Next Steps
+
+- [Gates Concepts](/concepts/gates) - Understanding gates
+- [Configuration Reference](/reference/config) - Full config schema
+- [CLI Reference](/reference/cli) - Running gates locally

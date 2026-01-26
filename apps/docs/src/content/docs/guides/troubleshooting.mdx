@@ -1,0 +1,405 @@
+---
+title: Troubleshooting
+description: Common issues and how to fix them
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This guide covers common issues you may encounter with LumenFlow and how to resolve them.
+
+## Gate Failures
+
+### Format check fails
+
+**Symptom:**
+
+```
+> Format check... FAILED
+>   src/utils/validator.ts needs formatting
+```
+
+**Fix:**
+
+```bash
+# Auto-fix formatting
+pnpm format
+# or
+npx prettier --write .
+
+# Then retry
+pnpm gates
+```
+
+### Lint check fails
+
+**Symptom:**
+
+```
+> Lint check... FAILED
+>   src/api/handler.ts:42 - Unexpected any
+```
+
+**Fix:**
+
+1. Read the error message to understand the issue
+2. Fix the code (don't disable the rule unless necessary)
+3. Retry: `pnpm gates`
+
+Common lint fixes:
+
+| Error                   | Fix                                    |
+| ----------------------- | -------------------------------------- |
+| `no-explicit-any`       | Add proper TypeScript types            |
+| `no-unused-vars`        | Remove the variable or prefix with `_` |
+| `exhaustive-deps`       | Add missing useEffect dependencies     |
+| `no-restricted-imports` | Use the correct import path            |
+
+### Type check fails
+
+**Symptom:**
+
+```
+> Type check... FAILED
+> error TS2322: Type 'string' is not assignable to type 'number'
+```
+
+**Fix:**
+
+1. Fix the first error (later errors often cascade from earlier ones)
+2. Save and check again
+3. Repeat until clean
+
+<Aside type="tip">
+  TypeScript errors cascade. Fix them one at a time, starting from the first.
+</Aside>
+
+### Tests fail
+
+**Symptom:**
+
+```
+> Tests... FAILED
+>   FAIL src/__tests__/auth.test.ts
+>   Expected: "success"
+>   Received: "error"
+```
+
+**Fix:**
+
+1. Run the failing test in isolation: `pnpm test src/__tests__/auth.test.ts`
+2. Debug: check test setup, mocks, and assertions
+3. Fix and retry
+
+**Common causes:**
+
+- Mocks not reset between tests (use `beforeEach`)
+- Async tests not awaited
+- Environment differences (CI vs local)
+
+### Pre-existing gate failures
+
+If gates fail on code you didn't change:
+
+<Steps>
+
+1. **Verify the failure existed before your changes**
+
+   ```bash
+   git stash
+   pnpm gates
+   # If it fails here, it's pre-existing
+   git stash pop
+   ```
+
+2. **Use skip-gates with documentation**
+
+   ```bash
+   pnpm wu:done --id WU-042 \
+     --skip-gates \
+     --reason "Pre-existing lint failure in src/legacy.ts" \
+     --fix-wu WU-050
+   ```
+
+3. **Create a follow-up WU to fix the issue**
+
+</Steps>
+
+<Aside type="caution">Never skip gates for failures you introduced. Fix them first.</Aside>
+
+## WU State Issues
+
+### WU stuck in `in_progress`
+
+**Symptom:** WU shows `in_progress` but worktree is gone or work is done elsewhere.
+
+**Fix:**
+
+```bash
+# Check current state
+pnpm wu:status --id WU-042
+
+# Recover based on situation
+pnpm wu:recover --id WU-042
+
+# Choose the appropriate action:
+pnpm wu:recover --id WU-042 --action resume   # Reconcile, keep work
+pnpm wu:recover --id WU-042 --action reset    # Reset to ready
+pnpm wu:recover --id WU-042 --action cleanup  # Remove orphaned worktree
+```
+
+### WU status mismatch
+
+**Symptom:** `backlog.md` says one status, WU YAML says another.
+
+**Fix:**
+
+```bash
+# Regenerate docs from state store
+pnpm exec lumenflow backlog:regenerate
+pnpm exec lumenflow status:regenerate
+```
+
+### Lane already has a WU in progress
+
+**Symptom:**
+
+```
+ERROR: Lane "Framework: Core" already has WU-040 in progress
+```
+
+**Fix:**
+
+1. Check if WU-040 is truly in progress: `pnpm wu:status --id WU-040`
+2. If blocked, mark it: `pnpm wu:block --id WU-040 --reason "Waiting for API"`
+3. If done, complete it: `pnpm wu:done --id WU-040`
+4. If orphaned, recover: `pnpm wu:recover --id WU-040 --action reset`
+
+## Worktree Issues
+
+### Worktree not found
+
+**Symptom:**
+
+```
+ERROR: Worktree not found for WU-042
+```
+
+**Fix:**
+
+```bash
+# If WU should be in progress, re-claim
+pnpm wu:recover --id WU-042 --action reset
+pnpm wu:claim --id WU-042 --lane "Framework: Core"
+
+# If WU is done but worktree lingers
+pnpm wu:recover --id WU-042 --action cleanup
+```
+
+### Changes made in wrong directory
+
+**Symptom:** You made changes in main instead of the worktree.
+
+**Fix:**
+
+```bash
+# From main checkout
+git stash
+
+# Move to worktree
+cd worktrees/framework-core-wu-042
+git stash pop
+
+# Commit there
+git add .
+git commit -m "wu(wu-042): implement feature"
+```
+
+### Worktree has merge conflicts
+
+**Symptom:** Conflicts after rebasing the worktree branch.
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+
+# Resolve conflicts in each file
+git status  # See conflicting files
+# Edit files to resolve conflicts
+git add <resolved-files>
+git rebase --continue
+```
+
+<Aside type="tip">
+  Prefer small WUs to minimize conflict risk. Large WUs that touch many files are more likely to
+  conflict with parallel work.
+</Aside>
+
+## Git Issues
+
+### wu:done fails with "not a fast-forward"
+
+**Symptom:**
+
+```
+ERROR: Cannot fast-forward merge lane/framework-core/wu-042 to main
+```
+
+**Cause:** Main has new commits since you started your WU.
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+git fetch origin main
+git rebase origin/main
+# Resolve any conflicts
+git push --force-with-lease origin lane/framework-core/wu-042
+
+# Return to main and retry
+cd /path/to/repo
+pnpm wu:done --id WU-042
+```
+
+### Hooks block my commit
+
+**Symptom:**
+
+```
+ERROR: WU commit attempted from main checkout
+```
+
+**Cause:** You're trying to commit WU work from the main directory.
+
+**Fix:**
+
+```bash
+# Move to the worktree
+cd worktrees/framework-core-wu-042
+git add .
+git commit -m "wu(wu-042): implement feature"
+```
+
+### Branch drift warning
+
+**Symptom:**
+
+```
+WARNING: Branch is 15 commits behind origin/main
+```
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+git fetch origin main
+git rebase origin/main
+```
+
+## CLI Issues
+
+### Command not found: wu-create
+
+**Symptom:**
+
+```
+bash: wu-create: command not found
+```
+
+**Fix:**
+
+```bash
+# Ensure CLI is installed
+pnpm add -D @lumenflow/cli
+
+# Use npx if not in PATH
+npx wu-create --id WU-042 ...
+
+# Or add scripts to package.json
+```
+
+### Config validation errors
+
+**Symptom:**
+
+```
+ERROR: Invalid .lumenflow.config.yaml
+  - lanes.definitions[0].name must match pattern "^[A-Za-z]+: [A-Za-z]+"
+```
+
+**Fix:**
+
+1. Check the error message for the specific field
+2. Compare with the [Configuration Reference](/reference/config)
+3. Fix the YAML syntax or values
+
+Validate without running:
+
+```bash
+pnpm exec lumenflow validate
+```
+
+### Memory checkpoint fails
+
+**Symptom:**
+
+```
+ERROR: Cannot create checkpoint - no session active
+```
+
+**Fix:**
+
+```bash
+# Initialize memory for this WU
+pnpm mem:init --wu WU-042
+
+# Then checkpoint
+pnpm mem:checkpoint --wu WU-042
+```
+
+## GitHub App Issues
+
+### PR checks don't run
+
+**Possible causes:**
+
+1. GitHub App not installed on the repository
+2. `LUMENFLOW_TOKEN` not set in repository secrets
+3. Workflow file missing or incorrect
+
+**Fix:**
+
+1. Check [GitHub App installation](https://github.com/apps/lumenflow-by-hellmai)
+2. Add `LUMENFLOW_TOKEN` to repository secrets
+3. Verify `.github/workflows/gates.yml` exists
+
+### Token invalid error
+
+**Symptom:**
+
+```
+ERROR: Invalid or expired LUMENFLOW_TOKEN
+```
+
+**Fix:**
+
+1. Go to [lumenflow.dev/settings](https://lumenflow.dev/settings)
+2. Regenerate your token
+3. Update the repository secret
+
+## Still Stuck?
+
+If these solutions don't help:
+
+1. **Check logs:** `cat .lumenflow/flow.log`
+2. **Run with debug:** `DEBUG=lumenflow:* pnpm wu:done --id WU-042`
+3. **Ask for help:**
+   - [GitHub Discussions](https://github.com/hellmai/os/discussions)
+   - [Discord](https://discord.gg/lumenflow)
+
+Include in your question:
+
+- The exact error message
+- Your `.lumenflow.config.yaml` (redact secrets)
+- Output of `pnpm wu:status --id WU-XXX`
+- Your Node.js version: `node --version`
