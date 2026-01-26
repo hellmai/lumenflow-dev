@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1117 — Docs Audit: Language Support - 8 language guides](wu/WU-1117.yaml) — Content: Documentation
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — Content: Documentation
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — Content: Documentation
   (No items ready)

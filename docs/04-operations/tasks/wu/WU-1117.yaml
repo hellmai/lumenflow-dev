@@ -1,0 +1,38 @@
+id: WU-1117
+title: 'Docs Audit: Language Support - 8 language guides'
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P1
+created: 2026-01-26
+code_paths:
+  - apps/docs/src/content/docs/language-guides/
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1117.done
+dependencies: []
+blocked_by:
+  - WU-1115
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Create language guides for all 8 supported languages emphasizing stack-agnostic architecture. Python, .NET, Go, Rust have existing presets; Java, Ruby, PHP need WU-1118 for presets.
+acceptance:
+  - Language Guides navigation section added to site
+  - Python language guide with quickstart
+  - .NET language guide with quickstart
+  - Go language guide with quickstart
+  - Rust language guide with quickstart
+  - 'Java/Ruby/PHP guides created (note: presets in WU-1118)'
+  - Stack-agnostic architecture emphasized in intro
+  - pnpm docs:build succeeds
