@@ -20,17 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml) — Content: Documentation
-- [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml) — Content: Documentation
-- [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml) — Framework: CLI
-- [WU-1117 — Docs Audit: Language Support - 8 language guides](wu/WU-1117.yaml) — Content: Documentation
-- [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — Content: Documentation
-- [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — Content: Documentation
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
+- [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

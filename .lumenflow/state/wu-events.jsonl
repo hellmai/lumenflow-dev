@@ -73,3 +73,4 @@
 {"type":"complete","wuId":"WU-1113","timestamp":"2026-01-26T09:22:02.901Z"}
 {"type":"claim","wuId":"WU-1114","lane":"Content: Documentation","title":"Enforce context exhaustion prevention via WU sizing and spawn-fresh policy","timestamp":"2026-01-26T09:33:29.064Z"}
 {"type":"complete","wuId":"WU-1114","timestamp":"2026-01-26T09:38:41.013Z"}
+{"type":"claim","wuId":"WU-1115","lane":"Content: Documentation","title":"Docs Audit: What & Why - Fix broken link + positioning","timestamp":"2026-01-26T10:20:04.396Z"}
