@@ -2,7 +2,7 @@ id: WU-1132
 title: Harden worktree validation hook to fail-closed
 lane: 'Operations: CI/CD'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -22,11 +22,17 @@ dependencies: []
 initiative: INIT-005
 phase: 2
 risks: []
-notes: |
+notes: >
   Implementation:
-  - Added fail-closed behavior for empty stdin, JSON parse errors, empty tool_name, and missing file_path
-  - Added audit logging to .claude/audit/main-write-blocks.log with format: timestamp|reason|tool_name|file_path
+
+  - Added fail-closed behavior for empty stdin, JSON parse errors, empty tool_name, and missing
+  file_path
+
+  - Added audit logging to .claude/audit/main-write-blocks.log with format:
+  timestamp|reason|tool_name|file_path
+
   - Added comprehensive test suite in validate-worktree-path.test.sh (16 tests)
+
   - All tests pass, including manual verification from WU spec
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -51,3 +57,5 @@ session_id: 8c16a1bc-e9c7-4814-837d-be4f38b746da
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T23:34:42.382Z
+locked: true
+completed_at: 2026-01-26T23:40:15.790Z

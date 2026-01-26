@@ -8,6 +8,7 @@ _Last updated: 2026-01-26_
 
 ## Completed
 
+- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — 2026-01-26
 - [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
