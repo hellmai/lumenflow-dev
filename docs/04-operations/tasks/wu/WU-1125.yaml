@@ -1,7 +1,7 @@
 id: WU-1125
 title: 'INIT-004 Phase 3: Document upgrade path'
 lane: 'Framework: CLI'
-type: engineering
+type: tooling
 status: in_progress
 priority: P2
 created: 2026-01-26
