@@ -7,18 +7,27 @@ priority: P1
 created: 2026-01-26
 code_paths:
   - .claude/hooks/validate-worktree-path.sh
+  - .claude/hooks/validate-worktree-path.test.sh
+  - .gitignore
 tests:
   manual:
     - echo 'invalid json' | .claude/hooks/validate-worktree-path.sh exits 2
-  unit: []
+  unit:
+    - .claude/hooks/validate-worktree-path.test.sh
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1132.done
+  - .claude/audit/main-write-blocks.log
 dependencies: []
 initiative: INIT-005
 phase: 2
 risks: []
-notes: ''
+notes: |
+  Implementation:
+  - Added fail-closed behavior for empty stdin, JSON parse errors, empty tool_name, and missing file_path
+  - Added audit logging to .claude/audit/main-write-blocks.log with format: timestamp|reason|tool_name|file_path
+  - Added comprehensive test suite in validate-worktree-path.test.sh (16 tests)
+  - All tests pass, including manual verification from WU spec
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
