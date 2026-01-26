@@ -2,7 +2,7 @@ id: WU-1137
 title: Add mem:export CLI for human-readable memory output
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -38,3 +38,5 @@ acceptance:
   - mem:export outputs markdown by default and JSON when --format json is provided
   - mem:export supports filtering by --wu and --type (and ignores unmatched filters)
   - quick-ref commands list mem:export
+locked: true
+completed_at: 2026-01-26T23:55:34.006Z

@@ -6,10 +6,10 @@ _Last updated: 2026-01-26_
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml)
-- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml)
 
 ## Completed
 
+- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
