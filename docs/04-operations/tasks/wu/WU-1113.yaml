@@ -2,7 +2,7 @@ id: WU-1113
 title: 'INIT-003 Phase 7: Publish @lumenflow/cli update'
 lane: 'Framework: CLI'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-25
 code_paths:
@@ -37,7 +37,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Final integration: bump version via changeset, publish to npm, update PatientPath to use npm commands, deprecate local tools/*.mjs wrappers, final docs generation.'
+description: 'Final integration: bump version via changeset, publish to npm, update PatientPath to
+  use npm commands, deprecate local tools/*.mjs wrappers, final docs generation.'
 acceptance:
   - pnpm changeset created for new version
   - '@lumenflow/cli published to npm with all migrated commands'
@@ -45,3 +46,11 @@ acceptance:
   - PatientPath local tools/*.mjs marked deprecated with pointers to npm commands
   - Final pnpm docs:generate with all 80+ commands
   - lumenflow.dev deployed with complete CLI reference
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1113
+claimed_at: 2026-01-26T09:16:13.359Z
+baseline_main_sha: 770dac63134b6f72307e915feb4cc6df9846e52e
+session_id: 7af25141-2006-4333-a6b1-e417616342a5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T09:16:13.364Z
