@@ -2,7 +2,7 @@ id: WU-1114
 title: Enforce context exhaustion prevention via WU sizing and spawn-fresh policy
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -29,10 +29,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: When agents compact/summarize context, they lose critical rules and start making mistakes. Problem: Current approach attempts complex recovery (hooks, agent frontmatter) which is vendor-specific and high effort. Solution: Prevention over recovery - enforce existing sizing guide thresholds as mandatory limits and document spawn-fresh as the standard pattern.'
+description: 'Context: When agents compact/summarize context, they lose critical rules and start
+  making mistakes. Problem: Current approach attempts complex recovery (hooks, agent frontmatter)
+  which is vendor-specific and high effort. Solution: Prevention over recovery - enforce existing
+  sizing guide thresholds as mandatory limits and document spawn-fresh as the standard pattern.'
 acceptance:
   - wu-sizing-guide.md updated with mandatory thresholds (not guidelines)
   - wu-sizing-guide.md includes spawn-fresh policy section
   - constraints.md has brief note about context limits
   - LUMENFLOW.md has one-line reminder about spawn-fresh at top
   - context-management skill updated with spawn-fresh as primary strategy
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1114
+claimed_at: 2026-01-26T09:33:29.040Z
+baseline_main_sha: 5d3c6ba866f947e425c8ad04334f65cfc220063a
+session_id: 6fcda05f-96d5-43b2-8190-38666549b03f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T09:33:29.048Z
