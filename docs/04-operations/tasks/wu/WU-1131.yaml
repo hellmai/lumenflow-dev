@@ -2,7 +2,7 @@ id: WU-1131
 title: Fix wu:spawn output truncation causing agent degradation
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - End sentinel <!-- LUMENFLOW_SPAWN_END --> added after constraints block
   - Orchestration skill updated with verbatim output + verification requirements
   - Truncation detection tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1131
+claimed_at: 2026-01-26T23:34:29.672Z
+baseline_main_sha: c8ac5eb243a28d75df4d7a4ad797be7c798f99e4
+session_id: 8c16a1bc-e9c7-4814-837d-be4f38b746da
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:34:29.681Z
