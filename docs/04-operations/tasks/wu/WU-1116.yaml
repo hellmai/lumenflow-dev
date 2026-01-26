@@ -2,7 +2,7 @@ id: WU-1116
 title: 'Docs Audit: Internal to Public - Agent onboarding + constraints'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -14,8 +14,8 @@ code_paths:
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual:
-    - 'pnpm build in apps/docs succeeds without errors'
-    - 'All new pages render correctly in dev server'
+    - pnpm build in apps/docs succeeds without errors
+    - All new pages render correctly in dev server
   unit: []
   e2e: []
 artifacts:
@@ -48,3 +48,5 @@ acceptance:
   - Memory layer section expanded with practical examples
   - All HellmAI-specific references sanitized for public use
   - pnpm docs:build succeeds
+locked: true
+completed_at: 2026-01-26T11:15:48.253Z
