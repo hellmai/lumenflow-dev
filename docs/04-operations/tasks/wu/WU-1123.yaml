@@ -15,8 +15,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1123.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/INIT-003-template-auto-sync.md
+initiative: INIT-004
+phase: 1
 risks: []
 notes: ''
 requires_review: false
@@ -34,4 +34,3 @@ acceptance:
   - Onboarding docs sync to templates
   - Claude skills sync to templates/vendors/claude
   - Core docs sync with template variables
-initiative: INIT-004
