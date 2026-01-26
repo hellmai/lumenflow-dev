@@ -1,0 +1,216 @@
+---
+title: Changelog
+description: LumenFlow release history and version notes
+---
+
+import { Aside, Badge } from '@astrojs/starlight/components';
+
+This changelog documents significant changes to LumenFlow packages and the framework as a whole.
+
+## Versioning Policy
+
+LumenFlow packages follow [Semantic Versioning](https://semver.org/):
+
+- **Major** (X.0.0): Breaking changes that require migration
+- **Minor** (0.X.0): New features, backwards compatible
+- **Patch** (0.0.X): Bug fixes, backwards compatible
+
+All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenflow/metrics` package may have independent minor versions.
+
+## v2.0.0
+
+<Badge text="Latest" variant="success" />
+
+**Release Date:** January 2026
+
+### Breaking Changes
+
+- **Config version bump**: `.lumenflow.config.yaml` now requires `version: '2.0'`
+- **Lane format**: Lanes now use "Parent: Sublane" format (e.g., `Framework: Core`)
+- **Stamp location**: Stamps moved from `.beacon/stamps/` to `.lumenflow/stamps/`
+- **State directory**: State files moved from `.beacon/` to `.lumenflow/`
+
+### New Features
+
+- **Agent Pattern Registry**: Central registry for AI agent branch patterns at `lumenflow.dev/registry/`
+- **Context-Aware Validation**: Commands now validate location, WU status, and git state
+- **Memory Layer**: New `@lumenflow/memory` package for agent session tracking
+- **Initiatives**: Multi-phase project orchestration with `@lumenflow/initiatives`
+- **DORA Metrics**: Flow metrics and bottleneck analysis in `@lumenflow/metrics`
+- **Skills System**: Modular knowledge bundles for AI agents in `.claude/skills/`
+- **Language Presets**: Gate presets for Node, Python, Go, Rust, Java, Ruby, PHP, .NET
+
+### Improvements
+
+- **wu:claim**: Now uses micro-worktree isolation for atomic state updates
+- **wu:done**: Spec completeness validation prevents placeholder WUs
+- **Gates**: Config-driven presets reduce boilerplate configuration
+- **CLI**: Better error messages with copy-paste fix commands
+
+### Migration Guide
+
+See [Migration Guide](/guides/migration) for upgrading from v1.x.
+
+---
+
+## v1.6.0
+
+**Release Date:** December 2025
+
+### New Features
+
+- **GitHub Action**: New `actions/lumenflow-gates` for CI/CD integration
+- **Headless Mode**: `LUMENFLOW_HEADLESS=1` for CI environments
+- **wu:recover**: Analyze and fix WU state inconsistencies
+
+### Improvements
+
+- **Performance**: 40% faster worktree creation
+- **Error messages**: More actionable error descriptions
+- **Documentation**: Expanded agent onboarding docs
+
+---
+
+## v1.5.0
+
+**Release Date:** November 2025
+
+### New Features
+
+- **wu:spawn**: Generate context-rich prompts for AI agents
+- **Agent sessions**: Track agent work with `agent:session` commands
+- **Flow analysis**: `flow:report` and `flow:bottlenecks` commands
+
+### Improvements
+
+- **Validation**: Better WU YAML schema validation
+- **Hooks**: More robust pre-commit and commit-msg hooks
+
+---
+
+## v1.4.0
+
+**Release Date:** October 2025
+
+### New Features
+
+- **Initiatives**: Link WUs to multi-phase initiatives
+- **Lane inference**: Automatic lane suggestion based on code paths
+- **Skip-gates audit**: Logged to `.lumenflow/skip-gates-audit.log`
+
+### Improvements
+
+- **wu:done**: Better handling of merge conflicts
+- **Gates**: Parallel execution for faster feedback
+
+---
+
+## v1.3.0
+
+**Release Date:** September 2025
+
+### New Features
+
+- **Memory checkpoints**: `mem:checkpoint` for context recovery
+- **Signal broadcasting**: `mem:signal` for agent coordination
+- **WU blocking**: `wu:block` and `wu:unblock` commands
+
+### Improvements
+
+- **Worktree cleanup**: Automatic cleanup of stale worktrees
+- **State tracking**: Event sourcing for WU state changes
+
+---
+
+## v1.2.0
+
+**Release Date:** August 2025
+
+### New Features
+
+- **Custom gates**: Define project-specific quality checks
+- **Docs-only mode**: `--docs-only` flag for documentation WUs
+- **Validation commands**: `validate:backlog:sync` and friends
+
+### Improvements
+
+- **Performance**: Lazy loading of optional dependencies
+- **Compatibility**: Support for Node.js 20 and 22
+
+---
+
+## v1.1.0
+
+**Release Date:** July 2025
+
+### New Features
+
+- **Lane WIP limits**: Configurable work-in-progress limits per lane
+- **Stamp timestamps**: Stamps now include completion timestamp
+- **Extended schema**: More WU fields (exposure, escalation_triggers)
+
+### Improvements
+
+- **Error handling**: Better recovery from failed wu:done
+- **Logging**: Structured logging with trace IDs
+
+---
+
+## v1.0.0
+
+**Release Date:** June 2025
+
+### Initial Release
+
+- **Core workflow**: `wu:create`, `wu:claim`, `wu:done`
+- **Worktree isolation**: Automatic worktree management
+- **Quality gates**: Format, lint, typecheck, test
+- **Lane-based WIP**: One active WU per lane
+- **Stamps**: Completion tracking with `.lumenflow/stamps/`
+- **Hooks**: Pre-commit and commit-msg enforcement
+
+---
+
+## Package Versions
+
+Current package versions as of v2.0.0:
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| `@lumenflow/core` | 2.0.0 | Core WU lifecycle and state machine |
+| `@lumenflow/cli` | 2.0.0 | Command-line interface |
+| `@lumenflow/memory` | 2.0.0 | Session tracking and context recovery |
+| `@lumenflow/agent` | 2.0.0 | Agent definitions and skill loading |
+| `@lumenflow/initiatives` | 2.0.0 | Multi-phase project orchestration |
+| `@lumenflow/metrics` | 1.6.0 | DORA metrics and flow analysis |
+| `@lumenflow/shims` | 2.0.0 | Git and pnpm safety shims |
+| `@lumenflow/gates-action` | 1.0.0 | GitHub Action for CI gates |
+
+## Deprecations
+
+### Deprecated in v2.0.0
+
+- `isAgentBranchSync()` - Use async `isAgentBranch()` instead
+- `.beacon/` directory - Migrated to `.lumenflow/`
+- Single-word lane names - Use "Parent: Sublane" format
+
+### Removed in v2.0.0
+
+- Legacy `backlog.yaml` format (use `backlog.md`)
+- `wu:complete` command (renamed to `wu:done`)
+- `--force` flag on wu:done (use `--skip-gates` with `--reason`)
+
+## Roadmap
+
+### v2.1.0 (Planned)
+
+- TypeDoc API documentation generation
+- Skill registry at lumenflow.dev
+- Enhanced metrics dashboard
+- VS Code extension
+
+### v3.0.0 (Future)
+
+- Multi-repo support
+- Enterprise SSO integration
+- Advanced analytics
