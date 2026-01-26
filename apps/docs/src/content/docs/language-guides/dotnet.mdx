@@ -93,8 +93,8 @@ gates:
 
 <Aside>
   In .NET, the `lint` gate uses `dotnet build --warnaserror` because the compiler catches most
-  issues that linters catch in dynamic languages. For additional static analysis, configure
-  Roslyn analyzers.
+  issues that linters catch in dynamic languages. For additional static analysis, configure Roslyn
+  analyzers.
 </Aside>
 
 ### Customizing Gate Commands
@@ -103,30 +103,17 @@ Override specific gates while keeping the preset defaults:
 
 <Tabs>
   <TabItem label="Standard">
-    ```yaml
-    gates:
-      execution:
-        preset: 'dotnet'
-        format: 'dotnet format --verify-no-changes --severity info'
-        test: 'dotnet test --collect:"XPlat Code Coverage"'
-    ```
+    ```yaml gates: execution: preset: 'dotnet' format: 'dotnet format --verify-no-changes --severity
+    info' test: 'dotnet test --collect:"XPlat Code Coverage"' ```
   </TabItem>
   <TabItem label="With Analyzers">
-    ```yaml
-    gates:
-      execution:
-        preset: 'dotnet'
-        lint: 'dotnet build --warnaserror && dotnet format analyzers --verify-no-changes'
-        test: 'dotnet test --logger "trx;LogFileName=test-results.trx"'
+    ```yaml gates: execution: preset: 'dotnet' lint: 'dotnet build --warnaserror && dotnet format
+    analyzers --verify-no-changes' test: 'dotnet test --logger "trx;LogFileName=test-results.trx"'
     ```
   </TabItem>
   <TabItem label="With Stryker">
-    ```yaml
-    gates:
-      execution:
-        preset: 'dotnet'
-        test: 'dotnet test && dotnet stryker --threshold-high 80'
-    ```
+    ```yaml gates: execution: preset: 'dotnet' test: 'dotnet test && dotnet stryker --threshold-high
+    80' ```
   </TabItem>
 </Tabs>
 
@@ -187,6 +174,7 @@ Override specific gates while keeping the preset defaults:
         preset: 'dotnet'
         test: 'dotnet test && npx playwright test'
     ```
+
   </TabItem>
   <TabItem label="Minimal API">
     ```yaml
@@ -205,6 +193,7 @@ Override specific gates while keeping the preset defaults:
         lint: 'dotnet build --warnaserror'
         test: 'dotnet test --collect:"XPlat Code Coverage"'
     ```
+
   </TabItem>
 </Tabs>
 

@@ -1,0 +1,87 @@
+---
+name: lumenflow-gates
+description: Quality gates troubleshooting (format, lint, typecheck, tests). Use when gates fail, debugging format/lint/typecheck errors, or determining if failure is from your changes vs pre-existing.
+version: 2.1.0
+source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+source_sections: §6.4 (Validation & Gates)
+last_updated: {{DATE}}
+allowed-tools: Read, Bash, Grep
+---
+
+# LumenFlow Gates Skill
+
+**Source**: `docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md` §6.4 (canonical)
+
+## When to Use
+
+Activate this skill when:
+
+- `pnpm gates` fails with format, lint, or typecheck errors
+- Need to determine if failure is from your changes vs pre-existing
+- Debugging test failures or coverage issues
+- Deciding whether to use `--skip-gates` (emergency only)
+
+**Use skill first**: Follow the decision tree and fix patterns in this skill.
+
+**Spawn lumenflow-enforcer agent when**: Complex gate failures span multiple packages, pre-existing failures require investigation, or DoD validation needs holistic review.
+
+## Gate Sequence
+
+```
+pnpm gates = format:check → lint → typecheck → spec:linter → tests
+```
+
+## Fix Patterns
+
+| Gate      | Auto-fix        | Manual                              |
+| --------- | --------------- | ----------------------------------- |
+| Format    | `pnpm format`   | -                                   |
+| Lint      | `pnpm lint:fix` | Fix reported issues                 |
+| Typecheck | -               | Fix type errors (first error first) |
+| Tests     | -               | Debug, fix mocks, update snapshots  |
+
+## Decision Tree
+
+**Gate failed. Is it from YOUR changes?**
+
+```bash
+git checkout main && pnpm gates  # Check main
+# Pass on main → Your change caused it → Fix it
+# Fail on main → Pre-existing → Consider --skip-gates
+```
+
+**Can you fix it?**
+
+- In your `code_paths`, <=10 lines → Fix in place
+- Different paths, >10 lines → Create Bug WU
+
+## Skip Gates (Emergency)
+
+Only when pre-existing failures:
+
+```bash
+pnpm wu:done --id WU-XXX --skip-gates --reason "Pre-existing" --fix-wu WU-YYY
+```
+
+## Common Lint Fixes
+
+```
+no-explicit-any → Add proper types
+no-unused-vars → Remove or prefix with _
+no-restricted-paths → Check hex boundaries (application cannot import infrastructure)
+exhaustive-deps → Add missing dependencies
+```
+
+## Validation Commands
+
+```bash
+pnpm gates                # All gates
+pnpm gates -- --docs-only # Docs WUs
+pnpm validate:context     # Context validation
+pnpm spec:linter          # Spec validation
+pnpm tasks:validate       # WU YAML validation
+```
+
+---
+
+**Full spec**: [lumenflow-complete.md §6.4](../../../docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)

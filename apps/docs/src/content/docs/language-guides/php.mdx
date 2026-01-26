@@ -35,7 +35,8 @@ The `php` preset provides these default commands:
 | Test      | `phpunit`       |
 
 <Aside type="note">
-  PHP is dynamically typed, so there is no separate typecheck gate. PHPStan provides static analysis that catches type-related issues at the lint stage.
+  PHP is dynamically typed, so there is no separate typecheck gate. PHPStan provides static analysis
+  that catches type-related issues at the lint stage.
 </Aside>
 
 ## Recommended Tooling
@@ -83,7 +84,8 @@ vendor/bin/php-cs-fixer fix
 ```
 
 <Aside type="tip">
-  Use `--dry-run --diff` in CI to report issues without modifying files. Use `--diff` alone for verbose output showing what would change.
+  Use `--dry-run --diff` in CI to report issues without modifying files. Use `--diff` alone for
+  verbose output showing what would change.
 </Aside>
 
 ### Static Analysis (PHPStan)
@@ -199,7 +201,8 @@ XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
 ```
 
 <Aside>
-  Coverage requires Xdebug or PCOV. For faster coverage, use [PCOV](https://github.com/krakjoe/pcov): `pecl install pcov`.
+  Coverage requires Xdebug or PCOV. For faster coverage, use
+  [PCOV](https://github.com/krakjoe/pcov): `pecl install pcov`.
 </Aside>
 
 ### Pest Alternative

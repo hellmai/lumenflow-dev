@@ -1,0 +1,139 @@
+---
+name: tdd-workflow
+description: Test-driven development workflow. RED-GREEN-REFACTOR applies to all code; 5-step ports-first for hex architecture. Use when implementing new features, writing tests, or working with hexagonal architecture.
+version: 2.1.0
+source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+source_sections: §5 (AI-TDD 5-Step Workflow), §4 (Hexagonal Architecture)
+last_updated: {{DATE}}
+allowed-tools: Read, Write, Edit, Bash, Grep
+---
+
+# TDD Workflow Skill
+
+**Source**: `docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md` §5 (canonical)
+
+## When to Use
+
+Activate this skill when:
+
+- Implementing new features (write tests first)
+- Working with hexagonal architecture (ports-first pattern)
+- Need to understand which layer code belongs in
+- Writing use cases with dependency injection
+
+**Use skill first**: Follow RED-GREEN-REFACTOR cycle and 5-step AI-TDD pattern.
+
+**Spawn test-engineer agent when**: Complex test scenarios require golden dataset creation, VCR cassette setup needed, or coverage gaps require investigation.
+
+## Universal TDD: RED-GREEN-REFACTOR
+
+All code follows this cycle:
+
+1. **RED**: Write failing test defining expected behaviour
+2. **GREEN**: Write minimal code to pass
+3. **REFACTOR**: Improve quality, keep tests green
+
+**Coverage**: >= 90% for application code.
+
+## 5-Step AI-TDD (Hex Architecture)
+
+```
+Step 1: Define Ports     → @lumenflow/ports (interfaces only)
+Step 2: Write Tests      → @lumenflow/application/__tests__ (mocks)
+Step 3: Implement        → @lumenflow/application/usecases
+Step 4: Run Tests        → RED → GREEN
+Step 5: Create Adapter   → @lumenflow/infrastructure
+```
+
+## Architecture Boundaries
+
+**Allowed**:
+
+- Application → Ports (use interfaces)
+- Infrastructure → Ports (implement interfaces)
+- Apps → Application + Infrastructure (wiring)
+
+**Forbidden**:
+
+- Application → Infrastructure (blocked by ESLint)
+
+## Dependency Injection Pattern
+
+```typescript
+// Use case accepts deps first, input second
+export async function exampleUseCase(
+  deps: { service: ExampleService; observability: ObservabilityService },
+  input: { id: string },
+): Promise<ServiceResponse<Result>> {
+  const span = deps.observability.startSpan('usecase.example');
+  try {
+    const result = await deps.service.doSomething(input);
+    span.end();
+    return result;
+  } catch (error) {
+    deps.observability.recordError(error as Error);
+    span.end();
+    return { success: false, error: 'Operation failed', code: 'OPERATION_ERROR' };
+  }
+}
+```
+
+## Test Pattern
+
+```typescript
+describe('exampleUseCase', () => {
+  let mockService: ExampleService;
+
+  beforeEach(() => {
+    mockService = { doSomething: vi.fn() };
+  });
+
+  it('should handle happy path', async () => {
+    vi.mocked(mockService.doSomething).mockResolvedValue({ success: true, data: {} });
+    const result = await exampleUseCase({ service: mockService }, { id: '1' });
+    expect(result.success).toBe(true);
+  });
+
+  it('should handle errors', async () => {
+    vi.mocked(mockService.doSomething).mockRejectedValue(new Error('fail'));
+    const result = await exampleUseCase({ service: mockService }, { id: '1' });
+    expect(result.success).toBe(false);
+  });
+});
+```
+
+## Decision Trees
+
+**Which Layer?**
+
+- Interface definition → ports
+- Business logic → application
+- External services → infrastructure
+- UI → apps
+
+**Need a Port?**
+
+- Testable with mocks? → YES
+- Swappable implementation? → YES
+- Pure utility? → NO
+
+## Commands
+
+```bash
+pnpm test                    # Run all tests
+pnpm test --filter <pkg>     # Run tests for specific package
+pnpm test -- --watch         # Watch mode
+pnpm test:coverage           # Check coverage
+```
+
+## Definition of Done
+
+- [ ] Ports defined
+- [ ] Tests written BEFORE implementation
+- [ ] Coverage >= 90%
+- [ ] No application → infrastructure imports
+- [ ] Gates pass
+
+---
+
+**Full spec**: [lumenflow-complete.md §5](../../../docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)
