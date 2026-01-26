@@ -84,3 +84,4 @@
 {"type":"claim","wuId":"WU-1121","lane":"Content: Documentation","title":"Docs Audit: Language Support - Go and Rust guides","timestamp":"2026-01-26T10:42:34.137Z"}
 {"type":"complete","wuId":"WU-1121","timestamp":"2026-01-26T10:49:42.299Z"}
 {"type":"complete","wuId":"WU-1117","timestamp":"2026-01-26T10:50:35.043Z"}
+{"type":"claim","wuId":"WU-1126","lane":"Framework: Core","title":"Export constants/enums for string literals in port interfaces","timestamp":"2026-01-26T10:51:04.788Z"}
