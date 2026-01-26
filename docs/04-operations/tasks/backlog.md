@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml) — Framework: CLI
 - [WU-1124 — INIT-004 Phase 2: Refactor docs-sync to read from templates](wu/WU-1124.yaml) — Framework: CLI
 - [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — Content: Documentation
 - [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — Content: Documentation
