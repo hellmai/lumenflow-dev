@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — Content: Documentation
 - [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — Content: Documentation
   (No items ready)
 
