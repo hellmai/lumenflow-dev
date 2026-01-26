@@ -2,7 +2,7 @@ id: WU-1136
 title: 'Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -42,3 +42,5 @@ acceptance:
   - agent-invocation-guide.md exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/
     with context-loading and spawn-prompt guidance
   - context-management skill includes optional pre-clear checkpoint hook guidance
+locked: true
+completed_at: 2026-01-26T23:48:03.509Z
