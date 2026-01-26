@@ -6,12 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
-  - packages/@lumenflow/memory/src/mem-export-core.ts
-  - packages/@lumenflow/memory/src/index.ts
-  - packages/@lumenflow/memory/__tests__/mem-export-core.test.ts
-  - packages/@lumenflow/cli/src/mem-export.ts
-  - packages/@lumenflow/cli/package.json
-  - package.json
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual: []
@@ -22,7 +16,7 @@ artifacts:
   - .lumenflow/stamps/WU-1137.done
 dependencies: []
 risks: []
-notes: ''
+notes: Gates fail on pre-existing prettier issues in apps/docs reference pages; tracked in WU-1138.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
