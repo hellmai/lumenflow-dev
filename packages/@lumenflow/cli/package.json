@@ -112,7 +112,8 @@
     "git-diff": "./dist/git-diff.js",
     "git-log": "./dist/git-log.js",
     "git-branch": "./dist/git-branch.js",
-    "guard-main-branch": "./dist/guard-main-branch.js"
+    "guard-main-branch": "./dist/guard-main-branch.js",
+    "state-bootstrap": "./dist/state-bootstrap.js"
   },
   "files": [
     "dist",
