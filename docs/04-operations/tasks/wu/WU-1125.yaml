@@ -29,3 +29,4 @@ description: Create UPGRADING.md and document npm update workflow
 acceptance:
   - UPGRADING.md.template created
   - README updated with upgrade section
+initiative: INIT-004
