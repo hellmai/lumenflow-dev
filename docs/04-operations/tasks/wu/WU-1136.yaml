@@ -2,7 +2,7 @@ id: WU-1136
 title: 'Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook'
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -27,8 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update memory docs to reflect .lumenflow/memory, add missing agent-invocation-guide.md referenced by skills/playbook, and document optional pre-clear checkpoint hook guidance for context safety.
+description: Update memory docs to reflect .lumenflow/memory, add missing agent-invocation-guide.md
+  referenced by skills/playbook, and document optional pre-clear checkpoint hook guidance for
+  context safety.
 acceptance:
-  - execution-memory skill references .lumenflow/memory paths and no longer claims .beacon/memory storage
-  - agent-invocation-guide.md exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/ with context-loading and spawn-prompt guidance
+  - execution-memory skill references .lumenflow/memory paths and no longer claims .beacon/memory
+    storage
+  - agent-invocation-guide.md exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/
+    with context-loading and spawn-prompt guidance
   - context-management skill includes optional pre-clear checkpoint hook guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1136
+claimed_at: 2026-01-26T23:40:30.649Z
+baseline_main_sha: 24f05272038c43638a0893258632c7b614e4fc58
+session_id: fee745b4-0e84-4d53-9ac8-32077399f873
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:40:30.655Z
