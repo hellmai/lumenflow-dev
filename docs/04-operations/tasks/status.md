@@ -8,6 +8,7 @@ _Last updated: 2026-01-26_
 - [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml)
 - [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml)
 - [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml)
+- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml)
 
 ## Completed
 

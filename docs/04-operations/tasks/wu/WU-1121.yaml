@@ -2,7 +2,7 @@ id: WU-1121
 title: 'Docs Audit: Language Support - Go and Rust guides'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -25,9 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create language guides for Go and Rust - systems programming languages with existing presets. These guides complement WU-1117 (Python/.NET).
+description: Create language guides for Go and Rust - systems programming languages with existing
+  presets. These guides complement WU-1117 (Python/.NET).
 acceptance:
   - Go language guide with quickstart
   - Rust language guide with quickstart
   - Examples of gates.preset configuration
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1121
+claimed_at: 2026-01-26T10:42:34.124Z
+baseline_main_sha: cf93005e5cba8a5a8d2f8cfdf920e094a35c9d1b
+session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:42:34.127Z
