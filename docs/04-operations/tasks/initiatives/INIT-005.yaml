@@ -1,11 +1,43 @@
 id: INIT-005
 slug: agent-quality-restoration
 title: Fix Agent Degradation and Worktree Discipline
-description: ''
-status: draft
+description: |
+  Agent quality has significantly degraded - agents write to main instead of worktrees,
+  don't complete tasks (used to be 9/10), and don't create bugs via mem:triage.
+
+  Primary root cause: wu:spawn output truncation causes ~90% context loss.
+  Secondary factors: Fail-open hook bugs, missing recovery guidance.
+status: active
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-26
-phases: []
-success_metrics: []
-labels: []
+phases:
+  - id: 1
+    name: Critical Fix
+    description: Fix wu:spawn truncation (root cause)
+    wus:
+      - WU-1131
+  - id: 2
+    name: Hook Hardening
+    description: Fix fail-open hooks + add audit logging
+    wus:
+      - WU-1132
+  - id: 3
+    name: Doc Alignment
+    description: Fix broken references + align docs-only language
+    wus:
+      - WU-1133
+  - id: 4
+    name: Recovery & Enforcement
+    description: Add recovery guidance and prompt-level enforcement
+    wus:
+      - WU-1134
+      - WU-1135
+success_metrics:
+  - Spawned agents receive full 23-section prompt (end sentinel present)
+  - Hook blocks are audited to .claude/audit/main-write-blocks.log
+  - Agent task completion rate returns to 9/10
+labels:
+  - agent-quality
+  - worktree-discipline
+  - truncation-fix
