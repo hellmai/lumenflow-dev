@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
-  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
 tests:
   manual: []
   unit:
@@ -20,10 +20,17 @@ phase: 2
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-26T11:17:02.148Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1124
+session_id: a9cbd7a2-59b7-4b94-9988-f0116889c63f
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T11:17:02.153Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -32,11 +39,3 @@ acceptance:
   - Hardcoded template strings removed from docs-sync.ts
   - Templates read from bundled files
   - docs-sync command works correctly after refactor
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1124
-claimed_at: 2026-01-26T11:17:02.148Z
-baseline_main_sha: a9dbe013761e2fe863646972e856c686b65d79b3
-session_id: a9cbd7a2-59b7-4b94-9988-f0116889c63f
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-26T11:17:02.153Z
