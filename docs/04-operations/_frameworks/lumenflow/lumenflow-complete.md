@@ -138,7 +138,7 @@ The **Constraints Capsule** is a short list of 6 non‑negotiable rules that eve
 5. **Gates and skip‑gates** — Complete via `pnpm wu:done`; skip-gates only for pre-existing failures with `--reason` and `--fix-wu`
 6. **Safety & governance** — Respect PHI/privacy rules, approved sources, RLS policies; when uncertain, choose safer path
 
-**See [`.claude/constraints-capsule.md` §2 (The 6 Non-Negotiable Constraints)](../../../../.claude/constraints-capsule.md#the-6-non-negotiable-constraints) for complete constraint descriptions, enforcement mechanisms, and usage guidance.**
+**See [`.lumenflow/constraints.md`](../../../../.lumenflow/constraints.md) for complete constraint descriptions, enforcement mechanisms, and usage guidance.**
 
 #### Delivery Lanes
 
@@ -157,10 +157,10 @@ Lanes keep focus while enabling parallelism. The default lane set is:
 
 **Business lanes (Customer, Revenue Ops, Comms):**
 
-- Typically use docs-only mode (work on main, no worktrees)
 - Focus on processes, content, policies, and metrics
 - Still follow WIP=1 (one active WU per lane)
-- Still require gates (format checking, link validation, YAML syntax)
+- Still require worktrees (same as all other lanes)
+- Use `pnpm gates --docs-only` for documentation-only WUs (skips lint/typecheck/tests)
 - YAML tooling uses the `yaml` package via core helpers; unquoted YYYY-MM-DD values remain strings (avoid js-yaml).
 
 Teams may refine or split lanes (e.g., separate Mobile from Web) but must keep the one-WU-per-lane rule. Discovery WUs are time-boxed and typically produce briefs or decision records, after which implementation WUs begin in the relevant lane.
@@ -406,9 +406,9 @@ These patterns were discovered during [WU-218](../tasks/wu/WU-218.yaml) when an 
 
 Always run gates in the lane worktree that contains your change. Use `pnpm wu:done --id WU-XXX`. This runs gates in the worktree, then performs a fast‑forward merge. Do not run gates on `main` as a proxy for validating your branch.
 
-#### 6.4.2 Main is Docs‑Only
+#### 6.4.2 Main is Read-Only
 
-The shared `main` checkout is for documentation changes only (`docs/**`, `docs/**`, `*.md`, `.lumenflow/stamps/**`). Hooks block code changes on `main` to prevent accidental manual merges. Claim a WU and work in a dedicated worktree/branch for any code.
+The shared `main` checkout is read-only for all WU work. Hooks block direct commits on `main` to prevent accidental manual merges. All WUs (including documentation-only WUs) must use worktrees via `pnpm wu:claim`. The only exceptions are surgical non-WU fixes (e.g., typo fixes unrelated to any WU).
 
 #### 6.4.3 Troubleshooting `wu:done`
 

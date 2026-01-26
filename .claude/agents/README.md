@@ -85,7 +85,7 @@ Agents can reference skills using:
 
 ## Constraints Capsule
 
-All agents must load and verify against `.claude/constraints-capsule.md` or `.lumenflow/constraints.md` before starting work. This ensures:
+All agents must load and verify against `.lumenflow/constraints.md` before starting work. This ensures:
 
 1. Worktree discipline & git safety
 2. WUs are specs, not code
