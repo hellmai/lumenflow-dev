@@ -65,3 +65,4 @@
 {"type":"claim","wuId":"WU-1111","lane":"Framework: CLI","title":"INIT-003 Phase 5b: Migrate guards & validation (7 tools)","timestamp":"2026-01-25T23:44:49.302Z"}
 {"type":"claim","wuId":"WU-1107","lane":"Framework: Core","title":"INIT-003 Phase 3c: Migrate state:bootstrap command","timestamp":"2026-01-25T23:50:28.527Z"}
 {"type":"complete","wuId":"WU-1111","timestamp":"2026-01-26T00:02:34.431Z"}
+{"type":"claim","wuId":"WU-1112","lane":"Framework: CLI","title":"INIT-003 Phase 6: Migrate remaining Tier 1 tools","timestamp":"2026-01-26T00:04:29.000Z"}
