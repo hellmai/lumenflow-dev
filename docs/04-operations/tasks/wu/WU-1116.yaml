@@ -1,7 +1,7 @@
 id: WU-1116
 title: 'Docs Audit: Internal to Public - Agent onboarding + constraints'
 lane: 'Content: Documentation'
-type: feature
+type: documentation
 status: in_progress
 priority: P1
 created: 2026-01-26
@@ -9,6 +9,9 @@ code_paths:
   - apps/docs/src/content/docs/guides/agent-onboarding.mdx
   - apps/docs/src/content/docs/concepts/constraints.mdx
   - apps/docs/src/content/docs/guides/ai-agents.mdx
+  - apps/docs/src/content/docs/concepts/memory.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual: []
   unit: []
