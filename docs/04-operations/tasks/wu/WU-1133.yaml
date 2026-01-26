@@ -34,6 +34,6 @@ description: Fix broken constraints-capsule.md reference in lumenflow-agent-caps
   remove claims.
 acceptance:
   - lumenflow-agent-capsule.md references .lumenflow/constraints.md (not constraints-capsule.md)
-  - LUMENFLOW.md docs-only mode language consistent with constraints
-  - lumenflow-complete.md docs-only mode language consistent with constraints
+  - LUMENFLOW.md has no docs-only main write exception (all WUs use worktrees)
+  - lumenflow-complete.md has no docs-only main write exception (all WUs use worktrees)
   - Vendor overlay stubs added OR claim removed from LUMENFLOW.md
