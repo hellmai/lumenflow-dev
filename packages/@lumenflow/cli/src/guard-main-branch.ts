@@ -14,6 +14,7 @@
  */
 
 import { createGitForPath, getGitForCwd, isAgentBranch, getConfig } from '@lumenflow/core';
+import { isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
 
 /**
  * Arguments for guard-main-branch operation
@@ -132,6 +133,16 @@ export async function guardMainBranch(args: GuardMainBranchArgs): Promise<GuardM
 
     // Check if on a lane branch (requires worktree discipline)
     if (isLaneBranch(currentBranch)) {
+      // If we're actually in a worktree, allow the operation (WU-1130)
+      const cwd = args.baseDir ?? process.cwd();
+      if (isInWorktree({ cwd })) {
+        return {
+          success: true,
+          isProtected: false,
+          currentBranch,
+        };
+      }
+      // On lane branch but not in worktree - block
       return {
         success: true,
         isProtected: true,
