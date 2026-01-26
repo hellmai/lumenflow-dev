@@ -42,7 +42,9 @@ describe('guard-main-branch (WU-1130)', () => {
       const mockGit = {
         getCurrentBranch: vi.fn().mockResolvedValue('lane/framework-cli/wu-1130'),
       };
-      vi.mocked(getGitForCwd).mockReturnValue(mockGit as unknown as ReturnType<typeof getGitForCwd>);
+      vi.mocked(getGitForCwd).mockReturnValue(
+        mockGit as unknown as ReturnType<typeof getGitForCwd>,
+      );
       vi.mocked(isInWorktree).mockReturnValue(true);
 
       const result = await guardMainBranch({});
@@ -57,7 +59,9 @@ describe('guard-main-branch (WU-1130)', () => {
       const mockGit = {
         getCurrentBranch: vi.fn().mockResolvedValue('lane/framework-cli/wu-1130'),
       };
-      vi.mocked(getGitForCwd).mockReturnValue(mockGit as unknown as ReturnType<typeof getGitForCwd>);
+      vi.mocked(getGitForCwd).mockReturnValue(
+        mockGit as unknown as ReturnType<typeof getGitForCwd>,
+      );
       vi.mocked(isInWorktree).mockReturnValue(false);
 
       const result = await guardMainBranch({});
@@ -71,7 +75,9 @@ describe('guard-main-branch (WU-1130)', () => {
       const mockGit = {
         getCurrentBranch: vi.fn().mockResolvedValue('lane/ops-tooling/wu-2725'),
       };
-      vi.mocked(createGitForPath).mockReturnValue(mockGit as unknown as ReturnType<typeof createGitForPath>);
+      vi.mocked(createGitForPath).mockReturnValue(
+        mockGit as unknown as ReturnType<typeof createGitForPath>,
+      );
       vi.mocked(isInWorktree).mockReturnValue(true);
 
       const result = await guardMainBranch({ baseDir: '/path/to/worktrees/ops-tooling-wu-2725' });
@@ -86,7 +92,9 @@ describe('guard-main-branch (WU-1130)', () => {
       const mockGit = {
         getCurrentBranch: vi.fn().mockResolvedValue('main'),
       };
-      vi.mocked(getGitForCwd).mockReturnValue(mockGit as unknown as ReturnType<typeof getGitForCwd>);
+      vi.mocked(getGitForCwd).mockReturnValue(
+        mockGit as unknown as ReturnType<typeof getGitForCwd>,
+      );
 
       const result = await guardMainBranch({});
 
