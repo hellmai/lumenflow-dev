@@ -23,7 +23,8 @@ This command:
 - Works from your main checkout
 
 <Aside type="tip">
-  The upgrade command handles version coordination automatically. All packages (except `@lumenflow/metrics`) are versioned together for compatibility.
+  The upgrade command handles version coordination automatically. All packages (except
+  `@lumenflow/metrics`) are versioned together for compatibility.
 </Aside>
 
 ## Manual Upgrade
@@ -32,18 +33,12 @@ If you prefer manual control or encounter issues with the upgrade command, you c
 
 <Tabs syncKey="pkg">
   <TabItem label="pnpm">
-    ```bash
-    pnpm up @lumenflow/core @lumenflow/cli @lumenflow/memory \
-      @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
-      @lumenflow/metrics --latest
-    ```
+    ```bash pnpm up @lumenflow/core @lumenflow/cli @lumenflow/memory \ @lumenflow/agent
+    @lumenflow/initiatives @lumenflow/shims \ @lumenflow/metrics --latest ```
   </TabItem>
   <TabItem label="npm">
-    ```bash
-    npm update @lumenflow/core @lumenflow/cli @lumenflow/memory \
-      @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
-      @lumenflow/metrics
-    ```
+    ```bash npm update @lumenflow/core @lumenflow/cli @lumenflow/memory \ @lumenflow/agent
+    @lumenflow/initiatives @lumenflow/shims \ @lumenflow/metrics ```
   </TabItem>
 </Tabs>
 
@@ -114,15 +109,15 @@ Key changes in v2.0:
 
 All `@lumenflow/*` packages (except metrics) should be at the same version for best compatibility.
 
-| Package | Current |
-|---------|---------|
-| `@lumenflow/core` | 2.1.0 |
-| `@lumenflow/cli` | 2.1.0 |
-| `@lumenflow/memory` | 2.1.0 |
-| `@lumenflow/agent` | 2.1.0 |
-| `@lumenflow/initiatives` | 2.1.0 |
-| `@lumenflow/shims` | 2.1.0 |
-| `@lumenflow/metrics` | 2.1.0 |
+| Package                  | Current |
+| ------------------------ | ------- |
+| `@lumenflow/core`        | 2.1.0   |
+| `@lumenflow/cli`         | 2.1.0   |
+| `@lumenflow/memory`      | 2.1.0   |
+| `@lumenflow/agent`       | 2.1.0   |
+| `@lumenflow/initiatives` | 2.1.0   |
+| `@lumenflow/shims`       | 2.1.0   |
+| `@lumenflow/metrics`     | 2.1.0   |
 
 See the [Compatibility Matrix](/reference/compatibility) for full version details.
 
