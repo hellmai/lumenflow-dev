@@ -17,11 +17,39 @@ LumenFlow packages follow [Semantic Versioning](https://semver.org/):
 
 All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenflow/metrics` package may have independent minor versions.
 
-## v2.0.0
+## v2.1.0
 
 <Badge text="Latest" variant="success" />
 
 **Release Date:** January 2026
+
+### New Features
+
+- **Micro-worktree upgrade**: The `lumenflow:upgrade` command now uses micro-worktree isolation, allowing you to upgrade packages without creating a WU. Just run `pnpm lumenflow:upgrade --latest` from your main checkout.
+- **Skills tutorial**: Comprehensive documentation for creating and publishing custom skills
+- **TypeDoc API documentation**: Auto-generated API reference for all packages
+- **Cookbook examples**: Real-world patterns and recipes for common workflows
+
+### Improvements
+
+- **lumenflow:upgrade**: Atomic package updates with automatic `pnpm-lock.yaml` regeneration
+- **Documentation**: Expanded guides for advanced workflows and polished existing content
+- **Gates**: Better error messages for common gate failures
+
+### Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+pnpm exec lumenflow docs:sync --force
+```
+
+See the [Upgrade Guide](/getting-started/upgrade) for detailed instructions.
+
+---
+
+## v2.0.0
+
+**Release Date:** January 2026 (early)
 
 ### Breaking Changes
 
@@ -173,18 +201,18 @@ See [Migration Guide](/guides/migration) for upgrading from v1.x.
 
 ## Package Versions
 
-Current package versions as of v2.0.0:
+Current package versions as of v2.1.0:
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| `@lumenflow/core` | 2.0.0 | Core WU lifecycle and state machine |
-| `@lumenflow/cli` | 2.0.0 | Command-line interface |
-| `@lumenflow/memory` | 2.0.0 | Session tracking and context recovery |
-| `@lumenflow/agent` | 2.0.0 | Agent definitions and skill loading |
-| `@lumenflow/initiatives` | 2.0.0 | Multi-phase project orchestration |
-| `@lumenflow/metrics` | 1.6.0 | DORA metrics and flow analysis |
-| `@lumenflow/shims` | 2.0.0 | Git and pnpm safety shims |
-| `@lumenflow/gates-action` | 1.0.0 | GitHub Action for CI gates |
+| Package                   | Version | Description                           |
+| ------------------------- | ------- | ------------------------------------- |
+| `@lumenflow/core`         | 2.1.0   | Core WU lifecycle and state machine   |
+| `@lumenflow/cli`          | 2.1.0   | Command-line interface                |
+| `@lumenflow/memory`       | 2.1.0   | Session tracking and context recovery |
+| `@lumenflow/agent`        | 2.1.0   | Agent definitions and skill loading   |
+| `@lumenflow/initiatives`  | 2.1.0   | Multi-phase project orchestration     |
+| `@lumenflow/metrics`      | 2.1.0   | DORA metrics and flow analysis        |
+| `@lumenflow/shims`        | 2.1.0   | Git and pnpm safety shims             |
+| `@lumenflow/gates-action` | 1.0.0   | GitHub Action for CI gates            |
 
 ## Deprecations
 
@@ -202,9 +230,8 @@ Current package versions as of v2.0.0:
 
 ## Roadmap
 
-### v2.1.0 (Planned)
+### v2.2.0 (Planned)
 
-- TypeDoc API documentation generation
 - Skill registry at lumenflow.dev
 - Enhanced metrics dashboard
 - VS Code extension

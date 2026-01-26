@@ -9,50 +9,52 @@ This matrix shows compatibility between LumenFlow package versions, runtime requ
 
 ## Package Versions
 
-All `@lumenflow/*` packages (except metrics) are versioned together. Use matching versions for best compatibility.
+All `@lumenflow/*` packages are versioned together. Use matching versions for best compatibility.
 
-| Package | Current | Minimum | Notes |
-|---------|---------|---------|-------|
-| `@lumenflow/core` | 2.0.0 | 2.0.0 | Core WU lifecycle |
-| `@lumenflow/cli` | 2.0.0 | 2.0.0 | Command-line interface |
-| `@lumenflow/memory` | 2.0.0 | 2.0.0 | Session tracking |
-| `@lumenflow/agent` | 2.0.0 | 2.0.0 | Agent definitions |
-| `@lumenflow/initiatives` | 2.0.0 | 2.0.0 | Multi-phase projects |
-| `@lumenflow/metrics` | 1.6.0 | 1.4.0 | Independent versioning |
-| `@lumenflow/shims` | 2.0.0 | 2.0.0 | Safety wrappers |
+| Package                  | Current | Minimum | Notes                          |
+| ------------------------ | ------- | ------- | ------------------------------ |
+| `@lumenflow/core`        | 2.1.0   | 2.0.0   | Core WU lifecycle              |
+| `@lumenflow/cli`         | 2.1.0   | 2.0.0   | Command-line interface         |
+| `@lumenflow/memory`      | 2.1.0   | 2.0.0   | Session tracking               |
+| `@lumenflow/agent`       | 2.1.0   | 2.0.0   | Agent definitions              |
+| `@lumenflow/initiatives` | 2.1.0   | 2.0.0   | Multi-phase projects           |
+| `@lumenflow/metrics`     | 2.1.0   | 1.4.0   | DORA metrics and flow analysis |
+| `@lumenflow/shims`       | 2.1.0   | 2.0.0   | Safety wrappers                |
 
 <Aside type="tip">
-  Run `pnpm lumenflow:upgrade` to update all packages to compatible versions.
+  Run `pnpm lumenflow:upgrade --latest` to update all packages to the latest compatible versions.
+  See the [Upgrade Guide](/getting-started/upgrade) for details.
 </Aside>
 
 ## Runtime Requirements
 
 ### Node.js
 
-| LumenFlow Version | Node.js Minimum | Node.js Recommended | Notes |
-|-------------------|-----------------|---------------------|-------|
-| 2.0.x | 20.0.0 | 22.x | ES modules, native fetch |
-| 1.x | 18.0.0 | 20.x | CommonJS fallback available |
+| LumenFlow Version | Node.js Minimum | Node.js Recommended | Notes                       |
+| ----------------- | --------------- | ------------------- | --------------------------- |
+| 2.0.x             | 20.0.0          | 22.x                | ES modules, native fetch    |
+| 1.x               | 18.0.0          | 20.x                | CommonJS fallback available |
 
 ### Package Managers
 
-| Package Manager | Minimum Version | Recommended | Notes |
-|-----------------|-----------------|-------------|-------|
-| pnpm | 9.0.0 | 10.x | Primary support |
-| npm | 10.0.0 | Latest | Supported |
-| yarn | 4.0.0 | Latest | Berry (v4) only |
-| bun | 1.0.0 | Latest | Experimental |
+| Package Manager | Minimum Version | Recommended | Notes           |
+| --------------- | --------------- | ----------- | --------------- |
+| pnpm            | 9.0.0           | 10.x        | Primary support |
+| npm             | 10.0.0          | Latest      | Supported       |
+| yarn            | 4.0.0           | Latest      | Berry (v4) only |
+| bun             | 1.0.0           | Latest      | Experimental    |
 
 <Aside type="caution">
-  pnpm is the primary supported package manager. Some features may have degraded functionality with npm or yarn.
+  pnpm is the primary supported package manager. Some features may have degraded functionality with
+  npm or yarn.
 </Aside>
 
 ## Config Version Compatibility
 
-| Config Version | LumenFlow Version | Breaking Changes |
-|----------------|-------------------|------------------|
-| `version: '2.0'` | 2.0.0+ | Lane format, stamp location |
-| `version: '1.0'` | 1.0.0 - 1.6.x | Original format |
+| Config Version   | LumenFlow Version | Breaking Changes            |
+| ---------------- | ----------------- | --------------------------- |
+| `version: '2.0'` | 2.0.0+            | Lane format, stamp location |
+| `version: '1.0'` | 1.0.0 - 1.6.x     | Original format             |
 
 ### Config Migration
 
@@ -73,125 +75,125 @@ lanes:
 
 ### Node Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| Prettier | 3.x | format |
-| ESLint | 9.x (flat config) | lint |
-| TypeScript | 5.7+ | typecheck |
-| Vitest | 4.x | test |
+| Tool       | Version           | Gate Step |
+| ---------- | ----------------- | --------- |
+| Prettier   | 3.x               | format    |
+| ESLint     | 9.x (flat config) | lint      |
+| TypeScript | 5.7+              | typecheck |
+| Vitest     | 4.x               | test      |
 
 ### Python Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| Ruff | 0.8+ | format, lint |
-| mypy | 1.x | typecheck |
-| pytest | 8.x | test |
+| Tool   | Version | Gate Step    |
+| ------ | ------- | ------------ |
+| Ruff   | 0.8+    | format, lint |
+| mypy   | 1.x     | typecheck    |
+| pytest | 8.x     | test         |
 
 ### Go Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| gofmt | Go 1.21+ | format |
-| golangci-lint | 1.60+ | lint |
-| go vet | Go 1.21+ | typecheck |
-| go test | Go 1.21+ | test |
+| Tool          | Version  | Gate Step |
+| ------------- | -------- | --------- |
+| gofmt         | Go 1.21+ | format    |
+| golangci-lint | 1.60+    | lint      |
+| go vet        | Go 1.21+ | typecheck |
+| go test       | Go 1.21+ | test      |
 
 ### Rust Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| rustfmt | Latest | format |
-| clippy | Latest | lint |
+| Tool        | Version    | Gate Step |
+| ----------- | ---------- | --------- |
+| rustfmt     | Latest     | format    |
+| clippy      | Latest     | lint      |
 | cargo check | Rust 1.75+ | typecheck |
-| cargo test | Rust 1.75+ | test |
+| cargo test  | Rust 1.75+ | test      |
 
 ### Java Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| google-java-format | 1.23+ | format |
-| SpotBugs | 4.8+ | lint |
-| javac | Java 17+ | typecheck |
-| JUnit/Maven | 5.x / 3.9+ | test |
+| Tool               | Version    | Gate Step |
+| ------------------ | ---------- | --------- |
+| google-java-format | 1.23+      | format    |
+| SpotBugs           | 4.8+       | lint      |
+| javac              | Java 17+   | typecheck |
+| JUnit/Maven        | 5.x / 3.9+ | test      |
 
 ### Ruby Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| RuboCop | 1.68+ | format, lint |
-| Sorbet | 0.5+ | typecheck |
-| RSpec | 3.13+ | test |
+| Tool    | Version | Gate Step    |
+| ------- | ------- | ------------ |
+| RuboCop | 1.68+   | format, lint |
+| Sorbet  | 0.5+    | typecheck    |
+| RSpec   | 3.13+   | test         |
 
 ### PHP Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| PHP-CS-Fixer | 3.x | format |
-| PHPStan | 2.x | lint |
-| Psalm | 6.x | typecheck |
-| PHPUnit | 11.x | test |
+| Tool         | Version | Gate Step |
+| ------------ | ------- | --------- |
+| PHP-CS-Fixer | 3.x     | format    |
+| PHPStan      | 2.x     | lint      |
+| Psalm        | 6.x     | typecheck |
+| PHPUnit      | 11.x    | test      |
 
 ### .NET Preset
 
-| Tool | Version | Gate Step |
-|------|---------|-----------|
-| dotnet format | .NET 8+ | format |
-| dotnet build | .NET 8+ | typecheck |
-| dotnet test | .NET 8+ | test |
+| Tool          | Version | Gate Step |
+| ------------- | ------- | --------- |
+| dotnet format | .NET 8+ | format    |
+| dotnet build  | .NET 8+ | typecheck |
+| dotnet test   | .NET 8+ | test      |
 
 ## GitHub Action Compatibility
 
-| Action Version | LumenFlow Version | GitHub Runner |
-|----------------|-------------------|---------------|
-| v1.x | 2.0.0+ | ubuntu-latest, macos-latest |
+| Action Version | LumenFlow Version | GitHub Runner               |
+| -------------- | ----------------- | --------------------------- |
+| v1.x           | 2.0.0+            | ubuntu-latest, macos-latest |
 
 ### Action Input Compatibility
 
-| Input | Type | Available Since |
-|-------|------|-----------------|
-| `preset` | string | v1.0.0 |
-| `format` | string | v1.0.0 |
-| `lint` | string | v1.0.0 |
-| `typecheck` | string | v1.0.0 |
-| `test` | string | v1.0.0 |
-| `config-path` | string | v1.0.0 |
+| Input         | Type   | Available Since |
+| ------------- | ------ | --------------- |
+| `preset`      | string | v1.0.0          |
+| `format`      | string | v1.0.0          |
+| `lint`        | string | v1.0.0          |
+| `typecheck`   | string | v1.0.0          |
+| `test`        | string | v1.0.0          |
+| `config-path` | string | v1.0.0          |
 
 ## AI Agent Compatibility
 
 ### Claude Code
 
-| Feature | Minimum Version | Notes |
-|---------|-----------------|-------|
-| Skills loading | Any | Via `/skill` command |
-| MCP tools | Claude Code 0.2.x+ | For tool integration |
+| Feature        | Minimum Version    | Notes                |
+| -------------- | ------------------ | -------------------- |
+| Skills loading | Any                | Via `/skill` command |
+| MCP tools      | Claude Code 0.2.x+ | For tool integration |
 
 ### Other Agents
 
-| Agent | Compatibility | Notes |
-|-------|---------------|-------|
-| Cursor | Full | Uses .cursor/ config |
-| Aider | Full | Uses .aider.conf.yml |
-| Continue | Partial | Basic workflow support |
-| GitHub Copilot | Partial | No memory integration |
+| Agent          | Compatibility | Notes                  |
+| -------------- | ------------- | ---------------------- |
+| Cursor         | Full          | Uses .cursor/ config   |
+| Aider          | Full          | Uses .aider.conf.yml   |
+| Continue       | Partial       | Basic workflow support |
+| GitHub Copilot | Partial       | No memory integration  |
 
 ## Editor Integration
 
-| Editor | Integration | Config Location |
-|--------|-------------|-----------------|
-| VS Code | Tasks, settings | `.vscode/` |
-| Cursor | Rules, settings | `.cursor/` |
-| Neovim | Config | `lua/` (custom) |
-| JetBrains | Run configs | `.idea/` (custom) |
+| Editor    | Integration     | Config Location   |
+| --------- | --------------- | ----------------- |
+| VS Code   | Tasks, settings | `.vscode/`        |
+| Cursor    | Rules, settings | `.cursor/`        |
+| Neovim    | Config          | `lua/` (custom)   |
+| JetBrains | Run configs     | `.idea/` (custom) |
 
 ## Operating System Support
 
-| OS | Support Level | Notes |
-|----|---------------|-------|
-| Linux | Full | Primary development platform |
-| macOS | Full | Tested on Apple Silicon and Intel |
-| Windows | Partial | WSL2 recommended |
-| Windows (native) | Limited | Path handling may have issues |
+| OS               | Support Level | Notes                             |
+| ---------------- | ------------- | --------------------------------- |
+| Linux            | Full          | Primary development platform      |
+| macOS            | Full          | Tested on Apple Silicon and Intel |
+| Windows          | Partial       | WSL2 recommended                  |
+| Windows (native) | Limited       | Path handling may have issues     |
 
 <Aside type="note">
   Windows native support is improving. For best results, use WSL2 or Git Bash.
@@ -199,13 +201,13 @@ lanes:
 
 ## Deprecation Timeline
 
-| Feature | Deprecated | Removal | Migration |
-|---------|------------|---------|-----------|
-| `.beacon/` directory | v2.0.0 | v3.0.0 | Use `.lumenflow/` |
-| `isAgentBranchSync()` | v2.0.0 | v3.0.0 | Use async `isAgentBranch()` |
-| Single-word lanes | v2.0.0 | v3.0.0 | Use "Parent: Sublane" format |
-| `wu:complete` command | v1.5.0 | v2.0.0 | Use `wu:done` |
-| Config `version: '1.0'` | v2.0.0 | v3.0.0 | Update to `version: '2.0'` |
+| Feature                 | Deprecated | Removal | Migration                    |
+| ----------------------- | ---------- | ------- | ---------------------------- |
+| `.beacon/` directory    | v2.0.0     | v3.0.0  | Use `.lumenflow/`            |
+| `isAgentBranchSync()`   | v2.0.0     | v3.0.0  | Use async `isAgentBranch()`  |
+| Single-word lanes       | v2.0.0     | v3.0.0  | Use "Parent: Sublane" format |
+| `wu:complete` command   | v1.5.0     | v2.0.0  | Use `wu:done`                |
+| Config `version: '1.0'` | v2.0.0     | v3.0.0  | Update to `version: '2.0'`   |
 
 ## Upgrade Path
 
@@ -233,8 +235,8 @@ pnpm outdated @lumenflow/*
 
 ## Support Matrix
 
-| Version | Status | Security Fixes | Bug Fixes |
-|---------|--------|----------------|-----------|
-| 2.0.x | Active | Yes | Yes |
-| 1.6.x | Maintenance | Yes | Critical only |
-| 1.5.x and below | EOL | No | No |
+| Version         | Status      | Security Fixes | Bug Fixes     |
+| --------------- | ----------- | -------------- | ------------- |
+| 2.0.x           | Active      | Yes            | Yes           |
+| 1.6.x           | Maintenance | Yes            | Critical only |
+| 1.5.x and below | EOL         | No             | No            |

@@ -1,0 +1,160 @@
+---
+title: Upgrading LumenFlow
+description: How to upgrade LumenFlow packages to the latest version
+---
+
+import { Steps, Tabs, TabItem, Aside, Badge } from '@astrojs/starlight/components';
+
+This guide covers how to upgrade your LumenFlow installation to the latest version.
+
+## Quick Upgrade (Recommended)
+
+The fastest way to upgrade all LumenFlow packages is with the built-in upgrade command.
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+This command:
+
+- Updates all 7 `@lumenflow/*` packages atomically
+- Uses micro-worktree isolation (no WU needed)
+- Updates both `package.json` and `pnpm-lock.yaml`
+- Works from your main checkout
+
+<Aside type="tip">
+  The upgrade command handles version coordination automatically. All packages (except `@lumenflow/metrics`) are versioned together for compatibility.
+</Aside>
+
+## Manual Upgrade
+
+If you prefer manual control or encounter issues with the upgrade command, you can update packages directly.
+
+<Tabs syncKey="pkg">
+  <TabItem label="pnpm">
+    ```bash
+    pnpm up @lumenflow/core @lumenflow/cli @lumenflow/memory \
+      @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
+      @lumenflow/metrics --latest
+    ```
+  </TabItem>
+  <TabItem label="npm">
+    ```bash
+    npm update @lumenflow/core @lumenflow/cli @lumenflow/memory \
+      @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
+      @lumenflow/metrics
+    ```
+  </TabItem>
+</Tabs>
+
+## Post-Upgrade Steps
+
+After upgrading, sync your agent documentation to get the latest skills and guidance.
+
+<Steps>
+
+1. **Sync agent documentation**
+
+   ```bash
+   pnpm exec lumenflow docs:sync --force
+   ```
+
+   This updates:
+   - `.lumenflow/agents/` — Vendor-agnostic agent guidance
+   - `.claude/skills/` — Claude Code skills (if present)
+   - `LUMENFLOW.md` — Workflow entry point
+
+2. **Verify the upgrade**
+
+   ```bash
+   pnpm lumenflow --version
+   ```
+
+3. **Check for config changes**
+
+   Review the [Changelog](/reference/changelog) for any breaking changes that may require config updates.
+
+</Steps>
+
+## Upgrading to v2.1.0
+
+<Badge text="Current" variant="success" />
+
+Version 2.1.0 includes these key improvements:
+
+- **Micro-worktree upgrade** — The `lumenflow:upgrade` command now uses micro-worktree isolation, so you can upgrade without creating a WU
+- **Skills tutorial** — New documentation for creating custom skills
+- **TypeDoc API docs** — Auto-generated API documentation
+- **Cookbook examples** — Real-world usage patterns
+
+### Upgrade Steps
+
+```bash
+# 1. Upgrade packages
+pnpm lumenflow:upgrade --latest
+
+# 2. Sync documentation
+pnpm exec lumenflow docs:sync --force
+
+# 3. Verify
+pnpm lumenflow --version  # Should show 2.1.0
+```
+
+## Upgrading from v1.x to v2.x
+
+If you're upgrading from v1.x, see the [Migration Guide](/guides/migration) for breaking changes and required configuration updates.
+
+Key changes in v2.0:
+
+- Config version changed to `version: '2.0'`
+- Lane format now requires "Parent: Sublane" (e.g., `Framework: Core`)
+- State directory moved from `.beacon/` to `.lumenflow/`
+
+## Version Compatibility
+
+All `@lumenflow/*` packages (except metrics) should be at the same version for best compatibility.
+
+| Package | Current |
+|---------|---------|
+| `@lumenflow/core` | 2.1.0 |
+| `@lumenflow/cli` | 2.1.0 |
+| `@lumenflow/memory` | 2.1.0 |
+| `@lumenflow/agent` | 2.1.0 |
+| `@lumenflow/initiatives` | 2.1.0 |
+| `@lumenflow/shims` | 2.1.0 |
+| `@lumenflow/metrics` | 2.1.0 |
+
+See the [Compatibility Matrix](/reference/compatibility) for full version details.
+
+## Troubleshooting
+
+### Upgrade command not found
+
+If `pnpm lumenflow:upgrade` is not recognized, ensure you have `@lumenflow/cli` installed:
+
+```bash
+pnpm add -D @lumenflow/cli
+```
+
+### Package version mismatch
+
+If you see version mismatch warnings, run the upgrade command again:
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+### docs:sync fails
+
+If `docs:sync --force` fails, ensure the CLI is built:
+
+```bash
+pnpm build --filter @lumenflow/cli
+pnpm exec lumenflow docs:sync --force
+```
+
+## Next Steps
+
+- [Changelog](/reference/changelog) — See what's new in each version
+- [Compatibility Matrix](/reference/compatibility) — Version requirements
+- [Migration Guide](/guides/migration) — Upgrading from v1.x

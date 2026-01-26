@@ -26,6 +26,7 @@ export default defineConfig({
             { label: 'Why LumenFlow?', slug: 'getting-started/why-lumenflow' },
             { label: 'Quickstart', slug: 'getting-started/quickstart' },
             { label: 'Install GitHub App', slug: 'getting-started/github-app' },
+            { label: 'Upgrading', slug: 'getting-started/upgrade' },
             { label: 'FAQ', slug: 'getting-started/faq' },
           ],
         },
