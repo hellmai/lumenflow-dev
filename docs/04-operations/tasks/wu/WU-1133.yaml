@@ -2,7 +2,7 @@ id: WU-1133
 title: 'Fix doc alignment: constraints-capsule reference and vendor overlays'
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - LUMENFLOW.md has no docs-only main write exception (all WUs use worktrees)
   - lumenflow-complete.md has no docs-only main write exception (all WUs use worktrees)
   - Vendor overlay stubs added OR claim removed from LUMENFLOW.md
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1133
+claimed_at: 2026-01-26T23:34:16.016Z
+baseline_main_sha: d54b4ad6b29f14685d8ee21d05466a5daa4306a6
+session_id: 8c16a1bc-e9c7-4814-837d-be4f38b746da
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T23:34:16.020Z
