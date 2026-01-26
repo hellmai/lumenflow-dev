@@ -2,7 +2,7 @@ id: WU-1128
 title: Add upgrade guide to lumenflow.dev
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -27,7 +27,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Users need clear upgrade instructions on lumenflow.dev. Currently no dedicated upgrade page exists. With 2.1.0 released, users need to know how to upgrade all 7 @lumenflow packages. Should document: (1) using lumenflow:upgrade command (after WU-1127 fix), (2) manual pnpm up workaround, (3) post-upgrade docs:sync step. Also update changelog to show 2.1.0 as latest.'
+description: 'Users need clear upgrade instructions on lumenflow.dev. Currently no dedicated upgrade
+  page exists. With 2.1.0 released, users need to know how to upgrade all 7 @lumenflow packages.
+  Should document: (1) using lumenflow:upgrade command (after WU-1127 fix), (2) manual pnpm up
+  workaround, (3) post-upgrade docs:sync step. Also update changelog to show 2.1.0 as latest.'
 acceptance:
   - Dedicated upgrade guide page at /getting-started/upgrade
   - Documents lumenflow:upgrade --latest command
@@ -36,3 +39,11 @@ acceptance:
   - Changelog updated to show 2.1.0 as latest
   - Compatibility matrix shows 2.1.0 versions
   - Upgrade page linked in Getting Started nav
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1128
+claimed_at: 2026-01-26T15:03:42.804Z
+baseline_main_sha: b62ef2e8bb053001423df29b610087961c8d5a64
+session_id: 17b36fd3-9dc2-4776-916f-05be07261106
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T15:03:42.811Z
