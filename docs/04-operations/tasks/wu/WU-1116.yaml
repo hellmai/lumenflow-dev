@@ -1,7 +1,7 @@
 id: WU-1116
 title: 'Docs Audit: Internal to Public - Agent onboarding + constraints'
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P1
 created: 2026-01-26
