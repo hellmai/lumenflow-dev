@@ -2,7 +2,7 @@ id: WU-1112
 title: 'INIT-003 Phase 6: Migrate remaining Tier 1 tools'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-25
 code_paths:
