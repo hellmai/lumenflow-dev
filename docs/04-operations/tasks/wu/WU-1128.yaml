@@ -1,7 +1,7 @@
 id: WU-1128
 title: Add upgrade guide to lumenflow.dev
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P1
 created: 2026-01-26
@@ -20,10 +20,17 @@ blocked_by:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-26T15:03:42.804Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1128
+session_id: 17b36fd3-9dc2-4776-916f-05be07261106
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T15:03:42.811Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +46,3 @@ acceptance:
   - Changelog updated to show 2.1.0 as latest
   - Compatibility matrix shows 2.1.0 versions
   - Upgrade page linked in Getting Started nav
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1128
-claimed_at: 2026-01-26T15:03:42.804Z
-baseline_main_sha: b62ef2e8bb053001423df29b610087961c8d5a64
-session_id: 17b36fd3-9dc2-4776-916f-05be07261106
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-26T15:03:42.811Z
