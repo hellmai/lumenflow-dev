@@ -20,16 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — Content: Documentation
-- [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — Framework: CLI
-- [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — Content: Documentation
-- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — Operations: CI/CD
-- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
+- [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

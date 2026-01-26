@@ -103,3 +103,4 @@
 {"type":"complete","wuId":"WU-1128","timestamp":"2026-01-26T15:10:17.548Z"}
 {"type":"claim","wuId":"WU-1130","lane":"Framework: CLI","title":"Fix guard-* commands to recognize worktree context","timestamp":"2026-01-26T17:03:49.831Z"}
 {"type":"complete","wuId":"WU-1130","timestamp":"2026-01-26T17:10:43.571Z"}
+{"type":"claim","wuId":"WU-1133","lane":"Content: Documentation","title":"Fix doc alignment: constraints-capsule reference and vendor overlays","timestamp":"2026-01-26T23:34:16.029Z"}
