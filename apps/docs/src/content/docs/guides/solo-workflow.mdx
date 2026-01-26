@@ -1,0 +1,470 @@
+---
+title: Solo Developer Workflow
+description: LumenFlow for individual developers and small projects
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+LumenFlow works for solo developers too. This guide covers a streamlined setup without the overhead of team features.
+
+## Why Use LumenFlow Solo?
+
+<CardGrid>
+  <Card title="AI Agent Ready" icon="laptop">
+    Set up once, then AI agents can work autonomously on your project.
+  </Card>
+  <Card title="Quality Gates" icon="approve-check">
+    Automated checks prevent shipping broken code, even when moving fast.
+  </Card>
+  <Card title="Context Preservation" icon="document">
+    WU specs document what you were thinking. Invaluable when returning to a project.
+  </Card>
+  <Card title="Scales Up" icon="up-caret">
+    Same workflow works when you add collaborators or AI agents.
+  </Card>
+</CardGrid>
+
+## Minimal Setup
+
+The simplest LumenFlow setup for solo work.
+
+<Steps>
+
+1. **Install CLI**
+
+   <Tabs syncKey="pkg">
+     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
+     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
+   </Tabs>
+
+2. **Initialize (minimal)**
+
+   ```bash
+   npx lumenflow-init --minimal
+   ```
+
+   This creates only the essentials:
+
+   ```
+   .lumenflow.config.yaml
+   LUMENFLOW.md
+   .lumenflow/constraints.md
+   ```
+
+3. **Add scripts**
+
+   ```json
+   {
+     "scripts": {
+       "wu:create": "wu-create",
+       "wu:done": "wu-done",
+       "gates": "gates"
+     }
+   }
+   ```
+
+</Steps>
+
+That's it. You're ready to use LumenFlow.
+
+## Solo Workflow
+
+### Without Worktrees (Simpler)
+
+For solo work, you can skip worktrees and work directly on main:
+
+```bash
+# 1. Create a WU
+npx wu-create \
+  --id WU-001 \
+  --title "Add dark mode" \
+  --lane "Experience: UI" \
+  --description "Add dark mode toggle to settings"
+
+# 2. Work directly (no claim needed for solo)
+# ... make changes ...
+
+# 3. Run gates
+npx gates
+
+# 4. Complete
+npx wu-done --id WU-001
+```
+
+<Aside type="tip">
+  Skip `wu:claim` when working solo on main. Just create the WU, work, and complete.
+</Aside>
+
+### With Worktrees (Recommended for AI)
+
+If you're using AI agents, use worktrees for isolation:
+
+```bash
+# 1. Create and claim
+npx wu-create --id WU-001 --title "Add dark mode" --lane "Experience: UI"
+npx wu-claim --id WU-001 --lane "Experience: UI"
+
+# 2. Work in worktree
+cd worktrees/experience-ui-wu-001
+# ... make changes ...
+
+# 3. Gates + complete
+npx gates
+cd ../..
+npx wu-done --id WU-001
+```
+
+Worktrees let AI agents work on one WU while you work on another.
+
+## Simplified Configuration
+
+### Minimal Config
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+directories:
+  wu_specs: .lumenflow/wu
+  stamps: .lumenflow/stamps
+
+# Single lane for solo work
+lanes:
+  enforcement:
+    require_parent: false
+    allow_custom: true
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+
+gates:
+  execution:
+    preset: 'node'
+```
+
+### Why This Works
+
+- **Single lane**: No need for lane hierarchy when you're the only one
+- **Higher WIP**: Solo devs can context-switch; `wip_limit: 3` allows flexibility
+- **Custom lanes allowed**: Create lanes as needed, no restrictions
+- **Preset gates**: Uses defaults for your stack
+
+## Day-to-Day Usage
+
+### Quick Task
+
+```bash
+# Quick inline WU (no spec file needed)
+npx wu-create --inline "Fix typo in README" --lane main
+# Creates WU, marks done, creates stamp in one command
+```
+
+### Standard Task
+
+```bash
+# 1. Create with full spec
+npx wu-create \
+  --id WU-015 \
+  --title "Add pagination to posts list" \
+  --lane main \
+  --acceptance "Posts show 10 per page" \
+  --acceptance "Next/prev buttons work" \
+  --code-paths "src/components/PostList.tsx"
+
+# 2. Work on it
+# ... changes ...
+
+# 3. Complete
+npx gates && npx wu-done --id WU-015
+```
+
+### Using AI Agents
+
+```bash
+# Generate prompt for AI agent
+npx wu-prompt --id WU-015
+
+# Paste into Claude/GPT/Cursor with full context
+# Agent works in worktree, runs gates, completes
+```
+
+## When to Create WUs
+
+### Always Create WUs For
+
+- Features (even small ones)
+- Bug fixes
+- Refactoring
+- Documentation updates
+
+### Skip WUs For
+
+- Single-line typo fixes
+- Dependency updates (use Dependabot)
+- Experiments you'll throw away
+
+## Tracking Progress
+
+### Backlog (Optional)
+
+For solo work, you may not need a formal backlog. But if you want one:
+
+```bash
+npx lumenflow-init --full
+```
+
+This adds `docs/04-operations/tasks/backlog.md` for tracking.
+
+### Stamps as History
+
+Every completed WU creates a stamp:
+
+```bash
+ls .lumenflow/stamps/
+# WU-001.done
+# WU-002.done
+# ...
+```
+
+Query your history:
+
+```bash
+# What did I complete this week?
+find .lumenflow/stamps -mtime -7 -name "*.done"
+
+# Full history
+git log --oneline --grep="wu(wu-"
+```
+
+### Quick Status
+
+```bash
+# See all WUs by status
+npx wu-list
+
+# What's in progress?
+npx wu-list --status in_progress
+
+# What did I complete?
+npx wu-list --status done --since "7 days"
+```
+
+## AI Agent Configuration
+
+### Allow Agent Autonomy
+
+Solo developers can give AI agents more autonomy:
+
+```yaml
+# .lumenflow.config.yaml
+agent:
+  approval_required: false  # Trust gates, skip human review
+  auto_commit: true         # Agent can commit passing code
+  parallel_wus: 2           # Agent can work on 2 WUs at once
+```
+
+### Context for Agents
+
+Add project-specific guidance:
+
+```yaml
+# .lumenflow.config.yaml
+agent:
+  context:
+    architecture: 'Next.js App Router + Supabase'
+    testing: 'Vitest for unit tests, Playwright for e2e'
+    style: 'Prefer functional components, use Tailwind'
+```
+
+### Agent Handoff
+
+When you want an AI to pick up work:
+
+```bash
+# 1. Create WU with full spec
+npx wu-create \
+  --id WU-020 \
+  --title "Add user avatar upload" \
+  --lane main \
+  --description "Allow users to upload profile avatars" \
+  --acceptance "Upload button in profile settings" \
+  --acceptance "Images resized to 200x200" \
+  --acceptance "Stored in Supabase storage" \
+  --code-paths "src/components/AvatarUpload.tsx" \
+  --code-paths "src/lib/storage.ts"
+
+# 2. Generate agent prompt
+npx wu-prompt --id WU-020
+
+# 3. Give to AI agent
+# Agent claims, works in worktree, completes
+```
+
+## Scaling Up
+
+When your solo project grows:
+
+### Adding Collaborators
+
+1. Keep your config
+2. Add lanes for areas:
+
+   ```yaml
+   lanes:
+     definitions:
+       - name: 'Experience: UI'
+       - name: 'Framework: Core'
+   ```
+
+3. Lower WIP limits: `wip_limit: 1`
+4. Enable review: `requires_review: true`
+
+### Adding GitHub App
+
+For enforcement with collaborators:
+
+```bash
+# Install GitHub App
+# https://github.com/apps/lumenflow-gates
+
+# Update config
+# .lumenflow.config.yaml
+github_app:
+  enforce_wip: true
+  require_gates: true
+```
+
+### Multi-Repo Setup
+
+If you have multiple solo projects:
+
+```bash
+# Global CLI install
+npm install -g @lumenflow/cli
+
+# Each repo has its own config
+cd project-a && lumenflow-init --minimal
+cd project-b && lumenflow-init --minimal
+```
+
+## Tips for Solo Devs
+
+### Keep WUs Small
+
+Even without team constraints, small WUs help:
+
+- Easier to return to after a break
+- Clear git history
+- AI agents work better on focused tasks
+
+### Use Inline WUs for Quick Fixes
+
+```bash
+npx wu-create --inline "Fix null check in useAuth hook" --lane main
+```
+
+One command: creates WU, marks done, commits.
+
+### Write Good Descriptions
+
+Future you (and AI agents) will thank present you:
+
+```yaml
+description: |
+  Context: Users report slow page loads on the posts list.
+  Problem: Loading all 1000 posts at once.
+  Solution: Add pagination with 10 posts per page.
+```
+
+### Run Gates Before Commit
+
+Add a pre-commit hook:
+
+```bash
+npx husky add .husky/pre-commit "npx gates --quick"
+```
+
+Or run manually before important commits.
+
+## Configuration Examples
+
+### For Web Apps (Next.js)
+
+```yaml
+version: '2.0'
+directories:
+  wu_specs: .lumenflow/wu
+  stamps: .lumenflow/stamps
+lanes:
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+gates:
+  execution:
+    preset: 'node'
+    format: 'npx prettier --check .'
+    lint: 'npx next lint'
+    typecheck: 'npx tsc --noEmit'
+    test: 'npx vitest run'
+```
+
+### For CLI Tools (Node)
+
+```yaml
+version: '2.0'
+directories:
+  wu_specs: .lumenflow/wu
+  stamps: .lumenflow/stamps
+lanes:
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+gates:
+  execution:
+    preset: 'node'
+    test: 'npm test'
+```
+
+### For Python Projects
+
+```yaml
+version: '2.0'
+directories:
+  wu_specs: .lumenflow/wu
+  stamps: .lumenflow/stamps
+lanes:
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+gates:
+  execution:
+    preset: 'python'
+    format: 'ruff format --check .'
+    lint: 'ruff check . && mypy .'
+    test: 'pytest'
+```
+
+### For Go Projects
+
+```yaml
+version: '2.0'
+directories:
+  wu_specs: .lumenflow/wu
+  stamps: .lumenflow/stamps
+lanes:
+  definitions:
+    - name: 'main'
+      wip_limit: 3
+gates:
+  execution:
+    preset: 'go'
+    format: 'gofmt -l .'
+    lint: 'golangci-lint run'
+    test: 'go test ./...'
+```
+
+## Next Steps
+
+- [Existing Projects](/guides/existing-projects) - Add to existing codebase
+- [AI Agent Integration](/guides/ai-agents) - Deep dive on AI workflows
+- [CLI Reference](/reference/cli) - Full command documentation

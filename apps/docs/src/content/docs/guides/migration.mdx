@@ -1,0 +1,528 @@
+---
+title: Migration Guide
+description: Migrate from Jira, Linear, or GitHub Issues to LumenFlow
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+This guide covers migrating from existing project management tools to LumenFlow. You can migrate incrementally or all at once.
+
+## Migration Philosophy
+
+<CardGrid>
+  <Card title="Keep What Works" icon="approve-check">
+    LumenFlow replaces execution tracking, not roadmaps. Keep Jira/Linear for planning if it works.
+  </Card>
+  <Card title="Start Fresh" icon="rocket">
+    No need to migrate history. Start with new work, archive old tickets.
+  </Card>
+  <Card title="Link Back" icon="external">
+    Reference external IDs in WU specs for traceability.
+  </Card>
+  <Card title="Gradual Adoption" icon="bars">
+    Migrate one team or area first. Expand when comfortable.
+  </Card>
+</CardGrid>
+
+## Concept Mapping
+
+### Common Terminology
+
+| Jira/Linear/GitHub | LumenFlow           | Notes                                      |
+| ------------------ | ------------------- | ------------------------------------------ |
+| Ticket/Issue       | Work Unit (WU)      | Atomic unit of work                        |
+| Epic               | Initiative          | Multi-WU scope                             |
+| Sprint             | Lane WIP            | No time-boxing, flow-based                 |
+| Status             | WU Status           | ready, in_progress, blocked, waiting, done |
+| Assignee           | `assigned_to`       | One owner per WU                           |
+| Labels             | `lane`, `type`      | Structured categorization                  |
+| Story Points       | Complexity estimate | Optional, tool-call based for agents       |
+| Acceptance Criteria| `acceptance`        | YAML array, verifiable outcomes            |
+| Priority           | `priority`          | P0-P3                                      |
+
+### Status Mapping
+
+| Jira Status    | Linear Status | GitHub Status | LumenFlow Status |
+| -------------- | ------------- | ------------- | ---------------- |
+| To Do          | Backlog       | Open          | `ready`          |
+| In Progress    | In Progress   | In Progress   | `in_progress`    |
+| Blocked        | Blocked       | -             | `blocked`        |
+| In Review      | In Review     | In Review     | `waiting`        |
+| Done           | Done          | Closed        | `done`           |
+
+### Priority Mapping
+
+| Jira              | Linear     | GitHub   | LumenFlow |
+| ----------------- | ---------- | -------- | --------- |
+| Highest/Blocker   | Urgent     | -        | P0        |
+| High              | High       | -        | P1        |
+| Medium            | Medium     | -        | P2        |
+| Low/Lowest        | Low        | -        | P3        |
+
+## Migration Scripts
+
+<Tabs>
+  <TabItem label="Jira">
+
+### Export from Jira
+
+1. **Export issues to JSON**
+
+   Use Jira's bulk export or REST API:
+
+   ```bash
+   # Using jira-cli
+   jira issue list \
+     --project PROJ \
+     --status "To Do,In Progress" \
+     --format json > jira-export.json
+   ```
+
+2. **Convert to WU YAML**
+
+   ```javascript
+   // convert-jira.mjs
+   import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+
+   const jiraExport = JSON.parse(readFileSync('jira-export.json', 'utf8'));
+
+   // Lane mapping
+   const laneMap = {
+     'frontend': 'Experience: UI',
+     'backend': 'Framework: Core',
+     'devops': 'Operations: Infrastructure',
+     'docs': 'Content: Documentation',
+   };
+
+   // Type mapping
+   const typeMap = {
+     'Story': 'feature',
+     'Bug': 'bug',
+     'Task': 'chore',
+     'Spike': 'discovery',
+   };
+
+   // Priority mapping
+   const priorityMap = {
+     'Highest': 'P0',
+     'High': 'P1',
+     'Medium': 'P2',
+     'Low': 'P3',
+     'Lowest': 'P3',
+   };
+
+   mkdirSync('docs/04-operations/tasks/wu', { recursive: true });
+
+   jiraExport.issues.forEach((issue, index) => {
+     const wuId = `WU-${String(index + 1).padStart(3, '0')}`;
+     const component = issue.fields.components?.[0]?.name?.toLowerCase() || 'backend';
+
+     const wu = {
+       id: wuId,
+       title: issue.fields.summary,
+       lane: laneMap[component] || 'Framework: Core',
+       type: typeMap[issue.fields.issuetype.name] || 'feature',
+       status: 'ready',
+       priority: priorityMap[issue.fields.priority.name] || 'P2',
+       description: issue.fields.description || '',
+       acceptance: parseAcceptanceCriteria(issue.fields.description),
+       code_paths: [],
+       external_refs: [`JIRA-${issue.key}`],
+     };
+
+     writeFileSync(
+       `docs/04-operations/tasks/wu/${wuId}.yaml`,
+       toYAML(wu)
+     );
+   });
+
+   function parseAcceptanceCriteria(description) {
+     // Extract bullet points that look like acceptance criteria
+     if (!description) return ['Feature works as specified'];
+     const lines = description.split('\n');
+     const criteria = lines
+       .filter(l => l.match(/^[\-\*]\s/))
+       .map(l => l.replace(/^[\-\*]\s+/, '').trim())
+       .filter(l => l.length > 0);
+     return criteria.length > 0 ? criteria : ['Feature works as specified'];
+   }
+
+   function toYAML(obj) {
+     // Simple YAML serialization (use js-yaml for production)
+     return Object.entries(obj)
+       .map(([k, v]) => {
+         if (Array.isArray(v)) {
+           return `${k}:\n${v.map(i => `  - ${JSON.stringify(i)}`).join('\n')}`;
+         }
+         return `${k}: ${typeof v === 'string' && v.includes('\n') ? `|\n  ${v.replace(/\n/g, '\n  ')}` : JSON.stringify(v)}`;
+       })
+       .join('\n');
+   }
+   ```
+
+3. **Run conversion**
+
+   ```bash
+   node convert-jira.mjs
+   ```
+
+  </TabItem>
+  <TabItem label="Linear">
+
+### Export from Linear
+
+1. **Use Linear API**
+
+   ```bash
+   # Install Linear CLI or use GraphQL API
+   linear issue list --team TEAM --status "Backlog,In Progress" --json > linear-export.json
+   ```
+
+2. **Convert to WU YAML**
+
+   ```javascript
+   // convert-linear.mjs
+   import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+
+   const linearExport = JSON.parse(readFileSync('linear-export.json', 'utf8'));
+
+   const laneMap = {
+     'Frontend': 'Experience: UI',
+     'Backend': 'Framework: Core',
+     'Platform': 'Operations: Infrastructure',
+     'Design': 'Experience: Design',
+   };
+
+   const priorityMap = {
+     0: 'P0', // No priority
+     1: 'P0', // Urgent
+     2: 'P1', // High
+     3: 'P2', // Medium
+     4: 'P3', // Low
+   };
+
+   mkdirSync('docs/04-operations/tasks/wu', { recursive: true });
+
+   linearExport.forEach((issue, index) => {
+     const wuId = `WU-${String(index + 1).padStart(3, '0')}`;
+
+     const wu = {
+       id: wuId,
+       title: issue.title,
+       lane: laneMap[issue.team?.name] || 'Framework: Core',
+       type: issue.labels?.includes('bug') ? 'bug' : 'feature',
+       status: 'ready',
+       priority: priorityMap[issue.priority] || 'P2',
+       description: issue.description || '',
+       acceptance: extractAcceptance(issue.description),
+       code_paths: [],
+       external_refs: [`LINEAR-${issue.identifier}`],
+     };
+
+     writeFileSync(
+       `docs/04-operations/tasks/wu/${wuId}.yaml`,
+       toYAML(wu)
+     );
+   });
+
+   function extractAcceptance(description) {
+     if (!description) return ['Feature works as specified'];
+     // Linear often has checkboxes for acceptance
+     const checkboxes = description.match(/\[ \].+/g) || [];
+     const criteria = checkboxes.map(c => c.replace(/^\[ \]\s*/, '').trim());
+     return criteria.length > 0 ? criteria : ['Feature works as specified'];
+   }
+
+   function toYAML(obj) {
+     // Use js-yaml in production
+     return JSON.stringify(obj, null, 2)
+       .replace(/"/g, '')
+       .replace(/,$/gm, '');
+   }
+   ```
+
+  </TabItem>
+  <TabItem label="GitHub Issues">
+
+### Export from GitHub Issues
+
+1. **Use GitHub CLI**
+
+   ```bash
+   gh issue list \
+     --repo owner/repo \
+     --state open \
+     --json number,title,body,labels,assignees,milestone \
+     > github-export.json
+   ```
+
+2. **Convert to WU YAML**
+
+   ```javascript
+   // convert-github.mjs
+   import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+
+   const issues = JSON.parse(readFileSync('github-export.json', 'utf8'));
+
+   const laneFromLabel = (labels) => {
+     const labelNames = labels.map(l => l.name.toLowerCase());
+     if (labelNames.some(l => l.includes('frontend') || l.includes('ui'))) {
+       return 'Experience: UI';
+     }
+     if (labelNames.some(l => l.includes('backend') || l.includes('api'))) {
+       return 'Framework: Core';
+     }
+     if (labelNames.some(l => l.includes('infra') || l.includes('devops'))) {
+       return 'Operations: Infrastructure';
+     }
+     if (labelNames.some(l => l.includes('docs'))) {
+       return 'Content: Documentation';
+     }
+     return 'Framework: Core';
+   };
+
+   const typeFromLabel = (labels) => {
+     const labelNames = labels.map(l => l.name.toLowerCase());
+     if (labelNames.includes('bug')) return 'bug';
+     if (labelNames.includes('enhancement')) return 'feature';
+     if (labelNames.includes('documentation')) return 'documentation';
+     return 'feature';
+   };
+
+   mkdirSync('docs/04-operations/tasks/wu', { recursive: true });
+
+   issues.forEach((issue) => {
+     const wuId = `WU-${String(issue.number).padStart(3, '0')}`;
+
+     const wu = {
+       id: wuId,
+       title: issue.title,
+       lane: laneFromLabel(issue.labels),
+       type: typeFromLabel(issue.labels),
+       status: 'ready',
+       priority: 'P2',
+       description: issue.body || '',
+       acceptance: extractTasks(issue.body),
+       code_paths: [],
+       external_refs: [`GH-${issue.number}`],
+       assigned_to: issue.assignees?.[0]?.login || null,
+     };
+
+     writeFileSync(
+       `docs/04-operations/tasks/wu/${wuId}.yaml`,
+       toYAML(wu)
+     );
+   });
+
+   function extractTasks(body) {
+     if (!body) return ['Feature works as specified'];
+     // GitHub uses - [ ] for task lists
+     const tasks = body.match(/- \[ \].+/g) || [];
+     const criteria = tasks.map(t => t.replace(/^- \[ \]\s*/, '').trim());
+     return criteria.length > 0 ? criteria : ['Feature works as specified'];
+   }
+
+   function toYAML(obj) {
+     // Use yaml package in production
+     return `id: ${obj.id}
+   title: "${obj.title}"
+   lane: "${obj.lane}"
+   type: ${obj.type}
+   status: ${obj.status}
+   priority: ${obj.priority}
+   description: |
+     ${obj.description.replace(/\n/g, '\n  ')}
+   acceptance:
+   ${obj.acceptance.map(a => `  - "${a}"`).join('\n')}
+   code_paths: []
+   external_refs:
+   ${obj.external_refs.map(r => `  - "${r}"`).join('\n')}
+   ${obj.assigned_to ? `assigned_to: ${obj.assigned_to}` : ''}`;
+   }
+   ```
+
+  </TabItem>
+</Tabs>
+
+## Step-by-Step Migration
+
+<Steps>
+
+1. **Audit existing tickets**
+
+   Count and categorize:
+   - How many open tickets?
+   - How many are actually actionable?
+   - How many are stale (no activity in 30+ days)?
+
+   <Aside type="tip">
+     Most teams find 50%+ of open tickets are stale and can be archived without migration.
+   </Aside>
+
+2. **Archive stale tickets**
+
+   Before migrating, close tickets that are:
+   - Older than 6 months with no activity
+   - Superseded by other work
+   - No longer relevant to current goals
+
+3. **Set up LumenFlow**
+
+   Follow the [Existing Projects Guide](/guides/existing-projects) to set up LumenFlow in your repo.
+
+4. **Export remaining tickets**
+
+   Use the scripts above to export actionable tickets.
+
+5. **Run conversion**
+
+   ```bash
+   node convert-jira.mjs  # or convert-linear.mjs, convert-github.mjs
+   ```
+
+6. **Review converted WUs**
+
+   Check a sample:
+   - Are lanes correct?
+   - Are acceptance criteria specific enough?
+   - Do priorities make sense?
+
+7. **Generate backlog**
+
+   ```bash
+   npx lumenflow backlog:generate
+   ```
+
+8. **Freeze old system**
+
+   Set ticket system to read-only for the migrated project, or add a banner:
+   > This project now uses LumenFlow. New work: see [repo]/docs/04-operations/tasks/
+
+9. **Team onboarding**
+
+   - Share the [Quickstart](/getting-started/quickstart)
+   - Run a practice WU together
+   - Set up first real WUs
+
+</Steps>
+
+## Coexistence Patterns
+
+### Pattern A: LumenFlow for Execution, Jira for Planning
+
+```
+Jira                          LumenFlow
+────                          ─────────
+Epics/Roadmap                 Initiatives
+  ↓ (quarterly)               (linked via external_refs)
+Stories                       ──→ WUs (execution)
+  (planning)                      ↓
+                                 Done
+                                  ↓
+Sprint Velocity ←──────────── DORA Metrics
+```
+
+Keep: High-level planning, stakeholder visibility, sprint reports
+Move: Day-to-day execution, developer workflow, CI integration
+
+### Pattern B: Full Migration
+
+Close Jira/Linear entirely. Use LumenFlow for:
+- WUs (execution)
+- Initiatives (multi-WU planning)
+- Backlog (prioritized queue)
+- DORA metrics (reporting)
+
+### Pattern C: Team-by-Team
+
+```
+Team A: Full LumenFlow
+Team B: Hybrid (LumenFlow + Linear for planning)
+Team C: Not yet migrated
+```
+
+Teams can adopt at different paces. Cross-team WUs use `external_refs` for linking.
+
+## Maintaining Links
+
+### Reference External IDs
+
+```yaml
+id: WU-042
+title: Implement user search
+external_refs:
+  - JIRA-PROJ-123
+  - LINEAR-ABC-45
+  - GH-789
+```
+
+### Query by External Reference
+
+```bash
+# Find WU by Jira ID
+grep -r "JIRA-PROJ-123" docs/04-operations/tasks/wu/
+```
+
+### Bidirectional Links
+
+Add WU reference back to original ticket:
+> Migrated to LumenFlow: WU-042
+
+## Common Migration Issues
+
+### "Tickets reference each other"
+
+WUs support dependencies:
+
+```yaml
+id: WU-101
+dependencies:
+  - WU-100  # Must complete first
+blocked_by:
+  - WU-099  # Currently blocked
+```
+
+### "We have sub-tasks"
+
+LumenFlow doesn't have sub-tasks. Instead:
+- Small sub-tasks: Include in parent WU acceptance criteria
+- Large sub-tasks: Promote to separate WUs with dependencies
+
+### "Tickets have attachments"
+
+Move attachments to:
+- Code comments (if small snippets)
+- Documentation files (if specs)
+- External storage with links in WU description
+
+### "We need sprint reports"
+
+LumenFlow provides:
+- `pnpm flow:report` - DORA metrics
+- `pnpm wu:list --completed --since "2 weeks ago"` - Recent completions
+- Initiative progress tracking
+
+## Validation
+
+After migration, verify:
+
+```bash
+# 1. Validate all WU YAML files
+npx lumenflow validate
+
+# 2. Check for orphaned WUs (not in backlog)
+npx lumenflow backlog:check
+
+# 3. Verify external references are unique
+grep -rh "external_refs" docs/04-operations/tasks/wu/ | sort | uniq -d
+
+# 4. Run gates to ensure everything builds
+npx gates
+```
+
+## Next Steps
+
+- [Existing Projects](/guides/existing-projects) - Initial setup
+- [Solo Developer Workflow](/guides/solo-workflow) - Simpler setup for individuals
+- [Team Workflow](/guides/team-workflow) - Team practices
+- [Initiatives](/guides/initiatives) - Multi-WU planning
