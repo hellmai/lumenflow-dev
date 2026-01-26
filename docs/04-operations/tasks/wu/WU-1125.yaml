@@ -1,6 +1,6 @@
 id: WU-1125
 title: 'INIT-004 Phase 3: Document upgrade path'
-lane: 'Content: Documentation'
+lane: 'Framework: CLI'
 type: documentation
 status: ready
 priority: P2
