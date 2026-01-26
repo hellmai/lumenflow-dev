@@ -2,7 +2,7 @@ id: WU-1119
 title: 'Docs Audit: Adoption Paths - existing projects + migration + solo dev'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -28,9 +28,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create guides for adopting LumenFlow in existing projects, migrating from Jira/Linear/GitHub Issues, and solo developer workflow.
+description: Create guides for adopting LumenFlow in existing projects, migrating from
+  Jira/Linear/GitHub Issues, and solo developer workflow.
 acceptance:
   - Adding LumenFlow to Existing Projects guide published
   - Migration guide from Jira/Linear/GitHub Issues published
   - Solo developer workflow guide published
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1119
+claimed_at: 2026-01-26T11:18:00.410Z
+baseline_main_sha: b4d0922593f7be43f1f8be93162fec611b2d3134
+session_id: a9cbd7a2-59b7-4b94-9988-f0116889c63f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T11:18:00.415Z
