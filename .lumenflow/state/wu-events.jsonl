@@ -108,3 +108,4 @@
 {"type":"claim","wuId":"WU-1131","lane":"Framework: CLI","title":"Fix wu:spawn output truncation causing agent degradation","timestamp":"2026-01-26T23:34:29.706Z"}
 {"type":"claim","wuId":"WU-1132","lane":"Operations: CI/CD","title":"Harden worktree validation hook to fail-closed","timestamp":"2026-01-26T23:34:42.391Z"}
 {"type":"complete","wuId":"WU-1132","timestamp":"2026-01-26T23:40:15.805Z"}
+{"type":"claim","wuId":"WU-1136","lane":"Content: Documentation","title":"Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook","timestamp":"2026-01-26T23:40:30.663Z"}
