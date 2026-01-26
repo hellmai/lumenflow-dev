@@ -111,3 +111,4 @@
 {"type":"claim","wuId":"WU-1136","lane":"Content: Documentation","title":"Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook","timestamp":"2026-01-26T23:40:30.663Z"}
 {"type":"complete","wuId":"WU-1136","timestamp":"2026-01-26T23:48:03.518Z"}
 {"type":"claim","wuId":"WU-1137","lane":"Operations: Infrastructure","title":"Add mem:export CLI for human-readable memory output","timestamp":"2026-01-26T23:48:20.271Z"}
+{"type":"complete","wuId":"WU-1137","timestamp":"2026-01-26T23:55:34.024Z"}
