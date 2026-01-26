@@ -6,6 +6,7 @@ _Last updated: 2026-01-26_
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml)
+- [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml)
 
 ## Completed
 
