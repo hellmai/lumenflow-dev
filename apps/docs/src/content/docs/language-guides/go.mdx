@@ -39,12 +39,12 @@ Go is a statically typed, compiled language known for simplicity and excellent t
 
 The `go` preset uses these commands:
 
-| Gate      | Command           | Description                       |
-| --------- | ----------------- | --------------------------------- |
-| Format    | `gofmt -l .`      | Check formatting (list unformatted files) |
-| Lint      | `golangci-lint run` | Run comprehensive linter suite   |
-| Typecheck | `go vet ./...`    | Report likely mistakes in code    |
-| Test      | `go test ./...`   | Run all tests                     |
+| Gate      | Command             | Description                               |
+| --------- | ------------------- | ----------------------------------------- |
+| Format    | `gofmt -l .`        | Check formatting (list unformatted files) |
+| Lint      | `golangci-lint run` | Run comprehensive linter suite            |
+| Typecheck | `go vet ./...`      | Report likely mistakes in code            |
+| Test      | `go test ./...`     | Run all tests                             |
 
 ## Custom Configuration
 
@@ -180,7 +180,8 @@ myproject/
 ```
 
 <Aside type="tip">
-  Go's `internal/` packages automatically enforce import boundaries, complementing LumenFlow's hexagonal architecture patterns.
+  Go's `internal/` packages automatically enforce import boundaries, complementing LumenFlow's
+  hexagonal architecture patterns.
 </Aside>
 
 ## Monorepo Support

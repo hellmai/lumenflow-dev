@@ -89,6 +89,8 @@
     "lumenflow": "./dist/init.js",
     "lumenflow-release": "./dist/release.js",
     "lumenflow-docs-sync": "./dist/docs-sync.js",
+    "lumenflow-sync-templates": "./dist/sync-templates.js",
+    "sync-templates": "./dist/sync-templates.js",
     "backlog-prune": "./dist/backlog-prune.js",
     "file-read": "./dist/file-read.js",
     "file-write": "./dist/file-write.js",

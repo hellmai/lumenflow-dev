@@ -52,15 +52,16 @@ gates:
 
 The `java` preset provides these default commands:
 
-| Gate      | Default Command    |
-| --------- | ------------------ |
-| Format    | `spotless:check`   |
-| Lint      | `checkstyle`       |
-| Typecheck | `mvn compile`      |
-| Test      | `mvn test`         |
+| Gate      | Default Command  |
+| --------- | ---------------- |
+| Format    | `spotless:check` |
+| Lint      | `checkstyle`     |
+| Typecheck | `mvn compile`    |
+| Test      | `mvn test`       |
 
 <Aside type="tip">
-  The Java preset defaults assume Maven. Override with Gradle commands as shown above if using Gradle.
+  The Java preset defaults assume Maven. Override with Gradle commands as shown above if using
+  Gradle.
 </Aside>
 
 ## Recommended Tooling
@@ -188,7 +189,8 @@ Run lint:
 </Tabs>
 
 <Aside>
-  Use Google's checkstyle configuration (`google_checks.xml`) or Sun's (`sun_checks.xml`) as a starting point. Customize rules in your own `checkstyle.xml`.
+  Use Google's checkstyle configuration (`google_checks.xml`) or Sun's (`sun_checks.xml`) as a
+  starting point. Customize rules in your own `checkstyle.xml`.
 </Aside>
 
 ### Static Analysis (SpotBugs)
