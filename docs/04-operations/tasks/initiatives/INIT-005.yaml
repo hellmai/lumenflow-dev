@@ -1,0 +1,11 @@
+id: INIT-005
+slug: agent-quality-restoration
+title: Fix Agent Degradation and Worktree Discipline
+description: ''
+status: draft
+priority: P1
+owner: tom@hellm.ai
+created: 2026-01-26
+phases: []
+success_metrics: []
+labels: []
