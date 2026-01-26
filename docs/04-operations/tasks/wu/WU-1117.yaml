@@ -8,7 +8,12 @@ created: 2026-01-26
 code_paths:
   - apps/docs/src/content/docs/language-guides/
 tests:
-  manual: []
+  manual:
+    - 'pnpm --filter @lumenflow/docs build completes successfully'
+    - 'Language Guides section appears in sidebar navigation'
+    - 'Python guide at /language-guides/python/ renders correctly'
+    - '.NET guide at /language-guides/dotnet/ renders correctly'
+    - 'Overview page at /language-guides/ emphasizes stack-agnostic architecture'
   unit: []
   e2e: []
 artifacts:
