@@ -2,7 +2,7 @@ id: WU-1115
 title: 'Docs Audit: What & Why - Fix broken link + positioning'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -12,11 +12,11 @@ code_paths:
   - apps/docs/src/content/docs/guides/troubleshooting.mdx
 tests:
   manual:
-    - 'pnpm docs:build succeeds (apps/docs)'
-    - 'Navigate to /reference/github-action and verify page renders'
-    - 'Navigate to /getting-started/why-lumenflow and verify page renders'
-    - 'Navigate to /getting-started/faq and verify page renders'
-    - 'Navigate to /guides/troubleshooting and verify page renders'
+    - pnpm docs:build succeeds (apps/docs)
+    - Navigate to /reference/github-action and verify page renders
+    - Navigate to /getting-started/why-lumenflow and verify page renders
+    - Navigate to /getting-started/faq and verify page renders
+    - Navigate to /guides/troubleshooting and verify page renders
   unit: []
   e2e: []
 artifacts:
@@ -53,3 +53,5 @@ session_id: f2c51e4f-c7b9-4b04-ae75-82a94995b6e7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T10:20:04.389Z
+locked: true
+completed_at: 2026-01-26T10:29:31.766Z
