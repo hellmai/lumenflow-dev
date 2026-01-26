@@ -91,3 +91,4 @@
 {"type":"claim","wuId":"WU-1125","lane":"Framework: CLI","title":"INIT-004 Phase 3: Document upgrade path","timestamp":"2026-01-26T11:07:21.121Z"}
 {"type":"complete","wuId":"WU-1125","timestamp":"2026-01-26T11:11:23.766Z"}
 {"type":"complete","wuId":"WU-1116","timestamp":"2026-01-26T11:15:48.263Z"}
+{"type":"claim","wuId":"WU-1124","lane":"Framework: CLI","title":"INIT-004 Phase 2: Refactor docs-sync to read from templates","timestamp":"2026-01-26T11:17:02.171Z"}
