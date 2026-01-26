@@ -1,0 +1,444 @@
+---
+title: Python
+description: Using LumenFlow with Python projects
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+LumenFlow integrates seamlessly with Python projects. This guide covers setup, configuration, and best practices for Django, FastAPI, Flask, and other Python frameworks.
+
+## Quickstart
+
+<Steps>
+
+1. **Install LumenFlow CLI**
+
+   ```bash
+   pip install lumenflow-cli
+   # or with pipx for global install
+   pipx install lumenflow-cli
+   ```
+
+   <Aside>
+     The Python CLI is a wrapper that delegates to the Node.js CLI. You can also use `npx
+     @lumenflow/cli` directly if you have Node.js installed.
+   </Aside>
+
+2. **Initialize LumenFlow**
+
+   ```bash
+   lumenflow init
+   ```
+
+   This creates `.lumenflow.config.yaml` with Python-optimized defaults.
+
+3. **Configure gates**
+
+   ```yaml
+   # .lumenflow.config.yaml
+   version: '2.0'
+
+   gates:
+     execution:
+       preset: 'python'
+   ```
+
+4. **Create your first WU**
+
+   ```bash
+   lumenflow wu create \
+     --id WU-001 \
+     --title "Add user authentication" \
+     --lane "Framework: Core" \
+     --type feature \
+     --exposure api \
+     --description "Implement JWT-based authentication" \
+     --acceptance "Users can log in with email/password" \
+     --code-paths "src/auth/" \
+     --test-paths-unit "tests/unit/auth/"
+   ```
+
+5. **Claim and start work**
+
+   ```bash
+   lumenflow wu claim --id WU-001 --lane "Framework: Core"
+   cd worktrees/framework-core-wu-001
+   ```
+
+</Steps>
+
+## Gate Configuration
+
+### Using the Python Preset
+
+The `python` preset provides sensible defaults for modern Python projects:
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+```
+
+This is equivalent to:
+
+```yaml
+gates:
+  execution:
+    format: 'ruff format --check .'
+    lint: 'ruff check .'
+    typecheck: 'mypy .'
+    test: 'pytest'
+```
+
+### Customizing Gate Commands
+
+Override specific gates while keeping the preset defaults:
+
+<Tabs>
+  <TabItem label="Poetry">
+    ```yaml
+    gates:
+      execution:
+        preset: 'python'
+        format: 'poetry run ruff format --check .'
+        lint: 'poetry run ruff check . && poetry run mypy .'
+        test: 'poetry run pytest --cov=src --cov-report=term-missing'
+    ```
+  </TabItem>
+  <TabItem label="pip + venv">
+    ```yaml
+    gates:
+      execution:
+        preset: 'python'
+        format: 'python -m ruff format --check .'
+        lint: 'python -m ruff check .'
+        typecheck: 'python -m mypy src/'
+        test: 'python -m pytest tests/'
+    ```
+  </TabItem>
+  <TabItem label="uv">
+    ```yaml
+    gates:
+      execution:
+        preset: 'python'
+        format: 'uv run ruff format --check .'
+        lint: 'uv run ruff check .'
+        typecheck: 'uv run mypy .'
+        test: 'uv run pytest'
+    ```
+  </TabItem>
+</Tabs>
+
+### Framework-Specific Configurations
+
+<Tabs>
+  <TabItem label="Django">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Framework: Core'
+          code_paths: ['myapp/**']
+        - name: 'Framework: API'
+          code_paths: ['api/**']
+
+    gates:
+      execution:
+        preset: 'python'
+        test: 'python manage.py test --parallel'
+    ```
+
+    **Recommended project structure:**
+
+    ```
+    myproject/
+    ├── myapp/
+    │   ├── models.py
+    │   ├── views.py
+    │   └── tests/
+    ├── api/
+    │   ├── views.py
+    │   └── serializers.py
+    ├── manage.py
+    ├── pyproject.toml
+    └── .lumenflow.config.yaml
+    ```
+
+  </TabItem>
+  <TabItem label="FastAPI">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Framework: Core'
+          code_paths: ['src/domain/**', 'src/application/**']
+        - name: 'Framework: API'
+          code_paths: ['src/api/**']
+        - name: 'Framework: Infrastructure'
+          code_paths: ['src/infrastructure/**']
+
+    gates:
+      execution:
+        preset: 'python'
+        lint: 'ruff check . && mypy src/'
+        test: 'pytest tests/ -v --cov=src'
+    ```
+
+    **Hexagonal architecture structure:**
+
+    ```
+    src/
+    ├── domain/          # Business entities and rules
+    ├── application/     # Use cases
+    ├── api/             # FastAPI routes (adapters)
+    └── infrastructure/  # Database, external services (adapters)
+    ```
+
+  </TabItem>
+  <TabItem label="Flask">
+    ```yaml
+    # .lumenflow.config.yaml
+    version: '2.0'
+
+    lanes:
+      definitions:
+        - name: 'Framework: Core'
+          code_paths: ['app/**']
+
+    gates:
+      execution:
+        preset: 'python'
+        test: 'pytest tests/ --cov=app'
+    ```
+  </TabItem>
+</Tabs>
+
+## GitHub Actions
+
+Complete workflow for Python projects:
+
+```yaml
+# .github/workflows/gates.yml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Configure Poetry
+        run: poetry config virtualenvs.create true --local
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+<Aside type="tip">
+  For projects using uv, replace the Poetry steps with `pip install uv` and `uv sync`.
+</Aside>
+
+## Testing Strategy
+
+LumenFlow encourages test-driven development. For Python projects:
+
+### Unit Tests
+
+Fast, isolated tests for business logic:
+
+```python
+# tests/unit/test_auth.py
+import pytest
+from src.application.auth import authenticate_user
+
+class TestAuthenticateUser:
+    def test_valid_credentials_returns_token(self):
+        # Arrange
+        mock_user_repo = Mock()
+        mock_user_repo.find_by_email.return_value = User(
+            email="test@example.com",
+            password_hash="hashed_password"
+        )
+
+        # Act
+        result = authenticate_user(
+            repo=mock_user_repo,
+            email="test@example.com",
+            password="password123"
+        )
+
+        # Assert
+        assert result.success is True
+        assert result.data.token is not None
+
+    def test_invalid_password_returns_error(self):
+        # Test error case
+        pass
+```
+
+### Integration Tests
+
+Tests that verify real dependencies:
+
+```python
+# tests/integration/test_api.py
+import pytest
+from fastapi.testclient import TestClient
+from src.main import app
+
+@pytest.fixture
+def client():
+    return TestClient(app)
+
+def test_login_endpoint(client):
+    response = client.post("/auth/login", json={
+        "email": "test@example.com",
+        "password": "password123"
+    })
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+```
+
+### Coverage Requirements
+
+Configure pytest-cov to enforce coverage:
+
+```toml
+# pyproject.toml
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=90"
+```
+
+## Type Checking
+
+LumenFlow works well with Python's type system. Configure mypy for strict checking:
+
+```toml
+# pyproject.toml
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]  # If using Pydantic
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+```
+
+## Linting with Ruff
+
+Ruff is the recommended linter for Python projects. Configure it in `pyproject.toml`:
+
+```toml
+# pyproject.toml
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+
+[tool.ruff.format]
+quote-style = "double"
+```
+
+## Monorepo Support
+
+For Python monorepos, configure lanes per package:
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths: ['packages/core/**']
+    - name: 'Framework: API'
+      code_paths: ['packages/api/**']
+    - name: 'Framework: Workers'
+      code_paths: ['packages/workers/**']
+```
+
+Run gates for specific packages:
+
+```bash
+lumenflow gates --working-directory packages/core
+```
+
+## Troubleshooting
+
+### Gate fails with "module not found"
+
+Ensure your virtual environment is activated or use the correct runner:
+
+```yaml
+gates:
+  execution:
+    test: 'poetry run pytest'  # or 'uv run pytest'
+```
+
+### Type errors in third-party libraries
+
+Add type stubs or ignore specific packages:
+
+```toml
+# pyproject.toml
+[tool.mypy]
+[[tool.mypy.overrides]]
+module = ["some_untyped_library.*"]
+ignore_missing_imports = true
+```
+
+### Tests slow in CI
+
+Use pytest-xdist for parallel execution:
+
+```yaml
+gates:
+  execution:
+    test: 'pytest -n auto --cov=src'
+```
+
+## Next Steps
+
+- [Gates Concepts](/concepts/gates) - Understanding quality gates
+- [Work Units](/concepts/work-units) - Structuring work effectively
+- [GitHub Action Reference](/reference/github-action) - CI/CD configuration

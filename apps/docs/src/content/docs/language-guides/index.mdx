@@ -1,0 +1,95 @@
+---
+title: Language Guides
+description: LumenFlow works with any language and toolchain
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+LumenFlow is a **stack-agnostic** delivery methodology. The core concepts (Work Units, Lanes, Gates, Memory) apply regardless of whether you're building with Python, .NET, Node.js, Go, Rust, or any other language.
+
+## Stack-Agnostic by Design
+
+LumenFlow deliberately separates **methodology** from **implementation**:
+
+- **Methodology**: WUs, lanes, gates, and flow states are universal concepts
+- **Implementation**: Gate commands, tooling, and CI/CD adapt to your stack
+
+This separation means:
+
+1. Teams can adopt LumenFlow without changing their existing toolchain
+2. Polyglot monorepos work naturally (different gates per package)
+3. Migration to new languages doesn't require workflow changes
+
+## How Language Support Works
+
+LumenFlow adapts to your stack through **gate presets** and **configuration**:
+
+```yaml
+# .lumenflow.config.yaml
+gates:
+  execution:
+    preset: 'python'  # or 'dotnet', 'node', 'go', 'rust'
+```
+
+Each preset provides sensible defaults for:
+
+| Gate      | Purpose                        | Language-specific tools       |
+| --------- | ------------------------------ | ----------------------------- |
+| Format    | Code style consistency         | prettier, ruff, dotnet format |
+| Lint      | Static analysis                | eslint, ruff, dotnet build    |
+| Typecheck | Type safety (where applicable) | tsc, mypy, go vet             |
+| Test      | Test execution                 | jest, pytest, dotnet test     |
+
+<Aside type="tip">
+  Presets are starting points. Override any command to match your team's tools.
+</Aside>
+
+## Available Language Guides
+
+<CardGrid>
+  <Card title="Python" icon="python">
+    Django, FastAPI, Flask, and more. Uses ruff for linting and pytest for testing.
+    [Python Guide](/language-guides/python/)
+  </Card>
+  <Card title=".NET" icon="laptop">
+    C#, F#, ASP.NET Core, and Blazor. Uses dotnet CLI for all gates.
+    [.NET Guide](/language-guides/dotnet/)
+  </Card>
+</CardGrid>
+
+## Coming Soon
+
+Additional language guides are in development:
+
+- **Go** - For microservices and CLI tools
+- **Rust** - For systems programming and WebAssembly
+- **Java** - For enterprise applications (Spring Boot, Quarkus)
+- **Ruby** - For Rails and Sinatra applications
+- **PHP** - For Laravel and Symfony applications
+
+<Aside>
+  Don't wait for a guide! LumenFlow works with any language today. Configure your gate commands
+  manually or use auto-detection.
+</Aside>
+
+## Universal Workflow
+
+Regardless of language, the workflow remains consistent:
+
+```bash
+# 1. Create a WU (same command, any language)
+pnpm wu:create --id WU-001 --title "Add user auth" --lane "Framework: Core"
+
+# 2. Claim and work in isolated worktree
+pnpm wu:claim --id WU-001 --lane "Framework: Core"
+cd worktrees/framework-core-wu-001
+
+# 3. Run gates (language-specific commands execute)
+pnpm gates
+
+# 4. Complete (from repo root)
+cd /path/to/repo
+pnpm wu:done --id WU-001
+```
+
+The gates command automatically detects your language and runs the appropriate tools. See [Configuration](/reference/config) for full customization options.
