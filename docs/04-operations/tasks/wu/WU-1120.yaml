@@ -2,7 +2,7 @@ id: WU-1120
 title: 'Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-26
 code_paths:
@@ -29,7 +29,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Create advanced guides and polish content: custom skills tutorial, A Day with LumenFlow walkthrough, TypeDoc API docs, changelog, cookbook, and versioning matrix.'
+description: 'Create advanced guides and polish content: custom skills tutorial, A Day with
+  LumenFlow walkthrough, TypeDoc API docs, changelog, cookbook, and versioning matrix.'
 acceptance:
   - Custom skills tutorial published
   - A Day with LumenFlow walkthrough (both AI-assisted and traditional versions)
@@ -38,3 +39,11 @@ acceptance:
   - Cookbook with common patterns published
   - Versioning compatibility matrix published
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1120
+claimed_at: 2026-01-26T11:27:16.844Z
+baseline_main_sha: eb1c02dace7106e0ab7b2ae054759446d1a2dbb1
+session_id: 79054159-30d9-49ee-86b8-4d6aff16d98f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T11:27:16.850Z
