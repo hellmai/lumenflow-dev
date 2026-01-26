@@ -16,8 +16,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1134.done
 dependencies: []
-spec_refs:
-  - INIT-005 plan Part 4
+initiative: INIT-005
+phase: 4
 risks: []
 notes: ''
 requires_review: false
@@ -28,7 +28,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add explicit recovery instructions to wu:spawn output telling agents what to do when blocked by worktree hook.
+description: Add explicit recovery instructions to wu:spawn output telling agents what to do when
+  blocked by worktree hook.
 acceptance:
   - wu:spawn output includes When Blocked by Worktree Hook section
   - Recovery section includes check worktrees cd to worktree retry use relative paths
