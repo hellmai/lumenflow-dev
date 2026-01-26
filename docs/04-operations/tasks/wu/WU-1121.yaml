@@ -2,7 +2,7 @@ id: WU-1121
 title: 'Docs Audit: Language Support - Go and Rust guides'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -42,3 +42,5 @@ session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T10:42:34.127Z
+locked: true
+completed_at: 2026-01-26T10:49:42.284Z
