@@ -1,10 +1,10 @@
 ---
 name: context-management
 description: Session checkpoint patterns, output bypass for large results, when to spawn fresh sub-agents. Use for long-running sessions, context exhaustion, or agent coordination.
-version: 1.1.0
+version: 1.2.0
 source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
 source_sections: Context Tiers, Session Management, Wave Orchestration
-last_updated: 2026-01-22
+last_updated: 2026-01-26
 allowed-tools: Read, Write, Bash
 ---
 
@@ -13,6 +13,52 @@ allowed-tools: Read, Write, Bash
 **Source**: `docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md`
 
 Patterns for managing context in long-running AI coding sessions.
+
+## Primary Strategy: Spawn Fresh, Don't Continue
+
+**When approaching context limits, spawn a fresh agent instead of continuing after compaction.**
+
+Context compaction (summarization) causes agents to lose critical rules. The recommended approach from [Anthropic's engineering guidance](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents):
+
+> "An initializer agent that sets up the environment, and a coding agent tasked with **making incremental progress in every session**, while leaving clear artifacts for the next session."
+
+### Mandatory Triggers
+
+Spawn a fresh agent when ANY of these apply:
+
+- Context usage exceeds **80%**
+- **50+ tool calls** in current session
+- Performance degradation (redundant queries, forgotten context)
+- You're about to run `/compact` or `/clear`
+
+### Spawn Fresh Protocol
+
+```bash
+# 1. Checkpoint your progress
+pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
+
+# 2. Commit and push work
+git add -A && git commit -m "checkpoint: progress on X"
+git push origin lane/<lane>/wu-xxx
+
+# 3. Generate fresh agent prompt
+pnpm wu:spawn --id WU-XXX
+
+# 4. EXIT current session (do NOT continue after compaction)
+
+# 5. Start fresh agent with the generated prompt
+```
+
+### Why Not Continue After Compaction?
+
+- Compaction summarizes conversation → rules get lost in summary
+- Agent forgets worktree discipline, WU context, constraints
+- Recovery mechanisms are complex and vendor-specific
+- Prevention (fresh agent) is simpler and more reliable than recovery
+
+**This is not failure—it's disciplined execution.** See [wu-sizing-guide.md](../../../docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md) for complete sizing thresholds.
+
+---
 
 ## Session Checkpoints
 

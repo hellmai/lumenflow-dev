@@ -1,8 +1,10 @@
 # LumenFlow Workflow Guide
 
-**Last updated:** 2026-01-24
+**Last updated:** 2026-01-26
 
 LumenFlow is a vendor-agnostic workflow framework for AI-native software development.
+
+> **Context Safety**: When approaching context limits (80% usage, 50+ tool calls), spawn a fresh agent instead of continuing after compaction. See [wu-sizing-guide.md](docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md).
 
 ---
 

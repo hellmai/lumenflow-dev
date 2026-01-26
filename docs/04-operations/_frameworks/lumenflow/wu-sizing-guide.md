@@ -4,7 +4,7 @@
 
 **Effective Date:** 2025-11-24 (Post-WU-1215 Analysis)
 
-**Status:** Active (thresholds are starting heuristics based on WU-1215; will be revised using data from future telemetry WUs)
+**Status:** Active — Thresholds are **mandatory limits**, not guidelines.
 
 ---
 
@@ -19,7 +19,7 @@ Before claiming a WU, estimate its "weight" using these heuristics.
 | **Complex**   | 50+   | 100+       | >50%           | **Orchestrator-Worker** OR **Decomposition** |
 | **Oversized** | 100+  | 200+       | —              | **MUST Split** (See Patterns below)          |
 
-**Note:** These thresholds are starting heuristics based on WU-1215 failure analysis (80k tokens consumed on analysis alone, zero implementation). We will revise them using data from future telemetry WUs. Agents operate in context windows and tool calls, not clock time.
+**These thresholds are mandatory.** Exceeding them leads to context exhaustion and rule loss (WU-1215 failure: 80k tokens consumed on analysis alone, zero implementation). Agents operate in context windows and tool calls, not clock time.
 
 ---
 
@@ -182,7 +182,53 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 
 ---
 
-## 5. Quick Reference
+## 5. Spawn Fresh, Don't Continue (Mandatory Policy)
+
+**When approaching context limits, spawn a fresh agent instead of continuing after compaction.**
+
+Context compaction (summarization) causes agents to lose critical rules. The recommended approach from [Anthropic's engineering guidance](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) is:
+
+> "An initializer agent that sets up the environment, and a coding agent tasked with **making incremental progress in every session**, while leaving clear artifacts for the next session."
+
+### When to Spawn Fresh
+
+Spawn a fresh agent when ANY of these apply:
+
+- Context usage exceeds 80%
+- Tool calls exceed 50 in current session
+- You notice performance degradation (redundant queries, forgotten context)
+- You're about to run `/compact` or `/clear`
+
+### Spawn Fresh Protocol
+
+```bash
+# 1. Checkpoint your progress
+pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
+
+# 2. Commit and push work
+git add -A && git commit -m "checkpoint: progress on X"
+git push origin lane/<lane>/wu-xxx
+
+# 3. Generate fresh agent prompt
+pnpm wu:spawn --id WU-XXX
+
+# 4. EXIT current session (do NOT continue after compaction)
+
+# 5. Start fresh agent with the generated prompt
+```
+
+### Why Not Continue After Compaction?
+
+- Compaction summarizes conversation → rules get lost in summary
+- Agent forgets worktree discipline, WU context, constraints
+- Recovery mechanisms are complex and vendor-specific
+- Prevention (fresh agent) is simpler and more reliable than recovery
+
+**This is not failure—it's disciplined execution.** Each agent session makes bounded progress and leaves clear artifacts for the next session.
+
+---
+
+## 6. Quick Reference
 
 | Scenario                                         | Strategy            | Action                                                        |
 | :----------------------------------------------- | :------------------ | :------------------------------------------------------------ |
@@ -194,7 +240,7 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 
 ---
 
-## 6. Case Study: WU-1215 (Learning from Failure)
+## 7. Case Study: WU-1215 (Learning from Failure)
 
 **WU:** Refactor wu-done.mjs 768-line `main()` function
 
@@ -222,7 +268,7 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 
 ---
 
-## 7. Related Documentation
+## 8. Related Documentation
 
 - [session-handoff.md](./agent/onboarding/session-handoff.md) — Mid-WU checkpoint protocol
 - [agent-safety-card.md](./agent/onboarding/agent-safety-card.md) — Quick reference safety thresholds
