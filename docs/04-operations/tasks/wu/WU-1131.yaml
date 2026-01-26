@@ -3,10 +3,11 @@ title: Fix wu:spawn output truncation causing agent degradation
 lane: 'Framework: CLI'
 type: bug
 status: ready
-priority: P2
+priority: P1
 created: 2026-01-26
 code_paths:
   - .claude/skills/orchestration/SKILL.md
+  - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual:
     - pnpm wu:spawn --id WU-XXX | head -20 shows warning banner
@@ -15,6 +16,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1131.done
 dependencies: []
+initiative: INIT-005
+phase: 1
 risks: []
 notes: ''
 requires_review: false
@@ -25,7 +28,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add warning banner and end sentinel to wu:spawn output to prevent truncation. Update orchestration skill to require verbatim output verification.
+description: Add warning banner and end sentinel to wu:spawn output to prevent truncation. Update
+  orchestration skill to require verbatim output verification.
 acceptance:
   - Warning banner added at start of wu:spawn output
   - End sentinel <!-- LUMENFLOW_SPAWN_END --> added after constraints block
