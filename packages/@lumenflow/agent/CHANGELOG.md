@@ -1,5 +1,13 @@
 # @lumenflow/agent
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @lumenflow/core@2.0.0
+  - @lumenflow/memory@2.0.0
+
 ## 1.0.0
 
 ### Minor Changes
