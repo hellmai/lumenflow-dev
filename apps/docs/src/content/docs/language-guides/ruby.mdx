@@ -1,0 +1,374 @@
+---
+title: Ruby
+description: Configure LumenFlow for Ruby projects
+---
+
+import { Aside, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+
+This guide covers setting up LumenFlow for Ruby projects using Bundler and RSpec.
+
+## Quick Setup
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+gates:
+  execution:
+    preset: 'ruby'
+    # Custom overrides:
+    setup: 'bundle install'
+    format: 'bundle exec rubocop --format simple --fail-level W'
+    lint: 'bundle exec rubocop'
+    test: 'bundle exec rspec'
+```
+
+## Ruby Preset Defaults
+
+The `ruby` preset provides these default commands:
+
+| Gate      | Default Command |
+| --------- | --------------- |
+| Format    | `rubocop`       |
+| Lint      | `rubocop`       |
+| Typecheck | (none)          |
+| Test      | `rspec`         |
+
+<Aside type="note">
+  Ruby is dynamically typed, so there is no typecheck gate by default. Consider adding Sorbet or RBS for type checking if your project uses them.
+</Aside>
+
+## Recommended Tooling
+
+### Code Formatting and Linting (RuboCop)
+
+[RuboCop](https://rubocop.org/) is the standard for Ruby code style and linting. It handles both formatting and lint checks.
+
+Add to your `Gemfile`:
+
+```ruby
+group :development do
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec', require: false  # RSpec-specific rules
+  gem 'rubocop-rails', require: false  # Rails-specific rules (if applicable)
+end
+```
+
+Install:
+
+```bash
+bundle install
+```
+
+Create `.rubocop.yml`:
+
+```yaml
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'db/schema.rb'
+
+Metrics/MethodLength:
+  Max: 20
+
+Style/Documentation:
+  Enabled: false
+```
+
+Run lint check:
+
+```bash
+bundle exec rubocop
+```
+
+Auto-fix issues:
+
+```bash
+bundle exec rubocop -A
+```
+
+<Aside type="tip">
+  Use `rubocop --format simple` for cleaner output in CI, and `--fail-level W` to fail only on warnings or worse.
+</Aside>
+
+### Type Checking (Sorbet)
+
+For projects that want static type checking, [Sorbet](https://sorbet.org/) is the leading option:
+
+Add to your `Gemfile`:
+
+```ruby
+group :development do
+  gem 'sorbet', require: false
+  gem 'sorbet-runtime'
+end
+```
+
+Initialize Sorbet:
+
+```bash
+bundle exec srb init
+```
+
+Run type check:
+
+```bash
+bundle exec srb tc
+```
+
+Add to your gates config:
+
+```yaml
+gates:
+  execution:
+    preset: 'ruby'
+    typecheck: 'bundle exec srb tc'
+```
+
+### Testing (RSpec)
+
+[RSpec](https://rspec.info/) is the most popular testing framework for Ruby.
+
+Add to your `Gemfile`:
+
+```ruby
+group :test do
+  gem 'rspec', '~> 3.13'
+  gem 'simplecov', require: false  # For coverage reports
+end
+```
+
+Initialize RSpec:
+
+```bash
+bundle exec rspec --init
+```
+
+This creates `spec/spec_helper.rb` and `.rspec`.
+
+Run tests:
+
+```bash
+bundle exec rspec
+```
+
+Run with coverage:
+
+```bash
+COVERAGE=true bundle exec rspec
+```
+
+Configure SimpleCov in `spec/spec_helper.rb`:
+
+```ruby
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter '/spec/'
+    minimum_coverage 90
+  end
+end
+```
+
+### Minitest Alternative
+
+If you prefer Minitest over RSpec:
+
+```yaml
+gates:
+  execution:
+    preset: 'ruby'
+    test: 'bundle exec rake test'
+```
+
+## Full Configuration Example
+
+Here is a complete `.lumenflow.config.yaml` for a Ruby project:
+
+```yaml
+version: '2.0'
+
+directories:
+  wu_specs: docs/tasks/wu
+  stamps: .lumenflow/stamps
+
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths:
+        - lib/**/*.rb
+        - app/**/*.rb
+    - name: 'Operations: Infrastructure'
+      code_paths:
+        - config/**/*.rb
+        - bin/**
+
+gates:
+  execution:
+    preset: 'ruby'
+    setup: 'bundle install --jobs 4 --retry 3'
+    format: 'bundle exec rubocop --format simple --fail-level W'
+    lint: 'bundle exec rubocop --format github'
+    test: 'bundle exec rspec --format progress'
+```
+
+## Running Gates
+
+Once configured, run gates as usual:
+
+```bash
+# Run all gates
+pnpm gates
+
+# Or if using the CLI directly
+npx gates
+```
+
+Output:
+
+```
+> Setup... done
+> Format check... pass
+> Lint check... pass
+> Test suite... pass
+> All gates passed!
+```
+
+## Rails Projects
+
+For Rails applications, extend the configuration:
+
+```yaml
+gates:
+  execution:
+    preset: 'ruby'
+    setup: 'bundle install && bin/rails db:prepare'
+    format: 'bundle exec rubocop --format simple'
+    lint: 'bundle exec rubocop && bundle exec brakeman -q'
+    test: 'bundle exec rspec'
+```
+
+Consider adding:
+
+- **Brakeman** for security analysis
+- **rubocop-rails** for Rails-specific rules
+- **factory_bot** for test fixtures
+
+Add to `Gemfile`:
+
+```ruby
+group :development do
+  gem 'rubocop-rails', require: false
+  gem 'brakeman', require: false
+end
+
+group :test do
+  gem 'factory_bot_rails'
+  gem 'faker'
+end
+```
+
+## CI Integration
+
+Use the LumenFlow Gates GitHub Action:
+
+```yaml
+# .github/workflows/gates.yml
+name: Gates
+on: [pull_request]
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+For Rails with database:
+
+```yaml
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgres://test:test@localhost:5432/test
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - run: bin/rails db:prepare
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+## Troubleshooting
+
+### RuboCop reports many offenses
+
+Start by generating a TODO file to ignore existing offenses:
+
+```bash
+bundle exec rubocop --auto-gen-config
+```
+
+This creates `.rubocop_todo.yml`. Gradually fix and remove entries.
+
+### Bundle install is slow
+
+Use parallel installation and caching:
+
+```bash
+bundle config set --local jobs 4
+bundle install
+```
+
+In CI, use `bundler-cache: true` with `ruby/setup-ruby`.
+
+### RSpec tests are slow
+
+Run tests in parallel with [parallel_tests](https://github.com/grosser/parallel_tests):
+
+```ruby
+gem 'parallel_tests', group: :test
+```
+
+```bash
+bundle exec parallel_rspec spec/
+```
+
+### Coverage below threshold
+
+If SimpleCov fails due to low coverage, identify uncovered files:
+
+```bash
+COVERAGE=true bundle exec rspec
+open coverage/index.html
+```
+
+Focus on adding tests for uncovered branches and methods.
+
+## Next Steps
+
+- [Gates Reference](/concepts/gates) - All gate configuration options
+- [Configuration](/reference/config) - Full config schema
+- [GitHub Action](/reference/github-action) - CI integration details
