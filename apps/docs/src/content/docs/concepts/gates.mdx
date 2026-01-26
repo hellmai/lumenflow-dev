@@ -50,7 +50,7 @@ gates:
     lint: 'mypy . && ruff check .'
 ```
 
-Available presets: `node`, `python`, `go`, `rust`, `dotnet`
+Available presets: `node`, `python`, `go`, `rust`, `dotnet`, `java`, `ruby`, `php`
 
 ### Preset Defaults
 
@@ -61,6 +61,9 @@ Available presets: `node`, `python`, `go`, `rust`, `dotnet`
 | `go`     | `gofmt -l .`             | `golangci-lint` | `go vet ./...` | `go test`     |
 | `rust`   | `cargo fmt --check`      | `cargo clippy`  | `cargo check`  | `cargo test`  |
 | `dotnet` | `dotnet format --verify` | `dotnet build`  | -              | `dotnet test` |
+| `java`   | `spotless:check`         | `checkstyle`    | `mvn compile`  | `mvn test`    |
+| `ruby`   | `rubocop`                | `rubocop`       | -              | `rspec`       |
+| `php`    | `php-cs-fixer`           | `phpstan`       | -              | `phpunit`     |
 
 ## Running Gates
 
@@ -157,6 +160,50 @@ gates:
     lint: 'cargo clippy -- -D warnings'
     typecheck: 'cargo check'
     test: 'cargo test'
+```
+
+### Java / JVM
+
+```yaml
+gates:
+  execution:
+    preset: 'java'
+    # Or custom (Maven):
+    format: 'mvn spotless:check'
+    lint: 'mvn checkstyle:check'
+    typecheck: 'mvn compile -DskipTests'
+    test: 'mvn test'
+    # Or Gradle:
+    # format: './gradlew spotlessCheck'
+    # lint: './gradlew checkstyleMain'
+    # typecheck: './gradlew compileJava'
+    # test: './gradlew test'
+```
+
+### Ruby
+
+```yaml
+gates:
+  execution:
+    preset: 'ruby'
+    # Or custom:
+    setup: 'bundle install'
+    format: 'bundle exec rubocop --format simple --fail-level W'
+    lint: 'bundle exec rubocop'
+    test: 'bundle exec rspec'
+```
+
+### PHP
+
+```yaml
+gates:
+  execution:
+    preset: 'php'
+    # Or custom:
+    setup: 'composer install'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse'
+    test: 'vendor/bin/phpunit'
 ```
 
 ## Gate Behavior

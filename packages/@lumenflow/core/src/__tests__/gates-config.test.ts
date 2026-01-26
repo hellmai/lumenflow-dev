@@ -237,6 +237,35 @@ describe('gates-config', () => {
       expect(expanded.test).toContain('dotnet test');
     });
 
+    // WU-1118: Java/JVM, Ruby, and PHP presets
+    it('should expand java preset to default Java/JVM commands', () => {
+      const expanded = expandPreset('java');
+
+      expect(expanded.format).toBeDefined();
+      expect(expanded.lint).toBeDefined();
+      expect(expanded.test).toBeDefined();
+      // Java preset should support both Maven and Gradle
+      expect(expanded.test).toContain('mvn');
+    });
+
+    it('should expand ruby preset to default Ruby commands', () => {
+      const expanded = expandPreset('ruby');
+
+      expect(expanded.setup).toContain('bundle');
+      expect(expanded.format).toContain('rubocop');
+      expect(expanded.lint).toContain('rubocop');
+      expect(expanded.test).toContain('rspec');
+    });
+
+    it('should expand php preset to default PHP commands', () => {
+      const expanded = expandPreset('php');
+
+      expect(expanded.setup).toContain('composer');
+      expect(expanded.format).toContain('php-cs-fixer');
+      expect(expanded.lint).toContain('phpstan');
+      expect(expanded.test).toContain('phpunit');
+    });
+
     it('should return empty object for unknown preset', () => {
       const expanded = expandPreset('unknown-preset');
       expect(expanded).toEqual({});
@@ -270,6 +299,30 @@ describe('gates-config', () => {
 
     it('should have dotnet preset defined', () => {
       expect(GATE_PRESETS.dotnet).toBeDefined();
+    });
+
+    // WU-1118: Java/JVM, Ruby, and PHP presets
+    it('should have java preset defined', () => {
+      expect(GATE_PRESETS.java).toBeDefined();
+      expect(GATE_PRESETS.java.format).toBeDefined();
+      expect(GATE_PRESETS.java.lint).toBeDefined();
+      expect(GATE_PRESETS.java.test).toBeDefined();
+    });
+
+    it('should have ruby preset defined', () => {
+      expect(GATE_PRESETS.ruby).toBeDefined();
+      expect(GATE_PRESETS.ruby.setup).toBeDefined();
+      expect(GATE_PRESETS.ruby.format).toBeDefined();
+      expect(GATE_PRESETS.ruby.lint).toBeDefined();
+      expect(GATE_PRESETS.ruby.test).toBeDefined();
+    });
+
+    it('should have php preset defined', () => {
+      expect(GATE_PRESETS.php).toBeDefined();
+      expect(GATE_PRESETS.php.setup).toBeDefined();
+      expect(GATE_PRESETS.php.format).toBeDefined();
+      expect(GATE_PRESETS.php.lint).toBeDefined();
+      expect(GATE_PRESETS.php.test).toBeDefined();
     });
   });
 

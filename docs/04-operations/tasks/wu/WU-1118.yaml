@@ -6,11 +6,12 @@ status: in_progress
 priority: P1
 created: 2026-01-26
 code_paths:
-  - packages/@lumenflow/cli/src/gates/
+  - packages/@lumenflow/core/src/gates-config.ts
+  - apps/docs/src/content/docs/concepts/gates.mdx
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/gates/__tests__/
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1118.done
