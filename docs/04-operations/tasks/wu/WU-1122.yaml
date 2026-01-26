@@ -2,7 +2,7 @@ id: WU-1122
 title: 'Docs Audit: Language Support - Java, Ruby, and PHP guides'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -25,9 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create language guides for Java/JVM, Ruby, and PHP. These languages have presets added in WU-1118. This WU creates the documentation guides to match.
+description: Create language guides for Java/JVM, Ruby, and PHP. These languages have presets added
+  in WU-1118. This WU creates the documentation guides to match.
 acceptance:
   - Java/JVM language guide with Maven and Gradle examples
   - Ruby language guide with Bundler and RSpec examples
   - PHP language guide with Composer and PHPUnit examples
   - pnpm docs:build succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1122
+claimed_at: 2026-01-26T10:41:54.928Z
+baseline_main_sha: edaacdf9554802aeef28faee6686b843234a71e0
+session_id: 4d3fe403-68a8-448d-9001-faf1a951e584
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-26T10:41:54.935Z

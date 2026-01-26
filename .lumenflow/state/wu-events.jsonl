@@ -78,3 +78,4 @@
 {"type":"complete","wuId":"WU-1118","timestamp":"2026-01-26T10:25:39.132Z"}
 {"type":"complete","wuId":"WU-1115","timestamp":"2026-01-26T10:29:31.785Z"}
 {"type":"claim","wuId":"WU-1116","lane":"Content: Documentation","title":"Docs Audit: Internal to Public - Agent onboarding + constraints","timestamp":"2026-01-26T10:30:53.819Z"}
+{"type":"claim","wuId":"WU-1122","lane":"Content: Documentation","title":"Docs Audit: Language Support - Java, Ruby, and PHP guides","timestamp":"2026-01-26T10:41:54.945Z"}
