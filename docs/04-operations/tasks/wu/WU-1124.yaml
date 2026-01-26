@@ -32,3 +32,4 @@ acceptance:
   - Hardcoded template strings removed from docs-sync.ts
   - Templates read from bundled files
   - docs-sync command works correctly after refactor
+initiative: INIT-004
