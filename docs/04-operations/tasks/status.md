@@ -1,17 +1,14 @@
 # Work Unit Status
 
-_Last updated: 2026-01-25_
+_Last updated: 2026-01-26_
 
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1113 — INIT-003 Phase 7: Publish @lumenflow/cli update](wu/WU-1113.yaml)
 
 ## Completed
 
-- [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — 2026-01-26
-- [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
-- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
-- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -42,3 +39,7 @@ _Last updated: 2026-01-25_
 - [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — 2026-01-25
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml) — 2026-01-25
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml) — 2026-01-25
+- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — 2026-01-26
+- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
+- [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
+- [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — 2026-01-26
