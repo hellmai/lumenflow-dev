@@ -6,11 +6,15 @@ status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
+  - packages/@lumenflow/core/src/domain/context.schemas.ts
+  - packages/@lumenflow/core/src/domain/recovery.schemas.ts
+  - packages/@lumenflow/core/src/index.ts
   - apps/docs/src/content/docs/reference/ports.mdx
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/**
+    - packages/@lumenflow/core/src/__tests__/domain/context.schemas.test.ts
+    - packages/@lumenflow/core/src/__tests__/domain/recovery.schemas.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1126.done

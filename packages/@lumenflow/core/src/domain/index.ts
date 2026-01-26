@@ -9,6 +9,7 @@
  */
 
 // Context schemas (primary definitions for location, git, wu state)
+// Includes LocationType enum constant
 export * from './context.schemas.js';
 
 // Validation schemas (excludes re-exports from context.schemas)
@@ -32,6 +33,7 @@ export {
 } from './validation.schemas.js';
 
 // Recovery schemas
+// Includes RecoveryIssueCode and RecoveryActionType enum constants
 export * from './recovery.schemas.js';
 
 // Orchestration schemas (existing)
