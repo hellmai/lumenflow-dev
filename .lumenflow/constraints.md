@@ -173,6 +173,14 @@ git worktree prune
 
 ---
 
+## Context Limits
+
+**When approaching context limits, spawn a fresh agent instead of continuing after compaction.**
+
+Context compaction causes agents to lose critical rules. See [wu-sizing-guide.md](../docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md) for mandatory thresholds and the spawn-fresh protocol.
+
+---
+
 ## Escalation Triggers
 
 Stop and ask a human when:
