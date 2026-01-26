@@ -1,0 +1,316 @@
+---
+title: Rust
+description: LumenFlow gates configuration for Rust projects
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Rust is a systems programming language focused on safety, concurrency, and performance. LumenFlow's `rust` preset integrates with Cargo for comprehensive quality gates.
+
+## Quickstart
+
+<Steps>
+
+1. **Add preset to your configuration**
+
+   ```yaml
+   # .lumenflow.config.yaml
+   version: '2.0'
+
+   gates:
+     execution:
+       preset: 'rust'
+   ```
+
+2. **Run gates**
+
+   ```bash
+   pnpm gates
+   # Or with the GitHub Action
+   ```
+
+3. **Done!**
+
+   The preset runs `cargo fmt`, `cargo clippy`, `cargo check`, and `cargo test` automatically.
+
+</Steps>
+
+## Preset Defaults
+
+The `rust` preset uses these commands:
+
+| Gate      | Command             | Description                              |
+| --------- | ------------------- | ---------------------------------------- |
+| Format    | `cargo fmt --check` | Check code formatting                    |
+| Lint      | `cargo clippy`      | Catch common mistakes and improve code   |
+| Typecheck | `cargo check`       | Fast type checking without full build    |
+| Test      | `cargo test`        | Run all tests                            |
+
+## Custom Configuration
+
+Override specific commands while keeping preset defaults for others:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    # Fail on any clippy warnings
+    lint: 'cargo clippy -- -D warnings'
+    # Run tests with output
+    test: 'cargo test -- --nocapture'
+```
+
+## Full Custom Configuration
+
+For complete control, omit the preset and define all commands:
+
+```yaml
+gates:
+  execution:
+    format: 'cargo fmt --all --check'
+    lint: 'cargo clippy --all-targets --all-features -- -D warnings'
+    typecheck: 'cargo check --all-targets --all-features'
+    test: 'cargo test --all-features'
+```
+
+## Common Patterns
+
+### Strict Clippy
+
+Treat all Clippy warnings as errors:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    lint: 'cargo clippy --all-targets --all-features -- -D warnings'
+```
+
+Configure additional lints in `Cargo.toml`:
+
+```toml
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "deny"
+pedantic = "warn"
+```
+
+### With Coverage
+
+Add test coverage using cargo-tarpaulin:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    test: 'cargo tarpaulin --out Xml'
+```
+
+Or using cargo-llvm-cov:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    test: 'cargo llvm-cov --lcov --output-path lcov.info'
+```
+
+### All Features and Targets
+
+Ensure all features and targets compile:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    typecheck: 'cargo check --all-targets --all-features'
+    lint: 'cargo clippy --all-targets --all-features -- -D warnings'
+    test: 'cargo test --all-features'
+```
+
+### With Documentation
+
+Include documentation build in gates:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    # Add doc build to typecheck
+    typecheck: 'cargo check && cargo doc --no-deps'
+```
+
+## GitHub Action Example
+
+```yaml
+name: LumenFlow Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run LumenFlow Gates
+        uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+<Aside type="tip">
+  Using `rust-cache` significantly speeds up CI by caching compiled dependencies between runs.
+</Aside>
+
+## Project Structure
+
+LumenFlow works well with standard Cargo project layouts:
+
+```
+myproject/
+├── .lumenflow.config.yaml
+├── Cargo.toml
+├── Cargo.lock
+├── src/
+│   ├── lib.rs
+│   └── main.rs
+├── tests/
+│   └── integration_test.rs
+└── benches/
+    └── benchmark.rs
+```
+
+## Workspace Support
+
+For Cargo workspaces, LumenFlow runs gates across all crates:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    # Workspace-wide commands
+    format: 'cargo fmt --all --check'
+    lint: 'cargo clippy --workspace --all-targets -- -D warnings'
+    typecheck: 'cargo check --workspace --all-targets'
+    test: 'cargo test --workspace'
+```
+
+Example workspace structure:
+
+```
+myworkspace/
+├── .lumenflow.config.yaml
+├── Cargo.toml              # [workspace] definition
+├── crates/
+│   ├── core/
+│   │   ├── Cargo.toml
+│   │   └── src/lib.rs
+│   ├── api/
+│   │   ├── Cargo.toml
+│   │   └── src/lib.rs
+│   └── cli/
+│       ├── Cargo.toml
+│       └── src/main.rs
+```
+
+## Nightly Features
+
+If using nightly-only features:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    format: 'cargo +nightly fmt --check'
+    lint: 'cargo +nightly clippy -- -D warnings'
+```
+
+In CI, install the nightly toolchain:
+
+```yaml
+- uses: dtolnay/rust-toolchain@nightly
+  with:
+    components: rustfmt, clippy
+```
+
+## Troubleshooting
+
+### Clippy warnings in dependencies
+
+Filter to your code only:
+
+```yaml
+lint: 'cargo clippy --all-targets -- -D warnings -A clippy::cargo'
+```
+
+### Long compile times in CI
+
+Use caching and consider splitting jobs:
+
+```yaml
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --all-targets
+
+  test:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test
+```
+
+### Feature flag combinations
+
+Test specific feature combinations:
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    test: |
+      cargo test --no-default-features
+      cargo test --all-features
+      cargo test --features "feature1,feature2"
+```
+
+### Cross-compilation
+
+For cross-compilation targets, add the target in CI:
+
+```yaml
+- uses: dtolnay/rust-toolchain@stable
+  with:
+    targets: wasm32-unknown-unknown
+
+- name: Check WASM build
+  run: cargo check --target wasm32-unknown-unknown
+```
+
+## Next Steps
+
+- [Gates Concepts](/concepts/gates) - Understanding gates
+- [Configuration Reference](/reference/config) - Full config schema
+- [GitHub Action](/reference/github-action) - CI/CD integration
