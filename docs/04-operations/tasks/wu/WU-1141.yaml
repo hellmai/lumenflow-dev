@@ -2,7 +2,7 @@ id: WU-1141
 title: Fix wu:cleanup PR merge verification failing for merged PRs
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -40,3 +40,5 @@ session_id: 49bd708a-f20e-4d3c-ab7b-23ad944a28be
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T12:16:11.867Z
+locked: true
+completed_at: 2026-01-27T12:47:26.437Z
