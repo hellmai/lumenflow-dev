@@ -7,7 +7,7 @@
  * - string risks → array
  * - test_paths → tests
  * - ISO/Date created → YYYY-MM-DD
- * - Removes deprecated fields: owner, context, spec_refs
+ * - Removes deprecated fields: owner, context
  */
 
 /**
@@ -82,7 +82,6 @@ export function normalizeWUSchema(wu) {
 
   // 6. Remove deprecated fields
   delete result.owner;
-  delete result.spec_refs;
 
   return result;
 }
