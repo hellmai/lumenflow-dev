@@ -6,7 +6,7 @@ status: in_progress
 priority: P1
 created: 2026-01-27
 code_paths:
-  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
 tests:
   manual:
     - Run gates in a consumer repo
@@ -17,12 +17,21 @@ artifacts:
   - .lumenflow/stamps/WU-1150.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Additional hardcoded paths found: wu-done-preflight.ts:222 (gates.js), wu-constants.ts:1154
+  (supabase-docs-linter), wu-constants.ts:1156 (system-map-validator), wu-constants.ts:1411
+  (validate.js)'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-27T20:20:22.650Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1150
+session_id: 0832c4d2-2005-4937-a9fa-f38e1b756a22
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T20:20:22.656Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +40,3 @@ description: TOOL_PATHS.VALIDATE_BACKLOG_SYNC uses monorepo-relative path that b
 acceptance:
   - TOOL_PATHS paths work in both monorepo and consumer repos
   - PatientPath gates pass after fix
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1150
-claimed_at: 2026-01-27T20:20:22.650Z
-baseline_main_sha: a7b59ea55d0066253ef1b53a208353fb4d874849
-session_id: 0832c4d2-2005-4937-a9fa-f38e1b756a22
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-27T20:20:22.656Z
