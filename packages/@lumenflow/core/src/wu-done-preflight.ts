@@ -219,7 +219,7 @@ export function validateAllPreCommitHooks(
     }
 
     // WU-1139: Run CLI gates directly (removes stub scripts)
-    execSyncFn('node packages/@lumenflow/cli/dist/gates.js', execOptions);
+    execSyncFn(SCRIPT_PATHS.GATES, execOptions);
 
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All pre-commit hooks passed`);
     return { valid: true, errors: [] };

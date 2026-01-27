@@ -13,6 +13,8 @@
  */
 
 import path from 'node:path';
+import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { kebabCase } from 'change-case';
 
 /**
@@ -1144,16 +1146,81 @@ export const GATE_COMMANDS = {
   TIERED_TEST: 'tiered-test',
 };
 
+const require = createRequire(import.meta.url);
+const NOOP_NODE_COMMAND = 'node -e "process.exit(0)"';
+
+function resolveNodeModulePath(modulePath: string) {
+  try {
+    return require.resolve(modulePath);
+  } catch {
+    return null;
+  }
+}
+
+function resolveRepoPath(relativePath: string, requireExists = false) {
+  const candidate = path.join(process.cwd(), relativePath);
+  if (requireExists && !existsSync(candidate)) {
+    return null;
+  }
+  return candidate;
+}
+
+function buildNodeCommand({
+  modulePath,
+  repoPath,
+  allowMissing = false,
+  repoPathRequiresExistence = false,
+}: {
+  modulePath?: string;
+  repoPath?: string;
+  allowMissing?: boolean;
+  repoPathRequiresExistence?: boolean;
+}) {
+  const resolved = modulePath ? resolveNodeModulePath(modulePath) : null;
+  if (resolved) {
+    return `node ${resolved}`;
+  }
+
+  const fallback = repoPath ? resolveRepoPath(repoPath, repoPathRequiresExistence) : null;
+  if (fallback) {
+    return `node ${fallback}`;
+  }
+
+  if (allowMissing) {
+    return NOOP_NODE_COMMAND;
+  }
+
+  if (repoPath) {
+    return `node ${resolveRepoPath(repoPath)}`;
+  }
+
+  if (modulePath) {
+    return `node ${modulePath}`;
+  }
+
+  return NOOP_NODE_COMMAND;
+}
+
 /**
  * Tool paths for scripts
  *
  * Centralized paths to tool scripts.
  */
 export const TOOL_PATHS = {
-  VALIDATE_BACKLOG_SYNC: 'node packages/@lumenflow/cli/dist/validate-backlog-sync.js',
-  SUPABASE_DOCS_LINTER: 'node packages/linters/supabase-docs-linter.js',
+  VALIDATE_BACKLOG_SYNC: buildNodeCommand({
+    modulePath: '@lumenflow/cli/dist/validate-backlog-sync.js',
+    repoPath: 'packages/@lumenflow/cli/dist/validate-backlog-sync.js',
+  }),
+  SUPABASE_DOCS_LINTER: buildNodeCommand({
+    repoPath: 'packages/linters/supabase-docs-linter.js',
+    allowMissing: true,
+    repoPathRequiresExistence: true,
+  }),
   /** WU-2315: System map validator script */
-  SYSTEM_MAP_VALIDATE: 'node packages/@lumenflow/core/dist/system-map-validator.js',
+  SYSTEM_MAP_VALIDATE: buildNodeCommand({
+    modulePath: '@lumenflow/core/dist/system-map-validator.js',
+    repoPath: 'packages/@lumenflow/core/dist/system-map-validator.js',
+  }),
 };
 
 /**
@@ -1407,8 +1474,17 @@ export const AUDIT_ARGS = {
  * Centralized paths to validation scripts.
  */
 export const SCRIPT_PATHS = {
+  /** Gates runner */
+  GATES: buildNodeCommand({
+    modulePath: '@lumenflow/cli/dist/gates.js',
+    repoPath: 'packages/@lumenflow/cli/dist/gates.js',
+  }),
+
   /** WU YAML validation */
-  VALIDATE: 'node packages/@lumenflow/cli/dist/validate.js',
+  VALIDATE: buildNodeCommand({
+    modulePath: '@lumenflow/cli/dist/validate.js',
+    repoPath: 'packages/@lumenflow/cli/dist/validate.js',
+  }),
 
   /** Prompt registry validation */
   VALIDATE_PROMPT_REGISTRY: 'tools/validate-prompt-registry.js',

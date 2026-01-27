@@ -31,6 +31,7 @@ vi.mock('simple-git', () => {
 // Mock fs.statSync for .git file detection
 vi.mock('node:fs', () => ({
   statSync: vi.fn(),
+  existsSync: vi.fn(() => false),
 }));
 
 import { resolveLocation, type LocationContext } from '../../context/location-resolver.js';
