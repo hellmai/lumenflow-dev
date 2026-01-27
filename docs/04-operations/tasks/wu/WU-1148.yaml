@@ -2,7 +2,7 @@ id: WU-1148
 title: 'Bug: docs:generate output not formatted by wu:done'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -40,3 +40,5 @@ session_id: 3462096f-78d9-4940-b191-250a110f063f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T18:48:33.047Z
+locked: true
+completed_at: 2026-01-27T18:57:05.830Z
