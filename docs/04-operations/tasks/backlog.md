@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — Framework: CLI
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — Framework: CLI
   (No items ready)
 
