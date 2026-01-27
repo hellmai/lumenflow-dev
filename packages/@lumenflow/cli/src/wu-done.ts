@@ -2487,9 +2487,14 @@ async function main() {
   // This prevents partial completion states where merge succeeds but commit fails
   // Validates all 8 gates: secrets, file size, ESLint, Prettier, TypeScript, audit, architecture, tasks
   // WU-2308: Pass worktreePath to run audit from worktree (checks fixed deps, not stale main deps)
-  const hookResult = validateAllPreCommitHooks(id, worktreePath);
-  if (!hookResult.valid) {
-    die('Pre-flight validation failed. Fix hook issues and try again.');
+  // WU-1145: Skip pre-flight when skipGates is true (pre-flight runs gates which was already skipped)
+  if (!args.skipGates) {
+    const hookResult = validateAllPreCommitHooks(id, worktreePath);
+    if (!hookResult.valid) {
+      die('Pre-flight validation failed. Fix hook issues and try again.');
+    }
+  } else {
+    console.log(`${LOG_PREFIX.DONE} Skipping pre-flight hook validation (--skip-gates)`);
   }
 
   // Step 0.6: WU-1781 - Run tasks:validate preflight BEFORE any merge/push operations
