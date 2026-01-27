@@ -1,6 +1,6 @@
 id: WU-1145
 title: 'Bug: wu:done metadata update overwrites concurrent backlog changes'
-lane: 'Framework: CLI'
+lane: 'Framework: Core'
 type: bug
 status: ready
 priority: P2

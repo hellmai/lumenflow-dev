@@ -1,6 +1,6 @@
 id: WU-1144
 title: 'Bug: wu:edit --notes and --acceptance overwrite instead of append'
-lane: 'Framework: CLI'
+lane: 'Framework: Core'
 type: bug
 status: ready
 priority: P2
