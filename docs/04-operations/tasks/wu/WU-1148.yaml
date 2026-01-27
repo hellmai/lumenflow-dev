@@ -6,7 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/wu-done-docs-generate.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-docs-integration.test.ts
 tests:
   manual: []
   unit:
