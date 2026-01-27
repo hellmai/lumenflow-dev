@@ -2,7 +2,7 @@ id: WU-1073
 title: Add --risks option to wu:edit command
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -25,9 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The wu:edit command is missing a --risks option to update the risks field in WU specs. This was discovered when trying to add risk notes to WU-1071 - had to manually edit the file instead of using CLI tooling.
+description: The wu:edit command is missing a --risks option to update the risks field in WU specs.
+  This was discovered when trying to add risk notes to WU-1071 - had to manually edit the file
+  instead of using CLI tooling.
 acceptance:
   - wu:edit supports --risks flag (repeatable)
   - wu:edit --risks replaces existing risks by default
   - wu:edit --risks --append adds to existing risks
   - Gates pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1073
+claimed_at: 2026-01-27T16:17:52.358Z
+baseline_main_sha: 0dd26211c43df88abda0e3ab3457e5929066d678
+session_id: 0fc4ba7d-3222-454a-a4ed-7ce3be434540
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T16:17:52.364Z
