@@ -1,127 +1,128 @@
-{"type":"claim","wuId":"WU-1077","lane":"Framework: CLI","title":"Fix release script to work entirely in micro-worktree","timestamp":"2026-01-23T14:30:05.484Z"}
-{"type":"claim","wuId":"WU-1078","lane":"Framework: CLI","title":"Fix wu:repair to use micro-worktree isolation","timestamp":"2026-01-23T14:36:07.067Z"}
-{"type":"claim","wuId":"WU-1079","lane":"Framework: Core","title":"Migrate stamps from .beacon to .lumenflow","timestamp":"2026-01-23T14:38:11.289Z"}
+{"type":"claim","wuId":"WU-1077","timestamp":"2026-01-23T14:30:05.484Z","lane":"Framework: CLI","title":"Fix release script to work entirely in micro-worktree"}
+{"type":"claim","wuId":"WU-1078","timestamp":"2026-01-23T14:36:07.067Z","lane":"Framework: CLI","title":"Fix wu:repair to use micro-worktree isolation"}
+{"type":"claim","wuId":"WU-1079","timestamp":"2026-01-23T14:38:11.289Z","lane":"Framework: Core","title":"Migrate stamps from .beacon to .lumenflow"}
 {"type":"complete","wuId":"WU-1079","timestamp":"2026-01-23T14:45:05.845Z"}
-{"type":"claim","wuId":"WU-1080","lane":"Framework: Core","title":"Add wu:release command to recover orphaned WUs","timestamp":"2026-01-23T14:48:09.073Z"}
+{"type":"claim","wuId":"WU-1080","timestamp":"2026-01-23T14:48:09.073Z","lane":"Framework: Core","title":"Add wu:release command to recover orphaned WUs"}
 {"type":"complete","wuId":"WU-1078","timestamp":"2026-01-23T14:51:38.848Z"}
 {"type":"complete","wuId":"WU-1077","timestamp":"2026-01-23T14:59:23.735Z"}
 {"type":"complete","wuId":"WU-1080","timestamp":"2026-01-23T15:01:45.937Z"}
-{"type":"claim","wuId":"WU-1081","lane":"Framework: CLI","title":"Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push","timestamp":"2026-01-23T18:16:17.724Z"}
+{"type":"claim","wuId":"WU-1081","timestamp":"2026-01-23T18:16:17.724Z","lane":"Framework: CLI","title":"Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push"}
 {"type":"complete","wuId":"WU-1081","timestamp":"2026-01-23T18:23:09.679Z"}
-{"type":"claim","wuId":"WU-1082","lane":"Framework: Core","title":"Agent branch patterns registry with fetch + cache","timestamp":"2026-01-24T11:28:20.659Z"}
-{"type":"claim","wuId":"WU-1083","lane":"Framework: CLI","title":"Scaffold agent onboarding docs and skills in lumenflow init","timestamp":"2026-01-24T11:37:31.488Z"}
+{"type":"claim","wuId":"WU-1082","timestamp":"2026-01-24T11:28:20.659Z","lane":"Framework: Core","title":"Agent branch patterns registry with fetch + cache"}
+{"type":"claim","wuId":"WU-1083","timestamp":"2026-01-24T11:37:31.488Z","lane":"Framework: CLI","title":"Scaffold agent onboarding docs and skills in lumenflow init"}
 {"type":"complete","wuId":"WU-1082","timestamp":"2026-01-24T11:44:13.388Z"}
 {"type":"complete","wuId":"WU-1083","timestamp":"2026-01-24T11:53:57.793Z"}
-{"type":"claim","wuId":"WU-1084","lane":"Framework: CLI","title":"wu:done should fail if main has uncommitted changes after merge","timestamp":"2026-01-24T12:19:27.650Z"}
+{"type":"claim","wuId":"WU-1084","timestamp":"2026-01-24T12:19:27.650Z","lane":"Framework: CLI","title":"wu:done should fail if main has uncommitted changes after merge"}
 {"type":"complete","wuId":"WU-1084","timestamp":"2026-01-24T12:27:11.099Z"}
-{"type":"claim","wuId":"WU-1085","lane":"Framework: CLI","title":"CLI best practices audit: --help, --no-color, exports","timestamp":"2026-01-24T15:59:06.987Z"}
-{"type":"claim","wuId":"WU-1086","lane":"Framework: Core","title":"Fix gates-pre-commit module resolution to support .mjs extension","timestamp":"2026-01-24T16:10:19.392Z"}
+{"type":"claim","wuId":"WU-1085","timestamp":"2026-01-24T15:59:06.987Z","lane":"Framework: CLI","title":"CLI best practices audit: --help, --no-color, exports"}
+{"type":"claim","wuId":"WU-1086","timestamp":"2026-01-24T16:10:19.392Z","lane":"Framework: Core","title":"Fix gates-pre-commit module resolution to support .mjs extension"}
 {"type":"complete","wuId":"WU-1085","timestamp":"2026-01-24T16:15:42.966Z"}
 {"type":"complete","wuId":"WU-1086","timestamp":"2026-01-24T16:21:04.258Z"}
-{"type":"claim","wuId":"WU-1087","lane":"Framework: CLI","title":"CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish","timestamp":"2026-01-24T16:31:35.700Z"}
-{"type":"claim","wuId":"WU-1088","lane":"Framework: Core","title":"Fix circular dependency in dependency-graph.ts causing top-level await warning","timestamp":"2026-01-24T16:37:43.924Z"}
+{"type":"claim","wuId":"WU-1087","timestamp":"2026-01-24T16:31:35.700Z","lane":"Framework: CLI","title":"CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish"}
+{"type":"claim","wuId":"WU-1088","timestamp":"2026-01-24T16:37:43.924Z","lane":"Framework: Core","title":"Fix circular dependency in dependency-graph.ts causing top-level await warning"}
 {"type":"complete","wuId":"WU-1087","timestamp":"2026-01-24T16:40:16.024Z"}
 {"type":"complete","wuId":"WU-1088","timestamp":"2026-01-24T16:51:37.611Z"}
-{"type":"claim","wuId":"WU-1089","lane":"Framework: Core","title":"Agent branch patterns: merge mode, override, and airgapped support","timestamp":"2026-01-24T17:35:48.116Z"}
+{"type":"claim","wuId":"WU-1089","timestamp":"2026-01-24T17:35:48.116Z","lane":"Framework: Core","title":"Agent branch patterns: merge mode, override, and airgapped support"}
 {"type":"complete","wuId":"WU-1089","timestamp":"2026-01-24T17:45:43.502Z"}
-{"type":"claim","wuId":"WU-1090","lane":"Framework: Core","title":"Context-aware state machine for WU lifecycle commands","timestamp":"2026-01-24T19:26:37.900Z"}
+{"type":"claim","wuId":"WU-1090","timestamp":"2026-01-24T19:26:37.900Z","lane":"Framework: Core","title":"Context-aware state machine for WU lifecycle commands"}
 {"type":"complete","wuId":"WU-1090","timestamp":"2026-01-24T19:51:47.665Z"}
-{"type":"claim","wuId":"WU-1097","lane":"Framework: CLI","title":"P3: Fix shell escaping in wu-recover CLI","timestamp":"2026-01-25T11:19:33.621Z"}
-{"type":"claim","wuId":"WU-1091","lane":"Framework: Core","title":"P1: Fix ensureOnMain() blocking all web agent commands","timestamp":"2026-01-25T11:20:03.148Z"}
+{"type":"claim","wuId":"WU-1097","timestamp":"2026-01-25T11:19:33.621Z","lane":"Framework: CLI","title":"P3: Fix shell escaping in wu-recover CLI"}
+{"type":"claim","wuId":"WU-1091","timestamp":"2026-01-25T11:20:03.148Z","lane":"Framework: Core","title":"P1: Fix ensureOnMain() blocking all web agent commands"}
 {"type":"complete","wuId":"WU-1091","timestamp":"2026-01-25T11:26:37.636Z"}
 {"type":"complete","wuId":"WU-1097","timestamp":"2026-01-25T11:32:54.766Z"}
-{"type":"claim","wuId":"WU-1092","lane":"Framework: Core","title":"P2: Fix worktreeCleanPredicate checking wrong git state","timestamp":"2026-01-25T11:54:50.080Z"}
+{"type":"claim","wuId":"WU-1092","timestamp":"2026-01-25T11:54:50.080Z","lane":"Framework: Core","title":"P2: Fix worktreeCleanPredicate checking wrong git state"}
 {"type":"complete","wuId":"WU-1092","timestamp":"2026-01-25T12:01:47.293Z"}
-{"type":"claim","wuId":"WU-1093","lane":"Framework: Core","title":"INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery","timestamp":"2026-01-25T12:05:23.120Z"}
+{"type":"claim","wuId":"WU-1093","timestamp":"2026-01-25T12:05:23.120Z","lane":"Framework: Core","title":"INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery"}
 {"type":"complete","wuId":"WU-1093","timestamp":"2026-01-25T12:24:15.500Z"}
-{"type":"claim","wuId":"WU-1094","lane":"Framework: Core","title":"INIT-002 Phase 2: Implement adapters and dependency injection","timestamp":"2026-01-25T12:28:35.731Z"}
+{"type":"claim","wuId":"WU-1094","timestamp":"2026-01-25T12:28:35.731Z","lane":"Framework: Core","title":"INIT-002 Phase 2: Implement adapters and dependency injection"}
 {"type":"complete","wuId":"WU-1094","timestamp":"2026-01-25T12:38:53.355Z"}
-{"type":"claim","wuId":"WU-1096","lane":"Framework: Core","title":"P3: Fix recovery commands and DETACHED location type in Core","timestamp":"2026-01-25T12:41:17.284Z"}
+{"type":"claim","wuId":"WU-1096","timestamp":"2026-01-25T12:41:17.284Z","lane":"Framework: Core","title":"P3: Fix recovery commands and DETACHED location type in Core"}
+{"type":"claim","wuId":"WU-1095","timestamp":"2026-01-25T12:41:57.005Z","lane":"Content: Documentation","title":"INIT-002 Phase 3: ADR for hex architecture + migration guide"}
 {"type":"complete","wuId":"WU-1096","timestamp":"2026-01-25T12:47:23.033Z"}
-{"type":"claim","wuId":"WU-1095","lane":"Content: Documentation","title":"INIT-002 Phase 3: ADR for hex architecture + migration guide","timestamp":"2026-01-25T12:41:57.005Z"}
 {"type":"complete","wuId":"WU-1095","timestamp":"2026-01-25T12:48:59.123Z"}
-{"type":"claim","wuId":"WU-1099","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev","timestamp":"2026-01-25T14:04:17.595Z"}
-{"type":"claim","wuId":"WU-1100","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI docs to lumenflow.dev","timestamp":"2026-01-25T20:32:41.344Z"}
-{"type":"claim","wuId":"WU-1101","lane":"Framework: Core","title":"INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core","timestamp":"2026-01-25T20:33:17.092Z"}
+{"type":"claim","wuId":"WU-1099","timestamp":"2026-01-25T14:04:17.595Z","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev"}
+{"type":"claim","wuId":"WU-1100","timestamp":"2026-01-25T20:32:41.344Z","lane":"Content: Documentation","title":"INIT-003 Phase 1: Sync CLI docs to lumenflow.dev"}
+{"type":"claim","wuId":"WU-1101","timestamp":"2026-01-25T20:33:17.092Z","lane":"Framework: Core","title":"INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core"}
 {"type":"complete","wuId":"WU-1100","timestamp":"2026-01-25T20:39:18.542Z"}
 {"type":"complete","wuId":"WU-1101","timestamp":"2026-01-25T20:41:45.026Z"}
-{"type":"claim","wuId":"WU-1102","lane":"Framework: Core","title":"INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core","timestamp":"2026-01-25T20:58:36.142Z"}
+{"type":"claim","wuId":"WU-1102","timestamp":"2026-01-25T20:58:36.142Z","lane":"Framework: Core","title":"INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core"}
 {"type":"complete","wuId":"WU-1102","timestamp":"2026-01-25T21:17:08.832Z"}
-{"type":"claim","wuId":"WU-1103","lane":"Framework: Core","title":"INIT-003 Phase 2c: Migrate git & validator modules","timestamp":"2026-01-25T21:50:07.671Z"}
-{"type":"claim","wuId":"WU-1106","lane":"Framework: CLI","title":"INIT-003 Phase 3b: Migrate backlog:prune command","timestamp":"2026-01-25T21:50:55.061Z"}
+{"type":"claim","wuId":"WU-1103","timestamp":"2026-01-25T21:50:07.671Z","lane":"Framework: Core","title":"INIT-003 Phase 2c: Migrate git & validator modules"}
+{"type":"claim","wuId":"WU-1106","timestamp":"2026-01-25T21:50:55.061Z","lane":"Framework: CLI","title":"INIT-003 Phase 3b: Migrate backlog:prune command"}
 {"type":"complete","wuId":"WU-1103","timestamp":"2026-01-25T22:00:51.783Z"}
 {"type":"complete","wuId":"WU-1106","timestamp":"2026-01-25T22:04:39.094Z"}
-{"type":"claim","wuId":"WU-1104","lane":"Framework: Core","title":"INIT-003 Phase 2d: Migrate utility modules","timestamp":"2026-01-25T22:56:31.788Z"}
-{"type":"claim","wuId":"WU-1108","lane":"Framework: CLI","title":"INIT-003 Phase 4a: Migrate file operations (4 tools)","timestamp":"2026-01-25T22:56:46.528Z"}
+{"type":"claim","wuId":"WU-1104","timestamp":"2026-01-25T22:56:31.788Z","lane":"Framework: Core","title":"INIT-003 Phase 2d: Migrate utility modules"}
+{"type":"claim","wuId":"WU-1108","timestamp":"2026-01-25T22:56:46.528Z","lane":"Framework: CLI","title":"INIT-003 Phase 4a: Migrate file operations (4 tools)"}
 {"type":"complete","wuId":"WU-1104","timestamp":"2026-01-25T23:08:40.041Z"}
 {"type":"complete","wuId":"WU-1108","timestamp":"2026-01-25T23:10:20.612Z"}
-{"type":"claim","wuId":"WU-1105","lane":"Framework: CLI","title":"INIT-003 Phase 3a: Migrate init:plan command","timestamp":"2026-01-25T23:19:57.104Z"}
-{"type":"claim","wuId":"WU-1110","lane":"Framework: Metrics","title":"INIT-003 Phase 5a: Migrate metrics commands","timestamp":"2026-01-25T23:22:19.835Z"}
+{"type":"claim","wuId":"WU-1105","timestamp":"2026-01-25T23:19:57.104Z","lane":"Framework: CLI","title":"INIT-003 Phase 3a: Migrate init:plan command"}
+{"type":"claim","wuId":"WU-1110","timestamp":"2026-01-25T23:22:19.835Z","lane":"Framework: Metrics","title":"INIT-003 Phase 5a: Migrate metrics commands"}
 {"type":"complete","wuId":"WU-1105","timestamp":"2026-01-25T23:33:54.479Z"}
 {"type":"complete","wuId":"WU-1110","timestamp":"2026-01-25T23:36:37.483Z"}
-{"type":"claim","wuId":"WU-1112","lane":"Framework: CLI","title":"INIT-003 Phase 6: Migrate remaining Tier 1 tools","timestamp":"2026-01-25T23:42:41.376Z"}
-{"type":"release","wuId":"WU-1112","reason":"Releasing to work on WU-1109 as instructed by user","timestamp":"2026-01-25T23:43:23.481Z"}
-{"type":"claim","wuId":"WU-1109","lane":"Framework: CLI","title":"INIT-003 Phase 4b: Migrate git operations (5 tools)","timestamp":"2026-01-25T23:43:37.524Z"}
-{"type":"claim","wuId":"WU-1111","lane":"Framework: CLI","title":"INIT-003 Phase 5b: Migrate guards & validation (7 tools)","timestamp":"2026-01-25T23:44:49.302Z"}
-{"type":"claim","wuId":"WU-1107","lane":"Framework: Core","title":"INIT-003 Phase 3c: Migrate state:bootstrap command","timestamp":"2026-01-25T23:50:28.527Z"}
+{"type":"claim","wuId":"WU-1112","timestamp":"2026-01-25T23:42:41.376Z","lane":"Framework: CLI","title":"INIT-003 Phase 6: Migrate remaining Tier 1 tools"}
+{"type":"release","wuId":"WU-1112","timestamp":"2026-01-25T23:43:23.481Z","reason":"Releasing to work on WU-1109 as instructed by user"}
+{"type":"claim","wuId":"WU-1109","timestamp":"2026-01-25T23:43:37.524Z","lane":"Framework: CLI","title":"INIT-003 Phase 4b: Migrate git operations (5 tools)"}
+{"type":"claim","wuId":"WU-1111","timestamp":"2026-01-25T23:44:49.302Z","lane":"Framework: CLI","title":"INIT-003 Phase 5b: Migrate guards & validation (7 tools)"}
+{"type":"claim","wuId":"WU-1107","timestamp":"2026-01-25T23:50:28.527Z","lane":"Framework: Core","title":"INIT-003 Phase 3c: Migrate state:bootstrap command"}
 {"type":"complete","wuId":"WU-1111","timestamp":"2026-01-26T00:02:34.431Z"}
-{"type":"claim","wuId":"WU-1112","lane":"Framework: CLI","title":"INIT-003 Phase 6: Migrate remaining Tier 1 tools","timestamp":"2026-01-26T00:04:29.000Z"}
+{"type":"claim","wuId":"WU-1112","timestamp":"2026-01-26T00:04:29.000Z","lane":"Framework: CLI","title":"INIT-003 Phase 6: Migrate remaining Tier 1 tools"}
 {"type":"complete","wuId":"WU-1112","timestamp":"2026-01-26T00:06:00.884Z"}
 {"type":"complete","wuId":"WU-1109","timestamp":"2026-01-26T00:08:29.170Z"}
 {"type":"complete","wuId":"WU-1107","timestamp":"2026-01-26T00:13:45.751Z"}
-{"type":"claim","wuId":"WU-1113","lane":"Framework: CLI","title":"INIT-003 Phase 7: Publish @lumenflow/cli update","timestamp":"2026-01-26T09:16:13.379Z"}
+{"type":"claim","wuId":"WU-1113","timestamp":"2026-01-26T09:16:13.379Z","lane":"Framework: CLI","title":"INIT-003 Phase 7: Publish @lumenflow/cli update"}
 {"type":"complete","wuId":"WU-1113","timestamp":"2026-01-26T09:22:02.901Z"}
-{"type":"claim","wuId":"WU-1114","lane":"Content: Documentation","title":"Enforce context exhaustion prevention via WU sizing and spawn-fresh policy","timestamp":"2026-01-26T09:33:29.064Z"}
+{"type":"claim","wuId":"WU-1114","timestamp":"2026-01-26T09:33:29.064Z","lane":"Content: Documentation","title":"Enforce context exhaustion prevention via WU sizing and spawn-fresh policy"}
 {"type":"complete","wuId":"WU-1114","timestamp":"2026-01-26T09:38:41.013Z"}
-{"type":"claim","wuId":"WU-1115","lane":"Content: Documentation","title":"Docs Audit: What & Why - Fix broken link + positioning","timestamp":"2026-01-26T10:20:04.396Z"}
-{"type":"claim","wuId":"WU-1118","lane":"Framework: CLI","title":"Docs Audit: CLI Presets - Java/Ruby/PHP gate presets","timestamp":"2026-01-26T10:20:31.525Z"}
+{"type":"claim","wuId":"WU-1115","timestamp":"2026-01-26T10:20:04.396Z","lane":"Content: Documentation","title":"Docs Audit: What & Why - Fix broken link + positioning"}
+{"type":"claim","wuId":"WU-1118","timestamp":"2026-01-26T10:20:31.525Z","lane":"Framework: CLI","title":"Docs Audit: CLI Presets - Java/Ruby/PHP gate presets"}
 {"type":"complete","wuId":"WU-1118","timestamp":"2026-01-26T10:25:39.132Z"}
 {"type":"complete","wuId":"WU-1115","timestamp":"2026-01-26T10:29:31.785Z"}
-{"type":"claim","wuId":"WU-1116","lane":"Content: Documentation","title":"Docs Audit: Internal to Public - Agent onboarding + constraints","timestamp":"2026-01-26T10:30:53.819Z"}
-{"type":"claim","wuId":"WU-1122","lane":"Content: Documentation","title":"Docs Audit: Language Support - Java, Ruby, and PHP guides","timestamp":"2026-01-26T10:41:54.945Z"}
-{"type":"complete","wuId":"WU-1122","timestamp":"2026-01-26T10:50:04.290Z"}
-{"type":"claim","wuId":"WU-1117","lane":"Content: Documentation","title":"Docs Audit: Language Support - Python and .NET guides","timestamp":"2026-01-26T10:42:14.488Z"}
-{"type":"claim","wuId":"WU-1121","lane":"Content: Documentation","title":"Docs Audit: Language Support - Go and Rust guides","timestamp":"2026-01-26T10:42:34.137Z"}
+{"type":"claim","wuId":"WU-1116","timestamp":"2026-01-26T10:30:53.819Z","lane":"Content: Documentation","title":"Docs Audit: Internal to Public - Agent onboarding + constraints"}
+{"type":"claim","wuId":"WU-1122","timestamp":"2026-01-26T10:41:54.945Z","lane":"Content: Documentation","title":"Docs Audit: Language Support - Java, Ruby, and PHP guides"}
+{"type":"claim","wuId":"WU-1117","timestamp":"2026-01-26T10:42:14.488Z","lane":"Content: Documentation","title":"Docs Audit: Language Support - Python and .NET guides"}
+{"type":"claim","wuId":"WU-1121","timestamp":"2026-01-26T10:42:34.137Z","lane":"Content: Documentation","title":"Docs Audit: Language Support - Go and Rust guides"}
 {"type":"complete","wuId":"WU-1121","timestamp":"2026-01-26T10:49:42.299Z"}
+{"type":"complete","wuId":"WU-1122","timestamp":"2026-01-26T10:50:04.290Z"}
 {"type":"complete","wuId":"WU-1117","timestamp":"2026-01-26T10:50:35.043Z"}
-{"type":"claim","wuId":"WU-1126","lane":"Framework: Core","title":"Export constants/enums for string literals in port interfaces","timestamp":"2026-01-26T10:51:04.788Z"}
+{"type":"claim","wuId":"WU-1126","timestamp":"2026-01-26T10:51:04.788Z","lane":"Framework: Core","title":"Export constants/enums for string literals in port interfaces"}
+{"type":"claim","wuId":"WU-1123","timestamp":"2026-01-26T10:52:23.396Z","lane":"Framework: CLI","title":"INIT-004 Phase 1: Template sync script"}
 {"type":"complete","wuId":"WU-1126","timestamp":"2026-01-26T11:02:46.611Z"}
-{"type":"claim","wuId":"WU-1123","lane":"Framework: CLI","title":"INIT-004 Phase 1: Template sync script","timestamp":"2026-01-26T10:52:23.396Z"}
 {"type":"complete","wuId":"WU-1123","timestamp":"2026-01-26T11:05:31.092Z"}
-{"type":"claim","wuId":"WU-1125","lane":"Framework: CLI","title":"INIT-004 Phase 3: Document upgrade path","timestamp":"2026-01-26T11:07:21.121Z"}
+{"type":"claim","wuId":"WU-1125","timestamp":"2026-01-26T11:07:21.121Z","lane":"Framework: CLI","title":"INIT-004 Phase 3: Document upgrade path"}
 {"type":"complete","wuId":"WU-1125","timestamp":"2026-01-26T11:11:23.766Z"}
 {"type":"complete","wuId":"WU-1116","timestamp":"2026-01-26T11:15:48.263Z"}
-{"type":"claim","wuId":"WU-1124","lane":"Framework: CLI","title":"INIT-004 Phase 2: Refactor docs-sync to read from templates","timestamp":"2026-01-26T11:17:02.171Z"}
-{"type":"claim","wuId":"WU-1119","lane":"Content: Documentation","title":"Docs Audit: Adoption Paths - existing projects + migration + solo dev","timestamp":"2026-01-26T11:18:00.423Z"}
+{"type":"claim","wuId":"WU-1124","timestamp":"2026-01-26T11:17:02.171Z","lane":"Framework: CLI","title":"INIT-004 Phase 2: Refactor docs-sync to read from templates"}
+{"type":"claim","wuId":"WU-1119","timestamp":"2026-01-26T11:18:00.423Z","lane":"Content: Documentation","title":"Docs Audit: Adoption Paths - existing projects + migration + solo dev"}
 {"type":"complete","wuId":"WU-1119","timestamp":"2026-01-26T11:24:23.219Z"}
-{"type":"claim","wuId":"WU-1120","lane":"Content: Documentation","title":"Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook","timestamp":"2026-01-26T11:27:16.857Z"}
+{"type":"claim","wuId":"WU-1120","timestamp":"2026-01-26T11:27:16.857Z","lane":"Content: Documentation","title":"Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook"}
 {"type":"complete","wuId":"WU-1124","timestamp":"2026-01-26T11:28:47.410Z"}
 {"type":"complete","wuId":"WU-1120","timestamp":"2026-01-26T11:37:24.328Z"}
-{"type":"claim","wuId":"WU-1127","lane":"Framework: CLI","title":"lumenflow:upgrade must use micro-worktree (users blocked from upgrading)","timestamp":"2026-01-26T12:10:55.435Z"}
+{"type":"claim","wuId":"WU-1127","timestamp":"2026-01-26T12:10:55.435Z","lane":"Framework: CLI","title":"lumenflow:upgrade must use micro-worktree (users blocked from upgrading)"}
 {"type":"complete","wuId":"WU-1127","timestamp":"2026-01-26T12:29:26.591Z"}
-{"type":"claim","wuId":"WU-1128","lane":"Content: Documentation","title":"Add upgrade guide to lumenflow.dev","timestamp":"2026-01-26T15:03:42.830Z"}
+{"type":"claim","wuId":"WU-1128","timestamp":"2026-01-26T15:03:42.830Z","lane":"Content: Documentation","title":"Add upgrade guide to lumenflow.dev"}
 {"type":"complete","wuId":"WU-1128","timestamp":"2026-01-26T15:10:17.548Z"}
-{"type":"claim","wuId":"WU-1130","lane":"Framework: CLI","title":"Fix guard-* commands to recognize worktree context","timestamp":"2026-01-26T17:03:49.831Z"}
+{"type":"claim","wuId":"WU-1130","timestamp":"2026-01-26T17:03:49.831Z","lane":"Framework: CLI","title":"Fix guard-* commands to recognize worktree context"}
 {"type":"complete","wuId":"WU-1130","timestamp":"2026-01-26T17:10:43.571Z"}
-{"type":"claim","wuId":"WU-1133","lane":"Content: Documentation","title":"Fix doc alignment: constraints-capsule reference and vendor overlays","timestamp":"2026-01-26T23:34:16.029Z"}
+{"type":"claim","wuId":"WU-1133","timestamp":"2026-01-26T23:34:16.029Z","lane":"Content: Documentation","title":"Fix doc alignment: constraints-capsule reference and vendor overlays"}
+{"type":"claim","wuId":"WU-1131","timestamp":"2026-01-26T23:34:29.706Z","lane":"Framework: CLI","title":"Fix wu:spawn output truncation causing agent degradation"}
+{"type":"claim","wuId":"WU-1132","timestamp":"2026-01-26T23:34:42.391Z","lane":"Operations: CI/CD","title":"Harden worktree validation hook to fail-closed"}
 {"type":"complete","wuId":"WU-1133","timestamp":"2026-01-26T23:39:19.698Z"}
-{"type":"claim","wuId":"WU-1131","lane":"Framework: CLI","title":"Fix wu:spawn output truncation causing agent degradation","timestamp":"2026-01-26T23:34:29.706Z"}
-{"type":"claim","wuId":"WU-1132","lane":"Operations: CI/CD","title":"Harden worktree validation hook to fail-closed","timestamp":"2026-01-26T23:34:42.391Z"}
 {"type":"complete","wuId":"WU-1132","timestamp":"2026-01-26T23:40:15.805Z"}
-{"type":"claim","wuId":"WU-1136","lane":"Content: Documentation","title":"Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook","timestamp":"2026-01-26T23:40:30.663Z"}
+{"type":"claim","wuId":"WU-1136","timestamp":"2026-01-26T23:40:30.663Z","lane":"Content: Documentation","title":"Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook"}
 {"type":"complete","wuId":"WU-1136","timestamp":"2026-01-26T23:48:03.518Z"}
-{"type":"claim","wuId":"WU-1137","lane":"Operations: Infrastructure","title":"Add mem:export CLI for human-readable memory output","timestamp":"2026-01-26T23:48:20.271Z"}
+{"type":"claim","wuId":"WU-1137","timestamp":"2026-01-26T23:48:20.271Z","lane":"Operations: Infrastructure","title":"Add mem:export CLI for human-readable memory output"}
 {"type":"complete","wuId":"WU-1137","timestamp":"2026-01-26T23:55:34.024Z"}
 {"type":"complete","wuId":"WU-1131","timestamp":"2026-01-27T00:03:19.434Z"}
-{"type":"claim","wuId":"WU-1138","lane":"Content: Documentation","title":"Fix Prettier failures in docs reference pages","timestamp":"2026-01-27T09:11:09.727Z"}
+{"type":"claim","wuId":"WU-1138","timestamp":"2026-01-27T09:11:09.727Z","lane":"Content: Documentation","title":"Fix Prettier failures in docs reference pages"}
 {"type":"complete","wuId":"WU-1138","timestamp":"2026-01-27T09:12:44.249Z"}
-{"type":"claim","wuId":"WU-1139","lane":"Framework: Core","title":"Remove dead gate stubs and wire to TypeScript implementations","timestamp":"2026-01-27T11:37:29.140Z"}
+{"type":"claim","wuId":"WU-1139","timestamp":"2026-01-27T11:37:29.140Z","lane":"Framework: Core","title":"Remove dead gate stubs and wire to TypeScript implementations"}
 {"type":"complete","wuId":"WU-1139","timestamp":"2026-01-27T11:57:47.365Z"}
-{"type":"claim","wuId":"WU-1140","lane":"Operations: Infrastructure","title":"Fix docs formatting for CLI reference","timestamp":"2026-01-27T12:14:53.836Z"}
-{"type":"claim","wuId":"WU-1141","lane":"Framework: CLI","title":"Fix wu:cleanup PR merge verification failing for merged PRs","timestamp":"2026-01-27T12:16:11.876Z"}
+{"type":"claim","wuId":"WU-1140","timestamp":"2026-01-27T12:14:53.836Z","lane":"Operations: Infrastructure","title":"Fix docs formatting for CLI reference"}
+{"type":"claim","wuId":"WU-1141","timestamp":"2026-01-27T12:16:11.876Z","lane":"Framework: CLI","title":"Fix wu:cleanup PR merge verification failing for merged PRs"}
 {"type":"complete","wuId":"WU-1141","timestamp":"2026-01-27T12:47:26.445Z"}
 {"type":"complete","wuId":"WU-1140","timestamp":"2026-01-27T13:05:00.246Z"}
-{"type":"claim","wuId":"WU-1142","lane":"Framework: CLI","title":"Make wu:spawn prompts type-aware for testing requirements","timestamp":"2026-01-27T13:08:12.832Z"}
-{"type":"claim","wuId":"WU-1144","lane":"Framework: Core","title":"Bug: wu:edit --notes and --acceptance overwrite instead of append","timestamp":"2026-01-27T13:26:23.294Z"}
+{"type":"claim","wuId":"WU-1142","timestamp":"2026-01-27T13:08:12.832Z","lane":"Framework: CLI","title":"Make wu:spawn prompts type-aware for testing requirements"}
+{"type":"claim","wuId":"WU-1144","timestamp":"2026-01-27T13:26:23.294Z","lane":"Framework: Core","title":"Bug: wu:edit --notes and --acceptance overwrite instead of append"}
 {"type":"complete","wuId":"WU-1144","timestamp":"2026-01-27T14:09:06.524Z"}
-{"type":"claim","wuId":"WU-1145","lane":"Framework: Core","title":"Bug: wu:done metadata update overwrites concurrent backlog changes","timestamp":"2026-01-27T15:08:42.463Z"}
+{"type":"claim","wuId":"WU-1145","timestamp":"2026-01-27T15:08:42.463Z","lane":"Framework: Core","title":"Bug: wu:done metadata update overwrites concurrent backlog changes"}
+{"type":"complete","wuId":"WU-1145","timestamp":"2026-01-27T15:24:25.309Z"}

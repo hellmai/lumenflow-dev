@@ -2,7 +2,7 @@ id: WU-1145
 title: 'Bug: wu:done metadata update overwrites concurrent backlog changes'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -41,3 +41,5 @@ session_id: 8c074200-4093-4d27-aea3-cd8ba43ab9aa
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T15:08:42.454Z
+locked: true
+completed_at: 2026-01-27T15:24:23.771Z

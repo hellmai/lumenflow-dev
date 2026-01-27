@@ -27,7 +27,6 @@ sections:
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -73,8 +72,8 @@ sections:
 - [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml)
 - [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml)
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml)
-- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml)
 - [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml)
+- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml)
 - [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml)
 - [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml)
 - [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml)
@@ -96,3 +95,4 @@ sections:
 - [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml)
 - [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml)
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml)
+- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml)
