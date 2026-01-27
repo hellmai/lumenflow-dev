@@ -46,32 +46,19 @@ describe('generateBacklog', () => {
 
     writeFileSync(
       join(wuDir, 'WU-100.yaml'),
-      [
-        'id: WU-100',
-        'title: YAML Title',
-        "lane: 'Framework: CLI'",
-        'status: ready',
-      ].join('\n'),
+      ['id: WU-100', 'title: YAML Title', "lane: 'Framework: CLI'", 'status: ready'].join('\n'),
     );
 
     writeFileSync(
       join(wuDir, 'WU-200.yaml'),
-      [
-        'id: WU-200',
-        'title: YAML Ready',
-        "lane: 'Framework: Ops'",
-        'status: ready',
-      ].join('\n'),
+      ['id: WU-200', 'title: YAML Ready', "lane: 'Framework: Ops'", 'status: ready'].join('\n'),
     );
 
     writeFileSync(
       join(wuDir, 'WU-300.yaml'),
-      [
-        'id: WU-300',
-        'title: YAML Cancelled',
-        "lane: 'Framework: Core'",
-        'status: cancelled',
-      ].join('\n'),
+      ['id: WU-300', 'title: YAML Cancelled', "lane: 'Framework: Core'", 'status: cancelled'].join(
+        '\n',
+      ),
     );
 
     const store = new WUStateStore(stateDir);

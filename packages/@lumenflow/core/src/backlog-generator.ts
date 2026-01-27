@@ -26,6 +26,11 @@ import { createWuPaths, resolveFromProjectRoot } from './wu-paths.js';
 
 const WU_FILENAME_PATTERN = /^WU-\d+\.yaml$/;
 
+interface BacklogYamlOptions {
+  wuDir?: string;
+  projectRoot?: string;
+}
+
 function normalizeYamlScalar(value) {
   if (value === undefined || value === null) {
     return '';
@@ -63,7 +68,7 @@ function compareWuIds(a, b) {
   return a.localeCompare(b);
 }
 
-function resolveWuDir(options = {}) {
+function resolveWuDir(options: BacklogYamlOptions = {}) {
   const paths = createWuPaths({ projectRoot: options.projectRoot });
   const configured = options.wuDir || paths.WU_DIR();
   return path.isAbsolute(configured) ? configured : resolveFromProjectRoot(configured);
@@ -98,7 +103,8 @@ function loadYamlWuEntries(wuDir) {
 }
 
 function getMergedBacklogEntry(store, yamlEntries, wuId) {
-  const state = typeof store.getWUState === 'function' ? store.getWUState(wuId) : store.wuState.get(wuId);
+  const state =
+    typeof store.getWUState === 'function' ? store.getWUState(wuId) : store.wuState.get(wuId);
   if (state) {
     return { title: state.title, lane: state.lane };
   }
@@ -133,7 +139,7 @@ function getMergedBacklogEntry(store, yamlEntries, wuId) {
  * await fs.writeFile('backlog.md', markdown, 'utf-8');
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export async function generateBacklog(store, options = {}) {
+export async function generateBacklog(store, options: BacklogYamlOptions = {}) {
   // Start with frontmatter
   const frontmatter = `---
 sections:
