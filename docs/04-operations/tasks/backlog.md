@@ -20,12 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — Framework: Core
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
+- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

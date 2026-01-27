@@ -115,3 +115,4 @@
 {"type":"complete","wuId":"WU-1131","timestamp":"2026-01-27T00:03:19.434Z"}
 {"type":"claim","wuId":"WU-1138","lane":"Content: Documentation","title":"Fix Prettier failures in docs reference pages","timestamp":"2026-01-27T09:11:09.727Z"}
 {"type":"complete","wuId":"WU-1138","timestamp":"2026-01-27T09:12:44.249Z"}
+{"type":"claim","wuId":"WU-1139","lane":"Framework: Core","title":"Remove dead gate stubs and wire to TypeScript implementations","timestamp":"2026-01-27T11:37:29.140Z"}
