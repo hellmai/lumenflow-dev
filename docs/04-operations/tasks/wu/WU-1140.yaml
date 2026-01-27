@@ -1,16 +1,14 @@
 id: WU-1140
-title: Restore WU-1142 spec and fix backlog sync
+title: Fix backlog sync after wu:done metadata bug
 lane: 'Operations: Infrastructure'
 type: documentation
 status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
-  - docs/04-operations/tasks/wu/WU-1142.yaml
   - docs/04-operations/tasks/backlog.md
 tests:
   manual:
-    - Verify WU-1142.yaml has all 15 acceptance criteria
     - Verify backlog.md includes all historical WUs
   unit: []
   e2e: []
@@ -20,9 +18,8 @@ dependencies: []
 risks: []
 notes: |-
   Original scope was prettier formatting for CLI reference docs, but those files
-  were already formatted. Repurposed to carry fixes for:
-  1. WU-1142.yaml restoration after wu:edit --acceptance bug overwrote spec
-  2. backlog.md restoration after wu:done metadata update bug lost entries
+  were already formatted. Repurposed to fix backlog.md restoration after
+  wu:done metadata update bug lost historical entries.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
@@ -38,10 +35,6 @@ approved_at: 2026-01-27T12:14:53.826Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Restore WU-1142 spec (after wu:edit overwrite bug) and fix backlog.md
-  (after wu:done metadata update bug lost historical entries).
+description: Fix backlog.md after wu:done metadata update bug lost historical entries.
 acceptance:
-  - WU-1142.yaml has full spec with 15 acceptance criteria restored
-  - WU-1142.yaml includes type-aware test guidance table in notes
-  - WU-1142.yaml includes skip-gates autonomy rule in notes
   - backlog.md includes all historical done WUs
