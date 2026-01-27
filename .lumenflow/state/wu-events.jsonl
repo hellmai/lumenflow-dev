@@ -117,3 +117,4 @@
 {"type":"complete","wuId":"WU-1138","timestamp":"2026-01-27T09:12:44.249Z"}
 {"type":"claim","wuId":"WU-1139","lane":"Framework: Core","title":"Remove dead gate stubs and wire to TypeScript implementations","timestamp":"2026-01-27T11:37:29.140Z"}
 {"type":"complete","wuId":"WU-1139","timestamp":"2026-01-27T11:57:47.365Z"}
+{"type":"claim","wuId":"WU-1140","lane":"Operations: Infrastructure","title":"Fix docs formatting for CLI reference","timestamp":"2026-01-27T12:14:53.836Z"}
