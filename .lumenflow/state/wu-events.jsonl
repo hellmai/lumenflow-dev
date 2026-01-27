@@ -120,3 +120,4 @@
 {"type":"claim","wuId":"WU-1140","lane":"Operations: Infrastructure","title":"Fix docs formatting for CLI reference","timestamp":"2026-01-27T12:14:53.836Z"}
 {"type":"claim","wuId":"WU-1141","lane":"Framework: CLI","title":"Fix wu:cleanup PR merge verification failing for merged PRs","timestamp":"2026-01-27T12:16:11.876Z"}
 {"type":"complete","wuId":"WU-1141","timestamp":"2026-01-27T12:47:26.445Z"}
+{"type":"complete","wuId":"WU-1140","timestamp":"2026-01-27T13:05:00.246Z"}
