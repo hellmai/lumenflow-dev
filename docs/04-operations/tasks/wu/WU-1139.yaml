@@ -6,16 +6,13 @@ status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
-  - tools/validate-backlog-sync.js
-  - tools/system-map-validate.js
-  - tools/gates-pre-commit.js
-  - tools/validate.js
+  - tools/
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  - packages/@lumenflow/core/src/system-map-validator.ts
   - packages/@lumenflow/cli/src/validate-backlog-sync.ts
   - packages/@lumenflow/cli/src/validate.ts
-  - packages/@lumenflow/core/src/system-map-validator.ts
   - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual: []
@@ -80,9 +77,17 @@ notes: |
     - Context: <20% (<30% threshold)
     - Strategy: Single session, Tier 2 context
 requires_review: true
+claimed_mode: worktree
+assigned_to: tom@hellm.ai
+claimed_at: 2026-01-27T11:37:29.125Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1139
+session_id: 9d867622-5559-4b3d-b189-ca4fc24f36a5
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T11:37:29.130Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -97,26 +102,14 @@ description: |
   Key change: wu-done-preflight.ts will call CLI gates directly instead of looking
   for tools/gates-pre-commit.{mjs,js}.
 acceptance:
-  - tools/validate-backlog-sync.js is deleted
-  - tools/system-map-validate.js is deleted
-  - tools/gates-pre-commit.js is deleted
-  - tools/validate.js is deleted
+  - Legacy gate stub scripts removed from tools/ directory
   - TOOL_PATHS.VALIDATE_BACKLOG_SYNC points to CLI command or core function
   - TOOL_PATHS.SYSTEM_MAP_VALIDATE points to CLI command or core function
   - SCRIPT_PATHS.VALIDATE points to CLI validate command (node
     packages/@lumenflow/cli/dist/validate.js)
   - wu-done-preflight.ts calls CLI gates directly (node packages/@lumenflow/cli/dist/gates.js)
-  - wu-done-preflight.ts uses CLI validate (no tools/validate.js)
-  - wu-done-preflight.ts no longer checks for tools/gates-pre-commit.{mjs,js}
+  - wu-done-preflight.ts uses CLI validate (does not call legacy stub)
+  - wu-done-preflight.ts no longer checks for legacy gates-pre-commit scripts
   - All existing tests pass after changes (including gates.test.ts, gates-worktree.test.ts)
   - pnpm gates passes in main checkout
-  - No references to deleted files remain in codebase (grep verification)
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1139
-assigned_to: tom@hellm.ai
-claimed_at: 2026-01-27T11:37:29.125Z
-baseline_main_sha: 413b4da0f4ba84790a4036695dca654426f9aaae
-session_id: 9d867622-5559-4b3d-b189-ca4fc24f36a5
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-27T11:37:29.130Z
+  - No references to deleted gate stubs remain in codebase (grep verification)
