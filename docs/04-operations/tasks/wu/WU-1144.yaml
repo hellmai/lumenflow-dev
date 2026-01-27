@@ -2,7 +2,7 @@ id: WU-1144
 title: 'Bug: wu:edit --notes and --acceptance overwrite instead of append'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When using wu:edit with --notes or --acceptance flags, the command overwrites existing content instead of appending. This causes data loss when adding to existing specs.
+description: When using wu:edit with --notes or --acceptance flags, the command overwrites existing
+  content instead of appending. This causes data loss when adding to existing specs.
 acceptance:
   - wu:edit --notes appends to existing notes (preserves original)
   - wu:edit --acceptance appends to existing acceptance criteria
   - Add --replace-notes and --replace-acceptance flags for explicit overwrite
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1144
+claimed_at: 2026-01-27T13:26:23.201Z
+baseline_main_sha: 01eb2ad40327e44796b7b9c102761733885b0e36
+session_id: 339c0a8e-2be5-4427-b1df-abf42dfb1bcc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T13:26:23.222Z
