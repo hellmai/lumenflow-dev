@@ -20,15 +20,14 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — Framework: Core
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
-  (No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
+- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
