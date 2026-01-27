@@ -1,3 +1,19 @@
+---
+sections:
+  ready:
+    heading: '## 🚀 Ready (pull from here)'
+    insertion: after_heading_blank_line
+  in_progress:
+    heading: '## 🔧 In progress'
+    insertion: after_heading_blank_line
+  blocked:
+    heading: '## ⏸️ Blocked'
+    insertion: after_heading_blank_line
+  done:
+    heading: '## ✅ Done'
+    insertion: after_heading_blank_line
+---
+
 # LumenFlow Work Unit Backlog
 
 **Last updated:** 2026-01-27
