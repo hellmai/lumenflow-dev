@@ -1150,10 +1150,10 @@ export const GATE_COMMANDS = {
  * Centralized paths to tool scripts.
  */
 export const TOOL_PATHS = {
-  VALIDATE_BACKLOG_SYNC: 'node tools/validate-backlog-sync.js',
+  VALIDATE_BACKLOG_SYNC: 'node packages/@lumenflow/cli/dist/validate-backlog-sync.js',
   SUPABASE_DOCS_LINTER: 'node packages/linters/supabase-docs-linter.js',
   /** WU-2315: System map validator script */
-  SYSTEM_MAP_VALIDATE: 'node tools/system-map-validate.js',
+  SYSTEM_MAP_VALIDATE: 'node packages/@lumenflow/core/dist/system-map-validator.js',
 };
 
 /**
@@ -1408,7 +1408,7 @@ export const AUDIT_ARGS = {
  */
 export const SCRIPT_PATHS = {
   /** WU YAML validation */
-  VALIDATE: 'tools/validate.js',
+  VALIDATE: 'node packages/@lumenflow/cli/dist/validate.js',
 
   /** Prompt registry validation */
   VALIDATE_PROMPT_REGISTRY: 'tools/validate-prompt-registry.js',
