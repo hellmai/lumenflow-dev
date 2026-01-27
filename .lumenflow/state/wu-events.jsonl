@@ -113,3 +113,4 @@
 {"type":"claim","wuId":"WU-1137","lane":"Operations: Infrastructure","title":"Add mem:export CLI for human-readable memory output","timestamp":"2026-01-26T23:48:20.271Z"}
 {"type":"complete","wuId":"WU-1137","timestamp":"2026-01-26T23:55:34.024Z"}
 {"type":"complete","wuId":"WU-1131","timestamp":"2026-01-27T00:03:19.434Z"}
+{"type":"claim","wuId":"WU-1138","lane":"Content: Documentation","title":"Fix Prettier failures in docs reference pages","timestamp":"2026-01-27T09:11:09.727Z"}
