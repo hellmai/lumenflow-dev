@@ -2,7 +2,7 @@ id: WU-1147
 title: Backlog generator merges YAML WUs missing from state store
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-01-27
 code_paths:
@@ -28,11 +28,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done regenerates backlog.md via generateBacklog(), which currently reads only WUStateStore (wu-events.jsonl). Problem: the store can be incomplete versus YAML specs, causing backlog generation to drop WUs (e.g., 141 YAML files vs 67 in the store). Solution: scan docs/04-operations/tasks/wu/*.yaml during backlog generation, merge missing WUs into the set, prefer state store fields when present, and fall back to YAML fields for missing WUs.'
+description: 'Context: wu:done regenerates backlog.md via generateBacklog(), which currently reads
+  only WUStateStore (wu-events.jsonl). Problem: the store can be incomplete versus YAML specs,
+  causing backlog generation to drop WUs (e.g., 141 YAML files vs 67 in the store). Solution: scan
+  docs/04-operations/tasks/wu/*.yaml during backlog generation, merge missing WUs into the set,
+  prefer state store fields when present, and fall back to YAML fields for missing WUs.'
 acceptance:
-  - generateBacklog reads WU YAML specs from docs/04-operations/tasks/wu and merges IDs missing from WUStateStore
+  - generateBacklog reads WU YAML specs from docs/04-operations/tasks/wu and merges IDs missing from
+    WUStateStore
   - Backlog output includes every WU YAML file even when missing from wu-events.jsonl
   - When a WU exists in both sources, state store values remain authoritative
   - YAML-only WUs use status/title/lane from YAML without duplicates
   - Unit tests cover YAML-only WUs and mixed store+YAML scenarios
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1147
+claimed_at: 2026-01-27T18:01:53.328Z
+baseline_main_sha: f359e60fad83fa8fafee4c266a6208d889c33a57
+session_id: a7e91902-6229-4392-a649-3a8ec2f370f1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T18:01:53.333Z
