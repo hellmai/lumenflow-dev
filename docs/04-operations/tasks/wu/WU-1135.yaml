@@ -2,7 +2,7 @@ id: WU-1135
 title: Add vendor-agnostic pre-write checks to constraints and agent templates
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -46,3 +46,5 @@ session_id: 0fc4ba7d-3222-454a-a4ed-7ce3be434540
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T16:23:29.010Z
+locked: true
+completed_at: 2026-01-27T16:57:12.364Z
