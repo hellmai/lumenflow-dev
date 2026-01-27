@@ -20,6 +20,25 @@ artifacts:
 dependencies: []
 risks: []
 notes: |-
+  ## Design: Truncation-Resistant Spawn Prompts
+
+  Problem: Agents can truncate spawn prompt output, missing critical rules.
+
+  ### Three-Layer Defense
+
+  1. **YAML Envelope** - head/tail truncation breaks YAML parse, checksum validates integrity
+  2. **Redundant Rules** - critical rules duplicated at BOTH head AND tail of content
+  3. **Schema Validation** - Zod schema for spawn_prompt structure with required fields
+
+  ### Type-Aware Test Guidance
+
+  | WU Type | Test Requirement |
+  |---------|------------------|
+  | feature, bug, tooling | TDD: failing test first |
+  | documentation | Format check only (no TDD) |
+  | visual/design | Smoke test + manual QA |
+  | refactor | Existing tests must pass |
+
   ## Skip-Gates Autonomy Rule
 
   When an agent encounters a gate failure during wu:done:
@@ -36,11 +55,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Two issues with current wu:spawn: (1) TDD mandate applies to ALL WUs regardless of
-  type - wrong for documentation, visual design, config changes. (2) Truncation vulnerability -
-  agents can head/tail output, missing critical rules. Solution: Type-aware prompts with
-  truncation-resistant YAML envelope format using proper YAML library (yaml package), Zod schema
-  validation, SHA256 checksums, and redundant rules at head/tail of content.'
+description: 'Two issues with current wu:spawn: (1) TDD mandate applies to ALL WUs regardless
+  of type - wrong for documentation, visual design, config changes. (2) Truncation
+  vulnerability - agents can head/tail output, missing critical rules. Solution: Type-aware
+  prompts with truncation-resistant YAML envelope format using proper YAML library
+  (yaml package), Zod schema validation, SHA256 checksums, and redundant rules at
+  head/tail of content.'
 acceptance:
-  - 'Spawn prompt includes skip-gates guidance: if agent verifies gate failure is pre-existing on
-    main, use --skip-gates --fix-wu autonomously'
+  - Spawn prompt omits TDD directive for type=documentation WUs
+  - Spawn prompt omits TDD directive for type=design WUs
+  - Spawn prompt includes appropriate test guidance per WU type
+  - Add smoke test guidance for UI component WUs
+  - byLane skills config is respected in mandatory standards section
+  - wu:spawn outputs valid YAML envelope with spawn_prompt schema
+  - YAML envelope includes wu_id, version, checksum, content, sentinel fields
+  - checksum is SHA256 of content field, validated on parse
+  - sentinel field value is LUMENFLOW_SPAWN_COMPLETE
+  - Critical rules duplicated at HEAD and TAIL of content field
+  - Zod schema created for spawn_prompt validation (spawn-prompt-schema.ts)
+  - Schema validation function exported for agent consumers
+  - Truncated output fails YAML parse OR checksum validation
+  - Unit tests verify truncation detection (head, tail, middle slice)
+  - 'Spawn prompt includes skip-gates guidance: if agent verifies gate failure is
+    pre-existing on main, use --skip-gates --fix-wu autonomously'
