@@ -129,3 +129,4 @@
 {"type":"claim","wuId":"WU-1063","lane":"Framework: Core","title":"Fix wu:edit dropping spec_refs","timestamp":"2026-01-27T15:59:16.813Z"}
 {"type":"complete","wuId":"WU-1063","timestamp":"2026-01-27T16:09:30.674Z"}
 {"type":"claim","wuId":"WU-1073","lane":"Framework: CLI","title":"Add --risks option to wu:edit command","timestamp":"2026-01-27T16:17:52.376Z"}
+{"type":"claim","wuId":"WU-1135","lane":"Content: Documentation","title":"Add vendor-agnostic pre-write checks to constraints and agent templates","timestamp":"2026-01-27T16:23:29.018Z"}
