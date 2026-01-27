@@ -124,3 +124,4 @@
 {"type":"claim","wuId":"WU-1142","lane":"Framework: CLI","title":"Make wu:spawn prompts type-aware for testing requirements","timestamp":"2026-01-27T13:08:12.832Z"}
 {"type":"claim","wuId":"WU-1144","lane":"Framework: Core","title":"Bug: wu:edit --notes and --acceptance overwrite instead of append","timestamp":"2026-01-27T13:26:23.294Z"}
 {"type":"complete","wuId":"WU-1144","timestamp":"2026-01-27T14:09:06.524Z"}
+{"type":"claim","wuId":"WU-1145","lane":"Framework: Core","title":"Bug: wu:done metadata update overwrites concurrent backlog changes","timestamp":"2026-01-27T15:08:42.463Z"}

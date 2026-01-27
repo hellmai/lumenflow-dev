@@ -2,7 +2,7 @@ id: WU-1145
 title: 'Bug: wu:done metadata update overwrites concurrent backlog changes'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -25,9 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When wu:done updates metadata (backlog.md, status.md), it uses a stale snapshot from worktree claim time. Any changes made to backlog.md on main after the worktree diverged are lost. This caused loss of 76 WU entries during WU-1141 completion.
+description: When wu:done updates metadata (backlog.md, status.md), it uses a stale snapshot from
+  worktree claim time. Any changes made to backlog.md on main after the worktree diverged are lost.
+  This caused loss of 76 WU entries during WU-1141 completion.
 acceptance:
   - wu:done merges backlog changes instead of overwriting
   - Concurrent additions to Done section are preserved
   - Concurrent additions to Ready section are preserved
   - Add test for concurrent backlog modification scenario
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1145
+claimed_at: 2026-01-27T15:08:42.448Z
+baseline_main_sha: 1561c7f484fc7e5af4f9d9ed46c347d8e548d990
+session_id: 8c074200-4093-4d27-aea3-cd8ba43ab9aa
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T15:08:42.454Z
