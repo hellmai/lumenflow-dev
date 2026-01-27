@@ -10,7 +10,7 @@
 
 import { execSync } from 'node:child_process';
 import { getGitForCwd } from './git-adapter.js';
-import { STDIO } from './wu-constants.js';
+import { STDIO, PKG_MANAGER, SCRIPTS, PRETTIER_FLAGS } from './wu-constants.js';
 
 /**
  * Pathspecs for files that affect generated documentation.
@@ -87,6 +87,22 @@ export function runDocsGenerate(repoRoot: string): void {
 }
 
 /**
+ * Format generated doc output files with prettier.
+ *
+ * @param repoRoot - Repository root directory for running prettier
+ * @returns void
+ */
+export function formatDocOutputs(repoRoot: string): void {
+  const files = DOC_OUTPUT_FILES.map((file) => `"${file}"`).join(' ');
+  const prettierCmd = `${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} ${files}`;
+  execSync(prettierCmd, {
+    cwd: repoRoot,
+    stdio: STDIO.INHERIT,
+    encoding: 'utf-8',
+  });
+}
+
+/**
  * Result of the docs regeneration check.
  */
 export interface DocsRegenerationResult {
@@ -133,6 +149,9 @@ export async function maybeRegenerateAndStageDocs(
 
   // Run turbo docs:generate (Turbo handles caching and dependencies)
   runDocsGenerate(repoRoot);
+
+  // Format the generated doc outputs before staging
+  formatDocOutputs(repoRoot);
 
   // Stage the doc output files
   await stageDocOutputs();

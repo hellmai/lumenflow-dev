@@ -112,6 +112,22 @@ describe('wu-done docs integration', () => {
       );
     });
 
+    it('should format doc outputs after regeneration', async () => {
+      mockGit.raw.mockResolvedValue('tools/generate-cli-docs.ts\n');
+      mockGit.add.mockResolvedValue(undefined);
+      vi.mocked(execSync).mockReturnValue('');
+
+      await maybeRegenerateAndStageDocs({
+        baseBranch: 'main',
+        repoRoot: '/repo',
+      });
+
+      expect(execSync).toHaveBeenCalledWith(
+        expect.stringContaining('prettier --write'),
+        expect.any(Object),
+      );
+    });
+
     it('should handle git errors gracefully and return safe defaults', async () => {
       mockGit.raw.mockRejectedValue(new Error('git error'));
 
