@@ -27,7 +27,7 @@ describe('validateAllPreCommitHooks', () => {
     validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
 
     expect(mockExecSync).toHaveBeenCalledWith(
-      'node packages/@lumenflow/cli/dist/gates.js',
+      expect.stringContaining('gates.js'),
       expect.any(Object),
     );
   });
@@ -39,7 +39,7 @@ describe('validateAllPreCommitHooks', () => {
     validateAllPreCommitHooks('WU-TEST', worktreePath, { execSyncFn: mockExecSync });
 
     expect(mockExecSync).toHaveBeenCalledWith(
-      'node packages/@lumenflow/cli/dist/gates.js',
+      expect.stringContaining('gates.js'),
       expect.objectContaining({ cwd: worktreePath }),
     );
   });
@@ -85,7 +85,7 @@ describe('runPreflightTasksValidation (WU-1139)', () => {
     runPreflightTasksValidation('WU-TEST', { execSyncFn: mockExecSync });
 
     expect(mockExecSync).toHaveBeenCalledWith(
-      'node packages/@lumenflow/cli/dist/validate.js',
+      expect.stringContaining('validate.js'),
       expect.objectContaining({
         env: expect.objectContaining({ WU_ID: 'WU-TEST' }),
       }),

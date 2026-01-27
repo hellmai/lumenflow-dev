@@ -6,12 +6,17 @@ status: in_progress
 priority: P1
 created: 2026-01-27
 code_paths:
+  - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-done-preflight.ts
+  - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  - packages/@lumenflow/core/src/__tests__/context/location-resolver.test.ts
 tests:
   manual:
     - Run gates in a consumer repo
   unit:
-    - packages/@lumenflow/core/__tests__/wu-constants.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1150.done

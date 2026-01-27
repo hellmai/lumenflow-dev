@@ -28,6 +28,8 @@ import {
   FILE_SYSTEM,
   STRING_LITERALS,
   LUMENFLOW_PATHS,
+  TOOL_PATHS,
+  SCRIPT_PATHS,
   toKebab,
   getWorktreePath,
   getLaneBranch,
@@ -202,6 +204,22 @@ describe('wu-constants', () => {
       expect(LOG_PREFIX.CREATE).toBe('[wu:create]');
       expect(LOG_PREFIX.EDIT).toBe('[wu:edit]');
       expect(LOG_PREFIX.DELETE).toBe('[wu:delete]');
+    });
+  });
+
+  describe('TOOL_PATHS', () => {
+    it('should not use monorepo-relative node paths for CLI tools', () => {
+      expect(TOOL_PATHS.VALIDATE_BACKLOG_SYNC).toContain('validate-backlog-sync.js');
+      expect(TOOL_PATHS.VALIDATE_BACKLOG_SYNC.startsWith('node packages/')).toBe(false);
+      expect(TOOL_PATHS.SYSTEM_MAP_VALIDATE).toContain('system-map-validator.js');
+      expect(TOOL_PATHS.SYSTEM_MAP_VALIDATE.startsWith('node packages/')).toBe(false);
+    });
+  });
+
+  describe('SCRIPT_PATHS', () => {
+    it('should not use monorepo-relative node paths for validate', () => {
+      expect(SCRIPT_PATHS.VALIDATE).toContain('validate.js');
+      expect(SCRIPT_PATHS.VALIDATE.startsWith('node packages/')).toBe(false);
     });
   });
 
