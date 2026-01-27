@@ -13,24 +13,101 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
+  - packages/@lumenflow/cli/src/validate.ts
+  - packages/@lumenflow/core/src/system-map-validator.ts
+  - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
+    - packages/@lumenflow/cli/__tests__/gates-worktree.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1139.done
 dependencies: []
-risks: []
-notes: ''
-requires_review: false
-assigned_to: tom@hellm.ai
+risks:
+  - Gate scripts are called during wu:done preflight; incorrect wiring could break the workflow
+  - gates-pre-commit is called before merge; must ensure replacement path works in both main and
+    worktree contexts
+notes: |
+  Root cause: Commit a547b43 ("add gates stub scripts for dogfooding") created stub scripts
+  to unblock gates during LumenFlow dogfooding. Real TypeScript implementations were later
+  added to @lumenflow/cli and @lumenflow/core, but the stubs were never removed and the
+  callers were never updated to use the real implementations.
+
+  Discovery: ExampleApp agents reported "validate-backlog-sync.js is missing" during
+  INIT-056 execution. Investigation revealed the stubs exist but do nothing (always pass).
+
+  ## gates-pre-commit Replacement Strategy (High Priority)
+
+  Current flow in wu-done-preflight.ts (lines 224-230):
+    const mjsPath = `${basePath}/tools/gates-pre-commit.mjs`;
+    const gateScript = existsSync(mjsPath)
+      ? 'tools/gates-pre-commit.mjs'
+      : 'tools/gates-pre-commit.js';
+    execSyncFn(`node ${gateScript}`, execOptions);
+
+  New flow: Call CLI gates directly instead of looking for repo-specific script:
+    execSyncFn('node packages/@lumenflow/cli/dist/gates.js', execOptions);
+
+  This removes the need for tools/gates-pre-commit.{mjs,js} entirely.
+  The CLI gates.ts is the canonical implementation and works in both contexts.
+
+  ## Files to DELETE (dead stubs)
+    - tools/validate-backlog-sync.js (stub, TS: @lumenflow/cli/src/validate-backlog-sync.ts)
+    - tools/system-map-validate.js (stub, TS: @lumenflow/core/src/system-map-validator.ts)
+    - tools/gates-pre-commit.js (stub, replaced by direct CLI call)
+    - tools/validate.js (stub, TS: @lumenflow/cli/src/validate.ts)
+
+  ## Files to KEEP
+    - packages/linters/supabase-docs-linter.js (valid no-op stub - this repo has no Supabase)
+    - tools/cli-entry.mjs (bootstrap script, must stay as .mjs)
+
+  ## Files to UPDATE
+    - packages/@lumenflow/core/src/wu-constants.ts: Update TOOL_PATHS
+    - packages/@lumenflow/core/src/wu-done-preflight.ts: Call CLI gates directly
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts: Update expectations
+
+  ## Docs/Hooks to Update
+    - Any .husky/pre-commit or similar that references gates-pre-commit.js
+    - No CLAUDE.md or workflow docs reference these stubs directly
+
+  ## Sizing estimate (per wu-sizing-guide.md)
+    - Files: ~11 (<20 threshold)
+    - Tool calls: ~35-40 (<50 threshold)
+    - Context: <20% (<30% threshold)
+    - Strategy: Single session, Tier 2 context
+requires_review: true
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Remove dead gate stubs and wire to TS implementations.
+description: |
+  Remove dead gate stub scripts created during dogfooding bootstrap and update callers
+  to use the real TypeScript implementations in @lumenflow/cli and @lumenflow/core.
+
+  The stubs were created in commit a547b43 to unblock gates, but the "wire up real
+  implementations" step was forgotten. This causes gates to silently pass without
+  actually validating anything.
+
+  Key change: wu-done-preflight.ts will call CLI gates directly instead of looking
+  for tools/gates-pre-commit.{mjs,js}.
 acceptance:
-  - Dead gate stubs removed and real implementations wired
+  - tools/validate-backlog-sync.js is deleted
+  - tools/system-map-validate.js is deleted
+  - tools/gates-pre-commit.js is deleted
+  - tools/validate.js is deleted
+  - TOOL_PATHS.VALIDATE_BACKLOG_SYNC points to CLI command or core function
+  - TOOL_PATHS.SYSTEM_MAP_VALIDATE points to CLI command or core function
+  - SCRIPT_PATHS.VALIDATE points to CLI validate command (node
+    packages/@lumenflow/cli/dist/validate.js)
+  - wu-done-preflight.ts calls CLI gates directly (node packages/@lumenflow/cli/dist/gates.js)
+  - wu-done-preflight.ts uses CLI validate (no tools/validate.js)
+  - wu-done-preflight.ts no longer checks for tools/gates-pre-commit.{mjs,js}
+  - All existing tests pass after changes (including gates.test.ts, gates-worktree.test.ts)
+  - pnpm gates passes in main checkout
+  - No references to deleted files remain in codebase (grep verification)
