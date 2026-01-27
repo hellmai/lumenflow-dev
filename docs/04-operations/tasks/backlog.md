@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1146 — Regenerate backlog.md from wu-events.jsonl to fix sync](wu/WU-1146.yaml) — Operations: Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
