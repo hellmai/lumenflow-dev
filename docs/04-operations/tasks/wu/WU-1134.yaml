@@ -2,7 +2,7 @@ id: WU-1134
 title: Add worktree block recovery guidance to wu:spawn output
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
