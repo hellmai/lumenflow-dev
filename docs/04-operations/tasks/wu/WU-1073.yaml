@@ -10,7 +10,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-edit.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1073.done
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-27T16:17:52.358Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1073
+session_id: 0fc4ba7d-3222-454a-a4ed-7ce3be434540
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T16:17:52.364Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +40,3 @@ acceptance:
   - wu:edit --risks replaces existing risks by default
   - wu:edit --risks --append adds to existing risks
   - Gates pass
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1073
-claimed_at: 2026-01-27T16:17:52.358Z
-baseline_main_sha: 0dd26211c43df88abda0e3ab3457e5929066d678
-session_id: 0fc4ba7d-3222-454a-a4ed-7ce3be434540
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-27T16:17:52.364Z
