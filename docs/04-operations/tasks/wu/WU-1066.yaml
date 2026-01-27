@@ -2,7 +2,7 @@ id: WU-1066
 title: Add .NET/C# preset to lumenflow-gates GitHub Action
 lane: 'Operations: CI/CD'
 type: feature
-status: ready
+status: cancelled
 priority: P2
 created: 2026-01-23
 code_paths:

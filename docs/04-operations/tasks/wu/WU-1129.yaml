@@ -2,7 +2,7 @@ id: WU-1129
 title: Fix pre-existing prettier format failures in apps/docs/*.mdx
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: cancelled
 priority: P2
 created: 2026-01-26
 code_paths:
