@@ -775,6 +775,46 @@ pnpm typecheck   # Check TypeScript types
 }
 
 /**
+ * Generate Worktree Block Recovery section (WU-1134)
+ *
+ * Provides guidance for agents when they're blocked by the worktree hook.
+ * This happens when agents try to commit from main instead of the worktree.
+ *
+ * @param {string} worktreePath - Worktree path from WU YAML
+ * @returns {string} Worktree block recovery section
+ */
+export function generateWorktreeBlockRecoverySection(worktreePath: string): string {
+  return `## When Blocked by Worktree Hook
+
+If you encounter a "worktree required" or "commit blocked" error:
+
+1. **Check existing worktrees**: \`git worktree list\`
+2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
+3. **Retry your operation** from within the worktree
+4. **Use relative paths only** (never absolute paths like \`/home/...\`)
+
+### Common Causes
+
+- Running \`git commit\` from main checkout instead of worktree
+- Using absolute paths that bypass worktree isolation
+- Forgetting to \`cd\` to worktree after \`wu:claim\`
+
+### Quick Fix
+
+\`\`\`bash
+# Check where you are
+pwd
+git worktree list
+
+# Navigate to your worktree
+cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}
+
+# Retry your commit
+git add . && git commit -m "your message"
+\`\`\``;
+}
+
+/**
  * Generate Lane Selection section (WU-2107)
  *
  * Provides guidance on lane selection when creating new WUs.
@@ -1089,6 +1129,9 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   // WU-2362: Worktree path guidance for sub-agents
   const worktreeGuidance = generateWorktreePathGuidance(doc.worktree_path);
 
+  // WU-1134: Worktree block recovery guidance
+  const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(doc.worktree_path);
+
   // Generate thinking mode sections if applicable
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);
@@ -1193,6 +1236,10 @@ ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}## Action
 
 ${generateActionSection(doc, id)}
 
+---
+
+${worktreeBlockRecovery}
+
 ${constraints}
 
 ${SPAWN_END_SENTINEL}`;
@@ -1251,6 +1298,9 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
     .filter((section) => section.length > 0)
     .join('\n\n---\n\n');
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
+
+  // WU-1134: Worktree block recovery guidance
+  const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(doc.worktree_path);
 
   // WU-1131: Warning banner at start, end sentinel after constraints
   // WU-1142: Type-aware test guidance
@@ -1311,7 +1361,11 @@ ${mandatorySection}${implementationContext ? `${implementationContext}\n\n---\n\
 
 ---
 
-${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}${constraints}
+${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}${worktreeBlockRecovery}
+
+---
+
+${constraints}
 
 ${SPAWN_END_SENTINEL}
 `;
