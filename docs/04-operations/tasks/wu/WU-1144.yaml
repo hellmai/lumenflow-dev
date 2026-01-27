@@ -2,7 +2,7 @@ id: WU-1144
 title: 'Bug: wu:edit --notes and --acceptance overwrite instead of append'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -39,3 +39,5 @@ session_id: 339c0a8e-2be5-4427-b1df-abf42dfb1bcc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T13:26:23.222Z
+locked: true
+completed_at: 2026-01-27T14:09:06.508Z
