@@ -124,22 +124,49 @@ export function generateSkillsCatalogGuidance(config, clientName) {
   return `${SECTION.skillsCatalog}\n\n${configuredHint}No skills directories configured or found. Set \`directories.skillsDir\` or \`${clientHint}\` in .lumenflow.config.yaml.\n`;
 }
 
-export function generateClientSkillsGuidance(clientContext: ClientContext) {
+/**
+ * WU-1142: Get byLane skills for a specific lane
+ *
+ * @param clientContext - Client context with config
+ * @param lane - Lane name (e.g., "Framework: Core")
+ * @returns Array of skill names for the lane, or empty array
+ */
+export function getByLaneSkills(clientContext: ClientContext | undefined, lane: string): string[] {
+  const byLane = clientContext?.config?.skills?.byLane;
+  if (!byLane || !lane) return [];
+  return byLane[lane] || [];
+}
+
+export function generateClientSkillsGuidance(
+  clientContext: ClientContext | undefined,
+  lane?: string,
+) {
   const skills = clientContext?.config?.skills;
-  if (
-    !skills ||
-    (!skills.instructions && (!skills.recommended || skills.recommended.length === 0))
-  ) {
+  if (!skills) {
+    return '';
+  }
+
+  // WU-1142: Check for byLane skills
+  const byLaneSkills = lane ? getByLaneSkills(clientContext, lane) : [];
+  const hasRecommended = skills.recommended && skills.recommended.length > 0;
+  const hasByLane = byLaneSkills.length > 0;
+  const hasInstructions = Boolean(skills.instructions);
+
+  if (!hasInstructions && !hasRecommended && !hasByLane) {
     return '';
   }
 
   const instructions = skills.instructions ? `${skills.instructions.trim()}\n\n` : '';
-  const recommended =
-    skills.recommended && skills.recommended.length > 0
-      ? `Recommended skills:\n${skills.recommended.map((s) => `- \`${s}\``).join('\n')}\n`
+
+  const recommendedSection =
+    hasRecommended || hasByLane
+      ? `Recommended skills:\n${[...(skills.recommended || []), ...byLaneSkills]
+          .filter((s, i, arr) => arr.indexOf(s) === i) // dedupe
+          .map((s) => `- \`${s}\``)
+          .join('\n')}\n`
       : '';
 
-  return `${SECTION.clientSkills} (${clientContext.name})\n\n${instructions}${recommended}`;
+  return `${SECTION.clientSkills} (${clientContext?.name})\n\n${instructions}${recommendedSection}`;
 }
 
 export function generateSkillsSelectionSection(doc, config, clientName) {

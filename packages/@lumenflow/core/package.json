@@ -39,6 +39,7 @@
     "./spawn-recovery": "./dist/spawn-recovery.js",
     "./spawn-monitor": "./dist/spawn-monitor.js",
     "./spawn-escalation": "./dist/spawn-escalation.js",
+    "./spawn-prompt-schema": "./dist/spawn-prompt-schema.js",
     "./backlog-generator": "./dist/backlog-generator.js",
     "./backlog-parser": "./dist/backlog-parser.js",
     "./backlog-editor": "./dist/backlog-editor.js",

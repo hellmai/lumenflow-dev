@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   generateTaskInvocation,
   generateCodexPrompt,
+  generateTestGuidance,
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
 } from '../dist/wu-spawn.js';
@@ -203,5 +204,234 @@ describe('wu-spawn client guidance injection', () => {
     expect(output).toContain('Gemini CLI Notes');
     expect(output).toContain('Client Skills Guidance (gemini-cli)');
     expect(output).toContain('Recommended skills');
+  });
+});
+
+describe('wu-spawn type-aware test guidance (WU-1142)', () => {
+  const baseDoc = {
+    title: 'Test WU',
+    lane: 'Framework: CLI',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-TEST';
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  describe('generateTestGuidance', () => {
+    it('returns TDD directive for type=feature', () => {
+      const guidance = generateTestGuidance('feature');
+      expect(guidance).toContain('TDD DIRECTIVE');
+      expect(guidance).toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+    });
+
+    it('returns TDD directive for type=bug', () => {
+      const guidance = generateTestGuidance('bug');
+      expect(guidance).toContain('TDD DIRECTIVE');
+      expect(guidance).toContain('Test-First Workflow');
+    });
+
+    it('returns TDD directive for type=tooling', () => {
+      const guidance = generateTestGuidance('tooling');
+      expect(guidance).toContain('TDD DIRECTIVE');
+    });
+
+    it('omits TDD directive for type=documentation', () => {
+      const guidance = generateTestGuidance('documentation');
+      expect(guidance).not.toContain('TDD DIRECTIVE');
+      expect(guidance).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+      expect(guidance).toContain('Format check');
+    });
+
+    it('omits TDD directive for type=design', () => {
+      const guidance = generateTestGuidance('design');
+      expect(guidance).not.toContain('TDD DIRECTIVE');
+      expect(guidance).toContain('Smoke test');
+      expect(guidance).toContain('manual QA');
+    });
+
+    it('returns existing tests guidance for type=refactor', () => {
+      const guidance = generateTestGuidance('refactor');
+      expect(guidance).toContain('Existing tests must pass');
+      expect(guidance).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+    });
+
+    it('returns smoke test guidance for UI component WUs (type=visual)', () => {
+      const guidance = generateTestGuidance('visual');
+      expect(guidance).toContain('Smoke test');
+      expect(guidance).toContain('manual QA');
+    });
+  });
+
+  describe('task invocation with type-aware guidance', () => {
+    it('includes TDD directive for feature WU', () => {
+      const doc = { ...baseDoc, type: 'feature' };
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(doc, id, strategy, { config });
+
+      expect(output).toContain('TDD DIRECTIVE');
+    });
+
+    it('omits TDD directive for documentation WU', () => {
+      const doc = { ...baseDoc, type: 'documentation' };
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(doc, id, strategy, { config });
+
+      expect(output).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+      expect(output).toContain('Format check');
+    });
+
+    it('omits TDD directive for design WU', () => {
+      const doc = { ...baseDoc, type: 'design' };
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(doc, id, strategy, { config });
+
+      expect(output).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+      expect(output).toContain('Smoke test');
+    });
+
+    it('includes appropriate guidance for refactor WU', () => {
+      const doc = { ...baseDoc, type: 'refactor' };
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(doc, id, strategy, { config });
+
+      expect(output).toContain('Existing tests must pass');
+    });
+  });
+
+  describe('codex prompt with type-aware guidance', () => {
+    it('includes TDD directive for tooling WU', () => {
+      const doc = { ...baseDoc, type: 'tooling' };
+      const strategy = new GenericStrategy();
+      const output = generateCodexPrompt(doc, id, strategy, { config });
+
+      expect(output).toContain('TDD DIRECTIVE');
+    });
+
+    it('omits TDD directive for documentation WU', () => {
+      const doc = { ...baseDoc, type: 'documentation' };
+      const strategy = new GenericStrategy();
+      const output = generateCodexPrompt(doc, id, strategy, { config });
+
+      expect(output).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+    });
+  });
+});
+
+describe('wu-spawn byLane skills configuration (WU-1142)', () => {
+  const baseDoc = {
+    title: 'Test WU',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['packages/@lumenflow/core/src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-TEST';
+
+  it('includes byLane skills for Framework: Core lane', () => {
+    const doc = { ...baseDoc, lane: 'Framework: Core' };
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+      agents: {
+        clients: {
+          'claude-code': {
+            skills: {
+              byLane: {
+                'Framework: Core': ['tdd-workflow', 'lumenflow-gates'],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const strategy = new GenericStrategy();
+    const output = generateTaskInvocation(doc, id, strategy, {
+      client: { name: 'claude-code', config: config.agents.clients['claude-code'] },
+      config,
+    });
+
+    expect(output).toContain('tdd-workflow');
+    expect(output).toContain('lumenflow-gates');
+  });
+
+  it('includes byLane skills for Content: Documentation lane', () => {
+    const doc = { ...baseDoc, lane: 'Content: Documentation' };
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+      agents: {
+        clients: {
+          'claude-code': {
+            skills: {
+              byLane: {
+                'Content: Documentation': ['worktree-discipline'],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const strategy = new GenericStrategy();
+    const output = generateTaskInvocation(doc, id, strategy, {
+      client: { name: 'claude-code', config: config.agents.clients['claude-code'] },
+      config,
+    });
+
+    expect(output).toContain('worktree-discipline');
+  });
+});
+
+describe('wu-spawn skip-gates guidance (WU-1142)', () => {
+  const baseDoc = {
+    title: 'Test WU',
+    lane: 'Framework: CLI',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-TEST';
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  it('includes skip-gates autonomy guidance in task invocation', () => {
+    const strategy = new GenericStrategy();
+    const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+    expect(output).toContain('--skip-gates');
+    expect(output).toContain('--fix-wu');
+    expect(output).toContain('pre-existing');
+  });
+
+  it('includes skip-gates autonomy guidance in codex prompt', () => {
+    const strategy = new GenericStrategy();
+    const output = generateCodexPrompt(baseDoc, id, strategy, { config });
+
+    expect(output).toContain('--skip-gates');
   });
 });

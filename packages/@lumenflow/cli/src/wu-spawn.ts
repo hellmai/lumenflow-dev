@@ -353,6 +353,88 @@ function generateInvariantsPriorArtSection(codePaths) {
 }
 
 /**
+ * WU types that require TDD (failing test first)
+ */
+const TDD_REQUIRED_TYPES = ['feature', 'bug', 'tooling', 'enhancement'];
+
+/**
+ * WU types that require existing tests to pass (no new tests mandated)
+ */
+const EXISTING_TESTS_TYPES = ['refactor'];
+
+/**
+ * WU types that require smoke tests + manual QA
+ */
+const SMOKE_TEST_TYPES = ['visual', 'design', 'ui'];
+
+/**
+ * WU types that only need format checks (no TDD)
+ */
+const DOCS_ONLY_TYPES = ['documentation', 'docs', 'config'];
+
+/**
+ * Generate type-aware test guidance (WU-1142)
+ *
+ * Returns appropriate test guidance based on WU type:
+ * - feature/bug/tooling: Full TDD directive
+ * - documentation: Format check only
+ * - visual/design: Smoke test + manual QA
+ * - refactor: Existing tests must pass
+ *
+ * @param {string} wuType - WU type from YAML
+ * @returns {string} Test guidance section
+ */
+export function generateTestGuidance(wuType: string): string {
+  const type = (wuType || 'feature').toLowerCase();
+
+  // Documentation WUs - no TDD, just format checks
+  if (DOCS_ONLY_TYPES.includes(type)) {
+    return `## Documentation Standards
+
+**Format check only** - No TDD required for documentation WUs.
+
+### Requirements
+
+1. Run \`pnpm gates --docs-only\` before completion
+2. Ensure markdown formatting is correct
+3. Verify links are valid
+4. Check spelling and grammar`;
+  }
+
+  // Visual/Design WUs - smoke tests + manual QA
+  if (SMOKE_TEST_TYPES.includes(type)) {
+    return `## Visual/Design Testing
+
+**Smoke test + manual QA** - Visual WUs require different verification.
+
+### Requirements
+
+1. Create smoke test for component rendering (if applicable)
+2. Verify visual appearance manually
+3. Test responsive behavior across breakpoints
+4. Check accessibility (keyboard navigation, screen reader)
+5. Document manual QA results in completion notes`;
+  }
+
+  // Refactor WUs - existing tests must pass
+  if (EXISTING_TESTS_TYPES.includes(type)) {
+    return `## Refactor Testing
+
+**Existing tests must pass** - Refactoring must not break current behavior.
+
+### Requirements
+
+1. Run all existing tests BEFORE refactoring
+2. Run all existing tests AFTER refactoring
+3. No new tests required unless behavior changes
+4. If tests fail after refactor, the refactor introduced a bug`;
+  }
+
+  // Default: TDD required (feature, bug, tooling, enhancement)
+  return generateTDDDirective();
+}
+
+/**
  * Generate the TDD directive section (WU-1585)
  *
  * Positioned immediately after </task> preamble per "Lost in the Middle" research.
@@ -458,6 +540,12 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
    - Use \`pnpm mem:checkpoint --wu ${id}\` to save progress before risky operations
    - Check \`pnpm mem:inbox --wu ${id}\` periodically for parallel signals from other agents
    - Checkpoint triggers (WU-1943): checkpoint after each acceptance criterion completed, checkpoint before gates, checkpoint every 30 tool calls
+
+8. SKIP-GATES AUTONOMY (WU-1142)
+   - If gates fail, first check if failure is pre-existing on main: \`git checkout main && pnpm gates\`
+   - If failure exists on main (not your change), use: \`pnpm wu:done --id ${id} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX\`
+   - Do NOT ask for approval - autonomous skip-gates for pre-existing failures is correct
+   - This prevents getting stuck on infrastructure debt
 </constraints>`;
 }
 
@@ -469,7 +557,8 @@ function generateCodexConstraints(id) {
 3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node tools/lib/agent-verification.mjs ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
 5. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
-6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\``;
+6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
+7. **Skip-gates for pre-existing**: if gates fail due to pre-existing issue on main, use \`--skip-gates --reason "pre-existing" --fix-wu WU-XXX\``;
 }
 
 /**
@@ -964,10 +1053,12 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
-  const tddDirective = generateTDDDirective();
+  // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
+  const testGuidance = generateTestGuidance(doc.type);
   const clientContext = options.client;
   const config = options.config || getConfig();
-  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
+  // WU-1142: Pass lane to get byLane skills
+  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
   const skillsSection =
     generateSkillsSelectionSection(doc, config, clientContext?.name) +
     (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
@@ -1011,14 +1102,14 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
 
   // Build the task prompt
   // WU-1131: Warning banner at start, end sentinel after constraints
-  // TDD directive appears immediately after </task> per "Lost in the Middle" research (WU-1585)
+  // WU-1142: Type-aware test guidance (TDD for code, format-only for docs, etc.)
   const taskPrompt = `${TRUNCATION_WARNING_BANNER}<task>
 ${preamble}
 </task>
 
 ---
 
-${tddDirective}
+${testGuidance}
 
 ---
 
@@ -1137,7 +1228,8 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
-  const tddDirective = generateTDDDirective();
+  // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
+  const testGuidance = generateTestGuidance(doc.type);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
@@ -1146,7 +1238,8 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
   const constraints = generateCodexConstraints(id);
   const clientContext = options.client;
   const config = options.config || getConfig();
-  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
+  // WU-1142: Pass lane to get byLane skills
+  const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
   const skillsSection =
     generateSkillsSelectionSection(doc, config, clientContext?.name) +
     (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
@@ -1160,9 +1253,10 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
 
   // WU-1131: Warning banner at start, end sentinel after constraints
+  // WU-1142: Type-aware test guidance
   return `${TRUNCATION_WARNING_BANNER}# ${id}: ${doc.title || 'Untitled'}
 
-${tddDirective}
+${testGuidance}
 
 ---
 

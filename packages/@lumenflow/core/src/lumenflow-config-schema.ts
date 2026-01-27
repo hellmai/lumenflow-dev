@@ -321,6 +321,16 @@ export const ClientSkillsSchema = z.object({
 
   /** Recommended skills to load for this client */
   recommended: z.array(z.string()).default([]),
+
+  /**
+   * WU-1142: Lane-specific skills to recommend
+   * Maps lane names to arrays of skill names
+   * @example
+   * byLane:
+   *   'Framework: Core': ['tdd-workflow', 'lumenflow-gates']
+   *   'Content: Documentation': ['worktree-discipline']
+   */
+  byLane: z.record(z.string(), z.array(z.string())).optional(),
 });
 
 /**

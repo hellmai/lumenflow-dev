@@ -113,6 +113,23 @@ export * from './spawn-recovery.js';
 export * from './spawn-monitor.js';
 export * from './spawn-escalation.js';
 
+// WU-1142: Spawn prompt schema for truncation-resistant prompts
+// Explicit exports to avoid ValidationResult conflict with validation/index.js
+export {
+  SPAWN_SENTINEL,
+  SPAWN_PROMPT_VERSION,
+  SpawnPromptSchema,
+  computeChecksum,
+  createSpawnPrompt,
+  validateSpawnPrompt,
+  parseSpawnPrompt,
+  serializeSpawnPrompt,
+  checkSentinel,
+  type SpawnPrompt,
+  type SpawnPromptValidationResult,
+  type ParseResult as SpawnPromptParseResult,
+} from './spawn-prompt-schema.js';
+
 // Backlog management
 export * from './backlog-generator.js';
 export * from './backlog-parser.js';
