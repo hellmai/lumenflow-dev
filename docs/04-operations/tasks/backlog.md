@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml) — Operations: Infrastructure
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
   (No items ready)
 
