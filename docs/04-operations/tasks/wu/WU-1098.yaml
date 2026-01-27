@@ -2,7 +2,7 @@ id: WU-1098
 title: 'BUG: Fix Starlight docs formatting issues'
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: cancelled
 priority: P2
 created: 2026-01-25
 code_paths:
