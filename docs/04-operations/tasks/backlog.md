@@ -164,3 +164,9 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite](wu/WU-1144.yaml) — Framework: Core
 - [WU-1145 — Bug: wu:done metadata update overwrites](wu/WU-1145.yaml) — Framework: Core
+- [WU-1004 — Make gates script repo-agnostic](wu/WU-1004.yaml) — CLI (cancelled)
+- [WU-1066 — Add .NET/C# preset to lumenflow-gates](wu/WU-1066.yaml) — Operations: CI/CD (cancelled)
+- [WU-1098 — BUG: Fix Starlight docs formatting](wu/WU-1098.yaml) — Content: Documentation (cancelled)
+- [WU-1129 — Fix pre-existing prettier format failures](wu/WU-1129.yaml) — Content: Documentation (cancelled)
+- [WU-1143 — Fix backlog-sync gate](wu/WU-1143.yaml) — Operations: Infrastructure (cancelled)
+- [WU-1146 — Regenerate backlog.md](wu/WU-1146.yaml) — Operations: Infrastructure (cancelled)
