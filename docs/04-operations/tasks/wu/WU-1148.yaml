@@ -11,7 +11,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-done-docs-generate.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-docs-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1148.done
