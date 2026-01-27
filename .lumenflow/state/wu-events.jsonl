@@ -132,3 +132,151 @@
 {"type":"claim","wuId":"WU-1135","lane":"Content: Documentation","title":"Add vendor-agnostic pre-write checks to constraints and agent templates","timestamp":"2026-01-27T16:23:29.018Z"}
 {"type":"complete","wuId":"WU-1073","timestamp":"2026-01-27T16:51:27.798Z"}
 {"type":"complete","wuId":"WU-1135","timestamp":"2026-01-27T16:57:12.385Z"}
+{"type":"claim","wuId":"WU-1001","timestamp":"2026-01-18T00:00:00.000Z","lane":"Infrastructure","title":"Complete LumenFlow dogfooding setup"}
+{"type":"complete","wuId":"WU-1001","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1002","timestamp":"2026-01-18T00:00:00.000Z","lane":"Infrastructure","title":"Publish @lumenflow packages to npm"}
+{"type":"complete","wuId":"WU-1002","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1003","timestamp":"2026-01-18T00:00:00.000Z","lane":"Infrastructure","title":"Add rate limiting to Gates Action"}
+{"type":"complete","wuId":"WU-1003","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1004","timestamp":"2026-01-18T00:00:00.000Z","lane":"CLI","title":"Make gates script repo-agnostic (skip missing apps/web)"}
+{"type":"complete","wuId":"WU-1004","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1005","timestamp":"2026-01-18T00:00:00.000Z","lane":"CLI","title":"Add lumenflow init scaffolding command"}
+{"type":"complete","wuId":"WU-1005","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1006","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Refactor codebase to use well-known libraries (Library-First)"}
+{"type":"complete","wuId":"WU-1006","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1007","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"List LumenFlow GitHub App on Marketplace (Free tier)"}
+{"type":"claim","wuId":"WU-1008","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Create lumenflow.dev docs site"}
+{"type":"complete","wuId":"WU-1008","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1009","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Write quickstart guide"}
+{"type":"complete","wuId":"WU-1009","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1010","timestamp":"2026-01-18T00:00:00.000Z","lane":"Documentation","title":"Create example repos (Node/Python/Go)"}
+{"type":"complete","wuId":"WU-1010","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1011","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Fix circular dependency between core and memory packages"}
+{"type":"complete","wuId":"WU-1011","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1012","timestamp":"2026-01-18T00:00:00.000Z","lane":"CLI","title":"Add --docs-only flag to wu:done for documentation WUs"}
+{"type":"complete","wuId":"WU-1012","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1013","timestamp":"2026-01-18T00:00:00.000Z","lane":"Documentation","title":"Deploy docs to Vercel (lumenflow.dev)"}
+{"type":"complete","wuId":"WU-1013","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1014","timestamp":"2026-01-18T00:00:00.000Z","lane":"CLI","title":"Add error logging to worktreeRemove fallback rmSync"}
+{"type":"complete","wuId":"WU-1014","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1015","timestamp":"2026-01-18T00:00:00.000Z","lane":"CLI","title":"Add missing CLI command wrappers"}
+{"type":"complete","wuId":"WU-1015","timestamp":"2026-01-18T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1016","timestamp":"2026-01-19T00:00:00.000Z","lane":"Core","title":"Implement configurable WIP limits per lane"}
+{"type":"complete","wuId":"WU-1016","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1017","timestamp":"2026-01-19T00:00:00.000Z","lane":"Infrastructure","title":"Add vendor-agnostic git hooks via Husky"}
+{"type":"complete","wuId":"WU-1017","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1018","timestamp":"2026-01-19T00:00:00.000Z","lane":"CLI","title":"Migrate missing CLI commands from PatientPath to @lumenflow/cli"}
+{"type":"complete","wuId":"WU-1018","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1019","timestamp":"2026-01-19T00:00:00.000Z","lane":"Infrastructure","title":"Add .lumenflow.lane-inference.yaml for sublane taxonomy"}
+{"type":"complete","wuId":"WU-1019","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1020","timestamp":"2026-01-19T00:00:00.000Z","lane":"CLI","title":"Fix TypeScript error in metrics-snapshot.ts for readonly array cast"}
+{"type":"complete","wuId":"WU-1020","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1022","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: CLI","title":"Enforce parent:sublane format for lanes (Framework: CLI not CLI)"}
+{"type":"complete","wuId":"WU-1022","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1023","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: CLI","title":"Auto-setup worktree dependencies on wu:claim"}
+{"type":"complete","wuId":"WU-1023","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1024","timestamp":"2026-01-19T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Pre-push hook should allow CLI tool pushes to main"}
+{"type":"complete","wuId":"WU-1024","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1025","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: Core","title":"Block wu:create and wu:claim if spec contains PLACEHOLDER markers"}
+{"type":"complete","wuId":"WU-1025","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1026","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: Core","title":"Allow agent branches to bypass worktree requirements"}
+{"type":"complete","wuId":"WU-1026","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1027","timestamp":"2026-01-19T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Block agents from deleting worktrees"}
+{"type":"complete","wuId":"WU-1027","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1028","timestamp":"2026-01-19T00:00:00.000Z","lane":"Content: Documentation","title":"Fix agent wu:done amnesia - docs and distribution"}
+{"type":"complete","wuId":"WU-1028","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1029","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: CLI","title":"Fix wu:claim fallback to symlink nested node_modules"}
+{"type":"complete","wuId":"WU-1029","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1030","timestamp":"2026-01-19T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Fix wu:create/wu:edit pre-push block leaving main ahead"}
+{"type":"complete","wuId":"WU-1030","timestamp":"2026-01-19T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1031","timestamp":"2026-01-20T00:00:00.000Z","lane":"Framework: CLI","title":"Make wu:done resilient to missing worktree"}
+{"type":"complete","wuId":"WU-1031","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1032","timestamp":"2026-01-20T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Upgrade Core Dependencies and Fix Documentation"}
+{"type":"complete","wuId":"WU-1032","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1033","timestamp":"2026-01-20T00:00:00.000Z","lane":"Content: Documentation","title":"Canonicalize LumenFlow framework docs under operations"}
+{"type":"complete","wuId":"WU-1033","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1035","timestamp":"2026-01-20T00:00:00.000Z","lane":"Framework: Core","title":"Update core references to new documentation paths"}
+{"type":"complete","wuId":"WU-1035","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1036","timestamp":"2026-01-20T00:00:00.000Z","lane":"Framework: CLI","title":"Update CLI references to new documentation paths"}
+{"type":"complete","wuId":"WU-1036","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1038","timestamp":"2026-01-20T00:00:00.000Z","lane":"Framework: CLI","title":"Ensure worktree gates can locate CLI dist"}
+{"type":"complete","wuId":"WU-1038","timestamp":"2026-01-20T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1039","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Allow exposure edits on completed WUs"}
+{"type":"complete","wuId":"WU-1039","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1040","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Allow safe metadata edits on done WUs (exposure)"}
+{"type":"complete","wuId":"WU-1040","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1041","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Auto-assign exposure on wu:done when missing"}
+{"type":"complete","wuId":"WU-1041","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1042","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Reduce gates friction (format guidance + worktree cleanup helper)"}
+{"type":"complete","wuId":"WU-1042","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1043","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Enforce complete specs at wu:create (schema + templates + docs)"}
+{"type":"complete","wuId":"WU-1043","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1044","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Vendor-Agnostic wu:spawn Refactor"}
+{"type":"complete","wuId":"WU-1044","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1045","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Define lumenflow:init project scaffolding (minimal + optional full)"}
+{"type":"complete","wuId":"WU-1045","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1046","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Consolidate YAML handling on yaml package (retire js-yaml)"}
+{"type":"complete","wuId":"WU-1046","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1047","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Configurable methodology defaults + client blocks for wu:claim/wu:spawn"}
+{"type":"complete","wuId":"WU-1047","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1048","timestamp":"2026-01-21T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Fix Vitest coverage provider gaps"}
+{"type":"complete","wuId":"WU-1048","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1049","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Refactor wu-done validators + standardize errors"}
+{"type":"complete","wuId":"WU-1049","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1050","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: CLI","title":"Restore canonical claim state + global visibility for wu:claim (push-only)"}
+{"type":"complete","wuId":"WU-1050","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1051","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Make wu:spawn skills guidance config-driven and vendor-agnostic"}
+{"type":"complete","wuId":"WU-1051","timestamp":"2026-01-21T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1052","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Migrate remaining tests from PatientPath tools/ to hellmai/os packages"}
+{"type":"complete","wuId":"WU-1052","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1053","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Claude Code Full Optimization - Skills, Agents, Docs, Release"}
+{"type":"complete","wuId":"WU-1053","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1054","timestamp":"2026-01-22T00:00:00.000Z","lane":"Operations: CI/CD","title":"Fix npm publish and document release process"}
+{"type":"complete","wuId":"WU-1054","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1055","timestamp":"2026-01-22T00:00:00.000Z","lane":"Content: Documentation","title":"Fix Starlight docs - remove custom CSS, use defaults"}
+{"type":"complete","wuId":"WU-1055","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1056","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Harden wu:cleanup + add worktree-loss safeguards"}
+{"type":"complete","wuId":"WU-1056","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1057","timestamp":"2026-01-22T00:00:00.000Z","lane":"Content: Documentation","title":"Update LumenFlow docs - Nova theme, logos, and content audit"}
+{"type":"complete","wuId":"WU-1057","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1058","timestamp":"2026-01-22T00:00:00.000Z","lane":"Content: Documentation","title":"Documentation overhaul - fix critical gaps and inaccuracies"}
+{"type":"complete","wuId":"WU-1058","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1059","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: CLI","title":"Auto-generate CLI and config documentation from source"}
+{"type":"complete","wuId":"WU-1059","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1061","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: CLI","title":"Integrate docs:generate into wu:done for @lumenflow/* changes"}
+{"type":"complete","wuId":"WU-1061","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1062","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"External plan storage and no-main-write mode for wu:create"}
+{"type":"complete","wuId":"WU-1062","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1064","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: CLI","title":"Fix CLI silent failure - async main() without catch handler"}
+{"type":"complete","wuId":"WU-1064","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1065","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: CLI","title":"Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring"}
+{"type":"complete","wuId":"WU-1065","timestamp":"2026-01-22T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1066","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: CI/CD","title":"Add .NET/C# preset to lumenflow-gates GitHub Action"}
+{"type":"complete","wuId":"WU-1066","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: CI/CD","title":"Make gates language-agnostic via config-driven execution"}
+{"type":"complete","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"LumenFlow Framework Cleanup - Remove PatientPath leakage and fix code smells"}
+{"type":"complete","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Validate spec-refs rejects repo-internal plan paths"}
+{"type":"complete","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1070","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Add audit logging and guarding for LUMENFLOW_FORCE bypass"}
+{"type":"complete","wuId":"WU-1070","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1071","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Fix CLI entry guard for pnpm symlink resolution"}
+{"type":"complete","wuId":"WU-1071","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1072","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior"}
+{"type":"complete","wuId":"WU-1072","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1074","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Add release command for npm publishing"}
+{"type":"complete","wuId":"WU-1074","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1075","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"Rename .beacon to .lumenflow - remove PatientPath branding"}
+{"type":"complete","wuId":"WU-1075","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1076","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Block direct main branch commits for agents"}
+{"type":"complete","wuId":"WU-1076","timestamp":"2026-01-23T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1098","timestamp":"2026-01-25T00:00:00.000Z","lane":"Content: Documentation","title":"BUG: Fix Starlight docs formatting issues"}
+{"type":"complete","wuId":"WU-1098","timestamp":"2026-01-25T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1129","timestamp":"2026-01-26T00:00:00.000Z","lane":"Content: Documentation","title":"Fix pre-existing prettier format failures in apps/docs/*.mdx"}
+{"type":"complete","wuId":"WU-1129","timestamp":"2026-01-26T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1134","timestamp":"2026-01-26T00:00:00.000Z","lane":"Framework: CLI","title":"Add worktree block recovery guidance to wu:spawn output"}
+{"type":"claim","wuId":"WU-1143","timestamp":"2026-01-27T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Fix backlog-sync gate - WU files missing from backlog.md"}
+{"type":"complete","wuId":"WU-1143","timestamp":"2026-01-27T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1146","timestamp":"2026-01-27T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Regenerate backlog.md from wu-events.jsonl to fix sync"}
+{"type":"complete","wuId":"WU-1146","timestamp":"2026-01-27T00:00:00.000Z"}
