@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — Framework: Core
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
   (No items ready)
 
