@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
