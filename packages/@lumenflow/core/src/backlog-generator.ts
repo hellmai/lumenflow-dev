@@ -18,6 +18,98 @@
  */
 
 import { createHash } from 'node:crypto';
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { readWURaw } from './wu-yaml.js';
+import { WU_STATUS, WU_STATUS_GROUPS } from './wu-constants.js';
+import { createWuPaths, resolveFromProjectRoot } from './wu-paths.js';
+
+const WU_FILENAME_PATTERN = /^WU-\d+\.yaml$/;
+
+function normalizeYamlScalar(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  return typeof value === 'string' ? value : String(value);
+}
+
+function normalizeYamlStatus(value) {
+  const normalized = normalizeYamlScalar(value).trim().toLowerCase();
+  return normalized === '' ? WU_STATUS.READY : normalized;
+}
+
+function mapYamlStatusToSection(status) {
+  if (WU_STATUS_GROUPS.UNCLAIMED.includes(status)) {
+    return WU_STATUS.READY;
+  }
+  if (status === WU_STATUS.IN_PROGRESS) {
+    return WU_STATUS.IN_PROGRESS;
+  }
+  if (status === WU_STATUS.BLOCKED) {
+    return WU_STATUS.BLOCKED;
+  }
+  if (WU_STATUS_GROUPS.TERMINAL.includes(status)) {
+    return WU_STATUS.DONE;
+  }
+  return WU_STATUS.READY;
+}
+
+function compareWuIds(a, b) {
+  const numA = Number.parseInt(a.replace(/^WU-/, ''), 10);
+  const numB = Number.parseInt(b.replace(/^WU-/, ''), 10);
+  if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA !== numB) {
+    return numA - numB;
+  }
+  return a.localeCompare(b);
+}
+
+function resolveWuDir(options = {}) {
+  const paths = createWuPaths({ projectRoot: options.projectRoot });
+  const configured = options.wuDir || paths.WU_DIR();
+  return path.isAbsolute(configured) ? configured : resolveFromProjectRoot(configured);
+}
+
+function loadYamlWuEntries(wuDir) {
+  if (!existsSync(wuDir)) {
+    return new Map();
+  }
+
+  const files = readdirSync(wuDir).filter((file) => WU_FILENAME_PATTERN.test(file));
+  files.sort((a, b) => compareWuIds(a.replace(/\.yaml$/, ''), b.replace(/\.yaml$/, '')));
+
+  const entries = new Map();
+
+  for (const file of files) {
+    const wuId = file.replace(/\.yaml$/, '');
+    const doc = readWURaw(path.join(wuDir, file));
+
+    if (!doc || typeof doc !== 'object') {
+      continue;
+    }
+
+    entries.set(wuId, {
+      status: normalizeYamlStatus(doc.status),
+      title: normalizeYamlScalar(doc.title),
+      lane: normalizeYamlScalar(doc.lane),
+    });
+  }
+
+  return entries;
+}
+
+function getMergedBacklogEntry(store, yamlEntries, wuId) {
+  const state = typeof store.getWUState === 'function' ? store.getWUState(wuId) : store.wuState.get(wuId);
+  if (state) {
+    return { title: state.title, lane: state.lane };
+  }
+
+  const yamlEntry = yamlEntries.get(wuId);
+  if (!yamlEntry) {
+    return null;
+  }
+
+  return { title: yamlEntry.title, lane: yamlEntry.lane };
+}
 
 /**
  * Generates backlog.md markdown from WUStateStore
@@ -29,6 +121,9 @@ import { createHash } from 'node:crypto';
  * - Placeholder text for empty sections
  *
  * @param {import('./wu-state-store.js').WUStateStore} store - State store to read from
+ * @param {object} [options] - Optional settings
+ * @param {string} [options.wuDir] - Absolute or repo-relative path to WU YAML directory
+ * @param {string} [options.projectRoot] - Project root override for path resolution
  * @returns {Promise<string>} Markdown content for backlog.md
  *
  * @example
@@ -38,7 +133,7 @@ import { createHash } from 'node:crypto';
  * await fs.writeFile('backlog.md', markdown, 'utf-8');
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export async function generateBacklog(store) {
+export async function generateBacklog(store, options = {}) {
   // Start with frontmatter
   const frontmatter = `---
 sections:
@@ -56,11 +151,53 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
 `;
+
+  const yamlEntries = loadYamlWuEntries(resolveWuDir(options));
+
+  const storeReady = Array.from(store.getByStatus('ready'));
+  const storeInProgress = Array.from(store.getByStatus('in_progress'));
+  const storeBlocked = Array.from(store.getByStatus('blocked'));
+  const storeDone = Array.from(store.getByStatus('done'));
+
+  const storeIds = new Set([...storeReady, ...storeInProgress, ...storeBlocked, ...storeDone]);
+
+  const yamlReady = [];
+  const yamlInProgress = [];
+  const yamlBlocked = [];
+  const yamlDone = [];
+
+  for (const [wuId, entry] of yamlEntries.entries()) {
+    if (storeIds.has(wuId)) {
+      continue;
+    }
+
+    const status = mapYamlStatusToSection(entry.status);
+
+    if (status === WU_STATUS.IN_PROGRESS) {
+      yamlInProgress.push(wuId);
+    } else if (status === WU_STATUS.BLOCKED) {
+      yamlBlocked.push(wuId);
+    } else if (status === WU_STATUS.DONE) {
+      yamlDone.push(wuId);
+    } else {
+      yamlReady.push(wuId);
+    }
+  }
+
+  yamlReady.sort(compareWuIds);
+  yamlInProgress.sort(compareWuIds);
+  yamlBlocked.sort(compareWuIds);
+  yamlDone.sort(compareWuIds);
+
+  const ready = [...storeReady, ...yamlReady];
+  const inProgress = [...storeInProgress, ...yamlInProgress];
+  const blocked = [...storeBlocked, ...yamlBlocked];
+  const done = [...storeDone, ...yamlDone];
 
   // Generate sections
   const sections = [];
@@ -68,14 +205,13 @@ sections:
   // Ready section (WUs with status: ready)
   sections.push('## 🚀 Ready (pull from here)');
   sections.push('');
-  const ready = store.getByStatus('ready');
-  if (ready.size === 0) {
+  if (ready.length === 0) {
     sections.push('(No items ready)');
   } else {
     for (const wuId of ready) {
-      const state = store.wuState.get(wuId);
-      if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml) — ${state.lane}`);
+      const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
+      if (entry) {
+        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
       }
     }
   }
@@ -84,14 +220,13 @@ sections:
   sections.push('');
   sections.push('## 🔧 In progress');
   sections.push('');
-  const inProgress = store.getByStatus('in_progress');
-  if (inProgress.size === 0) {
+  if (inProgress.length === 0) {
     sections.push('(No items currently in progress)');
   } else {
     for (const wuId of inProgress) {
-      const state = store.wuState.get(wuId);
-      if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml) — ${state.lane}`);
+      const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
+      if (entry) {
+        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
       }
     }
   }
@@ -100,14 +235,13 @@ sections:
   sections.push('');
   sections.push('## ⛔ Blocked');
   sections.push('');
-  const blocked = store.getByStatus('blocked');
-  if (blocked.size === 0) {
+  if (blocked.length === 0) {
     sections.push('(No items currently blocked)');
   } else {
     for (const wuId of blocked) {
-      const state = store.wuState.get(wuId);
-      if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml) — ${state.lane}`);
+      const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
+      if (entry) {
+        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
       }
     }
   }
@@ -116,40 +250,19 @@ sections:
   sections.push('');
   sections.push('## ✅ Done');
   sections.push('');
-  const done = store.getByStatus('done');
-  if (done.size === 0) {
+  if (done.length === 0) {
     sections.push('(No completed items)');
   } else {
     for (const wuId of done) {
-      const state = store.wuState.get(wuId);
-      if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml)`);
+      const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
+      if (entry) {
+        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml)`);
       }
     }
   }
 
   return frontmatter + sections.join('\n');
 }
-
-/**
- * Generates status.md markdown from WUStateStore
- *
- * Format matches current status.md exactly:
- * - Header with last updated timestamp
- * - In Progress section
- * - Completed section with dates
- * - Placeholder for empty sections
- *
- * @param {import('./wu-state-store.js').WUStateStore} store - State store to read from
- * @returns {Promise<string>} Markdown content for status.md
- *
- * @example
- * const store = new WUStateStore('/path/to/state');
- * await store.load();
- * const markdown = await generateStatus(store);
- * await fs.writeFile('status.md', markdown, 'utf-8');
- */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
 export async function generateStatus(store) {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
