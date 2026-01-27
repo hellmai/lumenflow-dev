@@ -20,12 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — Framework: CLI
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
+- [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — Operations: Infrastructure
 
 ## ⛔ Blocked
 
