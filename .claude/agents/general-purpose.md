@@ -21,6 +21,14 @@ Before starting work, load and audit against `.lumenflow/constraints.md`:
 5. Gates and skip-gates
 6. Safety compliance
 
+## Mandatory Pre-Write Check
+
+Before ANY Write/Edit/Read operation:
+
+1. Run `pwd` and confirm it shows `.../worktrees/<lane>-wu-xxx`
+2. Use relative paths only (no `/home/`, `/Users/`, or full repo paths)
+3. Documentation WUs: read-only commands may run from main, but **all writes require a worktree**
+
 ## Automatic Context Loading
 
 Before ANY task execution, you MUST read these files in order:
