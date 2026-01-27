@@ -2,7 +2,7 @@ id: WU-1150
 title: Fix TOOL_PATHS hardcoded paths for consumer repos
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-27
 code_paths:
@@ -26,7 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: TOOL_PATHS.VALIDATE_BACKLOG_SYNC uses monorepo-relative path that breaks in consumer repos. Path should resolve from node_modules or use require.resolve.
+description: TOOL_PATHS.VALIDATE_BACKLOG_SYNC uses monorepo-relative path that breaks in consumer
+  repos. Path should resolve from node_modules or use require.resolve.
 acceptance:
   - TOOL_PATHS paths work in both monorepo and consumer repos
   -  gates pass after fix
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1150
+claimed_at: 2026-01-27T20:20:22.650Z
+baseline_main_sha: a7b59ea55d0066253ef1b53a208353fb4d874849
+session_id: 0832c4d2-2005-4937-a9fa-f38e1b756a22
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T20:20:22.656Z
