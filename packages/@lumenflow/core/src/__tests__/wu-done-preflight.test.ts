@@ -2,18 +2,12 @@
  * @file wu-done-preflight.test.ts
  * @description Tests for wu:done preflight validation helpers
  *
- * WU-1086: Fix gates-pre-commit module resolution to support .mjs extension
+ * WU-1139: Wire preflight validation to CLI implementations
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock node:fs for existsSync
-vi.mock('node:fs', () => ({
-  existsSync: vi.fn(),
-}));
-
-import { existsSync } from 'node:fs';
-import { validateAllPreCommitHooks } from '../wu-done-preflight.js';
+import { runPreflightTasksValidation, validateAllPreCommitHooks } from '../wu-done-preflight.js';
 
 describe('validateAllPreCommitHooks', () => {
   let mockExecSync: ReturnType<typeof vi.fn>;
@@ -27,66 +21,30 @@ describe('validateAllPreCommitHooks', () => {
     vi.clearAllMocks();
   });
 
-  describe('WU-1086: gate script extension resolution', () => {
-    it('should try .mjs extension first when it exists', () => {
-      vi.mocked(existsSync).mockImplementation((path: string) => {
-        return path.toString().endsWith('gates-pre-commit.mjs');
-      });
-      mockExecSync.mockReturnValue('');
+  it('uses CLI gates command for pre-commit validation', () => {
+    mockExecSync.mockReturnValue('');
 
-      validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
+    validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
 
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'node tools/gates-pre-commit.mjs',
-        expect.any(Object),
-      );
-    });
+    expect(mockExecSync).toHaveBeenCalledWith(
+      'node packages/@lumenflow/cli/dist/gates.js',
+      expect.any(Object),
+    );
+  });
 
-    it('should fall back to .js extension when .mjs does not exist', () => {
-      vi.mocked(existsSync).mockReturnValue(false);
-      mockExecSync.mockReturnValue('');
+  it('uses worktree cwd when provided', () => {
+    const worktreePath = '/path/to/worktree';
+    mockExecSync.mockReturnValue('');
 
-      validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
+    validateAllPreCommitHooks('WU-TEST', worktreePath, { execSyncFn: mockExecSync });
 
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'node tools/gates-pre-commit.js',
-        expect.any(Object),
-      );
-    });
-
-    it('should check .mjs in worktree path when provided', () => {
-      const worktreePath = '/path/to/worktree';
-      vi.mocked(existsSync).mockImplementation((path: string) => {
-        return path.toString() === `${worktreePath}/tools/gates-pre-commit.mjs`;
-      });
-      mockExecSync.mockReturnValue('');
-
-      validateAllPreCommitHooks('WU-TEST', worktreePath, { execSyncFn: mockExecSync });
-
-      expect(existsSync).toHaveBeenCalledWith(`${worktreePath}/tools/gates-pre-commit.mjs`);
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'node tools/gates-pre-commit.mjs',
-        expect.objectContaining({ cwd: worktreePath }),
-      );
-    });
-
-    it('should check .mjs in current directory when no worktree provided', () => {
-      vi.mocked(existsSync).mockImplementation((path: string) => {
-        return path.toString() === './tools/gates-pre-commit.mjs';
-      });
-      mockExecSync.mockReturnValue('');
-
-      validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
-
-      expect(existsSync).toHaveBeenCalledWith('./tools/gates-pre-commit.mjs');
-    });
+    expect(mockExecSync).toHaveBeenCalledWith(
+      'node packages/@lumenflow/cli/dist/gates.js',
+      expect.objectContaining({ cwd: worktreePath }),
+    );
   });
 
   describe('validation result', () => {
-    beforeEach(() => {
-      vi.mocked(existsSync).mockReturnValue(false);
-    });
-
     it('should return valid: true when hooks pass', () => {
       mockExecSync.mockReturnValue('');
 
@@ -106,5 +64,43 @@ describe('validateAllPreCommitHooks', () => {
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
+  });
+});
+
+describe('runPreflightTasksValidation (WU-1139)', () => {
+  let mockExecSync: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    mockExecSync = vi.fn();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('runs CLI validate command with WU_ID env', () => {
+    mockExecSync.mockReturnValue('');
+
+    runPreflightTasksValidation('WU-TEST', { execSyncFn: mockExecSync });
+
+    expect(mockExecSync).toHaveBeenCalledWith(
+      'node packages/@lumenflow/cli/dist/validate.js',
+      expect.objectContaining({
+        env: expect.objectContaining({ WU_ID: 'WU-TEST' }),
+      }),
+    );
+  });
+
+  it('returns errors when validate command fails', () => {
+    mockExecSync.mockImplementation(() => {
+      throw { stdout: 'ERROR [WU] Validation failed' };
+    });
+
+    const result = runPreflightTasksValidation('WU-TEST', { execSyncFn: mockExecSync });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.abortedBeforeMerge).toBe(true);
   });
 });
