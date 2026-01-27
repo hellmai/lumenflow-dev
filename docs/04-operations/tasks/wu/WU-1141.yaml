@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-cleanup.ts
+  - packages/@lumenflow/cli/src/wu-cleanup.ts
 tests:
   manual: []
   unit:
