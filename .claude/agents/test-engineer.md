@@ -22,6 +22,14 @@ Before starting work, load and audit against `.lumenflow/constraints.md`:
 
 Verify compliance before reporting completion.
 
+## Mandatory Pre-Write Check
+
+Before ANY Write/Edit/Read operation:
+
+1. Run `pwd` and confirm it shows `.../worktrees/<lane>-wu-xxx`
+2. Use relative paths only (no `/home/`, `/Users/`, or full repo paths)
+3. Documentation WUs: read-only commands may run from main, but **all writes require a worktree**
+
 ## Primary Responsibilities
 
 1. **Test-Driven Development**: Write failing tests BEFORE implementation

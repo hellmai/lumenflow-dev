@@ -1,7 +1,7 @@
 # LumenFlow Constraints Capsule
 
 **Version:** 1.0
-**Last updated:** 2026-01-19
+**Last updated:** 2026-01-27
 
 This document contains the 6 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
@@ -18,6 +18,25 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 - After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx`
 - Hooks block WU commits from main checkout
 - Forbidden commands on main: `git reset --hard`, `git stash`, `git clean -fd`, `git push --force`
+
+**MANDATORY PRE-WRITE CHECK**
+
+Before ANY Write/Edit/Read operation:
+
+1. **Verify worktree location**:
+
+   ```bash
+   pwd
+   # Must show: .../worktrees/<lane>-wu-xxx
+   ```
+
+2. **Verify relative paths only**:
+   - ✅ `docs/...`, `packages/...`, `apps/...`, `./...`
+   - ❌ `/home/...`, `/Users/...`, or full repo paths
+
+3. **Docs-only exception (documentation WUs)**:
+   - You may run **read-only** commands from main (e.g., `pnpm gates --docs-only`).
+   - **All file writes still require a worktree**. If no worktree exists, claim one first.
 
 **Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch.
 
