@@ -20,13 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — Operations: Infrastructure
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
-- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -91,3 +89,4 @@ sections:
 - [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml)
 - [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml)
 - [WU-1138 — Fix Prettier failures in docs reference pages](wu/WU-1138.yaml)
+- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml)

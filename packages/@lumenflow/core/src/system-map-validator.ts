@@ -12,6 +12,10 @@
  * @module system-map-validator
  */
 
+import { existsSync, readFileSync } from 'node:fs';
+import fg from 'fast-glob';
+import { parseYAML } from './wu-yaml.js';
+
 /**
  * Canonical list of valid audience tags as defined in SYSTEM-MAP.yaml header
  * @type {string[]}
@@ -309,4 +313,58 @@ export async function validateSystemMap(systemMap, deps) {
     queryErrors,
     classificationErrors,
   };
+}
+
+const DEFAULT_SYSTEM_MAP_PATH = 'SYSTEM-MAP.yaml';
+
+function emitErrors(label, errors) {
+  if (!errors || errors.length === 0) return;
+  console.error(`\n${label}:`);
+  for (const error of errors) {
+    console.error(`  - ${error}`);
+  }
+}
+
+async function runCLI() {
+  const systemMapPath = process.env.SYSTEM_MAP_PATH || DEFAULT_SYSTEM_MAP_PATH;
+
+  if (!existsSync(systemMapPath)) {
+    console.warn(`[system-map] ${systemMapPath} not found; skipping validation.`);
+    process.exit(0);
+  }
+
+  let systemMap;
+  try {
+    const raw = readFileSync(systemMapPath, 'utf-8');
+    systemMap = parseYAML(raw);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[system-map] Failed to read or parse ${systemMapPath}: ${message}`);
+    process.exit(1);
+  }
+
+  const result = await validateSystemMap(systemMap, {
+    exists: (path) => existsSync(path),
+    glob: (pattern) => fg(pattern, { dot: false }),
+  });
+
+  if (!result.valid) {
+    console.error('\n[system-map] Validation failed');
+    emitErrors('Missing paths', result.pathErrors);
+    emitErrors('Orphan docs', result.orphanDocs);
+    emitErrors('Invalid audiences', result.audienceErrors);
+    emitErrors('Invalid quick queries', result.queryErrors);
+    emitErrors('Classification routing violations', result.classificationErrors);
+    process.exit(1);
+  }
+
+  console.log('[system-map] Validation passed');
+  process.exit(0);
+}
+
+if (import.meta.main) {
+  runCLI().catch((error) => {
+    console.error('[system-map] Validation failed:', error);
+    process.exit(1);
+  });
 }
