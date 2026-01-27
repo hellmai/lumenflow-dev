@@ -287,3 +287,4 @@
 {"type":"complete","wuId":"WU-1148","timestamp":"2026-01-27T18:57:05.853Z"}
 {"type":"claim","wuId":"WU-1150","timestamp":"2026-01-27T20:20:22.667Z","lane":"Framework: Core","title":"Fix TOOL_PATHS hardcoded paths for consumer repos"}
 {"type":"complete","wuId":"WU-1150","timestamp":"2026-01-27T20:36:09.092Z"}
+{"type":"claim","wuId":"WU-1152","lane":"Framework: Core","title":"Fix resolveNodeModulePath to check cwd/node_modules for sibling packages","timestamp":"2026-01-27T22:04:35.383Z"}

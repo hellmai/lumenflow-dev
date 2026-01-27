@@ -4,78 +4,13 @@ _Last updated: 2026-01-27_
 
 ## In Progress
 
+- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
-- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1152 — Fix resolveNodeModulePath to check cwd/node_modules for sibling packages](wu/WU-1152.yaml)
 
 ## Completed
 
-- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — 2026-01-27
-- [WU-1079 — Migrate stamps from ._legacy to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
-- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
-- [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
-- [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — 2026-01-23
-- [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml) — 2026-01-23
-- [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml) — 2026-01-24
-- [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml) — 2026-01-24
-- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — 2026-01-24
-- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — 2026-01-24
-- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — 2026-01-24
-- [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml) — 2026-01-24
-- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml) — 2026-01-24
-- [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml) — 2026-01-24
-- [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml) — 2026-01-24
-- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — 2026-01-25
-- [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — 2026-01-25
-- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — 2026-01-25
-- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — 2026-01-25
-- [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml) — 2026-01-25
-- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — 2026-01-25
-- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — 2026-01-25
-- [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml) — 2026-01-25
-- [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml) — 2026-01-25
-- [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml) — 2026-01-25
-- [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — 2026-01-25
-- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml) — 2026-01-25
-- [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml) — 2026-01-25
-- [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — 2026-01-25
-- [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml) — 2026-01-25
-- [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml) — 2026-01-25
-- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — 2026-01-26
-- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
-- [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
-- [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — 2026-01-26
-- [WU-1113 — INIT-003 Phase 7: Publish @lumenflow/cli update](wu/WU-1113.yaml) — 2026-01-26
-- [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml) — 2026-01-26
-- [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml) — 2026-01-26
-- [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — 2026-01-26
-- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — 2026-01-26
-- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — 2026-01-26
-- [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml) — 2026-01-26
-- [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — 2026-01-26
-- [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml) — 2026-01-26
-- [WU-1125 — INIT-004 Phase 3: Document upgrade path](wu/WU-1125.yaml) — 2026-01-26
-- [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — 2026-01-26
-- [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml) — 2026-01-26
-- [WU-1124 — INIT-004 Phase 2: Refactor docs-sync to read from templates](wu/WU-1124.yaml) — 2026-01-26
-- [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml) — 2026-01-26
-- [WU-1127 — lumenflow:upgrade must use micro-worktree (users blocked from upgrading)](wu/WU-1127.yaml) — 2026-01-26
-- [WU-1128 — Add upgrade guide to lumenflow.dev](wu/WU-1128.yaml) — 2026-01-26
-- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — 2026-01-26
-- [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — 2026-01-26
-- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — 2026-01-26
-- [WU-1136 — Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook](wu/WU-1136.yaml) — 2026-01-26
-- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — 2026-01-26
-- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — 2026-01-27
-- [WU-1138 — Fix Prettier failures in docs reference pages](wu/WU-1138.yaml) — 2026-01-27
-- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — 2026-01-27
-- [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — 2026-01-27
-- [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — 2026-01-27
-- [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — 2026-01-27
-- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
-- [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml) — 2026-01-27
-- [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — 2026-01-27
-- [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — 2026-01-27
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -145,10 +80,76 @@ _Last updated: 2026-01-27_
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — 2026-01-23
 - [WU-1075 — Rename ._legacy to .lumenflow - remove  branding](wu/WU-1075.yaml) — 2026-01-23
 - [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml) — 2026-01-23
+- [WU-1079 — Migrate stamps from ._legacy to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
+- [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
+- [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
+- [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — 2026-01-23
+- [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml) — 2026-01-23
+- [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml) — 2026-01-24
+- [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml) — 2026-01-24
+- [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — 2026-01-24
+- [WU-1085 — CLI best practices audit: --help, --no-color, exports](wu/WU-1085.yaml) — 2026-01-24
+- [WU-1086 — Fix gates-pre-commit module resolution to support .mjs extension](wu/WU-1086.yaml) — 2026-01-24
+- [WU-1087 — CLI Best Practices Phase 2: Command Migrations, Docs Rebalance, npm Publish](wu/WU-1087.yaml) — 2026-01-24
+- [WU-1088 — Fix circular dependency in dependency-graph.ts causing top-level await warning](wu/WU-1088.yaml) — 2026-01-24
+- [WU-1089 — Agent branch patterns: merge mode, override, and airgapped support](wu/WU-1089.yaml) — 2026-01-24
+- [WU-1090 — Context-aware state machine for WU lifecycle commands](wu/WU-1090.yaml) — 2026-01-24
 - [WU-1098 — BUG: Fix Starlight docs formatting issues](wu/WU-1098.yaml) — 2026-01-25
+- [WU-1091 — P1: Fix ensureOnMain() blocking all web agent commands](wu/WU-1091.yaml) — 2026-01-25
+- [WU-1097 — P3: Fix shell escaping in wu-recover CLI](wu/WU-1097.yaml) — 2026-01-25
+- [WU-1092 — P2: Fix worktreeCleanPredicate checking wrong git state](wu/WU-1092.yaml) — 2026-01-25
+- [WU-1093 — INIT-002 Phase 1: Define ports and domain schemas for context/validation/recovery](wu/WU-1093.yaml) — 2026-01-25
+- [WU-1094 — INIT-002 Phase 2: Implement adapters and dependency injection](wu/WU-1094.yaml) — 2026-01-25
+- [WU-1096 — P3: Fix recovery commands and DETACHED location type in Core](wu/WU-1096.yaml) — 2026-01-25
+- [WU-1095 — INIT-002 Phase 3: ADR for hex architecture + migration guide](wu/WU-1095.yaml) — 2026-01-25
+- [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml) — 2026-01-25
+- [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml) — 2026-01-25
+- [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml) — 2026-01-25
+- [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — 2026-01-25
+- [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml) — 2026-01-25
+- [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml) — 2026-01-25
+- [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — 2026-01-25
+- [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml) — 2026-01-25
+- [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml) — 2026-01-25
 - [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml) — 2026-01-26
+- [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — 2026-01-26
+- [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
+- [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
+- [WU-1107 — INIT-003 Phase 3c: Migrate state:bootstrap command](wu/WU-1107.yaml) — 2026-01-26
+- [WU-1113 — INIT-003 Phase 7: Publish @lumenflow/cli update](wu/WU-1113.yaml) — 2026-01-26
+- [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml) — 2026-01-26
+- [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml) — 2026-01-26
+- [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — 2026-01-26
+- [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — 2026-01-26
+- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — 2026-01-26
+- [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml) — 2026-01-26
+- [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — 2026-01-26
+- [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml) — 2026-01-26
+- [WU-1125 — INIT-004 Phase 3: Document upgrade path](wu/WU-1125.yaml) — 2026-01-26
+- [WU-1116 — Docs Audit: Internal to Public - Agent onboarding + constraints](wu/WU-1116.yaml) — 2026-01-26
+- [WU-1119 — Docs Audit: Adoption Paths - existing projects + migration + solo dev](wu/WU-1119.yaml) — 2026-01-26
+- [WU-1124 — INIT-004 Phase 2: Refactor docs-sync to read from templates](wu/WU-1124.yaml) — 2026-01-26
+- [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml) — 2026-01-26
+- [WU-1127 — lumenflow:upgrade must use micro-worktree (users blocked from upgrading)](wu/WU-1127.yaml) — 2026-01-26
+- [WU-1128 — Add upgrade guide to lumenflow.dev](wu/WU-1128.yaml) — 2026-01-26
+- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — 2026-01-26
+- [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — 2026-01-26
+- [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — 2026-01-26
+- [WU-1136 — Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook](wu/WU-1136.yaml) — 2026-01-26
+- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — 2026-01-26
 - [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml) — 2026-01-27
 - [WU-1146 — Regenerate backlog.md from wu-events.jsonl to fix sync](wu/WU-1146.yaml) — 2026-01-27
-- [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — 2026-01-27
+- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — 2026-01-27
+- [WU-1138 — Fix Prettier failures in docs reference pages](wu/WU-1138.yaml) — 2026-01-27
+- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — 2026-01-27
+- [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — 2026-01-27
+- [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — 2026-01-27
+- [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — 2026-01-27
+- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
+- [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml) — 2026-01-27
+- [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — 2026-01-27
+- [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — 2026-01-27
 - [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml) — 2026-01-27
+- [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — 2026-01-27
 - [WU-1148 — Bug: docs:generate output not formatted by wu:done](wu/WU-1148.yaml) — 2026-01-27
+- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — 2026-01-27
