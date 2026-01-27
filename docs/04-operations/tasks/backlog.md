@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
