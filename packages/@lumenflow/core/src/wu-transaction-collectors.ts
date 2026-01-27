@@ -37,6 +37,11 @@ import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { generateBacklog } from './backlog-generator.js';
 // WU-1734: Import proper path resolution utility
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
+// WU-1145: Import concurrent merge utilities
+import {
+  computeBacklogContentWithMainMerge,
+  computeWUEventsContentWithMainMerge,
+} from './wu-done-concurrent-merge.js';
 
 /**
  * Compute WU YAML content for done state
@@ -232,27 +237,26 @@ async function computeCompletionUpdatesFromStateStore(backlogPath, wuId) {
   return { store, stateDir, shouldAppendCompleteEvent: true, completeEvent };
 }
 
+/**
+ * Compute wu-events.jsonl content after completing a WU.
+ *
+ * WU-1145: Now merges with origin/main to preserve concurrent changes.
+ * This prevents loss of WU entries when multiple WUs are completed concurrently.
+ *
+ * @param {string} backlogPath - Path to backlog.md
+ * @param {string} wuId - WU ID being completed
+ * @returns {Promise<{eventsPath: string, content: string} | null>}
+ */
 export async function computeWUEventsContentAfterComplete(backlogPath, wuId) {
-  const { stateDir, shouldAppendCompleteEvent, completeEvent } =
-    await computeCompletionUpdatesFromStateStore(backlogPath, wuId);
-
-  if (!shouldAppendCompleteEvent) {
-    return null;
-  }
-
-  const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
-  const existing = existsSync(eventsPath) ? readFileSync(eventsPath, { encoding: 'utf-8' }) : '';
-  const withNewline = ensureTrailingNewline(existing);
-
-  return {
-    eventsPath,
-    content: withNewline + JSON.stringify(completeEvent) + STRING_LITERALS.NEWLINE,
-  };
+  // WU-1145: Use merged state to preserve concurrent changes
+  return computeWUEventsContentWithMainMerge(backlogPath, wuId);
 }
 
 /**
  * Compute updated backlog.md content
+ *
  * WU-1574: Simplified to generate from state store
+ * WU-1145: Now merges with origin/main to preserve concurrent changes
  *
  * @param {string} backlogPath - Path to backlog.md
  * @param {string} id - WU ID to mark complete
@@ -260,8 +264,8 @@ export async function computeWUEventsContentAfterComplete(backlogPath, wuId) {
  * @returns {Promise<string>} New backlog.md content
  */
 export async function computeBacklogContent(backlogPath, id, _title) {
-  const { store } = await computeCompletionUpdatesFromStateStore(backlogPath, id);
-  return generateBacklog(store);
+  // WU-1145: Use merged state to preserve concurrent changes
+  return computeBacklogContentWithMainMerge(backlogPath, id);
 }
 
 /**
