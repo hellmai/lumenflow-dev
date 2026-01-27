@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1151 — Add consumer integration tests for npm package usage](wu/WU-1151.yaml) — Framework: Core
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
 
 ## 🔧 In progress
