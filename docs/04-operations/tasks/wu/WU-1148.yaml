@@ -2,7 +2,7 @@ id: WU-1148
 title: 'Bug: docs:generate output not formatted by wu:done'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -25,7 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:done runs docs:generate which creates cli.mdx and config.mdx, but these files are not formatted with prettier before staging. This causes every subsequent agent to see dirty mdx files on their worktree, blocking work.
+description: wu:done runs docs:generate which creates cli.mdx and config.mdx, but these files are
+  not formatted with prettier before staging. This causes every subsequent agent to see dirty mdx
+  files on their worktree, blocking work.
 acceptance:
   - DOC_OUTPUT_FILES are formatted with prettier after docs:generate runs
   - No uncommitted mdx changes after wu:done completes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1148
+claimed_at: 2026-01-27T18:48:33.040Z
+baseline_main_sha: 5a60e950184ac9641d0e053bec86771f4b7b96aa
+session_id: 3462096f-78d9-4940-b191-250a110f063f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T18:48:33.047Z
