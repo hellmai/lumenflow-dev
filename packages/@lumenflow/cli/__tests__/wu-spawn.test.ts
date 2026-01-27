@@ -435,3 +435,77 @@ describe('wu-spawn skip-gates guidance (WU-1142)', () => {
     expect(output).toContain('--skip-gates');
   });
 });
+
+describe('wu-spawn worktree block recovery guidance (WU-1134)', () => {
+  const baseDoc = {
+    title: 'Test WU',
+    lane: 'Framework: CLI',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/framework-cli-wu-test',
+  };
+
+  const id = 'WU-TEST';
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  describe('task invocation', () => {
+    it('includes "When Blocked by Worktree Hook" section', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      expect(output).toContain('When Blocked by Worktree Hook');
+    });
+
+    it('includes recovery steps: check worktrees, cd to worktree, retry, use relative paths', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Check for key recovery instructions
+      expect(output).toContain('worktrees/');
+      expect(output).toContain('relative paths');
+    });
+
+    it('places recovery section after Action and before Constraints', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      const actionIndex = output.indexOf('## Action');
+      const recoveryIndex = output.indexOf('When Blocked by Worktree Hook');
+      const constraintsIndex = output.indexOf('&lt;constraints&gt;');
+
+      expect(actionIndex).toBeGreaterThan(-1);
+      expect(recoveryIndex).toBeGreaterThan(-1);
+      expect(constraintsIndex).toBeGreaterThan(-1);
+
+      // Recovery should appear after Action
+      expect(recoveryIndex).toBeGreaterThan(actionIndex);
+      // Recovery should appear before Constraints
+      expect(recoveryIndex).toBeLessThan(constraintsIndex);
+    });
+  });
+
+  describe('codex prompt', () => {
+    it('includes worktree recovery section', () => {
+      const strategy = new GenericStrategy();
+      const output = generateCodexPrompt(baseDoc, id, strategy, { config });
+
+      expect(output).toContain('When Blocked by Worktree Hook');
+    });
+
+    it('includes recovery steps', () => {
+      const strategy = new GenericStrategy();
+      const output = generateCodexPrompt(baseDoc, id, strategy, { config });
+
+      expect(output).toContain('worktrees/');
+      expect(output).toContain('relative paths');
+    });
+  });
+});
