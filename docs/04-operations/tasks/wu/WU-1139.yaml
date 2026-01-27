@@ -1,0 +1,36 @@
+id: WU-1139
+title: Remove dead gate stubs and wire to TypeScript implementations
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-01-27
+code_paths:
+  - tools/validate-backlog-sync.js
+  - tools/system-map-validate.js
+  - tools/gates-pre-commit.js
+  - tools/validate.js
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1139.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Remove dead gate stubs and wire to TS implementations.
+acceptance:
+  - Dead gate stubs removed and real implementations wired
