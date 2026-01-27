@@ -6,10 +6,10 @@ _Last updated: 2026-01-27_
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
-- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml)
 
 ## Completed
 
+- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
