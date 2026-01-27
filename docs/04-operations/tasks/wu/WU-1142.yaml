@@ -2,7 +2,7 @@ id: WU-1142
 title: Make wu:spawn prompts type-aware for testing requirements
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -85,3 +85,4 @@ session_id: 339c0a8e-2be5-4427-b1df-abf42dfb1bcc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T13:08:12.823Z
+completed_at: 2026-01-27T13:27:00.000Z
