@@ -22,6 +22,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml) — Framework: Core
 - [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — Framework: CLI
 
 ## 🔧 In progress
