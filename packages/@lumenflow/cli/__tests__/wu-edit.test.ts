@@ -156,6 +156,55 @@ describe('wu:edit --exposure on done WUs (WU-1039)', () => {
 });
 
 /**
+ * WU-1073: Test --risks replace/append behavior
+ */
+describe('wu:edit --risks behavior (WU-1073)', () => {
+  it('should replace existing risks by default', () => {
+    const wu = {
+      id: 'WU-1073',
+      risks: ['Original risk'],
+    };
+    const opts = { risks: ['New risk'] };
+    const result = applyEdits(wu, opts);
+
+    expect(result.risks).toEqual(['New risk']);
+  });
+
+  it('should append risks when --append is set', () => {
+    const wu = {
+      id: 'WU-1073',
+      risks: ['Original risk'],
+    };
+    const opts = { risks: ['Additional risk'], append: true };
+    const result = applyEdits(wu, opts);
+
+    expect(result.risks).toEqual(['Original risk', 'Additional risk']);
+  });
+
+  it('should split comma-separated risks and replace by default', () => {
+    const wu = {
+      id: 'WU-1073',
+      risks: ['Original risk'],
+    };
+    const opts = { risks: ['New risk 1, New risk 2'] };
+    const result = applyEdits(wu, opts);
+
+    expect(result.risks).toEqual(['New risk 1', 'New risk 2']);
+  });
+
+  it('should append multiple risks when repeated', () => {
+    const wu = {
+      id: 'WU-1073',
+      risks: ['Original risk'],
+    };
+    const opts = { risks: ['New risk 1', 'New risk 2'], append: true };
+    const result = applyEdits(wu, opts);
+
+    expect(result.risks).toEqual(['Original risk', 'New risk 1', 'New risk 2']);
+  });
+});
+
+/**
  * WU-1144: Test --notes and --acceptance append/replace behavior
  *
  * Bug: --notes and --acceptance overwrite instead of append
