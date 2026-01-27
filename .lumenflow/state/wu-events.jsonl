@@ -280,3 +280,4 @@
 {"type":"complete","wuId":"WU-1143","timestamp":"2026-01-27T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1146","timestamp":"2026-01-27T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Regenerate backlog.md from wu-events.jsonl to fix sync"}
 {"type":"complete","wuId":"WU-1146","timestamp":"2026-01-27T00:00:00.000Z"}
+{"type":"claim","wuId":"WU-1147","lane":"Framework: Core","title":"Backlog generator merges YAML WUs missing from state store","timestamp":"2026-01-27T18:01:53.353Z"}
