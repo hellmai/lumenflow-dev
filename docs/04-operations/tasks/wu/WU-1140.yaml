@@ -1,7 +1,7 @@
 id: WU-1140
 title: Fix docs formatting for CLI reference
 lane: 'Operations: Infrastructure'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-01-27
@@ -19,10 +19,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-27T12:14:53.821Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1140
+session_id: 49bd708a-f20e-4d3c-ab7b-23ad944a28be
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T12:14:53.826Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +38,3 @@ description: Prettier formatting drift in CLI reference docs is causing gates to
 acceptance:
   - apps/docs/src/content/docs/reference/cli.mdx is formatted by Prettier
   - apps/docs/src/content/docs/reference/config.mdx is formatted by Prettier
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1140
-claimed_at: 2026-01-27T12:14:53.821Z
-baseline_main_sha: dc2e7102da133d83395c307087569960dd11b7cb
-session_id: 49bd708a-f20e-4d3c-ab7b-23ad944a28be
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-27T12:14:53.826Z
