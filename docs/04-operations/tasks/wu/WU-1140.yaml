@@ -1,0 +1,32 @@
+id: WU-1140
+title: Fix docs formatting for CLI reference
+lane: 'Operations: Infrastructure'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-27
+code_paths:
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
+tests:
+  manual:
+    - pnpm prettier --write on the two files
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1140.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Prettier formatting drift in CLI reference docs is causing gates to fail. Fix formatting to restore clean format:check.
+acceptance:
+  - apps/docs/src/content/docs/reference/cli.mdx is formatted by Prettier
+  - apps/docs/src/content/docs/reference/config.mdx is formatted by Prettier
