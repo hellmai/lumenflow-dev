@@ -110,6 +110,9 @@ export function validateDoneWUEdits(opts: Record<string, unknown>): {
   if (opts.codePaths && Array.isArray(opts.codePaths) && opts.codePaths.length > 0) {
     disallowedEdits.push('--code-paths');
   }
+  if (opts.risks && Array.isArray(opts.risks) && opts.risks.length > 0) {
+    disallowedEdits.push('--risks');
+  }
   if (opts.lane) disallowedEdits.push('--lane');
   if (opts.type) disallowedEdits.push('--type');
   if (opts.priority) disallowedEdits.push('--priority');
@@ -216,6 +219,12 @@ const EDIT_OPTIONS = {
     name: 'codePaths',
     flags: '--code-paths <path>',
     description: 'Code path (repeatable, replaces existing; use --append to add)',
+    isRepeatable: true,
+  },
+  risks: {
+    name: 'risks',
+    flags: '--risks <risk>',
+    description: 'Risk entry (repeatable, replaces existing; use --append to add)',
     isRepeatable: true,
   },
   append: {
@@ -372,6 +381,7 @@ function parseArgs() {
       EDIT_OPTIONS.replaceNotes,
       EDIT_OPTIONS.replaceAcceptance,
       EDIT_OPTIONS.codePaths,
+      EDIT_OPTIONS.risks,
       EDIT_OPTIONS.append,
       // WU-1390: Add test path flags
       WU_OPTIONS.testPathsManual,
@@ -833,6 +843,22 @@ export function applyEdits(wu, opts) {
     updated.code_paths = mergeArrayField(wu.code_paths, codePaths, opts.append);
   }
 
+  // WU-1073: Handle repeatable --risks flags (replace by default, append with --append)
+  // Split comma-separated values within each entry for consistency with other list fields
+  if (opts.risks && opts.risks.length > 0) {
+    const rawRisks = opts.risks;
+    const risks = Array.isArray(rawRisks)
+      ? rawRisks
+          .flatMap((risk) => risk.split(','))
+          .map((risk) => risk.trim())
+          .filter(Boolean)
+      : rawRisks
+          .split(',')
+          .map((risk) => risk.trim())
+          .filter(Boolean);
+    updated.risks = mergeArrayField(wu.risks, risks, opts.append);
+  }
+
   // WU-1390: Handle test path flags (DRY refactor)
   const testPathMappings = [
     { optKey: 'testPathsManual', field: 'manual' },
@@ -933,6 +959,7 @@ async function main() {
     (opts.acceptance && opts.acceptance.length > 0) ||
     opts.notes ||
     (opts.codePaths && opts.codePaths.length > 0) ||
+    (opts.risks && opts.risks.length > 0) ||
     // WU-1390: Add test path flags to hasEdits check
     (opts.testPathsManual && opts.testPathsManual.length > 0) ||
     (opts.testPathsUnit && opts.testPathsUnit.length > 0) ||
@@ -961,6 +988,7 @@ async function main() {
         '  --replace-notes           Replace existing notes instead of appending\n' +
         '  --replace-acceptance      Replace existing acceptance instead of appending\n' +
         '  --code-paths <paths>      Replace code paths (repeatable; use --append to add)\n' +
+        '  --risks <risk>            Replace risks (repeatable; use --append to add)\n' +
         '  --lane <lane>             Update lane assignment (e.g., "Operations: Tooling")\n' +
         '  --type <type>             Update WU type (feature, bug, refactor, documentation)\n' +
         '  --priority <priority>     Update priority (P0, P1, P2, P3)\n' +
