@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1139 — Remove dead gate stubs and wire to TypeScript implementations](wu/WU-1139.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
