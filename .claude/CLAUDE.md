@@ -1,6 +1,8 @@
 # Claude Code Entry Point
 
-Read `LUMENFLOW.md` first and follow the workflow there.
+**Start here:** Read [docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md) for complete onboarding.
+
+Then read `LUMENFLOW.md` for workflow details.
 
 ## Skills
 
