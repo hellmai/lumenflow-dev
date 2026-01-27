@@ -61,6 +61,10 @@ Write({
 
 3. **Use relative paths for ALL file operations**
 
+4. **Docs-only exception (documentation WUs)**:
+   - Read-only commands may run from main.
+   - **All file writes still require a worktree** (claim first if needed).
+
 ## Quick Detection
 
 **Red flags** (you're about to fall into the trap):
@@ -115,7 +119,7 @@ About to use Write/Edit/Read?
 │   ├─ YES → Use RELATIVE paths only
 │   └─ NO → Did I claim a WU?
 │       ├─ YES → cd worktrees/<lane>-wu-xxx first
-│       └─ NO → Claim WU or use docs-only paths
+│       └─ NO → Claim WU or use docs-only paths (read-only only)
 └─ Path starts with "/" ?
     ├─ YES → STOP! Convert to relative path
     └─ NO → Safe to proceed
