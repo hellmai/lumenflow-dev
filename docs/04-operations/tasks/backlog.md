@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — Operations: Infrastructure
+  (No items ready)
 
 ## 🔧 In progress
 
