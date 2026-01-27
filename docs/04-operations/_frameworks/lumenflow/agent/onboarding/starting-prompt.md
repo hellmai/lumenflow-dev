@@ -85,15 +85,16 @@ Write to: src/index.ts
 
 When gates fail, read the error and fix it. Common failures and fixes:
 
-| Failure | Cause | Fix |
-|---------|-------|-----|
-| `format:check` | Prettier formatting | `pnpm prettier --write <file>` |
+| Failure        | Cause                   | Fix                                    |
+| -------------- | ----------------------- | -------------------------------------- |
+| `format:check` | Prettier formatting     | `pnpm prettier --write <file>`         |
 | `backlog-sync` | WU missing from backlog | Regenerate backlog or add WU reference |
-| `typecheck` | TypeScript errors | Fix the type errors |
-| `lint` | ESLint violations | `pnpm lint --fix` or manual fix |
-| `test` | Failing tests | Fix the tests or implementation |
+| `typecheck`    | TypeScript errors       | Fix the type errors                    |
+| `lint`         | ESLint violations       | `pnpm lint --fix` or manual fix        |
+| `test`         | Failing tests           | Fix the tests or implementation        |
 
 **Pre-existing failures:** If failures exist on main before your changes:
+
 ```bash
 pnpm wu:done --id WU-XXX --skip-gates \
   --reason "Pre-existing format failures in apps/docs/*.mdx" \
@@ -111,11 +112,13 @@ LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="backlog corruption recovery" git push
 ```
 
 **Never use for:**
+
 - Skipping failing tests
 - Avoiding gate failures
 - Convenience
 
 **Always use with:**
+
 - `LUMENFLOW_FORCE_REASON="explanation"`
 
 ---
@@ -127,6 +130,7 @@ LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="backlog corruption recovery" git push
 **Cause:** You're trying to commit in the main checkout, not the worktree.
 
 **Fix:**
+
 ```bash
 # Check where you are
 pwd
@@ -142,6 +146,7 @@ git add . && git commit -m "your message"
 **Cause:** The backlog.md file is missing references to some WU YAML files.
 
 **Fix:** Regenerate the backlog or manually add the missing WU:
+
 ```bash
 # In worktree, edit docs/04-operations/tasks/backlog.md
 # Add the missing WU reference in the appropriate section
@@ -152,6 +157,7 @@ git add . && git commit -m "your message"
 **Cause:** Your worktree has uncommitted changes when wu:done tries to rebase.
 
 **Fix:**
+
 ```bash
 cd worktrees/<lane>-wu-xxx
 git status  # See what's uncommitted
@@ -165,6 +171,7 @@ pnpm wu:done --id WU-XXX
 **Cause:** Main checkout has uncommitted changes (possibly from another agent).
 
 **Fix:**
+
 ```bash
 cd /path/to/main
 git status  # Check what's uncommitted
@@ -178,6 +185,7 @@ git restore <file>  # Only if safe to discard
 **Cause:** Pre-existing failures on main that your WU didn't introduce.
 
 **Fix:**
+
 ```bash
 # Verify the failure exists on main before your changes
 git stash
@@ -194,14 +202,14 @@ pnpm wu:done --id WU-XXX --skip-gates \
 
 ## WU Lifecycle Commands
 
-| Command | Description | When to Use |
-|---------|-------------|-------------|
-| `pnpm wu:status --id WU-XXX` | Show WU state and valid commands | Check current state |
-| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree | Start working |
-| `pnpm gates` | Run quality gates | Before wu:done |
-| `pnpm gates --docs-only` | Run docs-only gates | For documentation WUs |
-| `pnpm wu:done --id WU-XXX` | Complete WU, merge, cleanup | After gates pass |
-| `pnpm wu:recover --id WU-XXX` | Fix inconsistent WU state | When state is broken |
+| Command                                   | Description                      | When to Use           |
+| ----------------------------------------- | -------------------------------- | --------------------- |
+| `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands | Check current state   |
+| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree     | Start working         |
+| `pnpm gates`                              | Run quality gates                | Before wu:done        |
+| `pnpm gates --docs-only`                  | Run docs-only gates              | For documentation WUs |
+| `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup      | After gates pass      |
+| `pnpm wu:recover --id WU-XXX`             | Fix inconsistent WU state        | When state is broken  |
 
 ---
 
