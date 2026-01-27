@@ -1,15 +1,14 @@
 # Work Unit Status
 
-_Last updated: 2026-01-26_
+_Last updated: 2026-01-27_
 
 ## In Progress
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1138 — Fix Prettier failures in docs reference pages](wu/WU-1138.yaml)
 
 ## Completed
 
-- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — 2026-01-27
-- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — 2026-01-26
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -64,3 +63,5 @@ _Last updated: 2026-01-26_
 - [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — 2026-01-26
 - [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — 2026-01-26
 - [WU-1136 — Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook](wu/WU-1136.yaml) — 2026-01-26
+- [WU-1137 — Add mem:export CLI for human-readable memory output](wu/WU-1137.yaml) — 2026-01-26
+- [WU-1131 — Fix wu:spawn output truncation causing agent degradation](wu/WU-1131.yaml) — 2026-01-27
