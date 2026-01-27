@@ -2,7 +2,7 @@ id: WU-1131
 title: Fix wu:spawn output truncation causing agent degradation
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-26
 code_paths:
@@ -46,3 +46,5 @@ session_id: 8c16a1bc-e9c7-4814-837d-be4f38b746da
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-26T23:34:29.681Z
+locked: true
+completed_at: 2026-01-27T00:03:19.408Z
