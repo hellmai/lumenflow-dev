@@ -156,7 +156,7 @@ sections:
 - [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml)
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml)
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml)
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
