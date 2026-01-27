@@ -2,7 +2,7 @@ id: WU-1063
 title: Fix wu:edit dropping spec_refs
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -26,11 +26,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   Context: wu:edit normalizes WU YAML before validation.
-  Problem: normalizeWUSchema currently deletes spec_refs, so any wu:edit run strips plan links and triggers missing spec_refs warnings.
+
+  Problem: normalizeWUSchema currently deletes spec_refs, so any wu:edit run strips plan links and
+  triggers missing spec_refs warnings.
+
   Solution: Preserve spec_refs during normalization and add coverage to prevent regression.
 acceptance:
   - normalizeWUSchema preserves spec_refs (no deletion)
   - wu:edit keeps existing spec_refs after editing any other field
   - wu:validate no longer warns about missing spec_refs after wu:edit on feature WUs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1063
+claimed_at: 2026-01-27T15:59:16.800Z
+baseline_main_sha: 8975de88a5441cc497fce6d56afae95071b8aa74
+session_id: 613082ad-2491-4480-9444-a0e551da9496
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T15:59:16.805Z

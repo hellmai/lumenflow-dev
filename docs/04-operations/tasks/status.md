@@ -6,10 +6,10 @@ _Last updated: 2026-01-27_
 
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
+- [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml)
 
 ## Completed
 
-- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -48,8 +48,8 @@ _Last updated: 2026-01-27_
 - [WU-1114 — Enforce context exhaustion prevention via WU sizing and spawn-fresh policy](wu/WU-1114.yaml) — 2026-01-26
 - [WU-1118 — Docs Audit: CLI Presets - Java/Ruby/PHP gate presets](wu/WU-1118.yaml) — 2026-01-26
 - [WU-1115 — Docs Audit: What & Why - Fix broken link + positioning](wu/WU-1115.yaml) — 2026-01-26
-- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — 2026-01-26
 - [WU-1121 — Docs Audit: Language Support - Go and Rust guides](wu/WU-1121.yaml) — 2026-01-26
+- [WU-1122 — Docs Audit: Language Support - Java, Ruby, and PHP guides](wu/WU-1122.yaml) — 2026-01-26
 - [WU-1117 — Docs Audit: Language Support - Python and .NET guides](wu/WU-1117.yaml) — 2026-01-26
 - [WU-1126 — Export constants/enums for string literals in port interfaces](wu/WU-1126.yaml) — 2026-01-26
 - [WU-1123 — INIT-004 Phase 1: Template sync script](wu/WU-1123.yaml) — 2026-01-26
@@ -71,3 +71,4 @@ _Last updated: 2026-01-27_
 - [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — 2026-01-27
 - [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — 2026-01-27
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — 2026-01-27
+- [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
