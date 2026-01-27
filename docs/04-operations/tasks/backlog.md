@@ -27,6 +27,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — Framework: CLI
+- [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
