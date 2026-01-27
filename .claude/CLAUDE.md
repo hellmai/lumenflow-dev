@@ -1,6 +1,6 @@
 # Claude Code Entry Point
 
-**Start here:** Read [docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md) for complete onboarding.
+**Start here:** Read [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md) for complete onboarding.
 
 Then read `LUMENFLOW.md` for workflow details.
 
