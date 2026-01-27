@@ -2,7 +2,7 @@ id: WU-1139
 title: Remove dead gate stubs and wire to TypeScript implementations
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -111,3 +111,12 @@ acceptance:
   - All existing tests pass after changes (including gates.test.ts, gates-worktree.test.ts)
   - pnpm gates passes in main checkout
   - No references to deleted files remain in codebase (grep verification)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1139
+assigned_to: tom@hellm.ai
+claimed_at: 2026-01-27T11:37:29.125Z
+baseline_main_sha: 413b4da0f4ba84790a4036695dca654426f9aaae
+session_id: 9d867622-5559-4b3d-b189-ca4fc24f36a5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T11:37:29.130Z
