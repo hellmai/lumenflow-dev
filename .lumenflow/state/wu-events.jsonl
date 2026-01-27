@@ -285,3 +285,4 @@
 {"type":"complete","wuId":"WU-1147","timestamp":"2026-01-27T18:35:36.007Z"}
 {"type":"claim","wuId":"WU-1148","lane":"Framework: Core","title":"Bug: docs:generate output not formatted by wu:done","timestamp":"2026-01-27T18:48:33.068Z"}
 {"type":"complete","wuId":"WU-1148","timestamp":"2026-01-27T18:57:05.853Z"}
+{"type":"claim","wuId":"WU-1150","lane":"Framework: Core","title":"Fix TOOL_PATHS hardcoded paths for consumer repos","timestamp":"2026-01-27T20:20:22.667Z"}
