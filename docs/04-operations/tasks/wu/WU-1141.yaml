@@ -2,7 +2,7 @@ id: WU-1141
 title: Fix wu:cleanup PR merge verification failing for merged PRs
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:cleanup fails with 'PR is not merged' error even when the PR is confirmed merged via gh pr view. The gh_api verification method returns false positive failures, blocking worktree cleanup after successful PR merges.
+description: wu:cleanup fails with 'PR is not merged' error even when the PR is confirmed merged via
+  gh pr view. The gh_api verification method returns false positive failures, blocking worktree
+  cleanup after successful PR merges.
 acceptance:
   - wu:cleanup correctly detects merged PRs via GitHub API
   - wu:cleanup succeeds for PRs that gh pr view confirms as MERGED
   - Add integration test for PR merge verification
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1141
+claimed_at: 2026-01-27T12:16:11.862Z
+baseline_main_sha: 4cedec1b48b200182533342a522b2e7a2279bfa7
+session_id: 49bd708a-f20e-4d3c-ab7b-23ad944a28be
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T12:16:11.867Z
