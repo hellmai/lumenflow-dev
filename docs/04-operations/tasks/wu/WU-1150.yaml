@@ -2,7 +2,7 @@ id: WU-1150
 title: Fix TOOL_PATHS hardcoded paths for consumer repos
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-27
 code_paths:
@@ -45,3 +45,5 @@ description: TOOL_PATHS.VALIDATE_BACKLOG_SYNC uses monorepo-relative path that b
 acceptance:
   - TOOL_PATHS paths work in both monorepo and consumer repos
   -  gates pass after fix
+locked: true
+completed_at: 2026-01-27T20:36:07.470Z
