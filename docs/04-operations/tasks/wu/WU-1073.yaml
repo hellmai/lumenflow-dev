@@ -2,7 +2,7 @@ id: WU-1073
 title: Add --risks option to wu:edit command
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - wu:edit --risks replaces existing risks by default
   - wu:edit --risks --append adds to existing risks
   - Gates pass
+locked: true
+completed_at: 2026-01-27T16:51:27.778Z
