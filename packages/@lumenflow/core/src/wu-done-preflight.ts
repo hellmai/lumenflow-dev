@@ -3,9 +3,8 @@
  */
 
 import { execSync as execSyncImport } from 'node:child_process';
-import { existsSync } from 'node:fs';
 import { validatePreflight } from './wu-preflight-validators.js';
-import { LOG_PREFIX, EMOJI, STDIO } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, STDIO, SCRIPT_PATHS } from './wu-constants.js';
 
 /**
  * WU-1781: Build preflight error message with actionable guidance
@@ -156,7 +155,7 @@ export function runPreflightTasksValidation(id, options: ExecSyncOverrideOptions
 
   try {
     // Run tasks:validate with WU_ID context (single-WU validation mode)
-    execSyncFn('node tools/validate.js', {
+    execSyncFn(SCRIPT_PATHS.VALIDATE, {
       stdio: STDIO.PIPE,
       encoding: 'utf-8',
       env: { ...process.env, WU_ID: id },
@@ -219,15 +218,8 @@ export function validateAllPreCommitHooks(
       execOptions.cwd = worktreePath;
     }
 
-    // WU-1086: Check for .mjs extension first, fall back to .js for backwards compatibility
-    const basePath = worktreePath || '.';
-    const mjsPath = `${basePath}/tools/gates-pre-commit.mjs`;
-    const gateScript = existsSync(mjsPath)
-      ? 'tools/gates-pre-commit.mjs'
-      : 'tools/gates-pre-commit.js';
-
-    // Run the gates-pre-commit script that contains all validation gates
-    execSyncFn(`node ${gateScript}`, execOptions);
+    // WU-1139: Run CLI gates directly (removes stub scripts)
+    execSyncFn('node packages/@lumenflow/cli/dist/gates.js', execOptions);
 
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All pre-commit hooks passed`);
     return { valid: true, errors: [] };
