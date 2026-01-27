@@ -1,0 +1,12 @@
+# Cursor Rules for LumenFlow
+
+CRITICAL: Before starting any work, read this file completely:
+docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+
+This contains all the rules you must follow, including:
+- How to claim and complete Work Units (WUs)
+- Worktree discipline (never edit files in main checkout)
+- Gate failures and recovery
+- LUMENFLOW_FORCE usage
+
+DO NOT skip reading the starting-prompt.md - it prevents the most common failures.
