@@ -2,7 +2,7 @@ id: WU-1063
 title: Fix wu:edit dropping spec_refs
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-22
 code_paths:
@@ -45,3 +45,5 @@ acceptance:
   - normalizeWUSchema preserves spec_refs (no deletion)
   - wu:edit keeps existing spec_refs after editing any other field
   - wu:validate no longer warns about missing spec_refs after wu:edit on feature WUs
+locked: true
+completed_at: 2026-01-27T16:09:30.658Z

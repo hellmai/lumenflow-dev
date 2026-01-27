@@ -127,3 +127,4 @@
 {"type":"claim","wuId":"WU-1145","timestamp":"2026-01-27T15:08:42.463Z","lane":"Framework: Core","title":"Bug: wu:done metadata update overwrites concurrent backlog changes"}
 {"type":"complete","wuId":"WU-1145","timestamp":"2026-01-27T15:24:25.309Z"}
 {"type":"claim","wuId":"WU-1063","lane":"Framework: Core","title":"Fix wu:edit dropping spec_refs","timestamp":"2026-01-27T15:59:16.813Z"}
+{"type":"complete","wuId":"WU-1063","timestamp":"2026-01-27T16:09:30.674Z"}
