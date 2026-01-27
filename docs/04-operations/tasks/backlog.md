@@ -151,7 +151,7 @@ sections:
 - [WU-1126 — Export constants/enums](wu/WU-1126.yaml) — Framework: Core
 - [WU-1127 — lumenflow:upgrade micro-worktree](wu/WU-1127.yaml) — Framework: CLI
 - [WU-1128 — Add upgrade guide](wu/WU-1128.yaml) — Content: Documentation
-- [WU-1130 — Fix guard-* commands](wu/WU-1130.yaml) — Framework: CLI
+- [WU-1130 — Fix guard-\* commands](wu/WU-1130.yaml) — Framework: CLI
 - [WU-1131 — Fix wu:spawn output truncation](wu/WU-1131.yaml) — Framework: CLI
 - [WU-1132 — Harden worktree validation hook](wu/WU-1132.yaml) — Operations: CI/CD
 - [WU-1133 — Fix doc alignment](wu/WU-1133.yaml) — Content: Documentation
