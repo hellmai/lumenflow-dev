@@ -2,7 +2,7 @@ id: WU-1134
 title: Add worktree block recovery guidance to wu:spawn output
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -34,3 +34,5 @@ acceptance:
   - wu:spawn output includes When Blocked by Worktree Hook section
   - Recovery section includes check worktrees cd to worktree retry use relative paths
   - Recovery guidance appears after Action section but before Constraints Block
+locked: true
+completed_at: 2026-01-27T18:44:51.900Z
