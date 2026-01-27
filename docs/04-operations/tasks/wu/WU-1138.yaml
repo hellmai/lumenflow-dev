@@ -2,14 +2,15 @@ id: WU-1138
 title: Fix Prettier failures in docs reference pages
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-26
 code_paths:
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual:
-    - pnpm prettier --check "apps/docs/src/content/docs/reference/cli.mdx" "apps/docs/src/content/docs/reference/config.mdx"
+    - pnpm prettier --check "apps/docs/src/content/docs/reference/cli.mdx"
+      "apps/docs/src/content/docs/reference/config.mdx"
   unit: []
   e2e: []
 artifacts:
@@ -27,6 +28,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Format apps/docs reference pages that currently fail prettier --check so docs-only gates pass without skip-gates.
+description: Format apps/docs reference pages that currently fail prettier --check so docs-only
+  gates pass without skip-gates.
 acceptance:
   - prettier --check passes for the docs reference pages listed in code_paths
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1138
+claimed_at: 2026-01-27T09:11:09.701Z
+baseline_main_sha: 1ec0390b66500076b7d60edb6ce75f63bf6301b1
+session_id: b4f2c1d8-2cad-4c75-bf9e-9660c198e36c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-27T09:11:09.708Z
