@@ -7,10 +7,10 @@ _Last updated: 2026-01-27_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1148 — Bug: docs:generate output not formatted by wu:done](wu/WU-1148.yaml)
 
 ## Completed
 
-- [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — 2026-01-27
 - [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
@@ -149,3 +149,5 @@ _Last updated: 2026-01-27_
 - [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml) — 2026-01-26
 - [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml) — 2026-01-27
 - [WU-1146 — Regenerate backlog.md from wu-events.jsonl to fix sync](wu/WU-1146.yaml) — 2026-01-27
+- [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — 2026-01-27
+- [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml) — 2026-01-27
