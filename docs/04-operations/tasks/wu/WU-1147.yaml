@@ -2,7 +2,7 @@ id: WU-1147
 title: Backlog generator merges YAML WUs missing from state store
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-01-27
 code_paths:
@@ -49,3 +49,5 @@ session_id: a7e91902-6229-4392-a649-3a8ec2f370f1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T18:01:53.333Z
+locked: true
+completed_at: 2026-01-27T18:35:35.981Z

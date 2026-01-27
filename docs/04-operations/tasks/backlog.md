@@ -28,7 +28,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — Framework: CLI
-- [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -174,3 +173,4 @@ sections:
 - [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml)
 - [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml)
 - [WU-1146 — Regenerate backlog.md from wu-events.jsonl to fix sync](wu/WU-1146.yaml)
+- [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml)
