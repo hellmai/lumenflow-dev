@@ -11,7 +11,7 @@ tests:
   manual:
     - pnpm wu:spawn shows recovery guidance section
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1134.done
