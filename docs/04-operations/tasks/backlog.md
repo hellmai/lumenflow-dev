@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
