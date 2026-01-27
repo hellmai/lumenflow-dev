@@ -21,13 +21,9 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml) — Framework: Core
-- [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml) — Operations: CI/CD
 - [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — Framework: CLI
-- [WU-1098 — BUG: Fix Starlight docs formatting issues](wu/WU-1098.yaml) — Content: Documentation
-- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/*.mdx](wu/WU-1129.yaml) — Content: Documentation
 - [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — Framework: CLI
 - [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — Content: Documentation
-- [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml) — Operations: Infrastructure
 - [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — Framework: Core
 
 ## 🔧 In progress
@@ -169,4 +165,11 @@ sections:
 - [WU-1141 — Fix wu:cleanup PR merge verification failing for merged PRs](wu/WU-1141.yaml) — Framework: CLI
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — Framework: Core
+
+## ❌ Cancelled
+
 - [WU-1004 — Make gates script repo-agnostic (skip missing apps/web)](wu/WU-1004.yaml) — Framework: CLI
+- [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml) — Operations: CI/CD
+- [WU-1098 — BUG: Fix Starlight docs formatting issues](wu/WU-1098.yaml) — Content: Documentation
+- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/*.mdx](wu/WU-1129.yaml) — Content: Documentation
+- [WU-1143 — Fix backlog-sync gate - WU files missing from backlog.md](wu/WU-1143.yaml) — Operations: Infrastructure
