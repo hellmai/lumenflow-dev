@@ -192,13 +192,25 @@ const EDIT_OPTIONS = {
   acceptance: {
     name: 'acceptance',
     flags: '--acceptance <criterion>',
-    description: 'Acceptance criterion (repeatable, replaces existing; use --append to add)',
+    description:
+      'Acceptance criterion (repeatable, appends to existing; use --replace-acceptance to overwrite)',
     isRepeatable: true,
   },
   notes: {
     name: 'notes',
     flags: '--notes <text>',
-    description: 'New notes text (replaces existing)',
+    description: 'Notes text (appends to existing; use --replace-notes to overwrite)',
+  },
+  // WU-1144: Add explicit replace flags for notes and acceptance
+  replaceNotes: {
+    name: 'replaceNotes',
+    flags: '--replace-notes',
+    description: 'Replace existing notes instead of appending',
+  },
+  replaceAcceptance: {
+    name: 'replaceAcceptance',
+    flags: '--replace-acceptance',
+    description: 'Replace existing acceptance criteria instead of appending',
   },
   codePaths: {
     name: 'codePaths',
@@ -210,7 +222,7 @@ const EDIT_OPTIONS = {
     name: 'append',
     flags: '--append',
     description:
-      'Append to existing array values instead of replacing (for --acceptance, --code-paths)',
+      'Append to existing array values instead of replacing (for --code-paths, --test-paths-*, --blocked-by, --add-dep)',
   },
   // WU-1456: Add lane reassignment support
   lane: {
@@ -356,6 +368,9 @@ function parseArgs() {
       EDIT_OPTIONS.description,
       EDIT_OPTIONS.acceptance,
       EDIT_OPTIONS.notes,
+      // WU-1144: Add explicit replace flags for notes and acceptance
+      EDIT_OPTIONS.replaceNotes,
+      EDIT_OPTIONS.replaceAcceptance,
       EDIT_OPTIONS.codePaths,
       EDIT_OPTIONS.append,
       // WU-1390: Add test path flags
@@ -687,6 +702,30 @@ function mergeArrayField(existing, newValues, shouldAppend) {
 }
 
 /**
+ * WU-1144: Merge string field values with append-by-default behavior
+ *
+ * Notes and acceptance criteria should append by default (preserving original),
+ * with explicit --replace-notes and --replace-acceptance flags for overwrite.
+ *
+ * @param {string | undefined} existing - Current string value from WU
+ * @param {string} newValue - New value from CLI
+ * @param {boolean} shouldReplace - Whether to replace instead of append
+ * @returns {string} Merged string value
+ */
+export function mergeStringField(
+  existing: string | undefined,
+  newValue: string,
+  shouldReplace: boolean,
+): string {
+  // If replace mode or no existing value, just use new value
+  if (shouldReplace || !existing || existing.trim() === '') {
+    return newValue;
+  }
+  // Append with double newline separator
+  return `${existing}\n\n${newValue}`;
+}
+
+/**
  * Load spec file and merge with original WU (preserving id and status)
  * @param {string} specPath - Path to spec file
  * @param {object} originalWU - Original WU object
@@ -718,7 +757,7 @@ function loadSpecFile(specPath, originalWU) {
  * Returns the updated WU object
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-function applyEdits(wu, opts) {
+export function applyEdits(wu, opts) {
   // Full spec replacement from file
   if (opts.specFile) {
     return loadSpecFile(opts.specFile, wu);
@@ -731,13 +770,18 @@ function applyEdits(wu, opts) {
     updated.description = opts.description;
   }
 
-  // Handle repeatable --acceptance flags (WU-1388: replace by default, append with --append)
+  // WU-1144: Handle --acceptance with append-by-default behavior
+  // Appends to existing acceptance criteria unless --replace-acceptance is set
   if (opts.acceptance && opts.acceptance.length > 0) {
-    updated.acceptance = mergeArrayField(wu.acceptance, opts.acceptance, opts.append);
+    // Invert the logic: append by default, replace with --replace-acceptance
+    const shouldAppend = !opts.replaceAcceptance;
+    updated.acceptance = mergeArrayField(wu.acceptance, opts.acceptance, shouldAppend);
   }
 
+  // WU-1144: Handle --notes with append-by-default behavior
+  // Appends to existing notes unless --replace-notes is set
   if (opts.notes) {
-    updated.notes = opts.notes;
+    updated.notes = mergeStringField(wu.notes, opts.notes, opts.replaceNotes ?? false);
   }
 
   // WU-1456: Handle lane reassignment
@@ -912,8 +956,10 @@ async function main() {
         'Provide one of:\n' +
         '  --spec-file <path>        Replace full spec from YAML file\n' +
         '  --description <text>      Update description field\n' +
-        '  --acceptance <text>       Replace acceptance criteria (repeatable; use --append to add)\n' +
-        '  --notes <text>            Update notes field\n' +
+        '  --acceptance <text>       Append acceptance criteria (repeatable; use --replace-acceptance to overwrite)\n' +
+        '  --notes <text>            Append to notes (use --replace-notes to overwrite)\n' +
+        '  --replace-notes           Replace existing notes instead of appending\n' +
+        '  --replace-acceptance      Replace existing acceptance instead of appending\n' +
         '  --code-paths <paths>      Replace code paths (repeatable; use --append to add)\n' +
         '  --lane <lane>             Update lane assignment (e.g., "Operations: Tooling")\n' +
         '  --type <type>             Update WU type (feature, bug, refactor, documentation)\n' +

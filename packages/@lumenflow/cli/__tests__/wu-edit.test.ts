@@ -1,17 +1,24 @@
 /**
  * @file wu-edit.test.ts
- * Test suite for wu:edit exposure editing on done WUs (WU-1039)
+ * Test suite for wu:edit command
  *
- * Tests the --exposure flag behavior on done WUs:
- * - Exposure edits are allowed on done WUs
- * - Other edits (description, acceptance, code_paths) are blocked on done WUs
- * - Exposure values are validated against WU_EXPOSURE_VALUES schema
+ * Tests:
+ * - WU-1039: --exposure flag behavior on done WUs
+ * - WU-1144: --notes and --acceptance append behavior
+ *   - Notes and acceptance append by default (preserve original)
+ *   - --replace-notes and --replace-acceptance for explicit overwrite
  */
 
 import { describe, it, expect } from 'vitest';
 
 // Import the functions we're testing from dist (built files)
-import { validateDoneWUEdits, validateExposureValue, applyExposureEdit } from '../dist/wu-edit.js';
+import {
+  validateDoneWUEdits,
+  validateExposureValue,
+  applyExposureEdit,
+  applyEdits,
+  mergeStringField,
+} from '../dist/wu-edit.js';
 import { WU_EXPOSURE_VALUES } from '@lumenflow/core/dist/wu-constants.js';
 
 describe('wu:edit --exposure on done WUs (WU-1039)', () => {
@@ -144,6 +151,169 @@ describe('wu:edit --exposure on done WUs (WU-1039)', () => {
 
       expect(wu.exposure).toBe('backend-only');
       expect(result.exposure).toBe('api');
+    });
+  });
+});
+
+/**
+ * WU-1144: Test --notes and --acceptance append/replace behavior
+ *
+ * Bug: --notes and --acceptance overwrite instead of append
+ * Fix: These flags should append by default, with explicit --replace-* flags for overwrite
+ */
+describe('wu:edit --notes and --acceptance append behavior (WU-1144)', () => {
+  describe('mergeStringField', () => {
+    it('should append new text to existing notes by default', () => {
+      const existing = 'Original notes here.';
+      const newValue = 'Additional notes.';
+      const result = mergeStringField(existing, newValue, false);
+
+      expect(result).toBe('Original notes here.\n\nAdditional notes.');
+    });
+
+    it('should replace existing notes when shouldReplace is true', () => {
+      const existing = 'Original notes here.';
+      const newValue = 'Replacement notes.';
+      const result = mergeStringField(existing, newValue, true);
+
+      expect(result).toBe('Replacement notes.');
+    });
+
+    it('should set notes when no existing notes', () => {
+      const existing = '';
+      const newValue = 'New notes.';
+      const result = mergeStringField(existing, newValue, false);
+
+      expect(result).toBe('New notes.');
+    });
+
+    it('should handle undefined existing notes', () => {
+      const existing = undefined;
+      const newValue = 'New notes.';
+      const result = mergeStringField(existing, newValue, false);
+
+      expect(result).toBe('New notes.');
+    });
+  });
+
+  describe('applyEdits --notes behavior', () => {
+    it('should append to existing notes by default (preserves original)', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: 'Original notes.',
+        acceptance: [],
+      };
+      const opts = { notes: 'Additional info.' };
+      const result = applyEdits(wu, opts);
+
+      expect(result.notes).toBe('Original notes.\n\nAdditional info.');
+    });
+
+    it('should replace notes when --replace-notes is set', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: 'Original notes.',
+        acceptance: [],
+      };
+      const opts = { notes: 'Replacement notes.', replaceNotes: true };
+      const result = applyEdits(wu, opts);
+
+      expect(result.notes).toBe('Replacement notes.');
+    });
+
+    it('should set notes when no existing notes', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: [],
+      };
+      const opts = { notes: 'New notes.' };
+      const result = applyEdits(wu, opts);
+
+      expect(result.notes).toBe('New notes.');
+    });
+  });
+
+  describe('applyEdits --acceptance behavior', () => {
+    it('should append to existing acceptance criteria by default', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: ['Existing criterion 1', 'Existing criterion 2'],
+      };
+      const opts = { acceptance: ['New criterion 3'] };
+      const result = applyEdits(wu, opts);
+
+      expect(result.acceptance).toEqual([
+        'Existing criterion 1',
+        'Existing criterion 2',
+        'New criterion 3',
+      ]);
+    });
+
+    it('should replace acceptance criteria when --replace-acceptance is set', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: ['Existing criterion 1', 'Existing criterion 2'],
+      };
+      const opts = {
+        acceptance: ['Replacement criterion'],
+        replaceAcceptance: true,
+      };
+      const result = applyEdits(wu, opts);
+
+      expect(result.acceptance).toEqual(['Replacement criterion']);
+    });
+
+    it('should set acceptance when no existing criteria', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: [],
+      };
+      const opts = { acceptance: ['First criterion'] };
+      const result = applyEdits(wu, opts);
+
+      expect(result.acceptance).toEqual(['First criterion']);
+    });
+
+    it('should append multiple acceptance criteria at once', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: ['Existing'],
+      };
+      const opts = { acceptance: ['New 1', 'New 2'] };
+      const result = applyEdits(wu, opts);
+
+      expect(result.acceptance).toEqual(['Existing', 'New 1', 'New 2']);
+    });
+  });
+
+  describe('backward compatibility with --append flag', () => {
+    it('--append should have no effect on notes (already appends by default)', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: 'Original.',
+        acceptance: [],
+      };
+      const opts = { notes: 'Additional.', append: true };
+      const result = applyEdits(wu, opts);
+
+      expect(result.notes).toBe('Original.\n\nAdditional.');
+    });
+
+    it('--append should have no effect on acceptance (already appends by default)', () => {
+      const wu = {
+        id: 'WU-1144',
+        notes: '',
+        acceptance: ['Existing'],
+      };
+      const opts = { acceptance: ['New'], append: true };
+      const result = applyEdits(wu, opts);
+
+      expect(result.acceptance).toEqual(['Existing', 'New']);
     });
   });
 });
