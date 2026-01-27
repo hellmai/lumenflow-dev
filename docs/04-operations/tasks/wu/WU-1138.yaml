@@ -2,7 +2,7 @@ id: WU-1138
 title: Fix Prettier failures in docs reference pages
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-26
 code_paths:
@@ -40,3 +40,5 @@ session_id: b4f2c1d8-2cad-4c75-bf9e-9660c198e36c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T09:11:09.708Z
+locked: true
+completed_at: 2026-01-27T09:12:44.228Z
