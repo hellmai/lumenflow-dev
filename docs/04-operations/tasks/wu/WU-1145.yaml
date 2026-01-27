@@ -1,0 +1,33 @@
+id: WU-1145
+title: 'Bug: wu:done metadata update overwrites concurrent backlog changes'
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1145.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: When wu:done updates metadata (backlog.md, status.md), it uses a stale snapshot from worktree claim time. Any changes made to backlog.md on main after the worktree diverged are lost. This caused loss of 76 WU entries during WU-1141 completion.
+acceptance:
+  - wu:done merges backlog changes instead of overwriting
+  - Concurrent additions to Done section are preserved
+  - Concurrent additions to Ready section are preserved
+  - Add test for concurrent backlog modification scenario
