@@ -2,7 +2,7 @@ id: WU-1170
 title: 'Universal Agent Safety: Migrate Claude hooks to Husky/Scripts'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -27,8 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Align all agents (Windsurf, Cursor, etc.) with LumenFlow safety standards by migrating Claude-specific protections. 1) Create 'scripts/safe-git' wrapper to block 'worktree remove'. 2) Migrate 'validate-worktree-path' to Husky 'pre-commit' hook.
+description: Align all agents (Windsurf, Cursor, etc.) with LumenFlow safety standards by migrating
+  Claude-specific protections. 1) Create 'scripts/safe-git' wrapper to block 'worktree remove'. 2)
+  Migrate 'validate-worktree-path' to Husky 'pre-commit' hook.
 acceptance:
   - Manual 'git worktree remove' via safe-git wrapper is blocked or warned
   - Generic 'git commit' with absolute paths is blocked by Husky hook
   - Safety mechanisms work for non-Claude agents
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1170
+claimed_at: 2026-01-28T22:50:06.787Z
+baseline_main_sha: af2327e2a26573a93c47c6c5af204105270506cf
+session_id: 9866840b-b845-4343-a7f9-913a812401a1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T22:50:06.797Z
