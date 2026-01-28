@@ -428,6 +428,7 @@ function generateConfigMdx(sections: ConfigSection[]): string {
     '',
     '{/* AUTO-GENERATED FILE - DO NOT EDIT DIRECTLY */}',
     '{/* Run `pnpm docs:generate` to regenerate from source */}',
+    '{/* Includes formatting stabilization (WU-1157) */}',
     '',
     'LumenFlow is configured via `.lumenflow.config.yaml` in your project root.',
     '',
