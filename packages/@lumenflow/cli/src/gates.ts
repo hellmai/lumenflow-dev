@@ -234,6 +234,7 @@ const PRETTIER_CONFIG_FILES = new Set([
   'prettier.config.js',
   'prettier.config.cjs',
   'prettier.config.ts',
+  'prettier.config.mjs',
   '.prettierignore',
 ]);
 

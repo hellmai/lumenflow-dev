@@ -19,12 +19,24 @@ import {
   computeBranchOnlyFallback,
   checkPostMergeDirtyState,
 } from '../dist/wu-done.js';
-import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 
 // Mock die function for WU-1153 tests
 vi.mock('@lumenflow/core/dist/error-handler.js', () => ({
   die: vi.fn(),
 }));
+
+// Test constants to avoid duplicate strings
+const TEST_WU_ID = 'WU-1012';
+const TEST_WU_ID_1153 = 'WU-1153';
+const DOCS_ONLY_FLAG = '--docs-only';
+const EXPOSURE_FIELD = 'exposure';
+const WU_DONE_FILE = 'packages/@lumenflow/cli/src/wu-done.ts';
+const NEW_FILE = 'packages/@lumenflow/cli/src/new-file.ts';
+const COMMITTED_FILE = 'packages/@lumenflow/cli/src/committed.ts';
+const GIT_STATUS_MODIFIED_WU_DONE = ` M ${WU_DONE_FILE}`;
+const GIT_STATUS_MODIFIED_WU_DONE_AND_NEW = `${GIT_STATUS_MODIFIED_WU_DONE}\n?? ${NEW_FILE}`;
+const GIT_STATUS_STAGED_MIXED = `M  ${WU_DONE_FILE}\n A  packages/@lumenflow/cli/src/added.ts\n D  packages/@lumenflow/cli/src/deleted.ts\n?? packages/@lumenflow/cli/src/untracked.ts`;
 
 describe('wu:done --docs-only flag (WU-1012)', () => {
   beforeEach(() => {
@@ -37,15 +49,32 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
 
   describe('argument parsing', () => {
     it('should parse --docs-only flag', () => {
-      // Simulate: pnpm wu:done --id WU-1012 --docs-only
-      const args = parseWUArgs(['node', 'wu-done.js', '--id', 'WU-1012', '--docs-only']);
+      const originalArgv = process.argv;
+      process.argv = ['node', 'wu-done.js', '--id', TEST_WU_ID, '--docs-only'];
+
+      const args = createWUParser({
+        name: 'wu-done',
+        description: 'Complete a work unit',
+        options: [WU_OPTIONS.id, WU_OPTIONS.docsOnly],
+      });
+
+      process.argv = originalArgv;
 
       expect(args.docsOnly).toBe(true);
-      expect(args.id).toBe('WU-1012');
+      expect(args.id).toBe(TEST_WU_ID);
     });
 
     it('should default docsOnly to undefined when not provided', () => {
-      const args = parseWUArgs(['node', 'wu-done.js', '--id', 'WU-1012']);
+      const originalArgv = process.argv;
+      process.argv = ['node', 'wu-done.js', '--id', TEST_WU_ID];
+
+      const args = createWUParser({
+        name: 'wu-done',
+        description: 'Complete a work unit',
+        options: [WU_OPTIONS.id, WU_OPTIONS.docsOnly],
+      });
+
+      process.argv = originalArgv;
 
       expect(args.docsOnly).toBeUndefined();
     });
@@ -54,7 +83,7 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
   describe('exposure validation', () => {
     it('should accept --docs-only for WU with exposure: documentation', () => {
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         exposure: 'documentation',
         type: 'documentation',
         code_paths: ['docs/04-operations/_frameworks/lumenflow/test.md'],
@@ -68,22 +97,22 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
 
     it('should reject --docs-only for WU with exposure: api', () => {
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         exposure: 'api',
         type: 'feature',
-        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+        code_paths: [WU_DONE_FILE],
       };
 
       const result = validateDocsOnlyFlag(wu, { docsOnly: true });
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain('--docs-only');
-      expect(result.errors[0]).toContain('exposure');
+      expect(result.errors[0]).toContain(DOCS_ONLY_FLAG);
+      expect(result.errors[0]).toContain(EXPOSURE_FIELD);
     });
 
     it('should reject --docs-only for WU with exposure: ui', () => {
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         exposure: 'ui',
         type: 'feature',
         code_paths: ['apps/web/src/app/page.tsx'],
@@ -92,12 +121,12 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
       const result = validateDocsOnlyFlag(wu, { docsOnly: true });
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain('--docs-only');
+      expect(result.errors[0]).toContain(DOCS_ONLY_FLAG);
     });
 
     it('should reject --docs-only for WU with exposure: backend-only', () => {
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         exposure: 'backend-only',
         type: 'feature',
         code_paths: ['packages/@lumenflow/core/src/utils.ts'],
@@ -106,13 +135,13 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
       const result = validateDocsOnlyFlag(wu, { docsOnly: true });
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain('--docs-only');
+      expect(result.errors[0]).toContain(DOCS_ONLY_FLAG);
     });
 
     it('should accept --docs-only for WU with docs-only code_paths (auto-detect)', () => {
       // WU without explicit exposure but with docs-only code_paths
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         type: 'documentation',
         code_paths: ['docs/04-operations/_frameworks/lumenflow/playbook.md', 'CLAUDE.md'],
       };
@@ -124,7 +153,7 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
 
     it('should not validate exposure when --docs-only is not used', () => {
       const wu = {
-        id: 'WU-1012',
+        id: TEST_WU_ID,
         exposure: 'api',
         type: 'feature',
       };
@@ -140,26 +169,26 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
     it('should build docs-only gates command when --docs-only flag is set', () => {
       const cmd = buildGatesCommand({ docsOnly: true, isDocsOnly: false });
 
-      expect(cmd).toContain('--docs-only');
+      expect(cmd).toContain(DOCS_ONLY_FLAG);
     });
 
     it('should build docs-only gates command when auto-detected as docs-only', () => {
       const cmd = buildGatesCommand({ docsOnly: false, isDocsOnly: true });
 
-      expect(cmd).toContain('--docs-only');
+      expect(cmd).toContain(DOCS_ONLY_FLAG);
     });
 
     it('should build full gates command when neither flag nor auto-detect', () => {
       const cmd = buildGatesCommand({ docsOnly: false, isDocsOnly: false });
 
-      expect(cmd).not.toContain('--docs-only');
+      expect(cmd).not.toContain(DOCS_ONLY_FLAG);
     });
 
     it('should prioritize explicit --docs-only over auto-detection', () => {
       // Both explicit flag and auto-detection true
       const cmd = buildGatesCommand({ docsOnly: true, isDocsOnly: true });
 
-      expect(cmd).toContain('--docs-only');
+      expect(cmd).toContain(DOCS_ONLY_FLAG);
     });
   });
 
@@ -318,8 +347,8 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const wu = {
-        id: 'WU-1153',
-        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+        id: TEST_WU_ID_1153,
+        code_paths: [WU_DONE_FILE],
       };
 
       // Import the function we're testing
@@ -338,7 +367,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const wu = {
-        id: 'WU-1153',
+        id: TEST_WU_ID_1153,
         code_paths: [],
       };
 
@@ -357,7 +386,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const wu = {
-        id: 'WU-1153',
+        id: TEST_WU_ID_1153,
         code_paths: undefined,
       };
 
@@ -372,20 +401,15 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
 
     it('should detect uncommitted code_paths', async () => {
       const mockGitAdapter = {
-        getStatus: vi
-          .fn()
-          .mockResolvedValue(
-            ' M packages/@lumenflow/cli/src/wu-done.ts\n' +
-              '?? packages/@lumenflow/cli/src/new-file.ts',
-          ),
+        getStatus: vi.fn().mockResolvedValue(GIT_STATUS_MODIFIED_WU_DONE_AND_NEW),
       };
 
       const wu = {
-        id: 'WU-1153',
+        id: TEST_WU_ID_1153,
         code_paths: [
-          'packages/@lumenflow/cli/src/wu-done.ts',
-          'packages/@lumenflow/cli/src/new-file.ts',
-          'packages/@lumenflow/cli/src/committed.ts', // This one is not in status
+          WU_DONE_FILE,
+          NEW_FILE,
+          COMMITTED_FILE, // This one is not in status
         ],
       };
 
@@ -395,26 +419,18 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(false);
       expect(result.errors).toHaveLength(1);
-      expect(result.uncommittedPaths).toEqual([
-        'packages/@lumenflow/cli/src/wu-done.ts',
-        'packages/@lumenflow/cli/src/new-file.ts',
-      ]);
+      expect(result.uncommittedPaths).toEqual([WU_DONE_FILE, NEW_FILE]);
     });
 
     it('should handle different git status formats', async () => {
       const mockGitAdapter = {
-        getStatus: vi.fn().mockResolvedValue(
-          'M  packages/@lumenflow/cli/src/wu-done.ts\n' + // Modified but staged
-            ' A  packages/@lumenflow/cli/src/added.ts\n' + // Added but staged
-            ' D  packages/@lumenflow/cli/src/deleted.ts\n' + // Deleted but staged
-            '?? packages/@lumenflow/cli/src/untracked.ts', // Untracked (not staged)
-        ),
+        getStatus: vi.fn().mockResolvedValue(GIT_STATUS_STAGED_MIXED),
       };
 
       const wu = {
-        id: 'WU-1153',
+        id: TEST_WU_ID_1153,
         code_paths: [
-          'packages/@lumenflow/cli/src/wu-done.ts',
+          WU_DONE_FILE,
           'packages/@lumenflow/cli/src/added.ts',
           'packages/@lumenflow/cli/src/deleted.ts',
           'packages/@lumenflow/cli/src/untracked.ts',
@@ -427,7 +443,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(false);
       expect(result.uncommittedPaths).toEqual([
-        'packages/@lumenflow/cli/src/wu-done.ts',
+        WU_DONE_FILE,
         'packages/@lumenflow/cli/src/added.ts',
         'packages/@lumenflow/cli/src/deleted.ts',
         'packages/@lumenflow/cli/src/untracked.ts',
@@ -437,38 +453,35 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
 
   describe('buildCodePathsCommittedErrorMessage', () => {
     it('should build proper error message', async () => {
-      const id = 'WU-1153';
-      const uncommittedPaths = [
-        'packages/@lumenflow/cli/src/wu-done.ts',
-        'packages/@lumenflow/cli/src/new-file.ts',
-      ];
+      const id = TEST_WU_ID_1153;
+      const uncommittedPaths = [WU_DONE_FILE, NEW_FILE];
 
       const { buildCodePathsCommittedErrorMessage } =
         await import('@lumenflow/core/dist/wu-done-validation.js');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
-      expect(message).toContain('WU-1153');
-      expect(message).toContain('code_paths are not committed');
-      expect(message).toContain('packages/@lumenflow/cli/src/wu-done.ts');
-      expect(message).toContain('packages/@lumenflow/cli/src/new-file.ts');
+      expect(message).toContain(TEST_WU_ID_1153);
+      expect(message).toContain('2 code_paths for WU-1153 are not committed');
+      expect(message).toContain(WU_DONE_FILE);
+      expect(message).toContain(NEW_FILE);
       expect(message).toContain('git add');
       expect(message).toContain('git commit');
     });
 
     it('should handle single uncommitted path', async () => {
-      const id = 'WU-1153';
-      const uncommittedPaths = ['packages/@lumenflow/cli/src/wu-done.ts'];
+      const id = TEST_WU_ID_1153;
+      const uncommittedPaths = [WU_DONE_FILE];
 
       const { buildCodePathsCommittedErrorMessage } =
         await import('@lumenflow/core/dist/wu-done-validation.js');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
-      expect(message).toContain('1 code_path is not committed');
-      expect(message).toContain('packages/@lumenflow/cli/src/wu-done.ts');
+      expect(message).toContain('1 code_path for WU-1153 are not committed');
+      expect(message).toContain(WU_DONE_FILE);
     });
 
     it('should handle multiple uncommitted paths', async () => {
-      const id = 'WU-1153';
+      const id = TEST_WU_ID_1153;
       const uncommittedPaths = [
         'packages/@lumenflow/cli/src/file1.ts',
         'packages/@lumenflow/cli/src/file2.ts',
@@ -479,7 +492,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
         await import('@lumenflow/core/dist/wu-done-validation.js');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
-      expect(message).toContain('3 code_paths are not committed');
+      expect(message).toContain('3 code_paths for WU-1153 are not committed');
       expect(message).toContain('file1.ts');
       expect(message).toContain('file2.ts');
       expect(message).toContain('file3.ts');
@@ -492,12 +505,12 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const mockDie = vi.mocked(die);
 
       const mockGitAdapter = {
-        getStatus: vi.fn().mockResolvedValue(' M packages/@lumenflow/cli/src/wu-done.ts'),
+        getStatus: vi.fn().mockResolvedValue(GIT_STATUS_MODIFIED_WU_DONE),
       };
 
       const wu = {
-        id: 'WU-1153',
-        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+        id: TEST_WU_ID_1153,
+        code_paths: [WU_DONE_FILE],
       };
 
       const { validateCodePathsCommittedBeforeDone } =
@@ -506,8 +519,8 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter, { abortOnFailure: true });
 
       expect(mockDie).toHaveBeenCalledWith(
-        expect.stringContaining('WU-1153') &&
-          expect.stringContaining('code_paths are not committed'),
+        expect.stringContaining(TEST_WU_ID_1153) &&
+          expect.stringContaining('code_path for WU-1153 are not committed'),
       );
     });
 
@@ -516,12 +529,12 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const mockDie = vi.mocked(die);
 
       const mockGitAdapter = {
-        getStatus: vi.fn().mockResolvedValue(' M packages/@lumenflow/cli/src/wu-done.ts'),
+        getStatus: vi.fn().mockResolvedValue(GIT_STATUS_MODIFIED_WU_DONE),
       };
 
       const wu = {
-        id: 'WU-1153',
-        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+        id: TEST_WU_ID_1153,
+        code_paths: [WU_DONE_FILE],
       };
 
       const { validateCodePathsCommittedBeforeDone } =

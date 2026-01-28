@@ -200,7 +200,6 @@ pnpm wu:done --id WU-XXX --skip-gates \
 
 ---
 
-
 ## Spawning Sub-Agents with wu:spawn
 
 Use `wu:spawn` to create parallel sub-agents for complex WUs that require multiple agents working simultaneously on different aspects.
@@ -221,7 +220,7 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 # Valid client values:
 # - claude-code    # Claude Code CLI
 # - cursor        # Cursor IDE
-# - windsurf      # Windsurf IDE  
+# - windsurf      # Windsurf IDE
 # - gemini-cli    # Gemini CLI
 # - copilot       # GitHub Copilot CLI
 ```
@@ -236,17 +235,18 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 - Each sub-agent should focus on a specific aspect
 
 ---
+
 ## WU Lifecycle Commands
 
-| Command                                   | Description                      | When to Use           |
-| ----------------------------------------- | -------------------------------- | --------------------- |
-| `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands | Check current state   |
-| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree     | Start working         |
+| Command                                   | Description                       | When to Use           |
+| ----------------------------------------- | --------------------------------- | --------------------- |
+| `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
+| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
 | `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
-| `pnpm gates`                              | Run quality gates                | Before wu:done        |
-| `pnpm gates --docs-only`                  | Run docs-only gates              | For documentation WUs |
-| `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup      | After gates pass      |
-| `pnpm wu:recover --id WU-XXX`             | Fix inconsistent WU state        | When state is broken  |
+| `pnpm gates`                              | Run quality gates                 | Before wu:done        |
+| `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |
+| `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup       | After gates pass      |
+| `pnpm wu:recover --id WU-XXX`             | Fix inconsistent WU state         | When state is broken  |
 
 ---
 

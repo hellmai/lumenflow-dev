@@ -2,7 +2,7 @@
  * @lumenflow/metrics
  *
  * DORA/SPACE analytics and flow metrics for LumenFlow workflow framework.
- * 
+ *
  * WU-1160: Verified no .mjs references exist in this package.
  *
  * @module @lumenflow/metrics
