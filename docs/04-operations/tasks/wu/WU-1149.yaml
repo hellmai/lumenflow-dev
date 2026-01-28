@@ -2,7 +2,7 @@ id: WU-1149
 title: Add LUMENFLOW.md reference to vendor configs
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -66,3 +66,5 @@ session_id: d0d22e9f-37a4-4731-bfb0-e28b6ec48c09
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T12:30:36.075Z
+locked: true
+completed_at: 2026-01-28T12:40:36.744Z
