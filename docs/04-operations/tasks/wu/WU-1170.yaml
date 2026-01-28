@@ -2,7 +2,7 @@ id: WU-1170
 title: 'Universal Agent Safety: Migrate Claude hooks to Husky/Scripts'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -42,3 +42,5 @@ session_id: 9866840b-b845-4343-a7f9-913a812401a1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T22:50:06.797Z
+locked: true
+completed_at: 2026-01-28T23:06:39.792Z

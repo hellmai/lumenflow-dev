@@ -3,42 +3,63 @@
 # validate-worktree-discipline.sh
 #
 # Husky pre-commit hook to enforce worktree discipline.
-#
 # Prevents committing to the main repository when active worktrees exist.
-# Forces developers/agents to use worktrees for changes to prevent
-# state conflicts and main branch pollution.
+#
+# Features:
+# - Blocks main repo commits when worktrees exist
+# - Respects LUMENFLOW_HEADLESS (CI/Bots)
+# - Respects Agent Branches (is-agent-branch.js)
+# - Audit logging
 #
 
 set -euo pipefail
 
-# Get repository root
+# Configuration
 REPO_ROOT=$(git rev-parse --show-toplevel)
 WORKTREES_DIR="${REPO_ROOT}/worktrees"
+AUDIT_LOG_DIR="${REPO_ROOT}/audit"
+AUDIT_LOG="${AUDIT_LOG_DIR}/main-write-blocks.log"
 
-# If worktrees directory doesn't exist or is empty, we are safe.
-# This also naturally handles the case where we ARE in a worktree,
-# because a worktree root won't have a 'worktrees' subdirectory.
+# Setup audit logging
+mkdir -p "$AUDIT_LOG_DIR"
+
+log_audit() {
+    local reason="$1"
+    local context="$2"
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "${timestamp}|BLOCKED|${reason}|${context}" >> "$AUDIT_LOG"
+}
+
+# 1. Headless Bypass
+# Requires LUMENFLOW_HEADLESS=1 AND (LUMENFLOW_ADMIN=1 OR CI/GitHub Actions)
+if [[ "${LUMENFLOW_HEADLESS:-}" == "1" ]]; then
+  if [[ "${LUMENFLOW_ADMIN:-}" == "1" ]] || [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    exit 0
+  fi
+fi
+
+# 2. Check for Worktrees
 if [[ ! -d "$WORKTREES_DIR" ]]; then
   exit 0
 fi
 
-# Check if there are any actual worktree directories (not just empty dir)
 WORKTREE_COUNT=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 if [[ "$WORKTREE_COUNT" -eq 0 ]]; then
   exit 0
 fi
 
-# If we are here, we are in the main repo AND there are active worktrees.
+# 3. We are in main repo AND worktrees exist.
+#    Check if we are on an allowed "Agent Branch" (e.g. initial claim)
 
-# Exception 1: Allow commits on designated "agent branches" (e.g. initial claim)
-# We can delegate this check to the existing CLI tool if available, or check pattern directly.
-# For now, let's use a simple pattern check as a fallback.
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Simple fallback check
 if [[ "$CURRENT_BRANCH" == tmp/* ]]; then
     exit 0
 fi
 
-# Path to built CLI helper for robust agent branch checking
+# Robust check using CLI helper
 IS_AGENT_BRANCH_CLI=""
 for candidate in \
   "${REPO_ROOT}/node_modules/@lumenflow/core/dist/cli/is-agent-branch.js" \
@@ -55,8 +76,10 @@ if [[ -n "$IS_AGENT_BRANCH_CLI" ]]; then
   fi
 fi
 
-# Block the commit
+# 4. BLOCK THE COMMIT
 ACTIVE_WORKTREES=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | head -5 | tr '\n' ', ' | sed 's/,$//')
+
+log_audit "worktree_discipline_violation" "branch=${CURRENT_BRANCH}, worktrees=${ACTIVE_WORKTREES}"
 
 echo "" >&2
 echo "=== LUMENFLOW WORKTREE DISCIPLINE ===" >&2
