@@ -538,7 +538,7 @@ When using Claude Code's Task tool or spawning multiple specialized agents (lume
 - Place the **Critical Constraints** block from [agent-invocation-guide.md](agent-invocation-guide.md#append-these-constraints-at-the-end-mandatory) at the very end of every multi-agent prompt.
 - The block enforces three immutable rules:
   1. Shell/Bash failure → STOP immediately and report **BLOCKED**.
-  2. Run `node tools/lib/agent-verification.mjs WU-123` before claiming success.
+  2. Run `node packages/@lumenflow/agent/dist/agent-verification.js WU-123` before claiming success.
      - Exit 0 → WU verified (git clean, stamp exists, commit landed on main).
      - Exit 1 → Verification failed → report **INCOMPLETE**, never "done".
   3. No fabricated success: if verification fails or context loads break, surface the issue instead of reporting success.
