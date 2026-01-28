@@ -2,7 +2,7 @@ id: WU-1166
 title: 'Bug: Follow-up to WU-1153 (1153b)'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -43,3 +43,5 @@ session_id: d0d22e9f-37a4-4731-bfb0-e28b6ec48c09
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T12:29:28.513Z
+locked: true
+completed_at: 2026-01-28T13:42:25.719Z
