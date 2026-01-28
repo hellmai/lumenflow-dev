@@ -9,6 +9,7 @@ _Last updated: 2026-01-28_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml)
 - [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml)
+- [WU-1167 — Fix mem:cleanup require vs import error](wu/WU-1167.yaml)
 
 ## Completed
 
