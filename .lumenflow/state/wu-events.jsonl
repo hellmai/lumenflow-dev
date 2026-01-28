@@ -301,3 +301,4 @@
 {"type":"complete","wuId":"WU-1165","timestamp":"2026-01-28T11:56:12.049Z"}
 {"type":"complete","wuId":"WU-1160","timestamp":"2026-01-28T12:16:31.088Z"}
 {"type":"complete","wuId":"WU-1158","timestamp":"2026-01-28T12:18:13.355Z"}
+{"type":"claim","wuId":"WU-1166","lane":"Framework: Core","title":"Bug: Follow-up to WU-1153 (1153b)","timestamp":"2026-01-28T12:29:28.524Z"}
