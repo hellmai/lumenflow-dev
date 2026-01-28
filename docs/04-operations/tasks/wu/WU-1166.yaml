@@ -2,7 +2,7 @@ id: WU-1166
 title: 'Bug: Follow-up to WU-1153 (1153b)'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -27,9 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: CLI wu-done tests on main fail after WU-1153 due to missing exports/mismatched error messages in wu-done-validation. Problem: Gates cannot pass because @lumenflow/cli wu-done tests fail. Solution: Investigate export surface and message expectations, restore missing exports or update tests to match intended output.'
+description: 'Context: CLI wu-done tests on main fail after WU-1153 due to missing
+  exports/mismatched error messages in wu-done-validation. Problem: Gates cannot pass because
+  @lumenflow/cli wu-done tests fail. Solution: Investigate export surface and message expectations,
+  restore missing exports or update tests to match intended output.'
 acceptance:
   - Investigation notes document the root cause and failure mode
   - wu-done-validation exports used by CLI tests are present and correct
   - '@lumenflow/cli wu-done tests pass'
   - No regression in wu:done guard behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1166
+claimed_at: 2026-01-28T12:29:28.507Z
+baseline_main_sha: 00118196f683e98cf69f5b84151f9d3fe676961e
+session_id: d0d22e9f-37a4-4731-bfb0-e28b6ec48c09
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T12:29:28.513Z
