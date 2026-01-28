@@ -325,4 +325,5 @@
 {"type":"complete","wuId":"WU-1154","timestamp":"2026-01-28T19:19:05.787Z"}
 {"type":"claim","wuId":"WU-1168","timestamp":"2026-01-28T19:51:48.649Z","lane":"Framework: Core","title":"Investigate dependency-graph test timeouts"}
 {"type":"complete","wuId":"WU-1168","timestamp":"2026-01-28T20:06:56.687Z"}
-{"type":"claim","wuId":"WU-1169","lane":"Framework: Core","title":"Prevent wu:done rollback on uncommitted changes","timestamp":"2026-01-28T21:29:35.412Z"}
+{"type":"claim","wuId":"WU-1169","timestamp":"2026-01-28T21:29:35.412Z","lane":"Framework: Core","title":"Prevent wu:done rollback on uncommitted changes"}
+{"type":"complete","wuId":"WU-1169","timestamp":"2026-01-28T22:30:45.074Z"}
