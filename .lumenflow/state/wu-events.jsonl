@@ -323,4 +323,5 @@
 {"type":"claim","wuId":"WU-1154","timestamp":"2026-01-28T15:17:36.728Z","lane":"Framework: Core","title":"Improve preflight test path mismatch guidance"}
 {"type":"complete","wuId":"WU-1151","timestamp":"2026-01-28T15:34:07.914Z"}
 {"type":"complete","wuId":"WU-1154","timestamp":"2026-01-28T19:19:05.787Z"}
-{"type":"claim","wuId":"WU-1168","lane":"Framework: Core","title":"Investigate dependency-graph test timeouts","timestamp":"2026-01-28T19:51:48.649Z"}
+{"type":"claim","wuId":"WU-1168","timestamp":"2026-01-28T19:51:48.649Z","lane":"Framework: Core","title":"Investigate dependency-graph test timeouts"}
+{"type":"complete","wuId":"WU-1168","timestamp":"2026-01-28T20:06:56.687Z"}
