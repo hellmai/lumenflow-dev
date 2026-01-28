@@ -36,7 +36,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1158 — Bug: Validators use hardcoded paths instead of config](wu/WU-1158.yaml) — Framework: Core
-- [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml) — Framework: CLI
 - [WU-1160 — Remove all stale .mjs references from TypeScript codebase](wu/WU-1160.yaml) — Framework: Memory
 
 ## ⛔ Blocked
@@ -191,3 +190,4 @@ sections:
 - [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml)
 - [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml)
 - [WU-1163 — Replace internal doc paths in error messages with lumenflow.dev URLs](wu/WU-1163.yaml)
+- [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml)

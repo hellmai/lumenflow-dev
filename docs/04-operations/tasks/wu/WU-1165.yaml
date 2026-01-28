@@ -2,7 +2,7 @@ id: WU-1165
 title: 'Bug: incremental tests run full suite'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -50,3 +50,5 @@ session_id: 852fff34-1ca3-4627-81dd-41dd7408508e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T11:20:57.318Z
+locked: true
+completed_at: 2026-01-28T11:56:10.394Z
