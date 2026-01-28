@@ -17,7 +17,12 @@ vi.mock('../wu-paths.js', () => ({
   },
 }));
 
-import { runPreflightTasksValidation, validateAllPreCommitHooks } from '../wu-done-preflight.js';
+import {
+  buildPreflightCodePathErrorMessage,
+  executePreflightCodePathValidation,
+  runPreflightTasksValidation,
+  validateAllPreCommitHooks,
+} from '../wu-done-preflight.js';
 
 describe('validateAllPreCommitHooks', () => {
   let mockRunGates: ReturnType<typeof vi.fn>;
@@ -93,5 +98,53 @@ describe('runPreflightTasksValidation (WU-1139)', () => {
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
     expect(result.abortedBeforeMerge).toBe(true);
+  });
+});
+
+describe('buildPreflightCodePathErrorMessage (WU-1154)', () => {
+  it('includes suggested paths for missing test files', () => {
+    const preflightResult = {
+      errors: ['test paths validation failed'],
+      missingCodePaths: [],
+      missingTestPaths: ['packages/__tests__/missing.test.ts'],
+      suggestedTestPaths: {
+        'packages/__tests__/missing.test.ts': [
+          'packages/src/__tests__/missing.test.ts',
+          'packages/test/missing.spec.ts',
+        ],
+      },
+    } as any;
+
+    const message = buildPreflightCodePathErrorMessage('WU-1154', preflightResult);
+
+    expect(message).toContain('Suggested alternatives found:');
+    expect(message).toContain('For "packages/__tests__/missing.test.ts":');
+    expect(message).toContain('packages/src/__tests__/missing.test.ts');
+    expect(message).toContain('packages/test/missing.spec.ts');
+  });
+});
+
+describe('executePreflightCodePathValidation (WU-1154)', () => {
+  it('passes through suggestedTestPaths when validation fails', async () => {
+    const validatePreflightFn = vi.fn().mockResolvedValue({
+      valid: false,
+      errors: ['test paths validation failed'],
+      missingCodePaths: [],
+      missingTestPaths: ['packages/__tests__/missing.test.ts'],
+      suggestedTestPaths: {
+        'packages/__tests__/missing.test.ts': ['packages/src/__tests__/missing.test.ts'],
+      },
+    });
+
+    const result = await executePreflightCodePathValidation(
+      'WU-1154',
+      { rootDir: '/tmp', worktreePath: '/tmp/worktree' },
+      { validatePreflightFn: validatePreflightFn as any },
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.suggestedTestPaths).toEqual({
+      'packages/__tests__/missing.test.ts': ['packages/src/__tests__/missing.test.ts'],
+    });
   });
 });
