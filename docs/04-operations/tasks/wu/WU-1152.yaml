@@ -26,7 +26,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/validators/supabase-docs-linter.test.ts
     - packages/@lumenflow/core/src/__tests__/validators/system-map-validator.test.ts
     - packages/@lumenflow/cli/src/__tests__/guards-validation.test.ts
-    - packages/@lumenflow/cli/src/__tests__/gates.test.ts
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
   e2e: []
 artifacts:
