@@ -2,7 +2,7 @@ id: WU-1155
 title: Fix agent verification command references
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -41,3 +41,5 @@ acceptance:
   - docs reference the correct agent verification command
   - wu:spawn output references the correct command
   - manual verification confirms docs and prompt output align
+locked: true
+completed_at: 2026-01-28T14:16:51.135Z
