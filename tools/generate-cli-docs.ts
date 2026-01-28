@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 // Note: Using Zod 4's native .toJSONSchema() instead of zod-to-json-schema library
 // which doesn't support Zod 4
 
@@ -503,6 +504,42 @@ function generateConfigMdx(sections: ConfigSection[]): string {
 }
 
 // ============================================================================
+// Format generated files with Prettier
+// ============================================================================
+
+function formatGeneratedFiles(...filePaths: string[]) {
+  console.log('🎨 Formatting generated files...');
+  try {
+    execSync(`npx prettier --write ${filePaths.join(' ')}`, {
+      cwd: ROOT,
+      stdio: 'pipe',
+    });
+    for (const path of filePaths) {
+      console.log(`   ✅ Formatted: ${path}`);
+    }
+  } catch (error) {
+    console.warn('⚠️  Warning: Prettier formatting failed');
+    console.warn('   Generated files may not match project formatting');
+    // Don't fail the generation, just warn
+  }
+}
+
+function formatContent(content: string): string {
+  try {
+    const result = execSync('npx prettier --stdin --stdin-filepath=.mdx', {
+      cwd: ROOT,
+      input: content,
+      encoding: 'utf-8',
+      stdio: 'pipe',
+    });
+    return result;
+  } catch (error) {
+    // If formatting fails, return original content
+    return content;
+  }
+}
+
+// ============================================================================
 // Main
 // ============================================================================
 
@@ -537,12 +574,16 @@ async function main() {
   const configPath = join(ROOT, 'apps/docs/src/content/docs/reference/config.mdx');
 
   if (validateOnly) {
+    // Format the generated content to match what would be written to files
+    const formattedCliMdx = formatContent(cliMdx);
+    const formattedConfigMdx = formatContent(configMdx);
+
     // Compare with existing files
     let hasChanges = false;
 
     if (existsSync(cliPath)) {
       const existing = readFileSync(cliPath, 'utf-8');
-      if (existing !== cliMdx) {
+      if (existing !== formattedCliMdx) {
         console.log('❌ CLI docs are out of sync');
         hasChanges = true;
       } else {
@@ -555,7 +596,7 @@ async function main() {
 
     if (existsSync(configPath)) {
       const existing = readFileSync(configPath, 'utf-8');
-      if (existing !== configMdx) {
+      if (existing !== formattedConfigMdx) {
         console.log('❌ Config docs are out of sync');
         hasChanges = true;
       } else {
@@ -582,6 +623,9 @@ async function main() {
 
   writeFileSync(configPath, configMdx);
   console.log(`   ✅ Written: ${configPath}`);
+
+  // Format generated files to prevent format:check failures
+  formatGeneratedFiles(cliPath, configPath);
 
   console.log('\n✅ Documentation generated successfully\n');
   console.log('Next steps:');
