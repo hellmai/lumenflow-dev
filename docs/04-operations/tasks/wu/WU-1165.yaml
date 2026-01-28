@@ -12,7 +12,7 @@ tests:
     - Run pnpm gates on a worktree with a single file change in packages/@lumenflow/cli and verify
       only relevant format/lint/test steps run
   unit:
-    - packages/@lumenflow/cli/src/__tests__/gates.test.ts
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1165.done
