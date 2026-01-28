@@ -301,6 +301,7 @@
 {"type":"complete","wuId":"WU-1165","timestamp":"2026-01-28T11:56:12.049Z"}
 {"type":"complete","wuId":"WU-1160","timestamp":"2026-01-28T12:16:31.088Z"}
 {"type":"complete","wuId":"WU-1158","timestamp":"2026-01-28T12:18:13.355Z"}
-{"type":"claim","wuId":"WU-1166","lane":"Framework: Core","title":"Bug: Follow-up to WU-1153 (1153b)","timestamp":"2026-01-28T12:29:28.524Z"}
-{"type":"claim","wuId":"WU-1149","lane":"Content: Documentation","title":"Add LUMENFLOW.md reference to vendor configs","timestamp":"2026-01-28T12:30:36.090Z"}
-{"type":"claim","wuId":"WU-1162","lane":"Framework: CLI","title":"Add internal pre-release validation script for hellmai/os","timestamp":"2026-01-28T12:38:21.998Z"}
+{"type":"claim","wuId":"WU-1166","timestamp":"2026-01-28T12:29:28.524Z","lane":"Framework: Core","title":"Bug: Follow-up to WU-1153 (1153b)"}
+{"type":"claim","wuId":"WU-1149","timestamp":"2026-01-28T12:30:36.090Z","lane":"Content: Documentation","title":"Add LUMENFLOW.md reference to vendor configs"}
+{"type":"claim","wuId":"WU-1162","timestamp":"2026-01-28T12:38:21.998Z","lane":"Framework: CLI","title":"Add internal pre-release validation script for hellmai/os"}
+{"type":"complete","wuId":"WU-1149","timestamp":"2026-01-28T12:40:38.351Z"}
