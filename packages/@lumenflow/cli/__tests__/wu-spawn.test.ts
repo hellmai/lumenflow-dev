@@ -508,4 +508,50 @@ describe('wu-spawn worktree block recovery guidance (WU-1134)', () => {
       expect(output).toContain('relative paths');
     });
   });
+
+  describe('WU-1155: Agent verification command references', () => {
+    const mockDoc = {
+      title: 'Test WU for Agent Verification',
+      lane: 'Framework: CLI',
+      type: 'feature',
+      status: 'in_progress',
+      code_paths: ['packages/@lumenflow/cli/src/wu-spawn.ts'],
+      acceptance: ['Criteria 1'],
+      description: 'Test agent verification command',
+      worktree_path: 'worktrees/test',
+    };
+
+    const id = 'WU-1155';
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+    });
+
+    it('includes correct agent verification command in constraints', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(mockDoc, id, strategy, { config });
+
+      expect(output).toContain('node packages/@lumenflow/agent/dist/agent-verification.js WU-1155');
+      expect(output).not.toContain('tools/lib/agent-verification.mjs');
+      expect(output).not.toContain('tools/lib/agent-verification.ts');
+    });
+
+    it('includes correct agent verification command in verification section', () => {
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(mockDoc, id, strategy, { config });
+
+      expect(output).toContain('packages/@lumenflow/agent/dist/agent-verification.js WU-1155');
+      expect(output).not.toContain('tools/lib/agent-verification');
+    });
+
+    it('includes correct agent verification command in codex constraints', () => {
+      const strategy = new GenericStrategy();
+      const output = generateCodexPrompt(mockDoc, id, strategy, { config });
+
+      expect(output).toContain('node packages/@lumenflow/agent/dist/agent-verification.js WU-1155');
+      expect(output).not.toContain('tools/lib/agent-verification');
+    });
+  });
 });

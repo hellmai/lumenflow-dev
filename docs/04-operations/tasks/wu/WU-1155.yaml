@@ -12,7 +12,8 @@ code_paths:
 tests:
   manual:
     - Run wu:spawn and confirm the agent verification command matches docs
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1155.done
