@@ -2,9 +2,10 @@
  * Preflight validation helpers for wu:done.
  */
 
-import { execSync as execSyncImport } from 'node:child_process';
 import { validatePreflight } from './wu-preflight-validators.js';
-import { LOG_PREFIX, EMOJI, STDIO, SCRIPT_PATHS } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { WU_PATHS } from './wu-paths.js';
+import { validateSingleWU } from './validators/wu-tasks.js';
 
 /**
  * WU-1781: Build preflight error message with actionable guidance
@@ -142,25 +143,13 @@ See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-w
 /**
  * WU-1781: Run tasks:validate as preflight check before any git operations
  */
-export interface ExecSyncOverrideOptions {
-  /** Override execSync for testing (default: child_process.execSync) */
-  execSyncFn?: typeof execSyncImport;
-}
-
-export function runPreflightTasksValidation(id, options: ExecSyncOverrideOptions = {}) {
-  // Use injected execSync for testability, default to node's child_process
-  const execSyncFn = options.execSyncFn || execSyncImport;
-
+export function runPreflightTasksValidation(id) {
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Preflight: running tasks:validate...`);
 
-  try {
-    // Run tasks:validate with WU_ID context (single-WU validation mode)
-    execSyncFn(SCRIPT_PATHS.VALIDATE, {
-      stdio: STDIO.PIPE,
-      encoding: 'utf-8',
-      env: { ...process.env, WU_ID: id },
-    });
+  const wuPath = WU_PATHS.WU(id);
+  const result = validateSingleWU(wuPath, { strict: false });
 
+  if (result.valid) {
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Preflight tasks:validate passed`);
     return {
       valid: true,
@@ -169,38 +158,31 @@ export function runPreflightTasksValidation(id, options: ExecSyncOverrideOptions
       localMainModified: false,
       hasStampStatusError: false,
     };
-  } catch (err) {
-    // Validation failed - extract errors from output
-    const output = err.stdout || err.message || 'Unknown validation error';
-    const errors = output
-      .split('\n')
-      .filter((line) => line.includes('[') && line.includes(']'))
-      .map((line) => line.trim());
-
-    const hasStampStatusError = errors.some((e) => e.includes('stamp but status is not done'));
-
-    console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Preflight tasks:validate failed`);
-
-    return {
-      valid: false,
-      errors: errors.length > 0 ? errors : [output],
-      abortedBeforeMerge: true,
-      localMainModified: false,
-      hasStampStatusError,
-    };
   }
+
+  console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Preflight tasks:validate failed`);
+
+  return {
+    valid: false,
+    errors: result.errors,
+    abortedBeforeMerge: true,
+    localMainModified: false,
+    hasStampStatusError: false,
+  };
 }
 
 /**
  * WU-2308: Validate all pre-commit hooks with worktree context
  */
-export function validateAllPreCommitHooks(
+export interface ValidateAllPreCommitHooksOptions {
+  runGates?: (options: { cwd?: string; docsOnly?: boolean; wuId?: string }) => Promise<boolean>;
+}
+
+export async function validateAllPreCommitHooks(
   id,
   worktreePath = null,
-  options: ExecSyncOverrideOptions = {},
+  options: ValidateAllPreCommitHooksOptions = {},
 ) {
-  const execSyncFn = options.execSyncFn || execSyncImport;
-
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Pre-flight: validating all pre-commit hooks...`);
 
   const errors = [];
@@ -208,21 +190,21 @@ export function validateAllPreCommitHooks(
   try {
     // WU-2308: Run from worktree context when provided to ensure audit checks
     // the worktree's dependencies (with fixes) not main's stale dependencies
-    const execOptions: { stdio: 'inherit' | 'pipe' | 'ignore'; encoding: 'utf-8'; cwd?: string } = {
-      stdio: STDIO.INHERIT as 'inherit',
-      encoding: 'utf-8' as const,
-    };
-
-    // Only set cwd when worktreePath is provided
-    if (worktreePath) {
-      execOptions.cwd = worktreePath;
+    if (!options.runGates) {
+      throw new Error('runGates not provided for pre-commit validation.');
     }
 
-    // WU-1139: Run CLI gates directly (removes stub scripts)
-    execSyncFn(SCRIPT_PATHS.GATES, execOptions);
+    const ok = await options.runGates({
+      cwd: worktreePath ?? process.cwd(),
+      wuId: id,
+    });
 
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All pre-commit hooks passed`);
-    return { valid: true, errors: [] };
+    if (ok) {
+      console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All pre-commit hooks passed`);
+      return { valid: true, errors: [] };
+    }
+
+    throw new Error('Pre-commit hooks failed.');
   } catch {
     // Pre-commit hooks failed
     errors.push('Pre-commit hook validation failed. Fix these issues before wu:done:');

@@ -38,6 +38,7 @@ import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
 
 import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
+import { runGates } from './gates.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
@@ -1195,7 +1196,7 @@ function checkNodeModulesStaleness(worktreePath) {
  * @param {boolean} options.isDocsOnly - Auto-detected docs-only from code_paths
  * @param {boolean} options.docsOnly - Explicit --docs-only flag from CLI
  */
-function runGatesInWorktree(
+async function runGatesInWorktree(
   worktreePath: string,
   id: string,
   options: { isDocsOnly?: boolean; docsOnly?: boolean } = {},
@@ -1208,7 +1209,6 @@ function runGatesInWorktree(
 
   // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
   const useDocsOnlyGates = docsOnly || isDocsOnly;
-  const gatesCmd = buildGatesCommand({ docsOnly, isDocsOnly });
   if (useDocsOnlyGates) {
     console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
     if (docsOnly) {
@@ -1217,12 +1217,14 @@ function runGatesInWorktree(
   }
   const startTime = Date.now();
   try {
-    // WU-1230: Pass WU_ID to validator for context-aware validation
-    execSync(gatesCmd, {
+    const ok = await runGates({
       cwd: worktreePath,
-      stdio: 'inherit',
-      env: { ...process.env, WU_ID: id },
+      docsOnly: useDocsOnlyGates,
+      coverageMode: undefined,
     });
+    if (!ok) {
+      throw new Error('Gates failed');
+    }
     const duration = Date.now() - startTime;
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
     emitTelemetry({ script: 'wu-done', wu_id: id, step: 'gates', ok: true, duration_ms: duration });
@@ -2239,7 +2241,6 @@ async function executeGates({
     console.log(`\n${LOG_PREFIX.DONE} Running gates in Branch-Only mode (in-place on lane branch)`);
     // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
     const useDocsOnlyGates = args.docsOnly || isDocsOnly;
-    const gatesCmd = buildGatesCommand({ docsOnly: Boolean(args.docsOnly), isDocsOnly });
     if (useDocsOnlyGates) {
       console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
       if (args.docsOnly) {
@@ -2248,7 +2249,10 @@ async function executeGates({
     }
     const startTime = Date.now();
     try {
-      execSync(gatesCmd, { stdio: 'inherit' });
+      const ok = await runGates({ docsOnly: useDocsOnlyGates });
+      if (!ok) {
+        throw new Error('Gates failed');
+      }
       const duration = Date.now() - startTime;
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
       emitTelemetry({
@@ -2282,7 +2286,10 @@ async function executeGates({
   } else if (worktreePath && existsSync(worktreePath)) {
     // Worktree mode: run gates in the dedicated worktree
     // WU-1012: Pass both auto-detected and explicit docs-only flags
-    runGatesInWorktree(worktreePath, id, { isDocsOnly, docsOnly: Boolean(args.docsOnly) });
+    await runGatesInWorktree(worktreePath, id, {
+      isDocsOnly,
+      docsOnly: Boolean(args.docsOnly),
+    });
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
@@ -2489,7 +2496,9 @@ async function main() {
   // WU-2308: Pass worktreePath to run audit from worktree (checks fixed deps, not stale main deps)
   // WU-1145: Skip pre-flight when skipGates is true (pre-flight runs gates which was already skipped)
   if (!args.skipGates) {
-    const hookResult = validateAllPreCommitHooks(id, worktreePath);
+    const hookResult = await validateAllPreCommitHooks(id, worktreePath, {
+      runGates: ({ cwd }) => runGates({ cwd, docsOnly: false }),
+    });
     if (!hookResult.valid) {
       die('Pre-flight validation failed. Fix hook issues and try again.');
     }

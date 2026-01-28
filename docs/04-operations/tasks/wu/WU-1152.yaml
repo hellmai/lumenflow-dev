@@ -1,5 +1,5 @@
 id: WU-1152
-title: Fix resolveNodeModulePath to check cwd/node_modules for sibling packages
+title: Replace script-based validators with core TypeScript functions
 lane: 'Framework: Core'
 type: bug
 status: in_progress
@@ -7,10 +7,27 @@ priority: P1
 created: 2026-01-27
 code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
+  - packages/@lumenflow/core/src/system-map-validator.ts
+  - packages/@lumenflow/core/src/validators/backlog-sync.ts
+  - packages/@lumenflow/core/src/validators/supabase-docs-linter.ts
+  - packages/@lumenflow/core/src/validators/wu-tasks.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
+  - packages/@lumenflow/cli/src/validate.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/linters/supabase-docs-linter.js
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/__tests__/wu-constants.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+    - packages/@lumenflow/core/src/__tests__/validators/backlog-sync.test.ts
+    - packages/@lumenflow/core/src/__tests__/validators/supabase-docs-linter.test.ts
+    - packages/@lumenflow/core/src/__tests__/validators/system-map-validator.test.ts
+    - packages/@lumenflow/cli/src/__tests__/guards-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates.test.ts
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1152.done
@@ -25,13 +42,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: v2.2.1 require.resolve() fix is incomplete - it can only resolve packages in its own
-  dependency tree, but @lumenflow/cli is a sibling package not a dependency of @lumenflow/core.
-  Consumer repos still fail with 'validate-backlog-sync.js not found'.
+description: Move validation logic into @lumenflow/core TypeScript functions and have the CLI call
+  those functions directly instead of shelling out to JS scripts. This removes TOOL_PATHS and
+  SCRIPT_PATHS execSync patterns and fixes consumer repos where sibling package paths are not
+  resolvable.
 acceptance:
-  - resolveNodeModulePath falls back to cwd/node_modules when require.resolve fails
-  - Consumer repos can run gates without 'module not found' errors
-  - Unit test covers the cwd/node_modules fallback path
+  - Core exports TS validators for backlog sync, supabase docs, system map, and WU validation
+  - CLI gates and validate commands call core functions directly (no execSync to .js files)
+  - TOOL_PATHS and SCRIPT_PATHS no longer used for validators
+  - Supabase docs linter exports a function and can be invoked programmatically
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1152
 claimed_at: 2026-01-27T22:04:35.355Z

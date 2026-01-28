@@ -211,13 +211,38 @@ describe('release command integration', () => {
 describe('WU-1077: release script bug fixes', () => {
   describe('hasNpmAuth - ~/.npmrc detection', () => {
     let testDir: string;
+    let originalUserConfig: string | undefined;
+    let originalNpmToken: string | undefined;
+    let originalNodeAuthToken: string | undefined;
 
     beforeEach(() => {
       testDir = join(tmpdir(), `release-npmrc-test-${Date.now()}`);
       mkdirSync(testDir, { recursive: true });
+      originalUserConfig = process.env.NPM_CONFIG_USERCONFIG;
+      originalNpmToken = process.env.NPM_TOKEN;
+      originalNodeAuthToken = process.env.NODE_AUTH_TOKEN;
+      process.env.NPM_CONFIG_USERCONFIG = join(testDir, 'user.npmrc');
+      writeFileSync(process.env.NPM_CONFIG_USERCONFIG, '');
+      delete process.env.NPM_TOKEN;
+      delete process.env.NODE_AUTH_TOKEN;
     });
 
     afterEach(() => {
+      if (originalUserConfig === undefined) {
+        delete process.env.NPM_CONFIG_USERCONFIG;
+      } else {
+        process.env.NPM_CONFIG_USERCONFIG = originalUserConfig;
+      }
+      if (originalNpmToken === undefined) {
+        delete process.env.NPM_TOKEN;
+      } else {
+        process.env.NPM_TOKEN = originalNpmToken;
+      }
+      if (originalNodeAuthToken === undefined) {
+        delete process.env.NODE_AUTH_TOKEN;
+      } else {
+        process.env.NODE_AUTH_TOKEN = originalNodeAuthToken;
+      }
       rmSync(testDir, { recursive: true, force: true });
     });
 
