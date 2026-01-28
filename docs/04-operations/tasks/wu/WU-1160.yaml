@@ -6,7 +6,12 @@ status: ready
 priority: P2
 created: 2026-01-28
 code_paths:
+  - packages/@lumenflow/cli/src
+  - packages/@lumenflow/core/src
+  - packages/@lumenflow/memory/src
   - packages/@lumenflow/agent/src
+  - packages/@lumenflow/initiatives/src
+  - packages/@lumenflow/metrics/src
 tests:
   manual: []
   unit:
@@ -25,7 +30,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 653 stale .mjs references remain in JSDoc comments pointing to old tools/lib/*.mjs paths. These are from before the TypeScript migration and should be removed or updated to point to current .ts locations.
+description: >-
+  653 stale .mjs references remain in JSDoc comments pointing to old tools/lib/*.mjs paths. These
+  are from before the TypeScript migration and should be removed or updated to point to current .ts
+  locations.
+
+
+  AGENT INSTRUCTIONS:
+
+  1. Find all .mjs refs: grep -rn '\.mjs' packages/@lumenflow --include='*.ts' | grep -v
+  node_modules | grep -v __tests__
+
+  2. For @see JSDoc comments: Either remove the @see line or update to point to current .ts file
+
+  3. For string literals (like in wu-spawn prompts): Update to .ts or remove
+
+  4. Exception: cli-entry.mjs is allowed to remain
+
+  5. Verify: grep -rn '\.mjs' packages/@lumenflow --include='*.ts' | grep -v cli-entry | grep -v
+  __tests__ should return 0 results
 acceptance:
   - No .mjs references in packages/@lumenflow/**/*.ts except cli-entry.mjs
   - All @see JSDoc comments point to valid current paths
