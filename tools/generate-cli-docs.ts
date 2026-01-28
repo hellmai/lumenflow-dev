@@ -341,6 +341,7 @@ function generateCliMdx(commands: CommandMetadata[]): string {
     '',
     '{/* AUTO-GENERATED FILE - DO NOT EDIT DIRECTLY */}',
     '{/* Run `pnpm docs:generate` to regenerate from source */}',
+    '{/* Includes formatting stabilization (WU-1157) */}',
     '',
     "import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';",
     '',
