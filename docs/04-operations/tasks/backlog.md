@@ -29,13 +29,13 @@ sections:
 - [WU-1161 — Document all CLI commands in README and verify completeness](wu/WU-1161.yaml) — Content: Documentation
 - [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — Framework: CLI
 - [WU-1164 — Add pre-commit hook validation for WU YAML files](wu/WU-1164.yaml) — Framework: Core
-- [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml) — Framework: Core
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
+- [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
