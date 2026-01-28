@@ -1,0 +1,78 @@
+id: WU-1158
+title: 'Bug: Validators use hardcoded paths instead of config'
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-01-28
+code_paths:
+  - packages/@lumenflow/core/src/validators/backlog-sync.ts
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
+  - packages/@lumenflow/agent/src/agent-verification.ts
+  - packages/@lumenflow/memory/src/mem-triage-core.ts
+  - packages/@lumenflow/core/src/wu-yaml.ts
+  - packages/@lumenflow/core/src/wu-done-pr.ts
+  - packages/@lumenflow/cli/src/initiative-bulk-assign-wus.ts
+  - packages/@lumenflow/cli/src/metrics-cli.ts
+tests:
+  manual:
+    - Configure wuDir to .lumenflow/wus in .lumenflow.config.yaml
+    - Run pnpm gates - should validate against configured path
+    - Run agent-verification.mjs WU-XXX - should check configured path
+  unit:
+    - packages/@lumenflow/core/src/__tests__/validators/backlog-sync.test.ts
+    - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1158.done
+dependencies: []
+risks:
+  - Breaking change for consumer repos that rely on hardcoded paths (mitigated by keeping defaults)
+notes: |
+  Discovered via PatientPath agent friction - gates failed because validators check
+  docs/04-operations/tasks/wu/ regardless of .lumenflow.config.yaml settings.
+
+  Root cause: Multiple files have hardcoded path constants instead of reading from
+  the config system. The config schema supports wuDir but validators ignore it.
+
+  Files with hardcoded paths:
+  - backlog-sync.ts line 50-51: const backlogPath = path.join(cwd, 'docs', '04-operations', 'tasks', 'backlog.md')
+  - wu-consistency-checker.ts line 206, 238: const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu')
+  - agent-verification.ts line 62: hardcoded in git log command
+  - mem-triage-core.ts line 25: const WU_DIR = 'docs/04-operations/tasks/wu'
+  - initiative-bulk-assign-wus.ts line 34-37: hardcoded WU_DIR and INIT_DIR
+  - metrics-cli.ts line 50: hardcoded WU_DIR
+  - wu-yaml.ts line 229: hardcoded path
+  - wu-done-pr.ts line 120: hardcoded path
+
+  Solution: All these files should use WU_PATHS from wu-paths.ts or loadConfig()
+  from lumenflow-config.ts which properly reads .lumenflow.config.yaml.
+requires_review: true
+assigned_to: ''
+exposure: internal
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |
+  Context: LumenFlow validators (backlog-sync, wu-consistency-checker, agent-verification)
+  and several CLI commands have hardcoded paths like docs/04-operations/tasks/wu/ instead
+  of reading from .lumenflow.config.yaml.
+
+  Problem: Consumer repos that use different WU storage paths (e.g., .lumenflow/wus/)
+  cannot pass gates because validators check the wrong directory. The config schema
+  supports directories.wuDir but validators ignore it.
+
+  Impact: PatientPath agents experienced repeated gate failures despite correct config.
+  They had to use skip-gates as workaround, degrading workflow confidence.
+
+  Solution: Refactor all hardcoded path references to use the config-aware WU_PATHS
+  helper from wu-paths.ts or loadConfig() from lumenflow-config.ts. Keep current
+  paths as defaults for backwards compatibility.
+acceptance:
+  - All validators read wuDir/backlogPath from .lumenflow.config.yaml
+  - Validators use WU_PATHS helper or loadConfig() - no hardcoded path strings
+  - Default paths remain docs/04-operations/tasks/wu for backwards compatibility
+  - Unit tests cover custom wuDir configuration
+  - Consumer repo with .lumenflow/wus/ passes gates without skip-gates
