@@ -5,7 +5,7 @@
  * WU-1255: Per-file error tracking for robust rollback operations.
  * Ensures all files are attempted even if some fail, with clear error reporting.
  *
- * @see {@link tools/wu-done.mjs} - Consumer (rollbackTransaction function)
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Consumer (rollbackTransaction function)
  */
 
 /* eslint-disable security/detect-non-literal-fs-filename */

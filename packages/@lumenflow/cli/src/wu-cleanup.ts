@@ -237,7 +237,7 @@ async function main() {
   const id = args.id.toUpperCase();
   const wu = readWU(WU_PATHS.WU(id), id);
 
-  // Use kebab-case lane naming (match wu-claim.mjs logic)
+  // Use kebab-case lane naming (match wu-claim.ts logic)
   const laneK =
     wu.lane
       ?.toLowerCase()

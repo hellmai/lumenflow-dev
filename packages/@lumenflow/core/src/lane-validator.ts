@@ -5,13 +5,13 @@
  * Validates that a WU's code_paths are consistent with its assigned lane.
  * This is an advisory validation - it warns but never blocks wu:claim or wu:done.
  *
- * Uses LANE_PATH_PATTERNS from wu-constants.mjs to define which paths
+ * Uses LANE_PATH_PATTERNS from wu-constants.ts to define which paths
  * are discouraged for each lane parent.
  *
  * Part of INIT-002: Workflow Integrity initiative.
  *
- * @see {@link wu-constants.mjs} - LANE_PATH_PATTERNS definition
- * @see {@link lane-checker.mjs} - extractParent for lane parsing
+ * @see {@link wu-constants.ts} - LANE_PATH_PATTERNS definition
+ * @see {@link lane-checker.ts} - extractParent for lane parsing
  */
 
 import micromatch from 'micromatch';

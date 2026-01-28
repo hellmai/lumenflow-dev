@@ -4,12 +4,12 @@
  * Centralized constants for wu- scripts to ensure consistency and DRY compliance.
  * Single source of truth for magic strings, section headings, and patterns.
  *
- * Part of WU-1214: Extract hardcoded strings to wu-constants.mjs
+ * Part of WU-1214: Extract hardcoded strings to wu-constants.ts
  * Part of WU-1240: Consolidated toKebab using change-case library
  *
- * @see {@link tools/wu-done.mjs} - Primary consumer
- * @see {@link tools/wu-claim.mjs} - Branch/worktree creation
- * @see {@link tools/lib/wu-schema.mjs} - PLACEHOLDER_SENTINEL (already centralized)
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Primary consumer
+ * @see {@link packages/@lumenflow/cli/src/wu-claim.ts} - Branch/worktree creation
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - PLACEHOLDER_SENTINEL (already centralized)
  */
 
 import path from 'node:path';
@@ -84,7 +84,7 @@ export const WU_STATUS = {
 /**
  * WU status groups for state management (WU-1742)
  *
- * Used by state-bootstrap.mjs to categorize YAML statuses.
+ * Used by state-bootstrap.ts to categorize YAML statuses.
  */
 export const WU_STATUS_GROUPS = {
   /** Statuses representing unclaimed work (not tracked in state store) */
@@ -130,7 +130,7 @@ export const INCIDENT_SEVERITY = {
   INFO: 'info',
 };
 
-// Note: PATHS object removed in WU-1240 - use WU_PATHS from wu-paths.mjs instead
+// Note: PATHS object removed in WU-1240 - use WU_PATHS from wu-paths.ts instead
 
 /**
  * Backlog section headings (with emojis)
@@ -173,7 +173,7 @@ export const STATUS_SECTIONS = {
 /**
  * Regex patterns for WU operations
  *
- * Note: WU_ID pattern is also in wu-schema.mjs for Zod validation
+ * Note: WU_ID pattern is also in wu-schema.ts for Zod validation
  */
 export const PATTERNS = {
   /** WU identifier format: WU-123 */
@@ -543,7 +543,7 @@ export const YAML_OPTIONS = {
 /**
  * UI display constants
  *
- * WU-1281: Centralized from hardcoded values in wu-done.mjs
+ * WU-1281: Centralized from hardcoded values in wu-done.ts
  */
 export const UI = {
   /** Width for error/info boxes in console output */
@@ -656,7 +656,7 @@ export const GIT = {
  * P0 incident: 2025-12-10 server crash due to recursive fork bomb.
  *
  * @see tools/shims/git - The git shim that blocks destructive commands
- * @see tools/lib/wu-helpers.mjs - Uses REAL_GIT to avoid recursion
+ * @see tools/lib/wu-helpers.ts - Uses REAL_GIT to avoid recursion
  */
 export const REAL_GIT = '/usr/bin/git';
 
@@ -664,7 +664,7 @@ export const REAL_GIT = '/usr/bin/git';
  * Git command flags
  *
  * Centralized git flag constants to eliminate hardcoded strings.
- * Used by git-adapter.mjs and other git operation utilities.
+ * Used by git-adapter.ts and other git operation utilities.
  */
 export const GIT_FLAGS = {
   /** Show abbreviated ref names (for branch name resolution) */
@@ -824,8 +824,8 @@ export const WU_TYPES = {
  * Defines how a WU exposes its functionality to users.
  * Used to ensure backend features have corresponding UI coverage.
  *
- * @see {@link tools/lib/wu-schema.mjs} - Schema validation
- * @see {@link packages/linters/wu-schema-linter.mjs} - Linter validation
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - Schema validation
+ * @see {@link packages/linters/wu-schema-linter.ts} - Linter validation
  */
 export const WU_EXPOSURE = {
   /** User-facing UI changes (pages, components, widgets) */
@@ -925,7 +925,7 @@ export const EMOJI = {
  * WU-1337: Centralized defaults for auto-repair in schema validation
  * DRY principle: Single source of truth for optional field defaults
  *
- * Used by wu-schema.mjs Zod transformations to provide sensible defaults
+ * Used by wu-schema.ts Zod transformations to provide sensible defaults
  * when agents omit optional fields, reducing validation errors.
  */
 export const WU_DEFAULTS = {
@@ -972,7 +972,7 @@ export const WU_DEFAULTS = {
  * WU-1068: Removed hardcoded @ references. These patterns
  * should be configured in .lumenflow.config.yaml per-project.
  *
- * @see {@link tools/lib/lane-validator.mjs} - Validation logic
+ * @see {@link packages/@lumenflow/cli/src/lib/lane-validator.ts} - Validation logic
  */
 export const LANE_PATH_PATTERNS = {
   /**
@@ -997,7 +997,7 @@ export const LANE_PATH_PATTERNS = {
 /**
  * Process detection constants for background process warning (WU-1381)
  *
- * Used by process-detector.mjs to identify processes that may interfere
+ * Used by process-detector.ts to identify processes that may interfere
  * with wu:done gates execution.
  */
 export const PROCESS_DETECTION = {
@@ -1102,7 +1102,7 @@ export const SCRIPTS = {
 /**
  * Gate names for quality gates
  *
- * Centralized gate identifiers for gates.mjs and telemetry.
+ * Centralized gate identifiers for gates.ts and telemetry.
  */
 export const GATE_NAMES = {
   /** WU-2252: Invariants check (runs first, non-bypassable) */
@@ -1127,7 +1127,7 @@ export const GATE_NAMES = {
 /**
  * Gate command sentinels (special values for non-shell commands)
  *
- * These are not shell commands but trigger special handling in gates.mjs.
+ * These are not shell commands but trigger special handling in gates.ts.
  */
 export const GATE_COMMANDS = {
   /** WU-2252: Triggers invariants check */
@@ -1637,7 +1637,7 @@ export function getLaneBranch(lane, id) {
 }
 
 // Note: getWuYamlPath and getStampPath removed in WU-1240
-// Use WU_PATHS.WU(id) and WU_PATHS.STAMP(id) from wu-paths.mjs instead
+// Use WU_PATHS.WU(id) and WU_PATHS.STAMP(id) from wu-paths.ts instead
 
 /**
  * File tool constants (WU-1403)
@@ -1719,8 +1719,8 @@ export const SENSITIVE_DATA_CONFIG = {
  * Constants for the readiness summary box displayed after wu:create and wu:edit.
  * Provides visual feedback on whether WU is ready for wu:claim.
  *
- * @see tools/wu-create.mjs - displayReadinessSummary()
- * @see tools/wu-edit.mjs - displayReadinessSummary()
+ * @see tools/wu-create.ts - displayReadinessSummary()
+ * @see tools/wu-edit.ts - displayReadinessSummary()
  */
 export const READINESS_UI = {
   /** Box width (inner content area) */

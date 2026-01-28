@@ -11,10 +11,10 @@
  * - computeStoreChecksum(): Computes deterministic checksum of store state
  * - getCompletionDate(): Retrieves completion date from event timestamp
  *
- * @see {@link tools/__tests__/backlog-generator.test.mjs} - Tests
- * @see {@link tools/__tests__/backlog-checksum.test.mjs} - Checksum tests
- * @see {@link tools/__tests__/status-date-from-event.test.mjs} - Date tests
- * @see {@link tools/lib/wu-state-store.mjs} - State store
+ * @see {@link packages/@lumenflow/cli/src/__tests__/backlog-generator.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/__tests__/backlog-checksum.test.ts} - Checksum tests
+ * @see {@link packages/@lumenflow/cli/src/__tests__/status-date-from-event.test.ts} - Date tests
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-state-store.ts} - State store
  */
 
 import { createHash } from 'node:crypto';

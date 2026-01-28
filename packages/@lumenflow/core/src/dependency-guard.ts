@@ -9,8 +9,8 @@
  * - deps:add and deps:remove wrapper commands
  *
  * @see {@link .claude/hooks/pre-tool-use-hook.sh} - PreToolUse hook
- * @see {@link tools/deps-add.mjs} - Safe wrapper for pnpm add
- * @see {@link tools/deps-remove.mjs} - Safe wrapper for pnpm remove
+ * @see {@link packages/@lumenflow/cli/src/deps-add.ts} - Safe wrapper for pnpm add
+ * @see {@link packages/@lumenflow/cli/src/deps-remove.ts} - Safe wrapper for pnpm remove
  */
 
 import { LOG_PREFIX, EMOJI } from './wu-constants.js';

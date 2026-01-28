@@ -1,5 +1,5 @@
 /**
- * @file wu-claim-resume.mjs
+ * @file wu-claim-resume.ts
  * Helper functions for wu:claim --resume agent handoff (WU-2411)
  *
  * When an agent crashes or is killed, its worktree remains with uncommitted work.

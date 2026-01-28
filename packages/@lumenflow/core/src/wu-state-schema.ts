@@ -4,7 +4,7 @@
  * Zod schemas for WU state event validation.
  * Defines event types for WU lifecycle: create, claim, block, unblock, complete.
  *
- * @see {@link tools/lib/__tests__/wu-state-store.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/wu-state-store.test.ts} - Tests
  */
 
 import { z } from 'zod';

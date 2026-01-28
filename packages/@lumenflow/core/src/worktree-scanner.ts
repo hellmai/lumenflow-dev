@@ -10,7 +10,7 @@
  * - Reports last activity timestamp
  * - Identifies potentially abandoned WUs
  *
- * @see {@link tools/lib/__tests__/worktree-scanner.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/worktree-scanner.test.ts} - Tests
  */
 
 import { exec } from 'node:child_process';

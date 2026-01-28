@@ -9,8 +9,8 @@
  * - Atomic append operations
  * - O(1) queries by parent WU, target WU, and status
  *
- * @see {@link tools/lib/__tests__/spawn-registry-store.test.mjs} - Tests
- * @see {@link tools/lib/spawn-registry-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-registry-store.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';

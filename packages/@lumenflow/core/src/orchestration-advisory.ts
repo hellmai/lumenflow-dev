@@ -2,11 +2,11 @@
  * Orchestration Advisory Emitter
  *
  * Utility functions for emitting mandatory agent advisories and checking compliance.
- * Used by wu-claim.mjs (emit advisory) and wu-done.mjs (check compliance).
+ * Used by wu-claim.ts (emit advisory) and wu-done.ts (check compliance).
  *
  * @module orchestration-advisory
- * @see {@link ./orchestration-rules.mjs} - detectMandatoryAgents function
- * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
+ * @see {@link ./orchestration-rules.ts} - detectMandatoryAgents function
+ * @see {@link ./domain/orchestration.constants.ts} - MANDATORY_TRIGGERS patterns
  */
 
 import picocolors from 'picocolors';

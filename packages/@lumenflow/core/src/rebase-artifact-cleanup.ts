@@ -10,9 +10,9 @@
  * Part of WU-1371: Post-rebase artifact cleanup
  * WU-1449: Extended to handle backlog/status duplicates after rebase
  *
- * @see {@link tools/wu-done.mjs} - Creates completion artifacts
- * @see {@link tools/lib/stamp-utils.mjs} - Stamp file utilities
- * @see {@link tools/lib/wu-recovery.mjs} - Related zombie state handling
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Creates completion artifacts
+ * @see {@link packages/@lumenflow/cli/src/lib/stamp-utils.ts} - Stamp file utilities
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-recovery.ts} - Related zombie state handling
  */
 
 import { readFile, writeFile, unlink, access } from 'node:fs/promises';

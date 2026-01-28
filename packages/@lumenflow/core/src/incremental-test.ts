@@ -1,5 +1,5 @@
 /**
- * @file incremental-test.mjs
+ * @file incremental-test.ts
  * @description Helpers for Vitest --changed execution
  *
  * WU-1920: Add incremental test execution to gates

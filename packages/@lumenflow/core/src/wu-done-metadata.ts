@@ -36,7 +36,7 @@ const execAsync = promisify(execCallback);
 
 /**
  * Generate commit message for WU completion
- * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+ * Extracted from wu-done.ts (WU-1215 Phase 2 Extraction #1 Helper)
  * @param {string} id - WU ID (e.g., "WU-1215")
  * @param {string} title - WU title
  * @param {number} maxLength - Maximum commit header length from commitlint config
@@ -101,7 +101,7 @@ export function validateMetadataFilesExist({ statusPath, backlogPath }) {
 
 /**
  * Update all metadata files for WU completion
- * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+ * Extracted from wu-done.ts (WU-1215 Phase 2 Extraction #1 Helper)
  * WU-1572: Made async for WUStateStore integration
  * @param {object} params - Parameters object
  * @param {string} params.id - WU ID
@@ -215,7 +215,7 @@ export async function collectMetadataToTransaction({
 
 /**
  * Stage and format metadata files
- * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+ * Extracted from wu-done.ts (WU-1215 Phase 2 Extraction #1 Helper)
  * @param {object} params - Parameters object
  * @param {string} params.id - WU ID (for error reporting)
  * @param {string} params.wuPath - Path to WU YAML file

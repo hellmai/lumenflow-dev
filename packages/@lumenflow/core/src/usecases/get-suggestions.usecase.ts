@@ -34,7 +34,7 @@ export interface GetSuggestionsOptions {
    * When provided, suggestions for high-impact WUs are ranked higher
    * within the same priority level.
    *
-   * @see flow-bottlenecks.mjs for score calculation
+   * @see flow-bottlenecks.ts for score calculation
    */
   bottleneckScores?: BottleneckScores;
 }

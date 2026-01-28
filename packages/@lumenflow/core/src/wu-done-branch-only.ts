@@ -2,7 +2,7 @@
 
 /**
  * Branch-Only mode completion workflow for wu:done
- * Extracted from wu-done.mjs (WU-1215 refactoring)
+ * Extracted from wu-done.ts (WU-1215 refactoring)
  *
  * Flow:
  * 1. Switch to main branch

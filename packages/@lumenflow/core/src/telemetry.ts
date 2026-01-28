@@ -3,7 +3,7 @@
  * Telemetry Module - DORA/SPACE Metrics Emission
  *
  * Emits structured NDJSON telemetry for gates execution and WU flow metrics.
- * Used by gates-local.mjs and flow-report.mjs.
+ * Used by gates-local.ts and flow-report.ts.
  */
 
 import { appendFileSync, mkdirSync, existsSync } from 'node:fs';

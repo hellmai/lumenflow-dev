@@ -12,11 +12,11 @@
  * - WUSchema: Extends base + placeholder rejection (for wu:claim, wu:done)
  * - ReadyWUSchema: Alias for BaseWUSchema (for wu:create, wu:edit)
  *
- * @see {@link tools/wu-done.mjs} - Consumer (validates spec completeness, uses WUSchema)
- * @see {@link tools/wu-claim.mjs} - Consumer (validates spec completeness, uses WUSchema)
- * @see {@link tools/wu-create.mjs} - Consumer (structural validation, uses ReadyWUSchema)
- * @see {@link tools/wu-edit.mjs} - Consumer (structural validation, uses ReadyWUSchema)
- * @see {@link tools/validate.mjs} - Consumer (CI validation)
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Consumer (validates spec completeness, uses WUSchema)
+ * @see {@link packages/@lumenflow/cli/src/wu-claim.ts} - Consumer (validates spec completeness, uses WUSchema)
+ * @see {@link packages/@lumenflow/cli/src/wu-create.ts} - Consumer (structural validation, uses ReadyWUSchema)
+ * @see {@link packages/@lumenflow/cli/src/wu-edit.ts} - Consumer (structural validation, uses ReadyWUSchema)
+ * @see {@link packages/@lumenflow/cli/src/validate.ts} - Consumer (CI validation)
  * @see {@link apps/web/src/lib/llm/schemas/orchestrator.ts} - Pattern reference
  */
 
@@ -51,11 +51,11 @@ const VALID_STATUSES = [
  * Single source of truth for placeholder detection (DRY principle).
  *
  * @example
- * // tools/wu-create.mjs
+ * // tools/wu-create.ts
  * description: `${PLACEHOLDER_SENTINEL} Describe the work...`
  *
  * @example
- * // tools/validate.mjs
+ * // tools/validate.ts
  * if (doc.description.includes(PLACEHOLDER_SENTINEL)) { error(); }
  */
 export const PLACEHOLDER_SENTINEL = '[PLACEHOLDER]';
@@ -95,7 +95,7 @@ const NEWLINE_PATTERN = /\\n|\n/;
  * This transform auto-repairs: ["a\nb\nc"] → ["a", "b", "c"]
  *
  * @example
- * // Input: ["tools/a.mjs\ntools/b.js"]
+ * // Input: ["tools/a.ts\ntools/b.js"]
  * // Output: ["tools/a.js", "tools/b.js"]
  */
 const normalizedStringArray = z.array(z.string()).transform((arr) =>

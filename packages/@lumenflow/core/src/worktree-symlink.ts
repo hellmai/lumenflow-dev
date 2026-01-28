@@ -10,7 +10,7 @@
  * auto-create the node_modules symlink pointing to the main repo's
  * node_modules directory, including nested package node_modules.
  *
- * @module tools/lib/worktree-symlink.mjs
+ * @module tools/lib/worktree-symlink.ts
  */
 
 import fs from 'node:fs';
@@ -231,7 +231,7 @@ function checkMainNodeModulesHealth(mainRepoPath, logger) {
  * @returns {{created: boolean, skipped: boolean, refused?: boolean, reason?: string, error?: Error}}
  *
  * @example
- * // In wu-claim.mjs after worktree creation:
+ * // In wu-claim.ts after worktree creation:
  * symlinkNodeModules('/path/to/worktrees/operations-tooling-wu-1443');
  */
 export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath = null) {
@@ -355,7 +355,7 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
  * @returns {{created: number, skipped: number, errors: Error[]}}
  *
  * @example
- * // In wu-claim.mjs after worktree creation:
+ * // In wu-claim.ts after worktree creation:
  * symlinkNestedNodeModules(
  *   '/path/to/worktrees/operations-tooling-wu-1579',
  *   '/path/to/main-repo'

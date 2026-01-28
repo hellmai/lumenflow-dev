@@ -11,8 +11,8 @@
  * Recovery mode is idempotent - safe to run multiple times
  *
  * NOTE (WU-1826): Core recovery functions are now re-exported from
- * tools/lib/wu-repair-core.mjs for use by the unified wu:repair command.
- * This module remains the canonical implementation used by wu-done.mjs.
+ * tools/lib/wu-repair-core.ts for use by the unified wu:repair command.
+ * This module remains the canonical implementation used by wu-done.ts.
  */
 
 import { existsSync, readFileSync, unlinkSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -259,7 +259,7 @@ export function resetWorktreeYAMLForRecovery({ worktreePath, id, doc }) {
   return { reset: true };
 }
 
-// Note: updateBacklogMd removed (WU-1163) - now uses shared moveWUToDoneBacklog from wu-backlog-updater.mjs
+// Note: updateBacklogMd removed (WU-1163) - now uses shared moveWUToDoneBacklog from wu-backlog-updater.ts
 
 /**
  * Recover from zombie state
@@ -353,7 +353,7 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
 
       try {
         await git.add([stampPath, wuPath, statusPath, backlogPath]);
-        // WU-1383: Set recovery mode env var to bypass stamp existence check in validate.mjs
+        // WU-1383: Set recovery mode env var to bypass stamp existence check in validate.ts
         // During recovery, stamp and status=done are committed atomically, but pre-commit
         // hooks run mid-commit when both files are staged but validation sees inconsistent state
         process.env.WU_RECOVERY_ID = id;

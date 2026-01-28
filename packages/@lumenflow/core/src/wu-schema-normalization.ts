@@ -1,5 +1,5 @@
 /**
- * @file wu-schema-normalization.mjs
+ * @file wu-schema-normalization.ts
  * @description Schema normalization for legacy WU YAML formats (WU-2004)
  *
  * Handles migration of legacy fields to current schema:

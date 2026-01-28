@@ -8,8 +8,8 @@
  * - Promote discovery to WU (integrates with wu:create)
  * - Archive discovery without promotion
  *
- * @see {@link tools/mem-triage.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-triage.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/mem-triage.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-triage.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

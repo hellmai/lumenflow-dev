@@ -16,8 +16,8 @@
  *   pnpm mem:summarize --wu WU-1234 --dry-run # Preview without changes
  *   pnpm mem:summarize --wu WU-1234 --json    # Output as JSON
  *
- * @see {@link tools/lib/mem-summarize-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-summarize.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-summarize-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-summarize.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

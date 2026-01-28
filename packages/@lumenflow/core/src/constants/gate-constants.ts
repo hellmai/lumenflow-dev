@@ -2,7 +2,7 @@
  * Gate Configuration Constants
  *
  * Centralizes magic numbers for pre-commit and local gates.
- * Used by gates-pre-commit.mjs and gates-local.mjs.
+ * Used by gates-pre-commit.ts and gates-local.ts.
  */
 
 /** Gate execution configuration */

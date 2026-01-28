@@ -3,13 +3,13 @@
  * File Classifiers
  *
  * Shared utilities for classifying file types.
- * Consolidates duplicated classification logic from wu-validator.mjs
- * and code-path-validator.mjs.
+ * Consolidates duplicated classification logic from wu-validator.ts
+ * and code-path-validator.ts.
  *
  * WU-1848: DRY Consolidation - Eliminate duplicated code patterns
  *
- * @see tools/lib/wu-validator.mjs - Original isTestFile, isMarkdownFile
- * @see tools/lib/code-path-validator.mjs - Duplicated implementations
+ * @see tools/lib/wu-validator.ts - Original isTestFile, isMarkdownFile
+ * @see tools/lib/code-path-validator.ts - Duplicated implementations
  */
 
 /**
@@ -40,8 +40,8 @@ const TEST_FILE_PATTERNS = Object.freeze([
  * Check if a file path is a test file
  *
  * Detects test files by extension and directory patterns:
- * - *.test.ts, *.test.tsx, *.test.js, *.test.jsx, *.test.mjs
- * - *.spec.ts, *.spec.tsx, *.spec.js, *.spec.jsx, *.spec.mjs
+ * - *.test.ts, *.test.tsx, *.test.js, *.test.jsx, *.test.ts
+ * - *.spec.ts, *.spec.tsx, *.spec.js, *.spec.jsx, *.spec.ts
  * - Files in __tests__ directories
  * - *.test-utils.* files
  * - *.mock.* files

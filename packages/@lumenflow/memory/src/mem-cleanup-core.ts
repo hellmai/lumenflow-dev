@@ -25,8 +25,8 @@
  * - Active sessions (status: 'active') are never removed
  * - Project and sensitive nodes are protected from TTL removal
  *
- * @see {@link tools/mem-cleanup.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-cleanup.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/mem-cleanup.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-cleanup.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

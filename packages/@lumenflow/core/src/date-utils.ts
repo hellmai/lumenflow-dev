@@ -1,12 +1,12 @@
 /**
- * @file date-utils.mjs
+ * @file date-utils.ts
  * @description Date formatting utilities using date-fns library
  * WU-1082: Extract shared utilities (eliminate date formatting duplication)
  *
  * Replaces manual date formatting in:
- * - tools/wu-block.mjs (todayISO)
- * - tools/wu-unblock.mjs (todayISO)
- * - tools/wu-done.mjs (todayISO - already uses date-fns)
+ * - tools/wu-block.ts (todayISO)
+ * - tools/wu-unblock.ts (todayISO)
+ * - tools/wu-done.ts (todayISO - already uses date-fns)
  */
 
 import { format } from 'date-fns';

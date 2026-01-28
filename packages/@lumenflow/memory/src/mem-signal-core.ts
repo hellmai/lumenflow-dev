@@ -10,8 +10,8 @@
  * - Lane-targeted signals for cross-team communication
  * - Read/unread tracking for mem:inbox integration
  *
- * @see {@link tools/mem-signal.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-signal.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/mem-signal.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-signal.test.ts} - Tests
  */
 
 import { randomBytes } from 'node:crypto';
@@ -25,7 +25,7 @@ import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 export const SIGNAL_FILE_NAME = 'signals.jsonl';
 
 /**
- * WU ID validation pattern (from memory-schema.mjs)
+ * WU ID validation pattern (from memory-schema.ts)
  */
 const WU_ID_PATTERN = /^WU-\d+$/;
 

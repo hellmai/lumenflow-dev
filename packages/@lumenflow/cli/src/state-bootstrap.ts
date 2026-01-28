@@ -5,7 +5,7 @@
  * One-time migration utility from WU YAMLs to event-sourced state store.
  * Reads all WU YAML files and generates corresponding events in the state store.
  *
- * WU-1107: INIT-003 Phase 3c - Migrate state-bootstrap.mjs from 
+ * WU-1107: INIT-003 Phase 3c - Migrate state-bootstrap.ts from 
  *
  * Usage:
  *   pnpm state:bootstrap           # Dry-run mode (shows what would be done)

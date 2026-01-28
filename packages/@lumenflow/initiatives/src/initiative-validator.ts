@@ -8,8 +8,8 @@
  * WU-2319: Added bidirectional validation for WU<->Initiative references.
  * WU-1088: detectCycles moved to @lumenflow/core to break circular dependency.
  *
- * @see {@link tools/validate.mjs} - Consumer (CI validation)
- * @see {@link tools/lib/initiative-schema.mjs} - Initiative schema
+ * @see {@link packages/@lumenflow/cli/src/validate.ts} - Consumer (CI validation)
+ * @see {@link packages/@lumenflow/cli/src/lib/initiative-schema.ts} - Initiative schema
  */
 
 // WU-1088: Import detectCycles from @lumenflow/core to break circular dependency

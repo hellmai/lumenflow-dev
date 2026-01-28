@@ -4,8 +4,8 @@
  * WU-1281: Extracted display helpers to consolidate DRY violations
  * and use library-first duration formatting.
  *
- * @see {@link tools/wu-done.mjs} - Primary consumer
- * @see {@link tools/lib/wu-constants.mjs} - UI constants
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Primary consumer
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-constants.ts} - UI constants
  */
 
 import prettyMs from 'pretty-ms';
@@ -14,7 +14,7 @@ import { UI, LOG_PREFIX, STRING_LITERALS } from './wu-constants.js';
 /**
  * Print prominent gate failure box
  *
- * Consolidated from two duplicate implementations in wu-done.mjs
+ * Consolidated from two duplicate implementations in wu-done.ts
  * (worktree mode and branch-only mode). Uses pretty-ms for
  * human-readable duration formatting.
  *

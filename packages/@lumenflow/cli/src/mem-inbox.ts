@@ -14,8 +14,8 @@
  * Usage:
  *   pnpm mem:inbox [--lane <name>] [--wu <id>] [--since <time>] [--watch]
  *
- * @see {@link tools/lib/mem-signal-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-inbox.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-signal-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-inbox.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

@@ -9,9 +9,9 @@
  *
  * Part of INIT-031 Phase 4: Prevent backend-without-UI pattern.
  *
- * @see {@link tools/wu-done.mjs} - Consumer
- * @see {@link tools/lib/wu-schema.mjs} - WU schema with exposure field
- * @see {@link tools/lib/wu-constants.mjs} - WU_EXPOSURE values
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Consumer
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - WU schema with exposure field
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-constants.ts} - WU_EXPOSURE values
  */
 
 import { WU_EXPOSURE } from './wu-constants.js';

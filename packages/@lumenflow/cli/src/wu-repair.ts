@@ -41,9 +41,9 @@
  *   - pnpm wu:repair-claim is deprecated. Use: pnpm wu:repair --claim
  *   - pnpm wu:admin-repair is deprecated. Use: pnpm wu:repair --admin
  *
- * @see {@link tools/lib/wu-repair-core.mjs} - Core repair logic
- * @see {@link tools/lib/wu-consistency-checker.mjs} - Consistency detection/repair
- * @see {@link tools/lib/wu-state-store.mjs} - State file repair (repairStateFile)
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-repair-core.ts} - Core repair logic
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-consistency-checker.ts} - Consistency detection/repair
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-state-store.ts} - State file repair (repairStateFile)
  */
 
 import { Command } from 'commander';

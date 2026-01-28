@@ -31,7 +31,7 @@ import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-// WU-1352: Use centralized YAML functions from wu-yaml.mjs
+// WU-1352: Use centralized YAML functions from wu-yaml.ts
 import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
 import { todayISO } from '@lumenflow/core/dist/date-utils.js';

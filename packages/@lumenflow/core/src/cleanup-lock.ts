@@ -14,7 +14,7 @@
  * Lock ordering (WU-2241):
  *   Lane lock (phase-scoped) -> Merge lock -> Cleanup lock -> State store lock
  *
- * Pattern: Follows lane-lock.mjs and merge-lock.mjs internal patterns.
+ * Pattern: Follows lane-lock.ts and merge-lock.ts internal patterns.
  *
  * @module cleanup-lock
  */

@@ -2,7 +2,7 @@
  * Active WU Detection Utilities
  *
  * Detects which WU YAMLs are "active" (referenced in backlog.md/status.md)
- * vs "orphan" (legacy/unreferenced). Used by validate.mjs to suppress
+ * vs "orphan" (legacy/unreferenced). Used by validate.ts to suppress
  * lane-checker warnings for orphan WUs.
  *
  * WU-1814: Stop lane-checker warnings for orphan WU YAMLs

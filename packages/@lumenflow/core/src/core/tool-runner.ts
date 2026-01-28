@@ -1,11 +1,11 @@
 /**
- * @file tool-runner.mjs
+ * @file tool-runner.ts
  * @description Unified tool execution layer integrating all core components (WU-1398)
  *
  * This module provides a higher-order function pattern for executing tools with:
  * - Input validation via Zod schemas (tool.schemas.ts)
- * - Worktree context detection (worktree-guard.mjs)
- * - Scope validation against code_paths (scope-checker.mjs)
+ * - Worktree context detection (worktree-guard.ts)
+ * - Scope validation against code_paths (scope-checker.ts)
  * - Audit logging for telemetry (.lumenflow/telemetry/tools.ndjson)
  * - Consistent error handling with agent-friendly messages
  *
@@ -21,8 +21,8 @@
  *   const result = await runner.run('tool:name', { arg: 'value' });
  *
  * @see tools/lib/core/tool.schemas.ts - Zod schemas for tool I/O
- * @see tools/lib/core/worktree-guard.mjs - WU context detection
- * @see tools/lib/core/scope-checker.mjs - Code path validation
+ * @see tools/lib/core/worktree-guard.ts - WU context detection
+ * @see tools/lib/core/scope-checker.ts - Code path validation
  */
 
 import {

@@ -10,7 +10,7 @@
  * Usage:
  *   pnpm mem:init [--base-dir <path>] [--quiet]
  *
- * @see {@link tools/lib/mem-init-core.mjs} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-init-core.ts} - Core logic
  */
 
 import fs from 'node:fs/promises';

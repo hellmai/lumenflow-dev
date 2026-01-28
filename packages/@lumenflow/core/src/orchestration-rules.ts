@@ -5,7 +5,7 @@
  * Uses minimatch for glob pattern matching (NOT regex).
  *
  * @module orchestration-rules
- * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
+ * @see {@link ./domain/orchestration.constants.ts} - MANDATORY_TRIGGERS patterns
  * @see {@link https://lumenflow.dev/reference/agent-selection-guide/} - Agent selection rules
  */
 

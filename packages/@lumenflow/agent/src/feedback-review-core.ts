@@ -5,8 +5,8 @@
  * clusters by title similarity, scores patterns (frequency x severity x recency),
  * and outputs prioritised patterns for human review.
  *
- * @see {@link tools/__tests__/feedback-review.test.mjs} - Tests
- * @see {@link tools/feedback-review.mjs} - CLI entry point
+ * @see {@link packages/@lumenflow/cli/src/__tests__/feedback-review.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/feedback-review.ts} - CLI entry point
  */
 
 import fs from 'node:fs/promises';

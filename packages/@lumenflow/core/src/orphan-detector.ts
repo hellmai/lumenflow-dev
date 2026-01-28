@@ -14,9 +14,9 @@
  * - Layer 3: Pre-flight check in wu:claim
  * - Layer 4: Manual utility wu:cleanup-orphans
  *
- * @see {@link tools/wu-prune.mjs} - Primary consumer
- * @see {@link tools/wu-claim.mjs} - Pre-flight orphan check
- * @see {@link tools/lib/git-adapter.mjs} - worktreeRemove with cleanup
+ * @see {@link packages/@lumenflow/cli/src/wu-prune.ts} - Primary consumer
+ * @see {@link packages/@lumenflow/cli/src/wu-claim.ts} - Pre-flight orphan check
+ * @see {@link packages/@lumenflow/cli/src/lib/git-adapter.ts} - worktreeRemove with cleanup
  */
 
 import { readdirSync, statSync, existsSync, rmSync } from 'node:fs';

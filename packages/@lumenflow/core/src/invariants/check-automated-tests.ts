@@ -9,9 +9,9 @@
  *
  * Library-first check: This is custom validation logic for  WU workflow.
  * No external library exists for WU YAML validation - this integrates with
- * the existing manual-test-validator.mjs which already implements the core logic.
+ * the existing manual-test-validator.ts which already implements the core logic.
  *
- * @see {@link tools/lib/manual-test-validator.mjs} - Core validation logic
+ * @see {@link packages/@lumenflow/cli/src/lib/manual-test-validator.ts} - Core validation logic
  * @see {@link tools/invariants.yml} - Invariant registry
  */
 
@@ -73,7 +73,7 @@ function checkWUFile(filePath, options: CheckWUFileOptions = {}) {
       return { valid: true, wuId, error: null };
     }
 
-    // Use the existing validation logic from manual-test-validator.mjs
+    // Use the existing validation logic from manual-test-validator.ts
     const result = validateAutomatedTestRequirement(doc);
 
     if (!result.valid) {

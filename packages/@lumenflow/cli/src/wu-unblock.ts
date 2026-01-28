@@ -45,16 +45,16 @@ import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
 // WU-1574: Import backlog generator to replace BacklogManager
 import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
 
-// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
-// ensureStaged() moved to git-staged-validator.mjs (WU-1341)
-// defaultWorktreeFrom() moved to wu-paths.mjs (WU-1341)
+// ensureOnMain() moved to wu-helpers.ts (WU-1256)
+// ensureStaged() moved to git-staged-validator.ts (WU-1341)
+// defaultWorktreeFrom() moved to wu-paths.ts (WU-1341)
 
 const PREFIX = LOG_PREFIX.UNBLOCK;
 
 // WU-1574: Removed legacy backlog manipulation functions
 // All backlog/status updates now use WUStateStore + backlog generator
 
-// defaultBranchFrom() consolidated to wu-done-validators.mjs (emergency fix)
+// defaultBranchFrom() consolidated to wu-done-validators.ts (emergency fix)
 
 function branchExists(branch) {
   try {
@@ -84,7 +84,7 @@ function createWorktree(doc, worktreePath, branchName) {
   }
 }
 
-// emitTelemetry() moved to telemetry.mjs as emitWUFlowEvent() (WU-1256)
+// emitTelemetry() moved to telemetry.ts as emitWUFlowEvent() (WU-1256)
 
 /**
  * Handle lane occupancy check and enforce WIP=1 policy

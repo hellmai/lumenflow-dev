@@ -8,9 +8,9 @@
  * Integrates with spawn-registry-store and spawn-registry-schema.
  * No external tree library needed - logic is tightly coupled to spawn data model.
  *
- * @see {@link tools/__tests__/spawn-list.test.mjs} - Tests
- * @see {@link tools/spawn-list.mjs} - CLI command
- * @see {@link tools/lib/spawn-registry-store.mjs} - Data source
+ * @see {@link packages/@lumenflow/cli/src/__tests__/spawn-list.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/spawn-list.ts} - CLI command
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Data source
  */
 
 import fs from 'node:fs/promises';

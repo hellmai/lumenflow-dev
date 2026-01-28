@@ -24,7 +24,7 @@
  *   pnpm wu:edit --id WU-123 --acceptance "Criterion 1" --acceptance "Criterion 2"
  *
  * Part of WU-1274: Add wu:edit command for spec-only changes
- * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
+ * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
 import { fileURLToPath } from 'node:url';

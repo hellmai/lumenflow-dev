@@ -15,10 +15,10 @@
  * 's spawn-registry.jsonl and lane-lock files. No external
  * library exists for this custom format.
  *
- * @see {@link tools/__tests__/orchestrate-monitor.test.mjs} - Tests
- * @see {@link tools/lib/__tests__/spawn-monitor.test.mjs} - Signal handler tests
- * @see {@link tools/orchestrate-monitor.mjs} - CLI entry point
- * @see {@link tools/lib/spawn-registry-store.mjs} - Registry storage
+ * @see {@link packages/@lumenflow/cli/src/__tests__/orchestrate-monitor.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-monitor.test.ts} - Signal handler tests
+ * @see {@link packages/@lumenflow/cli/src/orchestrate-monitor.ts} - CLI entry point
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Registry storage
  */
 
 import fs from 'node:fs/promises';

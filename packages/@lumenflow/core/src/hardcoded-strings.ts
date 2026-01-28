@@ -290,7 +290,7 @@ export function findHardcodedPathViolations(
 }
 
 /**
- * Legacy function for backwards compatibility with gates-pre-commit.mjs
+ * Legacy function for backwards compatibility with gates-pre-commit.ts
  * Detects all hardcoded string patterns (not just paths)
  *
  * @deprecated Use findHardcodedPathViolations for path-specific detection

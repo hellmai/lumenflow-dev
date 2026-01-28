@@ -3,14 +3,14 @@
  * WU Lane Inference CLI (WU-908)
  *
  * Suggests sub-lane for a WU based on code paths and description.
- * Wrapper around lib/lane-inference.mjs for standalone CLI usage.
+ * Wrapper around lib/lane-inference.ts for standalone CLI usage.
  *
  * Usage:
  *   # Infer from existing WU
- *   node tools/wu-infer-lane.mjs --id WU-123
+ *   node tools/wu-infer-lane.ts --id WU-123
  *
  *   # Infer from manual inputs
- *   node tools/wu-infer-lane.mjs --paths "tools/**" "docs/**" --desc "Tooling improvements"
+ *   node tools/wu-infer-lane.ts --paths "tools/**" "docs/**" --desc "Tooling improvements"
  *
  * Returns suggested lane and confidence score (0-100).
  */

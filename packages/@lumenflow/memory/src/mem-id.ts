@@ -5,8 +5,8 @@
  * Format: mem-[4 hex chars] derived from content hash.
  * Supports hierarchical IDs (mem-a1b2.1.2) for sub-task decomposition.
  *
- * @see {@link tools/lib/__tests__/mem-id.test.mjs} - Tests
- * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/mem-id.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
 import { createHash } from 'node:crypto';
@@ -58,7 +58,7 @@ const ERROR_MESSAGES = {
  * @returns Memory ID in format mem-[a-f0-9]{4}
  *
  * @example
- * const id = generateMemId('discovered file at src/utils.mjs');
+ * const id = generateMemId('discovered file at src/utils.ts');
  * // Returns something like 'mem-a3f2'
  */
 export function generateMemId(content: string): string {
@@ -119,7 +119,7 @@ export interface MemIdValidationResult {
  * Validates a memory ID and extracts its components.
  *
  * Returns validation result with type classification and parsed components.
- * Compatible with MEMORY_PATTERNS.MEMORY_ID from memory-schema.mjs.
+ * Compatible with MEMORY_PATTERNS.MEMORY_ID from memory-schema.ts.
  *
  * @param id - Memory ID to validate
  * @returns Validation result with parsed components

@@ -11,9 +11,9 @@
  * - Validates node against memory-schema
  * - Supports discovered-from relationship for provenance tracking
  *
- * @see {@link tools/mem-create.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-create.test.mjs} - Tests
- * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/mem-create.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-create.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';
@@ -339,7 +339,7 @@ export interface CreateMemoryNodeResult {
  * @example
  * // Create a simple discovery node
  * const result = await createMemoryNode(baseDir, {
- *   title: 'Found relevant file at src/utils.mjs',
+ *   title: 'Found relevant file at src/utils.ts',
  *   type: 'discovery',
  *   wuId: 'WU-1469',
  * });

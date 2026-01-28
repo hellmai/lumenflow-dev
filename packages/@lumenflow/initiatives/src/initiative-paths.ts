@@ -3,7 +3,7 @@ import path from 'node:path';
 /**
  * Centralized path constants for Initiative management scripts.
  *
- * Mirrors wu-paths.mjs pattern. Single source of truth for all
+ * Mirrors wu-paths.ts pattern. Single source of truth for all
  * initiative-related file paths.
  *
  * @example

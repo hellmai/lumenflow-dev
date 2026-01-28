@@ -4,8 +4,8 @@
  * Zod schemas for spawn event validation.
  * Defines schema for tracking sub-agent spawns by orchestrators.
  *
- * @see {@link tools/lib/__tests__/spawn-registry-store.test.mjs} - Tests
- * @see {@link tools/lib/spawn-registry-store.mjs} - Store implementation
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-registry-store.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Store implementation
  */
 
 import { z } from 'zod';

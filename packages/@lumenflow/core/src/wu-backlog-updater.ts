@@ -1,7 +1,7 @@
 /**
  * Backlog.md Update Utilities
  *
- * Centralized backlog.md update functions (extracted from wu-done.mjs)
+ * Centralized backlog.md update functions (extracted from wu-done.ts)
  * Refactored to use BacklogManager (WU-1212) for AST-based manipulation
  *
  * Used by both main wu:done flow AND recovery mode (DRY principle)

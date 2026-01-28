@@ -1,14 +1,14 @@
 /**
  * Auto-Session Integration for wu:claim and wu:done lifecycle (WU-1438, WU-1466)
  *
- * Provides wrapper functions around agent-session.mjs that:
+ * Provides wrapper functions around agent-session.ts that:
  * 1. Auto-start sessions on wu:claim with silent no-op if already active
  * 2. Auto-end sessions on wu:done with silent no-op if not active
  * 3. Store session_id in WU YAML for tracking
  * 4. Create memory layer session nodes for context restoration (WU-1466)
  *
  * Design principles:
- * - Composition over modification (wraps existing agent-session.mjs)
+ * - Composition over modification (wraps existing agent-session.ts)
  * - Silent failures for idempotent operations (no throw on duplicate start/end)
  * - Configurable session directory for testing
  */
@@ -82,7 +82,7 @@ interface StartSessionResult {
 /**
  * Start a session for a WU (called by wu:claim)
  *
- * Unlike startSession in agent-session.mjs, this function:
+ * Unlike startSession in agent-session.ts, this function:
  * - Does NOT throw if a session already exists (returns existing session)
  * - Uses default tier 2 if not specified
  * - Supports custom session directory for testing
@@ -189,7 +189,7 @@ interface EndSessionResult {
 /**
  * End the current session (called by wu:done)
  *
- * Unlike endSession in agent-session.mjs, this function:
+ * Unlike endSession in agent-session.ts, this function:
  * - Does NOT throw if no active session (returns { ended: false })
  * - Returns structured result with summary
  * - Supports custom session directory for testing

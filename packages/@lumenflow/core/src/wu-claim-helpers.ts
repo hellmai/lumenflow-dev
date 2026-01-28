@@ -1,5 +1,5 @@
 /**
- * @file wu-claim-helpers.mjs
+ * @file wu-claim-helpers.ts
  * Helper functions for wu:claim (WU-1423)
  *
  * Extracted email validation logic for testability and SOLID compliance.

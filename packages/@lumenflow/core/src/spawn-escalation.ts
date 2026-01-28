@@ -14,9 +14,9 @@
  * 's custom spawn-registry.jsonl and memory bus patterns.
  * No external library exists for this domain-specific agent lifecycle management.
  *
- * @see {@link tools/lib/__tests__/spawn-escalation.test.mjs} - Tests
- * @see {@link tools/lib/spawn-recovery.mjs} - Recovery logic
- * @see {@link tools/lib/mem-signal-core.mjs} - Signal creation
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-escalation.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-recovery.ts} - Recovery logic
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-signal-core.ts} - Signal creation
  */
 
 import fs from 'node:fs/promises';

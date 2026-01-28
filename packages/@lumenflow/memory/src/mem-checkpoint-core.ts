@@ -11,9 +11,9 @@
  * - Auto-initializes memory layer if not present
  * - WU-1748: Persists to wu-events.jsonl for cross-agent visibility
  *
- * @see {@link tools/mem-checkpoint.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-checkpoint.test.mjs} - Tests
- * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/mem-checkpoint.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';

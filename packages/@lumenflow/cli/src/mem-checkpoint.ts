@@ -10,8 +10,8 @@
  * Usage:
  *   pnpm mem:checkpoint 'note' [--session <id>] [--wu <id>] [--progress <text>] [--next-steps <text>] [--trigger <type>] [--quiet]
  *
- * @see {@link tools/lib/mem-checkpoint-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-checkpoint.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-checkpoint-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

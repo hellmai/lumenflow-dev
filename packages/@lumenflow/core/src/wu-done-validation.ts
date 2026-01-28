@@ -337,7 +337,7 @@ export function validateTestPathsRequired(wu) {
 
 /**
  * WU-2310: Allowed path patterns for documentation WUs.
- * Mirrors the patterns in gates-pre-commit.mjs gateDocsOnlyPathEnforcement()
+ * Mirrors the patterns in gates-pre-commit.ts gateDocsOnlyPathEnforcement()
  * to enable early validation at preflight (before transaction starts).
  *
  * @constant {RegExp[]}

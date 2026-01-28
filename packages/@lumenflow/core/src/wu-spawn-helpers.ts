@@ -1,5 +1,5 @@
 /**
- * @file wu-spawn-helpers.mjs
+ * @file wu-spawn-helpers.ts
  * Helper functions for wu:spawn thinking mode and model configuration (WU-1577)
  *
  * Provides:

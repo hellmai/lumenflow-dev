@@ -13,7 +13,7 @@ import { BACKLOG_SECTIONS, STATUS_SECTIONS } from './wu-constants.js';
 
 /**
  * Default section headings (fallbacks when frontmatter is missing)
- * Re-exports from wu-constants.mjs for backwards compatibility
+ * Re-exports from wu-constants.ts for backwards compatibility
  */
 export const DEFAULT_SECTION_HEADINGS = {
   backlog: {

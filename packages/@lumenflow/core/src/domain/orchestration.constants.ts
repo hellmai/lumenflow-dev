@@ -5,8 +5,8 @@
  * Avoids magic numbers and hardcoded strings throughout the orchestration layer.
  *
  * @module orchestration.constants
- * @see {@link ../ports/dashboard-renderer.port.mjs} - Uses these constants
- * @see {@link ../ports/metrics-collector.port.mjs} - Uses these constants
+ * @see {@link ../ports/dashboard-renderer.port.ts} - Uses these constants
+ * @see {@link ../ports/metrics-collector.port.ts} - Uses these constants
  */
 
 /**

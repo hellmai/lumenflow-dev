@@ -12,8 +12,8 @@
  * - File locking with stale detection (WU-2240)
  * - Corruption recovery via repairStateFile (WU-2240)
  *
- * @see {@link tools/__tests__/state-store-concurrent.test.mjs} - Concurrent access tests
- * @see {@link tools/lib/wu-state-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/__tests__/state-store-concurrent.test.ts} - Concurrent access tests
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-state-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';

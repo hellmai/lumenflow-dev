@@ -652,7 +652,7 @@ export async function isBranchAlreadyMerged(branch) {
   }
 }
 
-// WU-1281: isDocsOnlyByPaths removed - use shouldSkipWebTests from path-classifiers.mjs
+// WU-1281: isDocsOnlyByPaths removed - use shouldSkipWebTests from path-classifiers.ts
 // The validators already use shouldSkipWebTests via detectDocsOnlyByPaths wrapper.
 // Keeping the export for backward compatibility but re-exporting the canonical function.
 export { shouldSkipWebTests as isDocsOnlyByPaths } from '@lumenflow/core/dist/path-classifiers.js';
@@ -715,7 +715,7 @@ function getCommitHeaderLimit() {
   }
 }
 
-// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+// ensureOnMain() moved to wu-helpers.ts (WU-1256)
 
 /**
  * Ensure working tree is clean before wu:done operations.
@@ -1122,7 +1122,7 @@ async function auditSkipCosGates(id, reason) {
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Skip-COS-gates event logged to ${auditPath}`);
 }
 
-// WU-2308: validateAllPreCommitHooks moved to wu-done-validators.mjs
+// WU-2308: validateAllPreCommitHooks moved to wu-done-validators.ts
 // Now accepts worktreePath parameter to run audit from worktree context
 
 /**
@@ -1303,13 +1303,13 @@ async function validateStagedFiles(id, isDocsOnly = false) {
 }
 
 // Note: updateStatusRemoveInProgress, addToStatusCompleted, and moveWUToDoneBacklog
-// have been extracted to tools/lib/wu-status-updater.mjs and imported above (WU-1163)
+// have been extracted to tools/lib/wu-status-updater.ts and imported above (WU-1163)
 //
-// Note: ensureStamp has been replaced with createStamp from tools/lib/stamp-utils.mjs (WU-1163)
+// Note: ensureStamp has been replaced with createStamp from tools/lib/stamp-utils.ts (WU-1163)
 //
 // Note: readWUPreferWorktree, detectCurrentWorktree, defaultWorktreeFrom, detectWorkspaceMode,
 // defaultBranchFrom, branchExists, runCleanup have been extracted to
-// tools/lib/wu-done-validators.mjs and imported above (WU-1215)
+// tools/lib/wu-done-validators.ts and imported above (WU-1215)
 
 /**
  * Validate Branch-Only mode requirements before proceeding
@@ -2403,7 +2403,7 @@ async function main() {
   // Allow pre-push hook to recognize wu:done automation (WU-1030)
   process.env.LUMENFLOW_WU_TOOL = 'wu-done';
 
-  // Validate CLI arguments and WU ID format (extracted to wu-done-validators.mjs)
+  // Validate CLI arguments and WU ID format (extracted to wu-done-validators.ts)
   const { args, id } = validateInputs(process.argv);
 
   // Detect workspace mode and calculate paths (WU-1215: extracted to validators module)

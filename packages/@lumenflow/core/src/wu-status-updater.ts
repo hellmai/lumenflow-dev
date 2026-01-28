@@ -1,7 +1,7 @@
 /**
  * Status.md Update Utilities
  *
- * Centralized status.md update functions (extracted from wu-done.mjs)
+ * Centralized status.md update functions (extracted from wu-done.ts)
  * Refactored to use frontmatter-based section headings (no magic strings)
  *
  * Used by both main wu:done flow AND recovery mode (DRY principle)
@@ -17,7 +17,7 @@ import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Remove WU from In Progress section (idempotent)
- * Refactored from wu-done.mjs line 471 to use frontmatter headings
+ * Refactored from wu-done.ts line 471 to use frontmatter headings
  *
  * @param {string} statusPath - Path to status.md
  * @param {string} id - WU ID
@@ -81,7 +81,7 @@ export function updateStatusRemoveInProgress(statusPath, id) {
 
 /**
  * Add WU to Completed section (idempotent - checks for duplicates)
- * Refactored from wu-done.mjs line 499 to use frontmatter headings
+ * Refactored from wu-done.ts line 499 to use frontmatter headings
  *
  * @param {string} statusPath - Path to status.md
  * @param {string} id - WU ID
