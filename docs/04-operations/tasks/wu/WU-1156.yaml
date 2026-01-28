@@ -7,7 +7,6 @@ priority: P2
 created: 2026-01-28
 code_paths:
   - .gitignore
-  - packages/@lumenflow/agent/.lumenflow/memory/memory.jsonl
 tests:
   manual:
     - Run gates and confirm git status remains clean
