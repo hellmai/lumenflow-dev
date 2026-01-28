@@ -219,7 +219,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
       `  pnpm wu:repair-claim --id ${id}\n\n` +
       `After repair, retry:\n` +
       `  pnpm wu:done --id ${id}\n\n` +
-      `See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md for more recovery options.`,
+      `See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery options.`,
   );
 }
 
@@ -976,7 +976,7 @@ async function ensureMainUpToDate() {
  * by calling /usr/bin/git directly or if PATH was not set up correctly.
  *
  * Context: WU-630 (detective layer, Layer 3 of 4)
- * See: docs/04-operations/_frameworks/lumenflow/02-playbook.md §4.6
+ * See: https://lumenflow.dev/reference/playbook/ §4.6
  */
 function runTripwireCheck() {
   const violations = scanLogForViolations();
@@ -1031,7 +1031,7 @@ function runTripwireCheck() {
   }
 
   console.error('📖 See detailed recovery steps:');
-  console.error('   docs/04-operations/_frameworks/lumenflow/02-playbook.md §4.6\n');
+  console.error('   https://lumenflow.dev/reference/playbook/ §4.6\n');
 
   console.error('🚫 DO NOT proceed with wu:done until violations are remediated.\n');
   console.error('Fix violations first, then retry wu:done.\n');
@@ -2333,7 +2333,7 @@ async function executeGates({
       console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} COS governance gates failed`);
       console.error('\nTo fix:');
       console.error('  1. Add required evidence to governance.evidence field in WU YAML');
-      console.error('  2. See: docs/04-operations/_frameworks/cos/evidence-format.md');
+      console.error('  2. See: https://lumenflow.dev/reference/evidence-format/');
       console.error('\nEmergency bypass (creates audit trail):');
       console.error(`  pnpm wu:done --id ${id} --skip-cos-gates --reason "explanation"`);
       die('Abort: WU not completed. Fix governance evidence and retry pnpm wu:done.');

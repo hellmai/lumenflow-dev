@@ -222,7 +222,7 @@ describe('dependency-guard', () => {
       const message = buildDependencyBlockMessage('pnpm add react');
 
       expect(message).toContain('CLAUDE.md');
-      expect(message).toContain('lumenflow-complete.md');
+      expect(message).toContain('https://lumenflow.dev/reference/lumenflow-complete/');
     });
 
     it('should explain consequences of running on main', () => {
