@@ -2,7 +2,7 @@ id: WU-1167
 title: Fix mem:cleanup require vs import error
 lane: 'Framework: Memory'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -40,3 +40,5 @@ description: "Context: The mem:cleanup command fails with 'ReferenceError: requi
 acceptance:
   - pnpm mem:cleanup --help returns exit code 0
   - pnpm mem:cleanup performs cleanup without crashing
+locked: true
+completed_at: 2026-01-28T14:10:51.130Z
