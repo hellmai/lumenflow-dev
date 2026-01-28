@@ -6,7 +6,7 @@ status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
-  - packages/@lumenflow/memory/src/**
+  - packages/@lumenflow/memory/src/mem-cleanup-core.ts
 tests:
   manual: []
   unit:
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-28T13:31:07.331Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-memory-wu-1167
+session_id: fa3feb73-5757-445a-a89c-c00e7de56098
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T13:31:07.336Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +38,3 @@ description: "Context: The mem:cleanup command fails with 'ReferenceError: requi
 acceptance:
   - pnpm mem:cleanup --help returns exit code 0
   - pnpm mem:cleanup performs cleanup without crashing
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-memory-wu-1167
-claimed_at: 2026-01-28T13:31:07.331Z
-baseline_main_sha: 793980e1b47d71e06212bb413b5fda969261f15c
-session_id: fa3feb73-5757-445a-a89c-c00e7de56098
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-28T13:31:07.336Z
