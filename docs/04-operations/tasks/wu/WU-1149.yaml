@@ -3,10 +3,12 @@ title: Add LUMENFLOW.md reference to vendor configs
 lane: 'Content: Documentation'
 type: documentation
 status: ready
-priority: P3
+priority: P2
 created: 2026-01-27
 code_paths:
   - .cursorrules
+  - .windsurfrules
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
 tests:
   manual:
     - Verify vendor configs reference both documents
@@ -25,7 +27,32 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update .windsurfrules and .cursorrules to reference LUMENFLOW.md after starting-prompt.md, aligning with .claude/CLAUDE.md wording
+description: >-
+  Current vendor configs (.cursorrules, .windsurfrules) are too sparse - they just point to
+  starting-prompt.md with no vendor-specific guidance. Additionally, starting-prompt.md doesn't
+  mention wu:spawn at all, causing agents to not know how to spawn sub-agents or what --client
+  values are valid.
+
+
+  Discovered via Cursor/Windsurf testing: one agent ran wu:spawn without --id, another used 'claude
+  code' as the client value.
+
+
+  AGENT INSTRUCTIONS:
+
+
+  1. Update .cursorrules with Cursor-specific guidance and wu:spawn --client cursor
+
+  2. Update .windsurfrules with Windsurf-specific guidance and wu:spawn --client windsurf  
+
+  3. Add wu:spawn section to starting-prompt.md with valid clients list
+
+  4. Document when to use wu:spawn (parallel sub-agents on same WU)
+
+  5. Add reference to LUMENFLOW.md in both vendor configs
 acceptance:
-  - Both .windsurfrules and .cursorrules mention LUMENFLOW.md
-  - Wording aligns with starting-prompt.md flow
+  - starting-prompt.md includes wu:spawn section with valid --client values
+  - .cursorrules has Cursor-specific guidance including wu:spawn --client cursor
+  - .windsurfrules has Windsurf-specific guidance including wu:spawn --client windsurf
+  - Both vendor configs reference LUMENFLOW.md after starting-prompt.md
+  - 'Valid client list documented: claude-code, cursor, windsurf, gemini-cli, copilot'
