@@ -306,3 +306,4 @@
 {"type":"claim","wuId":"WU-1162","timestamp":"2026-01-28T12:38:21.998Z","lane":"Framework: CLI","title":"Add internal pre-release validation script for hellmai/os"}
 {"type":"complete","wuId":"WU-1149","timestamp":"2026-01-28T12:40:38.351Z"}
 {"type":"claim","wuId":"WU-1161","lane":"Content: Documentation","title":"Document all CLI commands in README and verify completeness","timestamp":"2026-01-28T12:43:41.751Z"}
+{"type":"claim","wuId":"WU-1156","lane":"Framework: Agent","title":"Prevent agent memory logs from dirtying worktrees","timestamp":"2026-01-28T12:51:15.525Z"}
