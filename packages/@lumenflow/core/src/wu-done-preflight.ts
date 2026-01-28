@@ -101,7 +101,7 @@ export function buildPreflightCodePathErrorMessage(id, result) {
     errors,
     missingCodePaths = [],
     missingTestPaths = [],
-    suggestedTestPaths = {} as Record<string, string[]>
+    suggestedTestPaths = {} as Record<string, string[]>,
   } = result as { suggestedTestPaths?: Record<string, string[]> } & typeof result;
 
   let message = `
@@ -138,7 +138,7 @@ Fix options for missing test_paths:
   // Add suggested paths if available
   const suggestionsMap = suggestedTestPaths as Record<string, string[]>;
   const hasSuggestions = Object.keys(suggestionsMap).some(
-    (missingPath) => suggestionsMap[missingPath]?.length > 0
+    (missingPath) => suggestionsMap[missingPath]?.length > 0,
   );
 
   if (hasSuggestions) {
