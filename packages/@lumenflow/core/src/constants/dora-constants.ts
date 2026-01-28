@@ -2,7 +2,7 @@
  * DORA Metrics Constants
  *
  * Thresholds based on "Accelerate" research by Nicole Forsgren, Jez Humble, Gene Kim.
- * Used by calculate-dora-metrics.mjs.
+ * Used by calculate-dora-metrics.ts.
  */
 
 /** Deployment frequency classification thresholds (deploys per week) */

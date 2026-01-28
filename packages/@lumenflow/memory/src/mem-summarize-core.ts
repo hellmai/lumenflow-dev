@@ -10,8 +10,8 @@
  * - Respect lifecycle TTL (ephemeral, session, wu, project)
  * - Support dry-run mode for preview
  *
- * @see {@link tools/mem-summarize.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-summarize.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/mem-summarize.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-summarize.test.ts} - Tests
  */
 
 import { loadMemory, appendNode } from './memory-store.js';

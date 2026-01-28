@@ -2,7 +2,7 @@
  * WU Validation Constants (WU-1243)
  *
  * Centralizes magic numbers for lane inference and incident validation.
- * Extracted from lane-inference.mjs and agent-incidents.mjs for DRY compliance.
+ * Extracted from lane-inference.ts and agent-incidents.ts for DRY compliance.
  *
  * @module wu-validation-constants
  */
@@ -59,7 +59,7 @@ export const VALIDATION_LIMITS = {
 
 /**
  * Valid incident categories for agent issue logging.
- * Duplicated from agent-incidents.mjs z.enum for use in default arrays.
+ * Duplicated from agent-incidents.ts z.enum for use in default arrays.
  */
 export const INCIDENT_CATEGORIES = [
   'workflow',

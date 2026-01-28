@@ -3,9 +3,9 @@
  * Unified Code Path Validator (WU-1825)
  *
  * Consolidates three separate code path validators into one module:
- * - validateCodePathsExist (wu-done-validators.mjs) - file existence for wu:done
- * - validateLaneCodePaths (lane-validator.mjs) - lane pattern matching
- * - validateWUCodePaths (wu-validator.mjs) - code quality (TODOs, mocks)
+ * - validateCodePathsExist (wu-done-validators.ts) - file existence for wu:done
+ * - validateLaneCodePaths (lane-validator.ts) - lane pattern matching
+ * - validateWUCodePaths (wu-validator.ts) - code quality (TODOs, mocks)
  *
  * Usage:
  *   import { validate } from './code-path-validator.js';

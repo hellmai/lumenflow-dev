@@ -1,5 +1,5 @@
 /**
- * @file incremental-lint.mjs
+ * @file incremental-lint.ts
  * @description Incremental linting utilities for gates
  * WU-1304: Optimise ESLint gates performance
  *
@@ -18,7 +18,7 @@ export const LINTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.js'];
 
 /**
  * Directory patterns that should be ignored
- * Matches ESLint ignores in apps/web/eslint.config.mjs
+ * Matches ESLint ignores in apps/web/eslint.config.ts
  * @type {string[]}
  */
 const IGNORED_DIRECTORIES = [

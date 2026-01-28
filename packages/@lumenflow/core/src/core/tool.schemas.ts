@@ -6,7 +6,7 @@
  * outputs, and metadata. Supports JSON Schema export for provider adapters
  * (MCP, OpenAI, Gemini).
  *
- * Reference: tools/lib/arg-parser.mjs for current argument handling patterns
+ * Reference: tools/lib/arg-parser.ts for current argument handling patterns
  */
 
 import { z, type ZodTypeAny } from 'zod';

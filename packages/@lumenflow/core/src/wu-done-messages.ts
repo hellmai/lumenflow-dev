@@ -1,8 +1,8 @@
 /**
- * @file wu-done-messages.mjs
+ * @file wu-done-messages.ts
  * @description Constants and message templates for wu-done operations
  * WU-1159: Eliminate string literals (DRY/SOLID compliance)
- * WU-1281: Use centralized LOG_PREFIX and EMOJI from wu-constants.mjs
+ * WU-1281: Use centralized LOG_PREFIX and EMOJI from wu-constants.ts
  *
  * All log messages, error messages, and text templates extracted to constants.
  * Prevents duplication and makes text maintainable.

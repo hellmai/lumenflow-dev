@@ -7,8 +7,8 @@
  *
  * This is a NON-BLOCKING pre-flight check - it warns but doesn't fail wu:done.
  *
- * @see {@link tools/wu-done.mjs} - Integrates this as pre-flight check
- * @see {@link tools/lib/wu-constants.mjs} - Constants for log prefixes
+ * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Integrates this as pre-flight check
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-constants.ts} - Constants for log prefixes
  */
 
 import psList from 'ps-list';
@@ -16,7 +16,7 @@ import { LOG_PREFIX, EMOJI, PROCESS_DETECTION, STRING_LITERALS } from './wu-cons
 
 /**
  * Re-export interfering process names for external consumers.
- * Source of truth is PROCESS_DETECTION.INTERFERING_NAMES in wu-constants.mjs
+ * Source of truth is PROCESS_DETECTION.INTERFERING_NAMES in wu-constants.ts
  */
 export const INTERFERING_PROCESS_NAMES = PROCESS_DETECTION.INTERFERING_NAMES;
 
@@ -168,14 +168,14 @@ export async function detectBackgroundProcesses(worktreePath) {
 /**
  * Run background process detection as a pre-flight check.
  *
- * This is the main entry point for wu-done.mjs integration.
+ * This is the main entry point for wu-done.ts integration.
  * Logs warnings if background processes are detected but does NOT fail.
  *
  * @param {string} worktreePath - Path to the worktree directory
  * @returns {Promise<void>}
  *
  * @example
- * // In wu-done.mjs pre-flight checks:
+ * // In wu-done.ts pre-flight checks:
  * await runBackgroundProcessCheck(worktreePath);
  */
 export async function runBackgroundProcessCheck(worktreePath) {

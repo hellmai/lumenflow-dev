@@ -5,8 +5,8 @@
  * Uses minimatch for glob pattern matching (same as TypeScript version).
  *
  * @module orchestration-advisory-loader
- * @see {@link ./orchestration-advisory.mjs} - TypeScript version for tests
- * @see {@link ./domain/orchestration.constants.mjs} - Pattern definitions
+ * @see {@link ./orchestration-advisory.ts} - TypeScript version for tests
+ * @see {@link ./domain/orchestration.constants.ts} - Pattern definitions
  */
 
 import { minimatch } from 'minimatch';
@@ -14,7 +14,7 @@ import picocolors from 'picocolors';
 
 /**
  * Mandatory agent trigger patterns.
- * Mirrors MANDATORY_TRIGGERS from orchestration.constants.mjs.
+ * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
  */
 const MANDATORY_TRIGGERS = {
   'security-auditor': ['supabase/migrations/**', '**/auth/**', '**/rls/**', '**/permissions/**'],

@@ -4,8 +4,8 @@
  * Zod schema for runtime validation of Initiative YAML structure.
  * Part of the Initiative System Phase 1 - Schema & Validation Foundation.
  *
- * @see {@link tools/validate.mjs} - Consumer (CI validation)
- * @see {@link tools/lib/initiative-validator.mjs} - Consumer (dependency graph validation)
+ * @see {@link packages/@lumenflow/cli/src/validate.ts} - Consumer (CI validation)
+ * @see {@link packages/@lumenflow/cli/src/lib/initiative-validator.ts} - Consumer (dependency graph validation)
  * @see {@link docs/04-operations/tasks/initiatives/} - Initiative YAML files
  */
 

@@ -25,7 +25,7 @@ export const WU_LINT_ERROR_TYPES = {
 
 /**
  * Regex to detect file paths in acceptance criteria text
- * Matches patterns like: apps/web/src/file.ts, tools/lib/helper.mjs
+ * Matches patterns like: apps/web/src/file.ts, tools/lib/helper.ts
  * Uses explicit character sets to avoid regex backtracking issues
  */
 const FILE_PATH_PATTERN = /(?:^|[\s'"`])([a-zA-Z0-9_-]+\/[a-zA-Z0-9_./-]+\.[a-zA-Z0-9]+)/g;

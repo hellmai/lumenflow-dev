@@ -15,9 +15,9 @@
  * ExampleApp's custom spawn-registry.jsonl, lane-lock, and memory-store.
  * No external library exists for this domain-specific agent lifecycle management.
  *
- * @see {@link tools/lib/__tests__/spawn-recovery.test.mjs} - Tests
- * @see {@link tools/lib/spawn-monitor.mjs} - Monitoring logic
- * @see {@link tools/lib/spawn-registry-store.mjs} - Spawn state
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-recovery.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-monitor.ts} - Monitoring logic
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Spawn state
  */
 
 import fs from 'node:fs/promises';

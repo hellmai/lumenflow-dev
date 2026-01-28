@@ -2,7 +2,7 @@
  * WU Status Transition Module
  *
  * Shared logic for block/unblock status transitions.
- * Eliminates 90% code duplication between wu-block.mjs and wu-unblock.mjs.
+ * Eliminates 90% code duplication between wu-block.ts and wu-unblock.ts.
  *
  * Responsibilities:
  * - Validate state transitions (via state-machine)

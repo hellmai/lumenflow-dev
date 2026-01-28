@@ -2,7 +2,7 @@
  * Tokenizer Constants
  *
  * Configuration for token estimation in documentation files.
- * Used by token-count.mjs.
+ * Used by token-count.ts.
  */
 
 /** Token estimation configuration */

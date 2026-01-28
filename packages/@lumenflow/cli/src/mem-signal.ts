@@ -10,8 +10,8 @@
  * Usage:
  *   pnpm mem:signal 'message' [--wu <id>] [--lane <name>] [--quiet]
  *
- * @see {@link tools/lib/mem-signal-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-signal.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-signal-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-signal.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

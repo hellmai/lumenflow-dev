@@ -6,7 +6,7 @@
  * - Auto-tagging stale WUs (in_progress/ready too long without activity)
  * - Archiving old completed WUs (done for > N days)
  *
- * WU-1106: INIT-003 Phase 3b - Migrate from ExampleApp tools/backlog-prune.mjs
+ * WU-1106: INIT-003 Phase 3b - Migrate from ExampleApp tools/backlog-prune.ts
  *
  * Usage:
  *   pnpm backlog:prune           # Dry-run mode (shows what would be done)

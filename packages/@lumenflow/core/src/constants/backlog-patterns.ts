@@ -2,7 +2,7 @@
  * Backlog Parsing Patterns
  *
  * Centralizes patterns for parsing status.md and backlog.md files.
- * Used by lane-checker.mjs and related backlog utilities.
+ * Used by lane-checker.ts and related backlog utilities.
  */
 
 /** Markdown section header patterns for In Progress section */

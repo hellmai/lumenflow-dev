@@ -29,7 +29,7 @@
  *   pnpm initiative:edit --id INIT-001 --notes "Phase 2 started"
  *
  * Part of WU-1451: Add initiative:edit command for updating initiative status and blockers
- * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
+ * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';

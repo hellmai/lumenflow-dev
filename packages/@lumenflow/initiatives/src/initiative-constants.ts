@@ -1,7 +1,7 @@
 /**
  * Centralized constants for Initiative management scripts.
  *
- * Mirrors wu-constants.mjs pattern. Single source of truth for all
+ * Mirrors wu-constants.ts pattern. Single source of truth for all
  * initiative-related magic strings, patterns, and enums.
  *
  * @example

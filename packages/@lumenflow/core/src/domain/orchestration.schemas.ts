@@ -5,8 +5,8 @@
  * Single source of truth - types are inferred from these schemas.
  *
  * @module orchestration.schemas
- * @see {@link ./orchestration.types.mjs} - Types inferred from these schemas
- * @see {@link ./orchestration.constants.mjs} - Constants used in validation
+ * @see {@link ./orchestration.types.ts} - Types inferred from these schemas
+ * @see {@link ./orchestration.constants.ts} - Constants used in validation
  */
 
 import { z } from 'zod';

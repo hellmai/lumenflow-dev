@@ -32,11 +32,11 @@
  * - Standard WUs: changed tests + safety-critical tests
  *
  * Usage:
- *   node tools/gates.mjs                        # Tiered gates (default)
- *   node tools/gates.mjs --docs-only            # Docs-only gates
- *   node tools/gates.mjs --full-lint            # Full lint (bypass incremental)
- *   node tools/gates.mjs --full-tests           # Full tests (bypass incremental)
- *   node tools/gates.mjs --coverage-mode=block  # Coverage gate in block mode
+ *   node tools/gates.ts                        # Tiered gates (default)
+ *   node tools/gates.ts --docs-only            # Docs-only gates
+ *   node tools/gates.ts --full-lint            # Full lint (bypass incremental)
+ *   node tools/gates.ts --full-tests           # Full tests (bypass incremental)
+ *   node tools/gates.ts --coverage-mode=block  # Coverage gate in block mode
  */
 
 import { execSync, spawnSync } from 'node:child_process';
@@ -230,10 +230,10 @@ const PRETTIER_CONFIG_FILES = new Set([
   '.prettierrc.yml',
   '.prettierrc.js',
   '.prettierrc.cjs',
-  '.prettierrc.mjs',
+  '.prettierrc.ts',
   'prettier.config.js',
   'prettier.config.cjs',
-  'prettier.config.mjs',
+  'prettier.config.ts',
   '.prettierignore',
 ]);
 

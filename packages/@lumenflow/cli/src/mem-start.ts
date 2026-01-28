@@ -10,8 +10,8 @@
  * Usage:
  *   pnpm mem:start --wu WU-1234 [--agent-type <type>] [--context-tier <tier>] [--quiet]
  *
- * @see {@link tools/lib/mem-start-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-start.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-start-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-start.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

@@ -16,7 +16,7 @@ import { STDIO, PKG_MANAGER, SCRIPTS, PRETTIER_FLAGS } from './wu-constants.js';
  * Pathspecs for files that affect generated documentation.
  * When any of these files change, docs:generate should be run.
  *
- * Based on .husky/hooks/docs-sync.mjs patterns, expanded to match
+ * Based on .husky/hooks/docs-sync.ts patterns, expanded to match
  * all files that can affect CLI/config documentation.
  */
 export const DOC_SOURCE_PATHSPECS = [

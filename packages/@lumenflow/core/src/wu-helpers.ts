@@ -19,8 +19,8 @@ import { isAgentBranchWithDetails } from './branch-check.js';
 /**
  * Validate WU ID format
  *
- * WU-1593: Extracted from duplicate implementations in wu-create.mjs and wu-edit.mjs (DRY).
- * Uses centralized PATTERNS.WU_ID regex from wu-constants.mjs.
+ * WU-1593: Extracted from duplicate implementations in wu-create.ts and wu-edit.ts (DRY).
+ * Uses centralized PATTERNS.WU_ID regex from wu-constants.ts.
  *
  * @param {string} id - WU ID to validate (e.g., 'WU-123')
  * @throws {Error} If ID format is invalid

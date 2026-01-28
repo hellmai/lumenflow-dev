@@ -1,19 +1,19 @@
 /**
- * @file error-handler.mjs
+ * @file error-handler.ts
  * @description Structured error handling with error codes
  * WU-1082: Extract shared utilities (eliminate die() duplication)
  * WU-1006: Library-First - use path.basename() instead of manual split
  *
  * Replaces die() function in:
- * - tools/wu-claim.mjs
- * - tools/wu-done.mjs
- * - tools/wu-block.mjs
- * - tools/wu-unblock.mjs
- * - tools/wu-create.mjs
- * - tools/wu-cleanup.mjs
- * - tools/gates-pre-commit.mjs
- * - tools/validate.mjs
- * - tools/guard-worktree-commit.mjs
+ * - tools/wu-claim.ts
+ * - tools/wu-done.ts
+ * - tools/wu-block.ts
+ * - tools/wu-unblock.ts
+ * - tools/wu-create.ts
+ * - tools/wu-cleanup.ts
+ * - tools/gates-pre-commit.ts
+ * - tools/validate.ts
+ * - tools/guard-worktree-commit.ts
  */
 
 import path from 'node:path';

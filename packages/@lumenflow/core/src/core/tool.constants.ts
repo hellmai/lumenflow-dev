@@ -66,7 +66,7 @@ export const PERMISSION_LEVELS = {
 export type PermissionLevel = (typeof PERMISSION_LEVELS)[keyof typeof PERMISSION_LEVELS];
 
 /**
- * Tool error codes (extends existing ErrorCodes from error-handler.mjs)
+ * Tool error codes (extends existing ErrorCodes from error-handler.ts)
  */
 export const TOOL_ERROR_CODES = {
   /** Tool not found in registry */

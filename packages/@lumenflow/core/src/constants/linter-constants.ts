@@ -2,7 +2,7 @@
  * Linter Configuration Constants
  *
  * Centralizes magic numbers for spec-linter and related validation tools.
- * Used by packages/linters/spec-linter.mjs.
+ * Used by packages/linters/spec-linter.ts.
  */
 
 /** Spec linter configuration */

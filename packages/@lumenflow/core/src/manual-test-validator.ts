@@ -11,7 +11,7 @@
  * - type: documentation only
  * - code_paths containing only documentation/config files (no code files)
  *
- * @see {@link tools/lib/wu-done-validators.mjs} - Integration point
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-done-validators.ts} - Integration point
  * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - TDD requirements
  */
 
@@ -22,7 +22,7 @@ import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
  * Code file extensions that require automated tests.
  * @constant {string[]}
  */
-const CODE_EXTENSIONS = Object.freeze(['.js', '.ts', '.tsx', '.mjs']);
+const CODE_EXTENSIONS = Object.freeze(['.js', '.ts', '.tsx', '.ts']);
 
 /**
  * Non-code file extensions (documentation, data, config).
@@ -75,7 +75,7 @@ export const EXEMPT_TYPES = Object.freeze([WU_TYPES.DOCUMENTATION]);
 /**
  * Determine if a file path represents a code file requiring automated tests.
  *
- * Code files are those with extensions like .mjs, .ts, .tsx, .js
+ * Code files are those with extensions like .ts, .ts, .tsx, .js
  * EXCEPT config files (vitest.config.ts, .eslintrc.js, etc.)
  *
  * @param {string} filePath - File path to check

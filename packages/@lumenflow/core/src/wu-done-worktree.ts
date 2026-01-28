@@ -2,7 +2,7 @@
 
 /**
  * Worktree mode completion workflow for wu:done
- * Extracted from wu-done.mjs (WU-1215 refactoring)
+ * Extracted from wu-done.ts (WU-1215 refactoring)
  * Updated in WU-1369 to use atomic transaction pattern.
  *
  * Flow (WU-1369 Atomic Pattern):

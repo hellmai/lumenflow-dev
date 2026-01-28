@@ -1,5 +1,5 @@
 /**
- * @file worktree-guard.mjs
+ * @file worktree-guard.ts
  * @description WU context validation and main branch protection (WU-1396)
  *
  * Provides runtime guards to enforce worktree discipline:

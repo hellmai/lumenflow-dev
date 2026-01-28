@@ -6,10 +6,10 @@
  * implementations are coupled.
  *
  * @module orchestration-di
- * @see {@link ./ports/metrics-collector.port.mjs} - Input port
- * @see {@link ./ports/dashboard-renderer.port.mjs} - Output port
- * @see {@link ./adapters/filesystem-metrics.adapter.mjs} - Input adapter
- * @see {@link ./adapters/terminal-renderer.adapter.mjs} - Output adapter
+ * @see {@link ./ports/metrics-collector.port.ts} - Input port
+ * @see {@link ./ports/dashboard-renderer.port.ts} - Output port
+ * @see {@link ./adapters/filesystem-metrics.adapter.ts} - Input adapter
+ * @see {@link ./adapters/terminal-renderer.adapter.ts} - Output adapter
  */
 
 import { FileSystemMetricsCollector } from './adapters/filesystem-metrics.adapter.js';

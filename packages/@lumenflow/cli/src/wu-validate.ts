@@ -11,7 +11,7 @@
  *   pnpm wu:validate --all               # Validate all WUs
  *   pnpm wu:validate --all --strict      # Fail on warnings too
  *
- * @see {@link tools/lib/wu-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - Schema definitions
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';

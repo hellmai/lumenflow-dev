@@ -9,7 +9,7 @@
  * - Lifecycles (4 levels: ephemeral, session, wu, project)
  * - Relationships (4 types: blocks, parent_child, related, discovered_from)
  *
- * @see {@link tools/lib/__tests__/memory-schema.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/memory-schema.test.ts} - Tests
  */
 
 import { z } from 'zod';

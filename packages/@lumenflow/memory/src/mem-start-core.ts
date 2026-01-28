@@ -10,9 +10,9 @@
  * - Idempotent: multiple starts create separate sessions
  * - Auto-initializes memory layer if not present
  *
- * @see {@link tools/mem-start.mjs} - CLI wrapper
- * @see {@link tools/__tests__/mem-start.test.mjs} - Tests
- * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/mem-start.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-start.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
 import { randomUUID } from 'node:crypto';

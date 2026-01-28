@@ -10,7 +10,7 @@
  *
  * LIBRARY-FIRST: No general-purpose library exists for project-specific log
  * aggregation across custom log locations. Uses native JSON.parse like existing
- * tail-logs.mjs in the codebase.
+ * tail-logs.ts in the codebase.
  *
  * @see docs/02-technical/standards/logging.md
  */

@@ -1,5 +1,5 @@
 /**
- * @file scope-checker.mjs
+ * @file scope-checker.ts
  * @description WU scope validation and code_paths enforcement (WU-1397)
  *
  * Provides runtime validation that file modifications stay within WU code_paths.
@@ -13,8 +13,8 @@
  *
  * Used by wu- scripts and future file operation guards.
  *
- * @see {@link tools/lib/core/worktree-guard.mjs} - WU context detection
- * @see {@link tools/lib/wu-schema.mjs} - WU YAML parsing
+ * @see {@link packages/@lumenflow/cli/src/lib/core/worktree-guard.ts} - WU context detection
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - WU YAML parsing
  */
 
 import micromatch from 'micromatch';

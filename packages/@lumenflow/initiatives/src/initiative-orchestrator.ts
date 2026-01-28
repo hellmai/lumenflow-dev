@@ -15,9 +15,9 @@
  * - Wave manifest files for idempotent resumption
  * - Compact output for token discipline
  *
- * @see {@link tools/orchestrate-initiative.mjs} - CLI entry point
- * @see {@link tools/lib/initiative-yaml.mjs} - Initiative loading
- * @see {@link tools/lib/dependency-graph.mjs} - Dependency graph utilities
+ * @see {@link packages/@lumenflow/cli/src/orchestrate-initiative.ts} - CLI entry point
+ * @see {@link packages/@lumenflow/cli/src/lib/initiative-yaml.ts} - Initiative loading
+ * @see {@link packages/@lumenflow/cli/src/lib/dependency-graph.ts} - Dependency graph utilities
  */
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from 'node:fs';

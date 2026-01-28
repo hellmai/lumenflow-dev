@@ -10,7 +10,7 @@
  * - ORPHAN_WORKTREE_DONE: Done WU still has worktree
  * - STAMP_EXISTS_YAML_NOT_DONE: Stamp exists but YAML status is not done (WU-2412)
  *
- * @see {@link ../wu-repair.mjs} CLI interface
+ * @see {@link ../wu-repair.ts} CLI interface
  */
 
 import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';

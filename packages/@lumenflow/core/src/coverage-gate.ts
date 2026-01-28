@@ -9,7 +9,7 @@
  * - warn: Log failures but don't block (default)
  * - block: Fail the gate if thresholds not met
  *
- * @see {@link tools/gates.mjs} - Integration point
+ * @see {@link packages/@lumenflow/cli/src/gates.ts} - Integration point
  * @see {@link vitest.config.ts} - Coverage thresholds
  */
 

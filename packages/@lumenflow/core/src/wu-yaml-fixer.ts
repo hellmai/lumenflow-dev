@@ -10,15 +10,15 @@
  * - docs → documentation (type field)
  * - String numbers → number (phase field)
  *
- * @see {@link tools/lib/wu-schema.mjs} - WU schema definition
- * @see {@link tools/wu-claim.mjs} - Consumer
+ * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - WU schema definition
+ * @see {@link packages/@lumenflow/cli/src/wu-claim.ts} - Consumer
  */
 
 import { readFileSync, writeFileSync, copyFileSync } from 'node:fs';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
 import { DEFAULTS, STRING_LITERALS } from './wu-constants.js';
 
-// Valid type values from wu-schema.mjs
+// Valid type values from wu-schema.ts
 const VALID_TYPES = ['feature', 'bug', 'documentation', 'process', 'tooling', 'chore', 'refactor'];
 
 // Common type aliases that should be auto-fixed

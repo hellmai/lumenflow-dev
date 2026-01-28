@@ -3,7 +3,7 @@
  * Lane Occupancy Checker
  *
  * Enforces one-WU-per-lane rule by checking status.md for active WUs in a given lane.
- * Used by wu-claim.mjs and wu-unblock.mjs to prevent WIP violations.
+ * Used by wu-claim.ts and wu-unblock.ts to prevent WIP violations.
  */
 
 import { existsSync, readFileSync } from 'node:fs';

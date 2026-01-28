@@ -55,7 +55,7 @@ export interface InitiativeEntry {
 /**
  * Initiative YAML I/O module.
  *
- * Mirrors wu-yaml.mjs pattern. Provides validated read/write operations
+ * Mirrors wu-yaml.ts pattern. Provides validated read/write operations
  * for Initiative YAML files.
  *
  * @example

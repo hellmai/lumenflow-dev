@@ -9,8 +9,8 @@
  * - Indexed lookups by ID and WU
  * - Deterministic queryReady() ordering by priority then createdAt
  *
- * @see {@link tools/lib/__tests__/memory-store.test.mjs} - Tests
- * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/memory-store.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';

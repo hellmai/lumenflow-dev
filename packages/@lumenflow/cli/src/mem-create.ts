@@ -11,8 +11,8 @@
  * Usage:
  *   pnpm mem:create 'title' [--type <type>] [--discovered-from <id>] [--wu <id>] [--quiet]
  *
- * @see {@link tools/lib/mem-create-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-create.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-create-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-create.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

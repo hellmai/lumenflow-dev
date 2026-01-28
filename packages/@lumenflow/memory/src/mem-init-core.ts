@@ -4,9 +4,9 @@
  * Core logic for initializing memory layer in a repository.
  * Creates .lumenflow/memory/ directory with empty memory.jsonl and config.yaml.
  *
- * @see {@link tools/__tests__/mem-init.test.mjs} - Tests
- * @see {@link tools/lib/memory-store.mjs} - Memory store operations
- * @see {@link tools/lib/memory-schema.mjs} - Memory schema definitions
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-init.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-store.ts} - Memory store operations
+ * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Memory schema definitions
  */
 
 import fs from 'node:fs/promises';

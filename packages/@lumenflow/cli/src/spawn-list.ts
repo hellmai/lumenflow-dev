@@ -10,8 +10,8 @@
  *   pnpm spawn:list --initiative INIT-XXX # All spawns in an initiative
  *   pnpm spawn:list --json               # JSON output
  *
- * @see {@link tools/lib/spawn-tree.mjs} - Tree builder
- * @see {@link tools/__tests__/spawn-list.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/spawn-tree.ts} - Tree builder
+ * @see {@link packages/@lumenflow/cli/src/__tests__/spawn-list.test.ts} - Tests
  */
 
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';

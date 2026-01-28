@@ -2,7 +2,7 @@
 
 /**
  * PR mode completion workflow for wu:done
- * Extracted from wu-done.mjs (WU-1215 refactoring)
+ * Extracted from wu-done.ts (WU-1215 refactoring)
  *
  * PR mode creates a GitHub PR instead of auto-merging to main.
  * Used for:

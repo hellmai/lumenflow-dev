@@ -23,8 +23,8 @@
  *   pnpm mem:cleanup --session-id <uuid>      # Close specific session
  *   pnpm mem:cleanup --json                   # Output as JSON
  *
- * @see {@link tools/lib/mem-cleanup-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-cleanup.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-cleanup-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-cleanup.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

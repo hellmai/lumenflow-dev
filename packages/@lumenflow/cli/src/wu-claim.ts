@@ -8,7 +8,7 @@
  * 3) Create a dedicated worktree+branch for the WU
  *
  * Usage:
- *   node tools/wu-claim.mjs --id WU-334 --lane Intelligence \
+ *   node tools/wu-claim.ts --id WU-334 --lane Intelligence \
  *     [--worktree worktrees/intelligence-wu-334] [--branch lane/intelligence/wu-334]
  *
  * WU-2542: This script imports utilities from @lumenflow/core package.
@@ -23,7 +23,7 @@ import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { access, readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isOrphanWorktree } from '@lumenflow/core/dist/orphan-detector.js';
-// WU-1352: Use centralized YAML functions from wu-yaml.mjs
+// WU-1352: Use centralized YAML functions from wu-yaml.ts
 import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { assertTransition } from '@lumenflow/core/dist/state-machine.js';
 import { checkLaneFree, validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
@@ -96,7 +96,7 @@ import {
   createHandoffCheckpoint,
 } from '@lumenflow/core/dist/wu-claim-resume.js';
 
-// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+// ensureOnMain() moved to wu-helpers.ts (WU-1256)
 
 async function ensureCleanOrClaimOnlyWhenNoAuto() {
   // Require staged claim edits only if running with --no-auto
@@ -593,7 +593,7 @@ async function readWUTitle(id) {
   return m ? m[1] : null;
 }
 
-// emitWUFlowEvent() moved to telemetry.mjs as emitWUFlowEvent() (WU-1256)
+// emitWUFlowEvent() moved to telemetry.ts as emitWUFlowEvent() (WU-1256)
 
 /**
  * Check if there's already a Branch-Only WU in progress

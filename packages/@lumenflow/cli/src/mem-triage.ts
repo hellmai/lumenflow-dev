@@ -16,8 +16,8 @@
  *   pnpm mem:triage --promote mem-aaa1 --lane "Operations: Tooling"
  *   pnpm mem:triage --archive mem-aaa1 --reason "Duplicate"
  *
- * @see {@link tools/lib/mem-triage-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-triage.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-triage-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-triage.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

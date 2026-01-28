@@ -5,8 +5,8 @@
  * Single source of truth - schemas validate at runtime, types at compile time.
  *
  * @module orchestration.types
- * @see {@link ./orchestration.schemas.mjs} - Schemas these types are inferred from
- * @see {@link ./orchestration.constants.mjs} - Constants and derived types
+ * @see {@link ./orchestration.schemas.ts} - Schemas these types are inferred from
+ * @see {@link ./orchestration.constants.ts} - Constants and derived types
  */
 
 import type { z } from 'zod';

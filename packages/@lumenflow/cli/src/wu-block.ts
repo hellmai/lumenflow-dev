@@ -49,9 +49,9 @@ import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
 // WU-1603: Atomic lane locking - release lock when WU is blocked
 import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
 
-// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
-// ensureStaged() moved to git-staged-validator.mjs (WU-1341)
-// defaultWorktreeFrom() moved to wu-paths.mjs (WU-1341)
+// ensureOnMain() moved to wu-helpers.ts (WU-1256)
+// ensureStaged() moved to git-staged-validator.ts (WU-1341)
+// defaultWorktreeFrom() moved to wu-paths.ts (WU-1341)
 
 /**
  * Remove WU entry from in-progress section of lines array

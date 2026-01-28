@@ -1,20 +1,20 @@
 /**
- * @file git-adapter.mjs
+ * @file git-adapter.ts
  * @description Git operations adapter using simple-git library
  * WU-1082: Extract shared utilities (eliminate run() duplication)
  * WU-1213: Refactor to use simple-git library (eliminate execSync)
  * WU-2242: Add runtime type assertions to prevent silent API misuse
  *
  * Replaces run() function in:
- * - tools/wu-claim.mjs
- * - tools/wu-done.mjs
- * - tools/wu-block.mjs
- * - tools/wu-unblock.mjs
- * - tools/wu-create.mjs
- * - tools/wu-cleanup.mjs
- * - tools/gates-pre-commit.mjs
- * - tools/validate.mjs
- * - tools/guard-worktree-commit.mjs
+ * - tools/wu-claim.ts
+ * - tools/wu-done.ts
+ * - tools/wu-block.ts
+ * - tools/wu-unblock.ts
+ * - tools/wu-create.ts
+ * - tools/wu-cleanup.ts
+ * - tools/gates-pre-commit.ts
+ * - tools/validate.ts
+ * - tools/guard-worktree-commit.ts
  */
 
 import { simpleGit, type SimpleGit } from 'simple-git';
@@ -440,7 +440,7 @@ export class GitAdapter {
    * Get commit log
    *
    * WU-1749: Bug 4 fix - Add log() method for counting commits.
-   * Used by wu-done-retry-helpers.mjs to count previous completion attempts.
+   * Used by wu-done-retry-helpers.ts to count previous completion attempts.
    *
    * @param {object} [options] - Log options
    * @param {number} [options.maxCount] - Maximum number of commits to return

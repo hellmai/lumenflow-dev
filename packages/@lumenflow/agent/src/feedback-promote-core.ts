@@ -4,8 +4,8 @@
  * Generates draft WU specs from feedback patterns and promotes them to actual WUs.
  * Tracks incident-to-WU mappings in feedback-index.ndjson.
  *
- * @see {@link tools/__tests__/feedback-promote.test.mjs} - Tests
- * @see {@link tools/feedback-promote.mjs} - CLI entry point
+ * @see {@link packages/@lumenflow/cli/src/__tests__/feedback-promote.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/feedback-promote.ts} - CLI entry point
  */
 
 import fs from 'node:fs/promises';

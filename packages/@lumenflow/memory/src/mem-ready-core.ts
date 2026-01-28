@@ -16,8 +16,8 @@
  * - Lifecycle is not `ephemeral`
  * - Status is not `closed` (metadata.status !== 'closed')
  *
- * @see {@link tools/mem-ready.mjs} - CLI implementation
- * @see {@link tools/__tests__/mem-ready.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/mem-ready.ts} - CLI implementation
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-ready.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';

@@ -1,7 +1,7 @@
 /**
  * Micro-Worktree Operations
  *
- * Race-safe micro-worktree isolation pattern extracted from wu-create.mjs (WU-1262).
+ * Race-safe micro-worktree isolation pattern extracted from wu-create.ts (WU-1262).
  * Provides shared infrastructure for commands that need to modify main branch
  * atomically without switching checkout.
  *
@@ -23,9 +23,9 @@
  * - Cleanup guaranteed even on failure
  *
  * Consumers:
- * @see {@link tools/wu-create.mjs} - WU creation (WU-1262, WU-1439)
- * @see {@link tools/wu-edit.mjs} - Spec edits (WU-1274)
- * @see {@link tools/initiative-create.mjs} - Initiative creation (WU-1439)
+ * @see {@link packages/@lumenflow/cli/src/wu-create.ts} - WU creation (WU-1262, WU-1439)
+ * @see {@link packages/@lumenflow/cli/src/wu-edit.ts} - Spec edits (WU-1274)
+ * @see {@link packages/@lumenflow/cli/src/initiative-create.ts} - Initiative creation (WU-1439)
  */
 
 import { getGitForCwd, createGitForPath } from './git-adapter.js';

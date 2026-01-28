@@ -7,12 +7,12 @@
  * - Admin repair (--admin mode): administrative fixes for done WUs
  *
  * This module consolidates logic from:
- * - wu-consistency-checker.mjs (consistency checks)
- * - wu-repair-claim.mjs (claim metadata repair)
- * - wu-admin-repair.mjs (admin fixes)
- * - wu-recovery.mjs (zombie state recovery)
+ * - wu-consistency-checker.ts (consistency checks)
+ * - wu-repair-claim.ts (claim metadata repair)
+ * - wu-admin-repair.ts (admin fixes)
+ * - wu-recovery.ts (zombie state recovery)
  *
- * @see {@link ../wu-repair.mjs} - Unified CLI interface
+ * @see {@link ../wu-repair.ts} - Unified CLI interface
  */
 
 import path from 'node:path';
@@ -43,7 +43,7 @@ import { normalizeToDateString } from './date-utils.js';
 // Re-export for backwards compatibility
 export { checkWUConsistency, checkAllWUConsistency, repairWUInconsistency };
 
-// Re-export recovery utilities from wu-recovery.mjs
+// Re-export recovery utilities from wu-recovery.ts
 export {
   detectZombieState,
   recoverZombieState,

@@ -10,8 +10,8 @@
  *
  * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
- * @see {@link tools/lib/mem-ready-core.mjs} - Core logic
- * @see {@link tools/__tests__/mem-ready.test.mjs} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/mem-ready-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/cli/src/__tests__/mem-ready.test.ts} - Tests
  */
 
 import fs from 'node:fs/promises';
