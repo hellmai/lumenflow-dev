@@ -2,7 +2,7 @@ id: WU-1169
 title: Prevent wu:done rollback on uncommitted changes
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-01-28
 code_paths:
@@ -39,3 +39,5 @@ session_id: eaea8dcf-54af-45e5-9352-9d95cc2cc3a3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T21:29:35.398Z
+locked: true
+completed_at: 2026-01-28T22:30:43.411Z
