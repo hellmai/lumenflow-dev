@@ -26,7 +26,6 @@ sections:
 - [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml) — Framework: Agent
 - [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml) — Framework: CLI
 - [WU-1161 — Document all CLI commands in README and verify completeness](wu/WU-1161.yaml) — Content: Documentation
-- [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — Framework: CLI
 - [WU-1164 — Add pre-commit hook validation for WU YAML files](wu/WU-1164.yaml) — Framework: Core
 
 ## 🔧 In progress
@@ -36,6 +35,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml) — Framework: Core
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
+- [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
