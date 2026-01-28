@@ -6,6 +6,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { FILE_SYSTEM } from '../wu-constants.js';
+import { createWuPaths } from '../wu-paths.js';
 
 export interface BacklogSyncResult {
   valid: boolean;
@@ -47,8 +48,9 @@ export async function validateBacklogSync(
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const backlogPath = path.join(cwd, 'docs', '04-operations', 'tasks', 'backlog.md');
-  const wuDir = path.join(cwd, 'docs', '04-operations', 'tasks', 'wu');
+  const paths = createWuPaths({ projectRoot: cwd });
+  const backlogPath = path.join(cwd, paths.BACKLOG());
+  const wuDir = path.join(cwd, paths.WU_DIR());
 
   if (!existsSync(backlogPath)) {
     errors.push(`Backlog file not found: ${backlogPath}`);

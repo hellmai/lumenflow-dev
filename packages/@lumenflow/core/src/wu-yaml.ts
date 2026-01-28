@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { parse, stringify } from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
 import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 
 /**
  * Unified WU YAML I/O module.
@@ -226,7 +227,8 @@ export function appendNote(doc, note) {
  * @throws {Error} if WU file not found
  */
 export function appendAgentSession(wuId, sessionData) {
-  const wuPath = `docs/04-operations/tasks/wu/${wuId}.yaml`;
+  const paths = createWuPaths();
+  const wuPath = paths.WU(wuId);
 
   if (!existsSync(wuPath)) {
     throw new Error(`WU file not found: ${wuPath}`);

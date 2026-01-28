@@ -8,8 +8,8 @@ import {
   BRANCHES,
   STRING_LITERALS,
   EXIT_CODES,
-  LUMENFLOW_PATHS,
 } from '@lumenflow/core/lib/wu-constants.js';
+import { createWuPaths } from '@lumenflow/core/lib/wu-paths.js';
 
 function run(cmd: string): string {
   try {
@@ -48,21 +48,27 @@ function checkGitStatus(runFn: RunFn = run): string | null {
   return `Working tree dirty (stage or discard changes): ${lines.join('; ')}`;
 }
 
-function stampPath(wuId: string): string {
-  return path.join(LUMENFLOW_PATHS.STAMPS_DIR, `${wuId}.done`);
+function stampPath(wuId: string, paths: ReturnType<typeof createWuPaths>): string {
+  return paths.STAMP(wuId);
 }
 
-function checkStamp(wuId: string, existsFn: ExistsFn = existsSync): string | null {
-  if (existsFn(stampPath(wuId))) return null;
-  return `Missing stamp ${LUMENFLOW_PATHS.STAMPS_DIR}/${wuId}.done`;
+function checkStamp(
+  wuId: string,
+  paths: ReturnType<typeof createWuPaths>,
+  existsFn: ExistsFn = existsSync,
+): string | null {
+  if (existsFn(stampPath(wuId, paths))) return null;
+  return `Missing stamp ${paths.STAMPS_DIR()}/${wuId}.done`;
 }
 
-function checkCommit(wuId: string, runFn: RunFn = run): string | null {
-  const history = runFn(
-    `git log --oneline ${BRANCHES.MAIN} -- docs/04-operations/tasks/wu/${wuId}.yaml | head -n 1`,
-  );
+function checkCommit(
+  wuId: string,
+  paths: ReturnType<typeof createWuPaths>,
+  runFn: RunFn = run,
+): string | null {
+  const history = runFn(`git log --oneline ${BRANCHES.MAIN} -- ${paths.WU(wuId)} | head -n 1`);
   if (history) return null;
-  return `No commit on ${BRANCHES.MAIN} touching docs/04-operations/tasks/wu/${wuId}.yaml`;
+  return `No commit on ${BRANCHES.MAIN} touching ${paths.WU(wuId)}`;
 }
 
 /**
@@ -79,6 +85,7 @@ export interface VerificationResult {
 interface VerificationOverrides {
   run?: RunFn;
   exists?: ExistsFn;
+  projectRoot?: string;
 }
 
 /**
@@ -104,14 +111,15 @@ export function verifyWUComplete(
     typeof overrides.exists === 'function'
       ? overrides.exists
       : (filePath: string) => existsSync(filePath);
+  const paths = createWuPaths({ projectRoot: overrides.projectRoot });
 
   const gitStatusFailure = checkGitStatus(runFn);
   if (gitStatusFailure) failures.push(gitStatusFailure);
 
-  const stampFailure = checkStamp(normalized, existsFn);
+  const stampFailure = checkStamp(normalized, paths, existsFn);
   if (stampFailure) failures.push(stampFailure);
 
-  const commitFailure = checkCommit(normalized, runFn);
+  const commitFailure = checkCommit(normalized, paths, runFn);
   if (commitFailure) failures.push(commitFailure);
 
   return {

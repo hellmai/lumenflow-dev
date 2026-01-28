@@ -23,6 +23,7 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[initiative:bulk-assign]';
@@ -30,11 +31,13 @@ const LOG_PREFIX = '[initiative:bulk-assign]';
 /** Default lane bucket configuration path */
 const DEFAULT_CONFIG_PATH = 'tools/config/initiative-lane-buckets.yaml';
 
+const wuPaths = createWuPaths();
+
 /** WU directory relative to repo root */
-const WU_DIR = 'docs/04-operations/tasks/wu';
+const WU_DIR = wuPaths.WU_DIR();
 
 /** Initiative directory relative to repo root */
-const INIT_DIR = 'docs/04-operations/tasks/initiatives';
+const INIT_DIR = wuPaths.INITIATIVES_DIR();
 
 /** Environment variable required for apply mode */
 const ADMIN_ENV_VAR = 'LUMENFLOW_ADMIN';
