@@ -6,9 +6,10 @@ status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
-  - packages/@lumenflow/memory/src/mem-cleanup-core.ts
+  - packages/@lumenflow/memory/src/**
 tests:
-  manual: []
+  manual:
+    - Verified mem:cleanup --help and mem:cleanup --dry-run commands work without require errors
   unit:
     - packages/@lumenflow/memory/__tests__/**
   e2e: []
