@@ -8,6 +8,7 @@ _Last updated: 2026-01-28_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml)
+- [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml)
 
 ## Completed
 
