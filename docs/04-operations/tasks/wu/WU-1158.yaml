@@ -6,6 +6,13 @@ status: ready
 priority: P1
 created: 2026-01-28
 code_paths:
+  - packages/@lumenflow/core/src/validators/backlog-sync.ts
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
+  - packages/@lumenflow/agent/src/agent-verification.ts
+  - packages/@lumenflow/memory/src/mem-triage-core.ts
+  - packages/@lumenflow/core/src/wu-yaml.ts
+  - packages/@lumenflow/core/src/wu-done-pr.ts
+  - packages/@lumenflow/cli/src/initiative-bulk-assign-wus.ts
   - packages/@lumenflow/cli/src/metrics-cli.ts
 tests:
   manual: []
@@ -25,21 +32,37 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: LumenFlow validators (backlog-sync, wu-consistency-checker, agent-verification) and several CLI commands have hardcoded paths like docs/04-operations/tasks/wu/ instead of reading from .lumenflow.config.yaml.
+description: >-
+  Context: LumenFlow validators (backlog-sync, wu-consistency-checker, agent-verification) and
+  several CLI commands have hardcoded paths like docs/04-operations/tasks/wu/ instead of reading
+  from .lumenflow.config.yaml.
 
-  Problem: Consumer repos that use different WU storage paths (e.g., .lumenflow/wus/) cannot pass gates because validators check the wrong directory. The config schema supports directories.wuDir but validators ignore it.
 
-  Impact: ExampleApp agents experienced repeated gate failures despite correct config. They had to use skip-gates as workaround, degrading workflow confidence.
+  Problem: Consumer repos that use different WU storage paths (e.g., .lumenflow/wus/) cannot pass
+  gates because validators check the wrong directory. The config schema supports directories.wuDir
+  but validators ignore it.
 
-  Solution: Refactor all hardcoded path references to use the config-aware WU_PATHS helper from wu-paths.ts or loadConfig() from lumenflow-config.ts. Keep current paths as defaults for backwards compatibility.
+
+  Impact: ExampleApp agents experienced repeated gate failures despite correct config. They had to
+  use skip-gates as workaround, degrading workflow confidence.
+
+
+  Solution: Refactor all hardcoded path references to use the config-aware WU_PATHS helper from
+  wu-paths.ts or loadConfig() from lumenflow-config.ts. Keep current paths as defaults for backwards
+  compatibility.
+
 
   AGENT INSTRUCTIONS:
 
+
   1. Find all hardcoded path references in code_paths files
+
   2. Replace with WU_PATHS helper or loadConfig() calls
+
   3. Ensure defaults remain docs/04-operations/tasks/wu for backwards compat
+
   4. Add unit tests for custom wuDir configuration
+
   5. Test manually: configure wuDir in .lumenflow.config.yaml and run pnpm gates
 acceptance:
   - All validators read wuDir/backlogPath from .lumenflow.config.yaml
