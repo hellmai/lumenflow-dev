@@ -2,7 +2,7 @@ id: WU-1159
 title: 'Bug: templates/ not included in npm package - docs-sync broken'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-01-28
 code_paths:
@@ -47,3 +47,11 @@ description: >-
 acceptance:
   - templates/ directory included in npm package
   - npx lumenflow-docs-sync --force works for consumers
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1159
+claimed_at: 2026-01-28T10:14:04.098Z
+baseline_main_sha: 15b95fc053eb7cdaf374cfd068860016b9a2e018
+session_id: defc0ebd-97d0-40e6-aaf7-54563ec676c1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T10:14:04.104Z

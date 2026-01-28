@@ -289,3 +289,4 @@
 {"type":"complete","wuId":"WU-1150","timestamp":"2026-01-27T20:36:09.092Z"}
 {"type":"claim","wuId":"WU-1152","timestamp":"2026-01-27T22:04:35.383Z","lane":"Framework: Core","title":"Fix resolveNodeModulePath to check cwd/node_modules for sibling packages"}
 {"type":"complete","wuId":"WU-1152","timestamp":"2026-01-28T00:10:39.034Z"}
+{"type":"claim","wuId":"WU-1159","lane":"Framework: CLI","title":"Bug: templates/ not included in npm package - docs-sync broken","timestamp":"2026-01-28T10:14:04.120Z"}
