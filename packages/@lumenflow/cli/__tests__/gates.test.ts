@@ -11,6 +11,11 @@ import {
   parsePrettierListOutput,
   parseGatesOptions,
   GATES_OPTIONS,
+  isPrettierConfigFile,
+  resolveFormatCheckPlan,
+  resolveLintPlan,
+  isTestConfigFile,
+  resolveTestPlan,
 } from '../src/gates.js';
 
 describe('gates prettier helpers (WU-1042)', () => {
@@ -134,6 +139,141 @@ describe('gates argument parsing (WU-1087)', () => {
       process.argv = ['node', 'gates.js', '--', '--docs-only'];
       const opts = parseGatesOptions();
       expect(opts.docsOnly).toBe(true);
+    });
+  });
+});
+
+describe('gates incremental planning (WU-1165)', () => {
+  describe('format check planning', () => {
+    it('falls back to full format check when file list fails', () => {
+      const plan = resolveFormatCheckPlan({ changedFiles: [], fileListError: true });
+      expect(plan.mode).toBe('full');
+      expect(plan.reason).toBe('file-list-error');
+    });
+
+    it('falls back to full format check when prettier config changes', () => {
+      const plan = resolveFormatCheckPlan({
+        changedFiles: ['.prettierrc', 'packages/@lumenflow/cli/src/gates.ts'],
+      });
+      expect(plan.mode).toBe('full');
+      expect(plan.reason).toBe('prettier-config');
+    });
+
+    it('skips format check when no files changed', () => {
+      const plan = resolveFormatCheckPlan({ changedFiles: [] });
+      expect(plan.mode).toBe('skip');
+    });
+
+    it('runs incremental format check for changed files', () => {
+      const plan = resolveFormatCheckPlan({
+        changedFiles: ['packages/@lumenflow/cli/src/gates.ts'],
+      });
+      expect(plan.mode).toBe('incremental');
+      expect(plan.files).toEqual(['packages/@lumenflow/cli/src/gates.ts']);
+    });
+  });
+
+  describe('lint planning', () => {
+    it('runs full lint on main branch', () => {
+      const plan = resolveLintPlan({
+        isMainBranch: true,
+        changedFiles: ['packages/@lumenflow/cli/src/gates.ts'],
+      });
+      expect(plan.mode).toBe('full');
+    });
+
+    it('skips lint when no lintable files changed', () => {
+      const plan = resolveLintPlan({
+        isMainBranch: false,
+        changedFiles: ['docs/README.md', 'apps/docs/content.mdx'],
+      });
+      expect(plan.mode).toBe('skip');
+    });
+
+    it('runs incremental lint for apps and packages files', () => {
+      const plan = resolveLintPlan({
+        isMainBranch: false,
+        changedFiles: [
+          'packages/@lumenflow/cli/src/gates.ts',
+          'apps/web/src/app.tsx',
+          'tools/cli-entry.mjs',
+        ],
+      });
+      expect(plan.mode).toBe('incremental');
+      expect(plan.files).toEqual(['packages/@lumenflow/cli/src/gates.ts', 'apps/web/src/app.tsx']);
+    });
+  });
+
+  describe('test planning', () => {
+    it('falls back to full tests on main branch', () => {
+      const plan = resolveTestPlan({
+        isMainBranch: true,
+        hasUntrackedCode: false,
+        hasConfigChange: false,
+        fileListError: false,
+      });
+      expect(plan.mode).toBe('full');
+    });
+
+    it('falls back to full tests when untracked code files exist', () => {
+      const plan = resolveTestPlan({
+        isMainBranch: false,
+        hasUntrackedCode: true,
+        hasConfigChange: false,
+        fileListError: false,
+      });
+      expect(plan.mode).toBe('full');
+      expect(plan.reason).toBe('untracked-code');
+    });
+
+    it('falls back to full tests when config changes', () => {
+      const plan = resolveTestPlan({
+        isMainBranch: false,
+        hasUntrackedCode: false,
+        hasConfigChange: true,
+        fileListError: false,
+      });
+      expect(plan.mode).toBe('full');
+      expect(plan.reason).toBe('test-config');
+    });
+
+    it('falls back to full tests when file list fails', () => {
+      const plan = resolveTestPlan({
+        isMainBranch: false,
+        hasUntrackedCode: false,
+        hasConfigChange: false,
+        fileListError: true,
+      });
+      expect(plan.mode).toBe('full');
+      expect(plan.reason).toBe('file-list-error');
+    });
+
+    it('runs incremental tests when conditions allow', () => {
+      const plan = resolveTestPlan({
+        isMainBranch: false,
+        hasUntrackedCode: false,
+        hasConfigChange: false,
+        fileListError: false,
+      });
+      expect(plan.mode).toBe('incremental');
+    });
+  });
+
+  describe('config file detection', () => {
+    it('detects prettier config and ignore files', () => {
+      expect(isPrettierConfigFile('.prettierrc')).toBe(true);
+      expect(isPrettierConfigFile('prettier.config.mjs')).toBe(true);
+      expect(isPrettierConfigFile('.prettierignore')).toBe(true);
+      expect(isPrettierConfigFile('packages/@lumenflow/cli/src/gates.ts')).toBe(false);
+    });
+
+    it('detects test config files', () => {
+      expect(isTestConfigFile('vitest.config.ts')).toBe(true);
+      expect(isTestConfigFile('turbo.json')).toBe(true);
+      expect(isTestConfigFile('tsconfig.base.json')).toBe(true);
+      expect(isTestConfigFile('pnpm-lock.yaml')).toBe(true);
+      expect(isTestConfigFile('package.json')).toBe(true);
+      expect(isTestConfigFile('packages/@lumenflow/cli/src/gates.ts')).toBe(false);
     });
   });
 });
