@@ -1,0 +1,289 @@
+packages/@lumenflow/agent/src/auto-session-integration.ts:4: * Provides wrapper functions around agent-session.mjs that:
+packages/@lumenflow/agent/src/auto-session-integration.ts:11: * - Composition over modification (wraps existing agent-session.mjs)
+packages/@lumenflow/agent/src/auto-session-integration.ts:85: * Unlike startSession in agent-session.mjs, this function:
+packages/@lumenflow/agent/src/auto-session-integration.ts:192: * Unlike endSession in agent-session.mjs, this function:
+packages/@lumenflow/agent/src/feedback-promote-core.ts:8: * @see {@link tools/feedback-promote.mjs} - CLI entry point
+packages/@lumenflow/agent/src/feedback-review-core.ts:9: * @see {@link tools/feedback-review.mjs} - CLI entry point
+packages/@lumenflow/memory/src/mem-ready-core.ts:19: * @see {@link tools/mem-ready.mjs} - CLI implementation
+packages/@lumenflow/memory/src/mem-signal-core.ts:13: * @see {@link tools/mem-signal.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-signal-core.ts:28: * WU ID validation pattern (from memory-schema.mjs)
+packages/@lumenflow/memory/src/mem-id.ts:9: * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+packages/@lumenflow/memory/src/mem-id.ts:61: * const id = generateMemId('discovered file at src/utils.mjs');
+packages/@lumenflow/memory/src/mem-id.ts:122: * Compatible with MEMORY_PATTERNS.MEMORY_ID from memory-schema.mjs.
+packages/@lumenflow/memory/src/mem-create-core.ts:14: * @see {@link tools/mem-create.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-create-core.ts:16: * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+packages/@lumenflow/memory/src/mem-create-core.ts:342: *   title: 'Found relevant file at src/utils.mjs',
+packages/@lumenflow/memory/src/memory-store.ts:13: * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+packages/@lumenflow/memory/src/mem-triage-core.ts:11: * @see {@link tools/mem-triage.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-cleanup-core.ts:28: * @see {@link tools/mem-cleanup.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-start-core.ts:13: * @see {@link tools/mem-start.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-start-core.ts:15: * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+packages/@lumenflow/memory/src/mem-summarize-core.ts:13: * @see {@link tools/mem-summarize.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-init-core.ts:8: * @see {@link tools/lib/memory-store.mjs} - Memory store operations
+packages/@lumenflow/memory/src/mem-init-core.ts:9: * @see {@link tools/lib/memory-schema.mjs} - Memory schema definitions
+packages/@lumenflow/memory/src/mem-checkpoint-core.ts:14: * @see {@link tools/mem-checkpoint.mjs} - CLI wrapper
+packages/@lumenflow/memory/src/mem-checkpoint-core.ts:16: * @see {@link tools/lib/memory-schema.mjs} - Schema definitions
+packages/@lumenflow/initiatives/src/initiative-paths.ts:6: * Mirrors wu-paths.mjs pattern. Single source of truth for all
+packages/@lumenflow/initiatives/src/initiative-constants.ts:4: * Mirrors wu-constants.mjs pattern. Single source of truth for all
+packages/@lumenflow/initiatives/src/initiative-yaml.ts:58: * Mirrors wu-yaml.mjs pattern. Provides validated read/write operations
+packages/@lumenflow/initiatives/src/initiative-schema.ts:7: * @see {@link tools/validate.mjs} - Consumer (CI validation)
+packages/@lumenflow/initiatives/src/initiative-schema.ts:8: * @see {@link tools/lib/initiative-validator.mjs} - Consumer (dependency graph validation)
+packages/@lumenflow/initiatives/src/initiative-orchestrator.ts:18: * @see {@link tools/orchestrate-initiative.mjs} - CLI entry point
+packages/@lumenflow/initiatives/src/initiative-orchestrator.ts:19: * @see {@link tools/lib/initiative-yaml.mjs} - Initiative loading
+packages/@lumenflow/initiatives/src/initiative-orchestrator.ts:20: * @see {@link tools/lib/dependency-graph.mjs} - Dependency graph utilities
+packages/@lumenflow/initiatives/src/initiative-validator.ts:11: * @see {@link tools/validate.mjs} - Consumer (CI validation)
+packages/@lumenflow/initiatives/src/initiative-validator.ts:12: * @see {@link tools/lib/initiative-schema.mjs} - Initiative schema
+packages/@lumenflow/core/src/micro-worktree.ts:4: * Race-safe micro-worktree isolation pattern extracted from wu-create.mjs (WU-1262).
+packages/@lumenflow/core/src/micro-worktree.ts:26: * @see {@link tools/wu-create.mjs} - WU creation (WU-1262, WU-1439)
+packages/@lumenflow/core/src/micro-worktree.ts:27: * @see {@link tools/wu-edit.mjs} - Spec edits (WU-1274)
+packages/@lumenflow/core/src/micro-worktree.ts:28: * @see {@link tools/initiative-create.mjs} - Initiative creation (WU-1439)
+packages/@lumenflow/core/src/worktree-symlink.ts:13: * @module tools/lib/worktree-symlink.mjs
+packages/@lumenflow/core/src/worktree-symlink.ts:234: * // In wu-claim.mjs after worktree creation:
+packages/@lumenflow/core/src/worktree-symlink.ts:358: * // In wu-claim.mjs after worktree creation:
+packages/@lumenflow/core/src/wu-state-store.ts:16: * @see {@link tools/lib/wu-state-schema.mjs} - Schema definitions
+packages/@lumenflow/core/src/orchestration-advisory-loader.ts:8: * @see {@link ./orchestration-advisory.mjs} - TypeScript version for tests
+packages/@lumenflow/core/src/orchestration-advisory-loader.ts:9: * @see {@link ./domain/orchestration.constants.mjs} - Pattern definitions
+packages/@lumenflow/core/src/orchestration-advisory-loader.ts:17: * Mirrors MANDATORY_TRIGGERS from orchestration.constants.mjs.
+packages/@lumenflow/core/src/wu-done-branch-only.ts:5: * Extracted from wu-done.mjs (WU-1215 refactoring)
+packages/@lumenflow/core/src/telemetry.ts:6: * Used by gates-local.mjs and flow-report.mjs.
+packages/@lumenflow/core/src/orchestration-rules.ts:8: * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
+packages/@lumenflow/core/src/code-path-validator.ts:6: * - validateCodePathsExist (wu-done-validators.mjs) - file existence for wu:done
+packages/@lumenflow/core/src/code-path-validator.ts:7: * - validateLaneCodePaths (lane-validator.mjs) - lane pattern matching
+packages/@lumenflow/core/src/code-path-validator.ts:8: * - validateWUCodePaths (wu-validator.mjs) - code quality (TODOs, mocks)
+packages/@lumenflow/core/src/wu-yaml-fixer.ts:13: * @see {@link tools/lib/wu-schema.mjs} - WU schema definition
+packages/@lumenflow/core/src/wu-yaml-fixer.ts:14: * @see {@link tools/wu-claim.mjs} - Consumer
+packages/@lumenflow/core/src/wu-yaml-fixer.ts:21:// Valid type values from wu-schema.mjs
+packages/@lumenflow/core/src/coverage-gate.ts:12: * @see {@link tools/gates.mjs} - Integration point
+packages/@lumenflow/core/src/dependency-guard.ts:12: * @see {@link tools/deps-add.mjs} - Safe wrapper for pnpm add
+packages/@lumenflow/core/src/dependency-guard.ts:13: * @see {@link tools/deps-remove.mjs} - Safe wrapper for pnpm remove
+packages/@lumenflow/core/src/risk-detector.ts:18: * @see {@link tools/gates.mjs} - Consumer of risk detection
+packages/@lumenflow/core/src/risk-detector.ts:19: * @see {@link tools/lib/file-classifiers.mjs} - File classification utilities
+packages/@lumenflow/core/src/wu-validation-constants.ts:5: * Extracted from lane-inference.mjs and agent-incidents.mjs for DRY compliance.
+packages/@lumenflow/core/src/wu-validation-constants.ts:62: * Duplicated from agent-incidents.mjs z.enum for use in default arrays.
+packages/@lumenflow/core/src/orphan-detector.ts:17: * @see {@link tools/wu-prune.mjs} - Primary consumer
+packages/@lumenflow/core/src/orphan-detector.ts:18: * @see {@link tools/wu-claim.mjs} - Pre-flight orphan check
+packages/@lumenflow/core/src/orphan-detector.ts:19: * @see {@link tools/lib/git-adapter.mjs} - worktreeRemove with cleanup
+packages/@lumenflow/core/src/spawn-registry-schema.ts:8: * @see {@link tools/lib/spawn-registry-store.mjs} - Store implementation
+packages/@lumenflow/core/src/active-wu-detector.ts:5: * vs "orphan" (legacy/unreferenced). Used by validate.mjs to suppress
+packages/@lumenflow/core/src/file-classifiers.ts:6: * Consolidates duplicated classification logic from wu-validator.mjs
+packages/@lumenflow/core/src/file-classifiers.ts:7: * and code-path-validator.mjs.
+packages/@lumenflow/core/src/file-classifiers.ts:11: * @see tools/lib/wu-validator.mjs - Original isTestFile, isMarkdownFile
+packages/@lumenflow/core/src/file-classifiers.ts:12: * @see tools/lib/code-path-validator.mjs - Duplicated implementations
+packages/@lumenflow/core/src/file-classifiers.ts:43: * - *.test.ts, *.test.tsx, *.test.js, *.test.jsx, *.test.mjs
+packages/@lumenflow/core/src/file-classifiers.ts:44: * - *.spec.ts, *.spec.tsx, *.spec.js, *.spec.jsx, *.spec.mjs
+packages/@lumenflow/core/src/wu-spawn-helpers.ts:2: * @file wu-spawn-helpers.mjs
+packages/@lumenflow/core/src/manual-test-validator.ts:14: * @see {@link tools/lib/wu-done-validators.mjs} - Integration point
+packages/@lumenflow/core/src/manual-test-validator.ts:25:const CODE_EXTENSIONS = Object.freeze(['.js', '.ts', '.tsx', '.mjs']);
+packages/@lumenflow/core/src/manual-test-validator.ts:78: * Code files are those with extensions like .mjs, .ts, .tsx, .js
+packages/@lumenflow/core/src/wu-done-validation.ts:340: * Mirrors the patterns in gates-pre-commit.mjs gateDocsOnlyPathEnforcement()
+packages/@lumenflow/core/src/incremental-lint.ts:2: * @file incremental-lint.mjs
+packages/@lumenflow/core/src/incremental-lint.ts:21: * Matches ESLint ignores in apps/web/eslint.config.mjs
+packages/@lumenflow/core/src/wu-spawn.ts:64: * Mirrors MANDATORY_TRIGGERS from orchestration-advisory-loader.mjs.
+packages/@lumenflow/core/src/wu-spawn.ts:431:   - Run: node tools/lib/agent-verification.mjs ${id} (from shared checkout)
+packages/@lumenflow/core/src/wu-spawn.ts:459:3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node tools/lib/agent-verification.mjs ${id}\` (from the shared checkout)
+packages/@lumenflow/core/src/wu-spawn.ts:1167:- From shared checkout: \`node tools/lib/agent-verification.mjs ${id}\`
+packages/@lumenflow/core/src/wu-lint.ts:28: * Matches patterns like: apps/web/src/file.ts, tools/lib/helper.mjs
+packages/@lumenflow/core/src/wu-recovery.ts:14: * tools/lib/wu-repair-core.mjs for use by the unified wu:repair command.
+packages/@lumenflow/core/src/wu-recovery.ts:15: * This module remains the canonical implementation used by wu-done.mjs.
+packages/@lumenflow/core/src/wu-recovery.ts:262:// Note: updateBacklogMd removed (WU-1163) - now uses shared moveWUToDoneBacklog from wu-backlog-updater.mjs
+packages/@lumenflow/core/src/wu-recovery.ts:356:        // WU-1383: Set recovery mode env var to bypass stamp existence check in validate.mjs
+packages/@lumenflow/core/src/orchestration-advisory.ts:5: * Used by wu-claim.mjs (emit advisory) and wu-done.mjs (check compliance).
+packages/@lumenflow/core/src/orchestration-advisory.ts:8: * @see {@link ./orchestration-rules.mjs} - detectMandatoryAgents function
+packages/@lumenflow/core/src/orchestration-advisory.ts:9: * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
+packages/@lumenflow/core/src/wu-claim-resume.ts:2: * @file wu-claim-resume.mjs
+packages/@lumenflow/core/src/wu-done-pr.ts:5: * Extracted from wu-done.mjs (WU-1215 refactoring)
+packages/@lumenflow/core/src/wu-schema.ts:15: * @see {@link tools/wu-done.mjs} - Consumer (validates spec completeness, uses WUSchema)
+packages/@lumenflow/core/src/wu-schema.ts:16: * @see {@link tools/wu-claim.mjs} - Consumer (validates spec completeness, uses WUSchema)
+packages/@lumenflow/core/src/wu-schema.ts:17: * @see {@link tools/wu-create.mjs} - Consumer (structural validation, uses ReadyWUSchema)
+packages/@lumenflow/core/src/wu-schema.ts:18: * @see {@link tools/wu-edit.mjs} - Consumer (structural validation, uses ReadyWUSchema)
+packages/@lumenflow/core/src/wu-schema.ts:19: * @see {@link tools/validate.mjs} - Consumer (CI validation)
+packages/@lumenflow/core/src/wu-schema.ts:54: * // tools/wu-create.mjs
+packages/@lumenflow/core/src/wu-schema.ts:58: * // tools/validate.mjs
+packages/@lumenflow/core/src/wu-schema.ts:98: * // Input: ["tools/a.mjs\ntools/b.js"]
+packages/@lumenflow/core/src/rebase-artifact-cleanup.ts:13: * @see {@link tools/wu-done.mjs} - Creates completion artifacts
+packages/@lumenflow/core/src/rebase-artifact-cleanup.ts:14: * @see {@link tools/lib/stamp-utils.mjs} - Stamp file utilities
+packages/@lumenflow/core/src/rebase-artifact-cleanup.ts:15: * @see {@link tools/lib/wu-recovery.mjs} - Related zombie state handling
+packages/@lumenflow/core/src/section-headings.ts:16: * Re-exports from wu-constants.mjs for backwards compatibility
+packages/@lumenflow/core/src/spawn-registry-store.ts:13: * @see {@link tools/lib/spawn-registry-schema.mjs} - Schema definitions
+packages/@lumenflow/core/src/spawn-tree.ts:12: * @see {@link tools/spawn-list.mjs} - CLI command
+packages/@lumenflow/core/src/spawn-tree.ts:13: * @see {@link tools/lib/spawn-registry-store.mjs} - Data source
+packages/@lumenflow/core/src/wu-done-metadata.ts:39: * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+packages/@lumenflow/core/src/wu-done-metadata.ts:104: * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+packages/@lumenflow/core/src/wu-done-metadata.ts:218: * Extracted from wu-done.mjs (WU-1215 Phase 2 Extraction #1 Helper)
+packages/@lumenflow/core/src/spawn-escalation.ts:18: * @see {@link tools/lib/spawn-recovery.mjs} - Recovery logic
+packages/@lumenflow/core/src/spawn-escalation.ts:19: * @see {@link tools/lib/mem-signal-core.mjs} - Signal creation
+packages/@lumenflow/core/src/migration-deployer.ts:2: * @file migration-deployer.mjs
+packages/@lumenflow/core/src/backlog-generator.ts:17: * @see {@link tools/lib/wu-state-store.mjs} - State store
+packages/@lumenflow/core/src/wu-repair-core.ts:10: * - wu-consistency-checker.mjs (consistency checks)
+packages/@lumenflow/core/src/wu-repair-core.ts:11: * - wu-repair-claim.mjs (claim metadata repair)
+packages/@lumenflow/core/src/wu-repair-core.ts:12: * - wu-admin-repair.mjs (admin fixes)
+packages/@lumenflow/core/src/wu-repair-core.ts:13: * - wu-recovery.mjs (zombie state recovery)
+packages/@lumenflow/core/src/wu-repair-core.ts:15: * @see {@link ../wu-repair.mjs} - Unified CLI interface
+packages/@lumenflow/core/src/wu-repair-core.ts:46:// Re-export recovery utilities from wu-recovery.mjs
+packages/@lumenflow/core/src/wu-status-transition.ts:5: * Eliminates 90% code duplication between wu-block.mjs and wu-unblock.mjs.
+packages/@lumenflow/core/src/git-adapter.ts:2: * @file git-adapter.mjs
+packages/@lumenflow/core/src/git-adapter.ts:9: * - tools/wu-claim.mjs
+packages/@lumenflow/core/src/git-adapter.ts:10: * - tools/wu-done.mjs
+packages/@lumenflow/core/src/git-adapter.ts:11: * - tools/wu-block.mjs
+packages/@lumenflow/core/src/git-adapter.ts:12: * - tools/wu-unblock.mjs
+packages/@lumenflow/core/src/git-adapter.ts:13: * - tools/wu-create.mjs
+packages/@lumenflow/core/src/git-adapter.ts:14: * - tools/wu-cleanup.mjs
+packages/@lumenflow/core/src/git-adapter.ts:15: * - tools/gates-pre-commit.mjs
+packages/@lumenflow/core/src/git-adapter.ts:16: * - tools/validate.mjs
+packages/@lumenflow/core/src/git-adapter.ts:17: * - tools/guard-worktree-commit.mjs
+packages/@lumenflow/core/src/git-adapter.ts:443:   * Used by wu-done-retry-helpers.mjs to count previous completion attempts.
+packages/@lumenflow/core/src/date-utils.ts:2: * @file date-utils.mjs
+packages/@lumenflow/core/src/date-utils.ts:7: * - tools/wu-block.mjs (todayISO)
+packages/@lumenflow/core/src/date-utils.ts:8: * - tools/wu-unblock.mjs (todayISO)
+packages/@lumenflow/core/src/date-utils.ts:9: * - tools/wu-done.mjs (todayISO - already uses date-fns)
+packages/@lumenflow/core/src/spawn-monitor.ts:20: * @see {@link tools/orchestrate-monitor.mjs} - CLI entry point
+packages/@lumenflow/core/src/spawn-monitor.ts:21: * @see {@link tools/lib/spawn-registry-store.mjs} - Registry storage
+packages/@lumenflow/core/src/wu-done-ui.ts:7: * @see {@link tools/wu-done.mjs} - Primary consumer
+packages/@lumenflow/core/src/wu-done-ui.ts:8: * @see {@link tools/lib/wu-constants.mjs} - UI constants
+packages/@lumenflow/core/src/wu-done-ui.ts:17: * Consolidated from two duplicate implementations in wu-done.mjs
+packages/@lumenflow/core/src/domain/orchestration.constants.ts:8: * @see {@link ../ports/dashboard-renderer.port.mjs} - Uses these constants
+packages/@lumenflow/core/src/domain/orchestration.constants.ts:9: * @see {@link ../ports/metrics-collector.port.mjs} - Uses these constants
+packages/@lumenflow/core/src/domain/orchestration.schemas.ts:8: * @see {@link ./orchestration.types.mjs} - Types inferred from these schemas
+packages/@lumenflow/core/src/domain/orchestration.schemas.ts:9: * @see {@link ./orchestration.constants.mjs} - Constants used in validation
+packages/@lumenflow/core/src/domain/orchestration.types.ts:8: * @see {@link ./orchestration.schemas.mjs} - Schemas these types are inferred from
+packages/@lumenflow/core/src/domain/orchestration.types.ts:9: * @see {@link ./orchestration.constants.mjs} - Constants and derived types
+packages/@lumenflow/core/src/cleanup-lock.ts:17: * Pattern: Follows lane-lock.mjs and merge-lock.mjs internal patterns.
+packages/@lumenflow/core/src/hardcoded-strings.ts:293: * Legacy function for backwards compatibility with gates-pre-commit.mjs
+packages/@lumenflow/core/src/wu-consistency-checker.ts:13: * @see {@link ../wu-repair.mjs} CLI interface
+packages/@lumenflow/core/src/usecases/get-suggestions.usecase.ts:37:   * @see flow-bottlenecks.mjs for score calculation
+packages/@lumenflow/core/src/wu-helpers.ts:22: * WU-1593: Extracted from duplicate implementations in wu-create.mjs and wu-edit.mjs (DRY).
+packages/@lumenflow/core/src/wu-helpers.ts:23: * Uses centralized PATTERNS.WU_ID regex from wu-constants.mjs.
+packages/@lumenflow/core/src/process-detector.ts:10: * @see {@link tools/wu-done.mjs} - Integrates this as pre-flight check
+packages/@lumenflow/core/src/process-detector.ts:11: * @see {@link tools/lib/wu-constants.mjs} - Constants for log prefixes
+packages/@lumenflow/core/src/process-detector.ts:19: * Source of truth is PROCESS_DETECTION.INTERFERING_NAMES in wu-constants.mjs
+packages/@lumenflow/core/src/process-detector.ts:171: * This is the main entry point for wu-done.mjs integration.
+packages/@lumenflow/core/src/process-detector.ts:178: * // In wu-done.mjs pre-flight checks:
+packages/@lumenflow/core/src/wu-done-docs-generate.ts:19: * Based on .husky/hooks/docs-sync.mjs patterns, expanded to match
+packages/@lumenflow/core/src/wu-status-updater.ts:4: * Centralized status.md update functions (extracted from wu-done.mjs)
+packages/@lumenflow/core/src/wu-status-updater.ts:20: * Refactored from wu-done.mjs line 471 to use frontmatter headings
+packages/@lumenflow/core/src/wu-status-updater.ts:84: * Refactored from wu-done.mjs line 499 to use frontmatter headings
+packages/@lumenflow/core/src/wu-validation.ts:12: * @see {@link tools/wu-done.mjs} - Consumer
+packages/@lumenflow/core/src/wu-validation.ts:13: * @see {@link tools/lib/wu-schema.mjs} - WU schema with exposure field
+packages/@lumenflow/core/src/wu-validation.ts:14: * @see {@link tools/lib/wu-constants.mjs} - WU_EXPOSURE values
+packages/@lumenflow/core/src/spawn-recovery.ts:19: * @see {@link tools/lib/spawn-monitor.mjs} - Monitoring logic
+packages/@lumenflow/core/src/spawn-recovery.ts:20: * @see {@link tools/lib/spawn-registry-store.mjs} - Spawn state
+packages/@lumenflow/core/src/wu-schema-normalization.ts:2: * @file wu-schema-normalization.mjs
+packages/@lumenflow/core/src/wu-backlog-updater.ts:4: * Centralized backlog.md update functions (extracted from wu-done.mjs)
+packages/@lumenflow/core/src/logs-lib.ts:13: * tail-logs.mjs in the codebase.
+packages/@lumenflow/core/src/wu-claim-helpers.ts:2: * @file wu-claim-helpers.mjs
+packages/@lumenflow/core/src/compliance-parser.ts:5: * Used by compliance-snapshot.mjs tool to create snapshots.
+packages/@lumenflow/core/src/wu-done-worktree.ts:5: * Extracted from wu-done.mjs (WU-1215 refactoring)
+packages/@lumenflow/core/src/invariants/check-automated-tests.ts:12: * the existing manual-test-validator.mjs which already implements the core logic.
+packages/@lumenflow/core/src/invariants/check-automated-tests.ts:14: * @see {@link tools/lib/manual-test-validator.mjs} - Core validation logic
+packages/@lumenflow/core/src/invariants/check-automated-tests.ts:76:    // Use the existing validation logic from manual-test-validator.mjs
+packages/@lumenflow/core/src/lane-validator.ts:8: * Uses LANE_PATH_PATTERNS from wu-constants.mjs to define which paths
+packages/@lumenflow/core/src/lane-validator.ts:13: * @see {@link wu-constants.mjs} - LANE_PATH_PATTERNS definition
+packages/@lumenflow/core/src/lane-validator.ts:14: * @see {@link lane-checker.mjs} - extractParent for lane parsing
+packages/@lumenflow/core/src/lane-checker.ts:6: * Used by wu-claim.mjs and wu-unblock.mjs to prevent WIP violations.
+packages/@lumenflow/core/src/rollback-utils.ts:8: * @see {@link tools/wu-done.mjs} - Consumer (rollbackTransaction function)
+packages/@lumenflow/core/src/constants/dora-constants.ts:5: * Used by calculate-dora-metrics.mjs.
+packages/@lumenflow/core/src/constants/gate-constants.ts:5: * Used by gates-pre-commit.mjs and gates-local.mjs.
+packages/@lumenflow/core/src/constants/backlog-patterns.ts:5: * Used by lane-checker.mjs and related backlog utilities.
+packages/@lumenflow/core/src/constants/linter-constants.ts:5: * Used by packages/linters/spec-linter.mjs.
+packages/@lumenflow/core/src/constants/tokenizer-constants.ts:5: * Used by token-count.mjs.
+packages/@lumenflow/core/src/core/worktree-guard.ts:2: * @file worktree-guard.mjs
+packages/@lumenflow/core/src/core/tool.constants.ts:69: * Tool error codes (extends existing ErrorCodes from error-handler.mjs)
+packages/@lumenflow/core/src/core/tool-runner.ts:2: * @file tool-runner.mjs
+packages/@lumenflow/core/src/core/tool-runner.ts:7: * - Worktree context detection (worktree-guard.mjs)
+packages/@lumenflow/core/src/core/tool-runner.ts:8: * - Scope validation against code_paths (scope-checker.mjs)
+packages/@lumenflow/core/src/core/tool-runner.ts:24: * @see tools/lib/core/worktree-guard.mjs - WU context detection
+packages/@lumenflow/core/src/core/tool-runner.ts:25: * @see tools/lib/core/scope-checker.mjs - Code path validation
+packages/@lumenflow/core/src/core/scope-checker.ts:2: * @file scope-checker.mjs
+packages/@lumenflow/core/src/core/scope-checker.ts:16: * @see {@link tools/lib/core/worktree-guard.mjs} - WU context detection
+packages/@lumenflow/core/src/core/scope-checker.ts:17: * @see {@link tools/lib/wu-schema.mjs} - WU YAML parsing
+packages/@lumenflow/core/src/core/tool.schemas.ts:9: * Reference: tools/lib/arg-parser.mjs for current argument handling patterns
+packages/@lumenflow/core/src/wu-constants.ts:7: * Part of WU-1214: Extract hardcoded strings to wu-constants.mjs
+packages/@lumenflow/core/src/wu-constants.ts:10: * @see {@link tools/wu-done.mjs} - Primary consumer
+packages/@lumenflow/core/src/wu-constants.ts:11: * @see {@link tools/wu-claim.mjs} - Branch/worktree creation
+packages/@lumenflow/core/src/wu-constants.ts:12: * @see {@link tools/lib/wu-schema.mjs} - PLACEHOLDER_SENTINEL (already centralized)
+packages/@lumenflow/core/src/wu-constants.ts:87: * Used by state-bootstrap.mjs to categorize YAML statuses.
+packages/@lumenflow/core/src/wu-constants.ts:133:// Note: PATHS object removed in WU-1240 - use WU_PATHS from wu-paths.mjs instead
+packages/@lumenflow/core/src/wu-constants.ts:176: * Note: WU_ID pattern is also in wu-schema.mjs for Zod validation
+packages/@lumenflow/core/src/wu-constants.ts:546: * WU-1281: Centralized from hardcoded values in wu-done.mjs
+packages/@lumenflow/core/src/wu-constants.ts:659: * @see tools/lib/wu-helpers.mjs - Uses REAL_GIT to avoid recursion
+packages/@lumenflow/core/src/wu-constants.ts:667: * Used by git-adapter.mjs and other git operation utilities.
+packages/@lumenflow/core/src/wu-constants.ts:827: * @see {@link tools/lib/wu-schema.mjs} - Schema validation
+packages/@lumenflow/core/src/wu-constants.ts:828: * @see {@link packages/linters/wu-schema-linter.mjs} - Linter validation
+packages/@lumenflow/core/src/wu-constants.ts:928: * Used by wu-schema.mjs Zod transformations to provide sensible defaults
+packages/@lumenflow/core/src/wu-constants.ts:975: * @see {@link tools/lib/lane-validator.mjs} - Validation logic
+packages/@lumenflow/core/src/wu-constants.ts:1000: * Used by process-detector.mjs to identify processes that may interfere
+packages/@lumenflow/core/src/wu-constants.ts:1105: * Centralized gate identifiers for gates.mjs and telemetry.
+packages/@lumenflow/core/src/wu-constants.ts:1130: * These are not shell commands but trigger special handling in gates.mjs.
+packages/@lumenflow/core/src/wu-constants.ts:1640:// Use WU_PATHS.WU(id) and WU_PATHS.STAMP(id) from wu-paths.mjs instead
+packages/@lumenflow/core/src/wu-constants.ts:1722: * @see tools/wu-create.mjs - displayReadinessSummary()
+packages/@lumenflow/core/src/wu-constants.ts:1723: * @see tools/wu-edit.mjs - displayReadinessSummary()
+packages/@lumenflow/core/src/orchestration-di.ts:9: * @see {@link ./ports/metrics-collector.port.mjs} - Input port
+packages/@lumenflow/core/src/orchestration-di.ts:10: * @see {@link ./ports/dashboard-renderer.port.mjs} - Output port
+packages/@lumenflow/core/src/orchestration-di.ts:11: * @see {@link ./adapters/filesystem-metrics.adapter.mjs} - Input adapter
+packages/@lumenflow/core/src/orchestration-di.ts:12: * @see {@link ./adapters/terminal-renderer.adapter.mjs} - Output adapter
+packages/@lumenflow/core/src/incremental-test.ts:2: * @file incremental-test.mjs
+packages/@lumenflow/core/src/wu-done-messages.ts:2: * @file wu-done-messages.mjs
+packages/@lumenflow/core/src/wu-done-messages.ts:5: * WU-1281: Use centralized LOG_PREFIX and EMOJI from wu-constants.mjs
+packages/@lumenflow/core/src/error-handler.ts:2: * @file error-handler.mjs
+packages/@lumenflow/core/src/error-handler.ts:8: * - tools/wu-claim.mjs
+packages/@lumenflow/core/src/error-handler.ts:9: * - tools/wu-done.mjs
+packages/@lumenflow/core/src/error-handler.ts:10: * - tools/wu-block.mjs
+packages/@lumenflow/core/src/error-handler.ts:11: * - tools/wu-unblock.mjs
+packages/@lumenflow/core/src/error-handler.ts:12: * - tools/wu-create.mjs
+packages/@lumenflow/core/src/error-handler.ts:13: * - tools/wu-cleanup.mjs
+packages/@lumenflow/core/src/error-handler.ts:14: * - tools/gates-pre-commit.mjs
+packages/@lumenflow/core/src/error-handler.ts:15: * - tools/validate.mjs
+packages/@lumenflow/core/src/error-handler.ts:16: * - tools/guard-worktree-commit.mjs
+packages/@lumenflow/cli/src/init.ts:215:const WU_TEMPLATE_YAML = `# Work Unit Template (LumenFlow WU Schema)\n#\n# Copy this template when creating new WUs. Fill in all required fields and\n# remove optional fields if not needed.\n#\n# If you used "lumenflow init --full", this template lives at:\n# docs/04-operations/tasks/templates/wu-template.yaml\n\n# Required: Unique work unit identifier (format: WU-NNN)\nid: WU-XXX\n\n# Required: Short, descriptive title (max 80 chars)\ntitle: 'Your WU title here'\n\n# Required: Lane (Parent: Sublane format)\nlane: 'Framework: CLI'\n\n# Required: Type of work\ntype: 'feature' # feature | bug | documentation | process | tooling | chore | refactor\n\n# Required: Current status\nstatus: 'ready' # ready | in_progress | blocked | done | cancelled\n\n# Required: Priority\npriority: P2 # P0 | P1 | P2 | P3\n\n# Required: Creation date (YYYY-MM-DD)\ncreated: {{DATE}}\n\n# Required: Owner/assignee (email)\nassigned_to: 'unassigned@example.com'\n\n# Required: Description\ndescription: |\n  Context: ...\n  Problem: ...\n  Solution: ...\n\n# Required: Acceptance criteria (testable, binary)\nacceptance:\n  - Criterion 1 (specific, measurable, testable)\n  - Criterion 2 (binary pass/fail)\n  - Documentation updated\n\n# Required: References to plans/specs (required for type: feature)\nspec_refs:\n  - docs/04-operations/plans/WU-XXX-plan.md\n\n# Required: Code files changed or created (empty only for docs/process WUs)\ncode_paths:\n  - path/to/file.ts\n\n# Required: Test paths (at least one of manual/unit/e2e/integration for non-doc WUs)\ntests:\n  manual:\n    - Manual test: Verify behavior\n  unit:\n    - path/to/test.test.ts\n  e2e: []\n  integration: []\n\n# Required: Exposure level\nexposure: 'backend-only' # ui | api | backend-only | documentation\n\n# Optional: User journey (recommended for ui/api)\n# user_journey: |\n#   User navigates to ...\n#   User performs ...\n\n# Optional: UI pairing WUs (for api exposure)\n# ui_pairing_wus:\n#   - WU-1234\n\n# Optional: Navigation path (required when exposure=ui and no page file)\n# navigation_path: '/settings'\n\n# Required: Deliverable artifacts (stamps, docs, etc.)\nartifacts:\n  - .lumenflow/stamps/WU-XXX.done\n\n# Optional: Dependencies (other WUs that must complete first)\ndependencies: []\n\n# Optional: Risks\nrisks:\n  - Risk 1\n\n# Optional: Notes\nnotes: ''\n\n# Optional: Requires human review\nrequires_review: false\n\n# Optional: Claimed mode (worktree or branch-only)\n# Automatically set by wu:claim, usually don't need to specify\n# claimed_mode: worktree\n\n# Optional: Assigned to (email of current claimant)\n# Automatically set by wu:claim\n# assigned_to: engineer@example.com\n\n# Optional: Locked status (prevents concurrent edits)\n# Automatically set by wu:claim and wu:done\n# locked: false\n\n# Optional: Completion date (ISO 8601 format)\n# Automatically set by wu:done\n# completed: 2025-10-23\n\n# Optional: Completion notes (added by wu:done)\n# completion_notes: |\n#   Additional notes added during wu:done.\n#   Any deviations from original plan.\n#   Lessons learned.\n\n# ============================================================================\n# GOVERNANCE BLOCK (WU Schema v2.0)\n# ============================================================================\n# Optional: COS governance rules that apply to this WU\n# Only include if this WU needs specific governance enforcement\n\n# governance:\n#   # Rules that apply to this WU (evaluated during cos:gates)\n#   rules:\n#     - rule_id: UPAIN-01\n#       satisfied: false  # Initially false, set true when evidence provided\n#       evidence:\n#         - type: link\n#           value: docs/product/voc/feature-user-pain.md\n#           description: "Voice of Customer analysis showing user pain"\n#       notes: |\n#         VOC analysis shows 40% of support tickets request this feature.\n#         Average time wasted: 15min/user/week.\n#\n#     - rule_id: CASH-03\n#       satisfied: false\n#       evidence:\n#         - type: link\n#           value: docs/finance/spend-reviews/2025-10-cloud-infra.md\n#           description: "Spend review for £1200/month cloud infrastructure"\n#         - type: approval\n#           value: owner@example.com\n#           description: "Owner approval for spend commitment"\n#       notes: |\n#         New cloud infrastructure commitment: £1200/month for 12 months.\n#         ROI: Reduces latency by 50%, improves user retention.\n#\n#   # Gate checks (enforced by cos-gates.mjs)\n#   gates:\n#     narrative: "pending"  # Status: pending, passed, skipped, failed\n#     finance: "pending"\n#\n#   # Exemptions (only if rule doesn't apply)\n#   exemptions:\n#     - rule_id: FAIR-01\n#       reason: "No user-facing pricing changes in this WU"\n#       approved_by: product-owner@example.com\n#       approved_at: 2025-10-23\n\n# ============================================================================\n# USAGE NOTES\n# ============================================================================\n#\n# 1. Remove this entire governance block if no COS rules apply to your WU\n# 2. Only include rules that require enforcement (not all rules apply to all WUs)\n# 3. Evidence types: link:, metric:, screenshot:, approval:\n# 4. Gates are checked during wu:done (before merge)\n# 5. Exemptions require approval from rule owner\n#\n# For more details, see:\n# - docs/04-operations/_frameworks/cos/system-prompt-v1.3.md\n# - docs/04-operations/_frameworks/cos/evidence-format.md\n`;
+packages/@lumenflow/cli/src/wu-validate.ts:14: * @see {@link tools/lib/wu-schema.mjs} - Schema definitions
+packages/@lumenflow/cli/src/wu-infer-lane.ts:6: * Wrapper around lib/lane-inference.mjs for standalone CLI usage.
+packages/@lumenflow/cli/src/wu-infer-lane.ts:10: *   node tools/wu-infer-lane.mjs --id WU-123
+packages/@lumenflow/cli/src/wu-infer-lane.ts:13: *   node tools/wu-infer-lane.mjs --paths "tools/**" "docs/**" --desc "Tooling improvements"
+packages/@lumenflow/cli/src/state-bootstrap.ts:8: * WU-1107: INIT-003 Phase 3c - Migrate state-bootstrap.mjs from ExampleApp
+packages/@lumenflow/cli/src/wu-block.ts:52:// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+packages/@lumenflow/cli/src/wu-block.ts:53:// ensureStaged() moved to git-staged-validator.mjs (WU-1341)
+packages/@lumenflow/cli/src/wu-block.ts:54:// defaultWorktreeFrom() moved to wu-paths.mjs (WU-1341)
+packages/@lumenflow/cli/src/wu-spawn.ts:67: * Mirrors MANDATORY_TRIGGERS from orchestration-advisory-loader.mjs.
+packages/@lumenflow/cli/src/wu-spawn.ts:523:   - Run: node tools/lib/agent-verification.mjs ${id} (from shared checkout)
+packages/@lumenflow/cli/src/wu-spawn.ts:557:3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node tools/lib/agent-verification.mjs ${id}\` (from the shared checkout)
+packages/@lumenflow/cli/src/wu-spawn.ts:1356:- From shared checkout: \`node tools/lib/agent-verification.mjs ${id}\`
+packages/@lumenflow/cli/src/mem-inbox.ts:17: * @see {@link tools/lib/mem-signal-core.mjs} - Core logic
+packages/@lumenflow/cli/src/wu-unblock.ts:48:// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+packages/@lumenflow/cli/src/wu-unblock.ts:49:// ensureStaged() moved to git-staged-validator.mjs (WU-1341)
+packages/@lumenflow/cli/src/wu-unblock.ts:50:// defaultWorktreeFrom() moved to wu-paths.mjs (WU-1341)
+packages/@lumenflow/cli/src/wu-unblock.ts:57:// defaultBranchFrom() consolidated to wu-done-validators.mjs (emergency fix)
+packages/@lumenflow/cli/src/wu-unblock.ts:87:// emitTelemetry() moved to telemetry.mjs as emitWUFlowEvent() (WU-1256)
+packages/@lumenflow/cli/src/mem-signal.ts:13: * @see {@link tools/lib/mem-signal-core.mjs} - Core logic
+packages/@lumenflow/cli/src/wu-claim.ts:11: *   node tools/wu-claim.mjs --id WU-334 --lane Intelligence \
+packages/@lumenflow/cli/src/wu-claim.ts:26:// WU-1352: Use centralized YAML functions from wu-yaml.mjs
+packages/@lumenflow/cli/src/wu-claim.ts:99:// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+packages/@lumenflow/cli/src/wu-claim.ts:596:// emitWUFlowEvent() moved to telemetry.mjs as emitWUFlowEvent() (WU-1256)
+packages/@lumenflow/cli/src/mem-create.ts:14: * @see {@link tools/lib/mem-create-core.mjs} - Core logic
+packages/@lumenflow/cli/src/wu-done.ts:655:// WU-1281: isDocsOnlyByPaths removed - use shouldSkipWebTests from path-classifiers.mjs
+packages/@lumenflow/cli/src/wu-done.ts:718:// ensureOnMain() moved to wu-helpers.mjs (WU-1256)
+packages/@lumenflow/cli/src/wu-done.ts:1125:// WU-2308: validateAllPreCommitHooks moved to wu-done-validators.mjs
+packages/@lumenflow/cli/src/wu-done.ts:1306:// have been extracted to tools/lib/wu-status-updater.mjs and imported above (WU-1163)
+packages/@lumenflow/cli/src/wu-done.ts:1308:// Note: ensureStamp has been replaced with createStamp from tools/lib/stamp-utils.mjs (WU-1163)
+packages/@lumenflow/cli/src/wu-done.ts:1312:// tools/lib/wu-done-validators.mjs and imported above (WU-1215)
+packages/@lumenflow/cli/src/wu-done.ts:2406:  // Validate CLI arguments and WU ID format (extracted to wu-done-validators.mjs)
+packages/@lumenflow/cli/src/mem-ready.ts:13: * @see {@link tools/lib/mem-ready-core.mjs} - Core logic
+packages/@lumenflow/cli/src/mem-init.ts:13: * @see {@link tools/lib/mem-init-core.mjs} - Core logic
+packages/@lumenflow/cli/src/mem-start.ts:13: * @see {@link tools/lib/mem-start-core.mjs} - Core logic
+packages/@lumenflow/cli/src/mem-summarize.ts:19: * @see {@link tools/lib/mem-summarize-core.mjs} - Core logic
+packages/@lumenflow/cli/src/wu-create.ts:34:// WU-1352: Use centralized YAML functions from wu-yaml.mjs
+packages/@lumenflow/cli/src/wu-edit.ts:27: * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
+packages/@lumenflow/cli/src/spawn-list.ts:13: * @see {@link tools/lib/spawn-tree.mjs} - Tree builder
+packages/@lumenflow/cli/src/gates.ts:35: *   node tools/gates.mjs                        # Tiered gates (default)
+packages/@lumenflow/cli/src/gates.ts:36: *   node tools/gates.mjs --docs-only            # Docs-only gates
+packages/@lumenflow/cli/src/gates.ts:37: *   node tools/gates.mjs --full-lint            # Full lint (bypass incremental)
+packages/@lumenflow/cli/src/gates.ts:38: *   node tools/gates.mjs --full-tests           # Full tests (bypass incremental)
+packages/@lumenflow/cli/src/gates.ts:39: *   node tools/gates.mjs --coverage-mode=block  # Coverage gate in block mode
+packages/@lumenflow/cli/src/mem-cleanup.ts:26: * @see {@link tools/lib/mem-cleanup-core.mjs} - Core logic
+packages/@lumenflow/cli/src/backlog-prune.ts:9: * WU-1106: INIT-003 Phase 3b - Migrate from ExampleApp tools/backlog-prune.mjs
+packages/@lumenflow/cli/src/mem-checkpoint.ts:13: * @see {@link tools/lib/mem-checkpoint-core.mjs} - Core logic
+packages/@lumenflow/cli/src/wu-repair.ts:44: * @see {@link tools/lib/wu-repair-core.mjs} - Core repair logic
+packages/@lumenflow/cli/src/wu-repair.ts:45: * @see {@link tools/lib/wu-consistency-checker.mjs} - Consistency detection/repair
+packages/@lumenflow/cli/src/wu-repair.ts:46: * @see {@link tools/lib/wu-state-store.mjs} - State file repair (repairStateFile)
+packages/@lumenflow/cli/src/wu-cleanup.ts:240:  // Use kebab-case lane naming (match wu-claim.mjs logic)
+packages/@lumenflow/cli/src/initiative-edit.ts:32: * @see {@link tools/lib/micro-worktree.mjs} - Shared micro-worktree logic
+packages/@lumenflow/cli/src/mem-triage.ts:19: * @see {@link tools/lib/mem-triage-core.mjs} - Core logic
