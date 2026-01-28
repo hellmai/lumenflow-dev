@@ -31,154 +31,143 @@ gates:
 
 Directory paths configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `appsWeb` | string | `"apps/web/"` |  |
-| `worktrees` | string | `"worktrees/"` |  |
-| `ai` | string | `"ai/"` |  |
-| `claude` | string | `".claude/"` |  |
-| `docs` | string | `"docs/"` |  |
-| `packages` | string | `"packages/"` |  |
-| `tools` | string | `"tools/"` |  |
-| `memoryBank` | string | `"memory-bank/"` |  |
-| `wuDir` | string | `"docs/04-operations/tasks/wu"` |  |
-| `initiativesDir` | string | `"docs/04-operations/tasks/i...` |  |
-| `backlogPath` | string | `"docs/04-operations/tasks/b...` |  |
-| `statusPath` | string | `"docs/04-operations/tasks/s...` |  |
-| `skillsDir` | string | `".claude/skills"` |  |
-| `agentsDir` | string | `".claude/agents"` |  |
+| Field            | Type   | Default                          | Description |
+| ---------------- | ------ | -------------------------------- | ----------- |
+| `appsWeb`        | string | `"apps/web/"`                    |             |
+| `worktrees`      | string | `"worktrees/"`                   |             |
+| `ai`             | string | `"ai/"`                          |             |
+| `claude`         | string | `".claude/"`                     |             |
+| `docs`           | string | `"docs/"`                        |             |
+| `packages`       | string | `"packages/"`                    |             |
+| `tools`          | string | `"tools/"`                       |             |
+| `memoryBank`     | string | `"memory-bank/"`                 |             |
+| `wuDir`          | string | `"docs/04-operations/tasks/wu"`  |             |
+| `initiativesDir` | string | `"docs/04-operations/tasks/i...` |             |
+| `backlogPath`    | string | `"docs/04-operations/tasks/b...` |             |
+| `statusPath`     | string | `"docs/04-operations/tasks/s...` |             |
+| `skillsDir`      | string | `".claude/skills"`               |             |
+| `agentsDir`      | string | `".claude/agents"`               |             |
 
 ### legacy
 
 Legacy paths configuration (._legacy directory structure)
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `base` | string | `".lumenflow"` |  |
-| `stateDir` | string | `".lumenflow/state"` |  |
-| `stampsDir` | string | `".lumenflow/stamps"` |  |
-| `mergeLock` | string | `".lumenflow/merge.lock"` |  |
-| `telemetry` | string | `".lumenflow/telemetry"` |  |
-| `flowLog` | string | `".lumenflow/flow.log"` |  |
-| `sessions` | string | `".lumenflow/sessions"` |  |
-| `incidents` | string | `".lumenflow/incidents"` |  |
-| `commandsLog` | string | `".lumenflow/commands.log"` |  |
+| Field         | Type   | Default                     | Description |
+| ------------- | ------ | --------------------------- | ----------- |
+| `base`        | string | `".lumenflow"`              |             |
+| `stateDir`    | string | `".lumenflow/state"`        |             |
+| `stampsDir`   | string | `".lumenflow/stamps"`       |             |
+| `mergeLock`   | string | `".lumenflow/merge.lock"`   |             |
+| `telemetry`   | string | `".lumenflow/telemetry"`    |             |
+| `flowLog`     | string | `".lumenflow/flow.log"`     |             |
+| `sessions`    | string | `".lumenflow/sessions"`     |             |
+| `incidents`   | string | `".lumenflow/incidents"`    |             |
+| `commandsLog` | string | `".lumenflow/commands.log"` |             |
 
 ### git
 
 Git configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `mainBranch` | string | `"main"` |  |
-| `defaultRemote` | string | `"origin"` |  |
-| `laneBranchPrefix` | string | `"lane/"` |  |
-| `tempBranchPrefix` | string | `"tmp/"` |  |
-| `realGitPath` | string | `"/usr/bin/git"` |  |
-| `maxBranchDrift` | integer | `20` |  |
-| `branchDriftWarning` | integer | `15` |  |
-| `branchDriftInfo` | integer | `10` |  |
-| `agentBranchPatterns` | string[] | `[]` |  |
-| `agentBranchPatternsOverride` | string[] | `-` |  |
-| `disableAgentPatternRegistry` | boolean | `false` |  |
+| Field                         | Type     | Default          | Description |
+| ----------------------------- | -------- | ---------------- | ----------- |
+| `mainBranch`                  | string   | `"main"`         |             |
+| `defaultRemote`               | string   | `"origin"`       |             |
+| `laneBranchPrefix`            | string   | `"lane/"`        |             |
+| `tempBranchPrefix`            | string   | `"tmp/"`         |             |
+| `realGitPath`                 | string   | `"/usr/bin/git"` |             |
+| `maxBranchDrift`              | integer  | `20`             |             |
+| `branchDriftWarning`          | integer  | `15`             |             |
+| `branchDriftInfo`             | integer  | `10`             |             |
+| `agentBranchPatterns`         | string[] | `[]`             |             |
+| `agentBranchPatternsOverride` | string[] | `-`              |             |
+| `disableAgentPatternRegistry` | boolean  | `false`          |             |
 
 ### wu
 
 WU (Work Unit) configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `idPattern` | string | `"^WU-\d+$"` |  |
-| `minDescriptionLength` | integer | `50` |  |
-| `maxCommitSubject` | integer | `100` |  |
-| `defaultPriority` | string | `"P2"` |  |
-| `defaultStatus` | string | `"ready"` |  |
-| `defaultType` | string | `"feature"` |  |
+| Field                  | Type    | Default      | Description |
+| ---------------------- | ------- | ------------ | ----------- |
+| `idPattern`            | string  | `"^WU-\d+$"` |             |
+| `minDescriptionLength` | integer | `50`         |             |
+| `maxCommitSubject`     | integer | `100`        |             |
+| `defaultPriority`      | string  | `"P2"`       |             |
+| `defaultStatus`        | string  | `"ready"`    |             |
+| `defaultType`          | string  | `"feature"`  |             |
 
 ### gates
 
 Quality gates configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `maxEslintWarnings` | integer | `100` |  |
-| `enableCoverage` | boolean | `true` |  |
-| `minCoverage` | number | `90` |  |
-| `enableSafetyCriticalTests` | boolean | `true` |  |
-| `enableInvariants` | boolean | `true` |  |
-| `execution` | object | `-` |  |
+| Field                       | Type    | Default | Description |
+| --------------------------- | ------- | ------- | ----------- |
+| `maxEslintWarnings`         | integer | `100`   |             |
+| `enableCoverage`            | boolean | `true`  |             |
+| `minCoverage`               | number  | `90`    |             |
+| `enableSafetyCriticalTests` | boolean | `true`  |             |
+| `enableInvariants`          | boolean | `true`  |             |
+| `execution`                 | object  | `-`     |             |
 
 ### memory
 
 Memory layer configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `directory` | string | `"memory-bank/"` |  |
-| `sessionTtl` | integer | `604800000` |  |
-| `checkpointTtl` | integer | `2592000000` |  |
-| `enableAutoCleanup` | boolean | `true` |  |
+| Field               | Type    | Default          | Description |
+| ------------------- | ------- | ---------------- | ----------- |
+| `directory`         | string  | `"memory-bank/"` |             |
+| `sessionTtl`        | integer | `604800000`      |             |
+| `checkpointTtl`     | integer | `2592000000`     |             |
+| `enableAutoCleanup` | boolean | `true`           |             |
 
 ### ui
 
 UI configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `errorBoxWidth` | integer | `70` |  |
-| `statusPreviewLines` | integer | `5` |  |
-| `readinessBoxWidth` | integer | `50` |  |
+| Field                | Type    | Default | Description |
+| -------------------- | ------- | ------- | ----------- |
+| `errorBoxWidth`      | integer | `70`    |             |
+| `statusPreviewLines` | integer | `5`     |             |
+| `readinessBoxWidth`  | integer | `50`    |             |
 
 ### yaml
 
 YAML serialization configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `lineWidth` | integer | `100` |  |
+| Field       | Type    | Default | Description |
+| ----------- | ------- | ------- | ----------- |
+| `lineWidth` | integer | `100`   |             |
 
 ### agents
 
 Agents configuration
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `defaultClient` | string | `"claude-code"` |  |
-| `clients` | object | `[object Object]` |  |
-| `methodology` | object | `[object Object]` |  |
+| Field           | Type   | Default           | Description |
+| --------------- | ------ | ----------------- | ----------- |
+| `defaultClient` | string | `"claude-code"`   |             |
+| `clients`       | object | `[object Object]` |             |
+| `methodology`   | object | `[object Object]` |             |
 
 ### agents.methodology
 
 Methodology defaults (agent-facing project defaults)
 
+| Field         | Type       | Default                          | Description  |
+| ------------- | ---------- | -------------------------------- | ------------ | --- |
+| `enabled`     | boolean    | `true`                           |              |
+| `enforcement` | "required" | "recommended"                    | `"required"` |     |
+| `principles`  | string[]   | `["TDD","Hexagonal Architect...` |              |
+| `notes`       | string     | `-`                              |              |
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `enabled` | boolean | `true` |  |
-| `enforcement` | "required" | "recommended" | `"required"` |  |
-| `principles` | string[] | `["TDD","Hexagonal Architect...` |  |
-| `notes` | string | `-` |  |
-
-### agents.clients.*
+### agents.clients.\*
 
 Client configuration (per-client settings)
 
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `preamble` | unknown | `-` |  |
-| `skillsDir` | string | `-` |  |
-| `blocks` | object[] | `[]` |  |
-| `skills` | object | `-` |  |
+| Field       | Type     | Default | Description |
+| ----------- | -------- | ------- | ----------- |
+| `preamble`  | unknown  | `-`     |             |
+| `skillsDir` | string   | `-`     |             |
+| `blocks`    | object[] | `[]`    |             |
+| `skills`    | object   | `-`     |             |
 
 ## Environment Overrides
 
@@ -188,11 +177,11 @@ Config values can be overridden via environment variables:
 LUMENFLOW_MAIN_BRANCH=develop pnpm wu:done --id WU-001
 ```
 
-| Variable | Overrides |
-|----------|-----------|
-| `LUMENFLOW_CONFIG` | Config file path |
-| `LUMENFLOW_MAIN_BRANCH` | `git.mainBranch` |
-| `LUMENFLOW_WU_SPECS` | `directories.wuDir` |
+| Variable                | Overrides           |
+| ----------------------- | ------------------- |
+| `LUMENFLOW_CONFIG`      | Config file path    |
+| `LUMENFLOW_MAIN_BRANCH` | `git.mainBranch`    |
+| `LUMENFLOW_WU_SPECS`    | `directories.wuDir` |
 
 ## Validation
 
