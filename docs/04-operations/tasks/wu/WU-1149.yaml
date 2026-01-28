@@ -1,7 +1,7 @@
 id: WU-1149
 title: Add LUMENFLOW.md reference to vendor configs
 lane: 'Content: Documentation'
-type: engineering
+type: feature
 status: in_progress
 priority: P2
 created: 2026-01-27
