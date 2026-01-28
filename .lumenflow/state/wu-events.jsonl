@@ -327,5 +327,5 @@
 {"type":"complete","wuId":"WU-1168","timestamp":"2026-01-28T20:06:56.687Z"}
 {"type":"claim","wuId":"WU-1169","timestamp":"2026-01-28T21:29:35.412Z","lane":"Framework: Core","title":"Prevent wu:done rollback on uncommitted changes"}
 {"type":"complete","wuId":"WU-1169","timestamp":"2026-01-28T22:30:45.074Z"}
-{"type":"claim","wuId":"WU-1170","lane":"Framework: Core","title":"Universal Agent Safety: Migrate Claude hooks to Husky/Scripts","timestamp":"2026-01-28T22:50:06.817Z"}
-{"type":"claim","wuId":"WU-1171","lane":"Framework: CLI","title":"Universal Agent Onboarding: AGENTS.md + Merge Mode","timestamp":"2026-01-29T11:41:19.209Z"}
+{"type":"claim","wuId":"WU-1170","timestamp":"2026-01-28T22:50:06.817Z","lane":"Framework: Core","title":"Universal Agent Safety: Migrate Claude hooks to Husky/Scripts"}
+{"type":"complete","wuId":"WU-1170","timestamp":"2026-01-28T23:06:41.503Z"}

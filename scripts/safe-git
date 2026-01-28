@@ -1,29 +1,84 @@
-#!/bin/sh
+#!/bin/bash
 #
 # safe-git
 #
-# A wrapper around git that blocks dangerous operations in the LumenFlow environment.
-# Specifically intercepts 'worktree remove' to prevent orphan directories and state corruption.
-# For all other commands, it passes through to the system git.
+# Universal git wrapper for LumenFlow Agent Safety.
+# Blocks dangerous operations and enforces worktree discipline.
+#
+# Context: WU-1170
 #
 
-set -e
+set -u
 
-# Block 'worktree remove'
-if [ "$1" = "worktree" ] && [ "$2" = "remove" ]; then
-  echo "" >&2
-  echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
-  echo "" >&2
-  echo "BLOCKED: Manual 'git worktree remove' is unsafe in this environment." >&2
-  echo "" >&2
-  echo "REASON: Manual removal leaves orphan directories and corrupts agent state." >&2
-  echo "" >&2
-  echo "USE INSTEAD:" >&2
-  echo "  pnpm wu:done --id <ID>    (To complete a task)" >&2
-  echo "  pnpm wu:cleanup --id <ID> (To discard a task)" >&2
-  echo "==============================" >&2
-  exit 1
+# Configuration
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+AUDIT_LOG_DIR="${REPO_ROOT}/audit"
+AUDIT_LOG="${AUDIT_LOG_DIR}/bad-actor-commands.log"
+
+# Setup audit logging
+mkdir -p "$AUDIT_LOG_DIR"
+
+log_audit() {
+    local reason="$1"
+    local command="$2"
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "${timestamp}|BLOCKED|${reason}|${command}" >> "$AUDIT_LOG"
+}
+
+block_command() {
+    local reason="$1"
+    local msg="$2"
+    local cmd_str="$3"
+    
+    log_audit "$reason" "$cmd_str"
+
+    echo "" >&2
+    echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
+    echo "" >&2
+    echo "BLOCKED: ${msg}" >&2
+    echo "" >&2
+    echo "REASON: ${reason}" >&2
+    echo "" >&2
+    echo "See 'docs/04-operations/plans/WU-1170-safety-alignment.md' for details." >&2
+    echo "==============================" >&2
+    exit 1
+}
+
+# Reconstruct command string for logging
+CMD_STR="git $*"
+
+# 1. Block 'worktree remove'
+if [ "$1" = "worktree" ] && [ "${2:-}" = "remove" ]; then
+    block_command \
+        "Manual worktree removal causes orphan states." \
+        "Manual 'git worktree remove' is forbidden." \
+        "$CMD_STR"
 fi
 
-# Pass through to real git
+# 2. Block 'reset --hard'
+if [ "$1" = "reset" ] && [[ " $* " == *" --hard "* ]]; then
+    block_command \
+        "Hard reset causes irreversible data loss." \
+        "'git reset --hard' is forbidden." \
+        "$CMD_STR"
+fi
+
+# 3. Block 'clean -fd'
+if [ "$1" = "clean" ] && [[ " $* " == *" -fd "* || " $* " == *" -df "* ]]; then
+    block_command \
+        "Recursive force clean permanently deletes untracked files." \
+        "'git clean -fd' is forbidden." \
+        "$CMD_STR"
+fi
+
+# 4. Block 'push --force'
+if [ "$1" = "push" ] && [[ " $* " == *" --force "* || " $* " == *" -f "* ]]; then
+    block_command \
+        "Force push rewrites history and disrupts others." \
+        "'git push --force' is forbidden." \
+        "$CMD_STR"
+fi
+
+# Pass through to system git
 exec git "$@"
