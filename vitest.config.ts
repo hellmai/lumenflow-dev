@@ -8,6 +8,7 @@ export default defineConfig({
       'packages/**/__tests__/**/*.test.ts',
       'packages/**/*.spec.ts',
       'apps/**/__tests__/**/*.test.ts',
+      'tools/**/__tests__/**/*.test.ts',
     ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     coverage: {

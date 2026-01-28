@@ -73,6 +73,7 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "node packages/@lumenflow/cli/dist/release.js",
+    "pre-release:check": "npx tsx tools/pre-release-checks.ts",
     "release:changeset": "pnpm build && changeset publish"
   },
   "devDependencies": {
