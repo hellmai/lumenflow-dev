@@ -293,7 +293,8 @@
 {"type":"claim","wuId":"WU-1153","timestamp":"2026-01-28T10:18:26.188Z","lane":"Framework: Core","title":"Add wu:done guard for uncommitted code_paths"}
 {"type":"complete","wuId":"WU-1159","timestamp":"2026-01-28T10:20:25.080Z"}
 {"type":"complete","wuId":"WU-1153","timestamp":"2026-01-28T10:42:31.035Z"}
-{"type":"claim","wuId":"WU-1158","lane":"Framework: Core","title":"Bug: Validators use hardcoded paths instead of config","timestamp":"2026-01-28T11:20:04.590Z"}
-{"type":"claim","wuId":"WU-1165","lane":"Framework: CLI","title":"Bug: incremental tests run full suite","timestamp":"2026-01-28T11:20:57.342Z"}
-{"type":"claim","wuId":"WU-1160","lane":"Framework: Memory","title":"Remove all stale .mjs references from TypeScript codebase","timestamp":"2026-01-28T11:24:27.895Z"}
-{"type":"claim","wuId":"WU-1163","lane":"Framework: Core","title":"Replace internal doc paths in error messages with lumenflow.dev URLs","timestamp":"2026-01-28T11:34:41.137Z"}
+{"type":"claim","wuId":"WU-1158","timestamp":"2026-01-28T11:20:04.590Z","lane":"Framework: Core","title":"Bug: Validators use hardcoded paths instead of config"}
+{"type":"claim","wuId":"WU-1165","timestamp":"2026-01-28T11:20:57.342Z","lane":"Framework: CLI","title":"Bug: incremental tests run full suite"}
+{"type":"claim","wuId":"WU-1160","timestamp":"2026-01-28T11:24:27.895Z","lane":"Framework: Memory","title":"Remove all stale .mjs references from TypeScript codebase"}
+{"type":"claim","wuId":"WU-1163","timestamp":"2026-01-28T11:34:41.137Z","lane":"Framework: Core","title":"Replace internal doc paths in error messages with lumenflow.dev URLs"}
+{"type":"complete","wuId":"WU-1163","timestamp":"2026-01-28T11:48:03.045Z"}
