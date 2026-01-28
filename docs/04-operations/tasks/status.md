@@ -8,12 +8,12 @@ _Last updated: 2026-01-28_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml)
-- [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml)
 - [WU-1161 — Document all CLI commands in README and verify completeness](wu/WU-1161.yaml)
 - [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml)
 
 ## Completed
 
+- [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — 2026-01-28
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
