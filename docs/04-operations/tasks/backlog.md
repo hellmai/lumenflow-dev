@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1167 — Fix mem:cleanup require vs import error](wu/WU-1167.yaml) — Framework: CLI
 - [WU-1151 — Add consumer integration tests for npm package usage](wu/WU-1151.yaml) — Framework: Core
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
 - [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
