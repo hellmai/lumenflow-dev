@@ -12,3 +12,6 @@ node_modules/
 *.gen.ts
 .astro/
 .vercel/
+
+# Config files that shouldn't be formatted
+.gitignore
