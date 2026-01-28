@@ -30,6 +30,7 @@ import { PATTERNS, TEST_TYPES, LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { BaseWUSchema } from './wu-schema.js';
 // WU-1810: Import fixer to detect fixable issues
 import { detectFixableIssues, FIXABLE_ISSUES } from './wu-yaml-fixer.js';
+import fg from 'fast-glob';
 
 /**
  * Result structure for preflight validation
