@@ -108,7 +108,6 @@ export async function buildDependencyGraphAsync() {
   return graph;
 }
 
-
 /**
  * Get all dependencies (upstream: blocked_by) for a WU.
  *

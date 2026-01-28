@@ -168,7 +168,6 @@ export async function readWUAsync(wuPath, expectedId) {
   }
 }
 
-
 /**
  * Parse YAML string to object.
  * WU-1352: Centralized YAML parsing for consistency.
@@ -257,7 +256,6 @@ export async function readWURawAsync(yamlPath) {
     throw err;
   }
 }
-
 
 /**
  * Write WU YAML file with consistent formatting.
