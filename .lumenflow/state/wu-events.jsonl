@@ -319,5 +319,6 @@
 {"type":"complete","wuId":"WU-1167","timestamp":"2026-01-28T14:10:52.856Z"}
 {"type":"complete","wuId":"WU-1155","timestamp":"2026-01-28T14:16:52.918Z"}
 {"type":"complete","wuId":"WU-1164","timestamp":"2026-01-28T14:40:49.515Z"}
-{"type":"claim","wuId":"WU-1151","lane":"Framework: Core","title":"Add consumer integration tests for npm package usage","timestamp":"2026-01-28T15:17:01.292Z"}
-{"type":"claim","wuId":"WU-1154","lane":"Framework: Core","title":"Improve preflight test path mismatch guidance","timestamp":"2026-01-28T15:17:36.728Z"}
+{"type":"claim","wuId":"WU-1151","timestamp":"2026-01-28T15:17:01.292Z","lane":"Framework: Core","title":"Add consumer integration tests for npm package usage"}
+{"type":"claim","wuId":"WU-1154","timestamp":"2026-01-28T15:17:36.728Z","lane":"Framework: Core","title":"Improve preflight test path mismatch guidance"}
+{"type":"complete","wuId":"WU-1151","timestamp":"2026-01-28T15:34:07.914Z"}
