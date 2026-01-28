@@ -2,7 +2,7 @@ id: WU-1158
 title: 'Bug: Validators use hardcoded paths instead of config'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -71,3 +71,11 @@ acceptance:
   - Default paths remain docs/04-operations/tasks/wu for backwards compatibility
   - Unit tests cover custom wuDir configuration
   - Consumer repo with .lumenflow/wus/ passes gates without skip-gates
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1158
+claimed_at: 2026-01-28T11:20:04.574Z
+baseline_main_sha: aca6e769178f0ef687dbc0c34ec1b77208b47967
+session_id: 852fff34-1ca3-4627-81dd-41dd7408508e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T11:20:04.579Z
