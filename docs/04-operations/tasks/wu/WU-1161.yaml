@@ -5,7 +5,8 @@ type: documentation
 status: ready
 priority: P2
 created: 2026-01-28
-code_paths: []
+code_paths:
+  - packages/@lumenflow/cli/README.md
 tests:
   manual:
     - Extract bin count and compare to README documented count - must match
@@ -24,15 +25,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  The @lumenflow/cli README only documents ~30 commands but the package exposes ~70+ bin entries. Critical commands like validate-backlog-sync, lumenflow-upgrade, wu-status are undocumented. Agents cannot discover these commands exist.
+description: >-
+  The @lumenflow/cli README only documents ~30 commands but the package exposes ~70+ bin entries.
+  Critical commands like validate-backlog-sync, lumenflow-upgrade, wu-status are undocumented.
+  Agents cannot discover these commands exist.
+
 
   AGENT INSTRUCTIONS - FILE SWEEP REQUIRED:
-  1. Extract all bin entries: cat packages/@lumenflow/cli/package.json | grep -A200 bin | grep -oP '"[a-z-]+":' | tr -d '":' | sort > /tmp/all-commands.txt
+
+  1. Extract all bin entries: cat packages/@lumenflow/cli/package.json | grep -A200 bin | grep -oP
+  '"[a-z-]+":' | tr -d '":' | sort > /tmp/all-commands.txt
+
   2. Extract documented commands from README.md
+
   3. Diff to find undocumented commands
+
   4. For each missing command, run npx <command> --help to get description
+
   5. Add to appropriate section in README with description and usage example
+
   6. Verify final count matches bin entries count
 acceptance:
   - All bin entries in package.json are documented in README.md
