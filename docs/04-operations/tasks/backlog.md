@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml) — Framework: CLI
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
 - [WU-1151 — Add consumer integration tests for npm package usage](wu/WU-1151.yaml) — Framework: Core
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
