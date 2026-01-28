@@ -88,6 +88,7 @@ export async function executePreflightCodePathValidation(
     errors: result.errors,
     missingCodePaths: result.missingCodePaths || [],
     missingTestPaths: result.missingTestPaths || [],
+    suggestedTestPaths: result.suggestedTestPaths || {},
     abortedBeforeGates: true,
   };
 }
@@ -96,7 +97,12 @@ export async function executePreflightCodePathValidation(
  * WU-1805: Build preflight code_paths error message with actionable guidance
  */
 export function buildPreflightCodePathErrorMessage(id, result) {
-  const { errors, missingCodePaths = [], missingTestPaths = [] } = result;
+  const {
+    errors,
+    missingCodePaths = [],
+    missingTestPaths = [],
+    suggestedTestPaths = {} as Record<string, string[]>
+  } = result as { suggestedTestPaths?: Record<string, string[]> } & typeof result;
 
   let message = `
 ❌ PREFLIGHT CODE_PATHS VALIDATION FAILED
@@ -127,6 +133,25 @@ Fix options for missing test_paths:
   3. Use tests.manual for descriptions instead of file paths
 
 `;
+  }
+
+  // Add suggested paths if available
+  const suggestionsMap = suggestedTestPaths as Record<string, string[]>;
+  const hasSuggestions = Object.keys(suggestionsMap).some(
+    (missingPath) => suggestionsMap[missingPath]?.length > 0
+  );
+
+  if (hasSuggestions) {
+    message += `Suggested alternatives found:
+`;
+    for (const [missingPath, suggestions] of Object.entries(suggestionsMap)) {
+      if (suggestions.length > 0) {
+        message += `For "${missingPath}":
+${suggestions.map((s) => `  - ${s}`).join('\n')}
+
+`;
+      }
+    }
   }
 
   message += `
