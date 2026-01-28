@@ -8,5 +8,25 @@ This contains all the rules you must follow, including:
 - Worktree discipline (never edit files in main checkout)
 - Gate failures and recovery
 - LUMENFLOW_FORCE usage
+- Spawning sub-agents with wu:spawn
 
 DO NOT skip reading the starting-prompt.md - it prevents the most common failures.
+
+## Windsurf-Specific Guidance
+
+You are running in the Windsurf IDE environment. When spawning sub-agents, use:
+
+```bash
+pnpm wu:spawn --id WU-XXXX --client windsurf
+```
+
+The `--client windsurf` flag identifies Windsurf as your IDE environment, regardless of which AI model Windsurf is using.
+
+## Key Reminders for Windsurf Users
+
+- Always work in the worktree, never main checkout
+- Use relative paths from worktree root
+- Run `pnpm gates` before `pnpm wu:done`
+- Reference LUMENFLOW.md for complete workflow documentation
+
+See also: LUMENFLOW.md
