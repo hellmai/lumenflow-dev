@@ -2,7 +2,7 @@ id: WU-1155
 title: Fix agent verification command references
 lane: 'Framework: CLI'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -27,8 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Docs and spawn output reference a non-existent agent-verification.mjs. Update documentation and spawn guidance to use the actual agent verification entry point.
+description: Docs and spawn output reference a non-existent agent-verification.mjs. Update
+  documentation and spawn guidance to use the actual agent verification entry point.
 acceptance:
   - docs reference the correct agent verification command
   - wu:spawn output references the correct command
   - manual verification confirms docs and prompt output align
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1155
+claimed_at: 2026-01-28T14:08:30.809Z
+baseline_main_sha: 2315986102514061bae9a804e84105eedb31e8d1
+session_id: a291d0f1-f6cd-4d42-ab13-c8bb8cd4b227
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T14:08:30.817Z
