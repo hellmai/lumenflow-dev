@@ -39,6 +39,7 @@ import {
 } from '@lumenflow/metrics';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+import { createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[metrics]';
@@ -46,8 +47,10 @@ const LOG_PREFIX = '[metrics]';
 /** Default snapshot output path */
 const DEFAULT_OUTPUT = '.lumenflow/snapshots/metrics-latest.json';
 
+const wuPaths = createWuPaths();
+
 /** WU directory relative to repo root */
-const WU_DIR = 'docs/04-operations/tasks/wu';
+const WU_DIR = wuPaths.WU_DIR();
 
 /** Skip-gates audit file path */
 const SKIP_GATES_PATH = '.lumenflow/skip-gates-audit.ndjson';

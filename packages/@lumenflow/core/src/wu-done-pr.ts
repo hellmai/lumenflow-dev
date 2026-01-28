@@ -15,6 +15,7 @@ import { execSync } from 'node:child_process';
 import { getGitForCwd } from './git-adapter.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { LOG_PREFIX, EMOJI, REMOTES, FILE_SYSTEM, STDIO } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 
 /**
  * @typedef {Object} PRContext
@@ -117,7 +118,8 @@ export async function createPR(context) {
  * @returns {string} PR body markdown
  */
 export function buildPRBody(doc, id) {
-  const wuPath = `docs/04-operations/tasks/wu/${id}.yaml`;
+  const paths = createWuPaths();
+  const wuPath = paths.WU(id);
   const description = doc.description || doc.problem || '';
   const acceptance = doc.acceptance_criteria || doc.acceptance || {};
 

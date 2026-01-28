@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
 import { verifyWUComplete, debugSummary } from '../src/agent-verification.js';
 
 // Mock the external dependencies
@@ -16,11 +17,14 @@ vi.mock('node:child_process', () => ({
 
 vi.mock('node:fs', () => ({
   existsSync: vi.fn(),
+  readFileSync: vi.fn(),
 }));
 
 describe('verifyWUComplete', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(existsSync).mockReturnValue(false);
+    vi.mocked(readFileSync).mockReturnValue('');
   });
 
   describe('WU ID validation', () => {
@@ -137,6 +141,31 @@ describe('verifyWUComplete', () => {
       expect(result.failures).toHaveLength(1);
       expect(result.failures[0]).toContain('No commit on main');
       expect(result.failures[0]).toContain('docs/04-operations/tasks/wu/WU-1234.yaml');
+    });
+  });
+
+  describe('Configurable paths', () => {
+    it('uses wuDir from config when checking commit history', () => {
+      const mockRun = vi.fn(() => '');
+      const mockExists = vi.fn(() => true);
+
+      vi.mocked(existsSync).mockImplementation((filePath: string) =>
+        String(filePath).endsWith('.lumenflow.config.yaml'),
+      );
+      vi.mocked(readFileSync).mockImplementation((filePath: string) => {
+        if (String(filePath).endsWith('.lumenflow.config.yaml')) {
+          return 'directories:\n  wuDir: ".lumenflow/wus"\n';
+        }
+        return '';
+      });
+
+      verifyWUComplete('WU-1234', {
+        run: mockRun,
+        exists: mockExists,
+        projectRoot: '/tmp/project',
+      });
+
+      expect(mockRun).toHaveBeenCalledWith(expect.stringContaining('.lumenflow/wus/WU-1234.yaml'));
     });
   });
 

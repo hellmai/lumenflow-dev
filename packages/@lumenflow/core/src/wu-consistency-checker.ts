@@ -17,7 +17,7 @@ import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';
 import { constants, existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
-import { WU_PATHS } from './wu-paths.js';
+import { createWuPaths, WU_PATHS } from './wu-paths.js';
 import {
   CONSISTENCY_TYPES,
   CONSISTENCY_MESSAGES,
@@ -42,10 +42,11 @@ import { withMicroWorktree } from './micro-worktree.js';
  */
 export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   const errors = [];
-  const wuPath = path.join(projectRoot, WU_PATHS.WU(id));
-  const stampPath = path.join(projectRoot, WU_PATHS.STAMP(id));
-  const backlogPath = path.join(projectRoot, WU_PATHS.BACKLOG());
-  const statusPath = path.join(projectRoot, WU_PATHS.STATUS());
+  const paths = createWuPaths({ projectRoot });
+  const wuPath = path.join(projectRoot, paths.WU(id));
+  const stampPath = path.join(projectRoot, paths.STAMP(id));
+  const backlogPath = path.join(projectRoot, paths.BACKLOG());
+  const statusPath = path.join(projectRoot, paths.STATUS());
 
   // Handle missing WU YAML gracefully
   try {
@@ -203,7 +204,8 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
  * @returns {Promise<object>} Aggregated report with valid, errors, and checked count
  */
 export async function checkAllWUConsistency(projectRoot = process.cwd()) {
-  const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu');
+  const paths = createWuPaths({ projectRoot });
+  const wuDir = path.join(projectRoot, paths.WU_DIR());
   try {
     await access(wuDir, constants.R_OK);
   } catch {
@@ -235,7 +237,8 @@ export async function checkAllWUConsistency(projectRoot = process.cwd()) {
  * @returns {Promise<object>} Result with valid, orphans list, and reports
  */
 export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = process.cwd()) {
-  const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu');
+  const paths = createWuPaths({ projectRoot });
+  const wuDir = path.join(projectRoot, paths.WU_DIR());
   try {
     await access(wuDir, constants.R_OK);
   } catch {
@@ -624,7 +627,8 @@ async function updateYamlToDoneInWorktree(
   worktreePath: string,
   projectRoot: string,
 ): Promise<string[]> {
-  const wuRelPath = WU_PATHS.WU(id);
+  const paths = createWuPaths({ projectRoot });
+  const wuRelPath = paths.WU(id);
   const wuSrcPath = path.join(projectRoot, wuRelPath);
   const wuDestPath = path.join(worktreePath, wuRelPath);
 
@@ -671,7 +675,8 @@ async function updateYamlToDoneInWorktree(
  * @returns {Promise<void>}
  */
 async function updateYamlToDone(id: string, projectRoot: string) {
-  const wuPath = path.join(projectRoot, WU_PATHS.WU(id));
+  const paths = createWuPaths({ projectRoot });
+  const wuPath = path.join(projectRoot, paths.WU(id));
 
   // Read current YAML
   const content = await readFile(wuPath, { encoding: 'utf-8' });
@@ -873,7 +878,8 @@ async function removeOrphanWorktree(id, lane, projectRoot) {
   }
 
   // 🚨 SAFETY GUARD 3: Check stamp exists (not rollback state)
-  const stampPath = path.join(projectRoot, WU_PATHS.STAMP(id));
+  const paths = createWuPaths({ projectRoot });
+  const stampPath = path.join(projectRoot, paths.STAMP(id));
   try {
     await access(stampPath, constants.R_OK);
   } catch {

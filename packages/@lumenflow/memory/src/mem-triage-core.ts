@@ -17,12 +17,8 @@ import path from 'node:path';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
+import { createWuPaths } from '@lumenflow/core/lib/wu-paths.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
-
-/**
- * WU directory path relative to base
- */
-const WU_DIR = 'docs/04-operations/tasks/wu';
 
 /**
  * Relationships file name
@@ -402,7 +398,8 @@ export interface PromoteResult {
  * @returns Next WU ID (e.g., 'WU-1502')
  */
 async function getNextWuId(baseDir: string): Promise<string> {
-  const wuDir = path.join(baseDir, WU_DIR);
+  const paths = createWuPaths({ projectRoot: baseDir });
+  const wuDir = path.join(baseDir, paths.WU_DIR());
   let maxId = 0;
 
   try {

@@ -30,6 +30,30 @@ describe('validateBacklogSync', () => {
     cleanupTempDir(tmpDir);
   });
 
+  it('respects custom wuDir and backlogPath from config', async () => {
+    const configPath = path.join(tmpDir, '.lumenflow.config.yaml');
+    const customWuDir = path.join('.lumenflow', 'wus');
+    const customBacklog = path.join('.lumenflow', 'backlog.md');
+
+    writeFileSync(
+      configPath,
+      `directories:\n  wuDir: "${customWuDir}"\n  backlogPath: "${customBacklog}"\n`,
+    );
+
+    mkdirSync(path.join(tmpDir, customWuDir), { recursive: true });
+    writeFileSync(
+      path.join(tmpDir, customWuDir, 'WU-003.yaml'),
+      'id: WU-003\ntitle: Custom WU\nstatus: ready',
+    );
+
+    const backlogContent = `# Backlog\n\n## Ready\n- WU-003: Custom WU\n`;
+    writeFileSync(path.join(tmpDir, customBacklog), backlogContent);
+
+    const result = await validateBacklogSync({ cwd: tmpDir });
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
   it('passes when backlog.md lists all WU YAML files', async () => {
     writeFileSync(
       path.join(tmpDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-001.yaml'),
