@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1164 — Add pre-commit hook validation for WU YAML files](wu/WU-1164.yaml) — Framework: Core
 - [WU-1158 — Bug: Validators use hardcoded paths instead of config](wu/WU-1158.yaml) — Framework: Core
 - [WU-1163 — Replace internal doc paths in error messages with lumenflow.dev URLs](wu/WU-1163.yaml) — Framework: Core
 - [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — Framework: CLI
