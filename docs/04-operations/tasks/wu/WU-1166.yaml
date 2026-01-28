@@ -6,9 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-validation.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+  - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual: []
   unit:
