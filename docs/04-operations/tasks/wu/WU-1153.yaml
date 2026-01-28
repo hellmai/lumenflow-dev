@@ -2,7 +2,7 @@ id: WU-1153
 title: Add wu:done guard for uncommitted code_paths
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -26,8 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:done can roll back metadata after commit if code_paths were not committed, risking lost work. Add a preflight guard that checks code_paths are committed before metadata writes.
+description: wu:done can roll back metadata after commit if code_paths were not committed, risking
+  lost work. Add a preflight guard that checks code_paths are committed before metadata writes.
 acceptance:
   - wu:done aborts before metadata commit when code_paths are uncommitted
   - error message instructs user to commit code changes
   - unit test covers the guard
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1153
+claimed_at: 2026-01-28T10:18:26.168Z
+baseline_main_sha: 365d738681c77842de6b823374766f3adecf8b16
+session_id: defc0ebd-97d0-40e6-aaf7-54563ec676c1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T10:18:26.172Z
