@@ -294,3 +294,4 @@
 {"type":"complete","wuId":"WU-1159","timestamp":"2026-01-28T10:20:25.080Z"}
 {"type":"complete","wuId":"WU-1153","timestamp":"2026-01-28T10:42:31.035Z"}
 {"type":"claim","wuId":"WU-1158","lane":"Framework: Core","title":"Bug: Validators use hardcoded paths instead of config","timestamp":"2026-01-28T11:20:04.590Z"}
+{"type":"claim","wuId":"WU-1165","lane":"Framework: CLI","title":"Bug: incremental tests run full suite","timestamp":"2026-01-28T11:20:57.342Z"}
