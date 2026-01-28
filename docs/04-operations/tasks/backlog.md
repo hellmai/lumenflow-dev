@@ -22,7 +22,6 @@ sections:
 
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
 - [WU-1151 — Add consumer integration tests for npm package usage](wu/WU-1151.yaml) — Framework: Core
-- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — Framework: Core
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
 - [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
 - [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml) — Framework: Agent
@@ -40,6 +39,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml) — Framework: CLI
+- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
