@@ -1,0 +1,31 @@
+id: WU-1168
+title: Investigate dependency-graph test timeouts
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-28
+code_paths:
+  - packages/@lumenflow/core/src/dependency-graph.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/dependency-graph.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1168.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Investigate and fix 5s timeouts in dependency-graph tests seen in CI/local runs.
+acceptance:
+  - dependency-graph tests pass consistently without timeouts
+  - Root cause of timeouts identified and fixed
