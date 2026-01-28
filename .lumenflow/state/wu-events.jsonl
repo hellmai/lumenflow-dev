@@ -310,3 +310,4 @@
 {"type":"complete","wuId":"WU-1162","timestamp":"2026-01-28T12:58:56.136Z"}
 {"type":"complete","wuId":"WU-1156","timestamp":"2026-01-28T13:04:08.031Z"}
 {"type":"complete","wuId":"WU-1161","timestamp":"2026-01-28T13:13:31.823Z"}
+{"type":"claim","wuId":"WU-1157","lane":"Framework: CLI","title":"Stabilize docs:generate formatting drift","timestamp":"2026-01-28T13:14:18.344Z"}
