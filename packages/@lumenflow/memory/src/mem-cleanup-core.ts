@@ -31,6 +31,8 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ms = require('ms') as (value: string) => number;
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
