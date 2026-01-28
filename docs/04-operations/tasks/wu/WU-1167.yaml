@@ -1,8 +1,8 @@
 id: WU-1167
 title: Fix mem:cleanup require vs import error
-lane: 'Framework: CLI'
+lane: 'Framework: Memory'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -25,7 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: The mem:cleanup command fails with 'ReferenceError: require is not defined'. Problem: @lumenflow/memory build or source uses CommonJS 'require' in an ES Module context. Solution: Fix build configuration or source code to ensure proper ESM compatibility."
+description: "Context: The mem:cleanup command fails with 'ReferenceError: require is not defined'.
+  Problem: @lumenflow/memory build or source uses CommonJS 'require' in an ES Module context.
+  Solution: Fix build configuration or source code to ensure proper ESM compatibility."
 acceptance:
   - pnpm mem:cleanup --help returns exit code 0
   - pnpm mem:cleanup performs cleanup without crashing
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1167
+claimed_at: 2026-01-28T13:31:07.331Z
+baseline_main_sha: 793980e1b47d71e06212bb413b5fda969261f15c
+session_id: fa3feb73-5757-445a-a89c-c00e7de56098
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T13:31:07.336Z
