@@ -21,6 +21,11 @@ import {
 } from '../dist/wu-done.js';
 import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
 
+// Mock die function for WU-1153 tests
+vi.mock('@lumenflow/core/dist/error-handler.js', () => ({
+  die: vi.fn(),
+}));
+
 describe('wu:done --docs-only flag (WU-1012)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -287,6 +292,244 @@ describe('post-merge dirty state detection (WU-1084)', () => {
       const result = checkPostMergeDirtyState(gitStatus, wuId);
 
       expect(result.isDirty).toBe(false);
+    });
+  });
+});
+
+/**
+ * WU-1153: wu:done guard for uncommitted code_paths
+ *
+ * Tests that wu:done aborts before metadata commit when code_paths are uncommitted.
+ * This prevents lost work from metadata rollbacks after code commits.
+ */
+describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('validateCodePathsCommittedBeforeDone', () => {
+    it('should pass when all code_paths are committed', async () => {
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(''), // Clean status
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+      };
+
+      // Import the function we're testing
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.uncommittedPaths).toEqual([]);
+    });
+
+    it('should pass when code_paths is empty', async () => {
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(''), // Clean status
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: [],
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.uncommittedPaths).toEqual([]);
+    });
+
+    it('should pass when code_paths is undefined', async () => {
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(''), // Clean status
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: undefined,
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+      expect(result.uncommittedPaths).toEqual([]);
+    });
+
+    it('should detect uncommitted code_paths', async () => {
+      const mockGitAdapter = {
+        getStatus: vi
+          .fn()
+          .mockResolvedValue(
+            ' M packages/@lumenflow/cli/src/wu-done.ts\n' +
+              '?? packages/@lumenflow/cli/src/new-file.ts',
+          ),
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: [
+          'packages/@lumenflow/cli/src/wu-done.ts',
+          'packages/@lumenflow/cli/src/new-file.ts',
+          'packages/@lumenflow/cli/src/committed.ts', // This one is not in status
+        ],
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.uncommittedPaths).toEqual([
+        'packages/@lumenflow/cli/src/wu-done.ts',
+        'packages/@lumenflow/cli/src/new-file.ts',
+      ]);
+    });
+
+    it('should handle different git status formats', async () => {
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(
+          'M  packages/@lumenflow/cli/src/wu-done.ts\n' + // Modified but staged
+            ' A  packages/@lumenflow/cli/src/added.ts\n' + // Added but staged
+            ' D  packages/@lumenflow/cli/src/deleted.ts\n' + // Deleted but staged
+            '?? packages/@lumenflow/cli/src/untracked.ts', // Untracked (not staged)
+        ),
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: [
+          'packages/@lumenflow/cli/src/wu-done.ts',
+          'packages/@lumenflow/cli/src/added.ts',
+          'packages/@lumenflow/cli/src/deleted.ts',
+          'packages/@lumenflow/cli/src/untracked.ts',
+        ],
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
+      expect(result.valid).toBe(false);
+      expect(result.uncommittedPaths).toEqual([
+        'packages/@lumenflow/cli/src/wu-done.ts',
+        'packages/@lumenflow/cli/src/added.ts',
+        'packages/@lumenflow/cli/src/deleted.ts',
+        'packages/@lumenflow/cli/src/untracked.ts',
+      ]);
+    });
+  });
+
+  describe('buildCodePathsCommittedErrorMessage', () => {
+    it('should build proper error message', async () => {
+      const id = 'WU-1153';
+      const uncommittedPaths = [
+        'packages/@lumenflow/cli/src/wu-done.ts',
+        'packages/@lumenflow/cli/src/new-file.ts',
+      ];
+
+      const { buildCodePathsCommittedErrorMessage } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+      const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
+
+      expect(message).toContain('WU-1153');
+      expect(message).toContain('code_paths are not committed');
+      expect(message).toContain('packages/@lumenflow/cli/src/wu-done.ts');
+      expect(message).toContain('packages/@lumenflow/cli/src/new-file.ts');
+      expect(message).toContain('git add');
+      expect(message).toContain('git commit');
+    });
+
+    it('should handle single uncommitted path', async () => {
+      const id = 'WU-1153';
+      const uncommittedPaths = ['packages/@lumenflow/cli/src/wu-done.ts'];
+
+      const { buildCodePathsCommittedErrorMessage } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+      const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
+
+      expect(message).toContain('1 code_path is not committed');
+      expect(message).toContain('packages/@lumenflow/cli/src/wu-done.ts');
+    });
+
+    it('should handle multiple uncommitted paths', async () => {
+      const id = 'WU-1153';
+      const uncommittedPaths = [
+        'packages/@lumenflow/cli/src/file1.ts',
+        'packages/@lumenflow/cli/src/file2.ts',
+        'packages/@lumenflow/cli/src/file3.ts',
+      ];
+
+      const { buildCodePathsCommittedErrorMessage } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+      const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
+
+      expect(message).toContain('3 code_paths are not committed');
+      expect(message).toContain('file1.ts');
+      expect(message).toContain('file2.ts');
+      expect(message).toContain('file3.ts');
+    });
+  });
+
+  describe('integration with die function', () => {
+    it('should call die when validation fails and abort flag is true', async () => {
+      const { die } = await import('@lumenflow/core/dist/error-handler.js');
+      const mockDie = vi.mocked(die);
+
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(' M packages/@lumenflow/cli/src/wu-done.ts'),
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter, { abortOnFailure: true });
+
+      expect(mockDie).toHaveBeenCalledWith(
+        expect.stringContaining('WU-1153') &&
+          expect.stringContaining('code_paths are not committed'),
+      );
+    });
+
+    it('should not call die when abort flag is false', async () => {
+      const { die } = await import('@lumenflow/core/dist/error-handler.js');
+      const mockDie = vi.mocked(die);
+
+      const mockGitAdapter = {
+        getStatus: vi.fn().mockResolvedValue(' M packages/@lumenflow/cli/src/wu-done.ts'),
+      };
+
+      const wu = {
+        id: 'WU-1153',
+        code_paths: ['packages/@lumenflow/cli/src/wu-done.ts'],
+      };
+
+      const { validateCodePathsCommittedBeforeDone } =
+        await import('@lumenflow/core/dist/wu-done-validation.js');
+
+      await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter, { abortOnFailure: false });
+
+      expect(mockDie).not.toHaveBeenCalled();
     });
   });
 });

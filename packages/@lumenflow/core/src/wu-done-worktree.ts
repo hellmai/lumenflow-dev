@@ -51,6 +51,7 @@ import { getDriftLevel, DRIFT_LEVELS } from './branch-drift.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createRecoveryError, createValidationError } from './wu-done-errors.js';
 import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
+import { validateCodePathsCommittedBeforeDone } from './wu-done-validation.js';
 import { assertTransition } from './state-machine.js';
 import {
   detectZombieState,
@@ -303,6 +304,23 @@ export async function executeWorktreeCompletion(context) {
         `Cannot mark WU as done - spec incomplete:\n  ${completenessResult.errors.join('\n  ')}\n\nNext step: Update ${workingWUPath} to meet completion requirements and rerun wu:done`,
         { wuId: id },
       );
+    }
+
+    // WU-1153: Validate code_paths are committed before metadata transaction
+    // This prevents lost work from metadata rollbacks after code commits
+    console.log(`${LOG_PREFIX.DONE} Checking code_paths commit status (WU-1153)...`);
+    const gitAdapter = getGitForCwd();
+    const codePathsResult = await validateCodePathsCommittedBeforeDone(
+      normalizeResult.normalized,
+      gitAdapter,
+      { abortOnFailure: false }, // Don't abort here, throw validation error instead
+    );
+
+    if (!codePathsResult.valid) {
+      const errorMessage = await import('./wu-done-validation.js').then((m) =>
+        m.buildCodePathsCommittedErrorMessage(id, codePathsResult.uncommittedPaths),
+      );
+      throw createValidationError(errorMessage, { wuId: id });
     }
 
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} All validations passed`);

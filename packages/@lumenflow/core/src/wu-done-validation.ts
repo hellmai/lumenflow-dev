@@ -6,6 +6,7 @@ import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { getGitForCwd } from './git-adapter.js';
 import { parseYAML } from './wu-yaml.js';
+import { die } from './error-handler.js';
 import {
   BRANCHES,
   EMOJI,
@@ -430,5 +431,130 @@ Allowed paths for documentation WUs:
   - *.md files
 
 After fixing, retry: pnpm wu:done --id ${id}
+`;
+}
+
+/**
+ * WU-1153: Validate that code_paths are committed before wu:done metadata updates
+ *
+ * Prevents lost work by ensuring all code_paths are committed before metadata
+ * transaction starts. If code_paths are uncommitted and metadata transaction
+ * fails, the rollback could lose the uncommitted code changes.
+ *
+ * @param {object} wu - WU YAML document
+ * @param {object} gitAdapter - Git adapter instance
+ * @param {object} options - Validation options
+ * @param {boolean} [options.abortOnFailure=true] - Whether to call die() on failure
+ * @returns {Promise<{valid: boolean, errors: string[], uncommittedPaths: string[]}>}
+ */
+export async function validateCodePathsCommittedBeforeDone(
+  wu: Record<string, unknown>,
+  gitAdapter: { getStatus: () => Promise<string> },
+  options: { abortOnFailure?: boolean } = {},
+): Promise<{ valid: boolean; errors: string[]; uncommittedPaths: string[] }> {
+  const { abortOnFailure = true } = options;
+  const errors: string[] = [];
+  const uncommittedPaths: string[] = [];
+
+  // Skip validation if no code_paths
+  const codePaths = wu.code_paths as string[] | undefined;
+  if (!codePaths || codePaths.length === 0) {
+    return { valid: true, errors: [], uncommittedPaths: [] };
+  }
+
+  try {
+    // Get git status to check for uncommitted files
+    const gitStatus = await gitAdapter.getStatus();
+
+    // Parse git status output to find uncommitted files
+    const statusLines = gitStatus.split('\n').filter((line) => line.trim());
+
+    // Create a Set of uncommitted file paths for efficient lookup
+    const uncommittedFiles = new Set<string>();
+
+    for (const line of statusLines) {
+      // Git status porcelain format:
+      // XY PATH
+      // where X = staged, Y = working tree
+      // We care about any file that's not in a clean state
+      const match = line.match(/^.{2}\s+(.+)$/);
+      if (match) {
+        const filePath = match[1];
+        uncommittedFiles.add(filePath);
+      }
+    }
+
+    // Check each code_path against uncommitted files
+    for (const codePath of codePaths) {
+      if (uncommittedFiles.has(codePath)) {
+        uncommittedPaths.push(codePath);
+      }
+    }
+
+    // If any code_paths are uncommitted, validation fails
+    if (uncommittedPaths.length > 0) {
+      const count = uncommittedPaths.length;
+      const pathList = uncommittedPaths.map((p) => `  - ${p}`).join('\n');
+
+      errors.push(`${count} code_path${count === 1 ? '' : 's'} are not committed:\n${pathList}`);
+
+      if (abortOnFailure) {
+        const errorMessage = buildCodePathsCommittedErrorMessage(wu.id as string, uncommittedPaths);
+        die(errorMessage);
+      }
+    }
+  } catch (err) {
+    // If git status fails, warn but don't block (non-fatal)
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths commit status: ${err instanceof Error ? err.message : String(err)}`,
+    );
+    return { valid: true, errors: [], uncommittedPaths: [] };
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    uncommittedPaths,
+  };
+}
+
+/**
+ * WU-1153: Build error message for uncommitted code_paths validation failure
+ *
+ * @param {string} wuId - WU ID
+ * @param {string[]} uncommittedPaths - List of uncommitted code_paths
+ * @returns {string} Formatted error message
+ */
+export function buildCodePathsCommittedErrorMessage(
+  wuId: string,
+  uncommittedPaths: string[],
+): string {
+  const count = uncommittedPaths.length;
+  const pathList = uncommittedPaths.map((p) => `  - ${p}`).join('\n');
+
+  return `
+❌ UNCOMMITTED CODE_PATHS DETECTED (WU-1153)
+
+${count} code_path${count === 1 ? '' : 's'} for ${wuId} are not committed:
+
+${pathList}
+
+wu:done cannot proceed because uncommitted code_paths would be lost 
+if the metadata transaction fails and needs to roll back.
+
+This prevents lost work from metadata rollbacks after code commits.
+
+Required actions:
+  1. Commit your code changes:
+     git add ${uncommittedPaths.join(' ')}
+     git commit -m "implement: ${wuId} changes"
+
+  2. Retry wu:done:
+     pnpm wu:done --id ${wuId}
+
+The guard ensures atomic completion: either both code and metadata succeed,
+or neither is modified. This prevents partial state corruption.
+
+Context: WU-1153 prevents lost work from metadata rollbacks
 `;
 }
