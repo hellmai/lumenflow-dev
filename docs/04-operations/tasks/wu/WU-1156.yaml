@@ -2,7 +2,7 @@ id: WU-1156
 title: Prevent agent memory logs from dirtying worktrees
 lane: 'Framework: Agent'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -39,3 +39,5 @@ session_id: 4767c148-c727-4663-a957-577f515ec67d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T12:51:15.516Z
+locked: true
+completed_at: 2026-01-28T13:04:06.497Z
