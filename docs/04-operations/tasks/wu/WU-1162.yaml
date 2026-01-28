@@ -2,7 +2,7 @@ id: WU-1162
 title: Add internal pre-release validation script for hellmai/os
 lane: 'Framework: CLI'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - Script fails if bin entry missing from README
   - Script fails if templates dir exists but not in files array
   - release-process.md updated to require pre-release check
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1162
+claimed_at: 2026-01-28T12:38:21.978Z
+baseline_main_sha: 4d0691b02b2967cae4656cb022748b371543cc04
+session_id: d0d22e9f-37a4-4731-bfb0-e28b6ec48c09
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T12:38:21.984Z
