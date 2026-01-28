@@ -2,7 +2,7 @@ id: WU-1165
 title: 'Bug: incremental tests run full suite'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
     full suite on untracked code/config changes or detection failure
   - Global consistency validators (spec-linter, backlog sync, system map) remain full-repo
   - Unit tests updated to cover incremental vs fallback paths for format, lint, and tests
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1165
+claimed_at: 2026-01-28T11:20:57.313Z
+baseline_main_sha: 1afe64d12c216270f208eba484f365f8df012a96
+session_id: 852fff34-1ca3-4627-81dd-41dd7408508e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T11:20:57.318Z
