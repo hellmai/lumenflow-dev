@@ -4,6 +4,7 @@
  *
  * WU-1017: Vendor-agnostic git workflow enforcement
  * WU-1070: Audit logging for LUMENFLOW_FORCE bypass
+ * WU-1164: Validate staged WU YAML files against schema
  *
  * Rules:
  * - BLOCK commits to main/master (use wu:claim workflow)
@@ -13,10 +14,10 @@
  * Escape hatch: LUMENFLOW_FORCE=1 (logged to ._legacy/force-bypasses.log)
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readFileSync, appendFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 // WU-1070: Inline audit logging (fail-open, no external imports for hook reliability)
 function logForceBypass(hookName, projectRoot) {
@@ -54,112 +55,290 @@ function logForceBypass(hookName, projectRoot) {
   }
 }
 
-// Find project root
-let projectRoot = process.cwd();
-for (let i = 0; i < 10; i++) {
-  if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) break;
-  const parent = dirname(projectRoot);
-  if (parent === projectRoot) break;
-  projectRoot = parent;
+export function filterStagedWUYamlFiles(paths) {
+  if (!Array.isArray(paths)) return [];
+  return paths.filter(
+    (p) =>
+      typeof p === 'string' && p.startsWith('docs/04-operations/tasks/wu/') && p.endsWith('.yaml'),
+  );
 }
 
-// Escape hatch with audit logging (WU-1070)
-if (process.env.LUMENFLOW_FORCE === '1') {
-  logForceBypass('pre-commit', projectRoot);
-  process.exit(0);
-}
+let cachedBaseWUSchema = null;
+let cachedYamlParse = null;
 
-// Get current branch
-let branch;
-try {
-  branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-} catch {
-  // Not in a git repo or detached HEAD
-  process.exit(0);
-}
+function findMainCheckoutPath() {
+  try {
+    const out = execSync('git worktree list --porcelain', { encoding: 'utf8' });
+    const lines = out.split('\n');
 
-// Constants (repo-relative to avoid bare specifier imports that fail in micro-worktrees)
-const MAIN_BRANCHES = ['main', 'master'];
-const LANE_PREFIX = 'lane/';
+    let currentPath = null;
+    let currentBranch = null;
 
-// Block commits to main/master
-if (MAIN_BRANCHES.includes(branch)) {
-  console.error('');
-  console.error('BLOCKED: Direct commit to', branch);
-  console.error('');
-  console.error('LumenFlow requires work to happen on lane branches.');
-  console.error('');
-  console.error('To start work on a WU:');
-  console.error('  pnpm wu:claim --id WU-XXXX --lane <Lane>');
-  console.error('  cd worktrees/<lane>-wu-xxxx');
-  console.error('');
-  console.error('To bypass (emergency only):');
-  console.error('  LUMENFLOW_FORCE=1 git commit ...');
-  console.error('');
-  process.exit(1);
-}
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
 
-// Check for lane branch in main worktree (should be in worktree unless Branch-Only)
-if (branch.startsWith(LANE_PREFIX)) {
-  // Extract WU ID from branch: lane/core/wu-1017 -> wu-1017
-  const wuMatch = branch.match(/wu-\d+/i);
-  if (wuMatch) {
-    const wuId = wuMatch[0].toUpperCase(); // WU-1017
-
-    // Find project root (look for .lumenflow.config.yaml)
-    let projectRoot = process.cwd();
-    for (let i = 0; i < 10; i++) {
-      if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) {
-        break;
+      if (line.startsWith('worktree ')) {
+        currentPath = line.replace('worktree ', '').trim();
+        currentBranch = null;
+        continue;
       }
-      const parent = dirname(projectRoot);
-      if (parent === projectRoot) break;
-      projectRoot = parent;
+      if (line.startsWith('branch ')) {
+        currentBranch = line.replace('branch ', '').trim();
+        if (
+          currentPath &&
+          (currentBranch === 'refs/heads/main' || currentBranch === 'refs/heads/master')
+        ) {
+          return currentPath;
+        }
+      }
+    }
+  } catch {}
+  return null;
+}
+
+async function loadBaseWUSchema(projectRoot) {
+  if (cachedBaseWUSchema) return cachedBaseWUSchema;
+
+  const candidates = [join(projectRoot, 'packages/@lumenflow/core/dist/wu-schema.js')];
+  const mainCheckout = findMainCheckoutPath();
+  if (mainCheckout) {
+    candidates.push(join(mainCheckout, 'packages/@lumenflow/core/dist/wu-schema.js'));
+  }
+
+  for (const candidate of candidates) {
+    try {
+      if (!existsSync(candidate)) continue;
+      const mod = await import(pathToFileURL(candidate).href);
+      if (mod?.BaseWUSchema) {
+        cachedBaseWUSchema = mod.BaseWUSchema;
+        return cachedBaseWUSchema;
+      }
+    } catch {}
+  }
+
+  throw new Error(
+    'Failed to load BaseWUSchema (missing packages/@lumenflow/core/dist/wu-schema.js)',
+  );
+}
+
+async function loadYamlParse(projectRoot) {
+  if (cachedYamlParse) return cachedYamlParse;
+
+  const candidates = [
+    join(projectRoot, 'packages/@lumenflow/core/node_modules/yaml/dist/index.js'),
+    join(projectRoot, 'packages/@lumenflow/core/node_modules/yaml/browser/dist/index.js'),
+  ];
+
+  const mainCheckout = findMainCheckoutPath();
+  if (mainCheckout) {
+    candidates.push(join(mainCheckout, 'packages/@lumenflow/core/node_modules/yaml/dist/index.js'));
+    candidates.push(
+      join(mainCheckout, 'packages/@lumenflow/core/node_modules/yaml/browser/dist/index.js'),
+    );
+  }
+
+  for (const candidate of candidates) {
+    try {
+      if (!existsSync(candidate)) continue;
+      const mod = await import(pathToFileURL(candidate).href);
+      if (typeof mod?.parse === 'function') {
+        cachedYamlParse = mod.parse;
+        return cachedYamlParse;
+      }
+      if (typeof mod?.default?.parse === 'function') {
+        cachedYamlParse = mod.default.parse;
+        return cachedYamlParse;
+      }
+    } catch {}
+  }
+
+  throw new Error(
+    'Failed to load YAML parser (yaml dependency not found under @lumenflow/core/node_modules)',
+  );
+}
+
+export async function validateWUYamlString(yamlText, projectRoot) {
+  const errors = [];
+
+  let doc;
+  try {
+    const parseYaml = await loadYamlParse(projectRoot);
+    doc = parseYaml(yamlText);
+  } catch (error) {
+    errors.push(`YAML parse error: ${error.message}`);
+    return { valid: false, errors };
+  }
+
+  let BaseWUSchema;
+  try {
+    BaseWUSchema = await loadBaseWUSchema(projectRoot);
+  } catch (error) {
+    errors.push(`Schema load error: ${error.message}`);
+    return { valid: false, errors };
+  }
+
+  const result = BaseWUSchema.safeParse(doc);
+  if (!result.success) {
+    for (const issue of result.error.issues) {
+      const fieldPath = issue.path.join('.') || '(root)';
+      errors.push(`${fieldPath}: ${issue.message}`);
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+function getStagedFileList() {
+  const out = execSync('git diff --cached --name-only --diff-filter=ACMR', {
+    encoding: 'utf8',
+  });
+  return out
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function readStagedFile(path) {
+  return execFileSync('git', ['show', `:${path}`], { encoding: 'utf8' });
+}
+
+function findProjectRoot() {
+  let projectRoot = process.cwd();
+  for (let i = 0; i < 10; i++) {
+    if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) break;
+    const parent = dirname(projectRoot);
+    if (parent === projectRoot) break;
+    projectRoot = parent;
+  }
+  return projectRoot;
+}
+
+async function validateStagedWUYamlFiles(projectRoot) {
+  let staged;
+  try {
+    staged = getStagedFileList();
+  } catch {
+    return { valid: true, errors: [] };
+  }
+
+  const wuYamlFiles = filterStagedWUYamlFiles(staged);
+  if (wuYamlFiles.length === 0) return { valid: true, errors: [] };
+
+  const errors = [];
+  for (const filePath of wuYamlFiles) {
+    let content;
+    try {
+      content = readStagedFile(filePath);
+    } catch (error) {
+      errors.push(`${filePath}: Failed to read staged content: ${error.message}`);
+      continue;
     }
 
-    // Check if we're in the main worktree (not a worktree subdirectory)
-    const gitDir = execSync('git rev-parse --git-dir', { encoding: 'utf8' }).trim();
-    const isMainWorktree = gitDir === '.git';
+    const result = await validateWUYamlString(content, projectRoot);
+    if (!result.valid) {
+      errors.push(`${filePath}:`);
+      for (const msg of result.errors) {
+        errors.push(`  - ${msg}`);
+      }
+    }
+  }
 
-    if (isMainWorktree) {
-      // Check claimed_mode in WU YAML
-      const wuPath = join(projectRoot, 'docs/04-operations/tasks/wu', `${wuId}.yaml`);
+  return { valid: errors.length === 0, errors };
+}
 
-      if (existsSync(wuPath)) {
-        try {
-          const content = readFileSync(wuPath, 'utf8');
-          // Simple YAML parsing for claimed_mode (avoid js-yaml dependency for speed)
-          const modeMatch = content.match(/^claimed_mode:\s*(.+)$/m);
-          const claimedMode = modeMatch ? modeMatch[1].trim() : null;
+export async function main() {
+  const projectRoot = findProjectRoot();
 
-          if (claimedMode === 'branch-only') {
-            // Branch-Only mode: ALLOW working on lane branch in main worktree
-            process.exit(0);
-          }
+  if (process.env.LUMENFLOW_FORCE === '1') {
+    logForceBypass('pre-commit', projectRoot);
+    process.exit(0);
+  }
 
-          // Worktree mode (default): should be working in worktree
-          console.error('');
-          console.error('BLOCKED: Lane branch work should be in worktree');
-          console.error('');
-          console.error(`You're on branch ${branch} but in the main checkout.`);
-          console.error('');
-          console.error('Option 1: Work in the worktree:');
-          console.error(`  cd worktrees/*-${wuId.toLowerCase()}`);
-          console.error('');
-          console.error('Option 2: Reclaim with --branch-only:');
-          console.error(`  pnpm wu:claim --id ${wuId} --lane <Lane> --branch-only`);
-          console.error('');
-          console.error('To bypass (emergency only):');
-          console.error('  LUMENFLOW_FORCE=1 git commit ...');
-          console.error('');
-          process.exit(1);
-        } catch {
-          // Can't read/parse YAML, allow commit
+  let branch;
+  try {
+    branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+  } catch {
+    process.exit(0);
+  }
+
+  const MAIN_BRANCHES = ['main', 'master'];
+  const LANE_PREFIX = 'lane/';
+
+  if (MAIN_BRANCHES.includes(branch)) {
+    console.error('');
+    console.error('BLOCKED: Direct commit to', branch);
+    console.error('');
+    console.error('LumenFlow requires work to happen on lane branches.');
+    console.error('');
+    console.error('To start work on a WU:');
+    console.error('  pnpm wu:claim --id WU-XXXX --lane <Lane>');
+    console.error('  cd worktrees/<lane>-wu-xxxx');
+    console.error('');
+    console.error('To bypass (emergency only):');
+    console.error('  LUMENFLOW_FORCE=1 git commit ...');
+    console.error('');
+    process.exit(1);
+  }
+
+  if (branch.startsWith(LANE_PREFIX)) {
+    const wuMatch = branch.match(/wu-\d+/i);
+    if (wuMatch) {
+      const wuId = wuMatch[0].toUpperCase();
+      const gitDir = execSync('git rev-parse --git-dir', { encoding: 'utf8' }).trim();
+      const isMainWorktree = gitDir === '.git';
+
+      if (isMainWorktree) {
+        const wuPath = join(projectRoot, 'docs/04-operations/tasks/wu', `${wuId}.yaml`);
+
+        if (existsSync(wuPath)) {
+          try {
+            const content = readFileSync(wuPath, 'utf8');
+            const modeMatch = content.match(/^claimed_mode:\s*(.+)$/m);
+            const claimedMode = modeMatch ? modeMatch[1].trim() : null;
+
+            if (claimedMode === 'branch-only') {
+              process.exit(0);
+            }
+
+            console.error('');
+            console.error('BLOCKED: Lane branch work should be in worktree');
+            console.error('');
+            console.error(`You're on branch ${branch} but in the main checkout.`);
+            console.error('');
+            console.error('Option 1: Work in the worktree:');
+            console.error(`  cd worktrees/*-${wuId.toLowerCase()}`);
+            console.error('');
+            console.error('Option 2: Reclaim with --branch-only:');
+            console.error(`  pnpm wu:claim --id ${wuId} --lane <Lane> --branch-only`);
+            console.error('');
+            console.error('To bypass (emergency only):');
+            console.error('  LUMENFLOW_FORCE=1 git commit ...');
+            console.error('');
+            process.exit(1);
+          } catch {}
         }
       }
     }
   }
+
+  const validation = await validateStagedWUYamlFiles(projectRoot);
+  if (!validation.valid) {
+    console.error('');
+    console.error('[pre-commit] WU YAML validation failed for staged files');
+    console.error('');
+    for (const line of validation.errors) {
+      console.error(line);
+    }
+    console.error('');
+    process.exit(1);
+  }
+
+  process.exit(0);
 }
 
-// All other branches: ALLOW
-process.exit(0);
+const invokedPath = process.argv[1] ? resolve(process.argv[1]) : null;
+const modulePath = fileURLToPath(import.meta.url);
+if (invokedPath && invokedPath === modulePath) {
+  void main();
+}
