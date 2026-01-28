@@ -6,4 +6,7 @@ case "$BRANCH" in tmp/*) exit 0 ;; esac
 
 # WU-1061: docs-sync hook removed - docs regeneration now handled by wu:done
 
+# WU-1170: Universal worktree discipline
+"$(dirname "$0")/../scripts/hooks/validate-worktree-discipline.sh"
+
 node "$(dirname "$0")/hooks/pre-commit.mjs"
