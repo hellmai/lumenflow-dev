@@ -8,5 +8,25 @@ This contains all the rules you must follow, including:
 - Worktree discipline (never edit files in main checkout)
 - Gate failures and recovery
 - LUMENFLOW_FORCE usage
+- Spawning sub-agents with wu:spawn
 
 DO NOT skip reading the starting-prompt.md - it prevents the most common failures.
+
+## Cursor-Specific Guidance
+
+You are running in the Cursor IDE environment. When spawning sub-agents, use:
+
+```bash
+pnpm wu:spawn --id WU-XXXX --client cursor
+```
+
+The `--client cursor` flag identifies Cursor as your IDE environment, regardless of which AI model Cursor is using.
+
+## Key Reminders for Cursor Users
+
+- Always work in the worktree, never main checkout
+- Use relative paths from worktree root
+- Run `pnpm gates` before `pnpm wu:done`
+- Reference LUMENFLOW.md for complete workflow documentation
+
+See also: LUMENFLOW.md
