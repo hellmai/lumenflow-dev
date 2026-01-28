@@ -240,4 +240,23 @@ describe('dependency-graph', () => {
       expect(result).toContain('WU-001');
     });
   });
+  describe('buildDependencyGraphAsync', () => {
+    it('should build graph asynchronously', async () => {
+      const { buildDependencyGraphAsync } = await import('../dependency-graph.js');
+      const graph = await buildDependencyGraphAsync();
+      expect(graph).toBeInstanceOf(Map);
+      if (graph.size > 0) {
+        const first = graph.values().next().value;
+        expect(first).toHaveProperty('id');
+      }
+    });
+
+    it('should match synchronous graph build result', async () => {
+      const { buildDependencyGraphAsync, buildDependencyGraph } = await import('../dependency-graph.js');
+      const asyncGraph = await buildDependencyGraphAsync();
+      const syncGraph = buildDependencyGraph();
+
+      expect(asyncGraph.size).toBe(syncGraph.size);
+    });
+  });
 });

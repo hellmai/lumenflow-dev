@@ -15,14 +15,14 @@ import chalk from 'chalk';
 import {
   loadInitiativeWUs,
   loadMultipleInitiatives,
-  buildExecutionPlan,
+  buildExecutionPlanAsync,
   formatExecutionPlan,
   calculateProgress,
   formatProgress,
   buildCheckpointWave,
   formatCheckpointOutput,
   validateCheckpointFlags,
-  resolveCheckpointMode,
+  resolveCheckpointModeAsync,
   LOG_PREFIX,
 } from '@lumenflow/initiatives';
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
@@ -88,7 +88,7 @@ const program = new Command()
         return;
       }
 
-      const checkpointDecision = resolveCheckpointMode(
+      const checkpointDecision = await resolveCheckpointModeAsync(
         { checkpointPerWave, noCheckpoint, dryRun },
         wus,
       );
@@ -113,7 +113,7 @@ const program = new Command()
       }
 
       console.log(chalk.cyan(`${LOG_PREFIX} Building execution plan...`));
-      const plan = buildExecutionPlan(wus);
+      const plan = await buildExecutionPlanAsync(wus);
 
       if (plan.waves.length === 0) {
         console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
