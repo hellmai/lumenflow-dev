@@ -2,7 +2,7 @@ id: WU-1154
 title: Improve preflight test path mismatch guidance
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -39,3 +39,5 @@ session_id: 4268efd0-942d-4225-a4f7-12978d880b95
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T15:17:36.717Z
+locked: true
+completed_at: 2026-01-28T19:19:04.130Z
