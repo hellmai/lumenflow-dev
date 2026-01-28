@@ -2,7 +2,7 @@ id: WU-1149
 title: Add LUMENFLOW.md reference to vendor configs
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -58,3 +58,11 @@ acceptance:
   - .windsurfrules has Windsurf-specific guidance including wu:spawn --client windsurf
   - Both vendor configs reference LUMENFLOW.md after starting-prompt.md
   - 'Valid client list documented: claude-code, cursor, windsurf, gemini-cli, copilot'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1149
+claimed_at: 2026-01-28T12:30:36.069Z
+baseline_main_sha: e596dafb18611ab8e1e3484ae31bc3ccb5cfe363
+session_id: d0d22e9f-37a4-4731-bfb0-e28b6ec48c09
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T12:30:36.075Z
