@@ -314,5 +314,6 @@
 {"type":"claim","wuId":"WU-1167","timestamp":"2026-01-28T13:31:07.358Z","lane":"Framework: Memory","title":"Fix mem:cleanup require vs import error"}
 {"type":"complete","wuId":"WU-1166","timestamp":"2026-01-28T13:42:27.374Z"}
 {"type":"complete","wuId":"WU-1157","timestamp":"2026-01-28T13:43:26.686Z"}
-{"type":"claim","wuId":"WU-1164","lane":"Framework: Core","title":"Add pre-commit hook validation for WU YAML files","timestamp":"2026-01-28T14:03:45.963Z"}
-{"type":"claim","wuId":"WU-1155","lane":"Framework: CLI","title":"Fix agent verification command references","timestamp":"2026-01-28T14:08:30.840Z"}
+{"type":"claim","wuId":"WU-1164","timestamp":"2026-01-28T14:03:45.963Z","lane":"Framework: Core","title":"Add pre-commit hook validation for WU YAML files"}
+{"type":"claim","wuId":"WU-1155","timestamp":"2026-01-28T14:08:30.840Z","lane":"Framework: CLI","title":"Fix agent verification command references"}
+{"type":"complete","wuId":"WU-1167","timestamp":"2026-01-28T14:10:52.856Z"}
