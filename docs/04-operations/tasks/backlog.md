@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1168 — Investigate dependency-graph test timeouts](wu/WU-1168.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
