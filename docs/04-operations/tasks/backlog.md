@@ -28,7 +28,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1152 — Fix resolveNodeModulePath to check cwd/node_modules for sibling packages](wu/WU-1152.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -178,3 +177,4 @@ sections:
 - [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml)
 - [WU-1148 — Bug: docs:generate output not formatted by wu:done](wu/WU-1148.yaml)
 - [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml)
+- [WU-1152 — Fix resolveNodeModulePath to check cwd/node_modules for sibling packages](wu/WU-1152.yaml)
