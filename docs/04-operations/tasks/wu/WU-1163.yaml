@@ -6,6 +6,12 @@ status: ready
 priority: P2
 created: 2026-01-28
 code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/backlog-sync-validator.ts
+  - packages/@lumenflow/core/src/dependency-guard.ts
+  - packages/@lumenflow/core/src/orchestration-rules.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
 tests:
   manual: []
@@ -25,15 +31,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Error messages in public packages reference internal docs/04-operations/ paths that only exist in hellmai/os. Consumer repos get confusing See: references to files that do not exist. These should point to lumenflow.dev public URLs instead.
+description: >-
+  Error messages in public packages reference internal docs/04-operations/ paths that only exist in
+  hellmai/os. Consumer repos get confusing See: references to files that do not exist. These should
+  point to lumenflow.dev public URLs instead.
 
-  9 error messages affected across wu-done.ts, wu-spawn.ts, backlog-sync-validator.ts, dependency-guard.ts, orchestration-rules.ts, wu-done-preflight.ts.
+
+  9 error messages affected across wu-done.ts, wu-spawn.ts, backlog-sync-validator.ts,
+  dependency-guard.ts, orchestration-rules.ts, wu-done-preflight.ts.
+
 
   AGENT INSTRUCTIONS:
+
   1. Find all See: references containing docs/04-operations in packages/@lumenflow
+
   2. Map each internal path to equivalent lumenflow.dev URL
+
   3. Replace hardcoded paths with lumenflow.dev URLs
+
   4. Ensure URLs are valid and point to correct content
 acceptance:
   - No error messages reference docs/04-operations paths
