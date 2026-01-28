@@ -2242,7 +2242,7 @@ async function executeGates({
     // Branch-Only mode: run gates in-place (current directory on lane branch)
     console.log(`\n${LOG_PREFIX.DONE} Running gates in Branch-Only mode (in-place on lane branch)`);
     // WU-1012: Use docs-only gates if explicit --docs-only flag OR auto-detected
-    const useDocsOnlyGates = args.docsOnly || isDocsOnly;
+    const useDocsOnlyGates = Boolean(args.docsOnly) || Boolean(isDocsOnly);
     if (useDocsOnlyGates) {
       console.log(`${LOG_PREFIX.DONE} Using docs-only gates (skipping lint/typecheck/tests)`);
       if (args.docsOnly) {
