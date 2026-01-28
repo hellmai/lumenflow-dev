@@ -2,7 +2,7 @@ id: WU-1164
 title: Add pre-commit hook validation for WU YAML files
 lane: 'Framework: Core'
 type: chore
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -25,25 +25,42 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  WU YAML schema validation exists in wu-schema.ts but is only enforced by CLI tools (wu:create, wu:edit, wu:claim, wu:done). Manual file edits bypass validation entirely, and LUMENFLOW_FORCE=1 commits can introduce invalid WU specs.
+description: >-
+  WU YAML schema validation exists in wu-schema.ts but is only enforced by CLI tools (wu:create,
+  wu:edit, wu:claim, wu:done). Manual file edits bypass validation entirely, and LUMENFLOW_FORCE=1
+  commits can introduce invalid WU specs.
 
-  Gap discovered: WU-1158 was manually created with invalid fields (assigned_to: '', exposure: internal) that would have been rejected by the schema.
+
+  Gap discovered: WU-1158 was manually created with invalid fields (assigned_to: '', exposure:
+  internal) that would have been rejected by the schema.
+
 
   Solution: Add a pre-commit hook step in .husky/hooks/pre-commit.mjs that:
+
   1. Detects staged WU YAML files (docs/04-operations/tasks/wu/*.yaml)
+
   2. Validates them against BaseWUSchema from wu-schema.ts
+
   3. Fails commit with clear error message if validation fails
 
-  This is a defense-in-depth measure. CLI tooling already validates, but pre-commit hooks catch manual edits and ensure invalid specs never enter the repo.
+
+  This is a defense-in-depth measure. CLI tooling already validates, but pre-commit hooks catch
+  manual edits and ensure invalid specs never enter the repo.
+
 
   AGENT INSTRUCTIONS:
 
+
   1. Edit .husky/hooks/pre-commit.mjs
+
   2. Add function to detect staged WU YAML files (git diff --cached --name-only)
+
   3. For each staged WU YAML file, parse and validate against BaseWUSchema
+
   4. If validation fails, print clear error with field-level issues and block commit
+
   5. LUMENFLOW_FORCE=1 should still bypass (existing behavior)
+
   6. Add unit tests for the validation logic
 acceptance:
   - Pre-commit hook validates staged WU YAML files against schema
@@ -51,3 +68,11 @@ acceptance:
   - LUMENFLOW_FORCE=1 still bypasses validation (existing behavior)
   - Validation error message shows which fields failed and why
   - Unit tests cover common validation scenarios
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1164
+claimed_at: 2026-01-28T14:03:45.933Z
+baseline_main_sha: 3466299f4e092e4d1c9db261437f12655eba1337
+session_id: a291d0f1-f6cd-4d42-ab13-c8bb8cd4b227
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T14:03:45.942Z
