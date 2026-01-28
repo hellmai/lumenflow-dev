@@ -147,7 +147,7 @@ The safe wrapper (${wrapperCommand}) enforces worktree context
 and runs the underlying pnpm command with proper isolation.
 
 See: CLAUDE.md section 2 'Daily Operating Loop'
-See: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+See: https://lumenflow.dev/reference/lumenflow-complete/
 `;
 }
 

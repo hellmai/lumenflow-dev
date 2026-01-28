@@ -6,7 +6,7 @@
  *
  * @module orchestration-rules
  * @see {@link ./domain/orchestration.constants.mjs} - MANDATORY_TRIGGERS patterns
- * @see {@link ../../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-selection-guide.md} - Agent selection rules
+ * @see {@link https://lumenflow.dev/reference/agent-selection-guide/} - Agent selection rules
  */
 
 import { minimatch } from 'minimatch';
@@ -193,7 +193,7 @@ export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths)
   lines.push('  Remove --require-agents flag from wu:done command');
   lines.push('');
   lines.push(
-    'See: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-selection-guide.md for agent invocation guidance',
+    'See: https://lumenflow.dev/reference/agent-selection-guide/ for agent invocation guidance',
   );
   lines.push('='.repeat(70));
 
