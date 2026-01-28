@@ -38,7 +38,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -190,3 +189,4 @@ sections:
 - [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml)
 - [WU-1152 — Fix resolveNodeModulePath to check cwd/node_modules for sibling packages](wu/WU-1152.yaml)
 - [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml)
+- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml)

@@ -292,3 +292,4 @@
 {"type":"claim","wuId":"WU-1159","timestamp":"2026-01-28T10:14:04.120Z","lane":"Framework: CLI","title":"Bug: templates/ not included in npm package - docs-sync broken"}
 {"type":"claim","wuId":"WU-1153","timestamp":"2026-01-28T10:18:26.188Z","lane":"Framework: Core","title":"Add wu:done guard for uncommitted code_paths"}
 {"type":"complete","wuId":"WU-1159","timestamp":"2026-01-28T10:20:25.080Z"}
+{"type":"complete","wuId":"WU-1153","timestamp":"2026-01-28T10:42:31.035Z"}
