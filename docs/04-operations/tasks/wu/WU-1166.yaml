@@ -1,0 +1,35 @@
+id: WU-1166
+title: 'Bug: Follow-up to WU-1153 (1153b)'
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-01-28
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-validation.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1166.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: CLI wu-done tests on main fail after WU-1153 due to missing exports/mismatched error messages in wu-done-validation. Problem: Gates cannot pass because @lumenflow/cli wu-done tests fail. Solution: Investigate export surface and message expectations, restore missing exports or update tests to match intended output.'
+acceptance:
+  - Investigation notes document the root cause and failure mode
+  - wu-done-validation exports used by CLI tests are present and correct
+  - '@lumenflow/cli wu-done tests pass'
+  - No regression in wu:done guard behavior
