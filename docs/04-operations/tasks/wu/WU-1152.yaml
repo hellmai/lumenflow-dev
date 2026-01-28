@@ -2,7 +2,7 @@ id: WU-1152
 title: Replace script-based validators with core TypeScript functions
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-27
 code_paths:
@@ -59,3 +59,5 @@ session_id: 8a82793b-142a-4b7a-b8cf-8a0cc9847c3e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-27T22:04:35.363Z
+locked: true
+completed_at: 2026-01-28T00:10:37.241Z
