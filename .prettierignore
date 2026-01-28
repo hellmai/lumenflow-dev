@@ -18,3 +18,9 @@ node_modules/
 
 # Tooling caches
 .eslintcache
+
+# Shell scripts
+*.sh
+.husky/pre-commit
+scripts/safe-git
+packages/@lumenflow/cli/bin/safe-git
