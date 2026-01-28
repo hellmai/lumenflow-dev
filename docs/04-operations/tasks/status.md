@@ -6,8 +6,10 @@ _Last updated: 2026-01-28_
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1158 — Bug: Validators use hardcoded paths instead of config](wu/WU-1158.yaml)
 - [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml)
+- [WU-1160 — Remove all stale .mjs references from TypeScript codebase](wu/WU-1160.yaml)
 
 ## Completed
 

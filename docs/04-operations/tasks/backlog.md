@@ -26,7 +26,6 @@ sections:
 - [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
 - [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml) — Framework: Agent
 - [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml) — Framework: CLI
-- [WU-1160 — Remove all stale .mjs references from TypeScript codebase](wu/WU-1160.yaml) — Framework: Core
 - [WU-1161 — Document all CLI commands in README and verify completeness](wu/WU-1161.yaml) — Content: Documentation
 - [WU-1162 — Add internal pre-release validation script for hellmai/os](wu/WU-1162.yaml) — Framework: CLI
 - [WU-1163 — Replace internal doc paths in error messages with lumenflow.dev URLs](wu/WU-1163.yaml) — Framework: Core
@@ -39,6 +38,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1158 — Bug: Validators use hardcoded paths instead of config](wu/WU-1158.yaml) — Framework: Core
 - [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml) — Framework: CLI
+- [WU-1160 — Remove all stale .mjs references from TypeScript codebase](wu/WU-1160.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 
