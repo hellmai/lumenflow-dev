@@ -23,7 +23,6 @@ sections:
 - [WU-1151 — Add consumer integration tests for npm package usage](wu/WU-1151.yaml) — Framework: Core
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
 - [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
-- [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml) — Framework: CLI
 - [WU-1164 — Add pre-commit hook validation for WU YAML files](wu/WU-1164.yaml) — Framework: Core
 
 ## 🔧 In progress
@@ -32,6 +31,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1166 — Bug: Follow-up to WU-1153 (1153b)](wu/WU-1166.yaml) — Framework: Core
+- [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
