@@ -318,3 +318,4 @@
 {"type":"claim","wuId":"WU-1155","timestamp":"2026-01-28T14:08:30.840Z","lane":"Framework: CLI","title":"Fix agent verification command references"}
 {"type":"complete","wuId":"WU-1167","timestamp":"2026-01-28T14:10:52.856Z"}
 {"type":"complete","wuId":"WU-1155","timestamp":"2026-01-28T14:16:52.918Z"}
+{"type":"complete","wuId":"WU-1164","timestamp":"2026-01-28T14:40:49.515Z"}
