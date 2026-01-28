@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml) — Framework: CLI
 - [WU-1158 — Bug: Validators use hardcoded paths instead of config](wu/WU-1158.yaml) — Framework: Core
 - [WU-1157 — Stabilize docs:generate formatting drift](wu/WU-1157.yaml) — Framework: CLI
 - [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml) — Framework: Agent
