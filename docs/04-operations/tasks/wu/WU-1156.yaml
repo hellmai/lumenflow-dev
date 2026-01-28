@@ -1,0 +1,33 @@
+id: WU-1156
+title: Prevent agent memory logs from dirtying worktrees
+lane: 'Framework: Agent'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-28
+code_paths:
+  - .gitignore
+  - packages/@lumenflow/agent/.lumenflow/memory/memory.jsonl
+tests:
+  manual:
+    - Run gates and confirm git status remains clean
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1156.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Agent session memory.jsonl writes can dirty worktrees during gates or wu:done. Add a repo-level ignore or configurable output path to keep worktrees clean.
+acceptance:
+  - running gates/wu:done does not modify tracked memory.jsonl files
+  - worktree remains clean after agent memory writes
+  - manual verification covers the new behavior

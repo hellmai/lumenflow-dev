@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1156 — Prevent agent memory logs from dirtying worktrees](wu/WU-1156.yaml) — Framework: Agent
 - [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
 - [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — Framework: Core
