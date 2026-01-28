@@ -1,7 +1,7 @@
 id: WU-1157
 title: Stabilize docs:generate formatting drift
 lane: 'Framework: CLI'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-01-28
@@ -20,10 +20,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-28T13:14:18.319Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1157
+session_id: fa3feb73-5757-445a-a89c-c00e7de56098
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T13:14:18.323Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +40,3 @@ acceptance:
   - docs:generate produces stable cli.mdx/config.mdx output across repeated runs
   - format:check passes after a single docs:generate
   - unit test or manual verification covers the stability
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1157
-claimed_at: 2026-01-28T13:14:18.319Z
-baseline_main_sha: 93385867ca1f3fa60d4f42ef08c09cb9036a11e4
-session_id: fa3feb73-5757-445a-a89c-c00e7de56098
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-28T13:14:18.323Z
