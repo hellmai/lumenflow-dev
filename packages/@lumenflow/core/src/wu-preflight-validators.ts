@@ -100,8 +100,8 @@ function validateSchema(doc, id) {
   if (createdIssue) {
     errors.push(
       `created field has invalid format: "${createdIssue.current}" is an ISO timestamp. ` +
-      `Expected YYYY-MM-DD format. Suggested fix: change to "${createdIssue.suggested}". ` +
-      `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`,
+        `Expected YYYY-MM-DD format. Suggested fix: change to "${createdIssue.suggested}". ` +
+        `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`,
     );
   }
 
@@ -348,7 +348,12 @@ export async function findSuggestedTestPaths(missingPaths, rootDir) {
   if (missingPaths.length === 0) return suggestions;
 
   // Cache strict searches to avoid re-reading fs
-  const globOptions = { cwd: rootDir, caseSensitiveMatch: false, limit: 5, ignore: ['**/node_modules/**'] };
+  const globOptions = {
+    cwd: rootDir,
+    caseSensitiveMatch: false,
+    limit: 5,
+    ignore: ['**/node_modules/**'],
+  };
 
   for (const missingPath of missingPaths) {
     const filename = path.basename(missingPath);
@@ -371,10 +376,9 @@ export async function findSuggestedTestPaths(missingPaths, rootDir) {
 
     if (matches.length > 0) {
       // Filter out the missing path itself if it somehow showed up
-      suggestions[missingPath] = matches.filter(m => m !== missingPath);
+      suggestions[missingPath] = matches.filter((m) => m !== missingPath);
     }
   }
 
   return suggestions;
 }
-

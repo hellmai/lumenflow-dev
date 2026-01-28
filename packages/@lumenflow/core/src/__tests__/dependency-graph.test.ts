@@ -252,7 +252,8 @@ describe('dependency-graph', () => {
     });
 
     it('should match synchronous graph build result', async () => {
-      const { buildDependencyGraphAsync, buildDependencyGraph } = await import('../dependency-graph.js');
+      const { buildDependencyGraphAsync, buildDependencyGraph } =
+        await import('../dependency-graph.js');
       const asyncGraph = await buildDependencyGraphAsync();
       const syncGraph = buildDependencyGraph();
 

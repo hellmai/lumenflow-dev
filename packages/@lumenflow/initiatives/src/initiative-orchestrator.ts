@@ -144,7 +144,11 @@ export interface DependencyFilterResult {
   blockingDeps: string[];
   waitingMessage: string;
 }
-import { buildDependencyGraph, buildDependencyGraphAsync, validateGraph } from '@lumenflow/core/lib/dependency-graph.js';
+import {
+  buildDependencyGraph,
+  buildDependencyGraphAsync,
+  validateGraph,
+} from '@lumenflow/core/lib/dependency-graph.js';
 import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
 import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/lib/wu-constants.js';
 import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.js';
@@ -711,7 +715,6 @@ export async function buildExecutionPlanAsync(wus: WUEntry[]): Promise<Execution
   return { waves, skipped, skippedWithReasons, deferred };
 }
 
-
 /**
  * WU-1828: Determine if checkpoint mode should be auto-enabled based on initiative size.
  *
@@ -778,7 +781,9 @@ export function shouldAutoEnableCheckpoint(wus: WUEntry[]): AutoCheckpointResult
  * @param {Array<{id: string, doc: object}>} wus - WUs to analyse
  * @returns {Promise<{autoEnabled: boolean, reason: string, pendingCount: number, waveCount: number}>}
  */
-export async function shouldAutoEnableCheckpointAsync(wus: WUEntry[]): Promise<AutoCheckpointResult> {
+export async function shouldAutoEnableCheckpointAsync(
+  wus: WUEntry[],
+): Promise<AutoCheckpointResult> {
   // Count only pending WUs (not done)
   const pendingWUs = wus.filter((wu) => wu.doc.status !== WU_STATUS.DONE);
   const pendingCount = pendingWUs.length;
@@ -824,7 +829,6 @@ export async function shouldAutoEnableCheckpointAsync(wus: WUEntry[]): Promise<A
     waveCount,
   };
 }
-
 
 /**
  * WU-1828: Resolve checkpoint mode from CLI flags and auto-detection.
@@ -930,7 +934,6 @@ export async function resolveCheckpointModeAsync(
     reason: autoResult.reason,
   };
 }
-
 
 /**
  * Get bottleneck WUs from a set of WUs based on how many downstream WUs they block.
@@ -1289,7 +1292,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --dry-run (-d). ' +
-      'Checkpoint mode writes manifests and spawns agents.',
+        'Checkpoint mode writes manifests and spawns agents.',
       { flags: { checkpointPerWave: true, dryRun: true } },
     );
   }
@@ -1299,7 +1302,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --no-checkpoint. ' +
-      'These flags are mutually exclusive.',
+        'These flags are mutually exclusive.',
       { flags: { checkpointPerWave: true, noCheckpoint: true } },
     );
   }

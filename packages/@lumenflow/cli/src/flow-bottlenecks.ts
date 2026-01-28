@@ -20,7 +20,11 @@ import {
   type BottleneckAnalysis,
   type DependencyGraph,
 } from '@lumenflow/metrics';
-import { buildDependencyGraph, buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dist/dependency-graph.js';
+import {
+  buildDependencyGraph,
+  buildDependencyGraphAsync,
+  renderMermaid,
+} from '@lumenflow/core/dist/dependency-graph.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 
 /** Log prefix for console output */
