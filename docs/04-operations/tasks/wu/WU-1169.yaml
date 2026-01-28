@@ -1,0 +1,32 @@
+id: WU-1169
+title: Prevent wu:done rollback on uncommitted changes
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P3
+created: 2026-01-28
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1169.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add preflight check to fail fast if worktree has uncommitted changes in code_paths, preventing expensive/confusing WU-1943 auto-rollback.
+acceptance:
+  - fail wu:done immediately if git status shows uncommitted changes
+  - error message guides user to commit changes
+  - prevents WU-1943 rollback trigger
