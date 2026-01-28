@@ -2,7 +2,7 @@ id: WU-1161
 title: Document all CLI commands in README and verify completeness
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -59,3 +59,5 @@ session_id: 4767c148-c727-4663-a957-577f515ec67d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T12:43:41.731Z
+locked: true
+completed_at: 2026-01-28T13:13:30.159Z
