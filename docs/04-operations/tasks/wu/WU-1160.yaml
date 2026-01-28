@@ -2,7 +2,7 @@ id: WU-1160
 title: Remove all stale .mjs references from TypeScript codebase
 lane: 'Framework: Memory'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -60,3 +60,5 @@ session_id: 852fff34-1ca3-4627-81dd-41dd7408508e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T11:24:27.873Z
+locked: true
+completed_at: 2026-01-28T12:16:29.380Z
