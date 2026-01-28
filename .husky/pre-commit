@@ -8,5 +8,6 @@ case "$BRANCH" in tmp/*) exit 0 ;; esac
 
 # WU-1170: Universal worktree discipline
 "$(dirname "$0")/../scripts/hooks/validate-worktree-discipline.sh"
+"$(dirname "$0")/../scripts/hooks/validate-paths.sh"
 
 node "$(dirname "$0")/hooks/pre-commit.mjs"
