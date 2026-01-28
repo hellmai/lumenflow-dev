@@ -12,6 +12,8 @@ tests:
     - Verified mem:cleanup --help and mem:cleanup --dry-run commands work without require errors
   unit: []
   e2e: []
+  integration:
+    - packages/@lumenflow/cli/src/__tests__/mem-cleanup-execution.test.ts
 artifacts:
   - .lumenflow/stamps/WU-1167.done
 dependencies: []
