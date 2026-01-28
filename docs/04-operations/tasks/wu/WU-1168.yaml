@@ -2,7 +2,7 @@ id: WU-1168
 title: Investigate dependency-graph test timeouts
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -29,3 +29,11 @@ description: Investigate and fix 5s timeouts in dependency-graph tests seen in C
 acceptance:
   - dependency-graph tests pass consistently without timeouts
   - Root cause of timeouts identified and fixed
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1168
+claimed_at: 2026-01-28T19:51:48.622Z
+baseline_main_sha: 923d6e2b46cb269427e55194823f41814ba8bba8
+session_id: 28bb2c95-2696-475d-a980-f7fe798594a8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T19:51:48.629Z
