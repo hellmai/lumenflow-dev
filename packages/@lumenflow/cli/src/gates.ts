@@ -45,10 +45,7 @@ import { access } from 'node:fs/promises';
 import path from 'node:path';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import {
-  getChangedLintableFiles,
-  convertToPackageRelativePaths,
-} from '@lumenflow/core/dist/incremental-lint.js';
+import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/dist/incremental-lint.js';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/dist/incremental-test.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { runCoverageGate, COVERAGE_GATE_MODES } from '@lumenflow/core/dist/coverage-gate.js';
@@ -81,7 +78,6 @@ import {
   BRANCHES,
   PACKAGES,
   PKG_MANAGER,
-  PKG_FLAGS,
   ESLINT_FLAGS,
   ESLINT_COMMANDS,
   ESLINT_DEFAULTS,
@@ -211,6 +207,139 @@ function pnpmRun(script: string, ...args: string[]) {
   return `${PKG_MANAGER} ${SCRIPTS.RUN} ${script}${argsStr}`;
 }
 
+type FormatCheckPlan = {
+  mode: 'full' | 'incremental' | 'skip';
+  files: string[];
+  reason?: 'file-list-error' | 'prettier-config';
+};
+
+type LintPlan = {
+  mode: 'full' | 'incremental' | 'skip';
+  files: string[];
+};
+
+type TestPlan = {
+  mode: 'full' | 'incremental';
+  reason?: 'untracked-code' | 'test-config' | 'file-list-error';
+};
+
+const PRETTIER_CONFIG_FILES = new Set([
+  '.prettierrc',
+  '.prettierrc.json',
+  '.prettierrc.yaml',
+  '.prettierrc.yml',
+  '.prettierrc.js',
+  '.prettierrc.cjs',
+  '.prettierrc.mjs',
+  'prettier.config.js',
+  'prettier.config.cjs',
+  'prettier.config.mjs',
+  '.prettierignore',
+]);
+
+const TEST_CONFIG_BASENAMES = new Set(['turbo.json', 'pnpm-lock.yaml', 'package.json']);
+const TEST_CONFIG_PATTERNS = [/^vitest\.config\.(ts|mts|js|mjs|cjs)$/i, /^tsconfig(\..+)?\.json$/i];
+
+function normalizePath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
+}
+
+function getBasename(filePath: string): string {
+  const normalized = normalizePath(filePath);
+  const parts = normalized.split('/');
+  return parts[parts.length - 1] || normalized;
+}
+
+function quoteShellArgs(files: string[]): string {
+  return files.map((file) => `"${file}"`).join(' ');
+}
+
+export function isPrettierConfigFile(filePath: string): boolean {
+  if (!filePath) return false;
+  const basename = getBasename(filePath);
+  return PRETTIER_CONFIG_FILES.has(basename);
+}
+
+export function isTestConfigFile(filePath: string): boolean {
+  if (!filePath) return false;
+  const basename = getBasename(filePath);
+  if (TEST_CONFIG_BASENAMES.has(basename)) {
+    return true;
+  }
+  return TEST_CONFIG_PATTERNS.some((pattern) => pattern.test(basename));
+}
+
+export function resolveFormatCheckPlan({
+  changedFiles,
+  fileListError = false,
+}: {
+  changedFiles: string[];
+  fileListError?: boolean;
+}): FormatCheckPlan {
+  if (fileListError) {
+    return { mode: 'full', files: [], reason: 'file-list-error' };
+  }
+  if (changedFiles.some(isPrettierConfigFile)) {
+    return { mode: 'full', files: [], reason: 'prettier-config' };
+  }
+  if (changedFiles.length === 0) {
+    return { mode: 'skip', files: [] };
+  }
+  return { mode: 'incremental', files: changedFiles };
+}
+
+export function resolveLintPlan({
+  isMainBranch,
+  changedFiles,
+}: {
+  isMainBranch: boolean;
+  changedFiles: string[];
+}): LintPlan {
+  if (isMainBranch) {
+    return { mode: 'full', files: [] };
+  }
+
+  const lintTargets = changedFiles.filter((filePath) => {
+    const normalized = normalizePath(filePath);
+    return (
+      (normalized.startsWith('apps/') || normalized.startsWith('packages/')) &&
+      isLintableFile(normalized)
+    );
+  });
+
+  if (lintTargets.length === 0) {
+    return { mode: 'skip', files: [] };
+  }
+
+  return { mode: 'incremental', files: lintTargets };
+}
+
+export function resolveTestPlan({
+  isMainBranch,
+  hasUntrackedCode,
+  hasConfigChange,
+  fileListError,
+}: {
+  isMainBranch: boolean;
+  hasUntrackedCode: boolean;
+  hasConfigChange: boolean;
+  fileListError: boolean;
+}): TestPlan {
+  if (fileListError) {
+    return { mode: 'full', reason: 'file-list-error' };
+  }
+  if (hasUntrackedCode) {
+    return { mode: 'full', reason: 'untracked-code' };
+  }
+  if (hasConfigChange) {
+    return { mode: 'full', reason: 'test-config' };
+  }
+  if (isMainBranch) {
+    return { mode: 'full' };
+  }
+  return { mode: 'incremental' };
+}
+
 export function parsePrettierListOutput(output: string): string[] {
   if (!output) return [];
   return output
@@ -232,6 +361,11 @@ export function buildPrettierWriteCommand(files: string[]): string {
   return quotedFiles ? `${base} ${quotedFiles}` : base;
 }
 
+function buildPrettierCheckCommand(files: string[]): string {
+  const filesArg = files.length > 0 ? quoteShellArgs(files) : '.';
+  return pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.CHECK, filesArg);
+}
+
 export function formatFormatCheckGuidance(files: string[]): string[] {
   if (!files.length) return [];
   const command = buildPrettierWriteCommand(files);
@@ -247,8 +381,9 @@ export function formatFormatCheckGuidance(files: string[]): string[] {
   ];
 }
 
-function collectPrettierListDifferent(cwd: string): string[] {
-  const cmd = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.LIST_DIFFERENT, '.');
+function collectPrettierListDifferent(cwd: string, files: string[] = []): string[] {
+  const filesArg = files.length > 0 ? quoteShellArgs(files) : '.';
+  const cmd = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.LIST_DIFFERENT, filesArg);
   const result = spawnSync(cmd, [], {
     shell: true,
     cwd,
@@ -261,14 +396,16 @@ function collectPrettierListDifferent(cwd: string): string[] {
 function emitFormatCheckGuidance({
   agentLog,
   useAgentMode,
+  files,
 }: {
   agentLog?: { logFd: number; logPath: string } | null;
   useAgentMode: boolean;
+  files?: string[] | null;
 }) {
-  const files = collectPrettierListDifferent(process.cwd());
-  if (!files.length) return;
+  const formattedFiles = collectPrettierListDifferent(process.cwd(), files ?? []);
+  if (!formattedFiles.length) return;
 
-  const lines = formatFormatCheckGuidance(files);
+  const lines = formatFormatCheckGuidance(formattedFiles);
   const logLine =
     useAgentMode && agentLog
       ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
@@ -277,13 +414,6 @@ function emitFormatCheckGuidance({
   for (const line of lines) {
     logLine(line);
   }
-}
-
-/**
- * Build a pnpm --filter command string
- */
-function pnpmFilter(pkg: string, script: string) {
-  return `${PKG_MANAGER} ${PKG_FLAGS.FILTER} ${pkg} ${script}`;
 }
 
 function readLogTail(logPath: string, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
@@ -436,6 +566,96 @@ async function runSystemMapGate({ agentLog, useAgentMode }: GateLogContext) {
   return { ok: result.valid, duration: Date.now() - start };
 }
 
+async function filterExistingFiles(files: string[]): Promise<string[]> {
+  const existingFiles = await Promise.all(
+    files.map(async (file) => {
+      try {
+        await access(file);
+        return file;
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return existingFiles.filter((file): file is string => Boolean(file));
+}
+
+async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): Promise<{
+  ok: boolean;
+  duration: number;
+  fileCount: number;
+  filesChecked?: string[];
+}> {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+
+  let git;
+  let isMainBranch = false;
+
+  try {
+    git = getGitForCwd();
+    const currentBranch = await git.getCurrentBranch();
+    isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
+  } catch (error) {
+    logLine(`⚠️  Failed to determine branch for format check: ${error.message}`);
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    return { ...result, duration: Date.now() - start, fileCount: -1 };
+  }
+
+  if (isMainBranch) {
+    logLine('📋 On main branch - running full format check');
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    return { ...result, duration: Date.now() - start, fileCount: -1 };
+  }
+
+  let changedFiles: string[] = [];
+  let fileListError = false;
+
+  try {
+    changedFiles = await getChangedFilesForIncremental({ git });
+  } catch (error) {
+    fileListError = true;
+    logLine(`⚠️  Failed to determine changed files for format check: ${error.message}`);
+  }
+
+  const plan = resolveFormatCheckPlan({ changedFiles, fileListError });
+
+  if (plan.mode === 'skip') {
+    logLine('\n> format:check (incremental)\n');
+    logLine('✅ No files changed - skipping format check');
+    return { ok: true, duration: Date.now() - start, fileCount: 0, filesChecked: [] };
+  }
+
+  if (plan.mode === 'full') {
+    const reason =
+      plan.reason === 'prettier-config'
+        ? ' (prettier config changed)'
+        : plan.reason === 'file-list-error'
+          ? ' (file list unavailable)'
+          : '';
+    logLine(`📋 Running full format check${reason}`);
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    return { ...result, duration: Date.now() - start, fileCount: -1 };
+  }
+
+  const existingFiles = await filterExistingFiles(plan.files);
+  if (existingFiles.length === 0) {
+    logLine('\n> format:check (incremental)\n');
+    logLine('✅ All changed files were deleted - skipping format check');
+    return { ok: true, duration: Date.now() - start, fileCount: 0, filesChecked: [] };
+  }
+
+  logLine(`\n> format:check (incremental: ${existingFiles.length} files)\n`);
+  const result = run(buildPrettierCheckCommand(existingFiles), { agentLog });
+  return {
+    ...result,
+    duration: Date.now() - start,
+    fileCount: existingFiles.length,
+    filesChecked: existingFiles,
+  };
+}
+
 /**
  * Run incremental ESLint on changed files only
  * Falls back to full lint if on main branch or if incremental fails
@@ -453,67 +673,43 @@ async function runIncrementalLint({
     writeSync(agentLog.logFd, `${line}\n`);
   };
 
-  // WU-1006: Skip incremental lint if apps/web doesn't exist (repo-agnostic)
-  const webDir = path.join(process.cwd(), DIRECTORIES.APPS_WEB);
-  try {
-    await access(webDir);
-  } catch {
-    logLine('\n> ESLint (incremental) skipped (apps/web not present)\n');
-    return { ok: true, duration: Date.now() - start, fileCount: 0 };
-  }
-
   try {
     // Check if we're on main branch
     const git = getGitForCwd();
     const currentBranch = await git.getCurrentBranch();
+    const isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
 
-    if (currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER) {
+    if (isMainBranch) {
       logLine('📋 On main branch - running full lint');
-      const result = run(pnpmFilter(PACKAGES.WEB, SCRIPTS.LINT), { agentLog });
+      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
       return { ...result, fileCount: -1 };
     }
 
-    // Get changed files in apps/web
-    const changedFiles = await getChangedLintableFiles({
-      git,
-      filterPath: DIRECTORIES.APPS_WEB,
-    });
+    const changedFiles = await getChangedLintableFiles({ git });
+    const plan = resolveLintPlan({ isMainBranch, changedFiles });
 
-    if (changedFiles.length === 0) {
+    if (plan.mode === 'skip') {
       logLine('\n> ESLint (incremental)\n');
       logLine('✅ No lintable files changed - skipping lint');
       return { ok: true, duration: Date.now() - start, fileCount: 0 };
     }
 
-    // Filter to files that still exist (in case of deletions)
-    const existingFiles = (
-      await Promise.all(
-        changedFiles.map(async (f) => {
-          try {
-            await access(f);
-            return f;
-          } catch {
-            return null;
-          }
-        }),
-      )
-    ).filter(Boolean);
+    if (plan.mode === 'full') {
+      logLine('📋 Running full lint (incremental plan forced full)');
+      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
+      return { ...result, fileCount: -1 };
+    }
 
+    const existingFiles = await filterExistingFiles(plan.files);
     if (existingFiles.length === 0) {
       logLine('\n> ESLint (incremental)\n');
       logLine('✅ All changed files were deleted - skipping lint');
       return { ok: true, duration: Date.now() - start, fileCount: 0 };
     }
 
-    // WU-2571: Convert repo-relative paths to package-relative paths
-    // ESLint runs from apps/web/ where repo-relative paths don't exist
-    const packageRelativeFiles = convertToPackageRelativePaths(existingFiles, DIRECTORIES.APPS_WEB);
+    logLine(`\n> ESLint (incremental: ${existingFiles.length} files)\n`);
+    logLine(`Files to lint:\n  ${existingFiles.join('\n  ')}\n`);
 
-    logLine(`\n> ESLint (incremental: ${packageRelativeFiles.length} files)\n`);
-    logLine(`Files to lint:\n  ${packageRelativeFiles.join('\n  ')}\n`);
-
-    // WU-2571: Run ESLint from apps/web directory with package-relative paths
-    const webDir = path.join(process.cwd(), DIRECTORIES.APPS_WEB);
     const result = spawnSync(
       PKG_MANAGER,
       [
@@ -527,18 +723,18 @@ async function runIncrementalLint({
         ESLINT_FLAGS.CACHE_LOCATION,
         '.eslintcache',
         ESLINT_FLAGS.PASS_ON_UNPRUNED,
-        ...packageRelativeFiles,
+        ...existingFiles,
       ],
       agentLog
         ? {
             stdio: ['ignore', agentLog.logFd, agentLog.logFd] as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: webDir,
+            cwd: process.cwd(),
           }
         : {
             stdio: 'inherit' as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: webDir,
+            cwd: process.cwd(),
           },
     );
 
@@ -546,11 +742,11 @@ async function runIncrementalLint({
     return {
       ok: result.status === EXIT_CODES.SUCCESS,
       duration,
-      fileCount: packageRelativeFiles.length,
+      fileCount: existingFiles.length,
     };
   } catch (error) {
     console.error('⚠️  Incremental lint failed, falling back to full lint:', error.message);
-    const result = run(pnpmFilter(PACKAGES.WEB, SCRIPTS.LINT), { agentLog });
+    const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
     return { ...result, fileCount: -1 };
   }
 }
@@ -577,12 +773,25 @@ async function runChangedTests({
   try {
     const git = getGitForCwd();
     const currentBranch = await git.getCurrentBranch();
+    const isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
 
-    if (currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER) {
+    if (isMainBranch) {
       logLine('📋 On main branch - running full test suite');
       const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
       return { ...result, isIncremental: false };
     }
+
+    let changedFiles: string[] = [];
+    let fileListError = false;
+
+    try {
+      changedFiles = await getChangedFilesForIncremental({ git });
+    } catch (error) {
+      fileListError = true;
+      logLine(`⚠️  Failed to determine changed files for tests: ${error.message}`);
+    }
+
+    const hasConfigChange = !fileListError && changedFiles.some(isTestConfigFile);
 
     const untrackedOutput = await git.raw(['ls-files', '--others', '--exclude-standard']);
     const untrackedFiles = untrackedOutput
@@ -590,23 +799,39 @@ async function runChangedTests({
       .map((f) => f.trim())
       .filter(Boolean);
     const untrackedCodeFiles = untrackedFiles.filter(isCodeFilePath);
+    const hasUntrackedCode = untrackedCodeFiles.length > 0;
 
-    if (untrackedCodeFiles.length > 0) {
-      const preview = untrackedCodeFiles.slice(0, 5).join(', ');
-      logLine(
-        `⚠️  Untracked code files detected (${untrackedCodeFiles.length}): ${preview}${untrackedCodeFiles.length > 5 ? '...' : ''}`,
-      );
+    const plan = resolveTestPlan({
+      isMainBranch,
+      hasUntrackedCode,
+      hasConfigChange,
+      fileListError,
+    });
+
+    if (plan.mode === 'full') {
+      if (plan.reason === 'untracked-code') {
+        const preview = untrackedCodeFiles.slice(0, 5).join(', ');
+        logLine(
+          `⚠️  Untracked code files detected (${untrackedCodeFiles.length}): ${preview}${untrackedCodeFiles.length > 5 ? '...' : ''}`,
+        );
+      } else if (plan.reason === 'test-config') {
+        logLine('⚠️  Test config changes detected - running full test suite');
+      } else if (plan.reason === 'file-list-error') {
+        logLine('⚠️  Changed file list unavailable - running full test suite');
+      }
+
       logLine('📋 Running full test suite to avoid missing coverage');
       const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
       return { ...result, duration: Date.now() - start, isIncremental: false };
     }
 
-    // WU-1006: Use turbo for tests (repo-agnostic)
-    // Previously used --project tools and test:changed which don't exist in all repos
-    logLine('\n> Running tests (turbo run test)\n');
-    const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
+    logLine('\n> Running tests (vitest --changed)\n');
+    const result = run(
+      pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch: 'origin/main' })),
+      { agentLog },
+    );
 
-    return { ...result, duration: Date.now() - start, isIncremental: false };
+    return { ...result, duration: Date.now() - start, isIncremental: true };
   } catch (error) {
     console.error('⚠️  Changed tests failed, falling back to full suite:', error.message);
     const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
@@ -759,6 +984,35 @@ async function runIntegrationTests({
   }
 }
 
+async function getChangedFilesForIncremental({
+  git,
+  baseBranch = 'origin/main',
+}: {
+  git: ReturnType<typeof getGitForCwd>;
+  baseBranch?: string;
+}) {
+  const mergeBase = await git.mergeBase('HEAD', baseBranch);
+  const committedOutput = await git.raw(['diff', '--name-only', `${mergeBase}...HEAD`]);
+  const committedFiles = committedOutput
+    .split('\n')
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  const unstagedOutput = await git.raw(['diff', '--name-only']);
+  const unstagedFiles = unstagedOutput
+    .split('\n')
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  const untrackedOutput = await git.raw(['ls-files', '--others', '--exclude-standard']);
+  const untrackedFiles = untrackedOutput
+    .split('\n')
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  return [...new Set([...committedFiles, ...unstagedFiles, ...untrackedFiles])];
+}
+
 /**
  * WU-2062: Get all changed files for risk detection
  * Combines committed, unstaged, and untracked files.
@@ -775,32 +1029,7 @@ async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
   const { git = getGitForCwd() } = options;
 
   try {
-    // Get merge base
-    const mergeBase = await git.mergeBase('HEAD', 'origin/main');
-
-    // Get committed changes
-    const committedOutput = await git.raw(['diff', '--name-only', `${mergeBase}...HEAD`]);
-    const committedFiles = committedOutput
-      .split('\n')
-      .map((f) => f.trim())
-      .filter(Boolean);
-
-    // Get unstaged changes
-    const unstagedOutput = await git.raw(['diff', '--name-only']);
-    const unstagedFiles = unstagedOutput
-      .split('\n')
-      .map((f) => f.trim())
-      .filter(Boolean);
-
-    // Get untracked files
-    const untrackedOutput = await git.raw(['ls-files', '--others', '--exclude-standard']);
-    const untrackedFiles = untrackedOutput
-      .split('\n')
-      .map((f) => f.trim())
-      .filter(Boolean);
-
-    // Combine and deduplicate
-    return [...new Set([...committedFiles, ...unstagedFiles, ...untrackedFiles])];
+    return await getChangedFilesForIncremental({ git });
   } catch (error) {
     console.error('⚠️  Failed to get changed files:', error.message);
     return [];
@@ -913,7 +1142,7 @@ async function executeGates(opts: {
     ? [
         // WU-2252: Invariants check runs first (non-bypassable)
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        { name: GATE_NAMES.FORMAT_CHECK, cmd: pnpmCmd(SCRIPTS.FORMAT_CHECK) },
+        { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
         { name: GATE_NAMES.SPEC_LINTER, cmd: pnpmRun(SCRIPTS.SPEC_LINTER) },
         {
           name: GATE_NAMES.PROMPTS_LINT,
@@ -930,10 +1159,10 @@ async function executeGates(opts: {
     : [
         // WU-2252: Invariants check runs first (non-bypassable)
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        { name: GATE_NAMES.FORMAT_CHECK, cmd: pnpmCmd(SCRIPTS.FORMAT_CHECK) },
+        { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
         {
           name: GATE_NAMES.LINT,
-          cmd: isFullLint ? pnpmFilter(PACKAGES.WEB, SCRIPTS.LINT) : GATE_COMMANDS.INCREMENTAL,
+          cmd: isFullLint ? pnpmCmd(SCRIPTS.LINT) : GATE_COMMANDS.INCREMENTAL,
         },
         { name: GATE_NAMES.TYPECHECK, cmd: pnpmCmd(SCRIPTS.TYPECHECK) },
         { name: GATE_NAMES.SPEC_LINTER, cmd: pnpmRun(SCRIPTS.SPEC_LINTER) },
@@ -979,12 +1208,16 @@ async function executeGates(opts: {
   // Run all gates sequentially
   // WU-1920: Track last test result to skip coverage gate on changed tests
   let lastTestResult = null;
+  let lastFormatCheckFiles: string[] | null = null;
 
   for (const gate of gates) {
-    let result;
+    let result: { ok: boolean; duration: number; filesChecked?: string[] };
 
     if (gate.run) {
       result = await gate.run({ agentLog, useAgentMode });
+      if (gate.name === GATE_NAMES.FORMAT_CHECK) {
+        lastFormatCheckFiles = result.filesChecked ?? null;
+      }
     } else if (gate.cmd === GATE_COMMANDS.INVARIANTS) {
       // WU-2252: Invariants check runs first (non-bypassable)
       const logLine = useAgentMode
@@ -1071,7 +1304,7 @@ async function executeGates(opts: {
       }
 
       if (gate.name === GATE_NAMES.FORMAT_CHECK) {
-        emitFormatCheckGuidance({ agentLog, useAgentMode });
+        emitFormatCheckGuidance({ agentLog, useAgentMode, files: lastFormatCheckFiles });
       }
 
       if (useAgentMode) {
