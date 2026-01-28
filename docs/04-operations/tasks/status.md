@@ -10,6 +10,7 @@ _Last updated: 2026-01-28_
 
 ## Completed
 
+- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — 2026-01-28
 - [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml) — 2026-01-28
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18

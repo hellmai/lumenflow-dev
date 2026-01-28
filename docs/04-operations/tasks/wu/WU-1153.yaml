@@ -2,7 +2,7 @@ id: WU-1153
 title: Add wu:done guard for uncommitted code_paths
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-28
 code_paths:
@@ -40,3 +40,5 @@ session_id: defc0ebd-97d0-40e6-aaf7-54563ec676c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T10:18:26.172Z
+locked: true
+completed_at: 2026-01-28T10:42:29.379Z
