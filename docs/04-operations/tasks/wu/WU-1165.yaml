@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual:
-    - Run pnpm gates on a worktree with a single test file change
+    - Run pnpm gates on a worktree with a single file change in packages/@lumenflow/cli and verify
+      only relevant format/lint/test steps run
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates.test.ts
   e2e: []
@@ -26,9 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Gates advertise incremental tests but still execute the full suite. Problem: runChangedTests currently falls back to "turbo run test" and never uses the changed-test helper, so worktree gates are slow and noisy. Solution: use the incremental-test helper for changed files with safe fallbacks to full tests when needed.'
+description: "Context: Gates currently run full-repo format checks and full test suites in
+  worktrees, despite advertising incremental behavior. Problem: format:check runs Prettier against
+  '.', tests always run 'turbo run test', and linting only targets apps/web, so worktree gates are
+  slow and inconsistent. Solution: make gates use changed-file/package awareness for format, lint,
+  and tests with safe fallbacks to full runs; keep global consistency validators full-repo and
+  preserve default behavior on main."
 acceptance:
-  - Changed tests use Vitest --changed (or equivalent) when only code/test files are modified
-  - Falls back to full test suite on untracked code/config changes or when incremental detection fails
-  - Default behavior remains full suite on main branch
-  - Unit tests updated to cover incremental vs fallback paths
+  - Format check runs Prettier only on changed files (skip when none), with full-repo fallback if
+    Prettier config/ignore changes or file list cannot be determined
+  - Lint gate runs only for affected packages/paths (apps/*, packages/*); full lint on main or when
+    incremental detection fails
+  - Test gate runs incremental tests (Vitest --changed or equivalent) when possible; falls back to
+    full suite on untracked code/config changes or detection failure
+  - Global consistency validators (spec-linter, backlog sync, system map) remain full-repo
+  - Unit tests updated to cover incremental vs fallback paths for format, lint, and tests
