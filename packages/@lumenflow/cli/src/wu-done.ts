@@ -1217,11 +1217,13 @@ async function runGatesInWorktree(
   }
   const startTime = Date.now();
   try {
-    const ok = await runGates({
-      cwd: worktreePath,
-      docsOnly: useDocsOnlyGates,
-      coverageMode: undefined,
-    });
+    const ok = Boolean(
+      await runGates({
+        cwd: worktreePath,
+        docsOnly: useDocsOnlyGates,
+        coverageMode: undefined,
+      }),
+    );
     if (!ok) {
       throw new Error('Gates failed');
     }
@@ -2249,7 +2251,7 @@ async function executeGates({
     }
     const startTime = Date.now();
     try {
-      const ok = await runGates({ docsOnly: useDocsOnlyGates });
+      const ok = Boolean(await runGates({ docsOnly: useDocsOnlyGates }));
       if (!ok) {
         throw new Error('Gates failed');
       }
