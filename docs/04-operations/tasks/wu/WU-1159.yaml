@@ -2,7 +2,7 @@ id: WU-1159
 title: 'Bug: templates/ not included in npm package - docs-sync broken'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-01-28
 code_paths:
@@ -55,3 +55,5 @@ session_id: defc0ebd-97d0-40e6-aaf7-54563ec676c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T10:14:04.104Z
+locked: true
+completed_at: 2026-01-28T10:20:23.397Z
