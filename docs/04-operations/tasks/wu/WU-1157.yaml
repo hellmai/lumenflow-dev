@@ -2,7 +2,7 @@ id: WU-1157
 title: Stabilize docs:generate formatting drift
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - docs:generate produces stable cli.mdx/config.mdx output across repeated runs
   - format:check passes after a single docs:generate
   - unit test or manual verification covers the stability
+locked: true
+completed_at: 2026-01-28T13:43:24.948Z
