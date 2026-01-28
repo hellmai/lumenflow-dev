@@ -7,13 +7,23 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+vi.mock('../validators/wu-tasks.js', () => ({
+  validateSingleWU: vi.fn(),
+}));
+
+vi.mock('../wu-paths.js', () => ({
+  WU_PATHS: {
+    WU: (id) => `/tmp/${id}.yaml`,
+  },
+}));
+
 import { runPreflightTasksValidation, validateAllPreCommitHooks } from '../wu-done-preflight.js';
 
 describe('validateAllPreCommitHooks', () => {
-  let mockExecSync: ReturnType<typeof vi.fn>;
+  let mockRunGates: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    mockExecSync = vi.fn();
+    mockRunGates = vi.fn();
     vi.clearAllMocks();
   });
 
@@ -21,45 +31,41 @@ describe('validateAllPreCommitHooks', () => {
     vi.clearAllMocks();
   });
 
-  it('uses CLI gates command for pre-commit validation', () => {
-    mockExecSync.mockReturnValue('');
+  it('invokes runGates for pre-commit validation', async () => {
+    mockRunGates.mockResolvedValue(true);
 
-    validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
+    await validateAllPreCommitHooks('WU-TEST', null, { runGates: mockRunGates });
 
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('gates.js'),
-      expect.any(Object),
-    );
+    expect(mockRunGates).toHaveBeenCalledWith(expect.objectContaining({ wuId: 'WU-TEST' }));
   });
 
-  it('uses worktree cwd when provided', () => {
+  it('uses worktree cwd when provided', async () => {
     const worktreePath = '/path/to/worktree';
-    mockExecSync.mockReturnValue('');
+    mockRunGates.mockResolvedValue(true);
 
-    validateAllPreCommitHooks('WU-TEST', worktreePath, { execSyncFn: mockExecSync });
+    await validateAllPreCommitHooks('WU-TEST', worktreePath, { runGates: mockRunGates });
 
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('gates.js'),
-      expect.objectContaining({ cwd: worktreePath }),
-    );
+    expect(mockRunGates).toHaveBeenCalledWith(expect.objectContaining({ cwd: worktreePath }));
   });
 
   describe('validation result', () => {
-    it('should return valid: true when hooks pass', () => {
-      mockExecSync.mockReturnValue('');
+    it('should return valid: true when hooks pass', async () => {
+      mockRunGates.mockResolvedValue(true);
 
-      const result = validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
+      const result = await validateAllPreCommitHooks('WU-TEST', null, {
+        runGates: mockRunGates,
+      });
 
       expect(result.valid).toBe(true);
       expect(result.errors).toEqual([]);
     });
 
-    it('should return valid: false with errors when hooks fail', () => {
-      mockExecSync.mockImplementation(() => {
-        throw new Error('Hook failed');
-      });
+    it('should return valid: false with errors when hooks fail', async () => {
+      mockRunGates.mockResolvedValue(false);
 
-      const result = validateAllPreCommitHooks('WU-TEST', null, { execSyncFn: mockExecSync });
+      const result = await validateAllPreCommitHooks('WU-TEST', null, {
+        runGates: mockRunGates,
+      });
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -68,36 +74,21 @@ describe('validateAllPreCommitHooks', () => {
 });
 
 describe('runPreflightTasksValidation (WU-1139)', () => {
-  let mockExecSync: ReturnType<typeof vi.fn>;
+  it('returns valid when single WU validation passes', async () => {
+    const { validateSingleWU } = await import('../validators/wu-tasks.js');
+    validateSingleWU.mockReturnValue({ valid: true, warnings: [], errors: [] });
 
-  beforeEach(() => {
-    mockExecSync = vi.fn();
-    vi.clearAllMocks();
+    const result = runPreflightTasksValidation('WU-TEST');
+
+    expect(result.valid).toBe(true);
+    expect(validateSingleWU).toHaveBeenCalledWith('/tmp/WU-TEST.yaml', { strict: false });
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  it('returns errors when single WU validation fails', async () => {
+    const { validateSingleWU } = await import('../validators/wu-tasks.js');
+    validateSingleWU.mockReturnValue({ valid: false, warnings: [], errors: ['bad yaml'] });
 
-  it('runs CLI validate command with WU_ID env', () => {
-    mockExecSync.mockReturnValue('');
-
-    runPreflightTasksValidation('WU-TEST', { execSyncFn: mockExecSync });
-
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('validate.js'),
-      expect.objectContaining({
-        env: expect.objectContaining({ WU_ID: 'WU-TEST' }),
-      }),
-    );
-  });
-
-  it('returns errors when validate command fails', () => {
-    mockExecSync.mockImplementation(() => {
-      throw { stdout: 'ERROR [WU] Validation failed' };
-    });
-
-    const result = runPreflightTasksValidation('WU-TEST', { execSyncFn: mockExecSync });
+    const result = runPreflightTasksValidation('WU-TEST');
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
