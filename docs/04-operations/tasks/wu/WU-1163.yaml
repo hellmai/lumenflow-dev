@@ -2,7 +2,7 @@ id: WU-1163
 title: Replace internal doc paths in error messages with lumenflow.dev URLs
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -54,3 +54,11 @@ acceptance:
   - No error messages reference docs/04-operations paths
   - 'All See: references point to lumenflow.dev URLs'
   - URLs resolve to valid documentation pages
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1163
+claimed_at: 2026-01-28T11:34:41.115Z
+baseline_main_sha: 456c820f3c567a0d734af12549313a45ac1f42a4
+session_id: 852fff34-1ca3-4627-81dd-41dd7408508e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T11:34:41.120Z
