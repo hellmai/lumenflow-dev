@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1155 — Fix agent verification command references](wu/WU-1155.yaml) — Framework: CLI
 - [WU-1154 — Improve preflight test path mismatch guidance](wu/WU-1154.yaml) — Framework: Core
 - [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — Framework: Core
 - [WU-1149 — Add LUMENFLOW.md reference to vendor configs](wu/WU-1149.yaml) — Content: Documentation
