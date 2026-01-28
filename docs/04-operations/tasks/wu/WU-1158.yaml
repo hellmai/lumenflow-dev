@@ -17,6 +17,7 @@ code_paths:
 tests:
   manual: []
   unit:
+    - packages/@lumenflow/core/src/__tests__/validators/backlog-sync.test.ts
     - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
   e2e: []
 artifacts:
