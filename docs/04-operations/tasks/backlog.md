@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1170 — Universal Agent Safety: Migrate Claude hooks to Husky/Scripts](wu/WU-1170.yaml) — Framework: Core
 - [WU-1169 — Prevent wu:done rollback on uncommitted changes](wu/WU-1169.yaml) — Framework: Core
 - [WU-1168 — Investigate dependency-graph test timeouts](wu/WU-1168.yaml) — Framework: Core
   (No items ready)
