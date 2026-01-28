@@ -144,7 +144,7 @@ export interface DependencyFilterResult {
   blockingDeps: string[];
   waitingMessage: string;
 }
-import { buildDependencyGraph, validateGraph } from '@lumenflow/core/lib/dependency-graph.js';
+import { buildDependencyGraph, buildDependencyGraphAsync, validateGraph } from '@lumenflow/core/lib/dependency-graph.js';
 import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
 import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/lib/wu-constants.js';
 import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.js';
@@ -490,6 +490,229 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
 }
 
 /**
+ * Build execution plan from WUs asynchronously.
+ *
+ * @param {Array<{id: string, doc: object}>} wus - WUs to plan
+ * @returns {Promise<ExecutionPlan>}
+ */
+export async function buildExecutionPlanAsync(wus: WUEntry[]): Promise<ExecutionPlan> {
+  // WU-2430: Enhanced categorisation of WUs
+  const skipped: string[] = []; // IDs of done WUs (backwards compat)
+  const skippedWithReasons: SkippedWUEntry[] = []; // WU-2430: Non-ready WUs with reasons
+  const deferred: DeferredWUEntry[] = []; // WU-2430: Ready WUs waiting on external blockers
+
+  const doneStatuses = new Set([WU_STATUS.DONE, WU_STATUS.COMPLETED]);
+
+  // Categorise WUs by status
+  for (const wu of wus) {
+    const status = wu.doc.status ?? 'unknown';
+    if (doneStatuses.has(status)) {
+      skipped.push(wu.id);
+    } else if (status !== WU_STATUS.READY) {
+      skippedWithReasons.push({ id: wu.id, reason: `status: ${status}` });
+    }
+  }
+
+  // WU-2430: Only ready WUs are candidates for execution
+  const readyWUs = wus.filter((wu) => wu.doc.status === WU_STATUS.READY);
+
+  if (readyWUs.length === 0) {
+    return { waves: [], skipped, skippedWithReasons, deferred };
+  }
+
+  // Build a map for quick lookup
+  const wuMap = new Map(readyWUs.map((wu) => [wu.id, wu]));
+  const wuIds = new Set(wuMap.keys());
+  const allWuMap = new Map(wus.map((wu) => [wu.id, wu]));
+  const allWuIds = new Set(allWuMap.keys());
+
+  // Build dependency graph for validation (check cycles)
+  const graph = await buildDependencyGraphAsync();
+  const { cycles } = validateGraph(graph);
+
+  // Filter cycles to only those involving our WUs
+  const relevantCycles = cycles.filter((cycle: string[]) =>
+    cycle.some((id: string) => wuIds.has(id)),
+  );
+
+  if (relevantCycles.length > 0) {
+    const cycleStr = relevantCycles.map((c: string[]) => c.join(' → ')).join('; ');
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Circular dependencies detected: ${cycleStr}`, {
+      cycles: relevantCycles,
+    });
+  }
+
+  // WU-2430: Check for external blockers without stamps
+  // A WU with blocked_by dependencies that are NOT in the initiative
+  // and do NOT have stamps should be deferred
+  const deferredIds = new Set<string>();
+  const deferredReasons = new Map<string, Set<string>>();
+  const deferredBlockers = new Map<string, Set<string>>();
+
+  const addDeferredEntry = (wuId: string, blockers: string[], reason: string): void => {
+    deferredIds.add(wuId);
+    if (!deferredReasons.has(wuId)) {
+      deferredReasons.set(wuId, new Set<string>());
+    }
+    if (!deferredBlockers.has(wuId)) {
+      deferredBlockers.set(wuId, new Set<string>());
+    }
+    const reasonSet = deferredReasons.get(wuId)!;
+    const blockerSet = deferredBlockers.get(wuId)!;
+    for (const blockerId of blockers) {
+      blockerSet.add(blockerId);
+    }
+    reasonSet.add(reason);
+  };
+
+  for (const wu of readyWUs) {
+    const blockers = wu.doc.blocked_by ?? [];
+    const externalBlockers = blockers.filter((blockerId: string) => !allWuIds.has(blockerId));
+    const internalBlockers = blockers.filter((blockerId: string) => allWuIds.has(blockerId));
+
+    if (externalBlockers.length > 0) {
+      // Check if any external blockers lack stamps
+      const unstampedBlockers = externalBlockers.filter(
+        (blockerId: string) => !hasStamp(blockerId),
+      );
+      if (unstampedBlockers.length > 0) {
+        addDeferredEntry(
+          wu.id,
+          unstampedBlockers,
+          `waiting for external: ${unstampedBlockers.join(', ')}`,
+        );
+      }
+    }
+
+    if (internalBlockers.length > 0) {
+      const nonReadyInternal = internalBlockers.filter((blockerId) => {
+        const blocker = allWuMap.get(blockerId);
+        const status = blocker?.doc?.status ?? 'unknown';
+        if (status === WU_STATUS.READY) {
+          return false;
+        }
+        return !doneStatuses.has(status);
+      });
+
+      if (nonReadyInternal.length > 0) {
+        const details = nonReadyInternal.map((blockerId) => {
+          const status = allWuMap.get(blockerId)?.doc?.status ?? 'unknown';
+          return `${blockerId} (status: ${status})`;
+        });
+        addDeferredEntry(wu.id, nonReadyInternal, `waiting for internal: ${details.join(', ')}`);
+      }
+    }
+  }
+
+  let hasNewDeferral = true;
+  while (hasNewDeferral) {
+    hasNewDeferral = false;
+    for (const wu of readyWUs) {
+      if (deferredIds.has(wu.id)) {
+        continue;
+      }
+      const blockers = wu.doc.blocked_by || [];
+      const deferredInternal = blockers.filter(
+        (blockerId) => allWuIds.has(blockerId) && deferredIds.has(blockerId),
+      );
+
+      if (deferredInternal.length > 0) {
+        const details = deferredInternal.map((blockerId) => {
+          const status = allWuMap.get(blockerId)?.doc?.status ?? 'unknown';
+          return `${blockerId} (status: ${status})`;
+        });
+        addDeferredEntry(wu.id, deferredInternal, `waiting for internal: ${details.join(', ')}`);
+        hasNewDeferral = true;
+      }
+    }
+  }
+
+  for (const wu of readyWUs) {
+    if (deferredIds.has(wu.id)) {
+      const blockerSet = deferredBlockers.get(wu.id) || new Set();
+      const reasonSet = deferredReasons.get(wu.id) || new Set();
+      deferred.push({
+        id: wu.id,
+        blockedBy: Array.from(blockerSet),
+        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : 'waiting for dependencies',
+      });
+    }
+  }
+
+  // Remove deferred WUs from candidates
+  const schedulableWUs = readyWUs.filter((wu) => !deferredIds.has(wu.id));
+  const schedulableMap = new Map(schedulableWUs.map((wu) => [wu.id, wu]));
+  const schedulableIds = new Set(schedulableMap.keys());
+
+  if (schedulableIds.size === 0) {
+    return { waves: [], skipped, skippedWithReasons, deferred };
+  }
+
+  // Build waves using Kahn's algorithm (topological sort by levels)
+  // WU-1618: Also enforce lane WIP=1 constraint (no two WUs with same lane in same wave)
+  const waves: WUEntry[][] = [];
+  const remaining = new Set(schedulableIds);
+  const completed = new Set(skipped); // Treat done WUs as completed for dependency resolution
+
+  // Also treat stamped external deps as completed
+  for (const wu of wus) {
+    const blockers = wu.doc.blocked_by || [];
+    for (const blockerId of blockers) {
+      if (!allWuIds.has(blockerId) && hasStamp(blockerId)) {
+        completed.add(blockerId);
+      }
+    }
+  }
+
+  while (remaining.size > 0) {
+    const wave: WUEntry[] = [];
+    const lanesInWave = new Set(); // WU-1618: Track lanes used in this wave
+    const deferredToNextWave = []; // WUs that could run but lane is occupied
+
+    for (const id of remaining) {
+      const wu = schedulableMap.get(id)!;
+      const blockers = wu.doc.blocked_by || [];
+
+      // Check if all blockers are either done or completed in previous waves
+      const allBlockersDone = blockers.every((blockerId) => completed.has(blockerId));
+
+      if (allBlockersDone) {
+        // WU-1618: Check if lane is already occupied in this wave
+        const lane = wu.doc.lane;
+        if (lanesInWave.has(lane)) {
+          // Defer to next wave (lane conflict)
+          deferredToNextWave.push(wu);
+        } else {
+          wave.push(wu);
+          lanesInWave.add(lane);
+        }
+      }
+    }
+
+    // Deadlock detection: if no WUs can be scheduled but remaining exist
+    // WU-1618: Account for deferred WUs (they can run in next wave, not stuck)
+    if (wave.length === 0 && remaining.size > 0 && deferredToNextWave.length === 0) {
+      const stuckIds = Array.from(remaining);
+      throw createError(
+        ErrorCodes.VALIDATION_ERROR,
+        `Circular or unresolvable dependencies detected. Stuck WUs: ${stuckIds.join(', ')}`,
+        { stuckIds },
+      );
+    }
+
+    // Add wave and mark WUs as completed
+    waves.push(wave);
+    for (const wu of wave) {
+      remaining.delete(wu.id);
+      completed.add(wu.id);
+    }
+  }
+
+  return { waves, skipped, skippedWithReasons, deferred };
+}
+
+
+/**
  * WU-1828: Determine if checkpoint mode should be auto-enabled based on initiative size.
  *
  * Auto-detection triggers checkpoint mode when:
@@ -550,6 +773,60 @@ export function shouldAutoEnableCheckpoint(wus: WUEntry[]): AutoCheckpointResult
 }
 
 /**
+ * WU-1828: Determine if checkpoint mode should be auto-enabled based on initiative size asynchronously.
+ *
+ * @param {Array<{id: string, doc: object}>} wus - WUs to analyse
+ * @returns {Promise<{autoEnabled: boolean, reason: string, pendingCount: number, waveCount: number}>}
+ */
+export async function shouldAutoEnableCheckpointAsync(wus: WUEntry[]): Promise<AutoCheckpointResult> {
+  // Count only pending WUs (not done)
+  const pendingWUs = wus.filter((wu) => wu.doc.status !== WU_STATUS.DONE);
+  const pendingCount = pendingWUs.length;
+
+  // Check WU count threshold first (faster check)
+  if (pendingCount > CHECKPOINT_AUTO_THRESHOLDS.WU_COUNT) {
+    return {
+      autoEnabled: true,
+      reason: `${pendingCount} pending WUs exceeds threshold (>${CHECKPOINT_AUTO_THRESHOLDS.WU_COUNT})`,
+      pendingCount,
+      waveCount: -1, // Not computed (early return)
+    };
+  }
+
+  // Only compute waves if WU count didn't trigger
+  if (pendingCount === 0) {
+    return {
+      autoEnabled: false,
+      reason: 'No pending WUs',
+      pendingCount: 0,
+      waveCount: 0,
+    };
+  }
+
+  // Build execution plan to count waves
+  const plan = await buildExecutionPlanAsync(wus);
+  const waveCount = plan.waves.length;
+
+  // Check wave count threshold
+  if (waveCount > CHECKPOINT_AUTO_THRESHOLDS.WAVE_COUNT) {
+    return {
+      autoEnabled: true,
+      reason: `${waveCount} waves exceeds threshold (>${CHECKPOINT_AUTO_THRESHOLDS.WAVE_COUNT})`,
+      pendingCount,
+      waveCount,
+    };
+  }
+
+  return {
+    autoEnabled: false,
+    reason: `${pendingCount} pending WUs and ${waveCount} waves within thresholds`,
+    pendingCount,
+    waveCount,
+  };
+}
+
+
+/**
  * WU-1828: Resolve checkpoint mode from CLI flags and auto-detection.
  * WU-2430: Updated to suppress auto-detection in dry-run mode.
  *
@@ -604,6 +881,56 @@ export function resolveCheckpointMode(
     reason: autoResult.reason,
   };
 }
+
+/**
+ * WU-1828: Resolve checkpoint mode from CLI flags and auto-detection asynchronously.
+ *
+ * @param {{checkpointPerWave?: boolean, noCheckpoint?: boolean, dryRun?: boolean}} options - CLI options
+ * @param {Array<{id: string, doc: object}>} wus - WUs for auto-detection
+ * @returns {Promise<{enabled: boolean, source: 'explicit'|'override'|'auto'|'dryrun', reason?: string}>}
+ */
+export async function resolveCheckpointModeAsync(
+  options: CheckpointOptions,
+  wus: WUEntry[],
+): Promise<CheckpointModeResult> {
+  const { checkpointPerWave = false, noCheckpoint = false, dryRun = false } = options;
+
+  // Explicit enable via -c flag
+  if (checkpointPerWave) {
+    return {
+      enabled: true,
+      source: 'explicit',
+      reason: 'Enabled via -c/--checkpoint-per-wave flag',
+    };
+  }
+
+  // Explicit disable via --no-checkpoint flag
+  if (noCheckpoint) {
+    return {
+      enabled: false,
+      source: 'override',
+      reason: 'Disabled via --no-checkpoint flag',
+    };
+  }
+
+  // WU-2430: Dry-run suppresses auto-detection (preview should use polling mode)
+  if (dryRun) {
+    return {
+      enabled: false,
+      source: 'dryrun',
+      reason: 'Disabled in dry-run mode (preview uses polling mode)',
+    };
+  }
+
+  // Auto-detection
+  const autoResult = await shouldAutoEnableCheckpointAsync(wus);
+  return {
+    enabled: autoResult.autoEnabled,
+    source: 'auto',
+    reason: autoResult.reason,
+  };
+}
+
 
 /**
  * Get bottleneck WUs from a set of WUs based on how many downstream WUs they block.
@@ -962,7 +1289,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --dry-run (-d). ' +
-        'Checkpoint mode writes manifests and spawns agents.',
+      'Checkpoint mode writes manifests and spawns agents.',
       { flags: { checkpointPerWave: true, dryRun: true } },
     );
   }
@@ -972,7 +1299,7 @@ export function validateCheckpointFlags(options: CheckpointOptions): void {
     throw createError(
       ErrorCodes.VALIDATION_ERROR,
       'Cannot combine --checkpoint-per-wave (-c) with --no-checkpoint. ' +
-        'These flags are mutually exclusive.',
+      'These flags are mutually exclusive.',
       { flags: { checkpointPerWave: true, noCheckpoint: true } },
     );
   }

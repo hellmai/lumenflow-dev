@@ -15,6 +15,7 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import {
   buildDependencyGraph,
+  buildDependencyGraphAsync,
   renderASCII,
   renderMermaid,
   validateGraph,
@@ -42,7 +43,7 @@ async function main() {
   }
 
   console.log(`[wu:deps] Building dependency graph...`);
-  const graph = buildDependencyGraph();
+  const graph = await buildDependencyGraphAsync();
 
   if (!graph.has(wuId)) {
     die(`WU not found in graph: ${wuId}\n\nEnsure the WU exists in docs/04-operations/tasks/wu/`);

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, promises as fs } from 'node:fs';
 import { parse, stringify } from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
 import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
@@ -117,6 +117,59 @@ export function readWU(wuPath, expectedId) {
 }
 
 /**
+ * Read and parse WU YAML file asynchronously.
+ *
+ * Validates:
+ * - File exists
+ * - YAML is valid
+ * - WU ID matches expected ID
+ *
+ * @param {string} wuPath - Path to WU YAML file
+ * @param {string} expectedId - Expected WU ID (e.g., 'WU-123')
+ * @returns {Promise<object>} Parsed YAML document
+ * @throws {Error} If file not found, YAML invalid, or ID mismatch
+ */
+export async function readWUAsync(wuPath, expectedId) {
+  try {
+    const text = await fs.readFile(wuPath, { encoding: 'utf-8' });
+    let doc;
+
+    try {
+      doc = parse(text);
+    } catch (e) {
+      throw createError(
+        ErrorCodes.YAML_PARSE_ERROR,
+        `Failed to parse YAML ${wuPath}: ${e.message}`,
+        {
+          path: wuPath,
+          originalError: e.message,
+        },
+      );
+    }
+
+    // Validate ID matches
+    if (!doc || doc.id !== expectedId) {
+      throw createError(
+        ErrorCodes.WU_NOT_FOUND,
+        `WU YAML id mismatch. Expected ${expectedId}, found ${doc && doc.id}`,
+        { path: wuPath, expectedId, foundId: doc && doc.id },
+      );
+    }
+
+    return doc;
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`, {
+        path: wuPath,
+        expectedId,
+      });
+    }
+    throw err;
+  }
+}
+
+
+/**
  * Parse YAML string to object.
  * WU-1352: Centralized YAML parsing for consistency.
  *
@@ -170,6 +223,41 @@ export function readWURaw(yamlPath) {
     );
   }
 }
+
+/**
+ * Read and parse YAML file without ID validation asynchronously.
+ * WU-1352: For cases where you don't know/need to validate the WU ID.
+ *
+ * @param {string} yamlPath - Path to YAML file
+ * @returns {Promise<object>} Parsed YAML document
+ * @throws {Error} If file not found or YAML invalid
+ */
+export async function readWURawAsync(yamlPath) {
+  try {
+    const text = await fs.readFile(yamlPath, { encoding: 'utf-8' });
+
+    try {
+      return parse(text);
+    } catch (e) {
+      throw createError(
+        ErrorCodes.YAML_PARSE_ERROR,
+        `Failed to parse YAML ${yamlPath}: ${e.message}`,
+        {
+          path: yamlPath,
+          originalError: e.message,
+        },
+      );
+    }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      throw createError(ErrorCodes.FILE_NOT_FOUND, `YAML file not found: ${yamlPath}`, {
+        path: yamlPath,
+      });
+    }
+    throw err;
+  }
+}
+
 
 /**
  * Write WU YAML file with consistent formatting.
