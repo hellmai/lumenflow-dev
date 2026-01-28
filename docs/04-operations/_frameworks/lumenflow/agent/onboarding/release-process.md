@@ -238,6 +238,7 @@ The `apps/github-app/package.json` must have `"private": true` to prevent npm pu
 
 - [ ] All acceptance criteria met
 - [ ] Gates pass (`pnpm gates`)
+- [ ] Pre-release checks pass (`pnpm pre-release:check`)
 - [ ] CHANGELOG updated (if maintained)
 
 ### Release Steps (Automated)
@@ -261,6 +262,7 @@ If you need more control:
 1. **Complete WU** (includes version bump commit)
 
    ```bash
+   pnpm pre-release:check
    pnpm wu:done --id WU-XXXX
    ```
 
