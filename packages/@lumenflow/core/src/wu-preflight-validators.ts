@@ -49,6 +49,7 @@ import fg from 'fast-glob';
  * @param {string[]} [params.errors=[]] - Error messages
  * @param {string[]} [params.missingCodePaths=[]] - Missing code paths
  * @param {string[]} [params.missingTestPaths=[]] - Missing test paths
+ * @param {Record<string, string[]>} [params.suggestedTestPaths={}] - Suggested test paths
  * @returns {PreflightResult}
  */
 export function createPreflightResult({
@@ -56,12 +57,14 @@ export function createPreflightResult({
   errors = [],
   missingCodePaths = [],
   missingTestPaths = [],
+  suggestedTestPaths = {},
 }) {
   return {
     valid,
     errors,
     missingCodePaths,
     missingTestPaths,
+    suggestedTestPaths,
   };
 }
 
@@ -97,8 +100,8 @@ function validateSchema(doc, id) {
   if (createdIssue) {
     errors.push(
       `created field has invalid format: "${createdIssue.current}" is an ISO timestamp. ` +
-        `Expected YYYY-MM-DD format. Suggested fix: change to "${createdIssue.suggested}". ` +
-        `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`,
+      `Expected YYYY-MM-DD format. Suggested fix: change to "${createdIssue.suggested}". ` +
+      `Fix by editing the WU YAML file (created: '${createdIssue.suggested}').`,
     );
   }
 
@@ -274,11 +277,23 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
     missingTestPaths.push(...testPathsResult.missing);
   }
 
+  // Step 5 (WU-1154): Generate suggestions for missing test paths
+  let suggestedTestPaths = {};
+  if (missingTestPaths.length > 0) {
+    const searchRoot = worktreePath || rootDir;
+    try {
+      suggestedTestPaths = await findSuggestedTestPaths(missingTestPaths, searchRoot);
+    } catch (err) {
+      process.env.DEBUG && console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
+    }
+  }
+
   return createPreflightResult({
     valid: allErrors.length === 0,
     errors: allErrors,
     missingCodePaths,
     missingTestPaths,
+    suggestedTestPaths,
   });
 }
 
@@ -320,3 +335,46 @@ export function formatPreflightResult(id, result) {
 
 // Export PreflightResult type for documentation
 export const PreflightResult = {};
+/**
+ * Find suggested paths for missing test files
+ *
+ * @param {string[]} missingPaths - List of missing test paths
+ * @param {string} rootDir - Root directory to search in
+ * @returns {Promise<Record<string, string[]>>} Map of missing path -> suggestions
+ */
+export async function findSuggestedTestPaths(missingPaths, rootDir) {
+  const suggestions = {};
+
+  if (missingPaths.length === 0) return suggestions;
+
+  // Cache strict searches to avoid re-reading fs
+  const globOptions = { cwd: rootDir, caseSensitiveMatch: false, limit: 5, ignore: ['**/node_modules/**'] };
+
+  for (const missingPath of missingPaths) {
+    const filename = path.basename(missingPath);
+    const basename = path.basename(filename, path.extname(filename));
+    const cleanBasename = basename.replace(/(\.test|\.spec)$/, '');
+
+    // Strategy 1: Search for exact filename elsewhere
+    let matches = await fg(`**/${filename}`, globOptions);
+
+    // Strategy 2: Search for filename with different extension (ts/js/mjs)
+    if (matches.length === 0) {
+      matches = await fg(`**/${basename}.{ts,js,mjs,tsx,jsx}`, globOptions);
+    }
+
+    // Strategy 3: Search for fuzzy match on basename (without .test/.spec)
+    if (matches.length === 0) {
+      // Look for the code file the test might be for
+      matches = await fg(`**/${cleanBasename}.{ts,js,mjs,tsx,jsx}`, globOptions);
+    }
+
+    if (matches.length > 0) {
+      // Filter out the missing path itself if it somehow showed up
+      suggestions[missingPath] = matches.filter(m => m !== missingPath);
+    }
+  }
+
+  return suggestions;
+}
+
