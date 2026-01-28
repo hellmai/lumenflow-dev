@@ -1,0 +1,34 @@
+id: WU-1155
+title: Fix agent verification command references
+lane: 'Framework: CLI'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-28
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/playbook.md
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+tests:
+  manual:
+    - Run wu:spawn and confirm the agent verification command matches docs
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1155.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Docs and spawn output reference a non-existent agent-verification.mjs. Update documentation and spawn guidance to use the actual agent verification entry point.
+acceptance:
+  - docs reference the correct agent verification command
+  - wu:spawn output references the correct command
+  - manual verification confirms docs and prompt output align
