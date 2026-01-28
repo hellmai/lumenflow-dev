@@ -2,7 +2,7 @@ id: WU-1154
 title: Improve preflight test path mismatch guidance
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Preflight test path validation can block wu:done when test paths move. Enhance validation to surface a best-effort suggested path or clearer guidance to reduce churn.
+description: Preflight test path validation can block wu:done when test paths move. Enhance
+  validation to surface a best-effort suggested path or clearer guidance to reduce churn.
 acceptance:
   - preflight error includes actionable guidance when a test path is missing
   - suggested path (if found) is included in output
   - unit test covers missing test path guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1154
+claimed_at: 2026-01-28T15:17:36.713Z
+baseline_main_sha: 3f88ce9aa3267903ed9a8bf36ec98a083cf64a9f
+session_id: 4268efd0-942d-4225-a4f7-12978d880b95
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-28T15:17:36.717Z
