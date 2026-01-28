@@ -1,6 +1,6 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, promises as fs } from 'node:fs';
 import path from 'node:path';
-import { readWU } from './wu-yaml.js';
+import { readWU, readWUAsync } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
 import { detectCycles } from './cycle-detector.js';
@@ -61,6 +61,53 @@ export function buildDependencyGraph() {
 
   return graph;
 }
+
+/**
+ * Build a dependency graph from all WU YAML files asynchronously.
+ *
+ * @returns {Promise<Map<string, {id: string, title: string, status: string, blocks: string[], blockedBy: string[]}>>}
+ */
+export async function buildDependencyGraphAsync() {
+  const wuDir = path.dirname(WU_PATHS.WU('dummy'));
+  const graph = new Map();
+
+  try {
+    const files = await fs.readdir(wuDir);
+    const yamlFiles = files.filter((f) => f.endsWith('.yaml') && f.startsWith('WU-'));
+
+    const promises = yamlFiles.map(async (f) => {
+      const filePath = path.join(wuDir, f);
+      const id = f.replace('.yaml', '');
+
+      try {
+        const doc = await readWUAsync(filePath, id);
+        return {
+          id,
+          title: doc.title || id,
+          status: doc.status || 'unknown',
+          blocks: Array.isArray(doc.blocks) ? doc.blocks : [],
+          blockedBy: Array.isArray(doc.blocked_by) ? doc.blocked_by : [],
+        };
+      } catch {
+        // Skip invalid files
+        return null;
+      }
+    });
+
+    const results = await Promise.all(promises);
+
+    for (const result of results) {
+      if (result) {
+        graph.set(result.id, result);
+      }
+    }
+  } catch {
+    // Return empty graph if dir doesn't exist or other error
+  }
+
+  return graph;
+}
+
 
 /**
  * Get all dependencies (upstream: blocked_by) for a WU.

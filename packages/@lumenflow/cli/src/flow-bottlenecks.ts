@@ -20,7 +20,7 @@ import {
   type BottleneckAnalysis,
   type DependencyGraph,
 } from '@lumenflow/metrics';
-import { buildDependencyGraph, renderMermaid } from '@lumenflow/core/dist/dependency-graph.js';
+import { buildDependencyGraph, buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dist/dependency-graph.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 
 /** Log prefix for console output */
@@ -185,7 +185,7 @@ async function main() {
   console.log(`${LOG_PREFIX} Building dependency graph...`);
 
   // Build dependency graph from WU YAML files
-  const coreGraph = buildDependencyGraph();
+  const coreGraph = await buildDependencyGraphAsync();
 
   if (coreGraph.size === 0) {
     console.log(`${LOG_PREFIX} No WUs found in dependency graph.`);
