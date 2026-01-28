@@ -6,6 +6,8 @@ status: ready
 priority: P2
 created: 2026-01-28
 code_paths:
+  - tools
+  - package.json
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
 tests:
   manual: []
@@ -25,14 +27,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Create a pre-release validation script specific to hellmai/os that checks: 1) All bin entries documented in README, 2) files array includes templates/. This is internal tooling - NOT baked into public wu:done/gates.
+description: >-
+  Create a pre-release validation script specific to hellmai/os that checks: 1) All bin entries
+  documented in README, 2) files array includes templates/. This is internal tooling - NOT baked
+  into public wu:done/gates.
+
 
   AGENT INSTRUCTIONS:
+
   1. Create tools/pre-release-checks.ts
-  2. Check: Extract bin entries from packages/@lumenflow/cli/package.json, verify each exists in README.md
+
+  2. Check: Extract bin entries from packages/@lumenflow/cli/package.json, verify each exists in
+  README.md
+
   3. Check: Verify files array includes templates if templates/ dir exists
+
   4. Add script to package.json: pre-release:check
+
   5. Update release-process.md to require this check before release
 acceptance:
   - Pre-release check script created in tools/
