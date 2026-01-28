@@ -67,6 +67,9 @@ import {
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
+import { validateBacklogSync } from '@lumenflow/core/dist/validators/backlog-sync.js';
+import { runSupabaseDocsLinter } from '@lumenflow/core/dist/validators/supabase-docs-linter.js';
+import { runSystemMapValidation } from '@lumenflow/core/dist/system-map-validator.js';
 // WU-1067: Config-driven gates support
 import {
   loadGatesConfig,
@@ -87,7 +90,6 @@ import {
   DIRECTORIES,
   GATE_NAMES,
   GATE_COMMANDS,
-  TOOL_PATHS,
   CLI_MODES,
   STDIO_MODES,
   EXIT_CODES,
@@ -350,6 +352,88 @@ function run(
   });
 
   return { ok: result.status === EXIT_CODES.SUCCESS, duration: Date.now() - start };
+}
+
+type GateLogContext = {
+  agentLog?: { logFd: number; logPath: string } | null;
+  useAgentMode: boolean;
+};
+
+function makeGateLogger({ agentLog, useAgentMode }: GateLogContext) {
+  return (line: string) => {
+    if (!useAgentMode) {
+      console.log(line);
+      return;
+    }
+    if (agentLog) {
+      writeSync(agentLog.logFd, `${line}\n`);
+    }
+  };
+}
+
+async function runBacklogSyncGate({ agentLog, useAgentMode }: GateLogContext) {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+  logLine('\n> Backlog sync\n');
+
+  const result = await validateBacklogSync({ cwd: process.cwd() });
+
+  if (result.errors.length > 0) {
+    logLine('❌ Backlog sync errors:');
+    result.errors.forEach((error) => logLine(`  - ${error}`));
+  }
+
+  if (result.warnings.length > 0) {
+    logLine('⚠️  Backlog sync warnings:');
+    result.warnings.forEach((warning) => logLine(`  - ${warning}`));
+  }
+
+  logLine(`Backlog sync summary: WU files=${result.wuCount}, Backlog refs=${result.backlogCount}`);
+
+  return { ok: result.valid, duration: Date.now() - start };
+}
+
+async function runSupabaseDocsGate({ agentLog, useAgentMode }: GateLogContext) {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+  logLine('\n> Supabase docs linter\n');
+
+  const result = await runSupabaseDocsLinter({ cwd: process.cwd(), logger: { log: logLine } });
+
+  if (result.skipped) {
+    logLine(`⚠️  ${result.message ?? 'Supabase docs linter skipped.'}`);
+  } else if (!result.ok) {
+    logLine('❌ Supabase docs linter failed.');
+    (result.errors ?? []).forEach((error) => logLine(`  - ${error}`));
+  } else {
+    logLine(result.message ?? 'Supabase docs linter passed.');
+  }
+
+  return { ok: result.ok, duration: Date.now() - start };
+}
+
+async function runSystemMapGate({ agentLog, useAgentMode }: GateLogContext) {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+  logLine('\n> System map validation\n');
+
+  const result = await runSystemMapValidation({
+    cwd: process.cwd(),
+    logger: { log: logLine, warn: logLine, error: logLine },
+  });
+
+  if (!result.valid) {
+    logLine('❌ System map validation failed');
+    (result.pathErrors ?? []).forEach((error) => logLine(`  - ${error}`));
+    (result.orphanDocs ?? []).forEach((error) => logLine(`  - ${error}`));
+    (result.audienceErrors ?? []).forEach((error) => logLine(`  - ${error}`));
+    (result.queryErrors ?? []).forEach((error) => logLine(`  - ${error}`));
+    (result.classificationErrors ?? []).forEach((error) => logLine(`  - ${error}`));
+  } else {
+    logLine('System map validation passed.');
+  }
+
+  return { ok: result.valid, duration: Date.now() - start };
 }
 
 /**
@@ -723,16 +807,56 @@ async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
   }
 }
 
-// Get context for telemetry
-const wu_id = getCurrentWU();
-const lane = getCurrentLane();
-const useAgentMode = shouldUseGatesAgentMode({ argv: process.argv.slice(2), env: process.env });
-const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane }) : null;
+export async function runGates(
+  options: {
+    cwd?: string;
+    docsOnly?: boolean;
+    fullLint?: boolean;
+    fullTests?: boolean;
+    fullCoverage?: boolean;
+    coverageMode?: string;
+    verbose?: boolean;
+    argv?: string[];
+  } = {},
+): Promise<boolean> {
+  const originalCwd = process.cwd();
+  const targetCwd = options.cwd ?? originalCwd;
+
+  if (targetCwd !== originalCwd) {
+    process.chdir(targetCwd);
+  }
+
+  try {
+    return await executeGates({
+      ...options,
+      coverageMode: options.coverageMode ?? COVERAGE_GATE_MODES.BLOCK,
+    });
+  } catch {
+    return false;
+  } finally {
+    if (targetCwd !== originalCwd) {
+      process.chdir(originalCwd);
+    }
+  }
+}
 
 // Main execution
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing: main() orchestrates multi-step gate workflow
-async function main() {
-  const opts = parseGatesArgs();
+async function executeGates(opts: {
+  docsOnly?: boolean;
+  fullLint?: boolean;
+  fullTests?: boolean;
+  fullCoverage?: boolean;
+  coverageMode?: string;
+  verbose?: boolean;
+  argv?: string[];
+}): Promise<boolean> {
+  const argv = opts.argv ?? process.argv.slice(2);
+  // Get context for telemetry
+  const wu_id = getCurrentWU();
+  const lane = getCurrentLane();
+  const useAgentMode = shouldUseGatesAgentMode({ argv, env: process.env });
+  const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane }) : null;
   // Parse command line arguments (now via Commander)
   const isDocsOnly = opts.docsOnly || false;
   const isFullLint = opts.fullLint || false;
@@ -795,11 +919,11 @@ async function main() {
           name: GATE_NAMES.PROMPTS_LINT,
           cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),
         },
-        { name: GATE_NAMES.BACKLOG_SYNC, cmd: TOOL_PATHS.VALIDATE_BACKLOG_SYNC },
+        { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
         // WU-2315: System map validation (warn-only until orphan docs are indexed)
         {
           name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-          cmd: TOOL_PATHS.SYSTEM_MAP_VALIDATE,
+          run: runSystemMapGate,
           warnOnly: true,
         },
       ]
@@ -817,12 +941,12 @@ async function main() {
           name: GATE_NAMES.PROMPTS_LINT,
           cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),
         },
-        { name: GATE_NAMES.BACKLOG_SYNC, cmd: TOOL_PATHS.VALIDATE_BACKLOG_SYNC },
-        { name: GATE_NAMES.SUPABASE_DOCS_LINTER, cmd: TOOL_PATHS.SUPABASE_DOCS_LINTER },
+        { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
+        { name: GATE_NAMES.SUPABASE_DOCS_LINTER, run: runSupabaseDocsGate },
         // WU-2315: System map validation (warn-only until orphan docs are indexed)
         {
           name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-          cmd: TOOL_PATHS.SYSTEM_MAP_VALIDATE,
+          run: runSystemMapGate,
           warnOnly: true,
         },
         // WU-2062: Safety-critical tests ALWAYS run
@@ -859,7 +983,9 @@ async function main() {
   for (const gate of gates) {
     let result;
 
-    if (gate.cmd === GATE_COMMANDS.INVARIANTS) {
+    if (gate.run) {
+      result = await gate.run({ agentLog, useAgentMode });
+    } else if (gate.cmd === GATE_COMMANDS.INVARIANTS) {
       // WU-2252: Invariants check runs first (non-bypassable)
       const logLine = useAgentMode
         ? (line) => writeSync(agentLog.logFd, `${line}\n`)
@@ -969,15 +1095,21 @@ async function main() {
   } else {
     console.log(`✅ All gates passed (agent mode). Log: ${agentLog.logPath}\n`);
   }
-  process.exit(EXIT_CODES.SUCCESS);
+
+  return true;
 }
 
 // WU-1071: Use import.meta.main instead of process.argv[1] comparison
 // The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
 // path but import.meta.url resolves to the real path - they never match
 if (import.meta.main) {
-  main().catch((error) => {
-    console.error('Gates failed:', error);
-    process.exit(EXIT_CODES.ERROR);
-  });
+  const opts = parseGatesArgs();
+  executeGates({ ...opts, argv: process.argv.slice(2) })
+    .then((ok) => {
+      process.exit(ok ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
+    })
+    .catch((error) => {
+      console.error('Gates failed:', error);
+      process.exit(EXIT_CODES.ERROR);
+    });
 }

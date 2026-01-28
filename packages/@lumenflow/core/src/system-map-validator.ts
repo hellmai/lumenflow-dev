@@ -13,6 +13,7 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import fg from 'fast-glob';
 import { parseYAML } from './wu-yaml.js';
 
@@ -317,6 +318,77 @@ export async function validateSystemMap(systemMap, deps) {
 
 const DEFAULT_SYSTEM_MAP_PATH = 'SYSTEM-MAP.yaml';
 
+export interface SystemMapValidationResult {
+  valid: boolean;
+  skipped: boolean;
+  pathErrors: string[];
+  orphanDocs: string[];
+  audienceErrors: string[];
+  queryErrors: string[];
+  classificationErrors: string[];
+}
+
+export async function runSystemMapValidation(
+  options: {
+    cwd?: string;
+    systemMapPath?: string;
+    logger?: {
+      log: (message: string) => void;
+      warn?: (message: string) => void;
+      error?: (message: string) => void;
+    };
+  } = {},
+): Promise<SystemMapValidationResult> {
+  const { cwd = process.cwd(), systemMapPath, logger = console } = options;
+  const resolvedPath = systemMapPath ?? path.join(cwd, DEFAULT_SYSTEM_MAP_PATH);
+
+  if (!existsSync(resolvedPath)) {
+    logger.warn?.(`[system-map] ${resolvedPath} not found; skipping validation.`);
+    return {
+      valid: true,
+      skipped: true,
+      pathErrors: [],
+      orphanDocs: [],
+      audienceErrors: [],
+      queryErrors: [],
+      classificationErrors: [],
+    };
+  }
+
+  let systemMap;
+  try {
+    const raw = readFileSync(resolvedPath, 'utf-8');
+    systemMap = parseYAML(raw);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error?.(`[system-map] Failed to read or parse ${resolvedPath}: ${message}`);
+    return {
+      valid: false,
+      skipped: false,
+      pathErrors: [message],
+      orphanDocs: [],
+      audienceErrors: [],
+      queryErrors: [],
+      classificationErrors: [],
+    };
+  }
+
+  const result = await validateSystemMap(systemMap, {
+    exists: (path) => existsSync(path),
+    glob: (pattern) => fg(pattern, { dot: false }),
+  });
+
+  return {
+    valid: result.valid,
+    skipped: false,
+    pathErrors: result.pathErrors,
+    orphanDocs: result.orphanDocs,
+    audienceErrors: result.audienceErrors,
+    queryErrors: result.queryErrors,
+    classificationErrors: result.classificationErrors,
+  };
+}
+
 function emitErrors(label, errors) {
   if (!errors || errors.length === 0) return;
   console.error(`\n${label}:`);
@@ -327,26 +399,7 @@ function emitErrors(label, errors) {
 
 async function runCLI() {
   const systemMapPath = process.env.SYSTEM_MAP_PATH || DEFAULT_SYSTEM_MAP_PATH;
-
-  if (!existsSync(systemMapPath)) {
-    console.warn(`[system-map] ${systemMapPath} not found; skipping validation.`);
-    process.exit(0);
-  }
-
-  let systemMap;
-  try {
-    const raw = readFileSync(systemMapPath, 'utf-8');
-    systemMap = parseYAML(raw);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[system-map] Failed to read or parse ${systemMapPath}: ${message}`);
-    process.exit(1);
-  }
-
-  const result = await validateSystemMap(systemMap, {
-    exists: (path) => existsSync(path),
-    glob: (pattern) => fg(pattern, { dot: false }),
-  });
+  const result = await runSystemMapValidation({ systemMapPath });
 
   if (!result.valid) {
     console.error('\n[system-map] Validation failed');
@@ -356,6 +409,10 @@ async function runCLI() {
     emitErrors('Invalid quick queries', result.queryErrors);
     emitErrors('Classification routing violations', result.classificationErrors);
     process.exit(1);
+  }
+
+  if (result.skipped) {
+    process.exit(0);
   }
 
   console.log('[system-map] Validation passed');

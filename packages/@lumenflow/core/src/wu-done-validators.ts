@@ -46,5 +46,5 @@ export { validateAutomatedTestRequirement } from './manual-test-validator.js';
 export type { ValidateCodePathsExistOptions } from './wu-done-validation.js';
 export type {
   ExecutePreflightCodePathValidationOptions,
-  ExecSyncOverrideOptions,
+  ValidateAllPreCommitHooksOptions,
 } from './wu-done-preflight.js';

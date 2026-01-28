@@ -20,152 +20,20 @@
  * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - WU lifecycle
  */
 
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import {
+  validateSingleWU,
+  validateAllWUs,
+  type ValidationResult,
+  type ValidationSummary,
+} from '@lumenflow/core/dist/validators/wu-tasks.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { validateWU, validateWUCompleteness } from '@lumenflow/core/dist/wu-schema.js';
-import { FILE_SYSTEM, EMOJI, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+import { EMOJI, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
 
 const LOG_PREFIX = '[validate]';
 
-/**
- * Validation result for a single WU
- */
-export interface ValidationResult {
-  valid: boolean;
-  warnings: string[];
-  errors: string[];
-}
-
-/**
- * Validation summary for multiple WUs
- */
-export interface ValidationSummary {
-  totalValid: number;
-  totalInvalid: number;
-  totalWarnings: number;
-  results: Array<{ wuId: string } & ValidationResult>;
-}
-
-/**
- * Validate a single WU file
- *
- * @param wuPath - Path to WU YAML file
- * @param options - Validation options
- * @returns Validation result
- */
-export function validateSingleWU(
-  wuPath: string,
-  options: { strict?: boolean } = {},
-): ValidationResult {
-  const { strict = false } = options;
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  // Check file exists
-  if (!existsSync(wuPath)) {
-    errors.push(`WU file not found: ${wuPath}`);
-    return { valid: false, warnings, errors };
-  }
-
-  // Read and parse YAML
-  let doc: Record<string, unknown>;
-  try {
-    const text = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-    doc = parseYAML(text);
-  } catch (e) {
-    errors.push(`Failed to parse YAML: ${e.message}`);
-    return { valid: false, warnings, errors };
-  }
-
-  // Schema validation
-  const schemaResult = validateWU(doc);
-  if (!schemaResult.success) {
-    const schemaErrors = schemaResult.error.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`,
-    );
-    errors.push(...schemaErrors);
-    return { valid: false, warnings, errors };
-  }
-
-  // Completeness validation (soft warnings)
-  const completenessResult = validateWUCompleteness(schemaResult.data);
-  warnings.push(...completenessResult.warnings);
-
-  // In strict mode, warnings become errors
-  if (strict && warnings.length > 0) {
-    errors.push(...warnings.map((w) => `[STRICT] ${w}`));
-    return { valid: false, warnings: [], errors };
-  }
-
-  return { valid: true, warnings, errors };
-}
-
-/**
- * Validate all WU files in the WU directory
- *
- * @param options - Validation options
- * @returns Summary of all validations
- */
-export function validateAllWUs(
-  options: { strict?: boolean; doneOnly?: boolean } = {},
-): ValidationSummary {
-  const { strict = false, doneOnly = false } = options;
-  const wuDir = WU_PATHS.WU_DIR();
-
-  if (!existsSync(wuDir)) {
-    return {
-      totalValid: 0,
-      totalInvalid: 1,
-      totalWarnings: 0,
-      results: [
-        {
-          wuId: 'DIRECTORY',
-          valid: false,
-          warnings: [],
-          errors: [`WU directory not found: ${wuDir}`],
-        },
-      ],
-    };
-  }
-
-  const files = readdirSync(wuDir).filter((f) => f.endsWith('.yaml'));
-  const results: Array<{ wuId: string } & ValidationResult> = [];
-  let totalValid = 0;
-  let totalInvalid = 0;
-  let totalWarnings = 0;
-
-  for (const file of files) {
-    const wuPath = `${wuDir}/${file}`;
-    const wuId = file.replace('.yaml', '');
-
-    // Skip if only validating done WUs
-    if (doneOnly) {
-      try {
-        const text = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-        const doc = parseYAML(text);
-        if (doc.status !== 'done') {
-          continue;
-        }
-      } catch {
-        // If we can't read, still validate to catch the error
-      }
-    }
-
-    const result = validateSingleWU(wuPath, { strict });
-    results.push({ wuId, ...result });
-
-    if (result.valid) {
-      totalValid++;
-      totalWarnings += result.warnings.length;
-    } else {
-      totalInvalid++;
-    }
-  }
-
-  return { totalValid, totalInvalid, totalWarnings, results };
-}
+export type { ValidationResult, ValidationSummary };
+export { validateSingleWU, validateAllWUs };
 
 /**
  * Main CLI entry point
