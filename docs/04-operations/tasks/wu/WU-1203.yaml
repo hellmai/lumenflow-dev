@@ -2,7 +2,7 @@ id: WU-1203
 title: Add configurable progress signals to memory config
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -49,3 +49,5 @@ session_id: 6a7bd798-f77a-4ae8-a906-08a0fe926ab3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T20:09:39.700Z
+locked: true
+completed_at: 2026-01-29T20:30:05.937Z

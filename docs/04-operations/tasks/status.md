@@ -7,11 +7,10 @@ _Last updated: 2026-01-29_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
-- [WU-1203 — Add configurable progress signals to memory config](wu/WU-1203.yaml)
-- [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 
 ## Completed
 
+- [WU-1203 — Add configurable progress signals to memory config](wu/WU-1203.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
