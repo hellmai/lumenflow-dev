@@ -2,7 +2,7 @@ id: WU-1223
 title: Allow wu:done to run from worktree (fix docs generation on main)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -66,3 +66,11 @@ acceptance:
   - AGENTS.md universal entry point updated
   - Skill wu-lifecycle.md updated with wu:prep
   - Spawn prompt templates updated to use wu:prep workflow
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1223
+claimed_at: 2026-01-29T23:50:44.134Z
+baseline_main_sha: 68374710354898c95a2c304d4f98acec02d20c29
+session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:50:44.139Z

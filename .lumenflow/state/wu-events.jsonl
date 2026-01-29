@@ -411,3 +411,4 @@
 {"type":"claim","wuId":"WU-1222","lane":"Framework: Core","title":"Add PreToolUse hook to block grep/cat/find via Bash","timestamp":"2026-01-29T23:32:43.006Z"}
 {"type":"release","wuId":"WU-1222","reason":"Prioritizing WU-1223 (wu:done worktree fix) which blocks this work conceptually","timestamp":"2026-01-29T23:41:50.020Z"}
 {"type":"claim","wuId":"WU-1225","lane":"Framework: Core","title":"wu:edit: inconsistent default behavior for --code-paths vs --acceptance","timestamp":"2026-01-29T23:50:07.656Z"}
+{"type":"claim","wuId":"WU-1223","lane":"Framework: CLI","title":"Allow wu:done to run from worktree (fix docs generation on main)","timestamp":"2026-01-29T23:50:44.168Z"}
