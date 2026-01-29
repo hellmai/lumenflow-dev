@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1217 — Add gitignore check to lumenflow doctor](wu/WU-1217.yaml) — Framework: CLI
 - [WU-1216 — Add gitignore entries to lumenflow init](wu/WU-1216.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
