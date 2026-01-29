@@ -6,6 +6,11 @@
  *
  * Usage:
  *   pnpm agent:log-issue --category workflow --severity minor --title "..." --description "..."
+ *   pnpm agent:log-issue --category tooling --severity major --title "..." --description "..." \
+ *     --tag worktree --tag gates --file src/main.ts --file src/utils.ts
+ *
+ * WU-1182: Uses Commander.js repeatable options pattern for --tag and --file.
+ * Use --tag multiple times instead of comma-separated --tags.
  */
 
 import { Command } from 'commander';
@@ -17,6 +22,23 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 import chalk from 'chalk';
 
+/**
+ * WU-1182: Collector function for Commander.js repeatable options.
+ * Accumulates multiple flag values into an array.
+ *
+ * Usage: --tag a --tag b → ['a', 'b']
+ *
+ * This follows Commander.js best practices - use repeatable pattern for
+ * multi-value options instead of comma-separated splits.
+ *
+ * @param value - New value from CLI
+ * @param previous - Previously accumulated values
+ * @returns Updated array with new value appended
+ */
+function collectRepeatable(value: string, previous: string[]): string[] {
+  return previous.concat([value]);
+}
+
 const program = new Command()
   .name('agent:log-issue')
   .description('Log a workflow issue or incident')
@@ -25,9 +47,9 @@ const program = new Command()
   .requiredOption('--title <title>', 'Short description (5-100 chars)')
   .requiredOption('--description <desc>', 'Detailed context (10-2000 chars)')
   .option('--resolution <res>', 'How the issue was resolved')
-  .option('--tags <tags>', 'Comma-separated tags (e.g., worktree,gates)')
+  .option('--tag <tag>', 'Tag for categorization (repeatable)', collectRepeatable, [])
   .option('--step <step>', 'Current workflow step (e.g., wu:done, gates)')
-  .option('--files <files>', 'Comma-separated related files')
+  .option('--file <file>', 'Related file path (repeatable)', collectRepeatable, [])
   .action(async (opts) => {
     try {
       const session = await getCurrentSession();
@@ -43,10 +65,10 @@ const program = new Command()
         title: opts.title,
         description: opts.description,
         resolution: opts.resolution,
-        tags: opts.tags ? opts.tags.split(',').map((t: string) => t.trim()) : [],
+        tags: opts.tag,
         context: {
           current_step: opts.step,
-          related_files: opts.files ? opts.files.split(',').map((f: string) => f.trim()) : [],
+          related_files: opts.file,
         },
       };
 
