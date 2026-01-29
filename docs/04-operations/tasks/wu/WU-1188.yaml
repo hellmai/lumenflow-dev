@@ -1,0 +1,36 @@
+id: WU-1188
+title: 'lane:health command: overlap detection and coverage gaps'
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/lane-health.ts
+  - packages/@lumenflow/core/src/code-paths-overlap.ts
+  - packages/@lumenflow/cli/package.json
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/lane-health.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1188.done
+dependencies: []
+initiative: INIT-006
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'New CLI command to diagnose lane configuration issues: overlap detection, coverage gaps, breadth analysis, and WIP validation.'
+acceptance:
+  - pnpm lane:health runs and outputs formatted report
+  - Detects overlapping code_paths between lane definitions
+  - Detects files not covered by any lane
+  - Exit code 0 for healthy, 1 for issues
