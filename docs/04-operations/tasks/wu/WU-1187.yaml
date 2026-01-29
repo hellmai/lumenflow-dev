@@ -2,7 +2,7 @@ id: WU-1187
 title: 'WIP justification: require wip_justification when WIP > 1'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -42,3 +42,5 @@ session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T14:17:08.890Z
+locked: true
+completed_at: 2026-01-29T15:36:21.434Z

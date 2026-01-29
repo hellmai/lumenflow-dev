@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — Framework: Core
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1189 — lane:suggest command: LLM-driven lane generation](wu/WU-1189.yaml) — Framework: CLI
 - [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
@@ -28,6 +27,7 @@ sections:
 - [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
 - [WU-1195 — Fix pre-existing lint errors in agent-log-issue.ts](wu/WU-1195.yaml) — Framework: CLI
 - [WU-1196 — Fix pre-existing lint errors in wu-state-store.ts and wu-spawn.ts](wu/WU-1196.yaml) — Framework: Core
+- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -35,7 +35,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — Framework: CLI
-- [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -223,3 +222,4 @@ sections:
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml)
 - [WU-1192 — Consolidate wu-spawn prompt generation to single source of truth](wu/WU-1192.yaml)
 - [WU-1193 — Orchestration cleanup: fix constants, rename init:plan, remove ghost commands](wu/WU-1193.yaml)
+- [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml)
