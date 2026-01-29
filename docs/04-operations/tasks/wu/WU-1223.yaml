@@ -6,7 +6,15 @@ status: ready
 priority: P2
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/wu-prep.ts
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/guides/wu-prep-workflow.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md
+  - CLAUDE.md
+  - AGENTS.md
+  - .claude/skills/wu-lifecycle.md
+  - packages/@lumenflow/cli/templates/spawn-prompt.md.template
 tests:
   manual: []
   unit:
