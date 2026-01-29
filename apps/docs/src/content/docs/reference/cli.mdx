@@ -25,7 +25,7 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 | Orchestration   | [`orchestrate:init:status`](#orchestrateinitstatus), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Other           | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`guard:locked`](#guardlocked), [`guard:main:branch`](#guardmainbranch), [`guard:worktree:commit`](#guardworktreecommit), [`init:plan`](#initplan), [`rotate:progress`](#rotateprogress), [`session:coordinator`](#sessioncoordinator), [`state:bootstrap`](#statebootstrap), [`sync:templates`](#synctemplates), [`trace:gen`](#tracegen), [`validate`](#validate), [`validate:agent:skills`](#validateagentskills), [`validate:agent:sync`](#validateagentsync), [`validate:backlog:sync`](#validatebacklogsync), [`validate:skills:spec`](#validateskillsspec) |
 | Quality Gates   | [`gates`](#gates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync:templates`](#lumenflowsynctemplates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync:templates`](#lumenflowsynctemplates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                    |
 
@@ -573,6 +573,14 @@ Sync agent onboarding docs to existing projects (skips existing files by default
 pnpm lumenflow:docs:sync
 ```
 
+### lumenflow:doctor
+
+Check LumenFlow safety components and configuration
+
+```bash
+pnpm lumenflow:doctor
+```
+
 ### lumenflow:init
 
 Initialize LumenFlow in a project
@@ -716,16 +724,16 @@ pnpm wu:create
 | `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                   | No       |
 | `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                              | No       |
 | `--phase &lt;number&gt;`            | Phase number within initiative                                                    | No       |
-| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable or comma-separated)                         | No       |
-| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable or comma-separated)                             | No       |
-| `--labels &lt;labels&gt;`           | Labels (repeatable or comma-separated)                                            | No       |
+| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable)                                            | No       |
+| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable)                                                | No       |
+| `--labels &lt;labels&gt;`           | Labels (repeatable)                                                               | No       |
 | `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                          | No       |
 | `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                    | No       |
 | `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                             | No       |
-| `--code-paths &lt;paths&gt;`        | Code paths (repeatable or comma-separated)                                        | No       |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable or comma-separated)                          | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable or comma-separated)                              | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable or comma-separated)                               | No       |
+| `--code-paths &lt;paths&gt;`        | Code paths (repeatable)                                                           | No       |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                             | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                 | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                  | No       |
 | `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)         | No       |
 | `--spec-refs &lt;paths&gt;`         | Spec/plan references (repeatable or comma-separated, required for type: feature)  | No       |
 | `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                             | No       |
@@ -781,13 +789,13 @@ pnpm wu:edit
 
 **Options:**
 
-| Flag                                | Description                                              | Required |
-| ----------------------------------- | -------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                              | Yes      |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable or comma-separated) | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable or comma-separated)     | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable or comma-separated)      | No       |
-| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)    | No       |
+| Flag                                | Description                                           | Required |
+| ----------------------------------- | ----------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                           | Yes      |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                 | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                     | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                      | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation) | No       |
 
 ### wu:infer:lane
 
