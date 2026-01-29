@@ -2,7 +2,7 @@ id: WU-1172
 title: 'Universal Agent Safety: Documentation & Bypass Completeness'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -53,3 +53,5 @@ session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:01:48.671Z
+locked: true
+completed_at: 2026-01-29T13:21:44.688Z
