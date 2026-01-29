@@ -7,5 +7,6 @@ export * from './initiative-constants.js';
 export * from './initiative-orchestrator.js';
 export * from './initiative-paths.js';
 export * from './initiative-schema.js';
+export * from './initiative-validation.js';
 export * from './initiative-validator.js';
 export * from './initiative-yaml.js';
