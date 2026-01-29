@@ -12,7 +12,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/memory/src/__tests__/signal-cleanup-core.test.ts
+    - packages/@lumenflow/memory/__tests__/signal-cleanup-core.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1204.done
