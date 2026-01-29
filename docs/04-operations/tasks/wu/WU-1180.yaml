@@ -12,7 +12,7 @@ tests:
   manual:
     - Verify pnpm wu:preflight --help shows proper Commander help output
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1180.done
@@ -20,10 +20,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T13:45:48.714Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1180
+session_id: f48f6ca8-b9d7-4cf5-886d-e81064cb43c3
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:45:48.720Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +43,3 @@ acceptance:
   - wu-preflight.ts uses createWUParser instead of deprecated parseWUArgs
   - wu-preflight.ts has proper --help output from Commander
   - All existing tests pass (pnpm gates --docs-only not applicable, full gates required)
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1180
-claimed_at: 2026-01-29T13:45:48.714Z
-baseline_main_sha: d5851880d728adc219b8bbd9dddf7a330ab04023
-session_id: f48f6ca8-b9d7-4cf5-886d-e81064cb43c3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T13:45:48.720Z
