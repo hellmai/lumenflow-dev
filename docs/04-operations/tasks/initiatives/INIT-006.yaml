@@ -32,3 +32,4 @@ success_metrics:
 labels: []
 wus:
   - WU-1187
+  - WU-1188
