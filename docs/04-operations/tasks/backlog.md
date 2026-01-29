@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1176 — Add .eslintcache to .gitignore and untrack](wu/WU-1176.yaml) — Operations: CI/CD
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 
 ## 🔧 In progress
