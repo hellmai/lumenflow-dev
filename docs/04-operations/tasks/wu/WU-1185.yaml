@@ -1,0 +1,32 @@
+id: WU-1185
+title: 'Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors'
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1185.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Update documentation to clearly state LumenFlow works with ANY AI coding assistant (friction-free for all), while highlighting enhanced integrations for specific vendors (Claude Code, Cursor, Windsurf, Cline). Current docs imply a closed list of supported vendors rather than universal compatibility with optional enhancements.
+acceptance:
+  - introduction.mdx states LumenFlow works with any AI that can read markdown
+  - vendor-support.md reframed as Vendor Integrations with universal-first message
+  - ai-agents.mdx includes friction-free positioning statement
+  - AGENTS.md header clarifies universal compatibility
+  - Starlight site has vendor integrations page synced from internal docs
