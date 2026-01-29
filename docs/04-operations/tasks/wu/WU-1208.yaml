@@ -1,0 +1,40 @@
+id: WU-1208
+title: Create unified pnpm state:cleanup command
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/state-cleanup.ts
+  - packages/@lumenflow/core/src/state-cleanup-core.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/state-cleanup-core.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1208.done
+dependencies: []
+initiative: INIT-007
+phase: 3
+blocked_by:
+  - WU-1204
+  - WU-1207
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Single command to orchestrate all state cleanup: signals, memory, events. Respects config from .lumenflow.config.yaml. Calls existing cleanup functions in correct order.'
+acceptance:
+  - CLI command pnpm state:cleanup orchestrates signal + memory + event cleanup
+  - Supports --dry-run, --signals-only, --events-only, --memory-only flags
+  - 'Cleanup order: signals → memory → events (dependency order)'
+  - 'Non-fatal errors: warn but continue with other cleanups'
+  - Summary output shows removed/retained counts for each type
