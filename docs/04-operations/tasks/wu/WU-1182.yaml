@@ -2,7 +2,7 @@ id: WU-1182
 title: Standardize Commander usage across CLI tools
 lane: 'Framework: CLI'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -29,9 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Evaluate and migrate 13 CLI files using bare Commander directly instead of centralized createWUParser. Some may be intentional (orchestration tools, one-off scripts), others should migrate for consistency. Also address comma-split patterns in agent-log-issue.ts for --tags and --files options.
+description: Evaluate and migrate 13 CLI files using bare Commander directly instead of centralized
+  createWUParser. Some may be intentional (orchestration tools, one-off scripts), others should
+  migrate for consistency. Also address comma-split patterns in agent-log-issue.ts for --tags and
+  --files options.
 acceptance:
   - Audit all 13 files using direct Commander imports and document which should migrate
   - Files identified for migration use createWUParser with WU_OPTIONS
   - agent-log-issue.ts uses repeatable options pattern instead of comma splits where appropriate
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1182
+claimed_at: 2026-01-29T14:32:34.034Z
+baseline_main_sha: f6efbae56fd996e0a1f26509745447ceeba19ad4
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:32:34.037Z
