@@ -1,0 +1,37 @@
+id: WU-1207
+title: Archive old WU events to prevent unbounded growth
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/core/src/wu-events-cleanup.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-events-cleanup.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1207.done
+dependencies: []
+initiative: INIT-007
+phase: 2
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Move completed WU events older than 90d to .lumenflow/archive/wu-events-YYYY-MM.jsonl. Keep active WU events intact. Reuse atomic write patterns from wu-state-store.ts.
+acceptance:
+  - EventArchivalConfigSchema added with archiveAfter (default 90d), keepArchives (default true)
+  - wu-events-cleanup.ts implements archiveWuEvents() grouping by WU ID
+  - Archive files created at .lumenflow/archive/wu-events-YYYY-MM.jsonl
+  - Active WU events (in_progress/blocked/waiting) are never archived
+  - Tests cover archival, active WU protection, and monthly rollup
