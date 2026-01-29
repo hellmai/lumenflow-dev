@@ -364,4 +364,5 @@
 {"type":"claim","wuId":"WU-1192","timestamp":"2026-01-29T14:29:00.231Z","lane":"Framework: Core","title":"Consolidate wu-spawn prompt generation to single source of truth"}
 {"type":"claim","wuId":"WU-1182","timestamp":"2026-01-29T14:32:34.049Z","lane":"Framework: CLI","title":"Standardize Commander usage across CLI tools"}
 {"type":"claim","wuId":"WU-1193","timestamp":"2026-01-29T14:37:25.286Z","lane":"Framework: CLI","title":"Orchestration cleanup: fix constants, rename init:plan, remove ghost commands"}
+{"type":"complete","wuId":"WU-1192","timestamp":"2026-01-29T14:45:05.223Z"}
 {"type":"complete","wuId":"WU-1182","timestamp":"2026-01-29T14:46:03.058Z"}

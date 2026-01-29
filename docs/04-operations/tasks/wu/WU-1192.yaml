@@ -2,7 +2,7 @@ id: WU-1192
 title: Consolidate wu-spawn prompt generation to single source of truth
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -44,3 +44,5 @@ session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T14:29:00.210Z
+locked: true
+completed_at: 2026-01-29T14:45:03.484Z
