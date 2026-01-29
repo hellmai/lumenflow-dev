@@ -22,7 +22,6 @@ sections:
 
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml) — Framework: CLI
-- [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — Framework: Core
 - [WU-1189 — lane:suggest command: LLM-driven lane generation](wu/WU-1189.yaml) — Framework: CLI
 - [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
 - [WU-1191 — Doctor and gate integration for lane health](wu/WU-1191.yaml) — Framework: CLI
@@ -33,6 +32,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — Framework: CLI
+- [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
