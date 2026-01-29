@@ -2,7 +2,7 @@ id: WU-1177
 title: 'Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -37,7 +37,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Complete friction-free onboarding experience: lumenflow doctor verification command, environment auto-detection in init, multi-vendor config sync (Cline, Antigravity research), and clear entry point documentation (START-HERE.md).'
+description: 'Complete friction-free onboarding experience: lumenflow doctor verification command,
+  environment auto-detection in init, multi-vendor config sync (Cline, Antigravity research), and
+  clear entry point documentation (START-HERE.md).'
 acceptance:
   - lumenflow doctor command verifies all safety components (Husky, safe-git, AGENTS.md, Node/pnpm)
   - lumenflow doctor checks vendor configs present and in sync
@@ -54,3 +56,11 @@ acceptance:
   - 'DOCS: Starlight quickstart updated'
   - 'DOCS: Vendor support matrix'
   - 'DOCS: CLI --help updated'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1177
+claimed_at: 2026-01-29T13:02:09.400Z
+baseline_main_sha: d543d00598b5385fdac2d35eea3ea6098e0b1d36
+session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:02:09.407Z
