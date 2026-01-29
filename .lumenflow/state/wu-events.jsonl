@@ -392,3 +392,4 @@
 {"type":"complete","wuId":"WU-1203","timestamp":"2026-01-29T20:30:07.607Z"}
 {"type":"claim","wuId":"WU-1206","timestamp":"2026-01-29T20:33:29.637Z","lane":"Content: Documentation","title":"Add progress_signals example to .lumenflow.config.yaml"}
 {"type":"complete","wuId":"WU-1206","timestamp":"2026-01-29T20:34:48.140Z"}
+{"type":"claim","wuId":"WU-1207","lane":"Framework: Core","title":"Archive old WU events to prevent unbounded growth","timestamp":"2026-01-29T21:26:32.723Z"}

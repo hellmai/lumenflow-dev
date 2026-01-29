@@ -2,7 +2,7 @@ id: WU-1207
 title: Archive old WU events to prevent unbounded growth
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -28,10 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Move completed WU events older than 90d to .lumenflow/archive/wu-events-YYYY-MM.jsonl. Keep active WU events intact. Reuse atomic write patterns from wu-state-store.ts.
+description: Move completed WU events older than 90d to .lumenflow/archive/wu-events-YYYY-MM.jsonl.
+  Keep active WU events intact. Reuse atomic write patterns from wu-state-store.ts.
 acceptance:
   - EventArchivalConfigSchema added with archiveAfter (default 90d), keepArchives (default true)
   - wu-events-cleanup.ts implements archiveWuEvents() grouping by WU ID
   - Archive files created at .lumenflow/archive/wu-events-YYYY-MM.jsonl
   - Active WU events (in_progress/blocked/waiting) are never archived
   - Tests cover archival, active WU protection, and monthly rollup
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1207
+claimed_at: 2026-01-29T21:26:32.708Z
+baseline_main_sha: 2596a93e0d4d8f72bf3a722307ea42579d451a27
+session_id: a979f759-dbf5-4b68-bb96-0ed75478d1bd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T21:26:32.713Z
