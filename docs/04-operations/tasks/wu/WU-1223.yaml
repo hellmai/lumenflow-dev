@@ -6,12 +6,7 @@ status: ready
 priority: P2
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/core/src/validation/command-registry.ts
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
-  - packages/@lumenflow/core/src/wu-done-docs-generate.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-  - LUMENFLOW.md
+  - packages/@lumenflow/cli/src/wu-prep.ts
 tests:
   manual: []
   unit:
@@ -31,7 +26,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'BREAKING BEHAVIOR CHANGE: Currently wu:done must run from main checkout, causing docs:generate to write files to main filesystem even when worktree exists. This violates worktree discipline. Fix by allowing wu:done to run from worktree, generating docs there, then switching to main only for merge/cleanup.'
+description: 'BREAKING BEHAVIOR CHANGE: Currently wu:done must run from main checkout, causing
+  docs:generate to write files to main filesystem even when worktree exists. This violates worktree
+  discipline. Fix by allowing wu:done to run from worktree, generating docs there, then switching to
+  main only for merge/cleanup.'
 acceptance:
   - wu:done can be invoked from worktree directory
   - docs:generate writes to worktree filesystem, not main
@@ -41,3 +39,7 @@ acceptance:
   - 'Agent onboarding docs updated: docs/04-operations/_frameworks/lumenflow/agent/onboarding/'
   - LUMENFLOW.md quick-start updated to show new workflow
   - Migration notes for existing users documented
+  - New wu:prep command runs gates + docs in worktree
+  - wu:prep prints copy-paste 'cd main && wu:done --id' instruction
+  - wu:done from main only does merge + cleanup (no gates/docs)
+  - wu:done from worktree errors with 'use wu:prep instead' message
