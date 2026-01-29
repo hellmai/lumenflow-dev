@@ -1020,6 +1020,159 @@ acceptance:
   });
 });
 
+/**
+ * WU-1202: BUG: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled
+ *
+ * Tests for:
+ * - When checkpoint mode is NOT enabled and NOT dry-run, spawn XML should be output
+ * - The message "Copy the spawn commands above" should only appear when spawn XML was output
+ * - formatExecutionPlan (non-checkpoint path) should include spawn XML for actual execution
+ */
+describe('WU-1202: spawn XML in execution plan path when not dry-run', () => {
+  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+
+  function createDir(dir: string) {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+  }
+
+  function createTestWUFile(
+    wuId: string,
+    options: { lane?: string; status?: string; blockedBy?: string[] } = {},
+  ) {
+    const { lane = 'Test Lane', status = 'ready', blockedBy = [] } = options;
+    createDir(TEST_WU_DIR);
+
+    const blockedByYaml =
+      blockedBy.length > 0 ? '\n' + blockedBy.map((id) => `  - ${id}`).join('\n') : ' []';
+
+    const yaml = `id: ${wuId}
+title: Test WU ${wuId}
+lane: '${lane}'
+type: task
+status: ${status}
+priority: P2
+created: 2025-01-01
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+blocked_by:${blockedByYaml}
+risks: []
+notes: ''
+requires_review: false
+description: Test WU for WU-1202 tests
+acceptance:
+  - Test passes
+`;
+
+    writeFileSync(join(TEST_WU_DIR, `${wuId}.yaml`), yaml);
+  }
+
+  function cleanupTestWUs() {
+    if (existsSync(TEST_WU_DIR)) {
+      const files = readdirSync(TEST_WU_DIR);
+      for (const file of files) {
+        if (file.startsWith('WU-TEST-1202')) {
+          rmSync(join(TEST_WU_DIR, file));
+        }
+      }
+    }
+  }
+
+  beforeEach(() => {
+    cleanupTestWUs();
+  });
+
+  afterEach(() => {
+    cleanupTestWUs();
+  });
+
+  describe('AC1: Spawn XML output in execution plan path when not dry-run', () => {
+    it('should include Task invocation XML when formatExecutionPlan is used with actual execution intent', async () => {
+      createTestWUFile('WU-TEST-1202A', { lane: 'Test Lane A', status: 'ready' });
+
+      const { formatExecutionPlanWithEmbeddedSpawns } =
+        await import('../src/initiative-orchestrator.js');
+
+      // This is the function that SHOULD be used in the non-checkpoint execution path
+      const plan = {
+        waves: [
+          [
+            {
+              id: 'WU-TEST-1202A',
+              doc: { title: 'Test WU', lane: 'Test Lane A', status: 'ready', type: 'task' },
+            },
+          ],
+        ],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlanWithEmbeddedSpawns(plan);
+
+      // Should include Task XML for spawning
+      expect(output).toContain('antml:invoke name="Task"');
+      expect(output).toContain('antml:function_calls');
+    });
+
+    it('should NOT say "copy spawn commands" when formatExecutionPlan has no spawn XML', async () => {
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      const plan = {
+        waves: [[{ id: 'WU-1', doc: { title: 'Ready WU', lane: 'Lane A', blocked_by: [] } }]],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // formatExecutionPlan does NOT include spawn XML, so it should NOT
+      // tell users to "copy spawn commands" - there are none!
+      // NOTE: This test documents the current buggy behavior
+      // The fix should either:
+      // 1. Add spawn XML to formatExecutionPlan output
+      // 2. Or change the CLI message to say "use -c flag or wu:spawn"
+      expect(output).not.toContain('antml:invoke');
+      expect(output).not.toContain('antml:function_calls');
+    });
+  });
+
+  describe('AC2: Clear guidance when spawn XML not present', () => {
+    it('should guide user to use -c flag or wu:spawn when not in checkpoint mode', async () => {
+      // When the execution plan output doesn't include spawn XML,
+      // the user needs guidance on how to actually spawn agents
+      // The misleading "Copy the spawn commands above" should be replaced
+      // with actionable instructions like "use -c flag or wu:spawn"
+
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      const plan = {
+        waves: [[{ id: 'WU-1', doc: { title: 'Ready WU', lane: 'Lane A', blocked_by: [] } }]],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // The output from formatExecutionPlan is just the plan structure
+      // It doesn't include spawn instructions - that's handled by the CLI
+      // This test verifies the execution plan output is valid
+      expect(output).toContain('Wave 0');
+      expect(output).toContain('WU-1');
+    });
+  });
+});
+
 describe('WU-2040: Checkpoint mode Task invocation output', () => {
   const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
 

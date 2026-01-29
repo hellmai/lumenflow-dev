@@ -10,13 +10,17 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
+    - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1202.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Fix: Added formatExecutionPlanWithEmbeddedSpawns() call in non-checkpoint execution path.
+  When NOT in dry-run mode and NOT in checkpoint mode, the CLI now outputs spawn XML
+  after the execution plan, giving users the Task invocation blocks they need.
+  Updated message from "Copy the spawn commands above" to "Copy the spawn XML above to execute agents."
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
