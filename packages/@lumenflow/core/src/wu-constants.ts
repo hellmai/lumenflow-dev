@@ -1430,6 +1430,14 @@ export const ERROR_CODES = {
 };
 
 /**
+ * WU-1174: Lock directory name constant
+ *
+ * Defined separately so it can be used both in LUMENFLOW_PATHS.LOCK_DIR
+ * and for test isolation in cleanup-lock.ts/merge-lock.ts.
+ */
+export const LOCK_DIR_NAME = 'lumenflow-locks';
+
+/**
  * LumenFlow directory paths
  *
  * Centralized paths for .lumenflow directory structure to eliminate hardcoded strings.
@@ -1504,7 +1512,7 @@ export const LUMENFLOW_PATHS = {
    * Note: Lane locks still use LOCKS_DIR (.lumenflow/locks) because they need
    * to persist across sessions and be visible to other agents.
    */
-  LOCK_DIR: path.join(tmpdir(), 'lumenflow-locks'),
+  LOCK_DIR: path.join(tmpdir(), LOCK_DIR_NAME),
 };
 
 /**

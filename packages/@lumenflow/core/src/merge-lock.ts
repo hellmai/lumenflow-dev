@@ -18,7 +18,7 @@
 import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, LUMENFLOW_PATHS, LOCK_DIR_NAME } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
 /**
@@ -84,7 +84,7 @@ function getLockPath(options: MergeLockBaseDirOptions = {}) {
   // WU-1174: Use temp directory for locks (not main checkout's .lumenflow/)
   // baseDir is only used for test isolation
   const lockDir = options.baseDir
-    ? path.join(options.baseDir, '.lumenflow-locks')
+    ? path.join(options.baseDir, LOCK_DIR_NAME)
     : LUMENFLOW_PATHS.LOCK_DIR;
   return path.join(lockDir, LOCK_FILE_NAME);
 }
