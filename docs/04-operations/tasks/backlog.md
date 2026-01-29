@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1208 — Create unified pnpm state:cleanup command](wu/WU-1208.yaml) — Framework: CLI
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml) — Framework: CLI
