@@ -13,6 +13,9 @@ node_modules/
 .astro/
 .vercel/
 
+# Templates (contain placeholders)
+*.template
+
 # Config files that shouldn't be formatted
 .gitignore
 

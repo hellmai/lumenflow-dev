@@ -7,19 +7,22 @@ priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/merge-block.ts
   - packages/@lumenflow/cli/templates/core/AGENTS.md.template
+  - packages/@lumenflow/cli/templates/vendors/cursor/.cursor/rules/lumenflow.md.template
+  - packages/@lumenflow/cli/templates/vendors/windsurf/.windsurf/rules/lumenflow.md.template
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
-  - apps/docs/src/content/docs/getting-started/installation.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/guides/existing-projects.mdx
 tests:
   manual:
     - lumenflow init on new project creates AGENTS.md
     - lumenflow init --merge on existing project appends block without overwriting
     - lumenflow init --merge run twice produces no diff
   unit:
-    - packages/@lumenflow/cli/__tests__/init.test.ts
-    - packages/@lumenflow/cli/__tests__/merge-block.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/cli/src/__tests__/merge-block.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1171.done

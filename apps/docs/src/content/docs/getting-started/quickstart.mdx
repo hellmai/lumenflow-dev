@@ -38,12 +38,15 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
    This creates:
    - `.lumenflow.config.yaml` – Your configuration
    - `LUMENFLOW.md` – Workflow entry point
+   - `AGENTS.md` – Universal AI agent entry point
    - `.lumenflow/constraints.md` – Non-negotiable constraints
    - `.lumenflow/agents/` – Vendor-agnostic agent guidance
 
    Optional flags:
    - `--full` – Add `docs/04-operations/tasks/` (backlog, status, templates)
    - `--framework nextjs` – Add framework hint + overlay docs
+   - `--client claude|cursor|windsurf|codex|all` – Add client-specific overlay files
+   - `--merge` – Safely merge into existing files (preserves your content)
 
 3. **Add scripts to package.json**
 
