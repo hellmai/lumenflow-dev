@@ -11,7 +11,11 @@ code_paths:
   - apps/docs/src/content/docs/reference/config.mdx
   - packages/@lumenflow/cli/README.md
 tests:
-  manual: []
+  manual:
+    - Verify lane:health and lane:suggest are documented in apps/docs/src/content/docs/reference/cli.mdx
+    - Verify wip_justification and gates.lane_health are documented in apps/docs/src/content/docs/reference/config.mdx
+    - Verify Lane Tooling section exists in docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+    - Verify lane-health and lane-suggest commands listed in packages/@lumenflow/cli/README.md
   unit: []
   e2e: []
 artifacts:
