@@ -2,7 +2,7 @@ id: WU-1191
 title: Doctor and gate integration for lane health
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -43,3 +43,5 @@ session_id: a7b3c4be-1073-40a8-85f3-5abf2f010bd8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T16:11:53.270Z
+locked: true
+completed_at: 2026-01-29T16:46:13.502Z
