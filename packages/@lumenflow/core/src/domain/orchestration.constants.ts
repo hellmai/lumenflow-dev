@@ -18,13 +18,21 @@ export const DOD_TOTAL = 11;
 /**
  * Valid lane names in the LumenFlow system.
  * Used for type-safe lane validation.
+ *
+ * Note: This should match the lanes defined in .lumenflow.config.yaml.
+ * These are LumenFlow framework lanes, not application-specific lanes.
  */
 export const LANES = [
-  'Intelligence',
-  'Experience',
-  'Core Systems',
-  'Operations',
-  'Discovery',
+  'Framework: Core',
+  'Framework: CLI',
+  'Framework: Memory',
+  'Framework: Agent',
+  'Framework: Metrics',
+  'Framework: Initiatives',
+  'Framework: Shims',
+  'Operations: Infrastructure',
+  'Operations: CI/CD',
+  'Content: Documentation',
 ] as const;
 
 /** Type for valid lane names */
@@ -33,12 +41,18 @@ export type Lane = (typeof LANES)[number];
 /**
  * Known agent names in the orchestration system.
  * Includes both mandatory (Tier 1) and suggested (Tier 2) agents.
+ *
+ * Note: These are LumenFlow framework agents defined in .claude/agents/.
+ * Application-specific agents should be configured separately.
  */
 export const AGENT_NAMES = [
-  'security-auditor',
-  'beacon-guardian',
+  'general-purpose',
+  'lumenflow-pm',
   'test-engineer',
   'code-reviewer',
+  'bug-triage',
+  'lumenflow-enforcer',
+  'lumenflow-doc-sync',
 ] as const;
 
 /** Type for agent names */
@@ -99,8 +113,14 @@ export type UserChoiceOption = (typeof USER_CHOICE_OPTIONS)[number];
 
 /**
  * Mandatory agent names (subset of AGENT_NAMES)
+ *
+ * Note: For LumenFlow framework development, mandatory agents are not currently
+ * enforced since this is a workflow framework, not an application with PHI/auth concerns.
+ * Projects using LumenFlow can define their own mandatory agents in their config.
+ *
+ * The test-engineer and code-reviewer agents are suggested but not mandatory.
  */
-export const MANDATORY_AGENT_NAMES = ['security-auditor', 'beacon-guardian'] as const;
+export const MANDATORY_AGENT_NAMES = [] as const;
 
 /** Type for mandatory agent names */
 export type MandatoryAgentName = (typeof MANDATORY_AGENT_NAMES)[number];
@@ -109,15 +129,24 @@ export type MandatoryAgentName = (typeof MANDATORY_AGENT_NAMES)[number];
  * Mandatory agent triggers - glob patterns that indicate when agents must be invoked.
  * Uses minimatch patterns (NOT regex) for file path matching.
  *
- * @example
- * // Check if a path triggers security-auditor:
+ * Note: For LumenFlow framework development, this is empty since we don't have
+ * application-specific concerns like PHI, auth, or RLS. Projects using LumenFlow
+ * should configure their own triggers based on their domain requirements.
+ *
+ * Example application-specific triggers (configure in your project):
+ * - security-auditor: supabase/migrations/**, auth/**, rls/**
+ * - beacon-guardian: prompts/**, llm/**
+ *
+ * Usage:
+ * ```typescript
  * import { minimatch } from 'minimatch';
- * const triggers = MANDATORY_TRIGGERS['security-auditor'];
- * const shouldTrigger = triggers.some(pattern => minimatch(filePath, pattern));
+ * const triggers = MANDATORY_TRIGGERS['my-agent'];
+ * const shouldTrigger = triggers?.some(pattern => minimatch(filePath, pattern));
+ * ```
  */
-export const MANDATORY_TRIGGERS: Record<MandatoryAgentName, readonly string[]> = {
-  'security-auditor': ['supabase/migrations/**', '**/auth/**', '**/rls/**', '**/permissions/**'],
-  'beacon-guardian': ['**/prompts/**', '**/classification/**', '**/detector/**', '**/llm/**'],
+export const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
+  // No mandatory triggers for LumenFlow framework development.
+  // Projects should configure their own triggers based on their domain.
 };
 
 /**

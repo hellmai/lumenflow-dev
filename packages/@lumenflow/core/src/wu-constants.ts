@@ -302,7 +302,7 @@ export const LOG_PREFIX = {
   REPAIR: '[wu:repair]',
   CONSISTENCY: '[wu-consistency]',
   PREFLIGHT: '[wu-preflight]',
-  INIT_PLAN: '[init:plan]',
+  INITIATIVE_PLAN: '[initiative:plan]',
 };
 
 /**

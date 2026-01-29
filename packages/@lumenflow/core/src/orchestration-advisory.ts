@@ -71,7 +71,7 @@ export function emitMandatoryAgentAdvisory(codePaths: readonly string[], wuId: s
   }
 
   console.log('');
-  console.log(picocolors.gray(`Run: pnpm orchestrate:suggest --wu ${wuId}`));
+  console.log(picocolors.gray(`Run: pnpm orchestrate:monitor to check agent status`));
   console.log(picocolors.yellow(horizontalLine));
   console.log('');
 }
