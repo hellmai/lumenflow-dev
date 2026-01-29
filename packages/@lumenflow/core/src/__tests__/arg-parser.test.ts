@@ -10,6 +10,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { WU_OPTIONS, WU_CREATE_OPTIONS, createWUParser, parseWUArgs } from '../arg-parser.js';
 
+// Test fixture constants (WU-1173: avoid duplicate string lint errors)
+const TEST_PATH_A = 'src/a.ts';
+const TEST_PATH_B = 'src/b.ts';
+const TEST_PATH_C = 'src/c.ts';
+const TEST_ARGV_PREFIX = ['node', 'test.js'] as const;
+const FLAG_CODE_PATHS = '--code-paths';
+
 describe('arg-parser', () => {
   describe('WU_OPTIONS', () => {
     describe('string options', () => {
@@ -138,6 +145,52 @@ describe('arg-parser', () => {
       it('should mark reconcileInitiative as repeatable', () => {
         expect(WU_OPTIONS.reconcileInitiative.name).toBe('reconcileInitiative');
         expect(WU_OPTIONS.reconcileInitiative.isRepeatable).toBe(true);
+      });
+
+      // WU-1173: All array flags should be marked as repeatable for consistency
+      it('should mark codePaths as repeatable', () => {
+        expect(WU_OPTIONS.codePaths.name).toBe('codePaths');
+        expect(WU_OPTIONS.codePaths.isRepeatable).toBe(true);
+      });
+
+      it('should mark testPathsManual as repeatable', () => {
+        expect(WU_OPTIONS.testPathsManual.name).toBe('testPathsManual');
+        expect(WU_OPTIONS.testPathsManual.isRepeatable).toBe(true);
+      });
+
+      it('should mark testPathsUnit as repeatable', () => {
+        expect(WU_OPTIONS.testPathsUnit.name).toBe('testPathsUnit');
+        expect(WU_OPTIONS.testPathsUnit.isRepeatable).toBe(true);
+      });
+
+      it('should mark testPathsE2e as repeatable', () => {
+        expect(WU_OPTIONS.testPathsE2e.name).toBe('testPathsE2e');
+        expect(WU_OPTIONS.testPathsE2e.isRepeatable).toBe(true);
+      });
+
+      it('should mark specRefs as repeatable', () => {
+        expect(WU_OPTIONS.specRefs.name).toBe('specRefs');
+        expect(WU_OPTIONS.specRefs.isRepeatable).toBe(true);
+      });
+
+      it('should mark uiPairingWus as repeatable', () => {
+        expect(WU_OPTIONS.uiPairingWus.name).toBe('uiPairingWus');
+        expect(WU_OPTIONS.uiPairingWus.isRepeatable).toBe(true);
+      });
+
+      it('should mark blockedBy as repeatable', () => {
+        expect(WU_OPTIONS.blockedBy.name).toBe('blockedBy');
+        expect(WU_OPTIONS.blockedBy.isRepeatable).toBe(true);
+      });
+
+      it('should mark blocks as repeatable', () => {
+        expect(WU_OPTIONS.blocks.name).toBe('blocks');
+        expect(WU_OPTIONS.blocks.isRepeatable).toBe(true);
+      });
+
+      it('should mark labels as repeatable', () => {
+        expect(WU_OPTIONS.labels.name).toBe('labels');
+        expect(WU_OPTIONS.labels.isRepeatable).toBe(true);
       });
     });
 
@@ -363,6 +416,131 @@ describe('arg-parser', () => {
       });
 
       expect(opts.acceptance).toEqual([]);
+    });
+
+    // WU-1173: All array flags should support both repeatable and comma-separated patterns
+    describe('array flag consistency (WU-1173)', () => {
+      it('should parse --code-paths with repeatable pattern', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          FLAG_CODE_PATHS,
+          TEST_PATH_A,
+          FLAG_CODE_PATHS,
+          TEST_PATH_B,
+        ];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.codePaths],
+        });
+
+        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
+      });
+
+      it('should parse --code-paths with comma-separated pattern', () => {
+        process.argv = [...TEST_ARGV_PREFIX, FLAG_CODE_PATHS, `${TEST_PATH_A},${TEST_PATH_B}`];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.codePaths],
+        });
+
+        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
+      });
+
+      it('should parse --code-paths with mixed pattern', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          FLAG_CODE_PATHS,
+          `${TEST_PATH_A},${TEST_PATH_B}`,
+          FLAG_CODE_PATHS,
+          TEST_PATH_C,
+        ];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.codePaths],
+        });
+
+        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B, TEST_PATH_C]);
+      });
+
+      it('should parse --test-paths-unit with repeatable pattern', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          '--test-paths-unit',
+          'tests/a.test.ts',
+          '--test-paths-unit',
+          'tests/b.test.ts',
+        ];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.testPathsUnit],
+        });
+
+        expect(opts.testPathsUnit).toEqual(['tests/a.test.ts', 'tests/b.test.ts']);
+      });
+
+      it('should parse --spec-refs with repeatable pattern', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          '--spec-refs',
+          'docs/plan-a.md',
+          '--spec-refs',
+          'docs/plan-b.md',
+        ];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.specRefs],
+        });
+
+        expect(opts.specRefs).toEqual(['docs/plan-a.md', 'docs/plan-b.md']);
+      });
+
+      it('should handle empty values for array flags', () => {
+        process.argv = [...TEST_ARGV_PREFIX];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.codePaths, WU_OPTIONS.testPathsUnit, WU_OPTIONS.specRefs],
+        });
+
+        expect(opts.codePaths).toEqual([]);
+        expect(opts.testPathsUnit).toEqual([]);
+        expect(opts.specRefs).toEqual([]);
+      });
+
+      it('should parse --blocked-by with repeatable pattern', () => {
+        process.argv = [...TEST_ARGV_PREFIX, '--blocked-by', 'WU-100', '--blocked-by', 'WU-200'];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.blockedBy],
+        });
+
+        expect(opts.blockedBy).toEqual(['WU-100', 'WU-200']);
+      });
+
+      it('should parse --labels with repeatable pattern', () => {
+        process.argv = [...TEST_ARGV_PREFIX, '--labels', 'urgent', '--labels', 'bug'];
+
+        const opts = createWUParser({
+          name: 'test',
+          description: 'Test parser',
+          options: [WU_OPTIONS.labels],
+        });
+
+        expect(opts.labels).toEqual(['urgent', 'bug']);
+      });
     });
   });
 
