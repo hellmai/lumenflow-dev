@@ -2,7 +2,7 @@ id: WU-1200
 title: 'Bug: orchestrate:initiative marks WUs spawned before agent launch'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -26,8 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: orchestrate:initiative marks WUs as 'spawned' in wave manifests when it outputs the spawn prompt, not when an agent is actually invoked. This causes the orchestrator to think it's waiting for WUs that were never started, blocking subsequent runs.
+description: orchestrate:initiative marks WUs as 'spawned' in wave manifests when it outputs the
+  spawn prompt, not when an agent is actually invoked. This causes the orchestrator to think it's
+  waiting for WUs that were never started, blocking subsequent runs.
 acceptance:
   - Wave manifest only records spawned status after confirmation agent was launched
   - orchestrate:initiative checks WU YAML status not just wave manifest
   - Stale wave manifests don't block new orchestration runs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1200
+claimed_at: 2026-01-29T17:43:07.493Z
+baseline_main_sha: 62d56615ea629240bb73bc857335e27801610467
+session_id: 4f37f830-997a-4f43-841e-8af91606a60b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T17:43:07.500Z
