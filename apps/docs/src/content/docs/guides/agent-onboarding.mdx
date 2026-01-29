@@ -259,12 +259,12 @@ Use `scripts/safe-git` instead of system `git` to block destructive operations:
 
 These run for **everyone** on every commit:
 
-| Hook | What It Does |
-|------|--------------|
-| Secret scanning | Blocks commits containing AWS/GitHub/OpenAI keys |
-| Absolute path scanning | Blocks `/home/`, `/Users/` paths in code |
-| Lockfile sync | Blocks dependency changes without lockfile update |
-| Worktree discipline | Blocks main commits when worktrees exist |
+| Hook                   | What It Does                                      |
+| ---------------------- | ------------------------------------------------- |
+| Secret scanning        | Blocks commits containing AWS/GitHub/OpenAI keys  |
+| Absolute path scanning | Blocks `/home/`, `/Users/` paths in code          |
+| Lockfile sync          | Blocks dependency changes without lockfile update |
+| Worktree discipline    | Blocks main commits when worktrees exist          |
 
 ### Audit Logs
 
@@ -274,7 +274,8 @@ All blocked actions are logged for visibility:
 - `.beacon/force-bypasses.log` – Emergency LUMENFLOW_FORCE bypasses
 
 <Aside type="tip">
-  These mechanisms work regardless of which AI agent or IDE you use. They're enforced at the git/hook level, not the agent level.
+  These mechanisms work regardless of which AI agent or IDE you use. They're enforced at the
+  git/hook level, not the agent level.
 </Aside>
 
 ## Agent Safety Card
