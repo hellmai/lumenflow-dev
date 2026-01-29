@@ -1,14 +1,13 @@
 id: WU-1198
 title: 'Documentation: Lane tooling and WIP enforcement'
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
-  - apps/docs/src/content/docs/reference/cli.mdx
-  - apps/docs/src/content/docs/reference/config.mdx
+  - docs/04-operations/_frameworks/lumenflow/**
+  - apps/docs/src/content/docs/**
   - packages/@lumenflow/cli/README.md
 tests:
   manual: []
