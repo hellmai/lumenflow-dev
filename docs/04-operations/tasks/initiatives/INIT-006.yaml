@@ -1,11 +1,32 @@
 id: INIT-006
 slug: wip-enforcement-lane-tooling
 title: WIP=1 Enforcement + Lane Generation Tooling
-description: ''
-status: draft
+description: 'Replace configurable WIP limits with WIP=1 as default (require justification for WIP >
+  1), and add lane generation tooling so well-defined lanes make WIP=1 always sufficient.
+  Philosophy: If you need WIP > 1, you need better lanes, not higher limits.'
+status: open
 priority: P2
 owner: tom@hellm.ai
 created: 2026-01-29
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: WIP Restriction (Core)
+    status: pending
+  - id: 2
+    title: Lane Health Diagnostics (CLI)
+    status: pending
+  - id: 3
+    title: Lane Suggest - LLM-Driven (CLI)
+    status: pending
+  - id: 4
+    title: Git History Context (Enhancement)
+    status: pending
+  - id: 5
+    title: Doctor & Gate Integration
+    status: pending
+success_metrics:
+  - WIP > 1 without justification logs warning at claim time
+  - lane:health detects overlap and coverage gaps
+  - lane:suggest generates sensible lanes for LumenFlow OS repo
+  - lumenflow doctor includes lane health check
 labels: []
