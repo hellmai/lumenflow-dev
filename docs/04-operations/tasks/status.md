@@ -9,6 +9,7 @@ _Last updated: 2026-01-29_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml)
+- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml)
 
 ## Completed
 
