@@ -10,6 +10,7 @@ _Last updated: 2026-01-29_
 
 ## Completed
 
+- [WU-1179 — Fix micro-worktree push race leaving main diverged](wu/WU-1179.yaml) — 2026-01-29
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
