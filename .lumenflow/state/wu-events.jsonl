@@ -407,3 +407,4 @@
 {"type":"claim","wuId":"WU-1210","timestamp":"2026-01-29T23:10:53.463Z","lane":"Framework: CLI","title":"Fix wu-spawn.test.ts failing 'Required at Milestones' assertion"}
 {"type":"claim","wuId":"WU-1215","timestamp":"2026-01-29T23:21:58.505Z","lane":"Content: Documentation","title":"Update distribution gitignore with complete recursive patterns"}
 {"type":"complete","wuId":"WU-1210","timestamp":"2026-01-29T23:22:51.295Z"}
+{"type":"complete","wuId":"WU-1215","timestamp":"2026-01-29T23:27:19.956Z"}

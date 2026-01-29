@@ -2,7 +2,7 @@ id: WU-1215
 title: Update distribution gitignore with complete recursive patterns
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -38,3 +38,5 @@ session_id: 355e4d27-dc48-4261-aeee-567f2e93cb9b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T23:21:58.493Z
+locked: true
+completed_at: 2026-01-29T23:27:18.195Z
