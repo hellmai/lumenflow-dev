@@ -1,0 +1,55 @@
+id: WU-1171
+title: 'Universal Agent Onboarding: AGENTS.md + Merge Mode'
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/templates/core/AGENTS.md.template
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/init.test.ts
+    - packages/@lumenflow/cli/__tests__/merge-block.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1171.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1171-universal-agent-onboarding.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: LumenFlow init currently either skips existing files (safe but useless) or overwrites them with --force (destructive). Adding LumenFlow to existing projects requires a safe middle ground.
+
+  Problem: No way to add LumenFlow configuration to existing projects without destroying user content. Also, different AI agents read different config files (AGENTS.md for Codex/Cursor/Windsurf, CLAUDE.md for Claude).
+
+  Solution:
+  1. Add --merge mode that inserts/updates bounded LUMENFLOW blocks
+  2. Create AGENTS.md as universal entry point (one file = 3 agents)
+  3. Align --client flag with wu:spawn vocabulary
+  4. Keep CLAUDE.md as Claude-specific overlay
+acceptance:
+  - lumenflow init creates AGENTS.md by default (links to LUMENFLOW.md)
+  - lumenflow init --merge inserts LUMENFLOW:START/END block into existing files
+  - 'Merge is idempotent: running twice produces no diff on second run'
+  - Merge preserves original file line endings (CRLF/LF detection)
+  - Malformed markers (only one present) trigger warning and append fresh block
+  - --client flag added (windsurf, codex, cursor, claude, all)
+  - --vendor kept as backward-compatible alias for --client
+  - 'createFile() refactored to accept { mode: skip|merge|force }'
+  - docs:sync defaults to AGENTS.md, not Claude-first
+  - Cursor overlay uses .cursor/rules/lumenflow.md (not .cursor/rules.md)
+  - Windsurf overlay uses .windsurf/rules/lumenflow.md (not .windsurfrules)
+  - Single CLAUDE.md at root (no duplication with .claude/CLAUDE.md)

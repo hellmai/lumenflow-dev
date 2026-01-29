@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1171 — Universal Agent Onboarding: AGENTS.md + Merge Mode](wu/WU-1171.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
