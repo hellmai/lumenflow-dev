@@ -596,6 +596,7 @@ export const CLEANUP_GUARD = {
     MISSING_STAMP: 'WU stamp is missing. Refusing to delete.',
     PR_NOT_MERGED: 'PR is not merged (or cannot be verified). Refusing to delete.',
   },
+  /* eslint-disable sonarjs/no-duplicate-string -- Intentional: cleanup instructions repeated for each error type for readability */
   NEXT_STEPS: {
     DEFAULT: [
       { text: '1. Resolve the issue above', appendId: false },
@@ -625,6 +626,7 @@ export const CLEANUP_GUARD = {
       { text: '2. Re-run: pnpm wu:cleanup --id', appendId: true },
     ],
   },
+  /* eslint-enable sonarjs/no-duplicate-string */
   PR_CHECK: {
     START: 'Verifying PR merge status...',
     RESULT: 'PR merge verification via',
@@ -1123,6 +1125,8 @@ export const GATE_NAMES = {
   INTEGRATION_TEST: 'integration-test',
   /** WU-2315: System map validation (warn-only until orphan docs are indexed) */
   SYSTEM_MAP_VALIDATE: 'system-map:validate',
+  /** WU-1191: Lane health check (overlap detection) */
+  LANE_HEALTH: 'lane-health',
 };
 
 /**
@@ -1593,6 +1597,7 @@ export const PATH_LITERALS = {
   PLAN_FILE_SUFFIX: '-plan.md',
 
   /** Trailing slash regex pattern */
+  // eslint-disable-next-line sonarjs/slow-regex -- False positive: simple end-anchor regex, no catastrophic backtracking possible
   TRAILING_SLASH_REGEX: /\/+$/,
 };
 

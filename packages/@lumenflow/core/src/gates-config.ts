@@ -213,6 +213,7 @@ export function loadGatesConfig(projectRoot: string): GatesExecutionConfig | nul
     // Validate the config
     const result = GatesExecutionConfigSchema.safeParse(executionConfig);
     if (!result.success) {
+      // eslint-disable-next-line no-console -- Intentional warning for invalid config
       console.warn('Warning: Invalid gates.execution config:', result.error.message);
       return null;
     }
@@ -226,6 +227,7 @@ export function loadGatesConfig(projectRoot: string): GatesExecutionConfig | nul
 
     return merged;
   } catch (error) {
+    // eslint-disable-next-line no-console -- Intentional warning for parse failure
     console.warn(
       'Warning: Failed to parse .lumenflow.config.yaml:',
       error instanceof Error ? error.message : String(error),
@@ -300,4 +302,70 @@ export function shouldSkipGate(
   }
 
   return false;
+}
+
+/**
+ * WU-1191: Lane health gate mode
+ * Controls how lane health check behaves during gates
+ */
+export type LaneHealthMode = 'warn' | 'error' | 'off';
+
+/**
+ * Schema for lane health mode validation
+ */
+const LaneHealthModeSchema = z.enum(['warn', 'error', 'off']);
+
+/**
+ * Default lane health mode (advisory by default)
+ */
+const DEFAULT_LANE_HEALTH_MODE: LaneHealthMode = 'warn';
+
+/**
+ * WU-1191: Load lane health configuration from .lumenflow.config.yaml
+ *
+ * Configuration format:
+ * ```yaml
+ * gates:
+ *   lane_health: warn|error|off
+ * ```
+ *
+ * @param projectRoot - Project root directory
+ * @returns Lane health mode ('warn', 'error', or 'off'), defaults to 'warn'
+ */
+export function loadLaneHealthConfig(projectRoot: string): LaneHealthMode {
+  const configPath = path.join(projectRoot, '.lumenflow.config.yaml');
+
+  if (!fs.existsSync(configPath)) {
+    return DEFAULT_LANE_HEALTH_MODE;
+  }
+
+  try {
+    const content = fs.readFileSync(configPath, 'utf8');
+    const data = yaml.parse(content);
+
+    // Check if gates.lane_health is configured
+    const laneHealthConfig = data?.gates?.lane_health;
+    if (laneHealthConfig === undefined) {
+      return DEFAULT_LANE_HEALTH_MODE;
+    }
+
+    // Validate the config value
+    const result = LaneHealthModeSchema.safeParse(laneHealthConfig);
+    if (!result.success) {
+      // eslint-disable-next-line no-console -- Intentional warning for invalid config
+      console.warn(
+        `Warning: Invalid gates.lane_health value '${laneHealthConfig}', expected 'warn', 'error', or 'off'. Using default 'warn'.`,
+      );
+      return DEFAULT_LANE_HEALTH_MODE;
+    }
+
+    return result.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console -- Intentional warning for parse failure
+    console.warn(
+      'Warning: Failed to parse .lumenflow.config.yaml for lane_health config:',
+      error instanceof Error ? error.message : String(error),
+    );
+    return DEFAULT_LANE_HEALTH_MODE;
+  }
 }

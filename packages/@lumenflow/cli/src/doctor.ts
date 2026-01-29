@@ -1,6 +1,8 @@
+/* eslint-disable no-console -- CLI command uses console for status output */
 /**
  * @file doctor.ts
  * LumenFlow health check command (WU-1177)
+ * WU-1191: Lane health check integration
  * Verifies all safety components are installed and configured correctly
  */
 
@@ -8,6 +10,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createWUParser } from '@lumenflow/core';
+import { loadLaneDefinitions, detectLaneOverlaps } from './lane-health.js';
 
 /**
  * Check result for a single component
@@ -47,6 +50,8 @@ export interface DoctorResult {
     safeGit: CheckResult;
     agentsMd: CheckResult;
     lumenflowConfig: CheckResult;
+    /** WU-1191: Lane health check result */
+    laneHealth: CheckResult;
   };
   vendorConfigs: {
     claude: VendorConfigResult;
@@ -240,6 +245,7 @@ function getCommandVersion(command: string, args: string[]): string {
  * Parse semver version string to compare
  */
 function parseVersion(versionStr: string): number[] {
+  // eslint-disable-next-line sonarjs/slow-regex, sonarjs/prefer-regexp-exec -- Simple semver extraction, no backtracking risk
   const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
   if (!match) {
     return [0, 0, 0];
@@ -263,6 +269,42 @@ function compareVersions(actual: string, required: string): boolean {
     }
   }
   return true;
+}
+
+/**
+ * WU-1191: Check lane health configuration
+ * Integrates lane:health overlap detection into lumenflow doctor
+ */
+function checkLaneHealth(projectDir: string): CheckResult {
+  const lanes = loadLaneDefinitions(projectDir);
+
+  // No lanes configured - considered healthy (nothing to check)
+  if (lanes.length === 0) {
+    return {
+      passed: true,
+      message: 'No lane definitions found - skipping lane health check',
+    };
+  }
+
+  // Check for overlapping code_paths
+  const overlapResult = detectLaneOverlaps(lanes);
+
+  if (overlapResult.hasOverlaps) {
+    const overlapCount = overlapResult.overlaps.length;
+    const firstOverlap = overlapResult.overlaps[0];
+    const laneNames = firstOverlap.lanes.join(' <-> ');
+
+    return {
+      passed: false,
+      message: `Lane overlap detected: ${overlapCount} overlap(s) found`,
+      details: `First overlap: ${laneNames}. Run 'pnpm lane:health' for full report.`,
+    };
+  }
+
+  return {
+    passed: true,
+    message: `Lane configuration healthy (${lanes.length} lanes, no overlaps)`,
+  };
 }
 
 /**
@@ -312,12 +354,15 @@ export async function runDoctor(projectDir: string): Promise<DoctorResult> {
     safeGit: checkSafeGit(projectDir),
     agentsMd: checkAgentsMd(projectDir),
     lumenflowConfig: checkLumenflowConfig(projectDir),
+    // WU-1191: Lane health check
+    laneHealth: checkLaneHealth(projectDir),
   };
 
   const vendorConfigs = checkVendorConfigs(projectDir);
   const prerequisites = checkPrerequisites();
 
   // Determine overall status
+  // Note: laneHealth is advisory (not included in critical checks)
   const criticalChecks = [checks.husky, checks.safeGit, checks.agentsMd];
   const allCriticalPassed = criticalChecks.every((check) => check.passed);
 
@@ -352,6 +397,11 @@ export function formatDoctorOutput(result: DoctorResult): string {
   lines.push(formatCheck(result.checks.safeGit));
   lines.push(formatCheck(result.checks.agentsMd));
   lines.push(formatCheck(result.checks.lumenflowConfig));
+
+  // WU-1191: Lane Health section
+  lines.push('');
+  lines.push('Lane Health:');
+  lines.push(formatCheck(result.checks.laneHealth));
 
   // Vendor configs
   lines.push('');

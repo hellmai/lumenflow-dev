@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- Gates runner uses console for status output; refactoring to logger is tracked for future work */
 /**
  * Quality Gates Runner
  *
@@ -55,25 +56,18 @@ import {
   updateGatesLatestSymlink,
 } from '@lumenflow/core/dist/gates-agent-mode.js';
 // WU-2062: Import risk detector for tiered test execution
-// eslint-disable-next-line no-unused-vars -- Pre-existing: SAFETY_CRITICAL_TEST_PATTERNS imported for future use
-import {
-  detectRiskTier,
-  RISK_TIERS,
-  SAFETY_CRITICAL_TEST_PATTERNS,
-} from '@lumenflow/core/dist/risk-detector.js';
+import { detectRiskTier, RISK_TIERS } from '@lumenflow/core/dist/risk-detector.js';
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { validateBacklogSync } from '@lumenflow/core/dist/validators/backlog-sync.js';
 import { runSupabaseDocsLinter } from '@lumenflow/core/dist/validators/supabase-docs-linter.js';
 import { runSystemMapValidation } from '@lumenflow/core/dist/system-map-validator.js';
-// WU-1067: Config-driven gates support
-import {
-  loadGatesConfig,
-  resolveGatesConfig,
-  parseGateCommand,
-  type GatesExecutionConfig,
-} from '@lumenflow/core/dist/gates-config.js';
+// WU-1067: Config-driven gates support (partial implementation - unused imports removed)
+// WU-1191: Lane health gate configuration
+import { loadLaneHealthConfig, type LaneHealthMode } from '@lumenflow/core/dist/gates-config.js';
+// WU-1191: Lane health check
+import { runLaneHealthCheck } from './lane-health.js';
 import {
   BRANCHES,
   PACKAGES,
@@ -87,7 +81,6 @@ import {
   GATE_NAMES,
   GATE_COMMANDS,
   CLI_MODES,
-  STDIO_MODES,
   EXIT_CODES,
   FILE_SYSTEM,
   PRETTIER_ARGS,
@@ -188,6 +181,7 @@ export function parseGatesOptions(): {
  * @deprecated Use parseGatesOptions() instead (WU-1087)
  * Kept for backward compatibility during migration.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Pre-existing: argv kept for backwards compatibility
 function parseGatesArgs(argv = process.argv) {
   return parseGatesOptions();
 }
@@ -270,6 +264,7 @@ export function isTestConfigFile(filePath: string): boolean {
   return TEST_CONFIG_PATTERNS.some((pattern) => pattern.test(basename));
 }
 
+/* eslint-disable sonarjs/no-duplicate-string -- Pre-existing: format check reasons are intentionally distinct string literals */
 export function resolveFormatCheckPlan({
   changedFiles,
   fileListError = false,
@@ -314,6 +309,7 @@ export function resolveLintPlan({
 
   return { mode: 'incremental', files: lintTargets };
 }
+/* eslint-enable sonarjs/no-duplicate-string */
 
 export function resolveTestPlan({
   isMainBranch,
@@ -385,6 +381,7 @@ export function formatFormatCheckGuidance(files: string[]): string[] {
 function collectPrettierListDifferent(cwd: string, files: string[] = []): string[] {
   const filesArg = files.length > 0 ? quoteShellArgs(files) : '.';
   const cmd = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.LIST_DIFFERENT, filesArg);
+  // eslint-disable-next-line sonarjs/os-command -- Pre-existing: executes trusted pnpm prettier command
   const result = spawnSync(cmd, [], {
     shell: true,
     cwd,
@@ -467,6 +464,7 @@ function run(
   if (!agentLog) {
     console.log(`\n> ${cmd}\n`);
     try {
+      // eslint-disable-next-line sonarjs/os-command -- Pre-existing: cmd is built from trusted constants
       execSync(cmd, { stdio: 'inherit', encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
       return { ok: true, duration: Date.now() - start };
     } catch {
@@ -475,6 +473,7 @@ function run(
   }
 
   writeSync(agentLog.logFd, `\n> ${cmd}\n\n`);
+  // eslint-disable-next-line sonarjs/os-command -- Pre-existing: cmd is built from trusted constants
   const result = spawnSync(cmd, [], {
     shell: true,
     stdio: ['ignore', agentLog.logFd, agentLog.logFd],
@@ -567,6 +566,55 @@ async function runSystemMapGate({ agentLog, useAgentMode }: GateLogContext) {
   return { ok: result.valid, duration: Date.now() - start };
 }
 
+/**
+ * WU-1191: Run lane health check gate
+ *
+ * Checks lane configuration for overlaps and coverage gaps.
+ * Mode is configurable via gates.lane_health in .lumenflow.config.yaml:
+ * - 'warn': Log warnings but don't fail (default)
+ * - 'error': Fail the gate if issues detected
+ * - 'off': Skip the check entirely
+ */
+async function runLaneHealthGate({
+  agentLog,
+  useAgentMode,
+  mode,
+}: GateLogContext & { mode: LaneHealthMode }) {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+
+  // Skip if mode is 'off'
+  if (mode === 'off') {
+    logLine('\n> Lane health check (skipped - mode: off)\n');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  logLine(`\n> Lane health check (mode: ${mode})\n`);
+
+  const report = runLaneHealthCheck({ projectRoot: process.cwd() });
+
+  if (!report.healthy) {
+    logLine('⚠️  Lane health issues detected:');
+    if (report.overlaps.hasOverlaps) {
+      logLine(`  - ${report.overlaps.overlaps.length} overlapping code_paths`);
+    }
+    if (report.gaps.hasGaps) {
+      logLine(`  - ${report.gaps.uncoveredFiles.length} uncovered files`);
+    }
+    logLine(`  Run 'pnpm lane:health' for full report.`);
+
+    if (mode === 'error') {
+      return { ok: false, duration: Date.now() - start };
+    }
+    // mode === 'warn': report but don't fail
+    logLine('  (mode: warn - not blocking)');
+  } else {
+    logLine('Lane health check passed.');
+  }
+
+  return { ok: true, duration: Date.now() - start };
+}
+
 async function filterExistingFiles(files: string[]): Promise<string[]> {
   const existingFiles = await Promise.all(
     files.map(async (file) => {
@@ -629,12 +677,14 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
   }
 
   if (plan.mode === 'full') {
+    /* eslint-disable sonarjs/no-nested-conditional -- Pre-existing: simple reason mapping, readable as-is */
     const reason =
       plan.reason === 'prettier-config'
         ? ' (prettier config changed)'
         : plan.reason === 'file-list-error'
           ? ' (file list unavailable)'
           : '';
+    /* eslint-enable sonarjs/no-nested-conditional */
     logLine(`📋 Running full format check${reason}`);
     const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
     return { ...result, duration: Date.now() - start, fileCount: -1 };
@@ -1096,6 +1146,8 @@ async function executeGates(opts: {
   // WU-1433: Coverage gate mode (warn or block)
   // WU-2334: Default changed from WARN to BLOCK for TDD enforcement
   const coverageMode = opts.coverageMode || COVERAGE_GATE_MODES.BLOCK;
+  // WU-1191: Lane health gate mode (warn, error, or off)
+  const laneHealthMode = loadLaneHealthConfig(process.cwd());
 
   if (useAgentMode) {
     console.log(
@@ -1156,6 +1208,12 @@ async function executeGates(opts: {
           run: runSystemMapGate,
           warnOnly: true,
         },
+        // WU-1191: Lane health check (configurable: warn/error/off)
+        {
+          name: GATE_NAMES.LANE_HEALTH,
+          run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
+          warnOnly: laneHealthMode !== 'error',
+        },
       ]
     : [
         // WU-2252: Invariants check runs first (non-bypassable)
@@ -1178,6 +1236,12 @@ async function executeGates(opts: {
           name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
           run: runSystemMapGate,
           warnOnly: true,
+        },
+        // WU-1191: Lane health check (configurable: warn/error/off)
+        {
+          name: GATE_NAMES.LANE_HEALTH,
+          run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
+          warnOnly: laneHealthMode !== 'error',
         },
         // WU-2062: Safety-critical tests ALWAYS run
         { name: GATE_NAMES.SAFETY_CRITICAL_TEST, cmd: GATE_COMMANDS.SAFETY_CRITICAL_TEST },
@@ -1337,6 +1401,7 @@ async function executeGates(opts: {
 // The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
 // path but import.meta.url resolves to the real path - they never match
 if (import.meta.main) {
+  // eslint-disable-next-line sonarjs/deprecation -- Pre-existing: parseGatesArgs kept for backwards compatibility
   const opts = parseGatesArgs();
   executeGates({ ...opts, argv: process.argv.slice(2) })
     .then((ok) => {
