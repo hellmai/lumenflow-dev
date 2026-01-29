@@ -471,19 +471,96 @@ pnpm init:plan
 
 ### lane:health
 
-Check lane configuration health (WU-1188)
+Check lane configuration health - detects overlapping code_paths between lanes and identifies files not covered by any lane definition.
 
 ```bash
 pnpm lane:health
 ```
 
+**Options:**
+
+| Flag            | Description                         | Required |
+| --------------- | ----------------------------------- | -------- |
+| `-j, --json`    | Output results as JSON              | No       |
+| `-v, --verbose` | Show verbose output with all files  | No       |
+| `--no-coverage` | Skip coverage gap detection         | No       |
+
+**Example Output:**
+
+```
+============================================================
+  Lane Health Report
+============================================================
+
+  Status: healthy
+
+  All lane configurations are valid:
+    - No overlapping code_paths detected
+    - All code files covered by lanes
+
+============================================================
+```
+
+**Exit Codes:**
+
+- `0` - Lane configuration is healthy (no overlaps or gaps)
+- `1` - Issues detected (overlapping paths or coverage gaps)
+
+**Integration:**
+
+Lane health is also checked by:
+- `lumenflow doctor` - Includes lane health in system health check
+- `pnpm gates` - Configurable via `gates.lane_health` in `.lumenflow.config.yaml`
+
 ### lane:suggest
 
-Suggest lane definitions based on codebase context
+LLM-driven lane suggestions based on codebase context. Analyzes project structure, package layout, and optionally git history to suggest appropriate lane definitions.
 
 ```bash
 pnpm lane:suggest
 ```
+
+**Options:**
+
+| Flag                   | Description                                           | Required |
+| ---------------------- | ----------------------------------------------------- | -------- |
+| `--dry-run`            | Show what would be suggested without LLM call         | No       |
+| `-i, --interactive`    | Interactively accept/skip/edit each suggestion        | No       |
+| `-o, --output <file>`  | Write suggestions to YAML file                        | No       |
+| `--json`               | Output suggestions as JSON                            | No       |
+| `--no-llm`             | Use heuristic-based suggestions (no LLM)              | No       |
+| `--include-git`        | Add git history context (co-occurrence, ownership, churn) | No       |
+
+**Examples:**
+
+```bash
+# Preview suggestions without LLM call
+pnpm lane:suggest --dry-run
+
+# Generate and save to file
+pnpm lane:suggest --output .lumenflow.lane-inference.yaml
+
+# Interactive mode to review each suggestion
+pnpm lane:suggest --interactive
+
+# Include git history for better context
+pnpm lane:suggest --include-git
+```
+
+**Interactive Mode:**
+
+In interactive mode, for each suggestion you can:
+- `a` (accept) - Add suggestion to final output
+- `s` (skip) - Skip this suggestion
+- `e` (edit) - Modify the lane name or description
+- `q` (quit) - Stop and return accepted suggestions
+
+**Git History Context (`--include-git`):**
+
+When enabled, extracts insights from git history:
+- **Co-occurrence**: Files frequently changed together (suggests shared ownership)
+- **Ownership signals**: Primary contributors for different areas
+- **Churn hotspots**: Files with high change frequency (potential complexity)
 
 ### rotate:progress
 

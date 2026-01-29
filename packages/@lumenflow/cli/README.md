@@ -97,6 +97,13 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `metrics-snapshot`  | Capture DORA metrics, lane health, and flow state snapshot     |
 | `trace-gen`         | Generate traceability reports linking WUs to code changes      |
 
+### Lane Tooling
+
+| Command        | Description                                                         |
+| -------------- | ------------------------------------------------------------------- |
+| `lane-health`  | Check lane configuration health (overlaps, coverage gaps)           |
+| `lane-suggest` | LLM-driven lane suggestions based on codebase context and git history |
+
 ### Verification & Gates
 
 | Command                 | Description                                               |

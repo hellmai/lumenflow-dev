@@ -167,6 +167,80 @@ Teams may refine or split lanes (e.g., separate Mobile from Web) but must keep t
 
 Lanes are published in the backlog header. New lanes require a short rationale in `./operating-manual.md` to keep the taxonomy transparent.
 
+#### Lane Tooling (INIT-006)
+
+LumenFlow provides CLI commands and configuration options for lane management:
+
+**Lane Configuration in `.lumenflow.config.yaml`:**
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
+
+    - name: 'Content: Documentation'
+      wip_limit: 4
+      wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
+      code_paths:
+        - 'docs/**'
+```
+
+**WIP Justification (WU-1187):**
+
+Philosophy: **If you need WIP > 1, you need better lanes, not higher limits.**
+
+When `wip_limit` is greater than 1, the `wip_justification` field is required. This is soft enforcement - a warning is logged at `wu:claim` time if missing, but it doesn't block the claim.
+
+**Lane Health Command (WU-1188):**
+
+```bash
+pnpm lane:health              # Run health check
+pnpm lane:health --json       # Output as JSON
+pnpm lane:health --verbose    # Show all checked files
+```
+
+Detects:
+- **Overlapping code_paths** - Files matched by multiple lane definitions
+- **Coverage gaps** - Code files not covered by any lane
+
+**Lane Suggest Command (WU-1189, WU-1190):**
+
+LLM-driven lane generation based on codebase context:
+
+```bash
+pnpm lane:suggest                       # Generate suggestions
+pnpm lane:suggest --dry-run             # Preview without LLM call
+pnpm lane:suggest --interactive         # Accept/skip/edit each
+pnpm lane:suggest --include-git         # Add git history context
+pnpm lane:suggest --output lanes.yaml   # Write to file
+```
+
+The `--include-git` flag extracts insights from git history:
+- Co-occurrence (files frequently changed together)
+- Ownership signals (primary contributors per area)
+- Churn hotspots (files with high change frequency)
+
+**Doctor and Gate Integration (WU-1191):**
+
+Lane health is integrated into:
+
+1. **`lumenflow doctor`** - Includes lane health in system health check
+2. **`pnpm gates`** - Configurable via `gates.lane_health`:
+
+```yaml
+gates:
+  lane_health: warn  # 'warn' | 'error' | 'off'
+```
+
+| Value   | Behavior                                   |
+| ------- | ------------------------------------------ |
+| `warn`  | Log warning if issues found (default)      |
+| `error` | Fail gates if issues found                 |
+| `off`   | Skip lane health check during gates        |
+
 **Parallel execution:** Every claimed WU runs inside its own Git worktree. `pnpm wu:claim` updates canonical state on `origin/main` using a push-only micro-worktree, creates the lane branch, and provisions `worktrees/<lane>-wu-xxx/` (override with flags if required). By default it pushes the lane branch to `origin` so other agents can see the claim. From that moment, the main checkout is read/review/admin only for that WU: browse code, run scripts, or apply a non-WU typo fix, but **ALL WU edits, staging, commits, and tests stay inside the worktree**. If a WU stalls beyond a working session, move it to `blocked` with `pnpm wu:block`; once the dependency clears, return it to `in_progress` with `pnpm wu:unblock`. On completion, `pnpm wu:done` runs gates, updates docs, stamps, pushes, and removes the worktree. See `./02-playbook.md` §4.4 for the full flow.
 
 **Worktree discipline (IMMUTABLE law):**
