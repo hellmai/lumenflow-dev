@@ -529,4 +529,42 @@ describe('lumenflow init command (WU-1045)', () => {
       expect(detected).toBeUndefined();
     });
   });
+
+  // WU-1177: Prerequisite checking (non-blocking)
+  describe('checkPrerequisites (WU-1177)', () => {
+    it('should check Node.js version', async () => {
+      const { checkPrerequisites } = await import('../src/init.js');
+      const result = checkPrerequisites();
+
+      expect(result.node).toBeDefined();
+      expect(result.node.version).toBeDefined();
+      expect(result.node.passed).toBeDefined();
+    });
+
+    it('should check pnpm version', async () => {
+      const { checkPrerequisites } = await import('../src/init.js');
+      const result = checkPrerequisites();
+
+      expect(result.pnpm).toBeDefined();
+      expect(result.pnpm.version).toBeDefined();
+      expect(result.pnpm.passed).toBeDefined();
+    });
+
+    it('should check git version', async () => {
+      const { checkPrerequisites } = await import('../src/init.js');
+      const result = checkPrerequisites();
+
+      expect(result.git).toBeDefined();
+      expect(result.git.version).toBeDefined();
+      expect(result.git.passed).toBeDefined();
+    });
+
+    it('should return all prerequisites even if some fail', async () => {
+      const { checkPrerequisites } = await import('../src/init.js');
+      const result = checkPrerequisites();
+
+      // Should have all three keys regardless of pass/fail
+      expect(Object.keys(result)).toEqual(expect.arrayContaining(['node', 'pnpm', 'git']));
+    });
+  });
 });
