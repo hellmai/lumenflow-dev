@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml) — Framework: CLI
 - [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — Framework: Core
