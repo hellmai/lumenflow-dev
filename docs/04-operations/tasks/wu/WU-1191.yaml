@@ -1,0 +1,36 @@
+id: WU-1191
+title: Doctor and gate integration for lane health
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/doctor.ts
+  - .lumenflow.config.yaml
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/doctor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1191.done
+dependencies: []
+initiative: INIT-006
+blocked_by:
+  - WU-1188
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Integrate lane:health into lumenflow doctor and add configurable gate. Advisory by default, configurable to blocking.
+acceptance:
+  - lumenflow doctor includes lane health check
+  - 'gates.lane_health: warn|error|off config option works'
+  - Gate runs during pnpm gates when enabled
