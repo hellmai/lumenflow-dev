@@ -355,3 +355,4 @@
 {"type":"complete","wuId":"WU-1185","timestamp":"2026-01-29T13:40:31.591Z"}
 {"type":"claim","wuId":"WU-1180","timestamp":"2026-01-29T13:45:48.728Z","lane":"Framework: CLI","title":"Standardize spawn progress signals and fix deprecated parseWUArgs"}
 {"type":"complete","wuId":"WU-1180","timestamp":"2026-01-29T13:54:43.492Z"}
+{"type":"claim","wuId":"WU-1186","lane":"Content: Documentation","title":"Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE","timestamp":"2026-01-29T13:55:02.084Z"}
