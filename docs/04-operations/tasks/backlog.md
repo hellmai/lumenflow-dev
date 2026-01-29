@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
