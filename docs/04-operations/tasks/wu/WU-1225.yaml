@@ -1,6 +1,6 @@
 id: WU-1225
 title: 'wu:edit: inconsistent default behavior for --code-paths vs --acceptance'
-lane: 'Framework: CLI'
+lane: 'Framework: Core'
 type: bug
 status: ready
 priority: P2
@@ -25,7 +25,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'UX inconsistency: --acceptance appends by default, --code-paths replaces by default. This is confusing and caused data loss when editing WU-1223. Both array options should have consistent behavior - either both append by default or both replace by default.'
+description: 'UX inconsistency: --acceptance appends by default, --code-paths replaces by default.
+  This is confusing and caused data loss when editing WU-1223. Both array options should have
+  consistent behavior - either both append by default or both replace by default.'
 acceptance:
   - --code-paths appends by default (matches --acceptance behavior)
   - --replace-code-paths flag added for explicit replacement
