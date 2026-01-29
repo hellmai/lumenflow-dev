@@ -2,14 +2,12 @@ id: WU-1192
 title: Consolidate wu-spawn prompt generation to single source of truth
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  # Note: initiative-orchestrator.ts removed - it already imports from Core and
-  # automatically benefits from the consolidated exports. No code changes needed there.
 tests:
   manual: []
   unit:
@@ -45,3 +43,5 @@ session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T14:29:00.210Z
+locked: true
+completed_at: 2026-01-29T14:50:06.541Z
