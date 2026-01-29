@@ -6,8 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/commands/doctor.ts
-  - packages/@lumenflow/cli/src/commands/init.ts
+  - packages/@lumenflow/cli/src/doctor.ts
+  - packages/@lumenflow/cli/src/init.ts
   - START-HERE.md
   - README.md
   - .clinerules
@@ -30,10 +30,17 @@ spec_refs:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T13:02:09.400Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1177
+session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:02:09.407Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -56,11 +63,3 @@ acceptance:
   - 'DOCS: Starlight quickstart updated'
   - 'DOCS: Vendor support matrix'
   - 'DOCS: CLI --help updated'
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1177
-claimed_at: 2026-01-29T13:02:09.400Z
-baseline_main_sha: d543d00598b5385fdac2d35eea3ea6098e0b1d36
-session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T13:02:09.407Z
