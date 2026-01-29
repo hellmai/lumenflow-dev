@@ -22,6 +22,20 @@ pnpm wu:spawn --id WU-XXXX --client windsurf
 
 The `--client windsurf` flag identifies Windsurf as your IDE environment, regardless of which AI model Windsurf is using.
 
+## Git Safety Wrapper
+
+Prefer using the LumenFlow git wrapper instead of raw `git`:
+
+```bash
+./scripts/safe-git <git args>
+```
+
+This blocks destructive operations like `git reset --hard`, `git clean -fd`, `git push --force`, and manual `git worktree remove`.
+
+Blocked actions are logged to:
+
+`./.beacon/safety-blocks.log`
+
 ## Key Reminders for Windsurf Users
 
 - Always work in the worktree, never main checkout

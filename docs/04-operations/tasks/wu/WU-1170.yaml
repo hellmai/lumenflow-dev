@@ -2,13 +2,24 @@ id: WU-1170
 title: 'Universal Agent Safety: Migrate Claude hooks to Husky/Scripts'
 lane: 'Framework: Core'
 type: feature
-status: done
+status: in_progress
 priority: P2
 created: 2026-01-28
 code_paths:
-  - packages/@lumenflow/cli/bin/safe-git
+  - scripts/hooks/scan-secrets.sh
+  - scripts/hooks/check-lockfile.sh
+  - scripts/hooks/validate-paths.sh
+  - scripts/hooks/validate-worktree-discipline.sh
+  - scripts/safe-git
+  - .husky/pre-commit
+  - LUMENFLOW.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
 tests:
-  manual: []
+  manual:
+    - 'Attempt to commit file with mock secret - BLOCKED'
+    - 'Attempt to commit file with absolute path - BLOCKED'
+    - 'Modify package.json without lockfile - BLOCKED'
+    - 'Commit to main with active worktree - BLOCKED'
   unit:
     - packages/@lumenflow/cli/src/__tests__/safe-git.test.ts
   e2e: []
@@ -34,6 +45,12 @@ acceptance:
   - Manual 'git worktree remove' via safe-git wrapper is blocked or warned
   - Generic 'git commit' with absolute paths is blocked by Husky hook
   - Safety mechanisms work for non-Claude agents
+  - Secret scanning blocks commits with AWS/GitHub/OpenAI keys (staged content, not working tree)
+  - Lockfile sync blocks dependency changes without pnpm-lock.yaml update
+  - Worktree discipline blocks main commits when worktrees exist
+  - Audit logging writes to .beacon/safety-blocks.log
+  - Internal docs updated: LUMENFLOW.md documents safety hooks
+  - Agent safety card updated with new hooks information
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1170
 claimed_at: 2026-01-28T22:50:06.787Z
@@ -42,5 +59,3 @@ session_id: 9866840b-b845-4343-a7f9-913a812401a1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-28T22:50:06.797Z
-locked: true
-completed_at: 2026-01-28T23:06:39.792Z

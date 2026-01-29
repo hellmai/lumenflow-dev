@@ -210,17 +210,17 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
   // Build actionable error message with wu:repair-claim guidance
   die(
     `❌ CLAIM METADATA VALIDATION FAILED (WU-1804)\n\n` +
-    `Cannot proceed with wu:done - the WU is not properly claimed.\n\n` +
-    `Issues detected:\n${errors.map((e) => `  - ${e}`).join('\n')}\n\n` +
-    `This typically happens when:\n` +
-    `  • A crash/rebase interrupted worktree creation\n` +
-    `  • The claim transaction was partially completed\n` +
-    `  • Another process modified the WU state\n\n` +
-    `Next step:\n` +
-    `  pnpm wu:repair-claim --id ${id}\n\n` +
-    `After repair, retry:\n` +
-    `  pnpm wu:done --id ${id}\n\n` +
-    `See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery options.`,
+      `Cannot proceed with wu:done - the WU is not properly claimed.\n\n` +
+      `Issues detected:\n${errors.map((e) => `  - ${e}`).join('\n')}\n\n` +
+      `This typically happens when:\n` +
+      `  • A crash/rebase interrupted worktree creation\n` +
+      `  • The claim transaction was partially completed\n` +
+      `  • Another process modified the WU state\n\n` +
+      `Next step:\n` +
+      `  pnpm wu:repair-claim --id ${id}\n\n` +
+      `After repair, retry:\n` +
+      `  pnpm wu:done --id ${id}\n\n` +
+      `See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery options.`,
   );
 }
 
@@ -257,7 +257,7 @@ export function printExposureWarnings(wu: Record<string, unknown>, options: Expo
     }
     console.log(
       `${LOG_PREFIX.DONE} These are non-blocking warnings. ` +
-      `To skip, use --skip-exposure-check flag.\n`,
+        `To skip, use --skip-exposure-check flag.\n`,
     );
   }
 }
@@ -296,9 +296,9 @@ export function validateAccessibilityOrDie(
     );
     die(
       `❌ FEATURE ACCESSIBILITY VALIDATION FAILED (WU-2022)\n\n` +
-      `Cannot complete wu:done - UI feature accessibility not verified.\n\n` +
-      `${result.errors.join('\n\n')}\n\n` +
-      `This gate prevents "orphaned code" - features that exist but users cannot access.`,
+        `Cannot complete wu:done - UI feature accessibility not verified.\n\n` +
+        `${result.errors.join('\n\n')}\n\n` +
+        `This gate prevents "orphaned code" - features that exist but users cannot access.`,
     );
   }
 }
@@ -378,15 +378,15 @@ export function validateDocsOnlyFlag(
     valid: false,
     errors: [
       `--docs-only flag used on ${wuId} but WU is not documentation-focused.\n\n` +
-      `Current exposure: ${currentExposure}\n` +
-      `Current type: ${currentType}\n\n` +
-      `--docs-only requires one of:\n` +
-      `  1. exposure: documentation\n` +
-      `  2. type: documentation\n` +
-      `  3. All code_paths under docs/, ai/, .claude/, or *.md files\n\n` +
-      `To fix, either:\n` +
-      `  - Remove --docs-only flag and run full gates\n` +
-      `  - Change WU exposure to 'documentation' if this is truly a docs-only change`,
+        `Current exposure: ${currentExposure}\n` +
+        `Current type: ${currentType}\n\n` +
+        `--docs-only requires one of:\n` +
+        `  1. exposure: documentation\n` +
+        `  2. type: documentation\n` +
+        `  3. All code_paths under docs/, ai/, .claude/, or *.md files\n\n` +
+        `To fix, either:\n` +
+        `  - Remove --docs-only flag and run full gates\n` +
+        `  - Change WU exposure to 'documentation' if this is truly a docs-only change`,
     ],
   };
 }
@@ -432,10 +432,10 @@ async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   } catch (err) {
     die(
       `Cannot read WU state store for ${id}.\n\n` +
-      `Path: ${eventsPath}\n\n` +
-      `Error: ${err.message}\n\n` +
-      `If this WU was claimed on an older tool version or the event log is missing/corrupt,\n` +
-      `repair the worktree state store before rerunning wu:done.`,
+        `Path: ${eventsPath}\n\n` +
+        `Error: ${err.message}\n\n` +
+        `If this WU was claimed on an older tool version or the event log is missing/corrupt,\n` +
+        `repair the worktree state store before rerunning wu:done.`,
     );
   }
 
@@ -443,9 +443,9 @@ async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   if (!inProgress.has(id)) {
     die(
       `WU ${id} is not in_progress in the worktree state store.\n\n` +
-      `Path: ${eventsPath}\n\n` +
-      `This will fail later when wu:done tries to append a complete event and regenerate backlog/status.\n` +
-      `Fix the claim/state log first, then rerun wu:done.`,
+        `Path: ${eventsPath}\n\n` +
+        `This will fail later when wu:done tries to append a complete event and regenerate backlog/status.\n` +
+        `Fix the claim/state log first, then rerun wu:done.`,
     );
   }
 }
@@ -639,9 +639,9 @@ export async function isBranchAlreadyMerged(branch) {
       // Emergency fix Session 2: Use GIT.SHA_SHORT_LENGTH constant
       console.log(
         `${LOG_PREFIX.DONE} ${EMOJI.INFO} Branch ${branch} is already merged to main\n` +
-        `         Branch tip: ${branchTip.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
-        `         Merge-base: ${mergeBase.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
-        `         Main HEAD:  ${mainHead.substring(0, GIT.SHA_SHORT_LENGTH)}`,
+          `         Branch tip: ${branchTip.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
+          `         Merge-base: ${mergeBase.substring(0, GIT.SHA_SHORT_LENGTH)}\n` +
+          `         Main HEAD:  ${mainHead.substring(0, GIT.SHA_SHORT_LENGTH)}`,
       );
       return true;
     }
@@ -737,19 +737,19 @@ async function ensureCleanWorkingTree() {
   if (status.trim()) {
     die(
       `Working tree is not clean. Cannot proceed with wu:done.\n\n` +
-      `Uncommitted changes in main checkout:\n${status}\n\n` +
-      `⚠️  CRITICAL: These may be another agent's work!\n\n` +
-      `Before proceeding:\n` +
-      `1. Check if these are YOUR changes (forgot to commit in main)\n` +
-      `   → If yes: Commit them now, then retry wu:done\n\n` +
-      `2. Check if these are ANOTHER AGENT's changes\n` +
-      `   → If yes: STOP. Coordinate with user before proceeding\n` +
-      `   → NEVER remove another agent's uncommitted work\n\n` +
-      `Multi-agent coordination: See CLAUDE.md §2.2\n\n` +
-      `Common causes:\n` +
-      `  - You forgot to commit changes before claiming a different WU\n` +
-      `  - Another agent is actively working in main checkout\n` +
-      `  - Leftover changes from previous session`,
+        `Uncommitted changes in main checkout:\n${status}\n\n` +
+        `⚠️  CRITICAL: These may be another agent's work!\n\n` +
+        `Before proceeding:\n` +
+        `1. Check if these are YOUR changes (forgot to commit in main)\n` +
+        `   → If yes: Commit them now, then retry wu:done\n\n` +
+        `2. Check if these are ANOTHER AGENT's changes\n` +
+        `   → If yes: STOP. Coordinate with user before proceeding\n` +
+        `   → NEVER remove another agent's uncommitted work\n\n` +
+        `Multi-agent coordination: See CLAUDE.md §2.2\n\n` +
+        `Common causes:\n` +
+        `  - You forgot to commit changes before claiming a different WU\n` +
+        `  - Another agent is actively working in main checkout\n` +
+        `  - Leftover changes from previous session`,
     );
   }
 }
@@ -945,17 +945,17 @@ async function ensureMainUpToDate() {
 
       die(
         `Main branch is out of sync with ${REMOTES.ORIGIN}.\n\n` +
-        `Local ${BRANCHES.MAIN} is ${behind} commits behind and ${ahead} commits ahead of ${REMOTES.ORIGIN}/${BRANCHES.MAIN}.\n\n` +
-        `Update main before running wu:done:\n` +
-        `  git pull origin main\n` +
-        `  # Then retry:\n` +
-        `  pnpm wu:done --id ${process.argv.find((a) => a.startsWith('WU-')) || 'WU-XXX'}\n\n` +
-        `This prevents fast-forward merge failures during wu:done completion.\n\n` +
-        `Why this happens:\n` +
-        `  - Another agent completed a WU and pushed to main\n` +
-        `  - Your main checkout is now behind origin/main\n` +
-        `  - The fast-forward merge will fail without updating first\n\n` +
-        `Multi-agent coordination: See CLAUDE.md §2.7`,
+          `Local ${BRANCHES.MAIN} is ${behind} commits behind and ${ahead} commits ahead of ${REMOTES.ORIGIN}/${BRANCHES.MAIN}.\n\n` +
+          `Update main before running wu:done:\n` +
+          `  git pull origin main\n` +
+          `  # Then retry:\n` +
+          `  pnpm wu:done --id ${process.argv.find((a) => a.startsWith('WU-')) || 'WU-XXX'}\n\n` +
+          `This prevents fast-forward merge failures during wu:done completion.\n\n` +
+          `Why this happens:\n` +
+          `  - Another agent completed a WU and pushed to main\n` +
+          `  - Your main checkout is now behind origin/main\n` +
+          `  - The fast-forward merge will fail without updating first\n\n` +
+          `Multi-agent coordination: See CLAUDE.md §2.7`,
       );
     }
 
@@ -1163,27 +1163,27 @@ function checkNodeModulesStaleness(worktreePath) {
         if (packageJsonStat.mtimeMs > nodeModulesStat.mtimeMs) {
           console.log(
             `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WARNING: Potentially stale node_modules detected\n\n` +
-            `  package.json in worktree differs from main checkout\n` +
-            `  node_modules was last modified: ${nodeModulesStat.mtime.toISOString()}\n` +
-            `  package.json was last modified: ${packageJsonStat.mtime.toISOString()}\n\n` +
-            `  If gates fail with missing dependencies/types, run:\n` +
-            `    cd ${worktreePath}\n` +
-            `    pnpm install\n` +
-            `    cd -\n` +
-            `    pnpm wu:done --id <WU-ID>\n`,
+              `  package.json in worktree differs from main checkout\n` +
+              `  node_modules was last modified: ${nodeModulesStat.mtime.toISOString()}\n` +
+              `  package.json was last modified: ${packageJsonStat.mtime.toISOString()}\n\n` +
+              `  If gates fail with missing dependencies/types, run:\n` +
+              `    cd ${worktreePath}\n` +
+              `    pnpm install\n` +
+              `    cd -\n` +
+              `    pnpm wu:done --id <WU-ID>\n`,
           );
         }
       } else {
         // node_modules doesn't exist at all
         console.log(
           `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WARNING: node_modules missing in worktree\n\n` +
-          `  package.json in worktree differs from main checkout\n` +
-          `  but node_modules directory does not exist\n\n` +
-          `  If gates fail with missing dependencies/types, run:\n` +
-          `    cd ${worktreePath}\n` +
-          `    pnpm install\n` +
-          `    cd -\n` +
-          `    pnpm wu:done --id <WU-ID>\n`,
+            `  package.json in worktree differs from main checkout\n` +
+            `  but node_modules directory does not exist\n\n` +
+            `  If gates fail with missing dependencies/types, run:\n` +
+            `    cd ${worktreePath}\n` +
+            `    pnpm install\n` +
+            `    cd -\n` +
+            `    pnpm wu:done --id <WU-ID>\n`,
         );
       }
     }
@@ -1552,7 +1552,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
     if (!hasJustification) {
       die(
         '--allow-todo flag requires justification in WU YAML notes field.\n' +
-        'Add a note explaining why TODOs are acceptable for this WU.',
+          'Add a note explaining why TODOs are acceptable for this WU.',
       );
     }
   }
@@ -1798,11 +1798,11 @@ async function executePreFlightChecks({
   if (!approvalResult.valid) {
     die(
       `❌ Approval gates not satisfied:\n\n${approvalResult.errors.map((e) => `  - ${e}`).join(STRING_LITERALS.NEWLINE)}\n\n` +
-      `📋 To fix:\n` +
-      `   1. Request approval from the required role(s)\n` +
-      `   2. Add their email(s) to the 'approved_by' field in the WU YAML\n` +
-      `   3. Re-run: pnpm wu:done --id ${id}\n\n` +
-      `   See docs/04-operations/governance/project-governance.md for role definitions.`,
+        `📋 To fix:\n` +
+        `   1. Request approval from the required role(s)\n` +
+        `   2. Add their email(s) to the 'approved_by' field in the WU YAML\n` +
+        `   3. Re-run: pnpm wu:done --id ${id}\n\n` +
+        `   See docs/04-operations/governance/project-governance.md for role definitions.`,
     );
   }
   // Log advisory warnings (non-blocking)
@@ -1857,7 +1857,7 @@ async function executePreFlightChecks({
       .join(STRING_LITERALS.NEWLINE);
     die(
       `Pre-existing inconsistencies for ${id}:\n${errors}\n\n` +
-      `Fix with: pnpm wu:repair --id ${id}`,
+        `Fix with: pnpm wu:repair --id ${id}`,
     );
   }
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU state consistency check passed`);
@@ -1940,7 +1940,7 @@ async function executePreFlightChecks({
             console.error(rebaseResult.error);
             die(
               `WU-1584: Auto-rebase failed after detecting parallel completions.\n` +
-              `Manual resolution required - see instructions above.`,
+                `Manual resolution required - see instructions above.`,
             );
           }
         }
@@ -2034,13 +2034,13 @@ async function executePreFlightChecks({
     specResult.errors.forEach((err) => console.error(`  - ${err}`));
     console.error(
       `\nFix these issues before running wu:done:\n` +
-      `  1. Update docs/04-operations/tasks/wu/${id}.yaml\n` +
-      `  2. Fill description with Context/Problem/Solution\n` +
-      `  3. Replace ${PLACEHOLDER_SENTINEL} text with specific criteria\n` +
-      `  4. List all modified files in code_paths\n` +
-      `  5. Add at least one test path (unit, e2e, integration, or manual)\n` +
-      `  6. Re-run: pnpm wu:done --id ${id}\n\n` +
-      `See: CLAUDE.md §2.7 "WUs are specs, not code"\n`,
+        `  1. Update docs/04-operations/tasks/wu/${id}.yaml\n` +
+        `  2. Fill description with Context/Problem/Solution\n` +
+        `  3. Replace ${PLACEHOLDER_SENTINEL} text with specific criteria\n` +
+        `  4. List all modified files in code_paths\n` +
+        `  5. Add at least one test path (unit, e2e, integration, or manual)\n` +
+        `  6. Re-run: pnpm wu:done --id ${id}\n\n` +
+        `See: CLAUDE.md §2.7 "WUs are specs, not code"\n`,
     );
     die(`Cannot mark ${id} as done - spec incomplete`);
   }
@@ -2300,8 +2300,8 @@ async function executeGates({
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
-      `If the worktree was removed, recreate it and retry, or rerun with --branch-only when the lane branch exists.\n` +
-      `Use --skip-gates only with justification.`,
+        `If the worktree was removed, recreate it and retry, or rerun with --branch-only when the lane branch exists.\n` +
+        `Use --skip-gates only with justification.`,
     );
   }
 
@@ -2583,7 +2583,7 @@ async function main() {
         try {
           const lane = docMain.lane;
           if (lane) releaseLaneLock(lane, { wuId: id });
-        } catch { }
+        } catch {}
         process.exit(EXIT_CODES.SUCCESS);
       }
     } catch (err) {
@@ -2591,7 +2591,7 @@ async function main() {
       try {
         const lane = docMain.lane;
         if (lane) releaseLaneLock(lane, { wuId: id });
-      } catch { }
+      } catch {}
 
       // WU-1811: Check if cleanup is safe before removing worktree
       // If cleanupSafe is false (or undefined), preserve worktree for recovery

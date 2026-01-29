@@ -66,6 +66,18 @@ pnpm wu:done --id WU-XXXX
 
 ---
 
+## Universal Agent Safety (WU-1170)
+
+LumenFlow enforces safety at the repository level so protections apply to all agents and humans.
+
+- **Git wrapper**: `scripts/safe-git` blocks destructive operations (e.g. `worktree remove`, `reset --hard`, `clean -fd`, `push --force`).
+- **Husky hooks**: staged secret scanning, absolute-path scanning, lockfile sync, and worktree discipline.
+- **Audit logs**:
+  - `.beacon/safety-blocks.log`
+  - `.beacon/force-bypasses.log`
+
+---
+
 ## Global State
 
 Canonical global state is defined by:
@@ -158,7 +170,7 @@ When validation fails, commands provide copy-paste ready fix commands:
 ERROR: WRONG_LOCATION - wu:done must be run from main checkout
 
 FIX: Run this command:
-  cd /home/user/repo && pnpm wu:done --id WU-1090
+  cd <repo-root> && pnpm wu:done --id WU-1090
 ```
 
 Configure validation behavior in `.lumenflow.config.yaml`:

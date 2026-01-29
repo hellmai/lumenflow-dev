@@ -44,6 +44,35 @@ Quick reference for AI agents working in LumenFlow projects.
 
 ---
 
+## Universal Safety Mechanisms
+
+### Git Safety Wrapper
+
+Use `scripts/safe-git` instead of system `git` when possible.
+
+It blocks:
+
+- `git worktree remove`
+- `git reset --hard`
+- `git clean -fd`
+- `git push --force`
+
+### Repo Hooks (Husky)
+
+These run for everyone:
+
+- Secret scanning on staged content
+- Absolute path scanning on staged content
+- Lockfile sync checks
+- Worktree discipline checks
+
+Audit logs:
+
+- `.beacon/safety-blocks.log` (blocked safety actions)
+- `.beacon/force-bypasses.log` (LUMENFLOW_FORCE bypasses)
+
+---
+
 ## Error Handling
 
 ### Max 3 Attempts
