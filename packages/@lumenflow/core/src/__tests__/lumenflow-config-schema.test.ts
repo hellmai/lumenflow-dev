@@ -13,11 +13,14 @@ import { describe, it, expect } from 'vitest';
 
 import {
   ProgressSignalsConfigSchema,
+  EventArchivalConfigSchema,
   MemoryConfigSchema,
+  LegacyPathsSchema,
   LumenFlowConfigSchema,
   parseConfig,
   getDefaultConfig,
   type ProgressSignalsConfig,
+  type EventArchivalConfig,
   type MemoryConfig,
 } from '../lumenflow-config-schema.js';
 
@@ -216,6 +219,96 @@ describe('WU-1203: Progress Signals Config Schema', () => {
       // progress_signals should be optional and undefined by default
       expect(config.memory).toBeDefined();
       // Not including progress_signals in defaults keeps backwards compatibility
+    });
+  });
+
+  describe('WU-1207: Event Archival Config Schema', () => {
+    // 90 days in milliseconds
+    const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
+
+    describe('EventArchivalConfigSchema defaults', () => {
+      it('should have archiveAfter defaulting to 90 days', () => {
+        const result = EventArchivalConfigSchema.safeParse({});
+
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.archiveAfter).toBe(NINETY_DAYS_MS);
+        }
+      });
+
+      it('should have keepArchives defaulting to true', () => {
+        const result = EventArchivalConfigSchema.safeParse({});
+
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.keepArchives).toBe(true);
+        }
+      });
+
+      it('should accept custom archiveAfter value', () => {
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        const result = EventArchivalConfigSchema.safeParse({
+          archiveAfter: thirtyDays,
+        });
+
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.archiveAfter).toBe(thirtyDays);
+        }
+      });
+
+      it('should reject non-positive archiveAfter', () => {
+        const result = EventArchivalConfigSchema.safeParse({
+          archiveAfter: 0,
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject non-boolean keepArchives', () => {
+        const result = EventArchivalConfigSchema.safeParse({
+          keepArchives: 'true',
+        });
+        expect(result.success).toBe(false);
+      });
+    });
+
+    describe('LegacyPathsSchema with eventArchival', () => {
+      it('should include eventArchival in legacy paths', () => {
+        const result = LegacyPathsSchema.safeParse({});
+
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.eventArchival).toBeDefined();
+          expect(result.data.eventArchival.archiveAfter).toBe(NINETY_DAYS_MS);
+          expect(result.data.eventArchival.keepArchives).toBe(true);
+        }
+      });
+
+      it('should accept custom eventArchival configuration', () => {
+        const result = LegacyPathsSchema.safeParse({
+          eventArchival: {
+            archiveAfter: 60 * 24 * 60 * 60 * 1000, // 60 days
+            keepArchives: false,
+          },
+        });
+
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.eventArchival.archiveAfter).toBe(60 * 24 * 60 * 60 * 1000);
+          expect(result.data.eventArchival.keepArchives).toBe(false);
+        }
+      });
+    });
+
+    describe('Type safety', () => {
+      it('should infer correct EventArchivalConfig type', () => {
+        const _config: EventArchivalConfig = {
+          archiveAfter: NINETY_DAYS_MS,
+          keepArchives: true,
+        };
+
+        expect(_config.archiveAfter).toBe(NINETY_DAYS_MS);
+      });
     });
   });
 
