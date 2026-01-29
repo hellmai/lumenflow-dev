@@ -51,10 +51,13 @@ coverage/
 /.lumenflow/skip-gates-audit.log
 /.lumenflow/checkpoints/
 /.lumenflow/force-bypasses.log
-# LumenFlow locks anywhere (lane locking system)
+# LumenFlow runtime dirs anywhere (prevents worktree/nested package dirt)
 **/.lumenflow/locks/
-# Ignore all memory directories anywhere to prevent worktree dirt
 **/.lumenflow/memory/
+**/.lumenflow/telemetry/
+**/.lumenflow/sessions/
+**/.lumenflow/checkpoints/
+**/.lumenflow/artifacts/
 
 # Legacy .beacon paths (deprecated, kept for transition)
 /.beacon/state/*.backup*

@@ -68,6 +68,7 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `mem-summarize`       | Rollup older memory nodes into summary nodes for compaction |
 | `mem-triage`          | Review discovery nodes and promote to WUs or archive        |
 | `session-coordinator` | Manage agent sessions for WU work coordination              |
+| `signal-cleanup`      | Prune old signals based on TTL policy to prevent growth     |
 
 ### Initiative Orchestration
 
@@ -134,6 +135,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `lumenflow-sync-templates` | Sync internal docs to CLI templates                       |
 | `lumenflow-upgrade`        | Upgrade all @lumenflow/\* packages to a specified version |
 | `state-bootstrap`          | One-time migration utility for state sourcing             |
+| `state-cleanup`            | Unified cleanup: signals, memory, and event archival      |
+| `state-doctor`             | Check state integrity and detect inconsistencies          |
+| `lumenflow-doctor`         | Alias for `state-doctor`                                  |
 | `sync-templates`           | Alias for `lumenflow-sync-templates`                      |
 
 ### File & Git Operations
