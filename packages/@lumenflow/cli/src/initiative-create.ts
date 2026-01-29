@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Initiative Create Helper (WU-1247, WU-1439)
  *
@@ -39,6 +40,8 @@ import {
   INIT_COMMIT_FORMATS,
   INIT_DEFAULTS,
 } from '@lumenflow/initiatives/dist/initiative-constants.js';
+// WU-1211: Import initiative validation for completeness warnings
+import { validateInitiativeCompleteness } from '@lumenflow/initiatives/dist/initiative-validation.js';
 import { FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
@@ -203,6 +206,25 @@ async function main() {
     console.log(`  Title:  ${args.title}`);
     console.log(`  Status: ${INIT_DEFAULTS.STATUS}`);
     console.log(`  File:   ${INIT_PATHS.INITIATIVE(args.id)}`);
+
+    // WU-1211: Check completeness and emit warnings
+    const initContent = {
+      id: args.id,
+      slug: args.slug,
+      title: args.title,
+      description: '',
+      status: INIT_DEFAULTS.STATUS,
+      phases: [],
+      success_metrics: [],
+    };
+    const completenessResult = validateInitiativeCompleteness(initContent);
+    if (completenessResult.warnings.length > 0) {
+      console.log(`\n${LOG_PREFIX} ⚠️  Incomplete initiative - missing recommended fields:`);
+      for (const warning of completenessResult.warnings) {
+        console.log(`  - ${warning}`);
+      }
+    }
+
     console.log(`\nNext steps:`);
     console.log(`  1. Edit ${args.id}.yaml to add description, phases, and success_metrics`);
     console.log(`  2. Link WUs to this initiative: pnpm wu:create --initiative ${args.id} ...`);
