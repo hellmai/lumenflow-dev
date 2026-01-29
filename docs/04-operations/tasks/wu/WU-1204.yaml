@@ -2,7 +2,7 @@ id: WU-1204
 title: Add signal TTL cleanup to prevent unbounded growth
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -27,10 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Signals in .lumenflow/memory/signals.jsonl grow unbounded. Add TTL-based cleanup with configurable retention (7d read, 30d unread, 500 max). Reuse existing mem-cleanup-core.ts patterns.
+description: Signals in .lumenflow/memory/signals.jsonl grow unbounded. Add TTL-based cleanup with
+  configurable retention (7d read, 30d unread, 500 max). Reuse existing mem-cleanup-core.ts
+  patterns.
 acceptance:
   - SignalCleanupConfigSchema added to lumenflow-config-schema.ts with ttl, unreadTtl, maxEntries
   - signal-cleanup-core.ts implements cleanupSignals() with TTL and count-based pruning
   - CLI command pnpm signal:cleanup with --dry-run and --ttl options
   - Active WU signals (in_progress/blocked) are always retained
   - Tests cover TTL expiration, count limits, and active WU protection
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1204
+claimed_at: 2026-01-29T20:21:12.232Z
+baseline_main_sha: 705d29925e3c70affb757d9ae8e82960b99aa048
+session_id: 6a7bd798-f77a-4ae8-a906-08a0fe926ab3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T20:21:12.238Z

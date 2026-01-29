@@ -388,3 +388,4 @@
 {"type":"claim","wuId":"WU-1178","timestamp":"2026-01-29T19:46:17.035Z","lane":"Content: Documentation","title":"Document automatic CLI/config docs generation system"}
 {"type":"complete","wuId":"WU-1178","timestamp":"2026-01-29T19:49:23.665Z"}
 {"type":"claim","wuId":"WU-1203","lane":"Framework: Core","title":"Add configurable progress signals to memory config","timestamp":"2026-01-29T20:09:39.721Z"}
+{"type":"claim","wuId":"WU-1204","lane":"Framework: Memory","title":"Add signal TTL cleanup to prevent unbounded growth","timestamp":"2026-01-29T20:21:12.247Z"}
