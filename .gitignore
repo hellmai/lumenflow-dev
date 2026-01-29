@@ -25,6 +25,9 @@ pnpm-debug.log*
 coverage/
 .vitest/
 
+# Linting cache
+.eslintcache
+
 # Turbo
 .turbo/
 
