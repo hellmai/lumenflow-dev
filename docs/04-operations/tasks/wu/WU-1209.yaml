@@ -2,7 +2,7 @@ id: WU-1209
 title: Add state:doctor command for integrity checks
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -30,7 +30,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Detect orphaned WUs, dangling signals, broken memory relationships. Inspired by Beads bd doctor command. Provide --fix for safe auto-repair.
+description: Detect orphaned WUs, dangling signals, broken memory relationships. Inspired by Beads
+  bd doctor command. Provide --fix for safe auto-repair.
 acceptance:
   - CLI command pnpm state:doctor runs all integrity checks
   - Detects orphaned WUs (done status but no stamp)
@@ -38,3 +39,11 @@ acceptance:
   - Detects broken memory relationships and events for missing WU specs
   - --fix flag auto-repairs safe issues (e.g., remove dangling signals)
   - Human-readable output with actionable suggestions
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1209
+claimed_at: 2026-01-29T22:29:02.711Z
+baseline_main_sha: 5cfafa79b1e1b10cb4ca32c49365d21dceef78f9
+session_id: 198c182d-88d5-48d6-a197-b0b01a648e93
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T22:29:02.719Z
