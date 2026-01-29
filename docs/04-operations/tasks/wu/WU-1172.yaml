@@ -6,10 +6,17 @@ status: ready
 priority: P1
 created: 2026-01-29
 code_paths:
+  - scripts/safe-git
+  - scripts/hooks/check-lockfile.sh
+  - scripts/hooks/validate-paths.sh
+  - scripts/hooks/scan-secrets.sh
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
   - apps/docs/src/content/docs/guides/agent-onboarding.mdx
 tests:
   manual:
     - Without LUMENFLOW_FORCE - operations still BLOCKED
+    - With LUMENFLOW_FORCE=1 - operations proceed with audit log entry
+    - With LUMENFLOW_FORCE=1 without REASON - warning printed
   unit:
     - packages/@lumenflow/cli/src/__tests__/safe-git.test.ts
   e2e: []
@@ -18,6 +25,7 @@ artifacts:
 dependencies: []
 spec_refs:
   - WU-1170
+  - lumenflow://plans/WU-1177-friction-free-onboarding.md
 risks: []
 notes: ''
 requires_review: false
