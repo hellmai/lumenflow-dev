@@ -1,5 +1,6 @@
 /**
  * WU-2241: Cleanup Lock Module
+ * WU-1174: Lock files moved to temp directory to avoid polluting main checkout
  *
  * Provides atomic locking mechanism for wu:done cleanup operations
  * to prevent race conditions during concurrent worktree/branch cleanup.
@@ -10,6 +11,7 @@
  * - Zombie lock detection (PID not running)
  * - Idempotent re-acquisition for same WU
  * - Guaranteed cleanup via withCleanupLock wrapper
+ * - Lock files stored in temp directory (not main checkout)
  *
  * Lock ordering (WU-2241):
  *   Lane lock (phase-scoped) -> Merge lock -> Cleanup lock -> State store lock
@@ -77,19 +79,31 @@ const LOCK_POLL_INTERVAL_MS = 500;
  * Options for lock file operations
  */
 interface BaseDirOptions {
-  /** Base directory (defaults to cwd) */
+  /**
+   * Base directory override (for testing only)
+   *
+   * WU-1174: In production, locks are always stored in LUMENFLOW_PATHS.LOCK_DIR
+   * (a temp directory). This option allows tests to use isolated directories.
+   */
   baseDir?: string;
 }
 
 /**
  * Get the path to the cleanup lock file
  *
+ * WU-1174: Lock files are stored in a temp directory to avoid polluting
+ * the main checkout. The baseDir option is only for testing isolation.
+ *
  * @param {BaseDirOptions} [options]
  * @returns {string} Path to lock file
  */
 function getLockPath(options: BaseDirOptions = {}) {
-  const baseDir = options.baseDir || process.cwd();
-  return path.join(baseDir, LUMENFLOW_PATHS.BASE, LOCK_FILE_NAME);
+  // WU-1174: Use temp directory for locks (not main checkout's .lumenflow/)
+  // baseDir is only used for test isolation
+  const lockDir = options.baseDir
+    ? path.join(options.baseDir, '.lumenflow-locks')
+    : LUMENFLOW_PATHS.LOCK_DIR;
+  return path.join(lockDir, LOCK_FILE_NAME);
 }
 
 /**
@@ -216,9 +230,10 @@ export function getCleanupLockInfo(options: BaseDirOptions = {}) {
  */
 function tryAtomicLockCreate(lockInfo, options) {
   const lockPath = getLockPath(options);
-  const beaconDir = path.dirname(lockPath);
-  if (!existsSync(beaconDir)) {
-    mkdirSync(beaconDir, { recursive: true });
+  const lockDir = path.dirname(lockPath);
+  // WU-1174: Ensure lock directory exists (temp directory, not .lumenflow/)
+  if (!existsSync(lockDir)) {
+    mkdirSync(lockDir, { recursive: true });
   }
 
   try {
