@@ -5,14 +5,25 @@ import { EXIT_CODES } from './wu-constants.js';
 /**
  * Collector function for Commander.js repeatable options.
  * Accumulates multiple flag values into an array.
+ * Also supports comma-separated values for backwards compatibility.
  *
- * @param {string} value - New value from CLI
+ * WU-1173: All array flags now support both patterns:
+ * - Repeatable: --flag a --flag b
+ * - Comma-separated: --flag a,b
+ * - Mixed: --flag a,b --flag c
+ *
+ * @param {string} value - New value from CLI (may be comma-separated)
  * @param {string[]} previous - Previously accumulated values
- * @returns {string[]} Updated array with new value appended
+ * @returns {string[]} Updated array with new value(s) appended
  * @see https://github.com/tj/commander.js#custom-option-processing
  */
-function collectRepeatable(value, previous) {
-  return previous.concat([value]);
+function collectRepeatable(value: string, previous: string[]): string[] {
+  // Split on comma to support both comma-separated and repeatable patterns
+  const values = value
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
+  return previous.concat(values);
 }
 
 /**
@@ -233,17 +244,20 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   blockedBy: {
     name: 'blockedBy',
     flags: '--blocked-by <wuIds>',
-    description: 'Comma-separated WU IDs that block this WU',
+    description: 'WU IDs that block this WU (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   blocks: {
     name: 'blocks',
     flags: '--blocks <wuIds>',
-    description: 'Comma-separated WU IDs this WU blocks',
+    description: 'WU IDs this WU blocks (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   labels: {
     name: 'labels',
     flags: '--labels <labels>',
-    description: 'Comma-separated labels',
+    description: 'Labels (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   slug: {
     name: 'slug',
@@ -341,22 +355,26 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   codePaths: {
     name: 'codePaths',
     flags: '--code-paths <paths>',
-    description: 'Code paths (comma-separated)',
+    description: 'Code paths (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   testPathsManual: {
     name: 'testPathsManual',
     flags: '--test-paths-manual <tests>',
-    description: 'Manual test descriptions (comma-separated)',
+    description: 'Manual test descriptions (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   testPathsUnit: {
     name: 'testPathsUnit',
     flags: '--test-paths-unit <paths>',
-    description: 'Unit test file paths (comma-separated)',
+    description: 'Unit test file paths (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   testPathsE2e: {
     name: 'testPathsE2e',
     flags: '--test-paths-e2e <paths>',
-    description: 'E2E test file paths (comma-separated)',
+    description: 'E2E test file paths (repeatable or comma-separated)',
+    isRepeatable: true,
   },
   validate: {
     name: 'validate',
@@ -368,7 +386,8 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   specRefs: {
     name: 'specRefs',
     flags: '--spec-refs <paths>',
-    description: 'Spec/plan references (comma-separated paths to docs, required for type: feature)',
+    description: 'Spec/plan references (repeatable or comma-separated, required for type: feature)',
+    isRepeatable: true,
   },
 
   // WU-1998: Exposure field options
@@ -385,7 +404,9 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   uiPairingWus: {
     name: 'uiPairingWus',
     flags: '--ui-pairing-wus <wuIds>',
-    description: 'Comma-separated UI WU IDs that consume this API (for api exposure)',
+    description:
+      'UI WU IDs that consume this API (repeatable or comma-separated, for api exposure)',
+    isRepeatable: true,
   },
 
   // WU-1577: Thinking mode options for wu:spawn

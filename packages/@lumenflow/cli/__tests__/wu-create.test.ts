@@ -12,10 +12,11 @@ describe('wu:create spec validation (WU-1043)', () => {
       description:
         'Context: test context that exceeds minimum length.\nProblem: test problem statement.\nSolution: test solution statement.',
       acceptance: ['Acceptance criterion'],
-      codePaths: 'packages/@lumenflow/cli/src/wu-create.ts',
-      testPathsUnit: 'packages/@lumenflow/cli/__tests__/wu-create.test.ts',
+      // WU-1173: codePaths is now an array (supports repeatable pattern)
+      codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+      testPathsUnit: ['packages/@lumenflow/cli/__tests__/wu-create.test.ts'],
       exposure: 'backend-only',
-      specRefs: 'docs/04-operations/plans/WU-9999-plan.md',
+      specRefs: ['docs/04-operations/plans/WU-9999-plan.md'],
     },
   };
 
@@ -63,5 +64,58 @@ describe('wu:create spec validation (WU-1043)', () => {
 
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
+  });
+
+  // WU-1173: Array flags should support both repeatable and comma-separated patterns
+  describe('array flag patterns (WU-1173)', () => {
+    it('accepts codePaths as array (repeatable pattern)', () => {
+      const result = validateCreateSpec({
+        ...baseArgs,
+        opts: {
+          ...baseArgs.opts,
+          codePaths: ['src/a.ts', 'src/b.ts'],
+        },
+      });
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('accepts testPathsUnit as array (repeatable pattern)', () => {
+      const result = validateCreateSpec({
+        ...baseArgs,
+        opts: {
+          ...baseArgs.opts,
+          testPathsUnit: ['tests/a.test.ts', 'tests/b.test.ts'],
+        },
+      });
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('accepts specRefs as array (repeatable pattern)', () => {
+      const result = validateCreateSpec({
+        ...baseArgs,
+        opts: {
+          ...baseArgs.opts,
+          specRefs: ['docs/plan-a.md', 'docs/plan-b.md'],
+        },
+      });
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('accepts multiple test path types as arrays', () => {
+      const result = validateCreateSpec({
+        ...baseArgs,
+        opts: {
+          ...baseArgs.opts,
+          testPathsManual: ['Manual test 1', 'Manual test 2'],
+          testPathsUnit: ['unit/a.test.ts'],
+          testPathsE2e: ['e2e/a.spec.ts'],
+        },
+      });
+
+      expect(result.valid).toBe(true);
+    });
   });
 });
