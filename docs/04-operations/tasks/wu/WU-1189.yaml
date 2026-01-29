@@ -1,0 +1,37 @@
+id: WU-1189
+title: 'lane:suggest command: LLM-driven lane generation'
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/lane-suggest.ts
+  - packages/@lumenflow/core/src/lane-suggest-prompt.ts
+  - packages/@lumenflow/cli/package.json
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/lane-suggest.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1189.done
+dependencies: []
+initiative: INIT-006
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: New CLI command that uses LLM to suggest lane definitions based on codebase context (docs, structure, packages). Not hardcoded heuristics - lane boundaries are semantic and context-dependent.
+acceptance:
+  - pnpm lane:suggest gathers context and prompts LLM
+  - Returns structured suggestions with rationale
+  - --interactive mode for accept/skip/edit
+  - --dry-run shows what would be suggested without LLM call
+  - Works without existing config (greenfield projects)
