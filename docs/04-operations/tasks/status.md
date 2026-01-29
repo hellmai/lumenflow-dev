@@ -1,12 +1,14 @@
 # Work Unit Status
 
-_Last updated: 2026-01-28_
+_Last updated: 2026-01-29_
 
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1170 — Universal Agent Safety: Migrate Claude hooks to Husky/Scripts](wu/WU-1170.yaml)
+- [WU-1171 — Universal Agent Onboarding: AGENTS.md + Merge Mode](wu/WU-1171.yaml)
 
 ## Completed
 
