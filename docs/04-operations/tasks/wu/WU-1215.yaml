@@ -2,7 +2,7 @@ id: WU-1215
 title: Update distribution gitignore with complete recursive patterns
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The distribution-dogfooding.md plan has incomplete gitignore entries. Missing telemetry, checkpoints, artifacts dirs and recursive ** patterns for nested packages.
+description: The distribution-dogfooding.md plan has incomplete gitignore entries. Missing
+  telemetry, checkpoints, artifacts dirs and recursive ** patterns for nested packages.
 acceptance:
   - distribution-dogfooding.md includes all runtime dirs
   - Recursive ** patterns documented for nested package support
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1215
+claimed_at: 2026-01-29T23:21:58.489Z
+baseline_main_sha: 1dd7a0be2214259ccd1f576977095735eaabf295
+session_id: 355e4d27-dc48-4261-aeee-567f2e93cb9b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:21:58.493Z
