@@ -2,7 +2,7 @@ id: WU-1193
 title: 'Orchestration cleanup: fix constants, rename init:plan, remove ghost commands'
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -79,3 +79,5 @@ acceptance:
   - All skill templates in packages/@lumenflow/cli/templates/ updated
   - Starlight CLI reference updated (apps/docs/src/content/docs/reference/cli.mdx)
   - All gates pass (pnpm gates)
+locked: true
+completed_at: 2026-01-29T14:59:27.656Z
