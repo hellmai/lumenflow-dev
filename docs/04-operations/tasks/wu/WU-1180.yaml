@@ -2,7 +2,7 @@ id: WU-1180
 title: Standardize spawn progress signals and fix deprecated parseWUArgs
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -43,3 +43,5 @@ acceptance:
   - wu-preflight.ts uses createWUParser instead of deprecated parseWUArgs
   - wu-preflight.ts has proper --help output from Commander
   - All existing tests pass (pnpm gates --docs-only not applicable, full gates required)
+locked: true
+completed_at: 2026-01-29T13:54:41.797Z
