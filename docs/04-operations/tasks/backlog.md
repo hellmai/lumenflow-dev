@@ -28,7 +28,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
-- [WU-1206 — Add progress_signals example to .lumenflow.config.yaml](wu/WU-1206.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -227,3 +226,4 @@ sections:
 - [WU-1198 — Documentation: Lane tooling and WIP enforcement](wu/WU-1198.yaml)
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml)
 - [WU-1203 — Add configurable progress signals to memory config](wu/WU-1203.yaml)
+- [WU-1206 — Add progress_signals example to .lumenflow.config.yaml](wu/WU-1206.yaml)
