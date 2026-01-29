@@ -2,7 +2,7 @@ id: WU-1173
 title: 'wu:create: Inconsistent array flag patterns cause user errors'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Array flags in wu:create have inconsistent input patterns. --acceptance is repeatable while --code-paths and --test-paths-* are comma-separated. This causes user errors when agents or humans expect consistent behavior. All array flags should support both patterns.
+description: Array flags in wu:create have inconsistent input patterns. --acceptance is repeatable
+  while --code-paths and --test-paths-* are comma-separated. This causes user errors when agents or
+  humans expect consistent behavior. All array flags should support both patterns.
 acceptance:
   - All array flags support repeatable pattern (--flag a --flag b)
   - All array flags support comma-separated pattern (--flag a,b)
   - Help text documents both patterns consistently
   - Existing comma-separated usage continues to work (backwards compatible)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1173
+claimed_at: 2026-01-29T12:11:51.949Z
+baseline_main_sha: c9f27752519918940f86d389886ff838d7f83ed9
+session_id: b15842df-688a-4fa5-b819-5ee982c7969c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T12:11:51.956Z
