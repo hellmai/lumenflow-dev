@@ -6,15 +6,14 @@ status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/cli/src/arg-parser.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
 tests:
   manual:
     - pnpm wu:create with --code-paths a --code-paths b works
-    - pnpm wu:create with --code-paths a
-    - b works
+    - pnpm wu:create with --code-paths a,b works
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-create.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1173.done
