@@ -3,6 +3,7 @@ import {
   generateTaskInvocation,
   generateCodexPrompt,
   generateTestGuidance,
+  generateAgentCoordinationSection,
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
 } from '../dist/wu-spawn.js';
@@ -552,6 +553,66 @@ describe('wu-spawn worktree block recovery guidance (WU-1134)', () => {
 
       expect(output).toContain('node packages/@lumenflow/agent/dist/agent-verification.js WU-1155');
       expect(output).not.toContain('tools/lib/agent-verification');
+    });
+  });
+});
+
+describe('wu-spawn progress signals (WU-1180)', () => {
+  const id = 'WU-TEST';
+
+  describe('generateAgentCoordinationSection', () => {
+    it('uses "Required at Milestones" instead of "Optional" for progress signals', () => {
+      const section = generateAgentCoordinationSection(id);
+
+      // Should NOT contain the old "Optional" heading
+      expect(section).not.toContain('### Progress Signals (Optional)');
+
+      // Should contain the new "Required at Milestones" heading
+      expect(section).toContain('### Progress Signals (Required at Milestones)');
+    });
+
+    it('includes clear guidance on when to signal', () => {
+      const section = generateAgentCoordinationSection(id);
+
+      // Should have guidance about when milestones should trigger signals
+      expect(section).toContain('Signal at these milestones');
+    });
+
+    it('includes milestone examples', () => {
+      const section = generateAgentCoordinationSection(id);
+
+      // Should include examples of milestones
+      expect(section).toMatch(/acceptance criterion/i);
+      expect(section).toMatch(/tests.*pass/i);
+    });
+  });
+
+  describe('task invocation progress signals', () => {
+    const mockDoc = {
+      title: 'Test WU',
+      lane: 'Framework: CLI',
+      type: 'feature',
+      status: 'in_progress',
+      code_paths: ['src/foo.ts'],
+      acceptance: ['Criteria 1'],
+      description: 'Description',
+      worktree_path: 'worktrees/test',
+    };
+
+    const config = {
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+    };
+
+    it('includes Required at Milestones guidance in spawn output', () => {
+      const strategy = new GenericStrategy();
+      const parsedConfig = LumenFlowConfigSchema.parse(config);
+      const output = generateTaskInvocation(mockDoc, id, strategy, { config: parsedConfig });
+
+      expect(output).toContain('Required at Milestones');
+      expect(output).not.toContain('(Optional)');
     });
   });
 });

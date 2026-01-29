@@ -78,4 +78,36 @@ describe('CLI subprocess error handling', () => {
       expect(result.stderr.length + result.stdout.length).toBeGreaterThan(0);
     });
   });
+
+  describe('wu-preflight (WU-1180)', () => {
+    it('should show proper Commander help when --help is passed', () => {
+      const result = runCLI('wu-preflight', ['--help']);
+
+      // Help should work
+      expect(result.code).toBe(0);
+      expect(result.stdout).toContain('Usage');
+      expect(result.stdout).toContain('Options');
+      // Should have the standard Commander format with -h, --help
+      expect(result.stdout).toMatch(/-h,\s*--help/);
+    });
+
+    it('should show proper Commander help format with option descriptions', () => {
+      const result = runCLI('wu-preflight', ['--help']);
+
+      expect(result.code).toBe(0);
+      // Should include option descriptions in Commander format
+      expect(result.stdout).toContain('--id');
+      expect(result.stdout).toContain('--worktree');
+    });
+
+    it('should exit with non-zero code when required --id option is missing', () => {
+      const result = runCLI('wu-preflight', []);
+
+      // Should NOT exit 0 (silent failure)
+      expect(result.code).not.toBe(0);
+
+      // Should have some error output
+      expect(result.stderr.length + result.stdout.length).toBeGreaterThan(0);
+    });
+  });
 });

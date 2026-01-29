@@ -705,10 +705,13 @@ This format enables orchestrator to track progress across waves.`;
 }
 
 /**
- * Generate agent coordination section (WU-1987)
+ * Generate agent coordination section (WU-1987, WU-1180)
  *
  * Provides guidance on mem:signal for parallel agent coordination,
  * orchestrate:status for dashboard checks, and abandoned WU handling.
+ *
+ * WU-1180: Changed "Progress Signals (Optional)" to "Progress Signals (Required at Milestones)"
+ * with clear guidance on when to signal. This improves orchestrator visibility.
  *
  * @param {string} id - WU ID
  * @returns {string} Agent coordination section
@@ -735,12 +738,18 @@ pnpm mem:inbox --since 30m
 manually signal completion - just run \`wu:done\` and orchestrators will
 see your signal via \`mem:inbox\`.
 
-### Progress Signals (Optional)
+### Progress Signals (Required at Milestones)
 
-For long-running work, send progress signals at milestones:
+**Signal at these milestones** to enable orchestrator visibility:
+
+1. **After each acceptance criterion completed** - helps track progress
+2. **When tests first pass** - indicates implementation is working
+3. **Before running gates** - signals imminent completion
+4. **When blocked** - allows orchestrator to re-allocate or assist
 
 \`\`\`bash
-pnpm mem:signal "50% complete: tests passing, implementing adapter" --wu ${id}
+pnpm mem:signal "AC1 complete: tests passing for feature X" --wu ${id}
+pnpm mem:signal "All tests passing, running gates" --wu ${id}
 pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
 \`\`\`
 

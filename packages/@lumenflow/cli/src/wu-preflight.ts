@@ -5,6 +5,9 @@
  * WU-1803: Fast validation of code_paths and test paths before gates run.
  * Completes in under 5 seconds vs 2+ minutes for full gates.
  *
+ * WU-1180: Migrated from deprecated parseWUArgs to createWUParser for
+ * proper Commander --help output and consistency with other WU commands.
+ *
  * This catches YAML mismatches early, preventing wasted time running full
  * gates only to fail on code_paths validation at the end of wu:done.
  *
@@ -18,9 +21,8 @@
  *   - WU YAML schema is valid
  */
 
-import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-import { parseWUArgs } from '@lumenflow/core/dist/arg-parser.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import {
   validatePreflight,
   formatPreflightResult,
@@ -28,84 +30,15 @@ import {
 import { PATTERNS, EXIT_CODES, LOG_PREFIX, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
 import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';
+import { die } from '@lumenflow/core/dist/error-handler.js';
 /* eslint-disable security/detect-non-literal-fs-filename */
-
-/**
- * Parse command-line arguments
- * @param {string[]} argv - Process arguments
- * @returns {object} Parsed arguments
- */
-function parseArgs(argv) {
-  const args = parseWUArgs(argv);
-
-  // Handle help
-  if (args.help) {
-    return { help: true };
-  }
-
-  // Validate WU ID
-  if (!args.id) {
-    return { error: 'Missing required argument: --id WU-XXX' };
-  }
-
-  const id = args.id.toUpperCase();
-  if (!PATTERNS.WU_ID.test(id)) {
-    return { error: `Invalid WU ID format: ${args.id}. Expected WU-NNN` };
-  }
-
-  return {
-    id,
-    worktree: args.worktree || null,
-    help: false,
-  };
-}
-
-/**
- * Display help message
- */
-function showHelp() {
-  console.log(`
-WU Preflight Validation - Fast code_paths and test paths check
-
-Usage:
-  pnpm wu:preflight --id WU-XXX [OPTIONS]
-
-Options:
-  --id <WU-ID>           WU ID to validate (required)
-  --worktree <path>      Worktree path to validate files in (auto-detected if not provided)
-  --help, -h             Show this help
-
-Description:
-  Validates code_paths and test file paths exist BEFORE running full gates.
-  Completes in under 5 seconds vs 2+ minutes for gates.
-
-  This prevents wasting time running full gates only to fail on
-  code_paths validation at the end of wu:done.
-
-Checks performed:
-  ${EMOJI.SUCCESS} code_paths files exist in worktree/main
-  ${EMOJI.SUCCESS} Test file paths exist (unit, e2e, integration)
-  ${EMOJI.SUCCESS} WU YAML schema is valid (required fields present)
-  ${EMOJI.SUCCESS} Manual tests are skipped (descriptions, not files)
-
-Recommended workflow:
-  1. Implement feature/fix
-  2. Run: pnpm wu:preflight --id WU-XXX  (fast check)
-  3. Run: pnpm gates                      (full validation)
-  4. Run: pnpm wu:done --id WU-XXX        (complete WU)
-
-Example:
-  pnpm wu:preflight --id WU-1803
-  pnpm wu:preflight --id WU-1803 --worktree worktrees/operations-gates-wu-1803
-`);
-}
 
 /**
  * Detect worktree path from WU YAML or calculate from lane
  * @param {string} id - WU ID
  * @returns {string|null} Worktree path or null if not found
  */
-function detectWorktreePath(id) {
+function detectWorktreePath(id: string): string | null {
   const wuPath = WU_PATHS.WU(id);
 
   if (!existsSync(wuPath)) {
@@ -131,28 +64,28 @@ function detectWorktreePath(id) {
  */
 async function main() {
   const PREFIX = LOG_PREFIX.PREFLIGHT;
-  const args = parseArgs(process.argv);
 
-  // Handle help
-  if (args.help) {
-    showHelp();
-    process.exit(EXIT_CODES.SUCCESS);
+  // WU-1180: Use createWUParser for proper Commander help output
+  const args = createWUParser({
+    name: 'wu-preflight',
+    description:
+      'Fast validation of code_paths and test paths before gates run. ' +
+      'Completes in under 5 seconds vs 2+ minutes for full gates.',
+    options: [WU_OPTIONS.id, WU_OPTIONS.worktree],
+    required: ['id'],
+    allowPositionalId: true,
+  });
+
+  const id = args.id.toUpperCase();
+  if (!PATTERNS.WU_ID.test(id)) {
+    die(`Invalid WU ID format: ${args.id}. Expected WU-NNN`);
   }
-
-  // Handle parse errors
-  if (args.error) {
-    console.error(`${PREFIX} ${EMOJI.FAILURE} ${args.error}`);
-    console.error(`${PREFIX} Run: pnpm wu:preflight --help for usage`);
-    process.exit(EXIT_CODES.ERROR);
-  }
-
-  const { id, worktree } = args;
 
   console.log(`${PREFIX} Preflight Validation for ${id}`);
   console.log(`${PREFIX} ${'='.repeat(30)}\n`);
 
   // Determine worktree path
-  let worktreePath = worktree;
+  let worktreePath = args.worktree || null;
   if (!worktreePath) {
     worktreePath = detectWorktreePath(id);
     if (worktreePath) {
@@ -185,10 +118,13 @@ async function main() {
 }
 
 // Guard main() for testability
+// WU-1071: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   runCLI(main);
 }
 
 // Export for testing
-export { parseArgs, detectWorktreePath };
+export { detectWorktreePath };
