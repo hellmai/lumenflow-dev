@@ -1,0 +1,37 @@
+id: WU-1173
+title: 'wu:create: Inconsistent array flag patterns cause user errors'
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/arg-parser.ts
+tests:
+  manual:
+    - pnpm wu:create with --code-paths a --code-paths b works
+    - pnpm wu:create with --code-paths a
+    - b works
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1173.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Array flags in wu:create have inconsistent input patterns. --acceptance is repeatable while --code-paths and --test-paths-* are comma-separated. This causes user errors when agents or humans expect consistent behavior. All array flags should support both patterns.
+acceptance:
+  - All array flags support repeatable pattern (--flag a --flag b)
+  - All array flags support comma-separated pattern (--flag a,b)
+  - Help text documents both patterns consistently
+  - Existing comma-separated usage continues to work (backwards compatible)
