@@ -98,7 +98,7 @@ Spawn fresh agent when:
 
 - Current context >80% exhausted
 - Task is independent and parallelizable
-- Need specialized agent (security-auditor, code-reviewer)
+- Need specialized agent (e.g., code-reviewer, test-engineer)
 - Switching to different WU scope
 
 Keep in current context when:

@@ -15,10 +15,14 @@ import picocolors from 'picocolors';
 /**
  * Mandatory agent trigger patterns.
  * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
+ *
+ * Note: For LumenFlow framework development, this is empty since we don't have
+ * application-specific concerns like PII, auth, or RLS. Projects using LumenFlow
+ * should configure their own triggers based on their domain requirements.
  */
-const MANDATORY_TRIGGERS = {
-  'security-auditor': ['supabase/migrations/**', '**/auth/**', '**/rls/**', '**/permissions/**'],
-  'legacy-guardian': ['**/prompts/**', '**/classification/**', '**/detector/**', '**/llm/**'],
+const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
+  // No mandatory triggers for LumenFlow framework development.
+  // Projects should configure their own triggers based on their domain.
 };
 
 /**
@@ -80,7 +84,7 @@ export function emitMandatoryAgentAdvisory(codePaths, wuId) {
   }
 
   console.log('');
-  console.log(picocolors.gray(`Run: pnpm orchestrate:suggest --wu ${wuId}`));
+  console.log(picocolors.gray(`Run: pnpm orchestrate:monitor to check agent status`));
   console.log(picocolors.yellow(horizontalLine));
   console.log('');
 }

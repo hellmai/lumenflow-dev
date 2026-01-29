@@ -51,8 +51,8 @@ Task({ subagent_type: 'test-engineer', run_in_background: true, prompt: '...' })
 ## Handling Abandoned WUs
 
 ```bash
-# Check dashboard for abandoned work
-pnpm orchestrate:status
+# Monitor for stuck agents
+pnpm orchestrate:monitor
 
 # Review checkpoints
 pnpm mem:ready --wu WU-XXX

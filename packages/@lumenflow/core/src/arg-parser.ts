@@ -441,7 +441,7 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     name: 'requireAgents',
     flags: '--require-agents',
     description:
-      'Block wu:done if mandatory agents (security-auditor, legacy-guardian) were not invoked for WUs touching their trigger paths',
+      'Block wu:done if mandatory agents (configured in MANDATORY_TRIGGERS) were not invoked for WUs touching their trigger paths',
   },
 
   // WU-2411: Agent handoff for crashed/killed agents

@@ -74,11 +74,14 @@ export { TRUNCATION_WARNING_BANNER, SPAWN_END_SENTINEL, generateTestGuidance };
 
 /**
  * Mandatory agent trigger patterns.
- * Mirrors MANDATORY_TRIGGERS from orchestration-advisory-loader.ts.
+ * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
+ *
+ * Note: For LumenFlow framework development, this is empty since we don't have
+ * application-specific concerns like PII, auth, or RLS. Projects using LumenFlow
+ * should configure their own triggers based on their domain requirements.
  */
-const MANDATORY_TRIGGERS = {
-  'security-auditor': ['supabase/migrations/**', '**/auth/**', '**/rls/**', '**/permissions/**'],
-  'legacy-guardian': ['**/prompts/**', '**/classification/**', '**/detector/**', '**/llm/**'],
+const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
+  // No mandatory triggers for LumenFlow framework development.
 };
 
 const LOG_PREFIX = '[wu:spawn]';
@@ -459,7 +462,7 @@ Based on code_paths, the following agents MUST be invoked:
 
 ${agentList}
 
-Run: pnpm orchestrate:suggest --wu ${id}
+Run: pnpm orchestrate:monitor to check agent status
 `;
 }
 
@@ -586,7 +589,7 @@ This format enables orchestrator to track progress across waves.`;
  * Generate agent coordination section (WU-1987, WU-1180)
  *
  * Provides guidance on mem:signal for parallel agent coordination,
- * orchestrate:status for dashboard checks, and abandoned WU handling.
+ * orchestrate:monitor for dashboard checks, and abandoned WU handling.
  *
  * WU-1180: Changed "Progress Signals (Optional)" to "Progress Signals (Required at Milestones)"
  * with clear guidance on when to signal. This improves orchestrator visibility.
@@ -678,7 +681,7 @@ If you encounter a "worktree required" or "commit blocked" error:
 1. **Check existing worktrees**: \`git worktree list\`
 2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
 3. **Retry your operation** from within the worktree
-4. **Use relative paths only** (never absolute paths)
+4. **Use relative paths only** (never absolute paths starting with /)
 
 ### Common Causes
 
@@ -1079,7 +1082,7 @@ ${thinkingBlock}${skillsSection}
 - **Code Quality**: No string literals, no magic numbers, no brittle regexes when libraries exist
 - **Worktree Discipline**: ALWAYS use \`pnpm wu:claim\` to create worktrees (never \`git worktree add\` directly). Work ONLY in the worktree, never edit main
 - **Documentation**: Update tooling docs if changing tools. Keep docs in sync with code
-- **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents (security-auditor for PII/auth, legacy-guardian for LLM/prompts)
+- **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents as configured for your project
 
 ${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
