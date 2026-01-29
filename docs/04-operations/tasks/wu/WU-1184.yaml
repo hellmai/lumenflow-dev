@@ -2,7 +2,7 @@ id: WU-1184
 title: Fix pre-existing lint errors in init.ts
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,6 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1177 revealed pre-existing lint errors in init.ts. Problem: The file contains 41 lint errors including unused functions (parseVendorArg, parseFrameworkArg, parsePresetArg), no-console violations, and duplicate string literals. Solution: Remove dead code, add eslint-disable comments for legitimate CLI console output, and extract duplicate strings.'
+description: 'Context: WU-1177 revealed pre-existing lint errors in init.ts. Problem: The file
+  contains 41 lint errors including unused functions (parseVendorArg, parseFrameworkArg,
+  parsePresetArg), no-console violations, and duplicate string literals. Solution: Remove dead code,
+  add eslint-disable comments for legitimate CLI console output, and extract duplicate strings.'
 acceptance:
   - No lint errors in packages/@lumenflow/cli/src/init.ts
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1184
+claimed_at: 2026-01-29T13:35:07.928Z
+baseline_main_sha: e90075af62e00e8152de925330b856169ea329d0
+session_id: ac9228fd-3a50-483c-8ec9-70e6e4fd159c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:35:07.935Z
