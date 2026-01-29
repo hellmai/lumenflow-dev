@@ -48,6 +48,7 @@
     "mem:signal": "node packages/@lumenflow/cli/dist/mem-signal.js",
     "mem:cleanup": "node packages/@lumenflow/cli/dist/mem-cleanup.js",
     "signal:cleanup": "node packages/@lumenflow/cli/dist/signal-cleanup.js",
+    "state:cleanup": "node packages/@lumenflow/cli/dist/state-cleanup.js",
     "mem:create": "node packages/@lumenflow/cli/dist/mem-create.js",
     "mem:inbox": "node packages/@lumenflow/cli/dist/mem-inbox.js",
     "mem:summarize": "node packages/@lumenflow/cli/dist/mem-summarize.js",
