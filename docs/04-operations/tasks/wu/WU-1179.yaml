@@ -1,0 +1,34 @@
+id: WU-1179
+title: Fix micro-worktree push race leaving main diverged
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/core/src/micro-worktree.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1179.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: When wu:create or other micro-worktree operations push to origin/main and fail because origin advanced (race condition with parallel agents), the local main is left diverged from origin. The merge succeeded but push failed, and no rollback occurs. This causes friction requiring manual rebase/conflict resolution.
+acceptance:
+  - withMicroWorktree fetches origin/main before starting
+  - On push failure, local main is rolled back to origin/main
+  - After rollback, operation retries (fetch -> rebase temp branch -> merge -> push)
+  - MAX_PUSH_RETRIES constant added (suggest 3)
+  - Unit tests cover push failure + retry scenario
