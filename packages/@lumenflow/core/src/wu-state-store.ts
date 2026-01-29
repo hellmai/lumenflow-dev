@@ -475,7 +475,7 @@ export class WUStateStore {
    * @example
    * await store.checkpoint('WU-1748', 'Completed worktree scanner', {
    *   progress: 'Scanner implemented and tests passing',
-   *   nextSteps: 'Integrate into orchestrate:status'
+   *   nextSteps: 'Integrate into orchestrate:monitor'
    * });
    */
   async checkpoint(wuId: string, note: string, options: CheckpointOptions = {}): Promise<void> {

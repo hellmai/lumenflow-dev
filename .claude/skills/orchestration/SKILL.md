@@ -17,7 +17,7 @@ Activate this skill when:
 - Monitoring spawned agents for stuck/crashed states
 - Debugging spawn failures or zombie lane locks
 
-**Use skill first**: Run `pnpm orchestrate:status` and `pnpm orchestrate:suggest --wu <your-wu-id>`.
+**Use skill first**: Run `pnpm orchestrate:monitor` and `pnpm orchestrate:init-status -i <initiative-id>`.
 
 ## ⛔ MANDATORY: Never Spawn Task Agents Directly
 
@@ -93,11 +93,8 @@ If spawn output is truncated, sub-agents will:
 ## Commands
 
 ```bash
-# Dashboard status
-pnpm orchestrate:status
-
-# Suggestions for a WU
-pnpm orchestrate:suggest --wu WU-XXX
+# Initiative status (compact progress view)
+pnpm orchestrate:init-status -i INIT-001
 
 # Initiative execution
 pnpm orchestrate:initiative --initiative INIT-001 --dry-run   # Show plan
@@ -217,12 +214,13 @@ pnpm wu:spawn --id WU-XXX
 
 ```
 Starting WU?
-├── Run: pnpm orchestrate:suggest --wu WU-XXX
-└── Review agent recommendations
+├── Run: pnpm wu:spawn --id WU-XXX
+└── Review generated prompt with agent recommendations
 
 Initiative with multiple WUs?
 ├── Run: pnpm orchestrate:initiative -i INIT-XXX --dry-run
-└── Review wave plan, then execute
+├── Review wave plan
+└── Run: pnpm orchestrate:init-status -i INIT-XXX for progress
 
 Agent appears stuck or crashed?
 ├── Run: pnpm orchestrate:monitor

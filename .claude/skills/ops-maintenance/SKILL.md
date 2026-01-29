@@ -125,7 +125,7 @@ Identifies WUs that block the most downstream work:
 - **Critical path**: Longest chain of dependencies (schedule risk)
 - **Bottleneck ranking**: Prioritise completing these for maximum unblocking
 
-Use with `orchestrate:suggest` which incorporates impact scores into WU recommendations, or `orchestrate:initiative` which highlights bottlenecks in execution plans.
+Use with `orchestrate:initiative` which highlights bottlenecks in execution plans, or `orchestrate:monitor` to track agent progress.
 
 ## Validation Commands
 

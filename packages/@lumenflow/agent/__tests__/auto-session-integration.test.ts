@@ -5,7 +5,7 @@
  * 1. wu:claim auto-starts an agent session (calls startSession from lib/agent-session.mjs)
  * 2. wu:done auto-ends the active session (calls endSession)
  * 3. Session ID is stored in WU YAML under session_id field during claim
- * 4. orchestrate:status shows active sessions per WU
+ * 4. orchestrate:monitor shows active sessions per WU
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { existsSync, rmSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';

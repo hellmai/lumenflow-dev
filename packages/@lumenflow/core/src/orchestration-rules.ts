@@ -92,9 +92,11 @@ function generateWUSuggestions(wu, nextId) {
   const suggestions = [];
 
   // Check for pending mandatory agents (HIGH priority)
-  const mandatoryAgents = ['security-auditor', 'beacon-guardian'];
+  // Note: For LumenFlow framework development, MANDATORY_TRIGGERS is empty.
+  // Projects using LumenFlow can configure their own mandatory agents.
+  const mandatoryAgentNames = Object.keys(MANDATORY_TRIGGERS);
 
-  for (const agentName of mandatoryAgents) {
+  for (const agentName of mandatoryAgentNames) {
     if (wu.agents[agentName] === 'pending') {
       suggestions.push({
         id: `sug-${nextId().toString().padStart(3, '0')}`,
@@ -142,10 +144,16 @@ function generateWUSuggestions(wu, nextId) {
 /**
  * WU-1542: Agent trigger descriptions for error messages.
  * Maps agent names to human-readable descriptions of their trigger patterns.
+ *
+ * Note: For LumenFlow framework development, this is empty since we don't have
+ * application-specific mandatory agents. Projects using LumenFlow should
+ * configure their own trigger descriptions based on their domain requirements.
  */
-const AGENT_TRIGGER_DESCRIPTIONS = {
-  'security-auditor': 'supabase/migrations/**, **/auth/**, **/rls/**, **/permissions/**',
-  'beacon-guardian': '**/prompts/**, **/classification/**, **/detector/**, **/llm/**',
+const AGENT_TRIGGER_DESCRIPTIONS: Record<string, string> = {
+  // No mandatory agent triggers for LumenFlow framework development.
+  // Example for application-specific triggers:
+  // 'security-auditor': 'supabase/migrations/**, auth/**, rls/**',
+  // 'beacon-guardian': 'prompts/**, llm/**',
 };
 
 /**
@@ -186,10 +194,10 @@ export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths)
   lines.push('');
   lines.push('Required action:');
   lines.push('  1. Invoke the required agents BEFORE calling wu:done');
-  lines.push('  2. For security-auditor: Review PHI/auth/RLS implications');
-  lines.push('  3. For beacon-guardian: Validate LLM/prompt compliance');
+  lines.push('  2. Check your project\'s mandatory agent configuration');
+  lines.push('  3. Consult agent documentation for compliance requirements');
   lines.push('');
-  lines.push('To bypass (NOT RECOMMENDED for PHI/auth work):');
+  lines.push('To bypass (only if appropriate for your project):');
   lines.push('  Remove --require-agents flag from wu:done command');
   lines.push('');
   lines.push(
