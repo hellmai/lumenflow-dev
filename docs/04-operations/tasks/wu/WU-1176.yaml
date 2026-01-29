@@ -1,0 +1,31 @@
+id: WU-1176
+title: Add .eslintcache to .gitignore and untrack
+lane: 'Operations: CI/CD'
+type: chore
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - .gitignore
+tests:
+  manual:
+    - Run eslint and verify .eslintcache changes don't appear in git status
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1176.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The .eslintcache file is currently tracked by git, causing wu:done cleanup failures when the cache changes during operations. Cache files should not be version controlled.
+acceptance:
+  - .eslintcache is listed in .gitignore
+  - .eslintcache is no longer tracked by git
