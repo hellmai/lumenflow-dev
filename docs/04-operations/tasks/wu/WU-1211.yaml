@@ -2,7 +2,7 @@ id: WU-1211
 title: Add initiative completeness validation
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -44,3 +44,5 @@ session_id: 198c182d-88d5-48d6-a197-b0b01a648e93
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T22:30:00.014Z
+locked: true
+completed_at: 2026-01-29T22:44:50.008Z
