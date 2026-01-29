@@ -51,3 +51,12 @@ acceptance:
   - wu:prep prints copy-paste 'cd main && wu:done --id' instruction
   - wu:done from main only does merge + cleanup (no gates/docs)
   - wu:done from worktree errors with 'use wu:prep instead' message
+  - 'Starlight docs: cli.mdx updated with wu:prep command reference'
+  - 'Starlight docs: new wu-prep-workflow.mdx guide page'
+  - 'Agent onboarding: troubleshooting-wu-done.md updated for wu:prep'
+  - 'Agent onboarding: quick-ref-commands.md updated with wu:prep'
+  - 'Agent onboarding: first-wu-mistakes.md updated for new workflow'
+  - CLAUDE.md quick start updated for wu:prep workflow
+  - AGENTS.md universal entry point updated
+  - Skill wu-lifecycle.md updated with wu:prep
+  - Spawn prompt templates updated to use wu:prep workflow
