@@ -15,10 +15,10 @@
 set -euo pipefail
 
 # Configuration
-REPO_ROOT=$(git rev-parse --show-toplevel)
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 WORKTREES_DIR="${REPO_ROOT}/worktrees"
-AUDIT_LOG_DIR="${REPO_ROOT}/audit"
-AUDIT_LOG="${AUDIT_LOG_DIR}/main-write-blocks.log"
+AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
+AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
 
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
