@@ -48,6 +48,7 @@ import {
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/dist/wu-spawn-helpers.js';
 import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Type is used in JSDoc comments
 import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import type { ClientConfig } from '@lumenflow/core/dist/lumenflow-config-schema.js';
@@ -63,14 +64,21 @@ import {
 } from '@lumenflow/core/dist/dependency-validator.js';
 
 // WU-1192: Import prompt generation from Core (single source of truth)
+// WU-1203: Import generateAgentCoordinationSection from core for config-driven progress signals
 import {
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
   generateTestGuidance,
+  generateAgentCoordinationSection,
 } from '@lumenflow/core/dist/wu-spawn.js';
 
 // Re-export for backwards compatibility
-export { TRUNCATION_WARNING_BANNER, SPAWN_END_SENTINEL, generateTestGuidance };
+export {
+  TRUNCATION_WARNING_BANNER,
+  SPAWN_END_SENTINEL,
+  generateTestGuidance,
+  generateAgentCoordinationSection,
+};
 
 /**
  * Mandatory agent trigger patterns.
@@ -261,7 +269,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.paths) {
-    lines.push(`**Paths:** ${inv.paths.map((p) => `\`${p}\``).join(', ')}`);
+    const formattedPaths = inv.paths.map((p) => `\`${p}\``).join(', ');
+    lines.push(`**Paths:** ${formattedPaths}`);
   }
 
   // WU-2254: forbidden-import specific fields
@@ -270,7 +279,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.cannot_import && Array.isArray(inv.cannot_import)) {
-    lines.push(`**Cannot Import:** ${inv.cannot_import.map((m) => `\`${m}\``).join(', ')}`);
+    const formattedImports = inv.cannot_import.map((m) => `\`${m}\``).join(', ');
+    lines.push(`**Cannot Import:** ${formattedImports}`);
   }
 
   // WU-2254: required-pattern specific fields
@@ -283,7 +293,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.scope && Array.isArray(inv.scope)) {
-    lines.push(`**Scope:** ${inv.scope.map((s) => `\`${s}\``).join(', ')}`);
+    const formattedScope = inv.scope.map((s) => `\`${s}\``).join(', ');
+    lines.push(`**Scope:** ${formattedScope}`);
   }
 
   lines.push('');
@@ -446,10 +457,10 @@ function generateCodexConstraints(id) {
  * Generate mandatory agent advisory section
  *
  * @param {string[]} mandatoryAgents - Array of mandatory agent names
- * @param {string} id - WU ID
+ * @param {string} _id - WU ID (reserved for future use)
  * @returns {string} Mandatory agent section or empty string
  */
-function generateMandatoryAgentSection(mandatoryAgents, id) {
+function generateMandatoryAgentSection(mandatoryAgents, _id) {
   if (mandatoryAgents.length === 0) {
     return '';
   }
@@ -585,63 +596,8 @@ When finishing, provide structured output:
 This format enables orchestrator to track progress across waves.`;
 }
 
-/**
- * Generate agent coordination section (WU-1987, WU-1180)
- *
- * Provides guidance on mem:signal for parallel agent coordination,
- * orchestrate:monitor for dashboard checks, and abandoned WU handling.
- *
- * WU-1180: Changed "Progress Signals (Optional)" to "Progress Signals (Required at Milestones)"
- * with clear guidance on when to signal. This improves orchestrator visibility.
- *
- * @param {string} id - WU ID
- * @returns {string} Agent coordination section
- */
-export function generateAgentCoordinationSection(id) {
-  return `## Agent Coordination (Parallel Work)
-
-### ⚠️ CRITICAL: Use mem:signal, NOT TaskOutput
-
-**DO NOT** use TaskOutput to check agent progress - it returns full transcripts
-and causes "prompt too long" errors. Always use the memory layer instead:
-
-\`\`\`bash
-# ✅ CORRECT: Compact signals (~6 lines)
-pnpm mem:inbox --since 30m
-
-# ❌ WRONG: Full transcripts (context explosion)
-# TaskOutput with block=false  <-- NEVER DO THIS FOR MONITORING
-\`\`\`
-
-### Automatic Completion Signals
-
-\`wu:done\` automatically broadcasts completion signals. You do not need to
-manually signal completion - just run \`wu:done\` and orchestrators will
-see your signal via \`mem:inbox\`.
-
-### Progress Signals (Required at Milestones)
-
-**Signal at these milestones** to enable orchestrator visibility:
-
-1. **After each acceptance criterion completed** - helps track progress
-2. **When tests first pass** - indicates implementation is working
-3. **Before running gates** - signals imminent completion
-4. **When blocked** - allows orchestrator to re-allocate or assist
-
-\`\`\`bash
-pnpm mem:signal "AC1 complete: tests passing for feature X" --wu ${id}
-pnpm mem:signal "All tests passing, running gates" --wu ${id}
-pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
-\`\`\`
-
-### Checking Status
-
-\`\`\`bash
-pnpm orchestrate:init-status -i INIT-XXX  # Initiative progress (compact)
-pnpm mem:inbox --since 1h                  # Recent signals from all agents
-pnpm mem:inbox --lane "Experience: Web"    # Lane-specific signals
-\`\`\``;
-}
+// WU-1203: generateAgentCoordinationSection is now imported from @lumenflow/core
+// The core version reads config and generates dynamic guidance based on progress_signals settings
 
 /**
  * Generate quick fix commands section (WU-1987)

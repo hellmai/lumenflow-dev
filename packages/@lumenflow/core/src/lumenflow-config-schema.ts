@@ -225,6 +225,62 @@ export const GatesConfigSchema = z.object({
 });
 
 /**
+ * WU-1203: Progress signals configuration for sub-agent coordination
+ *
+ * When enabled, spawn prompts will include mandatory progress signal directives
+ * at configurable triggers (milestone completion, tests pass, before gates, when blocked).
+ * Frequency-based signals (every N tool calls) also supported.
+ *
+ * Addresses sub-agent coordination needs without unnecessary token waste.
+ */
+export const ProgressSignalsConfigSchema = z.object({
+  /**
+   * Enable mandatory progress signals in spawn prompts.
+   * When true, spawn prompts show "Progress Signals (Required at Milestones)"
+   * When false, spawn prompts show "Progress Signals (Optional)"
+   * @default false
+   */
+  enabled: z.boolean().default(false),
+
+  /**
+   * Send progress signals every N tool calls.
+   * Set to 0 to disable frequency-based signals.
+   * @default 0
+   */
+  frequency: z.number().int().nonnegative().default(0),
+
+  /**
+   * Signal after each acceptance criterion is completed.
+   * @default true
+   */
+  on_milestone: z.boolean().default(true),
+
+  /**
+   * Signal when tests first pass.
+   * @default true
+   */
+  on_tests_pass: z.boolean().default(true),
+
+  /**
+   * Signal before running gates.
+   * @default true
+   */
+  before_gates: z.boolean().default(true),
+
+  /**
+   * Signal when work is blocked.
+   * @default true
+   */
+  on_blocked: z.boolean().default(true),
+
+  /**
+   * Automatically checkpoint memory at signal milestones.
+   * @default false
+   */
+  auto_checkpoint: z.boolean().default(false),
+});
+
+/**
  * Memory layer configuration
  */
 export const MemoryConfigSchema = z.object({
@@ -247,6 +303,12 @@ export const MemoryConfigSchema = z.object({
 
   /** Enable auto-cleanup (default: true) */
   enableAutoCleanup: z.boolean().default(true),
+
+  /**
+   * WU-1203: Progress signals configuration for sub-agent coordination.
+   * Optional - when not provided, spawn prompts show "Progress Signals (Optional)".
+   */
+  progress_signals: ProgressSignalsConfigSchema.optional(),
 });
 
 /**
@@ -451,6 +513,7 @@ export type GitConfig = z.infer<typeof GitConfigSchema>;
 export type WuConfig = z.infer<typeof WuConfigSchema>;
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;
 // GatesExecutionConfig exported from gates-config.js
+export type ProgressSignalsConfig = z.infer<typeof ProgressSignalsConfigSchema>;
 export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
 
@@ -470,6 +533,7 @@ export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
  * @param data - Configuration data to validate
  * @returns Validation result with parsed config or errors
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Zod v4 return type inference
 export function validateConfig(data: unknown) {
   return LumenFlowConfigSchema.safeParse(data);
 }

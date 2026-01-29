@@ -32,6 +32,7 @@ import {
   WuConfigSchema,
   GatesConfigSchema,
   MemoryConfigSchema,
+  ProgressSignalsConfigSchema,
   UiConfigSchema,
   YamlConfigSchema,
   MethodologyDefaultsSchema,
@@ -240,6 +241,11 @@ const SCHEMA_DEFINITIONS: SchemaDefinition[] = [
     name: 'memory',
     description: 'Memory layer configuration',
     schema: MemoryConfigSchema,
+  },
+  {
+    name: 'memory.progress_signals',
+    description: 'Progress signals configuration for sub-agent coordination (WU-1203)',
+    schema: ProgressSignalsConfigSchema,
   },
   {
     name: 'ui',

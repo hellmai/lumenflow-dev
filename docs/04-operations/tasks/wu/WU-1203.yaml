@@ -14,6 +14,7 @@ tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1203.done

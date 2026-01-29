@@ -26,67 +26,6 @@ gates:
   test: true
 ```
 
-## Lane Definitions
-
-Lanes define parallel work streams with WIP enforcement. Each lane can have:
-
-```yaml
-lanes:
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1 # Default: 1 (one WU at a time)
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-
-    - name: 'Content: Documentation'
-      wip_limit: 4 # Higher limit for low-conflict parallel work
-      wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
-      code_paths:
-        - 'docs/**'
-```
-
-### Lane Fields
-
-| Field               | Type     | Default | Description                                 |
-| ------------------- | -------- | ------- | ------------------------------------------- |
-| `name`              | string   | -       | Lane name in "Parent: Sublane" format       |
-| `wip_limit`         | integer  | 1       | Maximum concurrent in-progress WUs          |
-| `wip_justification` | string   | -       | Required justification when `wip_limit` > 1 |
-| `code_paths`        | string[] | []      | Glob patterns for files owned by this lane  |
-
-### WIP Justification
-
-Philosophy: **If you need WIP > 1, you need better lanes, not higher limits.**
-
-When `wip_limit` is greater than 1, the `wip_justification` field is required. This is soft enforcement - a warning is logged at claim time if missing, but it doesn't block the claim.
-
-```yaml
-# Warning at claim time:
-# Lane "Content: Documentation" has WIP limit of 4 but no wip_justification.
-# Philosophy: If you need WIP > 1, you need better lanes, not higher limits.
-# Add wip_justification to .lumenflow.config.yaml to suppress this warning.
-```
-
-## Lane Health Gate
-
-Configure how lane health checks behave during quality gates:
-
-```yaml
-gates:
-  lane_health: warn # 'warn' | 'error' | 'off'
-```
-
-| Value   | Behavior                                   |
-| ------- | ------------------------------------------ |
-| `warn`  | Log warning if lane issues found (default) |
-| `error` | Fail gates if lane issues found            |
-| `off`   | Skip lane health check during gates        |
-
-Lane health checks for:
-
-- **Overlapping code_paths** - Files matched by multiple lanes
-- **Coverage gaps** - Code files not covered by any lane
-
 ## Config Sections
 
 ### directories
@@ -161,15 +100,14 @@ WU (Work Unit) configuration
 
 Quality gates configuration
 
-| Field                       | Type    | Default | Description                                        |
-| --------------------------- | ------- | ------- | -------------------------------------------------- |
-| `maxEslintWarnings`         | integer | `100`   | Maximum ESLint warnings before failure             |
-| `enableCoverage`            | boolean | `true`  | Enable coverage checking                           |
-| `minCoverage`               | number  | `90`    | Minimum coverage percentage                        |
-| `enableSafetyCriticalTests` | boolean | `true`  | Run safety-critical test suite                     |
-| `enableInvariants`          | boolean | `true`  | Check invariants                                   |
-| `lane_health`               | string  | `warn`  | Lane health mode: `warn`, `error`, or `off`        |
-| `execution`                 | object  | `-`     | Custom gate execution commands (see presets below) |
+| Field                       | Type    | Default | Description |
+| --------------------------- | ------- | ------- | ----------- |
+| `maxEslintWarnings`         | integer | `100`   |             |
+| `enableCoverage`            | boolean | `true`  |             |
+| `minCoverage`               | number  | `90`    |             |
+| `enableSafetyCriticalTests` | boolean | `true`  |             |
+| `enableInvariants`          | boolean | `true`  |             |
+| `execution`                 | object  | `-`     |             |
 
 ### memory
 
@@ -181,6 +119,21 @@ Memory layer configuration
 | `sessionTtl`        | integer | `604800000`      |             |
 | `checkpointTtl`     | integer | `2592000000`     |             |
 | `enableAutoCleanup` | boolean | `true`           |             |
+| `progress_signals`  | object  | `-`              |             |
+
+### memory.progress_signals
+
+Progress signals configuration for sub-agent coordination (WU-1203)
+
+| Field             | Type    | Default | Description |
+| ----------------- | ------- | ------- | ----------- |
+| `enabled`         | boolean | `false` |             |
+| `frequency`       | integer | `0`     |             |
+| `on_milestone`    | boolean | `true`  |             |
+| `on_tests_pass`   | boolean | `true`  |             |
+| `before_gates`    | boolean | `true`  |             |
+| `on_blocked`      | boolean | `true`  |             |
+| `auto_checkpoint` | boolean | `false` |             |
 
 ### ui
 

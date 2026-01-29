@@ -40,6 +40,7 @@ import { WU_STATUS, PATTERNS, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 import { checkLaneLock } from './lane-lock.js';
 import { minimatch } from 'minimatch';
 import { SpawnStrategyFactory } from './spawn-strategy.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Type is used in JSDoc comments
 import type { SpawnStrategy } from './spawn-strategy.js';
 import { getConfig } from './lumenflow-config.js';
 import type { ClientConfig, LumenFlowConfig } from './lumenflow-config-schema.js';
@@ -441,7 +442,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.paths) {
-    lines.push(`**Paths:** ${inv.paths.map((p) => `\`${p}\``).join(', ')}`);
+    const formattedPaths = inv.paths.map((p) => `\`${p}\``).join(', ');
+    lines.push(`**Paths:** ${formattedPaths}`);
   }
 
   // WU-2254: forbidden-import specific fields
@@ -450,7 +452,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.cannot_import && Array.isArray(inv.cannot_import)) {
-    lines.push(`**Cannot Import:** ${inv.cannot_import.map((m) => `\`${m}\``).join(', ')}`);
+    const formattedImports = inv.cannot_import.map((m) => `\`${m}\``).join(', ');
+    lines.push(`**Cannot Import:** ${formattedImports}`);
   }
 
   // WU-2254: required-pattern specific fields
@@ -463,7 +466,8 @@ function formatInvariantForOutput(inv) {
   }
 
   if (inv.scope && Array.isArray(inv.scope)) {
-    lines.push(`**Scope:** ${inv.scope.map((s) => `\`${s}\``).join(', ')}`);
+    const formattedScope = inv.scope.map((s) => `\`${s}\``).join(', ');
+    lines.push(`**Scope:** ${formattedScope}`);
   }
 
   lines.push('');
@@ -624,10 +628,10 @@ function generateCodexConstraints(id) {
  * Generate mandatory agent advisory section
  *
  * @param {string[]} mandatoryAgents - Array of mandatory agent names
- * @param {string} id - WU ID
+ * @param {string} _id - WU ID (reserved for future use)
  * @returns {string} Mandatory agent section or empty string
  */
-function generateMandatoryAgentSection(mandatoryAgents, id) {
+function generateMandatoryAgentSection(mandatoryAgents, _id) {
   if (mandatoryAgents.length === 0) {
     return '';
   }
@@ -764,15 +768,79 @@ This format enables orchestrator to track progress across waves.`;
 }
 
 /**
- * Generate agent coordination section (WU-1987)
+ * Generate agent coordination section (WU-1987, WU-1203)
  *
  * Provides guidance on mem:signal for parallel agent coordination,
  * orchestrate:monitor for agent status checks, and abandoned WU handling.
  *
+ * WU-1203: Reads progress_signals config to generate dynamic guidance.
+ * When enabled:true, shows "Progress Signals (Required at Milestones)" with
+ * configurable triggers. When enabled:false or not configured, shows
+ * "Progress Signals (Optional)".
+ *
  * @param {string} id - WU ID
  * @returns {string} Agent coordination section
  */
-export function generateAgentCoordinationSection(id) {
+export function generateAgentCoordinationSection(id: string): string {
+  const config = getConfig();
+  const progressSignals = config.memory?.progress_signals;
+  const isEnabled = progressSignals?.enabled ?? false;
+
+  // Generate milestone triggers section based on config
+  const generateMilestoneTriggers = (): string => {
+    if (!isEnabled || !progressSignals) {
+      // Default optional guidance
+      return `For long-running work, send progress signals at milestones:
+
+\`\`\`bash
+pnpm mem:signal "50% complete: tests passing, implementing adapter" --wu ${id}
+pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
+\`\`\``;
+    }
+
+    // Build list of enabled triggers
+    const triggers: string[] = [];
+
+    if (progressSignals.on_milestone !== false) {
+      triggers.push('**After each acceptance criterion completed** - helps track progress');
+    }
+    if (progressSignals.on_tests_pass !== false) {
+      triggers.push('**When tests first pass** - indicates implementation is working');
+    }
+    if (progressSignals.before_gates !== false) {
+      triggers.push('**Before running gates** - signals imminent completion');
+    }
+    if (progressSignals.on_blocked !== false) {
+      triggers.push('**When blocked** - allows orchestrator to re-allocate or assist');
+    }
+
+    // Add frequency-based trigger if configured
+    const frequency = progressSignals.frequency ?? 0;
+    let frequencyGuidance = '';
+    if (frequency > 0) {
+      frequencyGuidance = `\n5. **Every ${frequency} tool calls** - periodic progress update`;
+    }
+
+    const triggerList =
+      triggers.length > 0
+        ? triggers.map((t, i) => `${i + 1}. ${t}`).join('\n') + frequencyGuidance
+        : 'Signal at key milestones to enable orchestrator visibility.';
+
+    return `**Signal at these milestones** to enable orchestrator visibility:
+
+${triggerList}
+
+\`\`\`bash
+pnpm mem:signal "AC1 complete: tests passing for feature X" --wu ${id}
+pnpm mem:signal "All tests passing, running gates" --wu ${id}
+pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
+\`\`\``;
+  };
+
+  const progressSectionTitle = isEnabled
+    ? '### Progress Signals (Required at Milestones)'
+    : '### Progress Signals (Optional)';
+
   return `## Agent Coordination (Parallel Work)
 
 ### ⚠️ CRITICAL: Use mem:signal, NOT TaskOutput
@@ -794,14 +862,9 @@ pnpm mem:inbox --since 30m
 manually signal completion - just run \`wu:done\` and orchestrators will
 see your signal via \`mem:inbox\`.
 
-### Progress Signals (Optional)
+${progressSectionTitle}
 
-For long-running work, send progress signals at milestones:
-
-\`\`\`bash
-pnpm mem:signal "50% complete: tests passing, implementing adapter" --wu ${id}
-pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
-\`\`\`
+${generateMilestoneTriggers()}
 
 ### Checking Status
 
