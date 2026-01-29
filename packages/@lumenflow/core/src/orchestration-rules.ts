@@ -194,7 +194,7 @@ export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths)
   lines.push('');
   lines.push('Required action:');
   lines.push('  1. Invoke the required agents BEFORE calling wu:done');
-  lines.push('  2. Check your project\'s mandatory agent configuration');
+  lines.push("  2. Check your project's mandatory agent configuration");
   lines.push('  3. Consult agent documentation for compliance requirements');
   lines.push('');
   lines.push('To bypass (only if appropriate for your project):');

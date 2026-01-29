@@ -7,8 +7,8 @@ priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/core/src/domain/orchestration.constants.ts
-  - packages/@lumenflow/cli/src/init-plan.ts
-  - packages/@lumenflow/cli/src/__tests__/init-plan.test.ts
+  - packages/@lumenflow/cli/src/initiative-plan.ts
+  - packages/@lumenflow/cli/src/__tests__/initiative-plan.test.ts
   - .claude/skills/orchestration/SKILL.md
   - apps/docs/src/content/docs/reference/cli.mdx
 tests:
@@ -53,10 +53,17 @@ notes: |-
   - Phase 1: Code changes (constants, rename) → commit
   - Phase 2: Documentation updates → commit → wu:done
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T14:37:25.258Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1193
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:37:25.264Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -72,11 +79,3 @@ acceptance:
   - All skill templates in packages/@lumenflow/cli/templates/ updated
   - Starlight CLI reference updated (apps/docs/src/content/docs/reference/cli.mdx)
   - All gates pass (pnpm gates)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1193
-claimed_at: 2026-01-29T14:37:25.258Z
-baseline_main_sha: 3d23a54bbd2051a4e77930af01e63863845c81c5
-session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T14:37:25.264Z
