@@ -438,8 +438,11 @@ describe('arg-parser', () => {
         expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
       });
 
-      it('should parse --code-paths with comma-separated pattern', () => {
-        process.argv = [...TEST_ARGV_PREFIX, FLAG_CODE_PATHS, `${TEST_PATH_A},${TEST_PATH_B}`];
+      it('should treat comma-separated value as single item (not split)', () => {
+        // Per Commander.js best practices: comma-separated is a separate pattern
+        // Use repeatable (--flag a --flag b) for multi-value options
+        const commaValue = `${TEST_PATH_A},${TEST_PATH_B}`;
+        process.argv = [...TEST_ARGV_PREFIX, FLAG_CODE_PATHS, commaValue];
 
         const opts = createWUParser({
           name: 'test',
@@ -447,14 +450,17 @@ describe('arg-parser', () => {
           options: [WU_OPTIONS.codePaths],
         });
 
-        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
+        // Comma-separated value is preserved as single item (not split)
+        expect(opts.codePaths).toEqual([commaValue]);
       });
 
-      it('should parse --code-paths with mixed pattern', () => {
+      it('should handle multiple repeatable flags correctly', () => {
         process.argv = [
           ...TEST_ARGV_PREFIX,
           FLAG_CODE_PATHS,
-          `${TEST_PATH_A},${TEST_PATH_B}`,
+          TEST_PATH_A,
+          FLAG_CODE_PATHS,
+          TEST_PATH_B,
           FLAG_CODE_PATHS,
           TEST_PATH_C,
         ];

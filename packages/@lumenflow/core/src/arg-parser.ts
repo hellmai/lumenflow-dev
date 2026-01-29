@@ -5,25 +5,20 @@ import { EXIT_CODES } from './wu-constants.js';
 /**
  * Collector function for Commander.js repeatable options.
  * Accumulates multiple flag values into an array.
- * Also supports comma-separated values for backwards compatibility.
  *
- * WU-1173: All array flags now support both patterns:
- * - Repeatable: --flag a --flag b
- * - Comma-separated: --flag a,b
- * - Mixed: --flag a,b --flag c
+ * Usage: --flag a --flag b → ['a', 'b']
  *
- * @param {string} value - New value from CLI (may be comma-separated)
+ * This follows Commander.js best practices - use repeatable pattern for
+ * multi-value options. Do NOT split on commas here; that's a separate
+ * pattern with different semantics (see Commander.js docs).
+ *
+ * @param {string} value - New value from CLI
  * @param {string[]} previous - Previously accumulated values
- * @returns {string[]} Updated array with new value(s) appended
+ * @returns {string[]} Updated array with new value appended
  * @see https://github.com/tj/commander.js#custom-option-processing
  */
 function collectRepeatable(value: string, previous: string[]): string[] {
-  // Split on comma to support both comma-separated and repeatable patterns
-  const values = value
-    .split(',')
-    .map((v) => v.trim())
-    .filter((v) => v.length > 0);
-  return previous.concat(values);
+  return previous.concat([value]);
 }
 
 /**
@@ -244,19 +239,19 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   blockedBy: {
     name: 'blockedBy',
     flags: '--blocked-by <wuIds>',
-    description: 'WU IDs that block this WU (repeatable or comma-separated)',
+    description: 'WU IDs that block this WU (repeatable)',
     isRepeatable: true,
   },
   blocks: {
     name: 'blocks',
     flags: '--blocks <wuIds>',
-    description: 'WU IDs this WU blocks (repeatable or comma-separated)',
+    description: 'WU IDs this WU blocks (repeatable)',
     isRepeatable: true,
   },
   labels: {
     name: 'labels',
     flags: '--labels <labels>',
-    description: 'Labels (repeatable or comma-separated)',
+    description: 'Labels (repeatable)',
     isRepeatable: true,
   },
   slug: {
@@ -355,25 +350,25 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   codePaths: {
     name: 'codePaths',
     flags: '--code-paths <paths>',
-    description: 'Code paths (repeatable or comma-separated)',
+    description: 'Code paths (repeatable)',
     isRepeatable: true,
   },
   testPathsManual: {
     name: 'testPathsManual',
     flags: '--test-paths-manual <tests>',
-    description: 'Manual test descriptions (repeatable or comma-separated)',
+    description: 'Manual test descriptions (repeatable)',
     isRepeatable: true,
   },
   testPathsUnit: {
     name: 'testPathsUnit',
     flags: '--test-paths-unit <paths>',
-    description: 'Unit test file paths (repeatable or comma-separated)',
+    description: 'Unit test file paths (repeatable)',
     isRepeatable: true,
   },
   testPathsE2e: {
     name: 'testPathsE2e',
     flags: '--test-paths-e2e <paths>',
-    description: 'E2E test file paths (repeatable or comma-separated)',
+    description: 'E2E test file paths (repeatable)',
     isRepeatable: true,
   },
   validate: {

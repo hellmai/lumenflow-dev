@@ -99,22 +99,22 @@ const MIN_CONFIDENCE_FOR_WARNING = 30;
  * Non-blocking - just logs a warning if a better lane is suggested.
  *
  * @param {string} providedLane - Lane provided by the user
- * @param {string|undefined} codePathsRaw - Comma-separated code paths
+ * @param {string[]|undefined} codePathsArray - Code paths array from Commander
  * @param {string} title - WU title (used as fallback description)
  * @param {string|undefined} description - WU description
  */
-export function warnIfBetterLaneExists(providedLane, codePathsRaw, title, description) {
-  if (!codePathsRaw && !description) {
+export function warnIfBetterLaneExists(
+  providedLane: string,
+  codePathsArray: string[] | undefined,
+  title: string,
+  description: string | undefined,
+) {
+  if (!codePathsArray?.length && !description) {
     return;
   }
 
   try {
-    const codePaths = codePathsRaw
-      ? codePathsRaw
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
+    const codePaths = codePathsArray ?? [];
     const descForInference = description || title;
     const suggestion = inferSubLane(codePaths, descForInference);
 
@@ -134,7 +134,7 @@ export function warnIfBetterLaneExists(providedLane, codePathsRaw, title, descri
         `${LOG_PREFIX} Consider using "${suggestion.lane}" (${suggestion.confidence}% match) instead of "${providedLane}"`,
       );
       console.warn(
-        `${LOG_PREFIX}    Run: pnpm wu:infer-lane --paths "${codePathsRaw || ''}" --desc "${title}"`,
+        `${LOG_PREFIX}    Run: pnpm wu:infer-lane --paths "${codePaths.join(' ')}" --desc "${title}"`,
       );
     }
   } catch {
@@ -240,37 +240,28 @@ function displayReadinessSummary(id: string) {
 interface CreateWUOptions {
   initiative?: string;
   phase?: string;
-  blockedBy?: string;
-  blocks?: string;
-  labels?: string;
+  blockedBy?: string[];
+  blocks?: string[];
+  labels?: string[];
   assignedTo?: string;
   description?: string;
   acceptance?: string[];
-  codePaths?: string;
-  testPathsManual?: string;
-  testPathsUnit?: string;
-  testPathsE2e?: string;
+  codePaths?: string[];
+  testPathsManual?: string[];
+  testPathsUnit?: string[];
+  testPathsE2e?: string[];
   exposure?: string;
   userJourney?: string;
-  uiPairingWus?: string;
-  specRefs?: string;
+  uiPairingWus?: string[];
+  specRefs?: string[];
 }
 
-// Helper to parse comma-separated strings into arrays (DRY)
-const parseCommaSeparated = (value?: string) =>
-  value
-    ? value
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-    : [];
-
-function mergeSpecRefs(specRefs?: string, extraRef?: string): string | undefined {
-  const refs = parseCommaSeparated(specRefs);
+function mergeSpecRefs(specRefs?: string[], extraRef?: string): string[] {
+  const refs = specRefs ? [...specRefs] : [];
   if (extraRef && !refs.includes(extraRef)) {
     refs.push(extraRef);
   }
-  return refs.length > 0 ? refs.join(',') : undefined;
+  return refs;
 }
 
 function createPlanTemplate(wuId: string, title: string): string {
@@ -339,12 +330,13 @@ function buildWUContent({
     specRefs,
   } = opts;
 
-  const code_paths = parseCommaSeparated(codePaths);
+  // Arrays come directly from Commander.js repeatable options - no parsing needed
+  const code_paths = codePaths ?? [];
 
   const tests = {
-    manual: parseCommaSeparated(testPathsManual),
-    unit: parseCommaSeparated(testPathsUnit),
-    e2e: parseCommaSeparated(testPathsE2e),
+    manual: testPathsManual ?? [],
+    unit: testPathsUnit ?? [],
+    e2e: testPathsE2e ?? [],
   };
 
   return {
@@ -366,14 +358,14 @@ function buildWUContent({
     requires_review: false,
     ...(initiative && { initiative }),
     ...(phase && { phase: parseInt(phase, 10) }),
-    ...(blockedBy && { blocked_by: blockedBy.split(',').map((s) => s.trim()) }),
-    ...(blocks && { blocks: blocks.split(',').map((s) => s.trim()) }),
-    ...(labels && { labels: labels.split(',').map((s) => s.trim()) }),
+    ...(blockedBy?.length && { blocked_by: blockedBy }),
+    ...(blocks?.length && { blocks }),
+    ...(labels?.length && { labels }),
     ...(assignedTo && { assigned_to: assignedTo }),
     ...(exposure && { exposure }),
     ...(userJourney && { user_journey: userJourney }),
-    ...(uiPairingWus && { ui_pairing_wus: parseCommaSeparated(uiPairingWus) }),
-    ...(specRefs && { spec_refs: parseCommaSeparated(specRefs) }),
+    ...(uiPairingWus?.length && { ui_pairing_wus: uiPairingWus }),
+    ...(specRefs?.length && { spec_refs: specRefs }),
   };
 }
 
@@ -767,7 +759,7 @@ async function main() {
 
   console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
 
-  const specRefsList = parseCommaSeparated(mergedSpecRefs);
+  const specRefsList = mergedSpecRefs;
   const specRefsValidation = validateSpecRefs(specRefsList);
   if (!specRefsValidation.valid) {
     const errorList = specRefsValidation.errors

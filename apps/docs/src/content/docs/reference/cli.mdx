@@ -707,30 +707,30 @@ pnpm wu:create
 
 **Options:**
 
-| Flag                                | Description                                                                      | Required |
-| ----------------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                                                      | Yes      |
-| `-l, --lane &lt;lane&gt;`           | Lane name (e.g., "Operations: Tooling")                                          | Yes      |
-| `-t, --title &lt;title&gt;`         | Work Unit title                                                                  | Yes      |
-| `-p, --priority &lt;priority&gt;`   | Priority level (P0, P1, P2, P3)                                                  | No       |
-| `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                  | No       |
-| `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                             | No       |
-| `--phase &lt;number&gt;`            | Phase number within initiative                                                   | No       |
-| `--blocked-by &lt;wuIds&gt;`        | Comma-separated WU IDs that block this WU                                        | No       |
-| `--blocks &lt;wuIds&gt;`            | Comma-separated WU IDs this WU blocks                                            | No       |
-| `--labels &lt;labels&gt;`           | Comma-separated labels                                                           | No       |
-| `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                         | No       |
-| `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                   | No       |
-| `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                            | No       |
-| `--code-paths &lt;paths&gt;`        | Code paths (comma-separated)                                                     | No       |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (comma-separated)                                       | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (comma-separated)                                           | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (comma-separated)                                            | No       |
-| `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)        | No       |
-| `--spec-refs &lt;paths&gt;`         | Spec/plan references (comma-separated paths to docs, required for type: feature) | No       |
-| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                            | No       |
-| `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                       | No       |
-| `--ui-pairing-wus &lt;wuIds&gt;`    | Comma-separated UI WU IDs that consume this API (for api exposure)               | No       |
+| Flag                                | Description                                                                       | Required |
+| ----------------------------------- | --------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                                                       | Yes      |
+| `-l, --lane &lt;lane&gt;`           | Lane name (e.g., "Operations: Tooling")                                           | Yes      |
+| `-t, --title &lt;title&gt;`         | Work Unit title                                                                   | Yes      |
+| `-p, --priority &lt;priority&gt;`   | Priority level (P0, P1, P2, P3)                                                   | No       |
+| `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                   | No       |
+| `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                              | No       |
+| `--phase &lt;number&gt;`            | Phase number within initiative                                                    | No       |
+| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable or comma-separated)                         | No       |
+| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable or comma-separated)                             | No       |
+| `--labels &lt;labels&gt;`           | Labels (repeatable or comma-separated)                                            | No       |
+| `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                          | No       |
+| `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                    | No       |
+| `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                             | No       |
+| `--code-paths &lt;paths&gt;`        | Code paths (repeatable or comma-separated)                                        | No       |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable or comma-separated)                          | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable or comma-separated)                              | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable or comma-separated)                               | No       |
+| `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)         | No       |
+| `--spec-refs &lt;paths&gt;`         | Spec/plan references (repeatable or comma-separated, required for type: feature)  | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                             | No       |
+| `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                        | No       |
+| `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure) | No       |
 
 ### wu:delete
 
@@ -781,13 +781,13 @@ pnpm wu:edit
 
 **Options:**
 
-| Flag                                | Description                                           | Required |
-| ----------------------------------- | ----------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                           | Yes      |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (comma-separated)            | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (comma-separated)                | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (comma-separated)                 | No       |
-| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation) | No       |
+| Flag                                | Description                                              | Required |
+| ----------------------------------- | -------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123)                              | Yes      |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable or comma-separated) | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable or comma-separated)     | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable or comma-separated)      | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)    | No       |
 
 ### wu:infer:lane
 

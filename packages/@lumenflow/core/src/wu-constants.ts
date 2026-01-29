@@ -1435,7 +1435,7 @@ export const ERROR_CODES = {
  * Defined separately so it can be used both in LUMENFLOW_PATHS.LOCK_DIR
  * and for test isolation in cleanup-lock.ts/merge-lock.ts.
  */
-export const LOCK_DIR_NAME = 'lumenflow-locks';
+export const LOCK_DIR_NAME = '.lumenflow-locks';
 
 /**
  * LumenFlow directory paths
