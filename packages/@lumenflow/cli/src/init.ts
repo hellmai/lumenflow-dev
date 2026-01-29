@@ -10,6 +10,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { getDefaultConfig, createWUParser, WU_OPTIONS } from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
@@ -159,6 +160,8 @@ const LUMENFLOW_DIR = '.lumenflow';
 const LUMENFLOW_AGENTS_DIR = `${LUMENFLOW_DIR}/agents`;
 const CLAUDE_DIR = '.claude';
 const CLAUDE_AGENTS_DIR = path.join(CLAUDE_DIR, 'agents');
+// Shared path segment for docs structure
+const DOCS_OPERATIONS_DIR = '04-operations';
 
 /**
  * WU-1177: Detect IDE environment from environment variables
@@ -211,11 +214,10 @@ export interface PrerequisiteResults {
 }
 
 /**
- * Get command version safely using execSync
+ * Get command version safely using execFileSync
  */
 function getCommandVersion(command: string, args: string[]): string {
   try {
-    const { execFileSync } = require('node:child_process');
     const output = execFileSync(command, args, {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -230,7 +232,8 @@ function getCommandVersion(command: string, args: string[]): string {
  * Parse semver version string to compare
  */
 function parseVersion(versionStr: string): number[] {
-  const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
+  // Extract version numbers using a non-backtracking pattern
+  const match = /^v?(\d+)\.(\d+)(?:\.(\d+))?/.exec(versionStr);
   if (!match) {
     return [0, 0, 0];
   }
@@ -329,8 +332,11 @@ function normalizeFrameworkName(framework: string): { name: string; slug: string
   const name = framework.trim();
   const slug = name
     .toLowerCase()
-    .replace(/[^a-z0-9-_]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9_-]+/g, '-')
+    // Remove leading dashes and trailing dashes separately (explicit precedence)
+    .replace(/^-+/, '')
+    // eslint-disable-next-line sonarjs/slow-regex -- Simple pattern, no catastrophic backtracking risk
+    .replace(/-+$/, '');
 
   if (!slug) {
     throw new Error(`Invalid framework name: "${framework}"`);
@@ -1365,63 +1371,6 @@ function detectDefaultClient(): DefaultClient {
 }
 
 /**
- * Parse vendor flag from arguments
- */
-function parseVendorArg(args: string[]): VendorType | undefined {
-  const vendorIndex = args.findIndex((arg) => arg === '--vendor');
-  if (vendorIndex !== -1 && args[vendorIndex + 1]) {
-    const vendor = args[vendorIndex + 1].toLowerCase();
-    if (['claude', 'cursor', 'aider', 'all', 'none'].includes(vendor)) {
-      return vendor as VendorType;
-    }
-  }
-  return undefined;
-}
-
-/**
- * Parse framework flag from arguments
- */
-function parseFrameworkArg(args: string[]): string | undefined {
-  const frameworkArg = args.find((arg) => arg.startsWith('--framework='));
-  if (frameworkArg) {
-    const [, value] = frameworkArg.split('=', 2);
-    return value?.trim() || undefined;
-  }
-
-  const frameworkIndex = args.findIndex((arg) => arg === '--framework');
-  if (frameworkIndex !== -1 && args[frameworkIndex + 1]) {
-    return args[frameworkIndex + 1];
-  }
-
-  return undefined;
-}
-
-/**
- * WU-1067: Parse --preset flag from arguments for config-driven gates
- */
-function parsePresetArg(args: string[]): GatePresetType | undefined {
-  const presetArg = args.find((arg) => arg.startsWith('--preset='));
-  if (presetArg) {
-    const [, value] = presetArg.split('=', 2);
-    const preset = value?.trim().toLowerCase();
-    if (preset && ['node', 'python', 'go', 'rust', 'dotnet'].includes(preset)) {
-      return preset as GatePresetType;
-    }
-    return undefined;
-  }
-
-  const presetIndex = args.findIndex((arg) => arg === '--preset');
-  if (presetIndex !== -1 && args[presetIndex + 1]) {
-    const preset = args[presetIndex + 1].toLowerCase();
-    if (['node', 'python', 'go', 'rust', 'dotnet'].includes(preset)) {
-      return preset as GatePresetType;
-    }
-  }
-
-  return undefined;
-}
-
-/**
  * WU-1171: Resolve client type from options
  * --client takes precedence over --vendor (backwards compat)
  */
@@ -1596,7 +1545,7 @@ async function scaffoldFullDocs(
   result: ScaffoldResult,
   tokens: Record<string, string>,
 ): Promise<void> {
-  const tasksDir = path.join(targetDir, 'docs', '04-operations', 'tasks');
+  const tasksDir = path.join(targetDir, 'docs', DOCS_OPERATIONS_DIR, 'tasks');
   const wuDir = path.join(tasksDir, 'wu');
   const templatesDir = path.join(tasksDir, 'templates');
 
@@ -1644,7 +1593,7 @@ async function scaffoldAgentOnboardingDocs(
   const onboardingDir = path.join(
     targetDir,
     'docs',
-    '04-operations',
+    DOCS_OPERATIONS_DIR,
     '_frameworks',
     'lumenflow',
     'agent',
@@ -1764,7 +1713,7 @@ async function scaffoldFrameworkOverlay(
     targetDir,
   );
 
-  const overlayDir = path.join(targetDir, 'docs', '04-operations', '_frameworks', slug);
+  const overlayDir = path.join(targetDir, 'docs', DOCS_OPERATIONS_DIR, '_frameworks', slug);
   await createDirectory(overlayDir, result, targetDir);
 
   await createFile(
@@ -2016,6 +1965,7 @@ function writeNewFile(
  * WU-1171: Added --merge and --client support
  */
 export async function main(): Promise<void> {
+  /* eslint-disable no-console -- CLI tool requires console output for user feedback */
   const opts = parseInitOptions();
   const targetDir = process.cwd();
 
@@ -2032,11 +1982,8 @@ export async function main(): Promise<void> {
     .map(([name, check]) => `${name}: ${check.version} (requires ${check.required})`);
 
   if (failingPrereqs.length > 0) {
-    // eslint-disable-next-line no-console -- CLI output
     console.log('\nPrerequisite warnings (non-blocking):');
-    // eslint-disable-next-line no-console -- CLI output
     failingPrereqs.forEach((msg) => console.log(`  ! ${msg}`));
-    // eslint-disable-next-line no-console -- CLI output
     console.log('  Run "lumenflow doctor" for details.\n');
   }
 
@@ -2074,4 +2021,5 @@ export async function main(): Promise<void> {
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
   console.log('  3. Run: pnpm wu:create --id WU-0001 --lane <lane> --title "First WU"');
+  /* eslint-enable no-console */
 }
