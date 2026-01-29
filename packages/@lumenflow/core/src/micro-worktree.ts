@@ -40,10 +40,53 @@ import {
   PKG_MANAGER,
   SCRIPTS,
   PRETTIER_FLAGS,
-  FILE_SYSTEM,
   STDIO_MODES,
 } from './wu-constants.js';
 import type { GitAdapter } from './git-adapter.js';
+
+/**
+ * Context passed to the execute function in withMicroWorktree
+ */
+interface MicroWorktreeContext {
+  /** Path to the micro-worktree directory */
+  worktreePath: string;
+  /** GitAdapter instance for the micro-worktree */
+  gitWorktree: GitAdapter;
+}
+
+/**
+ * Result returned by the execute function in withMicroWorktree
+ */
+interface MicroWorktreeExecuteResult {
+  /** Commit message for the changes */
+  commitMessage: string;
+  /** List of files that were modified */
+  files: string[];
+}
+
+/**
+ * Options for withMicroWorktree
+ */
+interface WithMicroWorktreeOptions {
+  /** Operation name (e.g., 'wu-create', 'wu-edit') */
+  operation: string;
+  /** WU ID (e.g., 'WU-123') */
+  id: string;
+  /** Log prefix for console output */
+  logPrefix?: string;
+  /** Skip local main merge, push directly to origin/main */
+  pushOnly?: boolean;
+  /** Async function to execute in micro-worktree */
+  execute: (context: MicroWorktreeContext) => Promise<MicroWorktreeExecuteResult>;
+}
+
+/**
+ * Result from withMicroWorktree
+ */
+interface WithMicroWorktreeResult extends MicroWorktreeExecuteResult {
+  /** Git ref to use for worktree creation */
+  ref: string;
+}
 
 /**
  * Maximum retry attempts for ff-only merge when main moves
@@ -90,7 +133,7 @@ export const DEFAULT_LOG_PREFIX = '[micro-wt]';
  * @param {string} id - WU ID (e.g., 'wu-123')
  * @returns {string} Temp branch name (e.g., 'tmp/wu-create/wu-123')
  */
-export function getTempBranchName(operation, id) {
+export function getTempBranchName(operation: string, id: string): string {
   return `${BRANCHES.TEMP_PREFIX}${operation}/${id.toLowerCase()}`;
 }
 
@@ -100,7 +143,7 @@ export function getTempBranchName(operation, id) {
  * @param {string} prefix - Directory prefix (e.g., 'wu-create-', 'wu-edit-')
  * @returns {string} Path to created micro-worktree directory
  */
-export function createMicroWorktreeDir(prefix) {
+export function createMicroWorktreeDir(prefix: string): string {
   return mkdtempSync(join(tmpdir(), prefix));
 }
 
@@ -113,11 +156,14 @@ export function createMicroWorktreeDir(prefix) {
  * @param {string} branchName - Branch name to search for (e.g., 'tmp/wu-create/wu-123')
  * @returns {string|null} Worktree path if found, null otherwise
  */
-export function findWorktreeByBranch(worktreeListOutput, branchName) {
+export function findWorktreeByBranch(
+  worktreeListOutput: string,
+  branchName: string,
+): string | null {
   const branchRef = `refs/heads/${branchName}`;
   const lines = worktreeListOutput.split('\n');
 
-  let currentWorktreePath = null;
+  let currentWorktreePath: string | null = null;
 
   for (const line of lines) {
     if (line.startsWith('worktree ')) {
@@ -150,11 +196,11 @@ export function findWorktreeByBranch(worktreeListOutput, branchName) {
  * @returns {Promise<{cleanedWorktree: boolean, cleanedBranch: boolean}>} Cleanup status
  */
 export async function cleanupOrphanedMicroWorktree(
-  operation,
-  id,
-  gitAdapter,
-  logPrefix = DEFAULT_LOG_PREFIX,
-) {
+  operation: string,
+  id: string,
+  gitAdapter: GitAdapter,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+): Promise<{ cleanedWorktree: boolean; cleanedBranch: boolean }> {
   const tempBranchName = getTempBranchName(operation, id);
   let cleanedWorktree = false;
   let cleanedBranch = false;
@@ -172,15 +218,17 @@ export async function cleanupOrphanedMicroWorktree(
         await gitAdapter.worktreeRemove(orphanWorktreePath, { force: true });
         console.log(`${logPrefix} ✅ Removed orphaned worktree: ${orphanWorktreePath}`);
         cleanedWorktree = true;
-      } catch (err) {
-        console.warn(`${logPrefix} ⚠️  Could not remove orphaned worktree: ${err.message}`);
+      } catch (err: unknown) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.warn(`${logPrefix} ⚠️  Could not remove orphaned worktree: ${errMsg}`);
         // Try filesystem cleanup as fallback
         tryFilesystemCleanup(orphanWorktreePath);
         cleanedWorktree = true;
       }
     }
-  } catch (err) {
-    console.warn(`${logPrefix} ⚠️  Could not check worktree list: ${err.message}`);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Could not check worktree list: ${errMsg}`);
   }
 
   // Step 2: Check if the temp branch exists and delete it
@@ -192,8 +240,9 @@ export async function cleanupOrphanedMicroWorktree(
       console.log(`${logPrefix} ✅ Deleted orphaned temp branch: ${tempBranchName}`);
       cleanedBranch = true;
     }
-  } catch (err) {
-    console.warn(`${logPrefix} ⚠️  Could not delete orphaned branch: ${err.message}`);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Could not delete orphaned branch: ${errMsg}`);
   }
 
   return { cleanedWorktree, cleanedBranch };
@@ -206,7 +255,7 @@ export async function cleanupOrphanedMicroWorktree(
  *
  * @param {string} worktreePath - Path to remove
  */
-function tryFilesystemCleanup(worktreePath) {
+function tryFilesystemCleanup(worktreePath: string): void {
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
     if (existsSync(worktreePath)) {
@@ -227,15 +276,21 @@ function tryFilesystemCleanup(worktreePath) {
  * @param {string} logPrefix - Log prefix
  * @param {string} [contextLabel] - Optional label for logging (e.g., 'registered')
  */
-async function removeWorktreeSafe(gitAdapter, worktreePath, logPrefix, contextLabel = '') {
+async function removeWorktreeSafe(
+  gitAdapter: GitAdapter,
+  worktreePath: string,
+  logPrefix: string,
+  contextLabel: string = '',
+): Promise<void> {
   const label = contextLabel ? ` ${contextLabel}` : '';
   try {
     await gitAdapter.worktreeRemove(worktreePath, { force: true });
     if (contextLabel) {
       console.log(`${logPrefix} ✅ Removed${label} worktree: ${worktreePath}`);
     }
-  } catch (err) {
-    console.warn(`${logPrefix} ⚠️  Could not remove${label} worktree: ${err.message}`);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Could not remove${label} worktree: ${errMsg}`);
     tryFilesystemCleanup(worktreePath);
   }
 }
@@ -254,10 +309,10 @@ async function removeWorktreeSafe(gitAdapter, worktreePath, logPrefix, contextLa
  * @param {string} logPrefix - Log prefix for console output
  */
 export async function cleanupMicroWorktree(
-  worktreePath,
-  branchName,
-  logPrefix = DEFAULT_LOG_PREFIX,
-) {
+  worktreePath: string,
+  branchName: string,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+): Promise<void> {
   console.log(`${logPrefix} Cleaning up micro-worktree...`);
   const mainGit = getGitForCwd();
 
@@ -286,7 +341,12 @@ export async function cleanupMicroWorktree(
  * @param {string} expectedPath - Expected worktree path (skip if matches)
  * @param {string} logPrefix - Log prefix
  */
-async function cleanupRegisteredWorktreeForBranch(gitAdapter, branchName, expectedPath, logPrefix) {
+async function cleanupRegisteredWorktreeForBranch(
+  gitAdapter: GitAdapter,
+  branchName: string,
+  expectedPath: string,
+  logPrefix: string,
+): Promise<void> {
   try {
     const worktreeListOutput = await gitAdapter.worktreeList();
     const registeredPath = findWorktreeByBranch(worktreeListOutput, branchName);
@@ -295,8 +355,9 @@ async function cleanupRegisteredWorktreeForBranch(gitAdapter, branchName, expect
       console.log(`${logPrefix} Found additional registered worktree: ${registeredPath}`);
       await removeWorktreeSafe(gitAdapter, registeredPath, logPrefix, 'registered');
     }
-  } catch (err) {
-    console.warn(`${logPrefix} ⚠️  Could not check worktree list: ${err.message}`);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Could not check worktree list: ${errMsg}`);
   }
 }
 
@@ -309,14 +370,19 @@ async function cleanupRegisteredWorktreeForBranch(gitAdapter, branchName, expect
  * @param {string} branchName - Branch to delete
  * @param {string} logPrefix - Log prefix
  */
-async function deleteBranchSafe(gitAdapter, branchName, logPrefix) {
+async function deleteBranchSafe(
+  gitAdapter: GitAdapter,
+  branchName: string,
+  logPrefix: string,
+): Promise<void> {
   try {
     const branchExists = await gitAdapter.branchExists(branchName);
     if (branchExists) {
       await gitAdapter.deleteBranch(branchName, { force: true });
     }
-  } catch (err) {
-    console.warn(`${logPrefix} ⚠️  Could not delete branch: ${err.message}`);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Could not delete branch: ${errMsg}`);
   }
 }
 
@@ -331,7 +397,10 @@ async function deleteBranchSafe(gitAdapter, branchName, logPrefix) {
  * @param {string[]|undefined} files - Files to stage (undefined/empty = stage all)
  * @returns {Promise<void>}
  */
-export async function stageChangesWithDeletions(gitWorktree, files) {
+export async function stageChangesWithDeletions(
+  gitWorktree: GitAdapter,
+  files: string[] | undefined,
+): Promise<void> {
   // Normalise undefined/null to empty array for addWithDeletions
   const filesToStage = files || [];
   await gitWorktree.addWithDeletions(filesToStage);
@@ -347,7 +416,11 @@ export async function stageChangesWithDeletions(gitWorktree, files) {
  * @param {string} worktreePath - Path to the micro-worktree
  * @param {string} logPrefix - Log prefix for console output
  */
-export async function formatFiles(files, worktreePath, logPrefix = DEFAULT_LOG_PREFIX) {
+export async function formatFiles(
+  files: string[] | undefined,
+  worktreePath: string,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+): Promise<void> {
   if (!files || files.length === 0) {
     return;
   }
@@ -359,15 +432,17 @@ export async function formatFiles(files, worktreePath, logPrefix = DEFAULT_LOG_P
   const pathArgs = absolutePaths.map((p) => JSON.stringify(p)).join(' ');
 
   try {
+    // eslint-disable-next-line sonarjs/os-command -- CLI tool executing known safe prettier command with validated paths
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} ${pathArgs}`, {
       encoding: 'utf-8',
       stdio: STDIO_MODES.PIPE,
       cwd: worktreePath,
     });
     console.log(`${logPrefix} ✅ Files formatted`);
-  } catch (err) {
+  } catch (err: unknown) {
     // Log warning but don't fail - some files may not need formatting
-    console.warn(`${logPrefix} ⚠️  Formatting warning: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`${logPrefix} ⚠️  Formatting warning: ${errMsg}`);
   }
 }
 
@@ -383,10 +458,10 @@ export async function formatFiles(files, worktreePath, logPrefix = DEFAULT_LOG_P
  * @throws {Error} If merge fails after all retries
  */
 export async function mergeWithRetry(
-  tempBranchName,
-  microWorktreePath,
-  logPrefix = DEFAULT_LOG_PREFIX,
-) {
+  tempBranchName: string,
+  microWorktreePath: string,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+): Promise<void> {
   const gitWorktree = createGitForPath(microWorktreePath);
   const mainGit = getGitForCwd();
 
@@ -396,7 +471,7 @@ export async function mergeWithRetry(
       await mainGit.merge(tempBranchName, { ffOnly: true });
       console.log(`${logPrefix} ✅ Merged to main`);
       return;
-    } catch (mergeErr) {
+    } catch (mergeErr: unknown) {
       if (attempt < MAX_MERGE_RETRIES) {
         console.log(`${logPrefix} ⚠️  FF-only merge failed (main moved). Rebasing...`);
         // Fetch latest main and rebase temp branch
@@ -404,10 +479,11 @@ export async function mergeWithRetry(
         await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true }); // Update local main
         await gitWorktree.rebase(BRANCHES.MAIN);
       } else {
+        const errMsg = mergeErr instanceof Error ? mergeErr.message : String(mergeErr);
         throw new Error(
           `FF-only merge failed after ${MAX_MERGE_RETRIES} attempts. ` +
             `Main branch may have significant divergence.\n` +
-            `Error: ${mergeErr.message}`,
+            `Error: ${errMsg}`,
         );
       }
     }
@@ -433,12 +509,12 @@ export async function mergeWithRetry(
  * @throws {Error} If push fails after all retries
  */
 export async function pushWithRetry(
-  mainGit,
-  worktreeGit,
+  mainGit: GitAdapter,
+  worktreeGit: GitAdapter,
   remote: string,
   branch: string,
   tempBranchName: string,
-  logPrefix = DEFAULT_LOG_PREFIX,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
 ): Promise<void> {
   for (let attempt = 1; attempt <= MAX_PUSH_RETRIES; attempt++) {
     try {
@@ -448,7 +524,7 @@ export async function pushWithRetry(
       await mainGit.push(remote, branch);
       console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
       return;
-    } catch (pushErr) {
+    } catch (pushErr: unknown) {
       if (attempt < MAX_PUSH_RETRIES) {
         console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
 
@@ -472,10 +548,11 @@ export async function pushWithRetry(
         console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
         await mainGit.merge(tempBranchName, { ffOnly: true });
       } else {
+        const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
         throw new Error(
           `Push failed after ${MAX_PUSH_RETRIES} attempts. ` +
             `Origin ${branch} may have significant traffic.\n` +
-            `Error: ${pushErr.message}`,
+            `Error: ${errMsg}`,
         );
       }
     }
@@ -521,13 +598,13 @@ export async function pushRefspecWithForce(
   } finally {
     // Restore original env values
     if (originalForce === undefined) {
-      delete process.env[LUMENFLOW_FORCE_ENV];
+      Reflect.deleteProperty(process.env, LUMENFLOW_FORCE_ENV);
     } else {
       process.env[LUMENFLOW_FORCE_ENV] = originalForce;
     }
 
     if (originalReason === undefined) {
-      delete process.env[LUMENFLOW_FORCE_REASON_ENV];
+      Reflect.deleteProperty(process.env, LUMENFLOW_FORCE_REASON_ENV);
     } else {
       process.env[LUMENFLOW_FORCE_REASON_ENV] = originalReason;
     }
@@ -555,7 +632,9 @@ export async function pushRefspecWithForce(
  * @returns {Promise<Object>} Result with ref property for worktree creation
  * @throws {Error} If any step fails (cleanup still runs)
  */
-export async function withMicroWorktree(options) {
+export async function withMicroWorktree(
+  options: WithMicroWorktreeOptions,
+): Promise<WithMicroWorktreeResult> {
   const { operation, id, logPrefix = `[${operation}]`, execute, pushOnly = false } = options;
 
   const mainGit = getGitForCwd();
