@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1201 — Fix pre-existing lint errors in initiative-orchestrator tests](wu/WU-1201.yaml) — Framework: Initiatives
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
 - [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
