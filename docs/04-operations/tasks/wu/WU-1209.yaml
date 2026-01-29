@@ -2,7 +2,7 @@ id: WU-1209
 title: Add state:doctor command for integrity checks
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -47,3 +47,5 @@ session_id: 198c182d-88d5-48d6-a197-b0b01a648e93
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T22:29:02.719Z
+locked: true
+completed_at: 2026-01-29T22:44:12.669Z
