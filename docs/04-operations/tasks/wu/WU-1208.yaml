@@ -2,7 +2,7 @@ id: WU-1208
 title: Create unified pnpm state:cleanup command
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -47,3 +47,5 @@ session_id: 3568193f-a165-467b-b0fb-f39cb6ee2184
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T22:09:39.506Z
+locked: true
+completed_at: 2026-01-29T22:25:10.389Z
