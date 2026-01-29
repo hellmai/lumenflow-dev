@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 /**
- * lane:suggest CLI Command (WU-1189)
+ * lane:suggest CLI Command (WU-1189, WU-1190)
  *
  * LLM-driven lane generation based on codebase context.
  * Analyzes project structure and uses LLM to suggest appropriate lane definitions.
@@ -11,6 +11,7 @@
  *   pnpm lane:suggest --dry-run          # Preview without LLM call
  *   pnpm lane:suggest --interactive      # Accept/skip/edit each suggestion
  *   pnpm lane:suggest --output lanes.yaml # Write to file
+ *   pnpm lane:suggest --include-git      # Add git history context (WU-1190)
  */
 
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -28,6 +29,11 @@ import {
   type LaneSuggestion,
   type ProjectContext,
 } from '@lumenflow/core/dist/lane-suggest-prompt.js';
+import {
+  extractGitContext,
+  summarizeGitContext,
+  type GitContext,
+} from '@lumenflow/core/dist/git-context-extractor.js';
 import { runCLI } from './cli-entry-point.js';
 
 /**
@@ -59,6 +65,11 @@ const LANE_SUGGEST_OPTIONS = {
     flags: '--no-llm',
     description: 'Use heuristic-based suggestions (no LLM)',
   },
+  includeGit: {
+    name: 'includeGit',
+    flags: '--include-git',
+    description: 'Add git history context (co-occurrence, ownership, churn) to LLM prompt',
+  },
 };
 
 interface LaneSuggestOptions {
@@ -67,6 +78,7 @@ interface LaneSuggestOptions {
   output?: string;
   json?: boolean;
   noLlm?: boolean;
+  includeGit?: boolean;
 }
 
 /**
@@ -85,6 +97,7 @@ function parseOptions(): LaneSuggestOptions {
     output: opts.output,
     json: opts.json ?? false,
     noLlm: opts.noLlm ?? false,
+    includeGit: opts.includeGit ?? false,
   };
 }
 
@@ -221,7 +234,13 @@ function generateLaneInferenceYAML(suggestions: LaneSuggestion[]): string {
 /**
  * Display dry-run information
  */
-function displayDryRun(context: ProjectContext, systemPrompt: string, userPrompt: string): void {
+function displayDryRun(
+  context: ProjectContext,
+  systemPrompt: string,
+  userPrompt: string,
+  gitContext?: GitContext,
+  gitSummary?: string,
+): void {
   console.log(chalk.bold.cyan('\n=== DRY RUN MODE ===\n'));
   console.log(chalk.gray('This shows what would be sent to the LLM.\n'));
 
@@ -244,6 +263,24 @@ function displayDryRun(context: ProjectContext, systemPrompt: string, userPrompt
     for (const dir of context.directoryStructure) {
       console.log(chalk.gray(`  - ${dir}/`));
     }
+  }
+
+  // Display git context if available (WU-1190)
+  if (gitContext && gitSummary) {
+    console.log(chalk.bold('\nGit History Context (--include-git):'));
+    if (gitContext.hasLimitedHistory) {
+      console.log(
+        chalk.yellow(`  Limited history: ${gitContext.error ?? 'sparse commit history'}`),
+      );
+    } else {
+      console.log(chalk.gray(`  - Co-occurrences: ${gitContext.coOccurrences.length} pairs found`));
+      console.log(
+        chalk.gray(`  - Ownership signals: ${gitContext.ownership.length} paths analyzed`),
+      );
+      console.log(chalk.gray(`  - Churn hotspots: ${gitContext.churn.length} files identified`));
+    }
+    console.log(chalk.bold('\nGit Summary (for LLM):'));
+    console.log(chalk.gray(gitSummary.slice(0, 500) + (gitSummary.length > 500 ? '...' : '')));
   }
 
   console.log(chalk.bold('\nSystem Prompt Preview:'));
@@ -327,6 +364,37 @@ function showSaveInstructions(): void {
 }
 
 /**
+ * Generate user prompt with optional git context (WU-1190)
+ */
+function generateEnrichedUserPrompt(context: ProjectContext, gitSummary?: string): string {
+  let prompt = generateUserPrompt(context);
+
+  if (gitSummary) {
+    // Insert git context before the instructions section
+    const instructionsMarker = '## Instructions';
+    const insertionPoint = prompt.indexOf(instructionsMarker);
+
+    if (insertionPoint !== -1) {
+      const gitSection = `## Git History Analysis
+
+The following insights were extracted from the repository's git history.
+Use these to understand which files are often changed together (suggesting shared ownership),
+who the primary contributors are for different areas, and which files have high churn (potential complexity).
+
+${gitSummary}
+
+`;
+      prompt = prompt.slice(0, insertionPoint) + gitSection + prompt.slice(insertionPoint);
+    } else {
+      // Fallback: append at the end
+      prompt += `\n\n## Git History Analysis\n\n${gitSummary}`;
+    }
+  }
+
+  return prompt;
+}
+
+/**
  * Main entry point
  */
 async function main(): Promise<void> {
@@ -338,8 +406,29 @@ async function main(): Promise<void> {
 
   const context = gatherProjectContext(projectRoot);
 
+  // Extract git context if requested (WU-1190)
+  let gitContext: GitContext | undefined;
+  let gitSummary: string | undefined;
+
+  if (opts.includeGit) {
+    console.log(chalk.gray('  Extracting git history context...'));
+    gitContext = extractGitContext(projectRoot);
+
+    if (gitContext.hasLimitedHistory) {
+      console.log(chalk.yellow(`  Git history limited: ${gitContext.error ?? 'sparse history'}`));
+    } else {
+      console.log(chalk.gray(`    - ${gitContext.coOccurrences.length} co-occurrence pairs`));
+      console.log(chalk.gray(`    - ${gitContext.ownership.length} ownership signals`));
+      console.log(chalk.gray(`    - ${gitContext.churn.length} churn hotspots`));
+    }
+
+    // Summarize for LLM prompt (respecting token limits)
+    gitSummary = summarizeGitContext(gitContext, { maxTokens: 500 });
+  }
+
   if (opts.dryRun) {
-    displayDryRun(context, generateSystemPrompt(), generateUserPrompt(context));
+    const userPrompt = generateEnrichedUserPrompt(context, gitSummary);
+    displayDryRun(context, generateSystemPrompt(), userPrompt, gitContext, gitSummary);
     return;
   }
 

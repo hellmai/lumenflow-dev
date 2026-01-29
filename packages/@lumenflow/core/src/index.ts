@@ -285,6 +285,9 @@ export {
 // WU-1189: Lane suggestion prompt generation
 export * from './lane-suggest-prompt.js';
 
+// WU-1190: Git context extraction for lane suggestion
+export * from './git-context-extractor.js';
+
 // WU-1094: Dependency Injection - Factory functions for wiring
 export {
   // Adapter factory functions
