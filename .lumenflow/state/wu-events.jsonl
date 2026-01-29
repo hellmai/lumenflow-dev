@@ -409,3 +409,4 @@
 {"type":"complete","wuId":"WU-1210","timestamp":"2026-01-29T23:22:51.295Z"}
 {"type":"complete","wuId":"WU-1215","timestamp":"2026-01-29T23:27:19.956Z"}
 {"type":"claim","wuId":"WU-1222","lane":"Framework: Core","title":"Add PreToolUse hook to block grep/cat/find via Bash","timestamp":"2026-01-29T23:32:43.006Z"}
+{"type":"release","wuId":"WU-1222","reason":"Prioritizing WU-1223 (wu:done worktree fix) which blocks this work conceptually","timestamp":"2026-01-29T23:41:50.020Z"}

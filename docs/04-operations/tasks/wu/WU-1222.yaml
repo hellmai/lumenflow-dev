@@ -2,7 +2,7 @@ id: WU-1222
 title: Add PreToolUse hook to block grep/cat/find via Bash
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: ready
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -18,7 +18,8 @@ artifacts:
   - .lumenflow/stamps/WU-1222.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Released (2026-01-29): Prioritizing WU-1223 (wu:done worktree fix) which blocks this work
+  conceptually'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
