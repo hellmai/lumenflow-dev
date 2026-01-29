@@ -2,7 +2,7 @@ id: WU-1207
 title: Archive old WU events to prevent unbounded growth
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -44,3 +44,5 @@ session_id: a979f759-dbf5-4b68-bb96-0ed75478d1bd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T21:26:32.713Z
+locked: true
+completed_at: 2026-01-29T21:40:54.006Z
