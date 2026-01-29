@@ -95,8 +95,23 @@ export function parseInitOptions(): {
 /**
  * Supported client/vendor integrations
  * WU-1171: Added 'windsurf' and 'codex', renamed primary type to ClientType
+ * WU-1177: Added 'cline' support
  */
-export type ClientType = 'claude' | 'cursor' | 'windsurf' | 'codex' | 'aider' | 'all' | 'none';
+export type ClientType =
+  | 'claude'
+  | 'cursor'
+  | 'windsurf'
+  | 'codex'
+  | 'cline'
+  | 'aider'
+  | 'all'
+  | 'none';
+
+/**
+ * Detected IDE type from environment
+ * WU-1177: Auto-detection support
+ */
+export type DetectedIDE = 'claude' | 'cursor' | 'windsurf' | 'vscode' | undefined;
 
 /** @deprecated Use ClientType instead */
 // eslint-disable-next-line sonarjs/redundant-type-aliases -- Intentional backwards compatibility
@@ -144,6 +159,37 @@ const LUMENFLOW_DIR = '.lumenflow';
 const LUMENFLOW_AGENTS_DIR = `${LUMENFLOW_DIR}/agents`;
 const CLAUDE_DIR = '.claude';
 const CLAUDE_AGENTS_DIR = path.join(CLAUDE_DIR, 'agents');
+
+/**
+ * WU-1177: Detect IDE environment from environment variables
+ * Auto-detects which AI coding assistant is running
+ */
+export function detectIDEEnvironment(): DetectedIDE {
+  // Claude Code detection (highest priority - most specific)
+  if (process.env.CLAUDE_PROJECT_DIR || process.env.CLAUDE_CODE) {
+    return 'claude';
+  }
+
+  // Cursor detection
+  const cursorVars = Object.keys(process.env).filter((key) => key.startsWith('CURSOR_'));
+  if (cursorVars.length > 0) {
+    return 'cursor';
+  }
+
+  // Windsurf detection
+  const windsurfVars = Object.keys(process.env).filter((key) => key.startsWith('WINDSURF_'));
+  if (windsurfVars.length > 0) {
+    return 'windsurf';
+  }
+
+  // VS Code detection (lowest priority - most generic)
+  const vscodeVars = Object.keys(process.env).filter((key) => key.startsWith('VSCODE_'));
+  if (vscodeVars.length > 0) {
+    return 'vscode';
+  }
+
+  return undefined;
+}
 
 /**
  * Generate YAML configuration with header comment
@@ -346,6 +392,41 @@ pnpm wu:done --id WU-XXX
 const WINDSURF_RULES_TEMPLATE = `# Windsurf LumenFlow Rules
 
 This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
+
+## Critical Rules
+
+1. **Always run wu:done** - After gates pass, run \`pnpm wu:done --id WU-XXX\`
+2. **Work in worktrees** - After \`wu:claim\`, work only in the worktree
+3. **Never bypass hooks** - No \`--no-verify\`
+4. **TDD** - Write tests first
+
+## Forbidden Commands
+
+- \`git reset --hard\`
+- \`git push --force\`
+- \`git stash\` (on main)
+- \`--no-verify\`
+
+## Quick Reference
+
+\`\`\`bash
+# Claim WU
+pnpm wu:claim --id WU-XXX --lane <Lane>
+cd worktrees/<lane>-wu-xxx
+
+# Run gates
+pnpm gates
+
+# Complete (from main)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+\`\`\`
+`;
+
+// WU-1177: Template for .clinerules (Cline AI assistant)
+const CLINE_RULES_TEMPLATE = `# Cline LumenFlow Rules
+
+This project uses LumenFlow workflow. See [LUMENFLOW.md](LUMENFLOW.md).
 
 ## Critical Rules
 
@@ -1052,7 +1133,7 @@ version: 1.0.0
 
 // WRONG - Absolute path bypasses worktree
 Write({
-  file_path: '/home/user/source/project/apps/web/src/validator.ts',
+  file_path: '/<user-home>/source/project/apps/web/src/validator.ts',
   content: '...',
 });
 // Result: Written to MAIN checkout, not worktree!
@@ -1078,9 +1159,9 @@ Write({
 
 2. **Check file path format**:
 
-   | Pattern                           | Safe? | Example                  |
-   | --------------------------------- | ----- | ------------------------ |
-   | Starts with \`/home/\` or \`/Users/\` | NO    | \`/home/user/.../file.ts\` |
+   | Pattern                           | Safe? | Example                     |
+   | --------------------------------- | ----- | --------------------------- |
+   | Starts with \`/<user-home>/\`       | NO    | \`/<user-home>/.../file.ts\` |
    | Contains full repo path           | NO    | \`/source/project/...\`    |
    | Starts with package name          | YES   | \`apps/web/src/...\`       |
    | Starts with \`./\` or \`../\`         | YES   | \`./src/lib/...\`          |
@@ -1686,6 +1767,25 @@ async function scaffoldClientFiles(
 
   // WU-1171: Codex reads AGENTS.md directly - minimal extra config needed
   // AGENTS.md is always created, so nothing extra needed for codex
+
+  // WU-1177: Cline uses .clinerules file at project root
+  if (client === 'cline' || client === 'all') {
+    // Try to load from template, fallback to hardcoded
+    let clineContent: string;
+    try {
+      clineContent = loadTemplate('vendors/cline/.clinerules.template');
+    } catch {
+      clineContent = CLINE_RULES_TEMPLATE;
+    }
+
+    await createFile(
+      path.join(targetDir, '.clinerules'),
+      processTemplate(clineContent, tokens),
+      fileMode,
+      result,
+      targetDir,
+    );
+  }
 
   // Aider
   if (client === 'aider' || client === 'all') {
