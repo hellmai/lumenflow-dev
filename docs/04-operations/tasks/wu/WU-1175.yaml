@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - apps/docs/vercel.json
+  - .github/workflows/ci.yml
 tests:
   manual:
     - Create a WU spec and verify no CI/Vercel build triggers
