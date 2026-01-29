@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1208 — Create unified pnpm state:cleanup command](wu/WU-1208.yaml) — Framework: CLI
 - [WU-1207 — Archive old WU events to prevent unbounded growth](wu/WU-1207.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 
