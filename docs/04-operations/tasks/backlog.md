@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
 - [WU-9999 — Test WU for verification](wu/WU-9999.yaml) — Content: Documentation
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 
