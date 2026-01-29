@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: Initiative Validation
-    status: pending
+    status: done
 success_metrics:
   - Signal count stays under maxEntries (500) default
   - Event log archived after 90 days for completed WUs
