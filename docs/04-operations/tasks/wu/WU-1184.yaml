@@ -2,7 +2,7 @@ id: WU-1184
 title: Fix pre-existing lint errors in init.ts
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -39,3 +39,5 @@ session_id: ac9228fd-3a50-483c-8ec9-70e6e4fd159c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:35:07.935Z
+locked: true
+completed_at: 2026-01-29T13:40:02.618Z

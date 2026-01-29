@@ -349,5 +349,6 @@
 {"type":"claim","wuId":"WU-1183","timestamp":"2026-01-29T13:27:12.079Z","lane":"Framework: Core","title":"Fix pre-existing lint errors in micro-worktree.ts"}
 {"type":"complete","wuId":"WU-1177","timestamp":"2026-01-29T13:30:39.829Z"}
 {"type":"complete","wuId":"WU-1183","timestamp":"2026-01-29T13:34:45.727Z"}
-{"type":"claim","wuId":"WU-1184","lane":"Framework: CLI","title":"Fix pre-existing lint errors in init.ts","timestamp":"2026-01-29T13:35:07.944Z"}
-{"type":"claim","wuId":"WU-1185","lane":"Content: Documentation","title":"Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors","timestamp":"2026-01-29T13:36:24.928Z"}
+{"type":"claim","wuId":"WU-1184","timestamp":"2026-01-29T13:35:07.944Z","lane":"Framework: CLI","title":"Fix pre-existing lint errors in init.ts"}
+{"type":"claim","wuId":"WU-1185","timestamp":"2026-01-29T13:36:24.928Z","lane":"Content: Documentation","title":"Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors"}
+{"type":"complete","wuId":"WU-1184","timestamp":"2026-01-29T13:40:04.344Z"}
