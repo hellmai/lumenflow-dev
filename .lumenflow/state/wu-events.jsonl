@@ -385,3 +385,4 @@
 {"type":"complete","wuId":"WU-1202","timestamp":"2026-01-29T19:09:36.007Z"}
 {"type":"claim","wuId":"WU-1198","timestamp":"2026-01-29T19:09:51.520Z","lane":"Content: Documentation","title":"Documentation: Lane tooling and WIP enforcement"}
 {"type":"complete","wuId":"WU-1198","timestamp":"2026-01-29T19:16:11.884Z"}
+{"type":"claim","wuId":"WU-1178","lane":"Content: Documentation","title":"Document automatic CLI/config docs generation system","timestamp":"2026-01-29T19:46:17.035Z"}
