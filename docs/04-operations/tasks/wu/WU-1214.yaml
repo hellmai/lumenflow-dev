@@ -1,0 +1,31 @@
+id: WU-1214
+title: Add progress_signals configuration to memory docs
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1214.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add progress_signals configuration section to concepts/memory.mdx, documenting the new configurable triggers for sub-agent coordination
+acceptance:
+  - Configuration section expanded with progress_signals subsection
+  - All 7 config fields documented with defaults and descriptions
+  - Example YAML snippet shows typical sub-agent configuration
+  - Multi-Agent Coordination section references new config
