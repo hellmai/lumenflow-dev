@@ -99,9 +99,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Lane Tooling
 
-| Command        | Description                                                         |
-| -------------- | ------------------------------------------------------------------- |
-| `lane-health`  | Check lane configuration health (overlaps, coverage gaps)           |
+| Command        | Description                                                           |
+| -------------- | --------------------------------------------------------------------- |
+| `lane-health`  | Check lane configuration health (overlaps, coverage gaps)             |
 | `lane-suggest` | LLM-driven lane suggestions based on codebase context and git history |
 
 ### Verification & Gates
