@@ -38,3 +38,8 @@ acceptance:
   - Add LOCK_DIR constant to wu-constants.ts following existing pattern
   - Update merge-lock.ts and cleanup-lock.ts to use LOCK_DIR
   - Locks still work across processes (use os.tmpdir based path)
+  - 'Library-first: evaluate proper-lockfile or similar before custom implementation'
+  - Lock files created in temp directory, not main checkout
+  - Add LOCK_DIR constant to wu-constants.ts following existing pattern
+  - Update merge-lock.ts and cleanup-lock.ts to use LOCK_DIR
+  - Locks still work across processes (use os.tmpdir based path)
