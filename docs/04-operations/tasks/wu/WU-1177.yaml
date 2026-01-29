@@ -6,8 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/doctor.ts
-  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/commands/doctor.ts
+  - packages/@lumenflow/cli/src/commands/init.ts
   - START-HERE.md
   - README.md
   - .clinerules
@@ -19,8 +19,8 @@ tests:
     - lumenflow init auto-detects IDE environment
     - scripts/sync-vendor-configs.sh --check validates configs
   unit:
-    - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
-    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/cli/__tests__/doctor.test.ts
+    - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1177.done
