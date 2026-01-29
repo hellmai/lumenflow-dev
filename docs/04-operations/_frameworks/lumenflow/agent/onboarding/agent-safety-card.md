@@ -1,6 +1,6 @@
 # Agent Safety Card
 
-**Last updated:** 2026-01-19
+**Last updated:** 2026-01-29
 
 Quick reference for AI agents working in LumenFlow projects.
 
@@ -133,3 +133,162 @@ Choose the safer path:
 - Don't bypass hooks
 - Don't skip gates
 - Ask rather than assume
+
+---
+
+## Emergency Override (LUMENFLOW_FORCE)
+
+In rare cases, you may need to bypass safety mechanisms. This requires explicit user approval and creates an audit trail.
+
+### When Emergency Override is Appropriate
+
+- Fixing YAML parsing bugs in WU specs (spec infrastructure issue)
+- Emergency production hotfixes (with user present)
+- Recovering from corrupted workflow state
+- Bootstrap operations when CLI not yet built
+
+### When NOT to Use Emergency Override
+
+- Skipping failing tests
+- Avoiding code review
+- Working around gate failures
+- Convenience or speed
+
+### How to Use LUMENFLOW_FORCE
+
+**Step 1: Get user approval**
+
+Agents MUST stop and ask before using LUMENFLOW_FORCE. Present the situation to the user:
+
+```
+I need to bypass the safety check for [reason].
+This will be logged to .beacon/force-bypasses.log.
+Do you approve? (yes/no)
+```
+
+**Step 2: Execute with audit trail**
+
+```bash
+# With reason (preferred)
+LUMENFLOW_FORCE_REASON="user-approved: <reason>" LUMENFLOW_FORCE=1 git <command>
+
+# Example: bypass safe-git for reset --hard
+LUMENFLOW_FORCE_REASON="user-approved: recovering corrupted state" LUMENFLOW_FORCE=1 git reset --hard HEAD
+
+# Example: bypass hook for commit
+LUMENFLOW_FORCE_REASON="user-approved: false positive secret detection" LUMENFLOW_FORCE=1 git commit -m "fix: update config"
+```
+
+**Step 3: Document in WU notes**
+
+Add a note to the WU YAML explaining the bypass:
+
+```yaml
+notes: |
+  Used LUMENFLOW_FORCE to bypass [mechanism] because [reason].
+  Approved by user at [timestamp].
+```
+
+### Audit Log Format
+
+All bypasses are logged to `.beacon/force-bypasses.log`:
+
+```
+ISO_TIMESTAMP|BYPASSED|COMMAND_OR_HOOK|USER|BRANCH|REASON|CWD
+```
+
+Example:
+
+```
+2026-01-29T12:34:56Z|BYPASSED|git reset --hard HEAD|tom|lane/core/wu-1172|user-approved: recovering state|/home/tom/source/project
+```
+
+### Warning When No Reason Provided
+
+If LUMENFLOW_FORCE=1 is used without LUMENFLOW_FORCE_REASON, a warning is printed:
+
+```
+=== LUMENFLOW FORCE WARNING ===
+LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON.
+Please provide a reason for audit trail:
+  LUMENFLOW_FORCE_REASON="your reason" LUMENFLOW_FORCE=1 git ...
+===============================
+```
+
+The command still proceeds, but "NO_REASON" is logged.
+
+---
+
+## Setup and Verification
+
+### Claude Code
+
+Claude Code automatically respects LumenFlow safety through:
+
+1. **CLAUDE.md** - Entry point that references safety rules
+2. **.claude/skills/** - Skills include safety context
+3. **.claude/agents/** - Agent definitions include constraints
+
+No additional setup required. Claude Code will read these files on startup.
+
+### Cursor
+
+Cursor uses `.cursor/rules/lumenflow.md` for safety rules.
+
+**Setup:**
+
+```bash
+# Initialize LumenFlow with Cursor overlay
+lumenflow init --client cursor
+
+# Or add to existing project
+mkdir -p .cursor/rules
+# Copy lumenflow.md template to .cursor/rules/
+```
+
+**Verification:**
+
+1. Open a file in Cursor
+2. Start a chat with Cursor AI
+3. Ask: "What are the LumenFlow safety rules?"
+4. Verify it mentions: worktree discipline, forbidden git commands, LUMENFLOW_FORCE
+
+### Windsurf
+
+Windsurf uses `.windsurf/rules/lumenflow.md` for safety rules.
+
+**Setup:**
+
+```bash
+# Initialize LumenFlow with Windsurf overlay
+lumenflow init --client windsurf
+
+# Or add to existing project
+mkdir -p .windsurf/rules
+# Copy lumenflow.md template to .windsurf/rules/
+```
+
+**Verification:**
+
+1. Open project in Windsurf
+2. Start a Cascade session
+3. Ask: "What safety mechanisms does this project use?"
+4. Verify it mentions: safe-git wrapper, Husky hooks, audit logs
+
+### Manual Verification
+
+Test that safety mechanisms work:
+
+```bash
+# Verify safe-git blocks dangerous commands
+./scripts/safe-git reset --hard HEAD
+# Should show: === LUMENFLOW SAFETY BLOCK ===
+
+# Verify hooks are installed
+ls -la .husky/
+# Should show: pre-commit, commit-msg, etc.
+
+# Verify bypass works with audit
+LUMENFLOW_FORCE_REASON="testing" LUMENFLOW_FORCE=1 ./scripts/safe-git --version
+# Should succeed and log to .beacon/force-bypasses.log
+```

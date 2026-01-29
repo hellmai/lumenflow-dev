@@ -5,6 +5,10 @@
 # Husky pre-commit hook to scan for potential secrets in staged files.
 # Blocks commits containing high-entropy strings or known key patterns.
 #
+# Environment Variables:
+#   LUMENFLOW_FORCE=1           - Bypass this check (use with caution)
+#   LUMENFLOW_FORCE_REASON=""   - Reason for bypass (logged for audit)
+#
 
 set -u
 
@@ -12,6 +16,7 @@ set -u
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
 AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
+BYPASS_LOG="${AUDIT_LOG_DIR}/force-bypasses.log"
 
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
@@ -23,6 +28,36 @@ log_audit() {
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     echo "${timestamp}|BLOCKED|${reason}|${file}" >> "$AUDIT_LOG"
 }
+
+log_bypass() {
+    local hook_name="$1"
+    local reason="${LUMENFLOW_FORCE_REASON:-NO_REASON}"
+    local timestamp
+    local user
+    local branch
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    user=$(whoami 2>/dev/null || echo "unknown")
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    echo "${timestamp}|BYPASSED|${hook_name}|${user}|${branch}|${reason}|${PWD}" >> "$BYPASS_LOG"
+}
+
+warn_no_reason() {
+    echo "" >&2
+    echo "=== LUMENFLOW FORCE WARNING ===" >&2
+    echo "LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON." >&2
+    echo "Please provide a reason for audit trail:" >&2
+    echo "  LUMENFLOW_FORCE_REASON=\"your reason\" LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "===============================" >&2
+}
+
+# Check for LUMENFLOW_FORCE bypass
+if [ "${LUMENFLOW_FORCE:-}" = "1" ]; then
+    log_bypass "scan-secrets"
+    if [ -z "${LUMENFLOW_FORCE_REASON:-}" ]; then
+        warn_no_reason
+    fi
+    exit 0
+fi
 
 # Get list of staged files (exclude this script and tests)
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -v "scan-secrets.sh" | grep -v "__tests__")
@@ -45,7 +80,7 @@ for file in $FILES; do
         FAILURES+=("$file (Known Secret Pattern)")
         continue
     fi
-    
+
     # Generic suspicious keyword assignment in staged content
     if git show ":$file" 2>/dev/null | grep -qE "((api_key|access_token|secret_key|password)\s*[:=]\s*['\"][a-zA-Z0-9_\-]{20,}['\"])" ; then
          FAILURES+=("$file (Suspicious Keyword Assignment)")
