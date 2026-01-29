@@ -27,9 +27,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Initiatives can be created with empty description, phases, success_metrics. WUs can link to incomplete initiatives. Initiative status stays draft even as WUs complete. Validation parity with WU creation is needed.
+description: Initiatives can be created with empty description, phases, success_metrics. WUs can
+  link to incomplete initiatives. Initiative status stays draft even as WUs complete. Validation
+  parity with WU creation is needed.
 acceptance:
   - initiative:create warns if description not provided
   - wu:create --initiative INIT-XXX warns if initiative has no phases defined
   - 'Initiative status auto-progresses: draft to in_progress when first WU claimed'
   - state:doctor reports incomplete initiatives
+initiative: INIT-007
