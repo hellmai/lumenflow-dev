@@ -24,11 +24,15 @@ phases:
   - id: 5
     title: Doctor & Gate Integration
     status: pending
+  - id: 6
+    title: Documentation
+    status: pending
 success_metrics:
   - WIP > 1 without justification logs warning at claim time
   - lane:health detects overlap and coverage gaps
   - lane:suggest generates sensible lanes for LumenFlow OS repo
   - lumenflow doctor includes lane health check
+  - All new commands documented in internal docs and Starlight
 labels: []
 wus:
   - WU-1187
@@ -36,4 +40,5 @@ wus:
   - WU-1189
   - WU-1190
   - WU-1191
+  - WU-1198
 related_plan: lumenflow://plans/zesty-hatching-pearl.md
