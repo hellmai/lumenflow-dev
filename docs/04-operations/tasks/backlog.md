@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1179 — Fix micro-worktree push race leaving main diverged](wu/WU-1179.yaml) — Framework: Core
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 
 ## 🔧 In progress
@@ -30,6 +29,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 - [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
+- [WU-1179 — Fix micro-worktree push race leaving main diverged](wu/WU-1179.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
