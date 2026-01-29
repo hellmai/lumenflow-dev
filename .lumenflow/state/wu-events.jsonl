@@ -390,4 +390,5 @@
 {"type":"claim","wuId":"WU-1203","timestamp":"2026-01-29T20:09:39.721Z","lane":"Framework: Core","title":"Add configurable progress signals to memory config"}
 {"type":"claim","wuId":"WU-1204","timestamp":"2026-01-29T20:21:12.247Z","lane":"Framework: Memory","title":"Add signal TTL cleanup to prevent unbounded growth"}
 {"type":"complete","wuId":"WU-1203","timestamp":"2026-01-29T20:30:07.607Z"}
-{"type":"claim","wuId":"WU-1206","lane":"Content: Documentation","title":"Add progress_signals example to .lumenflow.config.yaml","timestamp":"2026-01-29T20:33:29.637Z"}
+{"type":"claim","wuId":"WU-1206","timestamp":"2026-01-29T20:33:29.637Z","lane":"Content: Documentation","title":"Add progress_signals example to .lumenflow.config.yaml"}
+{"type":"complete","wuId":"WU-1206","timestamp":"2026-01-29T20:34:48.140Z"}
