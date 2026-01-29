@@ -26,7 +26,11 @@ import { isOrphanWorktree } from '@lumenflow/core/dist/orphan-detector.js';
 // WU-1352: Use centralized YAML functions from wu-yaml.ts
 import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { assertTransition } from '@lumenflow/core/dist/state-machine.js';
-import { checkLaneFree, validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
+import {
+  checkLaneFree,
+  validateLaneFormat,
+  checkWipJustification,
+} from '@lumenflow/core/dist/lane-checker.js';
 // WU-1603: Atomic lane locking to prevent TOCTOU race conditions
 import {
   acquireLaneLock,
@@ -1383,6 +1387,12 @@ async function main() {
   const doc = preflightValidateWU(WU_PATH, id);
   await handleOrphanCheck(args.lane, id);
   validateLaneFormatWithError(args.lane);
+
+  // WU-1187: Check for WIP justification when WIP > 1 (soft enforcement - warning only)
+  const wipJustificationCheck = checkWipJustification(args.lane);
+  if (wipJustificationCheck.warning) {
+    console.warn(`${PREFIX} ${wipJustificationCheck.warning}`);
+  }
 
   // WU-1372: Lane-to-code_paths consistency check (advisory only, never blocks)
   const laneValidation = validateLaneCodePaths(doc, args.lane);

@@ -12,7 +12,7 @@ import { parseYAML } from './wu-yaml.js';
 import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
-import { CONFIG_FILES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { findProjectRoot } from './lumenflow-config.js';
 
@@ -72,8 +72,11 @@ interface LumenflowConfig {
 }
 
 /** WU-1016: Extended LaneConfig with wip_limit support */
+/** WU-1187: Added wip_justification field for soft WIP enforcement */
 interface LaneConfigWithWip extends LaneConfig {
   wip_limit?: number;
+  /** WU-1187: Required justification when wip_limit > 1 */
+  wip_justification?: string;
 }
 
 interface WUDoc {
@@ -429,7 +432,11 @@ export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {
       // Flat array format: lanes: [{name: "Core", wip_limit: 2}, ...]
       allLanes = config.lanes;
     } else {
-      // Nested format: lanes: {engineering: [...], business: [...]}
+      // New format with definitions
+      if (config.lanes.definitions) {
+        allLanes.push(...config.lanes.definitions);
+      }
+      // Legacy nested format: lanes: {engineering: [...], business: [...]}
       if (config.lanes.engineering) {
         allLanes.push(...config.lanes.engineering);
       }
@@ -597,5 +604,140 @@ export function checkLaneFree(
   } catch (error) {
     const errMessage = error instanceof Error ? error.message : String(error);
     return { free: false, occupiedBy: null, error: `Unexpected error: ${errMessage}` };
+  }
+}
+
+/** WU-1187: Options for checkWipJustification */
+interface CheckWipJustificationOptions {
+  /** Path to .lumenflow.config.yaml (for testing) */
+  configPath?: string;
+}
+
+/** WU-1187: Result of WIP justification check */
+interface CheckWipJustificationResult {
+  /** Always true - this is soft enforcement (warning only) */
+  valid: boolean;
+  /** Warning message if WIP > 1 without justification, null otherwise */
+  warning: string | null;
+  /** True if the lane needs justification but doesn't have one */
+  requiresJustification: boolean;
+  /** The wip_justification from config, if present */
+  justification?: string;
+}
+
+/** WU-1187: Default result when no justification is required */
+const NO_JUSTIFICATION_REQUIRED: CheckWipJustificationResult = {
+  valid: true,
+  warning: null,
+  requiresJustification: false,
+};
+
+/**
+ * WU-1187: Extract all lanes from config (handles all config formats)
+ * @param config - Parsed LumenFlow config
+ * @returns Array of lane configs with wip settings
+ */
+function extractAllLanesFromConfig(config: LumenflowConfig): LaneConfigWithWip[] {
+  if (!config.lanes) {
+    return [];
+  }
+
+  if (Array.isArray(config.lanes)) {
+    // Flat array format: lanes: [{name: "Core", wip_limit: 2}, ...]
+    return config.lanes;
+  }
+
+  // Nested formats with definitions, engineering, business
+  const allLanes: LaneConfigWithWip[] = [];
+  if (config.lanes.definitions) {
+    allLanes.push(...config.lanes.definitions);
+  }
+  if (config.lanes.engineering) {
+    allLanes.push(...config.lanes.engineering);
+  }
+  if (config.lanes.business) {
+    allLanes.push(...config.lanes.business);
+  }
+  return allLanes;
+}
+
+/**
+ * WU-1187: Check if a lane has WIP justification when required
+ *
+ * Philosophy: If you need WIP > 1, you need better lanes, not higher limits.
+ * This is soft enforcement: logs a warning at claim time, but doesn't block.
+ *
+ * @param {string} lane - Lane name to check
+ * @param {CheckWipJustificationOptions} options - Options including configPath for testing
+ * @returns {CheckWipJustificationResult} Result with valid=true (always) and optional warning
+ */
+export function checkWipJustification(
+  lane: string,
+  options: CheckWipJustificationOptions = {},
+): CheckWipJustificationResult {
+  // Determine config path
+  let resolvedConfigPath = options.configPath;
+  if (!resolvedConfigPath) {
+    const projectRoot = findProjectRoot();
+    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Config path is validated
+  if (!existsSync(resolvedConfigPath)) {
+    return NO_JUSTIFICATION_REQUIRED;
+  }
+
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- Config path is validated
+    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
+    const config = parseYAML(configContent) as LumenflowConfig;
+    const allLanes = extractAllLanesFromConfig(config);
+
+    if (allLanes.length === 0) {
+      return NO_JUSTIFICATION_REQUIRED;
+    }
+
+    // Find matching lane (case-insensitive)
+    const normalizedLane = lane.toLowerCase().trim();
+    const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
+
+    if (!matchingLane) {
+      return NO_JUSTIFICATION_REQUIRED;
+    }
+
+    const wipLimit = matchingLane.wip_limit ?? DEFAULT_WIP_LIMIT;
+
+    // WIP <= 1 doesn't need justification
+    if (wipLimit <= 1) {
+      return NO_JUSTIFICATION_REQUIRED;
+    }
+
+    // WIP > 1 - check for justification
+    const justification = matchingLane.wip_justification;
+
+    if (justification && justification.trim().length > 0) {
+      // Has justification - all good
+      return {
+        valid: true,
+        warning: null,
+        requiresJustification: false,
+        justification: justification.trim(),
+      };
+    }
+
+    // WIP > 1 without justification - emit warning
+    const warning =
+      `Lane "${lane}" has WIP limit of ${wipLimit} but no wip_justification. ` +
+      `Philosophy: If you need WIP > 1, you need better lanes, not higher limits. ` +
+      `Add wip_justification to .lumenflow.config.yaml to suppress this warning.`;
+
+    return {
+      valid: true, // Soft enforcement - warning only, doesn't block
+      warning,
+      requiresJustification: true,
+    };
+  } catch {
+    // If config parsing fails, don't block
+    return NO_JUSTIFICATION_REQUIRED;
   }
 }
