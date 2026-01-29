@@ -171,6 +171,8 @@ npm view @lumenflow/cli versions --json | tail -5
 
 The public docs at <https://lumenflow.dev> are built from `apps/docs/`.
 
+**Automatic Generation:** CLI and config reference docs are automatically generated from code. See [Automatic Docs Generation](./docs-generation.md) for details on the single-source-of-truth pattern.
+
 ### Deployment
 
 Starlight docs are deployed **manually** via Vercel CLI:
@@ -305,11 +307,13 @@ If you need more control:
 
 | Change Type      | npm           | Docs   | GitHub App   |
 | ---------------- | ------------- | ------ | ------------ |
-| Bug fix in CLI   | Tag + publish | No     | No           |
-| New CLI command  | Tag + publish | Update | No           |
+| Bug fix in CLI   | Tag + publish | Auto\* | No           |
+| New CLI command  | Tag + publish | Auto\* | No           |
 | Docs-only update | No            | Deploy | No           |
 | GitHub App fix   | No            | No     | Auto on push |
 | Full release     | Tag + publish | Deploy | Auto         |
+
+\* CLI/config reference docs regenerate automatically during `wu:done` when trigger files change. See [Automatic Docs Generation](./docs-generation.md).
 
 ---
 
