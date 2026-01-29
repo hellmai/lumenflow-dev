@@ -2,7 +2,7 @@ id: WU-1188
 title: 'lane:health command: overlap detection and coverage gaps'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -23,14 +23,24 @@ notes: ''
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
-escalation_triggers: []
-requires_human_escalation: false
+escalation_triggers:
+  - phi_pii
+requires_human_escalation: true
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'New CLI command to diagnose lane configuration issues: overlap detection, coverage gaps, breadth analysis, and WIP validation.'
+description: 'New CLI command to diagnose lane configuration issues: overlap detection, coverage
+  gaps, breadth analysis, and WIP validation.'
 acceptance:
   - pnpm lane:health runs and outputs formatted report
   - Detects overlapping code_paths between lane definitions
   - Detects files not covered by any lane
   - Exit code 0 for healthy, 1 for issues
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1188
+claimed_at: 2026-01-29T14:16:44.314Z
+baseline_main_sha: 6aae1dfd376c0f40da3c23d9a6d5c889e96c75df
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:16:44.319Z
