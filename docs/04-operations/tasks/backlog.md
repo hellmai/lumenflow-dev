@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1203 — Add configurable progress signals to memory config](wu/WU-1203.yaml) — Framework: Core
+  (No items ready)
 
 ## 🔧 In progress
 
