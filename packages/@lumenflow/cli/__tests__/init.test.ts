@@ -419,5 +419,114 @@ describe('lumenflow init command (WU-1045)', () => {
 
       expect(opts.preset).toBe('node');
     });
+
+    it('should parse --client cline flag correctly (WU-1177)', async () => {
+      process.argv = ['node', 'lumenflow-init', '--client', 'cline'];
+
+      const { parseInitOptions } = await import('../src/init.js');
+      const opts = parseInitOptions();
+
+      expect(opts.client).toBe('cline');
+    });
+  });
+
+  // WU-1177: Cline support
+  describe('Cline vendor support (WU-1177)', () => {
+    it('should create .clinerules file when --client cline is specified', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'cline' });
+
+      const clineRulesPath = path.join(tempDir, '.clinerules');
+      expect(fs.existsSync(clineRulesPath)).toBe(true);
+
+      const content = fs.readFileSync(clineRulesPath, 'utf-8');
+      expect(content).toContain('LumenFlow');
+    });
+
+    it('should create .clinerules file when --client all is specified', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'all' });
+
+      const clineRulesPath = path.join(tempDir, '.clinerules');
+      expect(fs.existsSync(clineRulesPath)).toBe(true);
+    });
+
+    it('should not create .clinerules file when --client claude is specified', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'claude' });
+
+      const clineRulesPath = path.join(tempDir, '.clinerules');
+      expect(fs.existsSync(clineRulesPath)).toBe(false);
+    });
+  });
+
+  // WU-1177: IDE auto-detection
+  describe('IDE auto-detection (WU-1177)', () => {
+    let originalEnv: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      originalEnv = { ...process.env };
+    });
+
+    afterEach(() => {
+      process.env = originalEnv;
+    });
+
+    it('should detect Claude Code from CLAUDE_PROJECT_DIR env var', async () => {
+      process.env.CLAUDE_PROJECT_DIR = '/some/path';
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBe('claude');
+    });
+
+    it('should detect Claude Code from CLAUDE_CODE env var', async () => {
+      process.env.CLAUDE_CODE = '1';
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBe('claude');
+    });
+
+    it('should detect Cursor from CURSOR_* env vars', async () => {
+      process.env.CURSOR_TRACE_ID = 'abc123';
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBe('cursor');
+    });
+
+    it('should detect Windsurf from WINDSURF_* env vars', async () => {
+      process.env.WINDSURF_SESSION_ID = 'xyz789';
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBe('windsurf');
+    });
+
+    it('should detect VS Code from VSCODE_* env vars', async () => {
+      process.env.VSCODE_GIT_ASKPASS_MAIN = '/some/path';
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBe('vscode');
+    });
+
+    it('should return undefined when no IDE detected', async () => {
+      // Clear ALL IDE-related env vars (not just the ones we set in tests)
+      const keysToDelete = Object.keys(process.env).filter(
+        (key) =>
+          key.startsWith('CLAUDE_') ||
+          key.startsWith('CURSOR_') ||
+          key.startsWith('WINDSURF_') ||
+          key.startsWith('VSCODE_'),
+      );
+      keysToDelete.forEach((key) => delete process.env[key]);
+
+      const { detectIDEEnvironment } = await import('../src/init.js');
+      const detected = detectIDEEnvironment();
+
+      expect(detected).toBeUndefined();
+    });
   });
 });

@@ -39,10 +39,29 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 - [Templates](docs/templates/) - WU and config templates
 - [Distribution Roadmap](docs/DISTRIBUTION.md) - Packaging for consultancy distribution
 
-## Requirements
+## Prerequisites
 
-- Node.js >= 22
-- pnpm >= 9
+Before using LumenFlow, ensure you have the following installed:
+
+| Tool    | Minimum Version | Check Command    | Install                             |
+| ------- | --------------- | ---------------- | ----------------------------------- |
+| Node.js | 22.0.0          | `node --version` | [nodejs.org](https://nodejs.org/)   |
+| pnpm    | 9.0.0           | `pnpm --version` | `npm install -g pnpm`               |
+| Git     | 2.0.0           | `git --version`  | [git-scm.com](https://git-scm.com/) |
+
+### Verify Setup
+
+After installation, run:
+
+```bash
+lumenflow doctor
+```
+
+This will check all safety components and prerequisites. You should see:
+
+```
+LumenFlow safety: ACTIVE
+```
 
 ## Getting Started
 
