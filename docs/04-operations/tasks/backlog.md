@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1175 — Skip CI/CD for WU metadata and docs-only changes](wu/WU-1175.yaml) — Operations: CI/CD
 - [WU-1174 — Lock files pollute main checkout during wu:done](wu/WU-1174.yaml) — Framework: Core
 - [WU-1173 — wu:create: Inconsistent array flag patterns cause user errors](wu/WU-1173.yaml) — Framework: CLI
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
