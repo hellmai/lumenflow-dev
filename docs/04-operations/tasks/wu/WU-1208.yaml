@@ -2,7 +2,7 @@ id: WU-1208
 title: Create unified pnpm state:cleanup command
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -31,10 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Single command to orchestrate all state cleanup: signals, memory, events. Respects config from .lumenflow.config.yaml. Calls existing cleanup functions in correct order.'
+description: 'Single command to orchestrate all state cleanup: signals, memory, events. Respects
+  config from .lumenflow.config.yaml. Calls existing cleanup functions in correct order.'
 acceptance:
   - CLI command pnpm state:cleanup orchestrates signal + memory + event cleanup
   - Supports --dry-run, --signals-only, --events-only, --memory-only flags
   - 'Cleanup order: signals → memory → events (dependency order)'
   - 'Non-fatal errors: warn but continue with other cleanups'
   - Summary output shows removed/retained counts for each type
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1208
+claimed_at: 2026-01-29T22:09:39.501Z
+baseline_main_sha: 73ffe02fd0203d2523084acbc285aa4f2c28b46e
+session_id: 3568193f-a165-467b-b0fb-f39cb6ee2184
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T22:09:39.506Z
