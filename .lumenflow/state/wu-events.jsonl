@@ -379,3 +379,4 @@
 {"type":"complete","wuId":"WU-1189","timestamp":"2026-01-29T17:30:51.142Z"}
 {"type":"claim","wuId":"WU-1200","timestamp":"2026-01-29T17:43:07.522Z","lane":"Framework: CLI","title":"Bug: orchestrate:initiative marks WUs spawned before agent launch"}
 {"type":"complete","wuId":"WU-1200","timestamp":"2026-01-29T17:51:31.861Z"}
+{"type":"claim","wuId":"WU-1190","lane":"Framework: CLI","title":"lane:suggest git history context enhancement","timestamp":"2026-01-29T18:27:44.004Z"}
