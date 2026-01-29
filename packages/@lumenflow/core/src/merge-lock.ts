@@ -1,5 +1,6 @@
 /**
  * WU-1747: Merge Lock Module
+ * WU-1174: Lock files moved to temp directory to avoid polluting main checkout
  *
  * Provides atomic locking mechanism for wu:done merge operations
  * to prevent race conditions during concurrent completions.
@@ -9,6 +10,7 @@
  * - Stale lock detection and auto-cleanup
  * - Idempotent re-acquisition for same WU
  * - Guaranteed cleanup via withMergeLock wrapper
+ * - Lock files stored in temp directory (not main checkout)
  *
  * @module merge-lock
  */
@@ -60,19 +62,31 @@ const LOCK_POLL_INTERVAL_MS = 500;
  * Options for lock file operations
  */
 interface MergeLockBaseDirOptions {
-  /** Base directory (defaults to cwd) */
+  /**
+   * Base directory override (for testing only)
+   *
+   * WU-1174: In production, locks are always stored in LUMENFLOW_PATHS.LOCK_DIR
+   * (a temp directory). This option allows tests to use isolated directories.
+   */
   baseDir?: string;
 }
 
 /**
  * Get the path to the merge lock file
  *
+ * WU-1174: Lock files are stored in a temp directory to avoid polluting
+ * the main checkout. The baseDir option is only for testing isolation.
+ *
  * @param {MergeLockBaseDirOptions} [options]
  * @returns {string} Path to lock file
  */
 function getLockPath(options: MergeLockBaseDirOptions = {}) {
-  const baseDir = options.baseDir || process.cwd();
-  return path.join(baseDir, LUMENFLOW_PATHS.BASE, LOCK_FILE_NAME);
+  // WU-1174: Use temp directory for locks (not main checkout's .lumenflow/)
+  // baseDir is only used for test isolation
+  const lockDir = options.baseDir
+    ? path.join(options.baseDir, '.lumenflow-locks')
+    : LUMENFLOW_PATHS.LOCK_DIR;
+  return path.join(lockDir, LOCK_FILE_NAME);
 }
 
 /**
@@ -103,11 +117,11 @@ function readLockFile(options: MergeLockBaseDirOptions = {}) {
  */
 function writeLockFile(lockInfo, options: MergeLockBaseDirOptions = {}) {
   const lockPath = getLockPath(options);
-  const lumenflowDir = path.dirname(lockPath);
+  const lockDir = path.dirname(lockPath);
 
-  // Ensure .lumenflow directory exists
-  if (!existsSync(lumenflowDir)) {
-    mkdirSync(lumenflowDir, { recursive: true });
+  // WU-1174: Ensure lock directory exists (temp directory, not .lumenflow/)
+  if (!existsSync(lockDir)) {
+    mkdirSync(lockDir, { recursive: true });
   }
 
   writeFileSync(lockPath, JSON.stringify(lockInfo, null, 2));
