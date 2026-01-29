@@ -2,7 +2,7 @@ id: WU-1186
 title: 'Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths: []
@@ -23,9 +23,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Reduce friction in onboarding documentation: add ultra-fast 30-second try-it path, simplify overwhelming wu:create example, sync START-HERE.md vendor section with new universal-first messaging, fix doctor-before-init order.'
+description: 'Reduce friction in onboarding documentation: add ultra-fast 30-second try-it path,
+  simplify overwhelming wu:create example, sync START-HERE.md vendor section with new
+  universal-first messaging, fix doctor-before-init order.'
 acceptance:
   - Quickstart has 30-second Try It Now section before full setup
   - wu:create first example uses minimal flags with note about adding details later
   - START-HERE.md vendor section uses works with ANY plus enhanced messaging
   - START-HERE.md shows init before doctor in workflow
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1186
+claimed_at: 2026-01-29T13:55:02.058Z
+baseline_main_sha: 30b5043ff96e7d830ed6f9ffebe158898adb9939
+session_id: e3fb5b87-b5b3-43cb-8cb9-fb6c9a129739
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:55:02.066Z

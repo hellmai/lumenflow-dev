@@ -7,10 +7,10 @@ _Last updated: 2026-01-29_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
+- [WU-1186 — Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE](wu/WU-1186.yaml)
 
 ## Completed
 
-- [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -185,3 +185,4 @@ _Last updated: 2026-01-29_
 - [WU-1183 — Fix pre-existing lint errors in micro-worktree.ts](wu/WU-1183.yaml) — 2026-01-29
 - [WU-1184 — Fix pre-existing lint errors in init.ts](wu/WU-1184.yaml) — 2026-01-29
 - [WU-1185 — Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors](wu/WU-1185.yaml) — 2026-01-29
+- [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml) — 2026-01-29
