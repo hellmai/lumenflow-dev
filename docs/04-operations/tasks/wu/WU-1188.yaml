@@ -7,7 +7,6 @@ priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/lane-health.ts
-  - packages/@lumenflow/core/src/code-paths-overlap.ts
   - packages/@lumenflow/cli/package.json
 tests:
   manual: []
