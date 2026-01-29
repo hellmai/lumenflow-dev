@@ -133,4 +133,14 @@ export default tseslint.config(
       'no-console': 'off', // Shims need to output errors
     },
   },
+
+  // Micro-worktree operations need console output for progress/status messages
+  // This is CLI infrastructure used by wu:create, wu:edit, wu:claim, initiative:create
+  {
+    files: ['packages/@lumenflow/core/src/micro-worktree.ts'],
+    rules: {
+      'no-console': 'off', // CLI progress output
+      'security/detect-object-injection': 'off', // Env var access is safe
+    },
+  },
 );
