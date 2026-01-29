@@ -9,6 +9,9 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 
+/** Test constant for config file name to avoid sonarjs/no-duplicate-string */
+const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
+
 describe('lumenflow doctor command (WU-1177)', () => {
   let tempDir: string;
   let originalCwd: string;
@@ -76,7 +79,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
     }
 
     if (options.lumenflowConfig) {
-      fs.writeFileSync(path.join(tempDir, '.lumenflow.config.yaml'), 'version: 1.0\n');
+      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), 'version: 1.0\n');
     }
   }
 
@@ -369,6 +372,169 @@ describe('lumenflow doctor command (WU-1177)', () => {
       const { parseDoctorOptions } = await import('../src/doctor.js');
 
       expect(() => parseDoctorOptions()).toThrow();
+    });
+  });
+
+  /**
+   * WU-1191: Lane health check integration
+   * Tests for integrating lane:health into lumenflow doctor
+   */
+  describe('lane health check (WU-1191)', () => {
+    it('should include lane health check in doctor result', async () => {
+      const { runDoctor } = await import('../src/doctor.js');
+
+      // Setup a valid project with lane definitions
+      setupMockProject({
+        husky: true,
+        safeGit: true,
+        agentsMd: true,
+        lumenflowConfig: true,
+      });
+
+      // Add lane definitions to config
+      fs.writeFileSync(
+        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        `version: '2.0'
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
+    - name: 'Framework: CLI'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/**'
+`,
+      );
+
+      const result = await runDoctor(tempDir);
+
+      // Should have a laneHealth check in the result
+      expect(result.checks.laneHealth).toBeDefined();
+      expect(result.checks.laneHealth.passed).toBeDefined();
+      expect(typeof result.checks.laneHealth.message).toBe('string');
+    });
+
+    it('should report lane health issues when overlaps detected', async () => {
+      const { runDoctor } = await import('../src/doctor.js');
+
+      setupMockProject({
+        husky: true,
+        safeGit: true,
+        agentsMd: true,
+        lumenflowConfig: true,
+      });
+
+      // Create overlapping lane definitions
+      fs.writeFileSync(
+        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        `version: '2.0'
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/**'
+    - name: 'Framework: CLI'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/**'
+`,
+      );
+
+      const result = await runDoctor(tempDir);
+
+      expect(result.checks.laneHealth).toBeDefined();
+      expect(result.checks.laneHealth.passed).toBe(false);
+      expect(result.checks.laneHealth.message).toContain('overlap');
+    });
+
+    it('should pass lane health check when configuration is valid', async () => {
+      const { runDoctor } = await import('../src/doctor.js');
+
+      setupMockProject({
+        husky: true,
+        safeGit: true,
+        agentsMd: true,
+        lumenflowConfig: true,
+      });
+
+      // Create non-overlapping lane definitions
+      fs.writeFileSync(
+        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        `version: '2.0'
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
+    - name: 'Content: Documentation'
+      wip_limit: 1
+      code_paths:
+        - 'docs/**'
+`,
+      );
+
+      const result = await runDoctor(tempDir);
+
+      expect(result.checks.laneHealth).toBeDefined();
+      expect(result.checks.laneHealth.passed).toBe(true);
+    });
+
+    it('should skip lane health check when no lane definitions exist', async () => {
+      const { runDoctor } = await import('../src/doctor.js');
+
+      setupMockProject({
+        husky: true,
+        safeGit: true,
+        agentsMd: true,
+        lumenflowConfig: true,
+      });
+
+      // Config without lane definitions
+      fs.writeFileSync(
+        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        `version: '2.0'
+project: test
+`,
+      );
+
+      const result = await runDoctor(tempDir);
+
+      // Should still have the check but indicate no lanes configured
+      expect(result.checks.laneHealth).toBeDefined();
+      expect(result.checks.laneHealth.passed).toBe(true);
+      expect(result.checks.laneHealth.message).toContain('No lane definitions');
+    });
+
+    it('should include lane health details in formatted output', async () => {
+      const { runDoctor, formatDoctorOutput } = await import('../src/doctor.js');
+
+      setupMockProject({
+        husky: true,
+        safeGit: true,
+        agentsMd: true,
+        lumenflowConfig: true,
+      });
+
+      fs.writeFileSync(
+        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        `version: '2.0'
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
+`,
+      );
+
+      const result = await runDoctor(tempDir);
+      const output = formatDoctorOutput(result);
+
+      expect(output).toContain('Lane Health');
     });
   });
 });
