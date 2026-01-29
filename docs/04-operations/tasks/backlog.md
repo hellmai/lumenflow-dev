@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1206 — Add progress_signals example to .lumenflow.config.yaml](wu/WU-1206.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 
 ## 🔧 In progress
