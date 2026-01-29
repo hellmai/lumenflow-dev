@@ -7,10 +7,10 @@ _Last updated: 2026-01-29_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
-- [WU-1176 — Add .eslintcache to .gitignore and untrack](wu/WU-1176.yaml)
 
 ## Completed
 
+- [WU-1176 — Add .eslintcache to .gitignore and untrack](wu/WU-1176.yaml) — 2026-01-29
 - [WU-1174 — Lock files pollute main checkout during wu:done](wu/WU-1174.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18

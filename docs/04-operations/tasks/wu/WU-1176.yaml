@@ -2,7 +2,7 @@ id: WU-1176
 title: Add .eslintcache to .gitignore and untrack
 lane: 'Operations: CI/CD'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -38,3 +38,5 @@ session_id: 95ca36f3-708e-4fbc-a987-f1815244f0bf
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T12:31:15.032Z
+locked: true
+completed_at: 2026-01-29T12:33:37.575Z
