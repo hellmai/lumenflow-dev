@@ -117,7 +117,8 @@
     "git-log": "./dist/git-log.js",
     "git-branch": "./dist/git-branch.js",
     "guard-main-branch": "./dist/guard-main-branch.js",
-    "state-bootstrap": "./dist/state-bootstrap.js"
+    "state-bootstrap": "./dist/state-bootstrap.js",
+    "lane-health": "./dist/lane-health.js"
   },
   "files": [
     "dist",
