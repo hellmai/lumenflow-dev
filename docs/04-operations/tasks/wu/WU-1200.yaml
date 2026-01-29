@@ -6,7 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
   - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
 tests:
   manual: []

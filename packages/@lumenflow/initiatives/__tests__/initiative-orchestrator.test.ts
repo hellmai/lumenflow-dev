@@ -781,6 +781,245 @@ describe('WU-2432: internal blockers and dry-run output alignment', () => {
   });
 });
 
+/**
+ * WU-1200: BUG: orchestrate:initiative marks WUs spawned before agent launch
+ *
+ * Tests for:
+ * - AC1: Wave manifest only records spawned status after confirmation agent was launched
+ *        (Changed: manifest now uses 'queued' status, not 'spawned')
+ * - AC2: orchestrate:initiative checks WU YAML status not just wave manifest
+ * - AC3: Stale wave manifests don't block new orchestration runs
+ */
+describe('WU-1200: Prevent premature spawned status in wave manifests', () => {
+  const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
+  const WAVE_MANIFEST_DIR = '.lumenflow/artifacts/waves';
+
+  function createDir(dir: string) {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+  }
+
+  function createTestWUFile(
+    wuId: string,
+    options: { lane?: string; status?: string; blockedBy?: string[] } = {},
+  ) {
+    const { lane = 'Test Lane', status = 'ready', blockedBy = [] } = options;
+    createDir(TEST_WU_DIR);
+
+    const blockedByYaml =
+      blockedBy.length > 0 ? '\n' + blockedBy.map((id) => `  - ${id}`).join('\n') : ' []';
+
+    const yaml = `id: ${wuId}
+title: Test WU ${wuId}
+lane: '${lane}'
+type: task
+status: ${status}
+priority: P2
+created: 2025-01-01
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+blocked_by:${blockedByYaml}
+risks: []
+notes: ''
+requires_review: false
+description: Test WU for WU-1200 tests
+acceptance:
+  - Test passes
+`;
+
+    writeFileSync(join(TEST_WU_DIR, `${wuId}.yaml`), yaml);
+  }
+
+  function cleanupTestWUs() {
+    if (existsSync(TEST_WU_DIR)) {
+      const files = readdirSync(TEST_WU_DIR);
+      for (const file of files) {
+        if (file.startsWith('WU-TEST-1200')) {
+          rmSync(join(TEST_WU_DIR, file));
+        }
+      }
+    }
+  }
+
+  function cleanupWaveManifests() {
+    if (existsSync(WAVE_MANIFEST_DIR)) {
+      const files = readdirSync(WAVE_MANIFEST_DIR);
+      for (const file of files) {
+        if (file.startsWith('INIT-TEST-1200')) {
+          rmSync(join(WAVE_MANIFEST_DIR, file));
+        }
+      }
+    }
+  }
+
+  function createStaleWaveManifest(
+    initId: string,
+    wave: number,
+    wus: Array<{ id: string; lane: string; status?: string }>,
+  ) {
+    createDir(WAVE_MANIFEST_DIR);
+    const manifest = {
+      initiative: initId,
+      wave,
+      created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      wus: wus.map((wu) => ({
+        id: wu.id,
+        lane: wu.lane,
+        status: wu.status || 'spawned', // Old status that should be ignored
+      })),
+      lane_validation: 'pass',
+      done_criteria: 'All stamps exist in .lumenflow/stamps/',
+    };
+    writeFileSync(
+      join(WAVE_MANIFEST_DIR, `${initId}-wave-${wave}.json`),
+      JSON.stringify(manifest, null, 2),
+    );
+  }
+
+  beforeEach(() => {
+    cleanupTestWUs();
+    cleanupWaveManifests();
+  });
+
+  afterEach(() => {
+    cleanupTestWUs();
+    cleanupWaveManifests();
+  });
+
+  describe('AC1: Wave manifest uses queued status, not spawned', () => {
+    it('should write manifest with status: queued instead of spawned', async () => {
+      // This test verifies that buildCheckpointWave writes 'queued' status
+      // so that WUs are not prematurely marked as 'spawned' before an agent is launched
+      const { getManifestWUStatus } = await import('../src/initiative-orchestrator.js');
+
+      // The constant should be 'queued', not 'spawned'
+      expect(getManifestWUStatus()).toBe('queued');
+    });
+  });
+
+  describe('AC2: orchestrate:initiative checks WU YAML status not just wave manifest', () => {
+    it('should include WU in spawn candidates when YAML status is ready despite being in stale manifest', async () => {
+      // Create a WU file with status: ready
+      createTestWUFile('WU-TEST-1200A', { lane: 'Test Lane A', status: 'ready' });
+
+      // Create a stale wave manifest that says WU was "spawned"
+      createStaleWaveManifest('INIT-TEST-1200', 0, [
+        { id: 'WU-TEST-1200A', lane: 'Test Lane A', status: 'spawned' },
+      ]);
+
+      const { isWUActuallySpawned } = await import('../src/initiative-orchestrator.js');
+
+      // The WU should NOT be considered spawned because YAML status is still 'ready'
+      const result = isWUActuallySpawned('WU-TEST-1200A');
+      expect(result).toBe(false);
+    });
+
+    it('should consider WU spawned only when YAML status is in_progress', async () => {
+      // Create a WU file with status: in_progress (agent actually claimed it)
+      createTestWUFile('WU-TEST-1200B', { lane: 'Test Lane B', status: 'in_progress' });
+
+      const { isWUActuallySpawned } = await import('../src/initiative-orchestrator.js');
+
+      // The WU SHOULD be considered spawned because YAML status is 'in_progress'
+      const result = isWUActuallySpawned('WU-TEST-1200B');
+      expect(result).toBe(true);
+    });
+
+    it('should consider WU done when YAML status is done', async () => {
+      // Create a WU file with status: done (agent completed it)
+      createTestWUFile('WU-TEST-1200C', { lane: 'Test Lane C', status: 'done' });
+
+      const { isWUActuallySpawned } = await import('../src/initiative-orchestrator.js');
+
+      // The WU SHOULD be considered spawned (actually, completed) because YAML status is 'done'
+      const result = isWUActuallySpawned('WU-TEST-1200C');
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('AC3: Stale wave manifests do not block new orchestration runs', () => {
+    it('should not exclude WU from candidates when manifest says spawned but YAML says ready', async () => {
+      // This is the core bug fix: WU is in manifest as 'spawned' but YAML is 'ready'
+      // The orchestrator should check YAML status, not just manifest
+      createTestWUFile('WU-TEST-1200D', { lane: 'Test Lane D', status: 'ready' });
+
+      // Create a stale wave manifest from a previous run where agent was never launched
+      createStaleWaveManifest('INIT-TEST-1200', 0, [
+        { id: 'WU-TEST-1200D', lane: 'Test Lane D', status: 'spawned' },
+      ]);
+
+      const { getSpawnCandidatesWithYAMLCheck } = await import('../src/initiative-orchestrator.js');
+
+      // WU should be included in candidates because its YAML status is 'ready'
+      const candidates = getSpawnCandidatesWithYAMLCheck('INIT-TEST-1200', [
+        { id: 'WU-TEST-1200D', doc: { lane: 'Test Lane D', status: 'ready', blocked_by: [] } },
+      ]);
+
+      expect(candidates.map((c) => c.id)).toContain('WU-TEST-1200D');
+    });
+
+    it('should correctly exclude WU when YAML status is in_progress', async () => {
+      createTestWUFile('WU-TEST-1200E', { lane: 'Test Lane E', status: 'in_progress' });
+
+      // Stale manifest exists
+      createStaleWaveManifest('INIT-TEST-1200', 0, [
+        { id: 'WU-TEST-1200E', lane: 'Test Lane E', status: 'spawned' },
+      ]);
+
+      const { getSpawnCandidatesWithYAMLCheck } = await import('../src/initiative-orchestrator.js');
+
+      // WU should NOT be in candidates because its YAML status is 'in_progress'
+      const candidates = getSpawnCandidatesWithYAMLCheck('INIT-TEST-1200', [
+        {
+          id: 'WU-TEST-1200E',
+          doc: { lane: 'Test Lane E', status: 'in_progress', blocked_by: [] },
+        },
+      ]);
+
+      expect(candidates.map((c) => c.id)).not.toContain('WU-TEST-1200E');
+    });
+
+    it('should handle multiple WUs with mixed statuses correctly', async () => {
+      // Create WU files with different statuses
+      createTestWUFile('WU-TEST-1200F', { lane: 'Test Lane F', status: 'ready' });
+      createTestWUFile('WU-TEST-1200G', { lane: 'Test Lane G', status: 'in_progress' });
+      createTestWUFile('WU-TEST-1200H', { lane: 'Test Lane H', status: 'ready' });
+
+      // Create stale manifest that says all were "spawned"
+      createStaleWaveManifest('INIT-TEST-1200', 0, [
+        { id: 'WU-TEST-1200F', lane: 'Test Lane F', status: 'spawned' },
+        { id: 'WU-TEST-1200G', lane: 'Test Lane G', status: 'spawned' },
+        { id: 'WU-TEST-1200H', lane: 'Test Lane H', status: 'spawned' },
+      ]);
+
+      const { getSpawnCandidatesWithYAMLCheck } = await import('../src/initiative-orchestrator.js');
+
+      const allWUs = [
+        { id: 'WU-TEST-1200F', doc: { lane: 'Test Lane F', status: 'ready', blocked_by: [] } },
+        {
+          id: 'WU-TEST-1200G',
+          doc: { lane: 'Test Lane G', status: 'in_progress', blocked_by: [] },
+        },
+        { id: 'WU-TEST-1200H', doc: { lane: 'Test Lane H', status: 'ready', blocked_by: [] } },
+      ];
+
+      const candidates = getSpawnCandidatesWithYAMLCheck('INIT-TEST-1200', allWUs);
+      const candidateIds = candidates.map((c) => c.id);
+
+      // F and H should be candidates (ready), G should not (in_progress)
+      expect(candidateIds).toContain('WU-TEST-1200F');
+      expect(candidateIds).not.toContain('WU-TEST-1200G');
+      expect(candidateIds).toContain('WU-TEST-1200H');
+    });
+  });
+});
+
 describe('WU-2040: Checkpoint mode Task invocation output', () => {
   const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
 
