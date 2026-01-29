@@ -7,9 +7,6 @@ priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/agent-log-issue.ts
-  - packages/@lumenflow/cli/src/orchestrate-*.ts
-  - packages/@lumenflow/cli/src/metrics-*.ts
-  - packages/@lumenflow/cli/src/flow-*.ts
 tests:
   manual:
     - Verify migrated CLI tools show proper --help output
@@ -22,10 +19,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T14:32:34.034Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1182
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:32:34.037Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +42,3 @@ acceptance:
   - Files identified for migration use createWUParser with WU_OPTIONS
   - agent-log-issue.ts uses repeatable options pattern instead of comma splits where appropriate
   - pnpm gates passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1182
-claimed_at: 2026-01-29T14:32:34.034Z
-baseline_main_sha: f6efbae56fd996e0a1f26509745447ceeba19ad4
-session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T14:32:34.037Z
