@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: Integrity Checking
-    status: pending
+    status: done
   - id: 5
     title: Initiative Validation
     status: pending
