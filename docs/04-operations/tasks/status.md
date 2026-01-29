@@ -8,6 +8,7 @@ _Last updated: 2026-01-29_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1184 — Fix pre-existing lint errors in init.ts](wu/WU-1184.yaml)
+- [WU-1185 — Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors](wu/WU-1185.yaml)
 
 ## Completed
 
