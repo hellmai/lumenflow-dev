@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * WU Create Helper (WU-1262, WU-1439)
  *
@@ -69,6 +70,8 @@ import {
   validateNoPlaceholders,
   buildPlaceholderErrorMessage,
 } from '@lumenflow/core/dist/wu-validator.js';
+// WU-1211: Import initiative validation for phase check
+import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives/dist/index.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';
@@ -758,6 +761,17 @@ async function main() {
   }
 
   console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
+
+  // WU-1211: Warn if linking to initiative with no phases defined
+  if (args.initiative) {
+    const initiative = findInitiative(args.initiative);
+    if (initiative) {
+      const phaseCheck = checkInitiativePhases(initiative.doc);
+      if (!phaseCheck.hasPhases && phaseCheck.warning) {
+        console.warn(`${LOG_PREFIX} ⚠️  ${phaseCheck.warning}`);
+      }
+    }
+  }
 
   const specRefsList = mergedSpecRefs;
   const specRefsValidation = validateSpecRefs(specRefsList);

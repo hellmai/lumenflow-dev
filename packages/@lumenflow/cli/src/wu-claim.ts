@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * WU Claim Helper
  *
@@ -99,6 +100,13 @@ import {
   formatUncommittedChanges,
   createHandoffCheckpoint,
 } from '@lumenflow/core/dist/wu-claim-resume.js';
+// WU-1211: Import initiative validation for status auto-progression
+import {
+  shouldProgressInitiativeStatus,
+  findInitiative,
+  writeInitiative,
+  getInitiativeWUs,
+} from '@lumenflow/initiatives/dist/index.js';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
 
@@ -355,7 +363,66 @@ async function updateWUYaml(
   // Write file
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
   await writeFile(WU_PATH, out, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-  return doc.title || '';
+  // WU-1211: Return both title and initiative for status progression check
+  return { title: doc.title || '', initiative: doc.initiative || null };
+}
+
+/**
+ * WU-1211: Check and progress initiative status from draft/open to in_progress.
+ *
+ * Called when a WU with an initiative field is claimed. If this is the first
+ * WU being claimed for the initiative, progress the initiative status.
+ *
+ * @param {string} worktreePath - Path to micro-worktree (or main)
+ * @param {string} initiativeRef - Initiative ID or slug
+ * @param {string} wuId - WU ID being claimed
+ * @returns {Promise<{updated: boolean, initPath: string|null}>} Result
+ */
+async function maybeProgressInitiativeStatus(
+  worktreePath: string,
+  initiativeRef: string,
+  wuId: string,
+): Promise<{ updated: boolean; initPath: string | null }> {
+  try {
+    // Find the initiative
+    const initiative = findInitiative(initiativeRef);
+    if (!initiative) {
+      console.log(`${PREFIX} Initiative ${initiativeRef} not found (may be created later)`);
+      return { updated: false, initPath: null };
+    }
+
+    // Get all WUs for this initiative to check if any are in_progress
+    const wus = getInitiativeWUs(initiativeRef);
+    // Include the WU we're currently claiming as in_progress
+    const wusWithCurrent = wus.map((wu) =>
+      wu.id === wuId ? { ...wu, doc: { ...wu.doc, status: 'in_progress' } } : wu,
+    );
+    const wuDocs = wusWithCurrent.map((wu) => wu.doc);
+
+    // Check if initiative status should progress
+    const progressCheck = shouldProgressInitiativeStatus(initiative.doc, wuDocs);
+    if (!progressCheck.shouldProgress || !progressCheck.newStatus) {
+      return { updated: false, initPath: null };
+    }
+
+    // Update initiative status in worktree
+    const initRelativePath = initiative.path.replace(process.cwd() + '/', '');
+    const initAbsPath = path.join(worktreePath, initRelativePath);
+
+    // Read, update, write
+    const initDoc = { ...initiative.doc, status: progressCheck.newStatus };
+    writeInitiative(initAbsPath, initDoc);
+
+    console.log(
+      `${PREFIX} ✅ Initiative ${initiativeRef} status progressed: ${initiative.doc.status} → ${progressCheck.newStatus}`,
+    );
+
+    return { updated: true, initPath: initRelativePath };
+  } catch (error) {
+    // Non-fatal: log warning and continue
+    console.warn(`${PREFIX} ⚠️  Could not check initiative status progression: ${error.message}`);
+    return { updated: false, initPath: null };
+  }
 }
 
 async function addOrReplaceInProgressStatus(statusPath, id, title) {
@@ -551,16 +618,17 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
         }
 
         const microGit = createGitForPath(worktreePath);
-        updatedTitle =
-          (await updateWUYaml(
-            microWUPath,
-            id,
-            args.lane,
-            claimedMode,
-            worktreePathForYaml,
-            sessionId,
-            microGit,
-          )) || updatedTitle;
+        // WU-1211: updateWUYaml now returns {title, initiative}
+        const updateResult = await updateWUYaml(
+          microWUPath,
+          id,
+          args.lane,
+          claimedMode,
+          worktreePathForYaml,
+          sessionId,
+          microGit,
+        );
+        updatedTitle = updateResult.title || updatedTitle;
         await addOrReplaceInProgressStatus(microStatusPath, id, updatedTitle);
         await removeFromReadyAndAddToInProgressBacklog(
           microBacklogPath,
@@ -568,6 +636,25 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
           updatedTitle,
           args.lane,
         );
+
+        // WU-1211: Check and progress initiative status
+        let initPath: string | null = null;
+        if (updateResult.initiative) {
+          const initProgress = await maybeProgressInitiativeStatus(
+            worktreePath,
+            updateResult.initiative,
+            id,
+          );
+          initPath = initProgress.initPath;
+        }
+
+        // Include initiative path in files to commit if updated
+        const allFilesToCommit = initPath ? [...filesToCommit, initPath] : filesToCommit;
+
+        return {
+          commitMessage: commitMsg,
+          files: allFilesToCommit,
+        };
       }
 
       return {
@@ -920,13 +1007,24 @@ async function claimBranchOnlyMode(ctx) {
     if (args.noAuto) {
       await ensureCleanOrClaimOnlyWhenNoAuto();
     } else {
-      finalTitle =
-        (await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId)) || finalTitle;
+      // WU-1211: updateWUYaml now returns {title, initiative}
+      const updateResult = await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId);
+      finalTitle = updateResult.title || finalTitle;
       await addOrReplaceInProgressStatus(STATUS_PATH, id, finalTitle);
       await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, finalTitle, args.lane);
-      await getGitForCwd().add(
-        `${JSON.stringify(WU_PATH)} ${JSON.stringify(STATUS_PATH)} ${JSON.stringify(BACKLOG_PATH)}`,
-      );
+      const filesToAdd = [WU_PATH, STATUS_PATH, BACKLOG_PATH];
+      // WU-1211: Progress initiative status if needed
+      if (updateResult.initiative) {
+        const initProgress = await maybeProgressInitiativeStatus(
+          process.cwd(),
+          updateResult.initiative,
+          id,
+        );
+        if (initProgress.initPath) {
+          filesToAdd.push(initProgress.initPath);
+        }
+      }
+      await getGitForCwd().add(filesToAdd.map((f) => JSON.stringify(f)).join(' '));
     }
 
     await getGitForCwd().commit(msg);
@@ -1028,6 +1126,9 @@ async function claimWorktreeMode(ctx) {
 
   if (args.noPush) {
     // Local-only claim (air-gapped) - update metadata inside worktree branch
+    // WU-1211: Track initiative path at outer scope for commit (only set in !noAuto path)
+    let initPathToCommit: string | null = null;
+
     if (args.noAuto) {
       await applyStagedChangesToMicroWorktree(worktreePath, stagedChanges);
     } else {
@@ -1040,20 +1141,43 @@ async function claimWorktreeMode(ctx) {
         console.log(`${PREFIX} YAML fixes applied successfully`);
       }
 
-      finalTitle =
-        (await updateWUYaml(wtWUPath, id, args.lane, claimedMode, worktree, sessionId)) ||
-        finalTitle;
+      // WU-1211: updateWUYaml now returns {title, initiative}
+      const updateResult = await updateWUYaml(
+        wtWUPath,
+        id,
+        args.lane,
+        claimedMode,
+        worktree,
+        sessionId,
+      );
+      finalTitle = updateResult.title || finalTitle;
 
       // WU-1746: Only append claim event to state store - don't regenerate backlog.md/status.md
       const wtStateDir = getStateStoreDirFromBacklog(wtBacklogPath);
       await appendClaimEventOnly(wtStateDir, id, finalTitle, args.lane);
+
+      // WU-1211: Progress initiative status if needed
+      if (updateResult.initiative) {
+        const initProgress = await maybeProgressInitiativeStatus(
+          worktreePath,
+          updateResult.initiative,
+          id,
+        );
+        initPathToCommit = initProgress.initPath;
+      }
     }
 
+    // Commit for BOTH noAuto and regular paths (outside if/else)
     console.log(`${PREFIX} Committing claim metadata in worktree...`);
     const wtGit = createGitForPath(worktreePath);
     const filesToCommit = getWorktreeCommitFiles(id);
+    // WU-1211: Include initiative path in commit if it was updated
+    if (initPathToCommit) {
+      filesToCommit.push(initPathToCommit);
+    }
     await wtGit.add(filesToCommit);
     await wtGit.commit(commitMsg);
+
     console.log(`${PREFIX} ${EMOJI.SUCCESS} Claim committed: ${commitMsg}`);
     console.warn(
       `${PREFIX} Warning: --no-push enabled. Claim is local-only and NOT visible to other agents.`,
