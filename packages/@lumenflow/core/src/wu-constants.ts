@@ -13,6 +13,7 @@
  */
 
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 import { kebabCase } from 'change-case';
 
 /**
@@ -1485,11 +1486,25 @@ export const LUMENFLOW_PATHS = {
   /** WU events log */
   WU_EVENTS: '.lumenflow/state/wu-events.jsonl',
 
-  /** Lock files directory */
+  /** Lock files directory (lane locks - persisted) */
   LOCKS_DIR: '.lumenflow/locks',
 
   /** Force bypass audit log */
   FORCE_BYPASSES: '.lumenflow/force-bypasses.log',
+
+  /**
+   * WU-1174: Runtime lock directory for merge/cleanup locks
+   *
+   * These locks are transient and should NOT be created in the main checkout
+   * because wu:done runs from main. Using os.tmpdir() ensures:
+   * 1. Locks don't pollute the git working tree
+   * 2. Locks work across processes on the same machine
+   * 3. No "Working tree is not clean" errors if process crashes
+   *
+   * Note: Lane locks still use LOCKS_DIR (.lumenflow/locks) because they need
+   * to persist across sessions and be visible to other agents.
+   */
+  LOCK_DIR: path.join(tmpdir(), 'lumenflow-locks'),
 };
 
 /**
