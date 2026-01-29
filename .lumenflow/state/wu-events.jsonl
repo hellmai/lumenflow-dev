@@ -369,3 +369,4 @@
 {"type":"claim","wuId":"WU-1192","timestamp":"2026-01-29T14:48:34.000Z","lane":"Framework: Core","title":"Consolidate wu-spawn prompt generation to single source of truth"}
 {"type":"complete","wuId":"WU-1192","timestamp":"2026-01-29T14:50:08.244Z"}
 {"type":"complete","wuId":"WU-1193","timestamp":"2026-01-29T14:59:29.293Z"}
+{"type":"complete","wuId":"WU-1187","timestamp":"2026-01-29T15:36:23.217Z"}
