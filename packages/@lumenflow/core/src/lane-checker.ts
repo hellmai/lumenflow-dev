@@ -206,6 +206,122 @@ const SPACE = ' ';
  */
 
 /**
+ * WU-1197: Validate colon format in lane string
+ * @throws {LumenflowError} If format is invalid
+ */
+function validateColonFormat(lane: string, trimmed: string, colonIndex: number): void {
+  // Check for space before colon
+  if (colonIndex > 0 && trimmed[colonIndex - 1] === SPACE) {
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Invalid lane format: "${lane}" has space before colon. Expected format: "Parent: Subdomain" (space AFTER colon only)`,
+      { lane },
+    );
+  }
+
+  // Check for space after colon
+  if (colonIndex + 1 >= trimmed.length || trimmed[colonIndex + 1] !== SPACE) {
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Invalid lane format: "${lane}" is missing space after colon. Expected format: "Parent: Subdomain"`,
+      { lane },
+    );
+  }
+}
+
+/**
+ * WU-1197: Validate sub-lane format (Parent: Subdomain)
+ * @throws {LumenflowError} If validation fails
+ */
+function validateSubLaneFormat(
+  lane: string,
+  trimmed: string,
+  colonIndex: number,
+  configPath: string | null,
+): ValidateLaneResult {
+  validateColonFormat(lane, trimmed, colonIndex);
+
+  // Extract parent and subdomain (colonIndex + 2 = skip colon and space)
+  const parent = trimmed.substring(0, colonIndex).trim();
+  const subdomain = trimmed.substring(colonIndex + LANE_SEPARATOR.length + SPACE.length).trim();
+
+  // Validate parent exists in config
+  if (!isValidParentLane(parent, configPath)) {
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Unknown parent lane: "${parent}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
+      { parent, lane },
+    );
+  }
+
+  // Validate sub-lane exists in taxonomy
+  if (hasSubLaneTaxonomy(parent)) {
+    validateSubLaneInTaxonomy(parent, subdomain);
+  } else {
+    // Parent has no taxonomy - reject sub-lane format
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Parent lane "${parent}" does not support sub-lanes. Use parent-only format or extend ${CONFIG_FILES.LANE_INFERENCE}.`,
+      { parent, lane },
+    );
+  }
+
+  return { valid: true, parent, error: null };
+}
+
+/**
+ * WU-1197: Validate that sub-lane exists in taxonomy
+ * @throws {LumenflowError} If sub-lane is not valid
+ */
+function validateSubLaneInTaxonomy(parent: string, subdomain: string): void {
+  if (!isValidSubLane(parent, subdomain)) {
+    const validSubLanes = getSubLanesForParent(parent);
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Unknown sub-lane: "${subdomain}" for parent lane "${parent}".\n\n` +
+        `Valid sub-lanes: ${validSubLanes.join(', ')}`,
+      { parent, subdomain, validSubLanes },
+    );
+  }
+}
+
+/**
+ * WU-1197: Validate parent-only lane format
+ * @throws {LumenflowError} If validation fails (in strict mode)
+ */
+function validateParentOnlyFormat(
+  trimmed: string,
+  configPath: string | null,
+  strict: boolean,
+): ValidateLaneResult {
+  if (!isValidParentLane(trimmed, configPath)) {
+    throw createError(
+      ErrorCodes.INVALID_LANE,
+      `Unknown parent lane: "${trimmed}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
+      { lane: trimmed },
+    );
+  }
+
+  // Block if parent has sub-lane taxonomy (sub-lane required)
+  if (hasSubLaneTaxonomy(trimmed)) {
+    const validSubLanes = getSubLanesForParent(trimmed);
+    const message =
+      `Parent-only lane "${trimmed}" blocked. Sub-lane required. ` +
+      `Valid: ${validSubLanes.join(', ')}. ` +
+      `Format: "${trimmed}: <sublane>"`;
+
+    if (strict) {
+      throw createError(ErrorCodes.INVALID_LANE, message, { lane: trimmed, validSubLanes });
+    }
+    // Non-strict mode: warn only for existing WU validation
+    // eslint-disable-next-line no-console -- Intentional operational logging
+    console.warn(`${PREFIX} ⚠️  ${message}`);
+  }
+
+  return { valid: true, parent: trimmed, error: null };
+}
+
+/**
  * Validate lane format and parent existence
  * @param {string} lane - Lane name (e.g., "Operations: Tooling" or "Operations")
  * @param {string} configPath - Path to config file (optional, defaults to project root)
@@ -230,94 +346,71 @@ export function validateLaneFormat(
     );
   }
 
-  // Check for colon
   const colonIndex = trimmed.indexOf(LANE_SEPARATOR);
+  const isSubLaneFormat = colonIndex !== -1;
 
-  if (colonIndex !== -1) {
-    // Sub-lane format validation
-
-    // Check for space before colon
-    if (colonIndex > 0 && trimmed[colonIndex - 1] === SPACE) {
-      throw createError(
-        ErrorCodes.INVALID_LANE,
-        `Invalid lane format: "${lane}" has space before colon. Expected format: "Parent: Subdomain" (space AFTER colon only)`,
-        { lane },
-      );
-    }
-
-    // Check for space after colon
-    if (colonIndex + 1 >= trimmed.length || trimmed[colonIndex + 1] !== SPACE) {
-      throw createError(
-        ErrorCodes.INVALID_LANE,
-        `Invalid lane format: "${lane}" is missing space after colon. Expected format: "Parent: Subdomain"`,
-        { lane },
-      );
-    }
-
-    // Extract parent and subdomain (colonIndex + 2 = skip colon and space)
-    const parent = trimmed.substring(0, colonIndex).trim();
-    const subdomain = trimmed.substring(colonIndex + LANE_SEPARATOR.length + SPACE.length).trim();
-
-    // Validate parent exists in config
-    if (!isValidParentLane(parent, configPath)) {
-      throw createError(
-        ErrorCodes.INVALID_LANE,
-        `Unknown parent lane: "${parent}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
-        { parent, lane },
-      );
-    }
-
-    // Validate sub-lane exists in taxonomy
-    if (hasSubLaneTaxonomy(parent)) {
-      // Parent has taxonomy - validate sub-lane
-      if (!isValidSubLane(parent, subdomain)) {
-        const validSubLanes = getSubLanesForParent(parent);
-        throw createError(
-          ErrorCodes.INVALID_LANE,
-          `Unknown sub-lane: "${subdomain}" for parent lane "${parent}".\n\n` +
-            `Valid sub-lanes: ${validSubLanes.join(', ')}`,
-          { parent, subdomain, validSubLanes },
-        );
-      }
-    } else {
-      // Parent has no taxonomy - reject sub-lane format
-      throw createError(
-        ErrorCodes.INVALID_LANE,
-        `Parent lane "${parent}" does not support sub-lanes. Use parent-only format or extend ${CONFIG_FILES.LANE_INFERENCE}.`,
-        { parent, lane },
-      );
-    }
-
-    return { valid: true, parent, error: null };
-  } else {
-    // Parent-only format
-    if (!isValidParentLane(trimmed, configPath)) {
-      throw createError(
-        ErrorCodes.INVALID_LANE,
-        `Unknown parent lane: "${trimmed}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
-        { lane: trimmed },
-      );
-    }
-
-    // Block if parent has sub-lane taxonomy (sub-lane required)
-    if (hasSubLaneTaxonomy(trimmed)) {
-      const validSubLanes = getSubLanesForParent(trimmed);
-      const message =
-        `Parent-only lane "${trimmed}" blocked. Sub-lane required. ` +
-        `Valid: ${validSubLanes.join(', ')}. ` +
-        `Format: "${trimmed}: <sublane>"`;
-
-      if (strict) {
-        // Strict mode (default): throw error for new WUs
-        throw createError(ErrorCodes.INVALID_LANE, message, { lane: trimmed, validSubLanes });
-      } else {
-        // Non-strict mode: warn only for existing WU validation
-        console.warn(`${PREFIX} ⚠️  ${message}`);
-      }
-    }
-
-    return { valid: true, parent: trimmed, error: null };
+  if (isSubLaneFormat) {
+    return validateSubLaneFormat(lane, trimmed, colonIndex, configPath);
   }
+  return validateParentOnlyFormat(trimmed, configPath, strict);
+}
+
+/**
+ * WU-1197: Result of extracting lanes from config for parent validation
+ */
+interface ExtractedLanesForParentCheck {
+  allLanes: string[];
+  parentLanes: Set<string>;
+}
+
+/**
+ * WU-1197: Extract lane names and parent lanes from config
+ * Handles flat array, definitions, and legacy nested formats
+ */
+function extractLanesForParentCheck(config: LumenflowConfig): ExtractedLanesForParentCheck {
+  const allLanes: string[] = [];
+  const parentLanes = new Set<string>();
+
+  if (!config.lanes) {
+    return { allLanes, parentLanes };
+  }
+
+  if (Array.isArray(config.lanes)) {
+    // Flat array format: lanes: [{name: "Core"}, {name: "CLI"}, ...]
+    allLanes.push(...config.lanes.map((l) => l.name));
+    return { allLanes, parentLanes };
+  }
+
+  // WU-1022: New format with lanes.definitions containing full "Parent: Sublane" names
+  if (config.lanes.definitions) {
+    for (const lane of config.lanes.definitions) {
+      allLanes.push(lane.name);
+      // Extract parent from full lane name for parent validation
+      const extracted = extractParent(lane.name);
+      parentLanes.add(extracted.toLowerCase().trim());
+    }
+  }
+
+  // Legacy nested format: lanes: {engineering: [...], business: [...]}
+  if (config.lanes.engineering) {
+    allLanes.push(...config.lanes.engineering.map((l) => l.name));
+  }
+  if (config.lanes.business) {
+    allLanes.push(...config.lanes.business.map((l) => l.name));
+  }
+
+  return { allLanes, parentLanes };
+}
+
+/**
+ * WU-1197: Resolve config path, defaulting to project root if not provided
+ */
+function resolveConfigPath(configPath: string | null): string {
+  if (configPath) {
+    return configPath;
+  }
+  const projectRoot = findProjectRoot();
+  return path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
 }
 
 /**
@@ -331,12 +424,7 @@ export function validateLaneFormat(
  * @returns {boolean} True if parent lane exists
  */
 function isValidParentLane(parent: string, configPath: string | null = null): boolean {
-  // Determine config path
-  let resolvedConfigPath = configPath;
-  if (!resolvedConfigPath) {
-    const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
-  }
+  const resolvedConfigPath = resolveConfigPath(configPath);
 
   // Read and parse config
   if (!existsSync(resolvedConfigPath)) {
@@ -348,36 +436,7 @@ function isValidParentLane(parent: string, configPath: string | null = null): bo
   const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
   const config = parseYAML(configContent) as LumenflowConfig;
 
-  // Extract all lane names - handle multiple config formats
-  const allLanes: string[] = [];
-  const parentLanes = new Set<string>();
-
-  if (config.lanes) {
-    if (Array.isArray(config.lanes)) {
-      // Flat array format: lanes: [{name: "Core"}, {name: "CLI"}, ...]
-      allLanes.push(...config.lanes.map((l) => l.name));
-    } else {
-      // WU-1022: New format with lanes.definitions containing full "Parent: Sublane" names
-      if (config.lanes.definitions) {
-        for (const lane of config.lanes.definitions) {
-          allLanes.push(lane.name);
-          // Extract parent from full lane name for parent validation
-          const extractedParent = extractParent(lane.name);
-          parentLanes.add(extractedParent.toLowerCase().trim());
-        }
-      }
-
-      // Legacy nested format: lanes: {engineering: [...], business: [...]}
-      if (config.lanes.engineering) {
-        allLanes.push(...config.lanes.engineering.map((l) => l.name));
-      }
-      if (config.lanes.business) {
-        allLanes.push(...config.lanes.business.map((l) => l.name));
-      }
-    }
-  }
-
-  // Case-insensitive comparison
+  const { allLanes, parentLanes } = extractLanesForParentCheck(config);
   const normalizedParent = parent.toLowerCase().trim();
 
   // WU-1022: If we have extracted parent lanes (from full lane names), check against those
@@ -460,6 +519,120 @@ export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {
   }
 }
 
+/** WU-1197: Section heading marker for H2 headings */
+const SECTION_HEADING_PREFIX = '## ';
+
+/**
+ * WU-1197: Create an empty lane result (no WUs in progress)
+ */
+function createEmptyLaneResult(wipLimit: number): CheckLaneFreeResult {
+  return {
+    free: true,
+    occupiedBy: null,
+    error: null,
+    inProgressWUs: [],
+    wipLimit,
+    currentCount: 0,
+  };
+}
+
+/**
+ * WU-1197: Extract In Progress section from status.md lines
+ * @returns Section content or null if not found
+ */
+function extractInProgressSection(lines: string[]): { section: string; error: string | null } {
+  const inProgressIdx = lines.findIndex((l) => isInProgressHeader(l));
+
+  if (inProgressIdx === -1) {
+    return { section: '', error: 'Could not find "## In Progress" section in status.md' };
+  }
+
+  // Find end of In Progress section (next ## heading or end of file)
+  let endIdx = lines
+    .slice(inProgressIdx + 1)
+    .findIndex((l) => l.startsWith(SECTION_HEADING_PREFIX));
+  if (endIdx === -1) {
+    endIdx = lines.length - inProgressIdx - 1;
+  } else {
+    endIdx = inProgressIdx + 1 + endIdx;
+  }
+
+  const section = lines.slice(inProgressIdx + 1, endIdx).join(STRING_LITERALS.NEWLINE);
+  return { section, error: null };
+}
+
+/**
+ * WU-1197: Check if a WU belongs to the target lane
+ * @returns The WU ID if it matches the target lane, null otherwise
+ */
+function checkWuLaneMatch(
+  activeWuid: string,
+  wuid: string,
+  projectRoot: string,
+  targetLane: string,
+): string | null {
+  // Skip if it's the same WU we're trying to claim
+  if (activeWuid === wuid) {
+    return null;
+  }
+
+  const wuPath = path.join(projectRoot, WU_PATHS.WU(activeWuid));
+
+  if (!existsSync(wuPath)) {
+    // eslint-disable-next-line no-console -- Intentional operational logging
+    console.warn(
+      `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`,
+    );
+    return null;
+  }
+
+  try {
+    const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
+    const wuDoc = parseYAML(wuContent) as WUDoc;
+
+    if (!wuDoc || !wuDoc.lane) {
+      // eslint-disable-next-line no-console -- Intentional operational logging
+      console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
+      return null;
+    }
+
+    // Normalize lane names for comparison (case-insensitive, trim whitespace)
+    const activeLane = wuDoc.lane.toString().trim().toLowerCase();
+
+    if (activeLane === targetLane) {
+      return activeWuid;
+    }
+  } catch (e) {
+    const errMessage = e instanceof Error ? e.message : String(e);
+    // eslint-disable-next-line no-console -- Intentional operational logging
+    console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${errMessage}`);
+  }
+
+  return null;
+}
+
+/**
+ * WU-1197: Collect WUs in the target lane from matched WU links
+ */
+function collectInProgressWUsForLane(
+  matches: RegExpMatchArray[],
+  wuid: string,
+  projectRoot: string,
+  targetLane: string,
+): string[] {
+  const inProgressWUs: string[] = [];
+
+  for (const match of matches) {
+    const activeWuid = match[1]; // e.g., "WU-334"
+    const matchedWu = checkWuLaneMatch(activeWuid, wuid, projectRoot, targetLane);
+    if (matchedWu) {
+      inProgressWUs.push(matchedWu);
+    }
+  }
+
+  return inProgressWUs;
+}
+
 /**
  * Check if a lane is free (in_progress WU count is below wip_limit)
  *
@@ -479,9 +652,6 @@ export function checkLaneFree(
   wuid: string,
   options: CheckLaneFreeOptions = {},
 ): CheckLaneFreeResult {
-  /** Section heading marker for H2 headings */
-  const SECTION_HEADING_PREFIX = '## ';
-
   try {
     // Read status.md
     if (!existsSync(statusPath)) {
@@ -491,40 +661,17 @@ export function checkLaneFree(
     const content = readFileSync(statusPath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
 
-    // Find "## In Progress" section
-    const inProgressIdx = lines.findIndex((l) => isInProgressHeader(l));
-
-    if (inProgressIdx === -1) {
-      return {
-        free: false,
-        occupiedBy: null,
-        error: 'Could not find "## In Progress" section in status.md',
-      };
+    const { section, error } = extractInProgressSection(lines);
+    if (error) {
+      return { free: false, occupiedBy: null, error };
     }
-
-    // Find end of In Progress section (next ## heading or end of file)
-    let endIdx = lines
-      .slice(inProgressIdx + 1)
-      .findIndex((l) => l.startsWith(SECTION_HEADING_PREFIX));
-    if (endIdx === -1) endIdx = lines.length - inProgressIdx - 1;
-    else endIdx = inProgressIdx + 1 + endIdx;
-
-    // Extract WU links from In Progress section
-    const section = lines.slice(inProgressIdx + 1, endIdx).join(STRING_LITERALS.NEWLINE);
 
     // WU-1016: Get WIP limit for this lane from config
     const wipLimit = getWipLimitForLane(lane, { configPath: options.configPath });
 
-    // Check for "No items" marker
+    // Check for "No items" marker or no WU links
     if (section.includes(NO_ITEMS_MARKER)) {
-      return {
-        free: true,
-        occupiedBy: null,
-        error: null,
-        inProgressWUs: [],
-        wipLimit,
-        currentCount: 0,
-      };
+      return createEmptyLaneResult(wipLimit);
     }
 
     // Extract WU IDs from links like [WU-334 — Title](wu/WU-334.yaml)
@@ -532,62 +679,13 @@ export function checkLaneFree(
     const matches = [...section.matchAll(WU_LINK_PATTERN)];
 
     if (matches.length === 0) {
-      return {
-        free: true,
-        occupiedBy: null,
-        error: null,
-        inProgressWUs: [],
-        wipLimit,
-        currentCount: 0,
-      };
+      return createEmptyLaneResult(wipLimit);
     }
 
     // Get project root from statusPath (docs/04-operations/tasks/status.md)
-    // Use path.dirname 4 times: status.md -> tasks -> 04-operations -> docs -> root
     const projectRoot = path.dirname(path.dirname(path.dirname(path.dirname(statusPath))));
-
-    // WU-1016: Collect all WUs in the target lane
-    const inProgressWUs: string[] = [];
     const targetLane = lane.toString().trim().toLowerCase();
-
-    for (const match of matches) {
-      const activeWuid = match[1]; // e.g., "WU-334"
-
-      // Skip if it's the same WU we're trying to claim (shouldn't happen, but be safe)
-      if (activeWuid === wuid) continue;
-
-      // Use WU_PATHS to build the path consistently
-      const wuPath = path.join(projectRoot, WU_PATHS.WU(activeWuid));
-
-      if (!existsSync(wuPath)) {
-        console.warn(
-          `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`,
-        );
-        continue;
-      }
-
-      try {
-        const wuContent = readFileSync(wuPath, { encoding: 'utf-8' });
-        const wuDoc = parseYAML(wuContent) as WUDoc;
-
-        if (!wuDoc || !wuDoc.lane) {
-          console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
-          continue;
-        }
-
-        // Normalize lane names for comparison (case-insensitive, trim whitespace)
-        const activeLane = wuDoc.lane.toString().trim().toLowerCase();
-
-        if (activeLane === targetLane) {
-          // WU-1016: Add to list of in-progress WUs in this lane
-          inProgressWUs.push(activeWuid);
-        }
-      } catch (e) {
-        const errMessage = e instanceof Error ? e.message : String(e);
-        console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${errMessage}`);
-        continue;
-      }
-    }
+    const inProgressWUs = collectInProgressWUsForLane(matches, wuid, projectRoot, targetLane);
 
     // WU-1016: Check if lane is free based on WIP limit
     const currentCount = inProgressWUs.length;
