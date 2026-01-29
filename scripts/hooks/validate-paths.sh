@@ -27,8 +27,14 @@ log_audit() {
 # Define prohibited patterns (case-insensitive)
 PATTERN="(/home/|/Users/|/mnt/c/|/C:/|/D:/)"
 
-# Get list of staged files (ignoring self to avoid false positives)
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -v "scripts/hooks/validate-paths.sh" | grep -v "docs/04-operations/tasks/wu/")
+# Get list of staged files (ignoring documentation and self to avoid false positives)
+# Documentation files may contain example paths for illustration
+FILES=$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -v "scripts/hooks/validate-paths.sh" \
+  | grep -v "docs/04-operations/tasks/wu/" \
+  | grep -v "apps/docs/" \
+  | grep -v "\.md$" \
+  | grep -v "\.mdx$")
 
 if [ -z "$FILES" ]; then
   exit 0

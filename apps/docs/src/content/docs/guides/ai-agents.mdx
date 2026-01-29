@@ -122,6 +122,38 @@ The agent can:
 
 ## Safety Guardrails
 
+LumenFlow provides multiple layers of safety for AI agents.
+
+### Universal Safety (Repository-Level)
+
+These protections work for **all agents** regardless of IDE or AI provider:
+
+**Git Safety Wrapper** (`scripts/safe-git`):
+
+```bash
+# Blocks dangerous operations automatically
+./scripts/safe-git worktree remove ...  # BLOCKED
+./scripts/safe-git reset --hard         # BLOCKED
+./scripts/safe-git clean -fd            # BLOCKED
+./scripts/safe-git push --force         # BLOCKED
+```
+
+**Husky Pre-Commit Hooks**:
+
+- Secret scanning (AWS/GitHub/OpenAI keys)
+- Absolute path scanning (`/home/`, `/Users/`)
+- Lockfile sync validation
+- Worktree discipline enforcement
+
+**Audit Logs**:
+
+- `.beacon/safety-blocks.log` – Blocked operations
+- `.beacon/force-bypasses.log` – Emergency bypasses
+
+<Aside type="tip">
+  Configure agents to use `scripts/safe-git` as their git command for maximum protection.
+</Aside>
+
 ### Scope Limits
 
 Define what agents can and cannot do:
