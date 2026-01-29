@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1184 — Fix pre-existing lint errors in init.ts](wu/WU-1184.yaml) — Framework: CLI
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml) — Framework: CLI
 - [WU-1181 — Migrate CLI entry points from process.argv to import.meta.main](wu/WU-1181.yaml) — Framework: CLI
