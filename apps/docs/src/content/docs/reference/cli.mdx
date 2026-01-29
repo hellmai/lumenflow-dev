@@ -479,11 +479,11 @@ pnpm lane:health
 
 **Options:**
 
-| Flag            | Description                         | Required |
-| --------------- | ----------------------------------- | -------- |
-| `-j, --json`    | Output results as JSON              | No       |
-| `-v, --verbose` | Show verbose output with all files  | No       |
-| `--no-coverage` | Skip coverage gap detection         | No       |
+| Flag            | Description                        | Required |
+| --------------- | ---------------------------------- | -------- |
+| `-j, --json`    | Output results as JSON             | No       |
+| `-v, --verbose` | Show verbose output with all files | No       |
+| `--no-coverage` | Skip coverage gap detection        | No       |
 
 **Example Output:**
 
@@ -509,6 +509,7 @@ pnpm lane:health
 **Integration:**
 
 Lane health is also checked by:
+
 - `lumenflow doctor` - Includes lane health in system health check
 - `pnpm gates` - Configurable via `gates.lane_health` in `.lumenflow.config.yaml`
 
@@ -522,14 +523,14 @@ pnpm lane:suggest
 
 **Options:**
 
-| Flag                   | Description                                           | Required |
-| ---------------------- | ----------------------------------------------------- | -------- |
-| `--dry-run`            | Show what would be suggested without LLM call         | No       |
-| `-i, --interactive`    | Interactively accept/skip/edit each suggestion        | No       |
-| `-o, --output <file>`  | Write suggestions to YAML file                        | No       |
-| `--json`               | Output suggestions as JSON                            | No       |
-| `--no-llm`             | Use heuristic-based suggestions (no LLM)              | No       |
-| `--include-git`        | Add git history context (co-occurrence, ownership, churn) | No       |
+| Flag                  | Description                                               | Required |
+| --------------------- | --------------------------------------------------------- | -------- |
+| `--dry-run`           | Show what would be suggested without LLM call             | No       |
+| `-i, --interactive`   | Interactively accept/skip/edit each suggestion            | No       |
+| `-o, --output <file>` | Write suggestions to YAML file                            | No       |
+| `--json`              | Output suggestions as JSON                                | No       |
+| `--no-llm`            | Use heuristic-based suggestions (no LLM)                  | No       |
+| `--include-git`       | Add git history context (co-occurrence, ownership, churn) | No       |
 
 **Examples:**
 
@@ -550,6 +551,7 @@ pnpm lane:suggest --include-git
 **Interactive Mode:**
 
 In interactive mode, for each suggestion you can:
+
 - `a` (accept) - Add suggestion to final output
 - `s` (skip) - Skip this suggestion
 - `e` (edit) - Modify the lane name or description
@@ -558,6 +560,7 @@ In interactive mode, for each suggestion you can:
 **Git History Context (`--include-git`):**
 
 When enabled, extracts insights from git history:
+
 - **Co-occurrence**: Files frequently changed together (suggests shared ownership)
 - **Ownership signals**: Primary contributors for different areas
 - **Churn hotspots**: Files with high change frequency (potential complexity)
