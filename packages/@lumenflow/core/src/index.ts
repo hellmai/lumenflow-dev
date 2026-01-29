@@ -157,6 +157,9 @@ export * from './wu-events-cleanup.js';
 // State Cleanup Orchestration (WU-1208)
 export * from './state-cleanup-core.js';
 
+// State Doctor Integrity Checking (WU-1209)
+export * from './state-doctor-core.js';
+
 // Gates configuration (WU-1067)
 export * from './gates-config.js';
 
