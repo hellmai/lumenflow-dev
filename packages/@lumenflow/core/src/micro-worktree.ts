@@ -54,6 +54,15 @@ import type { GitAdapter } from './git-adapter.js';
 export const MAX_MERGE_RETRIES = 3;
 
 /**
+ * Maximum retry attempts for push when origin/main advances
+ *
+ * WU-1179: When push fails due to race condition (origin advanced while we
+ * were working), rollback local main to origin/main and retry.
+ * Each retry: fetch -> rebase temp branch -> re-merge -> push.
+ */
+export const MAX_PUSH_RETRIES = 3;
+
+/**
  * Environment variable name for LUMENFLOW_FORCE bypass
  *
  * WU-1081: Exported for use in micro-worktree push operations.
@@ -406,6 +415,74 @@ export async function mergeWithRetry(
 }
 
 /**
+ * Push to origin/main with retry logic for race conditions
+ *
+ * WU-1179: When push fails because origin/main advanced (race condition with
+ * parallel agents), this function rolls back local main to origin/main and
+ * retries the full sequence: fetch -> rebase temp branch -> re-merge -> push.
+ *
+ * This prevents the scenario where local main is left diverged from origin
+ * after a push failure.
+ *
+ * @param {Object} mainGit - GitAdapter instance for main checkout
+ * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
+ * @param {string} remote - Remote name (e.g., 'origin')
+ * @param {string} branch - Branch name (e.g., 'main')
+ * @param {string} tempBranchName - Temp branch that was merged (for rebase)
+ * @param {string} logPrefix - Log prefix for console output
+ * @throws {Error} If push fails after all retries
+ */
+export async function pushWithRetry(
+  mainGit,
+  worktreeGit,
+  remote: string,
+  branch: string,
+  tempBranchName: string,
+  logPrefix = DEFAULT_LOG_PREFIX,
+): Promise<void> {
+  for (let attempt = 1; attempt <= MAX_PUSH_RETRIES; attempt++) {
+    try {
+      console.log(
+        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attempt}/${MAX_PUSH_RETRIES})...`,
+      );
+      await mainGit.push(remote, branch);
+      console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+      return;
+    } catch (pushErr) {
+      if (attempt < MAX_PUSH_RETRIES) {
+        console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
+
+        // Step 1: Rollback local main to origin/main
+        console.log(`${logPrefix} Rolling back local ${branch} to ${remote}/${branch}...`);
+        await mainGit.reset(`${remote}/${branch}`, { hard: true });
+
+        // Step 2: Fetch latest origin/main
+        console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
+        await mainGit.fetch(remote, branch);
+
+        // Step 3: Update local main to match origin/main (ff-only)
+        console.log(`${logPrefix} Updating local ${branch}...`);
+        await mainGit.merge(`${remote}/${branch}`, { ffOnly: true });
+
+        // Step 4: Rebase temp branch onto updated main
+        console.log(`${logPrefix} Rebasing temp branch onto ${branch}...`);
+        await worktreeGit.rebase(branch);
+
+        // Step 5: Re-merge temp branch to local main
+        console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
+        await mainGit.merge(tempBranchName, { ffOnly: true });
+      } else {
+        throw new Error(
+          `Push failed after ${MAX_PUSH_RETRIES} attempts. ` +
+            `Origin ${branch} may have significant traffic.\n` +
+            `Error: ${pushErr.message}`,
+        );
+      }
+    }
+  }
+}
+
+/**
  * Push using refspec with LUMENFLOW_FORCE to bypass pre-push hooks
  *
  * WU-1081: Micro-worktree pushes to origin/main need to bypass pre-push hooks
@@ -487,6 +564,16 @@ export async function withMicroWorktree(options) {
   // This makes the operation idempotent - a retry after crash/timeout will succeed
   await cleanupOrphanedMicroWorktree(operation, id, mainGit, logPrefix);
 
+  // WU-1179: Fetch origin/main before starting to minimize race condition window
+  // This ensures we start from the latest origin state, reducing push failures
+  if (!pushOnly) {
+    console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
+    await mainGit.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    // Update local main to match origin/main
+    await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
+    console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+  }
+
   const tempBranchName = getTempBranchName(operation, id);
   const microWorktreePath = createMicroWorktreeDir(`${operation}-`);
 
@@ -546,11 +633,19 @@ export async function withMicroWorktree(options) {
       return { ...result, ref: GIT_REFS.FETCH_HEAD };
     } else {
       // Standard path: merge to local main, then push
+      const gitWorktree = createGitForPath(microWorktreePath);
       await mergeWithRetry(tempBranchName, microWorktreePath, logPrefix);
 
-      console.log(`${logPrefix} Pushing to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}...`);
-      await mainGit.push(REMOTES.ORIGIN, BRANCHES.MAIN);
-      console.log(`${logPrefix} ✅ Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+      // WU-1179: Use pushWithRetry to handle race conditions
+      // On push failure, rollback local main and retry with rebase
+      await pushWithRetry(
+        mainGit,
+        gitWorktree,
+        REMOTES.ORIGIN,
+        BRANCHES.MAIN,
+        tempBranchName,
+        logPrefix,
+      );
 
       return { ...result, ref: BRANCHES.MAIN };
     }
