@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1186 — Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE](wu/WU-1186.yaml) — Content: Documentation
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1181 — Migrate CLI entry points from process.argv to import.meta.main](wu/WU-1181.yaml) — Framework: CLI
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml) — Framework: CLI
