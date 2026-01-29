@@ -13,6 +13,32 @@ import { z } from 'zod';
 import { GatesExecutionConfigSchema } from './gates-config.js';
 
 /**
+ * Event archival configuration (WU-1207)
+ *
+ * Configures archival of old WU events from .lumenflow/state/wu-events.jsonl
+ * to .lumenflow/archive/wu-events-YYYY-MM.jsonl to prevent unbounded growth.
+ */
+export const EventArchivalConfigSchema = z.object({
+  /**
+   * Archive events older than this duration in milliseconds (default: 90 days).
+   * Completed WU events older than this are moved to monthly archive files.
+   * Active WU events (in_progress/blocked/waiting) are never archived.
+   */
+  archiveAfter: z
+    .number()
+    .int()
+    .positive()
+    .default(90 * 24 * 60 * 60 * 1000),
+
+  /**
+   * Whether to keep archive files (default: true).
+   * When true, archived events are preserved in monthly archive files.
+   * When false, archived events are deleted (not recommended for audit trails).
+   */
+  keepArchives: z.boolean().default(true),
+});
+
+/**
  * Directory paths configuration
  */
 export const DirectoriesSchema = z.object({
@@ -69,6 +95,9 @@ export const BeaconPathsSchema = z.object({
   /** State directory (default: '.lumenflow/state') */
   stateDir: z.string().default('.lumenflow/state'),
 
+  /** Archive directory (default: '.lumenflow/archive') */
+  archiveDir: z.string().default('.lumenflow/archive'),
+
   /** Stamps directory (default: '.lumenflow/stamps') */
   stampsDir: z.string().default('.lumenflow/stamps'),
 
@@ -89,6 +118,12 @@ export const BeaconPathsSchema = z.object({
 
   /** Commands log file (default: '.lumenflow/commands.log') */
   commandsLog: z.string().default('.lumenflow/commands.log'),
+
+  /**
+   * WU-1207: Event archival configuration
+   * Controls archival of old WU events to prevent unbounded growth.
+   */
+  eventArchival: EventArchivalConfigSchema.default(() => EventArchivalConfigSchema.parse({})),
 });
 
 /**
@@ -556,6 +591,7 @@ export type GatesConfig = z.infer<typeof GatesConfigSchema>;
 // GatesExecutionConfig exported from gates-config.js
 export type ProgressSignalsConfig = z.infer<typeof ProgressSignalsConfigSchema>;
 export type SignalCleanupConfig = z.infer<typeof SignalCleanupConfigSchema>;
+export type EventArchivalConfig = z.infer<typeof EventArchivalConfigSchema>;
 export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
 

@@ -151,6 +151,9 @@ export * from './stamp-utils.js';
 export * from './lumenflow-config.js';
 export * from './lumenflow-config-schema.js';
 
+// WU Events Cleanup (WU-1207)
+export * from './wu-events-cleanup.js';
+
 // Gates configuration (WU-1067)
 export * from './gates-config.js';
 
