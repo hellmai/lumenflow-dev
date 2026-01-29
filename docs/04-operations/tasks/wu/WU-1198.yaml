@@ -6,8 +6,9 @@ status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - docs/04-operations/_frameworks/lumenflow/**
-  - apps/docs/src/content/docs/**
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
   - packages/@lumenflow/cli/README.md
 tests:
   manual: []
