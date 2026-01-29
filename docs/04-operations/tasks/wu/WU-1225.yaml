@@ -2,7 +2,7 @@ id: WU-1225
 title: 'wu:edit: inconsistent default behavior for --code-paths vs --acceptance'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: ready
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -16,7 +16,7 @@ artifacts:
   - .lumenflow/stamps/WU-1225.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Released (2026-01-29): Redesigning with library-first approach'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
