@@ -363,3 +363,4 @@
 {"type":"claim","wuId":"WU-1187","lane":"Framework: Core","title":"WIP justification: require wip_justification when WIP > 1","timestamp":"2026-01-29T14:17:08.912Z"}
 {"type":"claim","wuId":"WU-1192","lane":"Framework: Core","title":"Consolidate wu-spawn prompt generation to single source of truth","timestamp":"2026-01-29T14:29:00.231Z"}
 {"type":"claim","wuId":"WU-1182","lane":"Framework: CLI","title":"Standardize Commander usage across CLI tools","timestamp":"2026-01-29T14:32:34.049Z"}
+{"type":"claim","wuId":"WU-1193","lane":"Framework: CLI","title":"Orchestration cleanup: fix constants, rename init:plan, remove ghost commands","timestamp":"2026-01-29T14:37:25.286Z"}

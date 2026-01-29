@@ -2,7 +2,7 @@ id: WU-1193
 title: 'Orchestration cleanup: fix constants, rename init:plan, remove ghost commands'
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -72,3 +72,11 @@ acceptance:
   - All skill templates in packages/@lumenflow/cli/templates/ updated
   - Starlight CLI reference updated (apps/docs/src/content/docs/reference/cli.mdx)
   - All gates pass (pnpm gates)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1193
+claimed_at: 2026-01-29T14:37:25.258Z
+baseline_main_sha: 3d23a54bbd2051a4e77930af01e63863845c81c5
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:37:25.264Z
