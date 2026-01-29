@@ -309,9 +309,10 @@ async function main() {
   displaySummary(issues, opts.since);
 }
 
-// Guard main() for testability (WU-1366)
-import { fileURLToPath } from 'node:url';
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// WU-1181: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
+if (import.meta.main) {
   main().catch((err) => {
     die(`Issues query failed: ${err.message}`);
   });

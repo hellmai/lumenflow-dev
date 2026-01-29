@@ -70,7 +70,7 @@ describe('runCLI', () => {
 });
 
 /**
- * WU-1071: Verify CLI entry points use import.meta.main pattern
+ * WU-1071/WU-1181: Verify CLI entry points use import.meta.main pattern
  *
  * The old pattern `process.argv[1] === fileURLToPath(import.meta.url)` fails with
  * pnpm symlinks because process.argv[1] is the symlink path but import.meta.url
@@ -78,16 +78,31 @@ describe('runCLI', () => {
  *
  * The fix is to use `import.meta.main` (Node.js 22.16.0+ built-in) which correctly
  * handles symlinks.
+ *
+ * WU-1181: Extended to validate ALL CLI files with entry guards, not just a subset.
  */
-describe('WU-1071: CLI entry point patterns', () => {
-  // CLI files that should have the main() entry guard
-  const CLI_FILES_WITH_ENTRY_GUARD = [
-    'gates.ts',
-    'wu-spawn.ts',
-    'wu-create.ts',
-    'wu-claim.ts',
-    'wu-done.ts',
-  ] as const;
+describe('WU-1071/WU-1181: CLI entry point patterns', () => {
+  // Files that should NOT be checked for entry guards
+  // (helper modules, index files, tests, or files without CLI entry points)
+  const EXCLUDED_FILES = new Set([
+    'cli-entry-point.ts', // Helper module, not a CLI entry point itself
+    'index.ts', // Re-exports only
+    'merge-block.ts', // Not a CLI entry point (no main guard needed)
+    'wu-done-check.ts', // Not a CLI entry point (no main guard needed)
+    'wu-spawn-completion.ts', // Not a CLI entry point (helper module)
+    'agent-session.ts', // Not a CLI entry point (helper module)
+    'agent-session-end.ts', // Not a CLI entry point (helper module)
+    'agent-log-issue.ts', // Not a CLI entry point (helper module)
+    'orchestrate-init-status.ts', // Not a CLI entry point (helper module)
+    'orchestrate-initiative.ts', // Not a CLI entry point (helper module)
+    'orchestrate-monitor.ts', // Not a CLI entry point (helper module)
+    'initiative-edit.ts', // Not a CLI entry point (no main guard)
+    'wu-block.ts', // Not a CLI entry point (no main guard)
+    'wu-unblock.ts', // Not a CLI entry point (no main guard)
+    'wu-release.ts', // Not a CLI entry point (no main guard)
+    'wu-delete.ts', // Not a CLI entry point (no main guard)
+    'init.ts', // Not a CLI entry point (no main guard)
+  ]);
 
   // Old broken pattern that fails with pnpm symlinks
   const OLD_BROKEN_PATTERN =
@@ -96,30 +111,65 @@ describe('WU-1071: CLI entry point patterns', () => {
   // New working pattern using import.meta.main
   const NEW_WORKING_PATTERN = /if\s*\(\s*import\.meta\.main\s*\)/;
 
-  it('should use import.meta.main instead of process.argv[1] comparison', () => {
+  /**
+   * Discovers all CLI files with entry guards by scanning the src directory.
+   * A file is considered to have an entry guard if it contains either:
+   * - The old broken pattern: if (process.argv[1] === fileURLToPath(import.meta.url))
+   * - The new working pattern: if (import.meta.main)
+   */
+  function discoverCLIFilesWithEntryGuards(): string[] {
     const srcDir = path.resolve(__dirname, '..');
+    const files = readdirSync(srcDir).filter(
+      (f) => f.endsWith('.ts') && !f.endsWith('.test.ts') && !EXCLUDED_FILES.has(f),
+    );
 
-    for (const file of CLI_FILES_WITH_ENTRY_GUARD) {
+    return files.filter((file) => {
+      const content = readFileSync(path.join(srcDir, file), 'utf-8');
+      return OLD_BROKEN_PATTERN.test(content) || NEW_WORKING_PATTERN.test(content);
+    });
+  }
+
+  it('should discover all CLI files with entry guards', () => {
+    const cliFiles = discoverCLIFilesWithEntryGuards();
+
+    // WU-1181: There should be a significant number of CLI files with entry guards
+    // This test ensures we're actually discovering files, not returning an empty list
+    expect(cliFiles.length).toBeGreaterThan(40);
+  });
+
+  it('should use import.meta.main instead of process.argv[1] comparison in ALL CLI files', () => {
+    const srcDir = path.resolve(__dirname, '..');
+    const cliFiles = discoverCLIFilesWithEntryGuards();
+
+    const errors: string[] = [];
+
+    for (const file of cliFiles) {
       const filePath = path.join(srcDir, file);
       const content = readFileSync(filePath, 'utf-8');
 
       // Should NOT have old broken pattern
-      expect(
-        OLD_BROKEN_PATTERN.test(content),
-        `${file} should not use the old broken pattern (process.argv[1] === fileURLToPath)`,
-      ).toBe(false);
+      if (OLD_BROKEN_PATTERN.test(content)) {
+        errors.push(`${file} uses the old broken pattern (process.argv[1] === fileURLToPath)`);
+      }
 
       // Should have new working pattern
-      expect(NEW_WORKING_PATTERN.test(content), `${file} should use import.meta.main pattern`).toBe(
-        true,
-      );
+      if (!NEW_WORKING_PATTERN.test(content)) {
+        errors.push(`${file} does not use import.meta.main pattern`);
+      }
+    }
+
+    if (errors.length > 0) {
+      expect.fail(`Entry point pattern violations:\n${errors.join('\n')}`);
     }
   });
 
   it('should not have unused fileURLToPath imports in CLI files with entry guards', () => {
     const srcDir = path.resolve(__dirname, '..');
+    const cliFiles = discoverCLIFilesWithEntryGuards();
 
-    for (const file of CLI_FILES_WITH_ENTRY_GUARD) {
+    const errors: string[] = [];
+
+    for (const file of cliFiles) {
       const filePath = path.join(srcDir, file);
       const content = readFileSync(filePath, 'utf-8');
 
@@ -130,8 +180,12 @@ describe('WU-1071: CLI entry point patterns', () => {
       const usesFileURLToPath = /fileURLToPath\(/.test(content);
 
       if (hasFileURLToPathImport && !usesFileURLToPath) {
-        expect.fail(`${file} imports fileURLToPath but does not use it - remove unused import`);
+        errors.push(`${file} imports fileURLToPath but does not use it - remove unused import`);
       }
+    }
+
+    if (errors.length > 0) {
+      expect.fail(`Unused fileURLToPath imports:\n${errors.join('\n')}`);
     }
   });
 
