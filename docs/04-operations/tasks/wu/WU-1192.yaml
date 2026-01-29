@@ -2,7 +2,7 @@ id: WU-1192
 title: Consolidate wu-spawn prompt generation to single source of truth
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -27,9 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Two wu-spawn.ts files exist (CLI and Core) with diverged prompt templates. CLI has authoritative version with LUMENFLOW_SPAWN_END sentinel and SKIP-GATES AUTONOMY constraint. Core version (used by orchestrator) is missing these. Refactor to single source of truth in Core, with CLI as thin wrapper.
+description: Two wu-spawn.ts files exist (CLI and Core) with diverged prompt templates. CLI has
+  authoritative version with LUMENFLOW_SPAWN_END sentinel and SKIP-GATES AUTONOMY constraint. Core
+  version (used by orchestrator) is missing these. Refactor to single source of truth in Core, with
+  CLI as thin wrapper.
 acceptance:
   - Prompt template content lives in @lumenflow/core only
   - CLI wu-spawn.ts is thin wrapper calling core
   - orchestrate:initiative output matches wu:spawn output (same sentinel, same constraints)
   - No duplicate prompt template content between packages
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1192
+claimed_at: 2026-01-29T14:29:00.204Z
+baseline_main_sha: 8dcc74fddd07c75f280aa46f0c5ffeadb381b007
+session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:29:00.210Z
