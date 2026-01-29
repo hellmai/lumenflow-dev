@@ -27,7 +27,6 @@
  * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
-import { fileURLToPath } from 'node:url';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -1174,8 +1173,10 @@ async function main() {
   }
 }
 
-// Guard main() execution for testability (WU-1366)
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// WU-1181: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
+if (import.meta.main) {
   main().catch((err) => {
     console.error(`${PREFIX} ❌ ${err.message}`);
     process.exit(EXIT_CODES.ERROR);

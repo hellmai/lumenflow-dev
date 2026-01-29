@@ -17,7 +17,6 @@
  * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - Worktree discipline
  */
 
-import { fileURLToPath } from 'node:url';
 import { isInWorktree, isMainBranch } from '@lumenflow/core/dist/core/worktree-guard.js';
 
 const LOG_PREFIX = '[guard-worktree-commit]';
@@ -181,8 +180,10 @@ Examples:
   process.exit(0);
 }
 
-// Guard main() for testability
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// WU-1181: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
+if (import.meta.main) {
   main().catch((error) => {
     console.error(`${LOG_PREFIX} Unexpected error:`, error);
     process.exit(1);
