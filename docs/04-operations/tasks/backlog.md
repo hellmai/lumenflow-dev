@@ -20,7 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
