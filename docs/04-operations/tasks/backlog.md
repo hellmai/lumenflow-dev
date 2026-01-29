@@ -24,7 +24,6 @@ sections:
 - [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml) — Framework: CLI
 - [WU-1181 — Migrate CLI entry points from process.argv to import.meta.main](wu/WU-1181.yaml) — Framework: CLI
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml) — Framework: CLI
-- [WU-1183 — Fix pre-existing lint errors in micro-worktree.ts](wu/WU-1183.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -32,6 +31,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
+- [WU-1183 — Fix pre-existing lint errors in micro-worktree.ts](wu/WU-1183.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

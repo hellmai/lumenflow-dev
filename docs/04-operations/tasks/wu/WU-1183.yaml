@@ -2,7 +2,7 @@ id: WU-1183
 title: Fix pre-existing lint errors in micro-worktree.ts
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -28,3 +28,11 @@ requires_design_approval: false
 description: Fix no-console errors and missing return types in micro-worktree.ts. These errors pre-date WU-1179.
 acceptance:
   - All lint errors in micro-worktree.ts are fixed
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1183
+claimed_at: 2026-01-29T13:27:12.062Z
+baseline_main_sha: 8c2ed0d06cab4f2601fded07bddb55d0215f3147
+session_id: 295dcd4a-0315-46f8-8d33-5279b5593033
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:27:12.069Z

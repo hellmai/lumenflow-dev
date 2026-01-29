@@ -346,3 +346,4 @@
 {"type":"claim","wuId":"WU-1179","timestamp":"2026-01-29T13:15:12.081Z","lane":"Framework: Core","title":"Fix micro-worktree push race leaving main diverged"}
 {"type":"complete","wuId":"WU-1172","timestamp":"2026-01-29T13:21:46.466Z"}
 {"type":"complete","wuId":"WU-1179","timestamp":"2026-01-29T13:23:37.896Z"}
+{"type":"claim","wuId":"WU-1183","lane":"Framework: Core","title":"Fix pre-existing lint errors in micro-worktree.ts","timestamp":"2026-01-29T13:27:12.079Z"}
