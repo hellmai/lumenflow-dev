@@ -2,7 +2,7 @@ id: WU-1200
 title: 'Bug: orchestrate:initiative marks WUs spawned before agent launch'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -40,3 +40,5 @@ session_id: 4f37f830-997a-4f43-841e-8af91606a60b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T17:43:07.500Z
+locked: true
+completed_at: 2026-01-29T17:51:30.152Z
