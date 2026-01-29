@@ -2,7 +2,7 @@ id: WU-1179
 title: Fix micro-worktree push race leaving main diverged
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,10 +25,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When wu:create or other micro-worktree operations push to origin/main and fail because origin advanced (race condition with parallel agents), the local main is left diverged from origin. The merge succeeded but push failed, and no rollback occurs. This causes friction requiring manual rebase/conflict resolution.
+description: When wu:create or other micro-worktree operations push to origin/main and fail because
+  origin advanced (race condition with parallel agents), the local main is left diverged from
+  origin. The merge succeeded but push failed, and no rollback occurs. This causes friction
+  requiring manual rebase/conflict resolution.
 acceptance:
   - withMicroWorktree fetches origin/main before starting
   - On push failure, local main is rolled back to origin/main
   - After rollback, operation retries (fetch -> rebase temp branch -> merge -> push)
   - MAX_PUSH_RETRIES constant added (suggest 3)
   - Unit tests cover push failure + retry scenario
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1179
+claimed_at: 2026-01-29T13:15:12.051Z
+baseline_main_sha: 1e183f0f7c0084def7aefe873bc1969b95d2adcd
+session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:15:12.058Z

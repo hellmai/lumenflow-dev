@@ -343,3 +343,4 @@
 {"type":"complete","wuId":"WU-1176","timestamp":"2026-01-29T12:33:39.263Z"}
 {"type":"claim","wuId":"WU-1172","lane":"Framework: Core","title":"Universal Agent Safety: Documentation & Bypass Completeness","timestamp":"2026-01-29T13:01:48.693Z"}
 {"type":"claim","wuId":"WU-1177","lane":"Framework: CLI","title":"Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync","timestamp":"2026-01-29T13:02:09.420Z"}
+{"type":"claim","wuId":"WU-1179","lane":"Framework: Core","title":"Fix micro-worktree push race leaving main diverged","timestamp":"2026-01-29T13:15:12.081Z"}
