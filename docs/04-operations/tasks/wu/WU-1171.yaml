@@ -2,7 +2,7 @@ id: WU-1171
 title: 'Universal Agent Onboarding: AGENTS.md + Merge Mode'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -84,3 +84,5 @@ session_id: 9866840b-b845-4343-a7f9-913a812401a1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T11:41:19.196Z
+locked: true
+completed_at: 2026-01-29T12:08:25.325Z
