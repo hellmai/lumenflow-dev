@@ -4,9 +4,37 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      # LumenFlow operational files (WU specs, stamps, state, sessions)
+      - 'docs/04-operations/tasks/wu/**'
+      - 'docs/04-operations/tasks/backlog.md'
+      - 'docs/04-operations/tasks/status.md'
+      - '.lumenflow/stamps/**'
+      - '.lumenflow/state/**'
+      - '.lumenflow/sessions/**'
+      - '.lumenflow/plans/**'
+      - '.lumenflow/telemetry/**'
+      - '.lumenflow/flow.log'
+      - '.lumenflow/skip-gates-audit.log'
+      # Documentation and markdown files
+      - '*.md'
+      - 'docs/**/*.md'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'docs/04-operations/tasks/wu/**'
+      - 'docs/04-operations/tasks/backlog.md'
+      - 'docs/04-operations/tasks/status.md'
+      - '.lumenflow/stamps/**'
+      - '.lumenflow/state/**'
+      - '.lumenflow/sessions/**'
+      - '.lumenflow/plans/**'
+      - '.lumenflow/telemetry/**'
+      - '.lumenflow/flow.log'
+      - '.lumenflow/skip-gates-audit.log'
+      - '*.md'
+      - 'docs/**/*.md'
 
 jobs:
   gates:
