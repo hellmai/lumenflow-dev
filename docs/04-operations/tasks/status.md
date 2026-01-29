@@ -10,6 +10,7 @@ _Last updated: 2026-01-28_
 
 ## Completed
 
+- [WU-1171 — Universal Agent Onboarding: AGENTS.md + Merge Mode](wu/WU-1171.yaml) — 2026-01-29
 - [WU-1170 — Universal Agent Safety: Migrate Claude hooks to Husky/Scripts](wu/WU-1170.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
