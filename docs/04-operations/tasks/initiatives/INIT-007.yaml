@@ -4,7 +4,7 @@ title: State Management Robustness
 description: Bring LumenFlow state management to a robust, configurable state with sensible
   defaults. Address unbounded growth in signals and events while preserving the solid event-sourcing
   foundation. Validated against industry patterns (Beads, OpenAI Agents SDK, LangGraph, CrewAI).
-status: in_progress
+status: done
 priority: P2
 owner: Framework Team
 created: 2026-01-29
