@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Signal Cleanup CLI (WU-1204)
  *
@@ -337,7 +338,9 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  printResult(result!, args.quiet ?? false);
+  if (result) {
+    printResult(result, args.quiet ?? false);
+  }
 }
 
 main().catch((e) => {
