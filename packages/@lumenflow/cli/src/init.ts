@@ -4,17 +4,22 @@
  * WU-1006: Library-First - use core defaults for config generation
  * WU-1028: Vendor-agnostic core + vendor overlays
  * WU-1085: Added createWUParser for proper --help support
+ * WU-1171: Added --merge mode, --client flag, AGENTS.md, updated vendor paths
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
+import { fileURLToPath } from 'node:url';
 import { getDefaultConfig, createWUParser, WU_OPTIONS } from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
 import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
+// WU-1171: Import merge block utilities
+import { updateMergeBlock } from './merge-block.js';
 
 /**
  * WU-1085: CLI option definitions for init command
+ * WU-1171: Added --merge and --client options
  */
 const INIT_OPTIONS = {
   full: {
@@ -27,10 +32,23 @@ const INIT_OPTIONS = {
     flags: '--framework <name>',
     description: 'Add framework hint + overlay docs',
   },
+  // WU-1171: --client is the new primary flag (wu:spawn vocabulary)
+  client: {
+    name: 'client',
+    flags: '--client <type>',
+    description: 'Client type (claude, cursor, windsurf, codex, all, none)',
+  },
+  // WU-1171: --vendor kept as backward-compatible alias
   vendor: {
     name: 'vendor',
     flags: '--vendor <type>',
-    description: 'Vendor type (claude, cursor, aider, all, none)',
+    description: 'Alias for --client (deprecated)',
+  },
+  // WU-1171: --merge mode for safe insertion into existing files
+  merge: {
+    name: 'merge',
+    flags: '--merge',
+    description: 'Merge LumenFlow config into existing files using bounded markers',
   },
   preset: {
     name: 'preset',
@@ -42,13 +60,16 @@ const INIT_OPTIONS = {
 
 /**
  * WU-1085: Parse init command options using createWUParser
+ * WU-1171: Added --merge, --client options
  * Provides proper --help, --version, and option parsing
  */
 export function parseInitOptions(): {
   force: boolean;
   full: boolean;
+  merge: boolean;
   framework?: string;
-  vendor?: VendorType;
+  client?: ClientType;
+  vendor?: ClientType; // Alias for backwards compatibility
   preset?: GatePresetType;
 } {
   const opts = createWUParser({
@@ -57,21 +78,38 @@ export function parseInitOptions(): {
     options: Object.values(INIT_OPTIONS),
   });
 
+  // WU-1171: --client takes precedence, --vendor is alias
+  const clientValue = opts.client || opts.vendor;
+
   return {
     force: opts.force ?? false,
     full: opts.full ?? false,
+    merge: opts.merge ?? false,
     framework: opts.framework,
-    vendor: opts.vendor as VendorType | undefined,
+    client: clientValue as ClientType | undefined,
+    vendor: clientValue as ClientType | undefined,
     preset: opts.preset as GatePresetType | undefined,
   };
 }
 
 /**
- * Supported vendor integrations
+ * Supported client/vendor integrations
+ * WU-1171: Added 'windsurf' and 'codex', renamed primary type to ClientType
  */
-export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
+export type ClientType = 'claude' | 'cursor' | 'windsurf' | 'codex' | 'aider' | 'all' | 'none';
 
-export type DefaultClient = 'claude-code' | 'none';
+/** @deprecated Use ClientType instead */
+// eslint-disable-next-line sonarjs/redundant-type-aliases -- Intentional backwards compatibility
+export type VendorType = ClientType;
+
+const DEFAULT_CLIENT_CLAUDE = 'claude-code' as const;
+
+export type DefaultClient = typeof DEFAULT_CLIENT_CLAUDE | 'none';
+
+/**
+ * WU-1171: File creation mode
+ */
+export type FileMode = 'skip' | 'merge' | 'force';
 
 // WU-1067: Supported gate presets for config-driven gates
 export type GatePresetType = 'node' | 'python' | 'go' | 'rust' | 'dotnet';
@@ -79,8 +117,13 @@ export type GatePresetType = 'node' | 'python' | 'go' | 'rust' | 'dotnet';
 export interface ScaffoldOptions {
   force: boolean;
   full: boolean;
+  /** WU-1171: Enable merge mode for safe insertion into existing files */
+  merge?: boolean;
   framework?: string;
-  vendor?: VendorType;
+  /** WU-1171: Primary client flag (replaces vendor) */
+  client?: ClientType;
+  /** @deprecated Use client instead */
+  vendor?: ClientType;
   defaultClient?: DefaultClient;
   /** WU-1067: Gate preset to populate in gates.execution */
   gatePreset?: GatePresetType;
@@ -89,6 +132,10 @@ export interface ScaffoldOptions {
 export interface ScaffoldResult {
   created: string[];
   skipped: string[];
+  /** WU-1171: Files that were merged (not overwritten) */
+  merged?: string[];
+  /** WU-1171: Warnings encountered during scaffolding */
+  warnings?: string[];
 }
 
 const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
@@ -158,6 +205,67 @@ function getRelativePath(targetDir: string, filePath: string): string {
   return path.relative(targetDir, filePath).split(path.sep).join('/');
 }
 
+// WU-1171: Template for AGENTS.md (universal entry point)
+const AGENTS_MD_TEMPLATE = `# Universal Agent Instructions
+
+**Last updated:** {{DATE}}
+
+This project uses LumenFlow workflow. For complete documentation, see [LUMENFLOW.md](LUMENFLOW.md).
+
+---
+
+## Quick Start
+
+\`\`\`bash
+# 1. Claim a WU
+pnpm wu:claim --id WU-XXXX --lane <Lane>
+cd worktrees/<lane>-wu-xxxx
+
+# 2. Work in worktree, run gates
+pnpm gates
+
+# 3. Complete (ALWAYS run this!)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXXX
+\`\`\`
+
+---
+
+## Critical: Always wu:done
+
+After completing work, ALWAYS run \`pnpm wu:done --id WU-XXXX\` from the main checkout.
+
+This is the single most forgotten step. See [LUMENFLOW.md](LUMENFLOW.md) for details.
+
+---
+
+## Core Principles
+
+1. **TDD**: Write tests first, then implementation
+2. **Worktree Discipline**: After \`wu:claim\`, work ONLY in the worktree
+3. **Gates Before Done**: Run \`pnpm gates\` before \`wu:done\`
+4. **Never Bypass Hooks**: No \`--no-verify\`
+
+---
+
+## Forbidden Commands
+
+- \`git reset --hard\`
+- \`git push --force\`
+- \`git stash\` (on main)
+- \`--no-verify\`
+
+---
+
+## Vendor-Specific Overlays
+
+This file provides universal guidance for all AI agents. Additional vendor-specific configuration:
+
+- **Claude Code**: See \`CLAUDE.md\` (if present)
+- **Cursor**: See \`.cursor/rules/lumenflow.md\` (if present)
+- **Windsurf**: See \`.windsurf/rules/lumenflow.md\` (if present)
+`;
+
 // Template for LUMENFLOW.md (main entry point)
 const LUMENFLOW_MD_TEMPLATE = `# LumenFlow Workflow Guide\n\n**Last updated:** {{DATE}}\n\nLumenFlow is a vendor-agnostic workflow framework for AI-native software development.\n\n---\n\n## Critical Rule: ALWAYS Run wu:done\n\n**After completing work on a WU, you MUST run \`pnpm wu:done --id WU-XXXX\` from the main checkout.**\n\nThis is the single most forgotten step. Do NOT:\n- Write "To Complete: pnpm wu:done" and stop\n- Ask if you should run wu:done\n- Forget to run wu:done\n\n**DO**: Run \`pnpm wu:done --id WU-XXXX\` immediately after gates pass.\n\n---\n\n## Quick Start\n\n\`\`\`bash\n# 1. Create a WU\npnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"\n\n# 2. Edit WU spec with acceptance criteria, then claim:\npnpm wu:claim --id WU-XXXX --lane <Lane>\ncd worktrees/<lane>-wu-xxxx\n\n# 3. Implement in worktree\n\n# 4. Run gates\npnpm gates --docs-only  # for docs changes\npnpm gates              # for code changes\n\n# 5. Complete (from main checkout)\ncd {{PROJECT_ROOT}}\npnpm wu:done --id WU-XXXX\n\`\`\`\n\n---\n\n## Core Principles\n\n1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)\n2. **Library-First**: Search existing libraries before custom code\n3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings\n4. **Worktree Discipline**: After \`wu:claim\`, work ONLY in the worktree\n5. **Gates Before Done**: All gates must pass before \`wu:done\`\n6. **Do Not Bypass Hooks**: No \`--no-verify\`, fix issues properly\n7. **Always wu:done**: Complete every WU by running \`pnpm wu:done\`\n\n---\n\n## Documentation Structure\n\n### Core (Vendor-Agnostic)\n\n- **LUMENFLOW.md** - This file, main entry point\n- **.lumenflow/constraints.md** - Non-negotiable workflow constraints\n- **.lumenflow/agents/** - Agent instructions (vendor-agnostic)\n- **.lumenflow.config.yaml** - Workflow configuration\n\n### Optional Overlays\n\n- **CLAUDE.md + .claude/agents/** - Claude Code overlay (auto if Claude Code detected)\n- **docs/04-operations/tasks/** - Task boards and WU storage (\`lumenflow init --full\`)\n- **docs/04-operations/_frameworks/<framework>/** - Framework overlay docs (\`lumenflow init --framework <name>\`)\n- **.lumenflow.framework.yaml** - Framework hint file (created with \`--framework\`)\n\n---\n\n## Worktree Discipline (IMMUTABLE LAW)\n\nAfter claiming a WU, you MUST work in its worktree:\n\n\`\`\`bash\n# 1. Claim creates worktree\npnpm wu:claim --id WU-XXX --lane <lane>\n\n# 2. IMMEDIATELY cd to worktree\ncd worktrees/<lane>-wu-xxx\n\n# 3. ALL work happens here\n\n# 4. Return to main ONLY to complete\ncd {{PROJECT_ROOT}}\npnpm wu:done --id WU-XXX\n\`\`\`\n\n---\n\n## Definition of Done\n\n- Acceptance criteria satisfied\n- Gates green (\`pnpm gates\` or \`pnpm gates --docs-only\`)\n- WU YAML status = \`done\`\n- \`wu:done\` has been run\n\n---\n\n## Commands Reference\n\n| Command           | Description                         |\n| ----------------- | ----------------------------------- |\n| \`pnpm wu:create\` | Create new WU spec                  |\n| \`pnpm wu:claim\`  | Claim WU and create worktree        |\n| \`pnpm wu:done\`   | Complete WU (merge, stamp, cleanup) |\n| \`pnpm gates\`     | Run quality gates                   |\n\n---\n\n## Constraints\n\nSee [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules.\n\n---\n\n## Agent Onboarding\n\n- Start with **CLAUDE.md** if present (Claude Code overlay).\n- Add vendor-agnostic guidance in **.lumenflow/agents/**.\n- Add framework-specific notes in **docs/04-operations/_frameworks/<framework>/**.\n`;
 
@@ -199,8 +307,75 @@ const CLAUDE_SETTINGS_TEMPLATE = `{
 }
 `;
 
-// Template for .cursor/rules.md
-const CURSOR_RULES_TEMPLATE = `# Cursor Rules\n\nThis project uses LumenFlow workflow. See [LUMENFLOW.md](../LUMENFLOW.md).\n\n## Critical Rules\n\n1. **Always run wu:done** - After gates pass, run \`pnpm wu:done --id WU-XXX\`\n2. **Work in worktrees** - After \`wu:claim\`, work only in the worktree\n3. **Never bypass hooks** - No \`--no-verify\`\n4. **TDD** - Write tests first\n\n## Forbidden Commands\n\n- \`git reset --hard\`\n- \`git push --force\`\n- \`git stash\` (on main)\n- \`--no-verify\`\n`;
+// WU-1171: Template for .cursor/rules/lumenflow.md (updated path)
+const CURSOR_RULES_TEMPLATE = `# Cursor LumenFlow Rules
+
+This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
+
+## Critical Rules
+
+1. **Always run wu:done** - After gates pass, run \`pnpm wu:done --id WU-XXX\`
+2. **Work in worktrees** - After \`wu:claim\`, work only in the worktree
+3. **Never bypass hooks** - No \`--no-verify\`
+4. **TDD** - Write tests first
+
+## Forbidden Commands
+
+- \`git reset --hard\`
+- \`git push --force\`
+- \`git stash\` (on main)
+- \`--no-verify\`
+
+## Quick Reference
+
+\`\`\`bash
+# Claim WU
+pnpm wu:claim --id WU-XXX --lane <Lane>
+cd worktrees/<lane>-wu-xxx
+
+# Run gates
+pnpm gates
+
+# Complete (from main)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+\`\`\`
+`;
+
+// WU-1171: Template for .windsurf/rules/lumenflow.md
+const WINDSURF_RULES_TEMPLATE = `# Windsurf LumenFlow Rules
+
+This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
+
+## Critical Rules
+
+1. **Always run wu:done** - After gates pass, run \`pnpm wu:done --id WU-XXX\`
+2. **Work in worktrees** - After \`wu:claim\`, work only in the worktree
+3. **Never bypass hooks** - No \`--no-verify\`
+4. **TDD** - Write tests first
+
+## Forbidden Commands
+
+- \`git reset --hard\`
+- \`git push --force\`
+- \`git stash\` (on main)
+- \`--no-verify\`
+
+## Quick Reference
+
+\`\`\`bash
+# Claim WU
+pnpm wu:claim --id WU-XXX --lane <Lane>
+cd worktrees/<lane>-wu-xxx
+
+# Run gates
+pnpm gates
+
+# Complete (from main)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+\`\`\`
+`;
 
 // Template for .aider.conf.yml
 const AIDER_CONF_TEMPLATE = `# Aider Configuration for LumenFlow Projects\n# See LUMENFLOW.md for workflow documentation\n\nmodel: gpt-4-turbo\nauto-commits: false\ndirty-commits: false\n\nread:\n  - LUMENFLOW.md\n  - .lumenflow/constraints.md\n`;
@@ -1000,7 +1175,7 @@ pnpm typecheck            # Check types
  */
 function detectDefaultClient(): DefaultClient {
   if (process.env.CLAUDE_PROJECT_DIR || process.env.CLAUDE_CODE) {
-    return 'claude-code';
+    return DEFAULT_CLIENT_CLAUDE;
   }
   return 'none';
 }
@@ -1062,15 +1237,72 @@ function parsePresetArg(args: string[]): GatePresetType | undefined {
   return undefined;
 }
 
-function shouldUseVendor(vendor: VendorType | undefined, defaultClient: DefaultClient): VendorType {
+/**
+ * WU-1171: Resolve client type from options
+ * --client takes precedence over --vendor (backwards compat)
+ */
+function resolveClientType(
+  client: ClientType | undefined,
+  vendor: ClientType | undefined,
+  defaultClient: DefaultClient,
+): ClientType {
+  // Explicit --client or --vendor takes precedence
+  if (client) {
+    return client;
+  }
   if (vendor) {
     return vendor;
   }
-  return defaultClient === 'claude-code' ? 'claude' : 'none';
+  // Default based on environment
+  return defaultClient === DEFAULT_CLIENT_CLAUDE ? 'claude' : 'none';
+}
+
+/**
+ * WU-1171: Determine file mode from options
+ */
+function getFileMode(options: ScaffoldOptions): FileMode {
+  if (options.force) {
+    return 'force';
+  }
+  if (options.merge) {
+    return 'merge';
+  }
+  return 'skip';
+}
+
+/**
+ * WU-1171: Get templates directory path
+ */
+function getTemplatesDir(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  // Check for dist/templates (production) or ../templates (development)
+  const distTemplates = path.join(__dirname, '..', 'templates');
+  if (fs.existsSync(distTemplates)) {
+    return distTemplates;
+  }
+
+  throw new Error(`Templates directory not found at ${distTemplates}`);
+}
+
+/**
+ * WU-1171: Load a template file
+ */
+function loadTemplate(templatePath: string): string {
+  const templatesDir = getTemplatesDir();
+  const fullPath = path.join(templatesDir, templatePath);
+
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Template not found: ${templatePath}`);
+  }
+
+  return fs.readFileSync(fullPath, 'utf-8');
 }
 
 /**
  * Scaffold a new LumenFlow project
+ * WU-1171: Added AGENTS.md, --merge mode, updated vendor/client handling
  */
 export async function scaffoldProject(
   targetDir: string,
@@ -1079,10 +1311,15 @@ export async function scaffoldProject(
   const result: ScaffoldResult = {
     created: [],
     skipped: [],
+    merged: [],
+    warnings: [],
   };
 
   const defaultClient = options.defaultClient ?? detectDefaultClient();
-  const vendor = shouldUseVendor(options.vendor, defaultClient);
+  // WU-1171: Use resolveClientType with both client and vendor (vendor is deprecated but kept for backwards compat)
+  // eslint-disable-next-line sonarjs/deprecation -- Intentional backwards compatibility
+  const client = resolveClientType(options.client, options.vendor, defaultClient);
+  const fileMode = getFileMode(options);
 
   // Ensure target directory exists
   if (!fs.existsSync(targetDir)) {
@@ -1095,19 +1332,41 @@ export async function scaffoldProject(
   };
 
   // Create .lumenflow.config.yaml (WU-1067: includes gate preset if specified)
+  // Note: Config files don't use merge mode (always skip or force)
   await createFile(
     path.join(targetDir, CONFIG_FILE_NAME),
     generateLumenflowConfigYaml(options.gatePreset),
-    options.force,
+    options.force ? 'force' : 'skip',
     result,
     targetDir,
   );
+
+  // WU-1171: Create AGENTS.md (universal entry point for all agents)
+  try {
+    const agentsTemplate = loadTemplate('core/AGENTS.md.template');
+    await createFile(
+      path.join(targetDir, 'AGENTS.md'),
+      processTemplate(agentsTemplate, tokenDefaults),
+      fileMode,
+      result,
+      targetDir,
+    );
+  } catch {
+    // Fallback to hardcoded template if template file not found
+    await createFile(
+      path.join(targetDir, 'AGENTS.md'),
+      processTemplate(AGENTS_MD_TEMPLATE, tokenDefaults),
+      fileMode,
+      result,
+      targetDir,
+    );
+  }
 
   // Create LUMENFLOW.md (main entry point)
   await createFile(
     path.join(targetDir, 'LUMENFLOW.md'),
     processTemplate(LUMENFLOW_MD_TEMPLATE, tokenDefaults),
-    options.force,
+    fileMode,
     result,
     targetDir,
   );
@@ -1116,7 +1375,7 @@ export async function scaffoldProject(
   await createFile(
     path.join(targetDir, LUMENFLOW_DIR, 'constraints.md'),
     processTemplate(CONSTRAINTS_MD_TEMPLATE, tokenDefaults),
-    options.force,
+    fileMode,
     result,
     targetDir,
   );
@@ -1126,7 +1385,7 @@ export async function scaffoldProject(
   await createFile(
     path.join(targetDir, LUMENFLOW_AGENTS_DIR, '.gitkeep'),
     '',
-    options.force,
+    options.force ? 'force' : 'skip',
     result,
     targetDir,
   );
@@ -1141,8 +1400,8 @@ export async function scaffoldProject(
     await scaffoldFrameworkOverlay(targetDir, options, result, tokenDefaults);
   }
 
-  // Scaffold vendor-specific files
-  await scaffoldVendorFiles(targetDir, options, result, tokenDefaults, vendor);
+  // Scaffold client-specific files (WU-1171: renamed from vendor)
+  await scaffoldClientFiles(targetDir, options, result, tokenDefaults, client);
 
   return result;
 }
@@ -1334,21 +1593,25 @@ async function scaffoldFrameworkOverlay(
 }
 
 /**
- * Scaffold vendor-specific files based on --vendor option
+ * WU-1171: Scaffold client-specific files based on --client option
+ * Updated paths: Cursor uses .cursor/rules/lumenflow.md, Windsurf uses .windsurf/rules/lumenflow.md
  */
-async function scaffoldVendorFiles(
+async function scaffoldClientFiles(
   targetDir: string,
   options: ScaffoldOptions,
   result: ScaffoldResult,
   tokens: Record<string, string>,
-  vendor: VendorType,
+  client: ClientType,
 ): Promise<void> {
+  const fileMode = getFileMode(options);
+
   // Claude Code
-  if (vendor === 'claude' || vendor === 'all') {
+  if (client === 'claude' || client === 'all') {
+    // WU-1171: Single CLAUDE.md at root only (no .claude/CLAUDE.md duplication)
     await createFile(
       path.join(targetDir, 'CLAUDE.md'),
       processTemplate(CLAUDE_MD_TEMPLATE, tokens),
-      options.force,
+      fileMode,
       result,
       targetDir,
     );
@@ -1357,7 +1620,7 @@ async function scaffoldVendorFiles(
     await createFile(
       path.join(targetDir, CLAUDE_AGENTS_DIR, '.gitkeep'),
       '',
-      options.force,
+      options.force ? 'force' : 'skip',
       result,
       targetDir,
     );
@@ -1365,7 +1628,7 @@ async function scaffoldVendorFiles(
     await createFile(
       path.join(targetDir, CLAUDE_DIR, 'settings.json'),
       CLAUDE_SETTINGS_TEMPLATE,
-      options.force,
+      options.force ? 'force' : 'skip',
       result,
       targetDir,
     );
@@ -1377,25 +1640,59 @@ async function scaffoldVendorFiles(
     await scaffoldAgentOnboardingDocs(targetDir, options, result, tokens);
   }
 
-  // Cursor
-  if (vendor === 'cursor' || vendor === 'all') {
-    const cursorDir = path.join(targetDir, '.cursor');
-    await createDirectory(cursorDir, result, targetDir);
+  // WU-1171: Cursor uses .cursor/rules/lumenflow.md (not .cursor/rules.md)
+  if (client === 'cursor' || client === 'all') {
+    const cursorRulesDir = path.join(targetDir, '.cursor', 'rules');
+    await createDirectory(cursorRulesDir, result, targetDir);
+
+    // Try to load from template, fallback to hardcoded
+    let cursorContent: string;
+    try {
+      cursorContent = loadTemplate('vendors/cursor/.cursor/rules/lumenflow.md.template');
+    } catch {
+      cursorContent = CURSOR_RULES_TEMPLATE;
+    }
+
     await createFile(
-      path.join(cursorDir, 'rules.md'),
-      processTemplate(CURSOR_RULES_TEMPLATE, tokens),
-      options.force,
+      path.join(cursorRulesDir, 'lumenflow.md'),
+      processTemplate(cursorContent, tokens),
+      fileMode,
       result,
       targetDir,
     );
   }
 
+  // WU-1171: Windsurf uses .windsurf/rules/lumenflow.md (not .windsurfrules)
+  if (client === 'windsurf' || client === 'all') {
+    const windsurfRulesDir = path.join(targetDir, '.windsurf', 'rules');
+    await createDirectory(windsurfRulesDir, result, targetDir);
+
+    // Try to load from template, fallback to hardcoded
+    let windsurfContent: string;
+    try {
+      windsurfContent = loadTemplate('vendors/windsurf/.windsurf/rules/lumenflow.md.template');
+    } catch {
+      windsurfContent = WINDSURF_RULES_TEMPLATE;
+    }
+
+    await createFile(
+      path.join(windsurfRulesDir, 'lumenflow.md'),
+      processTemplate(windsurfContent, tokens),
+      fileMode,
+      result,
+      targetDir,
+    );
+  }
+
+  // WU-1171: Codex reads AGENTS.md directly - minimal extra config needed
+  // AGENTS.md is always created, so nothing extra needed for codex
+
   // Aider
-  if (vendor === 'aider' || vendor === 'all') {
+  if (client === 'aider' || client === 'all') {
     await createFile(
       path.join(targetDir, '.aider.conf.yml'),
       AIDER_CONF_TEMPLATE,
-      options.force,
+      fileMode,
       result,
       targetDir,
     );
@@ -1417,22 +1714,90 @@ async function createDirectory(
 }
 
 /**
- * Create a file, respecting force option
+ * WU-1171: Create a file with support for skip, merge, and force modes
+ *
+ * @param filePath - Path to the file to create
+ * @param content - Content to write (or merge block content in merge mode)
+ * @param mode - 'skip' (default), 'merge', or 'force'
+ * @param result - ScaffoldResult to track created/skipped/merged files
+ * @param targetDir - Target directory for relative path calculation
  */
 async function createFile(
   filePath: string,
   content: string,
-  force: boolean,
+  mode: FileMode | boolean,
   result: ScaffoldResult,
   targetDir: string,
 ): Promise<void> {
   const relativePath = getRelativePath(targetDir, filePath);
 
-  if (fs.existsSync(filePath) && !force) {
+  // Handle boolean for backwards compatibility (true = force, false = skip)
+  const resolvedMode = resolveBooleanToFileMode(mode);
+
+  // Ensure merged/warnings arrays exist
+  result.merged = result.merged ?? [];
+  result.warnings = result.warnings ?? [];
+
+  const fileExists = fs.existsSync(filePath);
+
+  if (fileExists && resolvedMode === 'skip') {
     result.skipped.push(relativePath);
     return;
   }
 
+  if (fileExists && resolvedMode === 'merge') {
+    handleMergeMode(filePath, content, result, relativePath);
+    return;
+  }
+
+  // Force mode or file doesn't exist: write new content
+  writeNewFile(filePath, content, result, relativePath);
+}
+
+/**
+ * Convert boolean or FileMode to FileMode
+ */
+function resolveBooleanToFileMode(mode: FileMode | boolean): FileMode {
+  if (typeof mode === 'boolean') {
+    return mode ? 'force' : 'skip';
+  }
+  return mode;
+}
+
+/**
+ * Handle merge mode file update
+ */
+function handleMergeMode(
+  filePath: string,
+  content: string,
+  result: ScaffoldResult,
+  relativePath: string,
+): void {
+  const existingContent = fs.readFileSync(filePath, 'utf-8');
+  const mergeResult = updateMergeBlock(existingContent, content);
+
+  if (mergeResult.unchanged) {
+    result.skipped.push(relativePath);
+    return;
+  }
+
+  if (mergeResult.warning) {
+    result.warnings?.push(`${relativePath}: ${mergeResult.warning}`);
+  }
+
+  fs.writeFileSync(filePath, mergeResult.content);
+  result.merged?.push(relativePath);
+}
+
+/**
+ * Write a new file, creating parent directories if needed
+ */
+function writeNewFile(
+  filePath: string,
+  content: string,
+  result: ScaffoldResult,
+  relativePath: string,
+): void {
   const parentDir = path.dirname(filePath);
   if (!fs.existsSync(parentDir)) {
     fs.mkdirSync(parentDir, { recursive: true });
@@ -1445,21 +1810,24 @@ async function createFile(
 /**
  * CLI entry point
  * WU-1085: Updated to use parseInitOptions for proper --help support
+ * WU-1171: Added --merge and --client support
  */
 export async function main(): Promise<void> {
   const opts = parseInitOptions();
   const targetDir = process.cwd();
 
   console.log('[lumenflow init] Scaffolding LumenFlow project...');
-  console.log(`  Mode: ${opts.full ? 'full' : 'minimal'}`);
+  console.log(`  Mode: ${opts.full ? 'full' : 'minimal'}${opts.merge ? ' (merge)' : ''}`);
   console.log(`  Framework: ${opts.framework ?? 'none'}`);
-  console.log(`  Vendor overlays: ${opts.vendor ?? 'auto'}`);
+  console.log(`  Client: ${opts.client ?? 'auto'}`);
   console.log(`  Gate preset: ${opts.preset ?? 'none (manual config)'}`);
 
   const result = await scaffoldProject(targetDir, {
     force: opts.force,
     full: opts.full,
-    vendor: opts.vendor,
+    merge: opts.merge,
+    client: opts.client,
+    vendor: opts.vendor, // Backwards compatibility
     framework: opts.framework,
     gatePreset: opts.preset,
   });
@@ -1469,13 +1837,23 @@ export async function main(): Promise<void> {
     result.created.forEach((f) => console.log(`  + ${f}`));
   }
 
+  if (result.merged && result.merged.length > 0) {
+    console.log('\nMerged (LumenFlow block inserted/updated):');
+    result.merged.forEach((f) => console.log(`  ~ ${f}`));
+  }
+
   if (result.skipped.length > 0) {
-    console.log('\nSkipped (already exists, use --force to overwrite):');
+    console.log('\nSkipped (already exists, use --force to overwrite or --merge to insert block):');
     result.skipped.forEach((f) => console.log(`  - ${f}`));
   }
 
+  if (result.warnings && result.warnings.length > 0) {
+    console.log('\nWarnings:');
+    result.warnings.forEach((w) => console.log(`  ⚠ ${w}`));
+  }
+
   console.log('\n[lumenflow init] Done! Next steps:');
-  console.log('  1. Review LUMENFLOW.md for workflow documentation');
+  console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
   console.log('  3. Run: pnpm wu:create --id WU-0001 --lane <lane> --title "First WU"');
 }

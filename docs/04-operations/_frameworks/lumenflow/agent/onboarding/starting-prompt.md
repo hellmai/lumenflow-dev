@@ -301,9 +301,67 @@ Before reporting a WU complete, verify:
 
 ---
 
+## Universal Agent Entry Points
+
+LumenFlow uses **AGENTS.md** as the universal entry point for all AI agents. This file works with:
+
+- **Claude Code** - Reads AGENTS.md directly
+- **Cursor** - Reads AGENTS.md directly
+- **Windsurf** - Reads AGENTS.md directly
+- **OpenAI Codex** - Reads AGENTS.md directly
+
+### Client-Specific Overlays
+
+Some clients have additional overlay files for client-specific features:
+
+| Client   | Entry Point | Overlay Location             |
+| -------- | ----------- | ---------------------------- |
+| Claude   | AGENTS.md   | CLAUDE.md (root)             |
+| Cursor   | AGENTS.md   | .cursor/rules/lumenflow.md   |
+| Windsurf | AGENTS.md   | .windsurf/rules/lumenflow.md |
+| Codex    | AGENTS.md   | (no overlay, AGENTS.md only) |
+
+### Setting Up for Your Client
+
+When initializing LumenFlow, use the `--client` flag to generate client-specific files:
+
+```bash
+# Universal setup (AGENTS.md only)
+lumenflow init
+
+# Claude-specific setup
+lumenflow init --client claude
+
+# Cursor-specific setup
+lumenflow init --client cursor
+
+# Windsurf-specific setup
+lumenflow init --client windsurf
+
+# All clients
+lumenflow init --client all
+```
+
+### Adding LumenFlow to Existing Projects
+
+Use `--merge` mode to safely add LumenFlow configuration to existing files without overwriting your content:
+
+```bash
+# Merge into existing AGENTS.md (preserves your content)
+lumenflow init --merge
+
+# Merge with client overlay
+lumenflow init --merge --client claude
+```
+
+The merge mode uses bounded markers (`<!-- LUMENFLOW:START -->` and `<!-- LUMENFLOW:END -->`) to safely insert and update the LumenFlow block while preserving everything else.
+
+---
+
 ## Reference Documents
 
 - [LUMENFLOW.md](../../../../../LUMENFLOW.md) - Main workflow documentation
+- [AGENTS.md](../../../../../AGENTS.md) - Universal agent entry point
 - [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 6 non-negotiable rules
 - [troubleshooting-wu-done.md](troubleshooting-wu-done.md) - Why agents forget wu:done
 - [first-wu-mistakes.md](first-wu-mistakes.md) - Common mistakes to avoid

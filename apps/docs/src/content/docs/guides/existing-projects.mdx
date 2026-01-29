@@ -65,15 +65,49 @@ The CLI provides the fastest path to adoption.
      --main-branch main
    ```
 
+   **Adding to existing config files?** Use `--merge` mode to safely insert LumenFlow configuration into your existing `AGENTS.md` or other files without overwriting your content:
+
+   ```bash
+   npx lumenflow-init --merge
+   ```
+
+   The merge mode uses bounded markers (`<!-- LUMENFLOW:START -->` and `<!-- LUMENFLOW:END -->`) to safely insert and update the LumenFlow block. Running `--merge` twice produces no changes on the second run (idempotent).
+
+   **Using a specific AI coding tool?** Use the `--client` flag to generate client-specific overlay files:
+
+   ```bash
+   # Claude Code / Claude in IDE
+   npx lumenflow-init --client claude
+
+   # Cursor IDE
+   npx lumenflow-init --client cursor
+
+   # Windsurf IDE
+   npx lumenflow-init --client windsurf
+
+   # All clients
+   npx lumenflow-init --client all
+   ```
+
 3. **Review generated files**
 
    The init command creates:
 
    <FileTree>
-     - .lumenflow.config.yaml (your configuration) - LUMENFLOW.md (workflow entry point) -
-     .lumenflow/ - constraints.md (non-negotiable rules) - agents/ (AI agent guidance) -
-     docs/04-operations/tasks/ (with --full) - backlog.md - status.md - wu/ (WU spec directory)
+     - .lumenflow.config.yaml (your configuration) - LUMENFLOW.md (workflow entry point) - AGENTS.md
+     (universal AI agent entry point) - .lumenflow/ - constraints.md (non-negotiable rules) -
+     agents/ (AI agent guidance) - docs/04-operations/tasks/ (with --full) - backlog.md - status.md
+     - wu/ (WU spec directory)
    </FileTree>
+
+   With `--client` flags, additional overlay files are created:
+
+   | Client Flag         | Files Created                  |
+   | ------------------- | ------------------------------ |
+   | `--client claude`   | `CLAUDE.md`                    |
+   | `--client cursor`   | `.cursor/rules/lumenflow.md`   |
+   | `--client windsurf` | `.windsurf/rules/lumenflow.md` |
+   | `--client all`      | All of the above               |
 
 4. **Add scripts to package.json**
 
