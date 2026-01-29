@@ -397,3 +397,4 @@
 {"type":"claim","wuId":"WU-1208","timestamp":"2026-01-29T22:09:39.530Z","lane":"Framework: CLI","title":"Create unified pnpm state:cleanup command"}
 {"type":"complete","wuId":"WU-1208","timestamp":"2026-01-29T22:25:12.125Z"}
 {"type":"claim","wuId":"WU-1209","lane":"Framework: CLI","title":"Add state:doctor command for integrity checks","timestamp":"2026-01-29T22:29:02.741Z"}
+{"type":"claim","wuId":"WU-1211","lane":"Framework: Initiatives","title":"Add initiative completeness validation","timestamp":"2026-01-29T22:30:00.036Z"}
