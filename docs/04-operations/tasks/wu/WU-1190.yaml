@@ -1,0 +1,37 @@
+id: WU-1190
+title: lane:suggest git history context enhancement
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/cli/src/lane-suggest.ts
+  - packages/@lumenflow/core/src/git-context-extractor.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/__tests__/git-context-extractor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1190.done
+dependencies: []
+initiative: INIT-006
+blocked_by:
+  - WU-1189
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Enrich LLM context with git history insights: co-occurrence, ownership signals, churn hotspots. Feed into LLM prompt, not algorithmic clustering.'
+acceptance:
+  - pnpm lane:suggest --include-git adds git context to LLM prompt
+  - Extracts co-occurrence, ownership, churn metrics
+  - Gracefully handles repos with limited history
+  - Context stays under token limits (summarizes if needed)
