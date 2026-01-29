@@ -1,30 +1,53 @@
-# AI Agent Vendor Support Matrix
+# AI Coding Assistant Integrations
 
 **Last updated:** 2026-01-29
 
-This document describes LumenFlow's support for various AI coding assistants.
+---
+
+## Works with Any AI
+
+**LumenFlow is friction-free for any AI coding assistant.** If your AI can read project files, it can use LumenFlow.
+
+### Universal Entry Points
+
+Every LumenFlow project includes these plain markdown files that work with ANY AI:
+
+| File                        | Purpose                                  |
+| --------------------------- | ---------------------------------------- |
+| `AGENTS.md`                 | Universal agent instructions             |
+| `LUMENFLOW.md`              | Workflow fundamentals and critical rules |
+| `.lumenflow/constraints.md` | Non-negotiable constraints               |
+
+**No vendor lock-in.** Point any AI at these files and it understands the workflow.
+
+```bash
+# Initialize with universal files only (works with any AI)
+lumenflow init
+```
 
 ---
 
-## Supported Vendors
+## Enhanced Integrations
 
-| Vendor      | Config File                    | Auto-detected | Status         |
-| ----------- | ------------------------------ | ------------- | -------------- |
-| Claude Code | `CLAUDE.md`, `.claude/`        | Yes           | Full Support   |
-| Cursor      | `.cursor/rules/lumenflow.md`   | Yes           | Full Support   |
-| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes           | Full Support   |
-| Cline       | `.clinerules`                  | No            | Full Support   |
-| Codex       | `AGENTS.md`                    | No            | Full Support   |
-| Aider       | `.aider.conf.yml`              | No            | Basic Support  |
-| Antigravity | `AGENTS.md` (native)           | Unknown       | Research Phase |
+For popular AI coding assistants, LumenFlow provides **optional enhanced integrations** with deeper features like auto-detection, skills, and vendor-specific configurations.
+
+| Assistant   | Config File                    | Auto-detected | Enhanced Features               |
+| ----------- | ------------------------------ | ------------- | ------------------------------- |
+| Claude Code | `CLAUDE.md`, `.claude/`        | Yes           | Skills, agents, hooks, settings |
+| Cursor      | `.cursor/rules/lumenflow.md`   | Yes           | Rules integration               |
+| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes           | Rules integration               |
+| Cline       | `.clinerules`                  | No            | Rules file                      |
+| Codex       | `AGENTS.md` (native)           | No            | Uses universal files directly   |
+| Aider       | `.aider.conf.yml`              | No            | Config file                     |
+| Antigravity | `AGENTS.md` (native)           | Unknown       | Research phase                  |
 
 ---
 
-## Vendor Details
+## Integration Details
 
 ### Claude Code (Anthropic)
 
-Claude Code is Anthropic's official CLI for Claude. It has deep integration with LumenFlow.
+Claude Code is Anthropic's official CLI for Claude. It has the deepest integration with LumenFlow.
 
 **Config Files:**
 
@@ -145,24 +168,29 @@ For projects using Antigravity:
 2. The universal instructions in AGENTS.md should work out of the box
 3. Report any issues for future vendor-specific support
 
-### Planned Investigation
+---
 
-- [ ] Confirm AGENTS.md parsing behavior
-- [ ] Test workflow command execution
-- [ ] Investigate MCP tool integration
-- [ ] Determine if vendor-specific config is needed
+## Using Another AI?
+
+If your AI coding assistant isn't listed above, LumenFlow still works:
+
+1. Run `lumenflow init` to create universal entry points
+2. Tell your AI to read `AGENTS.md` and `LUMENFLOW.md`
+3. The workflow commands (`wu:claim`, `wu:done`, `gates`) work the same
+
+**Want enhanced integration for your AI?** See [Adding New Integrations](#adding-new-integrations) below.
 
 ---
 
-## All Vendors Setup
+## All Integrations Setup
 
-To configure all supported vendors at once:
+To configure all enhanced integrations at once:
 
 ```bash
 lumenflow init --client all
 ```
 
-This creates all vendor-specific configuration files.
+This creates all vendor-specific configuration files alongside the universal entry points.
 
 ---
 
@@ -180,12 +208,12 @@ To ensure all vendor configs are in sync with the template:
 
 ---
 
-## Adding New Vendors
+## Adding New Integrations
 
-To add support for a new AI coding assistant:
+To add enhanced integration for a new AI coding assistant:
 
 1. Update `templates/vendor-rules.template.md` (single source of truth)
 2. Add vendor config path to `scripts/sync-vendor-configs.sh`
 3. Add scaffolding in `packages/@lumenflow/cli/src/init.ts`
-4. Update this vendor support matrix
+4. Update this integrations document
 5. Test with `lumenflow init --client <vendor>`

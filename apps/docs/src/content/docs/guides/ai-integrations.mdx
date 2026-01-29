@@ -1,0 +1,170 @@
+---
+title: AI Coding Assistant Integrations
+description: LumenFlow works with any AI—enhanced integrations for popular tools
+---
+
+import { Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+
+## Works with Any AI
+
+**LumenFlow is friction-free for any AI coding assistant.** If your AI can read project files, it can use LumenFlow.
+
+<CardGrid>
+  <Card title="Universal Entry Points" icon="document">
+    Every project includes plain markdown files that work with ANY AI: - `AGENTS.md` — Universal
+    agent instructions - `LUMENFLOW.md` — Workflow fundamentals - `.lumenflow/constraints.md` —
+    Non-negotiable rules
+  </Card>
+  <Card title="No Vendor Lock-in" icon="open-book">
+    Point any AI at these files and it understands the workflow. No special setup, no proprietary
+    formats.
+  </Card>
+</CardGrid>
+
+```bash
+# Initialize with universal files only (works with any AI)
+lumenflow init
+```
+
+---
+
+## Enhanced Integrations
+
+For popular AI coding assistants, LumenFlow provides **optional enhanced integrations** with deeper features like auto-detection, skills, and vendor-specific configurations.
+
+| Assistant   | Config File                    | Auto-detected | Enhanced Features               |
+| ----------- | ------------------------------ | ------------- | ------------------------------- |
+| Claude Code | `CLAUDE.md`, `.claude/`        | Yes           | Skills, agents, hooks, settings |
+| Cursor      | `.cursor/rules/lumenflow.md`   | Yes           | Rules integration               |
+| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes           | Rules integration               |
+| Cline       | `.clinerules`                  | No            | Rules file                      |
+| Codex       | `AGENTS.md` (native)           | No            | Uses universal files directly   |
+| Aider       | `.aider.conf.yml`              | No            | Config file                     |
+
+---
+
+## Quick Setup
+
+<Steps>
+
+1. **Any AI (universal)**
+
+   ```bash
+   lumenflow init
+   ```
+
+   Creates `AGENTS.md`, `LUMENFLOW.md`, and `.lumenflow/` — works with any AI that can read files.
+
+2. **Specific AI (enhanced)**
+
+   ```bash
+   lumenflow init --client claude    # Claude Code
+   lumenflow init --client cursor    # Cursor
+   lumenflow init --client windsurf  # Windsurf
+   lumenflow init --client cline     # Cline
+   lumenflow init --client aider     # Aider
+   ```
+
+   Adds vendor-specific configs alongside universal files.
+
+3. **All integrations**
+   ```bash
+   lumenflow init --client all
+   ```
+   Creates config files for all supported AI assistants.
+
+</Steps>
+
+---
+
+## Integration Details
+
+### Claude Code (Anthropic)
+
+Claude Code has the deepest integration with LumenFlow.
+
+**Config Files:**
+
+- `CLAUDE.md` — Root-level instructions
+- `.claude/settings.json` — Permission configuration
+- `.claude/agents/` — Agent definitions
+- `.claude/skills/` — Skill definitions (domain expertise)
+
+**Auto-detection:** Environment variables `CLAUDE_PROJECT_DIR` or `CLAUDE_CODE`
+
+**Unique Features:**
+
+- Skills system for loading domain expertise on demand
+- Agent spawning for parallel work
+- Hooks for automated workflows
+- Memory layer integration
+
+### Cursor
+
+**Config Files:**
+
+- `.cursor/rules/lumenflow.md` — LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `CURSOR_`
+
+### Windsurf
+
+**Config Files:**
+
+- `.windsurf/rules/lumenflow.md` — LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `WINDSURF_`
+
+### Cline
+
+**Config Files:**
+
+- `.clinerules` — LumenFlow rules (root-level)
+
+**Auto-detection:** Not supported
+
+### Aider
+
+**Config Files:**
+
+- `.aider.conf.yml` — Aider configuration
+
+---
+
+## Using Another AI?
+
+<Aside type="tip">
+  If your AI coding assistant isn't listed above, LumenFlow still works perfectly:
+
+1. Run `lumenflow init` to create universal entry points
+2. Tell your AI to read `AGENTS.md` and `LUMENFLOW.md`
+3. The workflow commands (`wu:claim`, `wu:done`, `gates`) work the same
+   </Aside>
+
+---
+
+## Keep Configs in Sync
+
+All vendor configs are generated from a single template:
+
+```bash
+# Check if configs are in sync
+./scripts/sync-vendor-configs.sh --check
+
+# Regenerate all configs from template
+./scripts/sync-vendor-configs.sh
+```
+
+The template lives at `templates/vendor-rules.template.md`.
+
+---
+
+## Adding New Integrations
+
+Want to add support for another AI assistant? Contributions welcome:
+
+1. Update `templates/vendor-rules.template.md` (single source of truth)
+2. Add vendor config path to `scripts/sync-vendor-configs.sh`
+3. Add scaffolding in `packages/@lumenflow/cli/src/init.ts`
+4. Update this documentation
+5. Test with `lumenflow init --client <vendor>`
