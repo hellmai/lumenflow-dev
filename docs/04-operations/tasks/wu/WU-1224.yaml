@@ -16,6 +16,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1224.done
 dependencies: []
+blocked_by:
+  - WU-1223
 risks: []
 notes: ''
 requires_review: false
@@ -26,7 +28,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Integrate state:cleanup into wu:done to automatically clean up signals, memory, and events after successful WU completion. Friction-free workflow - users never need to remember to run cleanup.
+description: Integrate state:cleanup into wu:done to automatically clean up signals, memory, and
+  events after successful WU completion. Friction-free workflow - users never need to remember to
+  run cleanup.
 acceptance:
   - State cleanup runs automatically after wu:done success
   - Cleanup is non-fatal - failures warn but don't fail wu:done
