@@ -334,3 +334,4 @@
 {"type":"complete","wuId":"WU-1170","timestamp":"2026-01-29T11:57:39.433Z"}
 {"type":"complete","wuId":"WU-1171","timestamp":"2026-01-29T12:08:27.130Z"}
 {"type":"claim","wuId":"WU-1173","lane":"Framework: CLI","title":"wu:create: Inconsistent array flag patterns cause user errors","timestamp":"2026-01-29T12:11:51.978Z"}
+{"type":"claim","wuId":"WU-1175","lane":"Operations: CI/CD","title":"Skip CI/CD for WU metadata and docs-only changes","timestamp":"2026-01-29T12:20:00.612Z"}
