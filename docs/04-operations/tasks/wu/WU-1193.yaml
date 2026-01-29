@@ -1,0 +1,40 @@
+id: WU-1193
+title: 'Orchestration cleanup: fix constants, rename init:plan, remove ghost commands'
+lane: 'Framework: CLI'
+type: refactor
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/core/src/domain/orchestration.constants.ts
+  - packages/@lumenflow/cli/src/init-plan.ts
+  - packages/@lumenflow/cli/src/__tests__/init-plan.test.ts
+  - .claude/skills/orchestration/SKILL.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-plan.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1193.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Clean up orchestration technical debt from ExampleApp extraction: fix LANES constant mismatch, update/remove obsolete MANDATORY_TRIGGERS, rename init:plan to initiative:plan for consistency, and remove ghost commands (orchestrate:status, orchestrate:suggest) from skills and docs.'
+acceptance:
+  - LANES constant in orchestration.constants.ts matches .lumenflow.config.yaml definitions
+  - MANDATORY_TRIGGERS updated with LumenFlow-relevant paths or removed if not applicable
+  - init:plan command renamed to initiative:plan (source, test, package.json)
+  - Ghost commands (orchestrate:status, orchestrate:suggest) removed from all skills
+  - All skill templates in packages/@lumenflow/cli/templates/ updated
+  - Starlight CLI reference updated (apps/docs/src/content/docs/reference/cli.mdx)
+  - All gates pass (pnpm gates)

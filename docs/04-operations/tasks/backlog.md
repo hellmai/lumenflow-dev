@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1193 — Orchestration cleanup: fix constants, rename init:plan, remove ghost commands](wu/WU-1193.yaml) — Framework: CLI
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1189 — lane:suggest command: LLM-driven lane generation](wu/WU-1189.yaml) — Framework: CLI
 - [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
