@@ -27,7 +27,6 @@ sections:
 - [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
 - [WU-1195 — Fix pre-existing lint errors in agent-log-issue.ts](wu/WU-1195.yaml) — Framework: CLI
 - [WU-1196 — Fix pre-existing lint errors in wu-state-store.ts and wu-spawn.ts](wu/WU-1196.yaml) — Framework: Core
-- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -35,6 +34,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — Framework: CLI
+- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
