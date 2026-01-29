@@ -29,7 +29,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
-- [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — Framework: CLI
 - [WU-1215 — Update distribution gitignore with complete recursive patterns](wu/WU-1215.yaml) — Content: Documentation
 
 ## ⛔ Blocked
@@ -236,3 +235,4 @@ sections:
 - [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml)
 - [WU-1214 — Add progress_signals configuration to memory docs](wu/WU-1214.yaml)
 - [WU-1213 — Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts](wu/WU-1213.yaml)
+- [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml)
