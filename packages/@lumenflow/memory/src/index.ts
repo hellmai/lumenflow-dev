@@ -11,6 +11,7 @@ export * from './mem-id.js';
 export * from './mem-init-core.js';
 export * from './mem-ready-core.js';
 export * from './mem-signal-core.js';
+export * from './signal-cleanup-core.js';
 export * from './mem-start-core.js';
 export {
   filterSummarizableNodes,

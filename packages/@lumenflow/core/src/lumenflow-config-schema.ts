@@ -281,6 +281,41 @@ export const ProgressSignalsConfigSchema = z.object({
 });
 
 /**
+ * Signal cleanup configuration (WU-1204)
+ *
+ * Configures TTL-based cleanup for signals in .lumenflow/memory/signals.jsonl
+ * to prevent unbounded growth.
+ */
+export const SignalCleanupConfigSchema = z.object({
+  /**
+   * TTL for read signals in milliseconds (default: 7 days).
+   * Read signals older than this are removed during cleanup.
+   */
+  ttl: z
+    .number()
+    .int()
+    .positive()
+    .default(7 * 24 * 60 * 60 * 1000),
+
+  /**
+   * TTL for unread signals in milliseconds (default: 30 days).
+   * Unread signals get a longer TTL to ensure important signals aren't missed.
+   */
+  unreadTtl: z
+    .number()
+    .int()
+    .positive()
+    .default(30 * 24 * 60 * 60 * 1000),
+
+  /**
+   * Maximum number of signals to retain (default: 500).
+   * When exceeded, oldest signals are removed first (keeping newest).
+   * Active WU signals are always retained regardless of this limit.
+   */
+  maxEntries: z.number().int().positive().default(500),
+});
+
+/**
  * Memory layer configuration
  */
 export const MemoryConfigSchema = z.object({
@@ -309,6 +344,12 @@ export const MemoryConfigSchema = z.object({
    * Optional - when not provided, spawn prompts show "Progress Signals (Optional)".
    */
   progress_signals: ProgressSignalsConfigSchema.optional(),
+
+  /**
+   * WU-1204: Signal cleanup configuration
+   * Controls TTL-based cleanup for signals.jsonl to prevent unbounded growth.
+   */
+  signalCleanup: SignalCleanupConfigSchema.default(() => SignalCleanupConfigSchema.parse({})),
 });
 
 /**
@@ -514,6 +555,7 @@ export type WuConfig = z.infer<typeof WuConfigSchema>;
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;
 // GatesExecutionConfig exported from gates-config.js
 export type ProgressSignalsConfig = z.infer<typeof ProgressSignalsConfigSchema>;
+export type SignalCleanupConfig = z.infer<typeof SignalCleanupConfigSchema>;
 export type MemoryConfig = z.infer<typeof MemoryConfigSchema>;
 export type UiConfig = z.infer<typeof UiConfigSchema>;
 
