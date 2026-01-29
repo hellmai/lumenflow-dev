@@ -52,6 +52,7 @@
     "./dependency-guard": "./dist/dependency-guard.js",
     "./worktree-scanner": "./dist/worktree-scanner.js",
     "./worktree-ownership": "./dist/worktree-ownership.js",
+    "./lane-suggest-prompt": "./dist/lane-suggest-prompt.js",
     "./config": "./dist/lumenflow-config.js",
     "./config-schema": "./dist/lumenflow-config-schema.js",
     "./dist/*": "./dist/*",
