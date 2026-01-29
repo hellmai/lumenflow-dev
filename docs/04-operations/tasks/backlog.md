@@ -28,13 +28,13 @@ sections:
 - [WU-1196 — Fix pre-existing lint errors in wu-state-store.ts and wu-spawn.ts](wu/WU-1196.yaml) — Framework: Core
 - [WU-1198 — Documentation: Lane tooling and WIP enforcement](wu/WU-1198.yaml) — Content: Documentation
 - [WU-1199 — Fix pre-existing test failures in check-automated-tests.test.ts](wu/WU-1199.yaml) — Framework: Core
+- [WU-1201 — Fix pre-existing lint errors in initiative-orchestrator tests](wu/WU-1201.yaml) — Framework: Initiatives
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1200 — Bug: orchestrate:initiative marks WUs spawned before agent launch](wu/WU-1200.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -227,3 +227,4 @@ sections:
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml)
 - [WU-1191 — Doctor and gate integration for lane health](wu/WU-1191.yaml)
 - [WU-1189 — lane:suggest command: LLM-driven lane generation](wu/WU-1189.yaml)
+- [WU-1200 — Bug: orchestrate:initiative marks WUs spawned before agent launch](wu/WU-1200.yaml)
