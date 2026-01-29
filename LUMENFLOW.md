@@ -95,16 +95,31 @@ air-gapped/offline work; it creates a local-only claim and warns explicitly.
 
 ### Core (Vendor-Agnostic)
 
-- **LUMENFLOW.md** - This file, main entry point
+- **AGENTS.md** - Universal entry point for AI agents (Codex, Cursor, Windsurf)
+- **LUMENFLOW.md** - This file, main workflow documentation
 - **.lumenflow/constraints.md** - Non-negotiable workflow constraints
 - **.lumenflow/rules/** - Workflow rules (git-safety.md, wu-workflow.md, etc.)
 - **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/** - Agent onboarding documentation
 
-### Vendor Integrations
+### Client/Vendor Overlays
 
-- **.claude/** - Claude Code (settings.json, hooks, .claude/CLAUDE.md)
+- **CLAUDE.md** - Claude Code overlay (single file at root)
+- **.claude/** - Claude Code settings, hooks, skills, agents
+- **.cursor/rules/lumenflow.md** - Cursor rules overlay
+- **.windsurf/rules/lumenflow.md** - Windsurf rules overlay
 
-Additional vendor integrations are available via CLI templates (see `packages/@lumenflow/cli/templates/vendors/`).
+Use `lumenflow init --client <type>` to generate client-specific files:
+
+```bash
+lumenflow init                     # Creates AGENTS.md + LUMENFLOW.md (universal)
+lumenflow init --client claude     # + CLAUDE.md, .claude/
+lumenflow init --client cursor     # + .cursor/rules/lumenflow.md
+lumenflow init --client windsurf   # + .windsurf/rules/lumenflow.md
+lumenflow init --client all        # All of the above
+lumenflow init --merge             # Safe merge into existing files
+```
+
+The `--merge` flag uses bounded markers (`LUMENFLOW:START`/`END`) to safely insert or update LumenFlow config in existing files without overwriting user content.
 
 ---
 
