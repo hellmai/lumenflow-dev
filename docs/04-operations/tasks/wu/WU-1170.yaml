@@ -14,6 +14,8 @@ code_paths:
   - .husky/pre-commit
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
+  - apps/docs/src/content/docs/guides/agent-onboarding.mdx
+  - apps/docs/src/content/docs/guides/ai-agents.mdx
 tests:
   manual:
     - 'Attempt to commit file with mock secret - BLOCKED'

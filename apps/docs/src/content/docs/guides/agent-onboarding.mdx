@@ -235,6 +235,48 @@ Write({
 });
 ```
 
+## Universal Safety Mechanisms
+
+LumenFlow enforces safety at the repository level, protecting all agents (Claude, Cursor, Windsurf, etc.) and humans.
+
+### Git Safety Wrapper
+
+Use `scripts/safe-git` instead of system `git` to block destructive operations:
+
+```bash
+# Use the safe wrapper
+./scripts/safe-git status
+./scripts/safe-git commit -m "feat: add feature"
+
+# These are blocked automatically:
+./scripts/safe-git worktree remove ...  # BLOCKED
+./scripts/safe-git reset --hard         # BLOCKED
+./scripts/safe-git clean -fd            # BLOCKED
+./scripts/safe-git push --force         # BLOCKED
+```
+
+### Repository Hooks (Husky)
+
+These run for **everyone** on every commit:
+
+| Hook | What It Does |
+|------|--------------|
+| Secret scanning | Blocks commits containing AWS/GitHub/OpenAI keys |
+| Absolute path scanning | Blocks `/home/`, `/Users/` paths in code |
+| Lockfile sync | Blocks dependency changes without lockfile update |
+| Worktree discipline | Blocks main commits when worktrees exist |
+
+### Audit Logs
+
+All blocked actions are logged for visibility:
+
+- `._legacy/safety-blocks.log` – Blocked safety violations
+- `._legacy/force-bypasses.log` – Emergency LUMENFLOW_FORCE bypasses
+
+<Aside type="tip">
+  These mechanisms work regardless of which AI agent or IDE you use. They're enforced at the git/hook level, not the agent level.
+</Aside>
+
 ## Agent Safety Card
 
 Quick reference for safe LumenFlow operation.
