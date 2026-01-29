@@ -2,7 +2,7 @@ id: WU-1183
 title: Fix pre-existing lint errors in micro-worktree.ts
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -36,3 +36,5 @@ session_id: 295dcd4a-0315-46f8-8d33-5279b5593033
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:27:12.069Z
+locked: true
+completed_at: 2026-01-29T13:34:44.032Z

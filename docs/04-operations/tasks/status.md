@@ -11,6 +11,7 @@ _Last updated: 2026-01-29_
 
 ## Completed
 
+- [WU-1183 — Fix pre-existing lint errors in micro-worktree.ts](wu/WU-1183.yaml) — 2026-01-29
 - [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — 2026-01-29
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
