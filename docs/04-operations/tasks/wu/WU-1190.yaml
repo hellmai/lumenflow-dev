@@ -2,7 +2,7 @@ id: WU-1190
 title: lane:suggest git history context enhancement
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -44,3 +44,5 @@ session_id: 635f9b3d-d299-4e77-aee5-815e888c5e31
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T18:27:43.983Z
+locked: true
+completed_at: 2026-01-29T18:56:46.356Z
