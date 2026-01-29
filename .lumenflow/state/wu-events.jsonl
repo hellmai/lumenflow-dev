@@ -338,3 +338,4 @@
 {"type":"claim","wuId":"WU-1174","timestamp":"2026-01-29T12:21:54.447Z","lane":"Framework: Core","title":"Lock files pollute main checkout during wu:done"}
 {"type":"complete","wuId":"WU-1175","timestamp":"2026-01-29T12:25:34.545Z"}
 {"type":"complete","wuId":"WU-1173","timestamp":"2026-01-29T12:30:36.379Z"}
+{"type":"claim","wuId":"WU-1176","lane":"Operations: CI/CD","title":"Add .eslintcache to .gitignore and untrack","timestamp":"2026-01-29T12:31:15.053Z"}
