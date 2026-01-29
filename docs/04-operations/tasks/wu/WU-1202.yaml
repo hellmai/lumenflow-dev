@@ -2,7 +2,7 @@ id: WU-1202
 title: 'Bug: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,8 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When checkpoint mode is not auto-enabled (<= 3 pending WUs and <= 2 waves), orchestrate:initiative outputs only the execution plan text with a misleading message 'Copy the spawn commands above' - but no spawn XML is actually output. The spawn XML output only exists in the checkpoint code path (formatCheckpointOutput), not the execution plan path (formatExecutionPlan).
+description: When checkpoint mode is not auto-enabled (<= 3 pending WUs and <= 2 waves),
+  orchestrate:initiative outputs only the execution plan text with a misleading message 'Copy the
+  spawn commands above' - but no spawn XML is actually output. The spawn XML output only exists in
+  the checkpoint code path (formatCheckpointOutput), not the execution plan path
+  (formatExecutionPlan).
 acceptance:
   - Spawn XML output in execution plan path when not dry-run
   - OR always use checkpoint mode when actually executing
   - OR fix misleading message to say 'use -c flag or wu:spawn'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1202
+claimed_at: 2026-01-29T19:01:04.972Z
+baseline_main_sha: f0428094eda306042b6b91866959e69e1fd9667a
+session_id: 847c5d7e-183d-48fa-9716-823a7921f0b3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T19:01:04.978Z
