@@ -11,7 +11,7 @@ created: 2026-01-29
 phases:
   - id: 1
     title: Signal Cleanup
-    status: pending
+    status: done
   - id: 2
     title: Event Archival
     status: pending
