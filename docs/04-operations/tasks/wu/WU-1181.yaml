@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/*.ts
+  - packages/@lumenflow/cli/src
 tests:
   manual: []
   unit:
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T14:01:26.563Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1181
+session_id: 7eaa8a08-f51f-4cc2-aee6-3a5922f7455d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:01:26.568Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +40,3 @@ acceptance:
   - cli-entry-point.test.ts validates ALL CLI files with entry guards, not just 5
   - Unused fileURLToPath imports removed from migrated files
   - pnpm gates passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1181
-claimed_at: 2026-01-29T14:01:26.563Z
-baseline_main_sha: 8ded203fd13a2bb1a1175d700a8c5a9cd4bf303b
-session_id: 7eaa8a08-f51f-4cc2-aee6-3a5922f7455d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T14:01:26.568Z
