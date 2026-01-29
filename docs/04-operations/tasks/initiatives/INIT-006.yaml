@@ -30,3 +30,5 @@ success_metrics:
   - lane:suggest generates sensible lanes for LumenFlow OS repo
   - lumenflow doctor includes lane health check
 labels: []
+wus:
+  - WU-1187
