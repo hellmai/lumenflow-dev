@@ -12,7 +12,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/__tests__/lane-checker.test.ts
+    - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1187.done
