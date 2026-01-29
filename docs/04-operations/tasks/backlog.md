@@ -34,7 +34,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — Framework: CLI
-- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -223,3 +222,4 @@ sections:
 - [WU-1192 — Consolidate wu-spawn prompt generation to single source of truth](wu/WU-1192.yaml)
 - [WU-1193 — Orchestration cleanup: fix constants, rename init:plan, remove ghost commands](wu/WU-1193.yaml)
 - [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml)
+- [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml)

@@ -2,7 +2,7 @@ id: WU-1197
 title: Fix pre-existing lint errors in lane-checker.ts
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -37,3 +37,5 @@ session_id: da883d48-e5eb-48b6-b77f-f5b5e69057a8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T15:38:04.484Z
+locked: true
+completed_at: 2026-01-29T15:42:33.241Z
