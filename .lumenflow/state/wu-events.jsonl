@@ -359,8 +359,9 @@
 {"type":"complete","wuId":"WU-1186","timestamp":"2026-01-29T13:56:45.574Z"}
 {"type":"claim","wuId":"WU-1181","timestamp":"2026-01-29T14:01:26.582Z","lane":"Framework: CLI","title":"Migrate CLI entry points from process.argv to import.meta.main"}
 {"type":"complete","wuId":"WU-1181","timestamp":"2026-01-29T14:11:16.108Z"}
-{"type":"claim","wuId":"WU-1188","lane":"Framework: CLI","title":"lane:health command: overlap detection and coverage gaps","timestamp":"2026-01-29T14:16:44.340Z"}
-{"type":"claim","wuId":"WU-1187","lane":"Framework: Core","title":"WIP justification: require wip_justification when WIP > 1","timestamp":"2026-01-29T14:17:08.912Z"}
-{"type":"claim","wuId":"WU-1192","lane":"Framework: Core","title":"Consolidate wu-spawn prompt generation to single source of truth","timestamp":"2026-01-29T14:29:00.231Z"}
-{"type":"claim","wuId":"WU-1182","lane":"Framework: CLI","title":"Standardize Commander usage across CLI tools","timestamp":"2026-01-29T14:32:34.049Z"}
-{"type":"claim","wuId":"WU-1193","lane":"Framework: CLI","title":"Orchestration cleanup: fix constants, rename init:plan, remove ghost commands","timestamp":"2026-01-29T14:37:25.286Z"}
+{"type":"claim","wuId":"WU-1188","timestamp":"2026-01-29T14:16:44.340Z","lane":"Framework: CLI","title":"lane:health command: overlap detection and coverage gaps"}
+{"type":"claim","wuId":"WU-1187","timestamp":"2026-01-29T14:17:08.912Z","lane":"Framework: Core","title":"WIP justification: require wip_justification when WIP > 1"}
+{"type":"claim","wuId":"WU-1192","timestamp":"2026-01-29T14:29:00.231Z","lane":"Framework: Core","title":"Consolidate wu-spawn prompt generation to single source of truth"}
+{"type":"claim","wuId":"WU-1182","timestamp":"2026-01-29T14:32:34.049Z","lane":"Framework: CLI","title":"Standardize Commander usage across CLI tools"}
+{"type":"claim","wuId":"WU-1193","timestamp":"2026-01-29T14:37:25.286Z","lane":"Framework: CLI","title":"Orchestration cleanup: fix constants, rename init:plan, remove ghost commands"}
+{"type":"complete","wuId":"WU-1182","timestamp":"2026-01-29T14:46:03.058Z"}
