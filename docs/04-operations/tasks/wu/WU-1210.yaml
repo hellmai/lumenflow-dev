@@ -2,7 +2,7 @@ id: WU-1210
 title: Pre-release fixes - test failures, lint errors, CLI docs
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -21,8 +21,10 @@ artifacts:
   - .lumenflow/stamps/WU-1210.done
 dependencies: []
 risks: []
-notes: |
-  Fix: Change default for progress_signals.enabled from false to true so "Required at Milestones" is shown by default.
+notes: >
+  Fix: Change default for progress_signals.enabled from false to true so "Required at Milestones" is
+  shown by default.
+
   Also fixed lint errors in CLI wu-spawn.ts (WU-1205 scope) and added missing CLI docs to README.
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -52,3 +54,5 @@ session_id: 355e4d27-dc48-4261-aeee-567f2e93cb9b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T23:10:53.451Z
+locked: true
+completed_at: 2026-01-29T23:22:49.807Z
