@@ -400,5 +400,6 @@
 {"type":"claim","wuId":"WU-1211","timestamp":"2026-01-29T22:30:00.036Z","lane":"Framework: Initiatives","title":"Add initiative completeness validation"}
 {"type":"complete","wuId":"WU-1209","timestamp":"2026-01-29T22:44:14.279Z"}
 {"type":"complete","wuId":"WU-1211","timestamp":"2026-01-29T22:44:51.710Z"}
-{"type":"claim","wuId":"WU-1213","lane":"Framework: CLI","title":"Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts","timestamp":"2026-01-29T22:48:53.238Z"}
-{"type":"claim","wuId":"WU-1214","lane":"Content: Documentation","title":"Add progress_signals configuration to memory docs","timestamp":"2026-01-29T22:49:03.675Z"}
+{"type":"claim","wuId":"WU-1213","timestamp":"2026-01-29T22:48:53.238Z","lane":"Framework: CLI","title":"Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts"}
+{"type":"claim","wuId":"WU-1214","timestamp":"2026-01-29T22:49:03.675Z","lane":"Content: Documentation","title":"Add progress_signals configuration to memory docs"}
+{"type":"complete","wuId":"WU-1214","timestamp":"2026-01-29T22:52:23.297Z"}
