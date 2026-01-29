@@ -333,6 +333,7 @@
 {"type":"claim","wuId":"WU-1171","timestamp":"2026-01-29T11:41:19.209Z","lane":"Framework: CLI","title":"Universal Agent Onboarding: AGENTS.md + Merge Mode"}
 {"type":"complete","wuId":"WU-1170","timestamp":"2026-01-29T11:57:39.433Z"}
 {"type":"complete","wuId":"WU-1171","timestamp":"2026-01-29T12:08:27.130Z"}
-{"type":"claim","wuId":"WU-1173","lane":"Framework: CLI","title":"wu:create: Inconsistent array flag patterns cause user errors","timestamp":"2026-01-29T12:11:51.978Z"}
-{"type":"claim","wuId":"WU-1175","lane":"Operations: CI/CD","title":"Skip CI/CD for WU metadata and docs-only changes","timestamp":"2026-01-29T12:20:00.612Z"}
-{"type":"claim","wuId":"WU-1174","lane":"Framework: Core","title":"Lock files pollute main checkout during wu:done","timestamp":"2026-01-29T12:21:54.447Z"}
+{"type":"claim","wuId":"WU-1173","timestamp":"2026-01-29T12:11:51.978Z","lane":"Framework: CLI","title":"wu:create: Inconsistent array flag patterns cause user errors"}
+{"type":"claim","wuId":"WU-1175","timestamp":"2026-01-29T12:20:00.612Z","lane":"Operations: CI/CD","title":"Skip CI/CD for WU metadata and docs-only changes"}
+{"type":"claim","wuId":"WU-1174","timestamp":"2026-01-29T12:21:54.447Z","lane":"Framework: Core","title":"Lock files pollute main checkout during wu:done"}
+{"type":"complete","wuId":"WU-1175","timestamp":"2026-01-29T12:25:34.545Z"}
