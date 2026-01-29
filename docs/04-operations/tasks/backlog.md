@@ -29,7 +29,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1186 — Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE](wu/WU-1186.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -212,3 +211,4 @@ sections:
 - [WU-1184 — Fix pre-existing lint errors in init.ts](wu/WU-1184.yaml)
 - [WU-1185 — Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors](wu/WU-1185.yaml)
 - [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml)
+- [WU-1186 — Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE](wu/WU-1186.yaml)
