@@ -2,7 +2,7 @@ id: WU-1189
 title: 'lane:suggest command: LLM-driven lane generation'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -45,3 +45,5 @@ session_id: 24839d98-c66b-4193-9def-156d930748cf
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T17:14:01.703Z
+locked: true
+completed_at: 2026-01-29T17:30:49.408Z
