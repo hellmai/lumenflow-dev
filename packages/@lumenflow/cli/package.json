@@ -118,7 +118,8 @@
     "git-branch": "./dist/git-branch.js",
     "guard-main-branch": "./dist/guard-main-branch.js",
     "state-bootstrap": "./dist/state-bootstrap.js",
-    "lane-health": "./dist/lane-health.js"
+    "lane-health": "./dist/lane-health.js",
+    "lane-suggest": "./dist/lane-suggest.js"
   },
   "files": [
     "dist",
