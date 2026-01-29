@@ -21,16 +21,25 @@ import {
   loadGatesConfig,
   getDefaultGatesConfig,
   GATE_PRESETS,
+  loadLaneHealthConfig,
 } from '../gates-config.js';
+
+// Test constants to avoid sonarjs/no-duplicate-string lint errors
+const TEST_COMMANDS = {
+  FORMAT_CHECK: 'pnpm format:check',
+  LINT: 'pnpm lint',
+  TEST: 'pnpm test',
+  DOTNET_TEST: 'dotnet test',
+} as const;
 
 describe('gates-config', () => {
   describe('GateCommandConfigSchema', () => {
     it('should accept a string command', () => {
-      const result = GateCommandConfigSchema.safeParse('pnpm format:check');
+      const result = GateCommandConfigSchema.safeParse(TEST_COMMANDS.FORMAT_CHECK);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe('pnpm format:check');
+        expect(result.data).toBe(TEST_COMMANDS.FORMAT_CHECK);
       }
     });
 
@@ -81,10 +90,10 @@ describe('gates-config', () => {
     it('should accept complete gates config with all fields', () => {
       const config = {
         setup: 'pnpm install',
-        format: 'pnpm format:check',
-        lint: 'pnpm lint',
+        format: TEST_COMMANDS.FORMAT_CHECK,
+        lint: TEST_COMMANDS.LINT,
         typecheck: 'pnpm typecheck',
-        test: 'pnpm test',
+        test: TEST_COMMANDS.TEST,
         coverage: {
           command: 'pnpm test --coverage',
           threshold: 90,
@@ -96,10 +105,10 @@ describe('gates-config', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.setup).toBe('pnpm install');
-        expect(result.data.format).toBe('pnpm format:check');
-        expect(result.data.lint).toBe('pnpm lint');
+        expect(result.data.format).toBe(TEST_COMMANDS.FORMAT_CHECK);
+        expect(result.data.lint).toBe(TEST_COMMANDS.LINT);
         expect(result.data.typecheck).toBe('pnpm typecheck');
-        expect(result.data.test).toBe('pnpm test');
+        expect(result.data.test).toBe(TEST_COMMANDS.TEST);
       }
     });
 
@@ -155,10 +164,10 @@ describe('gates-config', () => {
 
   describe('parseGateCommand', () => {
     it('should parse string command to executable form', () => {
-      const result = parseGateCommand('pnpm lint');
+      const result = parseGateCommand(TEST_COMMANDS.LINT);
 
       expect(result).toEqual({
-        command: 'pnpm lint',
+        command: TEST_COMMANDS.LINT,
         continueOnError: false,
         timeout: 120000, // default 2 minutes
       });
@@ -166,13 +175,13 @@ describe('gates-config', () => {
 
     it('should parse object command preserving options', () => {
       const result = parseGateCommand({
-        command: 'dotnet test',
+        command: TEST_COMMANDS.DOTNET_TEST,
         continueOnError: true,
         timeout: 300000,
       });
 
       expect(result).toEqual({
-        command: 'dotnet test',
+        command: TEST_COMMANDS.DOTNET_TEST,
         continueOnError: true,
         timeout: 300000,
       });
@@ -234,7 +243,7 @@ describe('gates-config', () => {
 
       expect(expanded.format).toContain('dotnet format');
       expect(expanded.lint).toContain('dotnet build');
-      expect(expanded.test).toContain('dotnet test');
+      expect(expanded.test).toContain(TEST_COMMANDS.DOTNET_TEST);
     });
 
     // WU-1118: Java/JVM, Ruby, and PHP presets
@@ -359,9 +368,9 @@ gates:
       const config = loadGatesConfig(testDir);
 
       expect(config).toBeDefined();
-      expect(config?.format).toBe('pnpm format:check');
-      expect(config?.lint).toBe('pnpm lint');
-      expect(config?.test).toBe('pnpm test');
+      expect(config?.format).toBe(TEST_COMMANDS.FORMAT_CHECK);
+      expect(config?.lint).toBe(TEST_COMMANDS.LINT);
+      expect(config?.test).toBe(TEST_COMMANDS.TEST);
     });
 
     it('should expand preset and merge with overrides', () => {
@@ -445,6 +454,110 @@ gates:
       // Preset defaults for other fields
       expect(merged.format).toContain('ruff');
       expect(merged.test).toContain('pytest');
+    });
+  });
+
+  /**
+   * WU-1191: Lane health gate configuration
+   * Tests for gates.lane_health config option
+   */
+  describe('lane health config (WU-1191)', () => {
+    const testDir = path.join('/tmp', `test-lumenflow-lane-health-${Date.now()}`);
+    const configPath = path.join(testDir, '.lumenflow.config.yaml');
+
+    beforeEach(() => {
+      fs.mkdirSync(testDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      try {
+        fs.rmSync(testDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors
+      }
+    });
+
+    it('should parse lane_health config with warn mode', () => {
+      const yamlContent = `
+version: "2.0"
+gates:
+  lane_health: warn
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      const config = loadLaneHealthConfig(testDir);
+
+      expect(config).toBe('warn');
+    });
+
+    it('should parse lane_health config with error mode', () => {
+      const yamlContent = `
+version: "2.0"
+gates:
+  lane_health: error
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      const config = loadLaneHealthConfig(testDir);
+
+      expect(config).toBe('error');
+    });
+
+    it('should parse lane_health config with off mode', () => {
+      const yamlContent = `
+version: "2.0"
+gates:
+  lane_health: off
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      const config = loadLaneHealthConfig(testDir);
+
+      expect(config).toBe('off');
+    });
+
+    it('should default to warn when lane_health not configured', () => {
+      const yamlContent = `
+version: "2.0"
+gates:
+  execution:
+    test: "pnpm test"
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      const config = loadLaneHealthConfig(testDir);
+
+      expect(config).toBe('warn');
+    });
+
+    it('should default to warn when no gates config exists', () => {
+      const yamlContent = `
+version: "2.0"
+project: test
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      const config = loadLaneHealthConfig(testDir);
+
+      expect(config).toBe('warn');
+    });
+
+    it('should reject invalid lane_health values', () => {
+      const yamlContent = `
+version: "2.0"
+gates:
+  lane_health: invalid
+`;
+      fs.writeFileSync(configPath, yamlContent);
+
+      // Suppress console.warn during this test
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const config = loadLaneHealthConfig(testDir);
+
+      // Should fall back to default when invalid
+      expect(config).toBe('warn');
+      warnSpy.mockRestore();
     });
   });
 });
