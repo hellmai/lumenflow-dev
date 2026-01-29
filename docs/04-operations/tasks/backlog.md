@@ -20,10 +20,10 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1213 — Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts](wu/WU-1213.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
+- [WU-1213 — Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts](wu/WU-1213.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -31,7 +31,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
-- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml) — Framework: Initiatives
 
 ## ⛔ Blocked
 
@@ -234,3 +233,4 @@ sections:
 - [WU-1207 — Archive old WU events to prevent unbounded growth](wu/WU-1207.yaml)
 - [WU-1208 — Create unified pnpm state:cleanup command](wu/WU-1208.yaml)
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml)
+- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml)
