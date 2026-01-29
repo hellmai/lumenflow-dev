@@ -2,7 +2,7 @@ id: WU-1181
 title: Migrate CLI entry points from process.argv to import.meta.main
 lane: 'Framework: CLI'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,9 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix 32 CLI files using broken entry point pattern. The pattern process.argv[1] === fileURLToPath(import.meta.url) fails with pnpm symlinks. Replace with import.meta.main (Node 22.16+). Also expand the test to validate ALL CLI files, not just 5.
+description: Fix 32 CLI files using broken entry point pattern. The pattern process.argv[1] ===
+  fileURLToPath(import.meta.url) fails with pnpm symlinks. Replace with import.meta.main (Node
+  22.16+). Also expand the test to validate ALL CLI files, not just 5.
 acceptance:
   - All 32 CLI files use import.meta.main instead of process.argv[1] comparison
   - cli-entry-point.test.ts validates ALL CLI files with entry guards, not just 5
   - Unused fileURLToPath imports removed from migrated files
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1181
+claimed_at: 2026-01-29T14:01:26.563Z
+baseline_main_sha: 8ded203fd13a2bb1a1175d700a8c5a9cd4bf303b
+session_id: 7eaa8a08-f51f-4cc2-aee6-3a5922f7455d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T14:01:26.568Z
