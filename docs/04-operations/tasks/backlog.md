@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1173 — wu:create: Inconsistent array flag patterns cause user errors](wu/WU-1173.yaml) — Framework: CLI
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 
 ## 🔧 In progress
