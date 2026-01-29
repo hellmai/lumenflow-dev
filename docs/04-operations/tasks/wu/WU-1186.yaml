@@ -2,7 +2,7 @@ id: WU-1186
 title: 'Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths: []
@@ -39,3 +39,5 @@ session_id: e3fb5b87-b5b3-43cb-8cb9-fb6c9a129739
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:55:02.066Z
+locked: true
+completed_at: 2026-01-29T13:56:44.002Z
