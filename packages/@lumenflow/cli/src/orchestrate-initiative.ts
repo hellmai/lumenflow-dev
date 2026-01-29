@@ -17,6 +17,7 @@ import {
   loadMultipleInitiatives,
   buildExecutionPlanAsync,
   formatExecutionPlan,
+  formatExecutionPlanWithEmbeddedSpawns,
   calculateProgress,
   formatProgress,
   buildCheckpointWave,
@@ -130,8 +131,15 @@ const program = new Command()
         return;
       }
 
+      // WU-1202: Output spawn XML for actual execution (not dry-run)
+      // formatExecutionPlan only shows the plan structure, not spawn commands
+      // formatExecutionPlanWithEmbeddedSpawns includes Task XML for spawning agents
+      console.log('');
+      console.log(chalk.bold('Spawn Commands:'));
+      console.log(formatExecutionPlanWithEmbeddedSpawns(plan));
+
       console.log(chalk.green(`${LOG_PREFIX} Execution plan output complete.`));
-      console.log(chalk.cyan('Copy the spawn commands above to execute.'));
+      console.log(chalk.cyan('Copy the spawn XML above to execute agents.'));
     } catch (error: any) {
       console.error(chalk.red(`${LOG_PREFIX} Error: ${error.message}`));
       process.exit(EXIT_CODES.ERROR);
