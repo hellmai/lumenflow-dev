@@ -417,6 +417,116 @@ When you run `pnpm wu:done --id WU-XXX`:
 
 This is the ONLY way to complete a WU. Manual steps leave things inconsistent.
 
+## Emergency Override (LUMENFLOW_FORCE)
+
+<Aside type="caution">
+  Emergency override bypasses safety mechanisms. AI agents MUST get explicit user approval before
+  using LUMENFLOW_FORCE. All bypasses are logged to `.beacon/force-bypasses.log`.
+</Aside>
+
+### When Override is Appropriate
+
+- Fixing YAML parsing bugs in WU specs
+- Emergency production hotfixes (with user present)
+- Recovering from corrupted workflow state
+- Bootstrap operations when CLI not yet built
+
+### When NOT to Use Override
+
+- Skipping failing tests
+- Avoiding code review
+- Working around gate failures
+- Convenience or speed
+
+### How to Use
+
+<Steps>
+
+1. **Get user approval** - Stop and ask before using LUMENFLOW_FORCE
+2. **Execute with audit trail**:
+
+```bash
+LUMENFLOW_FORCE_REASON="user-approved: <reason>" LUMENFLOW_FORCE=1 git <command>
+```
+
+3. **Document** - Add a note to WU YAML explaining the bypass
+
+</Steps>
+
+### Examples
+
+```bash
+# Bypass safe-git for reset --hard
+LUMENFLOW_FORCE_REASON="user-approved: recovering corrupted state" LUMENFLOW_FORCE=1 git reset --hard HEAD
+
+# Bypass hook for commit with false positive
+LUMENFLOW_FORCE_REASON="user-approved: false positive secret detection" LUMENFLOW_FORCE=1 git commit -m "fix: update config"
+```
+
+### Audit Log Format
+
+All bypasses are logged:
+
+```
+ISO_TIMESTAMP|BYPASSED|COMMAND_OR_HOOK|USER|BRANCH|REASON|CWD
+```
+
+<Aside type="note">
+  If LUMENFLOW_FORCE is used without LUMENFLOW_FORCE_REASON, "NO_REASON" is logged and a warning is
+  printed. The command still proceeds.
+</Aside>
+
+## Setup and Verification
+
+### Claude Code
+
+Claude Code automatically respects LumenFlow safety through:
+
+- **CLAUDE.md** - Entry point referencing safety rules
+- **.claude/skills/** - Skills include safety context
+- **.claude/agents/** - Agent definitions include constraints
+
+No additional setup required.
+
+### Cursor
+
+Cursor uses `.cursor/rules/lumenflow.md` for safety rules.
+
+```bash
+# Initialize with Cursor overlay
+lumenflow init --client cursor
+```
+
+**Verify:** Ask Cursor AI "What are the LumenFlow safety rules?" - it should mention worktree discipline, forbidden git commands, and LUMENFLOW_FORCE.
+
+### Windsurf
+
+Windsurf uses `.windsurf/rules/lumenflow.md` for safety rules.
+
+```bash
+# Initialize with Windsurf overlay
+lumenflow init --client windsurf
+```
+
+**Verify:** Ask in Cascade "What safety mechanisms does this project use?" - it should mention safe-git wrapper, Husky hooks, and audit logs.
+
+### Manual Verification
+
+Test that safety mechanisms work:
+
+```bash
+# Verify safe-git blocks dangerous commands
+./scripts/safe-git reset --hard HEAD
+# Should show: === LUMENFLOW SAFETY BLOCK ===
+
+# Verify hooks are installed
+ls -la .husky/
+
+# Verify bypass works with audit
+LUMENFLOW_FORCE_REASON="testing" LUMENFLOW_FORCE=1 ./scripts/safe-git --version
+# Should succeed and log to .beacon/force-bypasses.log
+```
+
 ## Next Steps
 
 - [AI Agent Integration](/guides/ai-agents) - Full agent capabilities

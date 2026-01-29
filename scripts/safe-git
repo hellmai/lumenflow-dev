@@ -5,7 +5,11 @@
 # Universal git wrapper for LumenFlow Agent Safety.
 # Blocks dangerous operations and enforces worktree discipline.
 #
-# Context: WU-1170
+# Context: WU-1170, WU-1172
+#
+# Environment Variables:
+#   LUMENFLOW_FORCE=1           - Bypass all safety blocks (use with caution)
+#   LUMENFLOW_FORCE_REASON=""   - Reason for bypass (logged for audit)
 #
 
 set -u
@@ -14,6 +18,7 @@ set -u
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
 AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
+BYPASS_LOG="${AUDIT_LOG_DIR}/force-bypasses.log"
 
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
@@ -26,11 +31,32 @@ log_audit() {
     echo "${timestamp}|BLOCKED|${reason}|${command}" >> "$AUDIT_LOG"
 }
 
+log_bypass() {
+    local command="$1"
+    local reason="${LUMENFLOW_FORCE_REASON:-NO_REASON}"
+    local timestamp
+    local user
+    local branch
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    user=$(whoami 2>/dev/null || echo "unknown")
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    echo "${timestamp}|BYPASSED|${command}|${user}|${branch}|${reason}|${PWD}" >> "$BYPASS_LOG"
+}
+
+warn_no_reason() {
+    echo "" >&2
+    echo "=== LUMENFLOW FORCE WARNING ===" >&2
+    echo "LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON." >&2
+    echo "Please provide a reason for audit trail:" >&2
+    echo "  LUMENFLOW_FORCE_REASON=\"your reason\" LUMENFLOW_FORCE=1 git ..." >&2
+    echo "===============================" >&2
+}
+
 block_command() {
     local reason="$1"
     local msg="$2"
     local cmd_str="$3"
-    
+
     log_audit "$reason" "$cmd_str"
 
     echo "" >&2
@@ -41,8 +67,24 @@ block_command() {
     echo "REASON: ${reason}" >&2
     echo "" >&2
     echo "See 'docs/04-operations/plans/WU-1170-safety-alignment.md' for details." >&2
+    echo "" >&2
+    echo "To bypass (emergency only):" >&2
+    echo "  LUMENFLOW_FORCE_REASON=\"reason\" LUMENFLOW_FORCE=1 git ..." >&2
     echo "==============================" >&2
     exit 1
+}
+
+# Check for LUMENFLOW_FORCE bypass
+check_bypass() {
+    local cmd_str="$1"
+    if [ "${LUMENFLOW_FORCE:-}" = "1" ]; then
+        log_bypass "$cmd_str"
+        if [ -z "${LUMENFLOW_FORCE_REASON:-}" ]; then
+            warn_no_reason
+        fi
+        return 0  # Bypass allowed
+    fi
+    return 1  # No bypass
 }
 
 # Reconstruct command string for logging
@@ -50,34 +92,42 @@ CMD_STR="git $*"
 
 # 1. Block 'worktree remove'
 if [ "$1" = "worktree" ] && [ "${2:-}" = "remove" ]; then
-    block_command \
-        "Manual worktree removal causes orphan states." \
-        "Manual 'git worktree remove' is forbidden." \
-        "$CMD_STR"
+    if ! check_bypass "$CMD_STR"; then
+        block_command \
+            "Manual worktree removal causes orphan states." \
+            "Manual 'git worktree remove' is forbidden." \
+            "$CMD_STR"
+    fi
 fi
 
 # 2. Block 'reset --hard'
 if [ "$1" = "reset" ] && [[ " $* " == *" --hard "* ]]; then
-    block_command \
-        "Hard reset causes irreversible data loss." \
-        "'git reset --hard' is forbidden." \
-        "$CMD_STR"
+    if ! check_bypass "$CMD_STR"; then
+        block_command \
+            "Hard reset causes irreversible data loss." \
+            "'git reset --hard' is forbidden." \
+            "$CMD_STR"
+    fi
 fi
 
 # 3. Block 'clean -fd'
 if [ "$1" = "clean" ] && [[ " $* " == *" -fd "* || " $* " == *" -df "* ]]; then
-    block_command \
-        "Recursive force clean permanently deletes untracked files." \
-        "'git clean -fd' is forbidden." \
-        "$CMD_STR"
+    if ! check_bypass "$CMD_STR"; then
+        block_command \
+            "Recursive force clean permanently deletes untracked files." \
+            "'git clean -fd' is forbidden." \
+            "$CMD_STR"
+    fi
 fi
 
 # 4. Block 'push --force'
 if [ "$1" = "push" ] && [[ " $* " == *" --force "* || " $* " == *" -f "* ]]; then
-    block_command \
-        "Force push rewrites history and disrupts others." \
-        "'git push --force' is forbidden." \
-        "$CMD_STR"
+    if ! check_bypass "$CMD_STR"; then
+        block_command \
+            "Force push rewrites history and disrupts others." \
+            "'git push --force' is forbidden." \
+            "$CMD_STR"
+    fi
 fi
 
 # Pass through to system git
