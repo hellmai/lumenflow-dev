@@ -2,7 +2,7 @@ id: WU-1179
 title: Fix micro-worktree push race leaving main diverged
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -43,3 +43,5 @@ session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:15:12.058Z
+locked: true
+completed_at: 2026-01-29T13:23:36.397Z
