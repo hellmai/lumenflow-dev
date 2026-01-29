@@ -7,6 +7,18 @@ import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 
+## Try It Now (30 Seconds)
+
+```bash
+npx lumenflow-init
+```
+
+That's it. Your project now speaks LumenFlow. Any AI coding assistant can read `AGENTS.md` and understand your workflow.
+
+Want the full experience with worktree isolation, automated gates, and 40+ CLI commands? Keep reading.
+
+---
+
 <Tabs>
   <TabItem label="npm CLI (Recommended)">
 
@@ -64,18 +76,24 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
 4. **Create your first Work Unit**
 
    ```bash
-   npx wu-create \
-     --id WU-001 \
-     --title "Add user authentication" \
-     --lane "Framework: Core" \
-     --type feature \
-     --exposure backend-only \
-     --description "Implement user authentication with JWT" \
-     --acceptance "Users can log in with email/password" \
-     --acceptance "JWT tokens are issued on successful login" \
-     --code-paths "src/auth/" \
-     --test-paths-unit "src/auth/__tests__/"
+   npx wu-create --id WU-001 --title "Add login page" --lane "Experience: UI"
    ```
+
+   This creates a minimal WU. Edit the YAML file to add details:
+
+   ```yaml
+   # docs/04-operations/tasks/wu/WU-001.yaml
+   acceptance:
+     - Login form renders with email and password fields
+     - Form validates inputs on submit
+   code_paths:
+     - src/components/Login/
+   ```
+
+   <Aside type="tip">
+     Start simple. Add `--type`, `--description`, `--acceptance`, and other flags as needed, or edit
+     the YAML directly.
+   </Aside>
 
 5. **Claim and start work**
 

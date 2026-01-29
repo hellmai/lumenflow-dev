@@ -19,43 +19,33 @@ Welcome to the LumenFlow repository. This document helps you find the right star
 
 ### Prerequisites
 
-Before using LumenFlow, ensure you have:
-
 - **Node.js** >= 22 ([download](https://nodejs.org/))
 - **pnpm** >= 9 (`npm install -g pnpm`)
 - **Git** >= 2.x
 
-### First-Time Setup
+### Add LumenFlow to Your Project
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-org/your-repo.git
-cd your-repo
+# 1. Install and initialize
+pnpm add -D @lumenflow/cli
+npx lumenflow-init
 
-# 2. Install dependencies and build CLI
-pnpm setup
-
-# 3. Verify installation
-pnpm exec lumenflow doctor
+# 2. Verify it worked
+npx lumenflow-doctor
 ```
 
 If `lumenflow doctor` shows "LumenFlow safety: ACTIVE", you're ready to go.
 
-### Initialize a New Project
+### Joining an Existing LumenFlow Repo
 
 ```bash
-# Minimal setup (core files only)
-pnpm exec lumenflow init
+# 1. Clone and install
+git clone https://github.com/your-org/your-repo.git
+cd your-repo
+pnpm setup
 
-# Full setup (with task scaffolding)
-pnpm exec lumenflow init --full
-
-# With specific vendor support
-pnpm exec lumenflow init --client claude
-pnpm exec lumenflow init --client cursor
-pnpm exec lumenflow init --client windsurf
-pnpm exec lumenflow init --client cline
-pnpm exec lumenflow init --client all
+# 2. Verify installation
+pnpm exec lumenflow doctor
 ```
 
 ---
@@ -117,20 +107,24 @@ For detailed workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 
 ---
 
-## Vendor Support
+## AI Coding Assistants
 
-LumenFlow supports multiple AI coding assistants:
+**LumenFlow works with any AI coding assistant.** Just point your AI at `AGENTS.md` and `LUMENFLOW.md`.
 
-| Vendor      | Config File                    | Auto-detected?              |
-| ----------- | ------------------------------ | --------------------------- |
-| Claude Code | `CLAUDE.md`                    | Yes (`CLAUDE_*` env vars)   |
-| Cursor      | `.cursor/rules/lumenflow.md`   | Yes (`CURSOR_*` env vars)   |
-| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes (`WINDSURF_*` env vars) |
-| Cline       | `.clinerules`                  | No                          |
-| Codex       | `AGENTS.md`                    | No                          |
-| VS Code     | N/A                            | Yes (`VSCODE_*` env vars)   |
+Enhanced integrations available for popular tools:
 
-Run `lumenflow init --client <vendor>` to set up vendor-specific configuration.
+| Assistant   | Config File                    | Enhanced Features                 |
+| ----------- | ------------------------------ | --------------------------------- |
+| Claude Code | `CLAUDE.md`, `.claude/`        | Skills, agents, hooks, settings   |
+| Cursor      | `.cursor/rules/lumenflow.md`   | Rules integration, auto-detection |
+| Windsurf    | `.windsurf/rules/lumenflow.md` | Rules integration, auto-detection |
+| Cline       | `.clinerules`                  | Rules file                        |
+| Codex/Aider | `AGENTS.md`                    | Uses universal files directly     |
+
+```bash
+# Add enhanced integration for your AI (optional)
+lumenflow init --client claude   # or cursor, windsurf, cline, all
+```
 
 ---
 
