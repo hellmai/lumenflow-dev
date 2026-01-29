@@ -21,14 +21,13 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
-- [WU-9999 — Test WU for verification](wu/WU-9999.yaml) — Content: Documentation
-- [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
+- [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

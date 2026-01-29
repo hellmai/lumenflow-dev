@@ -2,7 +2,7 @@ id: WU-1172
 title: 'Universal Agent Safety: Documentation & Bypass Completeness'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -36,7 +36,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Complete Universal Agent Safety from WU-1170 by adding LUMENFLOW_FORCE bypass to all safety scripts and comprehensive documentation for setup, verification, and emergency overrides.
+description: Complete Universal Agent Safety from WU-1170 by adding LUMENFLOW_FORCE bypass to all
+  safety scripts and comprehensive documentation for setup, verification, and emergency overrides.
 acceptance:
   - LUMENFLOW_FORCE=1 bypasses scripts/safe-git with audit log
   - LUMENFLOW_FORCE=1 bypasses all shell hooks with audit log
@@ -44,3 +45,11 @@ acceptance:
   - Warning printed when LUMENFLOW_FORCE used without REASON
   - Docs include Emergency Override section with examples
   - Docs include Setup and Verification for Cursor and Windsurf
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1172
+claimed_at: 2026-01-29T13:01:48.666Z
+baseline_main_sha: 49bf5165ed22e8101735ce30485575a761243bad
+session_id: 994b57e7-09a6-4eb3-b232-40c75c76c595
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T13:01:48.671Z
