@@ -300,8 +300,8 @@ pnpm mem:summarize --wu WU-050
 Multiple agents working on related WUs in different lanes.
 
 <Aside type="note">
-  Configure `progress_signals.enabled: true` in `.lumenflow.config.yaml` to make signaling
-  mandatory for sub-agents. See [Progress Signals](#progress-signals) for all options.
+  Configure `progress_signals.enabled: true` in `.lumenflow.config.yaml` to make signaling mandatory
+  for sub-agents. See [Progress Signals](#progress-signals) for all options.
 </Aside>
 
 ```bash
@@ -407,15 +407,15 @@ memory:
     auto_checkpoint: false # Create checkpoint with each signal
 ```
 
-| Field             | Default | Description                                          |
-| ----------------- | ------- | ---------------------------------------------------- |
-| `enabled`         | `false` | When `true`, signals are required at trigger points  |
-| `frequency`       | `0`     | Tool calls between auto-signals (0 = no frequency)   |
-| `on_milestone`    | `true`  | Signal after completing each acceptance criterion    |
-| `on_tests_pass`   | `true`  | Signal when tests first pass                         |
-| `before_gates`    | `true`  | Signal before running quality gates                  |
-| `on_blocked`      | `true`  | Signal when blocked or waiting on dependencies       |
-| `auto_checkpoint` | `false` | Automatically create checkpoint with each signal     |
+| Field             | Default | Description                                         |
+| ----------------- | ------- | --------------------------------------------------- |
+| `enabled`         | `false` | When `true`, signals are required at trigger points |
+| `frequency`       | `0`     | Tool calls between auto-signals (0 = no frequency)  |
+| `on_milestone`    | `true`  | Signal after completing each acceptance criterion   |
+| `on_tests_pass`   | `true`  | Signal when tests first pass                        |
+| `before_gates`    | `true`  | Signal before running quality gates                 |
+| `on_blocked`      | `true`  | Signal when blocked or waiting on dependencies      |
+| `auto_checkpoint` | `false` | Automatically create checkpoint with each signal    |
 
 <Aside type="tip" title="Sub-Agent Visibility">
   Enable `progress_signals.enabled: true` when orchestrating sub-agents. This ensures the parent
