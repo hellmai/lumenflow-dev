@@ -192,6 +192,109 @@ export function detectIDEEnvironment(): DetectedIDE {
 }
 
 /**
+ * WU-1177: Prerequisite check result
+ */
+export interface PrerequisiteResult {
+  passed: boolean;
+  version: string;
+  required: string;
+  message?: string;
+}
+
+/**
+ * WU-1177: All prerequisite results
+ */
+export interface PrerequisiteResults {
+  node: PrerequisiteResult;
+  pnpm: PrerequisiteResult;
+  git: PrerequisiteResult;
+}
+
+/**
+ * Get command version safely using execSync
+ */
+function getCommandVersion(command: string, args: string[]): string {
+  try {
+    const { execFileSync } = require('node:child_process');
+    const output = execFileSync(command, args, {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+    return output;
+  } catch {
+    return 'not found';
+  }
+}
+
+/**
+ * Parse semver version string to compare
+ */
+function parseVersion(versionStr: string): number[] {
+  const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
+  if (!match) {
+    return [0, 0, 0];
+  }
+  return [parseInt(match[1], 10), parseInt(match[2], 10), parseInt(match[3] || '0', 10)];
+}
+
+/**
+ * Compare versions: returns true if actual >= required
+ */
+function compareVersions(actual: string, required: string): boolean {
+  const actualParts = parseVersion(actual);
+  const requiredParts = parseVersion(required);
+
+  for (let i = 0; i < 3; i++) {
+    if (actualParts[i] > requiredParts[i]) {
+      return true;
+    }
+    if (actualParts[i] < requiredParts[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * WU-1177: Check prerequisite versions
+ * Non-blocking - returns results but doesn't fail init
+ */
+export function checkPrerequisites(): PrerequisiteResults {
+  const nodeVersion = getCommandVersion('node', ['--version']);
+  const pnpmVersion = getCommandVersion('pnpm', ['--version']);
+  const gitVersion = getCommandVersion('git', ['--version']);
+
+  const requiredNode = '22.0.0';
+  const requiredPnpm = '9.0.0';
+  const requiredGit = '2.0.0';
+
+  const nodeOk = nodeVersion !== 'not found' && compareVersions(nodeVersion, requiredNode);
+  const pnpmOk = pnpmVersion !== 'not found' && compareVersions(pnpmVersion, requiredPnpm);
+  const gitOk = gitVersion !== 'not found' && compareVersions(gitVersion, requiredGit);
+
+  return {
+    node: {
+      passed: nodeOk,
+      version: nodeVersion,
+      required: `>=${requiredNode}`,
+      message: nodeOk ? undefined : `Node.js ${requiredNode}+ required`,
+    },
+    pnpm: {
+      passed: pnpmOk,
+      version: pnpmVersion,
+      required: `>=${requiredPnpm}`,
+      message: pnpmOk ? undefined : `pnpm ${requiredPnpm}+ required`,
+    },
+    git: {
+      passed: gitOk,
+      version: gitVersion,
+      required: `>=${requiredGit}`,
+      message: gitOk ? undefined : `Git ${requiredGit}+ required`,
+    },
+  };
+}
+
+/**
  * Generate YAML configuration with header comment
  * WU-1067: Supports --preset option for config-driven gates
  */
@@ -1921,6 +2024,21 @@ export async function main(): Promise<void> {
   console.log(`  Framework: ${opts.framework ?? 'none'}`);
   console.log(`  Client: ${opts.client ?? 'auto'}`);
   console.log(`  Gate preset: ${opts.preset ?? 'none (manual config)'}`);
+
+  // WU-1177: Check prerequisites (non-blocking)
+  const prereqs = checkPrerequisites();
+  const failingPrereqs = Object.entries(prereqs)
+    .filter(([, check]) => !check.passed)
+    .map(([name, check]) => `${name}: ${check.version} (requires ${check.required})`);
+
+  if (failingPrereqs.length > 0) {
+    // eslint-disable-next-line no-console -- CLI output
+    console.log('\nPrerequisite warnings (non-blocking):');
+    // eslint-disable-next-line no-console -- CLI output
+    failingPrereqs.forEach((msg) => console.log(`  ! ${msg}`));
+    // eslint-disable-next-line no-console -- CLI output
+    console.log('  Run "lumenflow doctor" for details.\n');
+  }
 
   const result = await scaffoldProject(targetDir, {
     force: opts.force,
