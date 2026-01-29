@@ -154,6 +154,9 @@ export * from './lumenflow-config-schema.js';
 // WU Events Cleanup (WU-1207)
 export * from './wu-events-cleanup.js';
 
+// State Cleanup Orchestration (WU-1208)
+export * from './state-cleanup-core.js';
+
 // Gates configuration (WU-1067)
 export * from './gates-config.js';
 

@@ -53,17 +53,19 @@ Directory paths configuration
 
 Beacon paths configuration (.beacon directory structure)
 
-| Field         | Type   | Default                     | Description |
-| ------------- | ------ | --------------------------- | ----------- |
-| `base`        | string | `".lumenflow"`              |             |
-| `stateDir`    | string | `".lumenflow/state"`        |             |
-| `stampsDir`   | string | `".lumenflow/stamps"`       |             |
-| `mergeLock`   | string | `".lumenflow/merge.lock"`   |             |
-| `telemetry`   | string | `".lumenflow/telemetry"`    |             |
-| `flowLog`     | string | `".lumenflow/flow.log"`     |             |
-| `sessions`    | string | `".lumenflow/sessions"`     |             |
-| `incidents`   | string | `".lumenflow/incidents"`    |             |
-| `commandsLog` | string | `".lumenflow/commands.log"` |             |
+| Field           | Type   | Default                     | Description |
+| --------------- | ------ | --------------------------- | ----------- |
+| `base`          | string | `".lumenflow"`              |             |
+| `stateDir`      | string | `".lumenflow/state"`        |             |
+| `archiveDir`    | string | `".lumenflow/archive"`      |             |
+| `stampsDir`     | string | `".lumenflow/stamps"`       |             |
+| `mergeLock`     | string | `".lumenflow/merge.lock"`   |             |
+| `telemetry`     | string | `".lumenflow/telemetry"`    |             |
+| `flowLog`       | string | `".lumenflow/flow.log"`     |             |
+| `sessions`      | string | `".lumenflow/sessions"`     |             |
+| `incidents`     | string | `".lumenflow/incidents"`    |             |
+| `commandsLog`   | string | `".lumenflow/commands.log"` |             |
+| `eventArchival` | object | `[object Object]`           |             |
 
 ### git
 
@@ -113,13 +115,14 @@ Quality gates configuration
 
 Memory layer configuration
 
-| Field               | Type    | Default          | Description |
-| ------------------- | ------- | ---------------- | ----------- |
-| `directory`         | string  | `"memory-bank/"` |             |
-| `sessionTtl`        | integer | `604800000`      |             |
-| `checkpointTtl`     | integer | `2592000000`     |             |
-| `enableAutoCleanup` | boolean | `true`           |             |
-| `progress_signals`  | object  | `-`              |             |
+| Field               | Type    | Default           | Description |
+| ------------------- | ------- | ----------------- | ----------- |
+| `directory`         | string  | `"memory-bank/"`  |             |
+| `sessionTtl`        | integer | `604800000`       |             |
+| `checkpointTtl`     | integer | `2592000000`      |             |
+| `enableAutoCleanup` | boolean | `true`            |             |
+| `progress_signals`  | object  | `-`               |             |
+| `signalCleanup`     | object  | `[object Object]` |             |
 
 ### memory.progress_signals
 

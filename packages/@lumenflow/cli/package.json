@@ -120,7 +120,8 @@
     "guard-main-branch": "./dist/guard-main-branch.js",
     "state-bootstrap": "./dist/state-bootstrap.js",
     "lane-health": "./dist/lane-health.js",
-    "lane-suggest": "./dist/lane-suggest.js"
+    "lane-suggest": "./dist/lane-suggest.js",
+    "state-cleanup": "./dist/state-cleanup.js"
   },
   "files": [
     "dist",
