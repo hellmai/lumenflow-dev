@@ -44,3 +44,6 @@ session_id: e7342e72-3968-42b8-ad4b-41f013c8799d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T14:16:44.319Z
+escalation_resolved_by: tom@hellm.ai
+escalation_resolved_at: 2026-01-29T15:40:00.000Z
+escalation_resolution_notes: WU is for lane configuration health checking CLI command - no PII involved. Trigger was incorrectly set.
