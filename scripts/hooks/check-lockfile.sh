@@ -5,6 +5,10 @@
 # Husky pre-commit hook to ensure package.json and pnpm-lock.yaml stay in sync.
 # Blocks commits where package.json is modified but lockfile is not.
 #
+# Environment Variables:
+#   LUMENFLOW_FORCE=1           - Bypass this check (use with caution)
+#   LUMENFLOW_FORCE_REASON=""   - Reason for bypass (logged for audit)
+#
 
 set -u
 
@@ -12,6 +16,7 @@ set -u
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
 AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
+BYPASS_LOG="${AUDIT_LOG_DIR}/force-bypasses.log"
 
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
@@ -24,6 +29,36 @@ log_audit() {
     echo "${timestamp}|BLOCKED|${reason}|${file}" >> "$AUDIT_LOG"
 }
 
+log_bypass() {
+    local hook_name="$1"
+    local reason="${LUMENFLOW_FORCE_REASON:-NO_REASON}"
+    local timestamp
+    local user
+    local branch
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    user=$(whoami 2>/dev/null || echo "unknown")
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    echo "${timestamp}|BYPASSED|${hook_name}|${user}|${branch}|${reason}|${PWD}" >> "$BYPASS_LOG"
+}
+
+warn_no_reason() {
+    echo "" >&2
+    echo "=== LUMENFLOW FORCE WARNING ===" >&2
+    echo "LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON." >&2
+    echo "Please provide a reason for audit trail:" >&2
+    echo "  LUMENFLOW_FORCE_REASON=\"your reason\" LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "===============================" >&2
+}
+
+# Check for LUMENFLOW_FORCE bypass
+if [ "${LUMENFLOW_FORCE:-}" = "1" ]; then
+    log_bypass "check-lockfile"
+    if [ -z "${LUMENFLOW_FORCE_REASON:-}" ]; then
+        warn_no_reason
+    fi
+    exit 0
+fi
+
 # Check staged files
 STAGED_FILES=$(git diff --cached --name-only)
 
@@ -34,11 +69,11 @@ DEPS_CHANGED=0
 # Check if package.json is staged
 if echo "$STAGED_FILES" | grep -q "package.json"; then
     HAS_PACKAGE_JSON=1
-    
+
     # Check if dependency fields actually changed (not just metadata)
     # Look for additions/modifications to dependency sections
     DEPS_CHANGED=$(git diff --cached -U0 -- "package.json" | grep -E '^\+.*"(dependencies|devDependencies|peerDependencies|optionalDependencies)"' | wc -l)
-    
+
     # Also check for dependency value changes within existing sections
     if [ "$DEPS_CHANGED" -eq 0 ]; then
         # Look for lines that add/modify dependencies within sections
@@ -53,7 +88,7 @@ fi
 # If package.json dependency fields changed but lockfile is not -> BLOCK
 if [ "$HAS_PACKAGE_JSON" -eq 1 ] && [ "$DEPS_CHANGED" -gt 0 ] && [ "$HAS_LOCKFILE" -eq 0 ]; then
     log_audit "lockfile_desync" "package.json dependencies modified without lockfile"
-    
+
     echo "" >&2
     echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
     echo "BLOCKED: package.json dependencies modified without pnpm-lock.yaml" >&2
