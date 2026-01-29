@@ -383,3 +383,4 @@
 {"type":"complete","wuId":"WU-1190","timestamp":"2026-01-29T18:56:48.083Z"}
 {"type":"claim","wuId":"WU-1202","timestamp":"2026-01-29T19:01:04.994Z","lane":"Framework: CLI","title":"Bug: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled"}
 {"type":"complete","wuId":"WU-1202","timestamp":"2026-01-29T19:09:36.007Z"}
+{"type":"claim","wuId":"WU-1198","lane":"Content: Documentation","title":"Documentation: Lane tooling and WIP enforcement","timestamp":"2026-01-29T19:09:51.520Z"}

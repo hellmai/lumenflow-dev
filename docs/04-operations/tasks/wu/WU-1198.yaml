@@ -2,7 +2,7 @@ id: WU-1198
 title: 'Documentation: Lane tooling and WIP enforcement'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -33,9 +33,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Comprehensive documentation for INIT-006 lane tooling features. Covers internal LumenFlow docs, Starlight/Astral public docs, and CLI package README. Only documents what was actually implemented.
+description: Comprehensive documentation for INIT-006 lane tooling features. Covers internal
+  LumenFlow docs, Starlight/Astral public docs, and CLI package README. Only documents what was
+  actually implemented.
 acceptance:
   - Internal docs updated (lumenflow-complete.md or dedicated lane-tooling.md)
   - Starlight docs include lane:health, lane:suggest with usage examples
   - CLI README mentions new commands
   - wip_justification and gates.lane_health config options documented
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1198
+claimed_at: 2026-01-29T19:09:51.488Z
+baseline_main_sha: c7e75cc3cbc0024e082992c62523520af7316230
+session_id: 76e7c10f-21b8-494a-bd48-c166800cfece
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T19:09:51.496Z

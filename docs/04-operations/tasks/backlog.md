@@ -24,7 +24,6 @@ sections:
 - [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
 - [WU-1195 — Fix pre-existing lint errors in agent-log-issue.ts](wu/WU-1195.yaml) — Framework: CLI
 - [WU-1196 — Fix pre-existing lint errors in wu-state-store.ts and wu-spawn.ts](wu/WU-1196.yaml) — Framework: Core
-- [WU-1198 — Documentation: Lane tooling and WIP enforcement](wu/WU-1198.yaml) — Content: Documentation
 - [WU-1199 — Fix pre-existing test failures in check-automated-tests.test.ts](wu/WU-1199.yaml) — Framework: Core
 - [WU-1201 — Fix pre-existing lint errors in initiative-orchestrator tests](wu/WU-1201.yaml) — Framework: Initiatives
 
@@ -33,6 +32,7 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
+- [WU-1198 — Documentation: Lane tooling and WIP enforcement](wu/WU-1198.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
