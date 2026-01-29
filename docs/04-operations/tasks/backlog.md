@@ -21,11 +21,6 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
-- [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
-- [WU-1195 — Fix pre-existing lint errors in agent-log-issue.ts](wu/WU-1195.yaml) — Framework: CLI
-- [WU-1196 — Fix pre-existing lint errors in wu-state-store.ts and wu-spawn.ts](wu/WU-1196.yaml) — Framework: Core
-- [WU-1199 — Fix pre-existing test failures in check-automated-tests.test.ts](wu/WU-1199.yaml) — Framework: Core
-- [WU-1201 — Fix pre-existing lint errors in initiative-orchestrator tests](wu/WU-1201.yaml) — Framework: Initiatives
 
 ## 🔧 In progress
 
