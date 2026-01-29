@@ -784,12 +784,14 @@ This format enables orchestrator to track progress across waves.`;
 export function generateAgentCoordinationSection(id: string): string {
   const config = getConfig();
   const progressSignals = config.memory?.progress_signals;
-  const isEnabled = progressSignals?.enabled ?? false;
+  // WU-1210: Default to enabled (Required at Milestones) when not explicitly configured
+  // This ensures agents signal progress at key milestones by default
+  const isEnabled = progressSignals?.enabled ?? true;
 
   // Generate milestone triggers section based on config
   const generateMilestoneTriggers = (): string => {
-    if (!isEnabled || !progressSignals) {
-      // Default optional guidance
+    if (!isEnabled) {
+      // Disabled - show optional guidance only
       return `For long-running work, send progress signals at milestones:
 
 \`\`\`bash
@@ -798,24 +800,26 @@ pnpm mem:signal "Blocked: waiting for WU-XXX dependency" --wu ${id}
 \`\`\``;
     }
 
-    // Build list of enabled triggers
+    // WU-1210: isEnabled is true (either by default or explicit config)
+    // Build list of enabled triggers, using defaults when progressSignals is undefined
     const triggers: string[] = [];
 
-    if (progressSignals.on_milestone !== false) {
+    // Default all triggers to enabled when not explicitly configured
+    if ((progressSignals?.on_milestone ?? true) !== false) {
       triggers.push('**After each acceptance criterion completed** - helps track progress');
     }
-    if (progressSignals.on_tests_pass !== false) {
+    if ((progressSignals?.on_tests_pass ?? true) !== false) {
       triggers.push('**When tests first pass** - indicates implementation is working');
     }
-    if (progressSignals.before_gates !== false) {
+    if ((progressSignals?.before_gates ?? true) !== false) {
       triggers.push('**Before running gates** - signals imminent completion');
     }
-    if (progressSignals.on_blocked !== false) {
+    if ((progressSignals?.on_blocked ?? true) !== false) {
       triggers.push('**When blocked** - allows orchestrator to re-allocate or assist');
     }
 
     // Add frequency-based trigger if configured
-    const frequency = progressSignals.frequency ?? 0;
+    const frequency = progressSignals?.frequency ?? 0;
     let frequencyGuidance = '';
     if (frequency > 0) {
       frequencyGuidance = `\n5. **Every ${frequency} tool calls** - periodic progress update`;
