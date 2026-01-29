@@ -2,7 +2,7 @@ id: WU-1185
 title: 'Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths: []
@@ -41,3 +41,5 @@ session_id: ac9228fd-3a50-483c-8ec9-70e6e4fd159c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T13:36:24.916Z
+locked: true
+completed_at: 2026-01-29T13:40:29.906Z
