@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml) — Framework: Initiatives
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml) — Framework: CLI
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — Framework: CLI
