@@ -1,7 +1,7 @@
 /**
- * Tests for init:plan command (WU-1105)
+ * Tests for initiative:plan command (WU-1105, renamed in WU-1193)
  *
- * The init:plan command links plan files to initiatives by setting
+ * The initiative:plan command links plan files to initiatives by setting
  * the `related_plan` field in the initiative YAML.
  *
  * TDD: These tests are written BEFORE the implementation.
@@ -13,9 +13,9 @@ import { tmpdir } from 'node:os';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 
 // Pre-import the module to ensure coverage tracking includes the module itself
-let initPlanModule: typeof import('../init-plan.js');
+let initPlanModule: typeof import('../initiative-plan.js');
 beforeAll(async () => {
-  initPlanModule = await import('../init-plan.js');
+  initPlanModule = await import('../initiative-plan.js');
 });
 
 // Mock modules before importing the module under test
@@ -65,20 +65,20 @@ describe('init:plan command', () => {
 
   describe('validateInitIdFormat', () => {
     it('should accept valid INIT-NNN format', async () => {
-      const { validateInitIdFormat } = await import('../init-plan.js');
+      const { validateInitIdFormat } = await import('../initiative-plan.js');
       // Should not throw
       expect(() => validateInitIdFormat('INIT-001')).not.toThrow();
       expect(() => validateInitIdFormat('INIT-123')).not.toThrow();
     });
 
     it('should accept valid INIT-NAME format', async () => {
-      const { validateInitIdFormat } = await import('../init-plan.js');
+      const { validateInitIdFormat } = await import('../initiative-plan.js');
       expect(() => validateInitIdFormat('INIT-TOOLING')).not.toThrow();
       expect(() => validateInitIdFormat('INIT-A1')).not.toThrow();
     });
 
     it('should reject invalid formats', async () => {
-      const { validateInitIdFormat } = await import('../init-plan.js');
+      const { validateInitIdFormat } = await import('../initiative-plan.js');
       expect(() => validateInitIdFormat('init-001')).toThrow();
       expect(() => validateInitIdFormat('INIT001')).toThrow();
       expect(() => validateInitIdFormat('WU-001')).toThrow();
@@ -88,7 +88,7 @@ describe('init:plan command', () => {
 
   describe('validatePlanPath', () => {
     it('should accept existing markdown files', async () => {
-      const { validatePlanPath } = await import('../init-plan.js');
+      const { validatePlanPath } = await import('../initiative-plan.js');
       const planPath = join(tempDir, 'test-plan.md');
       writeFileSync(planPath, '# Test Plan');
 
@@ -97,14 +97,14 @@ describe('init:plan command', () => {
     });
 
     it('should reject non-existent files when not creating', async () => {
-      const { validatePlanPath } = await import('../init-plan.js');
+      const { validatePlanPath } = await import('../initiative-plan.js');
       const planPath = join(tempDir, 'nonexistent.md');
 
       expect(() => validatePlanPath(planPath)).toThrow();
     });
 
     it('should reject non-markdown files', async () => {
-      const { validatePlanPath } = await import('../init-plan.js');
+      const { validatePlanPath } = await import('../initiative-plan.js');
       const planPath = join(tempDir, 'test-plan.txt');
       writeFileSync(planPath, 'Test Plan');
 
@@ -114,7 +114,7 @@ describe('init:plan command', () => {
 
   describe('formatPlanUri', () => {
     it('should format plan path as lumenflow:// URI', async () => {
-      const { formatPlanUri } = await import('../init-plan.js');
+      const { formatPlanUri } = await import('../initiative-plan.js');
 
       expect(formatPlanUri('docs/04-operations/plans/my-plan.md')).toBe(
         'lumenflow://plans/my-plan.md',
@@ -122,7 +122,7 @@ describe('init:plan command', () => {
     });
 
     it('should handle nested paths', async () => {
-      const { formatPlanUri } = await import('../init-plan.js');
+      const { formatPlanUri } = await import('../initiative-plan.js');
 
       expect(formatPlanUri('docs/04-operations/plans/subdir/nested-plan.md')).toBe(
         'lumenflow://plans/subdir/nested-plan.md',
@@ -130,7 +130,7 @@ describe('init:plan command', () => {
     });
 
     it('should handle paths not in standard location', async () => {
-      const { formatPlanUri } = await import('../init-plan.js');
+      const { formatPlanUri } = await import('../initiative-plan.js');
 
       // Should still create a URI even for non-standard paths
       expect(formatPlanUri('/absolute/path/custom-plan.md')).toBe(
@@ -141,7 +141,7 @@ describe('init:plan command', () => {
 
   describe('checkInitiativeExists', () => {
     it('should return initiative doc if found', async () => {
-      const { checkInitiativeExists } = await import('../init-plan.js');
+      const { checkInitiativeExists } = await import('../initiative-plan.js');
 
       // Create a mock initiative file
       const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
@@ -162,7 +162,7 @@ describe('init:plan command', () => {
     });
 
     it('should throw if initiative not found', async () => {
-      const { checkInitiativeExists } = await import('../init-plan.js');
+      const { checkInitiativeExists } = await import('../initiative-plan.js');
 
       process.chdir(tempDir);
       expect(() => checkInitiativeExists('INIT-999')).toThrow();
@@ -171,7 +171,7 @@ describe('init:plan command', () => {
 
   describe('updateInitiativeWithPlan', () => {
     it('should add related_plan field to initiative', async () => {
-      const { updateInitiativeWithPlan } = await import('../init-plan.js');
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
 
       // Setup mock initiative
       const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
@@ -201,7 +201,7 @@ describe('init:plan command', () => {
     });
 
     it('should return false if plan already linked (idempotent)', async () => {
-      const { updateInitiativeWithPlan } = await import('../init-plan.js');
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
 
       // Setup mock initiative with existing plan
       const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
@@ -228,7 +228,7 @@ describe('init:plan command', () => {
     });
 
     it('should warn but proceed if different plan already linked', async () => {
-      const { updateInitiativeWithPlan } = await import('../init-plan.js');
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Setup mock initiative with different plan
@@ -263,7 +263,7 @@ describe('init:plan command', () => {
 
   describe('createPlanTemplate', () => {
     it('should create a plan template file', async () => {
-      const { createPlanTemplate } = await import('../init-plan.js');
+      const { createPlanTemplate } = await import('../initiative-plan.js');
 
       const plansDir = join(tempDir, 'docs', '04-operations', 'plans');
       mkdirSync(plansDir, { recursive: true });
@@ -279,7 +279,7 @@ describe('init:plan command', () => {
     });
 
     it('should not overwrite existing plan file', async () => {
-      const { createPlanTemplate } = await import('../init-plan.js');
+      const { createPlanTemplate } = await import('../initiative-plan.js');
 
       const plansDir = join(tempDir, 'docs', '04-operations', 'plans');
       mkdirSync(plansDir, { recursive: true });
@@ -294,14 +294,14 @@ describe('init:plan command', () => {
 
   describe('LOG_PREFIX', () => {
     it('should use correct log prefix', async () => {
-      const { LOG_PREFIX } = await import('../init-plan.js');
-      expect(LOG_PREFIX).toBe('[init:plan]');
+      const { LOG_PREFIX } = await import('../initiative-plan.js');
+      expect(LOG_PREFIX).toBe('[initiative:plan]');
     });
   });
 
   describe('getCommitMessage', () => {
     it('should generate correct commit message', async () => {
-      const { getCommitMessage } = await import('../init-plan.js');
+      const { getCommitMessage } = await import('../initiative-plan.js');
 
       expect(getCommitMessage('INIT-001', 'lumenflow://plans/my-plan.md')).toBe(
         'docs: link plan my-plan.md to init-001',
@@ -309,7 +309,7 @@ describe('init:plan command', () => {
     });
 
     it('should handle nested plan paths', async () => {
-      const { getCommitMessage } = await import('../init-plan.js');
+      const { getCommitMessage } = await import('../initiative-plan.js');
 
       expect(getCommitMessage('INIT-TOOLING', 'lumenflow://plans/subdir/nested-plan.md')).toBe(
         'docs: link plan subdir/nested-plan.md to init-tooling',
@@ -319,7 +319,7 @@ describe('init:plan command', () => {
 
   describe('updateInitiativeWithPlan ID mismatch', () => {
     it('should throw if initiative ID does not match', async () => {
-      const { updateInitiativeWithPlan } = await import('../init-plan.js');
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
 
       // Setup mock initiative with different ID
       const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
@@ -351,12 +351,12 @@ describe('init:plan CLI integration', () => {
   });
 
   it('should export main function for CLI entry', async () => {
-    const initPlan = await import('../init-plan.js');
+    const initPlan = await import('../initiative-plan.js');
     expect(typeof initPlan.main).toBe('function');
   });
 
   it('should export all required functions', async () => {
-    const initPlan = await import('../init-plan.js');
+    const initPlan = await import('../initiative-plan.js');
     expect(typeof initPlan.validateInitIdFormat).toBe('function');
     expect(typeof initPlan.validatePlanPath).toBe('function');
     expect(typeof initPlan.formatPlanUri).toBe('function');
@@ -387,7 +387,7 @@ describe('createPlanTemplate edge cases', () => {
   });
 
   it('should create plans directory if it does not exist', async () => {
-    const { createPlanTemplate } = await import('../init-plan.js');
+    const { createPlanTemplate } = await import('../initiative-plan.js');
 
     // Do NOT pre-create the plans directory
     const planPath = createPlanTemplate(tempDir, 'INIT-001', 'Test Initiative');
@@ -397,7 +397,7 @@ describe('createPlanTemplate edge cases', () => {
   });
 
   it('should truncate long titles in filename', async () => {
-    const { createPlanTemplate } = await import('../init-plan.js');
+    const { createPlanTemplate } = await import('../initiative-plan.js');
 
     const longTitle =
       'This is an extremely long initiative title that should be truncated in the filename';
@@ -411,7 +411,7 @@ describe('createPlanTemplate edge cases', () => {
   });
 
   it('should handle special characters in title', async () => {
-    const { createPlanTemplate } = await import('../init-plan.js');
+    const { createPlanTemplate } = await import('../initiative-plan.js');
 
     const specialTitle = "Test's Initiative: (Special) Chars! @#$%";
     const planPath = createPlanTemplate(tempDir, 'INIT-001', specialTitle);

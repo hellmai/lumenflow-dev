@@ -463,17 +463,11 @@ pnpm guard:worktree:commit
 
 ### init:plan
 
-Link a plan file to an initiative
+Run init:plan
 
 ```bash
 pnpm init:plan
 ```
-
-**Options:**
-
-| Flag                       | Description                          | Required |
-| -------------------------- | ------------------------------------ | -------- |
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
 ### rotate:progress
 
@@ -807,11 +801,18 @@ pnpm wu:infer:lane
 
 ### wu:preflight
 
-WU Preflight Validation
+Fast validation of code_paths and test paths before gates run.
 
 ```bash
 pnpm wu:preflight
 ```
+
+**Options:**
+
+| Flag                          | Description                 | Required |
+| ----------------------------- | --------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123) | Yes      |
+| `-w, --worktree &lt;path&gt;` | Override worktree path      | No       |
 
 ### wu:prune
 

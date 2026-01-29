@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /* eslint-disable security/detect-non-literal-fs-filename */
 /**
- * Init Plan Command (WU-1105)
+ * Initiative Plan Command (WU-1105, renamed in WU-1193)
  *
  * Links plan files to initiatives by setting the `related_plan` field
  * in the initiative YAML.
  *
  * Usage:
- *   pnpm init:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md
- *   pnpm init:plan --initiative INIT-001 --create  # Create new plan template
+ *   pnpm initiative:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md
+ *   pnpm initiative:plan --initiative INIT-001 --create  # Create new plan template
  *
  * Features:
  * - Validates initiative exists before modifying
@@ -17,7 +17,7 @@
  * - Warns if replacing existing plan link
  * - Can create plan templates with --create
  *
- * Context: WU-1105 (INIT-003 Phase 3a: Migrate init:plan command)
+ * Context: WU-1105 (INIT-003 Phase 3a), renamed from init:plan in WU-1193
  */
 
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
@@ -34,10 +34,10 @@ import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/dist/wu-constants.js';
 
 /** Log prefix for console output */
-export const LOG_PREFIX = CORE_LOG_PREFIX.INIT_PLAN;
+export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;
 
 /** Micro-worktree operation name */
-const OPERATION_NAME = 'init-plan';
+const OPERATION_NAME = 'initiative-plan';
 
 /** Standard plans directory relative to repo root */
 const PLANS_DIR = 'docs/04-operations/plans';
