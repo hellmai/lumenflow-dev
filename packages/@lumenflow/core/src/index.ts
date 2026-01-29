@@ -282,6 +282,9 @@ export {
   AnalyzeRecoveryUseCase,
 } from './usecases/index.js';
 
+// WU-1189: Lane suggestion prompt generation
+export * from './lane-suggest-prompt.js';
+
 // WU-1094: Dependency Injection - Factory functions for wiring
 export {
   // Adapter factory functions
