@@ -374,4 +374,3 @@
 {"type":"complete","wuId":"WU-1197","timestamp":"2026-01-29T15:42:34.916Z"}
 {"type":"complete","wuId":"WU-1188","timestamp":"2026-01-29T15:45:49.210Z"}
 {"type":"claim","wuId":"WU-1191","timestamp":"2026-01-29T16:11:53.282Z","lane":"Framework: CLI","title":"Doctor and gate integration for lane health"}
-{"type":"complete","wuId":"WU-1191","timestamp":"2026-01-29T16:46:15.231Z"}
