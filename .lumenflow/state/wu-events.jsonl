@@ -370,3 +370,4 @@
 {"type":"complete","wuId":"WU-1192","timestamp":"2026-01-29T14:50:08.244Z"}
 {"type":"complete","wuId":"WU-1193","timestamp":"2026-01-29T14:59:29.293Z"}
 {"type":"complete","wuId":"WU-1187","timestamp":"2026-01-29T15:36:23.217Z"}
+{"type":"claim","wuId":"WU-1197","lane":"Framework: Core","title":"Fix pre-existing lint errors in lane-checker.ts","timestamp":"2026-01-29T15:38:04.496Z"}

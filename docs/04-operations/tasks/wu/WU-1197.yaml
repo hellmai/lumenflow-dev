@@ -2,7 +2,7 @@ id: WU-1197
 title: Fix pre-existing lint errors in lane-checker.ts
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,6 +25,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Pre-existing lint errors (console statements, cognitive complexity) in lane-checker.ts block incremental gates. These are legacy issues that need cleanup.
+description: Pre-existing lint errors (console statements, cognitive complexity) in lane-checker.ts
+  block incremental gates. These are legacy issues that need cleanup.
 acceptance:
   - All lint errors fixed in lane-checker.ts
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1197
+claimed_at: 2026-01-29T15:38:04.479Z
+baseline_main_sha: 60d27455a83d983af6191d21dc41c14594d61ada
+session_id: da883d48-e5eb-48b6-b77f-f5b5e69057a8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T15:38:04.484Z
