@@ -2,7 +2,7 @@ id: WU-1177
 title: 'Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -68,3 +68,5 @@ acceptance:
   - 'DOCS: Starlight quickstart updated'
   - 'DOCS: Vendor support matrix'
   - 'DOCS: CLI --help updated'
+locked: true
+completed_at: 2026-01-29T13:30:38.026Z
