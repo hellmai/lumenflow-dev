@@ -6,7 +6,6 @@ _Last updated: 2026-01-29_
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
-- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml)
 - [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml)
 - [WU-1192 — Consolidate wu-spawn prompt generation to single source of truth](wu/WU-1192.yaml)
