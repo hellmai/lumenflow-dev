@@ -329,3 +329,4 @@
 {"type":"complete","wuId":"WU-1169","timestamp":"2026-01-28T22:30:45.074Z"}
 {"type":"claim","wuId":"WU-1170","timestamp":"2026-01-28T22:50:06.817Z","lane":"Framework: Core","title":"Universal Agent Safety: Migrate Claude hooks to Husky/Scripts"}
 {"type":"complete","wuId":"WU-1170","timestamp":"2026-01-28T23:06:41.503Z"}
+{"type":"claim","wuId":"WU-1170","lane":"Framework: Core","title":"Universal Agent Safety: Migrate Claude hooks to Husky/Scripts","timestamp":"2026-01-29T10:25:54.697Z"}
