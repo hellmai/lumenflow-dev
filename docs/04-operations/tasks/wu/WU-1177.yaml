@@ -6,13 +6,18 @@ status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
-  - packages/@lumenflow/cli/src/commands/doctor.ts
-  - packages/@lumenflow/cli/src/commands/init.ts
+  - packages/@lumenflow/cli/src/doctor.ts
+  - packages/@lumenflow/cli/src/init.ts
   - START-HERE.md
   - README.md
   - .clinerules
   - templates/vendor-rules.template.md
   - scripts/sync-vendor-configs.sh
+  - .prettierignore
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/vendor-support.md
+  - AGENTS.md
+  - apps/docs/src/content/docs/reference/cli.mdx
 tests:
   manual:
     - 'lumenflow doctor outputs LumenFlow safety: ACTIVE when all checks pass'
