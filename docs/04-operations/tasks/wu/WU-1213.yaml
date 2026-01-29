@@ -2,7 +2,7 @@ id: WU-1213
 title: Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-01-29
 code_paths:
@@ -43,3 +43,5 @@ session_id: a7ce174c-8a2b-4d0c-bcc8-327f13183138
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T22:48:53.226Z
+locked: true
+completed_at: 2026-01-29T23:03:14.167Z
