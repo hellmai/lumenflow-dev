@@ -31,7 +31,15 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1170-safety-alignment.md
 risks: []
-notes: ''
+notes: |
+  Additional verified behaviors:
+  - Secret scanning blocks commits with AWS/GitHub/OpenAI keys
+  - Lockfile sync blocks dependency changes without pnpm-lock.yaml update
+  - Worktree discipline blocks main commits when worktrees exist
+  - Audit logging writes to .beacon/safety-blocks.log
+  - Internal docs updated: LUMENFLOW.md documents safety hooks
+  - Agent safety card updated with new hooks information
+  - Starlight public docs updated: agent-onboarding.mdx, ai-agents.mdx
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -47,12 +55,6 @@ acceptance:
   - Manual 'git worktree remove' via safe-git wrapper is blocked or warned
   - Generic 'git commit' with absolute paths is blocked by Husky hook
   - Safety mechanisms work for non-Claude agents
-  - Secret scanning blocks commits with AWS/GitHub/OpenAI keys (staged content, not working tree)
-  - Lockfile sync blocks dependency changes without pnpm-lock.yaml update
-  - Worktree discipline blocks main commits when worktrees exist
-  - Audit logging writes to .beacon/safety-blocks.log
-  - Internal docs updated: LUMENFLOW.md documents safety hooks
-  - Agent safety card updated with new hooks information
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1170
 claimed_at: 2026-01-28T22:50:06.787Z
