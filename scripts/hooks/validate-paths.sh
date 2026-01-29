@@ -10,8 +10,8 @@ set -u
 
 # Configuration
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-AUDIT_LOG_DIR="${REPO_ROOT}/audit"
-AUDIT_LOG="${AUDIT_LOG_DIR}/main-write-blocks.log"
+AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
+AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
 
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
@@ -34,9 +34,13 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-# Check files for absolute paths
-# xargs grep returns 0 if matches found (which is bad for us)
-MATCHES=$(echo "$FILES" | xargs grep -IHE "$PATTERN" 2>/dev/null || echo "")
+# Check files for absolute paths in staged content
+MATCHES=""
+for file in $FILES; do
+    if git show ":$file" 2>/dev/null | grep -qHE "$PATTERN"; then
+        MATCHES="${MATCHES}${file}: absolute path pattern detected\n"
+    fi
+done
 
 if [ -n "$MATCHES" ]; then
     # Log the first match for audit
@@ -48,7 +52,8 @@ if [ -n "$MATCHES" ]; then
     echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
     echo "BLOCKED: Absolute path detected in staged files." >&2
     echo "Absolute paths break portability across environments." >&2
-    echo "Detected in: $MATCHES" >&2
+    echo "Detected in:" >&2
+    echo -e "$MATCHES" >&2
     echo "==============================" >&2
     exit 1
 fi
