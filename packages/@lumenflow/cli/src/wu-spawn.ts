@@ -62,6 +62,16 @@ import {
   formatDependencyError,
 } from '@lumenflow/core/dist/dependency-validator.js';
 
+// WU-1192: Import prompt generation from Core (single source of truth)
+import {
+  TRUNCATION_WARNING_BANNER,
+  SPAWN_END_SENTINEL,
+  generateTestGuidance,
+} from '@lumenflow/core/dist/wu-spawn.js';
+
+// Re-export for backwards compatibility
+export { TRUNCATION_WARNING_BANNER, SPAWN_END_SENTINEL, generateTestGuidance };
+
 /**
  * Mandatory agent trigger patterns.
  * Mirrors MANDATORY_TRIGGERS from orchestration-advisory-loader.ts.
@@ -72,30 +82,6 @@ const MANDATORY_TRIGGERS = {
 };
 
 const LOG_PREFIX = '[wu:spawn]';
-
-/**
- * WU-1131: Truncation prevention constants
- *
- * These constants help detect when spawn output has been truncated during
- * copy-paste operations or context loading. The warning banner alerts users
- * to the truncation risk, and the end sentinel allows verification that
- * the full output was received.
- */
-export const TRUNCATION_WARNING_BANNER = `<!-- LUMENFLOW_TRUNCATION_WARNING -->
-<!--
-  ⚠️ CRITICAL: DO NOT TRUNCATE THIS OUTPUT
-
-  This spawn prompt MUST be copied verbatim. Truncation causes:
-  - Missing constraints (agents ignore safety rules)
-  - Missing TDD directives (agents skip tests)
-  - Degraded agent performance
-
-  VERIFICATION: The output MUST end with: <!-- LUMENFLOW_SPAWN_END -->
-  If you don't see that sentinel at the end, the output was truncated.
--->
-`;
-
-export const SPAWN_END_SENTINEL = '<!-- LUMENFLOW_SPAWN_END -->';
 
 /**
  * Detect mandatory agents based on code paths.
@@ -352,116 +338,8 @@ function generateInvariantsPriorArtSection(codePaths) {
   return lines.join('\n');
 }
 
-/**
- * WU types that require TDD (failing test first)
- */
-const TDD_REQUIRED_TYPES = ['feature', 'bug', 'tooling', 'enhancement'];
-
-/**
- * WU types that require existing tests to pass (no new tests mandated)
- */
-const EXISTING_TESTS_TYPES = ['refactor'];
-
-/**
- * WU types that require smoke tests + manual QA
- */
-const SMOKE_TEST_TYPES = ['visual', 'design', 'ui'];
-
-/**
- * WU types that only need format checks (no TDD)
- */
-const DOCS_ONLY_TYPES = ['documentation', 'docs', 'config'];
-
-/**
- * Generate type-aware test guidance (WU-1142)
- *
- * Returns appropriate test guidance based on WU type:
- * - feature/bug/tooling: Full TDD directive
- * - documentation: Format check only
- * - visual/design: Smoke test + manual QA
- * - refactor: Existing tests must pass
- *
- * @param {string} wuType - WU type from YAML
- * @returns {string} Test guidance section
- */
-export function generateTestGuidance(wuType: string): string {
-  const type = (wuType || 'feature').toLowerCase();
-
-  // Documentation WUs - no TDD, just format checks
-  if (DOCS_ONLY_TYPES.includes(type)) {
-    return `## Documentation Standards
-
-**Format check only** - No TDD required for documentation WUs.
-
-### Requirements
-
-1. Run \`pnpm gates --docs-only\` before completion
-2. Ensure markdown formatting is correct
-3. Verify links are valid
-4. Check spelling and grammar`;
-  }
-
-  // Visual/Design WUs - smoke tests + manual QA
-  if (SMOKE_TEST_TYPES.includes(type)) {
-    return `## Visual/Design Testing
-
-**Smoke test + manual QA** - Visual WUs require different verification.
-
-### Requirements
-
-1. Create smoke test for component rendering (if applicable)
-2. Verify visual appearance manually
-3. Test responsive behavior across breakpoints
-4. Check accessibility (keyboard navigation, screen reader)
-5. Document manual QA results in completion notes`;
-  }
-
-  // Refactor WUs - existing tests must pass
-  if (EXISTING_TESTS_TYPES.includes(type)) {
-    return `## Refactor Testing
-
-**Existing tests must pass** - Refactoring must not break current behavior.
-
-### Requirements
-
-1. Run all existing tests BEFORE refactoring
-2. Run all existing tests AFTER refactoring
-3. No new tests required unless behavior changes
-4. If tests fail after refactor, the refactor introduced a bug`;
-  }
-
-  // Default: TDD required (feature, bug, tooling, enhancement)
-  return generateTDDDirective();
-}
-
-/**
- * Generate the TDD directive section (WU-1585)
- *
- * Positioned immediately after </task> preamble per "Lost in the Middle" research.
- * Critical instructions at START and END of prompt improve adherence.
- *
- * @returns {string} TDD directive section
- */
-function generateTDDDirective() {
-  return `## ⛔ TDD DIRECTIVE — READ BEFORE CODING
-
-**IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST, YOU HAVE FAILED THIS WU.**
-
-### Test-First Workflow (MANDATORY)
-
-1. Write a failing test for the acceptance criteria
-2. Run the test to confirm it fails (RED)
-3. Implement the minimum code to pass the test
-4. Run the test to confirm it passes (GREEN)
-5. Refactor if needed, keeping tests green
-
-### Why This Matters
-
-- Tests document expected behavior BEFORE implementation
-- Prevents scope creep and over-engineering
-- Ensures every feature has verification
-- Failing tests prove the test actually tests something`;
-}
+// WU-1192: generateTestGuidance and related constants moved to @lumenflow/core
+// See imports from '@lumenflow/core/dist/wu-spawn.js' above
 
 /**
  * Generate the context loading preamble
@@ -800,7 +678,7 @@ If you encounter a "worktree required" or "commit blocked" error:
 1. **Check existing worktrees**: \`git worktree list\`
 2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
 3. **Retry your operation** from within the worktree
-4. **Use relative paths only** (never absolute paths like \`/home/...\`)
+4. **Use relative paths only** (never absolute paths)
 
 ### Common Causes
 
