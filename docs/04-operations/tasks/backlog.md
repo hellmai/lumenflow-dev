@@ -28,6 +28,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1170 — Universal Agent Safety: Migrate Claude hooks to Husky/Scripts](wu/WU-1170.yaml) — Framework: Core
+- [WU-1171 — Universal Agent Onboarding: AGENTS.md + Merge Mode](wu/WU-1171.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
