@@ -2,7 +2,7 @@ id: WU-1181
 title: Migrate CLI entry points from process.argv to import.meta.main
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - cli-entry-point.test.ts validates ALL CLI files with entry guards, not just 5
   - Unused fileURLToPath imports removed from migrated files
   - pnpm gates passes
+locked: true
+completed_at: 2026-01-29T14:11:14.330Z

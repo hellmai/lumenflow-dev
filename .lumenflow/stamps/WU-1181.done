@@ -1,0 +1,2 @@
+WU WU-1181 — Migrate CLI entry points from process.argv to import.meta.main
+Completed: 2026-01-29

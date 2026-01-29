@@ -27,13 +27,14 @@ sections:
 - [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — Framework: Core
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — Framework: CLI
 - [WU-1189 — lane:suggest command: LLM-driven lane generation](wu/WU-1189.yaml) — Framework: CLI
+- [WU-1190 — lane:suggest git history context enhancement](wu/WU-1190.yaml) — Framework: CLI
+- [WU-1191 — Doctor and gate integration for lane health](wu/WU-1191.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
-- [WU-1181 — Migrate CLI entry points from process.argv to import.meta.main](wu/WU-1181.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -217,3 +218,4 @@ sections:
 - [WU-1185 — Clarify vendor-agnostic positioning: friction-free for all, enhanced for specific vendors](wu/WU-1185.yaml)
 - [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml)
 - [WU-1186 — Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE](wu/WU-1186.yaml)
+- [WU-1181 — Migrate CLI entry points from process.argv to import.meta.main](wu/WU-1181.yaml)
