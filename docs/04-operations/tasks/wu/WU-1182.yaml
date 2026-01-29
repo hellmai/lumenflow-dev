@@ -2,7 +2,7 @@ id: WU-1182
 title: Standardize Commander usage across CLI tools
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -42,3 +42,5 @@ acceptance:
   - Files identified for migration use createWUParser with WU_OPTIONS
   - agent-log-issue.ts uses repeatable options pattern instead of comma splits where appropriate
   - pnpm gates passes
+locked: true
+completed_at: 2026-01-29T14:46:01.252Z
