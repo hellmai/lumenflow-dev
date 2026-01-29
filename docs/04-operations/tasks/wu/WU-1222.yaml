@@ -2,7 +2,7 @@ id: WU-1222
 title: Add PreToolUse hook to block grep/cat/find via Bash
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -27,9 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create a vendor-agnostic rule and Claude-specific hook to enforce using Grep/Read/Glob tools instead of shell equivalents. This prevents agents from bypassing the dedicated tools which provide better UX and permissions.
+description: Create a vendor-agnostic rule and Claude-specific hook to enforce using Grep/Read/Glob
+  tools instead of shell equivalents. This prevents agents from bypassing the dedicated tools which
+  provide better UX and permissions.
 acceptance:
   - Rule documented in .lumenflow/rules/tool-usage.md
   - Hook script created in .claude/hooks/block-bash-file-commands.sh
   - Hook registered in .claude/settings.json for Bash tool
   - 'Hook blocks: grep, cat, head, tail, find, sed, awk, echo for file ops'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1222
+claimed_at: 2026-01-29T23:32:42.974Z
+baseline_main_sha: 41f2f9e845bda93c47f0c0bdf2bfc24e7bc6cb02
+session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:32:42.984Z
