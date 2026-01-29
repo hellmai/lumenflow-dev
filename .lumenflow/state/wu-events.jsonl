@@ -381,4 +381,5 @@
 {"type":"complete","wuId":"WU-1200","timestamp":"2026-01-29T17:51:31.861Z"}
 {"type":"claim","wuId":"WU-1190","timestamp":"2026-01-29T18:27:44.004Z","lane":"Framework: CLI","title":"lane:suggest git history context enhancement"}
 {"type":"complete","wuId":"WU-1190","timestamp":"2026-01-29T18:56:48.083Z"}
-{"type":"claim","wuId":"WU-1202","lane":"Framework: CLI","title":"Bug: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled","timestamp":"2026-01-29T19:01:04.994Z"}
+{"type":"claim","wuId":"WU-1202","timestamp":"2026-01-29T19:01:04.994Z","lane":"Framework: CLI","title":"Bug: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled"}
+{"type":"complete","wuId":"WU-1202","timestamp":"2026-01-29T19:09:36.007Z"}
