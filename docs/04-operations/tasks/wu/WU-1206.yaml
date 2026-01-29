@@ -2,7 +2,7 @@ id: WU-1206
 title: Add progress_signals example to .lumenflow.config.yaml
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths: []
@@ -24,7 +24,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add commented example of the new progress_signals configuration to .lumenflow.config.yaml so users can see available options. This completes the documentation for WU-1203.
+description: Add commented example of the new progress_signals configuration to
+  .lumenflow.config.yaml so users can see available options. This completes the documentation for
+  WU-1203.
 acceptance:
   - memory.progress_signals section added to .lumenflow.config.yaml as commented example
   - All 7 fields documented with comments explaining their purpose
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1206
+claimed_at: 2026-01-29T20:33:29.606Z
+baseline_main_sha: fad4cfec3ef7ce6a03f7c95028ad1d97484267df
+session_id: 0b2c0fc9-b57e-4ec9-882b-48ae6753cdd6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T20:33:29.615Z
