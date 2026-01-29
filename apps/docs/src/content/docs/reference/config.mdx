@@ -34,12 +34,12 @@ Lanes define parallel work streams with WIP enforcement. Each lane can have:
 lanes:
   definitions:
     - name: 'Framework: Core'
-      wip_limit: 1  # Default: 1 (one WU at a time)
+      wip_limit: 1 # Default: 1 (one WU at a time)
       code_paths:
         - 'packages/@lumenflow/core/**'
 
     - name: 'Content: Documentation'
-      wip_limit: 4  # Higher limit for low-conflict parallel work
+      wip_limit: 4 # Higher limit for low-conflict parallel work
       wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
       code_paths:
         - 'docs/**'
@@ -47,12 +47,12 @@ lanes:
 
 ### Lane Fields
 
-| Field             | Type     | Default | Description                                    |
-| ----------------- | -------- | ------- | ---------------------------------------------- |
-| `name`            | string   | -       | Lane name in "Parent: Sublane" format          |
-| `wip_limit`       | integer  | 1       | Maximum concurrent in-progress WUs             |
-| `wip_justification` | string | -       | Required justification when `wip_limit` > 1    |
-| `code_paths`      | string[] | []      | Glob patterns for files owned by this lane     |
+| Field               | Type     | Default | Description                                 |
+| ------------------- | -------- | ------- | ------------------------------------------- |
+| `name`              | string   | -       | Lane name in "Parent: Sublane" format       |
+| `wip_limit`         | integer  | 1       | Maximum concurrent in-progress WUs          |
+| `wip_justification` | string   | -       | Required justification when `wip_limit` > 1 |
+| `code_paths`        | string[] | []      | Glob patterns for files owned by this lane  |
 
 ### WIP Justification
 
@@ -73,16 +73,17 @@ Configure how lane health checks behave during quality gates:
 
 ```yaml
 gates:
-  lane_health: warn  # 'warn' | 'error' | 'off'
+  lane_health: warn # 'warn' | 'error' | 'off'
 ```
 
-| Value   | Behavior                                        |
-| ------- | ----------------------------------------------- |
-| `warn`  | Log warning if lane issues found (default)      |
-| `error` | Fail gates if lane issues found                 |
-| `off`   | Skip lane health check during gates             |
+| Value   | Behavior                                   |
+| ------- | ------------------------------------------ |
+| `warn`  | Log warning if lane issues found (default) |
+| `error` | Fail gates if lane issues found            |
+| `off`   | Skip lane health check during gates        |
 
 Lane health checks for:
+
 - **Overlapping code_paths** - Files matched by multiple lanes
 - **Coverage gaps** - Code files not covered by any lane
 

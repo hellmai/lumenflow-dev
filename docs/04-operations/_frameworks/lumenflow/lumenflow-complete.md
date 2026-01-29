@@ -203,6 +203,7 @@ pnpm lane:health --verbose    # Show all checked files
 ```
 
 Detects:
+
 - **Overlapping code_paths** - Files matched by multiple lane definitions
 - **Coverage gaps** - Code files not covered by any lane
 
@@ -219,6 +220,7 @@ pnpm lane:suggest --output lanes.yaml   # Write to file
 ```
 
 The `--include-git` flag extracts insights from git history:
+
 - Co-occurrence (files frequently changed together)
 - Ownership signals (primary contributors per area)
 - Churn hotspots (files with high change frequency)
@@ -232,14 +234,14 @@ Lane health is integrated into:
 
 ```yaml
 gates:
-  lane_health: warn  # 'warn' | 'error' | 'off'
+  lane_health: warn # 'warn' | 'error' | 'off'
 ```
 
-| Value   | Behavior                                   |
-| ------- | ------------------------------------------ |
-| `warn`  | Log warning if issues found (default)      |
-| `error` | Fail gates if issues found                 |
-| `off`   | Skip lane health check during gates        |
+| Value   | Behavior                              |
+| ------- | ------------------------------------- |
+| `warn`  | Log warning if issues found (default) |
+| `error` | Fail gates if issues found            |
+| `off`   | Skip lane health check during gates   |
 
 **Parallel execution:** Every claimed WU runs inside its own Git worktree. `pnpm wu:claim` updates canonical state on `origin/main` using a push-only micro-worktree, creates the lane branch, and provisions `worktrees/<lane>-wu-xxx/` (override with flags if required). By default it pushes the lane branch to `origin` so other agents can see the claim. From that moment, the main checkout is read/review/admin only for that WU: browse code, run scripts, or apply a non-WU typo fix, but **ALL WU edits, staging, commits, and tests stay inside the worktree**. If a WU stalls beyond a working session, move it to `blocked` with `pnpm wu:block`; once the dependency clears, return it to `in_progress` with `pnpm wu:unblock`. On completion, `pnpm wu:done` runs gates, updates docs, stamps, pushes, and removes the worktree. See `./02-playbook.md` §4.4 for the full flow.
 
