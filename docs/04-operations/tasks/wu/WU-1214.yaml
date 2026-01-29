@@ -2,7 +2,7 @@ id: WU-1214
 title: Add progress_signals configuration to memory docs
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths: []
@@ -38,3 +38,5 @@ session_id: a7ce174c-8a2b-4d0c-bcc8-327f13183138
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T22:49:03.661Z
+locked: true
+completed_at: 2026-01-29T22:52:21.656Z
