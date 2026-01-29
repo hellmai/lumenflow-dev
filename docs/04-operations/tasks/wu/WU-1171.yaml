@@ -2,7 +2,7 @@ id: WU-1171
 title: 'Universal Agent Onboarding: AGENTS.md + Merge Mode'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -73,3 +73,11 @@ acceptance:
   - 'Agent onboarding docs updated: starting-prompt.md includes universal agent guidance'
   - 'Starlight docs updated: lumenflow.dev documents new init features'
   - 'CLI --help updated: init command shows --merge and --client options'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1171
+claimed_at: 2026-01-29T11:41:19.190Z
+baseline_main_sha: 082a95f7ddf96a8aad89bcf9080769a1df37cded
+session_id: 9866840b-b845-4343-a7f9-913a812401a1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T11:41:19.196Z
