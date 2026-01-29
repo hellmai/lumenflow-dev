@@ -18,10 +18,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ms = require('ms') as (value: string) => number;
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
-import { loadSignals, SIGNAL_FILE_NAME, type Signal } from './mem-signal-core.js';
+import { SIGNAL_FILE_NAME, type Signal } from './mem-signal-core.js';
 
 /**
  * Default TTL values in milliseconds
@@ -306,6 +305,156 @@ async function defaultGetActiveWuIds(): Promise<Set<string>> {
 }
 
 /**
+ * Build cleanup configuration from options.
+ *
+ * @param options - Cleanup options
+ * @returns Effective cleanup configuration
+ */
+function buildCleanupConfig(options: CleanupSignalsOptions): SignalCleanupConfig {
+  const {
+    ttl,
+    ttlMs: providedTtlMs,
+    unreadTtl,
+    unreadTtlMs: providedUnreadTtlMs,
+    maxEntries,
+  } = options;
+
+  let ttlMs = providedTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.ttl;
+  if (ttl && !providedTtlMs) {
+    ttlMs = parseSignalTtl(ttl);
+  }
+
+  let unreadTtlMs = providedUnreadTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.unreadTtl;
+  if (unreadTtl && !providedUnreadTtlMs) {
+    unreadTtlMs = parseSignalTtl(unreadTtl);
+  }
+
+  return {
+    ttl: ttlMs,
+    unreadTtl: unreadTtlMs,
+    maxEntries: maxEntries ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.maxEntries,
+  };
+}
+
+/**
+ * State for tracking cleanup decisions
+ */
+interface CleanupState {
+  removedIds: string[];
+  retainedIds: string[];
+  retainedSignals: Signal[];
+  bytesFreed: number;
+  breakdown: CleanupBreakdown;
+}
+
+/**
+ * Process signals for TTL-based removal decisions.
+ *
+ * @param signals - All signals to process
+ * @param config - Cleanup configuration
+ * @param context - Removal context
+ * @returns Cleanup state after TTL processing
+ */
+function processSignalsForTtl(
+  signals: Signal[],
+  config: SignalCleanupConfig,
+  context: RemovalContext,
+): CleanupState {
+  const state: CleanupState = {
+    removedIds: [],
+    retainedIds: [],
+    retainedSignals: [],
+    bytesFreed: 0,
+    breakdown: {
+      ttlExpired: 0,
+      unreadTtlExpired: 0,
+      countLimitExceeded: 0,
+      activeWuProtected: 0,
+    },
+  };
+
+  for (const signal of signals) {
+    const decision = shouldRemoveSignal(signal, config, context);
+    processSignalDecision(signal, decision, state);
+  }
+
+  return state;
+}
+
+/**
+ * Process a single signal's removal decision and update state.
+ *
+ * @param signal - Signal being processed
+ * @param decision - Removal decision for this signal
+ * @param state - Cleanup state to update
+ */
+function processSignalDecision(
+  signal: Signal,
+  decision: RemovalDecision,
+  state: CleanupState,
+): void {
+  if (decision.remove) {
+    state.removedIds.push(signal.id);
+    state.bytesFreed += estimateSignalBytes(signal);
+    updateBreakdownForRemoval(decision.reason, state.breakdown);
+  } else {
+    state.retainedIds.push(signal.id);
+    state.retainedSignals.push(signal);
+    if (decision.reason === 'active-wu-protected') {
+      state.breakdown.activeWuProtected++;
+    }
+  }
+}
+
+/**
+ * Update breakdown statistics for a removed signal.
+ *
+ * @param reason - Removal reason
+ * @param breakdown - Breakdown to update
+ */
+function updateBreakdownForRemoval(reason: string, breakdown: CleanupBreakdown): void {
+  if (reason === 'ttl-expired') {
+    breakdown.ttlExpired++;
+  } else if (reason === 'unread-ttl-expired') {
+    breakdown.unreadTtlExpired++;
+  }
+}
+
+/**
+ * Apply count-based pruning to keep only maxEntries signals.
+ *
+ * @param state - Current cleanup state (mutated in place)
+ * @param maxEntries - Maximum entries to retain
+ */
+function applyCountPruning(state: CleanupState, maxEntries: number): void {
+  if (state.retainedSignals.length <= maxEntries) {
+    return;
+  }
+
+  // Sort by created_at (oldest first)
+  state.retainedSignals.sort((a, b) => {
+    const aTime = new Date(a.created_at).getTime();
+    const bTime = new Date(b.created_at).getTime();
+    return aTime - bTime;
+  });
+
+  const toRemove = state.retainedSignals.length - maxEntries;
+  for (let i = 0; i < toRemove; i++) {
+    // eslint-disable-next-line security/detect-object-injection -- Safe: i is a controlled loop index
+    const signal = state.retainedSignals[i];
+    const idIndex = state.retainedIds.indexOf(signal.id);
+    if (idIndex !== -1) {
+      state.retainedIds.splice(idIndex, 1);
+    }
+    state.removedIds.push(signal.id);
+    state.bytesFreed += estimateSignalBytes(signal);
+    state.breakdown.countLimitExceeded++;
+  }
+
+  state.retainedSignals.splice(0, toRemove);
+}
+
+/**
  * Cleanup signals based on TTL and count limits.
  *
  * Removes signals according to policy:
@@ -334,125 +483,31 @@ export async function cleanupSignals(
   baseDir: string,
   options: CleanupSignalsOptions = {},
 ): Promise<CleanupSignalsResult> {
-  const {
-    dryRun = false,
-    ttl,
-    ttlMs: providedTtlMs,
-    unreadTtl,
-    unreadTtlMs: providedUnreadTtlMs,
-    maxEntries,
-    now = Date.now(),
-    getActiveWuIds = defaultGetActiveWuIds,
-  } = options;
+  const { dryRun = false, now = Date.now(), getActiveWuIds = defaultGetActiveWuIds } = options;
 
-  // Parse TTL options, falling back to defaults
-  let ttlMs = providedTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.ttl;
-  if (ttl && !providedTtlMs) {
-    ttlMs = parseSignalTtl(ttl);
-  }
-
-  let unreadTtlMs = providedUnreadTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.unreadTtl;
-  if (unreadTtl && !providedUnreadTtlMs) {
-    unreadTtlMs = parseSignalTtl(unreadTtl);
-  }
-
-  const effectiveMaxEntries = maxEntries ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.maxEntries;
-
-  // Build effective config
-  const config: SignalCleanupConfig = {
-    ttl: ttlMs,
-    unreadTtl: unreadTtlMs,
-    maxEntries: effectiveMaxEntries,
-  };
-
-  // Load all signals
+  const config = buildCleanupConfig(options);
   const signals = await loadAllSignals(baseDir);
-
-  // Get active WU IDs for protection
   const activeWuIds = await getActiveWuIds();
 
-  // Track cleanup decisions
-  const removedIds: string[] = [];
-  const retainedIds: string[] = [];
-  const retainedSignals: Signal[] = [];
-  let bytesFreed = 0;
-  const breakdown: CleanupBreakdown = {
-    ttlExpired: 0,
-    unreadTtlExpired: 0,
-    countLimitExceeded: 0,
-    activeWuProtected: 0,
-  };
+  const state = processSignalsForTtl(signals, config, { now, activeWuIds });
+  applyCountPruning(state, config.maxEntries);
 
-  // Process each signal for TTL-based removal
-  for (const signal of signals) {
-    const decision = shouldRemoveSignal(signal, config, { now, activeWuIds });
-
-    if (decision.remove) {
-      removedIds.push(signal.id);
-      bytesFreed += estimateSignalBytes(signal);
-
-      // Track breakdown
-      if (decision.reason === 'ttl-expired') {
-        breakdown.ttlExpired++;
-      } else if (decision.reason === 'unread-ttl-expired') {
-        breakdown.unreadTtlExpired++;
-      }
-    } else {
-      retainedIds.push(signal.id);
-      retainedSignals.push(signal);
-
-      // Track protected signals
-      if (decision.reason === 'active-wu-protected') {
-        breakdown.activeWuProtected++;
-      }
-    }
-  }
-
-  // Apply count-based pruning if over maxEntries
-  if (retainedSignals.length > effectiveMaxEntries) {
-    // Sort by created_at (oldest first)
-    retainedSignals.sort((a, b) => {
-      const aTime = new Date(a.created_at).getTime();
-      const bTime = new Date(b.created_at).getTime();
-      return aTime - bTime;
-    });
-
-    // Remove oldest signals to get down to maxEntries
-    const toRemove = retainedSignals.length - effectiveMaxEntries;
-    for (let i = 0; i < toRemove; i++) {
-      const signal = retainedSignals[i];
-      // Move from retained to removed
-      const idIndex = retainedIds.indexOf(signal.id);
-      if (idIndex !== -1) {
-        retainedIds.splice(idIndex, 1);
-      }
-      removedIds.push(signal.id);
-      bytesFreed += estimateSignalBytes(signal);
-      breakdown.countLimitExceeded++;
-    }
-
-    // Keep only the newest signals
-    retainedSignals.splice(0, toRemove);
-  }
-
-  const compactionRatio = getCompactionRatio(removedIds.length, signals.length);
+  const compactionRatio = getCompactionRatio(state.removedIds.length, signals.length);
   const baseResult: CleanupSignalsResult = {
     success: true,
-    removedIds,
-    retainedIds,
-    bytesFreed,
+    removedIds: state.removedIds,
+    retainedIds: state.retainedIds,
+    bytesFreed: state.bytesFreed,
     compactionRatio,
-    breakdown,
+    breakdown: state.breakdown,
   };
 
-  // If dry-run, return preview without modifications
   if (dryRun) {
     return { ...baseResult, dryRun: true };
   }
 
-  // Write retained signals back to file
-  if (removedIds.length > 0) {
-    await writeSignals(baseDir, retainedSignals);
+  if (state.removedIds.length > 0) {
+    await writeSignals(baseDir, state.retainedSignals);
   }
 
   return baseResult;
