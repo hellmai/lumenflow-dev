@@ -1,0 +1,51 @@
+# {{VENDOR_NAME}} LumenFlow Rules
+
+This project uses LumenFlow workflow. See [LUMENFLOW.md]({{LUMENFLOW_PATH}}).
+
+## Critical Rules
+
+1. **Always run wu:done** - After gates pass, run `pnpm wu:done --id WU-XXX`
+2. **Work in worktrees** - After `wu:claim`, work only in the worktree
+3. **Never bypass hooks** - No `--no-verify`
+4. **TDD** - Write tests first
+
+## Forbidden Commands
+
+- `git reset --hard`
+- `git push --force`
+- `git stash` (on main)
+- `--no-verify`
+
+## Quick Reference
+
+```bash
+# Claim WU
+pnpm wu:claim --id WU-XXX --lane <Lane>
+cd worktrees/<lane>-wu-xxx
+
+# Run gates
+pnpm gates
+
+# Complete (from main)
+cd {{PROJECT_ROOT}}
+pnpm wu:done --id WU-XXX
+```
+
+---
+
+## Workflow Summary
+
+| Step         | Command                                   |
+| ------------ | ----------------------------------------- |
+| 1. Create WU | `pnpm wu:create --id WU-XXX ...`          |
+| 2. Claim     | `pnpm wu:claim --id WU-XXX --lane <Lane>` |
+| 3. Work      | `cd worktrees/<lane>-wu-xxx`              |
+| 4. Gates     | `pnpm gates`                              |
+| 5. Complete  | `pnpm wu:done --id WU-XXX`                |
+
+## Safety Reminders
+
+- **Worktree Discipline**: After claiming a WU, immediately `cd` to the worktree
+- **Main is read-only**: Do not edit files in the main checkout after claiming
+- **Gates before done**: Always run `pnpm gates` before `wu:done`
+- **Never skip hooks**: The `--no-verify` flag is forbidden
