@@ -22,7 +22,6 @@ sections:
 
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — Framework: CLI
-- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml) — Framework: Initiatives
 
 ## 🔧 In progress
 
@@ -31,6 +30,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml) — Framework: CLI
+- [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml) — Framework: Initiatives
 
 ## ⛔ Blocked
 

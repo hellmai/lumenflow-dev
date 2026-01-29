@@ -2,7 +2,7 @@ id: WU-1211
 title: Add initiative completeness validation
 lane: 'Framework: Initiatives'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-29
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - 'Initiative status auto-progresses: draft to in_progress when first WU claimed'
   - state:doctor reports incomplete initiatives
 initiative: INIT-007
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-initiatives-wu-1211
+claimed_at: 2026-01-29T22:30:00.009Z
+baseline_main_sha: ee498684978dc431eb56f259f8d857fa8de1ae70
+session_id: 198c182d-88d5-48d6-a197-b0b01a648e93
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T22:30:00.014Z
