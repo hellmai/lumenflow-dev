@@ -299,6 +299,11 @@ pnpm mem:summarize --wu WU-050
 
 Multiple agents working on related WUs in different lanes.
 
+<Aside type="note">
+  Configure `progress_signals.enabled: true` in `.lumenflow.config.yaml` to make signaling
+  mandatory for sub-agents. See [Progress Signals](#progress-signals) for all options.
+</Aside>
+
 ```bash
 # Agent A working on Core (WU-100)
 pnpm mem:signal "New validation port added: ValidationService"
@@ -384,6 +389,44 @@ memory:
   max_checkpoints: 10 # per WU
   auto_checkpoint: true # on significant changes
 ```
+
+### Progress Signals
+
+For sub-agent coordination, configure when agents must signal their progress:
+
+```yaml
+# .lumenflow.config.yaml
+memory:
+  progress_signals:
+    enabled: true # When true, signals become mandatory
+    frequency: 25 # Signal every N tool calls (0 = disabled)
+    on_milestone: true # Signal after each acceptance criterion
+    on_tests_pass: true # Signal when tests first pass
+    before_gates: true # Signal before running gates
+    on_blocked: true # Signal when blocked or waiting
+    auto_checkpoint: false # Create checkpoint with each signal
+```
+
+| Field             | Default | Description                                          |
+| ----------------- | ------- | ---------------------------------------------------- |
+| `enabled`         | `false` | When `true`, signals are required at trigger points  |
+| `frequency`       | `0`     | Tool calls between auto-signals (0 = no frequency)   |
+| `on_milestone`    | `true`  | Signal after completing each acceptance criterion    |
+| `on_tests_pass`   | `true`  | Signal when tests first pass                         |
+| `before_gates`    | `true`  | Signal before running quality gates                  |
+| `on_blocked`      | `true`  | Signal when blocked or waiting on dependencies       |
+| `auto_checkpoint` | `false` | Automatically create checkpoint with each signal     |
+
+<Aside type="tip" title="Sub-Agent Visibility">
+  Enable `progress_signals.enabled: true` when orchestrating sub-agents. This ensures the parent
+  agent can track progress via `mem:inbox` without polling.
+</Aside>
+
+**When to use:**
+
+- **Parallel WUs**: When multiple agents work on related WUs, signals prevent redundant work
+- **Long-running tasks**: For complex WUs, signals provide progress visibility
+- **Orchestrator patterns**: Parent agents can monitor child progress without context overhead
 
 ## Best Practices
 
