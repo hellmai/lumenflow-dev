@@ -20,7 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
+(No items ready)
 
 ## 🔧 In progress
 
@@ -28,6 +28,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1172 — Universal Agent Safety: Documentation & Bypass Completeness](wu/WU-1172.yaml) — Framework: Core
+- [WU-1177 — Friction-Free Onboarding: Doctor, Auto-Detect, Vendor Sync](wu/WU-1177.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
