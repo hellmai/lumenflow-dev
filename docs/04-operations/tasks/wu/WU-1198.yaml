@@ -2,7 +2,7 @@ id: WU-1198
 title: 'Documentation: Lane tooling and WIP enforcement'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -12,9 +12,12 @@ code_paths:
   - packages/@lumenflow/cli/README.md
 tests:
   manual:
-    - Verify lane:health and lane:suggest are documented in apps/docs/src/content/docs/reference/cli.mdx
-    - Verify wip_justification and gates.lane_health are documented in apps/docs/src/content/docs/reference/config.mdx
-    - Verify Lane Tooling section exists in docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+    - Verify lane:health and lane:suggest are documented in
+      apps/docs/src/content/docs/reference/cli.mdx
+    - Verify wip_justification and gates.lane_health are documented in
+      apps/docs/src/content/docs/reference/config.mdx
+    - Verify Lane Tooling section exists in
+      docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
     - Verify lane-health and lane-suggest commands listed in packages/@lumenflow/cli/README.md
   unit: []
   e2e: []
@@ -53,3 +56,5 @@ acceptance:
   - Starlight docs include lane:health, lane:suggest with usage examples
   - CLI README mentions new commands
   - wip_justification and gates.lane_health config options documented
+locked: true
+completed_at: 2026-01-29T19:16:10.174Z
