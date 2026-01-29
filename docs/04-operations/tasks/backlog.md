@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1202 — Bug: orchestrate:initiative missing spawn XML when checkpoint not auto-enabled](wu/WU-1202.yaml) — Framework: CLI
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 - [WU-1194 — Clean up lint errors in wu-spawn.ts CLI entrypoint](wu/WU-1194.yaml) — Framework: Core
 - [WU-1195 — Fix pre-existing lint errors in agent-log-issue.ts](wu/WU-1195.yaml) — Framework: CLI
