@@ -2,7 +2,7 @@ id: WU-1213
 title: Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-29
 code_paths:
@@ -28,9 +28,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix cognitive complexity, deprecation warnings, floating promises, and nested template literal errors in CLI files. These errors predate WU-1211 and block gates from passing.
+description: Fix cognitive complexity, deprecation warnings, floating promises, and nested template
+  literal errors in CLI files. These errors predate WU-1211 and block gates from passing.
 acceptance:
   - All lint errors in wu-claim.ts resolved
   - All lint errors in wu-create.ts resolved
   - All lint errors in initiative-create.ts resolved
   - pnpm gates passes without lint errors
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1213
+claimed_at: 2026-01-29T22:48:53.220Z
+baseline_main_sha: e77a07c821c20727fa95263f8f307bd98af31eab
+session_id: a7ce174c-8a2b-4d0c-bcc8-327f13183138
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T22:48:53.226Z
