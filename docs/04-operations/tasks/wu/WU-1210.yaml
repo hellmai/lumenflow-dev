@@ -2,7 +2,7 @@ id: WU-1210
 title: Fix wu-spawn.test.ts failing 'Required at Milestones' assertion
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The wu-spawn.test.ts test for 'Required at Milestones' assertion is failing because the output does not contain expected text. This is a pre-existing failure on main branch.
+description: The wu-spawn.test.ts test for 'Required at Milestones' assertion is failing because the
+  output does not contain expected text. This is a pre-existing failure on main branch.
 acceptance:
   - "Test passes: generateTaskInvocation output contains 'Required at Milestones'"
   - All wu-spawn tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1210
+claimed_at: 2026-01-29T23:10:53.448Z
+baseline_main_sha: 128394c689f9a51d48b118f219220ad1bbef072b
+session_id: 355e4d27-dc48-4261-aeee-567f2e93cb9b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:10:53.451Z
