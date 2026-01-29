@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1180 — Standardize spawn progress signals and fix deprecated parseWUArgs](wu/WU-1180.yaml) — Framework: CLI
 - [WU-1179 — Fix micro-worktree push race leaving main diverged](wu/WU-1179.yaml) — Framework: Core
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — Content: Documentation
 
