@@ -30,4 +30,5 @@ success_metrics:
   - Active WU data never accidentally cleaned up
   - state:doctor reports zero issues on healthy system
 labels: []
-related_plan: lumenflow://plans/hazy-crafting-lerdorf.md
+wus:
+  - WU-1204
