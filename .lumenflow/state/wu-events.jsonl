@@ -359,3 +359,4 @@
 {"type":"complete","wuId":"WU-1186","timestamp":"2026-01-29T13:56:45.574Z"}
 {"type":"claim","wuId":"WU-1181","timestamp":"2026-01-29T14:01:26.582Z","lane":"Framework: CLI","title":"Migrate CLI entry points from process.argv to import.meta.main"}
 {"type":"complete","wuId":"WU-1181","timestamp":"2026-01-29T14:11:16.108Z"}
+{"type":"claim","wuId":"WU-1188","lane":"Framework: CLI","title":"lane:health command: overlap detection and coverage gaps","timestamp":"2026-01-29T14:16:44.340Z"}
