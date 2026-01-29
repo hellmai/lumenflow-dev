@@ -2,7 +2,7 @@ id: WU-1225
 title: 'wu:edit: inconsistent default behavior for --code-paths vs --acceptance'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -33,3 +33,11 @@ acceptance:
   - --replace-code-paths flag added for explicit replacement
   - Same pattern applied to --risks, --test-paths-*, --blocked-by
   - Help text updated to reflect new defaults
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1225
+claimed_at: 2026-01-29T23:50:07.627Z
+baseline_main_sha: bc3abc99b297800872e2cbfdba0d7b69ee087bcd
+session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:50:07.634Z
