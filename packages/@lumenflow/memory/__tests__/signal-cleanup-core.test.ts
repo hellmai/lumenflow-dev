@@ -9,7 +9,10 @@
  * - Dry-run mode
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+/* eslint-disable sonarjs/no-duplicate-string -- Test files use descriptive repeated IDs */
+/* eslint-disable sonarjs/no-nested-functions -- Test structure requires nested describe/it blocks */
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -17,8 +20,6 @@ import {
   cleanupSignals,
   shouldRemoveSignal,
   parseSignalTtl,
-  type CleanupSignalsOptions,
-  type CleanupSignalsResult,
   type SignalCleanupConfig,
   DEFAULT_SIGNAL_CLEANUP_CONFIG,
 } from '../src/signal-cleanup-core.js';
@@ -32,6 +33,17 @@ const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
 const THIRTY_DAYS_MS = 30 * ONE_DAY_MS;
 
 /**
+ * Path constants to avoid duplicate string literals
+ */
+const MEMORY_DIR = '.lumenflow/memory';
+const SIGNALS_FILENAME = 'signals.jsonl';
+
+/**
+ * Incrementing counter for deterministic test signal IDs
+ */
+let signalIdCounter = 0;
+
+/**
  * Create a test signal with specified properties
  */
 function createSignal(
@@ -42,13 +54,21 @@ function createSignal(
   const offsetMs = (created_at_offset_days ?? 0) * ONE_DAY_MS;
   const createdAt = new Date(now - offsetMs).toISOString();
 
+  signalIdCounter++;
   return {
-    id: `sig-${Math.random().toString(36).slice(2, 10)}`,
+    id: `sig-${signalIdCounter.toString().padStart(8, '0')}`,
     message: 'Test signal',
     created_at: createdAt,
     read: false,
     ...rest,
   };
+}
+
+/**
+ * Helper to get active WU IDs for test
+ */
+function createGetActiveWuIds(activeIds: string[]): () => Promise<Set<string>> {
+  return async (): Promise<Set<string>> => new Set(activeIds);
 }
 
 describe('signal-cleanup-core', () => {
@@ -58,7 +78,9 @@ describe('signal-cleanup-core', () => {
     // Create temp directory for tests
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'signal-cleanup-test-'));
     // Create .lumenflow/memory directory
-    await fs.mkdir(path.join(testDir, '.lumenflow', 'memory'), { recursive: true });
+    await fs.mkdir(path.join(testDir, MEMORY_DIR), { recursive: true });
+    // Reset signal ID counter for each test
+    signalIdCounter = 0;
   });
 
   afterEach(async () => {
@@ -69,8 +91,8 @@ describe('signal-cleanup-core', () => {
   /**
    * Write signals to test directory
    */
-  async function writeSignals(signals: Signal[]) {
-    const signalsPath = path.join(testDir, '.lumenflow', 'memory', 'signals.jsonl');
+  async function writeSignals(signals: Signal[]): Promise<void> {
+    const signalsPath = path.join(testDir, MEMORY_DIR, SIGNALS_FILENAME);
     const content =
       signals.map((s) => JSON.stringify(s)).join('\n') + (signals.length > 0 ? '\n' : '');
     await fs.writeFile(signalsPath, content, 'utf-8');
@@ -80,7 +102,7 @@ describe('signal-cleanup-core', () => {
    * Read signals from test directory
    */
   async function readSignals(): Promise<Signal[]> {
-    const signalsPath = path.join(testDir, '.lumenflow', 'memory', 'signals.jsonl');
+    const signalsPath = path.join(testDir, MEMORY_DIR, SIGNALS_FILENAME);
     try {
       const content = await fs.readFile(signalsPath, 'utf-8');
       const lines = content.split('\n').filter((line) => line.trim());
@@ -317,7 +339,7 @@ describe('signal-cleanup-core', () => {
 
         // Mock getActiveWuIds to return WU-1234 as in_progress
         const result = await cleanupSignals(testDir, {
-          getActiveWuIds: async () => new Set(['WU-1234']),
+          getActiveWuIds: createGetActiveWuIds(['WU-1234']),
         });
 
         expect(result.removedIds).toContain('sig-done');
@@ -337,7 +359,7 @@ describe('signal-cleanup-core', () => {
         await writeSignals(signals);
 
         const result = await cleanupSignals(testDir, {
-          getActiveWuIds: async () => new Set(['WU-BLOCKED']),
+          getActiveWuIds: createGetActiveWuIds(['WU-BLOCKED']),
         });
 
         expect(result.retainedIds).toContain('sig-blocked');
@@ -400,7 +422,7 @@ describe('signal-cleanup-core', () => {
         await writeSignals(signals);
 
         const result = await cleanupSignals(testDir, {
-          getActiveWuIds: async () => new Set(['WU-ACTIVE']),
+          getActiveWuIds: createGetActiveWuIds(['WU-ACTIVE']),
         });
 
         expect(result.breakdown.ttlExpired).toBe(1);
