@@ -35,11 +35,12 @@ import { createWUParser, WU_OPTIONS } from './arg-parser.js';
 import { WU_PATHS } from './wu-paths.js';
 import { parseYAML } from './wu-yaml.js';
 import { die } from './error-handler.js';
-import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
+import { WU_STATUS, PATTERNS, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 // WU-1603: Check lane lock status before spawning
 import { checkLaneLock } from './lane-lock.js';
 import { minimatch } from 'minimatch';
-import { SpawnStrategyFactory, SpawnStrategy } from './spawn-strategy.js';
+import { SpawnStrategyFactory } from './spawn-strategy.js';
+import type { SpawnStrategy } from './spawn-strategy.js';
 import { getConfig } from './lumenflow-config.js';
 import type { ClientConfig, LumenFlowConfig } from './lumenflow-config-schema.js';
 import {
@@ -69,6 +70,181 @@ const MANDATORY_TRIGGERS = {
 };
 
 const LOG_PREFIX = '[wu:spawn]';
+
+/**
+ * WU-1192: Truncation prevention constants (consolidated from CLI)
+ *
+ * These constants help detect when spawn output has been truncated during
+ * copy-paste operations or context loading. The warning banner alerts users
+ * to the truncation risk, and the end sentinel allows verification that
+ * the full output was received.
+ */
+export const TRUNCATION_WARNING_BANNER = `<!-- LUMENFLOW_TRUNCATION_WARNING -->
+<!--
+  ⚠️ CRITICAL: DO NOT TRUNCATE THIS OUTPUT
+
+  This spawn prompt MUST be copied verbatim. Truncation causes:
+  - Missing constraints (agents ignore safety rules)
+  - Missing TDD directives (agents skip tests)
+  - Degraded agent performance
+
+  VERIFICATION: The output MUST end with: <!-- LUMENFLOW_SPAWN_END -->
+  If you don't see that sentinel at the end, the output was truncated.
+-->
+`;
+
+export const SPAWN_END_SENTINEL = '<!-- LUMENFLOW_SPAWN_END -->';
+
+/**
+ * WU types that require TDD (failing test first)
+ * Note: Used as documentation reference. TDD is the default for any type not in other categories.
+ */
+const _TDD_REQUIRED_TYPES = ['feature', 'bug', 'tooling', 'enhancement'];
+
+/**
+ * WU types that require existing tests to pass (no new tests mandated)
+ */
+const EXISTING_TESTS_TYPES = ['refactor'];
+
+/**
+ * WU types that require smoke tests + manual QA
+ */
+const SMOKE_TEST_TYPES = ['visual', 'design', 'ui'];
+
+/**
+ * WU types that only need format checks (no TDD)
+ */
+const DOCS_ONLY_TYPES = ['documentation', 'docs', 'config'];
+
+/**
+ * Generate type-aware test guidance (WU-1142, WU-1192)
+ *
+ * Returns appropriate test guidance based on WU type:
+ * - feature/bug/tooling: Full TDD directive
+ * - documentation: Format check only
+ * - visual/design: Smoke test + manual QA
+ * - refactor: Existing tests must pass
+ *
+ * @param {string} wuType - WU type from YAML
+ * @returns {string} Test guidance section
+ */
+export function generateTestGuidance(wuType: string): string {
+  const type = (wuType || 'feature').toLowerCase();
+
+  // Documentation WUs - no TDD, just format checks
+  if (DOCS_ONLY_TYPES.includes(type)) {
+    return `## Documentation Standards
+
+**Format check only** - No TDD required for documentation WUs.
+
+### Requirements
+
+1. Run \`pnpm gates --docs-only\` before completion
+2. Ensure markdown formatting is correct
+3. Verify links are valid
+4. Check spelling and grammar`;
+  }
+
+  // Visual/Design WUs - smoke tests + manual QA
+  if (SMOKE_TEST_TYPES.includes(type)) {
+    return `## Visual/Design Testing
+
+**Smoke test + manual QA** - Visual WUs require different verification.
+
+### Requirements
+
+1. Create smoke test for component rendering (if applicable)
+2. Verify visual appearance manually
+3. Test responsive behavior across breakpoints
+4. Check accessibility (keyboard navigation, screen reader)
+5. Document manual QA results in completion notes`;
+  }
+
+  // Refactor WUs - existing tests must pass
+  if (EXISTING_TESTS_TYPES.includes(type)) {
+    return `## Refactor Testing
+
+**Existing tests must pass** - Refactoring must not break current behavior.
+
+### Requirements
+
+1. Run all existing tests BEFORE refactoring
+2. Run all existing tests AFTER refactoring
+3. No new tests required unless behavior changes
+4. If tests fail after refactor, the refactor introduced a bug`;
+  }
+
+  // Default: TDD required (feature, bug, tooling, enhancement)
+  return generateTDDDirective();
+}
+
+/**
+ * Generate the TDD directive section (WU-1585, WU-1192)
+ *
+ * Positioned immediately after </task> preamble per "Lost in the Middle" research.
+ * Critical instructions at START and END of prompt improve adherence.
+ *
+ * @returns {string} TDD directive section
+ */
+function generateTDDDirective() {
+  return `## ⛔ TDD DIRECTIVE — READ BEFORE CODING
+
+**IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST, YOU HAVE FAILED THIS WU.**
+
+### Test-First Workflow (MANDATORY)
+
+1. Write a failing test for the acceptance criteria
+2. Run the test to confirm it fails (RED)
+3. Implement the minimum code to pass the test
+4. Run the test to confirm it passes (GREEN)
+5. Refactor if needed, keeping tests green
+
+### Why This Matters
+
+- Tests document expected behavior BEFORE implementation
+- Prevents scope creep and over-engineering
+- Ensures every feature has verification
+- Failing tests prove the test actually tests something`;
+}
+
+/**
+ * Generate worktree block recovery section (WU-1192)
+ *
+ * Provides guidance when agents encounter worktree hook blocks.
+ *
+ * @param {string} worktreePath - Path to the worktree
+ * @returns {string} Recovery section
+ */
+export function generateWorktreeBlockRecoverySection(worktreePath: string): string {
+  return `## When Blocked by Worktree Hook
+
+If you encounter a "worktree required" or "commit blocked" error:
+
+1. **Check existing worktrees**: \`git worktree list\`
+2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
+3. **Retry your operation** from within the worktree
+4. **Use relative paths only** (never absolute paths)
+
+### Common Causes
+
+- Running \`git commit\` from main checkout instead of worktree
+- Using absolute paths that bypass worktree isolation
+- Forgetting to \`cd\` to worktree after \`wu:claim\`
+
+### Quick Fix
+
+\`\`\`bash
+# Check where you are
+pwd
+git worktree list
+
+# Navigate to your worktree
+cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}
+
+# Retry your commit
+git add . && git commit -m "your message"
+\`\`\``;
+}
 
 /**
  * Detect mandatory agents based on code paths.
@@ -343,35 +519,6 @@ function generateInvariantsPriorArtSection(codePaths) {
 }
 
 /**
- * Generate the TDD directive section (WU-1585)
- *
- * Positioned immediately after </task> preamble per "Lost in the Middle" research.
- * Critical instructions at START and END of prompt improve adherence.
- *
- * @returns {string} TDD directive section
- */
-function generateTDDDirective() {
-  return `## ⛔ TDD DIRECTIVE — READ BEFORE CODING
-
-**IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST, YOU HAVE FAILED THIS WU.**
-
-### Test-First Workflow (MANDATORY)
-
-1. Write a failing test for the acceptance criteria
-2. Run the test to confirm it fails (RED)
-3. Implement the minimum code to pass the test
-4. Run the test to confirm it passes (GREEN)
-5. Refactor if needed, keeping tests green
-
-### Why This Matters
-
-- Tests document expected behavior BEFORE implementation
-- Prevents scope creep and over-engineering
-- Ensures every feature has verification
-- Failing tests prove the test actually tests something`;
-}
-
-/**
  * Generate the context loading preamble
  *
  * Follows AGENTS.md context loading protocol (WU-2247):
@@ -448,7 +595,15 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
    - Use \`pnpm mem:checkpoint --wu ${id}\` to save progress before risky operations
    - Check \`pnpm mem:inbox --wu ${id}\` periodically for parallel signals from other agents
    - Checkpoint triggers (WU-1943): checkpoint after each acceptance criterion completed, checkpoint before gates, checkpoint every 30 tool calls
-</constraints>`;
+
+8. SKIP-GATES AUTONOMY (WU-1142)
+   - If gates fail, first check if failure is pre-existing on main: \`git checkout main && pnpm gates\`
+   - If failure exists on main (not your change), use: \`pnpm wu:done --id ${id} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX\`
+   - Do NOT ask for approval - autonomous skip-gates for pre-existing failures is correct
+   - This prevents getting stuck on infrastructure debt
+</constraints>
+
+${SPAWN_END_SENTINEL}`;
 }
 
 function generateCodexConstraints(id) {
@@ -923,7 +1078,8 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
-  const tddDirective = generateTDDDirective();
+  // WU-1192: Use type-aware test guidance instead of always TDD directive
+  const testGuidance = generateTestGuidance(doc.type || 'feature');
   const clientContext = options.client;
   const config = options.config || getConfig();
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
@@ -969,14 +1125,14 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
 
   // Build the task prompt
-  // TDD directive appears immediately after </task> per "Lost in the Middle" research (WU-1585)
-  const taskPrompt = `<task>
+  // WU-1192: Truncation warning at start, test guidance after </task> per "Lost in the Middle" research
+  const taskPrompt = `${TRUNCATION_WARNING_BANNER}<task>
 ${preamble}
 </task>
 
 ---
 
-${tddDirective}
+${testGuidance}
 
 ---
 
