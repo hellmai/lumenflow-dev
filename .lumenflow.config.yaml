@@ -118,3 +118,17 @@ agents:
     gemini-cli:
       preamble: true
       skillsDir: '.claude/skills'
+
+# WU-1203: Memory layer configuration
+# Controls memory persistence, checkpoints, and sub-agent coordination signals
+memory:
+  # Progress signals for sub-agent coordination
+  # When enabled, spawn prompts include mandatory signal directives
+  # progress_signals:
+  #   enabled: false        # Set true to make signals mandatory in spawn prompts
+  #   frequency: 0          # Signal every N tool calls (0 = disabled)
+  #   on_milestone: true    # Signal after each acceptance criterion completed
+  #   on_tests_pass: true   # Signal when tests first pass
+  #   before_gates: true    # Signal before running gates
+  #   on_blocked: true      # Signal when work is blocked
+  #   auto_checkpoint: false # Automatically checkpoint memory at signal milestones
