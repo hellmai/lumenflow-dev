@@ -357,3 +357,4 @@
 {"type":"complete","wuId":"WU-1180","timestamp":"2026-01-29T13:54:43.492Z"}
 {"type":"claim","wuId":"WU-1186","timestamp":"2026-01-29T13:55:02.084Z","lane":"Content: Documentation","title":"Reduce quickstart friction: 30-sec path, simpler examples, sync START-HERE"}
 {"type":"complete","wuId":"WU-1186","timestamp":"2026-01-29T13:56:45.574Z"}
+{"type":"claim","wuId":"WU-1181","lane":"Framework: CLI","title":"Migrate CLI entry points from process.argv to import.meta.main","timestamp":"2026-01-29T14:01:26.582Z"}
