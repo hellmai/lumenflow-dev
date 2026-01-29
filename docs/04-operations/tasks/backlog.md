@@ -20,14 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1221 — Add gitignore setup to lumenflow init and state:doctor](wu/WU-1221.yaml) — Framework: CLI
-- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
-- [WU-1216 — Add gitignore entries to lumenflow init](wu/WU-1216.yaml) — Framework: CLI
-- [WU-1217 — Add gitignore check to lumenflow doctor](wu/WU-1217.yaml) — Framework: CLI
 - [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml) — Framework: CLI
+- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
+- [WU-1221 — Add gitignore setup to lumenflow init and state:doctor](wu/WU-1221.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -35,6 +32,7 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
+- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
