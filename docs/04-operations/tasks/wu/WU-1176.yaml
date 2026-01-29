@@ -2,7 +2,7 @@ id: WU-1176
 title: Add .eslintcache to .gitignore and untrack
 lane: 'Operations: CI/CD'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The .eslintcache file is currently tracked by git, causing wu:done cleanup failures when the cache changes during operations. Cache files should not be version controlled.
+description: The .eslintcache file is currently tracked by git, causing wu:done cleanup failures
+  when the cache changes during operations. Cache files should not be version controlled.
 acceptance:
   - .eslintcache is listed in .gitignore
   - .eslintcache is no longer tracked by git
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1176
+claimed_at: 2026-01-29T12:31:15.025Z
+baseline_main_sha: 2082339a6d461b786ebf470f00d0c9d26ccac7d4
+session_id: 95ca36f3-708e-4fbc-a987-f1815244f0bf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T12:31:15.032Z
