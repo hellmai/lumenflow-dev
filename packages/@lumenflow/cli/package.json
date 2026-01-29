@@ -60,6 +60,7 @@
     "mem-export": "./dist/mem-export.js",
     "mem-signal": "./dist/mem-signal.js",
     "mem-cleanup": "./dist/mem-cleanup.js",
+    "signal-cleanup": "./dist/signal-cleanup.js",
     "mem-create": "./dist/mem-create.js",
     "mem-inbox": "./dist/mem-inbox.js",
     "mem-summarize": "./dist/mem-summarize.js",

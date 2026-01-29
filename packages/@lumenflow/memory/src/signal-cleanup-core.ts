@@ -1,0 +1,459 @@
+/**
+ * Signal Cleanup Core (WU-1204)
+ *
+ * TTL-based cleanup for signals to prevent unbounded growth.
+ * Implements configurable retention policies:
+ * - Read signals: 7 days default TTL
+ * - Unread signals: 30 days default TTL
+ * - Max entries: 500 default
+ * - Active WU protection: signals linked to in_progress/blocked WUs are never removed
+ *
+ * Reuses patterns from mem-cleanup-core.ts.
+ *
+ * @see {@link packages/@lumenflow/cli/src/signal-cleanup.ts} - CLI wrapper
+ * @see {@link packages/@lumenflow/memory/src/__tests__/signal-cleanup-core.test.ts} - Tests
+ */
+
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ms = require('ms') as (value: string) => number;
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import { loadSignals, SIGNAL_FILE_NAME, type Signal } from './mem-signal-core.js';
+
+/**
+ * Default TTL values in milliseconds
+ */
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Signal cleanup configuration
+ */
+export interface SignalCleanupConfig {
+  /** TTL for read signals in milliseconds (default: 7 days) */
+  ttl: number;
+  /** TTL for unread signals in milliseconds (default: 30 days) */
+  unreadTtl: number;
+  /** Maximum number of signals to retain (default: 500) */
+  maxEntries: number;
+}
+
+/**
+ * Default signal cleanup configuration
+ */
+export const DEFAULT_SIGNAL_CLEANUP_CONFIG: SignalCleanupConfig = {
+  ttl: 7 * ONE_DAY_MS,
+  unreadTtl: 30 * ONE_DAY_MS,
+  maxEntries: 500,
+};
+
+/**
+ * Breakdown of cleanup by category
+ */
+export interface CleanupBreakdown {
+  ttlExpired: number;
+  unreadTtlExpired: number;
+  countLimitExceeded: number;
+  activeWuProtected: number;
+}
+
+/**
+ * Result of cleanup operation
+ */
+export interface CleanupSignalsResult {
+  /** Whether cleanup succeeded */
+  success: boolean;
+  /** IDs of removed signals */
+  removedIds: string[];
+  /** IDs of retained signals */
+  retainedIds: string[];
+  /** Approximate bytes freed (0 if dry-run) */
+  bytesFreed: number;
+  /** Ratio of removed to total signals */
+  compactionRatio: number;
+  /** True if in dry-run mode */
+  dryRun?: boolean;
+  /** Breakdown by category */
+  breakdown: CleanupBreakdown;
+}
+
+/**
+ * Options for cleanup operation
+ */
+export interface CleanupSignalsOptions {
+  /** If true, preview without modifications */
+  dryRun?: boolean;
+  /** TTL duration string for read signals (e.g., '7d', '24h') */
+  ttl?: string;
+  /** TTL in milliseconds for read signals (alternative to ttl string) */
+  ttlMs?: number;
+  /** TTL duration string for unread signals (e.g., '30d') */
+  unreadTtl?: string;
+  /** TTL in milliseconds for unread signals */
+  unreadTtlMs?: number;
+  /** Maximum number of signals to retain */
+  maxEntries?: number;
+  /** Current timestamp for testing (defaults to Date.now()) */
+  now?: number;
+  /** Function to get active WU IDs (in_progress/blocked) */
+  getActiveWuIds?: () => Promise<Set<string>>;
+}
+
+/**
+ * Context for shouldRemoveSignal decision
+ */
+export interface RemovalContext {
+  now: number;
+  activeWuIds: Set<string>;
+}
+
+/**
+ * Result of shouldRemoveSignal decision
+ */
+export interface RemovalDecision {
+  remove: boolean;
+  reason: string;
+}
+
+/**
+ * Node.js file system error with code
+ */
+interface NodeFsError extends Error {
+  code?: string;
+}
+
+/**
+ * Parse a TTL duration string into milliseconds.
+ *
+ * Uses the `ms` package to parse human-readable duration strings.
+ *
+ * @param ttlString - TTL string (e.g., '7d', '30d', '24h', '60m')
+ * @returns TTL in milliseconds
+ * @throws If TTL format is invalid
+ *
+ * @example
+ * parseSignalTtl('7d');  // 604800000 (7 days in ms)
+ * parseSignalTtl('30d'); // 2592000000 (30 days in ms)
+ * parseSignalTtl('24h'); // 86400000 (24 hours in ms)
+ */
+export function parseSignalTtl(ttlString: string): number {
+  if (!ttlString || typeof ttlString !== 'string') {
+    throw new Error('Invalid TTL format: TTL string is required');
+  }
+
+  const trimmed = ttlString.trim();
+  if (!trimmed) {
+    throw new Error('Invalid TTL format: TTL string is required');
+  }
+
+  // Use ms package to parse the duration
+  const result = ms(trimmed);
+
+  if (result === undefined || result <= 0) {
+    throw new Error(`Invalid TTL format: "${ttlString}" is not a valid duration`);
+  }
+
+  return result;
+}
+
+/**
+ * Check if a signal has expired based on TTL.
+ *
+ * @param signal - Signal to check
+ * @param ttlMs - TTL in milliseconds
+ * @param now - Current timestamp
+ * @returns True if signal is older than TTL
+ */
+function isSignalExpired(signal: Signal, ttlMs: number, now: number): boolean {
+  if (!signal.created_at) {
+    return false; // No timestamp means we can't determine age - safer to retain
+  }
+
+  const createdAt = new Date(signal.created_at).getTime();
+
+  // Invalid date - safer to retain
+  if (Number.isNaN(createdAt)) {
+    return false;
+  }
+
+  const age = now - createdAt;
+  return age > ttlMs;
+}
+
+/**
+ * Check if a signal should be removed based on TTL and active WU protection.
+ *
+ * Policy rules (checked in order):
+ * 1. Active WU signals are always retained
+ * 2. Read signals older than TTL are removed
+ * 3. Unread signals older than unreadTtl are removed
+ * 4. Otherwise, signal is retained
+ *
+ * @param signal - Signal to check
+ * @param config - Cleanup configuration
+ * @param context - Removal context (now timestamp, active WU IDs)
+ * @returns Removal decision with reason
+ */
+export function shouldRemoveSignal(
+  signal: Signal,
+  config: SignalCleanupConfig,
+  context: RemovalContext,
+): RemovalDecision {
+  const { now, activeWuIds } = context;
+
+  // Active WU protection: signals linked to in_progress/blocked WUs are always retained
+  if (signal.wu_id && activeWuIds.has(signal.wu_id)) {
+    return { remove: false, reason: 'active-wu-protected' };
+  }
+
+  // Check TTL based on read status
+  if (signal.read) {
+    // Read signals use the shorter TTL
+    if (isSignalExpired(signal, config.ttl, now)) {
+      return { remove: true, reason: 'ttl-expired' };
+    }
+  } else {
+    // Unread signals use the longer unreadTtl
+    if (isSignalExpired(signal, config.unreadTtl, now)) {
+      return { remove: true, reason: 'unread-ttl-expired' };
+    }
+  }
+
+  // Default: retain
+  return { remove: false, reason: 'within-ttl' };
+}
+
+/**
+ * Calculate approximate byte size of a signal when serialized.
+ *
+ * @param signal - Signal to measure
+ * @returns Approximate byte size
+ */
+function estimateSignalBytes(signal: Signal): number {
+  // JSON.stringify + newline character
+  return JSON.stringify(signal).length + 1;
+}
+
+/**
+ * Calculate compaction ratio (removed / total).
+ *
+ * @param removedCount - Number of removed signals
+ * @param totalCount - Total number of signals
+ * @returns Compaction ratio (0 to 1, or 0 if no signals)
+ */
+function getCompactionRatio(removedCount: number, totalCount: number): number {
+  if (totalCount === 0) {
+    return 0;
+  }
+  return removedCount / totalCount;
+}
+
+/**
+ * Gets the signals file path for a project.
+ *
+ * @param baseDir - Project base directory
+ * @returns Full path to signals.jsonl
+ */
+function getSignalsPath(baseDir: string): string {
+  return path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR, SIGNAL_FILE_NAME);
+}
+
+/**
+ * Load signals directly from file (for cleanup, to avoid loadSignals filter limitations).
+ *
+ * @param baseDir - Project base directory
+ * @returns Array of all signals
+ */
+async function loadAllSignals(baseDir: string): Promise<Signal[]> {
+  const signalsPath = getSignalsPath(baseDir);
+
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known path
+    const content = await fs.readFile(signalsPath, { encoding: 'utf-8' as BufferEncoding });
+    const lines = content.split('\n').filter((line) => line.trim());
+    return lines.map((line) => JSON.parse(line) as Signal);
+  } catch (err) {
+    const error = err as NodeFsError;
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+/**
+ * Write retained signals back to file.
+ *
+ * @param baseDir - Project base directory
+ * @param signals - Signals to write
+ */
+async function writeSignals(baseDir: string, signals: Signal[]): Promise<void> {
+  const signalsPath = getSignalsPath(baseDir);
+  const content =
+    signals.map((s) => JSON.stringify(s)).join('\n') + (signals.length > 0 ? '\n' : '');
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes known path
+  await fs.writeFile(signalsPath, content, { encoding: 'utf-8' as BufferEncoding });
+}
+
+/**
+ * Default function to get active WU IDs (returns empty set).
+ * Override in CLI to actually query WU status.
+ */
+async function defaultGetActiveWuIds(): Promise<Set<string>> {
+  return new Set();
+}
+
+/**
+ * Cleanup signals based on TTL and count limits.
+ *
+ * Removes signals according to policy:
+ * 1. Active WU signals (in_progress/blocked) are always retained
+ * 2. Read signals older than TTL (default 7d) are removed
+ * 3. Unread signals older than unreadTtl (default 30d) are removed
+ * 4. If over maxEntries, oldest signals are removed (keeping newest)
+ *
+ * In dry-run mode, no modifications are made but the result shows
+ * what would be removed.
+ *
+ * @param baseDir - Project base directory
+ * @param options - Cleanup options
+ * @returns Cleanup result with removed/retained IDs and metrics
+ *
+ * @example
+ * // Cleanup with dry-run to preview
+ * const preview = await cleanupSignals(baseDir, { dryRun: true });
+ * console.log(`Would remove ${preview.removedIds.length} signals`);
+ *
+ * @example
+ * // Cleanup with custom TTL
+ * const result = await cleanupSignals(baseDir, { ttl: '3d' });
+ */
+export async function cleanupSignals(
+  baseDir: string,
+  options: CleanupSignalsOptions = {},
+): Promise<CleanupSignalsResult> {
+  const {
+    dryRun = false,
+    ttl,
+    ttlMs: providedTtlMs,
+    unreadTtl,
+    unreadTtlMs: providedUnreadTtlMs,
+    maxEntries,
+    now = Date.now(),
+    getActiveWuIds = defaultGetActiveWuIds,
+  } = options;
+
+  // Parse TTL options, falling back to defaults
+  let ttlMs = providedTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.ttl;
+  if (ttl && !providedTtlMs) {
+    ttlMs = parseSignalTtl(ttl);
+  }
+
+  let unreadTtlMs = providedUnreadTtlMs ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.unreadTtl;
+  if (unreadTtl && !providedUnreadTtlMs) {
+    unreadTtlMs = parseSignalTtl(unreadTtl);
+  }
+
+  const effectiveMaxEntries = maxEntries ?? DEFAULT_SIGNAL_CLEANUP_CONFIG.maxEntries;
+
+  // Build effective config
+  const config: SignalCleanupConfig = {
+    ttl: ttlMs,
+    unreadTtl: unreadTtlMs,
+    maxEntries: effectiveMaxEntries,
+  };
+
+  // Load all signals
+  const signals = await loadAllSignals(baseDir);
+
+  // Get active WU IDs for protection
+  const activeWuIds = await getActiveWuIds();
+
+  // Track cleanup decisions
+  const removedIds: string[] = [];
+  const retainedIds: string[] = [];
+  const retainedSignals: Signal[] = [];
+  let bytesFreed = 0;
+  const breakdown: CleanupBreakdown = {
+    ttlExpired: 0,
+    unreadTtlExpired: 0,
+    countLimitExceeded: 0,
+    activeWuProtected: 0,
+  };
+
+  // Process each signal for TTL-based removal
+  for (const signal of signals) {
+    const decision = shouldRemoveSignal(signal, config, { now, activeWuIds });
+
+    if (decision.remove) {
+      removedIds.push(signal.id);
+      bytesFreed += estimateSignalBytes(signal);
+
+      // Track breakdown
+      if (decision.reason === 'ttl-expired') {
+        breakdown.ttlExpired++;
+      } else if (decision.reason === 'unread-ttl-expired') {
+        breakdown.unreadTtlExpired++;
+      }
+    } else {
+      retainedIds.push(signal.id);
+      retainedSignals.push(signal);
+
+      // Track protected signals
+      if (decision.reason === 'active-wu-protected') {
+        breakdown.activeWuProtected++;
+      }
+    }
+  }
+
+  // Apply count-based pruning if over maxEntries
+  if (retainedSignals.length > effectiveMaxEntries) {
+    // Sort by created_at (oldest first)
+    retainedSignals.sort((a, b) => {
+      const aTime = new Date(a.created_at).getTime();
+      const bTime = new Date(b.created_at).getTime();
+      return aTime - bTime;
+    });
+
+    // Remove oldest signals to get down to maxEntries
+    const toRemove = retainedSignals.length - effectiveMaxEntries;
+    for (let i = 0; i < toRemove; i++) {
+      const signal = retainedSignals[i];
+      // Move from retained to removed
+      const idIndex = retainedIds.indexOf(signal.id);
+      if (idIndex !== -1) {
+        retainedIds.splice(idIndex, 1);
+      }
+      removedIds.push(signal.id);
+      bytesFreed += estimateSignalBytes(signal);
+      breakdown.countLimitExceeded++;
+    }
+
+    // Keep only the newest signals
+    retainedSignals.splice(0, toRemove);
+  }
+
+  const compactionRatio = getCompactionRatio(removedIds.length, signals.length);
+  const baseResult: CleanupSignalsResult = {
+    success: true,
+    removedIds,
+    retainedIds,
+    bytesFreed,
+    compactionRatio,
+    breakdown,
+  };
+
+  // If dry-run, return preview without modifications
+  if (dryRun) {
+    return { ...baseResult, dryRun: true };
+  }
+
+  // Write retained signals back to file
+  if (removedIds.length > 0) {
+    await writeSignals(baseDir, retainedSignals);
+  }
+
+  return baseResult;
+}
