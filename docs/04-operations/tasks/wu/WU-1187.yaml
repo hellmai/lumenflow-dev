@@ -1,0 +1,35 @@
+id: WU-1187
+title: 'WIP justification: require wip_justification when WIP > 1'
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-29
+code_paths:
+  - packages/@lumenflow/core/src/lane-checker.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - .lumenflow.config.yaml
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/__tests__/lane-checker.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1187.done
+dependencies: []
+initiative: INIT-006
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Add soft WIP enforcement: require wip_justification field when wip_limit > 1. Philosophy: If you need WIP > 1, you need better lanes, not higher limits.'
+acceptance:
+  - WIP > 1 without wip_justification logs warning at claim time
+  - Schema accepts wip_justification string field
+  - Existing configs continue to work (backward compatible)
