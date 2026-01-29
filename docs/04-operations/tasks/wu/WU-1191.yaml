@@ -2,16 +2,19 @@ id: WU-1191
 title: Doctor and gate integration for lane health
 lane: 'Framework: CLI'
 type: feature
-status: done
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/doctor.ts
-  - .lumenflow.config.yaml
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/core/src/gates-config.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/cli/__tests__/doctor.test.ts
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1191.done
@@ -43,5 +46,3 @@ session_id: a7b3c4be-1073-40a8-85f3-5abf2f010bd8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T16:11:53.270Z
-locked: true
-completed_at: 2026-01-29T16:46:13.502Z
