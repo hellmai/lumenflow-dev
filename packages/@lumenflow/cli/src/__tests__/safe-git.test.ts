@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-os-command-from-path -- Test file needs to execute git commands */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
@@ -6,6 +7,15 @@ import os from 'node:os';
 
 const CLI_SAFE_GIT_PATH = path.resolve(__dirname, '../../bin/safe-git');
 const SCRIPTS_SAFE_GIT_PATH = path.resolve(__dirname, '../../../../../scripts/safe-git');
+
+// Constants for duplicate strings
+const SHOULD_HAVE_THROWN = 'Should have thrown an error';
+const GIT_CMD = 'git';
+const USER_EMAIL_CONFIG = 'user.email';
+const USER_NAME_CONFIG = 'user.name';
+const TEST_EMAIL = 'test@test.com';
+const TEST_USERNAME = 'Test';
+const FORCE_BYPASSES_LOG = 'force-bypasses.log';
 
 // Create a temporary directory for testing to avoid polluting the real .beacon directory
 const createTempDir = (): string => {
@@ -19,51 +29,56 @@ describe('safe-git', () => {
   it('should fail when running "worktree remove" (CLI wrapper)', () => {
     try {
       execFileSync(CLI_SAFE_GIT_PATH, ['worktree', 'remove', 'some-path'], { stdio: 'pipe' });
-      expect.fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain("BLOCKED: Manual 'git worktree remove' is unsafe");
+      expect.fail(SHOULD_HAVE_THROWN);
+    } catch (error: unknown) {
+      const err = error as { status: number; stderr: Buffer };
+      expect(err.status).toBe(1);
+      expect(err.stderr.toString()).toContain("BLOCKED: Manual 'git worktree remove' is unsafe");
     }
   });
 
   it('should fail when running "worktree remove" (scripts wrapper)', () => {
     try {
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['worktree', 'remove', 'some-path'], { stdio: 'pipe' });
-      expect.fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain('Manual');
-      expect(error.stderr.toString()).toContain('worktree remove');
+      expect.fail(SHOULD_HAVE_THROWN);
+    } catch (error: unknown) {
+      const err = error as { status: number; stderr: Buffer };
+      expect(err.status).toBe(1);
+      expect(err.stderr.toString()).toContain('Manual');
+      expect(err.stderr.toString()).toContain('worktree remove');
     }
   });
 
   it('should fail when running "reset --hard" (scripts wrapper)', () => {
     try {
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['reset', '--hard', 'HEAD'], { stdio: 'pipe' });
-      expect.fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain('reset --hard');
+      expect.fail(SHOULD_HAVE_THROWN);
+    } catch (error: unknown) {
+      const err = error as { status: number; stderr: Buffer };
+      expect(err.status).toBe(1);
+      expect(err.stderr.toString()).toContain('reset --hard');
     }
   });
 
   it('should fail when running "clean -fd" (scripts wrapper)', () => {
     try {
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['clean', '-fd'], { stdio: 'pipe' });
-      expect.fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain('clean -fd');
+      expect.fail(SHOULD_HAVE_THROWN);
+    } catch (error: unknown) {
+      const err = error as { status: number; stderr: Buffer };
+      expect(err.status).toBe(1);
+      expect(err.stderr.toString()).toContain('clean -fd');
     }
   });
 
   it('should fail when running "push --force" (scripts wrapper)', () => {
     try {
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['push', '--force'], { stdio: 'pipe' });
-      expect.fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain('push --force');
+      expect.fail(SHOULD_HAVE_THROWN);
+    } catch (error: unknown) {
+      const err = error as { status: number; stderr: Buffer };
+      expect(err.status).toBe(1);
+      expect(err.stderr.toString()).toContain('push --force');
     }
   });
 
@@ -106,17 +121,20 @@ describe('safe-git', () => {
       // Create a temporary git repo for this test
       const testRepo = path.join(tempDir, 'test-repo');
       fs.mkdirSync(testRepo, { recursive: true });
-      execFileSync('git', ['init'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['config', 'user.email', 'test@test.com'], {
+      execFileSync(GIT_CMD, ['init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_EMAIL_CONFIG, TEST_EMAIL], {
         cwd: testRepo,
         stdio: 'pipe',
       });
-      execFileSync('git', ['config', 'user.name', 'Test'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_NAME_CONFIG, TEST_USERNAME], {
+        cwd: testRepo,
+        stdio: 'pipe',
+      });
 
       // Create a file and commit
       fs.writeFileSync(path.join(testRepo, 'test.txt'), 'test');
-      execFileSync('git', ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
 
       // Run safe-git with force to reset --hard (should succeed with log)
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['reset', '--hard', 'HEAD'], {
@@ -126,7 +144,7 @@ describe('safe-git', () => {
       });
 
       // Check that the force bypass log exists and contains the entry
-      const bypassLog = path.join(testRepo, '.beacon', 'force-bypasses.log');
+      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
       expect(fs.existsSync(bypassLog)).toBe(true);
       const logContent = fs.readFileSync(bypassLog, 'utf-8');
       expect(logContent).toContain('reset --hard');
@@ -136,16 +154,19 @@ describe('safe-git', () => {
     it('should include LUMENFLOW_FORCE_REASON in audit log when provided', () => {
       const testRepo = path.join(tempDir, 'test-repo-reason');
       fs.mkdirSync(testRepo, { recursive: true });
-      execFileSync('git', ['init'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['config', 'user.email', 'test@test.com'], {
+      execFileSync(GIT_CMD, ['init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_EMAIL_CONFIG, TEST_EMAIL], {
         cwd: testRepo,
         stdio: 'pipe',
       });
-      execFileSync('git', ['config', 'user.name', 'Test'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_NAME_CONFIG, TEST_USERNAME], {
+        cwd: testRepo,
+        stdio: 'pipe',
+      });
 
       fs.writeFileSync(path.join(testRepo, 'test.txt'), 'test');
-      execFileSync('git', ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
 
       const testReason = 'user-approved: testing bypass';
       execFileSync(SCRIPTS_SAFE_GIT_PATH, ['reset', '--hard', 'HEAD'], {
@@ -154,7 +175,7 @@ describe('safe-git', () => {
         env: { ...process.env, LUMENFLOW_FORCE: '1', LUMENFLOW_FORCE_REASON: testReason },
       });
 
-      const bypassLog = path.join(testRepo, '.beacon', 'force-bypasses.log');
+      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
       const logContent = fs.readFileSync(bypassLog, 'utf-8');
       expect(logContent).toContain(testReason);
     });
@@ -162,34 +183,32 @@ describe('safe-git', () => {
     it('should print warning when LUMENFLOW_FORCE used without REASON', () => {
       const testRepo = path.join(tempDir, 'test-repo-no-reason');
       fs.mkdirSync(testRepo, { recursive: true });
-      execFileSync('git', ['init'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['config', 'user.email', 'test@test.com'], {
+      execFileSync(GIT_CMD, ['init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_EMAIL_CONFIG, TEST_EMAIL], {
         cwd: testRepo,
         stdio: 'pipe',
       });
-      execFileSync('git', ['config', 'user.name', 'Test'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['config', USER_NAME_CONFIG, TEST_USERNAME], {
+        cwd: testRepo,
+        stdio: 'pipe',
+      });
 
       fs.writeFileSync(path.join(testRepo, 'test.txt'), 'test');
-      execFileSync('git', ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
-      execFileSync('git', ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['add', '.'], { cwd: testRepo, stdio: 'pipe' });
+      execFileSync(GIT_CMD, ['commit', '-m', 'init'], { cwd: testRepo, stdio: 'pipe' });
 
-      // Capture stderr for the warning
-      try {
-        const result = execFileSync(SCRIPTS_SAFE_GIT_PATH, ['reset', '--hard', 'HEAD'], {
-          cwd: testRepo,
-          encoding: 'utf-8',
-          env: { ...process.env, LUMENFLOW_FORCE: '1' },
-          stdio: ['pipe', 'pipe', 'pipe'],
-        });
-        // Check the bypasslog for the NO_REASON marker
-        const bypassLog = path.join(testRepo, '.beacon', 'force-bypasses.log');
-        const logContent = fs.readFileSync(bypassLog, 'utf-8');
-        expect(logContent).toContain('NO_REASON');
-      } catch (error: any) {
-        // If there's stderr output with a warning, that's acceptable
-        // The command should still succeed
-        expect.fail('Command should have succeeded with LUMENFLOW_FORCE=1');
-      }
+      // Execute with LUMENFLOW_FORCE=1 but no reason
+      execFileSync(SCRIPTS_SAFE_GIT_PATH, ['reset', '--hard', 'HEAD'], {
+        cwd: testRepo,
+        encoding: 'utf-8',
+        env: { ...process.env, LUMENFLOW_FORCE: '1' },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+
+      // Check the bypasslog for the NO_REASON marker
+      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
+      const logContent = fs.readFileSync(bypassLog, 'utf-8');
+      expect(logContent).toContain('NO_REASON');
     });
   });
 });
