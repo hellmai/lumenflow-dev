@@ -2,7 +2,7 @@ id: WU-1251
 title: Fix orchestrate:initiative dependency resolution bug
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Bug: orchestrate:initiative --dry-run ignores WU dependencies when building execution plan. WU-1240 has dependencies: [WU-1234] but both are placed in Wave 0. The wave calculation should respect the dependencies array and only place WUs in a wave after all their dependencies are scheduled in earlier waves. Discovered while validating INIT-008.'
+description: 'Bug: orchestrate:initiative --dry-run ignores WU dependencies when building execution
+  plan. WU-1240 has dependencies: [WU-1234] but both are placed in Wave 0. The wave calculation
+  should respect the dependencies array and only place WUs in a wave after all their dependencies
+  are scheduled in earlier waves. Discovered while validating INIT-008.'
 acceptance:
   - WUs with dependencies are placed in waves AFTER their dependencies
   - orchestrate:initiative --dry-run shows correct wave structure
   - Unit test covers dependency ordering in wave calculation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1251
+claimed_at: 2026-01-30T13:58:21.026Z
+baseline_main_sha: cffecd50f23e14f6a447920b08bb6355c297b0df
+session_id: 26880a64-e1da-4de0-9404-e6fd700513b4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T13:58:21.033Z
