@@ -37,7 +37,6 @@ sections:
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — Framework: Core
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
-- [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -46,6 +45,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

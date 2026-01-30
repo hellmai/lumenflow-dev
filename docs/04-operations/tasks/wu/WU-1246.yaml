@@ -2,7 +2,7 @@ id: WU-1246
 title: Auto-generate WU IDs in wu:create when --id not provided
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - Starlight docs CLI reference updated (lumenflow.dev)
   - npm package README updated
   - --help output shows --id as optional with auto-generation note
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1246
+claimed_at: 2026-01-30T12:54:33.194Z
+baseline_main_sha: 1b2d54885ae137506b5ebd92fdb12c7bb2027fea
+session_id: fcbcb3d1-5896-4a63-9d1f-a10c3462aec4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T12:54:33.200Z
