@@ -1,0 +1,33 @@
+id: WU-1244
+title: Update quick-ref-commands.md with ALL CLI commands
+lane: 'Content: Documentation'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - Verify all pnpm commands from package.json are documented
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1244.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: quick-ref-commands.md documents ~20 commands but CLI has 50+ user-facing commands. Problem: Agents cannot discover available tooling, defaulting to raw git/file operations. Solution: Update quick-ref-commands.md to be comprehensive, auto-generated from --help output to stay in sync.'
+acceptance:
+  - All wired package.json CLI commands documented
+  - Commands organized by category (wu:, mem:, initiative:, etc.)
+  - Each command has one-line description
+  - Document kept under 300 lines for token efficiency
