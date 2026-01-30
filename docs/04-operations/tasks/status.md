@@ -11,6 +11,7 @@ _Last updated: 2026-01-30_
 
 ## Completed
 
+- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — 2026-01-30
 - [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml) — 2026-01-30
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
