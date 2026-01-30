@@ -46,7 +46,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml) — Content: Documentation
 - [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — Operations: CI/CD
 
 ## ⛔ Blocked
@@ -263,3 +262,4 @@ sections:
 - [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml)
 - [WU-1233 — Add EPIPE protection to CLI commands for pipe resilience](wu/WU-1233.yaml)
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml)
+- [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml)
