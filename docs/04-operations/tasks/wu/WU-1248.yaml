@@ -2,7 +2,7 @@ id: WU-1248
 title: Fix no-dynamic-delete lint errors in arg-parser.ts
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-30
 code_paths:
@@ -25,7 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: arg-parser.ts in @lumenflow/core has ESLint errors that block incremental lint gates. Problem: Lines 505 and 508 use dynamic delete operations (delete result[key]) which violates @typescript-eslint/no-dynamic-delete. Solution: Refactor processNegatedOptions() to avoid dynamic property deletion, possibly by using object spreading or a different data structure approach.'
+description: 'Context: arg-parser.ts in @lumenflow/core has ESLint errors that block incremental
+  lint gates. Problem: Lines 505 and 508 use dynamic delete operations (delete result[key]) which
+  violates @typescript-eslint/no-dynamic-delete. Solution: Refactor processNegatedOptions() to avoid
+  dynamic property deletion, possibly by using object spreading or a different data structure
+  approach.'
 acceptance:
   - No lint errors in arg-parser.ts
   - All existing tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1248
+claimed_at: 2026-01-30T13:48:53.663Z
+baseline_main_sha: 4086db215f5bda96e60ec0c4425bcfce788de2ad
+session_id: 3ce861e6-f162-4daf-93a9-8040283cca1d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T13:48:53.668Z
