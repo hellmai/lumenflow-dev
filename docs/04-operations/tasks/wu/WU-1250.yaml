@@ -2,7 +2,7 @@ id: WU-1250
 title: Add AI tool integration section to CLI README
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -38,3 +38,5 @@ session_id: c585e683-5081-45bd-88da-970700fa50c8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T13:53:27.957Z
+locked: true
+completed_at: 2026-01-30T13:55:18.105Z
