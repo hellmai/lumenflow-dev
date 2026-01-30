@@ -50,3 +50,4 @@ acceptance:
   - --dry-run flag shows what would be indexed without writing
   - Unit tests verify source scanning and node creation
   - Documentation updated in memory package README
+initiative: INIT-008
