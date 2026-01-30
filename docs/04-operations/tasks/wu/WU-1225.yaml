@@ -2,7 +2,7 @@ id: WU-1225
 title: 'wu:edit: inconsistent default behavior for --code-paths vs --acceptance'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
