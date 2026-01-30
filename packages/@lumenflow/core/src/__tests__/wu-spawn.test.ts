@@ -100,6 +100,16 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
       expect(guidance).toContain('Documentation Standards');
       expect(guidance).toContain('gates --docs-only');
     });
+
+    it('should include Test Ratchet Rule (WU-1253) in TDD directive', () => {
+      const guidance = generateTestGuidance('feature');
+      expect(guidance).toContain('Test Ratchet Rule');
+      expect(guidance).toContain('WU-1253');
+      expect(guidance).toContain('.lumenflow/test-baseline.json');
+      expect(guidance).toContain('NEW failures');
+      expect(guidance).toContain('Pre-existing failures');
+      expect(guidance).toContain('ratchet forward');
+    });
   });
 
   describe('generateWorktreeBlockRecoverySection', () => {

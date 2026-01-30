@@ -60,6 +60,13 @@ import {
 } from './wu-spawn-helpers.js';
 // Agent skills loading removed for vendor-agnostic design
 import { validateSpawnDependencies, formatDependencyError } from './dependency-validator.js';
+// WU-1253: Template loader for extracting hardcoded templates
+import {
+  loadManifest,
+  loadTemplatesWithOverrides,
+  assembleTemplates,
+  type TemplateContext,
+} from './template-loader.js';
 
 /**
  * Mandatory agent trigger patterns.
@@ -98,6 +105,64 @@ export const TRUNCATION_WARNING_BANNER = `<!-- LUMENFLOW_TRUNCATION_WARNING -->
 `;
 
 export const SPAWN_END_SENTINEL = '<!-- LUMENFLOW_SPAWN_END -->';
+
+/**
+ * WU-1253: Try to assemble spawn prompt sections from templates.
+ *
+ * This function loads templates from .lumenflow/templates/ and assembles
+ * them according to the manifest order. Client-specific overrides are
+ * supported via templates.{client}/ directories.
+ *
+ * @param baseDir - Project root directory
+ * @param clientName - Client name for overrides (e.g., 'claude', 'cursor')
+ * @param context - Context for token replacement and condition evaluation
+ * @returns Assembled template content, or null if templates unavailable
+ */
+export function tryAssembleSpawnTemplates(
+  baseDir: string,
+  clientName: string,
+  context: TemplateContext,
+): string | null {
+  try {
+    const manifest = loadManifest(baseDir);
+    const templates = loadTemplatesWithOverrides(baseDir, clientName);
+
+    if (templates.size === 0) {
+      return null;
+    }
+
+    return assembleTemplates(templates, manifest, context);
+  } catch {
+    // Template loading failed - return null for hardcoded fallback (intentional)
+    return null;
+  }
+}
+
+/**
+ * Build template context from WU document.
+ *
+ * @param doc - WU YAML document
+ * @param id - WU ID
+ * @returns Context for template assembly
+ */
+export function buildTemplateContext(doc: Record<string, unknown>, id: string): TemplateContext {
+  const lane = (doc.lane as string) || '';
+  const laneParent = lane.split(':')[0]?.trim() || '';
+
+  return {
+    WU_ID: id,
+    LANE: lane,
+    TYPE: ((doc.type as string) || 'feature').toLowerCase(),
+    TITLE: (doc.title as string) || '',
+    DESCRIPTION: (doc.description as string) || '',
+    WORKTREE_PATH: (doc.worktree_path as string) || '',
+    laneParent,
+    // Add lowercase aliases for condition evaluation
+    type: ((doc.type as string) || 'feature').toLowerCase(),
+    lane,
+    worktreePath: (doc.worktree_path as string) || '',
+  };
+}
 
 /**
  * WU types that require TDD (failing test first)
@@ -203,12 +268,26 @@ function generateTDDDirective() {
 4. Run the test to confirm it passes (GREEN)
 5. Refactor if needed, keeping tests green
 
+### Test Ratchet Rule (WU-1253)
+
+Gates compare test results against \`.lumenflow/test-baseline.json\`:
+
+- **NEW failures** (not in baseline) **BLOCK** gates - you must fix them
+- **Pre-existing failures** (in baseline) show **WARNING** - do not block your WU
+- When tests are **fixed**, baseline auto-updates (ratchet forward)
+
+If gates fail due to test failures:
+1. Check if failure is in baseline: \`cat .lumenflow/test-baseline.json\`
+2. If pre-existing: continue, it will warn but not block
+3. If NEW: fix the test or add to baseline with reason and fix-wu
+
 ### Why This Matters
 
 - Tests document expected behavior BEFORE implementation
 - Prevents scope creep and over-engineering
 - Ensures every feature has verification
-- Failing tests prove the test actually tests something`;
+- Failing tests prove the test actually tests something
+- Ratchet pattern prevents being blocked by unrelated failures`;
 }
 
 /**

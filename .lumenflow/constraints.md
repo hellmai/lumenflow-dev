@@ -1,13 +1,13 @@
 # LumenFlow Constraints Capsule
 
-**Version:** 1.0
-**Last updated:** 2026-01-27
+**Version:** 1.1
+**Last updated:** 2026-01-30
 
-This document contains the 6 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
+This document contains the 7 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
 ---
 
-## The 6 Non-Negotiable Constraints
+## The 7 Non-Negotiable Constraints
 
 ### 1. Worktree Discipline and Git Safety
 
@@ -110,6 +110,32 @@ Before ANY Write/Edit/Read operation:
 - Stop-and-ask for auth/PII/spend changes
 
 **Why:** Safety first. Some mistakes are irreversible.
+
+---
+
+### 7. Test Ratchet Pattern (WU-1253)
+
+**Rule:** NEW test failures block gates; pre-existing failures (in baseline) warn but do not block.
+
+**Baseline File:** `.lumenflow/test-baseline.json`
+
+**Enforcement:**
+
+- Gates compare current test results against baseline
+- NEW failures (not in baseline) = **BLOCK** (must fix or add to baseline)
+- Pre-existing failures (in baseline) = **WARNING** (continue, do not block WU)
+- Fixed tests auto-removed from baseline (ratchet forward)
+
+**When gates fail due to tests:**
+
+1. Check baseline: `cat .lumenflow/test-baseline.json`
+2. If failure is pre-existing: warning shown, WU proceeds
+3. If failure is NEW: fix the test or add to baseline with:
+   ```bash
+   pnpm baseline:add --test "<test_name>" --reason "<why>" --fix-wu WU-XXXX
+   ```
+
+**Why:** Agents should not be blocked by unrelated failures. The ratchet ensures quality improves over time (failures can only be removed, never added without justification).
 
 ---
 

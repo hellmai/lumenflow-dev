@@ -326,3 +326,24 @@ export {
 
 // WU-1246: WU ID auto-generation
 export * from './wu-id-generator.js';
+
+// WU-1253: Test baseline ratchet pattern
+export * from './test-baseline.js';
+
+// WU-1253: Template loader for extracting prompt templates
+export {
+  loadManifest,
+  loadTemplate,
+  loadTemplatesWithOverrides,
+  assembleTemplates,
+  replaceTokens,
+  evaluateCondition,
+  type TemplateFrontmatter,
+  type LoadedTemplate,
+  type ManifestEntry,
+  type TemplateManifest,
+  type TemplateContext,
+} from './template-loader.js';
+
+// WU-1253: Template-based spawn prompt generation
+export { tryAssembleSpawnTemplates, buildTemplateContext } from './wu-spawn.js';

@@ -57,6 +57,9 @@ import {
   generateSkillsSelectionSection,
   resolveClientConfig,
 } from '@lumenflow/core/dist/wu-spawn-skills.js';
+// WU-1253: Template loader for extracted prompt templates
+import { loadTemplatesWithOverrides, replaceTokens } from '@lumenflow/core/dist/template-loader.js';
+import type { TemplateContext } from '@lumenflow/core/dist/template-loader.js';
 
 import {
   validateSpawnDependencies,
@@ -943,6 +946,60 @@ interface SpawnOptions {
   config?: ReturnType<typeof getConfig>;
 }
 
+/**
+ * WU-1253: Try to load templates for spawn prompt sections.
+ *
+ * Implements shadow mode: tries templates first, returns empty map
+ * if templates aren't available (caller uses hardcoded fallback).
+ *
+ * @param clientName - Client name for overrides (e.g., 'claude-code', 'cursor')
+ * @param context - Token values for replacement
+ * @returns Map of template id to processed content, empty if templates unavailable
+ */
+function tryLoadTemplates(clientName: string, context: TemplateContext): Map<string, string> {
+  const result = new Map<string, string>();
+  try {
+    const baseDir = process.cwd();
+    const templates = loadTemplatesWithOverrides(baseDir, clientName);
+
+    // Process each template: replace tokens
+    for (const [id, template] of templates) {
+      const processed = replaceTokens(template.content, context);
+      result.set(id, processed);
+    }
+  } catch {
+    // Template loading failed - return empty map for hardcoded fallback
+  }
+  return result;
+}
+
+/**
+ * WU-1253: Build template context from WU document.
+ *
+ * @param doc - WU YAML document
+ * @param id - WU ID
+ * @returns Context for template token replacement
+ */
+function buildSpawnTemplateContext(doc: WUDocument, id: string): TemplateContext {
+  const lane = doc.lane || '';
+  const laneParent = lane.split(':')[0]?.trim() || '';
+  const type = (doc.type || 'feature').toLowerCase();
+
+  return {
+    WU_ID: id,
+    LANE: lane,
+    TYPE: type,
+    TITLE: doc.title || '',
+    DESCRIPTION: doc.description || '',
+    WORKTREE_PATH: doc.worktree_path || '',
+    laneParent,
+    // Lowercase aliases for condition evaluation
+    type,
+    lane,
+    worktreePath: doc.worktree_path || '',
+  };
+}
+
 function generateClientBlocksSection(clientContext: ClientContext | undefined): string {
   if (!clientContext?.config?.blocks?.length) return '';
   const blocks = clientContext.config.blocks
@@ -972,45 +1029,63 @@ export function generateTaskInvocation(
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
+  // WU-1253: Try loading templates (shadow mode - falls back to hardcoded if unavailable)
+  const clientName = options.client?.name || 'claude-code';
+  const templateContext = buildSpawnTemplateContext(doc, id);
+  const templates = tryLoadTemplates(clientName, templateContext);
+
   const preamble = generatePreamble(id, strategy);
   // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
-  const testGuidance = generateTestGuidance(doc.type);
+  // WU-1253: Try template first, fall back to hardcoded
+  const testGuidance = templates.get('tdd-directive') || generateTestGuidance(doc.type);
   const clientContext = options.client;
   const config = options.config || getConfig();
   // WU-1142: Pass lane to get byLane skills
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
-  const skillsSection =
-    generateSkillsSelectionSection(doc, config, clientContext?.name) +
-    (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
+  // WU-1253: Try template for skills-selection, build skills section
+  const skillsTemplateContent = templates.get('skills-selection');
+  const skillsGuidanceSuffix = clientSkillsGuidance ? '\n' + clientSkillsGuidance : '';
+  const skillsBaseContent =
+    skillsTemplateContent || generateSkillsSelectionSection(doc, config, clientContext?.name);
+  const skillsSection = skillsBaseContent + skillsGuidanceSuffix;
   const clientBlocks = generateClientBlocksSection(clientContext);
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
-  const bugDiscoverySection = generateBugDiscoverySection(id);
-  const constraints = generateConstraints(id);
+  // WU-1253: Try template for bug-discovery
+  const bugDiscoverySection = templates.get('bug-discovery') || generateBugDiscoverySection(id);
+  // WU-1253: Try template for constraints
+  const constraints = templates.get('constraints') || generateConstraints(id);
   const implementationContext = generateImplementationContext(doc);
 
   // WU-2252: Generate invariants/prior-art section for code_paths
   const invariantsPriorArt = generateInvariantsPriorArtSection(codePaths);
 
   // WU-1986: Anthropic multi-agent best practices sections
-  const effortScaling = generateEffortScalingRules();
-  const parallelToolCalls = generateParallelToolCallGuidance();
-  const searchHeuristics = generateIterativeSearchHeuristics();
-  const tokenBudget = generateTokenBudgetAwareness(id);
+  // WU-1253: Try templates for these sections
+  const effortScaling = templates.get('effort-scaling') || generateEffortScalingRules();
+  const parallelToolCalls =
+    templates.get('parallel-tool-calls') || generateParallelToolCallGuidance();
+  const searchHeuristics =
+    templates.get('search-heuristics') || generateIterativeSearchHeuristics();
+  const tokenBudget = templates.get('token-budget') || generateTokenBudgetAwareness(id);
   const completionFormat = generateCompletionFormat(id);
 
   // WU-1987: Agent coordination and quick fix sections
   const agentCoordination = generateAgentCoordinationSection(id);
-  const quickFix = generateQuickFixCommands();
+  // WU-1253: Try template for quick-fix-commands
+  const quickFix = templates.get('quick-fix-commands') || generateQuickFixCommands();
 
   // WU-2107: Lane selection guidance
-  const laneSelection = generateLaneSelectionSection();
+  // WU-1253: Try template for lane-selection
+  const laneSelection = templates.get('lane-selection') || generateLaneSelectionSection();
 
   // WU-2362: Worktree path guidance for sub-agents
   const worktreeGuidance = generateWorktreePathGuidance(doc.worktree_path);
 
   // WU-1134: Worktree block recovery guidance
-  const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(doc.worktree_path);
+  // WU-1253: Try template for worktree-recovery
+  const worktreeBlockRecovery =
+    templates.get('worktree-recovery') || generateWorktreeBlockRecoverySection(doc.worktree_path);
 
   // Generate thinking mode sections if applicable
   const executionModeSection = generateExecutionModeSection(options);

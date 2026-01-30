@@ -55,6 +55,7 @@
     "./lane-suggest-prompt": "./dist/lane-suggest-prompt.js",
     "./config": "./dist/lumenflow-config.js",
     "./config-schema": "./dist/lumenflow-config-schema.js",
+    "./test-baseline": "./dist/test-baseline.js",
     "./dist/*": "./dist/*",
     "./lib/*": "./dist/*"
   },

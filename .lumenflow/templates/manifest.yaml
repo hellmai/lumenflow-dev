@@ -1,0 +1,129 @@
+# Template Manifest (WU-1253)
+#
+# Defines assembly order for wu:spawn prompt templates.
+# Templates are assembled in ascending order by their 'order' field.
+#
+# Override Resolution:
+#   1. .lumenflow/templates.{client}/spawn-prompt/{template}.md (highest)
+#   2. .lumenflow/templates/spawn-prompt/{template}.md (base)
+
+version: '1.0'
+
+defaults:
+  tokenFormat: '{TOKEN}'
+
+templates:
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 1: Type-specific directives (order 10-50)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: tdd-directive
+    path: spawn-prompt/tdd-directive.md
+    required: false
+    order: 10
+    condition: "type !== 'documentation' && type !== 'docs' && type !== 'config'"
+
+  - id: documentation-directive
+    path: spawn-prompt/documentation-directive.md
+    required: false
+    order: 10
+    condition: "type === 'documentation' || type === 'docs' || type === 'config'"
+
+  - id: visual-directive
+    path: spawn-prompt/visual-directive.md
+    required: false
+    order: 15
+    condition: "type === 'visual' || type === 'design' || type === 'ui'"
+
+  - id: refactor-directive
+    path: spawn-prompt/refactor-directive.md
+    required: false
+    order: 15
+    condition: "type === 'refactor'"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Skills selection (order 50) - client-specific overrides available
+  # ─────────────────────────────────────────────────────────────────────
+  - id: skills-selection
+    path: spawn-prompt/skills-selection.md
+    required: true
+    order: 50
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 2: Agent guidance (order 100-200)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: effort-scaling
+    path: spawn-prompt/effort-scaling.md
+    required: true
+    order: 100
+
+  - id: parallel-tool-calls
+    path: spawn-prompt/parallel-tool-calls.md
+    required: true
+    order: 110
+
+  - id: search-heuristics
+    path: spawn-prompt/search-heuristics.md
+    required: true
+    order: 120
+
+  - id: token-budget
+    path: spawn-prompt/token-budget.md
+    required: true
+    order: 130
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 3: Operational guidance (order 200-300)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: bug-discovery
+    path: spawn-prompt/bug-discovery.md
+    required: true
+    order: 200
+
+  - id: quick-fix-commands
+    path: spawn-prompt/quick-fix-commands.md
+    required: true
+    order: 210
+
+  - id: lane-selection
+    path: spawn-prompt/lane-selection.md
+    required: true
+    order: 220
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 4: Recovery and worktree (order 300-400)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: worktree-recovery
+    path: spawn-prompt/worktree-recovery.md
+    required: false
+    order: 300
+    condition: 'worktreePath'
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 5: Lane-specific guidance (order 400-500)
+  # Mutually exclusive based on laneParent
+  # ─────────────────────────────────────────────────────────────────────
+  - id: lane-guidance-operations
+    path: spawn-prompt/lane-guidance/operations.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Operations'"
+
+  - id: lane-guidance-framework
+    path: spawn-prompt/lane-guidance/framework.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Framework'"
+
+  - id: lane-guidance-content
+    path: spawn-prompt/lane-guidance/content.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Content'"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 6: Constraints (order 900+) - ALWAYS LAST
+  # ─────────────────────────────────────────────────────────────────────
+  - id: constraints
+    path: spawn-prompt/constraints.md
+    required: true
+    order: 1000
