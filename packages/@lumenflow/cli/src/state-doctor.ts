@@ -44,6 +44,7 @@ import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { createStamp } from '@lumenflow/core/dist/stamp-utils.js';
+import { createStateDoctorFixDeps } from './state-doctor-fix.js';
 
 /**
  * Log prefix for state:doctor output
@@ -509,7 +510,20 @@ async function main(): Promise<void> {
   let error: string | null = null;
 
   try {
-    const deps = await createDeps(baseDir);
+    // Create base deps for read operations
+    const baseDeps = await createDeps(baseDir);
+
+    // WU-1230: When --fix is enabled, use micro-worktree isolation for all
+    // tracked file modifications. This prevents direct modifications to main
+    // and ensures changes are pushed via merge.
+    const deps: StateDoctorDeps =
+      args.fix && !args.dryRun
+        ? {
+            ...baseDeps,
+            ...createStateDoctorFixDeps(baseDir),
+          }
+        : baseDeps;
+
     result = await diagnoseState(baseDir, deps, {
       fix: args.fix,
       dryRun: args.dryRun,
