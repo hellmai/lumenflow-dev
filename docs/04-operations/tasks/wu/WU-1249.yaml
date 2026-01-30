@@ -1,0 +1,45 @@
+id: WU-1249
+title: Fix agent documentation discoverability and completeness
+lane: 'Content: Documentation'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
+  - packages/@lumenflow/cli/templates/core/AGENTS.md.template
+  - packages/@lumenflow/cli/templates/vendors/
+  - LUMENFLOW.md
+  - AGENTS.md
+  - CLAUDE.md
+  - .clinerules
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+tests:
+  manual:
+    - Verify all markdown links resolve correctly
+    - Run pnpm lumenflow:init --client all in temp dir, verify links work
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1249.done
+dependencies: []
+spec_refs:
+  - file:///home/tom/.claude/plans/flickering-exploring-honey.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: Agents can't find comprehensive CLI reference - requires 3 hops through buried links. WU-1244 marked done but missed 10 commands wired in WU-1243. Problem: LUMENFLOW.md 'Commands Reference' section (12 commands) looks complete but isn't. Link to quick-ref (60+ commands) buried in 'Agent Onboarding' section. All vendor entry points (Claude, Cursor, Windsurf, Cline, Aider) lack direct links. Solution: Add prominent quick-ref links to all entry points (core templates + vendor templates + internal files). Add 10 missing commands to quick-ref. Create Cline template. Result: 1-hop discovery for all vendors."
+acceptance:
+  - Core templates updated with quick-ref links (LUMENFLOW.md.template, AGENTS.md.template)
+  - All vendor templates updated (Claude, Cursor, Windsurf, Aider)
+  - Cline template created (new file)
+  - Internal files updated for dogfooding
+  - quick-ref-commands.md includes all 10 missing WU-1243 commands
+  - Works with any basic LLM via AGENTS.md universal entry
