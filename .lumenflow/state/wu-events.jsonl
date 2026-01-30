@@ -430,3 +430,4 @@
 {"type":"claim","wuId":"WU-1233","timestamp":"2026-01-30T12:10:10.575Z","lane":"Framework: CLI","title":"Add EPIPE protection to CLI commands for pipe resilience"}
 {"type":"complete","wuId":"WU-1233","timestamp":"2026-01-30T12:19:41.228Z"}
 {"type":"claim","wuId":"WU-1243","lane":"Framework: CLI","title":"Wire missing CLI commands to package.json","timestamp":"2026-01-30T12:33:53.705Z"}
+{"type":"claim","wuId":"WU-1244","lane":"Content: Documentation","title":"Update quick-ref-commands.md with ALL CLI commands","timestamp":"2026-01-30T12:35:36.384Z"}

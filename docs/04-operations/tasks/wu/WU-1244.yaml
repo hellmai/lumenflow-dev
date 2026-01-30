@@ -2,7 +2,7 @@ id: WU-1244
 title: Update quick-ref-commands.md with ALL CLI commands
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,9 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: quick-ref-commands.md documents ~20 commands but CLI has 50+ user-facing commands. Problem: Agents cannot discover available tooling, defaulting to raw git/file operations. Solution: Update quick-ref-commands.md to be comprehensive, auto-generated from --help output to stay in sync.'
+description: 'Context: quick-ref-commands.md documents ~20 commands but CLI has 50+ user-facing
+  commands. Problem: Agents cannot discover available tooling, defaulting to raw git/file
+  operations. Solution: Update quick-ref-commands.md to be comprehensive, auto-generated from --help
+  output to stay in sync.'
 acceptance:
   - All wired package.json CLI commands documented
   - Commands organized by category (wu:, mem:, initiative:, etc.)
   - Each command has one-line description
   - Document kept under 300 lines for token efficiency
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1244
+claimed_at: 2026-01-30T12:35:36.354Z
+baseline_main_sha: df6d032585413f639d7c89943a7350272777d782
+session_id: dd481f5a-0a66-4c69-bee9-a6a5909ada05
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T12:35:36.361Z
