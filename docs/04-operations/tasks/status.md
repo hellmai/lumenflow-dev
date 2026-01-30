@@ -5,12 +5,13 @@ _Last updated: 2026-01-30_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1233 — Add EPIPE protection to CLI commands for pipe resilience](wu/WU-1233.yaml)
 
 ## Completed
 
-- [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -216,3 +217,4 @@ _Last updated: 2026-01-30_
 - [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — 2026-01-30
 - [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml) — 2026-01-30
 - [WU-1231 — Parallelize dependency validation in wu:spawn to reduce latency](wu/WU-1231.yaml) — 2026-01-30
+- [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml) — 2026-01-30
