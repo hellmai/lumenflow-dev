@@ -45,7 +45,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1248 — Fix no-dynamic-delete lint errors in arg-parser.ts](wu/WU-1248.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -265,3 +264,4 @@ sections:
 - [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml)
 - [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml)
 - [WU-1249 — Fix agent documentation discoverability and completeness](wu/WU-1249.yaml)
+- [WU-1248 — Fix no-dynamic-delete lint errors in arg-parser.ts](wu/WU-1248.yaml)

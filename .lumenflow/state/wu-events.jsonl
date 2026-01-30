@@ -439,4 +439,5 @@
 {"type":"complete","wuId":"WU-1246","timestamp":"2026-01-30T13:28:00.303Z"}
 {"type":"claim","wuId":"WU-1249","timestamp":"2026-01-30T13:34:42.454Z","lane":"Content: Documentation","title":"Fix agent documentation discoverability and completeness"}
 {"type":"complete","wuId":"WU-1249","timestamp":"2026-01-30T13:45:15.445Z"}
-{"type":"claim","wuId":"WU-1248","lane":"Framework: Core","title":"Fix no-dynamic-delete lint errors in arg-parser.ts","timestamp":"2026-01-30T13:48:53.694Z"}
+{"type":"claim","wuId":"WU-1248","timestamp":"2026-01-30T13:48:53.694Z","lane":"Framework: Core","title":"Fix no-dynamic-delete lint errors in arg-parser.ts"}
+{"type":"complete","wuId":"WU-1248","timestamp":"2026-01-30T13:52:20.026Z"}
