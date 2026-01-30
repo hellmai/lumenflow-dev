@@ -2,7 +2,7 @@ id: WU-1222
 title: Add PreToolUse hook to block grep/cat/find via Bash
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
