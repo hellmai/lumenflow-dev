@@ -17,9 +17,56 @@ LumenFlow packages follow [Semantic Versioning](https://semver.org/):
 
 All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenflow/metrics` package may have independent minor versions.
 
-## v2.1.2
+## v2.2.0
 
 <Badge text="Latest" variant="success" />
+
+**Release Date:** January 30, 2026
+
+### Methodology Configurability (INIT-010)
+
+This release introduces **Methodology Configurability**, allowing teams to choose their testing and architecture approach without fighting the framework.
+
+```yaml
+methodology:
+  testing: 'tdd' # tdd | test-after | none
+  architecture: 'hexagonal' # hexagonal | layered | none
+  overrides:
+    coverage_threshold: 85
+    coverage_mode: 'warn'
+```
+
+### New Features
+
+- **Methodology configuration**: Configure testing (`tdd`, `test-after`, `none`) and architecture (`hexagonal`, `layered`, `none`) methodology in `.lumenflow.config.yaml`
+- **Methodology-aware spawn prompts**: Agent prompts now include methodology-specific guidance. TDD includes RED-GREEN-REFACTOR patterns; test-after allows implementation before tests; none removes testing ceremony.
+- **Template-based coverage thresholds**: Each methodology provides sensible defaults:
+
+  | Methodology  | Coverage | Mode  | Tests Required |
+  | ------------ | -------- | ----- | -------------- |
+  | `tdd`        | 90%      | block | Yes            |
+  | `test-after` | 70%      | warn  | Yes            |
+  | `none`       | 0%       | off   | No             |
+
+### Breaking Changes
+
+**None.** This release is fully backwards compatible. Projects without explicit `methodology` configuration maintain identical behavior to v2.1.x.
+
+### Migration
+
+No migration required. See [Choosing Your Methodology](/guides/choosing-methodology) for guidance on adopting methodology configurability.
+
+### Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+See the [v2.2.0 Release Notes](/releases/v2.2.0) for complete details.
+
+---
+
+## v2.1.2
 
 **Release Date:** January 2026
 
@@ -205,17 +252,17 @@ See [Migration Guide](/guides/migration) for upgrading from v1.x.
 
 ## Package Versions
 
-Current package versions as of v2.1.0:
+Current package versions as of v2.2.0:
 
 | Package                   | Version | Description                           |
 | ------------------------- | ------- | ------------------------------------- |
-| `@lumenflow/core`         | 2.1.0   | Core WU lifecycle and state machine   |
-| `@lumenflow/cli`          | 2.1.0   | Command-line interface                |
-| `@lumenflow/memory`       | 2.1.0   | Session tracking and context recovery |
-| `@lumenflow/agent`        | 2.1.0   | Agent definitions and skill loading   |
-| `@lumenflow/initiatives`  | 2.1.0   | Multi-phase project orchestration     |
-| `@lumenflow/metrics`      | 2.1.0   | DORA metrics and flow analysis        |
-| `@lumenflow/shims`        | 2.1.0   | Git and pnpm safety shims             |
+| `@lumenflow/core`         | 2.2.0   | Core WU lifecycle and state machine   |
+| `@lumenflow/cli`          | 2.2.0   | Command-line interface                |
+| `@lumenflow/memory`       | 2.2.0   | Session tracking and context recovery |
+| `@lumenflow/agent`        | 2.2.0   | Agent definitions and skill loading   |
+| `@lumenflow/initiatives`  | 2.2.0   | Multi-phase project orchestration     |
+| `@lumenflow/metrics`      | 2.2.0   | DORA metrics and flow analysis        |
+| `@lumenflow/shims`        | 2.2.0   | Git and pnpm safety shims             |
 | `@lumenflow/gates-action` | 1.0.0   | GitHub Action for CI gates            |
 
 ## Deprecations
@@ -234,7 +281,7 @@ Current package versions as of v2.1.0:
 
 ## Roadmap
 
-### v2.2.0 (Planned)
+### v2.3.0 (Planned)
 
 - Skill registry at lumenflow.dev
 - Enhanced metrics dashboard

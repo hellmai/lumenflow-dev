@@ -1,0 +1,49 @@
+---
+title: Releases
+description: LumenFlow release notes and upgrade guides
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="v2.2.0" icon="rocket">
+    **Latest Release** - Methodology Configurability
+
+    Configure your team's testing and architecture approach.
+
+    [View Release Notes](/releases/v2.2.0)
+
+  </Card>
+</CardGrid>
+
+## All Releases
+
+| Version                             | Date             | Highlights                              |
+| ----------------------------------- | ---------------- | --------------------------------------- |
+| [v2.2.0](/releases/v2.2.0)          | January 30, 2026 | Methodology configurability (INIT-010)  |
+| [v2.1.2](/reference/changelog#v212) | January 2026     | Micro-worktree upgrade, skills tutorial |
+| [v2.0.0](/reference/changelog#v200) | January 2026     | Breaking changes, new packages, skills  |
+| [v1.6.0](/reference/changelog#v160) | December 2025    | GitHub Action, headless mode            |
+| [v1.5.0](/reference/changelog#v150) | November 2025    | wu:spawn, agent sessions                |
+
+For complete release history, see the [Changelog](/reference/changelog).
+
+## Upgrade Guide
+
+To upgrade to the latest version:
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+See the [Upgrade Guide](/getting-started/upgrade) for detailed instructions.
+
+## Backwards Compatibility
+
+LumenFlow follows [Semantic Versioning](https://semver.org/):
+
+- **Major versions** (X.0.0) may include breaking changes
+- **Minor versions** (0.X.0) add features, backwards compatible
+- **Patch versions** (0.0.X) fix bugs, backwards compatible
+
+When upgrading across major versions, always check the release notes for migration steps.
