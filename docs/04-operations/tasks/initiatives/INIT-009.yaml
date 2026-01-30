@@ -5,7 +5,7 @@ description: 'Allow teams to choose their testing methodology (TDD, test-after, 
   architecture guidance (hexagonal, layered, none) via config. The chosen methodology drives BOTH
   agent prompting (wu:spawn) and enforcement defaults (gates) through a single resolvePolicy()
   resolver. Core principle: Workflow is invariant, but coding practices are team decisions.'
-status: open
+status: in_progress
 priority: P2
 owner: tom@hellm.ai
 created: 2026-01-30
@@ -33,3 +33,5 @@ success_metrics:
 labels: []
 notes:
   - 'Blocked by WU-1253 (template extraction). See plan: lumenflow://plans/linear-moseying-comet.md'
+  - 'WU-1253 complete. Template infrastructure ready. See plan:
+    lumenflow://plans/linear-moseying-comet.md'
