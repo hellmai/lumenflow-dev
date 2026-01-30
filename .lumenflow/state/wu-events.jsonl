@@ -443,5 +443,6 @@
 {"type":"complete","wuId":"WU-1248","timestamp":"2026-01-30T13:52:20.026Z"}
 {"type":"claim","wuId":"WU-1250","timestamp":"2026-01-30T13:53:27.979Z","lane":"Content: Documentation","title":"Add AI tool integration section to CLI README"}
 {"type":"complete","wuId":"WU-1250","timestamp":"2026-01-30T13:55:19.811Z"}
-{"type":"claim","wuId":"WU-1251","lane":"Framework: CLI","title":"Fix orchestrate:initiative dependency resolution bug","timestamp":"2026-01-30T13:58:21.059Z"}
-{"type":"claim","wuId":"WU-1239","lane":"Framework: Core","title":"BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests","timestamp":"2026-01-30T14:00:12.940Z"}
+{"type":"claim","wuId":"WU-1251","timestamp":"2026-01-30T13:58:21.059Z","lane":"Framework: CLI","title":"Fix orchestrate:initiative dependency resolution bug"}
+{"type":"claim","wuId":"WU-1239","timestamp":"2026-01-30T14:00:12.940Z","lane":"Framework: Core","title":"BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests"}
+{"type":"complete","wuId":"WU-1239","timestamp":"2026-01-30T14:10:07.199Z"}
