@@ -2,7 +2,7 @@ id: WU-1243
 title: Wire missing CLI commands to package.json
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -46,3 +46,5 @@ session_id: dd481f5a-0a66-4c69-bee9-a6a5909ada05
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T12:33:53.682Z
+locked: true
+completed_at: 2026-01-30T12:37:37.564Z
