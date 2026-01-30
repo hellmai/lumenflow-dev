@@ -8,11 +8,11 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/cli/src/initiative-create.ts
   - packages/@lumenflow/cli/src/initiative-edit.ts
+  - .husky/hooks/pre-push.mjs
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/initiative-create.test.ts
-    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1255.done
