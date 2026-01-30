@@ -545,6 +545,37 @@ export const ExperimentalConfigSchema = z.object({
 });
 
 /**
+ * WU-1270: Methodology telemetry configuration
+ *
+ * Opt-in telemetry to track which methodology modes are being used.
+ * Privacy-preserving: No PII or project-identifying information collected.
+ */
+export const MethodologyTelemetryConfigSchema = z.object({
+  /**
+   * Enable methodology telemetry (opt-in).
+   * When true, tracks methodology.testing and methodology.architecture values
+   * on wu:spawn events. Data is privacy-preserving (no PII/project info).
+   * @default false
+   */
+  enabled: z.boolean().default(false),
+});
+
+/**
+ * WU-1270: Telemetry configuration
+ *
+ * Configuration for opt-in telemetry features.
+ */
+export const TelemetryConfigSchema = z.object({
+  /**
+   * Methodology telemetry configuration (opt-in).
+   * Tracks methodology selection patterns for adoption insights.
+   */
+  methodology: MethodologyTelemetryConfigSchema.default(() =>
+    MethodologyTelemetryConfigSchema.parse({}),
+  ),
+});
+
+/**
  * Complete LumenFlow configuration schema
  */
 export const LumenFlowConfigSchema = z.object({
@@ -580,6 +611,12 @@ export const LumenFlowConfigSchema = z.object({
 
   /** Experimental features (WU-1090) */
   experimental: ExperimentalConfigSchema.default(() => ExperimentalConfigSchema.parse({})),
+
+  /**
+   * WU-1270: Telemetry configuration
+   * Opt-in telemetry features for adoption tracking.
+   */
+  telemetry: TelemetryConfigSchema.default(() => TelemetryConfigSchema.parse({})),
 
   /**
    * WU-1259: Methodology configuration
@@ -622,6 +659,8 @@ export type ClientConfig = z.infer<typeof ClientConfigSchema>;
 export type AgentsConfig = z.infer<typeof AgentsConfigSchema>;
 export type ExperimentalConfig = z.infer<typeof ExperimentalConfigSchema>;
 export type ValidationMode = z.infer<typeof ValidationModeSchema>;
+export type MethodologyTelemetryConfig = z.infer<typeof MethodologyTelemetryConfigSchema>;
+export type TelemetryConfig = z.infer<typeof TelemetryConfigSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
 // WU-1259: Re-export methodology types from resolve-policy
 export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';

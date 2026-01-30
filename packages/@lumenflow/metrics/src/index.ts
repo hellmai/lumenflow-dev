@@ -78,3 +78,17 @@ export {
   TELEMETRY_PATHS,
   type TelemetryEmitter,
 } from './telemetry/index.js';
+
+// Methodology Telemetry (WU-1270)
+export {
+  createMethodologyTelemetryEmitter,
+  METHODOLOGY_TELEMETRY_PATHS,
+  isMethodologyTelemetryEnabled,
+  type MethodologyTelemetryEmitter,
+  type MethodologyTelemetryEvent,
+  type MethodologyTelemetryInput,
+  type MethodologyTelemetryConfig,
+  type TestingMethodologyValue,
+  type ArchitectureMethodologyValue,
+  type MethodologyEventContext,
+} from './methodology-telemetry.js';
