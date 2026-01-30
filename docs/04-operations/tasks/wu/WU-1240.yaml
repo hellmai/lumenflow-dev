@@ -8,6 +8,8 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn-core.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual: []
   unit:
@@ -27,7 +29,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1234 creates mem:context command that produces a formatted context injection block. However, there is no integration point - the output is produced but nobody consumes it. Problem: Without spawn integration, agents start cold despite mem:context existing. The command produces output that has to be manually copy-pasted. Solution: Integrate mem:context into wu:spawn so that when memory.jsonl exists and contains relevant context, the spawn prompt automatically includes the context injection block. This is the critical link that makes WU-1234 useful. Technical approach: (1) wu:spawn checks if memory layer is initialized, (2) if yes, calls mem:context with --wu and --lane filters, (3) embeds output in spawn prompt under a dedicated section, (4) configurable max size to avoid bloating prompts.'
+description: 'Context: WU-1234 creates mem:context command that produces a formatted context
+  injection block. However, there is no integration point - the output is produced but nobody
+  consumes it. Problem: Without spawn integration, agents start cold despite mem:context existing.
+  The command produces output that has to be manually copy-pasted. Solution: Integrate mem:context
+  into wu:spawn so that when memory.jsonl exists and contains relevant context, the spawn prompt
+  automatically includes the context injection block. This is the critical link that makes WU-1234
+  useful. Technical approach: (1) wu:spawn checks if memory layer is initialized, (2) if yes, calls
+  mem:context with --wu and --lane filters, (3) embeds output in spawn prompt under a dedicated
+  section, (4) configurable max size to avoid bloating prompts.'
 acceptance:
   - wu:spawn detects memory.jsonl existence
   - When memory exists, wu:spawn calls mem:context internally
