@@ -50,7 +50,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml) — Framework: Core
-- [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — Content: Documentation
 - [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml) — Framework: Metrics
 
 ## ⛔ Blocked
@@ -285,3 +284,4 @@ sections:
 - [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml)
 - [WU-1262 — Integrate resolvePolicy() with gates enforcement](wu/WU-1262.yaml)
 - [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml)
+- [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml)
