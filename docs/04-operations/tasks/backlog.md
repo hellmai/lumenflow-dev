@@ -47,7 +47,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -280,3 +279,4 @@ sections:
 - [WU-1260 — Create methodology and architecture template directories](wu/WU-1260.yaml)
 - [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml)
 - [WU-1262 — Integrate resolvePolicy() with gates enforcement](wu/WU-1262.yaml)
+- [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml)
