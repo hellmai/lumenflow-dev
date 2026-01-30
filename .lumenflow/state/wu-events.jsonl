@@ -413,3 +413,4 @@
 {"type":"claim","wuId":"WU-1225","lane":"Framework: Core","title":"wu:edit: inconsistent default behavior for --code-paths vs --acceptance","timestamp":"2026-01-29T23:50:07.656Z"}
 {"type":"claim","wuId":"WU-1223","lane":"Framework: CLI","title":"Allow wu:done to run from worktree (fix docs generation on main)","timestamp":"2026-01-29T23:50:44.168Z"}
 {"type":"release","wuId":"WU-1225","reason":"Redesigning with library-first approach","timestamp":"2026-01-29T23:57:28.145Z"}
+{"type":"block","wuId":"WU-1223","reason":"Stale lock - freeing lane for P0 bug WU-1226","timestamp":"2026-01-30T00:00:00.000Z"}

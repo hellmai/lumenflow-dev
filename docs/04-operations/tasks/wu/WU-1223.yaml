@@ -2,7 +2,9 @@ id: WU-1223
 title: Allow wu:done to run from worktree (fix docs generation on main)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: blocked
+blocked_reason: 'Stale lock - freeing lane for P0 bug WU-1226'
+blocked_at: '2026-01-30T00:00:00.000Z'
 priority: P2
 created: 2026-01-29
 code_paths:
