@@ -10,6 +10,7 @@ _Last updated: 2026-01-30_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml)
 - [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml)
+- [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml)
 
 ## Completed
 
