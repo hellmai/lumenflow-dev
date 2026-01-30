@@ -2,7 +2,7 @@ id: WU-1244
 title: Update quick-ref-commands.md with ALL CLI commands
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -42,3 +42,5 @@ session_id: dd481f5a-0a66-4c69-bee9-a6a5909ada05
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T12:35:36.361Z
+locked: true
+completed_at: 2026-01-30T12:38:49.696Z
