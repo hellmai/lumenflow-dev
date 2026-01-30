@@ -450,3 +450,4 @@
 {"type":"claim","wuId":"WU-1253","timestamp":"2026-01-30T14:26:32.359Z","lane":"Framework: Core","title":"Implement test ratchet pattern with baseline comparison and agent guidance"}
 {"type":"claim","wuId":"WU-1255","timestamp":"2026-01-30T16:57:03.967Z","lane":"Framework: CLI","title":"initiative:create and initiative:edit fail due to pre-push hook blocking micro-worktree push"}
 {"type":"complete","wuId":"WU-1255","timestamp":"2026-01-30T17:04:49.458Z"}
+{"type":"claim","wuId":"WU-1256","lane":"Framework: CLI","title":"Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts","timestamp":"2026-01-30T17:35:45.268Z"}
