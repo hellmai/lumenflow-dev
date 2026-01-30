@@ -596,7 +596,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
    - ALWAYS use \`git rebase origin/main\` before push
    - Push to main via \`git push origin lane/...:main\` (fast-forward only)
    - NEVER use \`git merge\` on main branch
-   - Let \`pnpm wu:done\` handle the merge workflow
+   - Use \`pnpm wu:prep\` from worktree, then \`pnpm wu:done\` from main (WU-1223)
 
 7. MEMORY LAYER COORDINATION (INIT-007)
    - Use \`pnpm mem:checkpoint --wu ${id}\` to save progress before risky operations
@@ -620,7 +620,7 @@ function generateCodexConstraints(id) {
 2. **Stop on errors**: if any command fails, report BLOCKED (never DONE) with the error
 3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
-5. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
+5. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
 6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\``;
 }
 

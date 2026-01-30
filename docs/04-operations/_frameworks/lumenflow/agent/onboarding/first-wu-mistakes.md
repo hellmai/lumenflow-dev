@@ -1,6 +1,6 @@
 # First WU Mistakes
 
-**Last updated:** 2026-01-19
+**Last updated:** 2026-01-30
 
 Common mistakes agents make on their first WU, and how to avoid them.
 
@@ -26,17 +26,19 @@ cd worktrees/core-wu-123
 vim src/feature.ts
 git commit -m "feat: add feature"
 git push origin lane/core/wu-123
-cd /path/to/main
-pnpm wu:done --id WU-123
+pnpm wu:prep --id WU-123  # WU-1223: runs gates, prints copy-paste instruction
+cd /path/to/main && pnpm wu:done --id WU-123  # Copy-paste from wu:prep output
 ```
 
 ---
 
-## Mistake 2: Forgetting to Run wu:done
+## Mistake 2: Forgetting to Run wu:prep and wu:done
 
 See [troubleshooting-wu-done.md](troubleshooting-wu-done.md) for the full explanation.
 
-**TL;DR:** After gates pass, ALWAYS run `pnpm wu:done --id WU-XXX`.
+**TL;DR (WU-1223):**
+1. From worktree: `pnpm wu:prep --id WU-XXX` (runs gates)
+2. From main: `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep output)
 
 ---
 
@@ -194,5 +196,5 @@ Before starting any WU:
 - [ ] Work only in the worktree
 - [ ] Stay within code_paths
 - [ ] Follow TDD
-- [ ] Run gates before wu:done
-- [ ] ALWAYS run wu:done
+- [ ] Run wu:prep from worktree (runs gates)
+- [ ] Run wu:done from main (copy-paste from wu:prep output)
