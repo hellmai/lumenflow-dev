@@ -2,7 +2,7 @@ id: WU-1249
 title: Fix agent documentation discoverability and completeness
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -57,3 +57,5 @@ session_id: 8c302afe-3907-44b3-bce2-c14a1fd724db
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T13:34:42.433Z
+locked: true
+completed_at: 2026-01-30T13:45:13.766Z
