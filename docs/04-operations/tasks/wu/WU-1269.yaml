@@ -2,7 +2,7 @@ id: WU-1269
 title: 'Migration guide: adopting methodology configurability'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Create migration guide for existing users who want to adopt methodology configurability. Covers: when to use each mode, how to migrate gradually, common pitfalls, and troubleshooting.'
+description: 'Create migration guide for existing users who want to adopt methodology
+  configurability. Covers: when to use each mode, how to migrate gradually, common pitfalls, and
+  troubleshooting.'
 acceptance:
   - Guide explains when to use tdd vs test-after vs none
   - Step-by-step migration path for relaxing from tdd to test-after
   - Troubleshooting section for common config errors
   - Examples for different project types (greenfield, legacy, prototype)
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1269
+claimed_at: 2026-01-30T23:49:38.316Z
+baseline_main_sha: 870475f74364387bab8ac63745a6ed64cbd45742
+session_id: c524db0d-cbb8-4693-b1b2-4eb172e6cb1a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T23:49:38.321Z
