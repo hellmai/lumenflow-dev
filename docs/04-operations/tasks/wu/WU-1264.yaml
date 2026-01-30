@@ -2,7 +2,7 @@ id: WU-1264
 title: Fix ai-integrations.mdx MDX syntax error
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -37,3 +37,5 @@ session_id: 109f3d31-60ae-437d-a984-02aabd9f8ecf
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T18:43:20.995Z
+locked: true
+completed_at: 2026-01-30T18:48:35.123Z
