@@ -1,12 +1,13 @@
 id: WU-1269
 title: 'Migration guide: adopting methodology configurability'
 lane: 'Content: Documentation'
-type: documentation
+type: chore
 status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
   - apps/docs/src/content/docs/guides/migrating-methodology.mdx
+  - apps/docs/src/content/docs/guides/choosing-methodology.mdx
 tests:
   manual:
     - Verify guide renders correctly in Starlight
