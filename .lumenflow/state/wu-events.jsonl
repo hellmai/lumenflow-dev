@@ -463,3 +463,4 @@
 {"type":"complete","wuId":"WU-1260","timestamp":"2026-01-30T19:50:13.204Z"}
 {"type":"claim","wuId":"WU-1261","timestamp":"2026-01-30T19:53:56.719Z","lane":"Framework: Core","title":"Integrate resolvePolicy() with wu:spawn template assembly"}
 {"type":"complete","wuId":"WU-1261","timestamp":"2026-01-30T20:06:28.705Z"}
+{"type":"claim","wuId":"WU-1262","lane":"Framework: Core","title":"Integrate resolvePolicy() with gates enforcement","timestamp":"2026-01-30T20:33:28.665Z"}
