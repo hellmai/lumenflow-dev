@@ -7,14 +7,9 @@ priority: P2
 created: 2026-01-30
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/template-loader.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
-    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
