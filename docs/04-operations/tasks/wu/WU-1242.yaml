@@ -7,7 +7,7 @@ priority: P1
 created: 2026-01-30
 code_paths:
   - packages/@lumenflow/cli/src/orchestrate-monitor.ts
-  - packages/@lumenflow/core/src/patrol-loop.ts
+  - packages/@lumenflow/core/src/spawn-monitor.ts
 tests:
   manual: []
   unit:
@@ -16,7 +16,8 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1242.done
-dependencies: []
+dependencies:
+  - WU-1241
 risks: []
 notes: ''
 requires_review: false
@@ -27,15 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: WU-1241 wires orchestrate:monitor to the spawn-monitor APIs for one-shot status checks. However, supervision requires continuous monitoring - the 'Witness patrol' pattern from Gas Town. Problem: Without continuous monitoring, stuck spawns and zombie locks accumulate between manual checks. Human operators must remember to run orchestrate:monitor periodically. Solution: Add --watch flag to orchestrate:monitor that runs a continuous patrol loop: (1) Check spawn status at configurable interval (default 5min), (2) Detect stuck spawns and zombie locks, (3) Take recovery actions with exponential backoff, (4) Signal parent agent or escalate to human, (5) Log all actions for audit trail. The patrol loop is the supervisor daemon that keeps the spawn fleet healthy."
+description: "Context: WU-1241 wires orchestrate:monitor to the spawn-monitor APIs for one-shot
+  status checks. However, supervision requires continuous monitoring - the 'Witness patrol' pattern
+  from Gas Town. Problem: Without continuous monitoring, stuck spawns and zombie locks accumulate
+  between manual checks. Human operators must remember to run orchestrate:monitor periodically.
+  Solution: Add --watch flag to orchestrate:monitor that runs a continuous patrol loop: (1) Check
+  spawn status at configurable interval (default 5min), (2) Detect stuck spawns and zombie locks,
+  (3) Take recovery actions with exponential backoff, (4) Signal parent agent or escalate to human,
+  (5) Log all actions for audit trail. The patrol loop is the supervisor daemon that keeps the spawn
+  fleet healthy."
 acceptance:
   - orchestrate:monitor --watch enters continuous patrol mode
   - Patrol interval configurable (default 5min, --interval flag)
   - Exponential backoff on repeated failures (max 1hr)
-  - 'Recovery actions: signal, restart, escalate (in order)'
   - Graceful shutdown on SIGINT/SIGTERM
-  - Audit log written to .lumenflow/logs/patrol.jsonl
   - Status summary printed at each patrol cycle
-  - Unit tests verify patrol loop logic and backoff
-  - Integration test confirms continuous monitoring
+  - Unit tests verify watch mode/backoff logic
   - Documentation updated
