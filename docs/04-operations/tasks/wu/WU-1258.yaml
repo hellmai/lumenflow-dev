@@ -1,7 +1,7 @@
 id: WU-1258
 title: Document template system for wu:spawn prompt customization
 lane: 'Content: Documentation'
-type: documentation
+type: process
 status: in_progress
 priority: P2
 created: 2026-01-30
@@ -20,10 +20,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-30T18:30:01.436Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1258
+session_id: 32ab393f-29bb-4999-a5d0-8ada2184ae64
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T18:30:01.441Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +44,3 @@ acceptance:
   - Guide for adding custom templates
   - Token replacement syntax documented
   - Examples for common customization scenarios
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1258
-claimed_at: 2026-01-30T18:30:01.436Z
-baseline_main_sha: 7249c8786f10432ad5b3637a6cea07cf81bcd7fa
-session_id: 32ab393f-29bb-4999-a5d0-8ada2184ae64
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-30T18:30:01.441Z
