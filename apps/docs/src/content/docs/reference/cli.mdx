@@ -27,7 +27,7 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 | Quality Gates   | [`gates`](#gates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs:sync`](#lumenflowdocssync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync:templates`](#lumenflowsynctemplates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer:lane`](#wuinferlane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock:lane`](#wuunlocklane), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ## Agent Lifecycle
 
@@ -853,6 +853,20 @@ pnpm wu:preflight
 | ----------------------------- | --------------------------- | -------- |
 | `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123) | Yes      |
 | `-w, --worktree &lt;path&gt;` | Override worktree path      | No       |
+
+### wu:prep
+
+Prepare WU for completion (run gates in worktree)
+
+```bash
+pnpm wu:prep
+```
+
+**Options:**
+
+| Flag                    | Description                 | Required |
+| ----------------------- | --------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123) | Yes      |
 
 ### wu:prune
 
