@@ -11,18 +11,18 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/validation/command-registry.ts
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
-  - packages/@lumenflow/core/src/wu-done-docs-generate.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/context/location-resolver.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
   - LUMENFLOW.md
+  - CLAUDE.md
+  - AGENTS.md
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/guides/wu-prep-workflow.mdx
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md
-  - CLAUDE.md
-  - AGENTS.md
-  - .claude/skills/wu-lifecycle.md
-  - packages/@lumenflow/cli/templates/spawn-prompt.md.template
+  - .claude/skills/wu-lifecycle/SKILL.md
 tests:
   manual: []
   unit:
@@ -35,10 +35,17 @@ dependencies: []
 risks: []
 notes: 'Unblocked (2026-01-30): WU-1226 completed, lane free - WU-1142 is actually done (stale backlog)'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-29T23:50:44.134Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1223
+session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-29T23:50:44.139Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -68,11 +75,3 @@ acceptance:
   - AGENTS.md universal entry point updated
   - Skill wu-lifecycle.md updated with wu:prep
   - Spawn prompt templates updated to use wu:prep workflow
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1223
-claimed_at: 2026-01-29T23:50:44.134Z
-baseline_main_sha: 68374710354898c95a2c304d4f98acec02d20c29
-session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-29T23:50:44.139Z
