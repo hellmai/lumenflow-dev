@@ -2,7 +2,7 @@ id: WU-1253
 title: Implement test ratchet pattern with baseline comparison and agent guidance
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -27,7 +27,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1210 changed implementation but didnt update corresponding test. Test failed on main for days. WU-1239 fixed by updating test expectations but this is a TDD violation. Problem: Gates dont distinguish pre-existing failures vs NEW failures you caused. Agents have TDD guidance but no explicit ratchet rule. Solution: (1) Test baseline file tracking known failures, (2) Gate modification to block NEW failures only, (3) Skip-gates debt tracking, (4) Agent guidance in wu:spawn and constraints.md.'
+description: 'Context: WU-1210 changed implementation but didnt update corresponding test. Test
+  failed on main for days. WU-1239 fixed by updating test expectations but this is a TDD violation.
+  Problem: Gates dont distinguish pre-existing failures vs NEW failures you caused. Agents have TDD
+  guidance but no explicit ratchet rule. Solution: (1) Test baseline file tracking known failures,
+  (2) Gate modification to block NEW failures only, (3) Skip-gates debt tracking, (4) Agent guidance
+  in wu:spawn and constraints.md.'
 acceptance:
   - test-baseline.json file format defined
   - pnpm gates compares results against baseline
@@ -36,3 +41,11 @@ acceptance:
   - wu:spawn TDD directive includes Test Ratchet Rule
   - constraints.md has new constraint about test ratchet
   - Agent onboarding doc test-ratchet.md created
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1253
+claimed_at: 2026-01-30T14:26:32.346Z
+baseline_main_sha: 2ad1b18a59288e24d66d9ad642c20caa3ef64966
+session_id: fcbd5656-a01f-4ee8-97d2-9c5f0b2b3026
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T14:26:32.349Z
