@@ -461,4 +461,5 @@
 {"type":"complete","wuId":"WU-1259","timestamp":"2026-01-30T19:36:19.198Z"}
 {"type":"claim","wuId":"WU-1260","timestamp":"2026-01-30T19:40:51.292Z","lane":"Framework: Core","title":"Create methodology and architecture template directories"}
 {"type":"complete","wuId":"WU-1260","timestamp":"2026-01-30T19:50:13.204Z"}
-{"type":"claim","wuId":"WU-1261","lane":"Framework: Core","title":"Integrate resolvePolicy() with wu:spawn template assembly","timestamp":"2026-01-30T19:53:56.719Z"}
+{"type":"claim","wuId":"WU-1261","timestamp":"2026-01-30T19:53:56.719Z","lane":"Framework: Core","title":"Integrate resolvePolicy() with wu:spawn template assembly"}
+{"type":"complete","wuId":"WU-1261","timestamp":"2026-01-30T20:06:28.705Z"}
