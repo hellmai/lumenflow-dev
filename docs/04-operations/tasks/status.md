@@ -6,13 +6,13 @@ _Last updated: 2026-01-30_
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
+- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml)
 
 ## Completed
 
-- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — 2026-01-30
-- [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — 2026-01-30
-- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -214,3 +214,5 @@ _Last updated: 2026-01-30_
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — 2026-01-29
 - [WU-1215 — Update distribution gitignore with complete recursive patterns](wu/WU-1215.yaml) — 2026-01-29
 - [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml) — 2026-01-30
+- [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — 2026-01-30
+- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — 2026-01-30

@@ -2,7 +2,7 @@ id: WU-1230
 title: state:doctor --fix should use micro-worktree and update backlog/status
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "state:doctor --fix has two issues: (1) modifies tracked files (wu-events.jsonl) directly on main without micro-worktree isolation, (2) removes broken events but doesn't update backlog.md/status.md references, leaving stale WU links."
+description: "state:doctor --fix has two issues: (1) modifies tracked files (wu-events.jsonl)
+  directly on main without micro-worktree isolation, (2) removes broken events but doesn't update
+  backlog.md/status.md references, leaving stale WU links."
 acceptance:
   - state:doctor --fix uses micro-worktree isolation for all tracked file changes
   - state:doctor --fix removes stale WU references from backlog.md and status.md
   - Changes are pushed via merge, not direct file modification
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1230
+claimed_at: 2026-01-30T10:14:03.482Z
+baseline_main_sha: 9da63ba5025bed9a29e8da38b9d89a7fda975e9d
+session_id: 1dc8d83b-c34b-4b6c-8915-553a7b96838a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T10:14:03.490Z
