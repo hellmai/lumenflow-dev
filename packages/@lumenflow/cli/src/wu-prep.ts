@@ -57,7 +57,7 @@ const PREP_OPTIONS = {
  */
 function printSuccessMessage(wuId: string, mainCheckout: string): void {
   console.log('');
-  console.log(`${PREP_PREFIX} ${EMOJI.SUCCESS} WU-1223: Prep completed successfully!`);
+  console.log(`${PREP_PREFIX} ${EMOJI.SUCCESS} ${wuId}: Prep completed successfully!`);
   console.log('');
   console.log(`${PREP_PREFIX} Gates passed in worktree.`);
   console.log('');
