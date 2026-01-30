@@ -18,7 +18,32 @@ artifacts:
   - .lumenflow/stamps/WU-1255.done
 dependencies: []
 risks: []
-notes: ''
+notes: |-
+  ## Investigation Notes
+
+  ### Observed Behavior
+  - initiative:create attempts push to origin/main from micro-worktree
+  - Pre-push hook (.husky/pre-push) blocks with: 'BLOCKED: Direct push to main'
+  - Command retries 3 times, all fail
+  - Local commits remain stranded (committed to main but not pushed)
+  - Workaround: LUMENFLOW_FORCE=1 git push origin main
+
+  ### Expected Behavior
+  - Should behave identically to wu:create/wu:edit
+  - wu:create successfully pushes from micro-worktree without hook blocking
+
+  ### Investigation Areas
+  1. Compare pre-push hook logic for wu:create vs initiative:create
+  2. Check if env vars (LUMENFLOW_CLI, LUMENFLOW_FORCE) are being set correctly
+  3. Look at .husky/pre-push allowlisting logic for micro-worktree operations
+  4. Verify branch detection in hook (tmp/wu-create/* vs tmp/initiative-create/*)
+
+  ### Related Files
+  - .husky/pre-push (hook that blocks)
+  - packages/@lumenflow/cli/src/wu-create.ts (working reference)
+  - packages/@lumenflow/cli/src/initiative-create.ts (failing)
+  - packages/@lumenflow/cli/src/initiative-edit.ts (failing)
+  - packages/@lumenflow/cli/src/lib/micro-worktree.ts (shared infrastructure)
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,7 +52,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "The initiative:create and initiative:edit commands use the micro-worktree pattern for isolated commits, but unlike wu:create/wu:edit, they fail when the pre-push hook blocks with 'BLOCKED: Direct push to main'. The commands retry 3 times and then fail, leaving local commits stranded. This requires manual LUMENFLOW_FORCE=1 git push to complete. Initiative commands should work identically to wu:create/wu:edit which successfully use the same micro-worktree pattern."
+description: "The initiative:create and initiative:edit commands use the micro-worktree pattern for
+  isolated commits, but unlike wu:create/wu:edit, they fail when the pre-push hook blocks with
+  'BLOCKED: Direct push to main'. The commands retry 3 times and then fail, leaving local commits
+  stranded. This requires manual LUMENFLOW_FORCE=1 git push to complete. Initiative commands should
+  work identically to wu:create/wu:edit which successfully use the same micro-worktree pattern."
 acceptance:
   - initiative:create succeeds without pre-push hook blocking
   - initiative:edit succeeds without pre-push hook blocking
