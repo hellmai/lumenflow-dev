@@ -7,61 +7,43 @@
  * after all their dependencies are scheduled in earlier waves.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { existsSync, mkdirSync, rmSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { existsSync, mkdirSync, rmSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const STAMPS_DIR = '.lumenflow/stamps';
 const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
 
+// Lane constants to avoid duplicate string literals
+const LANE_A = 'Lane A';
+const LANE_B = 'Lane B';
+const LANE_C = 'Lane C';
+const LANE_MEMORY = 'Framework: Memory';
+const LANE_CORE = 'Framework: Core';
+
+// WU ID constants for test cases
+const WU_TEST_A = 'WU-TEST-1251-A';
+const WU_TEST_B = 'WU-TEST-1251-B';
+const WU_TEST_1234 = 'WU-TEST-1251-1234';
+const WU_TEST_1240 = 'WU-TEST-1251-1240';
+const WU_TEST_CHAIN_A = 'WU-TEST-1251-CHAIN-A';
+const WU_TEST_CHAIN_B = 'WU-TEST-1251-CHAIN-B';
+const WU_TEST_CHAIN_C = 'WU-TEST-1251-CHAIN-C';
+const WU_TEST_MIX_A = 'WU-TEST-1251-MIX-A';
+const WU_TEST_MIX_B = 'WU-TEST-1251-MIX-B';
+const WU_TEST_MIX_C = 'WU-TEST-1251-MIX-C';
+const WU_TEST_FMT_A = 'WU-TEST-1251-FMT-A';
+const WU_TEST_FMT_B = 'WU-TEST-1251-FMT-B';
+const WU_TEST_DEP = 'WU-TEST-1251-DEP';
+const WU_TEST_STAMPED = 'WU-TEST-1251-STAMPED';
+const WU_TEST_READY_DEP = 'WU-TEST-1251-READY-DEP';
+const WU_TEST_ASYNC_A = 'WU-TEST-1251-ASYNC-A';
+const WU_TEST_ASYNC_B = 'WU-TEST-1251-ASYNC-B';
+
 function createDir(dir: string): void {
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
-}
-
-function createTestWUFile(
-  wuId: string,
-  options: {
-    lane?: string;
-    status?: string;
-    blockedBy?: string[];
-    dependencies?: string[];
-  } = {},
-): void {
-  const { lane = 'Test Lane', status = 'ready', blockedBy = [], dependencies = [] } = options;
-  createDir(TEST_WU_DIR);
-
-  const blockedByYaml =
-    blockedBy.length > 0 ? '\n' + blockedBy.map((id) => `  - ${id}`).join('\n') : ' []';
-
-  const dependenciesYaml =
-    dependencies.length > 0 ? '\n' + dependencies.map((id) => `  - ${id}`).join('\n') : ' []';
-
-  const yaml = `id: ${wuId}
-title: Test WU ${wuId}
-lane: '${lane}'
-type: task
-status: ${status}
-priority: P2
-created: 2025-01-01
-code_paths: []
-tests:
-  manual: []
-  unit: []
-  e2e: []
-artifacts: []
-dependencies:${dependenciesYaml}
-blocked_by:${blockedByYaml}
-risks: []
-notes: ''
-requires_review: false
-description: Test WU for WU-1251 tests
-acceptance:
-  - Test passes
-`;
-
-  writeFileSync(join(TEST_WU_DIR, `${wuId}.yaml`), yaml);
 }
 
 function createStamp(wuId: string): void {
@@ -113,16 +95,16 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       // WU-B depends on WU-A via "dependencies" array (should be Wave 1)
       const wus = [
         {
-          id: 'WU-TEST-1251-A',
-          doc: { status: 'ready', lane: 'Lane A', blocked_by: [], dependencies: [] },
+          id: WU_TEST_A,
+          doc: { status: 'ready', lane: LANE_A, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-B',
+          id: WU_TEST_B,
           doc: {
             status: 'ready',
-            lane: 'Lane B',
+            lane: LANE_B,
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-A'],
+            dependencies: [WU_TEST_A],
           },
         },
       ];
@@ -134,12 +116,12 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
       // Wave 0 should only have WU-A
       const wave0Ids = plan.waves[0].map((wu) => wu.id);
-      expect(wave0Ids).toContain('WU-TEST-1251-A');
-      expect(wave0Ids).not.toContain('WU-TEST-1251-B');
+      expect(wave0Ids).toContain(WU_TEST_A);
+      expect(wave0Ids).not.toContain(WU_TEST_B);
 
       // Wave 1 should have WU-B
       const wave1Ids = plan.waves[1].map((wu) => wu.id);
-      expect(wave1Ids).toContain('WU-TEST-1251-B');
+      expect(wave1Ids).toContain(WU_TEST_B);
     });
 
     it('should respect dependencies array even when blocked_by is empty', async () => {
@@ -148,16 +130,16 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       // This is the exact bug scenario: dependencies is set but blocked_by is empty
       const wus = [
         {
-          id: 'WU-TEST-1251-1234',
-          doc: { status: 'ready', lane: 'Framework: Memory', blocked_by: [], dependencies: [] },
+          id: WU_TEST_1234,
+          doc: { status: 'ready', lane: LANE_MEMORY, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-1240',
+          id: WU_TEST_1240,
           doc: {
             status: 'ready',
-            lane: 'Framework: Core',
+            lane: LANE_CORE,
             blocked_by: [], // Bug: blocked_by is empty
-            dependencies: ['WU-TEST-1251-1234'], // But dependencies has the dep
+            dependencies: [WU_TEST_1234], // But dependencies has the dep
           },
         },
       ];
@@ -171,9 +153,9 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       const wave0Ids = plan.waves[0].map((wu) => wu.id);
       const wave1Ids = plan.waves[1].map((wu) => wu.id);
 
-      expect(wave0Ids).toContain('WU-TEST-1251-1234');
-      expect(wave0Ids).not.toContain('WU-TEST-1251-1240');
-      expect(wave1Ids).toContain('WU-TEST-1251-1240');
+      expect(wave0Ids).toContain(WU_TEST_1234);
+      expect(wave0Ids).not.toContain(WU_TEST_1240);
+      expect(wave1Ids).toContain(WU_TEST_1240);
     });
 
     it('should support chained dependencies via dependencies array', async () => {
@@ -182,25 +164,25 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       // Chain: A -> B -> C (all via dependencies array, not blocked_by)
       const wus = [
         {
-          id: 'WU-TEST-1251-CHAIN-A',
-          doc: { status: 'ready', lane: 'Lane A', blocked_by: [], dependencies: [] },
+          id: WU_TEST_CHAIN_A,
+          doc: { status: 'ready', lane: LANE_A, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-CHAIN-B',
+          id: WU_TEST_CHAIN_B,
           doc: {
             status: 'ready',
-            lane: 'Lane B',
+            lane: LANE_B,
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-CHAIN-A'],
+            dependencies: [WU_TEST_CHAIN_A],
           },
         },
         {
-          id: 'WU-TEST-1251-CHAIN-C',
+          id: WU_TEST_CHAIN_C,
           doc: {
             status: 'ready',
-            lane: 'Lane C',
+            lane: LANE_C,
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-CHAIN-B'],
+            dependencies: [WU_TEST_CHAIN_B],
           },
         },
       ];
@@ -211,9 +193,9 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(plan.waves.length).toBe(3);
 
       // Wave 0: A, Wave 1: B, Wave 2: C
-      expect(plan.waves[0].map((wu) => wu.id)).toEqual(['WU-TEST-1251-CHAIN-A']);
-      expect(plan.waves[1].map((wu) => wu.id)).toEqual(['WU-TEST-1251-CHAIN-B']);
-      expect(plan.waves[2].map((wu) => wu.id)).toEqual(['WU-TEST-1251-CHAIN-C']);
+      expect(plan.waves[0].map((wu) => wu.id)).toEqual([WU_TEST_CHAIN_A]);
+      expect(plan.waves[1].map((wu) => wu.id)).toEqual([WU_TEST_CHAIN_B]);
+      expect(plan.waves[2].map((wu) => wu.id)).toEqual([WU_TEST_CHAIN_C]);
     });
 
     it('should combine blocked_by and dependencies arrays for dependency resolution', async () => {
@@ -222,20 +204,20 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       // WU-C depends on WU-A via blocked_by AND WU-B via dependencies
       const wus = [
         {
-          id: 'WU-TEST-1251-MIX-A',
-          doc: { status: 'ready', lane: 'Lane A', blocked_by: [], dependencies: [] },
+          id: WU_TEST_MIX_A,
+          doc: { status: 'ready', lane: LANE_A, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-MIX-B',
-          doc: { status: 'ready', lane: 'Lane B', blocked_by: [], dependencies: [] },
+          id: WU_TEST_MIX_B,
+          doc: { status: 'ready', lane: LANE_B, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-MIX-C',
+          id: WU_TEST_MIX_C,
           doc: {
             status: 'ready',
-            lane: 'Lane C',
-            blocked_by: ['WU-TEST-1251-MIX-A'],
-            dependencies: ['WU-TEST-1251-MIX-B'],
+            lane: LANE_C,
+            blocked_by: [WU_TEST_MIX_A],
+            dependencies: [WU_TEST_MIX_B],
           },
         },
       ];
@@ -247,11 +229,11 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(plan.waves.length).toBe(2);
 
       const wave0Ids = plan.waves[0].map((wu) => wu.id);
-      expect(wave0Ids).toContain('WU-TEST-1251-MIX-A');
-      expect(wave0Ids).toContain('WU-TEST-1251-MIX-B');
+      expect(wave0Ids).toContain(WU_TEST_MIX_A);
+      expect(wave0Ids).toContain(WU_TEST_MIX_B);
 
       const wave1Ids = plan.waves[1].map((wu) => wu.id);
-      expect(wave1Ids).toContain('WU-TEST-1251-MIX-C');
+      expect(wave1Ids).toContain(WU_TEST_MIX_C);
     });
   });
 
@@ -261,23 +243,23 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
       const wus = [
         {
-          id: 'WU-TEST-1251-FMT-A',
+          id: WU_TEST_FMT_A,
           doc: {
             status: 'ready',
-            lane: 'Lane A',
+            lane: LANE_A,
             title: 'Foundation WU',
             blocked_by: [],
             dependencies: [],
           },
         },
         {
-          id: 'WU-TEST-1251-FMT-B',
+          id: WU_TEST_FMT_B,
           doc: {
             status: 'ready',
-            lane: 'Lane B',
+            lane: LANE_B,
             title: 'Dependent WU',
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-FMT-A'],
+            dependencies: [WU_TEST_FMT_A],
           },
         },
       ];
@@ -294,9 +276,9 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       const wave0Section = output.split('Wave 1')[0];
       const wave1Section = output.split('Wave 1')[1];
 
-      expect(wave0Section).toContain('WU-TEST-1251-FMT-A');
-      expect(wave0Section).not.toContain('WU-TEST-1251-FMT-B');
-      expect(wave1Section).toContain('WU-TEST-1251-FMT-B');
+      expect(wave0Section).toContain(WU_TEST_FMT_A);
+      expect(wave0Section).not.toContain(WU_TEST_FMT_B);
+      expect(wave1Section).toContain(WU_TEST_FMT_B);
     });
   });
 
@@ -307,10 +289,10 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       // WU-DEP depends on WU-EXT which is not in the initiative and has no stamp
       const wus = [
         {
-          id: 'WU-TEST-1251-DEP',
+          id: WU_TEST_DEP,
           doc: {
             status: 'ready',
-            lane: 'Lane A',
+            lane: LANE_A,
             blocked_by: [],
             dependencies: ['WU-EXTERNAL-NO-STAMP'],
           },
@@ -321,23 +303,23 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
       // The WU should be deferred since its dependency has no stamp
       expect(plan.deferred.length).toBeGreaterThan(0);
-      expect(plan.deferred.map((d) => d.id)).toContain('WU-TEST-1251-DEP');
+      expect(plan.deferred.map((d) => d.id)).toContain(WU_TEST_DEP);
     });
 
     it('should schedule WU when dependency has a stamp', async () => {
       // Create stamp for external dependency
-      createStamp('WU-TEST-1251-STAMPED');
+      createStamp(WU_TEST_STAMPED);
 
       const { buildExecutionPlan } = await import('@lumenflow/initiatives');
 
       const wus = [
         {
-          id: 'WU-TEST-1251-READY-DEP',
+          id: WU_TEST_READY_DEP,
           doc: {
             status: 'ready',
-            lane: 'Lane A',
+            lane: LANE_A,
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-STAMPED'],
+            dependencies: [WU_TEST_STAMPED],
           },
         },
       ];
@@ -346,7 +328,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
       // The WU should be scheduled since its dependency has a stamp
       const wuIdsInWaves = plan.waves.flat().map((wu) => wu.id);
-      expect(wuIdsInWaves).toContain('WU-TEST-1251-READY-DEP');
+      expect(wuIdsInWaves).toContain(WU_TEST_READY_DEP);
     });
   });
 
@@ -356,16 +338,16 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
       const wus = [
         {
-          id: 'WU-TEST-1251-ASYNC-A',
-          doc: { status: 'ready', lane: 'Lane A', blocked_by: [], dependencies: [] },
+          id: WU_TEST_ASYNC_A,
+          doc: { status: 'ready', lane: LANE_A, blocked_by: [], dependencies: [] },
         },
         {
-          id: 'WU-TEST-1251-ASYNC-B',
+          id: WU_TEST_ASYNC_B,
           doc: {
             status: 'ready',
-            lane: 'Lane B',
+            lane: LANE_B,
             blocked_by: [],
-            dependencies: ['WU-TEST-1251-ASYNC-A'],
+            dependencies: [WU_TEST_ASYNC_A],
           },
         },
       ];
@@ -378,8 +360,8 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       const wave0Ids = plan.waves[0].map((wu) => wu.id);
       const wave1Ids = plan.waves[1].map((wu) => wu.id);
 
-      expect(wave0Ids).toContain('WU-TEST-1251-ASYNC-A');
-      expect(wave1Ids).toContain('WU-TEST-1251-ASYNC-B');
+      expect(wave0Ids).toContain(WU_TEST_ASYNC_A);
+      expect(wave1Ids).toContain(WU_TEST_ASYNC_B);
     });
   });
 });
