@@ -2,7 +2,7 @@ id: WU-1268
 title: CHANGELOG and release notes for methodology configurability
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -30,9 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add changelog entry and release notes for methodology configurability feature. This communicates the new capability to users and sets expectations for the release.
+description: Add changelog entry and release notes for methodology configurability feature. This
+  communicates the new capability to users and sets expectations for the release.
 acceptance:
   - CHANGELOG.md updated with methodology configurability entry
   - Release notes section explains new config options
   - Breaking changes section confirms NO breaking changes (opt-in only)
   - Links to migration guide and choosing-methodology guide
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1268
+claimed_at: 2026-01-30T23:35:21.478Z
+baseline_main_sha: c81ee751424877059d2cb5d49fff14c7b2802488
+session_id: ed1b6cc8-c42a-4b65-9857-84939f4f143d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T23:35:21.484Z
