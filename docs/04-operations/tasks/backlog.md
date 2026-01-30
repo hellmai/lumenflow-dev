@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — Framework: Core

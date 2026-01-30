@@ -1,0 +1,37 @@
+id: WU-1243
+title: Wire missing CLI commands to package.json
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - package.json
+tests:
+  manual:
+    - Run each new command with --help
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1243.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Public docs at lumenflow.dev/reference/cli advertise 107 commands but only ~52 are wired in package.json. Problem: Users and agents cannot run documented commands like wu:delete, wu:unlock-lane, lumenflow:upgrade. The code exists in dist but is not accessible via pnpm. Solution: Wire missing user-facing commands to package.json scripts.'
+acceptance:
+  - wu:delete wired and works via pnpm wu:delete
+  - wu:unlock-lane wired and works
+  - lumenflow:upgrade wired and works
+  - backlog:prune wired and works
+  - deps:add and deps:remove wired and work
+  - state:bootstrap wired and works
+  - lane:suggest wired and works
+  - init:plan wired and works
