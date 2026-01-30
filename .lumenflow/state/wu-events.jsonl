@@ -408,10 +408,11 @@
 {"type":"claim","wuId":"WU-1215","timestamp":"2026-01-29T23:21:58.505Z","lane":"Content: Documentation","title":"Update distribution gitignore with complete recursive patterns"}
 {"type":"complete","wuId":"WU-1210","timestamp":"2026-01-29T23:22:51.295Z"}
 {"type":"complete","wuId":"WU-1215","timestamp":"2026-01-29T23:27:19.956Z"}
-{"type":"claim","wuId":"WU-1222","lane":"Framework: Core","title":"Add PreToolUse hook to block grep/cat/find via Bash","timestamp":"2026-01-29T23:32:43.006Z"}
-{"type":"release","wuId":"WU-1222","reason":"Prioritizing WU-1223 (wu:done worktree fix) which blocks this work conceptually","timestamp":"2026-01-29T23:41:50.020Z"}
-{"type":"claim","wuId":"WU-1225","lane":"Framework: Core","title":"wu:edit: inconsistent default behavior for --code-paths vs --acceptance","timestamp":"2026-01-29T23:50:07.656Z"}
-{"type":"claim","wuId":"WU-1223","lane":"Framework: CLI","title":"Allow wu:done to run from worktree (fix docs generation on main)","timestamp":"2026-01-29T23:50:44.168Z"}
-{"type":"release","wuId":"WU-1225","reason":"Redesigning with library-first approach","timestamp":"2026-01-29T23:57:28.145Z"}
-{"type":"block","wuId":"WU-1223","reason":"Stale lock - freeing lane for P0 bug WU-1226","timestamp":"2026-01-30T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1226","lane":"Framework: CLI","title":"wu:recover modifies files directly on main (should use micro-worktree)","timestamp":"2026-01-30T09:19:01.280Z"}
+{"type":"claim","wuId":"WU-1222","timestamp":"2026-01-29T23:32:43.006Z","lane":"Framework: Core","title":"Add PreToolUse hook to block grep/cat/find via Bash"}
+{"type":"release","wuId":"WU-1222","timestamp":"2026-01-29T23:41:50.020Z","reason":"Prioritizing WU-1223 (wu:done worktree fix) which blocks this work conceptually"}
+{"type":"claim","wuId":"WU-1225","timestamp":"2026-01-29T23:50:07.656Z","lane":"Framework: Core","title":"wu:edit: inconsistent default behavior for --code-paths vs --acceptance"}
+{"type":"claim","wuId":"WU-1223","timestamp":"2026-01-29T23:50:44.168Z","lane":"Framework: CLI","title":"Allow wu:done to run from worktree (fix docs generation on main)"}
+{"type":"release","wuId":"WU-1225","timestamp":"2026-01-29T23:57:28.145Z","reason":"Redesigning with library-first approach"}
+{"type":"block","wuId":"WU-1223","timestamp":"2026-01-30T00:00:00.000Z","reason":"Stale lock - freeing lane for P0 bug WU-1226"}
+{"type":"claim","wuId":"WU-1226","timestamp":"2026-01-30T09:19:01.280Z","lane":"Framework: CLI","title":"wu:recover modifies files directly on main (should use micro-worktree)"}
+{"type":"complete","wuId":"WU-1226","timestamp":"2026-01-30T09:30:07.257Z"}
