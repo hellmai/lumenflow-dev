@@ -459,3 +459,4 @@
 {"type":"complete","wuId":"WU-1264","timestamp":"2026-01-30T18:48:36.758Z"}
 {"type":"claim","wuId":"WU-1259","timestamp":"2026-01-30T19:22:11.446Z","lane":"Framework: Core","title":"Add methodology config schema and resolvePolicy() function"}
 {"type":"complete","wuId":"WU-1259","timestamp":"2026-01-30T19:36:19.198Z"}
+{"type":"claim","wuId":"WU-1260","lane":"Framework: Core","title":"Create methodology and architecture template directories","timestamp":"2026-01-30T19:40:51.292Z"}

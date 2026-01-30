@@ -2,7 +2,7 @@ id: WU-1260
 title: Create methodology and architecture template directories
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -66,3 +66,11 @@ acceptance:
   - Client-specific override directories created for Claude and Cursor
   - manifest.yaml updated with methodology-conditional entries using policy.testing
   - Existing TDD directive content migrated to new location
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1260
+claimed_at: 2026-01-30T19:40:51.272Z
+baseline_main_sha: 7dac4cc2dd5757925ac395554a87929ceb678dc9
+session_id: d5c44d7a-fe06-489d-bead-52d42ca0b09d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T19:40:51.279Z
