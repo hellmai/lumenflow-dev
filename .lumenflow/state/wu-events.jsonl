@@ -426,3 +426,4 @@
 {"type":"claim","wuId":"WU-1231","timestamp":"2026-01-30T10:25:40.176Z","lane":"Framework: Core","title":"Parallelize dependency validation in wu:spawn to reduce latency"}
 {"type":"complete","wuId":"WU-1230","timestamp":"2026-01-30T10:27:42.707Z"}
 {"type":"complete","wuId":"WU-1231","timestamp":"2026-01-30T10:29:23.909Z"}
+{"type":"claim","wuId":"WU-1218","lane":"Framework: CLI","title":"Fix spec:linter failing in worktrees without CLI dist","timestamp":"2026-01-30T10:34:49.393Z"}
