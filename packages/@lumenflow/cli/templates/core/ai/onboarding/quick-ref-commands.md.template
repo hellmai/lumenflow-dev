@@ -14,6 +14,7 @@
 | `pnpm exec lumenflow init --force`            | Overwrite existing files                           |
 | `pnpm exec lumenflow docs:sync`               | Sync agent docs to existing project (for upgrades) |
 | `pnpm exec lumenflow docs:sync --force`       | Overwrite existing agent docs                      |
+| `pnpm exec lumenflow doctor`                  | Diagnose LumenFlow configuration issues            |
 
 ---
 
@@ -32,6 +33,8 @@
 | `pnpm wu:unblock --id WU-XXX`                                                                                                                                                                                         | Unblock a WU                                         |
 | `pnpm wu:cleanup --id WU-XXX`                                                                                                                                                                                         | PR-only: cleanup after PR merge (see note below)     |
 | `pnpm wu:cleanup --artifacts`                                                                                                                                                                                         | Remove build artifacts in current worktree           |
+| `pnpm wu:delete --id WU-XXX`                                                                                                                                                                                          | Delete WU spec and cleanup                           |
+| `pnpm wu:unlock-lane --lane <Lane>`                                                                                                                                                                                   | Unlock stuck lane                                    |
 
 ### wu:done vs wu:cleanup
 
@@ -81,6 +84,8 @@ This means `wu:edit` on an `in_progress` WU automatically propagates to the work
 | `pnpm lint`              | Run linter                 |
 | `pnpm typecheck`         | Run TypeScript check       |
 | `pnpm test`              | Run tests                  |
+| `pnpm lane:health`       | Check lane config health   |
+| `pnpm lane:suggest`      | Suggest lane for code paths|
 
 ---
 

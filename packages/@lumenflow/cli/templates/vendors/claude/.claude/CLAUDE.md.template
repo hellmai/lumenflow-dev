@@ -24,6 +24,8 @@ cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXXX
 ```
 
+> **Complete CLI reference:** See [quick-ref-commands.md](../ai/onboarding/quick-ref-commands.md)
+
 ---
 
 ## Critical: Always wu:done

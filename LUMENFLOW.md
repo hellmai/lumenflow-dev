@@ -155,7 +155,9 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ---
 
-## Commands Reference
+## Core Commands
+
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 | Command                         | Description                                            |
 | ------------------------------- | ------------------------------------------------------ |

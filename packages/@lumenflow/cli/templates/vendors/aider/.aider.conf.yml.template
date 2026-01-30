@@ -13,6 +13,7 @@ read:
   - LUMENFLOW.md
   - .lumenflow/constraints.md
   - ai/onboarding/troubleshooting-wu-done.md
+  - ai/onboarding/quick-ref-commands.md
 
 # Message to remind about workflow
 message: |

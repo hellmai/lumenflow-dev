@@ -29,6 +29,13 @@ declare -A LUMENFLOW_PATHS=(
   ["cline"]="LUMENFLOW.md"
 )
 
+# quick-ref-commands.md path relative to vendor config location
+declare -A QUICK_REF_PATHS=(
+  ["cursor"]="../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md"
+  ["windsurf"]="../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md"
+  ["cline"]="docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md"
+)
+
 # Vendor display names
 declare -A VENDOR_NAMES=(
   ["cursor"]="Cursor"
@@ -66,6 +73,7 @@ generate_config() {
   local vendor="$1"
   local config_path="${VENDOR_CONFIGS[$vendor]}"
   local lumenflow_path="${LUMENFLOW_PATHS[$vendor]}"
+  local quick_ref_path="${QUICK_REF_PATHS[$vendor]}"
   local vendor_name="${VENDOR_NAMES[$vendor]}"
 
   # Read template and substitute variables
@@ -73,6 +81,7 @@ generate_config() {
   content=$(cat "$TEMPLATE_FILE")
   content="${content//\{\{VENDOR_NAME\}\}/$vendor_name}"
   content="${content//\{\{LUMENFLOW_PATH\}\}/$lumenflow_path}"
+  content="${content//\{\{QUICK_REF_PATH\}\}/$quick_ref_path}"
   content="${content//\{\{PROJECT_ROOT\}\}//path/to/repo}"
 
   echo "$content"

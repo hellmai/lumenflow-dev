@@ -91,6 +91,8 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 | `pnpm mem:init`       | Initialize memory layer                  |
 | `pnpm mem:checkpoint` | Save memory checkpoint                   |
 
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+
 ### Context-Aware Validation (WU-1090)
 
 Commands now include context-aware validation that checks:

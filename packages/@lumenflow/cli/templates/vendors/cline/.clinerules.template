@@ -1,6 +1,6 @@
 # Cline LumenFlow Rules
 
-This project uses LumenFlow workflow. See [LUMENFLOW.md](LUMENFLOW.md).
+This project uses LumenFlow workflow. See [LUMENFLOW.md](LUMENFLOW.md) for complete documentation.
 
 ## Critical Rules
 
@@ -27,23 +27,23 @@ cd worktrees/<lane>-wu-xxx
 pnpm gates
 
 # Complete (from main)
-cd /path/to/repo
+cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXX
 ```
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](ai/onboarding/quick-ref-commands.md)
 
 ---
 
 ## Workflow Summary
 
-| Step         | Command                                   |
-| ------------ | ----------------------------------------- |
-| 1. Create WU | `pnpm wu:create --id WU-XXX ...`          |
-| 2. Claim     | `pnpm wu:claim --id WU-XXX --lane <Lane>` |
-| 3. Work      | `cd worktrees/<lane>-wu-xxx`              |
-| 4. Gates     | `pnpm gates`                              |
-| 5. Complete  | `pnpm wu:done --id WU-XXX`                |
+| Step | Command |
+|------|---------|
+| 1. Create WU | `pnpm wu:create --id WU-XXX ...` |
+| 2. Claim | `pnpm wu:claim --id WU-XXX --lane <Lane>` |
+| 3. Work | `cd worktrees/<lane>-wu-xxx` |
+| 4. Gates | `pnpm gates` |
+| 5. Complete | `pnpm wu:done --id WU-XXX` |
 
 ## Safety Reminders
 
