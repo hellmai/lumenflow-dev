@@ -48,7 +48,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
-- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -285,3 +284,4 @@ sections:
 - [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml)
 - [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml)
 - [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml)
+- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml)
