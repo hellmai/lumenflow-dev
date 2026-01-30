@@ -26,3 +26,5 @@ success_metrics:
   - Stuck spawns detected within configured threshold (default 30min)
   - Patrol mode runs continuously without flapping
 labels: []
+wus:
+  - WU-1234
