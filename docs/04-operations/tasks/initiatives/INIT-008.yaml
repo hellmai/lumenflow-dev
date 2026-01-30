@@ -19,5 +19,10 @@ phases:
   - id: 3
     title: Intelligence (Wave 3 - Final)
     status: pending
-success_metrics: []
+success_metrics:
+  - Spawned agents receive relevant context (mem:context block in prompt)
+  - Project knowledge persists across WUs (mem:promote → mem:profile)
+  - Memory stays relevant over time (decay score affects ranking)
+  - Stuck spawns detected within configured threshold (default 30min)
+  - Patrol mode runs continuously without flapping
 labels: []
