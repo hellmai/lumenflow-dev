@@ -2,7 +2,7 @@ id: WU-1245
 title: Fix pre-push hook to allow micro-worktree operations
 lane: 'Operations: CI/CD'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -43,3 +43,5 @@ session_id: dd481f5a-0a66-4c69-bee9-a6a5909ada05
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T12:36:51.847Z
+locked: true
+completed_at: 2026-01-30T12:47:14.366Z
