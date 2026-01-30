@@ -29,7 +29,6 @@ sections:
 - [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
 - [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
-- [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -38,6 +37,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

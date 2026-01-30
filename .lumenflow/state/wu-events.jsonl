@@ -422,3 +422,4 @@
 {"type":"complete","wuId":"WU-1225","timestamp":"2026-01-30T10:04:50.881Z"}
 {"type":"claim","wuId":"WU-1222","timestamp":"2026-01-30T10:05:00.000Z","lane":"Framework: Core","title":"Add PreToolUse hook to block grep/cat/find via Bash"}
 {"type":"complete","wuId":"WU-1223","timestamp":"2026-01-30T10:09:54.875Z"}
+{"type":"claim","wuId":"WU-1230","lane":"Framework: CLI","title":"state:doctor --fix should use micro-worktree and update backlog/status","timestamp":"2026-01-30T10:14:03.514Z"}
