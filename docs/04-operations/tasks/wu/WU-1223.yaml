@@ -26,8 +26,8 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
     - packages/@lumenflow/core/src/__tests__/validation/command-registry.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1223.done
