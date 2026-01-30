@@ -2,7 +2,7 @@ id: WU-1267
 title: 'Regression test: default methodology behavior unchanged'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create regression test that proves default behavior (no methodology config) produces identical output to pre-INIT-009 behavior. This is critical for backwards compatibility - existing users must not see any change unless they opt in.
+description: Create regression test that proves default behavior (no methodology config) produces
+  identical output to pre-INIT-009 behavior. This is critical for backwards compatibility - existing
+  users must not see any change unless they opt in.
 acceptance:
   - Snapshot test captures spawn output with no methodology config
   - Snapshot matches pre-INIT-009 spawn output exactly
   - Gates enforcement matches pre-INIT-009 thresholds (90% block)
   - Test fails if default behavior changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1267
+claimed_at: 2026-01-30T23:49:14.479Z
+baseline_main_sha: 6a18332c4b30516af0774e812646c2bf521f978a
+session_id: c524db0d-cbb8-4693-b1b2-4eb172e6cb1a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T23:49:14.485Z

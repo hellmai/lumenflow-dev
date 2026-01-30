@@ -473,3 +473,4 @@
 {"type":"complete","wuId":"WU-1268","timestamp":"2026-01-30T23:41:15.442Z"}
 {"type":"complete","wuId":"WU-1266","timestamp":"2026-01-30T23:43:26.087Z"}
 {"type":"complete","wuId":"WU-1270","timestamp":"2026-01-30T23:44:55.430Z"}
+{"type":"claim","wuId":"WU-1267","lane":"Framework: Core","title":"Regression test: default methodology behavior unchanged","timestamp":"2026-01-30T23:49:14.498Z"}
