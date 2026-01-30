@@ -2,7 +2,7 @@ id: WU-1239
 title: 'BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -43,3 +43,5 @@ session_id: 26880a64-e1da-4de0-9404-e6fd700513b4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T14:00:12.930Z
+locked: true
+completed_at: 2026-01-30T14:10:05.385Z

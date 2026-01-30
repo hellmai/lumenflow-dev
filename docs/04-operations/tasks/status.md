@@ -9,10 +9,10 @@ _Last updated: 2026-01-30_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1251 — Fix orchestrate:initiative dependency resolution bug](wu/WU-1251.yaml)
-- [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml)
 
 ## Completed
 
+- [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
