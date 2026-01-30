@@ -8,11 +8,10 @@ _Last updated: 2026-01-30_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1258 — Document template system for wu:spawn prompt customization](wu/WU-1258.yaml)
 
 ## Completed
 
-- [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml) — 2026-01-30
-- [WU-1253 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1253.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -230,3 +229,5 @@ _Last updated: 2026-01-30_
 - [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml) — 2026-01-30
 - [WU-1251 — Fix orchestrate:initiative dependency resolution bug](wu/WU-1251.yaml) — 2026-01-30
 - [WU-1255 — initiative:create and initiative:edit fail due to pre-push hook blocking micro-worktree push](wu/WU-1255.yaml) — 2026-01-30
+- [WU-1253 — Implement test ratchet pattern with baseline comparison and agent guidance](wu/WU-1253.yaml) — 2026-01-30
+- [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml) — 2026-01-30

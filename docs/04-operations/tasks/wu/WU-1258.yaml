@@ -2,7 +2,7 @@ id: WU-1258
 title: Document template system for wu:spawn prompt customization
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -27,7 +27,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add comprehensive documentation for the .lumenflow/templates/ system introduced in WU-1253. This enables users to customize spawn prompts, add client-specific overrides, and understand the template assembly process.
+description: Add comprehensive documentation for the .lumenflow/templates/ system introduced in
+  WU-1253. This enables users to customize spawn prompts, add client-specific overrides, and
+  understand the template assembly process.
 acceptance:
   - Reference page for template format (YAML frontmatter + markdown)
   - Reference page for manifest.yaml schema
@@ -35,3 +37,11 @@ acceptance:
   - Guide for adding custom templates
   - Token replacement syntax documented
   - Examples for common customization scenarios
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1258
+claimed_at: 2026-01-30T18:30:01.436Z
+baseline_main_sha: 7249c8786f10432ad5b3637a6cea07cf81bcd7fa
+session_id: 32ab393f-29bb-4999-a5d0-8ada2184ae64
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T18:30:01.441Z
