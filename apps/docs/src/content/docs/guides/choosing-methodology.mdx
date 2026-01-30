@@ -1,0 +1,261 @@
+---
+title: Choosing Your Methodology
+description: Select the right testing and architecture methodology for your team
+---
+
+LumenFlow is opinionated by default but flexible by design. The `methodology` configuration lets you choose how strict your testing and architecture practices should be.
+
+## Why Methodology Configuration?
+
+Different teams have different needs:
+
+- **Greenfield projects** benefit from strict TDD and hexagonal architecture
+- **Legacy migrations** may need a gentler test-after approach during transition
+- **Prototype/spike work** may temporarily disable enforcement
+
+Rather than fight the framework, configure it to match your current situation.
+
+## Testing Methodologies
+
+### TDD (Default)
+
+Test-Driven Development: write tests before implementation.
+
+```yaml
+methodology:
+  testing: 'tdd'
+```
+
+**Characteristics:**
+
+- Tests written BEFORE implementation code
+- RED-GREEN-REFACTOR cycle enforced in agent prompts
+- 90% coverage threshold (blocks on failure)
+- Gates fail if coverage drops below threshold
+
+**Best for:**
+
+- New features with clear requirements
+- Teams committed to test-first development
+- Production-critical code paths
+
+### Test-After
+
+Write implementation first, tests before completion.
+
+```yaml
+methodology:
+  testing: 'test-after'
+```
+
+**Characteristics:**
+
+- Implementation can proceed without tests
+- Tests required before `wu:done`
+- 70% coverage threshold (warns but does not block)
+- More flexible for exploratory work
+
+**Best for:**
+
+- Legacy code migration
+- Teams transitioning to TDD
+- Rapid prototyping with deferred test coverage
+
+### None
+
+Minimal testing enforcement.
+
+```yaml
+methodology:
+  testing: 'none'
+```
+
+**Characteristics:**
+
+- No testing methodology in agent prompts
+- 0% coverage threshold (no enforcement)
+- Tests optional but still recommended
+
+**Best for:**
+
+- Spike/research work
+- Documentation-only projects
+- Non-production experiments
+
+:::caution
+Even with `testing: 'none'`, the test ratchet may prevent regressions if enabled.
+New test failures can still block gates regardless of methodology.
+:::
+
+## Architecture Methodologies
+
+### Hexagonal (Default)
+
+Ports and Adapters architecture with strict dependency rules.
+
+```yaml
+methodology:
+  architecture: 'hexagonal'
+```
+
+**Characteristics:**
+
+- Agent prompts include hexagonal architecture guidance
+- Ports-first development encouraged
+- Application layer never imports infrastructure
+
+**Best for:**
+
+- Complex domain logic
+- Projects requiring extensive testing
+- Teams familiar with DDD patterns
+
+### Layered
+
+Traditional layered architecture.
+
+```yaml
+methodology:
+  architecture: 'layered'
+```
+
+**Characteristics:**
+
+- Simpler three-tier structure guidance
+- Less strict about dependency direction
+- Easier to understand for newcomers
+
+**Best for:**
+
+- Simpler CRUD applications
+- Teams new to architecture patterns
+- Rapid development without complex domain logic
+
+### None
+
+No architecture guidance.
+
+```yaml
+methodology:
+  architecture: 'none'
+```
+
+**Characteristics:**
+
+- No architecture-specific prompting
+- Full flexibility in code organization
+
+**Best for:**
+
+- Small scripts and utilities
+- Projects with existing architecture
+- Teams with strong internal conventions
+
+## Overriding Template Defaults
+
+Each methodology sets sensible defaults, but you can fine-tune them:
+
+```yaml
+methodology:
+  testing: 'tdd'
+  architecture: 'hexagonal'
+  overrides:
+    coverage_threshold: 85 # Slightly lower than TDD default of 90
+    coverage_mode: 'warn' # Warn instead of block
+```
+
+### Override Fields
+
+| Field                | Description                            |
+| -------------------- | -------------------------------------- |
+| `coverage_threshold` | Minimum coverage percentage (0-100)    |
+| `coverage_mode`      | `block` (fail gates), `warn`, or `off` |
+
+## Methodology vs Gates
+
+The `methodology` section is a high-level abstraction. For fine-grained control, use the `gates` section directly:
+
+```yaml
+# High-level: Use methodology
+methodology:
+  testing: 'test-after'
+
+# Low-level: Override specific gates
+gates:
+  enableCoverage: true
+  minCoverage: 75
+```
+
+**Precedence (highest to lowest):**
+
+1. CLI flags (e.g., `--coverage-mode=warn`)
+2. Explicit `gates.*` configuration
+3. `methodology.overrides`
+4. Methodology template defaults
+
+## Migration Examples
+
+### From Strict TDD to Test-After
+
+Gradually relaxing enforcement for a legacy migration:
+
+```yaml
+# Phase 1: Keep TDD but warn instead of block
+methodology:
+  testing: 'tdd'
+  overrides:
+    coverage_mode: 'warn'
+
+# Phase 2: Switch to test-after
+methodology:
+  testing: 'test-after'
+
+# Phase 3: Return to TDD once migration complete
+methodology:
+  testing: 'tdd'
+```
+
+### Enterprise Strictness
+
+Maximum enforcement for regulated environments:
+
+```yaml
+methodology:
+  testing: 'tdd'
+  architecture: 'hexagonal'
+  overrides:
+    coverage_threshold: 95
+
+gates:
+  enableSafetyCriticalTests: true
+  enableInvariants: true
+```
+
+### Minimal Setup for Prototypes
+
+Quick exploration without ceremony:
+
+```yaml
+methodology:
+  testing: 'none'
+  architecture: 'none'
+
+gates:
+  enableCoverage: false
+```
+
+## Summary
+
+| Methodology  | Coverage | Mode  | Tests Required | Use Case              |
+| ------------ | -------- | ----- | -------------- | --------------------- |
+| `tdd`        | 90%      | block | Yes            | Production code       |
+| `test-after` | 70%      | warn  | Yes            | Legacy migration      |
+| `none`       | 0%       | off   | No             | Spikes and prototypes |
+
+---
+
+## Next Steps
+
+- [Configuration Reference](/reference/config) - All configuration options
+- [Gates Reference](/reference/cli#gates) - Gate commands and flags
+- [Team Workflow](/guides/team-workflow) - Multi-developer patterns
