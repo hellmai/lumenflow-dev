@@ -2,7 +2,7 @@ id: WU-1263
 title: Document methodology configurability in public and internal docs
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -58,3 +58,5 @@ acceptance:
   - New guide page explaining methodology options and tradeoffs
   - ADR created explaining the design decision
   - Internal documentation for resolvePolicy() precedence rules
+locked: true
+completed_at: 2026-01-30T21:00:52.823Z
