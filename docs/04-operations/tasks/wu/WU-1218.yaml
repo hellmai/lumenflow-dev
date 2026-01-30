@@ -2,7 +2,7 @@ id: WU-1218
 title: Fix spec:linter failing in worktrees without CLI dist
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,6 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done runs spec:linter in worktree which fails when CLI dist is missing. Problem: WU-1038 fixed gates fallback but spec:linter still uses worktree CLI. Solution: Make spec:linter fallback to main CLI dist like gates.'
+description: 'Context: wu:done runs spec:linter in worktree which fails when CLI dist is missing.
+  Problem: WU-1038 fixed gates fallback but spec:linter still uses worktree CLI. Solution: Make
+  spec:linter fallback to main CLI dist like gates.'
 acceptance:
   - spec:linter runs in worktree without CLI dist
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1218
+claimed_at: 2026-01-30T10:34:49.366Z
+baseline_main_sha: 9ead58fae611236082009753219749db76007d71
+session_id: 0765b8d6-00a7-4a1f-8dfd-44cf422b446b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T10:34:49.370Z
