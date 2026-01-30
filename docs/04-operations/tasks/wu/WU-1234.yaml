@@ -9,6 +9,9 @@ code_paths:
   - packages/@lumenflow/memory/src/mem-context-core.ts
   - packages/@lumenflow/cli/src/mem-context.ts
   - packages/@lumenflow/core/src/wu-spawn-core.ts
+  - packages/@lumenflow/memory/src/mem-context-core.ts
+  - packages/@lumenflow/cli/src/mem-context.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
 tests:
   manual: []
   unit:
@@ -28,7 +31,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow memory has storage and lifecycle but no way to inject relevant context at session start. Supermemory and similar tools automatically inject relevant memories when a new agent session begins. Problem: When wu:spawn creates a new agent session, it has no access to relevant project knowledge, recent summaries, or WU-specific context from the memory layer. Agents start cold without accumulated knowledge. Solution: Add mem:context command that produces a deterministic, formatted context injection block containing: (1) Project profile items (top N project-lifecycle memories), (2) Recent summaries relevant to the target WU/lane, (3) Current WU ready nodes and latest checkpoint, (4) Open discoveries for the WU. Output is structured text suitable for embedding into wu:spawn. Selection is deterministic (filter by lifecycle, WU, tags, recency). No LLM calls inside LumenFlow (vendor-agnostic).'
+description: 'Context: LumenFlow memory has storage and lifecycle but no way to inject relevant
+  context at session start. Supermemory and similar tools automatically inject relevant memories
+  when a new agent session begins. Problem: When wu:spawn creates a new agent session, it has no
+  access to relevant project knowledge, recent summaries, or WU-specific context from the memory
+  layer. Agents start cold without accumulated knowledge. Solution: Add mem:context command that
+  produces a deterministic, formatted context injection block containing: (1) Project profile items
+  (top N project-lifecycle memories), (2) Recent summaries relevant to the target WU/lane, (3)
+  Current WU ready nodes and latest checkpoint, (4) Open discoveries for the WU. Output is
+  structured text suitable for embedding into wu:spawn. Selection is deterministic (filter by
+  lifecycle, WU, tags, recency). No LLM calls inside LumenFlow (vendor-agnostic).'
 acceptance:
   - mem:context --wu WU-XXXX outputs formatted context block
   - 'Context block includes: project profile, relevant summaries, WU context'
