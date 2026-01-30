@@ -40,7 +40,7 @@ sections:
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
-- [WU-1257 — Fix pre-existing lint errors in wu-spawn.ts](wu/WU-1257.yaml) — Framework: Core
+
 - [WU-1259 — Add methodology config schema and resolvePolicy() function](wu/WU-1259.yaml) — Framework: Core
 - [WU-1260 — Create methodology and architecture template directories](wu/WU-1260.yaml) — Framework: Core
 - [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml) — Framework: Core
