@@ -1,0 +1,464 @@
+---
+title: Spawn Manifest Schema
+description: manifest.yaml schema for template assembly configuration
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The manifest file (`.lumenflow/templates/manifest.yaml`) controls how templates are assembled into spawn prompts. It defines the order, requirements, and conditions for each template.
+
+## File Location
+
+```
+.lumenflow/
+  templates/
+    manifest.yaml          # This file
+    spawn-prompt/
+      tdd-directive.md
+      constraints.md
+      ...
+```
+
+## Minimal Manifest
+
+```yaml
+version: '1.0'
+
+templates:
+  - id: tdd-directive
+    path: spawn-prompt/tdd-directive.md
+    required: true
+    order: 10
+```
+
+## Complete Manifest
+
+```yaml
+version: '1.0'
+
+defaults:
+  tokenFormat: '{TOKEN}'
+
+templates:
+  # Type-specific directives (order 10-50)
+  - id: tdd-directive
+    path: spawn-prompt/tdd-directive.md
+    required: false
+    order: 10
+    condition: "type !== 'documentation'"
+
+  - id: documentation-directive
+    path: spawn-prompt/documentation-directive.md
+    required: false
+    order: 10
+    condition: "type === 'documentation'"
+
+  # Common sections (order 50-200)
+  - id: skills-selection
+    path: spawn-prompt/skills-selection.md
+    required: true
+    order: 50
+
+  - id: effort-scaling
+    path: spawn-prompt/effort-scaling.md
+    required: true
+    order: 100
+
+  # Lane-specific guidance (order 400-500)
+  - id: lane-guidance-framework
+    path: spawn-prompt/lane-guidance/framework.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Framework'"
+
+  # Constraints always last (order 900+)
+  - id: constraints
+    path: spawn-prompt/constraints.md
+    required: true
+    order: 1000
+```
+
+## Schema Reference
+
+### Root Fields
+
+| Field       | Type   | Required | Description                          |
+| ----------- | ------ | -------- | ------------------------------------ |
+| `version`   | string | Yes      | Manifest schema version              |
+| `defaults`  | object | No       | Default settings for processing      |
+| `templates` | array  | Yes      | List of template entries             |
+
+### defaults Object
+
+| Field         | Type   | Default     | Description                     |
+| ------------- | ------ | ----------- | ------------------------------- |
+| `tokenFormat` | string | `{TOKEN}`   | Token placeholder format        |
+
+<Aside type="note">
+  The `tokenFormat` field is reserved for future use. Currently, all tokens use the `{TOKEN}` format.
+</Aside>
+
+### Template Entry
+
+Each entry in the `templates` array:
+
+| Field       | Type    | Required | Description                                      |
+| ----------- | ------- | -------- | ------------------------------------------------ |
+| `id`        | string  | Yes      | Unique identifier matching template frontmatter  |
+| `path`      | string  | Yes      | Relative path from `.lumenflow/templates/`       |
+| `required`  | boolean | Yes      | Whether template must exist                      |
+| `order`     | number  | Yes      | Sort position (ascending)                        |
+| `condition` | string  | No       | Inclusion condition expression                   |
+
+## Field Details
+
+### version
+
+The manifest schema version. Currently only `1.0` is supported.
+
+```yaml
+version: '1.0'
+```
+
+Future versions may add new fields or change behavior.
+
+### id
+
+A unique identifier for the template. Must match the `id` field in the template's YAML frontmatter.
+
+```yaml
+- id: tdd-directive        # Matches template frontmatter id
+  path: spawn-prompt/tdd-directive.md
+```
+
+The `id` is used for:
+
+- Matching templates during loading
+- Client override resolution
+- Error messages and debugging
+
+### path
+
+Relative path from `.lumenflow/templates/` to the template file.
+
+```yaml
+# Direct file
+- id: constraints
+  path: spawn-prompt/constraints.md
+
+# Nested in subdirectory
+- id: lane-guidance-framework
+  path: spawn-prompt/lane-guidance/framework.md
+```
+
+<Aside type="caution">
+  Paths are relative to `.lumenflow/templates/`, not the repository root.
+</Aside>
+
+### required
+
+Controls behavior when a template cannot be found or loaded.
+
+**When `true`:**
+
+```yaml
+- id: constraints
+  required: true
+  # Error thrown if template is missing
+```
+
+Assembly fails with an error message indicating the expected path.
+
+**When `false`:**
+
+```yaml
+- id: visual-directive
+  required: false
+  # Silently skipped if missing
+```
+
+Missing template is skipped without error.
+
+### order
+
+Numeric value controlling assembly sequence. Lower values appear first in the output.
+
+```yaml
+templates:
+  - id: tdd-directive
+    order: 10           # Appears first
+  - id: constraints
+    order: 1000         # Appears last
+```
+
+**Recommended ranges:**
+
+| Range   | Purpose                    |
+| ------- | -------------------------- |
+| 10-50   | Type-specific directives   |
+| 50-100  | Skills and methodology     |
+| 100-200 | Agent guidance             |
+| 200-300 | Operational guidance       |
+| 300-400 | Recovery and worktree      |
+| 400-500 | Lane-specific guidance     |
+| 900+    | Constraints (always last)  |
+
+**Equal order values:**
+
+When multiple templates have the same `order`, their relative order is undefined. Use conditions to ensure only one is included:
+
+```yaml
+# Both have order 10, but conditions are mutually exclusive
+- id: tdd-directive
+  order: 10
+  condition: "type !== 'documentation'"
+
+- id: documentation-directive
+  order: 10
+  condition: "type === 'documentation'"
+```
+
+### condition
+
+Optional JavaScript-like expression controlling template inclusion.
+
+**Syntax:**
+
+| Operator   | Example                        |
+| ---------- | ------------------------------ |
+| Equality   | `type === 'feature'`           |
+| Inequality | `type !== 'documentation'`     |
+| Truthy     | `worktreePath`                 |
+| AND        | `type === 'bug' && laneParent === 'Core'` |
+| OR         | `type === 'feature' \|\| type === 'bug'` |
+
+**Available variables:**
+
+| Variable      | Description                              |
+| ------------- | ---------------------------------------- |
+| `type`        | WU type (feature, bug, documentation)    |
+| `lane`        | Full lane name                           |
+| `laneParent`  | Parent lane (Framework, Content, etc.)   |
+| `wuId`        | Work Unit ID                             |
+| `worktreePath`| Worktree path (truthy if claimed)        |
+| `title`       | WU title                                 |
+| `description` | WU description                           |
+
+**Examples:**
+
+```yaml
+# Feature and bug WUs only
+condition: "type === 'feature' || type === 'bug'"
+
+# Documentation WUs only
+condition: "type === 'documentation' || type === 'docs'"
+
+# Only when worktree exists
+condition: "worktreePath"
+
+# Framework lane only
+condition: "laneParent === 'Framework'"
+
+# Combined: features in Framework lane
+condition: "type === 'feature' && laneParent === 'Framework'"
+```
+
+## Validation
+
+The manifest is validated when loaded. Errors include:
+
+### Missing version
+
+```
+Error: manifest.yaml: 'version' field is required and must be a string
+```
+
+### Missing templates array
+
+```
+Error: manifest.yaml: 'templates' field is required and must be an array
+```
+
+### Invalid template entry
+
+```
+Error: manifest.yaml: Template entry 'my-template' is missing required fields: order, required
+```
+
+### YAML syntax error
+
+```
+Error: Failed to parse manifest.yaml: <yaml error details>
+```
+
+## Assembly Algorithm
+
+When `wu:spawn` assembles templates:
+
+1. **Parse manifest** - Validate structure and entries
+2. **Load templates** - Read files from `spawn-prompt/`
+3. **Apply overrides** - Replace base templates with client-specific versions
+4. **Sort entries** - Order by `order` field ascending
+5. **Evaluate conditions** - Skip templates where condition is false
+6. **Check required** - Error if required template is missing
+7. **Replace tokens** - Substitute `{TOKEN}` placeholders
+8. **Join sections** - Concatenate with double newlines
+
+## Client Override Resolution
+
+Client-specific manifests are not supported. Overrides work at the template level:
+
+```
+.lumenflow/
+  templates/
+    manifest.yaml              # Single manifest for all clients
+    spawn-prompt/
+      skills-selection.md      # Base template
+  templates.claude/
+    spawn-prompt/
+      skills-selection.md      # Claude override (same id)
+```
+
+When assembling for `claude`:
+
+1. Load base template with `id: skills-selection`
+2. Load override from `templates.claude/spawn-prompt/skills-selection.md`
+3. Override replaces base (matched by `id`)
+
+<Aside type="tip">
+  To add client-specific templates not in the base manifest, add them to the manifest with a
+  client-specific condition or create them in the base directory with a client condition.
+</Aside>
+
+## Example: Full Manifest
+
+This example shows the default LumenFlow manifest structure:
+
+```yaml
+# .lumenflow/templates/manifest.yaml
+version: '1.0'
+
+defaults:
+  tokenFormat: '{TOKEN}'
+
+templates:
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 1: Type-specific directives (order 10-50)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: tdd-directive
+    path: spawn-prompt/tdd-directive.md
+    required: false
+    order: 10
+    condition: "type !== 'documentation' && type !== 'docs' && type !== 'config'"
+
+  - id: documentation-directive
+    path: spawn-prompt/documentation-directive.md
+    required: false
+    order: 10
+    condition: "type === 'documentation' || type === 'docs' || type === 'config'"
+
+  - id: visual-directive
+    path: spawn-prompt/visual-directive.md
+    required: false
+    order: 15
+    condition: "type === 'visual' || type === 'design' || type === 'ui'"
+
+  - id: refactor-directive
+    path: spawn-prompt/refactor-directive.md
+    required: false
+    order: 15
+    condition: "type === 'refactor'"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Skills selection (order 50)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: skills-selection
+    path: spawn-prompt/skills-selection.md
+    required: true
+    order: 50
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 2: Agent guidance (order 100-200)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: effort-scaling
+    path: spawn-prompt/effort-scaling.md
+    required: true
+    order: 100
+
+  - id: parallel-tool-calls
+    path: spawn-prompt/parallel-tool-calls.md
+    required: true
+    order: 110
+
+  - id: search-heuristics
+    path: spawn-prompt/search-heuristics.md
+    required: true
+    order: 120
+
+  - id: token-budget
+    path: spawn-prompt/token-budget.md
+    required: true
+    order: 130
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 3: Operational guidance (order 200-300)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: bug-discovery
+    path: spawn-prompt/bug-discovery.md
+    required: true
+    order: 200
+
+  - id: quick-fix-commands
+    path: spawn-prompt/quick-fix-commands.md
+    required: true
+    order: 210
+
+  - id: lane-selection
+    path: spawn-prompt/lane-selection.md
+    required: true
+    order: 220
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 4: Recovery and worktree (order 300-400)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: worktree-recovery
+    path: spawn-prompt/worktree-recovery.md
+    required: false
+    order: 300
+    condition: "worktreePath"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 5: Lane-specific guidance (order 400-500)
+  # ─────────────────────────────────────────────────────────────────────
+  - id: lane-guidance-operations
+    path: spawn-prompt/lane-guidance/operations.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Operations'"
+
+  - id: lane-guidance-framework
+    path: spawn-prompt/lane-guidance/framework.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Framework'"
+
+  - id: lane-guidance-content
+    path: spawn-prompt/lane-guidance/content.md
+    required: false
+    order: 400
+    condition: "laneParent === 'Content'"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 6: Constraints (order 900+) - ALWAYS LAST
+  # ─────────────────────────────────────────────────────────────────────
+  - id: constraints
+    path: spawn-prompt/constraints.md
+    required: true
+    order: 1000
+```
+
+## Next Steps
+
+- [Template Format](/reference/templates) - Template file structure
+- [Customizing Spawn Prompts](/guides/customizing-spawn-prompts) - Create custom templates
+- [CLI Reference](/reference/cli) - `wu:spawn` command options
