@@ -2,7 +2,7 @@ id: WU-1259
 title: Add methodology config schema and resolvePolicy() function
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -63,3 +63,5 @@ session_id: 9bca7100-82ab-427f-8e74-623def66123f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T19:22:11.418Z
+locked: true
+completed_at: 2026-01-30T19:36:17.572Z

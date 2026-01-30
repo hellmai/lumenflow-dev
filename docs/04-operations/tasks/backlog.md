@@ -51,7 +51,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1259 — Add methodology config schema and resolvePolicy() function](wu/WU-1259.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -280,3 +279,4 @@ sections:
 - [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml)
 - [WU-1258 — Document template system for wu:spawn prompt customization](wu/WU-1258.yaml)
 - [WU-1264 — Fix ai-integrations.mdx MDX syntax error](wu/WU-1264.yaml)
+- [WU-1259 — Add methodology config schema and resolvePolicy() function](wu/WU-1259.yaml)

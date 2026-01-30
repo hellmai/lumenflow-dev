@@ -457,4 +457,5 @@
 {"type":"complete","wuId":"WU-1258","timestamp":"2026-01-30T18:37:15.221Z"}
 {"type":"claim","wuId":"WU-1264","timestamp":"2026-01-30T18:43:21.016Z","lane":"Content: Documentation","title":"Fix ai-integrations.mdx MDX syntax error"}
 {"type":"complete","wuId":"WU-1264","timestamp":"2026-01-30T18:48:36.758Z"}
-{"type":"claim","wuId":"WU-1259","lane":"Framework: Core","title":"Add methodology config schema and resolvePolicy() function","timestamp":"2026-01-30T19:22:11.446Z"}
+{"type":"claim","wuId":"WU-1259","timestamp":"2026-01-30T19:22:11.446Z","lane":"Framework: Core","title":"Add methodology config schema and resolvePolicy() function"}
+{"type":"complete","wuId":"WU-1259","timestamp":"2026-01-30T19:36:19.198Z"}
