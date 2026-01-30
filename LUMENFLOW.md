@@ -236,6 +236,7 @@ If you're an AI agent, read the onboarding docs:
 2. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md) - First WU pitfalls
 3. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/agent-safety-card.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md) - Safety guardrails
 4. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) - Command reference
+5. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/test-ratchet.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/test-ratchet.md) - Test baseline ratchet pattern
 
 ---
 

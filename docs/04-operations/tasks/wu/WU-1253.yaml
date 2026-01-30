@@ -1,24 +1,37 @@
 id: WU-1253
-title: Implement test ratchet pattern with baseline comparison and agent guidance
+title: Extract hardcoded prompt templates to .lumenflow/templates/
 lane: 'Framework: Core'
 type: feature
 status: in_progress
-priority: P2
+priority: P1
 created: 2026-01-30
 code_paths:
-  - packages/@lumenflow/core/src/test-baseline.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
-  - .lumenflow/constraints.md
+  - packages/@lumenflow/core/src/template-loader.ts
+  - packages/@lumenflow/core/src/index.ts
+  - .lumenflow/templates/manifest.yaml
+  - .lumenflow/templates/spawn-prompt/
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/test-baseline.test.ts
+    - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1253.done
 dependencies: []
-risks: []
-notes: ''
+spec_refs:
+  - ~/.lumenflow/plans/methodology-templates.md
+risks:
+  - Large refactor touching wu-spawn.ts (1642 lines)
+notes: |
+  Foundation for INIT-009 (Methodology Configurability).
+  Reference plan: ~/.claude/plans/linear-moseying-comet.md
+
+  NOT in scope (deferred to INIT-009):
+  - methodology.* config schema
+  - resolvePolicy() function
+  - Methodology-specific templates (tdd-directive.md, test-after-directive.md)
+  - Gates integration with methodology
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,20 +40,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1210 changed implementation but didnt update corresponding test. Test
-  failed on main for days. WU-1239 fixed by updating test expectations but this is a TDD violation.
-  Problem: Gates dont distinguish pre-existing failures vs NEW failures you caused. Agents have TDD
-  guidance but no explicit ratchet rule. Solution: (1) Test baseline file tracking known failures,
-  (2) Gate modification to block NEW failures only, (3) Skip-gates debt tracking, (4) Agent guidance
-  in wu:spawn and constraints.md.'
+description: |
+  Context: wu-spawn.ts and init.ts have ~3000 lines of hardcoded markdown templates
+  as string literals. This makes content hard to maintain, review, and customize.
+
+  Problem: Templates mixed with code, no project-level overrides, massive files.
+
+  Solution: Extract templates to .lumenflow/templates/ with manifest.yaml for
+  assembly order. Design for extensibility so INIT-009 (Methodology Configurability)
+  can add methodology-specific templates later.
+
+  Template format: Markdown with YAML frontmatter (same as SKILL.md files).
 acceptance:
-  - test-baseline.json file format defined
-  - pnpm gates compares results against baseline
-  - NEW test failures block gate, pre-existing allowed with warning
-  - Baseline auto-updates when tests fixed (ratchet forward)
-  - wu:spawn TDD directive includes Test Ratchet Rule
-  - constraints.md has new constraint about test ratchet
-  - Agent onboarding doc test-ratchet.md created
+  - Template file structure created (.lumenflow/templates/spawn-prompt/)
+  - manifest.yaml defines section order and required/optional flags
+  - wu:spawn reads templates from files instead of hardcoded strings
+  - Client-specific overrides supported (.lumenflow/templates.claude/ etc)
+  - Extensible design supports conditional template inclusion
+  - Existing wu:spawn output unchanged (behavioral parity)
+  - Unit tests cover template loading and assembly
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1253
 claimed_at: 2026-01-30T14:26:32.346Z
