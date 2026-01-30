@@ -2,7 +2,7 @@ id: WU-1233
 title: Add EPIPE protection to CLI commands for pipe resilience
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -48,3 +48,5 @@ session_id: 0765b8d6-00a7-4a1f-8dfd-44cf422b446b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T12:10:10.565Z
+locked: true
+completed_at: 2026-01-30T12:19:39.477Z

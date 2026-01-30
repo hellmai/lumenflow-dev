@@ -35,6 +35,11 @@ sections:
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
 - [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
 - [WU-1232 — state:doctor --fix writes directly to main despite WU-1230 micro-worktree fix](wu/WU-1232.yaml) — Framework: CLI
+- [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — Framework: Memory
+- [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — Framework: Memory
+- [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
+- [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
+- [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -42,7 +47,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1233 — Add EPIPE protection to CLI commands for pipe resilience](wu/WU-1233.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -256,3 +260,4 @@ sections:
 - [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml)
 - [WU-1231 — Parallelize dependency validation in wu:spawn to reduce latency](wu/WU-1231.yaml)
 - [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml)
+- [WU-1233 — Add EPIPE protection to CLI commands for pipe resilience](wu/WU-1233.yaml)
