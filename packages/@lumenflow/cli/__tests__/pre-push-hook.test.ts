@@ -15,7 +15,9 @@ const hookPath = join(repoRoot, '.husky/hooks/pre-push.mjs');
 const STDIN_LINE =
   'refs/heads/main 0123456789abcdef0123456789abcdef01234567 refs/heads/main 0123456789abcdef0123456789abcdef01234567\n';
 
-function runHook(env = {}) {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type inferred from spawnSync
+function runHook(env: Record<string, string> = {}) {
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- test intentionally uses PATH to run node
   return spawnSync('node', [hookPath], {
     input: STDIN_LINE,
     encoding: 'utf8',
@@ -25,7 +27,9 @@ function runHook(env = {}) {
 
 describe('pre-push hook policy (WU-1030)', () => {
   it('blocks direct pushes to main by default', () => {
-    const result = runHook();
+    // Explicitly unset LUMENFLOW_WU_TOOL to ensure blocking behavior
+    // (parent process may have it set during wu:done)
+    const result = runHook({ LUMENFLOW_WU_TOOL: '' });
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('BLOCKED: Direct push to main');
   });
