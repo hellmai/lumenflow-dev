@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
+/* eslint-disable @typescript-eslint/explicit-function-return-type -- CLI tool uses dynamic YAML types */
 /**
  * Initiative Edit Helper
  *
