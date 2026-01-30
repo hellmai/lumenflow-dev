@@ -59,7 +59,7 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   id: {
     name: 'id',
     flags: '-i, --id <wuId>',
-    description: 'Work Unit ID (e.g., WU-123)',
+    description: 'Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.',
   },
   wu: {
     name: 'wu',

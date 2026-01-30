@@ -26,27 +26,27 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Work Unit Management
 
-| Command          | Description                                                                |
-| ---------------- | -------------------------------------------------------------------------- |
-| `wu-block`       | Block a work unit and move it from in-progress to blocked status           |
-| `wu-claim`       | Claim a work unit by creating a worktree/branch and updating status        |
-| `wu-cleanup`     | Clean up worktree and branch after PR merge (PR-based completion workflow) |
-| `wu-create`      | Create a new Work Unit with micro-worktree isolation (race-safe)           |
-| `wu-delete`      | Safely delete WU YAML files with micro-worktree isolation                  |
-| `wu-deps`        | Visualize WU dependency graph                                              |
-| `wu-done`        | Complete a WU (runs gates, merges, creates stamp)                          |
-| `wu-edit`        | Edit WU spec files with micro-worktree isolation                           |
-| `wu-infer-lane`  | Suggest sub-lane for a WU based on content                                 |
-| `wu-preflight`   | Fast validation of code paths and test paths before gates                  |
-| `wu-prune`       | Maintain worktree hygiene (prune stale worktrees, detect orphans)          |
-| `wu-recover`     | Analyze and fix WU state inconsistencies                                   |
-| `wu-release`     | Release an orphaned WU from in_progress back to ready state                |
-| `wu-repair`      | Unified WU repair tool - detect and fix WU state issues                    |
-| `wu-spawn`       | Generate Task tool invocation for sub-agent WU execution                   |
-| `wu-status`      | Show WU status, location, and valid commands                               |
-| `wu-unblock`     | Unblock a work unit and move it from blocked to in-progress status         |
-| `wu-unlock-lane` | Safely unlock a lane lock with audit logging                               |
-| `wu-validate`    | Validate WU YAML files against schema                                      |
+| Command          | Description                                                                                                 |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `wu-block`       | Block a work unit and move it from in-progress to blocked status                                            |
+| `wu-claim`       | Claim a work unit by creating a worktree/branch and updating status                                         |
+| `wu-cleanup`     | Clean up worktree and branch after PR merge (PR-based completion workflow)                                  |
+| `wu-create`      | Create a new Work Unit with micro-worktree isolation (race-safe). Auto-generates ID if `--id` not provided. |
+| `wu-delete`      | Safely delete WU YAML files with micro-worktree isolation                                                   |
+| `wu-deps`        | Visualize WU dependency graph                                                                               |
+| `wu-done`        | Complete a WU (runs gates, merges, creates stamp)                                                           |
+| `wu-edit`        | Edit WU spec files with micro-worktree isolation                                                            |
+| `wu-infer-lane`  | Suggest sub-lane for a WU based on content                                                                  |
+| `wu-preflight`   | Fast validation of code paths and test paths before gates                                                   |
+| `wu-prune`       | Maintain worktree hygiene (prune stale worktrees, detect orphans)                                           |
+| `wu-recover`     | Analyze and fix WU state inconsistencies                                                                    |
+| `wu-release`     | Release an orphaned WU from in_progress back to ready state                                                 |
+| `wu-repair`      | Unified WU repair tool - detect and fix WU state issues                                                     |
+| `wu-spawn`       | Generate Task tool invocation for sub-agent WU execution                                                    |
+| `wu-status`      | Show WU status, location, and valid commands                                                                |
+| `wu-unblock`     | Unblock a work unit and move it from blocked to in-progress status                                          |
+| `wu-unlock-lane` | Safely unlock a lane lock with audit logging                                                                |
+| `wu-validate`    | Validate WU YAML files against schema                                                                       |
 
 ### Memory & Session
 

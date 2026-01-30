@@ -76,7 +76,9 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
 4. **Create your first Work Unit**
 
    ```bash
-   npx wu-create --id WU-001 --title "Add login page" --lane "Experience: UI"
+   # ID is auto-generated if not provided
+   npx wu-create --title "Add login page" --lane "Experience: UI"
+   # Or with explicit ID: npx wu-create --id WU-001 --title "Add login page" --lane "Experience: UI"
    ```
 
    This creates a minimal WU. Edit the YAML file to add details:

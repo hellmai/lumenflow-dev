@@ -31,8 +31,8 @@ See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting
 # 1. Setup (first time only)
 pnpm setup
 
-# 2. Create a WU (default: creates spec/wu-xxxx branch, never writes to main)
-pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title" \
+# 2. Create a WU (--id is optional, auto-generates next sequential ID if omitted)
+pnpm wu:create --lane <Lane> --title "Title" \
   --description "..." --acceptance "..." --code-paths "..." \
   --test-paths-unit "..." --exposure backend-only \
   --spec-refs "lumenflow://plans/WU-XXXX-plan.md"
