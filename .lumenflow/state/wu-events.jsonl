@@ -435,3 +435,4 @@
 {"type":"complete","wuId":"WU-1243","timestamp":"2026-01-30T12:37:39.207Z"}
 {"type":"complete","wuId":"WU-1244","timestamp":"2026-01-30T12:38:51.315Z"}
 {"type":"complete","wuId":"WU-1245","timestamp":"2026-01-30T12:47:16.040Z"}
+{"type":"claim","wuId":"WU-1246","lane":"Framework: CLI","title":"Auto-generate WU IDs in wu:create when --id not provided","timestamp":"2026-01-30T12:54:33.225Z"}
