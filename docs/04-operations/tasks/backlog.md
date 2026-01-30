@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1260 — Create methodology and architecture template directories](wu/WU-1260.yaml) — Framework: Core
 - [WU-1259 — Add methodology config schema and resolvePolicy() function](wu/WU-1259.yaml) — Framework: Core
 - [WU-1258 — Document template system for wu:spawn prompt customization](wu/WU-1258.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
