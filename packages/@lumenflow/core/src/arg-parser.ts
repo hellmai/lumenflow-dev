@@ -492,24 +492,36 @@ const NEGATED_OPTIONS = ['auto', 'remove', 'merge', 'autoRebase', 'push'];
  * @param {object} opts - Commander parsed options
  * @returns {object} Processed options with noFoo properties
  */
-function processNegatedOptions(opts) {
-  const result = { ...opts };
+function processNegatedOptions(opts: Record<string, unknown>): Record<string, unknown> {
+  // Build a new object, excluding keys that need removal
+  // This avoids dynamic delete which violates @typescript-eslint/no-dynamic-delete
+  const keysToRemove = new Set<string>();
+  const keysToAdd: Record<string, boolean> = {};
 
   for (const key of NEGATED_OPTIONS) {
     // Commander sets the property to false when --no-foo is used
     // and undefined when not specified
-    if (key in result && result[key] === false) {
+    if (key in opts && opts[key] === false) {
       // Convert: auto=false → noAuto=true
       const camelKey = `no${key.charAt(0).toUpperCase()}${key.slice(1)}`;
-      result[camelKey] = true;
-      delete result[key];
-    } else if (key in result && result[key] === true) {
+      keysToAdd[camelKey] = true;
+      keysToRemove.add(key);
+    } else if (key in opts && opts[key] === true) {
       // Default value (not negated) - remove it
-      delete result[key];
+      keysToRemove.add(key);
     }
   }
 
-  return result;
+  // Build result by filtering out removed keys and adding new ones
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(opts)) {
+    if (!keysToRemove.has(key)) {
+      result[key] = value;
+    }
+  }
+
+  // Add the transformed keys
+  return { ...result, ...keysToAdd };
 }
 
 /**
