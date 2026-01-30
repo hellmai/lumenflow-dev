@@ -20,6 +20,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1237.done
 dependencies: []
+initiative: INIT-008
+phase: 1
 risks: []
 notes: ''
 requires_review: false
@@ -52,4 +54,3 @@ acceptance:
   - --dry-run shows what would be promoted without writing
   - Unit tests cover promotion logic and profile aggregation
   - Documentation updated in memory package README
-initiative: INIT-008
