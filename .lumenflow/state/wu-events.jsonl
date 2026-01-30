@@ -465,3 +465,4 @@
 {"type":"complete","wuId":"WU-1261","timestamp":"2026-01-30T20:06:28.705Z"}
 {"type":"claim","wuId":"WU-1262","timestamp":"2026-01-30T20:33:28.665Z","lane":"Framework: Core","title":"Integrate resolvePolicy() with gates enforcement"}
 {"type":"complete","wuId":"WU-1262","timestamp":"2026-01-30T20:47:03.648Z"}
+{"type":"claim","wuId":"WU-1263","lane":"Content: Documentation","title":"Document methodology configurability in public and internal docs","timestamp":"2026-01-30T20:54:39.704Z"}

@@ -39,7 +39,6 @@ sections:
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
-- [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml) — Content: Documentation
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
 
 ## 🔧 In progress
@@ -48,6 +47,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
