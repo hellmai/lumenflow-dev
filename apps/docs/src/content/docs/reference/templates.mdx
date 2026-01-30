@@ -1,0 +1,362 @@
+---
+title: Template Format
+description: Spawn prompt template format reference with YAML frontmatter
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Templates are markdown files with YAML frontmatter that define reusable prompt sections for `wu:spawn`. The template system enables customization of agent prompts without modifying core LumenFlow code.
+
+## Template Location
+
+Templates live in `.lumenflow/templates/spawn-prompt/`:
+
+```
+.lumenflow/
+  templates/
+    manifest.yaml          # Assembly order configuration
+    spawn-prompt/
+      tdd-directive.md     # Test-driven development guidance
+      documentation-directive.md
+      skills-selection.md
+      effort-scaling.md
+      constraints.md       # Always included last
+      lane-guidance/       # Lane-specific templates
+        operations.md
+        framework.md
+        content.md
+```
+
+## Template Structure
+
+Every template has two parts: YAML frontmatter and markdown content.
+
+### Minimal Template
+
+```markdown
+---
+id: my-template
+name: My Template
+required: false
+order: 100
+---
+
+## Template Content
+
+Your markdown content here.
+```
+
+### Complete Template
+
+```markdown
+---
+id: tdd-directive
+name: TDD Directive
+required: false
+order: 10
+tokens: [WU_ID, LANE]
+condition: "type !== 'documentation'"
+---
+
+## TDD Directive for {WU_ID}
+
+Working in lane: {LANE}
+
+Your markdown content with token placeholders...
+```
+
+## Frontmatter Fields
+
+| Field       | Type     | Required | Description                                          |
+| ----------- | -------- | -------- | ---------------------------------------------------- |
+| `id`        | string   | Yes      | Unique identifier matching manifest entry            |
+| `name`      | string   | Yes      | Human-readable name for debugging                    |
+| `required`  | boolean  | Yes      | If `true`, assembly fails when template is missing   |
+| `order`     | number   | Yes      | Assembly position (lower numbers appear first)       |
+| `tokens`    | string[] | No       | Token names used in this template                    |
+| `condition` | string   | No       | Expression that must be true for template inclusion  |
+
+### The `id` Field
+
+The `id` must match an entry in `manifest.yaml`. It's used to:
+
+- Look up the template during assembly
+- Apply client-specific overrides (matching by `id`)
+- Reference templates in error messages
+
+### The `order` Field
+
+Templates are sorted by `order` before assembly. Use these ranges:
+
+| Range     | Purpose                     | Examples                            |
+| --------- | --------------------------- | ----------------------------------- |
+| 10-50     | Type-specific directives    | `tdd-directive`, `docs-directive`   |
+| 50-100    | Skills and methodology      | `skills-selection`                  |
+| 100-200   | Agent guidance              | `effort-scaling`, `parallel-calls`  |
+| 200-300   | Operational guidance        | `bug-discovery`, `quick-fix`        |
+| 300-400   | Recovery and worktree       | `worktree-recovery`                 |
+| 400-500   | Lane-specific guidance      | `lane-guidance-operations`          |
+| 900+      | Constraints (always last)   | `constraints`                       |
+
+<Aside type="tip">
+  Leave gaps between order values (10, 20, 30) to allow inserting new templates later without
+  renumbering.
+</Aside>
+
+### The `required` Field
+
+When `required: true`:
+
+- Template **must** exist for assembly to succeed
+- Missing template throws an error with the expected path
+- Use for critical sections like constraints
+
+When `required: false`:
+
+- Template is optional
+- Missing template is silently skipped
+- Use for type-specific or conditional content
+
+### The `tokens` Field
+
+Lists token names that appear in the template content:
+
+```yaml
+tokens: [WU_ID, LANE, WORKTREE_PATH]
+```
+
+This field is informational (documents which tokens the template uses) but token replacement happens automatically for all known tokens regardless of this field.
+
+### The `condition` Field
+
+A JavaScript-like expression evaluated against the WU context. Template is included only when the condition evaluates to `true`.
+
+See [Condition Syntax](#condition-syntax) for details.
+
+## Token Replacement
+
+Tokens are placeholders in template content that get replaced with actual values during assembly.
+
+### Token Syntax
+
+Use curly braces with uppercase names:
+
+```markdown
+Working on {WU_ID} in lane {LANE}.
+Navigate to: {WORKTREE_PATH}
+```
+
+### Available Tokens
+
+| Token           | Description                        | Example Value                          |
+| --------------- | ---------------------------------- | -------------------------------------- |
+| `{WU_ID}`       | Work Unit identifier               | `WU-1253`                              |
+| `{LANE}`        | Full lane name                     | `Framework: Core`                      |
+| `{TYPE}`        | WU type                            | `feature`, `bug`, `documentation`      |
+| `{TITLE}`       | WU title                           | `Add template loader`                  |
+| `{DESCRIPTION}` | WU description                     | `Implement the template system...`     |
+| `{WORKTREE_PATH}` | Path to worktree (if claimed)    | `worktrees/framework-core-wu-1253`     |
+
+<Aside type="note">
+  Tokens that are `undefined` in the context remain as literal text (e.g., `{UNDEFINED_TOKEN}`).
+  Only tokens with values are replaced.
+</Aside>
+
+### Token Example
+
+**Template:**
+
+```markdown
+## Action
+
+Claim this WU before starting:
+
+\`\`\`bash
+pnpm wu:claim --id {WU_ID} --lane "{LANE}"
+cd {WORKTREE_PATH}
+\`\`\`
+```
+
+**Output (after replacement):**
+
+```markdown
+## Action
+
+Claim this WU before starting:
+
+\`\`\`bash
+pnpm wu:claim --id WU-1253 --lane "Framework: Core"
+cd worktrees/framework-core-wu-1253
+\`\`\`
+```
+
+## Condition Syntax
+
+Conditions control whether a template is included in the assembled prompt.
+
+### Supported Operators
+
+| Operator | Syntax                        | Description              |
+| -------- | ----------------------------- | ------------------------ |
+| Equality | `field === 'value'`           | Exact match              |
+| Inequality | `field !== 'value'`         | Not equal                |
+| Truthy   | `field`                       | Field exists and truthy  |
+| AND      | `expr1 && expr2`              | Both must be true        |
+| OR       | `expr1 \|\| expr2`            | Either can be true       |
+
+### Context Variables
+
+Conditions use lowercase aliases of token values:
+
+| Variable      | Maps To         | Example Values                    |
+| ------------- | --------------- | --------------------------------- |
+| `type`        | `{TYPE}`        | `feature`, `bug`, `documentation` |
+| `lane`        | `{LANE}`        | `Framework: Core`                 |
+| `wuId`        | `{WU_ID}`       | `WU-1253`                         |
+| `title`       | `{TITLE}`       | `Add template loader`             |
+| `description` | `{DESCRIPTION}` | Full description text             |
+| `worktreePath`| `{WORKTREE_PATH}` | Path or undefined               |
+| `laneParent`  | Extracted       | `Framework`, `Content`, `Operations` |
+
+### Condition Examples
+
+**Type-based inclusion:**
+
+```yaml
+# Include for features and bugs, exclude for docs
+condition: "type !== 'documentation'"
+
+# Include only for documentation WUs
+condition: "type === 'documentation' || type === 'docs'"
+```
+
+**Lane-based inclusion:**
+
+```yaml
+# Include only for Framework lanes
+condition: "laneParent === 'Framework'"
+
+# Include for Operations or Framework
+condition: "laneParent === 'Operations' || laneParent === 'Framework'"
+```
+
+**Truthy checks:**
+
+```yaml
+# Include only when worktree exists
+condition: "worktreePath"
+```
+
+**Combined conditions:**
+
+```yaml
+# Feature in Framework lane
+condition: "type === 'feature' && laneParent === 'Framework'"
+```
+
+<Aside type="caution">
+  Conditions with syntax errors pass by default (fail-open). Test your conditions thoroughly.
+</Aside>
+
+## Assembly Process
+
+When `wu:spawn` runs, templates are assembled in this order:
+
+1. **Load manifest** from `.lumenflow/templates/manifest.yaml`
+2. **Load templates** from `spawn-prompt/` directory
+3. **Apply client overrides** (e.g., `templates.claude/spawn-prompt/`)
+4. **Sort by order** field (ascending)
+5. **Evaluate conditions** for each template
+6. **Replace tokens** in included templates
+7. **Concatenate** with double newlines between sections
+
+### Override Resolution
+
+Client-specific templates take priority:
+
+```
+.lumenflow/
+  templates/
+    spawn-prompt/
+      skills-selection.md     # Base template (order 50)
+  templates.claude/
+    spawn-prompt/
+      skills-selection.md     # Claude override (same id, replaces base)
+  templates.cursor/
+    spawn-prompt/
+      skills-selection.md     # Cursor override (same id)
+```
+
+When running `wu:spawn --client claude`:
+1. Load base `skills-selection.md`
+2. Override with `templates.claude/spawn-prompt/skills-selection.md`
+3. Cursor template is ignored
+
+## Error Handling
+
+### Missing Required Template
+
+```
+Error: Required template 'constraints' is missing.
+Expected at: spawn-prompt/constraints.md
+```
+
+**Fix:** Create the template at the expected path or mark it `required: false` in the manifest.
+
+### Invalid Frontmatter
+
+```
+Error: Template spawn-prompt/my-template.md: 'id' field is required in frontmatter
+```
+
+**Fix:** Add the missing frontmatter field.
+
+### Manifest Validation
+
+```
+Error: manifest.yaml: Template entry 'my-template' is missing required fields: order
+```
+
+**Fix:** Add the missing field to the manifest entry.
+
+## Best Practices
+
+### Template Design
+
+- **One concern per template** - Keep templates focused
+- **Use conditions** - Avoid including irrelevant content
+- **Document tokens** - List tokens in frontmatter even though optional
+- **Leave order gaps** - Use increments of 10 for flexibility
+
+### Naming Conventions
+
+- **File names**: Lowercase with hyphens (`tdd-directive.md`)
+- **Template IDs**: Match file name without extension (`tdd-directive`)
+- **Subdirectories**: Use for related groups (`lane-guidance/`)
+
+### Ordering Guidelines
+
+```yaml
+# Type directives (mutually exclusive)
+- id: tdd-directive
+  order: 10
+  condition: "type !== 'documentation'"
+
+- id: documentation-directive
+  order: 10
+  condition: "type === 'documentation'"
+
+# Common sections (always included)
+- id: skills-selection
+  order: 50
+
+# Constraints (always last)
+- id: constraints
+  order: 1000
+```
+
+## Next Steps
+
+- [Manifest Schema](/reference/spawn-manifest) - Configure template assembly
+- [Customizing Spawn Prompts](/guides/customizing-spawn-prompts) - Create custom templates
+- [CLI Reference](/reference/cli) - `wu:spawn` command options
