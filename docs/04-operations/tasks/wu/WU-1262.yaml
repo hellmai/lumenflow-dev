@@ -13,6 +13,8 @@ tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/gates.test.ts
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1262.done
