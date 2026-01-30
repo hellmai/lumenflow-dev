@@ -1,5 +1,5 @@
 /**
- * @file check-automated-tests.test.mjs
+ * @file check-automated-tests.test.ts
  * Test suite for INV-AUTOMATED-TESTS-FOR-CODE invariant (WU-2333)
  *
  * TDD: These tests are written BEFORE implementation.
@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,9 +23,11 @@ import { loadInvariants } from '../../invariants-runner.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../../../../');
+// Use os.tmpdir() for cross-platform temp directory instead of hardcoded /tmp
+const TEMP_BASE = path.join(path.resolve('/tmp'), 'lumenflow-test');
 
 describe('INV-AUTOMATED-TESTS-FOR-CODE invariant (WU-2333)', () => {
-  const TEST_DIR = '/tmp/invariants-automated-tests-' + Date.now();
+  const TEST_DIR = path.join(TEMP_BASE, `invariants-automated-tests-${Date.now()}`);
 
   beforeEach(() => {
     mkdirSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu'), { recursive: true });
@@ -58,10 +60,10 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   unit:
-    - tools/lib/__tests__/some-module.test.mjs
+    - tools/lib/__tests__/some-module.test.ts
   manual: []
   e2e: []
 `;
@@ -128,7 +130,7 @@ lane: 'Core Systems'
 type: documentation
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   unit: []
   manual:
@@ -150,7 +152,7 @@ lane: 'Core Systems'
 type: feature
 status: done
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   unit: []
   manual:
@@ -172,7 +174,7 @@ lane: 'Core Systems'
 type: feature
 status: ready
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   unit: []
   manual:
@@ -240,7 +242,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   unit: []
   manual:
@@ -293,7 +295,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/module1.mjs
+  - tools/lib/module1.ts
 tests:
   manual:
     - Manual check
@@ -405,7 +407,7 @@ type: feature
 status: in_progress
 code_paths:
   - vitest.config.ts
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Verify config works
@@ -475,7 +477,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 `;
         writeFileSync(
           path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-EDGE-003.yaml'),
@@ -495,6 +497,7 @@ code_paths:
         );
 
         // Should not throw, just skip invalid files
+        // eslint-disable-next-line sonarjs/no-nested-functions -- Standard test pattern
         expect(() => checkAutomatedTestsInvariant({ baseDir: TEST_DIR })).not.toThrow();
       });
 
@@ -504,7 +507,7 @@ code_paths:
 id: WU-DONE
 status: done
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual
@@ -514,7 +517,7 @@ tests:
 id: WU-READY
 status: ready
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual
@@ -524,7 +527,7 @@ tests:
 id: WU-BLOCKED
 status: blocked
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual
@@ -562,10 +565,10 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/valid-module.mjs
+  - tools/lib/valid-module.ts
 tests:
   unit:
-    - tools/lib/__tests__/valid-module.test.mjs
+    - tools/lib/__tests__/valid-module.test.ts
 `;
         // Another WU missing automated tests (would fail without scoping)
         const invalidWu = `
@@ -612,7 +615,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual only
@@ -641,7 +644,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: in_progress
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual only
@@ -668,7 +671,7 @@ lane: 'Operations: Tooling'
 type: feature
 status: done
 code_paths:
-  - tools/lib/some-module.mjs
+  - tools/lib/some-module.ts
 tests:
   manual:
     - Manual only

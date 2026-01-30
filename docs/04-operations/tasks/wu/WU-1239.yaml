@@ -6,11 +6,14 @@ status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
-  - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts,packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts
+  - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
+  - packages/@lumenflow/core/vitest.config.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts,packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts
+    - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1239.done
