@@ -2,7 +2,7 @@ id: WU-1261
 title: Integrate resolvePolicy() with wu:spawn template assembly
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -54,3 +54,5 @@ session_id: c6db9096-cbf4-41c9-9eff-03426b74eee2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T19:53:56.695Z
+locked: true
+completed_at: 2026-01-30T20:06:27.046Z
