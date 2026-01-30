@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — Content: Documentation
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
 - [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
