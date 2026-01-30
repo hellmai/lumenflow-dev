@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1235.done
 dependencies: []
+initiative: INIT-008
+phase: 1
 risks: []
 notes: ''
 requires_review: false
@@ -50,4 +52,3 @@ acceptance:
   - --dry-run flag shows what would be indexed without writing
   - Unit tests verify source scanning and node creation
   - Documentation updated in memory package README
-initiative: INIT-008
