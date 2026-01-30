@@ -2,7 +2,7 @@ id: WU-1239
 title: 'BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,6 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Multiple pre-existing test failures on main blocking other WUs from completing. Problem: wu-spawn-progress-signals.test.ts expects 'Progress Signals (Optional)' but gets 'Required at Milestones'. check-automated-tests.test.ts has 7 failing tests related to scoped validation. Solution: Fix test assertions to match current implementation behavior."
+description: "Context: Multiple pre-existing test failures on main blocking other WUs from
+  completing. Problem: wu-spawn-progress-signals.test.ts expects 'Progress Signals (Optional)' but
+  gets 'Required at Milestones'. check-automated-tests.test.ts has 7 failing tests related to scoped
+  validation. Solution: Fix test assertions to match current implementation behavior."
 acceptance:
-  - wu-spawn-progress-signals.test.ts passes,check-automated-tests.test.ts passes,All core package tests pass
+  - wu-spawn-progress-signals.test.ts passes,check-automated-tests.test.ts passes,All core package
+    tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1239
+claimed_at: 2026-01-30T14:00:12.924Z
+baseline_main_sha: de34db28250a766b60fef81312e2439e3dd8a292
+session_id: 26880a64-e1da-4de0-9404-e6fd700513b4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T14:00:12.930Z
