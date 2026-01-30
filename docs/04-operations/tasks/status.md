@@ -9,6 +9,7 @@ _Last updated: 2026-01-30_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml)
+- [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml)
 
 ## Completed
 
