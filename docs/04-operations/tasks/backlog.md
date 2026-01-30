@@ -37,7 +37,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1231 — Parallelize dependency validation in wu:spawn to reduce latency](wu/WU-1231.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -249,3 +248,4 @@ sections:
 - [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml)
 - [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml)
 - [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml)
+- [WU-1231 — Parallelize dependency validation in wu:spawn to reduce latency](wu/WU-1231.yaml)

@@ -2,7 +2,7 @@ id: WU-1231
 title: Parallelize dependency validation in wu:spawn to reduce latency
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -40,3 +40,5 @@ session_id: 1dc8d83b-c34b-4b6c-8915-553a7b96838a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T10:25:40.153Z
+locked: true
+completed_at: 2026-01-30T10:29:22.211Z
