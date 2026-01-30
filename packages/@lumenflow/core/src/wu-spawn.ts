@@ -67,6 +67,8 @@ import {
   assembleTemplates,
   type TemplateContext,
 } from './template-loader.js';
+// WU-1261: Import ResolvedPolicy for policy-based template selection
+import type { ResolvedPolicy } from './resolve-policy.js';
 
 /**
  * Mandatory agent trigger patterns.
@@ -161,6 +163,31 @@ export function buildTemplateContext(doc: Record<string, unknown>, id: string): 
     type: ((doc.type as string) || 'feature').toLowerCase(),
     lane,
     worktreePath: (doc.worktree_path as string) || '',
+  };
+}
+
+/**
+ * WU-1261: Build template context with resolved policy fields.
+ *
+ * Extends buildTemplateContext() with policy.testing and policy.architecture
+ * fields for template condition evaluation.
+ *
+ * @param doc - WU YAML document
+ * @param id - WU ID
+ * @param policy - Resolved policy from resolvePolicy()
+ * @returns Context for template assembly with policy fields
+ */
+export function buildTemplateContextWithPolicy(
+  doc: Record<string, unknown>,
+  id: string,
+  policy: ResolvedPolicy,
+): TemplateContext & { 'policy.testing': string; 'policy.architecture': string } {
+  const baseContext = buildTemplateContext(doc, id);
+
+  return {
+    ...baseContext,
+    'policy.testing': policy.testing,
+    'policy.architecture': policy.architecture,
   };
 }
 
@@ -288,6 +315,224 @@ If gates fail due to test failures:
 - Ensures every feature has verification
 - Failing tests prove the test actually tests something
 - Ratchet pattern prevents being blocked by unrelated failures`;
+}
+
+/**
+ * WU-1261: Generate test guidance based on resolved policy
+ *
+ * Selects the appropriate test guidance based on policy.testing value:
+ * - 'tdd': Full TDD directive (failing test first)
+ * - 'test-after': Implementation first, then tests
+ * - 'none': Testing is optional
+ *
+ * Type overrides still apply (documentation WUs always get docs guidance).
+ *
+ * @param wuType - WU type from YAML (e.g., 'feature', 'documentation')
+ * @param policy - Resolved policy from resolvePolicy()
+ * @returns Test guidance section
+ */
+export function generatePolicyBasedTestGuidance(wuType: string, policy: ResolvedPolicy): string {
+  const type = (wuType || 'feature').toLowerCase();
+
+  // Type overrides take precedence (documentation never needs TDD)
+  if (DOCS_ONLY_TYPES.includes(type)) {
+    return `## Documentation Standards
+
+**Format check only** - No TDD required for documentation WUs.
+
+### Requirements
+
+1. Run \`pnpm gates --docs-only\` before completion
+2. Ensure markdown formatting is correct
+3. Verify links are valid
+4. Check spelling and grammar`;
+  }
+
+  // Visual/Design WUs - smoke tests + manual QA
+  if (SMOKE_TEST_TYPES.includes(type)) {
+    return `## Visual/Design Testing
+
+**Smoke test + manual QA** - Visual WUs require different verification.
+
+### Requirements
+
+1. Create smoke test for component rendering (if applicable)
+2. Verify visual appearance manually
+3. Test responsive behavior across breakpoints
+4. Check accessibility (keyboard navigation, screen reader)
+5. Document manual QA results in completion notes`;
+  }
+
+  // Refactor WUs - existing tests must pass
+  if (EXISTING_TESTS_TYPES.includes(type)) {
+    return `## Refactor Testing
+
+**Existing tests must pass** - Refactoring must not break current behavior.
+
+### Requirements
+
+1. Run all existing tests BEFORE refactoring
+2. Run all existing tests AFTER refactoring
+3. No new tests required unless behavior changes
+4. If tests fail after refactor, the refactor introduced a bug`;
+  }
+
+  // Policy-based selection for feature/bug/enhancement/tooling types
+  switch (policy.testing) {
+    case 'test-after':
+      return generateTestAfterDirective();
+    case 'none':
+      return generateTestingOptionalDirective();
+    case 'tdd':
+    default:
+      return generateTDDDirective();
+  }
+}
+
+/**
+ * WU-1261: Generate test-after directive
+ *
+ * @returns Test-after guidance section
+ */
+function generateTestAfterDirective(): string {
+  return `## Test-After Methodology
+
+**Write implementation first, then add tests** - Focus on solving the problem, then verify.
+
+### Test-After Workflow
+
+1. Understand the acceptance criteria
+2. Write implementation first
+3. Add tests to verify behavior
+4. Aim for ${70}% coverage on new code
+
+### When This Works
+
+- Exploratory prototyping where requirements are unclear
+- Quick iterations where test-first slows discovery
+- Projects configured with \`methodology.testing: 'test-after'\`
+
+### Requirements
+
+- Tests must be added before \`wu:done\`
+- Coverage target: 70%+ on new application code
+- All existing tests must still pass`;
+}
+
+/**
+ * WU-1261: Generate testing optional directive
+ *
+ * @returns Testing optional guidance section
+ */
+function generateTestingOptionalDirective(): string {
+  return `## Testing Optional
+
+**Tests are not required** - Project is configured without test requirements.
+
+### Focus
+
+- Code quality and functionality
+- Run \`pnpm gates\` before completion (will skip coverage checks)
+
+### If You Want to Add Tests
+
+You can still add tests for critical functionality:
+\`\`\`bash
+pnpm test -- --coverage
+\`\`\`
+
+But they are not required for WU completion.`;
+}
+
+/**
+ * WU-1261: Generate architecture guidance based on resolved policy
+ *
+ * Selects appropriate architecture guidance based on policy.architecture:
+ * - 'hexagonal': Ports and adapters, dependency inversion
+ * - 'layered': Traditional layer separation
+ * - 'none': No architecture constraints
+ *
+ * @param policy - Resolved policy from resolvePolicy()
+ * @returns Architecture guidance section, or empty string for 'none'
+ */
+export function generatePolicyBasedArchitectureGuidance(policy: ResolvedPolicy): string {
+  switch (policy.architecture) {
+    case 'hexagonal':
+      return `## Hexagonal Architecture
+
+**Ports and Adapters** - Keep domain logic pure, infrastructure at the edges.
+
+### Key Principles
+
+- **Ports**: Interfaces defining what the domain needs (inbound) or uses (outbound)
+- **Adapters**: Implementations connecting ports to infrastructure
+- **Domain**: Pure business logic with no infrastructure imports
+- **Dependency Rule**: Domain -> Ports <- Adapters (never domain -> adapters)
+
+### Directory Structure
+
+\`\`\`
+src/
+  domain/           # Pure business logic
+  ports/            # Interfaces
+  adapters/         # Infrastructure implementations
+  application/      # Use cases orchestrating domain + ports
+\`\`\``;
+
+    case 'layered':
+      return `## Layered Architecture
+
+**Traditional layer separation** - Clear boundaries between concerns.
+
+### Layers (Top to Bottom)
+
+1. **Presentation**: UI, API controllers, CLI
+2. **Application**: Use cases, orchestration
+3. **Domain**: Business logic, entities
+4. **Infrastructure**: Database, external services
+
+### Dependency Rule
+
+- Each layer can only depend on layers below it
+- Presentation -> Application -> Domain -> Infrastructure
+- Never skip layers (Presentation should not directly use Infrastructure)`;
+
+    case 'none':
+    default:
+      return '';
+  }
+}
+
+/**
+ * WU-1261: Generate enforcement summary from resolved policy
+ *
+ * Creates a "You will be judged by" section that summarizes the active
+ * enforcement rules based on the resolved policy.
+ *
+ * @param policy - Resolved policy from resolvePolicy()
+ * @returns Enforcement summary section
+ */
+export function generateEnforcementSummary(policy: ResolvedPolicy): string {
+  const lines: string[] = ['## You will be judged by', ''];
+
+  // Testing methodology
+  const testingStatus = policy.tests_required ? 'required' : 'optional';
+  lines.push(`- **Testing**: ${policy.testing} (tests ${testingStatus})`);
+
+  // Coverage
+  if (policy.coverage_mode === 'off') {
+    lines.push('- **Coverage**: disabled');
+  } else {
+    const modeLabel = policy.coverage_mode === 'block' ? 'blocking' : 'warn only';
+    lines.push(`- **Coverage**: ${policy.coverage_threshold}% (${modeLabel})`);
+  }
+
+  // Architecture
+  if (policy.architecture !== 'none') {
+    lines.push(`- **Architecture**: ${policy.architecture}`);
+  }
+
+  return lines.join('\n');
 }
 
 /**

@@ -23,6 +23,10 @@ import { SpawnStrategyFactory } from '../spawn-strategy.js';
 // Constants for repeated test values (sonarjs/no-duplicate-string)
 const TEST_SPAWN_CLIENT = 'claude-code';
 const TEST_WORKTREE_PATH = '/path/to/worktree';
+const TEST_LANE = 'Framework: Core';
+const TEST_TYPE_FEATURE = 'feature';
+const TEST_METHODOLOGY_TEST_AFTER = 'test-after';
+const TEST_TDD_DIRECTIVE = 'TDD DIRECTIVE';
 
 describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
   describe('AC1: Prompt template content lives in @lumenflow/core only', () => {
@@ -51,8 +55,8 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
   describe('AC3: orchestrate:initiative output matches wu:spawn output', () => {
     const mockWUDoc = {
       title: 'Test WU',
-      lane: 'Framework: Core',
-      type: 'feature',
+      lane: TEST_LANE,
+      type: TEST_TYPE_FEATURE,
       status: 'ready',
       description: 'Test description',
       acceptance: ['AC1', 'AC2'],
@@ -84,8 +88,8 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
 
   describe('generateTestGuidance type-aware output', () => {
     it('should return TDD directive for feature type', () => {
-      const guidance = generateTestGuidance('feature');
-      expect(guidance).toContain('TDD DIRECTIVE');
+      const guidance = generateTestGuidance(TEST_TYPE_FEATURE);
+      expect(guidance).toContain(TEST_TDD_DIRECTIVE);
       expect(guidance).toContain('FAILING TEST');
     });
 
@@ -102,7 +106,7 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
     });
 
     it('should include Test Ratchet Rule (WU-1253) in TDD directive', () => {
-      const guidance = generateTestGuidance('feature');
+      const guidance = generateTestGuidance(TEST_TYPE_FEATURE);
       expect(guidance).toContain('Test Ratchet Rule');
       expect(guidance).toContain('WU-1253');
       expect(guidance).toContain('.lumenflow/test-baseline.json');
@@ -123,6 +127,207 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
       const section = generateWorktreeBlockRecoverySection(TEST_WORKTREE_PATH);
       expect(section).toContain('git worktree list');
       expect(section).toContain('Quick Fix');
+    });
+  });
+});
+
+/**
+ * WU-1261: Tests for integrating resolvePolicy() with wu:spawn template assembly
+ *
+ * Acceptance Criteria:
+ * 1. wu:spawn calls resolvePolicy() to determine template selection
+ * 2. Methodology template selected based on policy.testing value
+ * 3. Architecture template selected based on policy.architecture value
+ * 4. Spawn prompt includes generated enforcement summary from resolved policy
+ * 5. Existing spawn output unchanged when using default methodology (tdd, hexagonal)
+ */
+import {
+  generatePolicyBasedTestGuidance,
+  generatePolicyBasedArchitectureGuidance,
+  generateEnforcementSummary,
+  buildTemplateContextWithPolicy,
+} from '../wu-spawn.js';
+import { resolvePolicy } from '../resolve-policy.js';
+import { parseConfig } from '../lumenflow-config-schema.js';
+
+describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', () => {
+  describe('AC1: wu:spawn calls resolvePolicy() to determine template selection', () => {
+    it('should export generatePolicyBasedTestGuidance function', () => {
+      expect(generatePolicyBasedTestGuidance).toBeDefined();
+      expect(typeof generatePolicyBasedTestGuidance).toBe('function');
+    });
+
+    it('should export buildTemplateContextWithPolicy function', () => {
+      expect(buildTemplateContextWithPolicy).toBeDefined();
+      expect(typeof buildTemplateContextWithPolicy).toBe('function');
+    });
+
+    it('should build template context with policy.testing and policy.architecture', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: TEST_METHODOLOGY_TEST_AFTER,
+          architecture: 'layered',
+        },
+      });
+      const doc = { lane: TEST_LANE, type: 'feature' };
+      const policy = resolvePolicy(config);
+      const context = buildTemplateContextWithPolicy(doc, 'WU-TEST', policy);
+
+      expect(context['policy.testing']).toBe(TEST_METHODOLOGY_TEST_AFTER);
+      expect(context['policy.architecture']).toBe('layered');
+    });
+  });
+
+  describe('AC2: Methodology template selected based on policy.testing value', () => {
+    it('should return TDD directive when policy.testing is "tdd"', () => {
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
+
+      expect(guidance).toContain(TEST_TDD_DIRECTIVE);
+      expect(guidance).toContain('FAILING TEST');
+    });
+
+    it('should return test-after directive when policy.testing is "test-after"', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
+
+      expect(guidance).toContain('Test-After');
+      expect(guidance).not.toContain(TEST_TDD_DIRECTIVE);
+      expect(guidance).toContain('implementation first');
+    });
+
+    it('should return minimal guidance when policy.testing is "none"', () => {
+      const config = parseConfig({ methodology: { testing: 'none' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
+
+      expect(guidance).not.toContain(TEST_TDD_DIRECTIVE);
+      expect(guidance).not.toContain('Test-After');
+      expect(guidance).toContain('Testing Optional');
+    });
+
+    it('should still respect type overrides (documentation) regardless of policy', () => {
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedTestGuidance('documentation', policy);
+
+      expect(guidance).toContain('Documentation Standards');
+      expect(guidance).not.toContain(TEST_TDD_DIRECTIVE);
+    });
+  });
+
+  describe('AC3: Architecture template selected based on policy.architecture value', () => {
+    it('should export generatePolicyBasedArchitectureGuidance function', () => {
+      expect(generatePolicyBasedArchitectureGuidance).toBeDefined();
+      expect(typeof generatePolicyBasedArchitectureGuidance).toBe('function');
+    });
+
+    it('should return hexagonal guidance when policy.architecture is "hexagonal"', () => {
+      const config = parseConfig({ methodology: { architecture: 'hexagonal' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedArchitectureGuidance(policy);
+
+      expect(guidance).toContain('Hexagonal Architecture');
+      expect(guidance).toContain('Ports');
+    });
+
+    it('should return layered guidance when policy.architecture is "layered"', () => {
+      const config = parseConfig({ methodology: { architecture: 'layered' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedArchitectureGuidance(policy);
+
+      expect(guidance).toContain('Layered Architecture');
+      expect(guidance).not.toContain('Hexagonal');
+    });
+
+    it('should return empty string when policy.architecture is "none"', () => {
+      const config = parseConfig({ methodology: { architecture: 'none' } });
+      const policy = resolvePolicy(config);
+      const guidance = generatePolicyBasedArchitectureGuidance(policy);
+
+      expect(guidance).toBe('');
+    });
+  });
+
+  describe('AC4: Spawn prompt includes generated enforcement summary from resolved policy', () => {
+    it('should export generateEnforcementSummary function', () => {
+      expect(generateEnforcementSummary).toBeDefined();
+      expect(typeof generateEnforcementSummary).toBe('function');
+    });
+
+    it('should include coverage threshold from policy', () => {
+      const config = parseConfig({
+        methodology: { testing: 'tdd' },
+      });
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('90%');
+      expect(summary).toContain('Coverage');
+    });
+
+    it('should include coverage mode from policy', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: TEST_METHODOLOGY_TEST_AFTER,
+          overrides: { coverage_mode: 'warn' },
+        },
+      });
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('warn');
+    });
+
+    it('should show tests_required status', () => {
+      const config = parseConfig({ methodology: { testing: 'none' } });
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('optional');
+    });
+
+    it('should include "You will be judged by" section header', () => {
+      const config = parseConfig({});
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('You will be judged by');
+    });
+  });
+
+  describe('AC5: Existing spawn output unchanged when using default methodology', () => {
+    const mockWUDoc = {
+      title: 'Test WU',
+      lane: TEST_LANE,
+      type: TEST_TYPE_FEATURE,
+      status: 'ready',
+      description: 'Test description',
+      acceptance: ['AC1', 'AC2'],
+      code_paths: ['packages/@lumenflow/core/src/test.ts'],
+    };
+
+    it('should include TDD directive by default', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      expect(output).toContain(TEST_TDD_DIRECTIVE);
+    });
+
+    it('should include Hexagonal Architecture in mandatory standards by default', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      expect(output).toContain('Hexagonal Architecture');
+    });
+
+    it('should include 90% coverage reference by default', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      expect(output).toContain('90%');
     });
   });
 });
