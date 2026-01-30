@@ -9,6 +9,15 @@ status: draft
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-30
-phases: []
+phases:
+  - id: 1
+    title: Foundation (Wave 1 - Parallel)
+    status: pending
+  - id: 2
+    title: Integration (Wave 2 - After Dependencies)
+    status: pending
+  - id: 3
+    title: Intelligence (Wave 3 - Final)
+    status: pending
 success_metrics: []
 labels: []
