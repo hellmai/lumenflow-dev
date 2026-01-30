@@ -31,6 +31,8 @@ cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXX
 ```
 
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md]({{QUICK_REF_PATH}})
+
 ---
 
 ## Workflow Summary

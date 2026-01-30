@@ -25,6 +25,8 @@ pnpm wu:prep --id WU-XXXX
 cd /home/tom/source/hellmai/os && pnpm wu:done --id WU-XXXX
 ```
 
+> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+
 ---
 
 ## Critical: Use wu:prep Then wu:done (WU-1223)
