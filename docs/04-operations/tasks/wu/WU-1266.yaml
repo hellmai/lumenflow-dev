@@ -2,7 +2,7 @@ id: WU-1266
 title: 'E2E test: methodology config → spawn → gates flow'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Create end-to-end test that validates the full methodology configurability flow: config file → resolvePolicy() → wu:spawn template selection → gates enforcement. Test all three modes (tdd, test-after, none) with expected behaviors.'
+description: 'Create end-to-end test that validates the full methodology configurability flow:
+  config file → resolvePolicy() → wu:spawn template selection → gates enforcement. Test all three
+  modes (tdd, test-after, none) with expected behaviors.'
 acceptance:
   - E2E test covers tdd methodology with 90% coverage enforcement
   - E2E test covers test-after methodology with 70% coverage warning
   - E2E test covers none methodology with no coverage check
   - Tests run in CI and block on failure
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1266
+claimed_at: 2026-01-30T23:34:44.794Z
+baseline_main_sha: 97564e892ae1457b1e986ebb6951ece562ee0c89
+session_id: ed1b6cc8-c42a-4b65-9857-84939f4f143d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T23:34:44.797Z
