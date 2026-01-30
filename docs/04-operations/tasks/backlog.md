@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml) — Framework: Core
 - [WU-1260 — Create methodology and architecture template directories](wu/WU-1260.yaml) — Framework: Core
 - [WU-1259 — Add methodology config schema and resolvePolicy() function](wu/WU-1259.yaml) — Framework: Core
 - [WU-1258 — Document template system for wu:spawn prompt customization](wu/WU-1258.yaml) — Content: Documentation
