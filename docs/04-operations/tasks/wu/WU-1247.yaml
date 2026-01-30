@@ -1,0 +1,39 @@
+id: WU-1247
+title: Add gates docs-check for CLI/API changes requiring documentation
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - packages/@lumenflow/cli/src/gates/docs-check.ts
+  - packages/@lumenflow/cli/src/gates.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/gates-docs-check.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1247.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: When CLI commands or public APIs change, documentation often lags behind. Agents complete WUs without updating Starlight docs, npm READMEs, or agent instructions. Problem: Doc drift accumulates - users see outdated docs that don't match actual CLI behavior. Solution: Add a docs-check gate that triggers ONLY when changes require documentation updates. Detection rules: (1) New CLI command file added -> require Starlight CLI reference entry, (2) CLI command signature changed (new flags, removed flags) -> require --help and Starlight update, (3) New public export in package index.ts -> require npm README update, (4) Workflow behavior change in core -> require LUMENFLOW.md/CLAUDE.md update. Gate outputs specific missing docs with file paths. Does NOT trigger for: internal refactors, test-only changes, bug fixes that don't change interfaces, documentation-only WUs."
+acceptance:
+  - Gate detects new CLI command files and requires Starlight entry
+  - Gate detects CLI flag changes via AST diff and requires docs update
+  - Gate detects new public exports and requires README update
+  - Gate does NOT trigger for internal refactors or test-only changes
+  - Gate outputs specific file paths that need updating
+  - 'Configurable in .lumenflow.config.yaml (docs_check: true/false)'
+  - Can be skipped with --skip-docs-check for legitimate exceptions
+  - Unit tests cover detection rules
+  - Integration test verifies gate catches missing docs
