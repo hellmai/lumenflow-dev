@@ -55,3 +55,4 @@ acceptance:
   - Unit tests cover scoring algorithm, access tracking, and archival
   - Integration test verifies decay affects mem:context ranking
   - Documentation updated in memory package README
+initiative: INIT-008
