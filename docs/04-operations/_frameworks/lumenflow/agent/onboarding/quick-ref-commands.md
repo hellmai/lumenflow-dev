@@ -8,20 +8,20 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ## Setup & Development
 
-| Command               | Description                             |
-| --------------------- | --------------------------------------- |
-| `pnpm setup`          | Install deps and build CLI (first time) |
-| `pnpm build`          | Build all packages                      |
-| `pnpm build:dist`     | Build distribution packages             |
-| `pnpm dev`            | Start development mode                  |
-| `pnpm clean`          | Clean build artifacts and caches        |
-| `pnpm pack:all`       | Pack all packages for distribution      |
-| `pnpm lumenflow:init` | Scaffold LumenFlow in a project         |
-| `pnpm docs:sync`        | Sync agent docs (for upgrades)          |
-| `pnpm sync:templates`   | Sync templates to project               |
-| `pnpm lumenflow:upgrade`| Upgrade LumenFlow packages              |
-| `pnpm lumenflow:doctor` | Diagnose LumenFlow configuration        |
-| `pnpm init:plan`        | Initialize planning workspace           |
+| Command                  | Description                             |
+| ------------------------ | --------------------------------------- |
+| `pnpm setup`             | Install deps and build CLI (first time) |
+| `pnpm build`             | Build all packages                      |
+| `pnpm build:dist`        | Build distribution packages             |
+| `pnpm dev`               | Start development mode                  |
+| `pnpm clean`             | Clean build artifacts and caches        |
+| `pnpm pack:all`          | Pack all packages for distribution      |
+| `pnpm lumenflow:init`    | Scaffold LumenFlow in a project         |
+| `pnpm docs:sync`         | Sync agent docs (for upgrades)          |
+| `pnpm sync:templates`    | Sync templates to project               |
+| `pnpm lumenflow:upgrade` | Upgrade LumenFlow packages              |
+| `pnpm lumenflow:doctor`  | Diagnose LumenFlow configuration        |
+| `pnpm init:plan`         | Initialize planning workspace           |
 
 ---
 
@@ -59,18 +59,18 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ## Gates & Quality
 
-| Command                  | Description                      |
-| ------------------------ | -------------------------------- |
-| `pnpm gates`             | Run all quality gates            |
-| `pnpm gates --docs-only` | Run gates for docs changes       |
-| `pnpm format`            | Format all files (Prettier)      |
-| `pnpm format:check`      | Check formatting without changes |
-| `pnpm lint`              | Run ESLint                       |
-| `pnpm typecheck`         | Run TypeScript type checking     |
-| `pnpm test`              | Run all tests (Vitest)           |
-| `pnpm spec:linter`       | Validate WU specs (all)          |
-| `pnpm lane:health`                | Check lane config health            |
-| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths         |
+| Command                           | Description                      |
+| --------------------------------- | -------------------------------- |
+| `pnpm gates`                      | Run all quality gates            |
+| `pnpm gates --docs-only`          | Run gates for docs changes       |
+| `pnpm format`                     | Format all files (Prettier)      |
+| `pnpm format:check`               | Check formatting without changes |
+| `pnpm lint`                       | Run ESLint                       |
+| `pnpm typecheck`                  | Run TypeScript type checking     |
+| `pnpm test`                       | Run all tests (Vitest)           |
+| `pnpm spec:linter`                | Validate WU specs (all)          |
+| `pnpm lane:health`                | Check lane config health         |
+| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths      |
 
 ---
 
@@ -94,22 +94,22 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ## State Management
 
-| Command               | Description                 |
-| --------------------- | --------------------------- |
-| `pnpm state:doctor`   | Diagnose state store issues |
-| `pnpm state:cleanup`  | Clean up stale state data   |
-| `pnpm signal:cleanup` | Clean up stale signals      |
-| `pnpm state:bootstrap`| Bootstrap state store       |
-| `pnpm backlog:prune`  | Clean stale backlog entries |
+| Command                | Description                 |
+| ---------------------- | --------------------------- |
+| `pnpm state:doctor`    | Diagnose state store issues |
+| `pnpm state:cleanup`   | Clean up stale state data   |
+| `pnpm signal:cleanup`  | Clean up stale signals      |
+| `pnpm state:bootstrap` | Bootstrap state store       |
+| `pnpm backlog:prune`   | Clean stale backlog entries |
 
 ---
 
 ## Dependencies
 
-| Command                          | Description                    |
-| -------------------------------- | ------------------------------ |
-| `pnpm deps:add --pkg <name>`     | Add dependency to package      |
-| `pnpm deps:remove --pkg <name>`  | Remove dependency from package |
+| Command                         | Description                    |
+| ------------------------------- | ------------------------------ |
+| `pnpm deps:add --pkg <name>`    | Add dependency to package      |
+| `pnpm deps:remove --pkg <name>` | Remove dependency from package |
 
 ---
 
