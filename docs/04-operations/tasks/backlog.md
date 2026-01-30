@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -39,6 +38,7 @@ sections:
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 - [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
+- [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -46,7 +46,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — Operations: CI/CD
 
 ## ⛔ Blocked
 
@@ -263,3 +262,4 @@ sections:
 - [WU-1233 — Add EPIPE protection to CLI commands for pipe resilience](wu/WU-1233.yaml)
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml)
 - [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml)
+- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml)
