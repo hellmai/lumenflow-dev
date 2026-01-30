@@ -20,11 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml) — Framework: Metrics
-- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
-- [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — Content: Documentation
-- [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
-- [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -45,6 +40,10 @@ sections:
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
+- [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
+- [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — Content: Documentation
+- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
+- [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml) — Framework: Metrics
 
 ## 🔧 In progress
 
@@ -52,6 +51,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

@@ -467,3 +467,4 @@
 {"type":"complete","wuId":"WU-1262","timestamp":"2026-01-30T20:47:03.648Z"}
 {"type":"claim","wuId":"WU-1263","timestamp":"2026-01-30T20:54:39.704Z","lane":"Content: Documentation","title":"Document methodology configurability in public and internal docs"}
 {"type":"complete","wuId":"WU-1263","timestamp":"2026-01-30T21:00:54.442Z"}
+{"type":"claim","wuId":"WU-1266","lane":"Framework: Core","title":"E2E test: methodology config → spawn → gates flow","timestamp":"2026-01-30T23:34:44.808Z"}
