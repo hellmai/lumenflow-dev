@@ -82,33 +82,34 @@ templates:
 
 ### Root Fields
 
-| Field       | Type   | Required | Description                          |
-| ----------- | ------ | -------- | ------------------------------------ |
-| `version`   | string | Yes      | Manifest schema version              |
-| `defaults`  | object | No       | Default settings for processing      |
-| `templates` | array  | Yes      | List of template entries             |
+| Field       | Type   | Required | Description                     |
+| ----------- | ------ | -------- | ------------------------------- |
+| `version`   | string | Yes      | Manifest schema version         |
+| `defaults`  | object | No       | Default settings for processing |
+| `templates` | array  | Yes      | List of template entries        |
 
 ### defaults Object
 
-| Field         | Type   | Default     | Description                     |
-| ------------- | ------ | ----------- | ------------------------------- |
-| `tokenFormat` | string | `{TOKEN}`   | Token placeholder format        |
+| Field         | Type   | Default   | Description              |
+| ------------- | ------ | --------- | ------------------------ |
+| `tokenFormat` | string | `{TOKEN}` | Token placeholder format |
 
 <Aside type="note">
-  The `tokenFormat` field is reserved for future use. Currently, all tokens use the `{TOKEN}` format.
+  The `tokenFormat` field is reserved for future use. Currently, all tokens use the `{TOKEN}`
+  format.
 </Aside>
 
 ### Template Entry
 
 Each entry in the `templates` array:
 
-| Field       | Type    | Required | Description                                      |
-| ----------- | ------- | -------- | ------------------------------------------------ |
-| `id`        | string  | Yes      | Unique identifier matching template frontmatter  |
-| `path`      | string  | Yes      | Relative path from `.lumenflow/templates/`       |
-| `required`  | boolean | Yes      | Whether template must exist                      |
-| `order`     | number  | Yes      | Sort position (ascending)                        |
-| `condition` | string  | No       | Inclusion condition expression                   |
+| Field       | Type    | Required | Description                                     |
+| ----------- | ------- | -------- | ----------------------------------------------- |
+| `id`        | string  | Yes      | Unique identifier matching template frontmatter |
+| `path`      | string  | Yes      | Relative path from `.lumenflow/templates/`      |
+| `required`  | boolean | Yes      | Whether template must exist                     |
+| `order`     | number  | Yes      | Sort position (ascending)                       |
+| `condition` | string  | No       | Inclusion condition expression                  |
 
 ## Field Details
 
@@ -127,7 +128,7 @@ Future versions may add new fields or change behavior.
 A unique identifier for the template. Must match the `id` field in the template's YAML frontmatter.
 
 ```yaml
-- id: tdd-directive        # Matches template frontmatter id
+- id: tdd-directive # Matches template frontmatter id
   path: spawn-prompt/tdd-directive.md
 ```
 
@@ -186,22 +187,22 @@ Numeric value controlling assembly sequence. Lower values appear first in the ou
 ```yaml
 templates:
   - id: tdd-directive
-    order: 10           # Appears first
+    order: 10 # Appears first
   - id: constraints
-    order: 1000         # Appears last
+    order: 1000 # Appears last
 ```
 
 **Recommended ranges:**
 
-| Range   | Purpose                    |
-| ------- | -------------------------- |
-| 10-50   | Type-specific directives   |
-| 50-100  | Skills and methodology     |
-| 100-200 | Agent guidance             |
-| 200-300 | Operational guidance       |
-| 300-400 | Recovery and worktree      |
-| 400-500 | Lane-specific guidance     |
-| 900+    | Constraints (always last)  |
+| Range   | Purpose                   |
+| ------- | ------------------------- |
+| 10-50   | Type-specific directives  |
+| 50-100  | Skills and methodology    |
+| 100-200 | Agent guidance            |
+| 200-300 | Operational guidance      |
+| 300-400 | Recovery and worktree     |
+| 400-500 | Lane-specific guidance    |
+| 900+    | Constraints (always last) |
 
 **Equal order values:**
 
@@ -224,25 +225,25 @@ Optional JavaScript-like expression controlling template inclusion.
 
 **Syntax:**
 
-| Operator   | Example                        |
-| ---------- | ------------------------------ |
-| Equality   | `type === 'feature'`           |
-| Inequality | `type !== 'documentation'`     |
-| Truthy     | `worktreePath`                 |
+| Operator   | Example                                   |
+| ---------- | ----------------------------------------- |
+| Equality   | `type === 'feature'`                      |
+| Inequality | `type !== 'documentation'`                |
+| Truthy     | `worktreePath`                            |
 | AND        | `type === 'bug' && laneParent === 'Core'` |
-| OR         | `type === 'feature' \|\| type === 'bug'` |
+| OR         | `type === 'feature' \|\| type === 'bug'`  |
 
 **Available variables:**
 
-| Variable      | Description                              |
-| ------------- | ---------------------------------------- |
-| `type`        | WU type (feature, bug, documentation)    |
-| `lane`        | Full lane name                           |
-| `laneParent`  | Parent lane (Framework, Content, etc.)   |
-| `wuId`        | Work Unit ID                             |
-| `worktreePath`| Worktree path (truthy if claimed)        |
-| `title`       | WU title                                 |
-| `description` | WU description                           |
+| Variable       | Description                            |
+| -------------- | -------------------------------------- |
+| `type`         | WU type (feature, bug, documentation)  |
+| `lane`         | Full lane name                         |
+| `laneParent`   | Parent lane (Framework, Content, etc.) |
+| `wuId`         | Work Unit ID                           |
+| `worktreePath` | Worktree path (truthy if claimed)      |
+| `title`        | WU title                               |
+| `description`  | WU description                         |
 
 **Examples:**
 
@@ -425,7 +426,7 @@ templates:
     path: spawn-prompt/worktree-recovery.md
     required: false
     order: 300
-    condition: "worktreePath"
+    condition: 'worktreePath'
 
   # ─────────────────────────────────────────────────────────────────────
   # Phase 5: Lane-specific guidance (order 400-500)

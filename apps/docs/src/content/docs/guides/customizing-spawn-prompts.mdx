@@ -133,6 +133,7 @@ Different AI tools have different capabilities. Override templates to provide to
 
     View available skills: `ls .claude/skills/`
     ```
+
   </TabItem>
   <TabItem label="Cursor">
     ```markdown
@@ -159,17 +160,18 @@ Different AI tools have different capabilities. Override templates to provide to
 
     View available rules: check `.cursor/rules/`
     ```
+
   </TabItem>
 </Tabs>
 
 ### Supported Clients
 
-| Client      | Override Directory        | Used When                    |
-| ----------- | ------------------------- | ---------------------------- |
-| `claude`    | `templates.claude/`       | `--client claude-code`       |
-| `cursor`    | `templates.cursor/`       | `--client cursor`            |
-| `windsurf`  | `templates.windsurf/`     | `--client windsurf`          |
-| `codex`     | `templates.codex/`        | `--client codex`             |
+| Client     | Override Directory    | Used When              |
+| ---------- | --------------------- | ---------------------- |
+| `claude`   | `templates.claude/`   | `--client claude-code` |
+| `cursor`   | `templates.cursor/`   | `--client cursor`      |
+| `windsurf` | `templates.windsurf/` | `--client windsurf`    |
+| `codex`    | `templates.codex/`    | `--client codex`       |
 
 <Aside type="tip">
   You don't need to create overrides for every template. Only override templates where client
@@ -403,14 +405,14 @@ condition: "type === 'documentation' || type === 'docs'"
 
 Use tokens to include WU-specific information:
 
-| Token             | Usage                              |
-| ----------------- | ---------------------------------- |
-| `{WU_ID}`         | Reference the current WU           |
-| `{LANE}`          | Show lane context                  |
-| `{TYPE}`          | Conditional text based on type     |
-| `{WORKTREE_PATH}` | Include worktree navigation        |
-| `{TITLE}`         | Show WU title in headings          |
-| `{DESCRIPTION}`   | Include full WU description        |
+| Token             | Usage                          |
+| ----------------- | ------------------------------ |
+| `{WU_ID}`         | Reference the current WU       |
+| `{LANE}`          | Show lane context              |
+| `{TYPE}`          | Conditional text based on type |
+| `{WORKTREE_PATH}` | Include worktree navigation    |
+| `{TITLE}`         | Show WU title in headings      |
+| `{DESCRIPTION}`   | Include full WU description    |
 
 **Example with tokens:**
 

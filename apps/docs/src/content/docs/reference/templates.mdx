@@ -67,14 +67,14 @@ Your markdown content with token placeholders...
 
 ## Frontmatter Fields
 
-| Field       | Type     | Required | Description                                          |
-| ----------- | -------- | -------- | ---------------------------------------------------- |
-| `id`        | string   | Yes      | Unique identifier matching manifest entry            |
-| `name`      | string   | Yes      | Human-readable name for debugging                    |
-| `required`  | boolean  | Yes      | If `true`, assembly fails when template is missing   |
-| `order`     | number   | Yes      | Assembly position (lower numbers appear first)       |
-| `tokens`    | string[] | No       | Token names used in this template                    |
-| `condition` | string   | No       | Expression that must be true for template inclusion  |
+| Field       | Type     | Required | Description                                         |
+| ----------- | -------- | -------- | --------------------------------------------------- |
+| `id`        | string   | Yes      | Unique identifier matching manifest entry           |
+| `name`      | string   | Yes      | Human-readable name for debugging                   |
+| `required`  | boolean  | Yes      | If `true`, assembly fails when template is missing  |
+| `order`     | number   | Yes      | Assembly position (lower numbers appear first)      |
+| `tokens`    | string[] | No       | Token names used in this template                   |
+| `condition` | string   | No       | Expression that must be true for template inclusion |
 
 ### The `id` Field
 
@@ -88,15 +88,15 @@ The `id` must match an entry in `manifest.yaml`. It's used to:
 
 Templates are sorted by `order` before assembly. Use these ranges:
 
-| Range     | Purpose                     | Examples                            |
-| --------- | --------------------------- | ----------------------------------- |
-| 10-50     | Type-specific directives    | `tdd-directive`, `docs-directive`   |
-| 50-100    | Skills and methodology      | `skills-selection`                  |
-| 100-200   | Agent guidance              | `effort-scaling`, `parallel-calls`  |
-| 200-300   | Operational guidance        | `bug-discovery`, `quick-fix`        |
-| 300-400   | Recovery and worktree       | `worktree-recovery`                 |
-| 400-500   | Lane-specific guidance      | `lane-guidance-operations`          |
-| 900+      | Constraints (always last)   | `constraints`                       |
+| Range   | Purpose                   | Examples                           |
+| ------- | ------------------------- | ---------------------------------- |
+| 10-50   | Type-specific directives  | `tdd-directive`, `docs-directive`  |
+| 50-100  | Skills and methodology    | `skills-selection`                 |
+| 100-200 | Agent guidance            | `effort-scaling`, `parallel-calls` |
+| 200-300 | Operational guidance      | `bug-discovery`, `quick-fix`       |
+| 300-400 | Recovery and worktree     | `worktree-recovery`                |
+| 400-500 | Lane-specific guidance    | `lane-guidance-operations`         |
+| 900+    | Constraints (always last) | `constraints`                      |
 
 <Aside type="tip">
   Leave gaps between order values (10, 20, 30) to allow inserting new templates later without
@@ -148,14 +148,14 @@ Navigate to: {WORKTREE_PATH}
 
 ### Available Tokens
 
-| Token           | Description                        | Example Value                          |
-| --------------- | ---------------------------------- | -------------------------------------- |
-| `{WU_ID}`       | Work Unit identifier               | `WU-1253`                              |
-| `{LANE}`        | Full lane name                     | `Framework: Core`                      |
-| `{TYPE}`        | WU type                            | `feature`, `bug`, `documentation`      |
-| `{TITLE}`       | WU title                           | `Add template loader`                  |
-| `{DESCRIPTION}` | WU description                     | `Implement the template system...`     |
-| `{WORKTREE_PATH}` | Path to worktree (if claimed)    | `worktrees/framework-core-wu-1253`     |
+| Token             | Description                   | Example Value                      |
+| ----------------- | ----------------------------- | ---------------------------------- |
+| `{WU_ID}`         | Work Unit identifier          | `WU-1253`                          |
+| `{LANE}`          | Full lane name                | `Framework: Core`                  |
+| `{TYPE}`          | WU type                       | `feature`, `bug`, `documentation`  |
+| `{TITLE}`         | WU title                      | `Add template loader`              |
+| `{DESCRIPTION}`   | WU description                | `Implement the template system...` |
+| `{WORKTREE_PATH}` | Path to worktree (if claimed) | `worktrees/framework-core-wu-1253` |
 
 <Aside type="note">
   Tokens that are `undefined` in the context remain as literal text (e.g., `{UNDEFINED_TOKEN}`).
@@ -196,27 +196,27 @@ Conditions control whether a template is included in the assembled prompt.
 
 ### Supported Operators
 
-| Operator | Syntax                        | Description              |
-| -------- | ----------------------------- | ------------------------ |
-| Equality | `field === 'value'`           | Exact match              |
-| Inequality | `field !== 'value'`         | Not equal                |
-| Truthy   | `field`                       | Field exists and truthy  |
-| AND      | `expr1 && expr2`              | Both must be true        |
-| OR       | `expr1 \|\| expr2`            | Either can be true       |
+| Operator   | Syntax              | Description             |
+| ---------- | ------------------- | ----------------------- |
+| Equality   | `field === 'value'` | Exact match             |
+| Inequality | `field !== 'value'` | Not equal               |
+| Truthy     | `field`             | Field exists and truthy |
+| AND        | `expr1 && expr2`    | Both must be true       |
+| OR         | `expr1 \|\| expr2`  | Either can be true      |
 
 ### Context Variables
 
 Conditions use lowercase aliases of token values:
 
-| Variable      | Maps To         | Example Values                    |
-| ------------- | --------------- | --------------------------------- |
-| `type`        | `{TYPE}`        | `feature`, `bug`, `documentation` |
-| `lane`        | `{LANE}`        | `Framework: Core`                 |
-| `wuId`        | `{WU_ID}`       | `WU-1253`                         |
-| `title`       | `{TITLE}`       | `Add template loader`             |
-| `description` | `{DESCRIPTION}` | Full description text             |
-| `worktreePath`| `{WORKTREE_PATH}` | Path or undefined               |
-| `laneParent`  | Extracted       | `Framework`, `Content`, `Operations` |
+| Variable       | Maps To           | Example Values                       |
+| -------------- | ----------------- | ------------------------------------ |
+| `type`         | `{TYPE}`          | `feature`, `bug`, `documentation`    |
+| `lane`         | `{LANE}`          | `Framework: Core`                    |
+| `wuId`         | `{WU_ID}`         | `WU-1253`                            |
+| `title`        | `{TITLE}`         | `Add template loader`                |
+| `description`  | `{DESCRIPTION}`   | Full description text                |
+| `worktreePath` | `{WORKTREE_PATH}` | Path or undefined                    |
+| `laneParent`   | Extracted         | `Framework`, `Content`, `Operations` |
 
 ### Condition Examples
 
@@ -244,7 +244,7 @@ condition: "laneParent === 'Operations' || laneParent === 'Framework'"
 
 ```yaml
 # Include only when worktree exists
-condition: "worktreePath"
+condition: 'worktreePath'
 ```
 
 **Combined conditions:**
@@ -288,6 +288,7 @@ Client-specific templates take priority:
 ```
 
 When running `wu:spawn --client claude`:
+
 1. Load base `skills-selection.md`
 2. Override with `templates.claude/spawn-prompt/skills-selection.md`
 3. Cursor template is ignored
