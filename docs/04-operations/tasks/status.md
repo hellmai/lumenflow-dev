@@ -10,6 +10,7 @@ _Last updated: 2026-01-30_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml)
 - [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml)
+- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml)
 
 ## Completed
 

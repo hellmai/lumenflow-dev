@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1247 — Add gates docs-check for CLI/API changes requiring documentation](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -38,8 +37,8 @@ sections:
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — Framework: Core
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
-- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — Operations: CI/CD
 - [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
+- [WU-1247 — Add gates docs-check for CLI/API changes requiring documentation](wu/WU-1247.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -49,6 +48,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml) — Framework: CLI
 - [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml) — Content: Documentation
+- [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — Operations: CI/CD
 
 ## ⛔ Blocked
 
