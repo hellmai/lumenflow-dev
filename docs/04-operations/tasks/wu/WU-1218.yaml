@@ -2,7 +2,7 @@ id: WU-1218
 title: Fix spec:linter failing in worktrees without CLI dist
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -38,3 +38,5 @@ session_id: 0765b8d6-00a7-4a1f-8dfd-44cf422b446b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T10:34:49.370Z
+locked: true
+completed_at: 2026-01-30T10:39:52.103Z
