@@ -59,6 +59,8 @@ import {
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
 // WU-1439: Use shared micro-worktree helper
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+// WU-1246: Auto-generate WU IDs when --id not provided
+import { generateWuIdWithRetry } from '@lumenflow/core/dist/wu-id-generator.js';
 // WU-1620: Import spec completeness validator for readiness summary
 import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
 // WU-1620: Import readWU to read back created YAML for validation
@@ -687,14 +689,34 @@ async function main() {
       // WU-1062: External plan options for wu:create
       WU_CREATE_OPTIONS.plan,
     ],
-    required: ['id', 'lane', 'title'],
+    required: ['lane', 'title'], // WU-1246: --id is now optional (auto-generated if not provided)
     allowPositionalId: false,
   });
 
-  console.log(`${LOG_PREFIX} Creating WU ${args.id} in ${args.lane} lane...`);
+  // WU-1246: Auto-generate WU ID if not provided
+  let wuId: string;
+  if (args.id) {
+    wuId = args.id;
+    // Validate explicitly provided ID
+    validateWUIDFormat(wuId);
+  } else {
+    // Auto-generate next sequential ID
+    console.log(`${LOG_PREFIX} Auto-generating WU ID...`);
+    try {
+      wuId = await generateWuIdWithRetry();
+      console.log(`${LOG_PREFIX} Generated WU ID: ${wuId}`);
+    } catch (error) {
+      die(
+        `Failed to auto-generate WU ID: ${error.message}\n\n` +
+          `Options:\n` +
+          `  1. Retry the command (transient file system issue)\n` +
+          `  2. Provide an explicit ID: --id WU-XXXX\n` +
+          `  3. Check for race conditions if running parallel wu:create`,
+      );
+    }
+  }
 
-  // Pre-flight checks (validation only - no main modification)
-  validateWUIDFormat(args.id);
+  console.log(`${LOG_PREFIX} Creating WU ${wuId} in ${args.lane} lane...`);
 
   // Validate lane format (sub-lane or parent-only)
   try {
@@ -717,7 +739,7 @@ async function main() {
   warnIfBetterLaneExists(args.lane, args.codePaths, args.title, args.description);
 
   await ensureOnMain(getGitForCwd());
-  checkWUExists(args.id);
+  checkWUExists(wuId);
 
   // WU-1368: Get assigned_to from flag or git config user.email
   const assignedTo = args.assignedTo || (await getDefaultAssignedTo());
@@ -725,11 +747,11 @@ async function main() {
     console.warn(`${LOG_PREFIX} ⚠️  No assigned_to set - WU will need manual assignment`);
   }
 
-  const planSpecRef = args.plan ? getPlanProtocolRef(args.id) : undefined;
+  const planSpecRef = args.plan ? getPlanProtocolRef(wuId) : undefined;
   const mergedSpecRefs = mergeSpecRefs(args.specRefs, planSpecRef);
 
   const createSpecValidation = validateCreateSpec({
-    id: args.id,
+    id: wuId,
     lane: args.lane,
     title: args.title,
     priority: args.priority || DEFAULT_PRIORITY,
@@ -789,7 +811,7 @@ async function main() {
   }
 
   if (args.plan) {
-    createPlanTemplate(args.id, args.title);
+    createPlanTemplate(wuId, args.title);
   }
 
   // Transaction: micro-worktree isolation (WU-1439)
@@ -802,13 +824,13 @@ async function main() {
     try {
       await withMicroWorktree({
         operation: OPERATION_NAME,
-        id: args.id,
+        id: wuId,
         logPrefix: LOG_PREFIX,
         execute: async ({ worktreePath }) => {
           // Create WU YAML in micro-worktree
           const wuPath = createWUYamlInWorktree(
             worktreePath,
-            args.id,
+            wuId,
             args.lane,
             args.title,
             priority,
@@ -839,11 +861,11 @@ async function main() {
           );
 
           // Update backlog.md in micro-worktree
-          const backlogPath = updateBacklogInWorktree(worktreePath, args.id, args.lane, args.title);
+          const backlogPath = updateBacklogInWorktree(worktreePath, wuId, args.lane, args.title);
 
           // Build commit message
           const shortTitle = truncateTitle(args.title);
-          const commitMessage = COMMIT_FORMATS.CREATE(args.id, shortTitle);
+          const commitMessage = COMMIT_FORMATS.CREATE(wuId, shortTitle);
 
           // Return commit message and files to commit
           return {
@@ -861,13 +883,13 @@ async function main() {
     }
 
     console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
-    console.log(`\nWU ${args.id} created successfully:`);
-    console.log(`  File: ${WU_PATHS.WU(args.id)}`);
+    console.log(`\nWU ${wuId} created successfully:`);
+    console.log(`  File: ${WU_PATHS.WU(wuId)}`);
     console.log(`  Lane: ${args.lane}`);
     console.log(`  Status: ready`);
 
     // WU-1620: Display readiness summary
-    displayReadinessSummary(args.id);
+    displayReadinessSummary(wuId);
   } catch (error) {
     die(
       `Transaction failed: ${error.message}\n\n` +

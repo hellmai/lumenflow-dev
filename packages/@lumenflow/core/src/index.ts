@@ -323,3 +323,6 @@ export {
   type CreateValidateCommandOptions,
   type CreateAnalyzeRecoveryOptions,
 } from './context-di.js';
+
+// WU-1246: WU ID auto-generation
+export * from './wu-id-generator.js';
