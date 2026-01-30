@@ -443,15 +443,14 @@ This is the ONLY way to complete a WU. Manual steps leave things inconsistent.
 <Steps>
 
 1. **Get user approval** - Stop and ask before using LUMENFLOW_FORCE
-2. **Execute with audit trail**:
+2. **Execute with audit trail** - Use `LUMENFLOW_FORCE_REASON` and `LUMENFLOW_FORCE=1` (see example below)
+3. **Document** - Add a note to WU YAML explaining the bypass
+
+</Steps>
 
 ```bash
 LUMENFLOW_FORCE_REASON="user-approved: <reason>" LUMENFLOW_FORCE=1 git <command>
 ```
-
-3. **Document** - Add a note to WU YAML explaining the bypass
-
-</Steps>
 
 ### Examples
 
