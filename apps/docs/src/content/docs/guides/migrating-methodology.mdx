@@ -18,6 +18,7 @@ Understanding when to use each methodology is the first step in migration.
     - Tests before implementation
     - 90% coverage threshold (blocks on failure)
     - RED-GREEN-REFACTOR cycle enforced
+
   </Card>
   <Card title="Test-After" icon="pencil">
     **Best for:** Legacy migrations, transitioning teams, rapid prototyping with deferred tests.
@@ -25,6 +26,7 @@ Understanding when to use each methodology is the first step in migration.
     - Implementation first, tests before completion
     - 70% coverage threshold (warns but does not block)
     - More flexible for exploratory work
+
   </Card>
   <Card title="None" icon="warning">
     **Best for:** Spikes, research, documentation-only projects.
@@ -32,21 +34,22 @@ Understanding when to use each methodology is the first step in migration.
     - No testing methodology enforced
     - 0% coverage threshold
     - Tests optional (but recommended)
+
   </Card>
 </CardGrid>
 
 ### Decision Matrix
 
-| Scenario | Recommended | Rationale |
-|----------|-------------|-----------|
-| Greenfield product with clear requirements | `tdd` | TDD ensures correct behavior from the start |
-| Legacy codebase with low test coverage | `test-after` | Focus on improving coverage gradually |
-| Rapid prototype to validate idea | `none` | Move fast, add tests if prototype succeeds |
-| Production-critical regulated/fintech code | `tdd` with 95% threshold | Maximum safety for regulated environments |
-| Documentation-only work | `none` | No code to test |
-| Research spike exploring APIs | `none` | Exploratory work doesn't need tests |
-| Refactoring well-tested code | `tdd` | Ensure refactoring doesn't break behavior |
-| Adding features to legacy code | `test-after` | Add tests as you touch code |
+| Scenario                                    | Recommended              | Rationale                                   |
+| ------------------------------------------- | ------------------------ | ------------------------------------------- |
+| Greenfield product with clear requirements  | `tdd`                    | TDD ensures correct behavior from the start |
+| Legacy codebase with low test coverage      | `test-after`             | Focus on improving coverage gradually       |
+| Rapid prototype to validate idea            | `none`                   | Move fast, add tests if prototype succeeds  |
+| Production-critical regulated/fintech code | `tdd` with 95% threshold | Maximum safety for regulated environments   |
+| Documentation-only work                     | `none`                   | No code to test                             |
+| Research spike exploring APIs               | `none`                   | Exploratory work doesn't need tests         |
+| Refactoring well-tested code                | `tdd`                    | Ensure refactoring doesn't break behavior   |
+| Adding features to legacy code              | `test-after`             | Add tests as you touch code                 |
 
 ## Migration Paths
 
@@ -77,7 +80,7 @@ This is the most common migration. Use this when TDD is slowing down a legacy mi
    methodology:
      testing: 'tdd'
      overrides:
-       coverage_mode: 'warn'  # Block -> Warn
+       coverage_mode: 'warn' # Block -> Warn
    ```
 
    This lets you see what would fail without blocking work.
@@ -127,7 +130,8 @@ This is the most common migration. Use this when TDD is slowing down a legacy mi
 </Steps>
 
 <Aside type="tip">
-  Use `test-after` as a stepping stone, not a permanent destination. Once legacy code has better coverage, consider returning to TDD.
+  Use `test-after` as a stepping stone, not a permanent destination. Once legacy code has better
+  coverage, consider returning to TDD.
 </Aside>
 
 ### Path 2: Tightening from None to TDD
@@ -154,7 +158,7 @@ Use this when graduating a prototype to production or when a team is ready for s
    methodology:
      testing: 'test-after'
      overrides:
-       coverage_threshold: 50  # Start low
+       coverage_threshold: 50 # Start low
    ```
 
 3. **Ratchet up coverage threshold**
@@ -181,7 +185,8 @@ Use this when graduating a prototype to production or when a team is ready for s
 
    ```yaml
    methodology:
-     testing: 'test-after'  # Global default
+     testing: 'test-after' # Global default
+
 
    # Document in WU specs:
    # New features use TDD (write tests first)
@@ -252,7 +257,7 @@ Use this when a project deadline requires temporarily reduced enforcement.
 
    ```yaml
    methodology:
-     testing: 'tdd'  # Back to normal
+     testing: 'tdd' # Back to normal
    ```
 
    Create WUs to add missing tests for the debt items.
@@ -283,6 +288,7 @@ gates:
 ```
 
 **Why TDD for greenfield:**
+
 - No legacy code to work around
 - Tests define expected behavior clearly
 - Prevents accumulating technical debt from the start
@@ -297,30 +303,31 @@ version: '2.0'
 
 methodology:
   testing: 'test-after'
-  architecture: 'layered'  # May not have clean hexagonal boundaries
+  architecture: 'layered' # May not have clean hexagonal boundaries
   overrides:
-    coverage_threshold: 50  # Start achievable
-    coverage_mode: 'warn'   # Don't block, guide
+    coverage_threshold: 50 # Start achievable
+    coverage_mode: 'warn' # Don't block, guide
 
 gates:
   enableCoverage: true
-  minCoverage: 50  # Match methodology
+  minCoverage: 50 # Match methodology
 ```
 
 **Why test-after for legacy:**
+
 - Can't write tests for code that doesn't exist yet
 - Existing code may be hard to test (tight coupling)
 - Focus on improving coverage gradually
 
 **Migration timeline:**
 
-| Phase | Duration | Coverage Target | Mode |
-|-------|----------|-----------------|------|
-| Assessment | 2 weeks | Baseline current state | `none` |
-| Foundation | 1 month | 30% | `test-after` (warn) |
-| Growth | 3 months | 50% | `test-after` (warn) |
-| Stabilization | 2 months | 70% | `test-after` (block) |
-| Maturity | Ongoing | 90% | `tdd` |
+| Phase         | Duration | Coverage Target        | Mode                 |
+| ------------- | -------- | ---------------------- | -------------------- |
+| Assessment    | 2 weeks  | Baseline current state | `none`               |
+| Foundation    | 1 month  | 30%                    | `test-after` (warn)  |
+| Growth        | 3 months | 50%                    | `test-after` (warn)  |
+| Stabilization | 2 months | 70%                    | `test-after` (block) |
+| Maturity      | Ongoing  | 90%                    | `tdd`                |
 
 ### Prototype/Spike Project
 
@@ -339,12 +346,14 @@ gates:
 ```
 
 **Why none for prototypes:**
+
 - Speed is the priority
 - Code may be thrown away
 - No value in testing throwaway code
 
 <Aside type="tip">
-  If the prototype succeeds and becomes production code, migrate to `test-after` immediately. Don't ship prototype code without a plan for tests.
+  If the prototype succeeds and becomes production code, migrate to `test-after` immediately. Don't
+  ship prototype code without a plan for tests.
 </Aside>
 
 ### Hybrid Project (Mixed Codebases)
@@ -356,7 +365,7 @@ When different parts of your codebase need different approaches:
 version: '2.0'
 
 methodology:
-  testing: 'test-after'  # Global default for legacy areas
+  testing: 'test-after' # Global default for legacy areas
   architecture: 'layered'
 
 # Override per lane in WU specs
@@ -380,11 +389,11 @@ Document per-lane expectations in your `LUMENFLOW.md`:
 ```markdown
 ## Lane-Specific Testing
 
-| Lane | Methodology | Notes |
-|------|-------------|-------|
-| Framework: Core | TDD | All new code requires tests first |
-| Experience: UI | Test-after | Add tests before PR merge |
-| Content: Documentation | None | No code changes |
+| Lane                   | Methodology | Notes                             |
+| ---------------------- | ----------- | --------------------------------- |
+| Framework: Core        | TDD         | All new code requires tests first |
+| Experience: UI         | Test-after  | Add tests before PR merge         |
+| Content: Documentation | None        | No code changes                   |
 ```
 
 ## Troubleshooting
@@ -394,28 +403,32 @@ Document per-lane expectations in your `LUMENFLOW.md`:
 #### Invalid methodology value
 
 **Error:**
+
 ```
 ERROR: Invalid methodology.testing value: "test-first"
 Valid values: tdd, test-after, none
 ```
 
 **Fix:**
+
 ```yaml
 methodology:
-  testing: 'tdd'  # Not "test-first" or "TDD" or "test_after"
+  testing: 'tdd' # Not "test-first" or "TDD" or "test_after"
 ```
 
 #### Override without methodology
 
 **Error:**
+
 ```
 ERROR: methodology.overrides requires methodology.testing to be set
 ```
 
 **Fix:**
+
 ```yaml
 methodology:
-  testing: 'tdd'  # Must set base methodology
+  testing: 'tdd' # Must set base methodology
   overrides:
     coverage_threshold: 85
 ```
@@ -423,6 +436,7 @@ methodology:
 #### Conflicting gates and methodology
 
 **Warning:**
+
 ```
 WARNING: gates.minCoverage (90) differs from methodology threshold (70)
 ```
@@ -435,14 +449,14 @@ This happens when you set both `methodology.testing: 'test-after'` (70% default)
 methodology:
   testing: 'test-after'
   overrides:
-    coverage_threshold: 90  # Override the test-after default
+    coverage_threshold: 90 # Override the test-after default
 ```
 
 Or remove the conflicting gates setting:
 
 ```yaml
 methodology:
-  testing: 'test-after'  # Uses 70% threshold
+  testing: 'test-after' # Uses 70% threshold
 
 gates:
   # Don't set minCoverage here, let methodology control it
@@ -466,7 +480,7 @@ gates:
    methodology:
      testing: 'test-after'
      overrides:
-       coverage_mode: 'block'  # Still block if below threshold
+       coverage_mode: 'block' # Still block if below threshold
    ```
 
 3. Add coverage requirement to WU acceptance criteria:
@@ -486,9 +500,9 @@ gates:
 
 ```yaml
 methodology:
-  testing: 'test-after'  # At minimum
+  testing: 'test-after' # At minimum
   overrides:
-    coverage_mode: 'warn'  # At minimum
+    coverage_mode: 'warn' # At minimum
 ```
 
 ### Agent Prompt Issues
@@ -502,11 +516,13 @@ methodology:
 **Fix:**
 
 1. Check agent prompts include methodology:
+
    ```bash
    pnpm wu:spawn --id WU-042 --dry-run | grep -i methodology
    ```
 
 2. If missing, regenerate agent files:
+
    ```bash
    pnpm exec lumenflow docs:sync
    ```
@@ -525,6 +541,7 @@ methodology:
 **Fix:**
 
 1. Clear agent cache:
+
    ```bash
    pnpm mem:init --force
    ```
@@ -539,26 +556,30 @@ methodology:
 #### Schema validation failure
 
 **Error:**
+
 ```
 ERROR: .lumenflow.config.yaml validation failed
   - methodology.overrides.coverage_threshold must be between 0 and 100
 ```
 
 **Fix:**
+
 ```yaml
 methodology:
   overrides:
-    coverage_threshold: 85  # Must be 0-100, not "85%" or 0.85
+    coverage_threshold: 85 # Must be 0-100, not "85%" or 0.85
 ```
 
 #### Unknown field warning
 
 **Warning:**
+
 ```
 WARNING: Unknown field in methodology: test_mode
 ```
 
 **Fix:** Check spelling. Valid fields are:
+
 - `testing` (not `test_mode`, `test`, `tests`)
 - `architecture` (not `arch`, `structure`)
 - `overrides`
