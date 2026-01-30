@@ -2,7 +2,7 @@ id: WU-1226
 title: wu:recover modifies files directly on main (should use micro-worktree)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:recover --action resume modified WU YAML directly on main checkout instead of using micro-worktree isolation like wu:create and wu:claim do. Main should NEVER be polluted with direct changes - merges only.
+description: wu:recover --action resume modified WU YAML directly on main checkout instead of using
+  micro-worktree isolation like wu:create and wu:claim do. Main should NEVER be polluted with direct
+  changes - merges only.
 acceptance:
   - wu:recover uses micro-worktree isolation for all state changes
   - wu:recover refuses to modify files if not using atomic transaction
   - Changes are pushed via merge, not direct file modification
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1226
+claimed_at: 2026-01-30T09:19:01.246Z
+baseline_main_sha: 3a3b2d716c916aa27dd769adfef1c2b7e3f63bd9
+session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T09:19:01.254Z
