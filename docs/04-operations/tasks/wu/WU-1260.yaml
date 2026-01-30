@@ -8,8 +8,6 @@ created: 2026-01-30
 code_paths:
   - .lumenflow/templates/spawn-prompt/methodology/
   - .lumenflow/templates/spawn-prompt/architecture/
-  - .lumenflow/templates.claude/
-  - .lumenflow/templates.cursor/
   - .lumenflow/templates/manifest.yaml
   - packages/@lumenflow/core/src/template-loader.ts
 tests:
@@ -61,7 +59,7 @@ description: >-
 acceptance:
   - methodology/ directory created with tdd, test-after, none directive templates
   - architecture/ directory created with hexagonal, layered, none directive templates
-  - Client-specific override directories created for Claude and Cursor
+  - Client-specific override directories verified for Claude and Cursor (already existed)
   - manifest.yaml updated with methodology-conditional entries using policy.testing
   - Existing TDD directive content migrated to new location
 claimed_mode: worktree
