@@ -18,6 +18,8 @@ const TEST_WU_ID = 'WU-1203';
 const DEFAULT_MEMORY_DIR = 'memory-bank/';
 const DEFAULT_SESSION_TTL = 604800000;
 const DEFAULT_CHECKPOINT_TTL = 2592000000;
+const PROGRESS_SIGNALS_REQUIRED = 'Progress Signals (Required at Milestones)';
+const PROGRESS_SIGNALS_OPTIONAL = 'Progress Signals (Optional)';
 
 /**
  * Creates a mock config for testing progress signals
@@ -72,8 +74,8 @@ describe('WU-1203: Progress Signals in Wu-Spawn', () => {
 
       const section = generateAgentCoordinationSection(TEST_WU_ID);
 
-      expect(section).toContain('Progress Signals (Optional)');
-      expect(section).not.toContain('Progress Signals (Required at Milestones)');
+      expect(section).toContain(PROGRESS_SIGNALS_OPTIONAL);
+      expect(section).not.toContain(PROGRESS_SIGNALS_REQUIRED);
     });
 
     it('should show "Progress Signals (Required at Milestones)" when enabled:true', () => {
@@ -91,17 +93,18 @@ describe('WU-1203: Progress Signals in Wu-Spawn', () => {
 
       const section = generateAgentCoordinationSection(TEST_WU_ID);
 
-      expect(section).toContain('Progress Signals (Required at Milestones)');
+      expect(section).toContain(PROGRESS_SIGNALS_REQUIRED);
     });
 
-    it('should show "Optional" when no progress_signals config exists', () => {
+    it('should show "Required at Milestones" when no progress_signals config exists (WU-1210 default)', () => {
       // Pass undefined to omit progress_signals entirely
       getConfigMock.mockReturnValue(createMockConfig());
 
       const section = generateAgentCoordinationSection(TEST_WU_ID);
 
-      // Without config, defaults to optional
-      expect(section).toContain('Progress Signals (Optional)');
+      // WU-1210: Without explicit config, defaults to enabled (Required at Milestones)
+      // This ensures agents signal progress at key milestones by default
+      expect(section).toContain(PROGRESS_SIGNALS_REQUIRED);
     });
   });
 
