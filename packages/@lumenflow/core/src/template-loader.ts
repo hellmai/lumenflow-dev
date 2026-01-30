@@ -465,6 +465,34 @@ function escapeRegex(str: string): string {
 }
 
 /**
+ * Get a value from a nested path in an object.
+ * Supports both flat keys (e.g., 'type') and dotted paths (e.g., 'policy.testing').
+ *
+ * @param obj - Object to get value from
+ * @param path - Key path (may contain dots for nested access)
+ * @returns Value at path, or undefined if not found
+ */
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+  // First try direct key lookup (for keys like 'policy.testing' stored as flat keys)
+  if (path in obj) {
+    return obj[path];
+  }
+
+  // Then try nested path traversal
+  const parts = path.split('.');
+  let current: unknown = obj;
+
+  for (const part of parts) {
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[part];
+  }
+
+  return current;
+}
+
+/**
  * Evaluate a simple condition expression against context.
  *
  * Supports:
@@ -473,6 +501,7 @@ function escapeRegex(str: string): string {
  * - Truthy: worktreePath
  * - AND: type === 'feature' && lane === 'Core'
  * - OR: type === 'feature' || type === 'bug'
+ * - Dotted paths: policy.testing === 'tdd' (WU-1260)
  *
  * @param condition - Condition expression string
  * @param context - Context values for evaluation
@@ -499,28 +528,28 @@ export function evaluateCondition(
     return parts.every((part) => evaluateCondition(part, context));
   }
 
-  // Handle equality: key === 'value'
-  const eqRegex = /^(\w+)\s*===\s*['"](.+)['"]$/;
+  // Handle equality: key === 'value' (supports dotted paths like policy.testing)
+  const eqRegex = /^([\w.]+)\s*===\s*['"](.+)['"]$/;
   const eqMatch = eqRegex.exec(condition);
   if (eqMatch) {
     const [, key, value] = eqMatch;
-    return context[key] === value;
+    return getNestedValue(context, key) === value;
   }
 
-  // Handle inequality: key !== 'value'
-  const neqRegex = /^(\w+)\s*!==\s*['"](.+)['"]$/;
+  // Handle inequality: key !== 'value' (supports dotted paths like policy.testing)
+  const neqRegex = /^([\w.]+)\s*!==\s*['"](.+)['"]$/;
   const neqMatch = neqRegex.exec(condition);
   if (neqMatch) {
     const [, key, value] = neqMatch;
-    return context[key] !== value;
+    return getNestedValue(context, key) !== value;
   }
 
-  // Handle truthy check: key
-  const truthyRegex = /^(\w+)$/;
+  // Handle truthy check: key (supports dotted paths)
+  const truthyRegex = /^([\w.]+)$/;
   const truthyMatch = truthyRegex.exec(condition);
   if (truthyMatch) {
     const key = truthyMatch[1];
-    return Boolean(context[key]);
+    return Boolean(getNestedValue(context, key));
   }
 
   // Unknown condition format - pass by default
