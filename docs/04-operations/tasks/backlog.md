@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml) — Content: Documentation
 - [WU-1262 — Integrate resolvePolicy() with gates enforcement](wu/WU-1262.yaml) — Framework: Core
 - [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml) — Framework: Core
 - [WU-1260 — Create methodology and architecture template directories](wu/WU-1260.yaml) — Framework: Core
