@@ -1,0 +1,40 @@
+id: WU-1240
+title: Integrate mem:context into wu:spawn prompts
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P1
+created: 2026-01-30
+code_paths:
+  - packages/@lumenflow/core/src/wu-spawn-core.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn-context.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1240.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-1234 creates mem:context command that produces a formatted context injection block. However, there is no integration point - the output is produced but nobody consumes it. Problem: Without spawn integration, agents start cold despite mem:context existing. The command produces output that has to be manually copy-pasted. Solution: Integrate mem:context into wu:spawn so that when memory.jsonl exists and contains relevant context, the spawn prompt automatically includes the context injection block. This is the critical link that makes WU-1234 useful. Technical approach: (1) wu:spawn checks if memory layer is initialized, (2) if yes, calls mem:context with --wu and --lane filters, (3) embeds output in spawn prompt under a dedicated section, (4) configurable max size to avoid bloating prompts.'
+acceptance:
+  - wu:spawn detects memory.jsonl existence
+  - When memory exists, wu:spawn calls mem:context internally
+  - 'Context block embedded in spawn prompt under ## Memory Context section'
+  - Max context size configurable (default 4KB, from .lumenflow.config.yaml)
+  - Graceful skip if memory layer not initialized (no error)
+  - --no-context flag allows skipping context injection
+  - Unit tests verify integration logic
+  - Integration test confirms spawned agent receives context
+  - Documentation updated
