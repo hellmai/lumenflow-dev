@@ -2,7 +2,7 @@ id: WU-1262
 title: Integrate resolvePolicy() with gates enforcement
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -53,3 +53,11 @@ acceptance:
   - Coverage mode defaults derived from methodology.testing
   - Explicit gates.* overrides take precedence over methodology defaults
   - Existing gate behavior unchanged with default methodology
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1262
+claimed_at: 2026-01-30T20:33:28.637Z
+baseline_main_sha: 2c7ee021ee35fb689afb2e6737af08b6b60312c8
+session_id: 0fe4c54a-afca-4b03-8f36-70b7c36e1aa1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T20:33:28.644Z
