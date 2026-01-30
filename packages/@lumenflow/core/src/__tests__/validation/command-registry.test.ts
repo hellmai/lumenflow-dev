@@ -858,6 +858,238 @@ describe('predicate getFixMessage', () => {
  * NOT context.git.isDirty. When running wu:done from main, context.git reflects
  * main's state while context.worktreeGit reflects the worktree's state.
  */
+/**
+ * WU-1223: Tests for wu:prep command and updated wu:done behavior.
+ *
+ * New workflow:
+ * - wu:prep: runs gates + docs in worktree, prints copy-paste instruction
+ * - wu:done from main: only merge + cleanup (no gates/docs)
+ * - wu:done from worktree: errors with 'use wu:prep instead'
+ */
+describe('wu:prep command (WU-1223)', () => {
+  it('is registered in the command registry', () => {
+    const def = getCommandDefinition(COMMANDS.WU_PREP);
+    expect(def).not.toBeNull();
+    expect(def?.name).toBe(COMMANDS.WU_PREP);
+  });
+
+  it('requires worktree location', () => {
+    const def = getCommandDefinition(COMMANDS.WU_PREP);
+    expect(def?.requiredLocation).toBe(LOCATION_TYPES.WORKTREE);
+  });
+
+  it('requires WU status in_progress', () => {
+    const def = getCommandDefinition(COMMANDS.WU_PREP);
+    expect(def?.requiredWuStatus).toBe('in_progress');
+  });
+
+  it('has predicates for clean git state', () => {
+    const def = getCommandDefinition(COMMANDS.WU_PREP);
+    expect(def?.predicates).toBeDefined();
+    const gitCleanPredicate = def?.predicates?.find((p) => p.id === 'git-clean');
+    expect(gitCleanPredicate).toBeDefined();
+  });
+
+  it('returns wu:prep for worktree with in_progress WU', () => {
+    const context: WuContext = {
+      location: {
+        type: LOCATION_TYPES.WORKTREE,
+        cwd: '/repo/worktrees/framework-core-wu-1223',
+        gitRoot: '/repo/worktrees/framework-core-wu-1223',
+        mainCheckout: '/repo',
+        worktreeName: 'framework-core-wu-1223',
+        worktreeWuId: 'WU-1223',
+      },
+      git: {
+        branch: 'lane/framework-core/wu-1223',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 2,
+        behind: 0,
+        tracking: 'origin/main',
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      },
+      wu: {
+        id: 'WU-1223',
+        status: 'in_progress',
+        lane: 'Framework: Core',
+        title: 'Test WU',
+        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        isConsistent: true,
+        inconsistencyReason: null,
+      },
+      session: {
+        isActive: true,
+        sessionId: 'session-123',
+      },
+    };
+
+    const validCommands = getValidCommandsForContext(context);
+    const commandNames = validCommands.map((c) => c.name);
+
+    expect(commandNames).toContain(COMMANDS.WU_PREP);
+    // wu:done should NOT be valid from worktree (now requires main)
+    expect(commandNames).not.toContain(COMMANDS.WU_DONE);
+  });
+
+  it('provides next steps with copy-paste wu:done instruction', () => {
+    const def = getCommandDefinition(COMMANDS.WU_PREP);
+    const context: WuContext = {
+      location: {
+        type: LOCATION_TYPES.WORKTREE,
+        cwd: '/repo/worktrees/framework-core-wu-1223',
+        gitRoot: '/repo/worktrees/framework-core-wu-1223',
+        mainCheckout: '/repo',
+        worktreeName: 'framework-core-wu-1223',
+        worktreeWuId: 'WU-1223',
+      },
+      git: {
+        branch: 'lane/framework-core/wu-1223',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 0,
+        behind: 0,
+        tracking: null,
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      },
+      wu: {
+        id: 'WU-1223',
+        status: 'in_progress',
+        lane: 'Framework: Core',
+        title: 'Test',
+        yamlPath: '/repo/wu.yaml',
+        isConsistent: true,
+        inconsistencyReason: null,
+      },
+      session: { isActive: true, sessionId: 'session-123' },
+    };
+
+    const nextSteps = def?.getNextSteps?.(context);
+    expect(nextSteps).toBeDefined();
+    // Should contain copy-paste instruction for wu:done from main
+    expect(nextSteps?.some((s) => s.includes('wu:done'))).toBe(true);
+    expect(nextSteps?.some((s) => s.includes('WU-1223'))).toBe(true);
+    expect(nextSteps?.some((s) => s.includes('/repo') || s.includes('main'))).toBe(true);
+  });
+});
+
+describe('wu:done updated behavior (WU-1223)', () => {
+  it('requires main location (no longer allows worktree)', () => {
+    const def = getCommandDefinition(COMMANDS.WU_DONE);
+    expect(def?.requiredLocation).toBe(LOCATION_TYPES.MAIN);
+  });
+
+  it('excludes wu:done from valid commands when in worktree', () => {
+    const context: WuContext = {
+      location: {
+        type: LOCATION_TYPES.WORKTREE,
+        cwd: '/repo/worktrees/framework-core-wu-1223',
+        gitRoot: '/repo/worktrees/framework-core-wu-1223',
+        mainCheckout: '/repo',
+        worktreeName: 'framework-core-wu-1223',
+        worktreeWuId: 'WU-1223',
+      },
+      git: {
+        branch: 'lane/framework-core/wu-1223',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 2,
+        behind: 0,
+        tracking: 'origin/main',
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      },
+      wu: {
+        id: 'WU-1223',
+        status: 'in_progress',
+        lane: 'Framework: Core',
+        title: 'Test WU',
+        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        isConsistent: true,
+        inconsistencyReason: null,
+      },
+      session: {
+        isActive: true,
+        sessionId: 'session-123',
+      },
+    };
+
+    const validCommands = getValidCommandsForContext(context);
+    const commandNames = validCommands.map((c) => c.name);
+
+    // wu:done should NOT be in valid commands from worktree
+    expect(commandNames).not.toContain(COMMANDS.WU_DONE);
+    // wu:prep SHOULD be in valid commands from worktree
+    expect(commandNames).toContain(COMMANDS.WU_PREP);
+  });
+
+  it('includes wu:done in valid commands when in main checkout', () => {
+    const context: WuContext = {
+      location: {
+        type: LOCATION_TYPES.MAIN,
+        cwd: '/repo',
+        gitRoot: '/repo',
+        mainCheckout: '/repo',
+        worktreeName: null,
+        worktreeWuId: null,
+      },
+      git: {
+        branch: 'main',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 0,
+        behind: 0,
+        tracking: 'origin/main',
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      },
+      worktreeGit: {
+        branch: 'lane/framework-core/wu-1223',
+        isDetached: false,
+        isDirty: false,
+        hasStaged: false,
+        ahead: 1,
+        behind: 0,
+        tracking: 'origin/main',
+        modifiedFiles: [],
+        hasError: false,
+        errorMessage: null,
+      },
+      wu: {
+        id: 'WU-1223',
+        status: 'in_progress',
+        lane: 'Framework: Core',
+        title: 'Test WU',
+        yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1223.yaml',
+        isConsistent: true,
+        inconsistencyReason: null,
+      },
+      session: {
+        isActive: true,
+        sessionId: 'session-123',
+      },
+    };
+
+    const validCommands = getValidCommandsForContext(context);
+    const commandNames = validCommands.map((c) => c.name);
+
+    // wu:done SHOULD be in valid commands from main
+    expect(commandNames).toContain(COMMANDS.WU_DONE);
+    // wu:prep should NOT be valid from main
+    expect(commandNames).not.toContain(COMMANDS.WU_PREP);
+  });
+});
+
 describe('worktreeCleanPredicate checks worktreeGit (WU-1092)', () => {
   const baseGitState = {
     branch: 'main',

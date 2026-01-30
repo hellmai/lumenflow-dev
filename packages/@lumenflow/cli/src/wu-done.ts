@@ -45,6 +45,8 @@ import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+// WU-1223: Location detection for worktree check
+import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
 import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
 import path from 'node:path';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
@@ -101,6 +103,8 @@ import {
   TELEMETRY_STEPS,
   SKIP_GATES_REASONS,
   CHECKPOINT_MESSAGES,
+  // WU-1223: Location types for worktree detection
+  CONTEXT_VALIDATION,
 } from '@lumenflow/core/dist/wu-constants.js';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/dist/wu-done-ui.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
@@ -2406,6 +2410,23 @@ async function main() {
 
   // Validate CLI arguments and WU ID format (extracted to wu-done-validators.ts)
   const { args, id } = validateInputs(process.argv);
+
+  // WU-1223: Check if running from worktree - wu:done now requires main checkout
+  // Agents should use wu:prep from worktree, then wu:done from main
+  const { LOCATION_TYPES } = CONTEXT_VALIDATION;
+  const currentLocation = await resolveLocation();
+  if (currentLocation.type === LOCATION_TYPES.WORKTREE) {
+    die(
+      `${EMOJI.FAILURE} wu:done must be run from main checkout, not from a worktree.\n\n` +
+        `Current location: ${currentLocation.cwd}\n\n` +
+        `WU-1223 NEW WORKFLOW:\n` +
+        `  1. From worktree, run: pnpm wu:prep --id ${id}\n` +
+        `     (This runs gates and prepares for completion)\n\n` +
+        `  2. From main, run: cd ${currentLocation.mainCheckout} && pnpm wu:done --id ${id}\n` +
+        `     (This does merge + cleanup only)\n\n` +
+        `Use wu:prep to run gates in the worktree, then wu:done from main for merge/cleanup.`,
+    );
+  }
 
   // Detect workspace mode and calculate paths (WU-1215: extracted to validators module)
   const pathInfo = await detectModeAndPaths(id, args);

@@ -36,6 +36,7 @@
   "bin": {
     "wu-claim": "./dist/wu-claim.js",
     "wu-done": "./dist/wu-done.js",
+    "wu-prep": "./dist/wu-prep.js",
     "wu-block": "./dist/wu-block.js",
     "wu-unblock": "./dist/wu-unblock.js",
     "wu-create": "./dist/wu-create.js",

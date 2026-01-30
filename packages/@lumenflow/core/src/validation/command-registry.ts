@@ -103,7 +103,45 @@ const wuClaim: CommandDefinition = {
 };
 
 /**
+ * Predicate: Check if worktree has no uncommitted changes.
+ * For wu:prep running from worktree itself.
+ */
+const gitCleanPredicate: CommandPredicate = {
+  id: 'git-clean',
+  description: 'Worktree must not have uncommitted changes',
+  severity: SEVERITY.ERROR,
+  check: (context: WuContext) => !context.git.isDirty,
+  getFixMessage: () => 'Commit or stash changes in worktree before running wu:prep',
+};
+
+/**
+ * Command definition for wu:prep (WU-1223).
+ *
+ * Runs gates and generates docs in the worktree, then prints copy-paste
+ * instruction to run wu:done from main checkout for merge/cleanup.
+ */
+const wuPrep: CommandDefinition = {
+  name: COMMANDS.WU_PREP,
+  description: 'Run gates + docs in worktree, prepare for wu:done',
+  requiredLocation: LOCATION_TYPES.WORKTREE,
+  requiredWuStatus: WU_STATUS.IN_PROGRESS,
+  predicates: [gitCleanPredicate, stateConsistentPredicate],
+  getNextSteps: (context: WuContext) => {
+    const mainPath = context.location.mainCheckout || '/path/to/main';
+    const wuId = context.wu?.id || 'WU-XXX';
+    return [
+      `1. Gates and docs generated in worktree`,
+      `2. Return to main checkout and complete:`,
+      `   cd ${mainPath} && pnpm wu:done --id ${wuId}`,
+    ];
+  },
+};
+
+/**
  * Command definition for wu:done.
+ *
+ * WU-1223: Now requires main checkout (merge + cleanup only).
+ * Use wu:prep from worktree for gates and docs generation.
  */
 const wuDone: CommandDefinition = {
   name: COMMANDS.WU_DONE,
@@ -176,6 +214,7 @@ const wuRecover: CommandDefinition = {
 export const COMMAND_REGISTRY: Map<string, CommandDefinition> = new Map([
   [COMMANDS.WU_CREATE, wuCreate],
   [COMMANDS.WU_CLAIM, wuClaim],
+  [COMMANDS.WU_PREP, wuPrep],
   [COMMANDS.WU_DONE, wuDone],
   [COMMANDS.WU_BLOCK, wuBlock],
   [COMMANDS.WU_UNBLOCK, wuUnblock],

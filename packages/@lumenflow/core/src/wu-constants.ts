@@ -2022,6 +2022,7 @@ export const CONTEXT_VALIDATION = {
   COMMANDS: {
     WU_CREATE: 'wu:create',
     WU_CLAIM: 'wu:claim',
+    WU_PREP: 'wu:prep',
     WU_DONE: 'wu:done',
     WU_BLOCK: 'wu:block',
     WU_UNBLOCK: 'wu:unblock',

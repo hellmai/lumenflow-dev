@@ -20,6 +20,7 @@
     "gates": "node tools/cli-entry.mjs gates",
     "wu:claim": "node packages/@lumenflow/cli/dist/wu-claim.js",
     "wu:done": "node packages/@lumenflow/cli/dist/wu-done.js",
+    "wu:prep": "node packages/@lumenflow/cli/dist/wu-prep.js",
     "wu:create": "node packages/@lumenflow/cli/dist/wu-create.js",
     "wu:edit": "node packages/@lumenflow/cli/dist/wu-edit.js",
     "wu:block": "node packages/@lumenflow/cli/dist/wu-block.js",
