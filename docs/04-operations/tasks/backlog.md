@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1249 — Fix agent documentation discoverability and completeness](wu/WU-1249.yaml) — Content: Documentation
 - [WU-1248 — Fix no-dynamic-delete lint errors in arg-parser.ts](wu/WU-1248.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
