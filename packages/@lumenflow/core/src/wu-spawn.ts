@@ -69,6 +69,9 @@ import {
 } from './template-loader.js';
 // WU-1261: Import ResolvedPolicy for policy-based template selection
 import type { ResolvedPolicy } from './resolve-policy.js';
+import { resolvePolicy } from './resolve-policy.js';
+// WU-1270: Import telemetry emit function for methodology tracking
+import { emit as emitTelemetry } from './telemetry.js';
 
 /**
  * Mandatory agent trigger patterns.
@@ -1225,6 +1228,34 @@ pnpm typecheck   # Check TypeScript types
 }
 
 /**
+ * WU-1270: Emit methodology telemetry event (opt-in)
+ *
+ * Emits privacy-preserving telemetry about methodology selection.
+ * Only emits if telemetry.methodology.enabled is true in config.
+ *
+ * @param config - LumenFlow configuration
+ * @param policy - Resolved methodology policy
+ */
+export function emitMethodologyTelemetry(config: LumenFlowConfig, policy: ResolvedPolicy): void {
+  // Check if methodology telemetry is opt-in enabled
+  if (!config.telemetry?.methodology?.enabled) {
+    return;
+  }
+
+  const event = {
+    timestamp: new Date().toISOString(),
+    event_type: 'methodology.selection',
+    methodology_testing: policy.testing,
+    methodology_architecture: policy.architecture,
+    event_context: 'spawn',
+  };
+
+  // Use the telemetry emit function from telemetry.ts
+  const METHODOLOGY_LOG = '.lumenflow/telemetry/methodology.ndjson';
+  emitTelemetry(METHODOLOGY_LOG, event);
+}
+
+/**
  * Generate Lane Selection section (WU-2107)
  *
  * Provides guidance on lane selection when creating new WUs.
@@ -1940,6 +1971,10 @@ async function main() {
     console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
     console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
     console.log(invocation);
+
+    // WU-1270: Emit methodology telemetry (opt-in only)
+    const policy = resolvePolicy(config);
+    emitMethodologyTelemetry(config, policy);
 
     // WU-1945: Record spawn event to registry (non-blocking)
     // Only record if --parent-wu is provided (orchestrator context)
