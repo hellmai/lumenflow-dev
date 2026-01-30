@@ -217,20 +217,31 @@ const EDIT_OPTIONS = {
   codePaths: {
     name: 'codePaths',
     flags: '--code-paths <path>',
-    description: 'Code path (repeatable, replaces existing; use --append to add)',
+    description:
+      'Code path (repeatable, appends to existing; use --replace-code-paths to overwrite)',
     isRepeatable: true,
+  },
+  replaceCodePaths: {
+    name: 'replaceCodePaths',
+    flags: '--replace-code-paths',
+    description: 'Replace existing code_paths instead of appending',
   },
   risks: {
     name: 'risks',
     flags: '--risks <risk>',
-    description: 'Risk entry (repeatable, replaces existing; use --append to add)',
+    description: 'Risk entry (repeatable, appends to existing; use --replace-risks to overwrite)',
     isRepeatable: true,
   },
+  replaceRisks: {
+    name: 'replaceRisks',
+    flags: '--replace-risks',
+    description: 'Replace existing risks instead of appending',
+  },
+  // WU-1225: Deprecated --append flag (kept for backwards compatibility)
   append: {
     name: 'append',
     flags: '--append',
-    description:
-      'Append to existing array values instead of replacing (for --code-paths, --test-paths-*, --blocked-by, --add-dep)',
+    description: '[DEPRECATED] Arrays now append by default. Use --replace-* flags to replace.',
   },
   // WU-1456: Add lane reassignment support
   lane: {
@@ -266,13 +277,23 @@ const EDIT_OPTIONS = {
     name: 'blockedBy',
     flags: '--blocked-by <wuIds>',
     description:
-      'Comma-separated WU IDs that block this WU (replaces existing; use --append to add)',
+      'Comma-separated WU IDs that block this WU (appends to existing; use --replace-blocked-by to overwrite)',
+  },
+  replaceBlockedBy: {
+    name: 'replaceBlockedBy',
+    flags: '--replace-blocked-by',
+    description: 'Replace existing blocked_by instead of appending',
   },
   addDep: {
     name: 'addDep',
     flags: '--add-dep <wuIds>',
     description:
-      'Comma-separated WU IDs to add to dependencies array (replaces existing; use --append to add)',
+      'Comma-separated WU IDs to add to dependencies array (appends to existing; use --replace-dependencies to overwrite)',
+  },
+  replaceDependencies: {
+    name: 'replaceDependencies',
+    flags: '--replace-dependencies',
+    description: 'Replace existing dependencies instead of appending',
   },
 };
 
@@ -380,7 +401,9 @@ function parseArgs() {
       EDIT_OPTIONS.replaceNotes,
       EDIT_OPTIONS.replaceAcceptance,
       EDIT_OPTIONS.codePaths,
+      EDIT_OPTIONS.replaceCodePaths,
       EDIT_OPTIONS.risks,
+      EDIT_OPTIONS.replaceRisks,
       EDIT_OPTIONS.append,
       // WU-1390: Add test path flags
       WU_OPTIONS.testPathsManual,
@@ -396,7 +419,9 @@ function parseArgs() {
       EDIT_OPTIONS.phase,
       // WU-2564: Add blocked_by and dependencies
       EDIT_OPTIONS.blockedBy,
+      EDIT_OPTIONS.replaceBlockedBy,
       EDIT_OPTIONS.addDep,
+      EDIT_OPTIONS.replaceDependencies,
       // WU-1039: Add exposure for done WU metadata updates
       WU_OPTIONS.exposure,
     ],
@@ -825,7 +850,7 @@ export function applyEdits(wu, opts) {
     updated.phase = phaseNum;
   }
 
-  // Handle repeatable --code-paths flags (WU-1388: replace by default, append with --append)
+  // Handle repeatable --code-paths flags (WU-1225: append by default, replace with --replace-code-paths)
   // WU-1816: Split comma-separated string into array (same pattern as test paths)
   // WU-1870: Fix to split comma-separated values WITHIN array elements (Commander passes ['a,b'] not 'a,b')
   if (opts.codePaths && opts.codePaths.length > 0) {
@@ -839,10 +864,13 @@ export function applyEdits(wu, opts) {
           .split(',')
           .map((p) => p.trim())
           .filter(Boolean);
-    updated.code_paths = mergeArrayField(wu.code_paths, codePaths, opts.append);
+    // WU-1225: Invert logic - append by default, replace with --replace-code-paths
+    // Also support legacy --append flag for backwards compatibility
+    const shouldAppend = !opts.replaceCodePaths || opts.append;
+    updated.code_paths = mergeArrayField(wu.code_paths, codePaths, shouldAppend);
   }
 
-  // WU-1073: Handle repeatable --risks flags (replace by default, append with --append)
+  // WU-1225: Handle repeatable --risks flags (append by default, replace with --replace-risks)
   // Split comma-separated values within each entry for consistency with other list fields
   if (opts.risks && opts.risks.length > 0) {
     const rawRisks = opts.risks;
@@ -855,10 +883,13 @@ export function applyEdits(wu, opts) {
           .split(',')
           .map((risk) => risk.trim())
           .filter(Boolean);
-    updated.risks = mergeArrayField(wu.risks, risks, opts.append);
+    // WU-1225: Invert logic - append by default
+    const shouldAppend = !opts.replaceRisks || opts.append;
+    updated.risks = mergeArrayField(wu.risks, risks, shouldAppend);
   }
 
   // WU-1390: Handle test path flags (DRY refactor)
+  // WU-1225: Test paths now append by default (consistent with --acceptance and --code-paths)
   const testPathMappings = [
     { optKey: 'testPathsManual', field: 'manual' },
     { optKey: 'testPathsUnit', field: 'unit' },
@@ -880,30 +911,34 @@ export function applyEdits(wu, opts) {
             .map((p) => p.trim())
             .filter(Boolean);
       updated.tests = updated.tests || {};
-      updated.tests[field] = mergeArrayField(wu.tests?.[field], paths, opts.append);
+      // WU-1225: Append by default (no individual replace flags for test paths yet)
+      const shouldAppend = true;
+      updated.tests[field] = mergeArrayField(wu.tests?.[field], paths, shouldAppend);
     }
   }
 
   // WU-2564: Handle --blocked-by flag
-  // Comma-separated WU IDs that block this WU
+  // WU-1225: Append by default, replace with --replace-blocked-by
   if (opts.blockedBy) {
     const rawBlockedBy = opts.blockedBy;
     const blockedByIds = rawBlockedBy
       .split(',')
       .map((id) => id.trim())
       .filter(Boolean);
-    updated.blocked_by = mergeArrayField(wu.blocked_by, blockedByIds, opts.append);
+    const shouldAppend = !opts.replaceBlockedBy || opts.append;
+    updated.blocked_by = mergeArrayField(wu.blocked_by, blockedByIds, shouldAppend);
   }
 
   // WU-2564: Handle --add-dep flag
-  // Comma-separated WU IDs to add to dependencies array
+  // WU-1225: Append by default, replace with --replace-dependencies
   if (opts.addDep) {
     const rawAddDep = opts.addDep;
     const depIds = rawAddDep
       .split(',')
       .map((id) => id.trim())
       .filter(Boolean);
-    updated.dependencies = mergeArrayField(wu.dependencies, depIds, opts.append);
+    const shouldAppend = !opts.replaceDependencies || opts.append;
+    updated.dependencies = mergeArrayField(wu.dependencies, depIds, shouldAppend);
   }
 
   // WU-1039: Handle --exposure flag with validation
@@ -984,21 +1019,20 @@ async function main() {
         '  --description <text>      Update description field\n' +
         '  --acceptance <text>       Append acceptance criteria (repeatable; use --replace-acceptance to overwrite)\n' +
         '  --notes <text>            Append to notes (use --replace-notes to overwrite)\n' +
-        '  --replace-notes           Replace existing notes instead of appending\n' +
-        '  --replace-acceptance      Replace existing acceptance instead of appending\n' +
-        '  --code-paths <paths>      Replace code paths (repeatable; use --append to add)\n' +
-        '  --risks <risk>            Replace risks (repeatable; use --append to add)\n' +
+        '  --code-paths <paths>      Append code paths (repeatable; use --replace-code-paths to overwrite)\n' +
+        '  --risks <risk>            Append risks (repeatable; use --replace-risks to overwrite)\n' +
         '  --lane <lane>             Update lane assignment (e.g., "Operations: Tooling")\n' +
         '  --type <type>             Update WU type (feature, bug, refactor, documentation)\n' +
         '  --priority <priority>     Update priority (P0, P1, P2, P3)\n' +
         '  --initiative <initId>     Update initiative (bidirectional update)\n' +
         '  --phase <number>          Update phase within initiative\n' +
-        '  --test-paths-manual <t>   Add manual test descriptions (repeatable; use --append to add)\n' +
-        '  --test-paths-unit <path>  Add unit test paths (repeatable; use --append to add)\n' +
-        '  --test-paths-e2e <path>   Add e2e test paths (repeatable; use --append to add)\n' +
-        '  --blocked-by <wuIds>      WU IDs that block this WU (comma-separated; use --append to add)\n' +
-        '  --add-dep <wuIds>         Add WU IDs to dependencies (comma-separated; use --append to add)\n' +
-        '  --exposure <type>         Update exposure level (ui, api, backend-only, documentation)',
+        '  --test-paths-manual <t>   Append manual test descriptions (repeatable)\n' +
+        '  --test-paths-unit <path>  Append unit test paths (repeatable)\n' +
+        '  --test-paths-e2e <path>   Append e2e test paths (repeatable)\n' +
+        '  --blocked-by <wuIds>      Append WU IDs that block this WU (use --replace-blocked-by to overwrite)\n' +
+        '  --add-dep <wuIds>         Append WU IDs to dependencies (use --replace-dependencies to overwrite)\n' +
+        '  --exposure <type>         Update exposure level (ui, api, backend-only, documentation)\n\n' +
+        'Note: All array fields now append by default (WU-1225). Use --replace-* flags to overwrite.',
     );
   }
 
