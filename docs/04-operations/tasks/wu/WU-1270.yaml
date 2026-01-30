@@ -8,10 +8,12 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/metrics/src/methodology-telemetry.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/metrics/src/index.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/metrics/src/__tests__/methodology-telemetry.test.ts
+    - packages/@lumenflow/metrics/__tests__/methodology-telemetry.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1270.done
