@@ -2,7 +2,7 @@ id: WU-1264
 title: Fix ai-integrations.mdx MDX syntax error
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,6 +25,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The ai-integrations.mdx file has an invalid MDX syntax error - an Aside component is not closed properly at line 142, which blocks the docs build.
+description: The ai-integrations.mdx file has an invalid MDX syntax error - an Aside component is
+  not closed properly at line 142, which blocks the docs build.
 acceptance:
   - Docs build without errors
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1264
+claimed_at: 2026-01-30T18:43:20.988Z
+baseline_main_sha: c0e2a71e3905774f788a6fc191f09c379b4793b2
+session_id: 109f3d31-60ae-437d-a984-02aabd9f8ecf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T18:43:20.995Z
