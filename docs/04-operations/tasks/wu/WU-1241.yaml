@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1241.done
 dependencies: []
+initiative: INIT-008
+phase: 1
 risks: []
 notes: ''
 requires_review: false
@@ -46,4 +48,3 @@ acceptance:
   - Unit tests verify API wiring and status formatting
   - Integration test confirms stuck detection works
   - Documentation updated
-initiative: INIT-008
