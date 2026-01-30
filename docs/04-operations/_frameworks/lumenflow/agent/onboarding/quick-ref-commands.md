@@ -27,20 +27,22 @@
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                                                             | Claim WU (auto-merges spec branch if needed)         |
 | `pnpm wu:spawn --id WU-XXX --client <client>`                                                                                                                                                                         | Spawn sub-agent prompt with client guidance          |
 | `pnpm wu:edit --id WU-1039 --exposure backend-only`                                                                                                                                                                   | Edit WU spec (supports exposure updates on done WUs) |
-| `pnpm wu:done --id WU-XXX`                                                                                                                                                                                            | Complete WU (merge, stamp, cleanup) - primary method |
+| `pnpm wu:prep --id WU-XXX`                                                                                                                                                                                            | Run gates in worktree, prep for wu:done (WU-1223)    |
+| `pnpm wu:done --id WU-XXX`                                                                                                                                                                                            | Complete WU (merge, stamp, cleanup) - from main only |
 | `pnpm wu:block --id WU-XXX --reason "Reason"`                                                                                                                                                                         | Block a WU                                           |
 | `pnpm wu:unblock --id WU-XXX`                                                                                                                                                                                         | Unblock a WU                                         |
 | `pnpm wu:cleanup --id WU-XXX`                                                                                                                                                                                         | PR-only: cleanup after PR merge (see note below)     |
 | `pnpm wu:cleanup --artifacts`                                                                                                                                                                                         | Remove build artifacts in current worktree           |
 
-### wu:done vs wu:cleanup
+### wu:prep vs wu:done vs wu:cleanup (WU-1223)
 
-**IMPORTANT:** Use `wu:done` for completing WUs. `wu:cleanup` is NOT a replacement for `wu:done`.
+**NEW WORKFLOW:** Use `wu:prep` from worktree, then `wu:done` from main.
 
-| Command      | Purpose                                    | When to Use                    |
-| ------------ | ------------------------------------------ | ------------------------------ |
-| `wu:done`    | Complete WU: run gates, merge, stamp, push | Always use this to finish a WU |
-| `wu:cleanup` | Remove worktree/branch after PR merge      | PR-based workflows only (rare) |
+| Command      | Location | Purpose                                    |
+| ------------ | -------- | ------------------------------------------ |
+| `wu:prep`    | Worktree | Run gates, print copy-paste instruction    |
+| `wu:done`    | Main     | Merge, stamp, push, cleanup worktree       |
+| `wu:cleanup` | Main     | Remove worktree/branch after PR merge only |
 
 **wu:cleanup is PR-only:** When `gh` CLI is available, `wu:cleanup` requires the PR to be merged before it will run. It checks the PR merge status via GitHub API and blocks if the PR is not merged. This prevents accidental cleanup of work-in-progress WUs.
 
@@ -145,12 +147,12 @@ git add .
 git commit -m "feat: add feature"
 git push origin lane/framework-core/wu-001
 
-# 5. Gates
-pnpm gates
+# 5. Prep (WU-1223: runs gates in worktree)
+pnpm wu:prep --id WU-001
+# This prints: cd /path/to/main && pnpm wu:done --id WU-001
 
-# 6. Complete
-cd /path/to/main
-pnpm wu:done --id WU-001
+# 6. Complete (copy-paste from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-001
 ```
 
 ---

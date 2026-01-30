@@ -8,11 +8,14 @@ For complete workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 
 ---
 
-## Critical Rule: ALWAYS Run wu:done
+## Critical Rule: Use wu:prep Then wu:done (WU-1223)
 
-**After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
+**NEW WORKFLOW - Two-step completion:**
 
-This is the single most forgotten step. See [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md).
+1. From worktree: `pnpm wu:prep --id WU-XXXX` (runs gates, prints copy-paste instruction)
+2. From main: `pnpm wu:done --id WU-XXXX` (merge + cleanup only)
+
+See [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md).
 
 ---
 
@@ -32,13 +35,12 @@ cd worktrees/<lane>-wu-xxxx
 
 # 4. Implement in worktree
 
-# 5. Run gates
-pnpm gates --docs-only  # for docs changes
-pnpm gates              # for code changes (requires built CLI in worktree)
+# 5. Run wu:prep (gates + docs in worktree) - WU-1223 NEW
+pnpm wu:prep --id WU-XXXX
+# This prints a copy-paste instruction for step 6
 
-# 6. Complete (from main) - DO NOT SKIP THIS!
-cd /home/tom/source/hellmai/os
-pnpm wu:done --id WU-XXXX
+# 6. Complete (from main) - copy-paste from wu:prep output
+cd /home/tom/source/hellmai/os && pnpm wu:done --id WU-XXXX
 ```
 
 ---
@@ -80,6 +82,7 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 | `pnpm setup`          | Install deps and build CLI               |
 | `pnpm wu:create`      | Create new WU spec                       |
 | `pnpm wu:claim`       | Claim WU and create worktree             |
+| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done  |
 | `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)      |
 | `pnpm wu:status`      | Show WU status, location, valid commands |
 | `pnpm wu:recover`     | Analyze and fix WU state inconsistencies |

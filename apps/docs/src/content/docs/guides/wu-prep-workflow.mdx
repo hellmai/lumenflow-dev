@@ -1,0 +1,129 @@
+---
+title: WU Prep Workflow
+description: Two-step completion workflow with wu:prep and wu:done (WU-1223)
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid, Code } from '@astrojs/starlight/components';
+
+As of WU-1223, completing a Work Unit is a two-step process. This guide explains the new workflow.
+
+## Why Two Steps?
+
+The previous single-step `wu:done` ran gates on main, which could cause issues with worktree isolation. The new workflow:
+
+1. **`wu:prep`** runs gates in the worktree (where your changes are)
+2. **`wu:done`** does merge and cleanup from main
+
+This ensures gates validate your actual changes, not stale main code.
+
+## The Workflow
+
+<Steps>
+
+1. **Work in your worktree**
+
+   Complete your implementation, write tests, commit changes.
+
+2. **Run wu:prep from worktree**
+
+   ```bash
+   pnpm wu:prep --id WU-123
+   ```
+
+   This command:
+   - Validates you're in a worktree
+   - Runs quality gates
+   - Prints a copy-paste instruction for the next step
+
+3. **Run wu:done from main (copy-paste)**
+
+   Copy the command printed by `wu:prep`:
+
+   ```bash
+   cd /path/to/main && pnpm wu:done --id WU-123
+   ```
+
+   This command:
+   - Validates you're in main checkout
+   - Fast-forward merges your changes
+   - Creates completion stamp
+   - Removes the worktree
+
+</Steps>
+
+## Command Reference
+
+### wu:prep
+
+Prepares a WU for completion by running gates in the worktree.
+
+```bash
+pnpm wu:prep --id WU-123 [--docs-only]
+```
+
+| Flag | Description |
+|------|-------------|
+| `--id` | WU ID (required) |
+| `--docs-only` | Run docs-only gates (format, spec-linter) |
+
+**Must be run from worktree** - errors if run from main.
+
+### wu:done
+
+Completes a WU by merging and cleaning up.
+
+```bash
+pnpm wu:done --id WU-123
+```
+
+| Flag | Description |
+|------|-------------|
+| `--id` | WU ID (required) |
+| `--skip-gates` | Skip gates (emergency only, requires --reason) |
+
+**Must be run from main** - errors if run from worktree.
+
+## Error Messages
+
+<Aside type="caution" title="wu:done from worktree">
+If you see "wu:done must be run from main checkout", you ran wu:done from a worktree. Use `wu:prep` instead, then follow its copy-paste instruction.
+</Aside>
+
+<Aside type="caution" title="wu:prep from main">
+If you see "wu:prep must be run from a worktree", navigate to your worktree first with `cd worktrees/<lane>-wu-xxx`.
+</Aside>
+
+## Migration Notes
+
+### Before WU-1223
+
+```bash
+# Old workflow (single step)
+cd /path/to/main
+pnpm wu:done --id WU-123  # Ran gates on main
+```
+
+### After WU-1223
+
+```bash
+# New workflow (two steps)
+# Step 1: From worktree
+pnpm wu:prep --id WU-123
+
+# Step 2: From main (copy-paste from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-123
+```
+
+## FAQ
+
+### Can I skip wu:prep?
+
+No. If you run `wu:done` from main without running `wu:prep` first, gates won't have run in the worktree where your changes are. The previous behavior of running gates on main has been removed.
+
+### What if gates fail in wu:prep?
+
+Fix the issues in your worktree, then run `wu:prep` again. The workflow prevents partial completions.
+
+### Does this change skip-gates?
+
+If you need to use `--skip-gates`, run `wu:done` directly from main with the `--reason` flag. This is for emergency use only when pre-existing failures block completion.

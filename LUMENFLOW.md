@@ -8,17 +8,18 @@ LumenFlow is a vendor-agnostic workflow framework for AI-native software develop
 
 ---
 
-## Critical Rule: ALWAYS Run wu:done
+## Critical Rule: Use wu:prep Then wu:done
 
-**After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
+**WU-1223 NEW WORKFLOW:**
 
-This is the single most forgotten step. Do NOT:
+1. From worktree: `pnpm wu:prep --id WU-XXXX` (runs gates, prints copy-paste instruction)
+2. From main: `pnpm wu:done --id WU-XXXX` (merge + cleanup only)
 
-- Write "To Complete: pnpm wu:done" and stop
-- Ask if you should run wu:done
-- Forget to run wu:done
+**DO NOT:**
 
-**DO**: Run `pnpm wu:done --id WU-XXXX` immediately after gates pass.
+- Run `wu:done` from a worktree (it will error)
+- Forget to run `wu:done` after `wu:prep`
+- Skip `wu:prep` and go directly to `wu:done` (gates won't run in worktree)
 
 See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
 
@@ -42,13 +43,12 @@ cd worktrees/<lane>-wu-xxxx
 
 # 4. Implement in worktree
 
-# 5. Run gates
-pnpm gates --docs-only  # for docs changes
-pnpm gates              # for code changes
+# 5. Prepare (runs gates in worktree) - WU-1223 NEW
+pnpm wu:prep --id WU-XXXX
+# This prints a copy-paste instruction for the next step
 
-# 6. Complete (from main checkout)
-cd /path/to/main
-pnpm wu:done --id WU-XXXX
+# 6. Complete (from main checkout - copy-paste from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-XXXX
 ```
 
 ---
