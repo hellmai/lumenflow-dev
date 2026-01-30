@@ -1,6 +1,6 @@
-# Cline LumenFlow Rules
+# Cursor LumenFlow Rules
 
-This project uses LumenFlow workflow. See [LUMENFLOW.md](LUMENFLOW.md).
+This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
 
 ## Critical Rules
 
@@ -31,7 +31,7 @@ cd /path/to/repo
 pnpm wu:done --id WU-XXX
 ```
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 ---
 

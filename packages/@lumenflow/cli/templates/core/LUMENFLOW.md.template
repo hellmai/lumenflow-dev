@@ -129,7 +129,9 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ---
 
-## Commands Reference
+## Core Commands
+
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](ai/onboarding/quick-ref-commands.md)
 
 | Command                         | Description                                            |
 | ------------------------------- | ------------------------------------------------------ |
@@ -159,7 +161,7 @@ When validation fails, commands provide copy-paste ready fix commands:
 ERROR: WRONG_LOCATION - wu:done must be run from main checkout
 
 FIX: Run this command:
-  cd /home/user/repo && pnpm wu:done --id WU-1090
+  cd {{PROJECT_ROOT}} && pnpm wu:done --id WU-1090
 ```
 
 Configure validation behavior in `.lumenflow.config.yaml`:
