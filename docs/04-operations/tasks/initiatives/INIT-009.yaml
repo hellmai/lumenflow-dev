@@ -31,7 +31,5 @@ success_metrics:
   - wu:spawn output stays consistent with resolved gate plan
   - Explicit gates.* overrides still work
 labels: []
-notes:
-  - 'Blocked by WU-1253 (template extraction). See plan: lumenflow://plans/linear-moseying-comet.md'
-  - 'WU-1253 complete. Template infrastructure ready. See plan:
-    lumenflow://plans/linear-moseying-comet.md'
+wus:
+  - WU-1263
