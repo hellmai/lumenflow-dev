@@ -30,7 +30,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow has mem:triage to promote discoveries into WUs. But there is no mechanism to promote session learnings into project-level knowledge that persists across WUs. Problem: Patterns discovered in WU-1200 are not available in WU-1500. Mistakes made once get repeated. Cross-WU knowledge transfer does not exist. Solution: Two complementary commands: (1) mem:promote - Turn WU/session learnings into project-level nodes. Input: nodeId or WU id. Output: new summary/note node with lifecycle=project. Provenance: relationship discovered_from or related back to source. Taxonomy tags (enforced): decision, convention, pattern, pitfall, interface, invariant, faq. (2) mem:profile - Render top N project knowledge for injection. Aggregates promoted items. Used by mem:context to build project profile section. Supports filtering by tag category. Output format matches mem:context expectations. Mirrors mem:triage pattern (existing code). Promotion is explicit (not automatic) to ensure quality.'
+description: 'Context: LumenFlow has mem:triage to promote discoveries into WUs. But there is no
+  mechanism to promote session learnings into project-level knowledge that persists across WUs.
+  Problem: Patterns discovered in WU-1200 are not available in WU-1500. Mistakes made once get
+  repeated. Cross-WU knowledge transfer does not exist. Solution: Two complementary commands: (1)
+  mem:promote - Turn WU/session learnings into project-level nodes. Input: nodeId or WU id. Output:
+  new summary/note node with lifecycle=project. Provenance: relationship discovered_from or related
+  back to source. Taxonomy tags (enforced): decision, convention, pattern, pitfall, interface,
+  invariant, faq. (2) mem:profile - Render top N project knowledge for injection. Aggregates
+  promoted items. Used by mem:context to build project profile section. Supports filtering by tag
+  category. Output format matches mem:context expectations. Mirrors mem:triage pattern (existing
+  code). Promotion is explicit (not automatic) to ensure quality.'
 acceptance:
   - mem:promote --node mem-xxxx creates project-level node from source
   - mem:promote --wu WU-XXXX promotes all summaries from that WU
@@ -42,3 +52,4 @@ acceptance:
   - --dry-run shows what would be promoted without writing
   - Unit tests cover promotion logic and profile aggregation
   - Documentation updated in memory package README
+initiative: INIT-008
