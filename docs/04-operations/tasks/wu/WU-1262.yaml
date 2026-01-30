@@ -2,7 +2,7 @@ id: WU-1262
 title: Integrate resolvePolicy() with gates enforcement
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -60,3 +60,5 @@ session_id: 0fe4c54a-afca-4b03-8f36-70b7c36e1aa1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T20:33:28.644Z
+locked: true
+completed_at: 2026-01-30T20:47:01.858Z
