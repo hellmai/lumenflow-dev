@@ -8,6 +8,9 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/core/src/config-schema.ts
   - packages/@lumenflow/core/src/resolve-policy.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/resolve-policy.ts
+  - packages/@lumenflow/core/src/index.ts
 tests:
   manual: []
   unit:
@@ -30,14 +33,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Add methodology.* config schema to .lumenflow.config.yaml and implement resolvePolicy() function that produces a resolved policy used by both wu:spawn and gates. This is the single source of truth for methodology decisions.
+description: >-
+  Add methodology.* config schema to .lumenflow.config.yaml and implement resolvePolicy() function
+  that produces a resolved policy used by both wu:spawn and gates. This is the single source of
+  truth for methodology decisions.
+
 
   Config schema:
+
   - methodology.testing: 'tdd' | 'test-after' | 'none' (default: 'tdd')
+
   - methodology.architecture: 'hexagonal' | 'layered' | 'none' (default: 'hexagonal')
+
   - methodology.overrides.coverage_threshold: number
+
   - methodology.overrides.coverage_mode: 'block' | 'warn' | 'off'
+
 
   Precedence: template defaults → methodology.overrides → explicit gates.* → CLI flags
 acceptance:
