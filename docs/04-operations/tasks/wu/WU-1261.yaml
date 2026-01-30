@@ -2,7 +2,7 @@ id: WU-1261
 title: Integrate resolvePolicy() with wu:spawn template assembly
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - Architecture template selected based on policy.architecture value
   - Spawn prompt includes generated enforcement summary from resolved policy
   - Existing spawn output unchanged when using default methodology (tdd, hexagonal)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1261
+claimed_at: 2026-01-30T19:53:56.688Z
+baseline_main_sha: 7508ed2c753af0a4d3a736c80f668c64f86779f6
+session_id: c6db9096-cbf4-41c9-9eff-03426b74eee2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T19:53:56.695Z
