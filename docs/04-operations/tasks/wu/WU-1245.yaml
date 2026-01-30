@@ -2,7 +2,7 @@ id: WU-1245
 title: Fix pre-push hook to allow micro-worktree operations
 lane: 'Operations: CI/CD'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:delete uses micro-worktree isolation like wu:create. Problem: Pre-push hook blocks wu:delete pushes but allows wu:create. The hook does not recognize micro-worktree operations from wu:delete. Solution: Update pre-push hook to allow micro-worktree pushes from all CLI commands (wu:create, wu:delete, wu:edit, etc.).'
+description: 'Context: wu:delete uses micro-worktree isolation like wu:create. Problem: Pre-push
+  hook blocks wu:delete pushes but allows wu:create. The hook does not recognize micro-worktree
+  operations from wu:delete. Solution: Update pre-push hook to allow micro-worktree pushes from all
+  CLI commands (wu:create, wu:delete, wu:edit, etc.).'
 acceptance:
   - wu:delete can push without LUMENFLOW_FORCE
   - Hook recognizes micro-worktree pattern from all CLI commands
   - wu:create still works (regression test)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1245
+claimed_at: 2026-01-30T12:36:51.841Z
+baseline_main_sha: 2cbcd94085fc841d712689ac0ad88e764686fdb4
+session_id: dd481f5a-0a66-4c69-bee9-a6a5909ada05
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T12:36:51.847Z

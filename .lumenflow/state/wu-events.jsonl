@@ -431,3 +431,4 @@
 {"type":"complete","wuId":"WU-1233","timestamp":"2026-01-30T12:19:41.228Z"}
 {"type":"claim","wuId":"WU-1243","lane":"Framework: CLI","title":"Wire missing CLI commands to package.json","timestamp":"2026-01-30T12:33:53.705Z"}
 {"type":"claim","wuId":"WU-1244","lane":"Content: Documentation","title":"Update quick-ref-commands.md with ALL CLI commands","timestamp":"2026-01-30T12:35:36.384Z"}
+{"type":"claim","wuId":"WU-1245","lane":"Operations: CI/CD","title":"Fix pre-push hook to allow micro-worktree operations","timestamp":"2026-01-30T12:36:51.861Z"}
