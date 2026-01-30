@@ -38,7 +38,6 @@ sections:
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 - [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
-- [WU-1247 — Add gates docs-check for CLI/API changes requiring documentation](wu/WU-1247.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
