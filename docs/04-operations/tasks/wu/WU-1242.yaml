@@ -46,3 +46,4 @@ acceptance:
   - Status summary printed at each patrol cycle
   - Unit tests verify watch mode/backoff logic
   - Documentation updated
+initiative: INIT-008
