@@ -1255,6 +1255,23 @@ export const EXIT_CODES = {
 };
 
 /**
+ * Stream error codes
+ *
+ * WU-1233: Error codes for stream operations (stdout/stderr).
+ * Used by StreamErrorHandler for graceful pipe closure handling.
+ */
+export const STREAM_ERRORS = {
+  /**
+   * EPIPE error code
+   *
+   * Occurs when writing to a pipe whose read end has been closed.
+   * This is normal behavior when CLI output is piped through head/tail.
+   * Unix convention: exit with code 0 on EPIPE (consumer got what it needed).
+   */
+  EPIPE: 'EPIPE',
+} as const;
+
+/**
  * ESLint command names
  *
  * Centralized ESLint command strings.
