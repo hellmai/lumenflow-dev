@@ -178,6 +178,10 @@ export * from './force-bypass-audit.js';
 // WU-1075: LumenFlow directory paths (exported from wu-constants)
 export { LUMENFLOW_PATHS, BEACON_PATHS } from './wu-constants.js';
 
+// WU-1233: Stream error handling (EPIPE protection)
+export { STREAM_ERRORS, EXIT_CODES } from './wu-constants.js';
+export * from './stream-error-handler.js';
+
 // WU-1085: Color support for NO_COLOR/FORCE_COLOR/--no-color
 export * from './color-support.js';
 

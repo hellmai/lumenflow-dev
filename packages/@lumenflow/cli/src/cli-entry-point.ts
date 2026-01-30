@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- CLI entry point uses console for error output */
 /**
  * Shared CLI entry point wrapper
  *
@@ -12,6 +13,10 @@
  *
  * WU-1085: Initializes color support respecting NO_COLOR/FORCE_COLOR/--no-color
  *
+ * WU-1233: Adds EPIPE protection for pipe resilience. When CLI output is piped
+ * through head/tail, the pipe may close before all output is written. Without
+ * this protection, Node.js throws unhandled EPIPE errors crashing the process.
+ *
  * @example
  * ```typescript
  * // At the bottom of each CLI file:
@@ -23,16 +28,22 @@
  * ```
  */
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
-import { initColorSupport } from '@lumenflow/core';
+import { initColorSupport, StreamErrorHandler } from '@lumenflow/core';
 
 /**
  * Wraps an async main function with proper error handling.
  * WU-1085: Also initializes color support based on NO_COLOR/FORCE_COLOR/--no-color
+ * WU-1233: Attaches EPIPE handler for graceful pipe closure
  *
  * @param main - The async main function to execute
  * @returns Promise that resolves when main completes (or after error handling)
  */
 export async function runCLI(main: () => Promise<void>): Promise<void> {
+  // WU-1233: Attach EPIPE handler before running command
+  // This must be done early to catch any EPIPE errors during execution
+  const streamErrorHandler = StreamErrorHandler.createWithDefaults();
+  streamErrorHandler.attach();
+
   // WU-1085: Initialize color support before running command
   initColorSupport();
 
