@@ -40,7 +40,6 @@ sections:
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
-- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -49,6 +48,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
+- [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
