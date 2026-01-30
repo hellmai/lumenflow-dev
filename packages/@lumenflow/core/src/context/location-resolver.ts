@@ -64,7 +64,8 @@ export async function resolveLocation(cwd: string = process.cwd()): Promise<Loca
     const gitDir = (await git.revparse(['--git-dir'])).trim();
 
     // Detect if we're in a worktree (in worktrees, .git is a file not a dir)
-    const isWorktree = isGitDirFile(gitDir);
+    // WU-1223: Fixed - check .git in gitRoot, not the gitDir path returned by rev-parse
+    const isWorktree = isGitDirFile(resolve(gitRoot, '.git'));
     const mainCheckout = isWorktree ? await findMainCheckout(git) : gitRoot;
 
     // Parse worktree info
