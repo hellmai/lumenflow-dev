@@ -455,4 +455,5 @@
 {"type":"complete","wuId":"WU-1256","timestamp":"2026-01-30T17:43:16.480Z"}
 {"type":"claim","wuId":"WU-1258","timestamp":"2026-01-30T18:30:01.468Z","lane":"Content: Documentation","title":"Document template system for wu:spawn prompt customization"}
 {"type":"complete","wuId":"WU-1258","timestamp":"2026-01-30T18:37:15.221Z"}
-{"type":"claim","wuId":"WU-1264","lane":"Content: Documentation","title":"Fix ai-integrations.mdx MDX syntax error","timestamp":"2026-01-30T18:43:21.016Z"}
+{"type":"claim","wuId":"WU-1264","timestamp":"2026-01-30T18:43:21.016Z","lane":"Content: Documentation","title":"Fix ai-integrations.mdx MDX syntax error"}
+{"type":"complete","wuId":"WU-1264","timestamp":"2026-01-30T18:48:36.758Z"}

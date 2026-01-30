@@ -46,6 +46,7 @@ sections:
 - [WU-1261 — Integrate resolvePolicy() with wu:spawn template assembly](wu/WU-1261.yaml) — Framework: Core
 - [WU-1262 — Integrate resolvePolicy() with gates enforcement](wu/WU-1262.yaml) — Framework: Core
 - [WU-1263 — Document methodology configurability in public and internal docs](wu/WU-1263.yaml) — Content: Documentation
+- [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -53,7 +54,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1264 — Fix ai-integrations.mdx MDX syntax error](wu/WU-1264.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -281,3 +281,4 @@ sections:
 - [WU-1253 — Implement test ratchet pattern with baseline comparison and agent guidance](wu/WU-1253.yaml)
 - [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml)
 - [WU-1258 — Document template system for wu:spawn prompt customization](wu/WU-1258.yaml)
+- [WU-1264 — Fix ai-integrations.mdx MDX syntax error](wu/WU-1264.yaml)
