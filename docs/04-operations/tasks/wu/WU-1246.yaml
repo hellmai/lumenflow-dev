@@ -1,0 +1,38 @@
+id: WU-1246
+title: Auto-generate WU IDs in wu:create when --id not provided
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/core/src/wu-id-generator.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-id-generator.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-create-auto-id.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1246.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Currently wu:create requires --id WU-XXXX to be specified manually. This leads to collisions when multiple agents work in parallel, requires checking existing IDs, and creates friction. Problem: Manual ID assignment is error-prone and unnecessary coordination overhead. Agents must check backlog for next available ID before creating WUs. Solution: Make --id optional. When omitted, wu:create should auto-generate the next available WU ID by scanning existing WU YAMLs, finding the highest numeric ID, and incrementing. Output the generated ID so the user knows what was created. Keep --id as optional override for specific cases (e.g., reserving a block of IDs).'
+acceptance:
+  - wu:create works without --id flag
+  - Auto-generated ID is next sequential after highest existing WU-NNNN
+  - Generated ID printed clearly in output
+  - --id flag still works as explicit override
+  - Concurrent wu:create calls handle race conditions (retry on conflict)
+  - Unit tests cover ID generation and conflict handling
+  - Documentation updated
