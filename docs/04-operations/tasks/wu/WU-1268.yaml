@@ -1,13 +1,15 @@
 id: WU-1268
 title: CHANGELOG and release notes for methodology configurability
 lane: 'Content: Documentation'
-type: documentation
+type: chore
 status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
   - CHANGELOG.md
-  - apps/docs/src/content/docs/releases/
+  - apps/docs/src/content/docs/reference/changelog.mdx
+  - apps/docs/src/content/docs/releases/index.mdx
+  - apps/docs/src/content/docs/releases/v2.2.0.mdx
 tests:
   manual:
     - Verify changelog renders correctly
