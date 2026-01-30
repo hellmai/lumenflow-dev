@@ -37,7 +37,7 @@
     "wu:deps": "node packages/@lumenflow/cli/dist/wu-deps.js",
     "wu:infer-lane": "node packages/@lumenflow/cli/dist/wu-infer-lane.js",
     "lane:health": "node packages/@lumenflow/cli/dist/lane-health.js",
-    "spec:linter": "node packages/@lumenflow/cli/dist/wu-validate.js --all",
+    "spec:linter": "node tools/cli-entry.mjs wu-validate --all",
     "prompts:lint": "echo 'prompts:lint: no prompt files to lint (stub)' && exit 0",
     "cos:gates": "echo 'cos:gates: COS governance not configured (stub)' && exit 0",
     "tasks:validate": "echo 'tasks:validate: no task validation (stub)' && exit 0",
