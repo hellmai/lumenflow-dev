@@ -20,6 +20,8 @@ artifacts:
   - .lumenflow/stamps/WU-1240.done
 dependencies:
   - WU-1234
+initiative: INIT-008
+phase: 2
 risks: []
 notes: ''
 requires_review: false
@@ -49,4 +51,3 @@ acceptance:
   - Unit tests verify integration logic
   - Integration test confirms spawned agent receives context
   - Documentation updated
-initiative: INIT-008
