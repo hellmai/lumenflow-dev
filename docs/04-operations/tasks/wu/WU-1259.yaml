@@ -6,10 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
-  - packages/@lumenflow/core/src/config-schema.ts
   - packages/@lumenflow/core/src/resolve-policy.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/core/src/resolve-policy.ts
   - packages/@lumenflow/core/src/index.ts
 tests:
   manual: []
@@ -52,7 +50,7 @@ description: >-
 
   Precedence: template defaults → methodology.overrides → explicit gates.* → CLI flags
 acceptance:
-  - methodology.* schema added to config-schema.ts with Zod validation
+  - methodology.* schema added to lumenflow-config-schema.ts with Zod validation
   - resolvePolicy(config) function returns ResolvedPolicy type
   - Default values preserve current strict behavior (tdd, hexagonal, 90% coverage)
   - Explicit gates.* overrides still take precedence over methodology defaults
