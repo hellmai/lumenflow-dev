@@ -416,3 +416,4 @@
 {"type":"block","wuId":"WU-1223","timestamp":"2026-01-30T00:00:00.000Z","reason":"Stale lock - freeing lane for P0 bug WU-1226"}
 {"type":"claim","wuId":"WU-1226","timestamp":"2026-01-30T09:19:01.280Z","lane":"Framework: CLI","title":"wu:recover modifies files directly on main (should use micro-worktree)"}
 {"type":"complete","wuId":"WU-1226","timestamp":"2026-01-30T09:30:07.257Z"}
+{"type":"unblock","wuId":"WU-1223","timestamp":"2026-01-30T09:35:48.659Z"}
