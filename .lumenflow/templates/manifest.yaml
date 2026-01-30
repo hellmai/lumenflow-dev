@@ -1,4 +1,4 @@
-# Template Manifest (WU-1253)
+# Template Manifest (WU-1253, WU-1260)
 #
 # Defines assembly order for wu:spawn prompt templates.
 # Templates are assembled in ascending order by their 'order' field.
@@ -6,6 +6,11 @@
 # Override Resolution:
 #   1. .lumenflow/templates.{client}/spawn-prompt/{template}.md (highest)
 #   2. .lumenflow/templates/spawn-prompt/{template}.md (base)
+#
+# Methodology Templates (WU-1260):
+#   Templates in methodology/ and architecture/ are selected based on
+#   resolved policy from .lumenflow.config.yaml methodology settings.
+#   Conditions use policy.testing and policy.architecture context values.
 
 version: '1.0'
 
@@ -14,7 +19,52 @@ defaults:
 
 templates:
   # ─────────────────────────────────────────────────────────────────────
+  # Phase 0: Methodology directives (order 5)
+  # Mutually exclusive based on policy.testing
+  # ─────────────────────────────────────────────────────────────────────
+  - id: methodology-tdd
+    path: spawn-prompt/methodology/tdd-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'tdd'"
+
+  - id: methodology-test-after
+    path: spawn-prompt/methodology/test-after-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'test-after'"
+
+  - id: methodology-none
+    path: spawn-prompt/methodology/none-directive.md
+    required: false
+    order: 5
+    condition: "policy.testing === 'none'"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Phase 0.5: Architecture directives (order 6)
+  # Mutually exclusive based on policy.architecture
+  # ─────────────────────────────────────────────────────────────────────
+  - id: architecture-hexagonal
+    path: spawn-prompt/architecture/hexagonal-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'hexagonal'"
+
+  - id: architecture-layered
+    path: spawn-prompt/architecture/layered-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'layered'"
+
+  - id: architecture-none
+    path: spawn-prompt/architecture/none-directive.md
+    required: false
+    order: 6
+    condition: "policy.architecture === 'none'"
+
+  # ─────────────────────────────────────────────────────────────────────
   # Phase 1: Type-specific directives (order 10-50)
+  # Fallback TDD directive for backward compatibility when no policy set
   # ─────────────────────────────────────────────────────────────────────
   - id: tdd-directive
     path: spawn-prompt/tdd-directive.md

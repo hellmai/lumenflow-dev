@@ -733,5 +733,337 @@ Test content.
       expect(evaluateCondition("laneParent === 'Framework'", context)).toBe(true);
       expect(evaluateCondition("laneParent === 'Operations'", context)).toBe(false);
     });
+
+    it('should evaluate policy.testing conditions for methodology templates (WU-1260)', () => {
+      const tddContext = { type: 'feature', 'policy.testing': 'tdd' };
+      const testAfterContext = { type: 'feature', 'policy.testing': 'test-after' };
+      const noneContext = { type: 'feature', 'policy.testing': 'none' };
+
+      // TDD template condition
+      const tddCondition = "policy.testing === 'tdd'";
+      expect(evaluateCondition(tddCondition, tddContext)).toBe(true);
+      expect(evaluateCondition(tddCondition, testAfterContext)).toBe(false);
+      expect(evaluateCondition(tddCondition, noneContext)).toBe(false);
+
+      // test-after template condition
+      const testAfterCondition = "policy.testing === 'test-after'";
+      expect(evaluateCondition(testAfterCondition, tddContext)).toBe(false);
+      expect(evaluateCondition(testAfterCondition, testAfterContext)).toBe(true);
+      expect(evaluateCondition(testAfterCondition, noneContext)).toBe(false);
+
+      // none template condition
+      const noneCondition = "policy.testing === 'none'";
+      expect(evaluateCondition(noneCondition, tddContext)).toBe(false);
+      expect(evaluateCondition(noneCondition, testAfterContext)).toBe(false);
+      expect(evaluateCondition(noneCondition, noneContext)).toBe(true);
+    });
+
+    it('should evaluate policy.architecture conditions for architecture templates (WU-1260)', () => {
+      const hexContext = { type: 'feature', 'policy.architecture': 'hexagonal' };
+      const layeredContext = { type: 'feature', 'policy.architecture': 'layered' };
+      const noneContext = { type: 'feature', 'policy.architecture': 'none' };
+
+      // Hexagonal template condition
+      const hexCondition = "policy.architecture === 'hexagonal'";
+      expect(evaluateCondition(hexCondition, hexContext)).toBe(true);
+      expect(evaluateCondition(hexCondition, layeredContext)).toBe(false);
+      expect(evaluateCondition(hexCondition, noneContext)).toBe(false);
+
+      // Layered template condition
+      const layeredCondition = "policy.architecture === 'layered'";
+      expect(evaluateCondition(layeredCondition, hexContext)).toBe(false);
+      expect(evaluateCondition(layeredCondition, layeredContext)).toBe(true);
+      expect(evaluateCondition(layeredCondition, noneContext)).toBe(false);
+
+      // None template condition
+      const noneCondition = "policy.architecture === 'none'";
+      expect(evaluateCondition(noneCondition, hexContext)).toBe(false);
+      expect(evaluateCondition(noneCondition, layeredContext)).toBe(false);
+      expect(evaluateCondition(noneCondition, noneContext)).toBe(true);
+    });
+  });
+
+  describe('methodology templates (WU-1260)', () => {
+    it('should load methodology templates from methodology/ subdirectory', () => {
+      // Create methodology templates
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/methodology/tdd-directive.md',
+        `---
+id: methodology-tdd
+name: TDD Directive
+required: false
+order: 10
+condition: "policy.testing === 'tdd'"
+---
+
+## TDD DIRECTIVE
+
+Test-first workflow.
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/methodology/test-after-directive.md',
+        `---
+id: methodology-test-after
+name: Test After Directive
+required: false
+order: 10
+condition: "policy.testing === 'test-after'"
+---
+
+## TEST AFTER DIRECTIVE
+
+Implementation-first workflow.
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/methodology/none-directive.md',
+        `---
+id: methodology-none
+name: No Testing Directive
+required: false
+order: 10
+condition: "policy.testing === 'none'"
+---
+
+## MINIMAL TESTING GUIDANCE
+
+No specific testing methodology enforced.
+`,
+      );
+
+      const templates = loadTemplatesWithOverrides(testDir, 'test-client');
+
+      expect(templates.has('methodology-tdd')).toBe(true);
+      expect(templates.has('methodology-test-after')).toBe(true);
+      expect(templates.has('methodology-none')).toBe(true);
+
+      expect(templates.get('methodology-tdd')?.content).toContain('Test-first workflow');
+      expect(templates.get('methodology-test-after')?.content).toContain('Implementation-first');
+      expect(templates.get('methodology-none')?.content).toContain('No specific testing');
+    });
+
+    it('should select correct methodology template based on policy.testing', () => {
+      // Create methodology templates
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/methodology/tdd-directive.md',
+        `---
+id: methodology-tdd
+name: TDD Directive
+required: false
+order: 10
+---
+
+TDD CONTENT
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/methodology/test-after-directive.md',
+        `---
+id: methodology-test-after
+name: Test After Directive
+required: false
+order: 10
+---
+
+TEST-AFTER CONTENT
+`,
+      );
+
+      const templates = loadTemplatesWithOverrides(testDir, 'test-client');
+
+      const manifest: TemplateManifest = {
+        version: '1.0',
+        defaults: { tokenFormat: '{TOKEN}' },
+        templates: [
+          {
+            id: 'methodology-tdd',
+            path: 'spawn-prompt/methodology/tdd-directive.md',
+            required: false,
+            order: 10,
+            condition: "policy.testing === 'tdd'",
+          },
+          {
+            id: 'methodology-test-after',
+            path: 'spawn-prompt/methodology/test-after-directive.md',
+            required: false,
+            order: 10,
+            condition: "policy.testing === 'test-after'",
+          },
+        ],
+      };
+
+      // With TDD policy
+      const tddContext: TemplateContext = {
+        WU_ID: 'WU-TEST',
+        LANE: 'Test',
+        TYPE: 'feature',
+        'policy.testing': 'tdd',
+      };
+      const tddResult = assembleTemplates(templates, manifest, tddContext);
+      expect(tddResult).toContain('TDD CONTENT');
+      expect(tddResult).not.toContain('TEST-AFTER CONTENT');
+
+      // With test-after policy
+      const testAfterContext: TemplateContext = {
+        WU_ID: 'WU-TEST',
+        LANE: 'Test',
+        TYPE: 'feature',
+        'policy.testing': 'test-after',
+      };
+      const testAfterResult = assembleTemplates(templates, manifest, testAfterContext);
+      expect(testAfterResult).toContain('TEST-AFTER CONTENT');
+      expect(testAfterResult).not.toContain('TDD CONTENT');
+    });
+  });
+
+  describe('architecture templates (WU-1260)', () => {
+    it('should load architecture templates from architecture/ subdirectory', () => {
+      // Create architecture templates
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/architecture/hexagonal-directive.md',
+        `---
+id: architecture-hexagonal
+name: Hexagonal Architecture Directive
+required: false
+order: 15
+condition: "policy.architecture === 'hexagonal'"
+---
+
+## HEXAGONAL ARCHITECTURE
+
+Ports-first design.
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/architecture/layered-directive.md',
+        `---
+id: architecture-layered
+name: Layered Architecture Directive
+required: false
+order: 15
+condition: "policy.architecture === 'layered'"
+---
+
+## LAYERED ARCHITECTURE
+
+Traditional layers.
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/architecture/none-directive.md',
+        `---
+id: architecture-none
+name: No Architecture Directive
+required: false
+order: 15
+condition: "policy.architecture === 'none'"
+---
+
+## MINIMAL ARCHITECTURE GUIDANCE
+
+No specific architecture enforced.
+`,
+      );
+
+      const templates = loadTemplatesWithOverrides(testDir, 'test-client');
+
+      expect(templates.has('architecture-hexagonal')).toBe(true);
+      expect(templates.has('architecture-layered')).toBe(true);
+      expect(templates.has('architecture-none')).toBe(true);
+
+      expect(templates.get('architecture-hexagonal')?.content).toContain('Ports-first design');
+      expect(templates.get('architecture-layered')?.content).toContain('Traditional layers');
+      expect(templates.get('architecture-none')?.content).toContain('No specific architecture');
+    });
+
+    it('should select correct architecture template based on policy.architecture', () => {
+      // Create architecture templates
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/architecture/hexagonal-directive.md',
+        `---
+id: architecture-hexagonal
+name: Hexagonal Directive
+required: false
+order: 15
+---
+
+HEXAGONAL CONTENT
+`,
+      );
+
+      writeTestFile(
+        testDir,
+        '.lumenflow/templates/spawn-prompt/architecture/layered-directive.md',
+        `---
+id: architecture-layered
+name: Layered Directive
+required: false
+order: 15
+---
+
+LAYERED CONTENT
+`,
+      );
+
+      const templates = loadTemplatesWithOverrides(testDir, 'test-client');
+
+      const manifest: TemplateManifest = {
+        version: '1.0',
+        defaults: { tokenFormat: '{TOKEN}' },
+        templates: [
+          {
+            id: 'architecture-hexagonal',
+            path: 'spawn-prompt/architecture/hexagonal-directive.md',
+            required: false,
+            order: 15,
+            condition: "policy.architecture === 'hexagonal'",
+          },
+          {
+            id: 'architecture-layered',
+            path: 'spawn-prompt/architecture/layered-directive.md',
+            required: false,
+            order: 15,
+            condition: "policy.architecture === 'layered'",
+          },
+        ],
+      };
+
+      // With hexagonal policy
+      const hexContext: TemplateContext = {
+        WU_ID: 'WU-TEST',
+        LANE: 'Test',
+        TYPE: 'feature',
+        'policy.architecture': 'hexagonal',
+      };
+      const hexResult = assembleTemplates(templates, manifest, hexContext);
+      expect(hexResult).toContain('HEXAGONAL CONTENT');
+      expect(hexResult).not.toContain('LAYERED CONTENT');
+
+      // With layered policy
+      const layeredContext: TemplateContext = {
+        WU_ID: 'WU-TEST',
+        LANE: 'Test',
+        TYPE: 'feature',
+        'policy.architecture': 'layered',
+      };
+      const layeredResult = assembleTemplates(templates, manifest, layeredContext);
+      expect(layeredResult).toContain('LAYERED CONTENT');
+      expect(layeredResult).not.toContain('HEXAGONAL CONTENT');
+    });
   });
 });
