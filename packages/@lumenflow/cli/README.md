@@ -13,6 +13,25 @@
 npm install @lumenflow/cli
 ```
 
+## Quick Start
+
+```bash
+# Initialize LumenFlow (works with any AI)
+npx lumenflow-init
+
+# Or specify your AI tool for enhanced integration
+npx lumenflow-init --client claude    # Claude Code
+npx lumenflow-init --client cursor    # Cursor
+npx lumenflow-init --client windsurf  # Windsurf
+npx lumenflow-init --client cline     # Cline
+npx lumenflow-init --client aider     # Aider
+npx lumenflow-init --client all       # All integrations
+```
+
+The default `lumenflow-init` creates `AGENTS.md` and `LUMENFLOW.md` which work with **any AI coding assistant**. The `--client` flag adds vendor-specific configuration files for deeper integration.
+
+See [AI Integrations](https://lumenflow.dev/guides/ai-integrations) for details on each tool.
+
 ## Overview
 
 This package provides CLI commands for the LumenFlow workflow framework, including:
