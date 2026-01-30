@@ -485,29 +485,41 @@ async function main() {
 
   console.log(`${PREFIX} Applying edits via micro-worktree...`);
 
-  await withMicroWorktree({
-    operation: MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT,
-    id: id,
-    logPrefix: PREFIX,
-    pushOnly: true, // WU-1435: Push directly to origin/main without touching local main
-    execute: async ({ worktreePath }) => {
-      // Write updated Initiative to micro-worktree
-      const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
-      const yamlContent = stringifyYAML(updatedInit);
+  // WU-1255: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass for micro-worktree pushes
+  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT;
+  try {
+    await withMicroWorktree({
+      operation: MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT,
+      id: id,
+      logPrefix: PREFIX,
+      pushOnly: true, // WU-1435: Push directly to origin/main without touching local main
+      execute: async ({ worktreePath }) => {
+        // Write updated Initiative to micro-worktree
+        const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
+        const yamlContent = stringifyYAML(updatedInit);
 
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
-      writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-      console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
+        writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+        console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
 
-      return {
-        commitMessage: INIT_COMMIT_FORMATS.EDIT(id),
-        files: [INIT_PATHS.INITIATIVE(id)],
-      };
-    },
-  });
+        return {
+          commitMessage: INIT_COMMIT_FORMATS.EDIT(id),
+          files: [INIT_PATHS.INITIATIVE(id)],
+        };
+      },
+    });
 
-  console.log(`${PREFIX} Successfully edited ${id}`);
-  console.log(`${PREFIX} Changes pushed to origin/main`);
+    console.log(`${PREFIX} Successfully edited ${id}`);
+    console.log(`${PREFIX} Changes pushed to origin/main`);
+  } finally {
+    // WU-1255: Restore LUMENFLOW_WU_TOOL to previous value
+    if (previousWuTool === undefined) {
+      delete process.env.LUMENFLOW_WU_TOOL;
+    } else {
+      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    }
+  }
 }
 
 main().catch((err) => {

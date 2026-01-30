@@ -172,69 +172,81 @@ async function main() {
   await ensureOnMain(getGitForCwd());
 
   // Transaction: micro-worktree isolation (WU-1439)
+  // WU-1255: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass for micro-worktree pushes
+  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+  process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
   try {
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: args.id,
-      logPrefix: LOG_PREFIX,
-      execute: async ({ worktreePath }) => {
-        // Create Initiative YAML in micro-worktree
-        const initPath = createInitiativeYamlInWorktree(
-          worktreePath,
-          args.id,
-          args.slug,
-          args.title,
-          {
-            priority: args.priority,
-            owner: args.owner,
-            targetDate: args.targetDate,
-          },
-        );
+    try {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: args.id,
+        logPrefix: LOG_PREFIX,
+        execute: async ({ worktreePath }) => {
+          // Create Initiative YAML in micro-worktree
+          const initPath = createInitiativeYamlInWorktree(
+            worktreePath,
+            args.id,
+            args.slug,
+            args.title,
+            {
+              priority: args.priority,
+              owner: args.owner,
+              targetDate: args.targetDate,
+            },
+          );
 
-        // Return commit message and files to commit
-        return {
-          commitMessage: INIT_COMMIT_FORMATS.CREATE(args.id, args.title),
-          files: [initPath],
-        };
-      },
-    });
+          // Return commit message and files to commit
+          return {
+            commitMessage: INIT_COMMIT_FORMATS.CREATE(args.id, args.title),
+            files: [initPath],
+          };
+        },
+      });
 
-    console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
-    console.log(`\nInitiative Created:`);
-    console.log(`  ID:     ${args.id}`);
-    console.log(`  Slug:   ${args.slug}`);
-    console.log(`  Title:  ${args.title}`);
-    console.log(`  Status: ${INIT_DEFAULTS.STATUS}`);
-    console.log(`  File:   ${INIT_PATHS.INITIATIVE(args.id)}`);
+      console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
+      console.log(`\nInitiative Created:`);
+      console.log(`  ID:     ${args.id}`);
+      console.log(`  Slug:   ${args.slug}`);
+      console.log(`  Title:  ${args.title}`);
+      console.log(`  Status: ${INIT_DEFAULTS.STATUS}`);
+      console.log(`  File:   ${INIT_PATHS.INITIATIVE(args.id)}`);
 
-    // WU-1211: Check completeness and emit warnings
-    const initContent = {
-      id: args.id,
-      slug: args.slug,
-      title: args.title,
-      description: '',
-      status: INIT_DEFAULTS.STATUS,
-      phases: [],
-      success_metrics: [],
-    };
-    const completenessResult = validateInitiativeCompleteness(initContent);
-    if (completenessResult.warnings.length > 0) {
-      console.log(`\n${LOG_PREFIX} ⚠️  Incomplete initiative - missing recommended fields:`);
-      for (const warning of completenessResult.warnings) {
-        console.log(`  - ${warning}`);
+      // WU-1211: Check completeness and emit warnings
+      const initContent = {
+        id: args.id,
+        slug: args.slug,
+        title: args.title,
+        description: '',
+        status: INIT_DEFAULTS.STATUS,
+        phases: [],
+        success_metrics: [],
+      };
+      const completenessResult = validateInitiativeCompleteness(initContent);
+      if (completenessResult.warnings.length > 0) {
+        console.log(`\n${LOG_PREFIX} ⚠️  Incomplete initiative - missing recommended fields:`);
+        for (const warning of completenessResult.warnings) {
+          console.log(`  - ${warning}`);
+        }
       }
-    }
 
-    console.log(`\nNext steps:`);
-    console.log(`  1. Edit ${args.id}.yaml to add description, phases, and success_metrics`);
-    console.log(`  2. Link WUs to this initiative: pnpm wu:create --initiative ${args.id} ...`);
-    console.log(`  3. View status: pnpm initiative:status ${args.id}`);
-  } catch (error) {
-    die(
-      `Transaction failed: ${error.message}\n\n` +
-        `Micro-worktree cleanup was attempted automatically.\n` +
-        `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
-    );
+      console.log(`\nNext steps:`);
+      console.log(`  1. Edit ${args.id}.yaml to add description, phases, and success_metrics`);
+      console.log(`  2. Link WUs to this initiative: pnpm wu:create --initiative ${args.id} ...`);
+      console.log(`  3. View status: pnpm initiative:status ${args.id}`);
+    } catch (error) {
+      die(
+        `Transaction failed: ${error.message}\n\n` +
+          `Micro-worktree cleanup was attempted automatically.\n` +
+          `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
+      );
+    }
+  } finally {
+    // WU-1255: Restore LUMENFLOW_WU_TOOL to previous value
+    if (previousWuTool === undefined) {
+      delete process.env.LUMENFLOW_WU_TOOL;
+    } else {
+      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    }
   }
 }
 

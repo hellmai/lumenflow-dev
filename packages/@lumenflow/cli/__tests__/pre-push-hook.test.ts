@@ -68,4 +68,16 @@ describe('pre-push hook policy (WU-1030)', () => {
     const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-unblock' });
     expect(result.status).toBe(0);
   });
+
+  // WU-1255: initiative:create uses micro-worktree isolation and must be allowed
+  it('allows initiative:create pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'initiative-create' });
+    expect(result.status).toBe(0);
+  });
+
+  // WU-1255: initiative:edit uses micro-worktree isolation and must be allowed
+  it('allows initiative:edit pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'initiative-edit' });
+    expect(result.status).toBe(0);
+  });
 });
