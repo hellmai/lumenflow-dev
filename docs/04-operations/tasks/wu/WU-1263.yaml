@@ -1,7 +1,7 @@
 id: WU-1263
 title: Document methodology configurability in public and internal docs
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-01-30
@@ -29,10 +29,17 @@ spec_refs:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-30T20:54:39.684Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1263
+session_id: 9f31979c-f227-4ea8-b64a-423ecdf84e9a
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T20:54:39.688Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +58,3 @@ acceptance:
   - New guide page explaining methodology options and tradeoffs
   - ADR created explaining the design decision
   - Internal documentation for resolvePolicy() precedence rules
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1263
-claimed_at: 2026-01-30T20:54:39.684Z
-baseline_main_sha: 89d4a17b89691e413eea82b5f731afd7c4bc664d
-session_id: 9f31979c-f227-4ea8-b64a-423ecdf84e9a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-30T20:54:39.688Z
