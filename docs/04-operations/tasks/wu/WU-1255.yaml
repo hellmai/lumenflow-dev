@@ -2,7 +2,7 @@ id: WU-1255
 title: initiative:create and initiative:edit fail due to pre-push hook blocking micro-worktree push
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -62,3 +62,11 @@ acceptance:
   - initiative:edit succeeds without pre-push hook blocking
   - Both commands work identically to wu:create and wu:edit micro-worktree pattern
   - No manual LUMENFLOW_FORCE workaround required for normal operation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1255
+claimed_at: 2026-01-30T16:57:03.942Z
+baseline_main_sha: 8aa6883d0fbd8812b932c22614516ec1651140b3
+session_id: fcbd5656-a01f-4ee8-97d2-9c5f0b2b3026
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T16:57:03.945Z

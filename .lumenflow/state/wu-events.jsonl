@@ -448,3 +448,4 @@
 {"type":"complete","wuId":"WU-1239","timestamp":"2026-01-30T14:10:07.199Z"}
 {"type":"complete","wuId":"WU-1251","timestamp":"2026-01-30T14:21:09.044Z"}
 {"type":"claim","wuId":"WU-1253","lane":"Framework: Core","title":"Implement test ratchet pattern with baseline comparison and agent guidance","timestamp":"2026-01-30T14:26:32.359Z"}
+{"type":"claim","wuId":"WU-1255","lane":"Framework: CLI","title":"initiative:create and initiative:edit fail due to pre-push hook blocking micro-worktree push","timestamp":"2026-01-30T16:57:03.967Z"}
