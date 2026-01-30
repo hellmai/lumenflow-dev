@@ -427,3 +427,4 @@
 {"type":"complete","wuId":"WU-1231","timestamp":"2026-01-30T10:29:23.909Z"}
 {"type":"claim","wuId":"WU-1218","timestamp":"2026-01-30T10:34:49.393Z","lane":"Framework: CLI","title":"Fix spec:linter failing in worktrees without CLI dist"}
 {"type":"complete","wuId":"WU-1218","timestamp":"2026-01-30T10:39:53.873Z"}
+{"type":"claim","wuId":"WU-1233","lane":"Framework: CLI","title":"Add EPIPE protection to CLI commands for pipe resilience","timestamp":"2026-01-30T12:10:10.575Z"}
