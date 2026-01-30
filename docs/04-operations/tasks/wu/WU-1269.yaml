@@ -1,0 +1,37 @@
+id: WU-1269
+title: 'Migration guide: adopting methodology configurability'
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-30
+code_paths:
+  - apps/docs/src/content/docs/guides/migrating-methodology.mdx
+tests:
+  manual:
+    - Verify guide renders correctly in Starlight
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1269.done
+dependencies: []
+initiative: INIT-010
+phase: 2
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-010.yaml
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Create migration guide for existing users who want to adopt methodology configurability. Covers: when to use each mode, how to migrate gradually, common pitfalls, and troubleshooting.'
+acceptance:
+  - Guide explains when to use tdd vs test-after vs none
+  - Step-by-step migration path for relaxing from tdd to test-after
+  - Troubleshooting section for common config errors
+  - Examples for different project types (greenfield, legacy, prototype)
