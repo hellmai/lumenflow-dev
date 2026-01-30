@@ -1,0 +1,600 @@
+---
+title: Migrating Methodology
+description: Adopt methodology configurability in your LumenFlow project
+---
+
+import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+This guide helps existing LumenFlow users adopt methodology configurability. Whether you're relaxing strict TDD for a legacy migration or tightening enforcement for a production system, this guide provides step-by-step migration paths.
+
+## When to Use Each Mode
+
+Understanding when to use each methodology is the first step in migration.
+
+<CardGrid>
+  <Card title="TDD (Default)" icon="approve-check">
+    **Best for:** New features, production code, teams committed to test-first.
+
+    - Tests before implementation
+    - 90% coverage threshold (blocks on failure)
+    - RED-GREEN-REFACTOR cycle enforced
+  </Card>
+  <Card title="Test-After" icon="pencil">
+    **Best for:** Legacy migrations, transitioning teams, rapid prototyping with deferred tests.
+
+    - Implementation first, tests before completion
+    - 70% coverage threshold (warns but does not block)
+    - More flexible for exploratory work
+  </Card>
+  <Card title="None" icon="warning">
+    **Best for:** Spikes, research, documentation-only projects.
+
+    - No testing methodology enforced
+    - 0% coverage threshold
+    - Tests optional (but recommended)
+  </Card>
+</CardGrid>
+
+### Decision Matrix
+
+| Scenario | Recommended | Rationale |
+|----------|-------------|-----------|
+| Greenfield product with clear requirements | `tdd` | TDD ensures correct behavior from the start |
+| Legacy codebase with low test coverage | `test-after` | Focus on improving coverage gradually |
+| Rapid prototype to validate idea | `none` | Move fast, add tests if prototype succeeds |
+| Production-critical regulated/fintech code | `tdd` with 95% threshold | Maximum safety for regulated environments |
+| Documentation-only work | `none` | No code to test |
+| Research spike exploring APIs | `none` | Exploratory work doesn't need tests |
+| Refactoring well-tested code | `tdd` | Ensure refactoring doesn't break behavior |
+| Adding features to legacy code | `test-after` | Add tests as you touch code |
+
+## Migration Paths
+
+### Path 1: Relaxing from TDD to Test-After
+
+This is the most common migration. Use this when TDD is slowing down a legacy migration or when your team needs a gentler transition.
+
+<Steps>
+
+1. **Assess current state**
+
+   Before changing methodology, understand where you are:
+
+   ```bash
+   # Check current coverage
+   pnpm test -- --coverage
+
+   # Review methodology config
+   cat .lumenflow.config.yaml | grep -A 5 methodology
+   ```
+
+2. **Create a transitional phase**
+
+   Don't jump directly to `test-after`. Start by keeping TDD but changing enforcement:
+
+   ```yaml
+   # .lumenflow.config.yaml
+   methodology:
+     testing: 'tdd'
+     overrides:
+       coverage_mode: 'warn'  # Block -> Warn
+   ```
+
+   This lets you see what would fail without blocking work.
+
+3. **Monitor for one sprint**
+
+   Run with warnings for 1-2 weeks. Track:
+   - How many gates would have blocked?
+   - Are coverage warnings being ignored?
+   - Is code quality degrading?
+
+4. **Switch to test-after**
+
+   If the team handles warnings responsibly:
+
+   ```yaml
+   methodology:
+     testing: 'test-after'
+   ```
+
+   This changes agent prompts and sets coverage threshold to 70%.
+
+5. **Communicate the change**
+
+   Update your `LUMENFLOW.md` or team docs:
+
+   ```markdown
+   ## Testing Methodology
+
+   We use **test-after** methodology. Tests are required before
+   `wu:done` but not before implementation.
+
+   Coverage threshold: 70% (warnings, not blocking)
+   ```
+
+6. **Plan return to TDD**
+
+   Set a milestone to review:
+
+   ```yaml
+   # .lumenflow.config.yaml
+   methodology:
+     testing: 'test-after'
+     # TODO: Review at end of Q2 - consider returning to TDD
+   ```
+
+</Steps>
+
+<Aside type="tip">
+  Use `test-after` as a stepping stone, not a permanent destination. Once legacy code has better coverage, consider returning to TDD.
+</Aside>
+
+### Path 2: Tightening from None to TDD
+
+Use this when graduating a prototype to production or when a team is ready for stricter practices.
+
+<Steps>
+
+1. **Baseline current coverage**
+
+   ```bash
+   # Get current coverage numbers
+   pnpm test -- --coverage
+
+   # Document baseline
+   echo "Baseline coverage: $(date)" >> docs/test-coverage-history.md
+   ```
+
+2. **Start with test-after**
+
+   Don't jump directly to TDD:
+
+   ```yaml
+   methodology:
+     testing: 'test-after'
+     overrides:
+       coverage_threshold: 50  # Start low
+   ```
+
+3. **Ratchet up coverage threshold**
+
+   Increase gradually (e.g., +10% per month):
+
+   ```yaml
+   # Month 1
+   overrides:
+     coverage_threshold: 50
+
+   # Month 2
+   overrides:
+     coverage_threshold: 60
+
+   # Month 3
+   overrides:
+     coverage_threshold: 70
+   ```
+
+4. **Introduce TDD for new code only**
+
+   Keep `test-after` for existing code but require TDD for new features:
+
+   ```yaml
+   methodology:
+     testing: 'test-after'  # Global default
+
+   # Document in WU specs:
+   # New features use TDD (write tests first)
+   # Modifications use test-after (add tests after)
+   ```
+
+5. **Graduate to full TDD**
+
+   When team is comfortable and coverage is stable at 70%+:
+
+   ```yaml
+   methodology:
+     testing: 'tdd'
+   ```
+
+</Steps>
+
+### Path 3: Temporary Relaxation for Deadline
+
+Use this when a project deadline requires temporarily reduced enforcement.
+
+<Steps>
+
+1. **Document the exception**
+
+   Create a WU for the relaxation:
+
+   ```yaml
+   # WU-999.yaml
+   id: WU-999
+   title: Temporarily relax testing methodology for Q4 deadline
+   type: chore
+   acceptance:
+     - Methodology changed to test-after
+     - Revert date documented: 2024-01-15
+     - Coverage debt tracked in COVERAGE-DEBT.md
+   ```
+
+2. **Make the change**
+
+   ```yaml
+   methodology:
+     testing: 'test-after'
+     overrides:
+       coverage_mode: 'warn'
+   ```
+
+3. **Track coverage debt**
+
+   Create a file to track what needs tests:
+
+   ```markdown
+   # COVERAGE-DEBT.md
+
+   Code added without full TDD during Q4 deadline:
+
+   - [ ] src/api/new-endpoint.ts (WU-101)
+   - [ ] src/utils/fast-parser.ts (WU-102)
+
+   Revert methodology: 2024-01-15
+   ```
+
+4. **Schedule revert**
+
+   Create a follow-up WU to restore TDD after the deadline.
+
+5. **Revert and address debt**
+
+   ```yaml
+   methodology:
+     testing: 'tdd'  # Back to normal
+   ```
+
+   Create WUs to add missing tests for the debt items.
+
+</Steps>
+
+<Aside type="caution">
+  Temporary relaxation should have a defined end date. Without one, "temporary" becomes permanent.
+</Aside>
+
+## Project Type Examples
+
+### Greenfield Project
+
+Starting fresh? Use strict TDD from day one.
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+methodology:
+  testing: 'tdd'
+  architecture: 'hexagonal'
+
+gates:
+  enableCoverage: true
+  minCoverage: 90
+```
+
+**Why TDD for greenfield:**
+- No legacy code to work around
+- Tests define expected behavior clearly
+- Prevents accumulating technical debt from the start
+
+### Legacy Migration Project
+
+Inheriting a codebase with low/no test coverage.
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+methodology:
+  testing: 'test-after'
+  architecture: 'layered'  # May not have clean hexagonal boundaries
+  overrides:
+    coverage_threshold: 50  # Start achievable
+    coverage_mode: 'warn'   # Don't block, guide
+
+gates:
+  enableCoverage: true
+  minCoverage: 50  # Match methodology
+```
+
+**Why test-after for legacy:**
+- Can't write tests for code that doesn't exist yet
+- Existing code may be hard to test (tight coupling)
+- Focus on improving coverage gradually
+
+**Migration timeline:**
+
+| Phase | Duration | Coverage Target | Mode |
+|-------|----------|-----------------|------|
+| Assessment | 2 weeks | Baseline current state | `none` |
+| Foundation | 1 month | 30% | `test-after` (warn) |
+| Growth | 3 months | 50% | `test-after` (warn) |
+| Stabilization | 2 months | 70% | `test-after` (block) |
+| Maturity | Ongoing | 90% | `tdd` |
+
+### Prototype/Spike Project
+
+Exploring an idea quickly without ceremony.
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+methodology:
+  testing: 'none'
+  architecture: 'none'
+
+gates:
+  enableCoverage: false
+```
+
+**Why none for prototypes:**
+- Speed is the priority
+- Code may be thrown away
+- No value in testing throwaway code
+
+<Aside type="tip">
+  If the prototype succeeds and becomes production code, migrate to `test-after` immediately. Don't ship prototype code without a plan for tests.
+</Aside>
+
+### Hybrid Project (Mixed Codebases)
+
+When different parts of your codebase need different approaches:
+
+```yaml
+# .lumenflow.config.yaml
+version: '2.0'
+
+methodology:
+  testing: 'test-after'  # Global default for legacy areas
+  architecture: 'layered'
+
+# Override per lane in WU specs
+lanes:
+  definitions:
+    - name: 'Framework: Core'
+      code_paths: ['packages/core/**']
+      # New core code uses TDD (document in lane description)
+
+    - name: 'Experience: UI'
+      code_paths: ['apps/web/**']
+      # UI uses test-after for component testing
+
+    - name: 'Content: Documentation'
+      code_paths: ['docs/**']
+      # Docs use none (no code to test)
+```
+
+Document per-lane expectations in your `LUMENFLOW.md`:
+
+```markdown
+## Lane-Specific Testing
+
+| Lane | Methodology | Notes |
+|------|-------------|-------|
+| Framework: Core | TDD | All new code requires tests first |
+| Experience: UI | Test-after | Add tests before PR merge |
+| Content: Documentation | None | No code changes |
+```
+
+## Troubleshooting
+
+### Configuration Errors
+
+#### Invalid methodology value
+
+**Error:**
+```
+ERROR: Invalid methodology.testing value: "test-first"
+Valid values: tdd, test-after, none
+```
+
+**Fix:**
+```yaml
+methodology:
+  testing: 'tdd'  # Not "test-first" or "TDD" or "test_after"
+```
+
+#### Override without methodology
+
+**Error:**
+```
+ERROR: methodology.overrides requires methodology.testing to be set
+```
+
+**Fix:**
+```yaml
+methodology:
+  testing: 'tdd'  # Must set base methodology
+  overrides:
+    coverage_threshold: 85
+```
+
+#### Conflicting gates and methodology
+
+**Warning:**
+```
+WARNING: gates.minCoverage (90) differs from methodology threshold (70)
+```
+
+This happens when you set both `methodology.testing: 'test-after'` (70% default) and `gates.minCoverage: 90`.
+
+**Fix:** Use methodology to set the threshold, or override explicitly:
+
+```yaml
+methodology:
+  testing: 'test-after'
+  overrides:
+    coverage_threshold: 90  # Override the test-after default
+```
+
+Or remove the conflicting gates setting:
+
+```yaml
+methodology:
+  testing: 'test-after'  # Uses 70% threshold
+
+gates:
+  # Don't set minCoverage here, let methodology control it
+  enableCoverage: true
+```
+
+### Coverage Issues
+
+#### Coverage dropping after methodology change
+
+**Symptom:** Coverage was 85% under TDD, dropped to 60% after switching to test-after.
+
+**Cause:** Team is writing less tests without the TDD requirement.
+
+**Fix:**
+
+1. Review recent PRs for test coverage
+2. Consider using `coverage_mode: 'block'` even with test-after:
+
+   ```yaml
+   methodology:
+     testing: 'test-after'
+     overrides:
+       coverage_mode: 'block'  # Still block if below threshold
+   ```
+
+3. Add coverage requirement to WU acceptance criteria:
+   ```yaml
+   acceptance:
+     - Feature implemented
+     - Unit tests added with >80% coverage
+   ```
+
+#### Gates pass but coverage is low
+
+**Symptom:** Gates report passing but coverage is 30%.
+
+**Cause:** Using `methodology: 'none'` or `coverage_mode: 'off'`.
+
+**Fix:**
+
+```yaml
+methodology:
+  testing: 'test-after'  # At minimum
+  overrides:
+    coverage_mode: 'warn'  # At minimum
+```
+
+### Agent Prompt Issues
+
+#### Agent not following TDD
+
+**Symptom:** AI agent writes implementation before tests despite `methodology.testing: 'tdd'`.
+
+**Cause:** Agent prompt may not include methodology context.
+
+**Fix:**
+
+1. Check agent prompts include methodology:
+   ```bash
+   pnpm wu:spawn --id WU-042 --dry-run | grep -i methodology
+   ```
+
+2. If missing, regenerate agent files:
+   ```bash
+   pnpm exec lumenflow docs:sync
+   ```
+
+3. Verify `.lumenflow.config.yaml` is readable:
+   ```bash
+   pnpm exec lumenflow validate
+   ```
+
+#### Agent ignoring coverage_mode
+
+**Symptom:** Agent continues blocking on coverage even with `coverage_mode: 'warn'`.
+
+**Cause:** Old agent prompt cached or gates command not using config.
+
+**Fix:**
+
+1. Clear agent cache:
+   ```bash
+   pnpm mem:init --force
+   ```
+
+2. Verify gates reads config:
+   ```bash
+   DEBUG=lumenflow:* pnpm gates 2>&1 | grep coverage
+   ```
+
+### Validation Errors
+
+#### Schema validation failure
+
+**Error:**
+```
+ERROR: .lumenflow.config.yaml validation failed
+  - methodology.overrides.coverage_threshold must be between 0 and 100
+```
+
+**Fix:**
+```yaml
+methodology:
+  overrides:
+    coverage_threshold: 85  # Must be 0-100, not "85%" or 0.85
+```
+
+#### Unknown field warning
+
+**Warning:**
+```
+WARNING: Unknown field in methodology: test_mode
+```
+
+**Fix:** Check spelling. Valid fields are:
+- `testing` (not `test_mode`, `test`, `tests`)
+- `architecture` (not `arch`, `structure`)
+- `overrides`
+
+### Migration Rollback
+
+#### Rolling back a methodology change
+
+If a methodology change caused problems:
+
+```bash
+# 1. Revert config file
+git checkout HEAD~1 -- .lumenflow.config.yaml
+
+# 2. Regenerate docs
+pnpm exec lumenflow docs:sync
+
+# 3. Notify team
+git add . && git commit -m "revert: methodology change caused coverage drop"
+```
+
+#### Recovering from broken config
+
+```bash
+# 1. Validate current config
+pnpm exec lumenflow validate
+
+# 2. If invalid, reset to defaults
+pnpm exec lumenflow init --force
+
+# 3. Reconfigure manually
+```
+
+## Next Steps
+
+- [Choosing Your Methodology](/guides/choosing-methodology) - Understand the tradeoffs
+- [Configuration Reference](/reference/config) - All configuration options
+- [Existing Projects](/guides/existing-projects) - Initial LumenFlow setup
+- [Troubleshooting](/guides/troubleshooting) - General troubleshooting
