@@ -2,7 +2,7 @@ id: WU-1250
 title: Add AI tool integration section to CLI README
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -24,7 +24,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The CLI README doesn't mention the --client flag for lumenflow-init. Users who only read npm might miss the vendor-specific integration options. Add a concise 'AI Tool Integration' section showing the --client options.
+description: The CLI README doesn't mention the --client flag for lumenflow-init. Users who only
+  read npm might miss the vendor-specific integration options. Add a concise 'AI Tool Integration'
+  section showing the --client options.
 acceptance:
   - CLI README has AI Tool Integration section
   - Shows --client options for claude, cursor, windsurf, cline, all
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1250
+claimed_at: 2026-01-30T13:53:27.952Z
+baseline_main_sha: 22c961af407e10bc33937530ac4ac19be7ea7de7
+session_id: c585e683-5081-45bd-88da-970700fa50c8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T13:53:27.957Z
