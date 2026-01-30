@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
 - [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml) — Framework: CLI
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — Framework: Core
