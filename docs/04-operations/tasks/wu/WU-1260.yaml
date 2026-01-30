@@ -11,9 +11,7 @@ code_paths:
   - .lumenflow/templates.claude/
   - .lumenflow/templates.cursor/
   - .lumenflow/templates/manifest.yaml
-  - .lumenflow/templates/spawn-prompt/methodology/
-  - .lumenflow/templates/spawn-prompt/architecture/
-  - .lumenflow/templates/manifest.yaml
+  - packages/@lumenflow/core/src/template-loader.ts
 tests:
   manual: []
   unit:
