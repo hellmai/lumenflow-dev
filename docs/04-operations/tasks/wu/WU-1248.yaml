@@ -2,7 +2,7 @@ id: WU-1248
 title: Fix no-dynamic-delete lint errors in arg-parser.ts
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-01-30
 code_paths:
@@ -41,3 +41,5 @@ session_id: 3ce861e6-f162-4daf-93a9-8040283cca1d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T13:48:53.668Z
+locked: true
+completed_at: 2026-01-30T13:52:18.363Z
