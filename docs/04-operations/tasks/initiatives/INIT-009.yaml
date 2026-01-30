@@ -1,11 +1,35 @@
 id: INIT-009
 slug: methodology-configurability
 title: Methodology Configurability - Templates + resolvePolicy
-description: ''
-status: draft
+description: 'Allow teams to choose their testing methodology (TDD, test-after, none) and
+  architecture guidance (hexagonal, layered, none) via config. The chosen methodology drives BOTH
+  agent prompting (wu:spawn) and enforcement defaults (gates) through a single resolvePolicy()
+  resolver. Core principle: Workflow is invariant, but coding practices are team decisions.'
+status: open
 priority: P2
 owner: tom@hellm.ai
 created: 2026-01-30
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Config Schema + resolvePolicy()
+    status: pending
+  - id: 2
+    title: Methodology Templates
+    status: pending
+  - id: 3
+    title: wu:spawn Integration
+    status: pending
+  - id: 4
+    title: Gates Integration
+    status: pending
+  - id: 5
+    title: Documentation
+    status: pending
+success_metrics:
+  - Existing users see no change (strict defaults preserved)
+  - Consumers can select methodology to change BOTH prompts and enforcement
+  - wu:spawn output stays consistent with resolved gate plan
+  - Explicit gates.* overrides still work
 labels: []
+notes:
+  - 'Blocked by WU-1253 (template extraction). See plan: lumenflow://plans/linear-moseying-comet.md'
