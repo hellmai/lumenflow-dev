@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1236 — Add mem:search command with BM25 and LLM rerank prompt](wu/WU-1236.yaml) — Framework: Memory
 - [WU-9999 — Test WU creation with active worktree](wu/WU-9999.yaml) — Content: Documentation
 - [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — Framework: Memory
 - [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — Framework: Memory
