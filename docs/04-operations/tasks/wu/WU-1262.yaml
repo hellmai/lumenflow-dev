@@ -6,7 +6,9 @@ status: ready
 priority: P2
 created: 2026-01-30
 code_paths:
-  - packages/@lumenflow/core/src/gates.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/core/src/gates-config.ts
+  - packages/@lumenflow/core/src/coverage-gate.ts
 tests:
   manual: []
   unit:
@@ -31,11 +33,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Update gates to use resolvePolicy() for determining enforcement defaults. The resolved policy should inform:
+description: >-
+  Update gates to use resolvePolicy() for determining enforcement defaults. The resolved policy
+  should inform:
+
   - Coverage threshold (90% for tdd, 70% for test-after, 0% for none)
+
   - Coverage mode (block for tdd, warn for test-after, off for none)
+
   - Test gate severity (required for tdd/test-after, warn for none)
+
 
   Explicit gates.* config must still override methodology defaults per the precedence rules.
 acceptance:
