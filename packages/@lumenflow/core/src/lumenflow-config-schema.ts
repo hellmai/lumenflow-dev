@@ -11,6 +11,8 @@ import { z } from 'zod';
 
 // WU-1067: Import gates execution schema from canonical source
 import { GatesExecutionConfigSchema } from './gates-config.js';
+// WU-1259: Import methodology config schema for resolvePolicy()
+import { MethodologyConfigSchema } from './resolve-policy.js';
 
 /**
  * Event archival configuration (WU-1207)
@@ -578,6 +580,23 @@ export const LumenFlowConfigSchema = z.object({
 
   /** Experimental features (WU-1090) */
   experimental: ExperimentalConfigSchema.default(() => ExperimentalConfigSchema.parse({})),
+
+  /**
+   * WU-1259: Methodology configuration
+   * Single source of truth for testing/architecture methodology decisions.
+   * Used by both wu:spawn (prompt assembly) and gates (enforcement).
+   *
+   * @example
+   * ```yaml
+   * methodology:
+   *   testing: 'tdd'              # tdd | test-after | none
+   *   architecture: 'hexagonal'   # hexagonal | layered | none
+   *   overrides:
+   *     coverage_threshold: 85    # Override TDD's default 90%
+   *     coverage_mode: 'warn'     # Override TDD's default 'block'
+   * ```
+   */
+  methodology: MethodologyConfigSchema.optional(),
 });
 
 /**
@@ -604,6 +623,8 @@ export type AgentsConfig = z.infer<typeof AgentsConfigSchema>;
 export type ExperimentalConfig = z.infer<typeof ExperimentalConfigSchema>;
 export type ValidationMode = z.infer<typeof ValidationModeSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
+// WU-1259: Re-export methodology types from resolve-policy
+export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';
 
 /**
  * Validate configuration data

@@ -347,3 +347,24 @@ export {
 
 // WU-1253: Template-based spawn prompt generation
 export { tryAssembleSpawnTemplates, buildTemplateContext } from './wu-spawn.js';
+
+// WU-1259: Methodology policy resolution
+export {
+  resolvePolicy,
+  getDefaultPolicy,
+  MethodologyConfigSchema,
+  MethodologyOverridesSchema,
+  TestingMethodologySchema,
+  ArchitectureMethodologySchema,
+  CoverageModeSchema,
+  TESTING_METHODOLOGY,
+  ARCHITECTURE_METHODOLOGY,
+  COVERAGE_MODE,
+  type ResolvedPolicy,
+  type ResolvePolicyOptions,
+  type MethodologyConfig,
+  type MethodologyOverrides,
+  type TestingMethodology,
+  type ArchitectureMethodology,
+  type CoverageMode,
+} from './resolve-policy.js';
