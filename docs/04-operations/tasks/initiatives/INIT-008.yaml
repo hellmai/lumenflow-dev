@@ -1,7 +1,10 @@
 id: INIT-008
 slug: intelligent-orchestration
 title: Intelligent Orchestration - Memory Context + Spawn Supervision
-description: ''
+description: "Transform LumenFlow's multi-agent orchestration from cold starts to warm orchestration
+  through two complementary pillars: Memory Intelligence (context injection, knowledge promotion,
+  decay scoring) and Supervision Infrastructure (monitoring, patrol mode). Agents start with
+  accumulated project knowledge and remain healthy through continuous supervision."
 status: draft
 priority: P1
 owner: tom@hellm.ai
