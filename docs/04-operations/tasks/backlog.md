@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -38,6 +37,7 @@ sections:
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
+- [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 
 ## 🔧 In progress
 
@@ -45,7 +45,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1251 — Fix orchestrate:initiative dependency resolution bug](wu/WU-1251.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -268,3 +267,4 @@ sections:
 - [WU-1248 — Fix no-dynamic-delete lint errors in arg-parser.ts](wu/WU-1248.yaml)
 - [WU-1250 — Add AI tool integration section to CLI README](wu/WU-1250.yaml)
 - [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml)
+- [WU-1251 — Fix orchestrate:initiative dependency resolution bug](wu/WU-1251.yaml)
