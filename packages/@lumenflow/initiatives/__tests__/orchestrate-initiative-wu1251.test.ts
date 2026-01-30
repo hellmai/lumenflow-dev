@@ -118,7 +118,12 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
         },
         {
           id: 'WU-TEST-1251-B',
-          doc: { status: 'ready', lane: 'Lane B', blocked_by: [], dependencies: ['WU-TEST-1251-A'] },
+          doc: {
+            status: 'ready',
+            lane: 'Lane B',
+            blocked_by: [],
+            dependencies: ['WU-TEST-1251-A'],
+          },
         },
       ];
 
