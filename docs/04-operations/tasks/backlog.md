@@ -20,9 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
-- [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
-- [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml) — Framework: CLI
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
@@ -31,6 +28,8 @@ sections:
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
 - [WU-1221 — Add gitignore setup to lumenflow init and state:doctor](wu/WU-1221.yaml) — Framework: CLI
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
+- [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
+- [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -38,11 +37,11 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
-- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — Framework: CLI
+- [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
-(No items currently blocked)
+- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — Framework: CLI
 
 ## ✅ Done
 
