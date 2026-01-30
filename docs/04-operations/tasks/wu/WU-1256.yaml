@@ -2,7 +2,7 @@ id: WU-1256
 title: Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -29,10 +29,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
-  Context: These files have pre-existing lint errors (no-console, missing return types, sonarjs/no-os-command-from-path) that were discovered during WU-1255.
+description: >-
+  Context: These files have pre-existing lint errors (no-console, missing return types,
+  sonarjs/no-os-command-from-path) that were discovered during WU-1255.
+
   Problem: Gates fail due to these pre-existing errors when any changes are made to these files.
-  Solution: Add eslint-disable comments where appropriate (CLI tools require console output), add return types to functions, or refactor to satisfy sonarjs rules.
+
+  Solution: Add eslint-disable comments where appropriate (CLI tools require console output), add
+  return types to functions, or refactor to satisfy sonarjs rules.
 acceptance:
-  - All lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts are resolved
+  - All lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts are
+    resolved
   - Gates pass on these files
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1256
+claimed_at: 2026-01-30T17:35:45.251Z
+baseline_main_sha: ec6bbe348008e1833b68cb69e80af1099e36119c
+session_id: e14ca33f-6e1a-4736-8a06-5b0e03ede330
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T17:35:45.255Z
