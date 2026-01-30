@@ -56,6 +56,15 @@
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/validate-worktree-path.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/block-bash-file-commands.sh"
+          }
+        ]
       }
     ]
   }
