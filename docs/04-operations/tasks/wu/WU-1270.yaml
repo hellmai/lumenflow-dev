@@ -2,7 +2,7 @@ id: WU-1270
 title: 'Telemetry: methodology selection tracking (opt-in)'
 lane: 'Framework: Metrics'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-30
 code_paths:
@@ -30,10 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add opt-in telemetry to track which methodology modes are being used across projects. This helps understand adoption patterns and informs future development priorities. Must be privacy-preserving and opt-in only.
+description: Add opt-in telemetry to track which methodology modes are being used across projects.
+  This helps understand adoption patterns and informs future development priorities. Must be
+  privacy-preserving and opt-in only.
 acceptance:
   - Telemetry captures methodology.testing value on wu:spawn
   - Telemetry captures methodology.architecture value on wu:spawn
   - Telemetry is opt-in via config flag
   - No PII or project-identifying information collected
   - Metrics visible in ops dashboard
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-metrics-wu-1270
+claimed_at: 2026-01-30T23:35:56.650Z
+baseline_main_sha: 3ea4c8b218b2ca8af328324fd9153b4f6b29d80b
+session_id: ed1b6cc8-c42a-4b65-9857-84939f4f143d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T23:35:56.655Z
