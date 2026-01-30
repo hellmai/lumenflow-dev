@@ -1,0 +1,221 @@
+/**
+ * State Doctor Fix Operations (WU-1230)
+ *
+ * Provides fix dependencies for state:doctor --fix that use micro-worktree
+ * isolation for all tracked file changes. This ensures:
+ *
+ * 1. No direct file modifications on main branch
+ * 2. Removal of stale WU references from backlog.md and status.md
+ * 3. All changes pushed via merge, not direct file modification
+ *
+ * @see {@link ./state-doctor.ts} - Main CLI that uses these deps
+ * @see {@link @lumenflow/core/dist/micro-worktree.js} - Micro-worktree infrastructure
+ */
+
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import type { StateDoctorDeps } from '@lumenflow/core/dist/state-doctor-core.js';
+
+/**
+ * Operation name for micro-worktree isolation
+ */
+const OPERATION_NAME = 'state-doctor';
+
+/**
+ * Log prefix for state:doctor output
+ */
+const LOG_PREFIX = '[state:doctor]';
+
+/**
+ * Signals file path (relative to project root)
+ */
+const SIGNALS_FILE = '.lumenflow/memory/signals.jsonl';
+
+/**
+ * WU events file path (relative to project root)
+ */
+const WU_EVENTS_FILE = '.lumenflow/state/wu-events.jsonl';
+
+/**
+ * Backlog file path (relative to project root)
+ */
+const BACKLOG_FILE = 'docs/04-operations/tasks/backlog.md';
+
+/**
+ * Status file path (relative to project root)
+ */
+const STATUS_FILE = 'docs/04-operations/tasks/status.md';
+
+/**
+ * Remove lines containing a WU reference from markdown content
+ *
+ * @param content - Markdown file content
+ * @param wuId - WU ID to remove (e.g., 'WU-999')
+ * @returns Updated content with lines containing WU ID removed
+ */
+function removeWuReferences(content: string, wuId: string): string {
+  const lines = content.split('\n');
+  const filtered = lines.filter((line) => !line.includes(wuId));
+  return filtered.join('\n');
+}
+
+/**
+ * Read file content safely, returning empty string if file doesn't exist
+ */
+async function readFileSafe(filePath: string): Promise<string> {
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path from config
+    return await fs.readFile(filePath, 'utf-8');
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Create fix dependencies for state:doctor --fix that use micro-worktree isolation.
+ *
+ * WU-1230: All file modifications happen in a micro-worktree and are pushed
+ * to origin/main via merge. This prevents direct modifications to local main.
+ *
+ * @param baseDir - Project base directory
+ * @returns Partial StateDoctorDeps with fix operations
+ */
+export function createStateDoctorFixDeps(
+  _baseDir: string,
+): Pick<StateDoctorDeps, 'removeSignal' | 'removeEvent' | 'createStamp'> {
+  return {
+    /**
+     * Remove a signal by ID using micro-worktree isolation
+     */
+    removeSignal: async (id: string): Promise<void> => {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: `remove-signal-${id}`,
+        logPrefix: LOG_PREFIX,
+        pushOnly: true,
+        execute: async ({ worktreePath }) => {
+          const signalsPath = path.join(worktreePath, SIGNALS_FILE);
+          const content = await readFileSafe(signalsPath);
+
+          if (!content) {
+            return { commitMessage: `fix: no signals file found`, files: [] };
+          }
+
+          const lines = content.split('\n').filter((line) => {
+            if (!line.trim()) return false;
+            try {
+              const signal = JSON.parse(line) as { id?: string };
+              return signal.id !== id;
+            } catch {
+              return true; // Keep malformed lines
+            }
+          });
+
+          // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path
+          await fs.writeFile(signalsPath, lines.join('\n') + '\n', 'utf-8');
+
+          return {
+            commitMessage: `fix(state-doctor): remove dangling signal ${id}`,
+            files: [SIGNALS_FILE],
+          };
+        },
+      });
+    },
+
+    /**
+     * Remove events for a WU and clean up stale references from backlog.md and status.md
+     * using micro-worktree isolation.
+     *
+     * WU-1230: Also removes references to the WU from backlog.md and status.md
+     * to prevent stale WU links.
+     */
+    removeEvent: async (wuId: string): Promise<void> => {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: `remove-event-${wuId.toLowerCase()}`,
+        logPrefix: LOG_PREFIX,
+        pushOnly: true,
+        execute: async ({ worktreePath }) => {
+          const modifiedFiles: string[] = [];
+
+          // 1. Remove events for this WU
+          const eventsPath = path.join(worktreePath, WU_EVENTS_FILE);
+          const eventsContent = await readFileSafe(eventsPath);
+
+          if (eventsContent) {
+            const lines = eventsContent.split('\n').filter((line) => {
+              if (!line.trim()) return false;
+              try {
+                const event = JSON.parse(line) as { wuId?: string };
+                return event.wuId !== wuId;
+              } catch {
+                return true; // Keep malformed lines
+              }
+            });
+
+            // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path
+            await fs.writeFile(eventsPath, lines.join('\n') + '\n', 'utf-8');
+            modifiedFiles.push(WU_EVENTS_FILE);
+          }
+
+          // 2. Remove stale WU references from backlog.md
+          const backlogPath = path.join(worktreePath, BACKLOG_FILE);
+          const backlogContent = await readFileSafe(backlogPath);
+
+          if (backlogContent && backlogContent.includes(wuId)) {
+            const updatedBacklog = removeWuReferences(backlogContent, wuId);
+            // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path
+            await fs.writeFile(backlogPath, updatedBacklog, 'utf-8');
+            modifiedFiles.push(BACKLOG_FILE);
+          }
+
+          // 3. Remove stale WU references from status.md
+          const statusPath = path.join(worktreePath, STATUS_FILE);
+          const statusContent = await readFileSafe(statusPath);
+
+          if (statusContent && statusContent.includes(wuId)) {
+            const updatedStatus = removeWuReferences(statusContent, wuId);
+            // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path
+            await fs.writeFile(statusPath, updatedStatus, 'utf-8');
+            modifiedFiles.push(STATUS_FILE);
+          }
+
+          return {
+            commitMessage: `fix(state-doctor): remove broken events and references for ${wuId}`,
+            files: modifiedFiles,
+          };
+        },
+      });
+    },
+
+    /**
+     * Create a stamp for a WU using micro-worktree isolation
+     */
+    createStamp: async (wuId: string, title: string): Promise<void> => {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: `create-stamp-${wuId.toLowerCase()}`,
+        logPrefix: LOG_PREFIX,
+        pushOnly: true,
+        execute: async ({ worktreePath }) => {
+          const stampsDir = path.join(worktreePath, '.lumenflow/stamps');
+
+          // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory
+          await fs.mkdir(stampsDir, { recursive: true });
+
+          // Create stamp file in micro-worktree
+          const stampPath = path.join(stampsDir, `${wuId}.done`);
+          const stampContent = `# ${wuId} Done\n\nTitle: ${title}\nCreated by: state:doctor --fix\nTimestamp: ${new Date().toISOString()}\n`;
+          // eslint-disable-next-line security/detect-non-literal-fs-filename -- Validated path
+          await fs.writeFile(stampPath, stampContent, 'utf-8');
+
+          return {
+            commitMessage: `fix(state-doctor): create missing stamp for ${wuId}`,
+            files: [`.lumenflow/stamps/${wuId}.done`],
+          };
+        },
+      });
+    },
+  };
+}
