@@ -2,7 +2,7 @@ id: WU-1269
 title: 'Migration guide: adopting methodology configurability'
 lane: 'Content: Documentation'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -46,3 +46,5 @@ session_id: c524db0d-cbb8-4693-b1b2-4eb172e6cb1a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T23:49:38.321Z
+locked: true
+completed_at: 2026-01-30T23:55:22.543Z
