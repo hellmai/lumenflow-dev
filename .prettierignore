@@ -12,6 +12,7 @@ node_modules/
 *.gen.ts
 .astro/
 .vercel/
+**/__snapshots__/*.snap
 
 # Templates (contain placeholders)
 *.template
