@@ -27,7 +27,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: The @lumenflow/core package contains spawn-monitor APIs for stuck detection, zombie lock recovery, and agent supervision. However, the CLI does not use these APIs - the supervision machinery exists but is disconnected. Problem: The orchestrate:monitor command exists but has a broken contract with core. Stuck spawns go undetected, zombie locks accumulate, and recovery is manual. This is the 'Gas Town' supervision gap. Solution: Rewire CLI orchestrate:monitor to properly call the spawn-monitor APIs in core. This includes: (1) stuck detection with configurable thresholds, (2) zombie lock identification and cleanup, (3) recovery actions (signal, restart, escalate), (4) status reporting for human oversight. The core APIs already exist - this WU wires them to the CLI surface."
+description: "Context: The @lumenflow/core package contains spawn-monitor APIs for stuck detection,
+  zombie lock recovery, and agent supervision. However, the CLI does not use these APIs - the
+  supervision machinery exists but is disconnected. Problem: The orchestrate:monitor command exists
+  but has a broken contract with core. Stuck spawns go undetected, zombie locks accumulate, and
+  recovery is manual. This is the 'Gas Town' supervision gap. Solution: Rewire CLI
+  orchestrate:monitor to properly call the spawn-monitor APIs in core. This includes: (1) stuck
+  detection with configurable thresholds, (2) zombie lock identification and cleanup, (3) recovery
+  actions (signal, restart, escalate), (4) status reporting for human oversight. The core APIs
+  already exist - this WU wires them to the CLI surface."
 acceptance:
   - orchestrate:monitor calls spawn-monitor APIs from @lumenflow/core
   - Stuck detection uses configurable timeout threshold (default 30min)
@@ -38,3 +46,4 @@ acceptance:
   - Unit tests verify API wiring and status formatting
   - Integration test confirms stuck detection works
   - Documentation updated
+initiative: INIT-008
