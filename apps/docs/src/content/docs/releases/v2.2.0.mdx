@@ -1,0 +1,173 @@
+---
+title: v2.2.0 Release Notes
+description: Methodology Configurability - Configure your team's testing and architecture approach
+---
+
+import { Aside, Badge, Card, CardGrid, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Badge text="Latest" variant="success" />
+
+**Release Date:** January 30, 2026
+
+This release introduces **Methodology Configurability**, allowing teams to choose their testing and architecture approach. Whether you're a TDD purist, transitioning from legacy code, or running quick spikes, LumenFlow now adapts to your workflow.
+
+## Highlights
+
+<CardGrid>
+  <Card title="Testing Flexibility" icon="setting">
+    Choose TDD, test-after, or no testing enforcement based on your project needs.
+  </Card>
+  <Card title="Architecture Options" icon="puzzle">
+    Select hexagonal, layered, or no architecture guidance for agent prompts.
+  </Card>
+  <Card title="Backwards Compatible" icon="approve-check">
+    Existing projects maintain identical behavior without any configuration changes.
+  </Card>
+  <Card title="Smart Defaults" icon="rocket">
+    Each methodology provides sensible coverage thresholds that can be overridden.
+  </Card>
+</CardGrid>
+
+## What's New
+
+### Methodology Configuration
+
+Configure your team's approach in `.lumenflow.config.yaml`:
+
+```yaml
+methodology:
+  testing: 'tdd' # tdd | test-after | none
+  architecture: 'hexagonal' # hexagonal | layered | none
+  overrides:
+    coverage_threshold: 85
+    coverage_mode: 'warn'
+```
+
+### Testing Methodologies
+
+<Tabs>
+  <TabItem label="TDD (Default)">
+    Test-Driven Development with strict enforcement:
+
+    - Tests written BEFORE implementation
+    - RED-GREEN-REFACTOR cycle in agent prompts
+    - 90% coverage threshold (blocks on failure)
+    - Best for production-critical code
+
+    ```yaml
+    methodology:
+      testing: 'tdd'
+    ```
+
+  </TabItem>
+  <TabItem label="Test-After">
+    Implementation first, tests before completion:
+
+    - Implementation can proceed without tests
+    - Tests required before `wu:done`
+    - 70% coverage threshold (warns but does not block)
+    - Best for legacy migration or rapid prototyping
+
+    ```yaml
+    methodology:
+      testing: 'test-after'
+    ```
+
+  </TabItem>
+  <TabItem label="None">
+    Minimal testing enforcement:
+
+    - No testing methodology in agent prompts
+    - 0% coverage threshold (no enforcement)
+    - Best for spikes, research, and documentation
+
+    ```yaml
+    methodology:
+      testing: 'none'
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Architecture Methodologies
+
+| Methodology | Description                          | Best For                             |
+| ----------- | ------------------------------------ | ------------------------------------ |
+| `hexagonal` | Ports and Adapters with strict rules | Complex domains, extensive testing   |
+| `layered`   | Traditional three-tier structure     | Simpler CRUD apps, newcomers         |
+| `none`      | No architecture guidance             | Small scripts, existing architecture |
+
+### Template Defaults
+
+Each testing methodology sets sensible defaults:
+
+| Methodology  | Coverage | Mode  | Tests Required |
+| ------------ | -------- | ----- | -------------- |
+| `tdd`        | 90%      | block | Yes            |
+| `test-after` | 70%      | warn  | Yes            |
+| `none`       | 0%       | off   | No             |
+
+Override any default with the `overrides` section:
+
+```yaml
+methodology:
+  testing: 'tdd'
+  overrides:
+    coverage_threshold: 85 # Slightly lower than default
+    coverage_mode: 'warn' # Warn instead of block
+```
+
+## Breaking Changes
+
+<Aside type="tip" title="No Breaking Changes">
+  This release is fully backwards compatible. Projects without explicit `methodology` configuration
+  maintain identical behavior to v2.1.x.
+</Aside>
+
+**None.** The methodology configuration is entirely opt-in. Existing users will see no change in behavior unless they add the `methodology` section to their config.
+
+## Migration
+
+No migration required. To adopt methodology configurability:
+
+1. Review the [Choosing Your Methodology](/guides/choosing-methodology) guide
+2. Add the `methodology` section to your `.lumenflow.config.yaml`
+3. Choose your testing methodology: `tdd`, `test-after`, or `none`
+4. Choose your architecture methodology: `hexagonal`, `layered`, or `none`
+5. Optionally override template defaults
+
+### Example: Transitioning Legacy Code
+
+For a legacy migration project:
+
+```yaml
+# Phase 1: Relaxed enforcement during migration
+methodology:
+  testing: 'test-after'
+  architecture: 'layered'
+
+# Phase 2: Tighten as code improves
+methodology:
+  testing: 'tdd'
+  architecture: 'hexagonal'
+  overrides:
+    coverage_mode: 'warn' # Still warn during transition
+```
+
+## Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+See the [Upgrade Guide](/getting-started/upgrade) for detailed instructions.
+
+## Related Documentation
+
+- [Choosing Your Methodology](/guides/choosing-methodology) - Detailed guide on methodology selection
+- [Configuration Reference](/reference/config) - All configuration options
+- [Migration Guide](/guides/migration) - Upgrading from other tools
+
+## Changelog
+
+For the complete list of changes, see the [Changelog](/reference/changelog#v220).
