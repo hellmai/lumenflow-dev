@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1239 — BUG: Fix pre-existing test failures in wu-spawn-progress-signals and check-automated-tests](wu/WU-1239.yaml) — Framework: Core
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 
