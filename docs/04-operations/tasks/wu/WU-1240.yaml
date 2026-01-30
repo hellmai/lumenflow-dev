@@ -6,9 +6,9 @@ status: ready
 priority: P1
 created: 2026-01-30
 code_paths:
-  - packages/@lumenflow/core/src/wu-spawn-core.ts
-  - packages/@lumenflow/cli/src/wu-spawn.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
+  - packages/@lumenflow/core/src/wu-spawn-skills.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual: []
@@ -18,7 +18,8 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1240.done
-dependencies: []
+dependencies:
+  - WU-1234
 risks: []
 notes: ''
 requires_review: false
