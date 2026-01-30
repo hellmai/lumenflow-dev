@@ -18,7 +18,9 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1238.done
-dependencies: []
+dependencies:
+  - WU-1234
+  - WU-1237
 risks: []
 notes: ''
 requires_review: false
@@ -29,7 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Without decay, context injection becomes noisy after 50+ WUs. Old, superseded decisions pollute new sessions. Project profiles grow unbounded. Problem: Memory relevance drifts over time. Frequently accessed, recent memories should rank higher than stale, rarely-used ones. Currently all memories are treated equally. Solution: Add access tracking and decay scoring using metadata fields (non-breaking, metadata-first approach). New metadata fields: metadata.access.count (increment on retrieval), metadata.access.last_accessed_at (ISO string), metadata.decay.score (computed), metadata.decay.reason (debuggable). Decay scoring algorithm: recencyScore = exp(-age / HALF_LIFE_MS), accessScore = log1p(access_count) / 10, importanceScore = priority P0=2, P1=1.5, P2=1, P3=0.5, decayScore = recencyScore * (1 + accessScore) * importanceScore. Access recorded when: node selected into mem:context, node returned in mem:search, optionally when mem:export includes it. Archival: nodes below threshold get metadata.status = archived (append-only pattern). Archived nodes excluded from default queries but searchable with --include-archived. Nothing deleted; relevance managed through selection filters.'
+description: 'Context: Without decay, context injection becomes noisy after 50+ WUs. Old, superseded
+  decisions pollute new sessions. Project profiles grow unbounded. Problem: Memory relevance drifts
+  over time. Frequently accessed, recent memories should rank higher than stale, rarely-used ones.
+  Currently all memories are treated equally. Solution: Add access tracking and decay scoring using
+  metadata fields (non-breaking, metadata-first approach). New metadata fields:
+  metadata.access.count (increment on retrieval), metadata.access.last_accessed_at (ISO string),
+  metadata.decay.score (computed), metadata.decay.reason (debuggable). Decay scoring algorithm:
+  recencyScore = exp(-age / HALF_LIFE_MS), accessScore = log1p(access_count) / 10, importanceScore =
+  priority P0=2, P1=1.5, P2=1, P3=0.5, decayScore = recencyScore * (1 + accessScore) *
+  importanceScore. Access recorded when: node selected into mem:context, node returned in
+  mem:search, optionally when mem:export includes it. Archival: nodes below threshold get
+  metadata.status = archived (append-only pattern). Archived nodes excluded from default queries but
+  searchable with --include-archived. Nothing deleted; relevance managed through selection filters.'
 acceptance:
   - Access count increments when node returned by mem:search or mem:context
   - last_accessed_at updated on each access
