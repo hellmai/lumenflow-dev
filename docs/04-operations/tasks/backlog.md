@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml) — Framework: Metrics
 - [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml) — Content: Documentation
 - [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — Content: Documentation
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml) — Framework: Core
