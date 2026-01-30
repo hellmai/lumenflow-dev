@@ -11,6 +11,7 @@ _Last updated: 2026-01-30_
 
 ## Completed
 
+- [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml) — 2026-01-30
 - [WU-1266 — E2E test: methodology config → spawn → gates flow](wu/WU-1266.yaml) — 2026-01-30
 - [WU-1268 — CHANGELOG and release notes for methodology configurability](wu/WU-1268.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18

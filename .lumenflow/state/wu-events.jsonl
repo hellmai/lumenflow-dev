@@ -472,3 +472,4 @@
 {"type":"claim","wuId":"WU-1270","timestamp":"2026-01-30T23:35:56.682Z","lane":"Framework: Metrics","title":"Telemetry: methodology selection tracking (opt-in)"}
 {"type":"complete","wuId":"WU-1268","timestamp":"2026-01-30T23:41:15.442Z"}
 {"type":"complete","wuId":"WU-1266","timestamp":"2026-01-30T23:43:26.087Z"}
+{"type":"complete","wuId":"WU-1270","timestamp":"2026-01-30T23:44:55.430Z"}
