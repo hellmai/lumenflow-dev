@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -40,7 +39,6 @@ sections:
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
-- [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -49,6 +47,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1253 — Implement test ratchet pattern with baseline comparison and agent guidance](wu/WU-1253.yaml) — Framework: Core
+- [WU-1256 — Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts](wu/WU-1256.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
