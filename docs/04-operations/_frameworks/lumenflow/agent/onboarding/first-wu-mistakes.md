@@ -37,6 +37,7 @@ cd /path/to/main && pnpm wu:done --id WU-123  # Copy-paste from wu:prep output
 See [troubleshooting-wu-done.md](troubleshooting-wu-done.md) for the full explanation.
 
 **TL;DR (WU-1223):**
+
 1. From worktree: `pnpm wu:prep --id WU-XXX` (runs gates)
 2. From main: `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep output)
 

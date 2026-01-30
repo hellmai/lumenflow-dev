@@ -61,9 +61,9 @@ Prepares a WU for completion by running gates in the worktree.
 pnpm wu:prep --id WU-123 [--docs-only]
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--id` | WU ID (required) |
+| Flag          | Description                               |
+| ------------- | ----------------------------------------- |
+| `--id`        | WU ID (required)                          |
 | `--docs-only` | Run docs-only gates (format, spec-linter) |
 
 **Must be run from worktree** - errors if run from main.
@@ -76,9 +76,9 @@ Completes a WU by merging and cleaning up.
 pnpm wu:done --id WU-123
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--id` | WU ID (required) |
+| Flag           | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `--id`         | WU ID (required)                               |
 | `--skip-gates` | Skip gates (emergency only, requires --reason) |
 
 **Must be run from main** - errors if run from worktree.
@@ -86,7 +86,8 @@ pnpm wu:done --id WU-123
 ## Error Messages
 
 <Aside type="caution" title="wu:done from worktree">
-If you see "wu:done must be run from main checkout", you ran wu:done from a worktree. Use `wu:prep` instead, then follow its copy-paste instruction.
+  If you see "wu:done must be run from main checkout", you ran wu:done from a worktree. Use
+  `wu:prep` instead, then follow its copy-paste instruction.
 </Aside>
 
 <Aside type="caution" title="wu:prep from main">
