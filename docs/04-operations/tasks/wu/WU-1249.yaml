@@ -2,7 +2,7 @@ id: WU-1249
 title: Fix agent documentation discoverability and completeness
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -35,7 +35,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Agents can't find comprehensive CLI reference - requires 3 hops through buried links. WU-1244 marked done but missed 10 commands wired in WU-1243. Problem: LUMENFLOW.md 'Commands Reference' section (12 commands) looks complete but isn't. Link to quick-ref (60+ commands) buried in 'Agent Onboarding' section. All vendor entry points (Claude, Cursor, Windsurf, Cline, Aider) lack direct links. Solution: Add prominent quick-ref links to all entry points (core templates + vendor templates + internal files). Add 10 missing commands to quick-ref. Create Cline template. Result: 1-hop discovery for all vendors."
+description: "Context: Agents can't find comprehensive CLI reference - requires 3 hops through
+  buried links. WU-1244 marked done but missed 10 commands wired in WU-1243. Problem: LUMENFLOW.md
+  'Commands Reference' section (12 commands) looks complete but isn't. Link to quick-ref (60+
+  commands) buried in 'Agent Onboarding' section. All vendor entry points (Claude, Cursor, Windsurf,
+  Cline, Aider) lack direct links. Solution: Add prominent quick-ref links to all entry points (core
+  templates + vendor templates + internal files). Add 10 missing commands to quick-ref. Create Cline
+  template. Result: 1-hop discovery for all vendors."
 acceptance:
   - Core templates updated with quick-ref links (LUMENFLOW.md.template, AGENTS.md.template)
   - All vendor templates updated (Claude, Cursor, Windsurf, Aider)
@@ -43,3 +49,11 @@ acceptance:
   - Internal files updated for dogfooding
   - quick-ref-commands.md includes all 10 missing WU-1243 commands
   - Works with any basic LLM via AGENTS.md universal entry
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1249
+claimed_at: 2026-01-30T13:34:42.426Z
+baseline_main_sha: 19c841498c944893d444deb3673a1b1453492670
+session_id: 8c302afe-3907-44b3-bce2-c14a1fd724db
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-30T13:34:42.433Z

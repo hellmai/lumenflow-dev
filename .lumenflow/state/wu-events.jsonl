@@ -437,3 +437,4 @@
 {"type":"complete","wuId":"WU-1245","timestamp":"2026-01-30T12:47:16.040Z"}
 {"type":"claim","wuId":"WU-1246","timestamp":"2026-01-30T12:54:33.225Z","lane":"Framework: CLI","title":"Auto-generate WU IDs in wu:create when --id not provided"}
 {"type":"complete","wuId":"WU-1246","timestamp":"2026-01-30T13:28:00.303Z"}
+{"type":"claim","wuId":"WU-1249","lane":"Content: Documentation","title":"Fix agent documentation discoverability and completeness","timestamp":"2026-01-30T13:34:42.454Z"}
