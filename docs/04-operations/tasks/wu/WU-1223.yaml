@@ -2,7 +2,7 @@ id: WU-1223
 title: Allow wu:done to run from worktree (fix docs generation on main)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 blocked_reason: Stale lock - freeing lane for P0 bug WU-1226
 blocked_at: 2026-01-30T00:00:00.000Z
 priority: P2
@@ -75,3 +75,5 @@ acceptance:
   - AGENTS.md universal entry point updated
   - Skill wu-lifecycle.md updated with wu:prep
   - Spawn prompt templates updated to use wu:prep workflow
+locked: true
+completed_at: 2026-01-30T10:09:53.148Z

@@ -8,10 +8,10 @@ _Last updated: 2026-01-30_
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
-- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml)
 
 ## Completed
 
+- [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — 2026-01-30
 - [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — 2026-01-30
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — 2026-01-30
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
