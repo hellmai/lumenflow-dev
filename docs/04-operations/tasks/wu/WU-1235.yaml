@@ -27,9 +27,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Supermemory has a command to index the repo architecture, patterns, conventions, and key files. LumenFlow already has patterns for scan repo to produce structured artifact (see lane:suggest). Problem: New agents have no awareness of project conventions, file structure, or established patterns. Each session rediscovers the same information. Solution: Add mem:index command that scans predictable sources and produces project-lifecycle summary nodes. Sources to scan: README.md (project overview), LUMENFLOW.md + selected docs (workflow conventions), package.json workspace structure (monorepo layout), packages/*/README.md (package descriptions), .lumenflow.config.yaml (workflow config), .lumenflow/constraints.md (invariants). Output memory nodes tagged: index:architecture, index:conventions, index:commands, index:invariants. Deterministic, repeatable, diffable. Each node includes provenance metadata (source_path, source_hash, indexed_at). Lifecycle: project. Idempotent: re-running updates existing nodes.'
+description: 'Context: Supermemory has a command to index the repo architecture, patterns,
+  conventions, and key files. LumenFlow already has patterns for scan repo to produce structured
+  artifact (see lane:suggest). Problem: New agents have no awareness of project conventions, file
+  structure, or established patterns. Each session rediscovers the same information. Solution: Add
+  mem:index command that scans predictable sources and produces project-lifecycle summary nodes.
+  Sources to scan: README.md (project overview), LUMENFLOW.md + selected docs (workflow
+  conventions), package.json workspace structure (monorepo layout), packages/*/README.md (package
+  descriptions), .lumenflow.config.yaml (workflow config), .lumenflow/constraints.md (invariants).
+  Output memory nodes tagged: index:architecture, index:conventions, index:commands,
+  index:invariants. Deterministic, repeatable, diffable. Each node includes provenance metadata
+  (source_path, source_hash, indexed_at). Lifecycle: project. Idempotent: re-running updates
+  existing nodes.'
 acceptance:
-  - mem:index scans README.md, LUMENFLOW.md, package.json, .lumenflow.config.yaml
+  - mem:index scans README.md, LUMENFLOW.md, package.json
+  - Scans .lumenflow.config.yaml if present
   - Creates memory nodes with lifecycle=project and type=summary
   - Nodes tagged with index:architecture, index:conventions, index:commands, index:invariants
   - Provenance metadata includes source_path, source_hash, indexed_at
