@@ -32,6 +32,8 @@ sections:
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
 - [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
+- [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
+- [WU-1230 — state:doctor --fix should use micro-worktree and update backlog/status](wu/WU-1230.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -39,7 +41,6 @@ sections:
 - [WU-1099 — INIT-003 Phase 1: Sync CLI documentation to lumenflow.dev](wu/WU-1099.yaml) — Content: Documentation
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
-- [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -247,3 +248,4 @@ sections:
 - [WU-1213 — Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts](wu/WU-1213.yaml)
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml)
 - [WU-1215 — Update distribution gitignore with complete recursive patterns](wu/WU-1215.yaml)
+- [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml)
