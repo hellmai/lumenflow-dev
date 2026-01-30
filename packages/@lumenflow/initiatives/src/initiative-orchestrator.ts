@@ -163,10 +163,7 @@ import {
  * @param {object} doc - WU document
  * @returns {string[]} Combined list of all dependency WU IDs (deduplicated)
  */
-function getAllDependencies(doc: {
-  blocked_by?: string[];
-  dependencies?: string[];
-}): string[] {
+function getAllDependencies(doc: { blocked_by?: string[]; dependencies?: string[] }): string[] {
   const blockedBy = doc.blocked_by ?? [];
   const dependencies = doc.dependencies ?? [];
 
