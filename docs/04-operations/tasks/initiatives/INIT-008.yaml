@@ -5,7 +5,7 @@ description: "Transform LumenFlow's multi-agent orchestration from cold starts t
   through two complementary pillars: Memory Intelligence (context injection, knowledge promotion,
   decay scoring) and Supervision Infrastructure (monitoring, patrol mode). Agents start with
   accumulated project knowledge and remain healthy through continuous supervision."
-status: draft
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-30
