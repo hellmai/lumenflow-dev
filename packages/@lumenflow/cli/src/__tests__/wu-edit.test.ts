@@ -1,0 +1,139 @@
+/**
+ * WU-1225: Tests for wu-edit append-by-default behavior
+ *
+ * Validates that array fields (code_paths, risks, acceptance, etc.)
+ * now append by default instead of replacing, making behavior consistent
+ * across all array options.
+ */
+import { describe, it, expect } from 'vitest';
+import { applyEdits, mergeStringField } from '../wu-edit.js';
+
+describe('wu-edit applyEdits', () => {
+  describe('WU-1225: code_paths append-by-default', () => {
+    const baseWU = {
+      id: 'WU-1225',
+      status: 'ready',
+      code_paths: ['existing/path.ts'],
+    };
+
+    it('appends code_paths by default (no flags)', () => {
+      const opts = { codePaths: ['new/path.ts'] };
+      const result = applyEdits(baseWU, opts);
+      expect(result.code_paths).toEqual(['existing/path.ts', 'new/path.ts']);
+    });
+
+    it('appends code_paths when --append is set (backwards compat)', () => {
+      const opts = { codePaths: ['new/path.ts'], append: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.code_paths).toEqual(['existing/path.ts', 'new/path.ts']);
+    });
+
+    it('replaces code_paths when --replace-code-paths is set', () => {
+      const opts = { codePaths: ['new/path.ts'], replaceCodePaths: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.code_paths).toEqual(['new/path.ts']);
+    });
+  });
+
+  describe('WU-1225: risks append-by-default', () => {
+    const baseWU = {
+      id: 'WU-1225',
+      status: 'ready',
+      risks: ['existing risk'],
+    };
+
+    it('appends risks by default', () => {
+      const opts = { risks: ['new risk'] };
+      const result = applyEdits(baseWU, opts);
+      expect(result.risks).toEqual(['existing risk', 'new risk']);
+    });
+
+    it('replaces risks when --replace-risks is set', () => {
+      const opts = { risks: ['new risk'], replaceRisks: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.risks).toEqual(['new risk']);
+    });
+  });
+
+  describe('WU-1225: blocked_by append-by-default', () => {
+    const baseWU = {
+      id: 'WU-1225',
+      status: 'ready',
+      blocked_by: ['WU-100'],
+    };
+
+    it('appends blocked_by by default', () => {
+      const opts = { blockedBy: 'WU-200' };
+      const result = applyEdits(baseWU, opts);
+      expect(result.blocked_by).toEqual(['WU-100', 'WU-200']);
+    });
+
+    it('replaces blocked_by when --replace-blocked-by is set', () => {
+      const opts = { blockedBy: 'WU-200', replaceBlockedBy: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.blocked_by).toEqual(['WU-200']);
+    });
+  });
+
+  describe('WU-1225: dependencies append-by-default', () => {
+    const baseWU = {
+      id: 'WU-1225',
+      status: 'ready',
+      dependencies: ['WU-50'],
+    };
+
+    it('appends dependencies by default', () => {
+      const opts = { addDep: 'WU-60' };
+      const result = applyEdits(baseWU, opts);
+      expect(result.dependencies).toEqual(['WU-50', 'WU-60']);
+    });
+
+    it('replaces dependencies when --replace-dependencies is set', () => {
+      const opts = { addDep: 'WU-60', replaceDependencies: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.dependencies).toEqual(['WU-60']);
+    });
+  });
+
+  describe('WU-1144: acceptance already appends by default', () => {
+    const baseWU = {
+      id: 'WU-1225',
+      status: 'ready',
+      acceptance: ['existing criterion'],
+    };
+
+    it('appends acceptance by default', () => {
+      const opts = { acceptance: ['new criterion'] };
+      const result = applyEdits(baseWU, opts);
+      expect(result.acceptance).toEqual(['existing criterion', 'new criterion']);
+    });
+
+    it('replaces acceptance when --replace-acceptance is set', () => {
+      const opts = { acceptance: ['new criterion'], replaceAcceptance: true };
+      const result = applyEdits(baseWU, opts);
+      expect(result.acceptance).toEqual(['new criterion']);
+    });
+  });
+});
+
+describe('wu-edit mergeStringField', () => {
+  it('appends by default', () => {
+    const result = mergeStringField('existing', 'new', false);
+    expect(result).toBe('existing\n\nnew');
+  });
+
+  it('replaces when shouldReplace is true', () => {
+    const result = mergeStringField('existing', 'new', true);
+    expect(result).toBe('new');
+  });
+
+  it('returns new value if existing is empty', () => {
+    const result = mergeStringField('', 'new', false);
+    expect(result).toBe('new');
+  });
+
+  it('returns new value if existing is undefined', () => {
+    const result = mergeStringField(undefined, 'new', false);
+    expect(result).toBe('new');
+  });
+});
