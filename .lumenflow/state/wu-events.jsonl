@@ -441,3 +441,4 @@
 {"type":"complete","wuId":"WU-1249","timestamp":"2026-01-30T13:45:15.445Z"}
 {"type":"claim","wuId":"WU-1248","timestamp":"2026-01-30T13:48:53.694Z","lane":"Framework: Core","title":"Fix no-dynamic-delete lint errors in arg-parser.ts"}
 {"type":"complete","wuId":"WU-1248","timestamp":"2026-01-30T13:52:20.026Z"}
+{"type":"claim","wuId":"WU-1250","lane":"Content: Documentation","title":"Add AI tool integration section to CLI README","timestamp":"2026-01-30T13:53:27.979Z"}
