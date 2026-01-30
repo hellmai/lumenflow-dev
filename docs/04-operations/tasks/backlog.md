@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1246 — Auto-generate WU IDs in wu:create when --id not provided](wu/WU-1246.yaml) — Framework: CLI
 - [WU-1245 — Fix pre-push hook to allow micro-worktree operations](wu/WU-1245.yaml) — Operations: CI/CD
 - [WU-1244 — Update quick-ref-commands.md with ALL CLI commands](wu/WU-1244.yaml) — Content: Documentation
 - [WU-1243 — Wire missing CLI commands to package.json](wu/WU-1243.yaml) — Framework: CLI
