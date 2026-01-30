@@ -2,7 +2,7 @@ id: WU-1225
 title: 'wu:edit: inconsistent default behavior for --code-paths vs --acceptance'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -41,3 +41,5 @@ session_id: 3ef4f43b-a135-46b6-8801-032e345b0f37
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-29T23:50:07.634Z
+locked: true
+completed_at: 2026-01-30T10:04:49.169Z

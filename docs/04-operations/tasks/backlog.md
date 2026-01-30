@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1218 — Fix spec:linter failing in worktrees without CLI dist](wu/WU-1218.yaml) — Framework: CLI
@@ -39,6 +38,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1223 — Allow wu:done to run from worktree (fix docs generation on main)](wu/WU-1223.yaml) — Framework: CLI
+- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -247,4 +247,4 @@ sections:
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml)
 - [WU-1215 — Update distribution gitignore with complete recursive patterns](wu/WU-1215.yaml)
 - [WU-1226 — wu:recover modifies files directly on main (should use micro-worktree)](wu/WU-1226.yaml)
-- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1225 — wu:edit: inconsistent default behavior for --code-paths vs --acceptance](wu/WU-1225.yaml)
