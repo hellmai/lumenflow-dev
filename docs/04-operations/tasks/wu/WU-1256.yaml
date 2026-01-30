@@ -2,7 +2,7 @@ id: WU-1256
 title: Fix pre-existing lint errors in initiative-create.ts, initiative-edit.ts, and pre-push-hook.test.ts
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -49,3 +49,5 @@ session_id: e14ca33f-6e1a-4736-8a06-5b0e03ede330
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T17:35:45.255Z
+locked: true
+completed_at: 2026-01-30T17:43:14.518Z
