@@ -160,39 +160,51 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
 
   console.log(`${PREFIX} Deleting via micro-worktree...`);
 
-  await withMicroWorktree({
-    operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
-    id: id,
-    logPrefix: PREFIX,
-    execute: async ({ worktreePath, gitWorktree }) => {
-      const wuFilePath = join(worktreePath, wuPath);
-      const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
+  // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
+  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+  try {
+    await withMicroWorktree({
+      operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
+      id: id,
+      logPrefix: PREFIX,
+      execute: async ({ worktreePath, gitWorktree }) => {
+        const wuFilePath = join(worktreePath, wuPath);
+        const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
 
-      unlinkSync(wuFilePath);
-      console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
+        unlinkSync(wuFilePath);
+        console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
 
-      const stampPath = join(worktreePath, getStampPath(id));
-      if (existsSync(stampPath)) {
-        unlinkSync(stampPath);
-        console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
-      }
+        const stampPath = join(worktreePath, getStampPath(id));
+        if (existsSync(stampPath)) {
+          unlinkSync(stampPath);
+          console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
+        }
 
-      const removedFromBacklog = removeFromBacklog(backlogFilePath, id);
-      if (removedFromBacklog) {
-        console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
-      } else {
-        console.log(`${PREFIX} ℹ️  ${id} was not found in backlog.md`);
-      }
+        const removedFromBacklog = removeFromBacklog(backlogFilePath, id);
+        if (removedFromBacklog) {
+          console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
+        } else {
+          console.log(`${PREFIX} ℹ️  ${id} was not found in backlog.md`);
+        }
 
-      await gitWorktree.add('.');
+        await gitWorktree.add('.');
 
-      const commitMessage = `docs: delete ${id.toLowerCase()}`;
-      return {
-        commitMessage,
-        files: [],
-      };
-    },
-  });
+        const commitMessage = `docs: delete ${id.toLowerCase()}`;
+        return {
+          commitMessage,
+          files: [],
+        };
+      },
+    });
+  } finally {
+    // Restore previous LUMENFLOW_WU_TOOL value
+    if (previousWuTool === undefined) {
+      delete process.env.LUMENFLOW_WU_TOOL;
+    } else {
+      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    }
+  }
 
   console.log(`${PREFIX} ✅ Successfully deleted ${id}`);
   console.log(`${PREFIX} Changes pushed to origin/main`);
@@ -231,44 +243,56 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
 
   console.log(`${PREFIX} Deleting ${ids.length} WU(s) via micro-worktree...`);
 
-  await withMicroWorktree({
-    operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
-    id: `batch-${ids.length}`,
-    logPrefix: PREFIX,
-    execute: async ({ worktreePath, gitWorktree }) => {
-      const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
+  // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
+  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+  try {
+    await withMicroWorktree({
+      operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
+      id: `batch-${ids.length}`,
+      logPrefix: PREFIX,
+      execute: async ({ worktreePath, gitWorktree }) => {
+        const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
 
-      for (const { id, wuPath } of wusToDelete) {
-        const wuFilePath = join(worktreePath, wuPath);
-        unlinkSync(wuFilePath);
-        console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
-      }
-
-      for (const id of stampsToDelete) {
-        const stampPath = join(worktreePath, getStampPath(id));
-        if (existsSync(stampPath)) {
-          unlinkSync(stampPath);
-          console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
+        for (const { id, wuPath } of wusToDelete) {
+          const wuFilePath = join(worktreePath, wuPath);
+          unlinkSync(wuFilePath);
+          console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
         }
-      }
 
-      for (const { id } of wusToDelete) {
-        const removed = removeFromBacklog(backlogFilePath, id);
-        if (removed) {
-          console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
+        for (const id of stampsToDelete) {
+          const stampPath = join(worktreePath, getStampPath(id));
+          if (existsSync(stampPath)) {
+            unlinkSync(stampPath);
+            console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
+          }
         }
-      }
 
-      await gitWorktree.add('.');
+        for (const { id } of wusToDelete) {
+          const removed = removeFromBacklog(backlogFilePath, id);
+          if (removed) {
+            console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
+          }
+        }
 
-      const idList = ids.map((id) => id.toLowerCase()).join(', ');
-      const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
-      return {
-        commitMessage,
-        files: [],
-      };
-    },
-  });
+        await gitWorktree.add('.');
+
+        const idList = ids.map((id) => id.toLowerCase()).join(', ');
+        const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
+        return {
+          commitMessage,
+          files: [],
+        };
+      },
+    });
+  } finally {
+    // Restore previous LUMENFLOW_WU_TOOL value
+    if (previousWuTool === undefined) {
+      delete process.env.LUMENFLOW_WU_TOOL;
+    } else {
+      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    }
+  }
 
   console.log(`${PREFIX} ✅ Successfully deleted ${ids.length} WU(s)`);
   console.log(`${PREFIX} Changes pushed to origin/main`);

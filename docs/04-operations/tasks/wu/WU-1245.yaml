@@ -6,11 +6,13 @@ status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
-  - .husky/pre-push
+  - .husky/hooks/pre-push.mjs
+  - packages/@lumenflow/cli/src/wu-delete.ts
 tests:
   manual:
     - Run wu:delete on test WU, verify push succeeds
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1245.done

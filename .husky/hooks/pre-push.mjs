@@ -70,9 +70,18 @@ if (process.env.LUMENFLOW_FORCE === '1') {
   process.exit(0);
 }
 
-// Allow wu:create / wu:edit pushes that originate from micro-worktree automation
+// Allow CLI micro-worktree pushes that originate from WU lifecycle automation
+// WU-1245: Extended to include all micro-worktree operations (wu:delete, wu:claim, etc.)
 const WU_TOOL_ENV = process.env.LUMENFLOW_WU_TOOL;
-const ALLOWED_WU_TOOLS = new Set(['wu-create', 'wu-edit', 'wu-done']);
+const ALLOWED_WU_TOOLS = new Set([
+  'wu-create',
+  'wu-edit',
+  'wu-done',
+  'wu-delete', // WU-1245: Safe WU deletion
+  'wu-claim', // WU-1245: WU claiming with micro-worktree
+  'wu-block', // WU-1245: WU blocking
+  'wu-unblock', // WU-1245: WU unblocking
+]);
 if (WU_TOOL_ENV && ALLOWED_WU_TOOLS.has(WU_TOOL_ENV)) {
   process.exit(0);
 }

@@ -44,4 +44,28 @@ describe('pre-push hook policy (WU-1030)', () => {
     const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-done' });
     expect(result.status).toBe(0);
   });
+
+  // WU-1245: wu:delete uses micro-worktree isolation and must be allowed
+  it('allows wu:delete pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-delete' });
+    expect(result.status).toBe(0);
+  });
+
+  // WU-1245: wu:claim uses micro-worktree isolation and must be allowed
+  it('allows wu:claim pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-claim' });
+    expect(result.status).toBe(0);
+  });
+
+  // WU-1245: wu:block uses micro-worktree isolation and must be allowed
+  it('allows wu:block pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-block' });
+    expect(result.status).toBe(0);
+  });
+
+  // WU-1245: wu:unblock uses micro-worktree isolation and must be allowed
+  it('allows wu:unblock pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-unblock' });
+    expect(result.status).toBe(0);
+  });
 });
