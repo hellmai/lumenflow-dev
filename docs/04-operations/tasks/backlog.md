@@ -53,7 +53,6 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — Framework: Core
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
-- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -308,3 +307,4 @@ sections:
 - [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml)
 - [WU-1285 — Fix mem:delete path calculation bug](wu/WU-1285.yaml)
 - [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml)
+- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml)
