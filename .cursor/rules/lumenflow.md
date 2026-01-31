@@ -31,7 +31,28 @@ cd /path/to/repo
 pnpm wu:done --id WU-XXX
 ```
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](../../docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+## CLI Commands
+
+### WU Lifecycle
+
+| Command                                   | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
+| `pnpm wu:status --id WU-XXX`              | Show WU status, location, valid commands |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>` | Claim WU and create worktree             |
+| `pnpm wu:prep --id WU-XXX`                | Run gates in worktree                    |
+| `pnpm wu:done --id WU-XXX`                | Complete WU (from main)                  |
+| `pnpm wu:spawn --id WU-XXX`               | Generate sub-agent spawn prompt          |
+| `pnpm wu:recover --id WU-XXX`             | Fix WU state inconsistencies             |
+
+### Gates & Orchestration
+
+| Command                                    | Description                  |
+| ------------------------------------------ | ---------------------------- |
+| `pnpm gates`                               | Run all quality gates        |
+| `pnpm orchestrate:init-status -i INIT-XXX` | Initiative progress view     |
+| `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity |
+| `pnpm mem:inbox --since 30m`               | Check coordination signals   |
+| `pnpm mem:checkpoint --wu WU-XXX`          | Save progress checkpoint     |
 
 ---
 

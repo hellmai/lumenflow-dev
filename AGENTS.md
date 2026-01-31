@@ -25,7 +25,61 @@ pnpm wu:prep --id WU-XXXX
 cd /home/tom/source/hellmai/os && pnpm wu:done --id WU-XXXX
 ```
 
-> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+---
+
+## CLI Command Reference
+
+### WU Lifecycle
+
+| Command                                       | Description                                   |
+| --------------------------------------------- | --------------------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec                            |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                  |
+| `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done       |
+| `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main |
+| `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands      |
+| `pnpm wu:block --id WU-XXX --reason "..."`    | Block WU with reason                          |
+| `pnpm wu:unblock --id WU-XXX`                 | Unblock WU                                    |
+| `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt               |
+| `pnpm wu:recover --id WU-XXX`                 | Analyze and fix WU state inconsistencies      |
+
+### Gates & Quality
+
+| Command                  | Description                  |
+| ------------------------ | ---------------------------- |
+| `pnpm gates`             | Run all quality gates        |
+| `pnpm gates --docs-only` | Run gates for docs changes   |
+| `pnpm format`            | Format all files (Prettier)  |
+| `pnpm lint`              | Run ESLint                   |
+| `pnpm typecheck`         | Run TypeScript type checking |
+| `pnpm test`              | Run all tests (Vitest)       |
+
+### Memory & Coordination
+
+| Command                             | Description                        |
+| ----------------------------------- | ---------------------------------- |
+| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint           |
+| `pnpm mem:inbox --since 30m`        | Check coordination signals         |
+| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal      |
+| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery) |
+
+### Orchestration & Initiatives
+
+| Command                                    | Description                      |
+| ------------------------------------------ | -------------------------------- |
+| `pnpm orchestrate:init-status -i INIT-XXX` | Compact initiative progress view |
+| `pnpm orchestrate:initiative -i INIT-XXX`  | Orchestrate initiative execution |
+| `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity     |
+| `pnpm initiative:status --id INIT-XXX`     | Show initiative status           |
+
+### State & Maintenance
+
+| Command                          | Description                 |
+| -------------------------------- | --------------------------- |
+| `pnpm wu:prune`                  | Clean stale worktrees       |
+| `pnpm wu:unlock-lane --lane <L>` | Unlock stuck lane           |
+| `pnpm state:doctor`              | Diagnose state store issues |
+| `pnpm backlog:prune`             | Clean stale backlog entries |
 
 ---
 
