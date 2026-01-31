@@ -387,6 +387,14 @@ export const MemoryConfigSchema = z.object({
    * Controls TTL-based cleanup for signals.jsonl to prevent unbounded growth.
    */
   signalCleanup: SignalCleanupConfigSchema.default(() => SignalCleanupConfigSchema.parse({})),
+
+  /**
+   * WU-1289: Maximum size in bytes for spawn memory context.
+   * Controls the maximum size of memory context injected into wu:spawn prompts.
+   * Larger values include more context but increase token usage.
+   * @default 4096 (4KB)
+   */
+  spawn_context_max_size: z.number().int().positive().default(4096),
 });
 
 /**
