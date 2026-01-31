@@ -2,7 +2,7 @@ id: WU-1234
 title: Add mem:context command for context injection at spawn
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-30
 code_paths:
@@ -49,3 +49,11 @@ acceptance:
   - Output is suitable for embedding into wu:spawn prompts (integration tracked in WU-1240)
   - Unit tests cover selection logic and output formatting
   - Documentation updated in memory package README
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1234
+claimed_at: 2026-01-31T10:27:42.804Z
+baseline_main_sha: f382802e0662142d75957d935cd65240997e5d3b
+session_id: 355e1c8c-e7de-4a14-a421-c11ad59b7080
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T10:27:42.809Z
