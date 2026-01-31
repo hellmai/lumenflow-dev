@@ -51,7 +51,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml) — Framework: Core
-- [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -309,3 +308,4 @@ sections:
 - [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml)
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml)
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml)
+- [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml)
