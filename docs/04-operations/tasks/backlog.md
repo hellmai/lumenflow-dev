@@ -29,7 +29,6 @@ sections:
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
 - [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
 - [WU-1232 — state:doctor --fix writes directly to main despite WU-1230 micro-worktree fix](wu/WU-1232.yaml) — Framework: CLI
-- [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — Framework: Memory
 - [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — Framework: Memory
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
@@ -41,6 +40,11 @@ sections:
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
 - [WU-1271 — Fix wu-edit risks replace-by-default behavior](wu/WU-1271.yaml) — Framework: CLI
+- [WU-1273 — CLI integration tests: wu:create, wu:claim, wu:status](wu/WU-1273.yaml) — Framework: CLI
+- [WU-1274 — CLI integration tests: wu:prep, wu:done workflow](wu/WU-1274.yaml) — Framework: CLI
+- [WU-1275 — Memory layer tests: checkpoint, signal, inbox](wu/WU-1275.yaml) — Framework: Memory
+- [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
+- [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -48,6 +52,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 
