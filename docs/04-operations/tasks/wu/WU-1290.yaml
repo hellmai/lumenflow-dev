@@ -2,7 +2,7 @@ id: WU-1290
 title: Update Codex spawn prompt to reflect methodology policy
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -46,3 +46,5 @@ session_id: 697c9466-0242-499d-ac3f-059321192d95
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T23:19:27.898Z
+locked: true
+completed_at: 2026-01-31T23:25:48.012Z
