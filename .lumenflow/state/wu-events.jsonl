@@ -487,3 +487,4 @@
 {"type":"claim","wuId":"WU-1240","timestamp":"2026-01-31T11:46:01.412Z","lane":"Framework: Core","title":"Integrate mem:context into wu:spawn prompts"}
 {"type":"claim","wuId":"WU-1242","timestamp":"2026-01-31T11:46:38.351Z","lane":"Framework: CLI","title":"Add --watch patrol mode for continuous spawn monitoring"}
 {"type":"complete","wuId":"WU-1240","timestamp":"2026-01-31T12:03:42.486Z"}
+{"type":"complete","wuId":"WU-1242","timestamp":"2026-01-31T12:06:21.583Z"}

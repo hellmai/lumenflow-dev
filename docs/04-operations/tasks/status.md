@@ -12,6 +12,7 @@ _Last updated: 2026-01-31_
 
 ## Completed
 
+- [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — 2026-01-31
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
