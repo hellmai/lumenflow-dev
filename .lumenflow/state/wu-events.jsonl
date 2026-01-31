@@ -523,4 +523,5 @@
 {"type":"complete","wuId":"WU-1289","timestamp":"2026-01-31T22:39:16.205Z"}
 {"type":"claim","wuId":"WU-1290","timestamp":"2026-01-31T23:19:27.924Z","lane":"Framework: Core","title":"Update Codex spawn prompt to reflect methodology policy"}
 {"type":"complete","wuId":"WU-1290","timestamp":"2026-01-31T23:25:49.737Z"}
-{"type":"claim","wuId":"WU-1291","lane":"Framework: Core","title":"Decide on spawn template system (activate or remove)","timestamp":"2026-01-31T23:28:56.750Z"}
+{"type":"claim","wuId":"WU-1291","timestamp":"2026-01-31T23:28:56.750Z","lane":"Framework: Core","title":"Decide on spawn template system (activate or remove)"}
+{"type":"complete","wuId":"WU-1291","timestamp":"2026-01-31T23:39:25.804Z"}
