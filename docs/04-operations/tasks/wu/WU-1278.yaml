@@ -2,7 +2,7 @@ id: WU-1278
 title: Fix orchestrate:monitor path stripping bug
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -26,8 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: orchestrate:monitor strips .lumenflow/ from paths incorrectly (lines 122, 207), causing spawn registry and signals to not load.
+description: orchestrate:monitor strips .lumenflow/ from paths incorrectly (lines 122, 207), causing
+  spawn registry and signals to not load.
 acceptance:
   - Path construction preserves .lumenflow/ prefix
   - Spawn registry loads correctly
   - Signal files are found and parsed
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1278
+claimed_at: 2026-01-31T14:13:58.244Z
+baseline_main_sha: e04e40b2d29bc83c3ee70f5f72cd0cfc358bff5d
+session_id: a285b8f7-5877-4bd8-9db5-ee027ed3e4ff
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T14:13:58.251Z
