@@ -2,7 +2,7 @@ id: WU-1280
 title: Gates should consume tests_required from resolved policy
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -27,8 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'tests_required exists in policy but gates never consume it. methodology.testing: none still runs and blocks on test failures instead of warn-only.'
+description: 'tests_required exists in policy but gates never consume it. methodology.testing: none
+  still runs and blocks on test failures instead of warn-only.'
 acceptance:
   - Gates read tests_required from resolved policy
   - 'testing: none produces warnings not failures'
   - 'testing: strict blocks on any test failure'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1280
+claimed_at: 2026-01-31T15:37:51.978Z
+baseline_main_sha: 7fb007a785d0c9293f726b4665c1d9b62ec8e800
+session_id: ed45845a-ecbf-496c-9619-540fb8dd80a6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T15:37:51.984Z
