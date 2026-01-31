@@ -2,7 +2,7 @@ id: WU-1240
 title: Integrate mem:context into wu:spawn prompts
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-30
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - Unit tests verify integration logic
   - Integration test confirms spawned agent receives context
   - Documentation updated
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1240
+claimed_at: 2026-01-31T11:46:01.395Z
+baseline_main_sha: aa81a03fcbb3f0e421c02c94f2fb6a5ac5c77fe7
+session_id: b20dde8e-5e0f-4c81-a631-a2d2e5bb7a8e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T11:46:01.401Z
