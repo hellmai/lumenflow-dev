@@ -41,6 +41,11 @@ sections:
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
 - [WU-1271 — Fix wu-edit risks replace-by-default behavior](wu/WU-1271.yaml) — Framework: CLI
+- [WU-1273 — CLI integration tests: wu:create, wu:claim, wu:status](wu/WU-1273.yaml) — Framework: CLI
+- [WU-1274 — CLI integration tests: wu:prep, wu:done workflow](wu/WU-1274.yaml) — Framework: CLI
+- [WU-1275 — Memory layer tests: checkpoint, signal, inbox](wu/WU-1275.yaml) — Framework: Memory
+- [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
+- [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 
 ## 🔧 In progress
 
