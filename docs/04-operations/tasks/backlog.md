@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — Framework: Core
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — Framework: Core
 - [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — Framework: Core
