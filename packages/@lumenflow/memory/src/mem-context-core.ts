@@ -1,5 +1,5 @@
 /**
- * Memory Context Core (WU-1234)
+ * Memory Context Core (WU-1234, WU-1238)
  *
  * Core logic for generating deterministic, formatted context injection blocks
  * for wu:spawn prompts. Produces structured markdown suitable for embedding
@@ -11,6 +11,8 @@
  * - Max context size configuration (default 4KB)
  * - Graceful degradation (empty block if no memories match)
  * - No LLM calls (vendor-agnostic)
+ * - WU-1238: Optional decay-based ranking (sortByDecay option)
+ * - WU-1238: Access tracking for nodes included in context (trackAccess option)
  *
  * @see {@link packages/@lumenflow/cli/src/mem-context.ts} - CLI wrapper
  * @see {@link packages/@lumenflow/memory/__tests__/mem-context-core.test.ts} - Tests
@@ -20,6 +22,8 @@ import path from 'node:path';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import { computeDecayScore, DEFAULT_HALF_LIFE_MS } from './decay/scoring.js';
+import { recordAccessBatch } from './decay/access-tracking.js';
 
 /**
  * Default maximum context size in bytes (4KB)
@@ -53,6 +57,14 @@ export interface GenerateContextOptions {
   wuId: string;
   /** Maximum size of context block in bytes (default: 4096) */
   maxSize?: number;
+  /** WU-1238: Sort by decay score instead of recency (default: false) */
+  sortByDecay?: boolean;
+  /** WU-1238: Track access for included nodes (default: false) */
+  trackAccess?: boolean;
+  /** WU-1238: Half-life in milliseconds for decay calculation (default: 30 days) */
+  halfLifeMs?: number;
+  /** WU-1238: Current timestamp for decay calculation (default: Date.now()) */
+  now?: number;
 }
 
 /**
@@ -67,6 +79,8 @@ export interface ContextStats {
   truncated: boolean;
   /** Size of the context block in bytes */
   size: number;
+  /** WU-1238: Number of nodes with access tracked */
+  accessTracked?: number;
 }
 
 /**
@@ -116,6 +130,28 @@ function compareByRecency(a: MemoryNode, b: MemoryNode): number {
 
   // Stable sort by ID for identical timestamps
   return a.id.localeCompare(b.id);
+}
+
+/**
+ * WU-1238: Create comparator for sorting nodes by decay score (highest first)
+ * Uses decay score as primary sort, id as secondary for stability
+ */
+function createCompareByDecay(
+  now: number,
+  halfLifeMs: number,
+): (a: MemoryNode, b: MemoryNode) => number {
+  return (a: MemoryNode, b: MemoryNode): number => {
+    const aScore = computeDecayScore(a, { now, halfLifeMs });
+    const bScore = computeDecayScore(b, { now, halfLifeMs });
+
+    // Highest score first
+    if (aScore !== bScore) {
+      return bScore - aScore;
+    }
+
+    // Stable sort by ID for identical scores
+    return a.id.localeCompare(b.id);
+  };
 }
 
 /**
@@ -237,7 +273,17 @@ export async function generateContext(
   baseDir: string,
   options: GenerateContextOptions,
 ): Promise<GenerateContextResult> {
-  const { wuId, maxSize = DEFAULT_MAX_SIZE } = options;
+  const {
+    wuId,
+    maxSize = DEFAULT_MAX_SIZE,
+    sortByDecay = false,
+    trackAccess = false,
+    halfLifeMs = DEFAULT_HALF_LIFE_MS,
+    now = Date.now(),
+  } = options;
+
+  // WU-1238: Choose comparator based on sortByDecay option
+  const sortComparator = sortByDecay ? createCompareByDecay(now, halfLifeMs) : compareByRecency;
 
   // Validate WU ID
   validateWuId(wuId);
@@ -282,24 +328,25 @@ export async function generateContext(
   }
 
   // Collect nodes for each section
-  // 1. Project profile: lifecycle=project, sorted by recency
-  const projectNodes = [...filterByLifecycle(allNodes, 'project')].sort(compareByRecency);
+  // WU-1238: Use sortComparator for all sections (either recency or decay-based)
+  // 1. Project profile: lifecycle=project
+  const projectNodes = [...filterByLifecycle(allNodes, 'project')].sort(sortComparator);
 
-  // 2. Summaries: type=summary, wu_id match OR recent, sorted by recency
+  // 2. Summaries: type=summary, wu_id match OR recent
   const allSummaries = filterByType(allNodes, 'summary');
   const wuSummaries = filterByWuId(allSummaries, wuId);
-  const summaryNodes = [...wuSummaries].sort(compareByRecency);
+  const summaryNodes = [...wuSummaries].sort(sortComparator);
 
-  // 3. WU context: wu_id match, not summary/discovery, sorted by recency
+  // 3. WU context: wu_id match, not summary/discovery
   const wuNodes = filterByWuId(allNodes, wuId);
   const wuContextFiltered = wuNodes.filter(
     (node) => node.type !== 'summary' && node.type !== 'discovery',
   );
-  const wuContextNodes = [...wuContextFiltered].sort(compareByRecency);
+  const wuContextNodes = [...wuContextFiltered].sort(sortComparator);
 
-  // 4. Discoveries: type=discovery, wu_id match, sorted by recency
+  // 4. Discoveries: type=discovery, wu_id match
   const discoveryFiltered = filterByWuId(filterByType(allNodes, 'discovery'), wuId);
-  const discoveryNodes = [...discoveryFiltered].sort(compareByRecency);
+  const discoveryNodes = [...discoveryFiltered].sort(sortComparator);
 
   // Build the context block
   const sections: string[] = [];
@@ -353,6 +400,18 @@ export async function generateContext(
     byType[node.type] = (byType[node.type] || 0) + 1;
   }
 
+  // WU-1238: Track access for selected nodes if requested
+  let accessTracked = 0;
+  if (trackAccess && selectedNodes.length > 0) {
+    const nodeIds = selectedNodes.map((n) => n.id);
+    try {
+      const tracked = await recordAccessBatch(memoryDir, nodeIds, { now, halfLifeMs });
+      accessTracked = tracked.length;
+    } catch {
+      // Access tracking is best-effort; don't fail context generation
+    }
+  }
+
   return {
     success: true,
     contextBlock,
@@ -361,6 +420,7 @@ export async function generateContext(
       byType,
       truncated,
       size: contextBlock.length,
+      ...(trackAccess ? { accessTracked } : {}),
     },
   };
 }
