@@ -4,7 +4,7 @@ title: Spawn Integration Hardening
 description: Close remaining integration gaps so spawn prompts consistently reflect methodology
   policy and memory context across CLI and Codex, with a single memory-context implementation and
   documented config.
-status: open
+status: in_progress
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-31
@@ -37,4 +37,3 @@ wus:
   - WU-1291
   - WU-1292
   - WU-1293
-related_plan: lumenflow://plans/INIT-012-spawn-integration-hardening.md

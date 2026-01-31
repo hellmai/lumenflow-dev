@@ -2,7 +2,7 @@ id: WU-1282
 title: 'Bug: Task-spawned sub-agents bypass PreToolUse hooks'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - Investigate why hooks don't propagate to Task-spawned agents
   - Document root cause and propose fix
   - Implement fix to ensure hooks run in sub-agents
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1282
+claimed_at: 2026-01-31T17:56:51.487Z
+baseline_main_sha: 4b11b2ac854168f2b61e6554479d3c16c93aeed6
+session_id: 5d3e8f37-9e29-4b97-861f-12e941e42ce9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T17:56:51.492Z
