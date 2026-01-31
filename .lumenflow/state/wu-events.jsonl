@@ -505,3 +505,4 @@
 {"type":"claim","wuId":"WU-1284","timestamp":"2026-01-31T16:59:36.513Z","lane":"Framework: Memory","title":"Add mem:delete command for memory node cleanup"}
 {"type":"complete","wuId":"WU-1283","timestamp":"2026-01-31T16:59:38.853Z"}
 {"type":"complete","wuId":"WU-1284","timestamp":"2026-01-31T17:18:11.623Z"}
+{"type":"claim","wuId":"WU-1286","lane":"Framework: CLI","title":"Make --full default for lumenflow init and sync all CLI commands to docs","timestamp":"2026-01-31T17:26:48.169Z"}
