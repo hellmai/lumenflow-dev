@@ -37,9 +37,29 @@ import {
   processSpawnFailureSignals,
   formatSignalHandlerOutput,
   DEFAULT_THRESHOLD_MINUTES,
+  calculateBackoff,
 } from '@lumenflow/core';
 import chalk from 'chalk';
 import ms from 'ms';
+
+// ============================================================================
+// WU-1242: Watch Mode Constants
+// ============================================================================
+
+/**
+ * Default watch interval (5 minutes in milliseconds)
+ */
+export const DEFAULT_WATCH_INTERVAL_MS = 5 * 60 * 1000;
+
+/**
+ * Minimum watch interval (1 minute in milliseconds)
+ */
+export const MIN_WATCH_INTERVAL_MS = 60 * 1000;
+
+/**
+ * Maximum backoff interval (1 hour in milliseconds)
+ */
+export const MAX_BACKOFF_MS = 60 * 60 * 1000;
 
 const LOG_PREFIX = '[orchestrate:monitor]';
 
@@ -320,20 +340,299 @@ async function runSpawnMonitoring(opts: {
   }
 }
 
+// ============================================================================
+// WU-1242: Watch Mode Implementation
+// ============================================================================
+
+/**
+ * Options for watch mode parsed from CLI args
+ */
+export interface WatchModeOptions {
+  /** Patrol interval in milliseconds */
+  intervalMs: number;
+}
+
+/**
+ * Parses CLI arguments into watch mode options.
+ *
+ * @param opts - Raw CLI options
+ * @returns Parsed watch mode options
+ */
+export function parseWatchOptions(opts: { interval?: string }): WatchModeOptions {
+  let intervalMs = DEFAULT_WATCH_INTERVAL_MS;
+
+  if (opts.interval) {
+    // Check if it's a plain number (no unit suffix) - treat as minutes
+    if (/^\d+$/.test(opts.interval)) {
+      const minutes = parseInt(opts.interval, 10);
+      intervalMs = minutes * 60 * 1000;
+    } else {
+      // Parse with ms library (handles units like "5m", "1h", "30s")
+      const parsed = ms(opts.interval);
+      if (typeof parsed === 'number') {
+        intervalMs = parsed;
+      }
+    }
+  }
+
+  // Enforce minimum interval
+  if (intervalMs < MIN_WATCH_INTERVAL_MS) {
+    intervalMs = MIN_WATCH_INTERVAL_MS;
+  }
+
+  return { intervalMs };
+}
+
+/**
+ * Options for creating a watch mode runner
+ */
+export interface CreateWatchModeRunnerOptions {
+  /** Function to check spawn health */
+  checkFn: () => Promise<MonitorResult>;
+  /** Patrol interval in milliseconds */
+  intervalMs: number;
+  /** Optional callback for output */
+  onOutput?: (line: string) => void;
+}
+
+/**
+ * Watch mode runner for continuous spawn monitoring
+ */
+export interface WatchModeRunner {
+  /** Start the patrol loop */
+  start(): void;
+  /** Stop the patrol loop */
+  stop(): void;
+  /** Whether the runner is currently running */
+  isRunning: boolean;
+  /** Current interval (may be increased due to backoff) */
+  currentIntervalMs: number;
+  /** Number of consecutive failures */
+  consecutiveFailures: number;
+}
+
+/**
+ * Formats watch cycle output for display.
+ *
+ * @param result - Monitor result from the cycle
+ * @param cycleNumber - The cycle number (1-indexed)
+ * @param timestamp - Timestamp of the cycle
+ * @returns Formatted output string
+ */
+export function formatWatchCycleOutput(
+  result: MonitorResult,
+  cycleNumber: number,
+  timestamp: Date,
+): string {
+  const lines: string[] = [];
+
+  // Cycle header with timestamp
+  const timeStr = timestamp.toISOString().replace('T', ' ').substring(0, 19);
+  lines.push(chalk.cyan(`=== Patrol Cycle #${cycleNumber} [${timeStr}] ===`));
+  lines.push('');
+
+  // Quick summary
+  const { analysis, stuckSpawns, zombieLocks } = result;
+  const statusLine = [
+    `Pending: ${analysis.pending}`,
+    `Completed: ${analysis.completed}`,
+    `Stuck: ${stuckSpawns.length}`,
+    `Zombies: ${zombieLocks.length}`,
+  ].join(' | ');
+
+  if (stuckSpawns.length === 0 && zombieLocks.length === 0) {
+    lines.push(chalk.green(`  ${statusLine}`));
+    lines.push(chalk.green('  All spawns healthy.'));
+  } else {
+    lines.push(chalk.yellow(`  ${statusLine}`));
+
+    // Show stuck spawns
+    if (stuckSpawns.length > 0) {
+      lines.push('');
+      lines.push(chalk.yellow('  Stuck spawns:'));
+      for (const info of stuckSpawns) {
+        lines.push(chalk.yellow(`    - ${info.spawn.targetWuId} (${info.ageMinutes}min)`));
+      }
+    }
+
+    // Show zombie locks
+    if (zombieLocks.length > 0) {
+      lines.push('');
+      lines.push(chalk.yellow('  Zombie locks:'));
+      for (const lock of zombieLocks) {
+        lines.push(chalk.yellow(`    - ${lock.lane} (PID ${lock.pid})`));
+      }
+    }
+  }
+
+  lines.push('');
+  return lines.join('\n');
+}
+
+/**
+ * Creates a watch mode runner for continuous spawn monitoring.
+ *
+ * @param options - Configuration options
+ * @returns WatchModeRunner instance
+ */
+export function createWatchModeRunner(options: CreateWatchModeRunnerOptions): WatchModeRunner {
+  const { checkFn, intervalMs, onOutput = console.log } = options;
+
+  let currentIntervalMs = intervalMs;
+  let consecutiveFailures = 0;
+  let running = false;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let cycleCount = 0;
+
+  function scheduleNext(): void {
+    if (!running) return;
+
+    timer = setTimeout(() => {
+      void runCycle().then(() => scheduleNext());
+    }, currentIntervalMs);
+  }
+
+  async function runCycle(): Promise<void> {
+    if (!running) return;
+
+    cycleCount++;
+    const cycleNumber = cycleCount;
+
+    try {
+      const result = await checkFn();
+
+      // Success - reset backoff
+      consecutiveFailures = 0;
+      currentIntervalMs = intervalMs;
+
+      // Output cycle result
+      const output = formatWatchCycleOutput(result, cycleNumber, new Date());
+      onOutput(output);
+    } catch (error) {
+      // Failure - apply backoff
+      consecutiveFailures++;
+      currentIntervalMs = calculateBackoff(consecutiveFailures, intervalMs);
+      if (currentIntervalMs > MAX_BACKOFF_MS) {
+        currentIntervalMs = MAX_BACKOFF_MS;
+      }
+
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      onOutput(chalk.red(`=== Patrol Cycle #${cycleNumber} ERROR ===`));
+      onOutput(chalk.red(`  ${errorMsg}`));
+      onOutput(chalk.yellow(`  Next check in ${Math.round(currentIntervalMs / 1000)}s (backoff)`));
+      onOutput('');
+    }
+  }
+
+  return {
+    start(): void {
+      if (running) return;
+      running = true;
+      onOutput(chalk.cyan(`${LOG_PREFIX} Starting watch mode (interval: ${intervalMs / 1000}s)`));
+      onOutput('');
+      scheduleNext();
+    },
+
+    stop(): void {
+      running = false;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      onOutput(chalk.cyan(`${LOG_PREFIX} Stopping watch mode. Exiting gracefully.`));
+    },
+
+    get isRunning(): boolean {
+      return running;
+    },
+
+    get currentIntervalMs(): number {
+      return currentIntervalMs;
+    },
+
+    get consecutiveFailures(): number {
+      return consecutiveFailures;
+    },
+  };
+}
+
+/**
+ * Run watch mode (continuous patrol)
+ */
+async function runWatchMode(opts: {
+  threshold: string;
+  interval: string;
+  recover: boolean;
+  dryRun: boolean;
+}): Promise<void> {
+  const baseDir = process.cwd();
+  const thresholdMinutes = parseInt(opts.threshold, 10);
+
+  if (isNaN(thresholdMinutes) || thresholdMinutes <= 0) {
+    console.error(chalk.red(`${LOG_PREFIX} Invalid threshold: ${opts.threshold}`));
+    process.exit(EXIT_CODES.FAILURE);
+  }
+
+  const watchOptions = parseWatchOptions(opts);
+
+  console.log(chalk.cyan(`${LOG_PREFIX} Starting continuous patrol mode...`));
+  console.log(chalk.gray(`  Threshold: ${thresholdMinutes} minutes`));
+  console.log(chalk.gray(`  Interval: ${watchOptions.intervalMs / 1000} seconds`));
+  console.log(chalk.gray(`  Recovery: ${opts.recover ? 'enabled' : 'disabled'}`));
+  console.log(chalk.gray(`  Press Ctrl+C to stop`));
+  console.log('');
+
+  const checkFn = async (): Promise<MonitorResult> => {
+    return runMonitor({
+      baseDir,
+      thresholdMinutes,
+      recover: opts.recover,
+      dryRun: opts.dryRun,
+    });
+  };
+
+  const runner = createWatchModeRunner({
+    checkFn,
+    intervalMs: watchOptions.intervalMs,
+  });
+
+  // Handle graceful shutdown
+  const shutdown = (): void => {
+    runner.stop();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+
+  runner.start();
+
+  // Keep process alive
+  await new Promise(() => {
+    // Never resolves - waits for signal
+  });
+}
+
 // CLI program
 const program = new Command()
   .name('orchestrate:monitor')
-  .description('Monitor spawned agent progress and spawn health (WU-1241)')
+  .description('Monitor spawned agent progress and spawn health (WU-1241, WU-1242)')
   .option('--threshold <minutes>', 'Stuck detection threshold in minutes (default: 30)', '30')
   .option('--recover', 'Run recovery actions for stuck spawns', false)
   .option('--dry-run', 'Show what would be done without taking action', false)
   .option('--since <time>', 'Show signals since (e.g., 30m, 1h)', '30m')
   .option('--wu <id>', 'Filter by WU ID')
   .option('--signals-only', 'Only show signals (skip spawn analysis)', false)
+  .option('--watch', 'Continuous patrol mode (WU-1242)', false)
+  .option('--interval <time>', 'Patrol interval for watch mode (e.g., 5m, 10m, 1h)', '5m')
   .action(async (opts) => {
     try {
       if (opts.signalsOnly) {
         await displaySignals(opts);
+        return;
+      }
+      if (opts.watch) {
+        await runWatchMode(opts);
         return;
       }
       await runSpawnMonitoring(opts);

@@ -348,6 +348,9 @@ export {
 // WU-1253: Template-based spawn prompt generation
 export { tryAssembleSpawnTemplates, buildTemplateContext } from './wu-spawn.js';
 
+// WU-1242: Patrol loop for continuous spawn monitoring
+export * from './patrol-loop.js';
+
 // WU-1259: Methodology policy resolution
 export {
   resolvePolicy,
