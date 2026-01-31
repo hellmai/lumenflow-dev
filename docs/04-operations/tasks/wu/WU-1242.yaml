@@ -2,7 +2,7 @@ id: WU-1242
 title: Add --watch patrol mode for continuous spawn monitoring
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-30
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - Status summary printed at each patrol cycle
   - Unit tests verify watch mode/backoff logic
   - Documentation updated
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1242
+claimed_at: 2026-01-31T11:46:38.316Z
+baseline_main_sha: d1718b2235e452eb8bcac25801348da958aa3f61
+session_id: b20dde8e-5e0f-4c81-a631-a2d2e5bb7a8e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T11:46:38.324Z
