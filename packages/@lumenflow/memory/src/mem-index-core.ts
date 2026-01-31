@@ -19,7 +19,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { generateMemId } from './mem-id.js';
-import { loadMemory, appendNode, MEMORY_FILE_NAME } from './memory-store.js';
+import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
@@ -96,17 +96,8 @@ export interface IndexResult {
   error?: string;
 }
 
-/**
- * Indexed source data
- */
-interface IndexedSource {
-  /** Source path */
-  path: string;
-  /** Content hash */
-  hash: string;
-  /** Node ID */
-  nodeId: string;
-}
+/** Maximum summary length in characters */
+const MAX_SUMMARY_LENGTH = 2000;
 
 /**
  * Computes SHA-256 hash of content
@@ -119,6 +110,76 @@ function computeHash(content: string): string {
 }
 
 /**
+ * Extracts summary from package.json content
+ *
+ * @param content - Raw JSON content
+ * @returns Summarized package info or null if parse fails
+ */
+function extractPackageJsonSummary(content: string): string | null {
+  try {
+    const pkg = JSON.parse(content);
+    const summary: string[] = [];
+
+    if (pkg.name) {
+      summary.push(`Project: ${pkg.name}`);
+    }
+    if (pkg.description) {
+      summary.push(`Description: ${pkg.description}`);
+    }
+    if (pkg.workspaces) {
+      const workspaces = Array.isArray(pkg.workspaces)
+        ? pkg.workspaces
+        : pkg.workspaces.packages || [];
+      summary.push(`Workspaces: ${workspaces.join(', ')}`);
+    }
+    if (pkg.scripts) {
+      const scripts = Object.keys(pkg.scripts).slice(0, 10);
+      summary.push(`Key scripts: ${scripts.join(', ')}`);
+    }
+
+    return summary.join('\n');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extracts summary from Markdown content
+ *
+ * @param content - Raw Markdown content
+ * @returns Summarized content with headings and paragraphs
+ */
+function extractMarkdownSummary(content: string): string {
+  const lines = content.split('\n');
+  const summary: string[] = [];
+  let currentLength = 0;
+
+  for (const line of lines) {
+    if (currentLength + line.length > MAX_SUMMARY_LENGTH) {
+      break;
+    }
+
+    // Include headings
+    if (line.startsWith('#')) {
+      summary.push(line);
+      currentLength += line.length + 1;
+      continue;
+    }
+
+    // Include non-empty lines until we hit length limit
+    if (line.trim()) {
+      summary.push(line);
+      currentLength += line.length + 1;
+    } else if (summary.length > 0) {
+      // Preserve paragraph breaks
+      summary.push('');
+    }
+  }
+
+  return summary.join('\n').trim();
+}
+
+/**
  * Extracts summary content from a source file
  *
  * @param sourcePath - Path of the source file
@@ -126,75 +187,26 @@ function computeHash(content: string): string {
  * @returns Summarized content for memory node
  */
 function extractSummary(sourcePath: string, content: string): string {
-  const maxLength = 2000;
-
   // For package.json, extract key fields
   if (sourcePath === 'package.json') {
-    try {
-      const pkg = JSON.parse(content);
-      const summary: string[] = [];
-
-      if (pkg.name) {
-        summary.push(`Project: ${pkg.name}`);
-      }
-      if (pkg.description) {
-        summary.push(`Description: ${pkg.description}`);
-      }
-      if (pkg.workspaces) {
-        const workspaces = Array.isArray(pkg.workspaces)
-          ? pkg.workspaces
-          : pkg.workspaces.packages || [];
-        summary.push(`Workspaces: ${workspaces.join(', ')}`);
-      }
-      if (pkg.scripts) {
-        const scripts = Object.keys(pkg.scripts).slice(0, 10);
-        summary.push(`Key scripts: ${scripts.join(', ')}`);
-      }
-
-      return summary.join('\n');
-    } catch {
-      // Fall through to default handling
+    const pkgSummary = extractPackageJsonSummary(content);
+    if (pkgSummary) {
+      return pkgSummary;
     }
   }
 
   // For YAML files, preserve structure
   if (sourcePath.endsWith('.yaml') || sourcePath.endsWith('.yml')) {
-    return content.slice(0, maxLength);
+    return content.slice(0, MAX_SUMMARY_LENGTH);
   }
 
   // For Markdown files, extract headings and first paragraphs
   if (sourcePath.endsWith('.md')) {
-    const lines = content.split('\n');
-    const summary: string[] = [];
-    let currentLength = 0;
-
-    for (const line of lines) {
-      if (currentLength + line.length > maxLength) {
-        break;
-      }
-
-      // Include headings
-      if (line.startsWith('#')) {
-        summary.push(line);
-        currentLength += line.length + 1;
-        continue;
-      }
-
-      // Include non-empty lines until we hit length limit
-      if (line.trim()) {
-        summary.push(line);
-        currentLength += line.length + 1;
-      } else if (summary.length > 0) {
-        // Preserve paragraph breaks
-        summary.push('');
-      }
-    }
-
-    return summary.join('\n').trim();
+    return extractMarkdownSummary(content);
   }
 
   // Default: truncate
-  return content.slice(0, maxLength);
+  return content.slice(0, MAX_SUMMARY_LENGTH);
 }
 
 /**
@@ -209,6 +221,109 @@ function findExistingNode(nodes: MemoryNode[], sourcePath: string): MemoryNode |
     const metadata = n.metadata as { source_path?: string } | undefined;
     return metadata?.source_path === sourcePath;
   });
+}
+
+/**
+ * Context for processing a single source
+ */
+interface ProcessSourceContext {
+  memoryDir: string;
+  indexedAt: string;
+  dryRun: boolean;
+  existingNodes: MemoryNode[];
+}
+
+/**
+ * Result of processing a single source
+ */
+type ProcessSourceResult = 'created' | 'updated' | 'skipped';
+
+/**
+ * Creates a memory node for a source
+ *
+ * @param source - Source definition
+ * @param content - File content
+ * @param contentHash - Content hash
+ * @param indexedAt - Timestamp
+ * @param existingNodeId - ID of existing node being replaced (if update)
+ * @returns Memory node
+ */
+function createSourceNode(
+  source: SourceDefinition,
+  content: string,
+  contentHash: string,
+  indexedAt: string,
+  existingNodeId?: string,
+): MemoryNode {
+  const node: MemoryNode = {
+    id: generateMemId(`${source.path}-${indexedAt}`),
+    type: 'summary',
+    lifecycle: 'project',
+    content: extractSummary(source.path, content),
+    created_at: indexedAt,
+    tags: source.tags,
+    metadata: {
+      source_path: source.path,
+      source_hash: contentHash,
+      indexed_at: indexedAt,
+      description: source.description,
+    },
+  };
+
+  if (existingNodeId) {
+    node.updated_at = indexedAt;
+    (node.metadata as Record<string, unknown>).replaces = existingNodeId;
+  }
+
+  return node;
+}
+
+/**
+ * Processes a single source file and creates/updates memory node
+ *
+ * @param source - Source definition
+ * @param content - File content
+ * @param ctx - Processing context
+ * @returns Result indicating what action was taken
+ */
+async function processSource(
+  source: SourceDefinition,
+  content: string,
+  ctx: ProcessSourceContext,
+): Promise<ProcessSourceResult> {
+  const contentHash = computeHash(content);
+  const existingNode = findExistingNode(ctx.existingNodes, source.path);
+
+  // Check if content unchanged
+  if (existingNode) {
+    const existingHash = (existingNode.metadata as { source_hash?: string })?.source_hash;
+    if (existingHash === contentHash) {
+      return 'skipped';
+    }
+  }
+
+  // Write node (unless dry-run)
+  if (!ctx.dryRun) {
+    const node = createSourceNode(source, content, contentHash, ctx.indexedAt, existingNode?.id);
+    await appendNode(ctx.memoryDir, node);
+  }
+
+  return existingNode ? 'updated' : 'created';
+}
+
+/**
+ * Loads existing memory nodes from memory directory
+ *
+ * @param memoryDir - Memory directory path
+ * @returns Array of existing memory nodes
+ */
+async function loadExistingNodes(memoryDir: string): Promise<MemoryNode[]> {
+  try {
+    const memory = await loadMemory(memoryDir);
+    return memory.nodes;
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -251,20 +366,14 @@ export async function indexProject(
     await fs.mkdir(memoryDir, { recursive: true });
   }
 
-  // Load existing memory nodes
-  let existingNodes: MemoryNode[] = [];
-  try {
-    const memory = await loadMemory(memoryDir);
-    existingNodes = memory.nodes;
-  } catch {
-    // No existing memory file, start fresh
-  }
+  const existingNodes = await loadExistingNodes(memoryDir);
+  const ctx: ProcessSourceContext = { memoryDir, indexedAt, dryRun, existingNodes };
 
   // Process each source
   for (const source of sources) {
     const sourcePath = path.join(baseDir, source.path);
 
-    // Check if file exists
+    // Try to read file content
     let content: string;
     try {
       content = await fs.readFile(sourcePath, 'utf-8');
@@ -275,68 +384,14 @@ export async function indexProject(
 
     result.sourcesScanned.push(source.path);
 
-    // Compute hash for idempotency
-    const contentHash = computeHash(content);
-
-    // Check for existing node
-    const existingNode = findExistingNode(existingNodes, source.path);
-
-    if (existingNode) {
-      const existingHash = (existingNode.metadata as { source_hash?: string })?.source_hash;
-
-      if (existingHash === contentHash) {
-        // Content unchanged, skip
-        result.nodesSkipped++;
-        continue;
-      }
-
-      // Content changed, need to update
-      // For now, we append a new version (JSONL append-only)
-      // Future: implement version tracking or replacement
-      if (!dryRun) {
-        const updatedNode: MemoryNode = {
-          id: generateMemId(`${source.path}-${indexedAt}`),
-          type: 'summary',
-          lifecycle: 'project',
-          content: extractSummary(source.path, content),
-          created_at: indexedAt,
-          updated_at: indexedAt,
-          tags: source.tags,
-          metadata: {
-            source_path: source.path,
-            source_hash: contentHash,
-            indexed_at: indexedAt,
-            description: source.description,
-            replaces: existingNode.id,
-          },
-        };
-
-        await appendNode(memoryDir, updatedNode);
-      }
-
+    // Process the source
+    const action = await processSource(source, content, ctx);
+    if (action === 'created') {
+      result.nodesCreated++;
+    } else if (action === 'updated') {
       result.nodesUpdated++;
     } else {
-      // Create new node
-      if (!dryRun) {
-        const newNode: MemoryNode = {
-          id: generateMemId(`${source.path}-${indexedAt}`),
-          type: 'summary',
-          lifecycle: 'project',
-          content: extractSummary(source.path, content),
-          created_at: indexedAt,
-          tags: source.tags,
-          metadata: {
-            source_path: source.path,
-            source_hash: contentHash,
-            indexed_at: indexedAt,
-            description: source.description,
-          },
-        };
-
-        await appendNode(memoryDir, newNode);
-      }
-
-      result.nodesCreated++;
+      result.nodesSkipped++;
     }
   }
 
