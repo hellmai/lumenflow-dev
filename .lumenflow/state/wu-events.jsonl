@@ -491,3 +491,4 @@
 {"type":"complete","wuId":"WU-1235","timestamp":"2026-01-31T12:06:57.007Z"}
 {"type":"claim","wuId":"WU-1278","lane":"Framework: CLI","title":"Fix orchestrate:monitor path stripping bug","timestamp":"2026-01-31T14:13:58.262Z"}
 {"type":"claim","wuId":"WU-1237","lane":"Framework: Memory","title":"Add mem:promote and mem:profile for project knowledge management","timestamp":"2026-01-31T14:14:23.667Z"}
+{"type":"claim","wuId":"WU-1279","lane":"Framework: Core","title":"Wire methodology policy into spawn prompt generation","timestamp":"2026-01-31T14:15:12.384Z"}
