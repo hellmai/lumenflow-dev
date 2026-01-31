@@ -7,12 +7,11 @@ _Last updated: 2026-01-31_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
+- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml)
 
 ## Completed
 
-- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — 2026-01-31
-- [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — 2026-01-31
-- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -260,3 +259,6 @@ _Last updated: 2026-01-31_
 - [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml) — 2026-01-31
 - [WU-1285 — Fix mem:delete path calculation bug](wu/WU-1285.yaml) — 2026-01-31
 - [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml) — 2026-01-31
+- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml) — 2026-01-31
+- [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — 2026-01-31
+- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — 2026-01-31
