@@ -40,6 +40,7 @@
     "./spawn-monitor": "./dist/spawn-monitor.js",
     "./spawn-escalation": "./dist/spawn-escalation.js",
     "./spawn-prompt-schema": "./dist/spawn-prompt-schema.js",
+    "./wu-spawn-context": "./dist/wu-spawn-context.js",
     "./backlog-generator": "./dist/backlog-generator.js",
     "./backlog-parser": "./dist/backlog-parser.js",
     "./backlog-editor": "./dist/backlog-editor.js",

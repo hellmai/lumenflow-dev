@@ -557,6 +557,118 @@ describe('wu-spawn worktree block recovery guidance (WU-1134)', () => {
   });
 });
 
+describe('wu-spawn memory context integration (WU-1240)', () => {
+  const mockDoc = {
+    title: 'Test WU',
+    lane: 'Framework: Core',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-1240';
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  describe('memory context section in spawn output', () => {
+    it('includes Memory Context section when memoryContextContent is provided', () => {
+      const strategy = new GenericStrategy();
+      const memoryContext = `## Memory Context
+
+Relevant memory nodes for WU-1240:
+- Checkpoint: Implementation in progress`;
+
+      const output = generateTaskInvocation(mockDoc, id, strategy, {
+        config,
+        baseDir: '/tmp/test',
+        includeMemoryContext: true,
+        memoryContextContent: memoryContext,
+      });
+
+      expect(output).toContain('## Memory Context');
+      expect(output).toContain('Implementation in progress');
+    });
+
+    it('omits Memory Context section when noContext is true', () => {
+      const strategy = new GenericStrategy();
+      const memoryContext = `## Memory Context
+
+Should not appear in output`;
+
+      const output = generateTaskInvocation(mockDoc, id, strategy, {
+        config,
+        baseDir: '/tmp/test',
+        includeMemoryContext: true,
+        memoryContextContent: memoryContext,
+        noContext: true,
+      });
+
+      expect(output).not.toContain('## Memory Context');
+      expect(output).not.toContain('Should not appear in output');
+    });
+
+    it('omits Memory Context section when memoryContextContent is empty', () => {
+      const strategy = new GenericStrategy();
+
+      const output = generateTaskInvocation(mockDoc, id, strategy, {
+        config,
+        baseDir: '/tmp/test',
+        includeMemoryContext: true,
+        memoryContextContent: '',
+      });
+
+      expect(output).not.toContain('## Memory Context');
+    });
+
+    it('positions Memory Context section after Skills Selection', () => {
+      const strategy = new GenericStrategy();
+      const memoryContext = `## Memory Context
+
+Test positioning content`;
+
+      const output = generateTaskInvocation(mockDoc, id, strategy, {
+        config,
+        baseDir: '/tmp/test',
+        includeMemoryContext: true,
+        memoryContextContent: memoryContext,
+      });
+
+      const skillsIndex = output.indexOf('## Skills Selection');
+      const memoryIndex = output.indexOf('## Memory Context');
+
+      expect(skillsIndex).toBeGreaterThan(-1);
+      expect(memoryIndex).toBeGreaterThan(-1);
+      expect(memoryIndex).toBeGreaterThan(skillsIndex);
+    });
+  });
+
+  describe('codex prompt memory context', () => {
+    it('includes Memory Context in codex output when provided', () => {
+      const strategy = new GenericStrategy();
+      const memoryContext = `## Memory Context
+
+Codex memory context test`;
+
+      const output = generateCodexPrompt(mockDoc, id, strategy, {
+        config,
+        baseDir: '/tmp/test',
+        includeMemoryContext: true,
+        memoryContextContent: memoryContext,
+      });
+
+      expect(output).toContain('## Memory Context');
+      expect(output).toContain('Codex memory context test');
+    });
+  });
+});
+
 describe('wu-spawn progress signals (WU-1180)', () => {
   const id = 'WU-TEST';
 
