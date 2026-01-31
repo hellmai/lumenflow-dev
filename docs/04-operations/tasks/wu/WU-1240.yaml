@@ -7,9 +7,8 @@ priority: P1
 created: 2026-01-30
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
-  - packages/@lumenflow/core/src/wu-spawn-skills.ts
   - packages/@lumenflow/core/src/wu-spawn-context.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual: []
