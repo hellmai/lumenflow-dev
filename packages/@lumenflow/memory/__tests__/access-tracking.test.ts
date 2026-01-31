@@ -165,7 +165,11 @@ describe('decay/access-tracking', () => {
       const nodes = [createNode({ id: 'mem-bat4' }), createNode({ id: 'mem-bat5' })];
       await writeJsonlFile(memoryFilePath, nodes);
 
-      const updated = await recordAccessBatch(tempDir, ['mem-bat4', NONEXISTENT_NODE_ID, 'mem-bat5']);
+      const updated = await recordAccessBatch(tempDir, [
+        'mem-bat4',
+        NONEXISTENT_NODE_ID,
+        'mem-bat5',
+      ]);
 
       expect(updated.length).toBe(2);
     });
