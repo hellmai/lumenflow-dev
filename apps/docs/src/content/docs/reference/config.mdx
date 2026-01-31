@@ -98,44 +98,6 @@ WU (Work Unit) configuration
 | `defaultStatus`        | string  | `"ready"`    |             |
 | `defaultType`          | string  | `"feature"`  |             |
 
-### methodology
-
-Configure your team's testing and architecture methodology. This section provides a high-level way to set defaults that affect both agent prompting and gate enforcement.
-
-```yaml
-methodology:
-  testing: 'tdd' # tdd | test-after | none
-  architecture: 'hexagonal' # hexagonal | layered | none
-  overrides:
-    coverage_threshold: 85 # Override template default
-    coverage_mode: 'warn' # block | warn | off
-```
-
-| Field          | Type   | Default       | Description                                        |
-| -------------- | ------ | ------------- | -------------------------------------------------- |
-| `testing`      | string | `"tdd"`       | Testing methodology: `tdd`, `test-after`, `none`   |
-| `architecture` | string | `"hexagonal"` | Architecture style: `hexagonal`, `layered`, `none` |
-| `overrides`    | object | `-`           | Fine-tune template defaults                        |
-
-#### methodology.overrides
-
-| Field                | Type   | Default | Description                                    |
-| -------------------- | ------ | ------- | ---------------------------------------------- |
-| `coverage_threshold` | number | `-`     | Override coverage threshold (0-100)            |
-| `coverage_mode`      | string | `-`     | Override coverage mode: `block`, `warn`, `off` |
-
-#### Template Defaults by Methodology
-
-Each testing methodology provides sensible defaults:
-
-| Methodology  | Coverage Threshold | Coverage Mode | Tests Required |
-| ------------ | ------------------ | ------------- | -------------- |
-| `tdd`        | 90%                | block         | Yes            |
-| `test-after` | 70%                | warn          | Yes            |
-| `none`       | 0%                 | off           | No             |
-
-See the [Choosing Your Methodology](/guides/choosing-methodology) guide for detailed tradeoffs.
-
 ### gates
 
 Quality gates configuration
@@ -252,6 +214,5 @@ pnpm exec lumenflow validate
 
 ## Next Steps
 
-- [Choosing Your Methodology](/guides/choosing-methodology) – TDD vs test-after vs none
 - [CLI Commands](/reference/cli) – All commands
 - [WU Schema](/reference/wu-schema) – WU YAML structure
