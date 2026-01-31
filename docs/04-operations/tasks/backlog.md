@@ -39,7 +39,6 @@ sections:
 - [WU-1275 — Memory layer tests: checkpoint, signal, inbox](wu/WU-1275.yaml) — Framework: Memory
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
-- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — Framework: Core
 - [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml) — Framework: Memory
 
 ## 🔧 In progress
@@ -49,6 +48,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
+- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
