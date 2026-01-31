@@ -321,6 +321,67 @@ If gates fail due to test failures:
 }
 
 /**
+ * WU-1279: Generate the Mandatory Standards section based on resolved policy
+ *
+ * Instead of hardcoding TDD/90%/Hexagonal, this function generates the
+ * section dynamically based on the resolved methodology policy.
+ *
+ * @param policy - Resolved policy from resolvePolicy()
+ * @returns Mandatory Standards section content
+ */
+export function generateMandatoryStandards(policy: ResolvedPolicy): string {
+  const lines: string[] = ['## Mandatory Standards', ''];
+
+  // LumenFlow workflow is always required
+  lines.push('- **LumenFlow**: Follow trunk-based flow, WIP=1, worktree discipline');
+
+  // Testing methodology based on policy
+  if (policy.testing === 'tdd') {
+    lines.push(
+      `- **TDD**: Failing test first, then implementation, then passing test. ${policy.coverage_threshold}%+ coverage on new application code`,
+    );
+  } else if (policy.testing === 'test-after') {
+    lines.push(
+      `- **Test-After**: Write implementation first, then add tests. ${policy.coverage_threshold}%+ coverage on new application code`,
+    );
+  } else if (policy.testing === 'none') {
+    lines.push('- **Testing**: Tests are optional for this project');
+  }
+
+  // Architecture based on policy
+  if (policy.architecture === 'hexagonal') {
+    lines.push(
+      '- **Hexagonal Architecture**: Ports-first design. No application -> infrastructure imports',
+    );
+  } else if (policy.architecture === 'layered') {
+    lines.push(
+      '- **Layered Architecture**: Clear layer separation. Each layer can only depend on layers below it',
+    );
+  }
+  // For architecture: 'none', we don't add any architecture guidance
+
+  // Always include these standards
+  lines.push('- **SOLID/DRY/YAGNI/KISS**: No over-engineering, no premature abstraction');
+  lines.push(
+    '- **Library-First**: Search context7 before writing custom code. No reinventing wheels',
+  );
+  lines.push(
+    '- **Code Quality**: No string literals, no magic numbers, no brittle regexes when libraries exist',
+  );
+  lines.push(
+    '- **Worktree Discipline**: ALWAYS use `pnpm wu:claim` to create worktrees (never `git worktree add` directly). Work ONLY in the worktree, never edit main',
+  );
+  lines.push(
+    '- **Documentation**: Update tooling docs if changing tools. Keep docs in sync with code',
+  );
+  lines.push(
+    '- **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents as configured for your project',
+  );
+
+  return lines.join('\n');
+}
+
+/**
  * WU-1261: Generate test guidance based on resolved policy
  *
  * Selects the appropriate test guidance based on policy.testing value:
@@ -383,7 +444,7 @@ export function generatePolicyBasedTestGuidance(wuType: string, policy: Resolved
   // Policy-based selection for feature/bug/enhancement/tooling types
   switch (policy.testing) {
     case 'test-after':
-      return generateTestAfterDirective();
+      return generateTestAfterDirective(policy.coverage_threshold);
     case 'none':
       return generateTestingOptionalDirective();
     case 'tdd':
@@ -393,11 +454,12 @@ export function generatePolicyBasedTestGuidance(wuType: string, policy: Resolved
 }
 
 /**
- * WU-1261: Generate test-after directive
+ * WU-1261, WU-1279: Generate test-after directive
  *
+ * @param coverageThreshold - Coverage threshold from resolved policy
  * @returns Test-after guidance section
  */
-function generateTestAfterDirective(): string {
+function generateTestAfterDirective(coverageThreshold: number): string {
   return `## Test-After Methodology
 
 **Write implementation first, then add tests** - Focus on solving the problem, then verify.
@@ -407,7 +469,7 @@ function generateTestAfterDirective(): string {
 1. Understand the acceptance criteria
 2. Write implementation first
 3. Add tests to verify behavior
-4. Aim for ${70}% coverage on new code
+4. Aim for ${coverageThreshold}% coverage on new code
 
 ### When This Works
 
@@ -418,7 +480,7 @@ function generateTestAfterDirective(): string {
 ### Requirements
 
 - Tests must be added before \`wu:done\`
-- Coverage target: 70%+ on new application code
+- Coverage target: ${coverageThreshold}%+ on new application code
 - All existing tests must still pass`;
 }
 
@@ -1511,10 +1573,18 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
-  // WU-1192: Use type-aware test guidance instead of always TDD directive
-  const testGuidance = generateTestGuidance(doc.type || 'feature');
   const clientContext = options.client;
   const config = options.config || getConfig();
+
+  // WU-1279: Resolve policy and use policy-based test guidance
+  const policy = resolvePolicy(config);
+  const testGuidance = generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
+
+  // WU-1279: Generate enforcement summary from resolved policy
+  const enforcementSummary = generateEnforcementSummary(policy);
+
+  // WU-1279: Generate mandatory standards based on resolved policy
+  const mandatoryStandards = generateMandatoryStandards(policy);
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext);
   const skillsSection =
     generateSkillsSelectionSection(doc, config, clientContext?.name) +
@@ -1600,17 +1670,11 @@ ${mandatorySection}${invariantsPriorArt ? `---\n\n${invariantsPriorArt}\n\n` : '
 ${thinkingBlock}${skillsSection}
 ${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 
-## Mandatory Standards
+${mandatoryStandards}
 
-- **LumenFlow**: Follow trunk-based flow, WIP=1, worktree discipline
-- **TDD**: Failing test first, then implementation, then passing test. 90%+ coverage on new application code
-- **Hexagonal Architecture**: Ports-first design. No application -> infrastructure imports
-- **SOLID/DRY/YAGNI/KISS**: No over-engineering, no premature abstraction
-- **Library-First**: Search context7 before writing custom code. No reinventing wheels
-- **Code Quality**: No string literals, no magic numbers, no brittle regexes when libraries exist
-- **Worktree Discipline**: ALWAYS use \`pnpm wu:claim\` to create worktrees (never \`git worktree add\` directly). Work ONLY in the worktree, never edit main
-- **Documentation**: Update tooling docs if changing tools. Keep docs in sync with code
-- **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents as configured for your project
+---
+
+${enforcementSummary}
 
 ${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
