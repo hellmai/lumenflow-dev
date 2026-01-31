@@ -5,13 +5,13 @@ _Last updated: 2026-01-31_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
+- [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml)
 
 ## Completed
 
-- [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — 2026-01-31
-- [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — 2026-01-31
-- [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -246,3 +246,6 @@ _Last updated: 2026-01-31_
 - [WU-1272 — Create INIT-011 comprehensive test suite initiative](wu/WU-1272.yaml) — 2026-01-31
 - [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — 2026-01-31
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — 2026-01-31
+- [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — 2026-01-31
+- [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — 2026-01-31
+- [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — 2026-01-31
