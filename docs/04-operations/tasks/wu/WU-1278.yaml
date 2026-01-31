@@ -10,7 +10,6 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/__tests__/orchestrate-monitor.test.ts
     - packages/@lumenflow/cli/__tests__/orchestrate-monitor.test.ts
   e2e: []
 artifacts:
