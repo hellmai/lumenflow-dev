@@ -2,7 +2,7 @@ id: WU-1284
 title: Add mem:delete command for memory node cleanup
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -26,9 +26,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Memory layer lacks a delete/archive command. Legitimate cleanup operations (removing duplicates, archiving stale nodes) are blocked by worktree discipline hook. Need CLI command to manage memory nodes. Discovered when trying to remove duplicate snag entries.
+description: Memory layer lacks a delete/archive command. Legitimate cleanup operations (removing
+  duplicates, archiving stale nodes) are blocked by worktree discipline hook. Need CLI command to
+  manage memory nodes. Discovered when trying to remove duplicate snag entries.
 acceptance:
   - mem:delete <node-id> removes or archives a memory node
   - Supports --dry-run to preview deletion
   - Optionally supports bulk delete via --tag or --older-than filters
   - Respects append-only pattern (soft delete via metadata.status=deleted)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1284
+claimed_at: 2026-01-31T16:59:36.494Z
+baseline_main_sha: 3652d9b445ad6398c52a014df33f54b7baa47224
+session_id: 42bb467d-35c6-4fbf-b5fa-994d53d1a291
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T16:59:36.500Z
