@@ -1,6 +1,6 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-01-30
+**Last updated:** 2026-01-31
 
 Complete reference for all CLI commands. Organized by category for quick discovery.
 
@@ -39,6 +39,7 @@ Complete reference for all CLI commands. Organized by category for quick discove
 | `pnpm wu:release --id WU-XXX`                 | Release orphaned WU (in_progress to ready)    |
 | `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands      |
 | `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt               |
+| `pnpm wu:spawn --id WU-XXX --no-context`      | Spawn prompt without memory context injection |
 
 ### WU Maintenance
 

@@ -436,6 +436,14 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description: 'Parent WU ID for orchestrator context (e.g., WU-1000)',
   },
 
+  // WU-1240: Skip memory context injection in spawn prompts
+  noContext: {
+    name: 'noContext',
+    flags: '--no-context',
+    description: 'Skip memory context injection in spawn prompts',
+    isNegated: true,
+  },
+
   // WU-1542: Mandatory agent enforcement for wu:done
   requireAgents: {
     name: 'requireAgents',
