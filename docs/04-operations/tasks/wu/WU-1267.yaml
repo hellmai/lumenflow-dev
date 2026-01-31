@@ -2,7 +2,7 @@ id: WU-1267
 title: 'Regression test: default methodology behavior unchanged'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -45,3 +45,5 @@ session_id: c524db0d-cbb8-4693-b1b2-4eb172e6cb1a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-30T23:49:14.485Z
+locked: true
+completed_at: 2026-01-31T00:02:28.586Z
