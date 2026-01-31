@@ -276,4 +276,201 @@ describe('mem:context CLI (WU-1234)', () => {
       expect(auditExists).not.toBeNull();
     });
   });
+
+  /**
+   * WU-1292: Tests for new CLI options: --lane, --max-recent-summaries, --max-project-nodes
+   * Note: Memory IDs must match format mem-[a-z0-9]{4} (exactly 4 alphanumeric chars after 'mem-')
+   */
+  describe('lane and limit options (WU-1292)', () => {
+    describe('--lane option', () => {
+      it('accepts --lane option and filters context to that lane', async () => {
+        // Arrange - create project nodes with different lanes
+        // Use valid mem-xxxx format IDs (exactly 4 alphanumeric chars)
+        const nodeWithLane = {
+          id: 'mem-la01',
+          type: 'checkpoint',
+          lifecycle: 'project',
+          content: 'Project content for CLI lane',
+          created_at: new Date().toISOString(),
+          metadata: { lane: 'Framework: CLI' },
+        };
+        const nodeOtherLane = {
+          id: 'mem-la02',
+          type: 'checkpoint',
+          lifecycle: 'project',
+          content: 'Project content for Core lane',
+          created_at: new Date().toISOString(),
+          metadata: { lane: 'Framework: Core' },
+        };
+        const nodeNoLane = {
+          id: 'mem-la03',
+          type: 'checkpoint',
+          lifecycle: 'project',
+          content: 'General project content no lane',
+          created_at: new Date().toISOString(),
+        };
+        await writeMemoryNode(nodeWithLane);
+        await writeMemoryNode(nodeOtherLane);
+        await writeMemoryNode(nodeNoLane);
+
+        // Act
+        const result = runCli(['--wu', 'WU-1234', '--lane', 'Framework: CLI', '--format', 'json']);
+
+        // Assert
+        expect(result.exitCode).toBe(0);
+        const json = JSON.parse(result.stdout);
+        // Should include node with matching lane and node with no lane
+        expect(json.contextBlock).toContain('CLI lane');
+        expect(json.contextBlock).toContain('no lane');
+        // Should NOT include node with different lane
+        expect(json.contextBlock).not.toContain('Core lane');
+      });
+
+      it('rejects empty --lane value', () => {
+        // Act
+        const result = runCli(['--wu', 'WU-1234', '--lane', '']);
+
+        // Assert
+        expect(result.exitCode).not.toBe(0);
+        expect(result.stderr).toContain('lane');
+      });
+    });
+
+    describe('--max-recent-summaries option', () => {
+      it('accepts --max-recent-summaries option', async () => {
+        // Arrange - create multiple summary nodes with valid IDs
+        const summaries = [1, 2, 3, 4, 5].map((i) => ({
+          id: `mem-sm0${i}`,
+          type: 'summary',
+          lifecycle: 'wu',
+          content: `Summary content ${i}`,
+          created_at: new Date(Date.now() - i * 1000).toISOString(),
+          wu_id: 'WU-1234',
+        }));
+        for (const summary of summaries) {
+          await writeMemoryNode(summary);
+        }
+
+        // Act - limit to 2 summaries
+        const result = runCli([
+          '--wu',
+          'WU-1234',
+          '--max-recent-summaries',
+          '2',
+          '--format',
+          'json',
+        ]);
+
+        // Assert
+        expect(result.exitCode).toBe(0);
+        const json = JSON.parse(result.stdout);
+        // Should only include 2 most recent summaries
+        const summaryMatches = json.contextBlock.match(/Summary content/g) || [];
+        expect(summaryMatches.length).toBe(2);
+      });
+
+      it('rejects invalid --max-recent-summaries value', () => {
+        // Act
+        const result = runCli(['--wu', 'WU-1234', '--max-recent-summaries', 'abc']);
+
+        // Assert
+        expect(result.exitCode).not.toBe(0);
+      });
+
+      it('rejects negative --max-recent-summaries value', () => {
+        // Act
+        const result = runCli(['--wu', 'WU-1234', '--max-recent-summaries', '-1']);
+
+        // Assert
+        expect(result.exitCode).not.toBe(0);
+      });
+    });
+
+    describe('--max-project-nodes option', () => {
+      it('accepts --max-project-nodes option', async () => {
+        // Arrange - create multiple project nodes with valid IDs
+        const projectNodes = [1, 2, 3, 4, 5].map((i) => ({
+          id: `mem-pn0${i}`,
+          type: 'checkpoint',
+          lifecycle: 'project',
+          content: `Project node content ${i}`,
+          created_at: new Date(Date.now() - i * 1000).toISOString(),
+        }));
+        for (const node of projectNodes) {
+          await writeMemoryNode(node);
+        }
+
+        // Act - limit to 2 project nodes
+        const result = runCli(['--wu', 'WU-1234', '--max-project-nodes', '2', '--format', 'json']);
+
+        // Assert
+        expect(result.exitCode).toBe(0);
+        const json = JSON.parse(result.stdout);
+        // Should only include 2 project nodes
+        const nodeMatches = json.contextBlock.match(/Project node content/g) || [];
+        expect(nodeMatches.length).toBe(2);
+      });
+
+      it('rejects invalid --max-project-nodes value', () => {
+        // Act
+        const result = runCli(['--wu', 'WU-1234', '--max-project-nodes', 'xyz']);
+
+        // Assert
+        expect(result.exitCode).not.toBe(0);
+      });
+    });
+
+    describe('--spawn-context-max-size option', () => {
+      it('accepts --spawn-context-max-size as alias for --max-size', async () => {
+        // Arrange
+        const node = {
+          id: 'mem-test',
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: TEST_CONTENT,
+          created_at: new Date().toISOString(),
+          wu_id: 'WU-1234',
+        };
+        await writeMemoryNode(node);
+
+        // Act - use spawn-context-max-size instead of max-size
+        const result = runCli(['--wu', 'WU-1234', '--spawn-context-max-size', '8192']);
+
+        // Assert
+        expect(result.exitCode).toBe(0);
+      });
+    });
+
+    describe('combined options', () => {
+      it('accepts all new options together', async () => {
+        // Arrange
+        const node = {
+          id: 'mem-test',
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: TEST_CONTENT,
+          created_at: new Date().toISOString(),
+          wu_id: 'WU-1234',
+        };
+        await writeMemoryNode(node);
+
+        // Act - use all new options together
+        const result = runCli([
+          '--wu',
+          'WU-1234',
+          '--lane',
+          'Framework: CLI',
+          '--max-recent-summaries',
+          '3',
+          '--max-project-nodes',
+          '5',
+          '--spawn-context-max-size',
+          '4096',
+        ]);
+
+        // Assert
+        expect(result.exitCode).toBe(0);
+      });
+    });
+  });
 });
