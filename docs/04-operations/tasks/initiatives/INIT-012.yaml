@@ -9,3 +9,4 @@ created: 2026-01-31
 phases: []
 success_metrics: []
 labels: []
+related_plan: lumenflow://plans/INIT-012-spawn-integration-hardening.md
