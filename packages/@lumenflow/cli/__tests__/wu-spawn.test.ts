@@ -669,6 +669,133 @@ Codex memory context test`;
   });
 });
 
+describe('wu-spawn methodology policy integration (WU-1288)', () => {
+  // Shared test fixtures to reduce duplicate strings (sonarjs/no-duplicate-string)
+  const ARCH_HEXAGONAL = 'hexagonal' as const;
+  const ARCH_LAYERED = 'layered' as const;
+  const TEST_AFTER = 'test-after' as const;
+  const TEST_AFTER_LABEL = 'Test-After' as const;
+
+  const baseDoc = {
+    title: 'Test WU',
+    lane: 'Framework: CLI',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-TEST';
+
+  type MethodologyInput = {
+    testing?: 'tdd' | 'test-after' | 'none';
+    architecture?: 'hexagonal' | 'layered' | 'none';
+    overrides?: { coverage_threshold?: number };
+  };
+
+  // Config factory to reduce duplicate directory strings
+  const createConfig = (
+    methodology?: MethodologyInput,
+  ): ReturnType<typeof LumenFlowConfigSchema.parse> =>
+    LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+      ...(methodology && { methodology }),
+    });
+
+  describe('methodology policy from config', () => {
+    it('uses TDD guidance for default config (methodology.testing not set)', () => {
+      const config = createConfig();
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Default should be TDD
+      expect(output).toContain('TDD DIRECTIVE');
+      expect(output).toContain('90%');
+    });
+
+    it('uses test-after guidance when methodology.testing is test-after', () => {
+      const config = createConfig({ testing: TEST_AFTER, architecture: ARCH_HEXAGONAL });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Should show test-after guidance, not TDD
+      expect(output).toContain(TEST_AFTER_LABEL);
+      expect(output).not.toContain('TDD DIRECTIVE');
+      expect(output).toContain('70%'); // Default coverage for test-after
+    });
+
+    it('uses no-tests guidance when methodology.testing is none', () => {
+      const config = createConfig({ testing: 'none', architecture: ARCH_HEXAGONAL });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Should show tests optional guidance
+      expect(output).toContain('Testing Optional');
+      expect(output).not.toContain('TDD DIRECTIVE');
+      expect(output).not.toContain(TEST_AFTER_LABEL);
+    });
+
+    it('includes layered architecture guidance when methodology.architecture is layered', () => {
+      const config = createConfig({ testing: 'tdd', architecture: ARCH_LAYERED });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Should show layered architecture in mandatory standards
+      expect(output).toContain('Layered Architecture');
+      expect(output).not.toContain('Hexagonal Architecture');
+    });
+
+    it('respects methodology.overrides.coverage_threshold', () => {
+      const config = createConfig({
+        testing: 'tdd',
+        architecture: ARCH_HEXAGONAL,
+        overrides: { coverage_threshold: 85 },
+      });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Should show overridden coverage threshold, not default 90%
+      expect(output).toContain('85%');
+    });
+
+    it('includes enforcement summary based on resolved policy', () => {
+      const config = createConfig({ testing: TEST_AFTER, architecture: ARCH_LAYERED });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+      // Should include enforcement summary with resolved policy values
+      expect(output).toContain('You will be judged by');
+      expect(output).toContain('test-after');
+      expect(output).toContain('layered');
+    });
+  });
+
+  describe('type overrides still apply', () => {
+    it('uses documentation guidance for documentation WU regardless of methodology', () => {
+      const docWu = { ...baseDoc, type: 'documentation' };
+      const config = createConfig({ testing: 'tdd', architecture: ARCH_HEXAGONAL });
+
+      const strategy = new GenericStrategy();
+      const output = generateTaskInvocation(docWu, id, strategy, { config });
+
+      // Documentation should NOT show TDD directive regardless of methodology setting
+      expect(output).not.toContain('TDD DIRECTIVE');
+      expect(output).not.toContain(TEST_AFTER_LABEL);
+    });
+  });
+});
+
 describe('wu-spawn progress signals (WU-1180)', () => {
   const id = 'WU-TEST';
 

@@ -68,12 +68,19 @@ import {
 
 // WU-1192: Import prompt generation from Core (single source of truth)
 // WU-1203: Import generateAgentCoordinationSection from core for config-driven progress signals
+// WU-1288: Import policy-based test guidance and mandatory standards generators
 import {
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
   generateTestGuidance,
   generateAgentCoordinationSection,
+  generatePolicyBasedTestGuidance,
+  generateMandatoryStandards,
+  generateEnforcementSummary,
 } from '@lumenflow/core/dist/wu-spawn.js';
+
+// WU-1288: Import resolvePolicy for methodology policy resolution
+import { resolvePolicy } from '@lumenflow/core/dist/resolve-policy.js';
 
 // WU-1240: Import memory context integration for spawn prompts
 import {
@@ -1050,11 +1057,23 @@ export function generateTaskInvocation(
   const templates = tryLoadTemplates(clientName, templateContext);
 
   const preamble = generatePreamble(id, strategy);
-  // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
-  // WU-1253: Try template first, fall back to hardcoded
-  const testGuidance = templates.get('tdd-directive') || generateTestGuidance(doc.type);
   const clientContext = options.client;
   const config = options.config || getConfig();
+
+  // WU-1288: Resolve methodology policy from config
+  const policy = resolvePolicy(config);
+
+  // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
+  // WU-1288: Use policy-based test guidance that respects methodology.testing config
+  // WU-1253: Try template first, fall back to policy-based guidance
+  const testGuidance =
+    templates.get('tdd-directive') || generatePolicyBasedTestGuidance(doc.type, policy);
+
+  // WU-1288: Generate enforcement summary from resolved policy
+  const enforcementSummary = generateEnforcementSummary(policy);
+
+  // WU-1288: Generate mandatory standards based on resolved policy
+  const mandatoryStandards = generateMandatoryStandards(policy);
   // WU-1142: Pass lane to get byLane skills
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
   // WU-1253: Try template for skills-selection, build skills section
@@ -1157,17 +1176,11 @@ ${mandatorySection}${invariantsPriorArt ? `---\n\n${invariantsPriorArt}\n\n` : '
 ${thinkingBlock}${skillsSection}
 ${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 
-## Mandatory Standards
+${mandatoryStandards}
 
-- **LumenFlow**: Follow trunk-based flow, WIP=1, worktree discipline
-- **TDD**: Failing test first, then implementation, then passing test. 90%+ coverage on new application code
-- **Hexagonal Architecture**: Ports-first design. No application -> infrastructure imports
-- **SOLID/DRY/YAGNI/KISS**: No over-engineering, no premature abstraction
-- **Library-First**: Search context7 before writing custom code. No reinventing wheels
-- **Code Quality**: No string literals, no magic numbers, no brittle regexes when libraries exist
-- **Worktree Discipline**: ALWAYS use \`pnpm wu:claim\` to create worktrees (never \`git worktree add\` directly). Work ONLY in the worktree, never edit main
-- **Documentation**: Update tooling docs if changing tools. Keep docs in sync with code
-- **Sub-agents**: Use Explore agent for codebase investigation. Activate mandatory agents as configured for your project
+---
+
+${enforcementSummary}
 
 ${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
