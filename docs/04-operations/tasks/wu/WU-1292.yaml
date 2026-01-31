@@ -1,0 +1,38 @@
+id: WU-1292
+title: Expose mem:context CLI options for lane and limits
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P3
+created: 2026-01-31
+code_paths:
+  - packages/@lumenflow/cli/src/mem-context.ts
+  - packages/@lumenflow/cli/__tests__/mem-context.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/mem-context.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1292.done
+dependencies: []
+initiative: INIT-012
+phase: 3
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-012.yaml
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: mem:context uses defaults and lacks flags for lane/limits. Problem: users cannot reproduce spawn context filters from CLI. Solution: add CLI options to pass lane, maxRecentSummaries, maxProjectNodes, and spawn_context_max_size to mem-context-core.'
+acceptance:
+  - mem:context supports --lane and filters to that lane
+  - mem:context supports --max-recent-summaries and --max-project-nodes
+  - mem:context respects configured spawn_context_max_size or explicit flag
+  - CLI tests cover new options and output
