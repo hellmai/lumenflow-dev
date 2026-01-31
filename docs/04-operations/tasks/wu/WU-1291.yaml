@@ -1,0 +1,36 @@
+id: WU-1291
+title: Decide on spawn template system (activate or remove)
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-01-31
+code_paths:
+  - packages/@lumenflow/core/src/template-loader.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1291.done
+dependencies: []
+initiative: INIT-012
+phase: 2
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: template-loader supports spawn-prompt templates but isn't clearly activated in wu-spawn. Problem: dead/uncertain template path increases maintenance and confusion. Solution: choose either to activate template system in spawn generation with clear config path or remove the unused loader and references."
+acceptance:
+  - Decision recorded in code/docs (activate or remove template system)
+  - 'If activated: wu:spawn loads templates and tests cover template rendering'
+  - 'If removed: template loader and unused references deleted without regressions'
