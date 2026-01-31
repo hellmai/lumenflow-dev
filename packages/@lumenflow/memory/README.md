@@ -433,30 +433,30 @@ Options for `generateContext`:
 
 ### Access Tracking (WU-1238)
 
-| Function                              | Description                                   |
-| ------------------------------------- | --------------------------------------------- |
-| `recordAccess(baseDir, nodeId)`       | Record access for a single node               |
-| `recordAccessBatch(baseDir, nodeIds)` | Record access for multiple nodes (efficient)  |
-| `getAccessStats(baseDir, nodeId)`     | Get access statistics for a node              |
+| Function                              | Description                                  |
+| ------------------------------------- | -------------------------------------------- |
+| `recordAccess(baseDir, nodeId)`       | Record access for a single node              |
+| `recordAccessBatch(baseDir, nodeIds)` | Record access for multiple nodes (efficient) |
+| `getAccessStats(baseDir, nodeId)`     | Get access statistics for a node             |
 
 ### Decay Scoring (WU-1238)
 
-| Function                            | Description                                    |
-| ----------------------------------- | ---------------------------------------------- |
-| `computeDecayScore(node, opts)`     | Compute overall decay score for a node         |
-| `computeRecencyScore(node, ...)`    | Compute recency component (exponential decay)  |
-| `computeAccessScore(node)`          | Compute access component (logarithmic boost)   |
-| `computeImportanceScore(node)`      | Compute importance component (priority-based)  |
-| `DEFAULT_HALF_LIFE_MS`              | Default half-life: 30 days in milliseconds     |
-| `IMPORTANCE_BY_PRIORITY`            | Priority multipliers: P0=2, P1=1.5, P2=1, P3=0.5 |
+| Function                         | Description                                      |
+| -------------------------------- | ------------------------------------------------ |
+| `computeDecayScore(node, opts)`  | Compute overall decay score for a node           |
+| `computeRecencyScore(node, ...)` | Compute recency component (exponential decay)    |
+| `computeAccessScore(node)`       | Compute access component (logarithmic boost)     |
+| `computeImportanceScore(node)`   | Compute importance component (priority-based)    |
+| `DEFAULT_HALF_LIFE_MS`           | Default half-life: 30 days in milliseconds       |
+| `IMPORTANCE_BY_PRIORITY`         | Priority multipliers: P0=2, P1=1.5, P2=1, P3=0.5 |
 
 ### Archival (WU-1238)
 
-| Function                         | Description                                    |
-| -------------------------------- | ---------------------------------------------- |
-| `archiveByDecay(baseDir, opts)`  | Archive nodes below decay threshold            |
-| `isArchived(node)`               | Check if node has metadata.status = 'archived' |
-| `DEFAULT_DECAY_THRESHOLD`        | Default threshold: 0.1                         |
+| Function                        | Description                                    |
+| ------------------------------- | ---------------------------------------------- |
+| `archiveByDecay(baseDir, opts)` | Archive nodes below decay threshold            |
+| `isArchived(node)`              | Check if node has metadata.status = 'archived' |
+| `DEFAULT_DECAY_THRESHOLD`       | Default threshold: 0.1                         |
 
 ### Memory Schema
 
