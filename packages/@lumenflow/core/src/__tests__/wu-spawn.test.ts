@@ -733,3 +733,98 @@ describe('WU-1290: Update Codex spawn prompt to reflect methodology policy', () 
     });
   });
 });
+
+/**
+ * WU-1291: Decide on spawn template system (activate or remove)
+ *
+ * Decision: ACTIVATE template system with graceful degradation
+ *
+ * The template system (template-loader.ts) is now integrated into wu:spawn.
+ * When templates exist in .lumenflow/templates/, they are used.
+ * If template loading fails, the hardcoded fallback functions are used.
+ *
+ * This test verifies the integration is working correctly.
+ */
+import { tryAssembleSpawnTemplates, buildTemplateContext } from '../wu-spawn.js';
+
+describe('WU-1291: Spawn template system activation', () => {
+  describe('tryAssembleSpawnTemplates integration', () => {
+    it('should be exported from wu-spawn', () => {
+      expect(tryAssembleSpawnTemplates).toBeDefined();
+      expect(typeof tryAssembleSpawnTemplates).toBe('function');
+    });
+
+    it('should be exported from wu-spawn (buildTemplateContext)', () => {
+      expect(buildTemplateContext).toBeDefined();
+      expect(typeof buildTemplateContext).toBe('function');
+    });
+
+    it('should return null when templates directory does not exist', () => {
+      const context = {
+        WU_ID: 'WU-TEST',
+        LANE: TEST_LANE,
+        TYPE: TEST_TYPE_FEATURE,
+      };
+      // Use a non-existent directory
+      const result = tryAssembleSpawnTemplates('/nonexistent/path', 'claude-code', context);
+      expect(result).toBeNull();
+    });
+
+    it('should build correct template context from WU doc', () => {
+      const doc = {
+        lane: 'Framework: Core',
+        type: 'feature',
+        title: 'Test WU',
+        description: 'A test WU',
+        worktree_path: '/path/to/worktree',
+      };
+
+      const context = buildTemplateContext(doc, 'WU-1234');
+
+      expect(context.WU_ID).toBe('WU-1234');
+      expect(context.LANE).toBe('Framework: Core');
+      expect(context.TYPE).toBe('feature');
+      expect(context.TITLE).toBe('Test WU');
+      expect(context.DESCRIPTION).toBe('A test WU');
+      expect(context.WORKTREE_PATH).toBe('/path/to/worktree');
+      expect(context.laneParent).toBe('Framework');
+    });
+
+    it('should extract laneParent correctly', () => {
+      const doc = { lane: 'Operations: Tooling', type: 'feature' };
+      const context = buildTemplateContext(doc, 'WU-1234');
+
+      expect(context.laneParent).toBe('Operations');
+    });
+
+    it('should handle missing lane gracefully', () => {
+      const doc = { type: 'feature' };
+      const context = buildTemplateContext(doc, 'WU-1234');
+
+      expect(context.LANE).toBe('');
+      expect(context.laneParent).toBe('');
+    });
+  });
+
+  describe('Template fallback behavior', () => {
+    it('should use hardcoded sections when templates unavailable', () => {
+      const mockWUDoc = {
+        title: 'Test WU',
+        lane: TEST_LANE,
+        type: TEST_TYPE_FEATURE,
+        status: 'ready',
+        description: TEST_DESCRIPTION,
+        acceptance: ['AC1'],
+        code_paths: [TEST_CODE_PATH],
+      };
+      const strategy = SpawnStrategyFactory.create('claude-code');
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, {});
+
+      // Should still contain all expected sections from hardcoded functions
+      expect(output).toContain('TDD DIRECTIVE');
+      expect(output).toContain('LUMENFLOW_SPAWN_END');
+      expect(output).toContain('Effort Scaling');
+      expect(output).toContain('Bug Discovery');
+    });
+  });
+});

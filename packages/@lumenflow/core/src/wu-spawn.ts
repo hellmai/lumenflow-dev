@@ -60,7 +60,26 @@ import {
 } from './wu-spawn-helpers.js';
 // Agent skills loading removed for vendor-agnostic design
 import { validateSpawnDependencies, formatDependencyError } from './dependency-validator.js';
-// WU-1253: Template loader for extracting hardcoded templates
+/**
+ * WU-1253/WU-1291: Template System for Spawn Prompts
+ *
+ * DECISION (WU-1291): Template system is ACTIVATED with graceful degradation.
+ *
+ * The template system loads prompt sections from .lumenflow/templates/spawn-prompt/
+ * with YAML frontmatter and manifest-driven assembly order. This design provides:
+ *
+ * 1. **Maintainability**: Templates in markdown files are easier to edit than code strings
+ * 2. **Client extensibility**: Client-specific overrides via templates.{client}/ directories
+ * 3. **Conditional inclusion**: Templates selected based on WU type and policy settings
+ * 4. **Graceful fallback**: If template loading fails, hardcoded functions are used
+ *
+ * Template loading is attempted via tryAssembleSpawnTemplates(). If it returns null
+ * (templates missing or assembly fails), the spawn output uses hardcoded generator
+ * functions (generateTDDDirective, generateBugDiscoverySection, etc.).
+ *
+ * @see template-loader.ts for the loading and assembly implementation
+ * @see .lumenflow/templates/manifest.yaml for the template registry
+ */
 import {
   loadManifest,
   loadTemplatesWithOverrides,
@@ -112,11 +131,24 @@ export const TRUNCATION_WARNING_BANNER = `<!-- LUMENFLOW_TRUNCATION_WARNING -->
 export const SPAWN_END_SENTINEL = '<!-- LUMENFLOW_SPAWN_END -->';
 
 /**
- * WU-1253: Try to assemble spawn prompt sections from templates.
+ * WU-1253/WU-1291: Try to assemble spawn prompt sections from templates.
  *
  * This function loads templates from .lumenflow/templates/ and assembles
  * them according to the manifest order. Client-specific overrides are
  * supported via templates.{client}/ directories.
+ *
+ * **Decision (WU-1291)**: Template system is ACTIVATED. This function is called
+ * by generateTaskInvocation() and generateCodexPrompt() to attempt template-based
+ * generation. If it returns null (templates missing, manifest invalid, or assembly
+ * fails), callers fall back to hardcoded generator functions.
+ *
+ * Template coverage (as of WU-1291):
+ * - Methodology directives (TDD, test-after, none)
+ * - Architecture directives (hexagonal, layered, none)
+ * - Type-specific directives (documentation, visual, refactor)
+ * - Agent guidance (effort-scaling, parallel-tool-calls, search-heuristics, token-budget)
+ * - Operational guidance (bug-discovery, quick-fix-commands, lane-selection)
+ * - Lane-specific guidance and constraints
  *
  * @param baseDir - Project root directory
  * @param clientName - Client name for overrides (e.g., 'claude', 'cursor')
