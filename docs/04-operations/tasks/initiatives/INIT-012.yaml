@@ -37,3 +37,4 @@ wus:
   - WU-1291
   - WU-1292
   - WU-1293
+related_plan: lumenflow://plans/INIT-012-spawn-integration-hardening.md
