@@ -2,7 +2,7 @@ id: WU-1284
 title: Add mem:delete command for memory node cleanup
 lane: 'Framework: Memory'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -41,3 +41,5 @@ acceptance:
   - Supports --dry-run to preview deletion
   - Optionally supports bulk delete via --tag or --older-than filters
   - Respects append-only pattern (soft delete via metadata.status=deleted)
+locked: true
+completed_at: 2026-01-31T17:18:09.855Z
