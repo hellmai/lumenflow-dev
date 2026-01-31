@@ -6,13 +6,12 @@ status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
-  - packages/@lumenflow/core/src/template-loader.ts
   - packages/@lumenflow/core/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1291.done
