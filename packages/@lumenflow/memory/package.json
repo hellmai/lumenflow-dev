@@ -34,6 +34,7 @@
     "./create": "./dist/mem-create-core.js",
     "./summarize": "./dist/mem-summarize-core.js",
     "./triage": "./dist/mem-triage-core.js",
+    "./index": "./dist/mem-index-core.js",
     "./schema": "./dist/memory-schema.js",
     "./store": "./dist/memory-store.js",
     "./dist/*": "./dist/*"

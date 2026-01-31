@@ -20,5 +20,6 @@ export {
   getCompactionRatio as getSummarizeCompactionRatio,
 } from './mem-summarize-core.js';
 export * from './mem-triage-core.js';
+export * from './mem-index-core.js';
 export * from './memory-schema.js';
 export * from './memory-store.js';
