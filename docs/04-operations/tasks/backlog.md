@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -45,6 +44,7 @@ sections:
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — Framework: Core
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — Framework: Core
 - [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
+- [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -52,7 +52,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -309,3 +308,4 @@ sections:
 - [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml)
 - [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml)
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml)
+- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml)
