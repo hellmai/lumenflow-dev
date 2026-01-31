@@ -479,5 +479,6 @@
 {"type":"complete","wuId":"WU-1267","timestamp":"2026-01-31T00:02:30.184Z"}
 {"type":"claim","wuId":"WU-1272","timestamp":"2026-01-31T10:16:49.660Z","lane":"Content: Documentation","title":"Create INIT-011 comprehensive test suite initiative"}
 {"type":"complete","wuId":"WU-1272","timestamp":"2026-01-31T10:23:29.693Z"}
-{"type":"claim","wuId":"WU-1234","lane":"Framework: Memory","title":"Add mem:context command for context injection at spawn","timestamp":"2026-01-31T10:27:42.826Z"}
-{"type":"claim","wuId":"WU-1241","lane":"Framework: CLI","title":"Wire CLI orchestrate:monitor to spawn-monitor APIs","timestamp":"2026-01-31T10:28:56.387Z"}
+{"type":"claim","wuId":"WU-1234","timestamp":"2026-01-31T10:27:42.826Z","lane":"Framework: Memory","title":"Add mem:context command for context injection at spawn"}
+{"type":"claim","wuId":"WU-1241","timestamp":"2026-01-31T10:28:56.387Z","lane":"Framework: CLI","title":"Wire CLI orchestrate:monitor to spawn-monitor APIs"}
+{"type":"complete","wuId":"WU-1234","timestamp":"2026-01-31T10:47:48.368Z"}
