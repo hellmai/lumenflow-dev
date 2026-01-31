@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Memory Index CLI (WU-1235)
  *
@@ -17,7 +18,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { indexProject, getDefaultSources } from '@lumenflow/memory/dist/mem-index-core.js';
+import { indexProject } from '@lumenflow/memory/dist/mem-index-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
