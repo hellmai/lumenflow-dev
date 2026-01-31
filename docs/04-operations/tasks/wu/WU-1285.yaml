@@ -2,7 +2,7 @@ id: WU-1285
 title: Fix mem:delete path calculation bug
 lane: 'Framework: Memory'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -41,3 +41,5 @@ approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T17:27:51.883Z
 initiative: INIT-012
+locked: true
+completed_at: 2026-01-31T17:34:55.162Z
