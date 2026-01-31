@@ -1,0 +1,37 @@
+id: WU-1283
+title: Fix agent documentation loading - inline tooling in entry points
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-01-31
+code_paths:
+  - packages/@lumenflow/core/src/spawn-strategy.ts
+  - AGENTS.md
+  - .cursor/rules/lumenflow.md
+  - .windsurf/rules/lumenflow.md
+  - .claude/CLAUDE.md
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/spawn-strategy.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1283.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Agents in new sessions don't load LumenFlow tooling documentation (quick-ref-commands.md). Root cause: All entry points (AGENTS.md, vendor overlays) use markdown links to reference the tooling docs instead of inline content. Agents see 'See quick-ref-commands.md' as text but don't automatically read that file. Fix: 1) Add quick-ref-commands.md to spawn-strategy.ts preamble 2) Inline key commands in AGENTS.md 3) Update vendor overlays with inline key commands"
+acceptance:
+  - spawn-strategy.ts preamble includes quick-ref-commands.md in context load order
+  - AGENTS.md contains inline Key Commands table with orchestrate:init-status, wu:status, gates, mem:inbox
+  - New agent sessions can answer what command shows initiative status correctly without prompting
+  - Vendor overlays updated with key commands
