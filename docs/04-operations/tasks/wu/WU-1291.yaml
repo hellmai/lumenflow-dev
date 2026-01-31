@@ -2,7 +2,7 @@ id: WU-1291
 title: Decide on spawn template system (activate or remove)
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -29,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: template-loader supports spawn-prompt templates but isn't clearly activated in wu-spawn. Problem: dead/uncertain template path increases maintenance and confusion. Solution: choose either to activate template system in spawn generation with clear config path or remove the unused loader and references."
+description: "Context: template-loader supports spawn-prompt templates but isn't clearly activated
+  in wu-spawn. Problem: dead/uncertain template path increases maintenance and confusion. Solution:
+  choose either to activate template system in spawn generation with clear config path or remove the
+  unused loader and references."
 acceptance:
   - Decision recorded in code/docs (activate or remove template system)
   - 'If activated: wu:spawn loads templates and tests cover template rendering'
   - 'If removed: template loader and unused references deleted without regressions'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1291
+claimed_at: 2026-01-31T23:28:56.720Z
+baseline_main_sha: 09e11da180dfb375dcad9abdb3426b28d8e41d12
+session_id: c2a1cdb0-6e9b-40a4-9768-37abd11c2fc4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T23:28:56.724Z
