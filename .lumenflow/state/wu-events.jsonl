@@ -509,6 +509,7 @@
 {"type":"claim","wuId":"WU-1285","timestamp":"2026-01-31T17:27:51.896Z","lane":"Framework: Memory","title":"Fix mem:delete path calculation bug"}
 {"type":"complete","wuId":"WU-1285","timestamp":"2026-01-31T17:34:56.762Z"}
 {"type":"complete","wuId":"WU-1286","timestamp":"2026-01-31T17:35:14.848Z"}
-{"type":"claim","wuId":"WU-1282","lane":"Framework: Core","title":"Bug: Task-spawned sub-agents bypass PreToolUse hooks","timestamp":"2026-01-31T17:56:51.505Z"}
-{"type":"claim","wuId":"WU-1288","lane":"Framework: CLI","title":"Wire methodology policy into wu:spawn CLI output","timestamp":"2026-01-31T17:58:58.665Z"}
-{"type":"claim","wuId":"WU-1293","lane":"Content: Documentation","title":"Initiative bookkeeping for INIT-012 snags","timestamp":"2026-01-31T17:59:59.842Z"}
+{"type":"claim","wuId":"WU-1282","timestamp":"2026-01-31T17:56:51.505Z","lane":"Framework: Core","title":"Bug: Task-spawned sub-agents bypass PreToolUse hooks"}
+{"type":"claim","wuId":"WU-1288","timestamp":"2026-01-31T17:58:58.665Z","lane":"Framework: CLI","title":"Wire methodology policy into wu:spawn CLI output"}
+{"type":"claim","wuId":"WU-1293","timestamp":"2026-01-31T17:59:59.842Z","lane":"Content: Documentation","title":"Initiative bookkeeping for INIT-012 snags"}
+{"type":"complete","wuId":"WU-1293","timestamp":"2026-01-31T18:05:24.015Z"}
