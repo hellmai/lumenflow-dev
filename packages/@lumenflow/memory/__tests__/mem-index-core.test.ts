@@ -14,6 +14,20 @@ import path from 'node:path';
 import os from 'node:os';
 import { indexProject } from '../src/mem-index-core.js';
 
+/** Test file path constants to avoid lint duplicate string warnings */
+const TEST_FILES = {
+  README: 'README.md',
+  LUMENFLOW: 'LUMENFLOW.md',
+  PACKAGE_JSON: 'package.json',
+  CONFIG_YAML: '.lumenflow.config.yaml',
+  CONSTRAINTS: '.lumenflow/constraints.md',
+} as const;
+
+/** Test content constants */
+const TEST_CONTENT = {
+  SIMPLE_README: '# Test\n\nContent.',
+} as const;
+
 describe('mem-index-core (WU-1235)', () => {
   let testDir: string;
   let memoryDir: string;
@@ -57,32 +71,32 @@ describe('mem-index-core (WU-1235)', () => {
   describe('source scanning', () => {
     it('scans README.md if present', async () => {
       // Arrange
-      await writeFile('README.md', '# Test Project\n\nProject description here.');
+      await writeFile(TEST_FILES.README, '# Test Project\n\nProject description here.');
 
       // Act
       const result = await indexProject(testDir);
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain('README.md');
+      expect(result.sourcesScanned).toContain(TEST_FILES.README);
     });
 
     it('scans LUMENFLOW.md if present', async () => {
       // Arrange
-      await writeFile('LUMENFLOW.md', '# LumenFlow Guide\n\nWorkflow conventions.');
+      await writeFile(TEST_FILES.LUMENFLOW, '# LumenFlow Guide\n\nWorkflow conventions.');
 
       // Act
       const result = await indexProject(testDir);
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain('LUMENFLOW.md');
+      expect(result.sourcesScanned).toContain(TEST_FILES.LUMENFLOW);
     });
 
     it('scans package.json if present', async () => {
       // Arrange
       await writeFile(
-        'package.json',
+        TEST_FILES.PACKAGE_JSON,
         JSON.stringify({
           name: 'test-project',
           workspaces: ['packages/*'],
@@ -94,13 +108,13 @@ describe('mem-index-core (WU-1235)', () => {
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain('package.json');
+      expect(result.sourcesScanned).toContain(TEST_FILES.PACKAGE_JSON);
     });
 
     it('scans .lumenflow.config.yaml if present', async () => {
       // Arrange
       await writeFile(
-        '.lumenflow.config.yaml',
+        TEST_FILES.CONFIG_YAML,
         'lanes:\n  definitions:\n    - name: Framework: Core\n',
       );
 
@@ -109,19 +123,19 @@ describe('mem-index-core (WU-1235)', () => {
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain('.lumenflow.config.yaml');
+      expect(result.sourcesScanned).toContain(TEST_FILES.CONFIG_YAML);
     });
 
     it('scans .lumenflow/constraints.md if present', async () => {
       // Arrange
-      await writeFile('.lumenflow/constraints.md', '# Constraints\n\nNon-negotiable rules.');
+      await writeFile(TEST_FILES.CONSTRAINTS, '# Constraints\n\nNon-negotiable rules.');
 
       // Act
       const result = await indexProject(testDir);
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain('.lumenflow/constraints.md');
+      expect(result.sourcesScanned).toContain(TEST_FILES.CONSTRAINTS);
     });
 
     it('handles missing files gracefully', async () => {
@@ -140,7 +154,7 @@ describe('mem-index-core (WU-1235)', () => {
   describe('node creation', () => {
     it('creates memory nodes with lifecycle=project', async () => {
       // Arrange
-      await writeFile('README.md', '# Test Project\n\nDescription.');
+      await writeFile(TEST_FILES.README, '# Test Project\n\nDescription.');
 
       // Act
       await indexProject(testDir);
@@ -153,7 +167,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('creates memory nodes with type=summary', async () => {
       // Arrange
-      await writeFile('README.md', '# Test Project\n\nDescription.');
+      await writeFile(TEST_FILES.README, '# Test Project\n\nDescription.');
 
       // Act
       await indexProject(testDir);
@@ -166,7 +180,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('creates nodes tagged with index:architecture for README', async () => {
       // Arrange
-      await writeFile('README.md', '# Architecture\n\nProject structure.');
+      await writeFile(TEST_FILES.README, '# Architecture\n\nProject structure.');
 
       // Act
       await indexProject(testDir);
@@ -174,7 +188,9 @@ describe('mem-index-core (WU-1235)', () => {
       // Assert
       const nodes = await readMemoryNodes();
       const readmeNode = nodes.find(
-        (n) => (n as { metadata?: { source_path?: string } }).metadata?.source_path === 'README.md',
+        (n) =>
+          (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
+          TEST_FILES.README,
       );
       expect(readmeNode).toBeDefined();
       expect((readmeNode as { tags: string[] }).tags).toContain('index:architecture');
@@ -182,7 +198,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('creates nodes tagged with index:conventions for LUMENFLOW.md', async () => {
       // Arrange
-      await writeFile('LUMENFLOW.md', '# Workflow\n\nConventions.');
+      await writeFile(TEST_FILES.LUMENFLOW, '# Workflow\n\nConventions.');
 
       // Act
       await indexProject(testDir);
@@ -191,7 +207,8 @@ describe('mem-index-core (WU-1235)', () => {
       const nodes = await readMemoryNodes();
       const lumenflowNode = nodes.find(
         (n) =>
-          (n as { metadata?: { source_path?: string } }).metadata?.source_path === 'LUMENFLOW.md',
+          (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
+          TEST_FILES.LUMENFLOW,
       );
       expect(lumenflowNode).toBeDefined();
       expect((lumenflowNode as { tags: string[] }).tags).toContain('index:conventions');
@@ -199,7 +216,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('creates nodes tagged with index:invariants for constraints.md', async () => {
       // Arrange
-      await writeFile('.lumenflow/constraints.md', '# Constraints\n\nRules.');
+      await writeFile(TEST_FILES.CONSTRAINTS, '# Constraints\n\nRules.');
 
       // Act
       await indexProject(testDir);
@@ -209,7 +226,7 @@ describe('mem-index-core (WU-1235)', () => {
       const constraintsNode = nodes.find(
         (n) =>
           (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
-          '.lumenflow/constraints.md',
+          TEST_FILES.CONSTRAINTS,
       );
       expect(constraintsNode).toBeDefined();
       expect((constraintsNode as { tags: string[] }).tags).toContain('index:invariants');
@@ -219,7 +236,7 @@ describe('mem-index-core (WU-1235)', () => {
   describe('provenance metadata', () => {
     it('includes source_path in metadata', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       await indexProject(testDir);
@@ -228,13 +245,13 @@ describe('mem-index-core (WU-1235)', () => {
       const nodes = await readMemoryNodes();
       expect(nodes.length).toBeGreaterThan(0);
       expect((nodes[0] as { metadata: { source_path: string } }).metadata.source_path).toBe(
-        'README.md',
+        TEST_FILES.README,
       );
     });
 
     it('includes source_hash in metadata', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       await indexProject(testDir);
@@ -250,7 +267,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('includes indexed_at timestamp in metadata', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       await indexProject(testDir);
@@ -268,7 +285,7 @@ describe('mem-index-core (WU-1235)', () => {
   describe('idempotency', () => {
     it('does not create duplicates on re-run', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       const result1 = await indexProject(testDir);
@@ -283,13 +300,13 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('updates existing node when source content changes', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nOriginal content.');
+      await writeFile(TEST_FILES.README, '# Test\n\nOriginal content.');
 
       // Act
       const result1 = await indexProject(testDir);
 
       // Change the file content
-      await writeFile('README.md', '# Test\n\nUpdated content.');
+      await writeFile(TEST_FILES.README, '# Test\n\nUpdated content.');
       const result2 = await indexProject(testDir);
 
       // Assert
@@ -300,7 +317,7 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('skips unchanged sources', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       await indexProject(testDir);
@@ -314,8 +331,8 @@ describe('mem-index-core (WU-1235)', () => {
   describe('result reporting', () => {
     it('returns count of nodes created', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
-      await writeFile('LUMENFLOW.md', '# Workflow\n\nGuide.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
+      await writeFile(TEST_FILES.LUMENFLOW, '# Workflow\n\nGuide.');
 
       // Act
       const result = await indexProject(testDir);
@@ -326,11 +343,11 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('returns count of nodes updated', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nOriginal.');
+      await writeFile(TEST_FILES.README, '# Test\n\nOriginal.');
       await indexProject(testDir);
 
       // Change content
-      await writeFile('README.md', '# Test\n\nChanged.');
+      await writeFile(TEST_FILES.README, '# Test\n\nChanged.');
 
       // Act
       const result = await indexProject(testDir);
@@ -341,22 +358,22 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('returns list of sources scanned', async () => {
       // Arrange
-      await writeFile('README.md', '# Test');
-      await writeFile('package.json', '{"name": "test"}');
+      await writeFile(TEST_FILES.README, '# Test');
+      await writeFile(TEST_FILES.PACKAGE_JSON, '{"name": "test"}');
 
       // Act
       const result = await indexProject(testDir);
 
       // Assert
-      expect(result.sourcesScanned).toContain('README.md');
-      expect(result.sourcesScanned).toContain('package.json');
+      expect(result.sourcesScanned).toContain(TEST_FILES.README);
+      expect(result.sourcesScanned).toContain(TEST_FILES.PACKAGE_JSON);
     });
   });
 
   describe('dry-run mode', () => {
     it('does not write to memory file in dry-run mode', async () => {
       // Arrange
-      await writeFile('README.md', '# Test\n\nContent.');
+      await writeFile(TEST_FILES.README, TEST_CONTENT.SIMPLE_README);
 
       // Act
       const result = await indexProject(testDir, { dryRun: true });
@@ -372,8 +389,8 @@ describe('mem-index-core (WU-1235)', () => {
 
     it('returns what would be indexed in dry-run mode', async () => {
       // Arrange
-      await writeFile('README.md', '# Test');
-      await writeFile('LUMENFLOW.md', '# Guide');
+      await writeFile(TEST_FILES.README, '# Test');
+      await writeFile(TEST_FILES.LUMENFLOW, '# Guide');
 
       // Act
       const result = await indexProject(testDir, { dryRun: true });
@@ -388,7 +405,7 @@ describe('mem-index-core (WU-1235)', () => {
     it('extracts workspace structure from package.json', async () => {
       // Arrange
       await writeFile(
-        'package.json',
+        TEST_FILES.PACKAGE_JSON,
         JSON.stringify({
           name: 'monorepo',
           workspaces: ['packages/*', 'apps/*'],
@@ -402,7 +419,8 @@ describe('mem-index-core (WU-1235)', () => {
       const nodes = await readMemoryNodes();
       const pkgNode = nodes.find(
         (n) =>
-          (n as { metadata?: { source_path?: string } }).metadata?.source_path === 'package.json',
+          (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
+          TEST_FILES.PACKAGE_JSON,
       );
       expect(pkgNode).toBeDefined();
       expect((pkgNode as { content: string }).content).toContain('Workspaces');
@@ -420,7 +438,7 @@ lanes:
       code_paths:
         - "packages/@lumenflow/cli/**"
 `;
-      await writeFile('.lumenflow.config.yaml', configContent);
+      await writeFile(TEST_FILES.CONFIG_YAML, configContent);
 
       // Act
       await indexProject(testDir);
@@ -430,7 +448,7 @@ lanes:
       const configNode = nodes.find(
         (n) =>
           (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
-          '.lumenflow.config.yaml',
+          TEST_FILES.CONFIG_YAML,
       );
       expect(configNode).toBeDefined();
       expect((configNode as { tags: string[] }).tags).toContain('index:commands');
