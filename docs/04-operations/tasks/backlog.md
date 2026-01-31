@@ -49,7 +49,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml) — Framework: CLI
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 - [WU-1279 — Wire methodology policy into spawn prompt generation](wu/WU-1279.yaml) — Framework: Core
 
@@ -296,3 +295,4 @@ sections:
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml)
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml)
 - [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml)
+- [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml)
