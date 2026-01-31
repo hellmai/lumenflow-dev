@@ -8,10 +8,10 @@ _Last updated: 2026-01-31_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml)
 
 ## Completed
 
+- [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — 2026-01-31
 - [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — 2026-01-31
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18

@@ -2,7 +2,7 @@ id: WU-1235
 title: Add mem:index command for project convention indexing
 lane: 'Framework: Memory'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -60,3 +60,5 @@ session_id: b20dde8e-5e0f-4c81-a631-a2d2e5bb7a8e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T11:43:14.940Z
+locked: true
+completed_at: 2026-01-31T12:06:55.294Z
