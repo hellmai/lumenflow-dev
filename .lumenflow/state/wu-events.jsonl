@@ -499,4 +499,5 @@
 {"type":"claim","wuId":"WU-1280","timestamp":"2026-01-31T15:37:52.007Z","lane":"Framework: Core","title":"Gates should consume tests_required from resolved policy"}
 {"type":"complete","wuId":"WU-1280","timestamp":"2026-01-31T15:47:17.529Z"}
 {"type":"complete","wuId":"WU-1238","timestamp":"2026-01-31T16:00:03.181Z"}
-{"type":"claim","wuId":"WU-1281","lane":"Framework: Memory","title":"Fix mem:context lane filtering and recency selection","timestamp":"2026-01-31T16:03:59.322Z"}
+{"type":"claim","wuId":"WU-1281","timestamp":"2026-01-31T16:03:59.322Z","lane":"Framework: Memory","title":"Fix mem:context lane filtering and recency selection"}
+{"type":"complete","wuId":"WU-1281","timestamp":"2026-01-31T16:11:06.419Z"}
