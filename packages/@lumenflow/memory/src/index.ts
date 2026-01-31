@@ -25,3 +25,8 @@ export * from './mem-promote-core.js';
 export * from './mem-profile-core.js';
 export * from './memory-schema.js';
 export * from './memory-store.js';
+
+// WU-1238: Decay scoring and access tracking
+export * from './decay/scoring.js';
+export * from './decay/access-tracking.js';
+export * from './decay/archival.js';

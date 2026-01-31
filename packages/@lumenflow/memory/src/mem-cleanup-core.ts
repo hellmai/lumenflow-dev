@@ -1,5 +1,5 @@
 /**
- * Memory Cleanup Core (WU-1472, WU-1554)
+ * Memory Cleanup Core (WU-1472, WU-1554, WU-1238)
  *
  * Prune closed memory nodes based on lifecycle policy.
  * Implements compaction to prevent memory bloat.
@@ -13,6 +13,7 @@
  * - Report compaction metrics (ratio, bytes freed)
  * - WU-1554: TTL-based expiration for old nodes
  * - WU-1554: Active session protection regardless of age
+ * - WU-1238: Decay-based archival for stale nodes
  *
  * Lifecycle Policy:
  * - ephemeral: Always removed (scratch pad data)
@@ -25,6 +26,11 @@
  * - Active sessions (status: 'active') are never removed
  * - Project and sensitive nodes are protected from TTL removal
  *
+ * Decay Policy (WU-1238):
+ * - Nodes with decay score below threshold are archived (not deleted)
+ * - Project lifecycle nodes are never archived
+ * - Already archived nodes are skipped
+ *
  * @see {@link packages/@lumenflow/cli/src/mem-cleanup.ts} - CLI wrapper
  * @see {@link packages/@lumenflow/cli/src/__tests__/mem-cleanup.test.ts} - Tests
  */
@@ -35,9 +41,15 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ms = require('ms') as (value: string) => number;
-import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
+import { loadMemory, loadMemoryAll, MEMORY_FILE_NAME } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import {
+  archiveByDecay,
+  DEFAULT_DECAY_THRESHOLD,
+  type DecayArchiveResult,
+} from './decay/archival.js';
+import { DEFAULT_HALF_LIFE_MS } from './decay/scoring.js';
 
 /**
  * Lifecycle policy definition
@@ -96,6 +108,12 @@ export interface CleanupOptions {
   ttlMs?: number;
   /** Current timestamp for testing (defaults to Date.now()) */
   now?: number;
+  /** WU-1238: Enable decay-based archival */
+  decay?: boolean;
+  /** WU-1238: Decay threshold (nodes below this are archived, default: 0.1) */
+  decayThreshold?: number;
+  /** WU-1238: Half-life in milliseconds for decay calculation (default: 30 days) */
+  halfLifeMs?: number;
 }
 
 /**
@@ -108,6 +126,8 @@ interface CleanupBreakdown {
   sensitive: number;
   ttlExpired: number;
   activeSessionProtected: number;
+  /** WU-1238: Number of nodes archived by decay */
+  decayArchived: number;
 }
 
 /**
@@ -130,6 +150,8 @@ export interface CleanupResult {
   ttlMs?: number;
   /** Breakdown by lifecycle */
   breakdown: CleanupBreakdown;
+  /** WU-1238: Decay archival result (if decay mode was used) */
+  decayResult?: DecayArchiveResult;
 }
 
 /**
@@ -416,12 +438,26 @@ async function writeRetainedNodes(memoryDir: string, retainedNodes: MemoryNode[]
  * // WU-1554: TTL-based cleanup
  * const result = await cleanupMemory(baseDir, { ttl: '30d' });
  * console.log(`Removed ${result.breakdown.ttlExpired} expired nodes`);
+ *
+ * @example
+ * // WU-1238: Decay-based archival
+ * const result = await cleanupMemory(baseDir, { decay: true, decayThreshold: 0.1 });
+ * console.log(`Archived ${result.breakdown.decayArchived} stale nodes`);
  */
 export async function cleanupMemory(
   baseDir: string,
   options: CleanupOptions = {},
 ): Promise<CleanupResult> {
-  const { dryRun = false, sessionId, ttl, ttlMs: providedTtlMs, now = Date.now() } = options;
+  const {
+    dryRun = false,
+    sessionId,
+    ttl,
+    ttlMs: providedTtlMs,
+    now = Date.now(),
+    decay = false,
+    decayThreshold = DEFAULT_DECAY_THRESHOLD,
+    halfLifeMs = DEFAULT_HALF_LIFE_MS,
+  } = options;
   const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
 
   // WU-1554: Parse TTL if provided as string
@@ -430,8 +466,20 @@ export async function cleanupMemory(
     ttlMs = parseTtl(ttl);
   }
 
-  // Load existing memory
-  const memory = await loadMemory(memoryDir);
+  // WU-1238: Handle decay-based archival if requested
+  let decayResult: DecayArchiveResult | undefined;
+  if (decay) {
+    decayResult = await archiveByDecay(memoryDir, {
+      threshold: decayThreshold,
+      now,
+      halfLifeMs,
+      dryRun,
+    });
+  }
+
+  // Load existing memory (includes all nodes for policy-based cleanup)
+  // Note: We need to include archived nodes to properly track retained vs removed
+  const memory = await loadMemoryAll(memoryDir);
 
   // Track cleanup decisions
   const removedIds: string[] = [];
@@ -445,6 +493,7 @@ export async function cleanupMemory(
     sensitive: 0,
     ttlExpired: 0,
     activeSessionProtected: 0,
+    decayArchived: decayResult?.archivedIds.length ?? 0,
   };
 
   // Process each node
@@ -475,6 +524,11 @@ export async function cleanupMemory(
   // WU-1554: Include TTL in result if provided
   if (ttlMs) {
     baseResult.ttlMs = ttlMs;
+  }
+
+  // WU-1238: Add decay result if present
+  if (decayResult) {
+    baseResult.decayResult = decayResult;
   }
 
   // If dry-run, return preview without modifications
