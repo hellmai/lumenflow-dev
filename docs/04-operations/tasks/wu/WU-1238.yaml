@@ -8,13 +8,19 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/memory/src/memory-store.ts
   - packages/@lumenflow/memory/src/decay/scoring.ts
+  - packages/@lumenflow/memory/src/decay/access-tracking.ts
   - packages/@lumenflow/memory/src/decay/archival.ts
   - packages/@lumenflow/memory/src/mem-cleanup-core.ts
+  - packages/@lumenflow/memory/src/mem-context-core.ts
+  - packages/@lumenflow/memory/src/index.ts
+  - packages/@lumenflow/memory/README.md
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/memory/src/__tests__/decay-scoring.test.ts
-    - packages/@lumenflow/memory/src/__tests__/access-tracking.test.ts
+    - packages/@lumenflow/memory/__tests__/decay-scoring.test.ts
+    - packages/@lumenflow/memory/__tests__/access-tracking.test.ts
+    - packages/@lumenflow/memory/__tests__/archival.test.ts
+    - packages/@lumenflow/memory/__tests__/decay-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1238.done
