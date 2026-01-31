@@ -1760,7 +1760,6 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   const preamble = generatePreamble(id, strategy);
-  const tddDirective = generateTDDDirective();
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
@@ -1775,6 +1774,16 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
     (clientSkillsGuidance ? `\n${clientSkillsGuidance}` : '');
   const clientBlocks = generateClientBlocksSection(clientContext);
 
+  // WU-1290: Resolve policy and use policy-based test guidance (same as generateTaskInvocation)
+  const policy = resolvePolicy(config);
+  const testGuidance = generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
+
+  // WU-1290: Generate enforcement summary from resolved policy
+  const enforcementSummary = generateEnforcementSummary(policy);
+
+  // WU-1290: Generate mandatory standards based on resolved policy
+  const mandatoryStandards = generateMandatoryStandards(policy);
+
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);
   const thinkingSections = [executionModeSection, thinkToolGuidance]
@@ -1784,7 +1793,7 @@ export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {
 
   return `# ${id}: ${doc.title || 'Untitled'}
 
-${tddDirective}
+${testGuidance}
 
 ---
 
@@ -1815,6 +1824,14 @@ ${codePaths.length > 0 ? codePaths.map((p) => `- ${p}`).join('\n') : '- No code 
 ## Acceptance Criteria
 
 ${formatAcceptance(doc.acceptance)}
+
+---
+
+${mandatoryStandards}
+
+---
+
+${enforcementSummary}
 
 ---
 
