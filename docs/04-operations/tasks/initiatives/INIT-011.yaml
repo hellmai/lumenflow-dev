@@ -1,0 +1,35 @@
+id: INIT-011
+slug: comprehensive-test-suite
+title: Comprehensive LumenFlow Test Suite
+description: |
+  Build a comprehensive test suite to validate all LumenFlow functionality.
+  Covers CLI commands, workflow lifecycle, agent coordination, memory layer,
+  and initiative orchestration. Ensures reliability before wider adoption.
+status: ready
+priority: P1
+owner: tom@hellm.ai
+created: 2026-01-31
+phases:
+  - name: Core CLI Testing
+    description: Test all wu:* commands end-to-end
+  - name: Workflow Integration
+    description: Test full WU lifecycle from create to done
+  - name: Agent Coordination
+    description: Test multi-agent spawning and coordination
+  - name: Memory Layer
+    description: Test checkpoints, signals, inbox
+success_metrics:
+  - 95% test coverage on @lumenflow/cli
+  - 90% test coverage on @lumenflow/core
+  - All wu:* commands have integration tests
+  - Agent spawn/signal flow tested end-to-end
+labels:
+  - testing
+  - quality
+  - infrastructure
+wus:
+  - WU-1273
+  - WU-1274
+  - WU-1275
+  - WU-1276
+  - WU-1277
