@@ -516,3 +516,4 @@
 {"type":"complete","wuId":"WU-1282","timestamp":"2026-01-31T18:06:51.949Z"}
 {"type":"complete","wuId":"WU-1288","timestamp":"2026-01-31T18:16:29.196Z"}
 {"type":"claim","wuId":"WU-1287","lane":"Framework: Core","title":"Align spawn memory context with mem-context-core","timestamp":"2026-01-31T22:00:52.756Z"}
+{"type":"claim","wuId":"WU-1292","lane":"Framework: CLI","title":"Expose mem:context CLI options for lane and limits","timestamp":"2026-01-31T22:01:56.545Z"}
