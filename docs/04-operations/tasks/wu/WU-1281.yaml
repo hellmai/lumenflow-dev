@@ -10,7 +10,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/memory/src/__tests__/mem-context-core.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-context-core.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1281.done
