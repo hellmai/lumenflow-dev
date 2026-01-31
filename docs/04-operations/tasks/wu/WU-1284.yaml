@@ -43,3 +43,4 @@ acceptance:
   - Respects append-only pattern (soft delete via metadata.status=deleted)
 locked: true
 completed_at: 2026-01-31T17:18:09.855Z
+initiative: INIT-012
