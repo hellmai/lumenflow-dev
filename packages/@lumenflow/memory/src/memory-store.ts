@@ -1,5 +1,5 @@
 /**
- * Memory Store (WU-1463)
+ * Memory Store (WU-1463, WU-1238)
  *
  * JSONL-based memory store with load, query, and append operations.
  * Git-friendly format with one node per line for merge-safe diffs.
@@ -8,6 +8,8 @@
  * - Append-only writes (no full file rewrite)
  * - Indexed lookups by ID and WU
  * - Deterministic queryReady() ordering by priority then createdAt
+ * - WU-1238: Support for archived node filtering
+ * - WU-1238: Decay score-based sorting option
  *
  * @see {@link packages/@lumenflow/cli/src/lib/__tests__/memory-store.test.ts} - Tests
  * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
@@ -52,6 +54,17 @@ interface NodeFsError extends Error {
 /**
  * Indexed memory result from loadMemory
  */
+/**
+ * Options for loading memory
+ */
+export interface LoadMemoryOptions {
+  /** If true, include archived nodes (default: false) */
+  includeArchived?: boolean;
+}
+
+/**
+ * Indexed memory result from loadMemory
+ */
 export interface IndexedMemory {
   /** All loaded nodes in file order */
   nodes: MemoryNode[];
@@ -59,6 +72,14 @@ export interface IndexedMemory {
   byId: Map<string, MemoryNode>;
   /** Nodes indexed by WU ID */
   byWu: Map<string, MemoryNode[]>;
+}
+
+/**
+ * Options for memory store query functions
+ */
+export interface MemoryQueryOptions {
+  /** If true, include archived nodes (default: false) */
+  includeArchived?: boolean;
 }
 
 /**
@@ -102,6 +123,16 @@ function compareNodes(a: MemoryNode, b: MemoryNode): number {
 }
 
 /**
+ * Check if a node is archived (WU-1238).
+ *
+ * @param node - Memory node to check
+ * @returns True if node has metadata.status = 'archived'
+ */
+function isNodeArchived(node: MemoryNode): boolean {
+  return node.metadata?.status === 'archived';
+}
+
+/**
  * Loads memory from JSONL file and returns indexed nodes.
  *
  * Handles:
@@ -119,8 +150,16 @@ function compareNodes(a: MemoryNode, b: MemoryNode): number {
  * const memory = await loadMemory('/path/to/project');
  * const node = memory.byId.get('mem-abc1');
  * const wuNodes = memory.byWu.get('WU-1463') ?? [];
+ *
+ * @example
+ * // WU-1238: Include archived nodes
+ * const allMemory = await loadMemory('/path/to/project', { includeArchived: true });
  */
-export async function loadMemory(baseDir: string): Promise<IndexedMemory> {
+export async function loadMemory(
+  baseDir: string,
+  options: LoadMemoryOptions = {},
+): Promise<IndexedMemory> {
+  const { includeArchived = false } = options;
   const filePath = path.join(baseDir, MEMORY_FILE_NAME);
   const result: IndexedMemory = {
     nodes: [],
@@ -172,6 +211,11 @@ export async function loadMemory(baseDir: string): Promise<IndexedMemory> {
 
     const node = validation.data;
 
+    // WU-1238: Skip archived nodes unless includeArchived is true
+    if (!includeArchived && isNodeArchived(node)) {
+      continue;
+    }
+
     // Add to nodes array
     result.nodes.push(node);
 
@@ -191,6 +235,17 @@ export async function loadMemory(baseDir: string): Promise<IndexedMemory> {
   }
 
   return result;
+}
+
+/**
+ * Loads all memory including archived nodes.
+ * Convenience function for operations that need to see all nodes.
+ *
+ * @param baseDir - Directory containing memory.jsonl
+ * @returns Indexed memory nodes including archived
+ */
+export async function loadMemoryAll(baseDir: string): Promise<IndexedMemory> {
+  return loadMemory(baseDir, { includeArchived: true });
 }
 
 /**
@@ -252,9 +307,18 @@ export async function appendNode(baseDir: string, node: MemoryNode): Promise<Mem
  * for (const node of ready) {
  *   await processNode(node);
  * }
+ *
+ * @example
+ * // WU-1238: Include archived nodes
+ * const all = await queryReady('/path/to/project', 'WU-1463', { includeArchived: true });
  */
-export async function queryReady(baseDir: string, wuId: string): Promise<MemoryNode[]> {
-  const memory = await loadMemory(baseDir);
+export async function queryReady(
+  baseDir: string,
+  wuId: string,
+  options: MemoryQueryOptions = {},
+): Promise<MemoryNode[]> {
+  const { includeArchived = false } = options;
+  const memory = await loadMemory(baseDir, { includeArchived });
 
   // Get nodes for this WU
   const wuNodes = memory.byWu.get(wuId) ?? [];
@@ -276,8 +340,17 @@ export async function queryReady(baseDir: string, wuId: string): Promise<MemoryN
  * @example
  * const nodes = await queryByWu('/path/to/project', 'WU-1463');
  * console.log(`Found ${nodes.length} nodes for WU-1463`);
+ *
+ * @example
+ * // WU-1238: Include archived nodes
+ * const all = await queryByWu('/path/to/project', 'WU-1463', { includeArchived: true });
  */
-export async function queryByWu(baseDir: string, wuId: string): Promise<MemoryNode[]> {
-  const memory = await loadMemory(baseDir);
+export async function queryByWu(
+  baseDir: string,
+  wuId: string,
+  options: MemoryQueryOptions = {},
+): Promise<MemoryNode[]> {
+  const { includeArchived = false } = options;
+  const memory = await loadMemory(baseDir, { includeArchived });
   return memory.byWu.get(wuId) ?? [];
 }
