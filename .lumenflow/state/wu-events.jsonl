@@ -519,4 +519,5 @@
 {"type":"claim","wuId":"WU-1292","timestamp":"2026-01-31T22:01:56.545Z","lane":"Framework: CLI","title":"Expose mem:context CLI options for lane and limits"}
 {"type":"complete","wuId":"WU-1292","timestamp":"2026-01-31T22:13:03.031Z"}
 {"type":"complete","wuId":"WU-1287","timestamp":"2026-01-31T22:13:44.427Z"}
-{"type":"claim","wuId":"WU-1289","lane":"Framework: Core","title":"Add spawn_context_max_size to config schema","timestamp":"2026-01-31T22:30:32.692Z"}
+{"type":"claim","wuId":"WU-1289","timestamp":"2026-01-31T22:30:32.692Z","lane":"Framework: Core","title":"Add spawn_context_max_size to config schema"}
+{"type":"complete","wuId":"WU-1289","timestamp":"2026-01-31T22:39:16.205Z"}

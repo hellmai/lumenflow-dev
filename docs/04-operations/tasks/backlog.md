@@ -49,7 +49,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -309,3 +308,4 @@ sections:
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml)
 - [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml)
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml)
+- [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml)
