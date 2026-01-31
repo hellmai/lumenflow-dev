@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — Framework: Core
 - [WU-1279 — Wire methodology policy into spawn prompt generation](wu/WU-1279.yaml) — Framework: Core
 - [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
