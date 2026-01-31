@@ -22,6 +22,7 @@ import type { MemoryNode } from '../src/memory-schema.js';
 
 import { deleteMemoryNodes } from '../src/mem-delete-core.js';
 import { loadMemory, MEMORY_FILE_NAME } from '../src/memory-store.js';
+import { LUMENFLOW_MEMORY_PATHS } from '../src/paths.js';
 
 /**
  * Error message constants for assertions
@@ -100,11 +101,15 @@ async function writeJsonlFile(filePath: string, nodes: MemoryNode[]): Promise<vo
 
 describe('mem-delete-core', () => {
   let tempDir: string;
+  let memoryDir: string;
   let memoryFilePath: string;
 
   beforeEach(async () => {
+    // Create project-like directory structure with .lumenflow/memory/
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'mem-delete-test-'));
-    memoryFilePath = path.join(tempDir, MEMORY_FILE_NAME);
+    memoryDir = path.join(tempDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
+    await fs.mkdir(memoryDir, { recursive: true });
+    memoryFilePath = path.join(memoryDir, MEMORY_FILE_NAME);
   });
 
   afterEach(async () => {
@@ -131,7 +136,7 @@ describe('mem-delete-core', () => {
         expect(result.dryRun).toBe(false);
 
         // Verify node is marked as deleted (soft delete via metadata.status)
-        const memory = await loadMemory(tempDir, { includeArchived: true });
+        const memory = await loadMemory(memoryDir, { includeArchived: true });
         const deletedNode = memory.byId.get('mem-del1');
         expect(deletedNode?.metadata?.status).toBe('deleted');
       });
@@ -213,7 +218,7 @@ describe('mem-delete-core', () => {
         expect(result.dryRun).toBe(true);
 
         // Verify node is NOT modified
-        const memory = await loadMemory(tempDir);
+        const memory = await loadMemory(memoryDir);
         const node = memory.byId.get('mem-del1');
         expect(node?.metadata?.status).not.toBe('deleted');
       });
@@ -234,7 +239,7 @@ describe('mem-delete-core', () => {
         expect(result.dryRun).toBe(true);
 
         // Verify nodes are NOT modified
-        const memory = await loadMemory(tempDir);
+        const memory = await loadMemory(memoryDir);
         expect(memory.byId.get('mem-del1')?.metadata?.status).not.toBe('deleted');
         expect(memory.byId.get('mem-del3')?.metadata?.status).not.toBe('deleted');
       });
@@ -255,7 +260,7 @@ describe('mem-delete-core', () => {
         expect(result.deletedIds).toContain('mem-del2');
 
         // Verify nodes are marked as deleted
-        const memory = await loadMemory(tempDir, { includeArchived: true });
+        const memory = await loadMemory(memoryDir, { includeArchived: true });
         expect(memory.byId.get('mem-del1')?.metadata?.status).toBe('deleted');
         expect(memory.byId.get('mem-del2')?.metadata?.status).toBe('deleted');
         // Non-matching nodes should be unchanged
@@ -412,7 +417,7 @@ describe('mem-delete-core', () => {
           nodeIds: ['mem-del1'],
         });
 
-        const memory = await loadMemory(tempDir, { includeArchived: true });
+        const memory = await loadMemory(memoryDir, { includeArchived: true });
         const deletedNode = memory.byId.get('mem-del1');
 
         // Original fields should be preserved
