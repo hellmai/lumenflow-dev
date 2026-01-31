@@ -48,7 +48,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
-- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -296,3 +295,4 @@ sections:
 - [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml)
 - [WU-1279 — Wire methodology policy into spawn prompt generation](wu/WU-1279.yaml)
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml)
+- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml)

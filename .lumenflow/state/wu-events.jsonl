@@ -495,5 +495,6 @@
 {"type":"complete","wuId":"WU-1278","timestamp":"2026-01-31T14:27:58.792Z"}
 {"type":"complete","wuId":"WU-1279","timestamp":"2026-01-31T14:28:15.063Z"}
 {"type":"complete","wuId":"WU-1237","timestamp":"2026-01-31T14:36:44.654Z"}
-{"type":"claim","wuId":"WU-1238","lane":"Framework: Memory","title":"Add access tracking and decay scoring to memory layer","timestamp":"2026-01-31T15:36:34.171Z"}
-{"type":"claim","wuId":"WU-1280","lane":"Framework: Core","title":"Gates should consume tests_required from resolved policy","timestamp":"2026-01-31T15:37:52.007Z"}
+{"type":"claim","wuId":"WU-1238","timestamp":"2026-01-31T15:36:34.171Z","lane":"Framework: Memory","title":"Add access tracking and decay scoring to memory layer"}
+{"type":"claim","wuId":"WU-1280","timestamp":"2026-01-31T15:37:52.007Z","lane":"Framework: Core","title":"Gates should consume tests_required from resolved policy"}
+{"type":"complete","wuId":"WU-1280","timestamp":"2026-01-31T15:47:17.529Z"}
