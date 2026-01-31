@@ -7,7 +7,6 @@ priority: P2
 created: 2026-01-31
 code_paths:
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/memory/src/mem-context-core.ts
   - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
 tests:
   manual: []
