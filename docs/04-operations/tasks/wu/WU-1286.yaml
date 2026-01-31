@@ -2,7 +2,7 @@ id: WU-1286
 title: Make --full default for lumenflow init and sync all CLI commands to docs
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -48,3 +48,5 @@ session_id: e5470cf6-6b1c-4d77-8d83-6c10ecc02d14
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T17:26:48.146Z
+locked: true
+completed_at: 2026-01-31T17:35:13.044Z

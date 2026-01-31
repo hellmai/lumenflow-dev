@@ -54,7 +54,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -308,3 +307,4 @@ sections:
 - [WU-1283 — Fix agent documentation loading - inline tooling in entry points](wu/WU-1283.yaml)
 - [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml)
 - [WU-1285 — Fix mem:delete path calculation bug](wu/WU-1285.yaml)
+- [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml)
