@@ -2,7 +2,7 @@ id: WU-1241
 title: Wire CLI orchestrate:monitor to spawn-monitor APIs
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-30
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - Unit tests verify API wiring and status formatting
   - Integration test confirms stuck detection works
   - Documentation updated
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1241
+claimed_at: 2026-01-31T10:28:56.357Z
+baseline_main_sha: e843aaf2556a245f22ade8edec12b9e729b1453f
+session_id: 355e1c8c-e7de-4a14-a421-c11ad59b7080
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T10:28:56.362Z
