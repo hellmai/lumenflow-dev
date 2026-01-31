@@ -7,8 +7,6 @@ priority: P2
 created: 2026-01-31
 code_paths:
   - packages/@lumenflow/cli/src/mem-delete.ts
-  - packages/@lumenflow/memory/src/memory-store.ts
-  - packages/@lumenflow/cli/src/mem-delete.ts
   - packages/@lumenflow/memory/src/mem-delete-core.ts
 tests:
   manual: []
