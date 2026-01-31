@@ -1,21 +1,27 @@
 /**
- * Memory Context Integration for wu:spawn (WU-1240)
+ * Memory Context Integration for wu:spawn (WU-1240, WU-1287)
  *
- * Integrates mem:context functionality into wu:spawn prompts.
- * When memory.jsonl exists and contains relevant context, the spawn
- * prompt automatically includes a Memory Context section.
+ * Thin wrapper that delegates to @lumenflow/memory's generateContext function.
+ * Provides spawn-specific formatting (## Memory Context header) while leveraging
+ * the full feature set of mem-context-core (lane filter, recency, decay).
+ *
+ * WU-1287: Refactored to eliminate duplicate logic. Now delegates to
+ * mem-context-core.generateContext for all memory context generation,
+ * ensuring spawn prompts benefit from lane filtering, recency limits,
+ * and decay/prioritization features.
  *
  * Features:
  * - Detects memory layer initialization (memory.jsonl existence)
- * - Generates Memory Context section from memory nodes
- * - Configurable max context size (default 4KB)
- * - Graceful skip when memory not initialized
+ * - Delegates to mem-context-core for context generation
+ * - Respects lane filter, recency limits, decay/prioritization from mem-context-core
+ * - Configurable max context size (default 4KB, from .lumenflow.config.yaml)
+ * - Graceful skip when memory not initialized or @lumenflow/memory unavailable
  * - No LLM calls (vendor-agnostic)
  *
  * @see {@link packages/@lumenflow/memory/src/mem-context-core.ts} - Core context generation
  */
 
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import type { LumenFlowConfig } from './lumenflow-config-schema.js';
 
@@ -43,23 +49,18 @@ export const MEMORY_CONTEXT_SECTION_HEADER = '## Memory Context';
 export interface GenerateMemoryContextOptions {
   /** WU ID to filter context for */
   wuId: string;
-  /** Lane to filter context for */
+  /** Lane to filter context for (WU-1281: enables lane-specific filtering) */
   lane?: string;
   /** Maximum size of context block in bytes (default: 4096) */
   maxSize?: number;
-}
-
-/**
- * Memory node structure (simplified from @lumenflow/memory)
- */
-interface MemoryNode {
-  id: string;
-  type: string;
-  lifecycle: string;
-  content: string;
-  created_at: string;
-  wu_id?: string;
-  tags?: string[];
+  /** WU-1238: Sort by decay score instead of recency (default: false) */
+  sortByDecay?: boolean;
+  /** WU-1238: Track access for included nodes (default: false) */
+  trackAccess?: boolean;
+  /** WU-1281: Maximum number of recent summaries to include (default: 5) */
+  maxRecentSummaries?: number;
+  /** WU-1281: Maximum number of project nodes to include (default: 10) */
+  maxProjectNodes?: number;
 }
 
 /**
@@ -101,130 +102,121 @@ export function getMemoryContextMaxSize(config: Partial<LumenFlowConfig>): numbe
 }
 
 /**
- * Loads memory nodes from memory.jsonl file.
+ * Type for the generateContext function from @lumenflow/memory
+ */
+interface GenerateContextResult {
+  success: boolean;
+  contextBlock: string;
+  stats: {
+    totalNodes: number;
+    byType: Record<string, number>;
+    truncated: boolean;
+    size: number;
+    accessTracked?: number;
+  };
+}
+
+/**
+ * Type for the generateContext options from @lumenflow/memory
+ */
+interface MemContextCoreOptions {
+  wuId: string;
+  maxSize?: number;
+  sortByDecay?: boolean;
+  trackAccess?: boolean;
+  lane?: string;
+  maxRecentSummaries?: number;
+  maxProjectNodes?: number;
+}
+
+/**
+ * Dynamically imports and calls generateContext from @lumenflow/memory.
  *
- * @param memoryFilePath - Path to memory.jsonl
- * @returns Array of memory nodes
+ * @param baseDir - Project root directory
+ * @param options - Generation options
+ * @returns Result from mem-context-core.generateContext, or null if unavailable
  */
-function loadMemoryNodes(memoryFilePath: string): MemoryNode[] {
-  const content = readFileSync(memoryFilePath, 'utf-8');
-  const lines = content.split('\n').filter((line) => line.trim().length > 0);
-
-  const nodes: MemoryNode[] = [];
-  for (const line of lines) {
-    try {
-      const node = JSON.parse(line) as MemoryNode;
-      nodes.push(node);
-    } catch {
-      // Skip malformed lines
-    }
+async function callMemContextCore(
+  baseDir: string,
+  options: MemContextCoreOptions,
+): Promise<GenerateContextResult | null> {
+  try {
+    // Dynamic import of optional peer dependency
+    const memModule = await import('@lumenflow/memory');
+    const { generateContext } = memModule as {
+      generateContext: (
+        baseDir: string,
+        options: MemContextCoreOptions,
+      ) => Promise<GenerateContextResult>;
+    };
+    return await generateContext(baseDir, options);
+  } catch {
+    // @lumenflow/memory not available - return null for graceful degradation
+    return null;
   }
-
-  return nodes;
 }
 
 /**
- * Filters nodes by lifecycle
+ * Converts mem-context-core output format to spawn prompt format.
+ *
+ * mem-context-core uses "## Section" headers, but spawn prompts expect
+ * "### Section" for subsections under "## Memory Context".
+ *
+ * @param contextBlock - Raw context block from mem-context-core
+ * @param wuId - WU ID for the intro line
+ * @returns Formatted context with spawn-specific header structure
  */
-function filterByLifecycle(nodes: MemoryNode[], lifecycle: string): MemoryNode[] {
-  return nodes.filter((node) => node.lifecycle === lifecycle);
-}
-
-/**
- * Filters nodes by WU ID
- */
-function filterByWuId(nodes: MemoryNode[], wuId: string): MemoryNode[] {
-  return nodes.filter((node) => node.wu_id === wuId);
-}
-
-/**
- * Sorts nodes by recency (most recent first)
- */
-function sortByRecency(nodes: MemoryNode[]): MemoryNode[] {
-  return [...nodes].sort((a, b) => {
-    const aTime = new Date(a.created_at).getTime();
-    const bTime = new Date(b.created_at).getTime();
-    if (aTime !== bTime) {
-      return bTime - aTime;
-    }
-    return a.id.localeCompare(b.id);
-  });
-}
-
-/**
- * Formats a single node for display
- */
-function formatNode(node: MemoryNode): string {
-  const timestamp = new Date(node.created_at).toISOString().split('T')[0];
-  return `- [${node.id}] (${timestamp}): ${node.content}`;
-}
-
-/**
- * Formats a section with header and nodes
- */
-function formatSection(header: string, nodes: MemoryNode[]): string {
-  if (nodes.length === 0) {
+function formatForSpawnPrompt(contextBlock: string, wuId: string): string {
+  if (!contextBlock || contextBlock.trim() === '') {
     return '';
   }
 
-  const lines = [header, ''];
-  for (const node of nodes) {
-    lines.push(formatNode(node));
-  }
-  lines.push('');
+  // Remove the mem:context header comment if present
+  let content = contextBlock.replace(/^<!--\s*mem:context[^>]*-->\s*\n*/m, '');
 
-  return lines.join('\n');
-}
+  // Convert ## headers to ### for subsection nesting under ## Memory Context
+  content = content.replace(/^## /gm, '### ');
 
-/**
- * Truncates content to fit within max size
- */
-function truncateToSize(content: string, maxSize: number): string {
-  if (content.length <= maxSize) {
-    return content;
-  }
+  // Build the full Memory Context section with spawn-specific formatting
+  const header = `${MEMORY_CONTEXT_SECTION_HEADER}\n\n`;
+  const intro = `Prior context from memory layer for ${wuId}:\n\n`;
 
-  const lines = content.split('\n');
-  let currentSize = 0;
-  const truncatedLines: string[] = [];
-
-  for (const line of lines) {
-    const lineSize = line.length + 1;
-    if (currentSize + lineSize > maxSize - 50) {
-      // Leave room for truncation marker
-      truncatedLines.push('');
-      truncatedLines.push('<!-- context truncated - exceeded max size -->');
-      break;
-    }
-    truncatedLines.push(line);
-    currentSize += lineSize;
-  }
-
-  return truncatedLines.join('\n');
+  return header + intro + content.trim() + '\n';
 }
 
 /**
  * Generates the Memory Context section for wu:spawn prompts.
  *
- * Collects relevant memory nodes and formats them into a structured
- * markdown section suitable for embedding in spawn prompts.
+ * WU-1287: Delegates to mem-context-core.generateContext for all context
+ * generation logic, ensuring spawn prompts benefit from:
+ * - Lane filtering (WU-1281)
+ * - Recency limits (WU-1281)
+ * - Decay-based prioritization (WU-1238)
+ * - WU-specific content prioritization (WU-1281)
  *
- * Context includes:
- * 1. Project profile items (lifecycle=project memories)
- * 2. WU-specific context (checkpoints, notes matching wu_id)
+ * Context includes (via mem-context-core):
+ * 1. WU-specific context (checkpoints, notes matching wu_id) - high priority
+ * 2. Summaries relevant to the WU
  * 3. Discoveries related to the WU
+ * 4. Project profile items (lifecycle=project memories) - lower priority, may be truncated
  *
  * @param baseDir - Project root directory
- * @param options - Generation options (wuId, lane, maxSize)
+ * @param options - Generation options (wuId, lane, maxSize, etc.)
  * @returns Formatted Memory Context section, or empty string if no context
  */
 export async function generateMemoryContextSection(
   baseDir: string,
   options: GenerateMemoryContextOptions,
 ): Promise<string> {
-  const { wuId, maxSize = DEFAULT_MAX_SIZE } = options;
-
-  const memoryFilePath = path.join(baseDir, MEMORY_PATHS.MEMORY_DIR, MEMORY_PATHS.MEMORY_FILE);
+  const {
+    wuId,
+    lane,
+    maxSize = DEFAULT_MAX_SIZE,
+    sortByDecay = false,
+    trackAccess = false,
+    maxRecentSummaries,
+    maxProjectNodes,
+  } = options;
 
   // Check if memory layer is initialized
   const isInitialized = await checkMemoryLayerInitialized(baseDir);
@@ -232,67 +224,27 @@ export async function generateMemoryContextSection(
     return '';
   }
 
-  // Load memory nodes
-  let allNodes: MemoryNode[];
-  try {
-    allNodes = loadMemoryNodes(memoryFilePath);
-  } catch {
+  // Delegate to mem-context-core.generateContext
+  const result = await callMemContextCore(baseDir, {
+    wuId,
+    maxSize,
+    sortByDecay,
+    trackAccess,
+    lane,
+    maxRecentSummaries,
+    maxProjectNodes,
+  });
+
+  // Graceful degradation if @lumenflow/memory is not available
+  if (!result) {
     return '';
   }
 
-  if (allNodes.length === 0) {
+  // If no context was generated, return empty
+  if (!result.success || result.stats.totalNodes === 0) {
     return '';
   }
 
-  // Collect nodes for each section
-  // 1. Project profile: lifecycle=project
-  const projectNodes = sortByRecency(filterByLifecycle(allNodes, 'project'));
-
-  // 2. WU context: wu_id match, not discovery type
-  const wuNodes = filterByWuId(allNodes, wuId);
-  const wuContextNodes = sortByRecency(
-    wuNodes.filter((node) => node.type !== 'discovery' && node.type !== 'summary'),
-  );
-
-  // 3. Summaries: type=summary, wu_id match
-  const summaryNodes = sortByRecency(wuNodes.filter((node) => node.type === 'summary'));
-
-  // 4. Discoveries: type=discovery, wu_id match
-  const discoveryNodes = sortByRecency(wuNodes.filter((node) => node.type === 'discovery'));
-
-  // Build the content sections
-  const sections: string[] = [];
-
-  const projectSection = formatSection('### Project Profile', projectNodes);
-  if (projectSection) {
-    sections.push(projectSection);
-  }
-
-  const summarySection = formatSection('### Summaries', summaryNodes);
-  if (summarySection) {
-    sections.push(summarySection);
-  }
-
-  const wuContextSection = formatSection('### WU Context', wuContextNodes);
-  if (wuContextSection) {
-    sections.push(wuContextSection);
-  }
-
-  const discoverySection = formatSection('### Discoveries', discoveryNodes);
-  if (discoverySection) {
-    sections.push(discoverySection);
-  }
-
-  // If no sections have content, return empty
-  if (sections.length === 0) {
-    return '';
-  }
-
-  // Build the full Memory Context section
-  const header = `${MEMORY_CONTEXT_SECTION_HEADER}\n\n`;
-  const intro = `Prior context from memory layer for ${wuId}:\n\n`;
-  const content = header + intro + sections.join('');
-
-  // Apply size limit
-  return truncateToSize(content, maxSize);
+  // Format for spawn prompt
+  return formatForSpawnPrompt(result.contextBlock, wuId);
 }
