@@ -26,6 +26,11 @@ success_metrics:
   - Hook inheritance bug fixed for Task-spawned sub-agents
   - mem:delete available for memory cleanup
 labels: []
+notes: |
+  Bookkeeping verified (WU-1293):
+  - Duplicate snag records (mem-0d78, mem-0cae, mem-987f, mem-c8c7, mem-e6aa) archived with status=deleted
+  - WU list covers all active snags from spawn integration review
+  - related_plan reference removed (plan file was never created)
 wus:
   - WU-1282
   - WU-1284
