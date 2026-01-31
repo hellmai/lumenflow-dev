@@ -1,5 +1,5 @@
 /**
- * WU-1240: Tests for integrating mem:context into wu:spawn prompts
+ * WU-1240, WU-1287: Tests for integrating mem:context into wu:spawn prompts
  *
  * Acceptance Criteria:
  * 1. wu:spawn detects memory.jsonl existence
@@ -10,6 +10,11 @@
  * 6. --no-context flag allows skipping context injection
  * 7. Unit tests verify integration logic
  * 8. Integration test confirms spawned agent receives context
+ *
+ * WU-1287 updates:
+ * - wu:spawn memory context now delegates to mem-context-core.generateContext
+ * - Memory nodes must use valid IDs matching pattern: mem-[a-z0-9]{4}
+ * - Spawn context respects lane filter, recency limits, and decay/prioritization
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -24,6 +29,7 @@ import {
   getMemoryContextMaxSize,
 } from '../wu-spawn-context.js';
 import { generateTaskInvocation } from '../wu-spawn.js';
+// eslint-disable-next-line sonarjs/deprecation -- SpawnStrategyFactory is still used in production
 import { SpawnStrategyFactory } from '../spawn-strategy.js';
 
 // Constants for test values
@@ -32,11 +38,24 @@ const TEST_LANE = 'Framework: Core';
 const MEMORY_CONTEXT_SECTION_HEADER = '## Memory Context';
 const DEFAULT_MAX_SIZE = 4096;
 
+// WU-1287: Constants for duplicate string elimination (sonarjs/no-duplicate-string)
+const TEST_DESCRIPTION = 'Test description';
+const TEST_TITLE = 'Test WU';
+const TEST_CLIENT = 'claude-code';
+const TEST_CODE_PATH = 'packages/@lumenflow/core/src/test.ts';
+
 describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
   let testDir: string;
   let memoryDir: string;
 
+  /**
+   * Counter for generating unique memory node IDs
+   */
+  let nodeIdCounter = 0;
+
   beforeEach(async () => {
+    // Reset node ID counter for test isolation
+    nodeIdCounter = 0;
     // Create a temporary directory for tests
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wu-spawn-context-test-'));
     memoryDir = path.join(testDir, '.lumenflow', 'memory');
@@ -59,19 +78,61 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
   }
 
   /**
-   * Helper to create a standard memory node
+   * Helper to generate a valid memory node ID.
+   * Format: mem-[a-z0-9]{4} (e.g., mem-ab01)
+   *
+   * WU-1287: Updated to use valid schema-compliant IDs.
+   */
+  function generateValidMemoryId(): string {
+    const counter = nodeIdCounter++;
+    // Convert counter to base36 and pad to 4 chars
+    const base36 = counter.toString(36).padStart(4, '0').slice(-4);
+    return `mem-${base36}`;
+  }
+
+  /**
+   * Helper to create a standard memory node.
+   *
+   * WU-1287: Updated to generate valid memory node IDs that match
+   * the mem-context-core schema pattern: mem-[a-z0-9]{4}
    */
   function createMemoryNode(
     overrides: Partial<Record<string, unknown>> = {},
   ): Record<string, unknown> {
     return {
-      id: `mem-${Date.now().toString(36)}`,
+      id: generateValidMemoryId(),
       type: 'note',
       lifecycle: 'wu',
       content: 'Test content',
       created_at: new Date().toISOString(),
       ...overrides,
     };
+  }
+
+  /**
+   * Helper to create a mock WU document for tests
+   */
+  function createMockWUDoc(
+    overrides: Partial<Record<string, unknown>> = {},
+  ): Record<string, unknown> {
+    return {
+      title: TEST_TITLE,
+      lane: TEST_LANE,
+      type: 'feature',
+      status: 'in_progress',
+      description: TEST_DESCRIPTION,
+      acceptance: ['AC1', 'AC2'],
+      code_paths: [TEST_CODE_PATH],
+      ...overrides,
+    };
+  }
+
+  /**
+   * Helper to create a spawn strategy
+   */
+  function createStrategy() {
+    // eslint-disable-next-line sonarjs/deprecation -- SpawnStrategyFactory is still used in production
+    return SpawnStrategyFactory.create(TEST_CLIENT);
   }
 
   describe('AC1: wu:spawn detects memory.jsonl existence', () => {
@@ -200,17 +261,8 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
         lane: TEST_LANE,
       });
 
-      const mockWUDoc = {
-        title: 'Test WU',
-        lane: TEST_LANE,
-        type: 'feature',
-        status: 'in_progress',
-        description: 'Test description',
-        acceptance: ['AC1', 'AC2'],
-        code_paths: ['packages/@lumenflow/core/src/test.ts'],
-      };
-
-      const strategy = SpawnStrategyFactory.create('claude-code');
+      const mockWUDoc = createMockWUDoc();
+      const strategy = createStrategy();
 
       // Act
       const output = generateTaskInvocation(mockWUDoc, TEST_WU_ID, strategy, {
@@ -338,17 +390,8 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
         lane: TEST_LANE,
       });
 
-      const mockWUDoc = {
-        title: 'Test WU',
-        lane: TEST_LANE,
-        type: 'feature',
-        status: 'in_progress',
-        description: 'Test description',
-        acceptance: ['AC1', 'AC2'],
-        code_paths: ['packages/@lumenflow/core/src/test.ts'],
-      };
-
-      const strategy = SpawnStrategyFactory.create('claude-code');
+      const mockWUDoc = createMockWUDoc();
+      const strategy = createStrategy();
 
       // Act - with noContext: true, memory context should be skipped
       const output = generateTaskInvocation(mockWUDoc, TEST_WU_ID, strategy, {
@@ -379,17 +422,8 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
         lane: TEST_LANE,
       });
 
-      const mockWUDoc = {
-        title: 'Test WU',
-        lane: TEST_LANE,
-        type: 'feature',
-        status: 'in_progress',
-        description: 'Test description',
-        acceptance: ['AC1', 'AC2'],
-        code_paths: ['packages/@lumenflow/core/src/test.ts'],
-      };
-
-      const strategy = SpawnStrategyFactory.create('claude-code');
+      const mockWUDoc = createMockWUDoc();
+      const strategy = createStrategy();
 
       // Act
       const output = generateTaskInvocation(mockWUDoc, TEST_WU_ID, strategy, {
@@ -420,17 +454,8 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
         lane: TEST_LANE,
       });
 
-      const mockWUDoc = {
-        title: 'Test WU',
-        lane: TEST_LANE,
-        type: 'feature',
-        status: 'in_progress',
-        description: 'Test description',
-        acceptance: ['AC1'],
-        code_paths: ['packages/@lumenflow/core/src/test.ts'],
-      };
-
-      const strategy = SpawnStrategyFactory.create('claude-code');
+      const mockWUDoc = createMockWUDoc({ acceptance: ['AC1'] });
+      const strategy = createStrategy();
 
       // Act
       const output = generateTaskInvocation(mockWUDoc, TEST_WU_ID, strategy, {
@@ -474,6 +499,194 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
 
       // Assert - should include project-level context
       expect(result).toContain('hexagonal pattern');
+    });
+  });
+
+  /**
+   * WU-1287: Tests for spawn context using mem-context-core features
+   */
+  describe('WU-1287: Spawn context aligns with mem-context-core', () => {
+    it('should respect lane filter from mem-context-core', async () => {
+      // Arrange - create project memories with different lanes
+      const OTHER_LANE = 'Framework: CLI';
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'note',
+          lifecycle: 'project',
+          content: 'Framework Core knowledge',
+          metadata: { lane: TEST_LANE },
+        }),
+      );
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'note',
+          lifecycle: 'project',
+          content: 'Framework CLI knowledge',
+          metadata: { lane: OTHER_LANE },
+        }),
+      );
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'note',
+          lifecycle: 'project',
+          content: 'General project knowledge with no lane',
+        }),
+      );
+
+      // Act - filter by Framework: Core lane
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+        lane: TEST_LANE,
+      });
+
+      // Assert - should include Core lane and no-lane nodes, exclude CLI lane
+      expect(result).toContain('Framework Core knowledge');
+      expect(result).toContain('General project knowledge');
+      expect(result).not.toContain('Framework CLI knowledge');
+    });
+
+    it('should support maxRecentSummaries limit from mem-context-core', async () => {
+      // Arrange - create multiple summaries
+      for (let i = 0; i < 10; i++) {
+        await writeMemoryNode(
+          createMemoryNode({
+            type: 'summary',
+            lifecycle: 'wu',
+            content: `Summary number ${i}`,
+            wu_id: TEST_WU_ID,
+            created_at: new Date(Date.UTC(2025, 0, i + 1)).toISOString(),
+          }),
+        );
+      }
+
+      // Act - limit to 3 recent summaries
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+        maxRecentSummaries: 3,
+      });
+
+      // Assert - should include only 3 most recent (days 8, 9, 10 = summary 7, 8, 9)
+      expect(result).toContain('Summary number 9');
+      expect(result).toContain('Summary number 8');
+      expect(result).toContain('Summary number 7');
+      expect(result).not.toContain('Summary number 0');
+      expect(result).not.toContain('Summary number 6');
+    });
+
+    it('should support maxProjectNodes limit from mem-context-core', async () => {
+      // Arrange - create many project memories
+      for (let i = 0; i < 15; i++) {
+        await writeMemoryNode(
+          createMemoryNode({
+            type: 'note',
+            lifecycle: 'project',
+            content: `Project memory ${i}`,
+            created_at: new Date(Date.UTC(2025, 0, i + 1)).toISOString(),
+          }),
+        );
+      }
+
+      // Act - limit to 5 project nodes
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+        maxProjectNodes: 5,
+      });
+
+      // Assert - should include only 5 most recent project memories
+      expect(result).toContain('Project memory 14');
+      expect(result).toContain('Project memory 13');
+      expect(result).not.toContain('Project memory 0');
+      expect(result).not.toContain('Project memory 9');
+    });
+
+    it('should prioritize WU-specific content over project content (WU-1281)', async () => {
+      // Arrange - create WU-specific and project content
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Critical WU checkpoint',
+          wu_id: TEST_WU_ID,
+        }),
+      );
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'discovery',
+          lifecycle: 'wu',
+          content: 'Important WU discovery',
+          wu_id: TEST_WU_ID,
+        }),
+      );
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'note',
+          lifecycle: 'project',
+          content: 'Project level note',
+        }),
+      );
+
+      // Act
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+      });
+
+      // Assert - WU content should appear before project content
+      const wuIndex = result.indexOf('Critical WU checkpoint');
+      const projectIndex = result.indexOf('Project level note');
+
+      expect(wuIndex).toBeGreaterThan(-1);
+      expect(projectIndex).toBeGreaterThan(-1);
+      expect(wuIndex).toBeLessThan(projectIndex);
+    });
+
+    it('should format with ## Memory Context header and ### subsection headers', async () => {
+      // Arrange
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Test checkpoint',
+          wu_id: TEST_WU_ID,
+        }),
+      );
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'note',
+          lifecycle: 'project',
+          content: 'Test project note',
+        }),
+      );
+
+      // Act
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+      });
+
+      // Assert - should use spawn-specific formatting
+      expect(result).toContain('## Memory Context');
+      expect(result).toContain('Prior context from memory layer for');
+      expect(result).toContain('### WU Context');
+      expect(result).toContain('### Project Profile');
+    });
+
+    it('should return empty string when @lumenflow/memory generates no context', async () => {
+      // Arrange - create memory for a different WU
+      await writeMemoryNode(
+        createMemoryNode({
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Other WU content',
+          wu_id: 'WU-9999',
+        }),
+      );
+
+      // Act - query for a WU with no content
+      const result = await generateMemoryContextSection(testDir, {
+        wuId: TEST_WU_ID,
+      });
+
+      // Assert - should return empty when no matching content
+      expect(result).toBe('');
     });
   });
 });
