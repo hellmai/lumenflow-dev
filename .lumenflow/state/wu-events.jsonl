@@ -494,3 +494,4 @@
 {"type":"claim","wuId":"WU-1279","timestamp":"2026-01-31T14:15:12.384Z","lane":"Framework: Core","title":"Wire methodology policy into spawn prompt generation"}
 {"type":"complete","wuId":"WU-1278","timestamp":"2026-01-31T14:27:58.792Z"}
 {"type":"complete","wuId":"WU-1279","timestamp":"2026-01-31T14:28:15.063Z"}
+{"type":"complete","wuId":"WU-1237","timestamp":"2026-01-31T14:36:44.654Z"}

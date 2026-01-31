@@ -2,7 +2,7 @@ id: WU-1237
 title: Add mem:promote and mem:profile for project knowledge management
 lane: 'Framework: Memory'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -62,3 +62,5 @@ session_id: a285b8f7-5877-4bd8-9db5-ee027ed3e4ff
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T14:14:23.643Z
+locked: true
+completed_at: 2026-01-31T14:36:43.022Z
