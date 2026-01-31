@@ -26,8 +26,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Task-spawned sub-agents via Task tool do not inherit PreToolUse hooks from parent session. The validate-worktree-path.sh hook did not run for a spawned agent, allowing it to write to main repo (cli.mdx) while worktrees existed. This is a security gap - agents can bypass safety hooks by spawning sub-agents. Discovered during INIT-008 Wave 0 execution.
+description: Task-spawned sub-agents via Task tool do not inherit PreToolUse hooks from parent
+  session. The validate-worktree-path.sh hook did not run for a spawned agent, allowing it to write
+  to main repo (cli.mdx) while worktrees existed. This is a security gap - agents can bypass safety
+  hooks by spawning sub-agents. Discovered during INIT-008 Wave 0 execution.
 acceptance:
   - Investigate why hooks don't propagate to Task-spawned agents
   - Document root cause and propose fix
   - Implement fix to ensure hooks run in sub-agents
+initiative: INIT-012

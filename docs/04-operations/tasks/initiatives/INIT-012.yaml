@@ -26,4 +26,5 @@ success_metrics:
   - Hook inheritance bug fixed for Task-spawned sub-agents
   - mem:delete available for memory cleanup
 labels: []
-related_plan: lumenflow://plans/INIT-012-spawn-integration-hardening.md
+wus:
+  - WU-1282
