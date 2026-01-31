@@ -228,7 +228,10 @@ function indexNodeByWu(result: IndexedMemory, node: MemoryNode): void {
   if (!result.byWu.has(node.wu_id)) {
     result.byWu.set(node.wu_id, []);
   }
-  result.byWu.get(node.wu_id)!.push(node);
+  const wuNodes = result.byWu.get(node.wu_id);
+  if (wuNodes) {
+    wuNodes.push(node);
+  }
 }
 
 /**
