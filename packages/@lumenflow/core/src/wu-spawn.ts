@@ -997,6 +997,14 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
    - If failure exists on main (not your change), use: \`pnpm wu:done --id ${id} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX\`
    - Do NOT ask for approval - autonomous skip-gates for pre-existing failures is correct
    - This prevents getting stuck on infrastructure debt
+
+9. WORKTREE DISCIPLINE (WU-1282)
+   - CRITICAL: PreToolUse hooks do not propagate to sub-agents spawned via Task tool
+   - BEFORE any Write/Edit operation, manually verify you are in a worktree:
+   - Run: \`pwd\` and confirm output contains \`worktrees/\`
+   - If not in worktree, STOP and navigate: \`cd worktrees/<lane>-wu-xxx\`
+   - Use RELATIVE paths only (never full absolute paths starting with root directory)
+   - This constraint exists because Claude Code does not inherit settings.json hooks in sub-agent sessions
 </constraints>
 
 ${SPAWN_END_SENTINEL}`;
@@ -1010,7 +1018,8 @@ function generateCodexConstraints(id) {
 3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
 5. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
-6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\``;
+6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
+7. **Worktree discipline (WU-1282)**: BEFORE any Write/Edit, verify \`pwd\` shows \`worktrees/\`; hooks do not propagate to sub-agents`;
 }
 
 /**

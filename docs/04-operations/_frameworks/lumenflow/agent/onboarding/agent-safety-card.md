@@ -219,6 +219,45 @@ The command still proceeds, but "NO_REASON" is logged.
 
 ---
 
+## Task Tool Hook Limitation (WU-1282)
+
+**Critical**: Claude Code's Task tool spawns sub-agents in a new session that does NOT inherit PreToolUse hooks from `.claude/settings.json`.
+
+### What This Means
+
+When you spawn a sub-agent via Task tool:
+
+- The sub-agent runs in a fresh context
+- PreToolUse hooks (like `validate-worktree-path.sh`) do NOT run
+- Sub-agents can write to main checkout even when worktrees exist
+
+### Workaround for Sub-Agents
+
+Sub-agents MUST manually verify worktree discipline before any Write/Edit:
+
+```bash
+# BEFORE any file operation, verify location
+pwd
+# Must show: /path/to/repo/worktrees/<lane>-wu-xxx
+
+# If not in worktree, navigate first
+cd worktrees/<lane>-wu-xxx
+```
+
+### For Orchestrators
+
+When spawning sub-agents via `pnpm wu:spawn`:
+
+1. The spawn prompt includes constraint #9 (WORKTREE DISCIPLINE)
+2. Sub-agents are instructed to manually verify worktree location
+3. This constraint compensates for the missing hook enforcement
+
+### Root Cause
+
+This is a Claude Code platform limitation, not a LumenFlow bug. Hooks defined in `.claude/settings.json` only apply to the parent session that loaded the settings file. Task-spawned sub-agents start fresh sessions without hook inheritance.
+
+---
+
 ## Setup and Verification
 
 ### Claude Code

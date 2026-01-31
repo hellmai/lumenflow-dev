@@ -496,3 +496,86 @@ describe('WU-1279: Wire methodology policy into spawn prompt generation', () => 
     });
   });
 });
+
+/**
+ * WU-1282: Task-spawned sub-agents bypass PreToolUse hooks
+ *
+ * Root Cause: Claude Code Task tool spawns sub-agents in a new session context
+ * that does NOT inherit PreToolUse hooks from the parent session. This is a Claude
+ * Code platform limitation.
+ *
+ * Workaround: Include explicit worktree discipline instructions in spawn prompt
+ * constraints block so sub-agents manually verify worktree discipline before
+ * Write/Edit operations.
+ *
+ * Acceptance Criteria:
+ * 1. Spawn constraints include WORKTREE DISCIPLINE (WU-1282) rule
+ * 2. Constraint instructs agents to verify worktree location before Write/Edit
+ * 3. Root cause is documented in constraints block
+ */
+describe('WU-1282: Task-spawned sub-agents must verify worktree discipline', () => {
+  const mockWUDoc = {
+    title: 'Test WU',
+    lane: TEST_LANE,
+    type: TEST_TYPE_FEATURE,
+    status: 'ready',
+    description: TEST_DESCRIPTION,
+    acceptance: ['AC1', 'AC2'],
+    code_paths: [TEST_CODE_PATH],
+  };
+
+  describe('AC1: Spawn constraints include WORKTREE DISCIPLINE rule', () => {
+    it('should include WORKTREE DISCIPLINE constraint in spawn output', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      expect(output).toContain('WORKTREE DISCIPLINE');
+      expect(output).toContain('WU-1282');
+    });
+
+    it('should include constraint number 9 for WORKTREE DISCIPLINE', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      // Constraint should be numbered (after SKIP-GATES AUTONOMY which is #8)
+      expect(output).toMatch(/9\.\s+WORKTREE DISCIPLINE/);
+    });
+  });
+
+  describe('AC2: Constraint instructs agents to verify worktree location', () => {
+    it('should instruct agents to verify worktree location before Write/Edit', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      // Should include verification instructions
+      expect(output).toContain('BEFORE any Write/Edit');
+      expect(output).toContain('worktrees/');
+    });
+
+    it('should warn about hook bypass in sub-agents', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      // Should mention that hooks do not propagate to sub-agents
+      expect(output).toContain('hooks do not propagate');
+    });
+
+    it('should provide verification command', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      // Should include command to verify working directory
+      expect(output).toContain('Run:');
+    });
+  });
+
+  describe('AC3: Root cause is documented in constraints block', () => {
+    it('should explain Task-spawned sub-agents context', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
+
+      // Should mention sub-agent context
+      expect(output).toMatch(/sub-agent/i);
+    });
+  });
+});
