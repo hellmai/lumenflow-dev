@@ -2,7 +2,7 @@ id: WU-1289
 title: Add spawn_context_max_size to config schema
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -32,9 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: spawn memory context size is currently hardcoded. Problem: teams need to tune memory context size per project. Solution: add memory.spawn_context_max_size to config schema with defaults and wire into mem-context-core/spawn generation.'
+description: 'Context: spawn memory context size is currently hardcoded. Problem: teams need to tune
+  memory context size per project. Solution: add memory.spawn_context_max_size to config schema with
+  defaults and wire into mem-context-core/spawn generation.'
 acceptance:
   - Config schema supports memory.spawn_context_max_size with default
   - mem-context-core respects spawn_context_max_size when generating context
   - wu:spawn uses configured spawn_context_max_size
   - Schema tests cover parsing and defaults
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1289
+claimed_at: 2026-01-31T22:30:32.675Z
+baseline_main_sha: 89cf6804f4535bfd37604e7275b19b3c212b158f
+session_id: bf2abacb-65b3-4d7d-986a-98cd62d2f8e0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T22:30:32.679Z
