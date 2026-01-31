@@ -1,6 +1,6 @@
 # Agent Invocation Guide (LumenFlow)
 
-**Last updated:** 2026-01-26
+**Last updated:** 2026-01-31
 
 This guide defines how to spawn and brief sub-agents so they start with the right context,
 follow LumenFlow constraints, and leave durable artifacts for handoff.
@@ -62,6 +62,42 @@ pnpm wu:spawn --id WU-XXX
 ```bash
 pnpm mem:checkpoint "Pre-clear: <summary>" --wu WU-XXX --trigger pre-clear
 ```
+
+---
+
+## 2a) Memory Context Injection (Automatic)
+
+When the memory layer is initialized (`memory.jsonl` exists), `wu:spawn` automatically
+injects relevant memory context into the spawn prompt under a `## Memory Context` section.
+
+**What gets included:**
+
+- WU-specific checkpoints and notes
+- Project-level architectural decisions
+- Recent context relevant to the lane
+
+**Configuration:**
+
+Configure max context size in `.lumenflow.config.yaml`:
+
+```yaml
+memory:
+  spawn_context_max_size: 4096 # Default: 4KB
+```
+
+**Skip context injection:**
+
+Use `--no-context` when you want a clean spawn without memory context:
+
+```bash
+pnpm wu:spawn --id WU-XXX --no-context
+```
+
+This is useful when:
+
+- Starting completely fresh without prior context
+- Debugging context-related issues
+- Memory layer contains stale or irrelevant data
 
 ---
 
