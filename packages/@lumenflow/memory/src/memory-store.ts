@@ -161,77 +161,97 @@ export async function loadMemory(
 ): Promise<IndexedMemory> {
   const { includeArchived = false } = options;
   const filePath = path.join(baseDir, MEMORY_FILE_NAME);
-  const result: IndexedMemory = {
+
+  const content = await readMemoryFileOrEmpty(filePath);
+  if (content === null) {
+    return createEmptyIndexedMemory();
+  }
+
+  return parseAndIndexMemory(content, includeArchived);
+}
+
+/**
+ * Reads memory file content, returning null if file doesn't exist
+ */
+async function readMemoryFileOrEmpty(filePath: string): Promise<string | null> {
+  try {
+    return await fs.readFile(filePath, { encoding: 'utf-8' as BufferEncoding });
+  } catch (err) {
+    const error = err as NodeFsError;
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Creates an empty indexed memory result
+ */
+function createEmptyIndexedMemory(): IndexedMemory {
+  return {
     nodes: [],
     byId: new Map<string, MemoryNode>(),
     byWu: new Map<string, MemoryNode[]>(),
   };
+}
 
-  // Check if file exists
-  let content: string;
+/**
+ * Parses a single JSONL line and validates it
+ */
+function parseAndValidateLine(line: string, lineNumber: number): MemoryNode {
+  let parsed: unknown;
   try {
-    content = await fs.readFile(filePath, { encoding: 'utf-8' as BufferEncoding });
+    parsed = JSON.parse(line);
   } catch (err) {
-    const error = err as NodeFsError;
-    if (error.code === 'ENOENT') {
-      // File doesn't exist - return empty result
-      return result;
-    }
-    throw error;
+    const errMsg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Malformed JSON on line ${lineNumber}: ${errMsg}`);
   }
 
-  // Parse JSONL content
+  const validation = validateMemoryNode(parsed);
+  if (!validation.success) {
+    const issues = validation.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join(', ');
+    throw new Error(`Validation error on line ${lineNumber}: ${issues}`);
+  }
+
+  return validation.data;
+}
+
+/**
+ * Adds a node to the WU index
+ */
+function indexNodeByWu(result: IndexedMemory, node: MemoryNode): void {
+  if (!node.wu_id) return;
+
+  if (!result.byWu.has(node.wu_id)) {
+    result.byWu.set(node.wu_id, []);
+  }
+  result.byWu.get(node.wu_id)!.push(node);
+}
+
+/**
+ * Parses JSONL content and builds indexed memory
+ */
+function parseAndIndexMemory(content: string, includeArchived: boolean): IndexedMemory {
+  const result = createEmptyIndexedMemory();
   const lines = content.split('\n');
+
   for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i];
-    const line = rawLine ? rawLine.trim() : '';
+    const line = lines[i]?.trim() ?? '';
+    if (!line) continue;
 
-    // Skip empty lines
-    if (!line) {
-      continue;
-    }
-
-    // Parse JSON line
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(line);
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      throw new Error(`Malformed JSON on line ${i + 1}: ${errMsg}`);
-    }
-
-    // Validate against schema
-    const validation = validateMemoryNode(parsed);
-    if (!validation.success) {
-      const issues = validation.error.issues
-        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-        .join(', ');
-      throw new Error(`Validation error on line ${i + 1}: ${issues}`);
-    }
-
-    const node = validation.data;
+    const node = parseAndValidateLine(line, i + 1);
 
     // WU-1238: Skip archived nodes unless includeArchived is true
     if (!includeArchived && isNodeArchived(node)) {
       continue;
     }
 
-    // Add to nodes array
     result.nodes.push(node);
-
-    // Index by ID
     result.byId.set(node.id, node);
-
-    // Index by WU ID if present
-    if (node.wu_id) {
-      if (!result.byWu.has(node.wu_id)) {
-        result.byWu.set(node.wu_id, []);
-      }
-      const wuNodes = result.byWu.get(node.wu_id);
-      if (wuNodes) {
-        wuNodes.push(node);
-      }
-    }
+    indexNodeByWu(result, node);
   }
 
   return result;

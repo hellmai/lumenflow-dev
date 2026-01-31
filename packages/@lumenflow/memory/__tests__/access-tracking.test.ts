@@ -41,6 +41,9 @@ async function writeJsonlFile(filePath: string, nodes: object[]): Promise<void> 
   await fs.writeFile(filePath, content + '\n', 'utf-8');
 }
 
+/** Constant for non-existent node ID used in tests */
+const NONEXISTENT_NODE_ID = 'mem-nonexistent';
+
 describe('decay/access-tracking', () => {
   let tempDir: string;
   let memoryFilePath: string;
@@ -124,7 +127,7 @@ describe('decay/access-tracking', () => {
       const node = createNode({ id: 'mem-acc6' });
       await writeJsonlFile(memoryFilePath, [node]);
 
-      await expect(recordAccess(tempDir, 'mem-nonexistent')).rejects.toThrow(/not found/i);
+      await expect(recordAccess(tempDir, NONEXISTENT_NODE_ID)).rejects.toThrow(/not found/i);
     });
 
     it('should compute and store decay score on access', async () => {
@@ -162,7 +165,7 @@ describe('decay/access-tracking', () => {
       const nodes = [createNode({ id: 'mem-bat4' }), createNode({ id: 'mem-bat5' })];
       await writeJsonlFile(memoryFilePath, nodes);
 
-      const updated = await recordAccessBatch(tempDir, ['mem-bat4', 'mem-nonexistent', 'mem-bat5']);
+      const updated = await recordAccessBatch(tempDir, ['mem-bat4', NONEXISTENT_NODE_ID, 'mem-bat5']);
 
       expect(updated.length).toBe(2);
     });
@@ -211,7 +214,7 @@ describe('decay/access-tracking', () => {
       const node = createNode({ id: 'mem-sta3' });
       await writeJsonlFile(memoryFilePath, [node]);
 
-      const stats = await getAccessStats(tempDir, 'mem-nonexistent');
+      const stats = await getAccessStats(tempDir, NONEXISTENT_NODE_ID);
 
       expect(stats).toBeNull();
     });
