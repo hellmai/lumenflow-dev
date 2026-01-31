@@ -29,7 +29,6 @@ sections:
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
 - [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
 - [WU-1232 — state:doctor --fix writes directly to main despite WU-1230 micro-worktree fix](wu/WU-1232.yaml) — Framework: CLI
-- [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
@@ -52,6 +51,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml) — Framework: CLI
+- [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 
