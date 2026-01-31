@@ -40,7 +40,6 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — Framework: Core
-- [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml) — Framework: Memory
 
 ## 🔧 In progress
 
@@ -299,3 +298,4 @@ sections:
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml)
 - [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml)
 - [WU-1283 — Fix agent documentation loading - inline tooling in entry points](wu/WU-1283.yaml)
+- [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml)
