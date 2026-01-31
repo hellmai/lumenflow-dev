@@ -11,6 +11,7 @@ _Last updated: 2026-01-31_
 
 ## Completed
 
+- [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — 2026-01-31
 - [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
