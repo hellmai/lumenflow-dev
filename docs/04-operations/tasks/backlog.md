@@ -47,7 +47,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 
@@ -297,3 +296,4 @@ sections:
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml)
 - [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml)
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml)
+- [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml)
