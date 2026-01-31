@@ -521,3 +521,4 @@
 {"type":"complete","wuId":"WU-1287","timestamp":"2026-01-31T22:13:44.427Z"}
 {"type":"claim","wuId":"WU-1289","timestamp":"2026-01-31T22:30:32.692Z","lane":"Framework: Core","title":"Add spawn_context_max_size to config schema"}
 {"type":"complete","wuId":"WU-1289","timestamp":"2026-01-31T22:39:16.205Z"}
+{"type":"claim","wuId":"WU-1290","lane":"Framework: Core","title":"Update Codex spawn prompt to reflect methodology policy","timestamp":"2026-01-31T23:19:27.924Z"}

@@ -2,7 +2,7 @@ id: WU-1290
 title: Update Codex spawn prompt to reflect methodology policy
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -30,9 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Codex/GPT spawn prompt uses static TDD guidance. Problem: methodology policy in config is ignored in Codex prompts, causing incorrect guidance. Solution: update Codex prompt generation to include policy-based testing/architecture guidance and enforcement summary.'
+description: 'Context: Codex/GPT spawn prompt uses static TDD guidance. Problem: methodology policy
+  in config is ignored in Codex prompts, causing incorrect guidance. Solution: update Codex prompt
+  generation to include policy-based testing/architecture guidance and enforcement summary.'
 acceptance:
   - Codex spawn prompt reflects resolved policy.testing and policy.architecture
   - Enforcement summary in Codex prompt uses policy coverage_threshold and coverage_mode
   - policy.testing=none yields warn-only guidance (no TDD directive)
   - wu:spawn --client codex-cli output matches policy config
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1290
+claimed_at: 2026-01-31T23:19:27.890Z
+baseline_main_sha: 3fca8ca39f4c4f33304d1cc03b156f9b8c759f7b
+session_id: 697c9466-0242-499d-ac3f-059321192d95
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T23:19:27.898Z
