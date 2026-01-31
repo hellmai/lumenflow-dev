@@ -1,0 +1,33 @@
+id: WU-1272
+title: Create INIT-011 comprehensive test suite initiative
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-01-31
+code_paths:
+  - docs/04-operations/tasks/initiatives/
+  - docs/04-operations/tasks/wu/
+tests:
+  manual:
+    - Verify orchestrate:initiative --initiative INIT-011 --dry-run works
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1272.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Create initiative spec and WU specs for INIT-011: Comprehensive LumenFlow Test Suite. Includes 5 WUs covering CLI integration tests, memory layer tests, agent coordination tests, and initiative orchestration E2E tests.'
+acceptance:
+  - INIT-011.yaml created with valid schema
+  - WU-1273 through WU-1277 specs created
+  - All specs pass schema validation
