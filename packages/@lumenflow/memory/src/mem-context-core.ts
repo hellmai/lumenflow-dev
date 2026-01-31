@@ -1,5 +1,5 @@
 /**
- * Memory Context Core (WU-1234, WU-1238)
+ * Memory Context Core (WU-1234, WU-1238, WU-1281)
  *
  * Core logic for generating deterministic, formatted context injection blocks
  * for wu:spawn prompts. Produces structured markdown suitable for embedding
@@ -13,6 +13,10 @@
  * - No LLM calls (vendor-agnostic)
  * - WU-1238: Optional decay-based ranking (sortByDecay option)
  * - WU-1238: Access tracking for nodes included in context (trackAccess option)
+ * - WU-1281: Lane filtering for project memories
+ * - WU-1281: Recency limits for summaries (maxRecentSummaries)
+ * - WU-1281: Bounded project nodes (maxProjectNodes)
+ * - WU-1281: WU-specific context prioritized over project-level
  *
  * @see {@link packages/@lumenflow/cli/src/mem-context.ts} - CLI wrapper
  * @see {@link packages/@lumenflow/memory/__tests__/mem-context-core.test.ts} - Tests
@@ -29,6 +33,18 @@ import { recordAccessBatch } from './decay/access-tracking.js';
  * Default maximum context size in bytes (4KB)
  */
 const DEFAULT_MAX_SIZE = 4096;
+
+/**
+ * WU-1281: Default maximum number of project nodes to include
+ * Prevents unbounded project memory growth from truncating WU-specific context
+ */
+const DEFAULT_MAX_PROJECT_NODES = 10;
+
+/**
+ * WU-1281: Default maximum number of recent summaries to include
+ * Ensures only the most relevant recent summaries are included
+ */
+const DEFAULT_MAX_RECENT_SUMMARIES = 5;
 
 /**
  * Error messages for validation
@@ -65,6 +81,12 @@ export interface GenerateContextOptions {
   halfLifeMs?: number;
   /** WU-1238: Current timestamp for decay calculation (default: Date.now()) */
   now?: number;
+  /** WU-1281: Filter project memories by lane (nodes with matching metadata.lane or no lane) */
+  lane?: string;
+  /** WU-1281: Maximum number of recent summaries to include (default: 5) */
+  maxRecentSummaries?: number;
+  /** WU-1281: Maximum number of project nodes to include (default: 10) */
+  maxProjectNodes?: number;
 }
 
 /**
@@ -173,6 +195,35 @@ function filterByWuId(nodes: MemoryNode[], wuId: string): MemoryNode[] {
  */
 function filterByType(nodes: MemoryNode[], type: string): MemoryNode[] {
   return nodes.filter((node) => node.type === type);
+}
+
+/**
+ * WU-1281: Filters nodes by lane
+ * Includes nodes that either:
+ * - Have matching metadata.lane
+ * - Have no lane set (general project knowledge)
+ */
+function filterByLane(nodes: MemoryNode[], lane: string | undefined): MemoryNode[] {
+  if (!lane) {
+    // No lane filter specified, include all
+    return nodes;
+  }
+
+  return nodes.filter((node) => {
+    const nodeLane = node.metadata?.lane as string | undefined;
+    // Include if no lane (general knowledge) or lane matches
+    return !nodeLane || nodeLane === lane;
+  });
+}
+
+/**
+ * WU-1281: Limits array to first N items
+ */
+function limitNodes(nodes: MemoryNode[], limit: number | undefined): MemoryNode[] {
+  if (limit === undefined || limit <= 0) {
+    return nodes;
+  }
+  return nodes.slice(0, limit);
 }
 
 /**
@@ -306,6 +357,10 @@ export async function generateContext(
     trackAccess = false,
     halfLifeMs = DEFAULT_HALF_LIFE_MS,
     now = Date.now(),
+    // WU-1281: New options for lane filtering and limits
+    lane,
+    maxRecentSummaries = DEFAULT_MAX_RECENT_SUMMARIES,
+    maxProjectNodes = DEFAULT_MAX_PROJECT_NODES,
   } = options;
 
   // Validate WU ID
@@ -321,10 +376,11 @@ export async function generateContext(
   // WU-1238: Choose comparator based on sortByDecay option
   const sortComparator = sortByDecay ? createCompareByDecay(now, halfLifeMs) : compareByRecency;
 
-  // Collect and sort nodes for each section
-  const projectNodes = [...filterByLifecycle(allNodes, 'project')].sort(sortComparator);
-  const summaryNodes = [...filterByWuId(filterByType(allNodes, 'summary'), wuId)].sort(
-    sortComparator,
+  // WU-1281: Collect WU-specific nodes FIRST (high priority)
+  // These are always included before project-level content
+  const summaryNodes = limitNodes(
+    [...filterByWuId(filterByType(allNodes, 'summary'), wuId)].sort(sortComparator),
+    maxRecentSummaries,
   );
   const wuContextNodes = [...filterByWuId(allNodes, wuId)]
     .filter((node) => node.type !== 'summary' && node.type !== 'discovery')
@@ -333,12 +389,24 @@ export async function generateContext(
     sortComparator,
   );
 
-  // Build the context block with sections
+  // WU-1281: Collect project nodes with lane filtering and limits (lower priority)
+  const projectNodes = limitNodes(
+    filterByLane([...filterByLifecycle(allNodes, 'project')].sort(sortComparator), lane),
+    maxProjectNodes,
+  );
+
+  // WU-1281: Build context block with WU-specific content FIRST
+  // Order: WU Context -> Summaries -> Discoveries -> Project Profile
+  // This ensures WU-specific content is preserved when truncation occurs
   const sections: string[] = [buildHeader(wuId)];
-  addSectionIfNotEmpty(sections, SECTION_HEADERS.PROJECT_PROFILE, projectNodes);
-  addSectionIfNotEmpty(sections, SECTION_HEADERS.SUMMARIES, summaryNodes);
+
+  // WU-specific sections first (high priority)
   addSectionIfNotEmpty(sections, SECTION_HEADERS.WU_CONTEXT, wuContextNodes);
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.SUMMARIES, summaryNodes);
   addSectionIfNotEmpty(sections, SECTION_HEADERS.DISCOVERIES, discoveryNodes);
+
+  // Project-level section last (lower priority, may be truncated)
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.PROJECT_PROFILE, projectNodes);
 
   // If no sections have content (only header), return empty
   if (sections.length === 1) {
@@ -348,8 +416,8 @@ export async function generateContext(
   const rawContextBlock = sections.join('');
   const { content: contextBlock, truncated } = truncateToSize(rawContextBlock, maxSize);
 
-  // Calculate statistics
-  const selectedNodes = [...projectNodes, ...summaryNodes, ...wuContextNodes, ...discoveryNodes];
+  // Calculate statistics based on the limited node sets
+  const selectedNodes = [...wuContextNodes, ...summaryNodes, ...discoveryNodes, ...projectNodes];
   const byType: Record<string, number> = {};
   for (const node of selectedNodes) {
     byType[node.type] = (byType[node.type] || 0) + 1;

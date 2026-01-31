@@ -1,5 +1,5 @@
 /**
- * Memory Context Core Tests (WU-1234)
+ * Memory Context Core Tests (WU-1234, WU-1281)
  *
  * Tests for the mem:context command core logic that produces deterministic,
  * formatted context injection blocks for wu:spawn prompts.
@@ -9,6 +9,7 @@
  * - Output formatting (structured markdown with clear sections)
  * - Max context size configuration (default 4KB)
  * - Graceful degradation (empty block if no memories match)
+ * - WU-1281: Lane filtering, recency limits, context prioritization
  *
  * @see {@link packages/@lumenflow/memory/src/mem-context-core.ts} - Implementation
  */
@@ -18,6 +19,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { generateContext } from '../src/mem-context-core.js';
+
+/**
+ * Test constants to avoid duplicate string literals (sonarjs/no-duplicate-string)
+ */
+const TEST_WU_ID = 'WU-1234';
+const TEST_TIMESTAMP_EARLY = '2025-01-01T10:00:00.000Z';
+const TEST_TIMESTAMP_MID = '2025-01-15T10:00:00.000Z';
+const TEST_TIMESTAMP_LATE = '2025-01-30T10:00:00.000Z';
+const LANE_FRAMEWORK_MEMORY = 'Framework: Memory';
+const LANE_FRAMEWORK_CORE = 'Framework: Core';
 
 describe('mem-context-core (WU-1234)', () => {
   let testDir: string;
@@ -239,15 +250,15 @@ describe('mem-context-core (WU-1234)', () => {
           type: 'checkpoint',
           lifecycle: 'wu',
           content: 'Old checkpoint',
-          wu_id: 'WU-1234',
-          created_at: '2025-01-01T10:00:00.000Z',
+          wu_id: TEST_WU_ID,
+          created_at: TEST_TIMESTAMP_EARLY,
         });
         const newNode = createMemoryNode({
           type: 'checkpoint',
           lifecycle: 'wu',
           content: 'New checkpoint',
-          wu_id: 'WU-1234',
-          created_at: '2025-01-30T10:00:00.000Z',
+          wu_id: TEST_WU_ID,
+          created_at: TEST_TIMESTAMP_LATE,
         });
         await writeMemoryNode(oldNode);
         await writeMemoryNode(newNode);
@@ -268,16 +279,16 @@ describe('mem-context-core (WU-1234)', () => {
           type: 'checkpoint',
           lifecycle: 'wu',
           content: 'Checkpoint A',
-          wu_id: 'WU-1234',
-          created_at: '2025-01-15T10:00:00.000Z',
+          wu_id: TEST_WU_ID,
+          created_at: TEST_TIMESTAMP_MID,
         });
         const node2 = createMemoryNode({
           id: 'mem-bbbb',
           type: 'checkpoint',
           lifecycle: 'wu',
           content: 'Checkpoint B',
-          wu_id: 'WU-1234',
-          created_at: '2025-01-15T10:00:00.000Z',
+          wu_id: TEST_WU_ID,
+          created_at: TEST_TIMESTAMP_MID,
         });
         await writeMemoryNode(node1);
         await writeMemoryNode(node2);
@@ -456,6 +467,279 @@ describe('mem-context-core (WU-1234)', () => {
         // Act & Assert - should throw with line info
         await expect(generateContext(testDir, { wuId: 'WU-1234' })).rejects.toThrow(/line/i);
       });
+    });
+  });
+
+  /**
+   * WU-1281: Bug fixes for lane filtering, recency, and context prioritization
+   * These tests are at top level to avoid deep nesting (sonarjs/no-nested-functions)
+   */
+  describe('WU-1281: lane filtering', () => {
+    it('filters project memories by lane when lane option is provided', async () => {
+      // Arrange - create project memories with different lanes
+      const frameworkNode = createMemoryNode({
+        id: 'mem-fw01',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Framework: Memory architectural decision',
+        metadata: { lane: LANE_FRAMEWORK_MEMORY },
+      });
+      const coreNode = createMemoryNode({
+        id: 'mem-co01',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Framework: Core architectural decision',
+        metadata: { lane: LANE_FRAMEWORK_CORE },
+      });
+      const noLaneNode = createMemoryNode({
+        id: 'mem-nl01',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Project memory without lane',
+      });
+      await writeMemoryNode(frameworkNode);
+      await writeMemoryNode(coreNode);
+      await writeMemoryNode(noLaneNode);
+
+      // Act - filter by Framework: Memory lane
+      const result = await generateContext(testDir, {
+        wuId: TEST_WU_ID,
+        lane: LANE_FRAMEWORK_MEMORY,
+      });
+
+      // Assert
+      expect(result.contextBlock).toContain('Framework: Memory architectural decision');
+      expect(result.contextBlock).not.toContain('Framework: Core architectural decision');
+      // Nodes without lane should still be included (they're general project knowledge)
+      expect(result.contextBlock).toContain('Project memory without lane');
+    });
+
+    it('includes all project memories when no lane filter is specified', async () => {
+      // Arrange
+      const frameworkNode = createMemoryNode({
+        id: 'mem-fw02',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Framework: Memory decision',
+        metadata: { lane: LANE_FRAMEWORK_MEMORY },
+      });
+      const coreNode = createMemoryNode({
+        id: 'mem-co02',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Framework: Core decision',
+        metadata: { lane: LANE_FRAMEWORK_CORE },
+      });
+      await writeMemoryNode(frameworkNode);
+      await writeMemoryNode(coreNode);
+
+      // Act - no lane filter
+      const result = await generateContext(testDir, { wuId: TEST_WU_ID });
+
+      // Assert - both should be included
+      expect(result.contextBlock).toContain('Framework: Memory decision');
+      expect(result.contextBlock).toContain('Framework: Core decision');
+    });
+  });
+
+  describe('WU-1281: recency sorting', () => {
+    it('sorts summaries by recency within the summaries section', async () => {
+      // Arrange - create summaries with specific timestamps
+      const oldSummary = createMemoryNode({
+        id: 'mem-sum1',
+        type: 'summary',
+        lifecycle: 'wu',
+        content: 'Old summary from January',
+        wu_id: TEST_WU_ID,
+        created_at: '2025-01-10T10:00:00.000Z',
+      });
+      const recentSummary = createMemoryNode({
+        id: 'mem-sum2',
+        type: 'summary',
+        lifecycle: 'wu',
+        content: 'Recent summary from January 25th',
+        wu_id: TEST_WU_ID,
+        created_at: '2025-01-25T10:00:00.000Z',
+      });
+      const midSummary = createMemoryNode({
+        id: 'mem-sum3',
+        type: 'summary',
+        lifecycle: 'wu',
+        content: 'Mid summary from January 15th',
+        wu_id: TEST_WU_ID,
+        created_at: TEST_TIMESTAMP_MID,
+      });
+      // Write in non-chronological order to test sorting
+      await writeMemoryNode(oldSummary);
+      await writeMemoryNode(recentSummary);
+      await writeMemoryNode(midSummary);
+
+      // Act
+      const result = await generateContext(testDir, { wuId: TEST_WU_ID });
+
+      // Assert - most recent should appear first
+      const recentIdx = result.contextBlock.indexOf('Recent summary from January 25th');
+      const midIdx = result.contextBlock.indexOf('Mid summary from January 15th');
+      const oldIdx = result.contextBlock.indexOf('Old summary from January');
+      expect(recentIdx).toBeLessThan(midIdx);
+      expect(midIdx).toBeLessThan(oldIdx);
+    });
+
+    it('applies recency limit to summaries (keeps N most recent)', async () => {
+      // Arrange - create many summaries
+      for (let i = 0; i < 10; i++) {
+        const summary = createMemoryNode({
+          id: `mem-s${i.toString().padStart(3, '0')}`,
+          type: 'summary',
+          lifecycle: 'wu',
+          content: `Summary number ${i}`,
+          wu_id: TEST_WU_ID,
+          created_at: new Date(Date.UTC(2025, 0, i + 1)).toISOString(),
+        });
+        await writeMemoryNode(summary);
+      }
+
+      // Act - request with max recent summaries
+      const result = await generateContext(testDir, {
+        wuId: TEST_WU_ID,
+        maxRecentSummaries: 3,
+      });
+
+      // Assert - only 3 most recent summaries (Summary 7, 8, 9 - days 8, 9, 10)
+      expect(result.contextBlock).toContain('Summary number 9');
+      expect(result.contextBlock).toContain('Summary number 8');
+      expect(result.contextBlock).toContain('Summary number 7');
+      expect(result.contextBlock).not.toContain('Summary number 0');
+      expect(result.contextBlock).not.toContain('Summary number 6');
+    });
+  });
+
+  describe('WU-1281: context prioritization', () => {
+    it('includes WU-specific content before project content when space is limited', async () => {
+      // Arrange - create content that would exceed max size if all included
+      // WU-specific content (high priority)
+      const wuCheckpoint = createMemoryNode({
+        id: 'mem-wc01',
+        type: 'checkpoint',
+        lifecycle: 'wu',
+        content: 'Critical WU checkpoint that must be included',
+        wu_id: TEST_WU_ID,
+        created_at: TEST_TIMESTAMP_LATE,
+      });
+      const wuDiscovery = createMemoryNode({
+        id: 'mem-wd01',
+        type: 'discovery',
+        lifecycle: 'wu',
+        content: 'Important WU discovery that must be included',
+        wu_id: TEST_WU_ID,
+        created_at: TEST_TIMESTAMP_LATE,
+      });
+
+      // Project-level content (lower priority)
+      const projectNote1 = createMemoryNode({
+        id: 'mem-pn01',
+        type: 'note',
+        lifecycle: 'project',
+        content: `Large project note A: ${'x'.repeat(500)}`,
+        created_at: TEST_TIMESTAMP_EARLY,
+      });
+      const projectNote2 = createMemoryNode({
+        id: 'mem-pn02',
+        type: 'note',
+        lifecycle: 'project',
+        content: `Large project note B: ${'y'.repeat(500)}`,
+        created_at: '2025-01-02T10:00:00.000Z',
+      });
+      const projectNote3 = createMemoryNode({
+        id: 'mem-pn03',
+        type: 'note',
+        lifecycle: 'project',
+        content: `Large project note C: ${'z'.repeat(500)}`,
+        created_at: '2025-01-03T10:00:00.000Z',
+      });
+
+      await writeMemoryNode(wuCheckpoint);
+      await writeMemoryNode(wuDiscovery);
+      await writeMemoryNode(projectNote1);
+      await writeMemoryNode(projectNote2);
+      await writeMemoryNode(projectNote3);
+
+      // Act - use a small max size that can't fit everything
+      const result = await generateContext(testDir, {
+        wuId: TEST_WU_ID,
+        maxSize: 800, // Small enough that not everything fits
+      });
+
+      // Assert - WU-specific content must be included
+      expect(result.contextBlock).toContain('Critical WU checkpoint');
+      expect(result.contextBlock).toContain('Important WU discovery');
+      // Project content may be truncated
+      expect(result.stats.truncated).toBe(true);
+    });
+
+    it('limits project-level memories to prevent unbounded growth', async () => {
+      // Arrange - create many project memories
+      for (let i = 0; i < 20; i++) {
+        const projectNode = createMemoryNode({
+          id: `mem-p${i.toString().padStart(3, '0')}`,
+          type: 'note',
+          lifecycle: 'project',
+          content: `Project memory ${i}: ${'x'.repeat(200)}`,
+          created_at: new Date(Date.UTC(2025, 0, i + 1)).toISOString(),
+        });
+        await writeMemoryNode(projectNode);
+      }
+
+      // Create some WU-specific content
+      const wuNode = createMemoryNode({
+        id: 'mem-wu01',
+        type: 'checkpoint',
+        lifecycle: 'wu',
+        content: 'WU specific checkpoint that must appear',
+        wu_id: TEST_WU_ID,
+        created_at: TEST_TIMESTAMP_LATE,
+      });
+      await writeMemoryNode(wuNode);
+
+      // Act - with default max size (4KB)
+      const result = await generateContext(testDir, {
+        wuId: TEST_WU_ID,
+        maxProjectNodes: 5, // Limit project nodes
+      });
+
+      // Assert - WU content is included
+      expect(result.contextBlock).toContain('WU specific checkpoint');
+      // Project memories are limited (stats should show bounded count)
+      const projectCount = result.stats.byType.note || 0;
+      expect(projectCount).toBeLessThanOrEqual(5);
+    });
+
+    it('reports prioritization in stats', async () => {
+      // Arrange
+      const projectNode = createMemoryNode({
+        id: 'mem-pj01',
+        type: 'note',
+        lifecycle: 'project',
+        content: 'Project note',
+      });
+      const wuNode = createMemoryNode({
+        id: 'mem-wu02',
+        type: 'checkpoint',
+        lifecycle: 'wu',
+        content: 'WU checkpoint',
+        wu_id: TEST_WU_ID,
+      });
+      await writeMemoryNode(projectNode);
+      await writeMemoryNode(wuNode);
+
+      // Act
+      const result = await generateContext(testDir, { wuId: TEST_WU_ID });
+
+      // Assert - stats should include priority information
+      expect(result.stats).toBeDefined();
+      expect(result.stats.byType).toBeDefined();
+      expect(result.stats.byType.checkpoint).toBe(1);
+      expect(result.stats.byType.note).toBe(1);
     });
   });
 });
