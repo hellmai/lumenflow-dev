@@ -9,10 +9,10 @@ _Last updated: 2026-01-31_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml)
-- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml)
 
 ## Completed
 
+- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
