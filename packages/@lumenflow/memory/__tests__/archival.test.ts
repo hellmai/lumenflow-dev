@@ -16,11 +16,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
-import {
-  archiveByDecay,
-  isArchived,
-  DEFAULT_DECAY_THRESHOLD,
-} from '../src/decay/archival.js';
+import { archiveByDecay, isArchived, DEFAULT_DECAY_THRESHOLD } from '../src/decay/archival.js';
 import { loadMemoryAll, MEMORY_FILE_NAME } from '../src/memory-store.js';
 import { DEFAULT_HALF_LIFE_MS } from '../src/decay/scoring.js';
 import type { MemoryNode } from '../src/memory-schema.js';
