@@ -1,12 +1,29 @@
 id: INIT-012
 slug: spawn-integration-hardening
 title: Spawn Integration Hardening
-description: ''
-status: draft
+description: Close remaining integration gaps so spawn prompts consistently reflect methodology
+  policy and memory context across CLI and Codex, with a single memory-context implementation and
+  documented config.
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-31
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Critical Spawn Integration
+    status: pending
+  - id: 2
+    title: Prompt + Config Alignment
+    status: pending
+  - id: 3
+    title: Ergonomics + Bookkeeping
+    status: pending
+success_metrics:
+  - CLI and Codex spawn prompts reflect resolved methodology policy
+  - Spawn memory context uses mem-context-core (lane, recency, priority)
+  - memory.spawn_context_max_size is configurable and documented
+  - Template system is either activated or formally retired
+  - Hook inheritance bug fixed for Task-spawned sub-agents
+  - mem:delete available for memory cleanup
 labels: []
 related_plan: lumenflow://plans/INIT-012-spawn-integration-hardening.md
