@@ -7,13 +7,11 @@ priority: P1
 created: 2026-01-31
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn-context.ts
-  - packages/@lumenflow/memory/src/mem-context-core.ts
   - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
-    - packages/@lumenflow/memory/__tests__/mem-context-core.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1287.done
