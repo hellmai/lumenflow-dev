@@ -726,4 +726,103 @@ gates:
       expect(result.mode).toBe('block'); // TDD default mode
     });
   });
+
+  /**
+   * WU-1280: Tests for tests_required from resolved policy
+   * Gates should consume tests_required to determine test failure behavior
+   */
+  describe('tests_required from methodology policy (WU-1280)', () => {
+    const testsRequiredTestDir = path.join('/tmp', `test-lumenflow-tests-required-${Date.now()}`);
+    const testsRequiredConfigPath = path.join(testsRequiredTestDir, '.lumenflow.config.yaml');
+
+    beforeEach(() => {
+      fs.mkdirSync(testsRequiredTestDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      try {
+        fs.rmSync(testsRequiredTestDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors
+      }
+    });
+
+    // Import the new function we need to create
+    let resolveTestPolicy: typeof import('../gates-config.js').resolveTestPolicy;
+    beforeEach(async () => {
+      const mod = await import('../gates-config.js');
+      resolveTestPolicy = mod.resolveTestPolicy;
+    });
+
+    it('should return tests_required: true for methodology.testing: tdd', () => {
+      const yamlContent = `
+version: "2.0"
+methodology:
+  testing: tdd
+`;
+      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+
+      const result = resolveTestPolicy(testsRequiredTestDir);
+
+      expect(result.tests_required).toBe(true);
+    });
+
+    it('should return tests_required: true for methodology.testing: test-after', () => {
+      const yamlContent = `
+version: "2.0"
+methodology:
+  testing: test-after
+`;
+      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+
+      const result = resolveTestPolicy(testsRequiredTestDir);
+
+      expect(result.tests_required).toBe(true);
+    });
+
+    it('should return tests_required: false for methodology.testing: none', () => {
+      const yamlContent = `
+version: "2.0"
+methodology:
+  testing: none
+`;
+      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+
+      const result = resolveTestPolicy(testsRequiredTestDir);
+
+      expect(result.tests_required).toBe(false);
+    });
+
+    it('should return tests_required: true when no config specified (TDD default)', () => {
+      const yamlContent = `
+version: "2.0"
+`;
+      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+
+      const result = resolveTestPolicy(testsRequiredTestDir);
+
+      expect(result.tests_required).toBe(true);
+    });
+
+    it('should include coverage config alongside tests_required', () => {
+      const yamlContent = `
+version: "2.0"
+methodology:
+  testing: none
+`;
+      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+
+      const result = resolveTestPolicy(testsRequiredTestDir);
+
+      // Should include all three fields
+      expect(result).toHaveProperty('threshold');
+      expect(result).toHaveProperty('mode');
+      expect(result).toHaveProperty('tests_required');
+
+      // Values should match methodology: none defaults
+      expect(result.threshold).toBe(0);
+      expect(result.mode).toBe('off');
+      expect(result.tests_required).toBe(false);
+    });
+  });
 });

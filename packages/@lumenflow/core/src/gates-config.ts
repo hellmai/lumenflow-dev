@@ -479,3 +479,100 @@ export function resolveCoverageConfig(projectRoot: string): CoverageConfig {
     mode: policy.coverage_mode,
   };
 }
+
+/**
+ * WU-1280: Resolved test policy configuration
+ * Extends CoverageConfig with tests_required from methodology policy
+ */
+export interface TestPolicy extends CoverageConfig {
+  /** Whether tests are required for completion (from methodology.testing) */
+  tests_required: boolean;
+}
+
+/**
+ * WU-1280: Resolve test policy from methodology configuration
+ *
+ * Returns the full test policy including coverage config AND tests_required.
+ * This is used by gates to determine whether test failures should block or warn.
+ *
+ * Methodology mapping:
+ * - tdd: 90% threshold, block mode, tests_required=true
+ * - test-after: 70% threshold, warn mode, tests_required=true
+ * - none: 0% threshold, off mode, tests_required=false
+ *
+ * When tests_required=false:
+ * - Test failures produce WARNINGS instead of FAILURES
+ * - Gates continue but log the test failures
+ * - Coverage gate is effectively skipped (mode='off')
+ *
+ * @param projectRoot - Project root directory
+ * @returns Resolved test policy including tests_required
+ */
+export function resolveTestPolicy(projectRoot: string): TestPolicy {
+  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+
+  // Load raw config to detect explicit vs default values
+  let rawConfig: Record<string, unknown> = {};
+
+  if (fs.existsSync(configPath)) {
+    try {
+      const content = fs.readFileSync(configPath, 'utf8');
+      rawConfig = yaml.parse(content) ?? {};
+    } catch {
+      // Fall through to use defaults
+      rawConfig = {};
+    }
+  }
+
+  // If no config file, use default policy (TDD)
+  if (Object.keys(rawConfig).length === 0) {
+    const defaultPolicy = getDefaultPolicy();
+    return {
+      threshold: defaultPolicy.coverage_threshold,
+      mode: defaultPolicy.coverage_mode,
+      tests_required: defaultPolicy.tests_required,
+    };
+  }
+
+  // Parse methodology config manually to avoid circular dependency with lumenflow-config-schema.ts
+  const methodologyRaw = rawConfig.methodology as Record<string, unknown> | undefined;
+  const gatesRaw = rawConfig.gates as Record<string, unknown> | undefined;
+
+  // Parse methodology with Zod to get defaults
+  const methodology = MethodologyConfigSchema.parse(methodologyRaw ?? {});
+
+  // Build the config structure that resolvePolicy expects
+  const minimalConfig = {
+    methodology: methodologyRaw, // Pass raw methodology for explicit detection
+    gates: {
+      minCoverage: gatesRaw?.minCoverage as number | undefined,
+      enableCoverage: gatesRaw?.enableCoverage as boolean | undefined,
+    },
+  };
+
+  // Resolve policy using the methodology configuration
+  const policy = resolvePolicy(
+    {
+      methodology,
+      gates: {
+        // Default gates values from schema
+        maxEslintWarnings: 100,
+        enableCoverage:
+          gatesRaw?.enableCoverage !== undefined ? Boolean(gatesRaw.enableCoverage) : true,
+        minCoverage: typeof gatesRaw?.minCoverage === 'number' ? gatesRaw.minCoverage : 90,
+        enableSafetyCriticalTests: true,
+        enableInvariants: true,
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
+    } as any,
+    {
+      rawConfig: minimalConfig,
+    },
+  );
+
+  return {
+    threshold: policy.coverage_threshold,
+    mode: policy.coverage_mode,
+    tests_required: policy.tests_required,
+  };
+}

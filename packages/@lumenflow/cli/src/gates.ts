@@ -66,9 +66,10 @@ import { runSystemMapValidation } from '@lumenflow/core/dist/system-map-validato
 // WU-1067: Config-driven gates support (partial implementation - unused imports removed)
 // WU-1191: Lane health gate configuration
 // WU-1262: Coverage config from methodology policy
+// WU-1280: Test policy for tests_required (warn vs block on test failures)
 import {
   loadLaneHealthConfig,
-  resolveCoverageConfig,
+  resolveTestPolicy,
   type LaneHealthMode,
 } from '@lumenflow/core/dist/gates-config.js';
 // WU-1191: Lane health check
@@ -1150,12 +1151,16 @@ async function executeGates(opts: {
   const isFullCoverage = opts.fullCoverage || false;
   // WU-1262: Resolve coverage config from methodology policy
   // This derives coverage threshold and mode from methodology.testing setting
-  const resolvedCoverage = resolveCoverageConfig(process.cwd());
+  // WU-1280: Use resolveTestPolicy to also get tests_required for test failure handling
+  const resolvedTestPolicy = resolveTestPolicy(process.cwd());
   // WU-1433: Coverage gate mode (warn or block)
   // WU-2334: Default changed from WARN to BLOCK for TDD enforcement
   // WU-1262: CLI flag overrides resolved policy, which overrides methodology defaults
-  const coverageMode = opts.coverageMode || resolvedCoverage.mode || COVERAGE_GATE_MODES.BLOCK;
-  const coverageThreshold = resolvedCoverage.threshold;
+  const coverageMode = opts.coverageMode || resolvedTestPolicy.mode || COVERAGE_GATE_MODES.BLOCK;
+  const coverageThreshold = resolvedTestPolicy.threshold;
+  // WU-1280: Determine if tests are required (affects whether test failures block or warn)
+  // When tests_required=false (methodology.testing: none), test failures produce warnings only
+  const testsRequired = resolvedTestPolicy.tests_required;
   // WU-1191: Lane health gate mode (warn, error, or off)
   const laneHealthMode = loadLaneHealthConfig(process.cwd());
 
@@ -1254,19 +1259,33 @@ async function executeGates(opts: {
           warnOnly: laneHealthMode !== 'error',
         },
         // WU-2062: Safety-critical tests ALWAYS run
-        { name: GATE_NAMES.SAFETY_CRITICAL_TEST, cmd: GATE_COMMANDS.SAFETY_CRITICAL_TEST },
+        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
+        {
+          name: GATE_NAMES.SAFETY_CRITICAL_TEST,
+          cmd: GATE_COMMANDS.SAFETY_CRITICAL_TEST,
+          warnOnly: !testsRequired,
+        },
         // WU-1920: Use changed tests by default, full suite with --full-tests
         // WU-2244: --full-coverage implies --full-tests for accurate coverage
+        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
         {
           name: GATE_NAMES.TEST,
           cmd:
             isFullTests || isFullCoverage
               ? pnpmCmd('turbo', 'run', 'test')
               : GATE_COMMANDS.INCREMENTAL_TEST,
+          warnOnly: !testsRequired,
         },
         // WU-2062: Integration tests only for high-risk changes
+        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
         ...(riskTier && riskTier.shouldRunIntegration
-          ? [{ name: GATE_NAMES.INTEGRATION_TEST, cmd: GATE_COMMANDS.TIERED_TEST }]
+          ? [
+              {
+                name: GATE_NAMES.INTEGRATION_TEST,
+                cmd: GATE_COMMANDS.TIERED_TEST,
+                warnOnly: !testsRequired,
+              },
+            ]
           : []),
         // WU-1433: Coverage gate with configurable mode (warn/block)
         { name: GATE_NAMES.COVERAGE, cmd: GATE_COMMANDS.COVERAGE_GATE },

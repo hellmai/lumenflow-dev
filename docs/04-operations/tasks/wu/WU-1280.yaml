@@ -6,19 +6,25 @@ status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
-  - packages/@lumenflow/core/src/gates.ts
-  - packages/@lumenflow/core/src/resolve-policy.ts
+  - packages/@lumenflow/core/src/gates-config.ts
+  - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/gates.test.ts
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1280.done
 dependencies: []
 initiative: INIT-008
 risks: []
-notes: ''
+notes: |
+  Implementation:
+  1. Added resolveTestPolicy() to gates-config.ts - returns CoverageConfig + tests_required
+  2. Updated CLI gates.ts to import resolveTestPolicy and apply tests_required
+  3. Test gates (SAFETY_CRITICAL_TEST, TEST, INTEGRATION_TEST) now have warnOnly: !testsRequired
+  4. When methodology.testing: none, test failures produce warnings instead of blocking
+  5. When methodology.testing: tdd or test-after, test failures block (existing behavior)
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
