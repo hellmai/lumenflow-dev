@@ -2,7 +2,7 @@ id: WU-1278
 title: Fix orchestrate:monitor path stripping bug
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -39,3 +39,5 @@ acceptance:
   - Path construction preserves .lumenflow/ prefix
   - Spawn registry loads correctly
   - Signal files are found and parsed
+locked: true
+completed_at: 2026-01-31T14:27:57.202Z
