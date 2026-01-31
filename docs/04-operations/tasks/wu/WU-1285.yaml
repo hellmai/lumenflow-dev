@@ -1,0 +1,32 @@
+id: WU-1285
+title: Fix mem:delete path calculation bug
+lane: 'Framework: Memory'
+type: bug
+status: ready
+priority: P1
+created: 2026-01-31
+code_paths:
+  - packages/@lumenflow/memory/src/mem-delete-core.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/memory/__tests__/mem-delete.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1285.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "mem:delete does not prepend .lumenflow/memory/ to baseDir before calling loadMemory. Results in 'Node not found' for all IDs. Fix: use path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR) in deleteMemoryNodes() and writeUpdatedNodes()."
+acceptance:
+  - mem:delete correctly finds nodes by ID
+  - mem:delete --dry-run shows correct nodes to delete
+  - mem:delete actually soft-deletes nodes
