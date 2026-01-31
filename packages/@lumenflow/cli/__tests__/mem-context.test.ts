@@ -17,6 +17,18 @@ import os from 'node:os';
 /** Test fixture constant for memory node content */
 const TEST_CONTENT = 'Test content';
 
+/** WU-1292: Test fixture constants for lane and limit tests */
+const LANE_CLI = 'Framework: CLI';
+const LANE_CORE = 'Framework: Core';
+const LIFECYCLE_PROJECT = 'project';
+const LIFECYCLE_WU = 'wu';
+const TYPE_CHECKPOINT = 'checkpoint';
+const TYPE_SUMMARY = 'summary';
+const FORMAT_JSON = 'json';
+/** CLI option flags */
+const OPT_MAX_RECENT_SUMMARIES = '--max-recent-summaries';
+const OPT_MAX_PROJECT_NODES = '--max-project-nodes';
+
 describe('mem:context CLI (WU-1234)', () => {
   let testDir: string;
   let memoryDir: string;
@@ -282,30 +294,57 @@ describe('mem:context CLI (WU-1234)', () => {
    * Note: Memory IDs must match format mem-[a-z0-9]{4} (exactly 4 alphanumeric chars after 'mem-')
    */
   describe('lane and limit options (WU-1292)', () => {
+    /**
+     * Helper to create summary nodes for limit testing
+     */
+    function createSummaryNodes(count: number): Array<Record<string, unknown>> {
+      return Array.from({ length: count }, (_, i) => ({
+        id: `mem-sm0${i + 1}`,
+        type: TYPE_SUMMARY,
+        lifecycle: LIFECYCLE_WU,
+        content: `Summary content ${i + 1}`,
+        created_at: new Date(Date.now() - (i + 1) * 1000).toISOString(),
+        wu_id: 'WU-1234',
+      }));
+    }
+
+    /**
+     * Helper to create project nodes for limit testing
+     */
+    function createProjectNodes(count: number): Array<Record<string, unknown>> {
+      return Array.from({ length: count }, (_, i) => ({
+        id: `mem-pn0${i + 1}`,
+        type: TYPE_CHECKPOINT,
+        lifecycle: LIFECYCLE_PROJECT,
+        content: `Project node content ${i + 1}`,
+        created_at: new Date(Date.now() - (i + 1) * 1000).toISOString(),
+      }));
+    }
+
     describe('--lane option', () => {
       it('accepts --lane option and filters context to that lane', async () => {
         // Arrange - create project nodes with different lanes
         // Use valid mem-xxxx format IDs (exactly 4 alphanumeric chars)
         const nodeWithLane = {
           id: 'mem-la01',
-          type: 'checkpoint',
-          lifecycle: 'project',
+          type: TYPE_CHECKPOINT,
+          lifecycle: LIFECYCLE_PROJECT,
           content: 'Project content for CLI lane',
           created_at: new Date().toISOString(),
-          metadata: { lane: 'Framework: CLI' },
+          metadata: { lane: LANE_CLI },
         };
         const nodeOtherLane = {
           id: 'mem-la02',
-          type: 'checkpoint',
-          lifecycle: 'project',
+          type: TYPE_CHECKPOINT,
+          lifecycle: LIFECYCLE_PROJECT,
           content: 'Project content for Core lane',
           created_at: new Date().toISOString(),
-          metadata: { lane: 'Framework: Core' },
+          metadata: { lane: LANE_CORE },
         };
         const nodeNoLane = {
           id: 'mem-la03',
-          type: 'checkpoint',
-          lifecycle: 'project',
+          type: TYPE_CHECKPOINT,
+          lifecycle: LIFECYCLE_PROJECT,
           content: 'General project content no lane',
           created_at: new Date().toISOString(),
         };
@@ -314,7 +353,7 @@ describe('mem:context CLI (WU-1234)', () => {
         await writeMemoryNode(nodeNoLane);
 
         // Act
-        const result = runCli(['--wu', 'WU-1234', '--lane', 'Framework: CLI', '--format', 'json']);
+        const result = runCli(['--wu', 'WU-1234', '--lane', LANE_CLI, '--format', FORMAT_JSON]);
 
         // Assert
         expect(result.exitCode).toBe(0);
@@ -339,14 +378,7 @@ describe('mem:context CLI (WU-1234)', () => {
     describe('--max-recent-summaries option', () => {
       it('accepts --max-recent-summaries option', async () => {
         // Arrange - create multiple summary nodes with valid IDs
-        const summaries = [1, 2, 3, 4, 5].map((i) => ({
-          id: `mem-sm0${i}`,
-          type: 'summary',
-          lifecycle: 'wu',
-          content: `Summary content ${i}`,
-          created_at: new Date(Date.now() - i * 1000).toISOString(),
-          wu_id: 'WU-1234',
-        }));
+        const summaries = createSummaryNodes(5);
         for (const summary of summaries) {
           await writeMemoryNode(summary);
         }
@@ -355,10 +387,10 @@ describe('mem:context CLI (WU-1234)', () => {
         const result = runCli([
           '--wu',
           'WU-1234',
-          '--max-recent-summaries',
+          OPT_MAX_RECENT_SUMMARIES,
           '2',
           '--format',
-          'json',
+          FORMAT_JSON,
         ]);
 
         // Assert
@@ -371,7 +403,7 @@ describe('mem:context CLI (WU-1234)', () => {
 
       it('rejects invalid --max-recent-summaries value', () => {
         // Act
-        const result = runCli(['--wu', 'WU-1234', '--max-recent-summaries', 'abc']);
+        const result = runCli(['--wu', 'WU-1234', OPT_MAX_RECENT_SUMMARIES, 'abc']);
 
         // Assert
         expect(result.exitCode).not.toBe(0);
@@ -379,7 +411,7 @@ describe('mem:context CLI (WU-1234)', () => {
 
       it('rejects negative --max-recent-summaries value', () => {
         // Act
-        const result = runCli(['--wu', 'WU-1234', '--max-recent-summaries', '-1']);
+        const result = runCli(['--wu', 'WU-1234', OPT_MAX_RECENT_SUMMARIES, '-1']);
 
         // Assert
         expect(result.exitCode).not.toBe(0);
@@ -389,19 +421,20 @@ describe('mem:context CLI (WU-1234)', () => {
     describe('--max-project-nodes option', () => {
       it('accepts --max-project-nodes option', async () => {
         // Arrange - create multiple project nodes with valid IDs
-        const projectNodes = [1, 2, 3, 4, 5].map((i) => ({
-          id: `mem-pn0${i}`,
-          type: 'checkpoint',
-          lifecycle: 'project',
-          content: `Project node content ${i}`,
-          created_at: new Date(Date.now() - i * 1000).toISOString(),
-        }));
+        const projectNodes = createProjectNodes(5);
         for (const node of projectNodes) {
           await writeMemoryNode(node);
         }
 
         // Act - limit to 2 project nodes
-        const result = runCli(['--wu', 'WU-1234', '--max-project-nodes', '2', '--format', 'json']);
+        const result = runCli([
+          '--wu',
+          'WU-1234',
+          OPT_MAX_PROJECT_NODES,
+          '2',
+          '--format',
+          FORMAT_JSON,
+        ]);
 
         // Assert
         expect(result.exitCode).toBe(0);
@@ -413,7 +446,7 @@ describe('mem:context CLI (WU-1234)', () => {
 
       it('rejects invalid --max-project-nodes value', () => {
         // Act
-        const result = runCli(['--wu', 'WU-1234', '--max-project-nodes', 'xyz']);
+        const result = runCli(['--wu', 'WU-1234', OPT_MAX_PROJECT_NODES, 'xyz']);
 
         // Assert
         expect(result.exitCode).not.toBe(0);
