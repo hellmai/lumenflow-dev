@@ -31,7 +31,6 @@ sections:
 - [WU-1232 — state:doctor --fix writes directly to main despite WU-1230 micro-worktree fix](wu/WU-1232.yaml) — Framework: CLI
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — Framework: Memory
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — Framework: Memory
-- [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 - [WU-1247 — Fix lint errors in CLI package (no-console, unused imports)](wu/WU-1247.yaml) — Framework: CLI
 - [WU-1252 — Fix pre-existing lint errors in initiative-orchestrator.ts](wu/WU-1252.yaml) — Framework: Initiatives
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
@@ -51,6 +50,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1235 — Add mem:index command for project convention indexing](wu/WU-1235.yaml) — Framework: Memory
 - [WU-1240 — Integrate mem:context into wu:spawn prompts](wu/WU-1240.yaml) — Framework: Core
+- [WU-1242 — Add --watch patrol mode for continuous spawn monitoring](wu/WU-1242.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

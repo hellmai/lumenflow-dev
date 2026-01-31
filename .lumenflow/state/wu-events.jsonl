@@ -485,3 +485,4 @@
 {"type":"complete","wuId":"WU-1241","timestamp":"2026-01-31T10:52:15.009Z"}
 {"type":"claim","wuId":"WU-1235","lane":"Framework: Memory","title":"Add mem:index command for project convention indexing","timestamp":"2026-01-31T11:43:14.966Z"}
 {"type":"claim","wuId":"WU-1240","lane":"Framework: Core","title":"Integrate mem:context into wu:spawn prompts","timestamp":"2026-01-31T11:46:01.412Z"}
+{"type":"claim","wuId":"WU-1242","lane":"Framework: CLI","title":"Add --watch patrol mode for continuous spawn monitoring","timestamp":"2026-01-31T11:46:38.351Z"}
