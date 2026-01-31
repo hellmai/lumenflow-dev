@@ -2,7 +2,7 @@ id: WU-1235
 title: Add mem:index command for project convention indexing
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -52,3 +52,11 @@ acceptance:
   - --dry-run flag shows what would be indexed without writing
   - Unit tests verify source scanning and node creation
   - Documentation updated in memory package README
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1235
+claimed_at: 2026-01-31T11:43:14.933Z
+baseline_main_sha: 4bc2b405544e1a9669ea32b714d4b6ee720fad3e
+session_id: b20dde8e-5e0f-4c81-a631-a2d2e5bb7a8e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T11:43:14.940Z
