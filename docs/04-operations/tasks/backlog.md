@@ -40,7 +40,6 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — Framework: Core
-- [WU-1285 — Fix mem:delete path calculation bug](wu/WU-1285.yaml) — Framework: Memory
 
 ## 🔧 In progress
 
@@ -49,6 +48,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml) — Framework: CLI
+- [WU-1285 — Fix mem:delete path calculation bug](wu/WU-1285.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 

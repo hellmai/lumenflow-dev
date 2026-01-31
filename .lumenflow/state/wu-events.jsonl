@@ -506,3 +506,4 @@
 {"type":"complete","wuId":"WU-1283","timestamp":"2026-01-31T16:59:38.853Z"}
 {"type":"complete","wuId":"WU-1284","timestamp":"2026-01-31T17:18:11.623Z"}
 {"type":"claim","wuId":"WU-1286","lane":"Framework: CLI","title":"Make --full default for lumenflow init and sync all CLI commands to docs","timestamp":"2026-01-31T17:26:48.169Z"}
+{"type":"claim","wuId":"WU-1285","lane":"Framework: Memory","title":"Fix mem:delete path calculation bug","timestamp":"2026-01-31T17:27:51.896Z"}
