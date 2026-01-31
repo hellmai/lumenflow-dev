@@ -2,7 +2,7 @@ id: WU-1287
 title: Align spawn memory context with mem-context-core
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -30,9 +30,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu-spawn-context duplicates memory context logic. Problem: spawn prompts miss mem-context-core features (lane filter, recency, decay/prioritization). Solution: delegate spawn memory context to mem-context-core.generateContext or make wu-spawn-context a thin wrapper with pass-through options.'
+description: 'Context: wu-spawn-context duplicates memory context logic. Problem: spawn prompts miss
+  mem-context-core features (lane filter, recency, decay/prioritization). Solution: delegate spawn
+  memory context to mem-context-core.generateContext or make wu-spawn-context a thin wrapper with
+  pass-through options.'
 acceptance:
   - wu:spawn memory context uses mem-context-core generateContext (no duplicate logic)
-  - Spawn context respects lane filter, recency limits, and decay/prioritization from mem-context-core
+  - Spawn context respects lane filter, recency limits, and decay/prioritization from
+    mem-context-core
   - wu-spawn-context integration tests updated to cover mem-context-core behavior
   - Spawn context output matches mem:context for equivalent inputs
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1287
+claimed_at: 2026-01-31T22:00:52.727Z
+baseline_main_sha: 990ba4e6583acbf3b660f3441b2867ec8d7d75e1
+session_id: c4cb3a03-5039-4478-9739-e657ba14983e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T22:00:52.732Z
