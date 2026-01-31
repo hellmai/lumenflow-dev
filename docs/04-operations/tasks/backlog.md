@@ -44,7 +44,6 @@ sections:
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — Framework: Core
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — Framework: Core
 - [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
-- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -54,6 +53,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — Framework: Core
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
+- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

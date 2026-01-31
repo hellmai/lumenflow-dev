@@ -10,6 +10,7 @@ _Last updated: 2026-01-31_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml)
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml)
+- [WU-1293 — Initiative bookkeeping for INIT-012 snags](wu/WU-1293.yaml)
 
 ## Completed
 
