@@ -2,7 +2,7 @@ id: WU-1279
 title: Wire methodology policy into spawn prompt generation
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -26,8 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Core spawn uses hardcoded TDD/Hex/90% Mandatory Standards. generateTestGuidance and tdd-directive don't consume resolvePolicy output. Methodology configurability from INIT-009/010 isn't flowing to agent prompts.
+description: Core spawn uses hardcoded TDD/Hex/90% Mandatory Standards. generateTestGuidance and
+  tdd-directive don't consume resolvePolicy output. Methodology configurability from INIT-009/010
+  isn't flowing to agent prompts.
 acceptance:
   - Spawn prompts use resolved methodology policy
   - Coverage thresholds come from policy not hardcoded
   - 'methodology.testing: none produces warn-only guidance'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1279
+claimed_at: 2026-01-31T14:15:12.366Z
+baseline_main_sha: e089ac9562536b9324c866c012647f21beffa0c4
+session_id: a285b8f7-5877-4bd8-9db5-ee027ed3e4ff
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T14:15:12.371Z
