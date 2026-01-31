@@ -5,13 +5,13 @@ _Last updated: 2026-01-31_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1286 — Make --full default for lumenflow init and sync all CLI commands to docs](wu/WU-1286.yaml)
 
 ## Completed
 
-- [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml) — 2026-01-31
-- [WU-1283 — Fix agent documentation loading - inline tooling in entry points](wu/WU-1283.yaml) — 2026-01-31
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -255,3 +255,5 @@ _Last updated: 2026-01-31_
 - [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — 2026-01-31
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — 2026-01-31
 - [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml) — 2026-01-31
+- [WU-1283 — Fix agent documentation loading - inline tooling in entry points](wu/WU-1283.yaml) — 2026-01-31
+- [WU-1284 — Add mem:delete command for memory node cleanup](wu/WU-1284.yaml) — 2026-01-31
