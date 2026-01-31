@@ -15,13 +15,24 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1285.done
 dependencies: []
+initiative: INIT-012
+phase: 3
 risks: []
 notes: ''
 requires_review: false
+locked: true
+completed_at: 2026-01-31T17:34:55.162Z
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-31T17:27:51.880Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1285
+session_id: e5470cf6-6b1c-4d77-8d83-6c10ecc02d14
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T17:27:51.883Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -32,14 +43,3 @@ acceptance:
   - mem:delete correctly finds nodes by ID
   - mem:delete --dry-run shows correct nodes to delete
   - mem:delete actually soft-deletes nodes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1285
-claimed_at: 2026-01-31T17:27:51.880Z
-baseline_main_sha: 03e5b78c8a982438e41250e75dd43536e45f043d
-session_id: e5470cf6-6b1c-4d77-8d83-6c10ecc02d14
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-31T17:27:51.883Z
-initiative: INIT-012
-locked: true
-completed_at: 2026-01-31T17:34:55.162Z
