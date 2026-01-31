@@ -15,22 +15,22 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
 import {
   archiveByDecay,
   isArchived,
   DEFAULT_DECAY_THRESHOLD,
-  type DecayArchiveResult,
 } from '../src/decay/archival.js';
-import { loadMemory, loadMemoryAll, MEMORY_FILE_NAME } from '../src/memory-store.js';
+import { loadMemoryAll, MEMORY_FILE_NAME } from '../src/memory-store.js';
 import { DEFAULT_HALF_LIFE_MS } from '../src/decay/scoring.js';
 import type { MemoryNode } from '../src/memory-schema.js';
 
 /**
- * Helper to create a memory node
+ * Helper to create a memory node with secure random ID
  */
 function createNode(overrides: Partial<MemoryNode> = {}): MemoryNode {
   return {
-    id: `mem-${Math.random().toString(36).slice(2, 6)}`,
+    id: `mem-${crypto.randomBytes(3).toString('hex')}`,
     type: 'checkpoint',
     lifecycle: 'wu',
     content: 'Test content',

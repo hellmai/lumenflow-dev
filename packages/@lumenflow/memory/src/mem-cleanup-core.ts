@@ -39,9 +39,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ms = require('ms') as (value: string) => number;
-import { loadMemory, loadMemoryAll, MEMORY_FILE_NAME } from './memory-store.js';
+import { loadMemoryAll, MEMORY_FILE_NAME } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 import {
