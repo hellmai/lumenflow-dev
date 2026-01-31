@@ -8,6 +8,8 @@ created: 2026-01-31
 code_paths:
   - packages/@lumenflow/cli/src/mem-delete.ts
   - packages/@lumenflow/memory/src/memory-store.ts
+  - packages/@lumenflow/cli/src/mem-delete.ts
+  - packages/@lumenflow/memory/src/mem-delete-core.ts
 tests:
   manual: []
   unit:
@@ -19,10 +21,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-01-31T16:59:36.494Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-memory-wu-1284
+session_id: 42bb467d-35c6-4fbf-b5fa-994d53d1a291
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T16:59:36.500Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +43,3 @@ acceptance:
   - Supports --dry-run to preview deletion
   - Optionally supports bulk delete via --tag or --older-than filters
   - Respects append-only pattern (soft delete via metadata.status=deleted)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-memory-wu-1284
-claimed_at: 2026-01-31T16:59:36.494Z
-baseline_main_sha: 3652d9b445ad6398c52a014df33f54b7baa47224
-session_id: 42bb467d-35c6-4fbf-b5fa-994d53d1a291
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-01-31T16:59:36.500Z
