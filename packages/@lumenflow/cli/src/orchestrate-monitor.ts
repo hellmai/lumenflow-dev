@@ -139,7 +139,8 @@ export async function runMonitor(options: MonitorOptions = {}): Promise<MonitorR
   } = options;
 
   // Load spawn registry
-  const stateDir = join(baseDir, LUMENFLOW_PATHS.STATE_DIR.replace('.lumenflow/', ''));
+  // WU-1278: Use full LUMENFLOW_PATHS.STATE_DIR without stripping .lumenflow/ prefix
+  const stateDir = join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
   const store = new SpawnRegistryStore(stateDir);
 
   let spawns: ReturnType<typeof store.getAllSpawns> = [];
@@ -224,7 +225,8 @@ function parseTimeString(timeStr: string): Date {
 
 function loadRecentSignals(since: Date, baseDir: string = process.cwd()): Signal[] {
   const signals: Signal[] = [];
-  const memoryDir = join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR.replace('.lumenflow/', ''));
+  // WU-1278: Use full LUMENFLOW_PATHS.MEMORY_DIR without stripping .lumenflow/ prefix
+  const memoryDir = join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
 
   if (!existsSync(memoryDir)) {
     return signals;

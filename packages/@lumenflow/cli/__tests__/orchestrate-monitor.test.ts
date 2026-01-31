@@ -285,6 +285,111 @@ describe('orchestrate:monitor (WU-1241)', () => {
       expect(suggestions.length).toBe(0);
     });
   });
+
+  /**
+   * WU-1278: Path construction bug fix
+   *
+   * These tests verify that runMonitor and loadRecentSignals use
+   * the correct paths with .lumenflow/ prefix preserved.
+   *
+   * The bug was stripping .lumenflow/ prefix from paths:
+   * - Line 142: join(baseDir, LUMENFLOW_PATHS.STATE_DIR.replace('.lumenflow/', ''))
+   * - Line 227: join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR.replace('.lumenflow/', ''))
+   *
+   * This resulted in paths like /base/state instead of /base/.lumenflow/state
+   */
+  describe('path construction (WU-1278)', () => {
+    // Test constant to avoid lint warning about duplicate strings
+    const TEST_BASE_PATH = '/test/base';
+
+    it('LUMENFLOW_PATHS.STATE_DIR should not be modified when constructing state path', async () => {
+      const { LUMENFLOW_PATHS } = await import('@lumenflow/core');
+      const { join } = await import('node:path');
+
+      // Verify LUMENFLOW_PATHS.STATE_DIR has the expected value
+      expect(LUMENFLOW_PATHS.STATE_DIR).toBe('.lumenflow/state');
+
+      // Verify correct path construction (what it should be)
+      const correctPath = join(TEST_BASE_PATH, LUMENFLOW_PATHS.STATE_DIR);
+      expect(correctPath).toBe(`${TEST_BASE_PATH}/.lumenflow/state`);
+
+      // Verify buggy path construction (what it was doing)
+      const buggyPath = join(TEST_BASE_PATH, LUMENFLOW_PATHS.STATE_DIR.replace('.lumenflow/', ''));
+      expect(buggyPath).toBe(`${TEST_BASE_PATH}/state`);
+
+      // These should NOT be equal - the bug was making them equal
+      expect(correctPath).not.toBe(buggyPath);
+    });
+
+    it('LUMENFLOW_PATHS.MEMORY_DIR should not be modified when constructing memory path', async () => {
+      const { LUMENFLOW_PATHS } = await import('@lumenflow/core');
+      const { join } = await import('node:path');
+
+      // Verify LUMENFLOW_PATHS.MEMORY_DIR has the expected value
+      expect(LUMENFLOW_PATHS.MEMORY_DIR).toBe('.lumenflow/memory');
+
+      // Verify correct path construction (what it should be)
+      const correctPath = join(TEST_BASE_PATH, LUMENFLOW_PATHS.MEMORY_DIR);
+      expect(correctPath).toBe(`${TEST_BASE_PATH}/.lumenflow/memory`);
+
+      // Verify buggy path construction (what it was doing)
+      const buggyPath = join(TEST_BASE_PATH, LUMENFLOW_PATHS.MEMORY_DIR.replace('.lumenflow/', ''));
+      expect(buggyPath).toBe(`${TEST_BASE_PATH}/memory`);
+
+      // These should NOT be equal - the bug was making them equal
+      expect(correctPath).not.toBe(buggyPath);
+    });
+
+    it('runMonitor should construct state path correctly (integration test)', async () => {
+      // Import the actual module to test its path construction
+      const { runMonitor } = await import('../src/orchestrate-monitor.js');
+      const { LUMENFLOW_PATHS, SpawnRegistryStore } = await import('@lumenflow/core');
+      const path = await import('node:path');
+      const fs = await import('node:fs');
+      const os = await import('node:os');
+
+      // Create a temp directory for testing
+      const testBaseDir = path.join(os.tmpdir(), `orchestrate-monitor-test-${Date.now()}`);
+      fs.mkdirSync(testBaseDir, { recursive: true });
+
+      // Create the CORRECT path structure (.lumenflow/state)
+      const correctStateDir = path.join(testBaseDir, LUMENFLOW_PATHS.STATE_DIR);
+      fs.mkdirSync(correctStateDir, { recursive: true });
+
+      // Write a spawn registry file at the correct path
+      const registryPath = path.join(correctStateDir, 'spawn-registry.jsonl');
+      const spawnEvent = {
+        id: 'spawn-a1b2', // Must match pattern spawn-XXXX
+        parentWuId: 'WU-1000',
+        targetWuId: 'WU-1001',
+        lane: 'Framework: CLI',
+        spawnedAt: new Date().toISOString(),
+        status: 'completed',
+        completedAt: new Date().toISOString(),
+      };
+      fs.writeFileSync(registryPath, JSON.stringify(spawnEvent) + '\n');
+
+      // First, verify the file exists and can be loaded directly
+      const directStore = new SpawnRegistryStore(correctStateDir);
+      await directStore.load();
+      const directSpawns = directStore.getAllSpawns();
+      expect(directSpawns.length).toBe(1);
+      expect(directSpawns[0].status).toBe('completed');
+
+      try {
+        // Run monitor with the test directory
+        const result = await runMonitor({ baseDir: testBaseDir });
+
+        // If paths are constructed correctly, the spawn registry should be found
+        // and we should see 1 completed spawn
+        expect(result.analysis.completed).toBe(1);
+        expect(result.analysis.total).toBe(1);
+      } finally {
+        // Cleanup
+        fs.rmSync(testBaseDir, { recursive: true, force: true });
+      }
+    });
+  });
 });
 
 // Helper function to create mock spawn events
