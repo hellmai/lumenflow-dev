@@ -27,6 +27,16 @@ const TEST_LANE = 'Framework: Core';
 const TEST_TYPE_FEATURE = 'feature';
 const TEST_METHODOLOGY_TEST_AFTER = 'test-after';
 const TEST_TDD_DIRECTIVE = 'TDD DIRECTIVE';
+const TEST_DESCRIPTION = 'Test description';
+const TEST_CODE_PATH = 'packages/@lumenflow/core/src/test.ts';
+const TEST_FAILING_TEST = 'FAILING TEST';
+const TEST_ARCH_LAYERED = 'layered';
+const TEST_ARCH_NONE = 'none';
+const TEST_METHODOLOGY_NONE = 'none';
+const TEST_AFTER_LABEL = 'Test-After';
+const TEST_HEXAGONAL_ARCH = 'Hexagonal Architecture';
+// Regex pattern for extracting Mandatory Standards section
+const MANDATORY_STANDARDS_REGEX = /## Mandatory Standards[\s\S]*?(?=---|\n##|$)/;
 
 describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
   describe('AC1: Prompt template content lives in @lumenflow/core only', () => {
@@ -58,9 +68,9 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
       lane: TEST_LANE,
       type: TEST_TYPE_FEATURE,
       status: 'ready',
-      description: 'Test description',
+      description: TEST_DESCRIPTION,
       acceptance: ['AC1', 'AC2'],
-      code_paths: ['packages/@lumenflow/core/src/test.ts'],
+      code_paths: [TEST_CODE_PATH],
     };
 
     it('should include TRUNCATION_WARNING_BANNER at start of output', () => {
@@ -90,7 +100,7 @@ describe('WU-1192: Consolidated wu-spawn prompt generation', () => {
     it('should return TDD directive for feature type', () => {
       const guidance = generateTestGuidance(TEST_TYPE_FEATURE);
       expect(guidance).toContain(TEST_TDD_DIRECTIVE);
-      expect(guidance).toContain('FAILING TEST');
+      expect(guidance).toContain(TEST_FAILING_TEST);
     });
 
     it('should return refactor guidance for refactor type', () => {
@@ -185,7 +195,7 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
 
       expect(guidance).toContain(TEST_TDD_DIRECTIVE);
-      expect(guidance).toContain('FAILING TEST');
+      expect(guidance).toContain(TEST_FAILING_TEST);
     });
 
     it('should return test-after directive when policy.testing is "test-after"', () => {
@@ -193,18 +203,18 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       const policy = resolvePolicy(config);
       const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
 
-      expect(guidance).toContain('Test-After');
+      expect(guidance).toContain(TEST_AFTER_LABEL);
       expect(guidance).not.toContain(TEST_TDD_DIRECTIVE);
       expect(guidance).toContain('implementation first');
     });
 
     it('should return minimal guidance when policy.testing is "none"', () => {
-      const config = parseConfig({ methodology: { testing: 'none' } });
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
       const policy = resolvePolicy(config);
       const guidance = generatePolicyBasedTestGuidance(TEST_TYPE_FEATURE, policy);
 
       expect(guidance).not.toContain(TEST_TDD_DIRECTIVE);
-      expect(guidance).not.toContain('Test-After');
+      expect(guidance).not.toContain(TEST_AFTER_LABEL);
       expect(guidance).toContain('Testing Optional');
     });
 
@@ -229,12 +239,12 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       const policy = resolvePolicy(config);
       const guidance = generatePolicyBasedArchitectureGuidance(policy);
 
-      expect(guidance).toContain('Hexagonal Architecture');
+      expect(guidance).toContain(TEST_HEXAGONAL_ARCH);
       expect(guidance).toContain('Ports');
     });
 
     it('should return layered guidance when policy.architecture is "layered"', () => {
-      const config = parseConfig({ methodology: { architecture: 'layered' } });
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_LAYERED } });
       const policy = resolvePolicy(config);
       const guidance = generatePolicyBasedArchitectureGuidance(policy);
 
@@ -243,7 +253,7 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
     });
 
     it('should return empty string when policy.architecture is "none"', () => {
-      const config = parseConfig({ methodology: { architecture: 'none' } });
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_NONE } });
       const policy = resolvePolicy(config);
       const guidance = generatePolicyBasedArchitectureGuidance(policy);
 
@@ -282,7 +292,7 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
     });
 
     it('should show tests_required status', () => {
-      const config = parseConfig({ methodology: { testing: 'none' } });
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
       const policy = resolvePolicy(config);
       const summary = generateEnforcementSummary(policy);
 
@@ -304,9 +314,9 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       lane: TEST_LANE,
       type: TEST_TYPE_FEATURE,
       status: 'ready',
-      description: 'Test description',
+      description: TEST_DESCRIPTION,
       acceptance: ['AC1', 'AC2'],
-      code_paths: ['packages/@lumenflow/core/src/test.ts'],
+      code_paths: [TEST_CODE_PATH],
     };
 
     it('should include TDD directive by default', () => {
@@ -320,7 +330,7 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
       const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
 
-      expect(output).toContain('Hexagonal Architecture');
+      expect(output).toContain(TEST_HEXAGONAL_ARCH);
     });
 
     it('should include 90% coverage reference by default', () => {
@@ -328,6 +338,161 @@ describe('WU-1261: Integrate resolvePolicy() with wu:spawn template assembly', (
       const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
 
       expect(output).toContain('90%');
+    });
+  });
+});
+
+/**
+ * WU-1279: Wire methodology policy into spawn prompt generation
+ *
+ * Acceptance Criteria:
+ * 1. Spawn prompts use resolved methodology policy
+ * 2. Coverage thresholds come from policy not hardcoded
+ * 3. methodology.testing: none produces warn-only guidance
+ */
+describe('WU-1279: Wire methodology policy into spawn prompt generation', () => {
+  const mockWUDoc = {
+    title: 'Test WU',
+    lane: TEST_LANE,
+    type: TEST_TYPE_FEATURE,
+    status: 'ready',
+    description: TEST_DESCRIPTION,
+    acceptance: ['AC1', 'AC2'],
+    code_paths: [TEST_CODE_PATH],
+  };
+
+  describe('AC1: Spawn prompts use resolved methodology policy', () => {
+    it('should use generatePolicyBasedTestGuidance in generateTaskInvocation when config passed', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Test-after methodology should NOT include TDD directive
+      expect(output).not.toContain(TEST_TDD_DIRECTIVE);
+      expect(output).toContain(TEST_AFTER_LABEL);
+    });
+
+    it('should use resolved architecture policy in spawn output', () => {
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_LAYERED } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should NOT contain hexagonal architecture when layered is configured
+      expect(output).not.toContain(TEST_HEXAGONAL_ARCH);
+      expect(output).toContain('Layered');
+    });
+
+    it('should include enforcement summary from resolved policy', () => {
+      const config = parseConfig({
+        methodology: { testing: 'tdd', architecture: 'hexagonal' },
+      });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('You will be judged by');
+    });
+  });
+
+  describe('AC2: Coverage thresholds come from policy not hardcoded', () => {
+    it('should use TDD template default (90%) when methodology.testing is tdd', () => {
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('90%');
+    });
+
+    it('should use test-after template default (70%) when methodology.testing is test-after', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('70%');
+    });
+
+    it('should use overridden coverage threshold when specified', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: 'tdd',
+          overrides: { coverage_threshold: 85 },
+        },
+      });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('85%');
+      // Should NOT contain the default 90%
+      expect(output).not.toMatch(/90%\+? coverage/);
+    });
+  });
+
+  describe('AC3: methodology.testing: none produces warn-only guidance', () => {
+    it('should produce testing optional guidance when methodology.testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('Testing Optional');
+      expect(output).not.toContain(TEST_TDD_DIRECTIVE);
+      expect(output).not.toContain(TEST_FAILING_TEST);
+    });
+
+    it('should show tests as optional in enforcement summary when testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('optional');
+      expect(policy.tests_required).toBe(false);
+    });
+
+    it('should show coverage as disabled in enforcement summary when testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const policy = resolvePolicy(config);
+      const summary = generateEnforcementSummary(policy);
+
+      expect(summary).toContain('disabled');
+      expect(policy.coverage_mode).toBe('off');
+    });
+  });
+
+  describe('Mandatory Standards section uses resolved policy', () => {
+    it('should not include hardcoded TDD reference when methodology is test-after', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // The "Mandatory Standards" section should not have hardcoded TDD
+      // when the methodology is test-after
+      const mandatoryStandardsSection = MANDATORY_STANDARDS_REGEX.exec(output)?.[0];
+      expect(mandatoryStandardsSection).toBeDefined();
+      expect(mandatoryStandardsSection).not.toContain('Failing test first');
+    });
+
+    it('should not include hardcoded 90%+ when methodology has different coverage', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: TEST_METHODOLOGY_TEST_AFTER,
+          overrides: { coverage_threshold: 75 },
+        },
+      });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should not contain "90%+" in the Mandatory Standards
+      const mandatoryStandardsSection = MANDATORY_STANDARDS_REGEX.exec(output)?.[0];
+      expect(mandatoryStandardsSection).not.toContain('90%+');
+    });
+
+    it('should not include architecture guidance when architecture is none', () => {
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_NONE } });
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should not contain architecture-specific references
+      const mandatoryStandardsSection = MANDATORY_STANDARDS_REGEX.exec(output)?.[0];
+      expect(mandatoryStandardsSection).not.toContain(TEST_HEXAGONAL_ARCH);
+      expect(mandatoryStandardsSection).not.toContain('Ports-first');
     });
   });
 });
