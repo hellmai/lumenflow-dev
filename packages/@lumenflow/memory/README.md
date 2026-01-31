@@ -130,6 +130,37 @@ The context block includes:
 
 Selection is deterministic (filter by lifecycle, wu_id, recency). Max size is configurable (default 4KB). Returns empty block if no memories match.
 
+### Project Indexing (WU-1235)
+
+Index project conventions for agent context awareness:
+
+```typescript
+import { indexProject, getDefaultSources } from '@lumenflow/memory/index';
+
+// Index project conventions
+const result = await indexProject('/path/to/project');
+console.log(`Created: ${result.nodesCreated}, Updated: ${result.nodesUpdated}`);
+
+// Dry-run mode (no writes)
+const dryResult = await indexProject('/path/to/project', { dryRun: true });
+console.log('Would index:', dryResult.sourcesScanned);
+
+// Get default sources that will be scanned
+const sources = getDefaultSources();
+// ['README.md', 'LUMENFLOW.md', 'package.json', ...]
+```
+
+Default sources scanned:
+
+- **README.md**: Project overview (tagged: `index:architecture`)
+- **LUMENFLOW.md**: Workflow conventions (tagged: `index:conventions`)
+- **package.json**: Monorepo structure (tagged: `index:architecture`)
+- **.lumenflow.config.yaml**: Workflow config (tagged: `index:commands`, `index:conventions`)
+- **.lumenflow/constraints.md**: Project invariants (tagged: `index:invariants`)
+
+Each node includes provenance metadata: `source_path`, `source_hash`, `indexed_at`.
+Idempotent: re-running updates or skips existing nodes based on content hash.
+
 ## Subpath Exports
 
 ```typescript
@@ -147,6 +178,7 @@ import { createMemoryNode } from '@lumenflow/memory/create';
 import { summarizeWu } from '@lumenflow/memory/summarize';
 import { triageBugs } from '@lumenflow/memory/triage';
 import { generateContext } from '@lumenflow/memory/context';
+import { indexProject } from '@lumenflow/memory/index';
 import { MemoryNodeSchema } from '@lumenflow/memory/schema';
 import { loadMemory, appendNode } from '@lumenflow/memory/store';
 ```
@@ -168,7 +200,19 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 | -------------------------------- | --------------------------------------------- |
 | `generateContext(baseDir, opts)` | Generate formatted context block for wu:spawn |
 
-Options:
+### Project Indexing
+
+| Function                      | Description                           |
+| ----------------------------- | ------------------------------------- |
+| `indexProject(baseDir, opts)` | Scan sources and create summary nodes |
+| `getDefaultSources()`         | Get list of default sources to scan   |
+
+Options for `indexProject`:
+
+- `dryRun` (optional): If true, show what would be indexed without writing (default: false)
+- `additionalSources` (optional): Additional source definitions to scan
+
+Options for `generateContext`:
 
 - `wuId` (required): WU ID to generate context for
 - `maxSize` (optional): Maximum context size in bytes (default: 4096)
