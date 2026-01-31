@@ -18,6 +18,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { MemoryNode } from './memory-schema.js';
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
+import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
  * Duration multipliers in milliseconds
@@ -262,7 +263,7 @@ async function writeUpdatedNodes(baseDir: string, nodes: MemoryNode[]): Promise<
  * Respects the append-only pattern by updating nodes in-place rather than
  * physically removing them from the file.
  *
- * @param baseDir - Directory containing memory.jsonl
+ * @param baseDir - Project root directory containing .lumenflow/memory/
  * @param options - Delete options (filters and dry-run)
  * @returns Result with deleted IDs and any errors
  *
@@ -296,10 +297,14 @@ export async function deleteMemoryNodes(
     };
   }
 
+  // WU-1285: Compute the memory directory path from baseDir
+  // The memory file lives at .lumenflow/memory/memory.jsonl
+  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
+
   // Load all memory including archived/deleted nodes
   let memory;
   try {
-    memory = await loadMemory(baseDir, { includeArchived: true });
+    memory = await loadMemory(memoryDir, { includeArchived: true });
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     return {
@@ -341,8 +346,8 @@ export async function deleteMemoryNodes(
       return node;
     });
 
-    // Write back to file
-    await writeUpdatedNodes(baseDir, updatedNodes);
+    // Write back to file (using memoryDir, not baseDir)
+    await writeUpdatedNodes(memoryDir, updatedNodes);
   }
 
   // Determine success:
