@@ -6,9 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-01-31
 code_paths:
-  - .claude/hooks/validate-worktree-path.sh
-  - .claude/settings.json
   - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
 tests:
   manual:
