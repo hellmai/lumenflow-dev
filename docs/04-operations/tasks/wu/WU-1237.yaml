@@ -13,8 +13,8 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/memory/src/__tests__/mem-promote-core.test.ts
-    - packages/@lumenflow/memory/src/__tests__/mem-profile-core.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-promote-core.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-profile-core.test.ts
     - packages/@lumenflow/cli/__tests__/mem-promote.test.ts
   e2e: []
 artifacts:
