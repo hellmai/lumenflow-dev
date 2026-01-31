@@ -209,6 +209,32 @@ function buildHeader(wuId: string): string {
 }
 
 /**
+ * Creates an empty context result
+ */
+function createEmptyResult(): GenerateContextResult {
+  return {
+    success: true,
+    contextBlock: '',
+    stats: {
+      totalNodes: 0,
+      byType: {},
+      truncated: false,
+      size: 0,
+    },
+  };
+}
+
+/**
+ * Adds a section to the sections array if it has content
+ */
+function addSectionIfNotEmpty(sections: string[], header: string, nodes: MemoryNode[]): void {
+  const section = formatSection(header, nodes);
+  if (section) {
+    sections.push(section);
+  }
+}
+
+/**
  * Truncates the context block to fit within max size
  * Removes nodes from the end while keeping structure intact
  */
@@ -282,115 +308,44 @@ export async function generateContext(
     now = Date.now(),
   } = options;
 
-  // WU-1238: Choose comparator based on sortByDecay option
-  const sortComparator = sortByDecay ? createCompareByDecay(now, halfLifeMs) : compareByRecency;
-
   // Validate WU ID
   validateWuId(wuId);
 
   const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
+  const allNodes = await loadNodesOrEmpty(memoryDir);
 
-  // Load all memory nodes
-  let allNodes: MemoryNode[] = [];
-  try {
-    const memory = await loadMemory(memoryDir);
-    allNodes = memory.nodes;
-  } catch (error) {
-    // If memory directory doesn't exist or is empty, return empty result
-    const err = error as { code?: string };
-    if (err.code === 'ENOENT') {
-      return {
-        success: true,
-        contextBlock: '',
-        stats: {
-          totalNodes: 0,
-          byType: {},
-          truncated: false,
-          size: 0,
-        },
-      };
-    }
-    throw error;
-  }
-
-  // If no nodes, return empty result
   if (allNodes.length === 0) {
-    return {
-      success: true,
-      contextBlock: '',
-      stats: {
-        totalNodes: 0,
-        byType: {},
-        truncated: false,
-        size: 0,
-      },
-    };
+    return createEmptyResult();
   }
 
-  // Collect nodes for each section
-  // WU-1238: Use sortComparator for all sections (either recency or decay-based)
-  // 1. Project profile: lifecycle=project
+  // WU-1238: Choose comparator based on sortByDecay option
+  const sortComparator = sortByDecay ? createCompareByDecay(now, halfLifeMs) : compareByRecency;
+
+  // Collect and sort nodes for each section
   const projectNodes = [...filterByLifecycle(allNodes, 'project')].sort(sortComparator);
-
-  // 2. Summaries: type=summary, wu_id match OR recent
-  const allSummaries = filterByType(allNodes, 'summary');
-  const wuSummaries = filterByWuId(allSummaries, wuId);
-  const summaryNodes = [...wuSummaries].sort(sortComparator);
-
-  // 3. WU context: wu_id match, not summary/discovery
-  const wuNodes = filterByWuId(allNodes, wuId);
-  const wuContextFiltered = wuNodes.filter(
-    (node) => node.type !== 'summary' && node.type !== 'discovery',
+  const summaryNodes = [...filterByWuId(filterByType(allNodes, 'summary'), wuId)].sort(
+    sortComparator,
   );
-  const wuContextNodes = [...wuContextFiltered].sort(sortComparator);
+  const wuContextNodes = [...filterByWuId(allNodes, wuId)]
+    .filter((node) => node.type !== 'summary' && node.type !== 'discovery')
+    .sort(sortComparator);
+  const discoveryNodes = [...filterByWuId(filterByType(allNodes, 'discovery'), wuId)].sort(
+    sortComparator,
+  );
 
-  // 4. Discoveries: type=discovery, wu_id match
-  const discoveryFiltered = filterByWuId(filterByType(allNodes, 'discovery'), wuId);
-  const discoveryNodes = [...discoveryFiltered].sort(sortComparator);
+  // Build the context block with sections
+  const sections: string[] = [buildHeader(wuId)];
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.PROJECT_PROFILE, projectNodes);
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.SUMMARIES, summaryNodes);
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.WU_CONTEXT, wuContextNodes);
+  addSectionIfNotEmpty(sections, SECTION_HEADERS.DISCOVERIES, discoveryNodes);
 
-  // Build the context block
-  const sections: string[] = [];
-
-  sections.push(buildHeader(wuId));
-
-  const projectSection = formatSection(SECTION_HEADERS.PROJECT_PROFILE, projectNodes);
-  if (projectSection) {
-    sections.push(projectSection);
-  }
-
-  const summarySection = formatSection(SECTION_HEADERS.SUMMARIES, summaryNodes);
-  if (summarySection) {
-    sections.push(summarySection);
-  }
-
-  const wuContextSection = formatSection(SECTION_HEADERS.WU_CONTEXT, wuContextNodes);
-  if (wuContextSection) {
-    sections.push(wuContextSection);
-  }
-
-  const discoverySection = formatSection(SECTION_HEADERS.DISCOVERIES, discoveryNodes);
-  if (discoverySection) {
-    sections.push(discoverySection);
-  }
-
-  // If no sections have content, return empty
+  // If no sections have content (only header), return empty
   if (sections.length === 1) {
-    // Only header
-    return {
-      success: true,
-      contextBlock: '',
-      stats: {
-        totalNodes: 0,
-        byType: {},
-        truncated: false,
-        size: 0,
-      },
-    };
+    return createEmptyResult();
   }
 
   const rawContextBlock = sections.join('');
-
-  // Apply size limit
   const { content: contextBlock, truncated } = truncateToSize(rawContextBlock, maxSize);
 
   // Calculate statistics
@@ -401,16 +356,13 @@ export async function generateContext(
   }
 
   // WU-1238: Track access for selected nodes if requested
-  let accessTracked = 0;
-  if (trackAccess && selectedNodes.length > 0) {
-    const nodeIds = selectedNodes.map((n) => n.id);
-    try {
-      const tracked = await recordAccessBatch(memoryDir, nodeIds, { now, halfLifeMs });
-      accessTracked = tracked.length;
-    } catch {
-      // Access tracking is best-effort; don't fail context generation
-    }
-  }
+  const accessTracked = await trackAccessIfEnabled(
+    trackAccess,
+    selectedNodes,
+    memoryDir,
+    now,
+    halfLifeMs,
+  );
 
   return {
     success: true,
@@ -423,4 +375,44 @@ export async function generateContext(
       ...(trackAccess ? { accessTracked } : {}),
     },
   };
+}
+
+/**
+ * Loads memory nodes, returning empty array if directory doesn't exist
+ */
+async function loadNodesOrEmpty(memoryDir: string): Promise<MemoryNode[]> {
+  try {
+    const memory = await loadMemory(memoryDir);
+    return memory.nodes;
+  } catch (error) {
+    const err = error as { code?: string };
+    if (err.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+/**
+ * Tracks access for nodes if enabled, returns count of tracked nodes
+ */
+async function trackAccessIfEnabled(
+  trackAccess: boolean,
+  nodes: MemoryNode[],
+  memoryDir: string,
+  now: number,
+  halfLifeMs: number,
+): Promise<number> {
+  if (!trackAccess || nodes.length === 0) {
+    return 0;
+  }
+
+  try {
+    const nodeIds = nodes.map((n) => n.id);
+    const tracked = await recordAccessBatch(memoryDir, nodeIds, { now, halfLifeMs });
+    return tracked.length;
+  } catch {
+    // Access tracking is best-effort; don't fail context generation
+    return 0;
+  }
 }

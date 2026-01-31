@@ -14,21 +14,17 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {
-  recordAccess,
-  recordAccessBatch,
-  getAccessStats,
-  type AccessStats,
-} from '../src/decay/access-tracking.js';
-import { loadMemory, appendNode, MEMORY_FILE_NAME } from '../src/memory-store.js';
+import crypto from 'node:crypto';
+import { recordAccess, recordAccessBatch, getAccessStats } from '../src/decay/access-tracking.js';
+import { loadMemory, MEMORY_FILE_NAME } from '../src/memory-store.js';
 import type { MemoryNode } from '../src/memory-schema.js';
 
 /**
- * Helper to create a memory node
+ * Helper to create a memory node with secure random ID
  */
 function createNode(overrides: Partial<MemoryNode> = {}): MemoryNode {
   return {
-    id: `mem-${Math.random().toString(36).slice(2, 6)}`,
+    id: `mem-${crypto.randomBytes(3).toString('hex')}`,
     type: 'checkpoint',
     lifecycle: 'wu',
     content: 'Test content',
