@@ -2,7 +2,7 @@ id: WU-1238
 title: Add access tracking and decay scoring to memory layer
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-30
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - Unit tests cover scoring algorithm, access tracking, and archival
   - Integration test verifies decay affects mem:context ranking
   - Documentation updated in memory package README
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1238
+claimed_at: 2026-01-31T15:36:34.139Z
+baseline_main_sha: 14df84bb26828a539a20fb918c8c56874a0efc8a
+session_id: ed45845a-ecbf-496c-9619-540fb8dd80a6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T15:36:34.146Z
