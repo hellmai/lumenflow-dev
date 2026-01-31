@@ -41,11 +41,6 @@ sections:
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1265 — Fix pre-existing formatting issues in docs and settings](wu/WU-1265.yaml) — Content: Documentation
 - [WU-1271 — Fix wu-edit risks replace-by-default behavior](wu/WU-1271.yaml) — Framework: CLI
-- [WU-1273 — CLI integration tests: wu:create, wu:claim, wu:status](wu/WU-1273.yaml) — Framework: CLI
-- [WU-1274 — CLI integration tests: wu:prep, wu:done workflow](wu/WU-1274.yaml) — Framework: CLI
-- [WU-1275 — Memory layer tests: checkpoint, signal, inbox](wu/WU-1275.yaml) — Framework: Memory
-- [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
-- [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -53,7 +48,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1272 — Create INIT-011 comprehensive test suite initiative](wu/WU-1272.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -292,3 +286,4 @@ sections:
 - [WU-1270 — Telemetry: methodology selection tracking (opt-in)](wu/WU-1270.yaml)
 - [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml)
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml)
+- [WU-1272 — Create INIT-011 comprehensive test suite initiative](wu/WU-1272.yaml)
