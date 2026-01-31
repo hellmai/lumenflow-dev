@@ -89,6 +89,8 @@ Complete reference for all CLI commands. Organized by category for quick discove
 | `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals         |
 | `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context           |
 | `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs             |
+| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU    |
+| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node       |
 | `pnpm mem:cleanup`                  | Clean up stale memory data         |
 
 ---

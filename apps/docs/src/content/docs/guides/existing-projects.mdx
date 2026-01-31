@@ -60,10 +60,11 @@ The CLI provides the fastest path to adoption.
 
    ```bash
    npx lumenflow-init \
-     --full \
      --framework nextjs \
      --main-branch main
    ```
+
+   Agent onboarding docs are included by default. Use `--minimal` to skip them.
 
    **Adding to existing config files?** Use `--merge` mode to safely insert LumenFlow configuration into your existing `AGENTS.md` or other files without overwriting your content:
 
@@ -91,14 +92,18 @@ The CLI provides the fastest path to adoption.
 
 3. **Review generated files**
 
-   The init command creates:
+   The init command creates (agent onboarding docs are now included by default):
 
    <FileTree>
      - .lumenflow.config.yaml (your configuration) - LUMENFLOW.md (workflow entry point) - AGENTS.md
      (universal AI agent entry point) - .lumenflow/ - constraints.md (non-negotiable rules) -
-     agents/ (AI agent guidance) - docs/04-operations/tasks/ (with --full) - backlog.md - status.md
-     - wu/ (WU spec directory)
+     agents/ (AI agent guidance) - docs/04-operations/ - tasks/ - backlog.md - status.md - wu/ (WU
+     spec directory) - _frameworks/lumenflow/agent/onboarding/ - quick-ref-commands.md (CLI command
+     reference) - first-wu-mistakes.md (common pitfalls) - troubleshooting-wu-done.md (wu:done
+     issues) - agent-safety-card.md (safety reference)
    </FileTree>
+
+   Use `--minimal` to skip agent onboarding docs if you want a lighter setup.
 
    With `--client` flags, additional overlay files are created:
 

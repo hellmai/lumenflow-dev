@@ -13,6 +13,10 @@ import * as os from 'node:os';
 
 import { scaffoldProject, type ScaffoldOptions } from '../init.js';
 
+// Constants to avoid sonarjs/no-duplicate-string
+const LUMENFLOW_MD = 'LUMENFLOW.md';
+const VENDOR_RULES_FILE = 'lumenflow.md';
+
 describe('lumenflow init', () => {
   let tempDir: string;
 
@@ -37,7 +41,7 @@ describe('lumenflow init', () => {
       expect(fs.existsSync(agentsPath)).toBe(true);
 
       const content = fs.readFileSync(agentsPath, 'utf-8');
-      expect(content).toContain('LUMENFLOW.md');
+      expect(content).toContain(LUMENFLOW_MD);
       expect(content).toContain('universal');
     });
 
@@ -50,7 +54,7 @@ describe('lumenflow init', () => {
       await scaffoldProject(tempDir, options);
 
       const agentsContent = fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf-8');
-      expect(agentsContent).toContain('[LUMENFLOW.md]');
+      expect(agentsContent).toContain(`[${LUMENFLOW_MD}]`);
     });
   });
 
@@ -75,10 +79,10 @@ describe('lumenflow init', () => {
         client: 'cursor',
       };
 
-      const result = await scaffoldProject(tempDir, options);
+      await scaffoldProject(tempDir, options);
 
       // Cursor uses .cursor/rules/lumenflow.md (not .cursor/rules.md)
-      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', 'lumenflow.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', VENDOR_RULES_FILE))).toBe(true);
     });
 
     it('should accept --client windsurf', async () => {
@@ -88,10 +92,10 @@ describe('lumenflow init', () => {
         client: 'windsurf',
       };
 
-      const result = await scaffoldProject(tempDir, options);
+      await scaffoldProject(tempDir, options);
 
       // Windsurf uses .windsurf/rules/lumenflow.md (not .windsurfrules)
-      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', 'lumenflow.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', VENDOR_RULES_FILE))).toBe(true);
     });
 
     it('should accept --client codex', async () => {
@@ -101,7 +105,7 @@ describe('lumenflow init', () => {
         client: 'codex',
       };
 
-      const result = await scaffoldProject(tempDir, options);
+      await scaffoldProject(tempDir, options);
 
       // Codex reads AGENTS.md directly, minimal extra config
       expect(fs.existsSync(path.join(tempDir, 'AGENTS.md'))).toBe(true);
@@ -114,13 +118,13 @@ describe('lumenflow init', () => {
         client: 'all',
       };
 
-      const result = await scaffoldProject(tempDir, options);
+      await scaffoldProject(tempDir, options);
 
       // Should create all vendor files
       expect(fs.existsSync(path.join(tempDir, 'AGENTS.md'))).toBe(true);
       expect(fs.existsSync(path.join(tempDir, 'CLAUDE.md'))).toBe(true);
-      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', 'lumenflow.md'))).toBe(true);
-      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', 'lumenflow.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', VENDOR_RULES_FILE))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', VENDOR_RULES_FILE))).toBe(true);
     });
 
     it('should treat --vendor as alias for --client (backwards compatibility)', async () => {
@@ -130,7 +134,7 @@ describe('lumenflow init', () => {
         vendor: 'claude', // Using old --vendor flag
       };
 
-      const result = await scaffoldProject(tempDir, options);
+      await scaffoldProject(tempDir, options);
 
       expect(fs.existsSync(path.join(tempDir, 'CLAUDE.md'))).toBe(true);
     });
@@ -159,7 +163,7 @@ describe('lumenflow init', () => {
       // Should add LumenFlow block
       expect(content).toContain('<!-- LUMENFLOW:START -->');
       expect(content).toContain('<!-- LUMENFLOW:END -->');
-      expect(content).toContain('LUMENFLOW.md');
+      expect(content).toContain(LUMENFLOW_MD);
     });
 
     it('should be idempotent (running twice produces no diff)', async () => {
@@ -220,7 +224,7 @@ describe('lumenflow init', () => {
 
       // Should have warnings about malformed markers
       expect(result.warnings).toBeDefined();
-      expect(result.warnings!.some((w) => w.includes('malformed'))).toBe(true);
+      expect(result.warnings?.some((w) => w.includes('malformed'))).toBe(true);
 
       const content = fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf-8');
       // Should have complete block
@@ -292,7 +296,7 @@ describe('lumenflow init', () => {
       // Should NOT create old path
       expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules.md'))).toBe(false);
       // Should create new path
-      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', 'lumenflow.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.cursor', 'rules', VENDOR_RULES_FILE))).toBe(true);
     });
 
     it('should use .windsurf/rules/lumenflow.md for Windsurf', async () => {
@@ -307,7 +311,7 @@ describe('lumenflow init', () => {
       // Should NOT create old path
       expect(fs.existsSync(path.join(tempDir, '.windsurfrules'))).toBe(false);
       // Should create new path
-      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', 'lumenflow.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.windsurf', 'rules', VENDOR_RULES_FILE))).toBe(true);
     });
   });
 
@@ -326,6 +330,58 @@ describe('lumenflow init', () => {
 
       // Should NOT create .claude/CLAUDE.md (no duplication)
       expect(fs.existsSync(path.join(tempDir, '.claude', 'CLAUDE.md'))).toBe(false);
+    });
+  });
+
+  // WU-1286: --full is now the default
+  describe('--full default and --minimal flag', () => {
+    it('should scaffold agent onboarding docs by default (full=true)', async () => {
+      const options: ScaffoldOptions = {
+        force: false,
+        full: true, // This is now the default when parsed
+      };
+
+      await scaffoldProject(tempDir, options);
+
+      // Should create agent onboarding docs
+      const onboardingDir = path.join(
+        tempDir,
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
+      expect(fs.existsSync(path.join(onboardingDir, 'quick-ref-commands.md'))).toBe(true);
+      expect(fs.existsSync(path.join(onboardingDir, 'first-wu-mistakes.md'))).toBe(true);
+      expect(fs.existsSync(path.join(onboardingDir, 'troubleshooting-wu-done.md'))).toBe(true);
+    });
+
+    it('should skip agent onboarding docs when full=false (minimal mode)', async () => {
+      const options: ScaffoldOptions = {
+        force: false,
+        full: false, // Explicitly minimal
+      };
+
+      await scaffoldProject(tempDir, options);
+
+      // Should NOT create agent onboarding docs
+      const onboardingDir = path.join(
+        tempDir,
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
+      expect(fs.existsSync(path.join(onboardingDir, 'quick-ref-commands.md'))).toBe(false);
+    });
+
+    it('should still create core files in minimal mode', async () => {
+      const options: ScaffoldOptions = {
+        force: false,
+        full: false,
+      };
+
+      await scaffoldProject(tempDir, options);
+
+      // Core files should always be created
+      expect(fs.existsSync(path.join(tempDir, 'AGENTS.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, 'LUMENFLOW.md'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.lumenflow.config.yaml'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, '.lumenflow', 'constraints.md'))).toBe(true);
     });
   });
 });

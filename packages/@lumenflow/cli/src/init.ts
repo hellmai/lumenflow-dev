@@ -26,7 +26,12 @@ const INIT_OPTIONS = {
   full: {
     name: 'full',
     flags: '--full',
-    description: 'Add docs + agent onboarding + task scaffolding',
+    description: 'Add docs + agent onboarding + task scaffolding (default: true)',
+  },
+  minimal: {
+    name: 'minimal',
+    flags: '--minimal',
+    description: 'Skip agent onboarding docs (only core files)',
   },
   framework: {
     name: 'framework',
@@ -82,9 +87,13 @@ export function parseInitOptions(): {
   // WU-1171: --client takes precedence, --vendor is alias
   const clientValue = opts.client || opts.vendor;
 
+  // WU-1286: --full is now the default (true), use --minimal to disable
+  // --minimal explicitly sets full to false, otherwise full defaults to true
+  const fullMode = opts.minimal ? false : (opts.full ?? true);
+
   return {
     force: opts.force ?? false,
-    full: opts.full ?? false,
+    full: fullMode,
     merge: opts.merge ?? false,
     framework: opts.framework,
     client: clientValue as ClientType | undefined,

@@ -62,6 +62,8 @@ cd /home/USER/source/hellmai/os && pnpm wu:done --id WU-XXXX
 | `pnpm mem:inbox --since 30m`        | Check coordination signals         |
 | `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal      |
 | `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery) |
+| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU    |
+| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node       |
 
 ### Orchestration & Initiatives
 
