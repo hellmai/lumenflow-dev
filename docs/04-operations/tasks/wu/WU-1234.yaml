@@ -11,7 +11,7 @@ code_paths:
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/memory/src/__tests__/mem-context-core.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-context-core.test.ts
     - packages/@lumenflow/cli/__tests__/mem-context.test.ts
   e2e: []
 artifacts:
