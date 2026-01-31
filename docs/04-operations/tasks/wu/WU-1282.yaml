@@ -8,18 +8,50 @@ created: 2026-01-31
 code_paths:
   - .claude/hooks/validate-worktree-path.sh
   - .claude/settings.json
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
 tests:
   manual:
-    - Spawn sub-agent via Task tool and verify hooks are enforced
-  unit: []
+    - Spawn sub-agent via Task tool and verify constraint #9 WORKTREE DISCIPLINE is included
+    - Verify sub-agent spawn prompt includes WU-1282 reference
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1282.done
 dependencies: []
 initiative: INIT-012
 phase: 1
-risks: []
-notes: ''
+risks:
+  - Claude Code platform limitation - cannot be fully fixed without Anthropic update
+notes: |
+  ## Root Cause Analysis
+
+  Claude Code's Task tool spawns sub-agents in a completely new session context.
+  The PreToolUse hooks defined in `.claude/settings.json` are only loaded at the
+  start of a top-level Claude session. When a Task tool spawns a sub-agent, that
+  sub-agent runs fresh without hook inheritance.
+
+  This is a Claude Code platform limitation, not a LumenFlow bug.
+
+  ## Fix Implemented
+
+  Added constraint #9 (WORKTREE DISCIPLINE) to spawn prompts in wu-spawn.ts:
+  - Instructs sub-agents to manually verify worktree location before Write/Edit
+  - Documents the hook bypass issue explicitly
+  - Provides verification command (pwd must show worktrees/)
+
+  ## Files Modified
+
+  1. `packages/@lumenflow/core/src/wu-spawn.ts` - Added constraint #9 to generateConstraints()
+  2. `docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md` -
+     Added Task Tool Hook Limitation section
+
+  ## Verification
+
+  Run `pnpm wu:spawn --id WU-XXX` and verify output contains:
+  - "9. WORKTREE DISCIPLINE (WU-1282)"
+  - "hooks do not propagate to sub-agents"
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
