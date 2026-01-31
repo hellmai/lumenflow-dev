@@ -9,12 +9,13 @@ code_paths:
   - packages/@lumenflow/core/src/wu-spawn.ts
   - packages/@lumenflow/core/src/wu-spawn-helpers.ts
   - packages/@lumenflow/core/src/wu-spawn-skills.ts
+  - packages/@lumenflow/core/src/wu-spawn-context.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
-    - packages/@lumenflow/cli/__tests__/wu-spawn-context.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1240.done

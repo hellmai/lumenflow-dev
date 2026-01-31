@@ -75,6 +75,13 @@ import {
   generateAgentCoordinationSection,
 } from '@lumenflow/core/dist/wu-spawn.js';
 
+// WU-1240: Import memory context integration for spawn prompts
+import {
+  generateMemoryContextSection,
+  checkMemoryLayerInitialized,
+  getMemoryContextMaxSize,
+} from '@lumenflow/core/dist/wu-spawn-context.js';
+
 // Re-export for backwards compatibility
 export {
   TRUNCATION_WARNING_BANNER,
@@ -944,6 +951,14 @@ interface SpawnOptions {
   budget?: string;
   client?: ClientContext;
   config?: ReturnType<typeof getConfig>;
+  /** WU-1240: Base directory for memory context loading */
+  baseDir?: string;
+  /** WU-1240: Include memory context section */
+  includeMemoryContext?: boolean;
+  /** WU-1240: Skip memory context */
+  noContext?: boolean;
+  /** WU-1240: Memory context content (pre-generated) */
+  memoryContextContent?: string;
 }
 
 /**
@@ -1087,6 +1102,11 @@ export function generateTaskInvocation(
   const worktreeBlockRecovery =
     templates.get('worktree-recovery') || generateWorktreeBlockRecoverySection(doc.worktree_path);
 
+  // WU-1240: Memory context section
+  // Include if explicitly enabled and not disabled via noContext
+  const shouldIncludeMemoryContext = options.includeMemoryContext && !options.noContext;
+  const memoryContextSection = shouldIncludeMemoryContext ? options.memoryContextContent || '' : '';
+
   // Generate thinking mode sections if applicable
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);
@@ -1135,7 +1155,7 @@ ${codePaths.length > 0 ? codePaths.map((p) => `- ${p}`).join('\n') : '- No code 
 ${mandatorySection}${invariantsPriorArt ? `---\n\n${invariantsPriorArt}\n\n` : ''}${implementationContext ? `---\n\n${implementationContext}\n\n` : ''}---
 
 ${thinkingBlock}${skillsSection}
----
+${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 
 ## Mandatory Standards
 
@@ -1262,6 +1282,10 @@ export function generateCodexPrompt(
   // WU-1134: Worktree block recovery guidance
   const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(doc.worktree_path);
 
+  // WU-1240: Memory context section
+  const shouldIncludeMemoryContext = options.includeMemoryContext && !options.noContext;
+  const memoryContextSection = shouldIncludeMemoryContext ? options.memoryContextContent || '' : '';
+
   // WU-1131: Warning banner at start, end sentinel after constraints
   // WU-1142: Type-aware test guidance
   return `${TRUNCATION_WARNING_BANNER}# ${id}: ${doc.title || 'Untitled'}
@@ -1301,8 +1325,7 @@ ${formatAcceptance(doc.acceptance)}
 ---
 
 ${skillsSection}
-
----
+${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 
 ## Action
 
@@ -1395,6 +1418,7 @@ interface ParsedArgs {
   parentWu?: string;
   client?: string;
   vendor?: string;
+  noContext?: boolean;
 }
 
 function parseAndValidateArgs(): ParsedArgs {
@@ -1410,6 +1434,7 @@ function parseAndValidateArgs(): ParsedArgs {
       WU_OPTIONS.parentWu, // WU-1945: Parent WU for spawn registry tracking
       WU_OPTIONS.client,
       WU_OPTIONS.vendor,
+      WU_OPTIONS.noContext, // WU-1240: Skip memory context injection
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1551,6 +1576,26 @@ async function main(): Promise<void> {
   const config = getConfig();
   const clientName = resolveClientName(args, config);
 
+  // WU-1240: Generate memory context if not skipped
+  const baseDir = process.cwd();
+  let memoryContextContent = '';
+  const shouldIncludeMemoryContext = !args.noContext;
+
+  if (shouldIncludeMemoryContext) {
+    const isMemoryInitialized = await checkMemoryLayerInitialized(baseDir);
+    if (isMemoryInitialized) {
+      const maxSize = getMemoryContextMaxSize(config);
+      memoryContextContent = await generateMemoryContextSection(baseDir, {
+        wuId: id,
+        lane: doc.lane,
+        maxSize,
+      });
+      if (memoryContextContent) {
+        console.log(`${LOG_PREFIX} Memory context loaded (${memoryContextContent.length} bytes)`);
+      }
+    }
+  }
+
   // Create strategy
   const strategy = SpawnStrategyFactory.create(clientName);
   const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
@@ -1572,6 +1617,11 @@ async function main(): Promise<void> {
     ...thinkingOptions,
     client: clientContext,
     config,
+    // WU-1240: Include memory context in spawn prompt
+    baseDir,
+    includeMemoryContext: shouldIncludeMemoryContext && memoryContextContent.length > 0,
+    memoryContextContent,
+    noContext: args.noContext,
   });
 
   console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);

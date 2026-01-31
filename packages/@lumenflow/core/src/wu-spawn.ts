@@ -1476,6 +1476,14 @@ interface SpawnOptions {
   budget?: string;
   client?: ClientContext;
   config?: LumenFlowConfig;
+  /** WU-1240: Base directory for memory context loading */
+  baseDir?: string;
+  /** WU-1240: Include memory context section (default: false for backward compat) */
+  includeMemoryContext?: boolean;
+  /** WU-1240: Skip memory context even if includeMemoryContext is true */
+  noContext?: boolean;
+  /** WU-1240: Memory context content (pre-generated, for async integration) */
+  memoryContextContent?: string;
 }
 
 function generateClientBlocksSection(clientContext) {
@@ -1538,6 +1546,11 @@ export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions 
   // WU-2362: Worktree path guidance for sub-agents
   const worktreeGuidance = generateWorktreePathGuidance(doc.worktree_path);
 
+  // WU-1240: Memory context section
+  // Include if explicitly enabled and not disabled via noContext
+  const shouldIncludeMemoryContext = options.includeMemoryContext && !options.noContext;
+  const memoryContextSection = shouldIncludeMemoryContext ? options.memoryContextContent || '' : '';
+
   // Generate thinking mode sections if applicable
   const executionModeSection = generateExecutionModeSection(options);
   const thinkToolGuidance = generateThinkToolGuidance(options);
@@ -1585,7 +1598,7 @@ ${codePaths.length > 0 ? codePaths.map((p) => `- ${p}`).join('\n') : '- No code 
 ${mandatorySection}${invariantsPriorArt ? `---\n\n${invariantsPriorArt}\n\n` : ''}${implementationContext ? `---\n\n${implementationContext}\n\n` : ''}---
 
 ${thinkingBlock}${skillsSection}
----
+${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 
 ## Mandatory Standards
 
