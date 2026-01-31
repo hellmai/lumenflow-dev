@@ -1,14 +1,23 @@
 #!/usr/bin/env node
 /* eslint-disable no-console -- CLI tool requires console output */
 /**
- * Memory Context CLI (WU-1234)
+ * Memory Context CLI (WU-1234, WU-1292)
  *
  * Generate deterministic, formatted context injection blocks for wu:spawn prompts.
  * Outputs structured markdown with sections for project profile, summaries,
  * WU context, and discoveries.
  *
  * Usage:
- *   pnpm mem:context --wu WU-XXXX [--max-size <bytes>] [--format <json|human>] [--quiet]
+ *   pnpm mem:context --wu WU-XXXX [options]
+ *
+ * Options:
+ *   --max-size <bytes>            Maximum context size in bytes (default: 4096)
+ *   --spawn-context-max-size <bytes>  Alias for --max-size (for config parity)
+ *   --lane <lane>                 Filter project memories by lane (WU-1292)
+ *   --max-recent-summaries <n>    Limit recent summaries included (WU-1292)
+ *   --max-project-nodes <n>       Limit project nodes included (WU-1292)
+ *   --format <json|human>         Output format (default: human)
+ *   --quiet                       Suppress header/footer output
  *
  * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
@@ -61,6 +70,26 @@ const CLI_OPTIONS = {
     flags: '-m, --max-size <bytes>',
     description: 'Maximum context size in bytes (default: 4096)',
   },
+  spawnContextMaxSize: {
+    name: 'spawnContextMaxSize',
+    flags: '--spawn-context-max-size <bytes>',
+    description: 'Alias for --max-size (for config parity with spawn_context_max_size)',
+  },
+  lane: {
+    name: 'lane',
+    flags: '-l, --lane <lane>',
+    description: 'Filter project memories by lane (e.g., "Framework: CLI")',
+  },
+  maxRecentSummaries: {
+    name: 'maxRecentSummaries',
+    flags: '--max-recent-summaries <count>',
+    description: 'Maximum number of recent summaries to include (default: 5)',
+  },
+  maxProjectNodes: {
+    name: 'maxProjectNodes',
+    flags: '--max-project-nodes <count>',
+    description: 'Maximum number of project nodes to include (default: 10)',
+  },
   format: {
     name: 'format',
     flags: '-f, --format <format>',
@@ -101,23 +130,43 @@ async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): P
 }
 
 /**
- * Validate and parse max-size argument
+ * Validate and parse a positive integer argument
  *
- * @param maxSizeArg - Raw max-size argument
- * @returns Parsed max size in bytes
- * @throws If max-size is invalid
+ * @param value - Raw argument value
+ * @param optionName - Name of the option for error messages
+ * @returns Parsed integer value
+ * @throws If value is invalid
  */
-function parseMaxSize(maxSizeArg: string | undefined): number | undefined {
-  if (!maxSizeArg) {
+function parsePositiveInt(value: string | undefined, optionName: string): number | undefined {
+  if (!value) {
     return undefined;
   }
 
-  const parsed = parseInt(maxSizeArg, 10);
+  const parsed = parseInt(value, 10);
   if (isNaN(parsed) || parsed <= 0) {
-    throw new Error(`Invalid --max-size value: "${maxSizeArg}". Must be a positive integer.`);
+    throw new Error(`Invalid ${optionName} value: "${value}". Must be a positive integer.`);
   }
 
   return parsed;
+}
+
+/**
+ * WU-1292: Validate lane argument
+ *
+ * @param lane - Lane argument
+ * @returns Validated lane
+ * @throws If lane is empty string
+ */
+function validateLane(lane: string | undefined): string | undefined {
+  if (lane === undefined) {
+    return undefined;
+  }
+
+  if (lane === '') {
+    throw new Error('Invalid --lane value: lane cannot be empty.');
+  }
+
+  return lane;
 }
 
 /**
@@ -198,6 +247,10 @@ async function main(): Promise<void> {
     options: [
       WU_OPTIONS.wu,
       CLI_OPTIONS.maxSize,
+      CLI_OPTIONS.spawnContextMaxSize,
+      CLI_OPTIONS.lane,
+      CLI_OPTIONS.maxRecentSummaries,
+      CLI_OPTIONS.maxProjectNodes,
       CLI_OPTIONS.format,
       CLI_OPTIONS.baseDir,
       CLI_OPTIONS.quiet,
@@ -209,11 +262,20 @@ async function main(): Promise<void> {
   const startTime = Date.now();
 
   let maxSize: number | undefined;
+  let lane: string | undefined;
+  let maxRecentSummaries: number | undefined;
+  let maxProjectNodes: number | undefined;
   let format: OutputFormat;
 
   // Validate arguments
   try {
-    maxSize = parseMaxSize(args.maxSize);
+    // WU-1292: --spawn-context-max-size is an alias for --max-size (for config parity)
+    // If both are provided, --spawn-context-max-size takes precedence
+    const maxSizeArg = args.spawnContextMaxSize || args.maxSize;
+    maxSize = parsePositiveInt(maxSizeArg, '--max-size');
+    lane = validateLane(args.lane);
+    maxRecentSummaries = parsePositiveInt(args.maxRecentSummaries, '--max-recent-summaries');
+    maxProjectNodes = parsePositiveInt(args.maxProjectNodes, '--max-project-nodes');
     format = validateFormat(args.format);
   } catch (err) {
     const error = err as Error;
@@ -229,6 +291,9 @@ async function main(): Promise<void> {
     result = await generateContext(baseDir, {
       wuId: args.wu,
       maxSize,
+      lane,
+      maxRecentSummaries,
+      maxProjectNodes,
     });
   } catch (err) {
     const e = err as Error;
@@ -256,6 +321,9 @@ async function main(): Promise<void> {
       baseDir,
       wuId: args.wu,
       maxSize,
+      lane,
+      maxRecentSummaries,
+      maxProjectNodes,
       format,
       quiet: args.quiet,
     },
