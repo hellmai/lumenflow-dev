@@ -2,7 +2,7 @@ id: WU-1240
 title: Integrate mem:context into wu:spawn prompts
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-01-30
 code_paths:
@@ -59,3 +59,5 @@ session_id: b20dde8e-5e0f-4c81-a631-a2d2e5bb7a8e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T11:46:01.401Z
+locked: true
+completed_at: 2026-01-31T12:03:40.839Z
