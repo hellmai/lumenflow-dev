@@ -2,7 +2,7 @@ id: WU-1286
 title: Make --full default for lumenflow init and sync all CLI commands to docs
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -30,10 +30,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Two issues: (1) lumenflow init without --full doesn't scaffold agent onboarding docs (quick-ref-commands.md etc), leaving non-Claude agents without CLI reference. (2) New commands like mem:delete and mem:context are missing from quick-ref-commands.md and AGENTS.md. Fix: Make --full the default behavior and sync all CLI commands to documentation."
+description: "Two issues: (1) lumenflow init without --full doesn't scaffold agent onboarding docs
+  (quick-ref-commands.md etc), leaving non-Claude agents without CLI reference. (2) New commands
+  like mem:delete and mem:context are missing from quick-ref-commands.md and AGENTS.md. Fix: Make
+  --full the default behavior and sync all CLI commands to documentation."
 acceptance:
   - lumenflow init (no flags) scaffolds agent onboarding docs including quick-ref-commands.md
   - mem:delete command documented in quick-ref-commands.md
   - mem:context command documented in quick-ref-commands.md
   - AGENTS.md Memory section includes mem:delete and mem:context
   - Starlight existing-projects.mdx FileTree shows agent onboarding docs path
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1286
+claimed_at: 2026-01-31T17:26:48.141Z
+baseline_main_sha: ab25d8f3c7b8dc65adc162748b2ef849c288ef5e
+session_id: e5470cf6-6b1c-4d77-8d83-6c10ecc02d14
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T17:26:48.146Z
