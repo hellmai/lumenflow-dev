@@ -42,7 +42,6 @@ sections:
 - [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — Framework: Core
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — Framework: Core
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — Framework: Core
-- [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -52,6 +51,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml) — Framework: Core
+- [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
