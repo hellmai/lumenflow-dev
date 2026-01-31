@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — Framework: Core
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
