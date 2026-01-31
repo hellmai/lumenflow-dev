@@ -40,7 +40,6 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml) — Framework: Core
-- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
 - [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — Framework: Core
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — Framework: Core
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — Framework: Core
@@ -54,6 +53,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1282 — Bug: Task-spawned sub-agents bypass PreToolUse hooks](wu/WU-1282.yaml) — Framework: Core
+- [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

@@ -2,7 +2,7 @@ id: WU-1288
 title: Wire methodology policy into wu:spawn CLI output
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-01-31
 code_paths:
@@ -28,9 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: methodology policy is resolved in core but CLI wu:spawn does not apply it, so config changes have no effect on spawn output. Problem: users set methodology.testing/architecture in .lumenflow.config.yaml yet spawned prompts stay default. Solution: load config + rawConfig in CLI, resolve policy, and ensure wu:spawn output reflects policy-based guidance.'
+description: 'Context: methodology policy is resolved in core but CLI wu:spawn does not apply it, so
+  config changes have no effect on spawn output. Problem: users set methodology.testing/architecture
+  in .lumenflow.config.yaml yet spawned prompts stay default. Solution: load config + rawConfig in
+  CLI, resolve policy, and ensure wu:spawn output reflects policy-based guidance.'
 acceptance:
   - wu:spawn uses resolved methodology policy from project config
   - Spawn output includes correct test/architecture guidance for non-default methodology
   - Default (no methodology config) output remains unchanged
   - CLI tests cover policy-driven spawn output
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1288
+claimed_at: 2026-01-31T17:58:58.643Z
+baseline_main_sha: c319f96306d89b15043b2f1d0114cf5e9959e197
+session_id: 5d3e8f37-9e29-4b97-861f-12e941e42ce9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T17:58:58.651Z
