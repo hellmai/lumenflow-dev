@@ -98,6 +98,38 @@ await sendSignal('/path/to/project', {
 });
 ```
 
+### Context Injection (WU-1234)
+
+Generate deterministic context blocks for wu:spawn prompts:
+
+```typescript
+import { generateContext } from '@lumenflow/memory/context';
+
+// Generate context for a WU
+const result = await generateContext('/path/to/project', {
+  wuId: 'WU-123',
+  maxSize: 4096, // default: 4KB
+});
+
+console.log(result.contextBlock);
+// <!-- mem:context for WU-123 -->
+//
+// ## Project Profile
+// - [mem-abc1] (2025-01-15): Project architecture decision...
+//
+// ## WU Context
+// - [mem-def2] (2025-01-20): Checkpoint: completed port definitions...
+```
+
+The context block includes:
+
+- **Project Profile**: lifecycle=project memories (architectural knowledge)
+- **Summaries**: summary-type nodes for the WU
+- **WU Context**: checkpoints and notes linked to the WU
+- **Discoveries**: discovered information for the WU
+
+Selection is deterministic (filter by lifecycle, wu_id, recency). Max size is configurable (default 4KB). Returns empty block if no memories match.
+
 ## Subpath Exports
 
 ```typescript
@@ -114,6 +146,7 @@ import { cleanupExpired } from '@lumenflow/memory/cleanup';
 import { createMemoryNode } from '@lumenflow/memory/create';
 import { summarizeWu } from '@lumenflow/memory/summarize';
 import { triageBugs } from '@lumenflow/memory/triage';
+import { generateContext } from '@lumenflow/memory/context';
 import { MemoryNodeSchema } from '@lumenflow/memory/schema';
 import { loadMemory, appendNode } from '@lumenflow/memory/store';
 ```
@@ -128,6 +161,17 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 | `appendNode(baseDir, node)` | Append a validated node to the memory file |
 | `queryReady(baseDir, wuId)` | Get nodes for WU in priority order         |
 | `queryByWu(baseDir, wuId)`  | Get all nodes for WU in file order         |
+
+### Context Injection
+
+| Function                         | Description                                   |
+| -------------------------------- | --------------------------------------------- |
+| `generateContext(baseDir, opts)` | Generate formatted context block for wu:spawn |
+
+Options:
+
+- `wuId` (required): WU ID to generate context for
+- `maxSize` (optional): Maximum context size in bytes (default: 4096)
 
 ### Memory Schema
 

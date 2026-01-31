@@ -25,6 +25,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./checkpoint": "./dist/mem-checkpoint-core.js",
+    "./context": "./dist/mem-context-core.js",
     "./init": "./dist/mem-init-core.js",
     "./start": "./dist/mem-start-core.js",
     "./ready": "./dist/mem-ready-core.js",
