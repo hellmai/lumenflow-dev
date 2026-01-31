@@ -16,9 +16,13 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1284.done
 dependencies: []
+initiative: INIT-012
+phase: 3
 risks: []
 notes: ''
 requires_review: false
+locked: true
+completed_at: 2026-01-31T17:18:09.855Z
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
 claimed_at: 2026-01-31T16:59:36.494Z
@@ -41,6 +45,3 @@ acceptance:
   - Supports --dry-run to preview deletion
   - Optionally supports bulk delete via --tag or --older-than filters
   - Respects append-only pattern (soft delete via metadata.status=deleted)
-locked: true
-completed_at: 2026-01-31T17:18:09.855Z
-initiative: INIT-012
