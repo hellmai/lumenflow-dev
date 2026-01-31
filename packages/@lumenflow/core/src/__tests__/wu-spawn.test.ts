@@ -579,3 +579,157 @@ describe('WU-1282: Task-spawned sub-agents must verify worktree discipline', () 
     });
   });
 });
+
+/**
+ * WU-1290: Update Codex spawn prompt to reflect methodology policy
+ *
+ * Acceptance Criteria:
+ * 1. Codex spawn prompt reflects resolved policy.testing and policy.architecture
+ * 2. Enforcement summary in Codex prompt uses policy coverage_threshold and coverage_mode
+ * 3. policy.testing=none yields warn-only guidance (no TDD directive)
+ * 4. wu:spawn --client codex-cli output matches policy config
+ */
+import { generateCodexPrompt } from '../wu-spawn.js';
+
+describe('WU-1290: Update Codex spawn prompt to reflect methodology policy', () => {
+  const mockWUDoc = {
+    title: 'Test WU',
+    lane: TEST_LANE,
+    type: TEST_TYPE_FEATURE,
+    status: 'ready',
+    description: TEST_DESCRIPTION,
+    acceptance: ['AC1', 'AC2'],
+    code_paths: [TEST_CODE_PATH],
+  };
+
+  describe('AC1: Codex spawn prompt reflects resolved policy.testing and policy.architecture', () => {
+    it('should use test-after methodology when configured', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should NOT contain TDD directive
+      expect(output).not.toContain(TEST_TDD_DIRECTIVE);
+      // Should contain test-after guidance
+      expect(output).toContain(TEST_AFTER_LABEL);
+    });
+
+    it('should use layered architecture when configured', () => {
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_LAYERED } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should NOT contain hexagonal architecture
+      expect(output).not.toContain(TEST_HEXAGONAL_ARCH);
+      // Should contain layered architecture reference
+      expect(output).toContain('Layered');
+    });
+
+    it('should use TDD methodology by default (no config override)', () => {
+      const config = parseConfig({});
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should contain TDD directive
+      expect(output).toContain(TEST_TDD_DIRECTIVE);
+    });
+  });
+
+  describe('AC2: Enforcement summary in Codex prompt uses policy coverage_threshold and coverage_mode', () => {
+    it('should include enforcement summary with coverage threshold', () => {
+      const config = parseConfig({
+        methodology: { testing: 'tdd' },
+      });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should contain enforcement summary section
+      expect(output).toContain('You will be judged by');
+      expect(output).toContain('90%');
+    });
+
+    it('should use custom coverage threshold from config', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: 'tdd',
+          overrides: { coverage_threshold: 85 },
+        },
+      });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('85%');
+    });
+
+    it('should include coverage mode from config', () => {
+      const config = parseConfig({
+        methodology: {
+          testing: TEST_METHODOLOGY_TEST_AFTER,
+          overrides: { coverage_mode: 'warn' },
+        },
+      });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('warn');
+    });
+  });
+
+  describe('AC3: policy.testing=none yields warn-only guidance (no TDD directive)', () => {
+    it('should produce testing optional guidance when methodology.testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should NOT contain TDD directive
+      expect(output).not.toContain(TEST_TDD_DIRECTIVE);
+      expect(output).not.toContain(TEST_FAILING_TEST);
+      // Should contain testing optional guidance
+      expect(output).toContain('Testing Optional');
+    });
+
+    it('should show tests as optional in enforcement summary when testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('optional');
+    });
+
+    it('should show coverage as disabled in enforcement summary when testing is none', () => {
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('disabled');
+    });
+  });
+
+  describe('AC4: wu:spawn --client codex-cli output matches policy config', () => {
+    it('should include mandatory standards section reflecting policy', () => {
+      const config = parseConfig({
+        methodology: { testing: TEST_METHODOLOGY_TEST_AFTER, architecture: TEST_ARCH_LAYERED },
+      });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should contain mandatory standards section
+      expect(output).toContain('Mandatory Standards');
+      // Should NOT contain hexagonal when layered is configured
+      expect(output).not.toMatch(/hexagonal/i);
+    });
+
+    it('should omit architecture guidance when architecture is none', () => {
+      const config = parseConfig({ methodology: { architecture: TEST_ARCH_NONE } });
+      const strategy = SpawnStrategyFactory.create('codex-cli');
+      const output = generateCodexPrompt(mockWUDoc, 'WU-TEST', strategy, { config });
+
+      // Should NOT contain hexagonal or layered architecture references in standards
+      const mandatoryStandardsSection = MANDATORY_STANDARDS_REGEX.exec(output)?.[0];
+      if (mandatoryStandardsSection) {
+        expect(mandatoryStandardsSection).not.toContain(TEST_HEXAGONAL_ARCH);
+        expect(mandatoryStandardsSection).not.toContain('Layered Architecture');
+      }
+    });
+  });
+});
