@@ -130,6 +130,70 @@ The context block includes:
 
 Selection is deterministic (filter by lifecycle, wu_id, recency). Max size is configurable (default 4KB). Returns empty block if no memories match.
 
+### Knowledge Promotion (WU-1237)
+
+Promote session/WU learnings to project-level knowledge:
+
+```typescript
+import { promoteNode, promoteFromWu, ALLOWED_PROMOTION_TAGS } from '@lumenflow/memory';
+
+// Promote a single node to project-level
+const result = await promoteNode('/path/to/project', {
+  nodeId: 'mem-abc1',
+  tag: 'pattern', // decision|convention|pattern|pitfall|interface|invariant|faq
+});
+console.log(`Promoted to ${result.promotedNode.id}`);
+
+// Promote all summaries from a WU
+const wuResult = await promoteFromWu('/path/to/project', {
+  wuId: 'WU-123',
+  tag: 'decision',
+});
+console.log(`Promoted ${wuResult.promotedNodes.length} summaries`);
+
+// Dry-run mode (preview without writing)
+const dryResult = await promoteNode('/path/to/project', {
+  nodeId: 'mem-abc1',
+  tag: 'pattern',
+  dryRun: true,
+});
+```
+
+Promotion creates:
+
+- A new node with `lifecycle=project`
+- A `discovered_from` relationship to the source node
+- The specified taxonomy tag on the promoted node
+
+Allowed tags: `decision`, `convention`, `pattern`, `pitfall`, `interface`, `invariant`, `faq`.
+
+### Project Profile (WU-1237)
+
+Generate aggregated project knowledge for context injection:
+
+```typescript
+import { generateProfile, DEFAULT_PROFILE_LIMIT } from '@lumenflow/memory';
+
+// Get top 20 project memories (default)
+const result = await generateProfile('/path/to/project');
+console.log(result.profileBlock);
+// ## Project Profile
+// - [mem-abc1] (2025-01-15): Architecture decision...
+// - [mem-def2] (2025-01-20): Naming convention...
+
+// Filter by tag
+const decisions = await generateProfile('/path/to/project', {
+  tag: 'decision',
+  limit: 10,
+});
+
+// Access statistics
+console.log(result.stats.totalProjectNodes);
+console.log(result.stats.byTag); // { decision: 5, pattern: 3, ... }
+```
+
+The profile output is formatted for integration with `mem:context`.
+
 ### Project Indexing (WU-1235)
 
 Index project conventions for agent context awareness:
@@ -206,6 +270,21 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 | ----------------------------- | ------------------------------------- |
 | `indexProject(baseDir, opts)` | Scan sources and create summary nodes |
 | `getDefaultSources()`         | Get list of default sources to scan   |
+
+### Knowledge Promotion
+
+| Function                       | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `promoteNode(baseDir, opts)`   | Promote single node to project lifecycle |
+| `promoteFromWu(baseDir, opts)` | Promote all summaries from a WU          |
+| `ALLOWED_PROMOTION_TAGS`       | Array of valid taxonomy tags             |
+
+### Project Profile
+
+| Function                         | Description                                   |
+| -------------------------------- | --------------------------------------------- |
+| `generateProfile(baseDir, opts)` | Generate aggregated project knowledge profile |
+| `DEFAULT_PROFILE_LIMIT`          | Default limit for profile generation (20)     |
 
 Options for `indexProject`:
 
