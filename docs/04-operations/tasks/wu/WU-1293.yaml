@@ -2,7 +2,7 @@ id: WU-1293
 title: Initiative bookkeeping for INIT-012 snags
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P3
 created: 2026-01-31
 code_paths:
@@ -28,8 +28,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-012 consolidates spawn integration snags. Problem: duplicate mem-* snag records and incomplete WU linkage cause tracking gaps. Solution: clean up initiative bookkeeping (WUs linked, duplicates archived, plan references aligned).'
+description: 'Context: INIT-012 consolidates spawn integration snags. Problem: duplicate mem-* snag
+  records and incomplete WU linkage cause tracking gaps. Solution: clean up initiative bookkeeping
+  (WUs linked, duplicates archived, plan references aligned).'
 acceptance:
   - Duplicate mem-* snag records archived or marked superseded
   - INIT-012 WU list reflects all active snags
   - Plan and initiative status output matches WU mapping
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1293
+claimed_at: 2026-01-31T17:59:59.803Z
+baseline_main_sha: 42a94c7543054f0c2d3acb8ce25ad3db9ba31ae4
+session_id: 5d3e8f37-9e29-4b97-861f-12e941e42ce9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-01-31T17:59:59.810Z
