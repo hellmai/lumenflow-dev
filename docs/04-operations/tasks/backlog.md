@@ -51,7 +51,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml) — Framework: Memory
 - [WU-1241 — Wire CLI orchestrate:monitor to spawn-monitor APIs](wu/WU-1241.yaml) — Framework: CLI
 
 ## ⛔ Blocked
@@ -292,3 +291,4 @@ sections:
 - [WU-1269 — Migration guide: adopting methodology configurability](wu/WU-1269.yaml)
 - [WU-1267 — Regression test: default methodology behavior unchanged](wu/WU-1267.yaml)
 - [WU-1272 — Create INIT-011 comprehensive test suite initiative](wu/WU-1272.yaml)
+- [WU-1234 — Add mem:context command for context injection at spawn](wu/WU-1234.yaml)
