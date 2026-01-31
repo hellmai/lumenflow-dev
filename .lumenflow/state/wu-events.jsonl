@@ -511,3 +511,4 @@
 {"type":"complete","wuId":"WU-1286","timestamp":"2026-01-31T17:35:14.848Z"}
 {"type":"claim","wuId":"WU-1282","lane":"Framework: Core","title":"Bug: Task-spawned sub-agents bypass PreToolUse hooks","timestamp":"2026-01-31T17:56:51.505Z"}
 {"type":"claim","wuId":"WU-1288","lane":"Framework: CLI","title":"Wire methodology policy into wu:spawn CLI output","timestamp":"2026-01-31T17:58:58.665Z"}
+{"type":"claim","wuId":"WU-1293","lane":"Content: Documentation","title":"Initiative bookkeeping for INIT-012 snags","timestamp":"2026-01-31T17:59:59.842Z"}
