@@ -501,5 +501,6 @@
 {"type":"complete","wuId":"WU-1238","timestamp":"2026-01-31T16:00:03.181Z"}
 {"type":"claim","wuId":"WU-1281","timestamp":"2026-01-31T16:03:59.322Z","lane":"Framework: Memory","title":"Fix mem:context lane filtering and recency selection"}
 {"type":"complete","wuId":"WU-1281","timestamp":"2026-01-31T16:11:06.419Z"}
-{"type":"claim","wuId":"WU-1283","lane":"Framework: Core","title":"Fix agent documentation loading - inline tooling in entry points","timestamp":"2026-01-31T16:50:14.629Z"}
-{"type":"claim","wuId":"WU-1284","lane":"Framework: Memory","title":"Add mem:delete command for memory node cleanup","timestamp":"2026-01-31T16:59:36.513Z"}
+{"type":"claim","wuId":"WU-1283","timestamp":"2026-01-31T16:50:14.629Z","lane":"Framework: Core","title":"Fix agent documentation loading - inline tooling in entry points"}
+{"type":"claim","wuId":"WU-1284","timestamp":"2026-01-31T16:59:36.513Z","lane":"Framework: Memory","title":"Add mem:delete command for memory node cleanup"}
+{"type":"complete","wuId":"WU-1283","timestamp":"2026-01-31T16:59:38.853Z"}

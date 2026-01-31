@@ -2,7 +2,7 @@ id: WU-1283
 title: Fix agent documentation loading - inline tooling in entry points
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-31
 code_paths:
@@ -49,3 +49,5 @@ session_id: 42bb467d-35c6-4fbf-b5fa-994d53d1a291
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-01-31T16:50:14.616Z
+locked: true
+completed_at: 2026-01-31T16:59:37.246Z
