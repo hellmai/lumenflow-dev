@@ -60,6 +60,7 @@
     "mem:inbox": "node packages/@lumenflow/cli/dist/mem-inbox.js",
     "mem:summarize": "node packages/@lumenflow/cli/dist/mem-summarize.js",
     "mem:triage": "node packages/@lumenflow/cli/dist/mem-triage.js",
+    "mem:delete": "node packages/@lumenflow/cli/dist/mem-delete.js",
     "backlog:prune": "node packages/@lumenflow/cli/dist/backlog-prune.js",
     "deps:add": "node packages/@lumenflow/cli/dist/deps-add.js",
     "deps:remove": "node packages/@lumenflow/cli/dist/deps-remove.js",
