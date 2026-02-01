@@ -46,6 +46,9 @@ import { access } from 'node:fs/promises';
 import path from 'node:path';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+// WU-1299: Import WU YAML reader to get code_paths for docs-only filtering
+import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';
+import { createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
 import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/dist/incremental-lint.js';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/dist/incremental-test.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
@@ -341,6 +344,192 @@ export function resolveTestPlan({
     return { mode: 'full' };
   }
   return { mode: 'incremental' };
+}
+
+/**
+ * WU-1299: Docs-only test plan type
+ * Indicates how tests should be handled in docs-only mode based on code_paths
+ */
+export type DocsOnlyTestPlan = {
+  mode: 'skip' | 'filtered';
+  packages: string[];
+  reason?: 'no-code-packages';
+};
+
+/**
+ * WU-1299: Extract package name from a single code path
+ *
+ * @param codePath - Single code path to parse
+ * @returns Package name or null if not a package/app path
+ */
+function extractPackageFromPath(codePath: string): string | null {
+  if (!codePath || typeof codePath !== 'string') {
+    return null;
+  }
+
+  const normalized = codePath.replace(/\\/g, '/');
+
+  // Handle packages/@scope/name/... or packages/name/...
+  if (normalized.startsWith('packages/')) {
+    const parts = normalized.slice('packages/'.length).split('/');
+    // Scoped package (@scope/name)
+    if (parts[0]?.startsWith('@') && parts[1]) {
+      return `${parts[0]}/${parts[1]}`;
+    }
+    // Unscoped package
+    if (parts[0]) {
+      return parts[0];
+    }
+  }
+
+  // Handle apps/name/...
+  if (normalized.startsWith('apps/')) {
+    const parts = normalized.slice('apps/'.length).split('/');
+    if (parts[0]) {
+      return parts[0];
+    }
+  }
+
+  return null;
+}
+
+/**
+ * WU-1299: Extract package/app names from code_paths
+ *
+ * Parses paths like:
+ * - packages/@lumenflow/cli/src/file.ts -> @lumenflow/cli
+ * - apps/web/src/file.ts -> web
+ *
+ * @param codePaths - Array of code paths from WU YAML
+ * @returns Array of unique package/app names
+ */
+export function extractPackagesFromCodePaths(codePaths: string[]): string[] {
+  if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
+    return [];
+  }
+
+  const packages = new Set<string>();
+
+  for (const codePath of codePaths) {
+    const pkg = extractPackageFromPath(codePath);
+    if (pkg) {
+      packages.add(pkg);
+    }
+  }
+
+  return Array.from(packages);
+}
+
+/**
+ * WU-1299: Resolve test plan for docs-only mode
+ *
+ * When --docs-only is passed, this determines whether to:
+ * - Skip tests entirely (no code packages in code_paths)
+ * - Run tests only for packages mentioned in code_paths
+ *
+ * @param options - Options including code_paths from WU YAML
+ * @returns DocsOnlyTestPlan indicating how to handle tests
+ */
+export function resolveDocsOnlyTestPlan({ codePaths }: { codePaths: string[] }): DocsOnlyTestPlan {
+  const packages = extractPackagesFromCodePaths(codePaths);
+
+  if (packages.length === 0) {
+    return {
+      mode: 'skip',
+      packages: [],
+      reason: 'no-code-packages',
+    };
+  }
+
+  return {
+    mode: 'filtered',
+    packages,
+  };
+}
+
+/**
+ * WU-1299: Format message for docs-only test skipping/filtering
+ *
+ * Provides clear messaging when tests are skipped or filtered in docs-only mode.
+ *
+ * @param plan - The docs-only test plan
+ * @returns Human-readable message explaining what's happening
+ */
+export function formatDocsOnlySkipMessage(plan: DocsOnlyTestPlan): string {
+  if (plan.mode === 'skip') {
+    return '📝 docs-only mode: skipping all tests (no code packages in code_paths)';
+  }
+
+  const packageList = plan.packages.join(', ');
+  return `📝 docs-only mode: running tests only for packages in code_paths: ${packageList}`;
+}
+
+/**
+ * WU-1299: Load code_paths from current WU YAML
+ *
+ * Attempts to read the WU YAML file for the current WU (detected from git branch)
+ * and return its code_paths. Returns empty array if WU cannot be determined or
+ * YAML file doesn't exist.
+ *
+ * @param options - Options including optional cwd
+ * @returns Array of code_paths from WU YAML, or empty array if unavailable
+ */
+export function loadCurrentWUCodePaths(options: { cwd?: string } = {}): string[] {
+  const cwd = options.cwd ?? process.cwd();
+  const wuId = getCurrentWU();
+
+  if (!wuId) {
+    return [];
+  }
+
+  try {
+    const wuPaths = createWuPaths({ projectRoot: cwd });
+    const wuYamlPath = wuPaths.WU(wuId);
+    const wuDoc = readWURaw(wuYamlPath);
+
+    if (wuDoc && Array.isArray(wuDoc.code_paths)) {
+      return wuDoc.code_paths.filter((p: unknown): p is string => typeof p === 'string');
+    }
+  } catch {
+    // WU YAML not found or unreadable - return empty array
+  }
+
+  return [];
+}
+
+/**
+ * WU-1299: Run filtered tests for docs-only mode
+ *
+ * When --docs-only is passed and code_paths contains packages, this runs tests
+ * only for those specific packages using turbo's --filter flag.
+ *
+ * @param options - Options including packages to test and agent log context
+ * @returns Result object with ok status and duration
+ */
+async function runDocsOnlyFilteredTests({
+  packages,
+  agentLog,
+}: {
+  packages: string[];
+  agentLog?: { logFd: number; logPath: string } | null;
+}): Promise<{ ok: boolean; duration: number }> {
+  const start = Date.now();
+  const logLine = makeGateLogger({ agentLog, useAgentMode: !!agentLog });
+
+  if (packages.length === 0) {
+    logLine('📝 docs-only mode: no packages to test, skipping');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  logLine(`\n> Tests (docs-only filtered: ${packages.join(', ')})\n`);
+
+  // Build turbo filter args for each package
+  // turbo supports --filter=@scope/package or --filter=package
+  const filterArgs = packages.map((pkg) => `--filter=${pkg}`);
+
+  const result = run(pnpmCmd('turbo', 'run', 'test', ...filterArgs), { agentLog });
+
+  return { ok: result.ok, duration: Date.now() - start };
 }
 
 export function parsePrettierListOutput(output: string): string[] {
@@ -1204,6 +1393,13 @@ async function executeGates(opts: {
   // Determine effective docs-only mode (explicit flag OR detected from changed files)
   const effectiveDocsOnly = isDocsOnly || (riskTier && riskTier.isDocsOnly);
 
+  // WU-1299: Load code_paths and compute docs-only test plan
+  let docsOnlyTestPlan: DocsOnlyTestPlan | null = null;
+  if (effectiveDocsOnly) {
+    const codePaths = loadCurrentWUCodePaths({ cwd: process.cwd() });
+    docsOnlyTestPlan = resolveDocsOnlyTestPlan({ codePaths });
+  }
+
   // Determine which gates to run
   // WU-2252: Invariants gate runs FIRST and is included in both docs-only and regular modes
   const gates = effectiveDocsOnly
@@ -1229,6 +1425,25 @@ async function executeGates(opts: {
           run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
           warnOnly: laneHealthMode !== 'error',
         },
+        // WU-1299: Filtered tests for packages in code_paths (if any)
+        // When docs-only mode has packages in code_paths, run tests only for those packages
+        // This prevents pre-existing failures in unrelated packages from blocking
+        ...(docsOnlyTestPlan && docsOnlyTestPlan.mode === 'filtered'
+          ? [
+              {
+                name: GATE_NAMES.TEST,
+                run: (ctx: GateLogContext) => {
+                  // Safe access: docsOnlyTestPlan is guaranteed non-null by the outer conditional
+                  const pkgs = docsOnlyTestPlan.packages;
+                  return runDocsOnlyFilteredTests({
+                    packages: pkgs,
+                    agentLog: ctx.agentLog,
+                  });
+                },
+                warnOnly: !testsRequired,
+              },
+            ]
+          : []),
       ]
     : [
         // WU-2252: Invariants check runs first (non-bypassable)
@@ -1292,10 +1507,16 @@ async function executeGates(opts: {
       ];
 
   if (effectiveDocsOnly) {
+    // WU-1299: Show clear messaging about what's being skipped/run in docs-only mode
+    const docsOnlyMessage =
+      docsOnlyTestPlan && docsOnlyTestPlan.mode === 'filtered'
+        ? formatDocsOnlySkipMessage(docsOnlyTestPlan)
+        : '📝 Docs-only mode: skipping lint, typecheck, and all tests (no code packages in code_paths)';
+
     if (!useAgentMode) {
-      console.log('📝 Docs-only mode: skipping lint, typecheck, and tests\n');
+      console.log(`${docsOnlyMessage}\n`);
     } else {
-      writeSync(agentLog.logFd, '📝 Docs-only mode: skipping lint, typecheck, and tests\n');
+      writeSync(agentLog.logFd, `${docsOnlyMessage}\n`);
     }
   }
 
