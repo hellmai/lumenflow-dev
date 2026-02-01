@@ -1,7 +1,7 @@
 id: WU-1298
 title: Document missing CLI commands (initiative:plan, mem:context)
 lane: 'Content: Documentation'
-type: refactor
+type: documentation
 status: in_progress
 priority: P2
 created: 2026-02-01
@@ -13,6 +13,7 @@ code_paths:
   - packages/@lumenflow/cli/package.json
   - apps/docs/src/content/docs/reference/cli.mdx
   - packages/@lumenflow/cli/package.json
+  - apps/docs/src/content/docs/reference/cli.mdx
 tests:
   manual:
     - Verify initiative-plan --help and mem-context --help work after npm install
