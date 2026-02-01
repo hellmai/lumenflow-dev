@@ -16,6 +16,9 @@ import * as os from 'node:os';
 import YAML from 'yaml';
 import { scaffoldProject } from '../init.js';
 
+/** Config file name - extracted to avoid duplicate string lint errors */
+const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+
 describe('init config default lanes (WU-1307)', () => {
   let tempDir: string;
 
@@ -31,9 +34,16 @@ describe('init config default lanes (WU-1307)', () => {
     }
   });
 
+  /** Helper to read and parse config from temp directory */
+  function readConfig(): Record<string, unknown> {
+    const configPath = path.join(tempDir, CONFIG_FILE_NAME);
+    const configContent = fs.readFileSync(configPath, 'utf-8');
+    return YAML.parse(configContent) as Record<string, unknown>;
+  }
+
   it('should generate .lumenflow.config.yaml with lanes.definitions', async () => {
     // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+    const configPath = path.join(tempDir, CONFIG_FILE_NAME);
 
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
@@ -41,147 +51,135 @@ describe('init config default lanes (WU-1307)', () => {
     // Assert
     expect(fs.existsSync(configPath)).toBe(true);
 
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
     // Should have lanes.definitions
     expect(config.lanes).toBeDefined();
-    expect(config.lanes.definitions).toBeDefined();
-    expect(Array.isArray(config.lanes.definitions)).toBe(true);
+    expect((config.lanes as Record<string, unknown>).definitions).toBeDefined();
+    expect(Array.isArray((config.lanes as Record<string, unknown>).definitions)).toBe(true);
   });
 
   it('should include Framework parent lane with sublanes', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
-    const frameworkLanes = lanes.filter((l: { name: string }) => l.name.startsWith('Framework:'));
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+    }>;
+    const frameworkLanes = lanes.filter((l) => l.name.startsWith('Framework:'));
 
     expect(frameworkLanes.length).toBeGreaterThan(0);
 
     // Should have at least Framework: Core and Framework: CLI
-    const laneNames = frameworkLanes.map((l: { name: string }) => l.name);
+    const laneNames = frameworkLanes.map((l) => l.name);
     expect(laneNames).toContain('Framework: Core');
     expect(laneNames).toContain('Framework: CLI');
   });
 
   it('should include Experience parent lane for frontend work', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
-    const experienceLanes = lanes.filter((l: { name: string }) => l.name.startsWith('Experience:'));
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+    }>;
+    const experienceLanes = lanes.filter((l) => l.name.startsWith('Experience:'));
 
     // Should have at least one Experience lane
     expect(experienceLanes.length).toBeGreaterThan(0);
   });
 
   it('should include Content: Documentation lane', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
-    const contentLane = lanes.find((l: { name: string }) => l.name === 'Content: Documentation');
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+      code_paths?: string[];
+    }>;
+    const contentLane = lanes.find((l) => l.name === 'Content: Documentation');
 
     expect(contentLane).toBeDefined();
-    expect(contentLane.code_paths).toBeDefined();
-    expect(contentLane.code_paths).toContain('docs/**');
+    expect(contentLane?.code_paths).toBeDefined();
+    expect(contentLane?.code_paths).toContain('docs/**');
   });
 
   it('should include Operations parent lanes', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
-    const operationsLanes = lanes.filter((l: { name: string }) => l.name.startsWith('Operations:'));
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+    }>;
+    const operationsLanes = lanes.filter((l) => l.name.startsWith('Operations:'));
 
     expect(operationsLanes.length).toBeGreaterThan(0);
 
     // Should have Infrastructure and CI/CD
-    const laneNames = operationsLanes.map((l: { name: string }) => l.name);
+    const laneNames = operationsLanes.map((l) => l.name);
     expect(laneNames).toContain('Operations: Infrastructure');
     expect(laneNames).toContain('Operations: CI/CD');
   });
 
   it('should have wip_limit: 1 for code lanes by default', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
-    const frameworkCore = lanes.find((l: { name: string }) => l.name === 'Framework: Core');
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+      wip_limit?: number;
+    }>;
+    const frameworkCore = lanes.find((l) => l.name === 'Framework: Core');
 
     expect(frameworkCore).toBeDefined();
-    expect(frameworkCore.wip_limit).toBe(1);
+    expect(frameworkCore?.wip_limit).toBe(1);
   });
 
   it('should have code_paths for each lane', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+      code_paths?: string[];
+    }>;
 
     // Every lane should have code_paths
     for (const lane of lanes) {
       expect(lane.code_paths).toBeDefined();
       expect(Array.isArray(lane.code_paths)).toBe(true);
-      expect(lane.code_paths.length).toBeGreaterThan(0);
+      expect(lane.code_paths?.length).toBeGreaterThan(0);
     }
   });
 
   it('should use "Parent: Sublane" format for lane names', async () => {
-    // Arrange
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const configContent = fs.readFileSync(configPath, 'utf-8');
-    const config = YAML.parse(configContent);
+    const config = readConfig();
 
-    const lanes = config.lanes?.definitions || [];
+    const lanes = ((config.lanes as Record<string, unknown>)?.definitions || []) as Array<{
+      name: string;
+    }>;
 
     // All lanes should follow "Parent: Sublane" format (colon + space)
     for (const lane of lanes) {

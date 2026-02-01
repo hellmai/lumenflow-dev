@@ -28,6 +28,30 @@ import * as os from 'node:os';
 import YAML from 'yaml';
 import { scaffoldProject } from '../init.js';
 
+/** Lane inference file name - extracted to avoid duplicate string lint errors */
+const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
+
+/** Type for lane inference sublane config */
+interface SublaneConfig {
+  code_paths?: string[];
+  keywords?: string[];
+  patterns?: string[];
+}
+
+/** Type for lane inference parent config */
+interface ParentLaneConfig {
+  [sublane: string]: SublaneConfig;
+}
+
+/** Type for the full lane inference config */
+interface LaneInferenceConfig {
+  lanes?: unknown;
+  Framework?: ParentLaneConfig;
+  Operations?: ParentLaneConfig;
+  Content?: ParentLaneConfig;
+  Experience?: ParentLaneConfig;
+}
+
 describe('init lane inference generation (WU-1307)', () => {
   let tempDir: string;
 
@@ -43,9 +67,16 @@ describe('init lane inference generation (WU-1307)', () => {
     }
   });
 
+  /** Helper to read and parse lane inference config from temp directory */
+  function readLaneInference(): LaneInferenceConfig {
+    const laneInferencePath = path.join(tempDir, LANE_INFERENCE_FILE_NAME);
+    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
+    return YAML.parse(laneInferenceContent) as LaneInferenceConfig;
+  }
+
   it('should generate .lumenflow.lane-inference.yaml in hierarchical format', async () => {
     // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
+    const laneInferencePath = path.join(tempDir, LANE_INFERENCE_FILE_NAME);
 
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
@@ -53,8 +84,7 @@ describe('init lane inference generation (WU-1307)', () => {
     // Assert
     expect(fs.existsSync(laneInferencePath)).toBe(true);
 
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Should NOT have a flat 'lanes' array
     expect(laneInference.lanes).toBeUndefined();
@@ -67,86 +97,67 @@ describe('init lane inference generation (WU-1307)', () => {
   });
 
   it('should include sublanes under parent lanes', async () => {
-    // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Framework parent should have sublanes like Core, CLI
-    expect(laneInference.Framework.Core).toBeDefined();
-    expect(laneInference.Framework.CLI).toBeDefined();
+    expect(laneInference.Framework?.Core).toBeDefined();
+    expect(laneInference.Framework?.CLI).toBeDefined();
 
     // Operations parent should have sublanes like Infrastructure, CI/CD
-    expect(laneInference.Operations.Infrastructure).toBeDefined();
-    expect(laneInference.Operations['CI/CD']).toBeDefined();
+    expect(laneInference.Operations?.Infrastructure).toBeDefined();
+    expect(laneInference.Operations?.['CI/CD']).toBeDefined();
 
     // Content parent should have Documentation sublane
-    expect(laneInference.Content.Documentation).toBeDefined();
+    expect(laneInference.Content?.Documentation).toBeDefined();
   });
 
   it('should have code_paths in sublane config (not patterns)', async () => {
-    // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Sublanes should have code_paths (not patterns)
     const frameworkCore = laneInference.Framework?.Core;
     expect(frameworkCore).toBeDefined();
-    expect(frameworkCore.code_paths).toBeDefined();
-    expect(Array.isArray(frameworkCore.code_paths)).toBe(true);
-    expect(frameworkCore.patterns).toBeUndefined();
+    expect(frameworkCore?.code_paths).toBeDefined();
+    expect(Array.isArray(frameworkCore?.code_paths)).toBe(true);
+    expect(frameworkCore?.patterns).toBeUndefined();
   });
 
   it('should include keywords in sublane config', async () => {
-    // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Sublanes should have keywords array
     const contentDocs = laneInference.Content?.Documentation;
     expect(contentDocs).toBeDefined();
-    expect(contentDocs.keywords).toBeDefined();
-    expect(Array.isArray(contentDocs.keywords)).toBe(true);
-    expect(contentDocs.keywords.length).toBeGreaterThan(0);
+    expect(contentDocs?.keywords).toBeDefined();
+    expect(Array.isArray(contentDocs?.keywords)).toBe(true);
+    expect(contentDocs?.keywords?.length).toBeGreaterThan(0);
   });
 
   it('should generate Experience parent lane for frontend projects', async () => {
-    // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
-
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Should have Experience parent for frontend work
     expect(laneInference.Experience).toBeDefined();
-    expect(laneInference.Experience.UI || laneInference.Experience.Web).toBeDefined();
+    expect(laneInference.Experience?.UI || laneInference.Experience?.Web).toBeDefined();
   });
 
   it('should add framework-specific lanes when --framework is provided', async () => {
-    // Arrange
-    const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
-
     // Act
     await scaffoldProject(tempDir, {
       force: true,
@@ -155,8 +166,7 @@ describe('init lane inference generation (WU-1307)', () => {
     });
 
     // Assert
-    const laneInferenceContent = fs.readFileSync(laneInferencePath, 'utf-8');
-    const laneInference = YAML.parse(laneInferenceContent);
+    const laneInference = readLaneInference();
 
     // Should still have base lanes
     expect(laneInference.Framework).toBeDefined();
