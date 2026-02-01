@@ -29,7 +29,7 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 | Command                                       | Description                                   |
 | --------------------------------------------- | --------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec                            |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec (see required fields below) |
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                  |
 | `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done       |
 | `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main |
@@ -187,7 +187,11 @@ Complete reference for all CLI commands. Organized by category for quick discove
 # 1. Create WU
 pnpm wu:create --id WU-XXX --lane "Framework: Core" --title "Add feature" \
   --description "Context: ... Problem: ... Solution: ..." \
-  --acceptance "Criterion 1" --code-paths "src/file.ts"
+  --acceptance "Criterion 1" --acceptance "Criterion 2" \
+  --code-paths "src/file.ts" \
+  --test-paths-unit "src/__tests__/file.test.ts" \
+  --exposure backend-only \
+  --spec-refs "~/.lumenflow/plans/WU-XXX-plan.md"
 
 # 2. Claim (creates worktree)
 pnpm wu:claim --id WU-XXX --lane "Framework: Core"
@@ -205,6 +209,45 @@ pnpm wu:prep --id WU-XXX
 # 6. Complete (from main - copy from wu:prep output)
 cd /path/to/main && pnpm wu:done --id WU-XXX
 ```
+
+---
+
+## wu:create Required Fields (Code WUs)
+
+For code changes, you must include **all** of the following (or wu:create will fail):
+
+- `--description`
+- `--acceptance` (repeatable, at least one)
+- `--code-paths` (repeatable)
+- `--test-paths-unit` or `--test-paths-e2e` (automated tests required)
+- `--exposure` (ui | api | backend-only | documentation)
+- `--spec-refs` (required for type: feature)
+
+Documentation WUs can omit code/test paths but should set `--type documentation` and `--exposure documentation`.
+
+---
+
+## Lane Inference Requirement (Sub-Lanes)
+
+If you use a sub-lane like `Experience: UI`, you **must** have a lane taxonomy:
+
+- Ensure `.lumenflow.lane-inference.yaml` exists, or
+- Generate it with `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`
+
+Without this file, sub-lane validation will fail.
+
+---
+
+## Local / Offline Behavior (No Remote)
+
+`wu:create` and `wu:claim` currently expect an `origin` remote and will fetch `origin/main`.
+
+If your repo has no remote yet:
+
+1. Create and push a remote first, or
+2. Use `--no-push` where supported (e.g., `wu:claim`) for local-only work.
+
+Full offline mode for `wu:create` is planned but not available yet.
 
 ---
 

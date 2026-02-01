@@ -31,6 +31,18 @@ pnpm wu:done --id WU-XXXX
 
 ---
 
+## Before Creating WUs
+
+If you plan to use sub-lanes like `Experience: UI`, make sure lane inference is configured:
+
+- `.lumenflow.lane-inference.yaml` must exist for sub-lane validation, or
+- Generate it with `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`
+
+**No remote yet?** `wu:create` expects `origin/main`. If your repo is local-only, add a remote
+before running `wu:create`. `wu:claim` supports `--no-push` for local-only work.
+
+---
+
 ## The 5 Rules You Must Follow
 
 ### Rule 1: ALWAYS Work in Worktrees

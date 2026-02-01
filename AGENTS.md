@@ -22,8 +22,10 @@ pnpm wu:prep --id WU-XXXX
 # This prints a copy-paste command for step 4
 
 # 4. Complete (from main - copy-paste from wu:prep output)
-cd /home/USER/source/hellmai/os && pnpm wu:done --id WU-XXXX
+cd <project-root> && pnpm wu:done --id WU-XXXX
 ```
+
+> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 ---
 
@@ -129,7 +131,7 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 | Step         | Location | Command                                                    |
 | ------------ | -------- | ---------------------------------------------------------- |
-| 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title"` |
+| 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
 | 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                  |
 | 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                               |
 | 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                    |

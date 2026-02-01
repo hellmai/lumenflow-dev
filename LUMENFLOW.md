@@ -53,6 +53,28 @@ cd /path/to/main && pnpm wu:done --id WU-XXXX
 
 ---
 
+## Setup Notes (Common First-Run Failures)
+
+### Lane inference (sub-lanes)
+
+If you use sub-lanes like `Experience: UI`, you must have a lane taxonomy:
+
+- Ensure `.lumenflow.lane-inference.yaml` exists, or
+- Generate it with `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`
+
+Without this file, sub-lane validation will fail.
+
+### Local-only / no remote
+
+`wu:create` expects an `origin` remote and will fetch `origin/main`. If your repo has no remote:
+
+1. Create a remote and push `main` first, or
+2. Use `--no-push` where supported (e.g., `wu:claim`) for local-only work.
+
+Full offline mode for `wu:create` is planned but not available yet.
+
+---
+
 ## Core Principles
 
 1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
