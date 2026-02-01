@@ -2032,3 +2032,13 @@ export async function main(): Promise<void> {
   console.log('  3. Run: pnpm wu:create --id WU-0001 --lane <lane> --title "First WU"');
   /* eslint-enable no-console */
 }
+
+// WU-1297: Use import.meta.main instead of exporting main() without calling it
+// This ensures main() runs when the script is executed as a CLI entry point
+if (import.meta.main) {
+  main().catch((err: unknown) => {
+    // eslint-disable-next-line no-console -- CLI error output
+    console.error('[lumenflow init] Error:', err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  });
+}
