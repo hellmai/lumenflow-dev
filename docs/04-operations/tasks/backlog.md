@@ -20,9 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
-- [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
-- [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -47,6 +44,9 @@ sections:
 - [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
 - [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — Framework: CLI
 - [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
+- [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
+- [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
+- [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -55,7 +55,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
-- [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -333,3 +332,4 @@ sections:
 - [WU-1307 — Fix lumenflow-init scaffolding: scripts + lane inference + default lanes](wu/WU-1307.yaml)
 - [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml)
 - [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml)
+- [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml)
