@@ -1,0 +1,32 @@
+id: WU-1304
+title: Update lumenflow.dev docs for current tooling and workflow
+lane: 'Operations: Infrastructure'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1304.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Audit lumenflow.dev documentation for workflow and command drift, update examples to wu:prep + wu:done flow, correct CLI command names/flags, refresh version/runtime references, and fix broken docs links and weak examples.
+acceptance:
+  - All pages describing completion now show the wu:prep (worktree gates) then wu:done (main merge) flow, including quickstart, gates, guides, FAQ, and homepage.
+  - CLI examples use valid current commands and required flags; unsupported commands (wu:list, wu:escalate, wu-prompt, mem:decide) are removed or replaced.
+  - Agent and memory examples use current required args (mem:start --wu, mem:ready --wu, agent:session --wu --tier).
+  - Version/runtime references are consistent with current repo tooling (package versions, Node requirement).
+  - Previously broken in-site links are corrected or removed, and the A Day example is updated to a realistic multi-task flow.
