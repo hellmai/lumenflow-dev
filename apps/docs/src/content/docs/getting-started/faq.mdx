@@ -100,7 +100,8 @@ Gates are automated quality checks that run before a WU can be completed:
 
 ### Can I skip gates?
 
-Only for pre-existing failures with proper documentation:
+Only for pre-existing failures with proper documentation. Normally, gates run via `wu:prep` in the
+worktree:
 
 ```bash
 pnpm wu:done --id WU-042 --skip-gates \
@@ -130,12 +131,12 @@ Worktrees provide true isolation:
 
 ### What happens to my worktree when I finish?
 
-`pnpm wu:done` automatically:
+`pnpm wu:prep` and `pnpm wu:done` together:
 
-1. Runs gates in the worktree
-2. Merges to main (fast-forward)
-3. Creates the stamp
-4. Deletes the worktree
+1. `wu:prep` runs gates in the worktree
+2. `wu:done` merges to main (fast-forward)
+3. `wu:done` creates the stamp
+4. `wu:done` deletes the worktree
 
 ## CLI
 
@@ -145,7 +146,7 @@ The CLI provides the full LumenFlow experience (worktrees, gates, memory). Witho
 
 ### What Node.js version do I need?
 
-Node.js 18 or higher. We recommend Node.js 22.
+Node.js 22 or higher (LTS recommended).
 
 ### Does the CLI work with npm?
 
@@ -153,7 +154,10 @@ Yes. We recommend pnpm, but npm works too:
 
 ```bash
 npm install -D @lumenflow/cli
-npx wu-create --id WU-001 ...
+npx wu-create --title "Update README" --lane "Operations: Documentation" \
+  --type documentation --exposure documentation \
+  --description "Clarify setup steps" \
+  --acceptance "README includes updated setup instructions"
 ```
 
 ## GitHub App
@@ -209,6 +213,7 @@ Yes. AI agents can run the full workflow:
 pnpm wu:claim --id WU-042 --lane "Framework: Core"
 cd worktrees/framework-core-wu-042
 # ... implement ...
+pnpm wu:prep --id WU-042
 cd /path/to/repo
 pnpm wu:done --id WU-042
 ```

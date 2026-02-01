@@ -14,12 +14,11 @@ This walkthrough follows a realistic day of development using LumenFlow, showing
 <Tabs syncKey="workflow">
   <TabItem label="AI-Assisted">
     ```bash
-    # AI agent starts by checking memory
-    pnpm mem:ready
-    # Output: 2 WUs ready in your lanes
+    # AI agent checks recent signals
+    pnpm mem:inbox --since 30m
 
     # Review backlog
-    pnpm wu:list --status ready --lane "Framework: Core"
+    cat docs/04-operations/tasks/backlog.md
     ```
 
   </TabItem>
@@ -27,9 +26,6 @@ This walkthrough follows a realistic day of development using LumenFlow, showing
     ```bash
     # Developer checks the backlog
     cat docs/04-operations/tasks/backlog.md
-
-    # Or use the list command
-    pnpm wu:list --status ready
     ```
 
   </TabItem>
@@ -71,7 +67,7 @@ code_paths:
     # /skill code-quality
 
     # Start agent session for memory tracking
-    pnpm agent:session --id WU-042
+    pnpm agent:session --wu WU-042 --tier 2
     ```
 
   </TabItem>
@@ -287,6 +283,25 @@ pnpm test --filter @lumenflow/core
 # All tests still pass
 ```
 
+## Early Afternoon: Quick Docs WU (Parallel)
+
+While the core work is stable, we knock out a small documentation WU in parallel.
+
+```bash
+# Claim a docs WU
+pnpm wu:claim --id WU-077 --lane "Content: Documentation"
+cd worktrees/content-documentation-wu-077
+
+# Make doc edits...
+
+# Run docs-only gates
+pnpm wu:prep --id WU-077 --docs-only
+
+# Complete from main
+cd /path/to/main
+pnpm wu:done --id WU-077
+```
+
 ## Late Afternoon: Gates and Completion
 
 ### Run Quality Gates
@@ -295,25 +310,25 @@ pnpm test --filter @lumenflow/core
   <TabItem label="AI-Assisted">
     ```bash
     # Agent runs gates in worktree
-    pnpm gates
+    pnpm wu:prep --id WU-042
 
     # Output:
-    # [gates] Running format check...
-    # [gates] Running lint...
-    # [gates] Running typecheck...
-    # [gates] Running tests...
-    # [gates] All gates passed
+    # [wu-prep] Running format check...
+    # [wu-prep] Running lint...
+    # [wu-prep] Running typecheck...
+    # [wu-prep] Running tests...
+    # [wu-prep] Gates passed
     ```
 
   </TabItem>
   <TabItem label="Traditional">
     ```bash
     # Developer runs gates
-    pnpm gates
+    pnpm wu:prep --id WU-042
 
     # If format fails:
     pnpm format
-    # Then re-run gates
+    # Then re-run wu:prep
     ```
 
   </TabItem>
@@ -340,15 +355,13 @@ git commit -m "wu(wu-042): add email validation with tests
   <TabItem label="AI-Assisted">
     ```bash
     # Agent signals completion
-    pnpm mem:signal "Implementation complete, gates passing"
+    pnpm mem:signal "Implementation complete, gates passing" --wu WU-042
 
     # Return to main and complete
     cd /home/user/project
     pnpm wu:done --id WU-042
 
     # Output:
-    # [wu:done] Running gates in worktree...
-    # [wu:done] Gates passed
     # [wu:done] Merging to main (fast-forward)...
     # [wu:done] Creating stamp...
     # [wu:done] Cleaning up worktree...
@@ -365,7 +378,7 @@ git commit -m "wu(wu-042): add email validation with tests
     pnpm wu:done --id WU-042
 
     # This:
-    # 1. Runs gates in worktree
+    # 1. Requires a successful wu:prep
     # 2. Fast-forward merges to main
     # 3. Creates .lumenflow/stamps/WU-042.done
     # 4. Updates backlog.md and status.md
@@ -376,7 +389,7 @@ git commit -m "wu(wu-042): add email validation with tests
 </Tabs>
 
 <Aside type="caution">
-  Always run `wu:done` from the main checkout, not from within the worktree.
+  Run `wu:prep` from the worktree, then run `wu:done` from the main checkout.
 </Aside>
 
 ## End of Day: Review
@@ -406,20 +419,23 @@ pnpm mem:checkpoint --wu WU-042
 
 ## Complete Timeline
 
-| Time  | Activity            | Commands                             |
-| ----- | ------------------- | ------------------------------------ |
-| 9:00  | Review ready WUs    | `pnpm wu:list --status ready`        |
-| 9:15  | Claim WU-042        | `pnpm wu:claim --id WU-042`          |
-| 9:20  | cd to worktree      | `cd worktrees/framework-core-wu-042` |
-| 10:00 | Write failing tests | TDD RED phase                        |
-| 10:30 | Run tests (fail)    | `pnpm test`                          |
-| 11:00 | Implement feature   | TDD GREEN phase                      |
-| 11:30 | Run tests (pass)    | `pnpm test`                          |
-| 14:00 | Refactor            | TDD REFACTOR phase                   |
-| 14:30 | Check coverage      | `pnpm test -- --coverage`            |
-| 15:00 | Run gates           | `pnpm gates`                         |
-| 15:30 | Commit changes      | `git commit`                         |
-| 16:00 | Complete WU         | `pnpm wu:done --id WU-042`           |
+| Time  | Activity            | Commands                                                    |
+| ----- | ------------------- | ----------------------------------------------------------- |
+| 9:00  | Review backlog      | `cat docs/04-operations/tasks/backlog.md`                   |
+| 9:15  | Claim WU-042        | `pnpm wu:claim --id WU-042`                                 |
+| 9:20  | cd to worktree      | `cd worktrees/framework-core-wu-042`                        |
+| 10:00 | Write failing tests | TDD RED phase                                               |
+| 10:30 | Run tests (fail)    | `pnpm test`                                                 |
+| 11:00 | Implement feature   | TDD GREEN phase                                             |
+| 11:30 | Run tests (pass)    | `pnpm test`                                                 |
+| 12:30 | Claim docs WU-077   | `pnpm wu:claim --id WU-077 --lane "Content: Documentation"` |
+| 13:00 | Docs gates          | `pnpm wu:prep --id WU-077 --docs-only`                      |
+| 13:15 | Complete WU-077     | `pnpm wu:done --id WU-077`                                  |
+| 14:00 | Refactor            | TDD REFACTOR phase                                          |
+| 14:30 | Check coverage      | `pnpm test -- --coverage`                                   |
+| 15:00 | Run gates           | `pnpm wu:prep --id WU-042`                                  |
+| 15:30 | Commit changes      | `git commit`                                                |
+| 16:00 | Complete WU-042     | `pnpm wu:done --id WU-042`                                  |
 
 ## Common Issues
 
@@ -429,7 +445,7 @@ pnpm mem:checkpoint --wu WU-042
 pnpm format
 git add -A
 git commit --amend --no-edit
-pnpm gates
+pnpm wu:prep --id WU-042
 ```
 
 ### "Working in wrong directory"
@@ -440,10 +456,12 @@ If you made changes in main instead of worktree:
 # Check where changes are
 git status
 
-# If in main, stash and apply to worktree
-git stash
+# If in main, move changes into the worktree
+git diff > /tmp/main-changes.patch
 cd worktrees/framework-core-wu-042
-git stash pop
+git apply /tmp/main-changes.patch
+cd /path/to/main
+git restore .
 ```
 
 ### "wu:done from worktree"
@@ -464,7 +482,7 @@ FIX: cd /home/user/project && pnpm wu:done --id WU-042
     Write failing tests before implementation (RED-GREEN-REFACTOR).
   </Card>
   <Card title="Gates before done" icon="approve-check">
-    Run `pnpm gates` before `wu:done` to catch issues early.
+    Run `pnpm wu:prep --id WU-XXX` in the worktree before `wu:done`.
   </Card>
   <Card title="Complete from main" icon="setting">
     Run `pnpm wu:done` from the main checkout, not the worktree.

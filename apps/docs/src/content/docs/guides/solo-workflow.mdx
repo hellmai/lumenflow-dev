@@ -57,6 +57,7 @@ The simplest LumenFlow setup for solo work.
    {
      "scripts": {
        "wu:create": "wu-create",
+       "wu:prep": "wu-prep",
        "wu:done": "wu-done",
        "gates": "gates"
      }
@@ -69,52 +70,36 @@ That's it. You're ready to use LumenFlow.
 
 ## Solo Workflow
 
-### Without Worktrees (Simpler)
-
-For solo work, you can skip worktrees and work directly on main:
+Worktrees are required for `wu:prep`, even when working solo.
 
 ```bash
-# 1. Create a WU
+# 1. Create a full spec (ID auto-generated)
 npx wu-create \
-  --id WU-001 \
   --title "Add dark mode" \
   --lane "Experience: UI" \
-  --description "Add dark mode toggle to settings"
+  --type feature \
+  --exposure ui \
+  --description "Add dark mode toggle to settings" \
+  --acceptance "Users can switch between light/dark modes" \
+  --code-paths "src/components/ThemeToggle.tsx" \
+  --test-paths-unit "src/components/__tests__/ThemeToggle.test.tsx" \
+  --plan
 
-# 2. Work directly (no claim needed for solo)
+# 2. Claim and work in the worktree (use the generated ID, example: WU-123)
+npx wu-claim --id WU-123 --lane "Experience: UI"
+cd worktrees/experience-ui-wu-123
 # ... make changes ...
 
-# 3. Run gates
-npx gates
-
-# 4. Complete
-npx wu-done --id WU-001
+# 3. Run gates in worktree, then complete from main
+npx wu-prep --id WU-123
+cd /path/to/main
+npx wu-done --id WU-123
 ```
 
-<Aside type="tip">
-  Skip `wu:claim` when working solo on main. Just create the WU, work, and complete.
+<Aside type="note">
+  If you truly don't want worktrees, use the GitHub App-only workflow and manage WUs manually.
+  `wu:prep` requires a worktree.
 </Aside>
-
-### With Worktrees (Recommended for AI)
-
-If you're using AI agents, use worktrees for isolation:
-
-```bash
-# 1. Create and claim
-npx wu-create --id WU-001 --title "Add dark mode" --lane "Experience: UI"
-npx wu-claim --id WU-001 --lane "Experience: UI"
-
-# 2. Work in worktree
-cd worktrees/experience-ui-wu-001
-# ... make changes ...
-
-# 3. Gates + complete
-npx gates
-cd ../..
-npx wu-done --id WU-001
-```
-
-Worktrees let AI agents work on one WU while you work on another.
 
 ## Simplified Configuration
 
@@ -154,9 +139,22 @@ gates:
 ### Quick Task
 
 ```bash
-# Quick inline WU (no spec file needed)
-npx wu-create --inline "Fix typo in README" --lane main
-# Creates WU, marks done, creates stamp in one command
+# Small documentation WU (fast, but still fully specified)
+npx wu-create \
+  --title "Fix typo in README" \
+  --lane main \
+  --type documentation \
+  --exposure documentation \
+  --description "Fix install command typo in README" \
+  --acceptance "README shows the correct install command"
+
+# Use the generated ID (example: WU-124)
+npx wu-claim --id WU-124 --lane main
+cd worktrees/main-wu-124
+# ... changes ...
+npx wu-prep --id WU-124
+cd /path/to/main
+npx wu-done --id WU-124
 ```
 
 ### Standard Task
@@ -164,25 +162,33 @@ npx wu-create --inline "Fix typo in README" --lane main
 ```bash
 # 1. Create with full spec
 npx wu-create \
-  --id WU-015 \
   --title "Add pagination to posts list" \
   --lane main \
+  --type feature \
+  --exposure ui \
+  --description "Paginate posts list to 10 items per page" \
   --acceptance "Posts show 10 per page" \
   --acceptance "Next/prev buttons work" \
-  --code-paths "src/components/PostList.tsx"
+  --code-paths "src/components/PostList.tsx" \
+  --test-paths-unit "src/components/__tests__/PostList.test.tsx" \
+  --plan
 
-# 2. Work on it
+# 2. Claim and work in the worktree (use the generated ID, example: WU-015)
+npx wu-claim --id WU-015 --lane main
+cd worktrees/main-wu-015
 # ... changes ...
 
-# 3. Complete
-npx gates && npx wu-done --id WU-015
+# 3. Run gates in worktree, then complete from main
+npx wu-prep --id WU-015
+cd /path/to/main
+npx wu-done --id WU-015
 ```
 
 ### Using AI Agents
 
 ```bash
 # Generate prompt for AI agent
-npx wu-prompt --id WU-015
+npx wu-spawn --id WU-015
 
 # Paste into Claude/GPT/Cursor with full context
 # Agent works in worktree, runs gates, completes
@@ -195,11 +201,11 @@ npx wu-prompt --id WU-015
 - Features (even small ones)
 - Bug fixes
 - Refactoring
-- Documentation updates
+- Substantive documentation updates
 
 ### Skip WUs For
 
-- Single-line typo fixes
+- Truly trivial typo fixes
 - Dependency updates (use Dependabot)
 - Experiments you'll throw away
 
@@ -283,18 +289,22 @@ When you want an AI to pick up work:
 ```bash
 # 1. Create WU with full spec
 npx wu-create \
-  --id WU-020 \
   --title "Add user avatar upload" \
   --lane main \
+  --type feature \
+  --exposure ui \
   --description "Allow users to upload profile avatars" \
   --acceptance "Upload button in profile settings" \
   --acceptance "Images resized to 200x200" \
   --acceptance "Stored in Supabase storage" \
   --code-paths "src/components/AvatarUpload.tsx" \
-  --code-paths "src/lib/storage.ts"
+  --code-paths "src/lib/storage.ts" \
+  --test-paths-unit "src/components/__tests__/AvatarUpload.test.tsx" \
+  --plan
 
 # 2. Generate agent prompt
-npx wu-prompt --id WU-020
+# Use the generated ID from the output (example: WU-020)
+npx wu-spawn --id WU-020
 
 # 3. Give to AI agent
 # Agent claims, works in worktree, completes
@@ -357,13 +367,21 @@ Even without team constraints, small WUs help:
 - Clear git history
 - AI agents work better on focused tasks
 
-### Use Inline WUs for Quick Fixes
+### Use Small WUs for Quick Fixes
 
 ```bash
-npx wu-create --inline "Fix null check in useAuth hook" --lane main
+npx wu-create \
+  --title "Fix null check in useAuth hook" \
+  --lane main \
+  --type bug \
+  --exposure api \
+  --description "Prevent crash when auth state is null" \
+  --acceptance "useAuth handles null without throwing" \
+  --code-paths "src/hooks/useAuth.ts" \
+  --test-paths-unit "src/hooks/__tests__/useAuth.test.ts"
 ```
 
-One command: creates WU, marks done, commits.
+Keep the WU small, but still fully specified.
 
 ### Write Good Descriptions
 

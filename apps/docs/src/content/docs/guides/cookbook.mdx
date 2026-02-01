@@ -16,20 +16,23 @@ For small, urgent fixes that don't need full WU ceremony:
 ```bash
 # Create and claim in one flow
 pnpm wu:create \
-  --id WU-999 \
   --title "Fix null check in auth handler" \
   --lane "Framework: Core" \
+  --type bug \
+  --exposure backend-only \
   --description "Hotfix: Auth handler crashes on null user" \
   --acceptance "Auth handler gracefully handles null user" \
-  --code-paths "src/auth/handler.ts"
+  --code-paths "src/auth/handler.ts" \
+  --test-paths-unit "src/auth/__tests__/handler.test.ts"
 
+# Use the generated ID from the output (example: WU-999)
 pnpm wu:claim --id WU-999 --lane "Framework: Core"
 cd worktrees/framework-core-wu-999
 
 # Make fix, test, complete
 # ... edit files ...
-pnpm gates
-cd ../..
+pnpm wu:prep --id WU-999
+cd /path/to/main
 pnpm wu:done --id WU-999
 ```
 
@@ -47,6 +50,10 @@ cd worktrees/framework-core-wu-100
 pnpm wu:claim --id WU-101 --lane "Content: Documentation"
 cd worktrees/content-documentation-wu-101
 # Work here...
+
+# Run gates in each worktree
+pnpm wu:prep --id WU-100
+pnpm wu:prep --id WU-101
 
 # Complete each from main
 cd /path/to/main
@@ -104,10 +111,12 @@ If you made changes in the wrong place:
 # Check where changes are
 git status
 
-# If in main checkout
-git stash
+# If in main checkout, move the changes into the worktree
+git diff > /tmp/main-changes.patch
 cd worktrees/lane-wu-xxx
-git stash pop
+git apply /tmp/main-changes.patch
+cd /path/to/main
+git restore .
 ```
 
 ### Sync Worktree with Main
@@ -154,8 +163,8 @@ pnpm format
 git add -A
 git commit --amend --no-edit
 
-# Re-run gates
-pnpm gates
+# Re-run gates in worktree
+pnpm wu:prep --id WU-XXX
 ```
 
 ### Fix Lint Failures
@@ -168,8 +177,8 @@ pnpm lint
 pnpm lint -- --fix
 
 # Manual fixes for remaining issues
-# Then re-run gates
-pnpm gates
+# Then re-run gates in worktree
+pnpm wu:prep --id WU-XXX
 ```
 
 ### Fix Type Errors
@@ -181,6 +190,7 @@ pnpm typecheck
 # Fix first error first (often cascades)
 # Then re-run
 pnpm typecheck
+pnpm wu:prep --id WU-XXX
 ```
 
 ### Skip Gates (Emergency Only)
@@ -189,15 +199,14 @@ pnpm typecheck
 
 ```bash
 # Verify failure exists on main
-git checkout main
+cd /path/to/main
 pnpm gates
 # Confirm same failure exists
 
 # Return to worktree
 cd worktrees/lane-wu-xxx
 
-# Skip with reason and fix WU
-cd ../..
+# Skip with reason and fix WU (run from main)
 pnpm wu:done --id WU-042 --skip-gates \
   --reason "Pre-existing lint failure in unrelated file" \
   --fix-wu WU-050
@@ -241,10 +250,10 @@ pnpm test --filter @lumenflow/core -- --update-snapshots
 
 ```bash
 # Begin tracking work
-pnpm agent:session --id WU-042
+pnpm agent:session --wu WU-042 --tier 2
 
 # Signal progress
-pnpm mem:signal "Tests written, starting implementation"
+pnpm mem:signal "Tests written, starting implementation" --wu WU-042
 
 # Create checkpoint before risky changes
 pnpm mem:checkpoint --wu WU-042
@@ -254,7 +263,7 @@ pnpm mem:checkpoint --wu WU-042
 
 ```bash
 # Check what's pending
-pnpm mem:ready
+pnpm mem:ready --wu WU-042
 
 # Output shows:
 # - Active WUs
@@ -306,14 +315,14 @@ pnpm initiative:bulk:assign:wus \
 pnpm wu:status --id WU-042
 ```
 
-### List All Active WUs
+### List Active WUs
 
 ```bash
-# All in progress
-pnpm wu:list --status in_progress
+# In progress
+cat docs/04-operations/tasks/status.md
 
-# By lane
-pnpm wu:list --lane "Framework: Core"
+# Ready/backlog
+cat docs/04-operations/tasks/backlog.md
 ```
 
 ### View Event History
@@ -516,24 +525,24 @@ pnpm install
 pnpm clean
 pnpm build
 
-# Re-run gates
-pnpm gates
+# Re-run gates in worktree
+pnpm wu:prep --id WU-XXX
 ```
 
 ## Quick Reference
 
-| Task              | Command                                    |
-| ----------------- | ------------------------------------------ |
-| Create WU         | `pnpm wu:create --id WU-XXX ...`           |
-| Claim WU          | `pnpm wu:claim --id WU-XXX --lane "Lane"`  |
-| Complete WU       | `pnpm wu:done --id WU-XXX`                 |
-| Block WU          | `pnpm wu:block --id WU-XXX --reason "..."` |
-| Check status      | `pnpm wu:status --id WU-XXX`               |
-| Run gates         | `pnpm gates`                               |
-| Fix format        | `pnpm format`                              |
-| Run tests         | `pnpm test`                                |
-| Memory checkpoint | `pnpm mem:checkpoint`                      |
-| Check ready work  | `pnpm mem:ready`                           |
+| Task              | Command                                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Create WU         | `pnpm wu:create --title "..." --lane "..." --description "..." --acceptance "..." --exposure ... --code-paths ... --test-paths-unit ...` |
+| Claim WU          | `pnpm wu:claim --id WU-XXX --lane "Lane"`                                                                                                |
+| Run gates         | `pnpm wu:prep --id WU-XXX`                                                                                                               |
+| Complete WU       | `pnpm wu:done --id WU-XXX`                                                                                                               |
+| Block WU          | `pnpm wu:block --id WU-XXX --reason "..."`                                                                                               |
+| Check status      | `pnpm wu:status --id WU-XXX`                                                                                                             |
+| Fix format        | `pnpm format`                                                                                                                            |
+| Run tests         | `pnpm test`                                                                                                                              |
+| Memory checkpoint | `pnpm mem:checkpoint --wu WU-XXX`                                                                                                        |
+| Check ready work  | `pnpm mem:ready --wu WU-XXX`                                                                                                             |
 
 ## Next Steps
 

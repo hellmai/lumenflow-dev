@@ -28,7 +28,7 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
 
 ### Prerequisites
 
-- Node.js 18+ or 22+
+- Node.js 22+ (LTS recommended)
 - pnpm (recommended) or npm
 - A Git repository
 
@@ -67,6 +67,7 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
      "scripts": {
        "wu:create": "wu-create",
        "wu:claim": "wu-claim",
+       "wu:prep": "wu-prep",
        "wu:done": "wu-done",
        "gates": "gates"
      }
@@ -76,32 +77,30 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
 4. **Create your first Work Unit**
 
    ```bash
-   # ID is auto-generated if not provided
-   npx wu-create --title "Add login page" --lane "Experience: UI"
-   # Or with explicit ID: npx wu-create --id WU-001 --title "Add login page" --lane "Experience: UI"
-   ```
+   # ID is auto-generated if not provided (use the printed ID in later steps)
+   npx wu-create \
+     --title "Fix login error banner" \
+     --lane "Experience: UI" \
+     --type bug \
+     --exposure ui \
+     --description "Fix error banner overlap on small screens" \
+     --acceptance "Error banner no longer overlaps the form on mobile widths" \
+     --code-paths "src/components/LoginError.tsx" \
+     --test-paths-unit "src/components/__tests__/LoginError.test.tsx"
 
-   This creates a minimal WU. Edit the YAML file to add details:
-
-   ```yaml
-   # docs/04-operations/tasks/wu/WU-001.yaml
-   acceptance:
-     - Login form renders with email and password fields
-     - Form validates inputs on submit
-   code_paths:
-     - src/components/Login/
+   # If you need a specific ID (e.g., to reference a plan), add --id WU-001
    ```
 
    <Aside type="tip">
-     Start simple. Add `--type`, `--description`, `--acceptance`, and other flags as needed, or edit
-     the YAML directly.
+     `wu:create` validates a full spec up front. Use `wu:edit` later if you need to refine details.
    </Aside>
 
 5. **Claim and start work**
 
    ```bash
-   npx wu-claim --id WU-001 --lane "Framework: Core"
-   cd worktrees/framework-core-wu-001
+   # Use the ID printed by wu-create (example: WU-123)
+   npx wu-claim --id WU-123 --lane "Experience: UI"
+   cd worktrees/experience-ui-wu-123
    ```
 
 </Steps>
@@ -116,8 +115,8 @@ npx wu-claim --id WU-XXX --lane "Framework: Core"
 cd worktrees/framework-core-wu-xxx
 # ... make changes ...
 
-# 3. Run gates (checks your work)
-npx gates
+# 3. Run gates in the worktree
+npx wu-prep --id WU-XXX
 
 # 4. Complete the WU (merges to main, from repo root)
 cd /path/to/repo
@@ -125,8 +124,8 @@ npx wu-done --id WU-XXX
 ```
 
 <Aside type="caution">
-  Always run `wu:done` from the main repository checkout, not from the worktree. The worktree is
-  automatically cleaned up after completion.
+  Run `wu:prep` from the worktree (it runs gates there), then run `wu:done` from the main repository
+  checkout. The worktree is automatically cleaned up after completion.
 </Aside>
 
 ### Key CLI Commands
@@ -136,8 +135,9 @@ npx wu-done --id WU-XXX
 | `lumenflow-init` | Initialize LumenFlow in a project |
 | `wu-create`      | Create a new Work Unit            |
 | `wu-claim`       | Claim a WU and create worktree    |
+| `wu-prep`        | Run gates in worktree             |
 | `wu-done`        | Complete WU, merge, and cleanup   |
-| `gates`          | Run quality gates                 |
+| `gates`          | Run quality gates (standalone)    |
 | `flow-report`    | Generate DORA metrics report      |
 
 Run any command with `--help` to see all options:

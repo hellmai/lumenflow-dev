@@ -48,7 +48,6 @@ LumenFlow integrates seamlessly with .NET projects. This guide covers setup, con
 
    ```bash
    lumenflow wu create \
-     --id WU-001 \
      --title "Add user authentication" \
      --lane "Framework: Core" \
      --type feature \
@@ -56,14 +55,16 @@ LumenFlow integrates seamlessly with .NET projects. This guide covers setup, con
      --description "Implement JWT-based authentication" \
      --acceptance "Users can log in with email/password" \
      --code-paths "src/Auth/" \
-     --test-paths-unit "tests/Auth.Tests/"
+     --test-paths-unit "tests/Auth.Tests/" \
+     --plan
    ```
 
 5. **Claim and start work**
 
    ```bash
-   lumenflow wu claim --id WU-001 --lane "Framework: Core"
-   cd worktrees/framework-core-wu-001
+   # Use the generated ID from the output (example: WU-123)
+   lumenflow wu claim --id WU-123 --lane "Framework: Core"
+   cd worktrees/framework-core-wu-123
    ```
 
 </Steps>

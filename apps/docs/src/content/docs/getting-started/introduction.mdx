@@ -68,20 +68,22 @@ gates:
 
 ```bash
 # Create and claim a work unit
-pnpm wu:create --id WU-001 --title "Add user auth" --lane "Framework: Core" \
+pnpm wu:create --title "Add user auth" --lane "Framework: Core" \
   --type feature --exposure backend-only \
   --description "Add authentication" --acceptance "Users can log in" \
-  --code-paths "src/auth/" --test-paths-unit "src/auth/__tests__/"
+  --code-paths "src/auth/" --test-paths-unit "src/auth/__tests__/" \
+  --plan
 
-pnpm wu:claim --id WU-001 --lane "Framework: Core"
+# wu:create prints the generated ID (example: WU-123)
+pnpm wu:claim --id WU-123 --lane "Framework: Core"
 
 # Work in the worktree
-cd worktrees/framework-core-wu-001
+cd worktrees/framework-core-wu-123
 # ... make changes ...
 
-# Run gates and complete (from repo root)
-pnpm gates
-cd /path/to/repo && pnpm wu:done --id WU-001
+# Run gates in the worktree, then complete from main
+pnpm wu:prep --id WU-123
+cd /path/to/repo && pnpm wu:done --id WU-123
 ```
 
 ## Next Steps

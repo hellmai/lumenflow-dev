@@ -79,7 +79,7 @@ pnpm gates
 > All gates passed!
 ```
 
-If any gate fails, `wu:done` is blocked until fixed.
+If any gate fails, `wu:prep` fails and you fix issues in the worktree before completion.
 
 ## Command Options
 
@@ -227,18 +227,23 @@ pnpm gates
 # All green? Continue
 ```
 
-### On Done
+### On Prep and Done
+
+When you `wu:prep`:
+
+1. Gates run automatically in the worktree
+2. If any fail, the WU stays `in_progress` until you fix and rerun `wu:prep`
 
 When you `wu:done`:
 
-1. Gates run automatically
-2. If any fail, error, WU stays `in_progress`
-3. If all pass, WU marked `done`, stamp created
+1. The WU merges to main
+2. The stamp is created
+3. The worktree is cleaned up
 
 ## Gate Failures
 
 ```bash
-pnpm wu:done --id WU-042
+pnpm wu:prep --id WU-042
 
 > Running gates...
 > Format check... FAILED
@@ -251,8 +256,9 @@ Fix and retry:
 
 ```bash
 pnpm prettier --write src/utils/validation.ts
-pnpm wu:done --id WU-042
-# Success
+pnpm wu:prep --id WU-042
+# Gates pass, then complete from main:
+cd /path/to/main && pnpm wu:done --id WU-042
 ```
 
 ## Skip Flags

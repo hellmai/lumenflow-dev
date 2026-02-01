@@ -12,7 +12,7 @@ Adding LumenFlow to an existing project takes about 15 minutes. This guide walks
 Before starting:
 
 - Git repository (any platform)
-- Node.js 18+ (for CLI) or skip CLI and use GitHub App only
+- Node.js 22+ (for CLI) or skip CLI and use GitHub App only
 - Understanding of [Work Units](/concepts/work-units) and [Gates](/concepts/gates)
 
 ## Quick Overview
@@ -121,6 +121,7 @@ The CLI provides the fastest path to adoption.
      "scripts": {
        "wu:create": "wu-create",
        "wu:claim": "wu-claim",
+       "wu:prep": "wu-prep",
        "wu:done": "wu-done",
        "gates": "gates"
      }
@@ -196,7 +197,7 @@ If you prefer not to use the CLI or are using a non-Node.js project.
    2. Create WU: Create YAML in `docs/04-operations/tasks/wu/`
    3. Claim WU: Update status to `in_progress`
    4. Work: Implement per acceptance criteria
-   5. Complete: Run gates, mark done, create stamp
+   5. Complete: Run `wu:prep` (gates), then `wu:done` and create the stamp
 
    ## Reference
 
@@ -437,27 +438,30 @@ After setup, verify everything works:
 ```bash
 # 1. Create a test WU
 npx wu-create \
-  --id WU-TEST \
   --title "Test LumenFlow setup" \
   --lane "Operations: Infrastructure" \
-  --type chore
+  --type documentation \
+  --exposure documentation \
+  --description "Verify LumenFlow CLI works in this repo" \
+  --acceptance "WU can be claimed, prepped, and completed"
 
 # 2. Claim it
-npx wu-claim --id WU-TEST --lane "Operations: Infrastructure"
+# Use the generated ID from the output (example: WU-123)
+npx wu-claim --id WU-123 --lane "Operations: Infrastructure"
 
 # 3. Make a trivial change in worktree
-cd worktrees/operations-infrastructure-wu-test
+cd worktrees/operations-infrastructure-wu-123
 echo "# LumenFlow works" >> README.md
 
-# 4. Run gates
-npx gates
+# 4. Run gates in worktree
+npx wu-prep --id WU-123
 
 # 5. Complete (from main checkout)
-cd ../..
-npx wu-done --id WU-TEST
+cd /path/to/main
+npx wu-done --id WU-123
 
 # 6. Check results
-ls .lumenflow/stamps/WU-TEST.done  # Should exist
+ls .lumenflow/stamps/WU-123.done  # Should exist
 ```
 
 ## Next Steps
