@@ -6,14 +6,16 @@ status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
-  - packages/@lumenflow/core/src/lane-checker.ts
-  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/lane-inference.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/cli/src/commands/wu-create.ts
+  - LUMENFLOW.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
+    - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
+    - packages/@lumenflow/core/src/__tests__/git-require-remote-config.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-create-validation-aggregate.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1302.done
