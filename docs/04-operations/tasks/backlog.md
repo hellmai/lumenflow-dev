@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1309 — Finish CLI path centralization (remove hardcoded docs/04-operations)](wu/WU-1309.yaml) — Framework: Core
 - [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — Framework: Core
 - [WU-1307 — Fix lumenflow-init scaffolding bugs: scripts, lane-inference, requireRemote](wu/WU-1307.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
