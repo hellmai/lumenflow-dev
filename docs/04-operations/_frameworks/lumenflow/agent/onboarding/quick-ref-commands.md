@@ -124,9 +124,9 @@ Plans are markdown documents that capture goals, scope, approach, and success cr
 
 Plans are stored in the repo at `docs/04-operations/plans/` by default (configurable via `directories.plansDir` in `.lumenflow.config.yaml`).
 
-| Command                                          | Description                                    |
-| ------------------------------------------------ | ---------------------------------------------- |
-| `pnpm initiative:plan --initiative INIT-XXX`     | Link existing plan to initiative               |
+| Command                                               | Description                                 |
+| ----------------------------------------------------- | ------------------------------------------- |
+| `pnpm initiative:plan --initiative INIT-XXX`          | Link existing plan to initiative            |
 | `pnpm initiative:plan --initiative INIT-XXX --create` | Create plan template and link to initiative |
 
 ### Linking Plans
@@ -155,6 +155,7 @@ pnpm wu:edit --id WU-123 --spec-refs "lumenflow://plans/WU-123-plan.md"
 ### Plan URI Format
 
 Plans use the `lumenflow://plans/` URI scheme for references:
+
 - `lumenflow://plans/INIT-001-auth-system.md` - Initiative plan
 - `lumenflow://plans/WU-123-plan.md` - WU-specific plan
 
