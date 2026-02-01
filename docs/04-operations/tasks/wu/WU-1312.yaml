@@ -2,7 +2,7 @@ id: WU-1312
 title: Update wu-sizing-guide with doc-only exception and tuning guidance
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Refine wu-sizing-guide thresholds to add explicit doc-only exceptions and clarify when single-session overrides are allowed. Keep the guide conservative but practical, with examples for documentation-only changes and shallow multi-file edits.
+description: Refine wu-sizing-guide thresholds to add explicit doc-only exceptions and clarify when
+  single-session overrides are allowed. Keep the guide conservative but practical, with examples for
+  documentation-only changes and shallow multi-file edits.
 acceptance:
   - Adds a documented exception for docs-only changes (higher file count tolerated)
   - Clarifies single-session override criteria and required justification
   - Includes examples for doc-only and shallow multi-file WUs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1312
+claimed_at: 2026-02-01T23:48:27.638Z
+baseline_main_sha: 70ef0cc69ddae9da3660e926f6d909172157626d
+session_id: 71b69930-c12b-487e-8c2d-60beb2747880
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:48:27.642Z
