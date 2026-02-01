@@ -2,7 +2,7 @@ id: WU-1299
 title: Improve --docs-only gate mode to skip unrelated package tests
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When running gates with --docs-only, pre-existing test failures in unrelated packages (e.g., @lumenflow/initiatives, @lumenflow/core) block WU completion even when the WU only touches documentation files. The --docs-only flag should either truly skip code tests entirely, or better filter to only run tests in packages touched by the WU's code_paths.
+description: When running gates with --docs-only, pre-existing test failures in unrelated packages
+  (e.g., @lumenflow/initiatives, @lumenflow/core) block WU completion even when the WU only touches
+  documentation files. The --docs-only flag should either truly skip code tests entirely, or better
+  filter to only run tests in packages touched by the WU's code_paths.
 acceptance:
   - When --docs-only is passed, tests in packages not in the WU code_paths are skipped
   - Pre-existing test failures in unrelated packages don't block docs-only WUs
   - Clear messaging when tests are skipped due to --docs-only mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1299
+claimed_at: 2026-02-01T13:43:55.091Z
+baseline_main_sha: d97e62ad9ba7ff244817a4f995af3b20ea485d9b
+session_id: 43e3e2a5-3cdb-4360-806a-9d68603e7e9c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T13:43:55.098Z
