@@ -1,0 +1,11 @@
+id: INIT-013
+slug: wip-lock-policy
+title: Configurable lane lock policy + active-state WIP accounting
+description: ''
+status: draft
+priority: P1
+owner: workflow
+created: 2026-02-01
+phases: []
+success_metrics: []
+labels: []
