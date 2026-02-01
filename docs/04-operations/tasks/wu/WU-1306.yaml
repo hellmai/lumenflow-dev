@@ -2,7 +2,7 @@ id: WU-1306
 title: Fix WUOption interface missing type property
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -38,3 +38,5 @@ session_id: 7c847309-1895-4730-ad4e-e3518e6903df
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T19:00:34.144Z
+locked: true
+completed_at: 2026-02-01T19:05:14.794Z
