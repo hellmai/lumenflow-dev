@@ -11,6 +11,7 @@ _Last updated: 2026-02-01_
 
 ## Completed
 
+- [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — 2026-02-01
 - [WU-1307 — Fix lumenflow-init scaffolding: scripts + lane inference + default lanes](wu/WU-1307.yaml) — 2026-02-01
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18

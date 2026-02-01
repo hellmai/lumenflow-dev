@@ -2,7 +2,7 @@ id: WU-1308
 title: Honor git.requireRemote and improve missing lane-inference errors
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -46,3 +46,5 @@ session_id: d6f9b85c-5c0f-48fc-bd9f-41de4fcf89ed
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T23:01:43.180Z
+locked: true
+completed_at: 2026-02-01T23:18:59.449Z
