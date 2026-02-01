@@ -1,0 +1,38 @@
+id: WU-1314
+title: Document plan tooling across internal docs and Starlight
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P1
+created: 2026-02-01
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
+  - apps/docs/src/content/docs/guides/initiatives/index.mdx
+  - apps/docs/src/content/docs/guides/wu-prep-workflow/index.mdx
+tests:
+  manual:
+    - Docs review
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1314.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Fully document the new plan tooling so agents can discover and use it without friction. Update internal onboarding docs (quick-ref, LUMENFLOW workflow) and Starlight docs (reference/guides) to show plan:create/link/edit/promote, repo plan storage, and how WUs/initiatives should link plans. Remove all references to initiative:plan.
+acceptance:
+  - Internal onboarding docs include a Plans section with examples
+  - Starlight docs include plan tooling reference and workflow guidance
+  - All references to initiative:plan removed

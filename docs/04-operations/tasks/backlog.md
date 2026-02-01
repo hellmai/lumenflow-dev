@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
 - [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — Framework: CLI
 - [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
