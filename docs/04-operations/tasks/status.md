@@ -10,10 +10,10 @@ _Last updated: 2026-02-01_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml)
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml)
-- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml)
 
 ## Completed
 
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — 2026-02-01
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18

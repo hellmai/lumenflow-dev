@@ -53,7 +53,6 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
-- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -330,3 +329,4 @@ sections:
 - [WU-1306 — Fix WUOption interface missing type property](wu/WU-1306.yaml)
 - [WU-1307 — Fix lumenflow-init scaffolding: scripts + lane inference + default lanes](wu/WU-1307.yaml)
 - [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml)
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml)
