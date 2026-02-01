@@ -16,6 +16,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import type { StateDoctorDeps } from '@lumenflow/core/dist/state-doctor-core.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 /**
  * Operation name for micro-worktree isolation
@@ -38,14 +39,14 @@ const SIGNALS_FILE = '.lumenflow/memory/signals.jsonl';
 const WU_EVENTS_FILE = '.lumenflow/state/wu-events.jsonl';
 
 /**
- * Backlog file path (relative to project root)
+ * Backlog file path (WU-1301: uses config-based paths)
  */
-const BACKLOG_FILE = 'docs/04-operations/tasks/backlog.md';
+const BACKLOG_FILE = WU_PATHS.BACKLOG();
 
 /**
- * Status file path (relative to project root)
+ * Status file path (WU-1301: uses config-based paths)
  */
-const STATUS_FILE = 'docs/04-operations/tasks/status.md';
+const STATUS_FILE = WU_PATHS.STATUS();
 
 /**
  * Remove lines containing a WU reference from markdown content
