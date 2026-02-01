@@ -1,15 +1,22 @@
 /**
- * @fileoverview Tests for WU-1301: CLI path centralization
+ * @fileoverview Tests for WU-1301 and WU-1310: CLI path centralization
  *
  * Tests that all CLI commands use config-based paths (WU_PATHS / getResolvedPaths())
  * instead of hardcoded paths like 'docs/04-operations/tasks/wu'.
  *
- * Acceptance Criteria:
+ * WU-1301 Acceptance Criteria:
  * - All wu-* commands use WU_PATHS / getResolvedPaths() instead of hardcoded paths
  * - state-doctor, flow-report, validate-* use config paths
  * - directories.* config section fully populated with simple/arc42 defaults
  * - state-doctor warns if configured paths don't exist
  * - Consumers can change paths in config and CLI respects them
+ *
+ * WU-1310 Acceptance Criteria:
+ * - directories.* includes defaults for simple and arc42 structures
+ *   (wuDir, backlogPath, statusPath, templatesDir, onboardingDir, plansDir, initiativesDir)
+ * - WU_PATHS/getResolvedPaths use config values for all paths
+ * - Config overrides are respected by core path helpers
+ * - Unit tests cover core path defaults and overrides
  *
  * @module __tests__/path-centralization.test
  */
@@ -177,6 +184,220 @@ describe('WU-1301: CLI path centralization', () => {
 
       expect(paths.wuDir).toBe(path.join(tempDir, '.lumenflow/wu'));
       expect(paths.backlogPath).toBe(path.join(tempDir, '.lumenflow/backlog.md'));
+    });
+  });
+});
+
+/**
+ * WU-1310: Core path centralization tests
+ *
+ * Tests that directories.* includes defaults for simple and arc42 structures,
+ * and that WU_PATHS/getResolvedPaths use config values for all paths.
+ */
+describe('WU-1310: Core path centralization', () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await mkdtemp(path.join(tmpdir(), 'lumenflow-test-'));
+    clearConfigCache();
+  });
+
+  afterEach(async () => {
+    await rm(tempDir, { recursive: true, force: true });
+    clearConfigCache();
+  });
+
+  describe('AC1: directories.* includes defaults for simple and arc42 structures', () => {
+    it('should have templatesDir in default config', () => {
+      const defaultConfig = getDefaultConfig();
+      expect(defaultConfig.directories.templatesDir).toBeDefined();
+      expect(defaultConfig.directories.templatesDir).toBe('.lumenflow/templates');
+    });
+
+    it('should have onboardingDir in default config', () => {
+      const defaultConfig = getDefaultConfig();
+      expect(defaultConfig.directories.onboardingDir).toBeDefined();
+      expect(defaultConfig.directories.onboardingDir).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
+    });
+
+    it('should have plansDir in default config', () => {
+      const defaultConfig = getDefaultConfig();
+      expect(defaultConfig.directories.plansDir).toBeDefined();
+      expect(defaultConfig.directories.plansDir).toBe('docs/04-operations/plans');
+    });
+
+    it('should have all required directory paths for simple structure support', () => {
+      const defaultConfig = getDefaultConfig();
+
+      // Core WU paths required by acceptance criteria
+      expect(defaultConfig.directories.wuDir).toBeDefined();
+      expect(defaultConfig.directories.backlogPath).toBeDefined();
+      expect(defaultConfig.directories.statusPath).toBeDefined();
+      expect(defaultConfig.directories.templatesDir).toBeDefined();
+      expect(defaultConfig.directories.onboardingDir).toBeDefined();
+      expect(defaultConfig.directories.plansDir).toBeDefined();
+      expect(defaultConfig.directories.initiativesDir).toBeDefined();
+    });
+
+    it('should support simple structure config (no nested docs/)', async () => {
+      const simpleConfig = {
+        version: '1.0.0',
+        directories: {
+          wuDir: 'tasks/wu',
+          backlogPath: 'tasks/backlog.md',
+          statusPath: 'tasks/status.md',
+          templatesDir: 'templates',
+          onboardingDir: 'onboarding',
+          plansDir: 'plans',
+          initiativesDir: 'tasks/initiatives',
+        },
+      };
+
+      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(simpleConfig), 'utf-8');
+
+      clearConfigCache();
+      const config = getConfig({ projectRoot: tempDir });
+
+      expect(config.directories.wuDir).toBe('tasks/wu');
+      expect(config.directories.templatesDir).toBe('templates');
+      expect(config.directories.onboardingDir).toBe('onboarding');
+      expect(config.directories.plansDir).toBe('plans');
+    });
+
+    it('should support arc42 structure config (nested docs/04-operations)', () => {
+      const defaultConfig = getDefaultConfig();
+
+      // Default arc42 pattern: docs/04-operations/...
+      expect(defaultConfig.directories.wuDir).toContain('docs');
+      expect(defaultConfig.directories.backlogPath).toContain('docs');
+      expect(defaultConfig.directories.statusPath).toContain('docs');
+      expect(defaultConfig.directories.plansDir).toContain('docs');
+      expect(defaultConfig.directories.initiativesDir).toContain('docs');
+      expect(defaultConfig.directories.onboardingDir).toContain('docs');
+    });
+  });
+
+  describe('AC2: WU_PATHS/getResolvedPaths use config values for all paths', () => {
+    it('should include templatesDir in getResolvedPaths', () => {
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+      expect(paths.templatesDir).toBeDefined();
+      expect(path.isAbsolute(paths.templatesDir)).toBe(true);
+    });
+
+    it('should include onboardingDir in getResolvedPaths', () => {
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+      expect(paths.onboardingDir).toBeDefined();
+      expect(path.isAbsolute(paths.onboardingDir)).toBe(true);
+    });
+
+    it('should include all required paths in getResolvedPaths', () => {
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+
+      // All paths from acceptance criteria
+      expect(paths.wuDir).toBeDefined();
+      expect(paths.backlogPath).toBeDefined();
+      expect(paths.statusPath).toBeDefined();
+      expect(paths.templatesDir).toBeDefined();
+      expect(paths.onboardingDir).toBeDefined();
+      expect(paths.plansDir).toBeDefined();
+      expect(paths.initiativesDir).toBeDefined();
+
+      // Verify all are absolute paths
+      expect(path.isAbsolute(paths.wuDir)).toBe(true);
+      expect(path.isAbsolute(paths.backlogPath)).toBe(true);
+      expect(path.isAbsolute(paths.statusPath)).toBe(true);
+      expect(path.isAbsolute(paths.templatesDir)).toBe(true);
+      expect(path.isAbsolute(paths.onboardingDir)).toBe(true);
+      expect(path.isAbsolute(paths.plansDir)).toBe(true);
+      expect(path.isAbsolute(paths.initiativesDir)).toBe(true);
+    });
+  });
+
+  describe('AC3: Config overrides are respected by core path helpers', () => {
+    it('should respect custom templatesDir from config', async () => {
+      const customConfig = {
+        version: '1.0.0',
+        directories: {
+          templatesDir: 'custom/templates',
+        },
+      };
+
+      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+
+      clearConfigCache();
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+
+      expect(paths.templatesDir).toBe(path.join(tempDir, 'custom/templates'));
+    });
+
+    it('should respect custom onboardingDir from config', async () => {
+      const customConfig = {
+        version: '1.0.0',
+        directories: {
+          onboardingDir: 'docs/onboarding',
+        },
+      };
+
+      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+
+      clearConfigCache();
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+
+      expect(paths.onboardingDir).toBe(path.join(tempDir, 'docs/onboarding'));
+    });
+
+    it('should respect all custom directory paths from config', async () => {
+      const customConfig = {
+        version: '1.0.0',
+        directories: {
+          wuDir: 'my/wu',
+          backlogPath: 'my/backlog.md',
+          statusPath: 'my/status.md',
+          templatesDir: 'my/templates',
+          onboardingDir: 'my/onboarding',
+          plansDir: 'my/plans',
+          initiativesDir: 'my/initiatives',
+        },
+      };
+
+      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+
+      clearConfigCache();
+      const paths = getResolvedPaths({ projectRoot: tempDir });
+
+      expect(paths.wuDir).toBe(path.join(tempDir, 'my/wu'));
+      expect(paths.backlogPath).toBe(path.join(tempDir, 'my/backlog.md'));
+      expect(paths.statusPath).toBe(path.join(tempDir, 'my/status.md'));
+      expect(paths.templatesDir).toBe(path.join(tempDir, 'my/templates'));
+      expect(paths.onboardingDir).toBe(path.join(tempDir, 'my/onboarding'));
+      expect(paths.plansDir).toBe(path.join(tempDir, 'my/plans'));
+      expect(paths.initiativesDir).toBe(path.join(tempDir, 'my/initiatives'));
+    });
+
+    it('should merge partial config with defaults', async () => {
+      // Only override one path, rest should use defaults
+      const partialConfig = {
+        version: '1.0.0',
+        directories: {
+          templatesDir: 'custom/templates',
+        },
+      };
+
+      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(partialConfig), 'utf-8');
+
+      clearConfigCache();
+      const config = getConfig({ projectRoot: tempDir });
+
+      // Custom override
+      expect(config.directories.templatesDir).toBe('custom/templates');
+
+      // Defaults preserved
+      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
+      expect(config.directories.onboardingDir).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
     });
   });
 });

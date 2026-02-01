@@ -88,6 +88,12 @@ export const DirectoriesSchema = z.object({
 
   /** Plans directory (default: 'docs/04-operations/plans') - WU-1301 */
   plansDir: z.string().default('docs/04-operations/plans'),
+
+  /** Templates directory (default: '.lumenflow/templates') - WU-1310 */
+  templatesDir: z.string().default('.lumenflow/templates'),
+
+  /** Onboarding directory (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding') - WU-1310 */
+  onboardingDir: z.string().default('docs/04-operations/_frameworks/lumenflow/agent/onboarding'),
 });
 
 /**
