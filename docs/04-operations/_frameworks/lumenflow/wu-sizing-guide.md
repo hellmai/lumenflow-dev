@@ -21,6 +21,80 @@ Before claiming a WU, estimate its "weight" using these heuristics.
 
 **These thresholds are mandatory.** Exceeding them leads to context exhaustion and rule loss (WU-1215 failure: 80k tokens consumed on analysis alone, zero implementation). Agents operate in context windows and tool calls, not clock time.
 
+### 1.1 Documentation-Only Exception
+
+Documentation WUs (`type: documentation`) have relaxed file count thresholds because:
+
+- Doc files have lower cognitive complexity than code
+- No test/type/lint dependencies to track
+- Changes are typically additive, not structural
+
+| Complexity  | Files (docs) | Tool Calls | Context Budget | Strategy          |
+| :---------- | :----------- | :--------- | :------------- | :---------------- |
+| **Simple**  | <40          | <50        | <30%           | Single Session    |
+| **Medium**  | 40-80        | 50-100     | 30-50%         | Checkpoint-Resume |
+| **Complex** | 80+          | 100+       | >50%           | Decomposition     |
+
+**Applies when ALL true:**
+
+- WU `type: documentation`
+- Only modifies: `docs/**`, `*.md`, `.lumenflow/stamps/**`
+- Does NOT touch: `apps/**`, `packages/**`, `tools/**` (code paths)
+
+**Example: Docs-only WU touching 35 markdown files**
+
+```yaml
+# WU-XXX.yaml
+id: WU-XXX
+type: documentation
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/*.md
+  - docs/01-product/*.md
+```
+
+This is allowed under docs exception: 35 files < 40 threshold for Simple.
+
+---
+
+### 1.2 Shallow Multi-File Exception
+
+Some WUs touch many files but make shallow, uniform changes (e.g., renaming, search-replace, config updates). These may exceed file count thresholds while remaining low-complexity.
+
+**Single-session override allowed when ALL true:**
+
+1. **Uniform change pattern**: Same edit repeated across files (e.g., rename, import path update, config value change)
+2. **No structural changes**: No new functions, classes, or control flow
+3. **Low cognitive load**: Each file change is <=5 lines and mechanically identical
+4. **Justification documented**: WU notes explain why thresholds are exceeded
+
+**Example: Renaming a module across 45 files**
+
+```yaml
+# WU YAML notes field
+notes: |
+  Single-session override: 45 files modified but all are mechanical
+  import path updates from '@old/path' to '@new/path'. Each change is
+  1 line, pattern is identical across all files. No structural changes.
+  Complexity: Low (uniform search-replace).
+```
+
+**Counter-example (NOT eligible for override):**
+
+A WU touching 30 files where each requires unique logic changes, test updates, or structural modifications. This is Complex, not shallow multi-file - standard thresholds apply.
+
+---
+
+### 1.3 Examples Summary
+
+| WU Type                     | Files | Eligible for Override? | Reasoning                                      |
+| :-------------------------- | :---- | :--------------------- | :--------------------------------------------- |
+| Docs: update 25 markdown    | 25    | Yes (docs exception)   | <40 files, docs-only, low complexity           |
+| Docs: reorg 60 doc files    | 60    | Yes (docs exception)   | <80 files = Medium, checkpoint-resume strategy |
+| Code: rename import in 45   | 45    | Yes (shallow override) | Uniform 1-line changes, no structural edits    |
+| Code: refactor 30 files     | 30    | No                     | Each file has unique logic changes             |
+| Code: add feature across 25 | 25    | No                     | Exceeds 20-file threshold, structural changes  |
+| Docs + Code: mixed 15 files | 15    | No                     | Not docs-only, standard code thresholds apply  |
+
 ---
 
 ## 2. Strategy Decision Tree
@@ -178,7 +252,12 @@ If you hit ANY of these triggers during a session, you MUST perform a Standard S
 5. Load Tier-1 context only (~500 tokens)
 6. Resume from documented checkpoint
 
-**Deviation protocol:** If you believe a trigger is not applicable to your specific WU (e.g., docs-only WU touching 25 small files), document the justification in WU notes and proceed with caution. Monitor for performance degradation symptoms listed above.
+**Deviation protocol:** If a trigger fires but you believe an exception applies, check section 1.1 (Documentation-Only Exception) or section 1.2 (Shallow Multi-File Exception). If your WU qualifies:
+
+1. Document the justification in WU notes (required)
+2. Specify which exception applies and why
+3. Monitor for performance degradation symptoms listed above
+4. If symptoms appear, checkpoint and spawn fresh regardless of file count
 
 ---
 
@@ -237,6 +316,8 @@ pnpm wu:spawn --id WU-XXX
 | Multi-domain feature, must land atomically       | Orchestrator-Worker | Main agent coordinates, spawns test-engineer, beacon-guardian |
 | Large refactor 100+ tool calls                   | Feature Flag Split  | WU-A: New behind flag → WU-B: Remove flag + old code          |
 | New integration, uncertain complexity            | Tracer Bullet       | WU-A: Prove skeleton works → WU-B: Real implementation        |
+| Docs-only, 30 markdown files                     | Simple (exception)  | Single session, document in notes, monitor for degradation    |
+| Rename import across 45 files (uniform)          | Simple (override)   | Document justification, proceed if all 4 criteria met         |
 
 ---
 
@@ -278,11 +359,12 @@ pnpm wu:spawn --id WU-XXX
 
 ---
 
-**Version:** 1.1 (2026-01-17)
-**Last Updated:** 2026-01-19
+**Version:** 1.2 (2026-02-01)
+**Last Updated:** 2026-02-01
 **Contributors:** Claude (research), Codex (pragmatic framing), Gemini (trigger enforcement)
 
 **Changelog:**
 
+- v1.2 (2026-02-01): Added documentation-only exception (section 1.1), shallow multi-file exception with single-session override criteria (section 1.2), and examples summary table (section 1.3). Updated deviation protocol to reference exceptions.
 - v1.1 (2026-01-17): Removed time-based estimates (hours); replaced with tool-call and context-budget heuristics. Agents operate in context windows, not clock time.
 - v1.0 (2025-11-24): Initial version based on WU-1215 post-mortem.
