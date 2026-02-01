@@ -563,3 +563,4 @@
 {"type":"claim","wuId":"WU-1314","timestamp":"2026-02-01T23:37:07.280Z","lane":"Content: Documentation","title":"Document plan tooling across internal docs and Starlight"}
 {"type":"complete","wuId":"WU-1314","timestamp":"2026-02-01T23:44:57.972Z"}
 {"type":"complete","wuId":"WU-1310","timestamp":"2026-02-01T23:46:18.910Z"}
+{"type":"claim","wuId":"WU-1312","lane":"Content: Documentation","title":"Update wu-sizing-guide with doc-only exception and tuning guidance","timestamp":"2026-02-01T23:48:27.653Z"}
