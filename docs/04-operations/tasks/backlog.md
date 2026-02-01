@@ -47,7 +47,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1305 — Document workflow friction and recovery steps](wu/WU-1305.yaml) — Content: Documentation
 - [WU-1306 — Fix WUOption interface missing type property](wu/WU-1306.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -321,3 +320,4 @@ sections:
 - [WU-1301 — CLI path centralization: eliminate hardcoded docs paths](wu/WU-1301.yaml)
 - [WU-1302 — wu:create UX: lane errors, required fields, local/offline mode](wu/WU-1302.yaml)
 - [WU-1304 — Update lumenflow.dev docs for current tooling and workflow](wu/WU-1304.yaml)
+- [WU-1305 — Document workflow friction and recovery steps](wu/WU-1305.yaml)
