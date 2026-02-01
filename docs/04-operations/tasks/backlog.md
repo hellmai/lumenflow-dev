@@ -53,7 +53,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
-- [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -333,3 +332,4 @@ sections:
 - [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml)
 - [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml)
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml)
+- [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml)
