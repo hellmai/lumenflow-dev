@@ -2,7 +2,7 @@ id: WU-1311
 title: Remove hardcoded docs/04-operations paths in CLI commands
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -46,9 +46,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Finish CLI path centralization by replacing remaining hardcoded docs/04-operations paths with WU_PATHS/getResolvedPaths across wu-* commands and diagnostics. Add state-doctor warnings for missing configured paths and ensure CLI respects config overrides. Depends on WU-1310 core path defaults.
+description: Finish CLI path centralization by replacing remaining hardcoded docs/04-operations
+  paths with WU_PATHS/getResolvedPaths across wu-* commands and diagnostics. Add state-doctor
+  warnings for missing configured paths and ensure CLI respects config overrides. Depends on WU-1310
+  core path defaults.
 acceptance:
   - No hardcoded docs/04-operations paths remain in CLI commands (use WU_PATHS/getResolvedPaths)
   - state-doctor warns when configured paths are missing
   - Config overrides are respected across wu-* commands and diagnostics
   - Unit tests cover CLI path usage and warnings
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1311
+claimed_at: 2026-02-01T23:53:17.984Z
+baseline_main_sha: 1c961ae67e276dda2c0137cd7abcf0f8bb0b4e9d
+session_id: 71b69930-c12b-487e-8c2d-60beb2747880
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:53:17.992Z
