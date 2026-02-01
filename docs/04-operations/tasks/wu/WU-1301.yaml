@@ -12,6 +12,20 @@ code_paths:
   - packages/@lumenflow/cli/src/commands/wu-create.ts
   - packages/@lumenflow/cli/src/commands/wu-claim.ts
   - packages/@lumenflow/cli/src/commands/wu-done.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/context/wu-state-reader.ts
+  - packages/@lumenflow/cli/src/flow-report.ts
+  - packages/@lumenflow/cli/src/initiative-plan.ts
+  - packages/@lumenflow/cli/src/metrics-snapshot.ts
+  - packages/@lumenflow/cli/src/rotate-progress.ts
+  - packages/@lumenflow/cli/src/spawn-list.ts
+  - packages/@lumenflow/cli/src/state-bootstrap.ts
+  - packages/@lumenflow/cli/src/state-doctor-fix.ts
+  - packages/@lumenflow/cli/src/state-doctor.ts
+  - packages/@lumenflow/cli/src/trace-gen.ts
+  - packages/@lumenflow/cli/src/wu-infer-lane.ts
 tests:
   manual: []
   unit:
@@ -23,10 +37,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-01T17:31:23.327Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1301
+session_id: 97f72e6a-6c98-49c7-ab4b-16c654b57f6c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T17:31:23.335Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +59,3 @@ acceptance:
   - directories.* config section fully populated with simple/arc42 defaults
   - state-doctor warns if configured paths don't exist
   - Consumers can change paths in config and CLI respects them
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1301
-claimed_at: 2026-02-01T17:31:23.327Z
-baseline_main_sha: 7c7bcca31a3525b9aa1ebc1038dc19d66454b8ed
-session_id: 97f72e6a-6c98-49c7-ab4b-16c654b57f6c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-01T17:31:23.335Z
