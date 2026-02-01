@@ -1,0 +1,31 @@
+id: WU-1306
+title: Fix WUOption interface missing type property
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths:
+  - packages/@lumenflow/core/src/arg-parser.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1306.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: WUOption interface in arg-parser.ts is missing type and required properties used by CLI commands, blocking v2.4.0 release build
+acceptance:
+  - WUOption interface includes type and required optional properties
+  - pnpm build passes
