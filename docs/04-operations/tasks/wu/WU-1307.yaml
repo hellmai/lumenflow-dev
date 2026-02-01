@@ -7,10 +7,6 @@ priority: P0
 created: 2026-02-01
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/templates/frameworks/nextjs/.lumenflow.lane-inference.yaml.template
-  - packages/@lumenflow/cli/templates/frameworks/react/.lumenflow.lane-inference.yaml.template
-  - packages/@lumenflow/cli/templates/frameworks/node/.lumenflow.lane-inference.yaml.template
-  - packages/@lumenflow/cli/templates/frameworks/python/.lumenflow.lane-inference.yaml.template
 tests:
   manual: []
   unit:
@@ -41,7 +37,7 @@ description: 'Hotfix for v2.4.0 onboarding regressions: fix init-generated scrip
 acceptance:
   - Generated package.json scripts use correct format (wu-create, wu-claim, wu-done, gates)
   - .lumenflow.lane-inference.yaml is generated in hierarchical Parent→Sublane format
-  - Framework-specific lane inference templates are generated and included in init output
+  - Framework-specific lanes are dynamically added when --framework option is provided
   - .lumenflow.config.yaml includes default lane definitions for parent lanes
   - Unit tests cover scripts, lane-inference generation, and default lanes config
 claimed_mode: worktree
