@@ -531,4 +531,5 @@
 {"type":"release","wuId":"WU-1296","timestamp":"2026-02-01T11:07:54.895Z","reason":"Reset from interrupted claim via wu:recover - emitted missing release event"}
 {"type":"claim","wuId":"WU-1296","timestamp":"2026-02-01T11:20:00.000Z","lane":"Framework: CLI","title":"Make release flow compatible with trunk protections (no direct push to main)"}
 {"type":"complete","wuId":"WU-1296","timestamp":"2026-02-01T11:28:47.376Z"}
-{"type":"claim","wuId":"WU-1297","lane":"Framework: CLI","title":"Fix init.ts CLI entry point missing runCLI call","timestamp":"2026-02-01T11:29:41.289Z"}
+{"type":"claim","wuId":"WU-1297","timestamp":"2026-02-01T11:29:41.289Z","lane":"Framework: CLI","title":"Fix init.ts CLI entry point missing runCLI call"}
+{"type":"complete","wuId":"WU-1297","timestamp":"2026-02-01T11:37:26.179Z"}
