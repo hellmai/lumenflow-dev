@@ -50,7 +50,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -326,3 +325,4 @@ sections:
 - [WU-1305 — Document workflow friction and recovery steps](wu/WU-1305.yaml)
 - [WU-1306 — Fix WUOption interface missing type property](wu/WU-1306.yaml)
 - [WU-1307 — Fix lumenflow-init scaffolding: scripts + lane inference + default lanes](wu/WU-1307.yaml)
+- [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml)
