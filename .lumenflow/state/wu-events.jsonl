@@ -537,3 +537,4 @@
 {"type":"complete","wuId":"WU-1298","timestamp":"2026-02-01T13:37:31.764Z"}
 {"type":"claim","wuId":"WU-1299","timestamp":"2026-02-01T13:43:55.111Z","lane":"Framework: CLI","title":"Improve --docs-only gate mode to skip unrelated package tests"}
 {"type":"complete","wuId":"WU-1299","timestamp":"2026-02-01T13:55:59.544Z"}
+{"type":"claim","wuId":"WU-1300","lane":"Framework: CLI","title":"lumenflow-init: scaffolding fixes and template portability","timestamp":"2026-02-01T16:17:21.925Z"}
