@@ -20,11 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
-- [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
-- [WU-1309 — Finish CLI path centralization (remove hardcoded docs/04-operations)](wu/WU-1309.yaml) — Framework: Core
-- [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — Framework: Core
-- [WU-1307 — Fix lumenflow-init scaffolding bugs: scripts, lane-inference, requireRemote](wu/WU-1307.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -45,6 +40,10 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
+- [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — Framework: Core
+- [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
+- [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
+- [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -52,6 +51,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1307 — Fix lumenflow-init scaffolding: scripts + lane inference + default lanes](wu/WU-1307.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
