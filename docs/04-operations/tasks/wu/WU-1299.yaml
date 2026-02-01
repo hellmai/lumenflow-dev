@@ -2,7 +2,7 @@ id: WU-1299
 title: Improve --docs-only gate mode to skip unrelated package tests
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -41,3 +41,5 @@ session_id: 43e3e2a5-3cdb-4360-806a-9d68603e7e9c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T13:43:55.098Z
+locked: true
+completed_at: 2026-02-01T13:55:57.909Z
