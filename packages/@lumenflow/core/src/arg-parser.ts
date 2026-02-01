@@ -42,6 +42,10 @@ interface WUOption {
   default?: string | boolean | string[];
   isNegated?: boolean;
   isRepeatable?: boolean;
+  /** Type hint for option parsing (e.g., 'boolean' for flags, 'string' for values) */
+  type?: 'boolean' | 'string';
+  /** Whether this option is required (used for validation hints) */
+  required?: boolean;
 }
 
 export const WU_OPTIONS: Record<string, WUOption> = {
