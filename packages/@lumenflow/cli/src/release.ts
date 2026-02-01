@@ -90,6 +90,44 @@ const LUMENFLOW_FORCE_ENV = 'LUMENFLOW_FORCE';
 const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /**
+ * Environment variable for WU tool identification (WU-1296)
+ * Pre-push hook checks this to allow approved tool operations
+ */
+const LUMENFLOW_WU_TOOL_ENV = 'LUMENFLOW_WU_TOOL';
+
+/**
+ * Release tool identifier for pre-push hook bypass (WU-1296)
+ * Added to ALLOWED_WU_TOOLS in pre-push.mjs
+ */
+export const RELEASE_WU_TOOL = 'release';
+
+/**
+ * Execute a function with LUMENFLOW_WU_TOOL set to 'release' (WU-1296)
+ *
+ * This allows the release command to push to main via micro-worktree
+ * without requiring LUMENFLOW_FORCE bypass. The pre-push hook checks
+ * LUMENFLOW_WU_TOOL and allows approved tools like 'release'.
+ *
+ * @param fn - Async function to execute with release env set
+ * @returns Result of the function
+ */
+export async function withReleaseEnv<T>(fn: () => Promise<T>): Promise<T> {
+  const originalValue = process.env[LUMENFLOW_WU_TOOL_ENV];
+
+  try {
+    process.env[LUMENFLOW_WU_TOOL_ENV] = RELEASE_WU_TOOL;
+    return await fn();
+  } finally {
+    // Restore original value (or delete if it wasn't set)
+    if (originalValue === undefined) {
+      delete process.env[LUMENFLOW_WU_TOOL_ENV];
+    } else {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = originalValue;
+    }
+  }
+}
+
+/**
  * Release command options
  * WU-1085: Renamed version to releaseVersion to avoid CLI --version conflict
  */
@@ -411,41 +449,45 @@ async function main(): Promise<void> {
   } else {
     console.log(`${LOG_PREFIX} Bumping versions using micro-worktree isolation...`);
 
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: `v${version}`,
-      logPrefix: LOG_PREFIX,
-      execute: async ({ worktreePath }) => {
-        // Check and exit changeset pre mode if active
-        if (isInChangesetPreMode(worktreePath)) {
-          console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
-          exitChangesetPreMode(worktreePath);
-          console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
-        }
+    // WU-1296: Use withReleaseEnv to set LUMENFLOW_WU_TOOL=release
+    // This allows the micro-worktree push to main without LUMENFLOW_FORCE
+    await withReleaseEnv(async () => {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: `v${version}`,
+        logPrefix: LOG_PREFIX,
+        execute: async ({ worktreePath }) => {
+          // Check and exit changeset pre mode if active
+          if (isInChangesetPreMode(worktreePath)) {
+            console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
+            exitChangesetPreMode(worktreePath);
+            console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
+          }
 
-        // Find package paths within the worktree
-        const worktreePackagePaths = findPackageJsonPaths(worktreePath);
+          // Find package paths within the worktree
+          const worktreePackagePaths = findPackageJsonPaths(worktreePath);
 
-        // Update versions
-        console.log(`${LOG_PREFIX} Updating ${worktreePackagePaths.length} package versions...`);
-        await updatePackageVersions(worktreePackagePaths, version);
+          // Update versions
+          console.log(`${LOG_PREFIX} Updating ${worktreePackagePaths.length} package versions...`);
+          await updatePackageVersions(worktreePackagePaths, version);
 
-        // Get relative paths for commit
-        const relativePaths = worktreePackagePaths.map((p) => getRelativePath(p, worktreePath));
+          // Get relative paths for commit
+          const relativePaths = worktreePackagePaths.map((p) => getRelativePath(p, worktreePath));
 
-        // If we exited pre mode, include the deleted pre.json in files to commit
-        // (the deletion will be staged automatically by git add -A behavior)
-        const changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
-        const filesToCommit = [...relativePaths];
-        // Note: Deletion of pre.json is handled by git detecting the missing file
+          // If we exited pre mode, include the deleted pre.json in files to commit
+          // (the deletion will be staged automatically by git add -A behavior)
+          const changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
+          const filesToCommit = [...relativePaths];
+          // Note: Deletion of pre.json is handled by git detecting the missing file
 
-        console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
+          console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
 
-        return {
-          commitMessage: buildCommitMessage(version),
-          files: filesToCommit,
-        };
-      },
+          return {
+            commitMessage: buildCommitMessage(version),
+            files: filesToCommit,
+          };
+        },
+      });
     });
 
     console.log(`${LOG_PREFIX} ✅ Version bump committed and pushed`);
