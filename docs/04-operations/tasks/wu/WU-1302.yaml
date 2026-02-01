@@ -2,7 +2,7 @@ id: WU-1302
 title: 'wu:create UX: lane errors, required fields, local/offline mode'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -45,3 +45,5 @@ session_id: 394435a7-1ab9-425c-93c5-83065d45d992
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T18:16:45.017Z
+locked: true
+completed_at: 2026-02-01T18:29:20.959Z
