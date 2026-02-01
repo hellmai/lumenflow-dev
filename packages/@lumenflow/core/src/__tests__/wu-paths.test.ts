@@ -40,6 +40,9 @@ vi.mock('../lumenflow-config.js', () => ({
       backlogPath: 'docs/04-operations/tasks/backlog.md',
       initiativesDir: 'docs/04-operations/tasks/initiatives',
       worktrees: 'worktrees',
+      plansDir: 'docs/04-operations/plans',
+      templatesDir: '.lumenflow/templates',
+      onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
     },
     legacy: {
       stampsDir: '.lumenflow/stamps',
@@ -121,6 +124,9 @@ describe('wu-paths', () => {
       expect(typeof paths.STATE_DIR).toBe('function');
       expect(typeof paths.INITIATIVES_DIR).toBe('function');
       expect(typeof paths.WORKTREES_DIR).toBe('function');
+      expect(typeof paths.PLANS_DIR).toBe('function');
+      expect(typeof paths.TEMPLATES_DIR).toBe('function');
+      expect(typeof paths.ONBOARDING_DIR).toBe('function');
     });
 
     it('should return correct WU path', () => {
@@ -170,6 +176,23 @@ describe('wu-paths', () => {
     it('should return correct WORKTREES_DIR path', () => {
       const paths = createWuPaths();
       expect(paths.WORKTREES_DIR()).toBe('worktrees');
+    });
+
+    it('should return correct PLANS_DIR path', () => {
+      const paths = createWuPaths();
+      expect(paths.PLANS_DIR()).toBe('docs/04-operations/plans');
+    });
+
+    it('should return correct TEMPLATES_DIR path (WU-1310)', () => {
+      const paths = createWuPaths();
+      expect(paths.TEMPLATES_DIR()).toBe('.lumenflow/templates');
+    });
+
+    it('should return correct ONBOARDING_DIR path (WU-1310)', () => {
+      const paths = createWuPaths();
+      expect(paths.ONBOARDING_DIR()).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
     });
 
     it('should accept projectRoot option', () => {

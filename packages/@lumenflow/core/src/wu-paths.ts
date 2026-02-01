@@ -124,6 +124,18 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
      * @returns Path to plans directory (WU-1301)
      */
     PLANS_DIR: () => config.directories.plansDir,
+
+    /**
+     * Get path to templates directory
+     * @returns Path to templates directory (WU-1310)
+     */
+    TEMPLATES_DIR: () => config.directories.templatesDir,
+
+    /**
+     * Get path to onboarding directory
+     * @returns Path to onboarding directory (WU-1310)
+     */
+    ONBOARDING_DIR: () => config.directories.onboardingDir,
   };
 }
 
