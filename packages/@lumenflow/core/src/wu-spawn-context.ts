@@ -129,6 +129,22 @@ interface MemContextCoreOptions {
   maxProjectNodes?: number;
 }
 
+type MemContextModule = {
+  generateContext: (
+    baseDir: string,
+    options: MemContextCoreOptions,
+  ) => Promise<GenerateContextResult>;
+};
+
+function hasGenerateContext(module: unknown): module is MemContextModule {
+  if (!module || typeof module !== 'object') {
+    return false;
+  }
+
+  const candidate = module as { generateContext?: unknown };
+  return typeof candidate.generateContext === 'function';
+}
+
 /**
  * Dynamically imports and calls generateContext from @lumenflow/memory.
  *
@@ -142,14 +158,13 @@ async function callMemContextCore(
 ): Promise<GenerateContextResult | null> {
   try {
     // Dynamic import of optional peer dependency
-    const memModule = await import('@lumenflow/memory');
-    const { generateContext } = memModule as {
-      generateContext: (
-        baseDir: string,
-        options: MemContextCoreOptions,
-      ) => Promise<GenerateContextResult>;
-    };
-    return await generateContext(baseDir, options);
+    // Use a non-literal import to avoid compile-time dependency on optional peer
+    const memoryModuleName: string = '@lumenflow/memory';
+    const memModule = (await import(memoryModuleName)) as unknown;
+    if (!hasGenerateContext(memModule)) {
+      return null;
+    }
+    return await memModule.generateContext(baseDir, options);
   } catch {
     // @lumenflow/memory not available - return null for graceful degradation
     return null;
