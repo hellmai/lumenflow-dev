@@ -85,6 +85,9 @@ export const DirectoriesSchema = z.object({
 
   /** Agents directory (default: '.claude/agents') */
   agentsDir: z.string().default('.claude/agents'),
+
+  /** Plans directory (default: 'docs/04-operations/plans') - WU-1301 */
+  plansDir: z.string().default('docs/04-operations/plans'),
 });
 
 /**

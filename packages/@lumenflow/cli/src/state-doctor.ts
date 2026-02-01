@@ -42,7 +42,8 @@ import {
 } from '@lumenflow/core/dist/state-doctor-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { getConfig, getResolvedPaths } from '@lumenflow/core/dist/lumenflow-config.js';
+import { existsSync } from 'node:fs';
 import { createStamp } from '@lumenflow/core/dist/stamp-utils.js';
 import { createStateDoctorFixDeps } from './state-doctor-fix.js';
 
@@ -206,10 +207,11 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
 
     /**
      * List all stamp file IDs
+     * WU-1301: Use config-based paths instead of LUMENFLOW_PATHS
      */
     listStamps: async (): Promise<string[]> => {
       try {
-        const stampsDir = path.join(baseDir, LUMENFLOW_PATHS.STAMPS_DIR);
+        const stampsDir = path.join(baseDir, config.beacon.stampsDir);
         const stampFiles = await fg('WU-*.done', { cwd: stampsDir });
         return stampFiles.map((file) => file.replace('.done', ''));
       } catch {
@@ -498,6 +500,35 @@ function buildAuditOutput(result: StateDiagnosis | null): Record<string, unknown
 }
 
 /**
+ * WU-1301: Warn if configured paths don't exist
+ * This helps consumers detect misconfiguration early.
+ */
+function warnMissingPaths(baseDir: string, quiet: boolean): void {
+  if (quiet) return;
+
+  const paths = getResolvedPaths({ projectRoot: baseDir });
+  const missing: string[] = [];
+
+  if (!existsSync(paths.wuDir)) {
+    missing.push(`WU directory: ${paths.wuDir}`);
+  }
+  if (!existsSync(paths.stampsDir)) {
+    missing.push(`Stamps directory: ${paths.stampsDir}`);
+  }
+  if (!existsSync(paths.stateDir)) {
+    missing.push(`State directory: ${paths.stateDir}`);
+  }
+
+  if (missing.length > 0) {
+    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Configured paths not found:`);
+    for (const p of missing) {
+      console.warn(`  - ${p}`);
+    }
+    console.warn('  Tip: Run `pnpm setup` or check .lumenflow.config.yaml');
+  }
+}
+
+/**
  * Main CLI entry point
  */
 async function main(): Promise<void> {
@@ -505,6 +536,9 @@ async function main(): Promise<void> {
   const baseDir = args.baseDir || process.cwd();
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
+
+  // WU-1301: Warn about missing configured paths
+  warnMissingPaths(baseDir, args.quiet ?? false);
 
   let result: StateDiagnosis | null = null;
   let error: string | null = null;

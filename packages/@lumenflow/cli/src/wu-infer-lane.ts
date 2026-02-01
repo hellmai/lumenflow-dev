@@ -21,6 +21,7 @@ import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { FILE_SYSTEM, EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 function parseArgs(argv) {
   const args = { paths: [], desc: '', id: null };
@@ -68,7 +69,8 @@ interface WUYamlDoc {
 }
 
 function loadWuYaml(id: string): WUYamlDoc {
-  const wuPath = path.join(process.cwd(), 'docs/04-operations/tasks/wu', `${id}.yaml`);
+  // WU-1301: Use config-based paths instead of hardcoded path
+  const wuPath = path.join(process.cwd(), WU_PATHS.WU(id));
   if (!existsSync(wuPath)) {
     die(
       `WU file not found: ${wuPath}\n\n` +

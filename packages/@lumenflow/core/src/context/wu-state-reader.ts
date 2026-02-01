@@ -12,7 +12,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { DIRECTORIES } from '../wu-constants.js';
+import { WU_PATHS } from '../wu-paths.js';
 
 /**
  * Result of reading WU state.
@@ -46,10 +46,11 @@ function normalizeWuId(id: string): string {
 
 /**
  * Build the path to WU YAML file.
+ * WU-1301: Uses config-based paths instead of hardcoded DIRECTORIES.
  */
 function getWuYamlPath(wuId: string, repoRoot: string): string {
   const normalizedId = normalizeWuId(wuId);
-  return join(repoRoot, DIRECTORIES.WU_DIR, `${normalizedId}.yaml`);
+  return join(repoRoot, WU_PATHS.WU(normalizedId));
 }
 
 /**
