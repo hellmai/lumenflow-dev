@@ -18,13 +18,23 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1310.done
 dependencies: []
+initiative: INIT-013
 risks: []
 notes: ''
 requires_review: false
+locked: true
+completed_at: 2026-02-01T23:46:16.991Z
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-01T23:35:00.749Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1310
+session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:35:00.754Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,13 +47,3 @@ acceptance:
   - WU_PATHS/getResolvedPaths use config values for all paths
   - Config overrides are respected by core path helpers
   - Unit tests cover core path defaults and overrides
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1310
-claimed_at: 2026-02-01T23:35:00.749Z
-baseline_main_sha: a35372cb04265c095bf280c6fdaa8fe5fb7698f2
-session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-01T23:35:00.754Z
-locked: true
-completed_at: 2026-02-01T23:46:16.991Z
