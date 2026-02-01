@@ -27,19 +27,19 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ## WU Lifecycle
 
-| Command                                       | Description                                   |
-| --------------------------------------------- | --------------------------------------------- |
+| Command                                       | Description                                    |
+| --------------------------------------------- | ---------------------------------------------- |
 | `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec (see required fields below) |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                  |
-| `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done       |
-| `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main |
-| `pnpm wu:edit --id WU-XXX --field value`      | Edit WU spec fields                           |
-| `pnpm wu:block --id WU-XXX --reason "..."`    | Block WU with reason                          |
-| `pnpm wu:unblock --id WU-XXX`                 | Unblock WU                                    |
-| `pnpm wu:release --id WU-XXX`                 | Release orphaned WU (in_progress to ready)    |
-| `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands      |
-| `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt               |
-| `pnpm wu:spawn --id WU-XXX --no-context`      | Spawn prompt without memory context injection |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                   |
+| `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done        |
+| `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main  |
+| `pnpm wu:edit --id WU-XXX --field value`      | Edit WU spec fields                            |
+| `pnpm wu:block --id WU-XXX --reason "..."`    | Block WU with reason                           |
+| `pnpm wu:unblock --id WU-XXX`                 | Unblock WU                                     |
+| `pnpm wu:release --id WU-XXX`                 | Release orphaned WU (in_progress to ready)     |
+| `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands       |
+| `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt                |
+| `pnpm wu:spawn --id WU-XXX --no-context`      | Spawn prompt without memory context injection  |
 
 ### WU Maintenance
 
