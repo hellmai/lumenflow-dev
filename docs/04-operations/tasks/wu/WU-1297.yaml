@@ -2,7 +2,7 @@ id: WU-1297
 title: Fix init.ts CLI entry point missing runCLI call
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -26,7 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'The lumenflow-init CLI command produces no output when installed from npm. Root cause: init.ts exports main() but never calls it. All other CLI commands use the import.meta.main pattern.'
+description: 'The lumenflow-init CLI command produces no output when installed from npm. Root cause:
+  init.ts exports main() but never calls it. All other CLI commands use the import.meta.main
+  pattern.'
 acceptance:
   - npx lumenflow --help shows help output
   - npx lumenflow init creates scaffolding files
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1297
+claimed_at: 2026-02-01T11:29:41.256Z
+baseline_main_sha: ff21ffe5bcdfb9cc65bf19a450ee373c956b6fd2
+session_id: 918eaad8-181d-41d9-b281-81b2cf97613d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T11:29:41.264Z
