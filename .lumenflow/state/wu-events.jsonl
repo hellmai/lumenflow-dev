@@ -562,3 +562,4 @@
 {"type":"claim","wuId":"WU-1310","timestamp":"2026-02-01T23:35:00.765Z","lane":"Framework: Core","title":"Centralize path defaults in core config (simple/arc42)"}
 {"type":"claim","wuId":"WU-1314","timestamp":"2026-02-01T23:37:07.280Z","lane":"Content: Documentation","title":"Document plan tooling across internal docs and Starlight"}
 {"type":"complete","wuId":"WU-1314","timestamp":"2026-02-01T23:44:57.972Z"}
+{"type":"complete","wuId":"WU-1310","timestamp":"2026-02-01T23:46:18.910Z"}
