@@ -201,6 +201,79 @@ describe('release command integration', () => {
 });
 
 /**
+ * WU-1296: Tests for release flow trunk protection compatibility
+ *
+ * Verifies:
+ * - RELEASE_WU_TOOL constant is exported for pre-push hook bypass
+ * - withReleaseEnv helper sets LUMENFLOW_WU_TOOL=release during execution
+ * - Environment is properly restored after execution (including on error)
+ */
+describe('WU-1296: release flow trunk protection compatibility', () => {
+  it('should export RELEASE_WU_TOOL constant for pre-push hook bypass', async () => {
+    const { RELEASE_WU_TOOL } = await import('../release.js');
+    expect(RELEASE_WU_TOOL).toBe('release');
+  });
+
+  it('should export withReleaseEnv helper for setting LUMENFLOW_WU_TOOL', async () => {
+    const { withReleaseEnv } = await import('../release.js');
+    expect(typeof withReleaseEnv).toBe('function');
+  });
+
+  it('withReleaseEnv should set and restore LUMENFLOW_WU_TOOL', async () => {
+    const { withReleaseEnv } = await import('../release.js');
+
+    // Save original value
+    const originalValue = process.env.LUMENFLOW_WU_TOOL;
+
+    let capturedValue: string | undefined;
+    await withReleaseEnv(async () => {
+      capturedValue = process.env.LUMENFLOW_WU_TOOL;
+    });
+
+    expect(capturedValue).toBe('release');
+    expect(process.env.LUMENFLOW_WU_TOOL).toBe(originalValue);
+  });
+
+  it('withReleaseEnv should restore LUMENFLOW_WU_TOOL even on error', async () => {
+    const { withReleaseEnv } = await import('../release.js');
+
+    // Save original value
+    const originalValue = process.env.LUMENFLOW_WU_TOOL;
+
+    try {
+      await withReleaseEnv(async () => {
+        throw new Error('Test error');
+      });
+    } catch {
+      // Expected to throw
+    }
+
+    expect(process.env.LUMENFLOW_WU_TOOL).toBe(originalValue);
+  });
+
+  it('withReleaseEnv should preserve existing LUMENFLOW_WU_TOOL value', async () => {
+    const { withReleaseEnv } = await import('../release.js');
+
+    // Set a specific value before running
+    const testValue = 'wu-done';
+    process.env.LUMENFLOW_WU_TOOL = testValue;
+
+    try {
+      let capturedValue: string | undefined;
+      await withReleaseEnv(async () => {
+        capturedValue = process.env.LUMENFLOW_WU_TOOL;
+      });
+
+      expect(capturedValue).toBe('release');
+      expect(process.env.LUMENFLOW_WU_TOOL).toBe(testValue);
+    } finally {
+      // Cleanup
+      delete process.env.LUMENFLOW_WU_TOOL;
+    }
+  });
+});
+
+/**
  * WU-1077: Tests for release script bug fixes
  *
  * Verifies:
