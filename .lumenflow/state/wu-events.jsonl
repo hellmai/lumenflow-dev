@@ -527,3 +527,4 @@
 {"type":"complete","wuId":"WU-1291","timestamp":"2026-01-31T23:39:25.804Z"}
 {"type":"claim","wuId":"WU-1295","timestamp":"2026-02-01T00:08:53.537Z","lane":"Framework: Core","title":"Fix build failure in wu-spawn-context optional mem-context import"}
 {"type":"complete","wuId":"WU-1295","timestamp":"2026-02-01T00:14:25.134Z"}
+{"type":"claim","wuId":"WU-1296","lane":"Framework: CLI","title":"Make release flow compatible with trunk protections (no direct push to main)","timestamp":"2026-02-01T11:01:16.716Z"}
