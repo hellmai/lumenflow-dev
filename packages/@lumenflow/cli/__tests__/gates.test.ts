@@ -5,6 +5,8 @@
  * WU-1299: Tests for docs-only mode package filtering.
  */
 
+/* eslint-disable sonarjs/no-duplicate-string -- Test files commonly repeat string literals for clarity */
+
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   buildPrettierWriteCommand,
