@@ -11,6 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/src/mem-context.ts
   - apps/docs/src/content/docs/reference/cli.mdx
   - packages/@lumenflow/cli/package.json
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - packages/@lumenflow/cli/package.json
 tests:
   manual:
     - Verify initiative-plan --help and mem-context --help work after npm install
