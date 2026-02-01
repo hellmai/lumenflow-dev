@@ -2,7 +2,7 @@ id: WU-1304
 title: Update lumenflow.dev docs for current tooling and workflow
 lane: 'Operations: Infrastructure'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths: []
@@ -45,3 +45,5 @@ session_id: 97f72e6a-6c98-49c7-ab4b-16c654b57f6c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T17:30:38.075Z
+locked: true
+completed_at: 2026-02-01T18:38:06.025Z
