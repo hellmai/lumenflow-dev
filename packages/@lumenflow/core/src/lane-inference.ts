@@ -202,7 +202,7 @@ export function getAllSubLanes(configPath = null) {
     }
   }
 
-  return subLanes.sort();
+  return subLanes.sort((a, b) => a.localeCompare(b));
 }
 
 /**
