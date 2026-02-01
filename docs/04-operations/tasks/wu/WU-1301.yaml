@@ -1,0 +1,39 @@
+id: WU-1301
+title: 'CLI path centralization: eliminate hardcoded docs paths'
+lane: 'Framework: CLI'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths:
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/src/commands/wu-create.ts
+  - packages/@lumenflow/cli/src/commands/wu-claim.ts
+  - packages/@lumenflow/cli/src/commands/wu-done.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1301.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Route all CLI commands through config for docs paths. Remove hardcoded docs/04-operations references. Enable consumers to customize paths in .lumenflow.config.yaml.
+acceptance:
+  - All wu-* commands use WU_PATHS / getResolvedPaths() instead of hardcoded paths
+  - state-doctor, flow-report, validate-* use config paths
+  - directories.* config section fully populated with simple/arc42 defaults
+  - state-doctor warns if configured paths don't exist
+  - Consumers can change paths in config and CLI respects them

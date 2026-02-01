@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1301 — CLI path centralization: eliminate hardcoded docs paths](wu/WU-1301.yaml) — Framework: CLI
 - [WU-1300 — lumenflow-init: scaffolding fixes and template portability](wu/WU-1300.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
