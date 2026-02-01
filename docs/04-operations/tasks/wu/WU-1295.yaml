@@ -2,7 +2,7 @@ id: WU-1295
 title: Fix build failure in wu-spawn-context optional mem-context import
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -40,3 +40,5 @@ session_id: 023a4a8d-dcef-45c8-b65e-ce74d56686e0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T00:08:53.512Z
+locked: true
+completed_at: 2026-02-01T00:14:23.162Z

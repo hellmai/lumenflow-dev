@@ -525,4 +525,5 @@
 {"type":"complete","wuId":"WU-1290","timestamp":"2026-01-31T23:25:49.737Z"}
 {"type":"claim","wuId":"WU-1291","timestamp":"2026-01-31T23:28:56.750Z","lane":"Framework: Core","title":"Decide on spawn template system (activate or remove)"}
 {"type":"complete","wuId":"WU-1291","timestamp":"2026-01-31T23:39:25.804Z"}
-{"type":"claim","wuId":"WU-1295","lane":"Framework: Core","title":"Fix build failure in wu-spawn-context optional mem-context import","timestamp":"2026-02-01T00:08:53.537Z"}
+{"type":"claim","wuId":"WU-1295","timestamp":"2026-02-01T00:08:53.537Z","lane":"Framework: Core","title":"Fix build failure in wu-spawn-context optional mem-context import"}
+{"type":"complete","wuId":"WU-1295","timestamp":"2026-02-01T00:14:25.134Z"}
