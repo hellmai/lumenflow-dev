@@ -12,7 +12,8 @@ code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - packages/@lumenflow/cli/package.json
 tests:
-  manual: []
+  manual:
+    - Verify initiative-plan --help and mem-context --help work after npm install
   unit: []
   e2e: []
 artifacts:
