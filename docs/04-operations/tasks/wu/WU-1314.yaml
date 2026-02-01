@@ -2,7 +2,7 @@ id: WU-1314
 title: Document plan tooling across internal docs and Starlight
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -31,8 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fully document the new plan tooling so agents can discover and use it without friction. Update internal onboarding docs (quick-ref, LUMENFLOW workflow) and Starlight docs (reference/guides) to show plan:create/link/edit/promote, repo plan storage, and how WUs/initiatives should link plans. Remove all references to initiative:plan.
+description: Fully document the new plan tooling so agents can discover and use it without friction.
+  Update internal onboarding docs (quick-ref, LUMENFLOW workflow) and Starlight docs
+  (reference/guides) to show plan:create/link/edit/promote, repo plan storage, and how
+  WUs/initiatives should link plans. Remove all references to initiative:plan.
 acceptance:
   - Internal onboarding docs include a Plans section with examples
   - Starlight docs include plan tooling reference and workflow guidance
   - All references to initiative:plan removed
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1314
+claimed_at: 2026-02-01T23:37:07.247Z
+baseline_main_sha: b44235c1fe94ab50a8e8e0ebff799fb3e9c8718a
+session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:37:07.254Z

@@ -560,3 +560,4 @@
 {"type":"complete","wuId":"WU-1308","timestamp":"2026-02-01T23:19:01.066Z"}
 {"type":"claim","wuId":"WU-1309","lane":"Framework: CLI","title":"Fix init docs structure + portability + onboarding docs + quick-ref","timestamp":"2026-02-01T23:32:40.909Z"}
 {"type":"claim","wuId":"WU-1310","lane":"Framework: Core","title":"Centralize path defaults in core config (simple/arc42)","timestamp":"2026-02-01T23:35:00.765Z"}
+{"type":"claim","wuId":"WU-1314","lane":"Content: Documentation","title":"Document plan tooling across internal docs and Starlight","timestamp":"2026-02-01T23:37:07.280Z"}

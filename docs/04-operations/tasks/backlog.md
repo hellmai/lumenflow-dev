@@ -43,7 +43,6 @@ sections:
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
 - [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
 - [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — Framework: CLI
-- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
 - [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -54,6 +53,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

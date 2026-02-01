@@ -10,6 +10,7 @@ _Last updated: 2026-02-01_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml)
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml)
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml)
 
 ## Completed
 
