@@ -2,7 +2,7 @@ id: WU-1295
 title: Fix build failure in wu-spawn-context optional mem-context import
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -25,7 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Release build failed after WU-1287 due to TypeScript error in wu-spawn-context when casting optional @lumenflow/memory import. Problem: @lumenflow/memory types do not expose generateContext in dist typings, causing TS2352 during core build. Solution: adjust the optional import handling to avoid type mismatch while preserving graceful degradation.'
+description: 'Context: Release build failed after WU-1287 due to TypeScript error in
+  wu-spawn-context when casting optional @lumenflow/memory import. Problem: @lumenflow/memory types
+  do not expose generateContext in dist typings, causing TS2352 during core build. Solution: adjust
+  the optional import handling to avoid type mismatch while preserving graceful degradation.'
 acceptance:
   - Core build succeeds without TS2352 for optional @lumenflow/memory import
   - wu-spawn-context safely handles missing generateContext export at runtime
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1295
+claimed_at: 2026-02-01T00:08:53.506Z
+baseline_main_sha: d58647da99c09b10529ab7702b9441f961817ffc
+session_id: 023a4a8d-dcef-45c8-b65e-ce74d56686e0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T00:08:53.512Z
