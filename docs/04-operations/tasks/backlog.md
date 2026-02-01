@@ -40,7 +40,6 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
-- [WU-1301 — CLI path centralization: eliminate hardcoded docs paths](wu/WU-1301.yaml) — Framework: Core
 - [WU-1302 — wu:create UX: lane errors, required fields, local/offline mode](wu/WU-1302.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -50,6 +49,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1304 — Update lumenflow.dev docs for current tooling and workflow](wu/WU-1304.yaml) — Operations: Infrastructure
+- [WU-1301 — CLI path centralization: eliminate hardcoded docs paths](wu/WU-1301.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

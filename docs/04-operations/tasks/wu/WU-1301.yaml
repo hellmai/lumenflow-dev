@@ -2,7 +2,7 @@ id: WU-1301
 title: 'CLI path centralization: eliminate hardcoded docs paths'
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -30,10 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Route all CLI commands through config for docs paths. Remove hardcoded docs/04-operations references. Enable consumers to customize paths in .lumenflow.config.yaml.
+description: Route all CLI commands through config for docs paths. Remove hardcoded
+  docs/04-operations references. Enable consumers to customize paths in .lumenflow.config.yaml.
 acceptance:
   - All wu-* commands use WU_PATHS / getResolvedPaths() instead of hardcoded paths
   - state-doctor, flow-report, validate-* use config paths
   - directories.* config section fully populated with simple/arc42 defaults
   - state-doctor warns if configured paths don't exist
   - Consumers can change paths in config and CLI respects them
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1301
+claimed_at: 2026-02-01T17:31:23.327Z
+baseline_main_sha: 7c7bcca31a3525b9aa1ebc1038dc19d66454b8ed
+session_id: 97f72e6a-6c98-49c7-ab4b-16c654b57f6c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T17:31:23.335Z
