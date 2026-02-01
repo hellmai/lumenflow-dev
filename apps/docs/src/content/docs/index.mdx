@@ -47,15 +47,22 @@ lanes:
   - name: 'Experience: UI'
     wip_limit: 2
 
-# 2. Create a Work Unit
-# pnpm wu:create --id WU-001 --title "Add auth" --lane "Framework: Core"
+# 2. Create a Work Unit (ID auto-generated)
+# pnpm wu:create --title "Add auth" --lane "Framework: Core" \
+#   --type feature --exposure api \
+#   --description "Add login and session handling" \
+#   --acceptance "Users can log in with email/password" \
+#   --code-paths "src/auth/" \
+#   --test-paths-unit "src/auth/__tests__/auth.test.ts" \
+#   --plan
 
-# 3. Claim and work
-# pnpm wu:claim --id WU-001 --lane "Framework: Core"
-# cd worktrees/framework-core-wu-001
+# 3. Claim and work (use generated ID, example: WU-123)
+# pnpm wu:claim --id WU-123 --lane "Framework: Core"
+# cd worktrees/framework-core-wu-123
 
-# 4. Complete with gates
-# pnpm gates && pnpm wu:done --id WU-001
+# 4. Run gates in worktree, then complete from main
+# pnpm wu:prep --id WU-123
+# cd /path/to/main && pnpm wu:done --id WU-123
 ```
 
 ## Get Started

@@ -115,7 +115,6 @@ This audit trail is valuable for:
 ```bash
 # With required flags
 pnpm wu:create \
-  --id WU-043 \
   --title "Add password strength meter" \
   --lane "Experience: UI" \
   --type feature \
@@ -124,10 +123,12 @@ pnpm wu:create \
   --acceptance "Strength meter shows weak/medium/strong" \
   --acceptance "Meter updates in real-time as user types" \
   --code-paths "src/components/PasswordStrength.tsx" \
-  --test-paths-unit "src/components/__tests__/password-strength.test.ts"
+  --test-paths-unit "src/components/__tests__/password-strength.test.ts" \
+  --plan
 ```
 
-The created WU goes into `docs/04-operations/tasks/wu/WU-043.yaml` with status `ready`.
+The command prints the generated ID. The created WU goes into
+`docs/04-operations/tasks/wu/WU-XXX.yaml` with status `ready`.
 
 ## Next Steps
 

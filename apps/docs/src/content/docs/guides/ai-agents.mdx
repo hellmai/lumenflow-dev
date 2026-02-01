@@ -66,8 +66,8 @@ You are working on WU-042 in the LumenFlow workflow.
 
 1. Work in worktree: worktrees/ui-wu-042
 2. Implement changes per acceptance
-3. Run: pnpm gates
-4. When done: pnpm wu:done --id WU-042
+3. Run: pnpm wu:prep --id WU-042
+4. From main: pnpm wu:done --id WU-042
 ```
 
 ## Memory Integration
@@ -79,13 +79,13 @@ For long-running agent sessions:
 pnpm mem:start --wu WU-042
 
 # Agent signals progress
-pnpm mem:signal "Validation logic complete"
+pnpm mem:signal "Validation logic complete" --wu WU-042
 
 # Agent creates checkpoint (before pause/context limit)
-pnpm mem:checkpoint
+pnpm mem:checkpoint --wu WU-042
 
 # Agent resumes later
-pnpm mem:ready
+pnpm mem:ready --wu WU-042
 # → Shows previous progress
 ```
 
@@ -95,7 +95,7 @@ When an agent session ends and a new one begins:
 
 ```bash
 # New agent runs
-pnpm mem:ready
+pnpm mem:ready --wu WU-042
 
 # Output:
 # WU-042 in progress
@@ -198,7 +198,7 @@ Agents should escalate when:
 - Scope seems larger than WU
 
 ```bash
-pnpm wu:escalate --id WU-042 --reason "Unclear: should validation be server-side too?"
+pnpm wu:block --id WU-042 --reason "Unclear: should validation be server-side too?"
 ```
 
 ## Cloud Agent Branches

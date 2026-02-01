@@ -150,13 +150,13 @@ async function classifyIntent(input: string) {
 ### 5. Gates and Skip-Gates
 
 <Card title="Rule" icon="document">
-  Complete via `pnpm wu:done`; skip-gates only for pre-existing failures with `--reason` and
-  `--fix-wu`.
+  Complete via `pnpm wu:prep` (gates) then `pnpm wu:done`; skip-gates only for pre-existing failures
+  with `--reason` and `--fix-wu`.
 </Card>
 
 **Enforcement:**
 
-- `pnpm wu:done` runs gates before merge
+- `pnpm wu:prep` runs gates in the worktree
 - `--skip-gates` requires both `--reason` and `--fix-wu`
 - Skip events logged to `.lumenflow/skip-gates-audit.log`
 

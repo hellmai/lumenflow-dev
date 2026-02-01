@@ -25,6 +25,7 @@ import { execSync } from 'child_process';
 // Use relative path to the built dist folder for workspace compatibility
 import {
   WU_OPTIONS,
+  WU_CREATE_OPTIONS,
   type WUOption,
   DirectoriesSchema,
   LegacyPathsSchema,
@@ -69,6 +70,26 @@ interface ConfigSection {
   name: string;
   description: string;
   fields: ConfigField[];
+}
+
+function pickExampleFlag(opt: WUOption): string {
+  const parts = opt.flags.split(',').map((part) => part.trim());
+  const longFlag = parts.find((part) => part.startsWith('--'));
+  return longFlag || parts[0];
+}
+
+function buildExampleCommand(cmd: CommandMetadata): string {
+  if (!cmd.required.length) {
+    return `pnpm ${cmd.pnpmCommand}`;
+  }
+
+  const requiredFlags = cmd.required
+    .map((name) => cmd.options.find((opt) => opt.name === name))
+    .filter(Boolean)
+    .map((opt) => pickExampleFlag(opt as WUOption));
+
+  const suffix = requiredFlags.length ? ` ${requiredFlags.join(' ')}` : '';
+  return `pnpm ${cmd.pnpmCommand}${suffix}`;
 }
 
 // ============================================================================
@@ -117,6 +138,74 @@ function extractCommandMetadata(): CommandMetadata[] {
       'Sync agent onboarding docs to existing projects (skips existing files by default, use --force to overwrite)',
   };
 
+  // Manual options for commands that do not use createWUParser (Commander-only)
+  const manualOptions: Record<string, WUOption[]> = {
+    'agent-session': [
+      {
+        name: 'wu',
+        flags: '--wu <wuId>',
+        description: 'WU ID to work on (e.g., WU-1234)',
+      },
+      {
+        name: 'tier',
+        flags: '--tier <tier>',
+        description: 'Context tier (1, 2, or 3)',
+      },
+      {
+        name: 'agentType',
+        flags: '--agent-type <type>',
+        description: 'Agent type (default: claude-code)',
+      },
+    ],
+    'agent-log-issue': [
+      {
+        name: 'category',
+        flags: '--category <cat>',
+        description: 'Issue category (workflow|tooling|confusion|violation|error)',
+      },
+      {
+        name: 'severity',
+        flags: '--severity <sev>',
+        description: 'Severity level (blocker|major|minor|info)',
+      },
+      {
+        name: 'title',
+        flags: '--title <title>',
+        description: 'Short description (5-100 chars)',
+      },
+      {
+        name: 'description',
+        flags: '--description <desc>',
+        description: 'Detailed context (10-2000 chars)',
+      },
+      {
+        name: 'resolution',
+        flags: '--resolution <res>',
+        description: 'How the issue was resolved',
+      },
+      {
+        name: 'tag',
+        flags: '--tag <tag>',
+        description: 'Tag for categorization (repeatable)',
+      },
+      {
+        name: 'step',
+        flags: '--step <step>',
+        description: 'Current workflow step (e.g., wu:done, gates)',
+      },
+      {
+        name: 'file',
+        flags: '--file <file>',
+        description: 'Related file path (repeatable)',
+      },
+    ],
+  };
+
+  const manualRequired: Record<string, string[]> = {
+    'agent-session': ['wu', 'tier'],
+    'agent-log-issue': ['category', 'severity', 'title', 'description'],
+  };
+
   for (const [binName, binPath] of Object.entries(binEntries)) {
     // Skip aliases
     if (binName === 'lumenflow-gates') continue;
@@ -129,8 +218,8 @@ function extractCommandMetadata(): CommandMetadata[] {
     const prefix = binName.split('-')[0];
     const category = categories[prefix] || 'Other';
 
-    // Convert bin name to pnpm command (wu-claim -> wu:claim)
-    const pnpmCommand = binName.replace(/-/g, ':');
+    // Convert bin name to pnpm command (wu-claim -> wu:claim, agent-issues-query -> agent:issues-query)
+    const pnpmCommand = binName.replace('-', ':');
 
     // Try to extract options from source file
     let options: WUOption[] = [];
@@ -154,15 +243,24 @@ function extractCommandMetadata(): CommandMetadata[] {
         }
       }
 
-      // Extract options array - look for WU_OPTIONS references
+      // Extract options array - look for WU_OPTIONS / WU_CREATE_OPTIONS references
       const optionsMatch = srcContent.match(/options:\s*\[\s*([\s\S]*?)\s*\]\s*,/);
       if (optionsMatch) {
-        const optionRefs = optionsMatch[1].match(/WU_OPTIONS\.(\w+)/g) || [];
+        const optionRefs = [
+          ...(optionsMatch[1].match(/WU_OPTIONS\.(\w+)/g) || []),
+          ...(optionsMatch[1].match(/WU_CREATE_OPTIONS\.(\w+)/g) || []),
+        ];
         for (const ref of optionRefs) {
-          const optName = ref.replace('WU_OPTIONS.', '');
-          // Use the imported WU_OPTIONS directly
-          if (WU_OPTIONS[optName]) {
-            options.push(WU_OPTIONS[optName]);
+          if (ref.startsWith('WU_OPTIONS.')) {
+            const optName = ref.replace('WU_OPTIONS.', '');
+            if (WU_OPTIONS[optName]) {
+              options.push(WU_OPTIONS[optName]);
+            }
+          } else if (ref.startsWith('WU_CREATE_OPTIONS.')) {
+            const optName = ref.replace('WU_CREATE_OPTIONS.', '');
+            if (WU_CREATE_OPTIONS[optName]) {
+              options.push(WU_CREATE_OPTIONS[optName]);
+            }
           }
         }
       }
@@ -175,6 +273,11 @@ function extractCommandMetadata(): CommandMetadata[] {
           .map((s) => s.trim().replace(/['"]/g, ''))
           .filter(Boolean);
       }
+    }
+
+    if (manualOptions[binName]) {
+      options = manualOptions[binName];
+      required = manualRequired[binName] || required;
     }
 
     commands.push({
@@ -391,7 +494,7 @@ function generateCliMdx(commands: CommandMetadata[]): string {
       lines.push(cmd.description, '');
 
       lines.push('```bash');
-      lines.push(`pnpm ${cmd.pnpmCommand}`);
+      lines.push(buildExampleCommand(cmd));
       lines.push('```');
       lines.push('');
 

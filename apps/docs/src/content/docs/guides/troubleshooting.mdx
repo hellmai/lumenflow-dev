@@ -27,7 +27,7 @@ pnpm format
 npx prettier --write .
 
 # Then retry
-pnpm gates
+pnpm wu:prep --id WU-XXX
 ```
 
 ### Lint check fails
@@ -43,7 +43,7 @@ pnpm gates
 
 1. Read the error message to understand the issue
 2. Fix the code (don't disable the rule unless necessary)
-3. Retry: `pnpm gates`
+3. Retry: `pnpm wu:prep --id WU-XXX`
 
 Common lint fixes:
 
@@ -105,10 +105,16 @@ If gates fail on code you didn't change:
 1. **Verify the failure existed before your changes**
 
    ```bash
-   git stash
+   # Save your changes as a patch
+   git diff > /tmp/wu-changes.patch
+
+   # Verify on clean main
+   git restore .
    pnpm gates
    # If it fails here, it's pre-existing
-   git stash pop
+
+   # Re-apply your changes
+   git apply /tmp/wu-changes.patch
    ```
 
 2. **Use skip-gates with documentation**
@@ -202,14 +208,19 @@ pnpm wu:recover --id WU-042 --action cleanup
 **Fix:**
 
 ```bash
-# From main checkout
-git stash
+# From main checkout, save a patch
+git diff > /tmp/main-changes.patch
 
-# Move to worktree
+# Move to worktree and apply
 cd worktrees/framework-core-wu-042
-git stash pop
+git apply /tmp/main-changes.patch
 
-# Commit there
+# Clean main
+cd /path/to/main
+git restore .
+
+# Commit in worktree
+cd worktrees/framework-core-wu-042
 git add .
 git commit -m "wu(wu-042): implement feature"
 ```
@@ -313,7 +324,7 @@ bash: wu-create: command not found
 pnpm add -D @lumenflow/cli
 
 # Use npx if not in PATH
-npx wu-create --id WU-042 ...
+npx wu-create --help
 
 # Or add scripts to package.json
 ```

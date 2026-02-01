@@ -1,0 +1,22 @@
+---
+title: v2.3.2
+description: Workflow alignment and tooling polish
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Highlights
+
+- **Two-step completion**: `wu:prep` runs gates in the worktree, `wu:done` merges from main
+- **CLI accuracy**: Command names and required flags aligned with current tooling
+- **Docs alignment**: Updated examples to match the current completion flow
+
+## Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+<Aside type="tip">
+  After upgrading, run `pnpm exec lumenflow docs:sync --force` to refresh agent onboarding docs.
+</Aside>
