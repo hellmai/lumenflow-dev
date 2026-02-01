@@ -2,7 +2,7 @@ id: WU-1314
 title: Document plan tooling across internal docs and Starlight
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -43,3 +43,5 @@ acceptance:
   - Internal onboarding docs include a Plans section with examples
   - Starlight docs include plan tooling reference and workflow guidance
   - All references to initiative:plan removed
+locked: true
+completed_at: 2026-02-01T23:44:56.248Z
