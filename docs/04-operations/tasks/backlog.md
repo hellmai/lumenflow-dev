@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
 - [WU-1309 — Finish CLI path centralization (remove hardcoded docs/04-operations)](wu/WU-1309.yaml) — Framework: Core
 - [WU-1308 — Honor git.requireRemote and improve missing lane-inference errors](wu/WU-1308.yaml) — Framework: Core
