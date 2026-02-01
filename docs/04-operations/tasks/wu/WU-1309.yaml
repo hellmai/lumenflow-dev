@@ -1,0 +1,57 @@
+id: WU-1309
+title: Finish CLI path centralization (remove hardcoded docs/04-operations)
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths:
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/wu-delete.ts
+  - packages/@lumenflow/cli/src/wu-block.ts
+  - packages/@lumenflow/cli/src/wu-unblock.ts
+  - packages/@lumenflow/cli/src/wu-release.ts
+  - packages/@lumenflow/cli/src/wu-deps.ts
+  - packages/@lumenflow/cli/src/wu-infer-lane.ts
+  - packages/@lumenflow/cli/src/state-doctor.ts
+  - packages/@lumenflow/cli/src/state-doctor-fix.ts
+  - packages/@lumenflow/cli/src/flow-report.ts
+  - packages/@lumenflow/cli/src/metrics-snapshot.ts
+  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
+  - packages/@lumenflow/cli/src/validate.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/sync-templates.ts
+  - packages/@lumenflow/cli/src/initiative-plan.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+    - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
+    - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1309.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Complete the remaining CLI path centralization gaps from WU-1301. Remove hardcoded docs/04-operations paths across CLI commands and diagnostics, route all path usage through WU_PATHS/getResolvedPaths, and ensure directories.* config supports simple/arc42 defaults with state-doctor warnings when configured paths are missing. This enables config overrides to work end-to-end.
+acceptance:
+  - All CLI commands use WU_PATHS/getResolvedPaths (no hardcoded docs/04-operations paths)
+  - directories.* config includes needed defaults for simple/arc42 structures
+  - state-doctor warns when configured paths are missing
+  - Config overrides are respected across wu-* commands and diagnostics
+  - Unit tests cover path centralization and warnings
