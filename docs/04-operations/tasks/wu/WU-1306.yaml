@@ -2,7 +2,7 @@ id: WU-1306
 title: Fix WUOption interface missing type property
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WUOption interface in arg-parser.ts is missing type and required properties used by CLI commands, blocking v2.4.0 release build
+description: WUOption interface in arg-parser.ts is missing type and required properties used by CLI
+  commands, blocking v2.4.0 release build
 acceptance:
   - WUOption interface includes type and required optional properties
   - pnpm build passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1306
+claimed_at: 2026-02-01T19:00:34.138Z
+baseline_main_sha: 4bb5364374b6d0d65ee9c5015c255043d2b6a034
+session_id: 7c847309-1895-4730-ad4e-e3518e6903df
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T19:00:34.144Z
