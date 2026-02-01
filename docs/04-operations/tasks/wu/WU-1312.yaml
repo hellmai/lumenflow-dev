@@ -2,7 +2,7 @@ id: WU-1312
 title: Update wu-sizing-guide with doc-only exception and tuning guidance
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -40,3 +40,5 @@ session_id: 71b69930-c12b-487e-8c2d-60beb2747880
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T23:48:27.642Z
+locked: true
+completed_at: 2026-02-01T23:55:43.293Z
