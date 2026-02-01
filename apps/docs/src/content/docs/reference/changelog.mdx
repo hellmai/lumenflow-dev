@@ -17,9 +17,27 @@ LumenFlow packages follow [Semantic Versioning](https://semver.org/):
 
 All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenflow/metrics` package may have independent minor versions.
 
-## v2.2.0
+## v2.3.2
 
 <Badge text="Latest" variant="success" />
+
+**Release Date:** February 2026
+
+### Highlights
+
+- **Two-step completion**: `wu:prep` runs gates in the worktree, `wu:done` merges from main
+- **CLI accuracy**: Command names and required flags aligned with current tooling
+- **Docs alignment**: Workflow examples updated to match the current completion flow
+
+### Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+---
+
+## v2.2.0
 
 **Release Date:** January 30, 2026
 
@@ -252,17 +270,17 @@ See [Migration Guide](/guides/migration) for upgrading from v1.x.
 
 ## Package Versions
 
-Current package versions as of v2.2.0:
+Current package versions as of v2.3.2:
 
 | Package                   | Version | Description                           |
 | ------------------------- | ------- | ------------------------------------- |
-| `@lumenflow/core`         | 2.2.0   | Core WU lifecycle and state machine   |
-| `@lumenflow/cli`          | 2.2.0   | Command-line interface                |
-| `@lumenflow/memory`       | 2.2.0   | Session tracking and context recovery |
-| `@lumenflow/agent`        | 2.2.0   | Agent definitions and skill loading   |
-| `@lumenflow/initiatives`  | 2.2.0   | Multi-phase project orchestration     |
-| `@lumenflow/metrics`      | 2.2.0   | DORA metrics and flow analysis        |
-| `@lumenflow/shims`        | 2.2.0   | Git and pnpm safety shims             |
+| `@lumenflow/core`         | 2.3.2   | Core WU lifecycle and state machine   |
+| `@lumenflow/cli`          | 2.3.2   | Command-line interface                |
+| `@lumenflow/memory`       | 2.3.2   | Session tracking and context recovery |
+| `@lumenflow/agent`        | 2.3.2   | Agent definitions and skill loading   |
+| `@lumenflow/initiatives`  | 2.3.2   | Multi-phase project orchestration     |
+| `@lumenflow/metrics`      | 2.3.2   | DORA metrics and flow analysis        |
+| `@lumenflow/shims`        | 2.3.2   | Git and pnpm safety shims             |
 | `@lumenflow/gates-action` | 1.0.0   | GitHub Action for CI gates            |
 
 ## Deprecations

@@ -59,18 +59,8 @@ Each preset provides sensible defaults for:
 
 ## Coming Soon
 
-Additional language guides are in development:
-
-- **Go** - For microservices and CLI tools
-- **Rust** - For systems programming and WebAssembly
-- **Java** - For enterprise applications (Spring Boot, Quarkus)
-- **Ruby** - For Rails and Sinatra applications
-- **PHP** - For Laravel and Symfony applications
-
-<Aside>
-  Don't wait for a guide! LumenFlow works with any language today. Configure your gate commands
-  manually or use auto-detection.
-</Aside>
+More language guides are in development. Don’t wait for a guide—LumenFlow works with any language
+today. Configure your gate commands manually or use auto-detection.
 
 ## Universal Workflow
 
@@ -78,18 +68,25 @@ Regardless of language, the workflow remains consistent:
 
 ```bash
 # 1. Create a WU (same command, any language)
-pnpm wu:create --id WU-001 --title "Add user auth" --lane "Framework: Core"
+pnpm wu:create --title "Add user auth" --lane "Framework: Core" \
+  --type feature --exposure api \
+  --description "Add authentication flow" \
+  --acceptance "Users can log in with email/password" \
+  --code-paths "src/auth/" \
+  --test-paths-unit "src/auth/__tests__/auth.test.ts" \
+  --plan
+# Use the generated ID from the output (example: WU-123)
 
 # 2. Claim and work in isolated worktree
-pnpm wu:claim --id WU-001 --lane "Framework: Core"
-cd worktrees/framework-core-wu-001
+pnpm wu:claim --id WU-123 --lane "Framework: Core"
+cd worktrees/framework-core-wu-123
 
-# 3. Run gates (language-specific commands execute)
-pnpm gates
+# 3. Run gates in the worktree
+pnpm wu:prep --id WU-123
 
 # 4. Complete (from repo root)
 cd /path/to/repo
-pnpm wu:done --id WU-001
+pnpm wu:done --id WU-123
 ```
 
 The gates command automatically detects your language and runs the appropriate tools. See [Configuration](/reference/config) for full customization options.
