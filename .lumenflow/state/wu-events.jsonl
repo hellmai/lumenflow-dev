@@ -541,3 +541,4 @@
 {"type":"claim","wuId":"WU-1303","timestamp":"2026-02-01T16:47:07.827Z","lane":"Content: Documentation","title":"Clarify LumenFlow onboarding docs"}
 {"type":"checkpoint","wuId":"WU-1303","timestamp":"2026-02-01T16:51:55.640Z","note":"WU-1303"}
 {"type":"complete","wuId":"WU-1303","timestamp":"2026-02-01T16:55:07.773Z"}
+{"type":"release","wuId":"WU-1300","timestamp":"2026-02-01T17:00:00.000Z","reason":"Previous claim failed mid-stream, worktree never created - manual recovery"}
