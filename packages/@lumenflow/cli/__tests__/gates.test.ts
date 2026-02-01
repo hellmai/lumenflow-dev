@@ -2,9 +2,10 @@
  * @file gates.test.ts
  * WU-1042: Tests for prettier guidance helpers in gates.
  * WU-1087: Tests for createWUParser-based argument parsing.
+ * WU-1299: Tests for docs-only mode package filtering.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   buildPrettierWriteCommand,
   formatFormatCheckGuidance,
@@ -16,6 +17,10 @@ import {
   resolveLintPlan,
   isTestConfigFile,
   resolveTestPlan,
+  extractPackagesFromCodePaths,
+  resolveDocsOnlyTestPlan,
+  formatDocsOnlySkipMessage,
+  loadCurrentWUCodePaths,
 } from '../src/gates.js';
 
 describe('gates prettier helpers (WU-1042)', () => {
@@ -274,6 +279,137 @@ describe('gates incremental planning (WU-1165)', () => {
       expect(isTestConfigFile('pnpm-lock.yaml')).toBe(true);
       expect(isTestConfigFile('package.json')).toBe(true);
       expect(isTestConfigFile('packages/@lumenflow/cli/src/gates.ts')).toBe(false);
+    });
+  });
+});
+
+describe('docs-only mode package filtering (WU-1299)', () => {
+  describe('extractPackagesFromCodePaths', () => {
+    it('extracts package names from packages/* paths', () => {
+      const codePaths = [
+        'packages/@lumenflow/cli/src/gates.ts',
+        'packages/@lumenflow/core/src/index.ts',
+      ];
+      const packages = extractPackagesFromCodePaths(codePaths);
+      expect(packages).toEqual(['@lumenflow/cli', '@lumenflow/core']);
+    });
+
+    it('extracts app names from apps/* paths', () => {
+      const codePaths = ['apps/web/src/app.tsx', 'apps/docs/content.mdx'];
+      const packages = extractPackagesFromCodePaths(codePaths);
+      expect(packages).toEqual(['web', 'docs']);
+    });
+
+    it('handles mixed packages and apps paths', () => {
+      const codePaths = ['packages/@lumenflow/cli/src/gates.ts', 'apps/web/src/app.tsx'];
+      const packages = extractPackagesFromCodePaths(codePaths);
+      expect(packages).toEqual(['@lumenflow/cli', 'web']);
+    });
+
+    it('deduplicates package names', () => {
+      const codePaths = [
+        'packages/@lumenflow/cli/src/gates.ts',
+        'packages/@lumenflow/cli/src/index.ts',
+      ];
+      const packages = extractPackagesFromCodePaths(codePaths);
+      expect(packages).toEqual(['@lumenflow/cli']);
+    });
+
+    it('handles docs-only paths (returns empty array)', () => {
+      const codePaths = ['docs/README.md', 'docs/guide.md'];
+      const packages = extractPackagesFromCodePaths(codePaths);
+      expect(packages).toEqual([]);
+    });
+
+    it('returns empty array for empty input', () => {
+      expect(extractPackagesFromCodePaths([])).toEqual([]);
+      expect(extractPackagesFromCodePaths(undefined as unknown as string[])).toEqual([]);
+    });
+  });
+
+  describe('resolveDocsOnlyTestPlan', () => {
+    it('returns skip mode when no packages are found in code_paths', () => {
+      const plan = resolveDocsOnlyTestPlan({
+        codePaths: ['docs/README.md'],
+      });
+      expect(plan.mode).toBe('skip');
+      expect(plan.packages).toEqual([]);
+      expect(plan.reason).toBe('no-code-packages');
+    });
+
+    it('returns filtered mode when packages are found in code_paths', () => {
+      const plan = resolveDocsOnlyTestPlan({
+        codePaths: ['packages/@lumenflow/cli/src/gates.ts'],
+      });
+      expect(plan.mode).toBe('filtered');
+      expect(plan.packages).toEqual(['@lumenflow/cli']);
+    });
+
+    it('includes all packages from code_paths', () => {
+      const plan = resolveDocsOnlyTestPlan({
+        codePaths: [
+          'packages/@lumenflow/cli/src/gates.ts',
+          'packages/@lumenflow/core/src/index.ts',
+        ],
+      });
+      expect(plan.mode).toBe('filtered');
+      expect(plan.packages).toContain('@lumenflow/cli');
+      expect(plan.packages).toContain('@lumenflow/core');
+    });
+
+    it('handles empty code_paths', () => {
+      const plan = resolveDocsOnlyTestPlan({
+        codePaths: [],
+      });
+      expect(plan.mode).toBe('skip');
+      expect(plan.reason).toBe('no-code-packages');
+    });
+
+    it('handles undefined code_paths', () => {
+      const plan = resolveDocsOnlyTestPlan({
+        codePaths: undefined as unknown as string[],
+      });
+      expect(plan.mode).toBe('skip');
+      expect(plan.reason).toBe('no-code-packages');
+    });
+  });
+
+  describe('formatDocsOnlySkipMessage', () => {
+    it('formats skip message when all tests are skipped', () => {
+      const message = formatDocsOnlySkipMessage({
+        mode: 'skip',
+        packages: [],
+        reason: 'no-code-packages',
+      });
+      expect(message).toContain('docs-only');
+      expect(message).toContain('skip');
+    });
+
+    it('formats filtered message with package names', () => {
+      const message = formatDocsOnlySkipMessage({
+        mode: 'filtered',
+        packages: ['@lumenflow/cli', '@lumenflow/core'],
+      });
+      expect(message).toContain('docs-only');
+      expect(message).toContain('@lumenflow/cli');
+      expect(message).toContain('@lumenflow/core');
+    });
+
+    it('handles single package in message', () => {
+      const message = formatDocsOnlySkipMessage({
+        mode: 'filtered',
+        packages: ['@lumenflow/cli'],
+      });
+      expect(message).toContain('@lumenflow/cli');
+    });
+  });
+
+  describe('loadCurrentWUCodePaths', () => {
+    it('returns empty array when no WU is detected', () => {
+      // When not in a WU branch, getCurrentWU returns null
+      // This test verifies the function handles that gracefully
+      const codePaths = loadCurrentWUCodePaths({ cwd: '/nonexistent/path' });
+      expect(Array.isArray(codePaths)).toBe(true);
     });
   });
 });
