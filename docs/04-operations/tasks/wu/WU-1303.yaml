@@ -2,7 +2,7 @@ id: WU-1303
 title: Clarify LumenFlow onboarding docs
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -44,3 +44,5 @@ session_id: 37028cc6-5db5-4039-9f97-e9330fed452e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T16:47:07.802Z
+locked: true
+completed_at: 2026-02-01T16:55:06.065Z

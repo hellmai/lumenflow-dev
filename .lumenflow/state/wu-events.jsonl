@@ -537,6 +537,7 @@
 {"type":"complete","wuId":"WU-1298","timestamp":"2026-02-01T13:37:31.764Z"}
 {"type":"claim","wuId":"WU-1299","timestamp":"2026-02-01T13:43:55.111Z","lane":"Framework: CLI","title":"Improve --docs-only gate mode to skip unrelated package tests"}
 {"type":"complete","wuId":"WU-1299","timestamp":"2026-02-01T13:55:59.544Z"}
-{"type":"claim","wuId":"WU-1300","lane":"Framework: CLI","title":"lumenflow-init: scaffolding fixes and template portability","timestamp":"2026-02-01T16:17:21.925Z"}
-{"type":"claim","wuId":"WU-1303","lane":"Content: Documentation","title":"Clarify LumenFlow onboarding docs","timestamp":"2026-02-01T16:47:07.827Z"}
-{"type":"checkpoint","wuId":"WU-1303","note":"WU-1303","timestamp":"2026-02-01T16:51:55.640Z"}
+{"type":"claim","wuId":"WU-1300","timestamp":"2026-02-01T16:17:21.925Z","lane":"Framework: CLI","title":"lumenflow-init: scaffolding fixes and template portability"}
+{"type":"claim","wuId":"WU-1303","timestamp":"2026-02-01T16:47:07.827Z","lane":"Content: Documentation","title":"Clarify LumenFlow onboarding docs"}
+{"type":"checkpoint","wuId":"WU-1303","timestamp":"2026-02-01T16:51:55.640Z","note":"WU-1303"}
+{"type":"complete","wuId":"WU-1303","timestamp":"2026-02-01T16:55:07.773Z"}
