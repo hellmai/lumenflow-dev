@@ -2,7 +2,7 @@ id: WU-1310
 title: Centralize path defaults in core config (simple/arc42)
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -28,9 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Complete the core path centralization: expand directories.* defaults to support simple/arc42 structures, ensure WU_PATHS/getResolvedPaths use config values (not hardcoded docs/04-operations), and make config overrides fully respected for core path helpers.'
+description: 'Complete the core path centralization: expand directories.* defaults to support
+  simple/arc42 structures, ensure WU_PATHS/getResolvedPaths use config values (not hardcoded
+  docs/04-operations), and make config overrides fully respected for core path helpers.'
 acceptance:
-  - directories.* includes defaults for simple and arc42 structures (wuDir, backlogPath, statusPath, templatesDir, onboardingDir, plansDir, initiativesDir)
+  - directories.* includes defaults for simple and arc42 structures (wuDir, backlogPath, statusPath,
+    templatesDir, onboardingDir, plansDir, initiativesDir)
   - WU_PATHS/getResolvedPaths use config values for all paths
   - Config overrides are respected by core path helpers
   - Unit tests cover core path defaults and overrides
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1310
+claimed_at: 2026-02-01T23:35:00.749Z
+baseline_main_sha: a35372cb04265c095bf280c6fdaa8fe5fb7698f2
+session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:35:00.754Z
