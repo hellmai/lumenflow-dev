@@ -2,7 +2,7 @@ id: WU-1309
 title: Fix init docs structure + portability + onboarding docs + quick-ref
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - AGENTS.md quick-ref link matches docs structure (simple vs arc42)
   - Quick-ref commands include correct init command and a complete wu:create example
   - Unit tests cover docs-structure, portability, onboarding docs, and quick-ref
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1309
+claimed_at: 2026-02-01T23:32:40.894Z
+baseline_main_sha: 1247fcd0f0a9721da4ab0397b4fa1ef89472de88
+session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:32:40.899Z
