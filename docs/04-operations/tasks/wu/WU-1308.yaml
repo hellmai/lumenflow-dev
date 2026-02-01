@@ -2,7 +2,7 @@ id: WU-1308
 title: Honor git.requireRemote and improve missing lane-inference errors
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -28,8 +28,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Fix two onboarding blockers: (1) micro-worktree operations must respect git.requireRemote=false and skip origin fetch/merge when remote is missing, enabling local-only wu:create/wu:claim; (2) when a sub-lane is used but .lumenflow.lane-inference.yaml is missing or invalid, lane-checker should emit an explicit error naming the missing file and a clear fix command.'
+description: 'Fix two onboarding blockers: (1) micro-worktree operations must respect
+  git.requireRemote=false and skip origin fetch/merge when remote is missing, enabling local-only
+  wu:create/wu:claim; (2) when a sub-lane is used but .lumenflow.lane-inference.yaml is missing or
+  invalid, lane-checker should emit an explicit error naming the missing file and a clear fix
+  command.'
 acceptance:
-  - micro-worktree skips origin fetch/merge when git.requireRemote=false (local-only wu:create/wu:claim succeed without origin)
-  - Sub-lane validation error explicitly calls out missing/invalid .lumenflow.lane-inference.yaml and suggests generation command
+  - micro-worktree skips origin fetch/merge when git.requireRemote=false (local-only
+    wu:create/wu:claim succeed without origin)
+  - Sub-lane validation error explicitly calls out missing/invalid .lumenflow.lane-inference.yaml
+    and suggests generation command
   - Unit tests cover requireRemote enforcement and lane-inference error message
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1308
+claimed_at: 2026-02-01T23:01:43.172Z
+baseline_main_sha: cc3b6e54ff8fef886432da747317336f5424460b
+session_id: d6f9b85c-5c0f-48fc-bd9f-41de4fcf89ed
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T23:01:43.180Z

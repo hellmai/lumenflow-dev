@@ -555,3 +555,4 @@
 {"type":"complete","wuId":"WU-1305","timestamp":"2026-02-01T19:01:19.253Z"}
 {"type":"complete","wuId":"WU-1306","timestamp":"2026-02-01T19:05:16.540Z"}
 {"type":"claim","wuId":"WU-1307","lane":"Framework: CLI","title":"Fix lumenflow-init scaffolding: scripts + lane inference + default lanes","timestamp":"2026-02-01T22:59:35.784Z"}
+{"type":"claim","wuId":"WU-1308","lane":"Framework: Core","title":"Honor git.requireRemote and improve missing lane-inference errors","timestamp":"2026-02-01T23:01:43.207Z"}
