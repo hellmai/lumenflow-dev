@@ -1,7 +1,7 @@
 id: WU-1298
 title: Document missing CLI commands (initiative:plan, mem:context)
 lane: 'Content: Documentation'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-02-01
