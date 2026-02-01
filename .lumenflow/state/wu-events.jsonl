@@ -535,3 +535,4 @@
 {"type":"complete","wuId":"WU-1297","timestamp":"2026-02-01T11:37:26.179Z"}
 {"type":"claim","wuId":"WU-1298","timestamp":"2026-02-01T13:30:41.593Z","lane":"Content: Documentation","title":"Document missing CLI commands (initiative:plan, mem:context)"}
 {"type":"complete","wuId":"WU-1298","timestamp":"2026-02-01T13:37:31.764Z"}
+{"type":"claim","wuId":"WU-1299","lane":"Framework: CLI","title":"Improve --docs-only gate mode to skip unrelated package tests","timestamp":"2026-02-01T13:43:55.111Z"}
