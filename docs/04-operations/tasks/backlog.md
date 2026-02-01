@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 - [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
 - [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
