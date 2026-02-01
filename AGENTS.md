@@ -129,13 +129,13 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 ## Workflow Summary
 
-| Step         | Location | Command                                                    |
-| ------------ | -------- | ---------------------------------------------------------- |
+| Step         | Location | Command                                                                                                                                                                                |
+| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
-| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                  |
-| 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                               |
-| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                    |
-| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)       |
+| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                              |
+| 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                                                                                                                                                           |
+| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                                |
+| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                   |
 
 ---
 
