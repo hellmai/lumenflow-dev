@@ -18,9 +18,12 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1314.done
 dependencies: []
+initiative: INIT-013
 risks: []
 notes: ''
 requires_review: false
+locked: true
+completed_at: 2026-02-01T23:44:56.248Z
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
 claimed_at: 2026-02-01T23:37:07.247Z
@@ -43,5 +46,3 @@ acceptance:
   - Internal onboarding docs include a Plans section with examples
   - Starlight docs include plan tooling reference and workflow guidance
   - All references to initiative:plan removed
-locked: true
-completed_at: 2026-02-01T23:44:56.248Z
