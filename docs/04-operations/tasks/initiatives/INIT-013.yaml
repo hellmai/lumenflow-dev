@@ -25,3 +25,5 @@ success_metrics:
   - Waiting/blocked WUs no longer hold lane locks when policy=active
   - Pilot lane shows reduced idle time without increased conflict rate
 labels: []
+wus:
+  - WU-1313

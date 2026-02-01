@@ -27,6 +27,7 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1313.done
 dependencies: []
+initiative: INIT-013
 spec_refs:
   - docs/04-operations/plans/WU-1313-plan.md
 risks: []
@@ -39,7 +40,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Make plans first-class and repo-native. Replace initiative:plan with a unified plan toolset that supports WU and initiative plans, uses micro-worktree isolation, stores plans in repo directories.plansDir, and updates WU spec_refs/initiative related_plan atomically. Ensure wu:create guides users to plan:create when spec_refs are missing.
+description: Make plans first-class and repo-native. Replace initiative:plan with a unified plan
+  toolset that supports WU and initiative plans, uses micro-worktree isolation, stores plans in repo
+  directories.plansDir, and updates WU spec_refs/initiative related_plan atomically. Ensure
+  wu:create guides users to plan:create when spec_refs are missing.
 acceptance:
   - 'New plan commands exist: plan:create, plan:link, plan:edit, plan:promote (repo-native)'
   - initiative:plan is removed and replaced by plan:link for initiatives
