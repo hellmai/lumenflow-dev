@@ -25,6 +25,8 @@ This guide covers common issues you may encounter with LumenFlow and how to reso
 pnpm format
 # or
 npx prettier --write .
+# Or fix only the files listed by gates (copy from the gates output):
+pnpm prettier --write "apps/docs/src/content/docs/getting-started/quickstart.mdx"
 
 # Then retry
 pnpm wu:prep --id WU-XXX
@@ -272,6 +274,31 @@ cd /path/to/repo
 pnpm wu:done --id WU-042
 ```
 
+### wu:done fails with "Worktree has uncommitted changes"
+
+**Symptom:**
+
+```
+ERROR: Worktree has uncommitted changes. Cannot proceed with wu:done.
+```
+
+**Cause:** `wu:done` requires a clean, committed worktree before it can merge.
+
+**Fix:**
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git status
+git add .
+git commit -m "wu(wu-xxx): describe the change"
+
+# Return to main and retry
+cd /path/to/repo
+pnpm wu:done --id WU-XXX
+```
+
+If the changes were accidental, restore the files, then retry.
+
 ### Hooks block my commit
 
 **Symptom:**
@@ -291,6 +318,20 @@ git add .
 git commit -m "wu(wu-042): implement feature"
 ```
 
+### Commit message missing WU ID
+
+**Symptom:**
+
+```
+BLOCKED: Commit message must reference WU-1305
+```
+
+**Fix:** Include the WU ID in the commit message, for example:
+
+```bash
+git commit -m "wu(wu-1305): document workflow friction"
+```
+
 ### Branch drift warning
 
 **Symptom:**
@@ -305,6 +346,26 @@ WARNING: Branch is 15 commits behind origin/main
 cd worktrees/framework-core-wu-042
 git fetch origin main
 git rebase origin/main
+```
+
+### Parallel completions detected
+
+**Symptom:**
+
+```
+⚠️  PARALLEL COMPLETIONS DETECTED
+```
+
+**Cause:** Other WUs merged to main while your WU was in progress.
+
+**Fix:** Rebase your worktree onto main, then retry:
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git fetch origin main
+git rebase origin/main
+cd /path/to/repo
+pnpm wu:done --id WU-XXX
 ```
 
 ## CLI Issues
@@ -366,6 +427,20 @@ pnpm mem:init --wu WU-042
 
 # Then checkpoint
 pnpm mem:checkpoint --wu WU-042
+```
+
+### wu:done warns about missing checkpoints
+
+**Symptom:**
+
+```
+⚠️  No checkpoints found for WU-XXX session.
+```
+
+**Fix:** Create checkpoints during long sessions:
+
+```bash
+pnpm mem:checkpoint --wu WU-XXX
 ```
 
 ## GitHub App Issues
