@@ -2,7 +2,7 @@ id: WU-1296
 title: Make release flow compatible with trunk protections (no direct push to main)
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -26,8 +26,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: pnpm release uses micro-worktree to merge and push directly to origin/main, but pre-push hooks block direct main pushes. Problem: release retries fail even when build is green because trunk protections require wu:done pathway. Solution: adjust release flow to use the approved merge/push path (or a release-specific lane flow) so releases can succeed without force-bypass.'
+description: 'Context: pnpm release uses micro-worktree to merge and push directly to origin/main,
+  but pre-push hooks block direct main pushes. Problem: release retries fail even when build is
+  green because trunk protections require wu:done pathway. Solution: adjust release flow to use the
+  approved merge/push path (or a release-specific lane flow) so releases can succeed without
+  force-bypass.'
 acceptance:
   - Release flow succeeds without LUMENFLOW_FORCE when trunk protections are enabled
   - Release still runs build, tags, and publish steps
   - Release tests cover the updated push/merge behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1296
+claimed_at: 2026-02-01T11:01:16.701Z
+baseline_main_sha: 24b4d4355c11cf96758f3c736cc1e201180a26d4
+session_id: 1c164232-c7bd-42cd-b8ed-0780c16b4418
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T11:01:16.706Z

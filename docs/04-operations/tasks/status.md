@@ -5,12 +5,13 @@ _Last updated: 2026-02-01_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1296 — Make release flow compatible with trunk protections (no direct push to main)](wu/WU-1296.yaml)
 
 ## Completed
 
-- [WU-1295 — Fix build failure in wu-spawn-context optional mem-context import](wu/WU-1295.yaml) — 2026-02-01
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -266,3 +267,4 @@ _Last updated: 2026-02-01_
 - [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — 2026-01-31
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — 2026-01-31
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — 2026-01-31
+- [WU-1295 — Fix build failure in wu-spawn-context optional mem-context import](wu/WU-1295.yaml) — 2026-02-01
