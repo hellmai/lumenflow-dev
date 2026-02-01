@@ -18,7 +18,8 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
-import { EXIT_CODES, DIRECTORIES, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
@@ -198,7 +199,8 @@ function getWuFiles(wuId: string): string[] {
  * Get WU info from YAML file
  */
 function getWuInfo(wuId: string): { title: string; status: string } | null {
-  const yamlPath = join(process.cwd(), DIRECTORIES.WU_DIR, `${wuId}.yaml`);
+  // WU-1301: Use config-based paths
+  const yamlPath = join(process.cwd(), WU_PATHS.WU(wuId));
   if (!existsSync(yamlPath)) {
     return null;
   }
@@ -361,7 +363,8 @@ async function main(): Promise<void> {
     // Trace all WUs
     console.error(`${LOG_PREFIX} Scanning all WUs...`);
 
-    const wuDir = join(process.cwd(), DIRECTORIES.WU_DIR);
+    // WU-1301: Use config-based paths
+    const wuDir = join(process.cwd(), WU_PATHS.WU_DIR());
     if (!existsSync(wuDir)) {
       console.error(`${LOG_PREFIX} Error: WU directory not found`);
       process.exit(EXIT_CODES.ERROR);

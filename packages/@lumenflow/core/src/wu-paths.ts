@@ -118,6 +118,12 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
      * @returns Path to worktrees directory
      */
     WORKTREES_DIR: () => config.directories.worktrees,
+
+    /**
+     * Get path to plans directory
+     * @returns Path to plans directory (WU-1301)
+     */
+    PLANS_DIR: () => config.directories.plansDir,
   };
 }
 

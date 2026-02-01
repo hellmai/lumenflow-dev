@@ -171,6 +171,7 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
   skillsDir: string;
   agentsDir: string;
   memoryBank: string;
+  plansDir: string;
 } {
   const projectRoot = options.projectRoot || getProjectRoot();
   const config = getConfig({ projectRoot });
@@ -186,6 +187,7 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
     skillsDir: path.join(projectRoot, config.directories.skillsDir),
     agentsDir: path.join(projectRoot, config.directories.agentsDir),
     memoryBank: path.join(projectRoot, config.directories.memoryBank),
+    plansDir: path.join(projectRoot, config.directories.plansDir),
   };
 }
 
@@ -303,3 +305,6 @@ export type {
   UiConfig,
   YamlConfig,
 } from './lumenflow-config-schema.js';
+
+// Re-export getDefaultConfig for consumers
+export { getDefaultConfig } from './lumenflow-config-schema.js';
