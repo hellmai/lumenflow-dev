@@ -2,7 +2,7 @@ id: WU-1307
 title: 'Fix lumenflow-init scaffolding: scripts + lane inference + default lanes'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-01
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - Framework-specific lane inference templates are generated and included in init output
   - .lumenflow.config.yaml includes default lane definitions for parent lanes
   - Unit tests cover scripts, lane-inference generation, and default lanes config
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1307
+claimed_at: 2026-02-01T22:59:35.755Z
+baseline_main_sha: 60ffeb145d4b9c7b0321f27d6a17d61118ac7633
+session_id: d6f9b85c-5c0f-48fc-bd9f-41de4fcf89ed
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T22:59:35.760Z
