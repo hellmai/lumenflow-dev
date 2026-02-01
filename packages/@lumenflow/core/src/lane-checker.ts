@@ -111,6 +111,16 @@ export function extractParent(lane: string): string {
 }
 
 /**
+ * WU-1308: Check if lane-inference.yaml file exists
+ * @returns {boolean} True if the file exists
+ */
+function laneInferenceFileExists(): boolean {
+  const projectRoot = findProjectRoot();
+  const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
+  return existsSync(taxonomyPath);
+}
+
+/**
  * Check if a parent lane has sub-lane taxonomy defined
  * @param {string} parent - Parent lane name
  * @returns {boolean} True if parent has sub-lanes in lane-inference config
@@ -251,6 +261,22 @@ function validateSubLaneFormat(
       ErrorCodes.INVALID_LANE,
       `Unknown parent lane: "${parent}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
       { parent, lane },
+    );
+  }
+
+  // WU-1308: Check if lane-inference file exists before validating sub-lanes
+  // This provides a clear error message when the file is missing
+  if (!laneInferenceFileExists()) {
+    throw createError(
+      ErrorCodes.FILE_NOT_FOUND,
+      `Sub-lane validation requires ${CONFIG_FILES.LANE_INFERENCE} which is missing.\n\n` +
+        `The file "${CONFIG_FILES.LANE_INFERENCE}" defines the lane taxonomy for sub-lane validation.\n\n` +
+        `To fix this:\n` +
+        `  1. Generate a lane taxonomy from your codebase:\n` +
+        `     pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}\n\n` +
+        `  2. Or copy from an example project and customize.\n\n` +
+        `See: LUMENFLOW.md "Setup Notes" section for details.`,
+      { lane, parent, subdomain, missingFile: CONFIG_FILES.LANE_INFERENCE },
     );
   }
 

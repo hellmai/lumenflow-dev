@@ -9,20 +9,33 @@
  * @see {@link ../lane-checker.ts}
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { getWipLimitForLane, checkWipJustification } from '../lane-checker.js';
 import { stringifyYAML } from '../wu-yaml.js';
+import { CONFIG_FILES } from '../wu-constants.js';
 
 // Test constants to avoid magic string duplication
 const TEST_LANE_FRAMEWORK_CORE = 'Framework: Core';
+const TEST_LANE_FRAMEWORK_CLI = 'Framework: CLI';
 const TEST_LANE_CONTENT_DOCS = 'Content: Documentation';
 const TEST_LANE_OPS_INFRA = 'Operations: Infrastructure';
 const TEST_LANE_FRAMEWORK = 'Framework';
 const TEST_LANE_NONEXISTENT = 'Nonexistent: Lane';
 const TEST_LANE_CONTENT = 'Content';
+
+/** Test directory prefix for lane-checker tests */
+const TEST_DIR_PREFIX = 'lane-checker-test-';
+
+/** Mock config for lumenflow-config.js in WU-1308 tests */
+const MOCK_GIT_CONFIG = {
+  git: { mainBranch: 'main', defaultRemote: 'origin', requireRemote: true },
+};
+
+/** Error message for expected throw scenarios */
+const EXPECTED_THROW_MESSAGE = 'Should have thrown an error';
 
 describe('lane-checker WIP justification', () => {
   let testBaseDir: string;
@@ -33,7 +46,7 @@ describe('lane-checker WIP justification', () => {
     testBaseDir = join(
       tmpdir(),
       // eslint-disable-next-line sonarjs/pseudo-random -- Test isolation needs unique temp dirs
-      `lane-checker-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `${TEST_DIR_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     mkdirSync(testBaseDir, { recursive: true });
 
@@ -258,6 +271,121 @@ describe('lane-checker WIP justification', () => {
       expect(docsResult.valid).toBe(true);
       expect(docsResult.requiresJustification).toBe(true); // Needs justification because wip_limit > 1
       expect(docsResult.warning).toBeTruthy();
+    });
+  });
+});
+
+/**
+ * WU-1308: Tests for lane-inference file missing error message
+ *
+ * When a sub-lane is used but .lumenflow.lane-inference.yaml is missing,
+ * the error should explicitly name the missing file and suggest how to fix.
+ */
+describe('lane-checker missing lane-inference file error (WU-1308)', () => {
+  let testBaseDir: string;
+  let configFilePath: string;
+
+  beforeEach(() => {
+    vi.resetModules();
+
+    // Create a unique test directory for each test
+    testBaseDir = join(
+      tmpdir(),
+      // eslint-disable-next-line sonarjs/pseudo-random -- Test isolation needs unique temp dirs
+      `${TEST_DIR_PREFIX}inference-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    mkdirSync(testBaseDir, { recursive: true });
+
+    configFilePath = join(testBaseDir, '.lumenflow.config.yaml');
+
+    // Create .lumenflow.config.yaml with parent lanes defined (via definitions)
+    const config = {
+      lanes: {
+        definitions: [
+          { name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 },
+          { name: TEST_LANE_FRAMEWORK_CLI, wip_limit: 1 },
+        ],
+      },
+    };
+    writeFileSync(configFilePath, stringifyYAML(config));
+
+    // NOTE: .lumenflow.lane-inference.yaml is intentionally NOT created
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    try {
+      rmSync(testBaseDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  });
+
+  describe('validateLaneFormat with missing lane-inference file', () => {
+    /** Module path for dynamic import (extracted to avoid duplication) */
+    const LANE_CHECKER_MODULE = '../lane-checker.js';
+
+    /**
+     * Helper to mock lumenflow-config.js and import lane-checker with mocked deps.
+     * Combines mock setup and dynamic import to avoid duplication.
+     */
+    async function importMockedLaneChecker(): Promise<{
+      validateLaneFormat: typeof import('../lane-checker.js').validateLaneFormat;
+    }> {
+      vi.doMock('../lumenflow-config.js', () => ({
+        findProjectRoot: vi.fn().mockReturnValue(testBaseDir),
+        getProjectRoot: vi.fn().mockReturnValue(testBaseDir),
+        getConfig: vi.fn().mockReturnValue(MOCK_GIT_CONFIG),
+      }));
+      return import(LANE_CHECKER_MODULE);
+    }
+
+    it('should throw error that mentions the missing file name', async () => {
+      const { validateLaneFormat } = await importMockedLaneChecker();
+
+      try {
+        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        expect.fail(EXPECTED_THROW_MESSAGE);
+      } catch (error) {
+        // Error should mention the lane-inference file name
+        expect((error as Error).message).toContain(CONFIG_FILES.LANE_INFERENCE);
+      }
+    });
+
+    it('should throw error that includes lane:suggest command', async () => {
+      const { validateLaneFormat } = await importMockedLaneChecker();
+
+      try {
+        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        expect.fail(EXPECTED_THROW_MESSAGE);
+      } catch (error) {
+        // Error should include actionable fix command
+        expect((error as Error).message).toContain('lane:suggest');
+      }
+    });
+
+    it('should throw error that explains the file is for lane taxonomy', async () => {
+      const { validateLaneFormat } = await importMockedLaneChecker();
+
+      try {
+        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        expect.fail(EXPECTED_THROW_MESSAGE);
+      } catch (error) {
+        // Error should explain the purpose of the file
+        expect((error as Error).message.toLowerCase()).toContain('taxonomy');
+      }
+    });
+
+    it('should use FILE_NOT_FOUND error code', async () => {
+      const { validateLaneFormat } = await importMockedLaneChecker();
+
+      try {
+        validateLaneFormat(TEST_LANE_FRAMEWORK_CORE, configFilePath);
+        expect.fail(EXPECTED_THROW_MESSAGE);
+      } catch (error) {
+        // Error should have the correct error code
+        expect((error as { code?: string }).code).toBe('FILE_NOT_FOUND');
+      }
     });
   });
 });

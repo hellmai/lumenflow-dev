@@ -42,6 +42,7 @@ import {
   PRETTIER_FLAGS,
   STDIO_MODES,
 } from './wu-constants.js';
+import { getConfig } from './lumenflow-config.js';
 import type { GitAdapter } from './git-adapter.js';
 
 /**
@@ -125,6 +126,30 @@ export const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
  * Extracted to constant to satisfy sonarjs/no-duplicate-string rule.
  */
 export const DEFAULT_LOG_PREFIX = '[micro-wt]';
+
+/**
+ * WU-1308: Check if remote operations should be skipped based on git.requireRemote config
+ *
+ * When git.requireRemote is false, micro-worktree operations skip:
+ * - Fetching origin/main before starting
+ * - Pushing to origin/main after completion
+ *
+ * This enables local-only development without a remote repository.
+ *
+ * @returns {boolean} True if remote operations should be skipped (requireRemote=false)
+ *
+ * @example
+ * ```yaml
+ * # .lumenflow.config.yaml
+ * git:
+ *   requireRemote: false  # Enable local-only mode
+ * ```
+ */
+export function shouldSkipRemoteOperations(): boolean {
+  const config = getConfig();
+  // Default is requireRemote=true, so only skip if explicitly set to false
+  return config.git.requireRemote === false;
+}
 
 /**
  * Temp branch prefix for micro-worktree operations
@@ -639,18 +664,24 @@ export async function withMicroWorktree(
 
   const mainGit = getGitForCwd();
 
+  // WU-1308: Check if remote operations should be skipped (local-only mode)
+  const skipRemote = shouldSkipRemoteOperations();
+
   // WU-2237: Clean up any orphaned temp branch/worktree from previous interrupted operations
   // This makes the operation idempotent - a retry after crash/timeout will succeed
   await cleanupOrphanedMicroWorktree(operation, id, mainGit, logPrefix);
 
   // WU-1179: Fetch origin/main before starting to minimize race condition window
   // This ensures we start from the latest origin state, reducing push failures
-  if (!pushOnly) {
+  // WU-1308: Skip when git.requireRemote=false (local-only mode)
+  if (!pushOnly && !skipRemote) {
     console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
     await mainGit.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
     // Update local main to match origin/main
     await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
     console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+  } else if (skipRemote) {
+    console.log(`${logPrefix} Local-only mode (git.requireRemote=false): skipping origin sync`);
   }
 
   const tempBranchName = getTempBranchName(operation, id);
@@ -688,7 +719,14 @@ export async function withMicroWorktree(
     console.log(`${logPrefix} ✅ Committed: ${result.commitMessage}`);
 
     // Step 6: Push to origin (different paths for pushOnly vs standard)
-    if (pushOnly) {
+    // WU-1308: Skip push when git.requireRemote=false (local-only mode)
+    if (skipRemote) {
+      // Local-only mode: merge to local main but skip push
+      console.log(`${logPrefix} Local-only mode: merging to local main (skipping push)`);
+      await mainGit.merge(tempBranchName, { ffOnly: true });
+      console.log(`${logPrefix} ✅ Merged to local main (no remote push)`);
+      return { ...result, ref: BRANCHES.MAIN };
+    } else if (pushOnly) {
       // WU-1435: Push directly to origin/main without touching local main
       // WU-1081: Use LUMENFLOW_FORCE to bypass pre-push hooks for micro-worktree pushes
       console.log(

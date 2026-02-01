@@ -8,12 +8,11 @@ created: 2026-02-01
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
   - packages/@lumenflow/core/src/lane-checker.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
-    - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
+    - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1308.done
