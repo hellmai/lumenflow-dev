@@ -37,7 +37,3 @@ acceptance:
   - --docs-structure simple|arc42 flag works with auto-detect
   - Scripts injected into package.json during init
   - --code-path and --manual-test CLI aliases work
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-01T16:17:21.913Z
