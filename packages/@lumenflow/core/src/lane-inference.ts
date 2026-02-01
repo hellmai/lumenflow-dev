@@ -18,7 +18,6 @@ import micromatch from 'micromatch'; // Industry-standard glob matching (CommonJ
 import { extractParent } from './lane-checker.js'; // Shared utility (WU-1137: consolidation)
 import { createError, ErrorCodes } from './error-handler.js';
 import { WEIGHTS, CONFIDENCE } from './wu-validation-constants.js';
-import { FILE_SYSTEM } from './wu-constants.js';
 import { findProjectRoot } from './lumenflow-config.js';
 
 /**
