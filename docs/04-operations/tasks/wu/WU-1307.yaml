@@ -1,5 +1,5 @@
 id: WU-1307
-title: 'Fix lumenflow-init scaffolding: scripts, lane inference, docs structure, portability'
+title: 'Fix lumenflow-init scaffolding: scripts + lane inference + default lanes'
 lane: 'Framework: CLI'
 type: bug
 status: ready
@@ -7,13 +7,6 @@ priority: P0
 created: 2026-02-01
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/templates/core/AGENTS.md.template
-  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/first-15-mins.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/local-only.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/lane-inference.md.template
   - packages/@lumenflow/cli/templates/frameworks/nextjs/.lumenflow.lane-inference.yaml.template
   - packages/@lumenflow/cli/templates/frameworks/react/.lumenflow.lane-inference.yaml.template
   - packages/@lumenflow/cli/templates/frameworks/node/.lumenflow.lane-inference.yaml.template
@@ -23,8 +16,7 @@ tests:
   unit:
     - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-lane-inference.test.ts
-    - packages/@lumenflow/cli/src/__tests__/init-docs-structure.test.ts
-    - packages/@lumenflow/cli/src/__tests__/init-onboarding-docs.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-config-lanes.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1307.done
@@ -39,21 +31,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Hotfix for v2.4.0 scaffolding regressions discovered during fresh project onboarding.
-  Fix the init-generated scripts and templates so a new repo works out of the box. Required fixes:
-  (1) package.json scripts must call standalone binaries (wu-create, wu-claim, wu-done, gates) not
-  'pnpm exec lumenflow ...', (2) .lumenflow.lane-inference.yaml must use hierarchical Parent→Sublane
-  format compatible with lane-inference.ts/lane-checker.ts and include framework-specific defaults,
-  (3) init must support --docs-structure simple|arc42 with auto-detect, (4) templates must be
-  portable (no absolute paths; use <project-root>), (5) onboarding docs must include
-  starting-prompt, first-15-mins, local-only, lane-inference and quick-ref must show a complete
-  wu:create example and correct init command."
+description: 'Hotfix for v2.4.0 onboarding regressions: fix init-generated scripts and lane
+  inference scaffolding so new projects work out of the box. Specifically: (1) inject package.json
+  scripts that call standalone binaries (wu-create, wu-claim, wu-done, gates) instead of pnpm exec
+  lumenflow, (2) generate .lumenflow.lane-inference.yaml in hierarchical Parent→Sublane format that
+  lane-inference.ts/lane-checker.ts expect, including framework-specific defaults, and (3) ensure
+  .lumenflow.config.yaml includes default lane definitions for parent lanes used in onboarding
+  examples (Framework, Experience, Content, Operations).'
 acceptance:
   - Generated package.json scripts use correct format (wu-create, wu-claim, wu-done, gates)
-  - .lumenflow.lane-inference.yaml is generated in hierarchical Parent→Sublane format and matches
-    lane-inference.ts expectations
-  - init supports --docs-structure simple|arc42 and auto-detects arc42 when docs/04-operations exists
-  - Templates are portable (no absolute paths; use <project-root> placeholder)
-  - Onboarding docs scaffold includes starting-prompt, first-15-mins, local-only, lane-inference
-  - Quick-ref commands include a complete wu:create example and correct init command
-  - Unit tests cover scripts, lane-inference generation, docs-structure, onboarding docs
+  - .lumenflow.lane-inference.yaml is generated in hierarchical Parent→Sublane format
+  - Framework-specific lane inference templates are generated and included in init output
+  - .lumenflow.config.yaml includes default lane definitions for parent lanes
+  - Unit tests cover scripts, lane-inference generation, and default lanes config
