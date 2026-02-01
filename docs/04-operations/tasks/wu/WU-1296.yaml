@@ -2,7 +2,7 @@ id: WU-1296
 title: Make release flow compatible with trunk protections (no direct push to main)
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
