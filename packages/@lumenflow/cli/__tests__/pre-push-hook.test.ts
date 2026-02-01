@@ -84,4 +84,10 @@ describe('pre-push hook policy (WU-1030)', () => {
     const result = runHook({ LUMENFLOW_WU_TOOL: 'initiative-edit' });
     expect(result.status).toBe(0);
   });
+
+  // WU-1296: release uses micro-worktree isolation and must be allowed
+  it('allows release pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'release' });
+    expect(result.status).toBe(0);
+  });
 });
