@@ -2,7 +2,7 @@ id: WU-1304
 title: Update lumenflow.dev docs for current tooling and workflow
 lane: 'Operations: Infrastructure'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths: []
@@ -23,10 +23,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Audit lumenflow.dev documentation for workflow and command drift, update examples to wu:prep + wu:done flow, correct CLI command names/flags, refresh version/runtime references, and fix broken docs links and weak examples.
+description: Audit lumenflow.dev documentation for workflow and command drift, update examples to
+  wu:prep + wu:done flow, correct CLI command names/flags, refresh version/runtime references, and
+  fix broken docs links and weak examples.
 acceptance:
-  - All pages describing completion now show the wu:prep (worktree gates) then wu:done (main merge) flow, including quickstart, gates, guides, FAQ, and homepage.
-  - CLI examples use valid current commands and required flags; unsupported commands (wu:list, wu:escalate, wu-prompt, mem:decide) are removed or replaced.
-  - Agent and memory examples use current required args (mem:start --wu, mem:ready --wu, agent:session --wu --tier).
-  - Version/runtime references are consistent with current repo tooling (package versions, Node requirement).
-  - Previously broken in-site links are corrected or removed, and the A Day example is updated to a realistic multi-task flow.
+  - All pages describing completion now show the wu:prep (worktree gates) then wu:done (main merge)
+    flow, including quickstart, gates, guides, FAQ, and homepage.
+  - CLI examples use valid current commands and required flags; unsupported commands (wu:list,
+    wu:escalate, wu-prompt, mem:decide) are removed or replaced.
+  - Agent and memory examples use current required args (mem:start --wu, mem:ready --wu,
+    agent:session --wu --tier).
+  - Version/runtime references are consistent with current repo tooling (package versions, Node
+    requirement).
+  - Previously broken in-site links are corrected or removed, and the A Day example is updated to a
+    realistic multi-task flow.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-infrastructure-wu-1304
+claimed_at: 2026-02-01T17:30:38.067Z
+baseline_main_sha: 5ae0a1ef2ec108f2a183ae915cd8f93d7d5040af
+session_id: 97f72e6a-6c98-49c7-ab4b-16c654b57f6c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T17:30:38.075Z
