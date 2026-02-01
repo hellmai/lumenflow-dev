@@ -21,7 +21,7 @@ cd {{PROJECT_ROOT}}
 pnpm wu:done --id WU-XXXX
 ```
 
-> **Complete CLI reference:** See [quick-ref-commands.md](ai/onboarding/quick-ref-commands.md)
+> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 ---
 

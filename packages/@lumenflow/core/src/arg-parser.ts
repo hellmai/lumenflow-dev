@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, type OptionValues } from 'commander';
 import { createError, ErrorCodes } from './error-handler.js';
 import { EXIT_CODES } from './wu-constants.js';
 
@@ -353,10 +353,24 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description: 'Code paths (repeatable)',
     isRepeatable: true,
   },
+  // WU-1300: Alias for --code-paths (singular form for convenience)
+  codePath: {
+    name: 'codePath',
+    flags: '--code-path <path>',
+    description: 'Alias for --code-paths (repeatable)',
+    isRepeatable: true,
+  },
   testPathsManual: {
     name: 'testPathsManual',
     flags: '--test-paths-manual <tests>',
     description: 'Manual test descriptions (repeatable)',
+    isRepeatable: true,
+  },
+  // WU-1300: Alias for --test-paths-manual (shorter form for convenience)
+  manualTest: {
+    name: 'manualTest',
+    flags: '--manual-test <test>',
+    description: 'Alias for --test-paths-manual (repeatable)',
     isRepeatable: true,
   },
   testPathsUnit: {
@@ -554,7 +568,14 @@ function processNegatedOptions(opts: Record<string, unknown>): Record<string, un
  * console.log(opts.id); // 'WU-123'
  * console.log(opts.branchOnly); // true
  */
-export function createWUParser(config) {
+export function createWUParser(config: {
+  name: string;
+  description: string;
+  options?: WUOption[];
+  required?: string[];
+  allowPositionalId?: boolean;
+  version?: string;
+}): OptionValues {
   const {
     name,
     description,
@@ -626,7 +647,63 @@ export function createWUParser(config) {
     opts.id = program.args[0];
   }
 
+  // WU-1300: Merge CLI aliases into their canonical options
+  opts = mergeAliasOptions(opts);
+
   return opts;
+}
+
+/**
+ * WU-1300: Option alias mappings (alias -> canonical)
+ * These allow users to use shorter/alternative flag names.
+ */
+const OPTION_ALIASES: Record<string, string> = {
+  codePath: 'codePaths',
+  manualTest: 'testPathsManual',
+};
+
+/**
+ * WU-1300: Merge alias options into their canonical counterparts.
+ * Supports both singular aliases (--code-path -> --code-paths)
+ * and alternative names (--manual-test -> --test-paths-manual).
+ *
+ * For repeatable options, values are concatenated.
+ * For single-value options, alias value is used if canonical is not set.
+ *
+ * @param {object} opts - Parsed options from Commander
+ * @returns {object} Options with aliases merged into canonical names
+ */
+function mergeAliasOptions(opts: OptionValues): OptionValues {
+  const result = { ...opts };
+
+  for (const [alias, canonical] of Object.entries(OPTION_ALIASES)) {
+    const aliasValue = result[alias];
+    const canonicalValue = result[canonical];
+
+    if (aliasValue !== undefined && aliasValue !== null) {
+      // For arrays (repeatable options), concatenate
+      if (Array.isArray(aliasValue)) {
+        const existingArray = Array.isArray(canonicalValue) ? canonicalValue : [];
+        result[canonical] = [...existingArray, ...aliasValue];
+      } else if (canonicalValue === undefined || canonicalValue === null) {
+        // For single values, only use alias if canonical not set
+        result[canonical] = aliasValue;
+      }
+
+      // Remove the alias from results (clean output)
+      // Build new result without the alias key to avoid dynamic delete
+    }
+  }
+
+  // Remove alias keys from final result
+  const finalResult: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(result)) {
+    if (!(key in OPTION_ALIASES)) {
+      finalResult[key] = value;
+    }
+  }
+
+  return finalResult;
 }
 
 /**
@@ -644,7 +721,7 @@ export function createWUParser(config) {
  * console.log(args.id); // 'WU-123'
  * console.log(args.branchOnly); // true
  */
-export function parseWUArgs(argv) {
+export function parseWUArgs(argv: string[]): OptionValues {
   // Filter out pnpm's `--` separator before parsing
   const filteredArgv = argv.filter((arg) => arg !== '--');
 

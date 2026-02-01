@@ -8,6 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+// eslint-disable-next-line sonarjs/deprecation -- Testing deprecated API for backward compat
 import { WU_OPTIONS, WU_CREATE_OPTIONS, createWUParser, parseWUArgs } from '../arg-parser.js';
 
 // Test fixture constants (WU-1173: avoid duplicate string lint errors)
@@ -16,6 +17,13 @@ const TEST_PATH_B = 'src/b.ts';
 const TEST_PATH_C = 'src/c.ts';
 const TEST_ARGV_PREFIX = ['node', 'test.js'] as const;
 const FLAG_CODE_PATHS = '--code-paths';
+// WU-1300: Additional constants for lint compliance
+const FLAG_CODE_PATH = '--code-path';
+const FLAG_MANUAL_TEST = '--manual-test';
+const TEST_PARSER_NAME = 'test';
+const TEST_PARSER_CONFIG_DESC = 'Test parser';
+const MANUAL_TEST_PATH_A = 'tests/manual/a.test.ts';
+const MANUAL_TEST_PATH_B = 'tests/manual/b.test.ts';
 
 describe('arg-parser', () => {
   describe('WU_OPTIONS', () => {
@@ -314,8 +322,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', '--id', 'WU-123', '--lane', 'Framework: Core'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.id, WU_OPTIONS.lane],
       });
 
@@ -327,8 +335,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', '-i', 'WU-456', '-l', 'Operations'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.id, WU_OPTIONS.lane],
       });
 
@@ -340,8 +348,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', '--force', '--skip-gates'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.force, WU_OPTIONS.skipGates],
       });
 
@@ -353,8 +361,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', 'WU-789'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.id],
         allowPositionalId: true,
       });
@@ -366,8 +374,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', '--id', 'WU-FLAG', 'WU-POSITIONAL'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.id],
         allowPositionalId: true,
       });
@@ -379,8 +387,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js', '--', '--id', 'WU-123'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.id],
       });
 
@@ -398,8 +406,8 @@ describe('arg-parser', () => {
       ];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.acceptance],
       });
 
@@ -410,8 +418,8 @@ describe('arg-parser', () => {
       process.argv = ['node', 'test.js'];
 
       const opts = createWUParser({
-        name: 'test',
-        description: 'Test parser',
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
         options: [WU_OPTIONS.acceptance],
       });
 
@@ -430,8 +438,8 @@ describe('arg-parser', () => {
         ];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.codePaths],
         });
 
@@ -445,8 +453,8 @@ describe('arg-parser', () => {
         process.argv = [...TEST_ARGV_PREFIX, FLAG_CODE_PATHS, commaValue];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.codePaths],
         });
 
@@ -466,8 +474,8 @@ describe('arg-parser', () => {
         ];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.codePaths],
         });
 
@@ -484,8 +492,8 @@ describe('arg-parser', () => {
         ];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.testPathsUnit],
         });
 
@@ -502,8 +510,8 @@ describe('arg-parser', () => {
         ];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.specRefs],
         });
 
@@ -514,8 +522,8 @@ describe('arg-parser', () => {
         process.argv = [...TEST_ARGV_PREFIX];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.codePaths, WU_OPTIONS.testPathsUnit, WU_OPTIONS.specRefs],
         });
 
@@ -528,8 +536,8 @@ describe('arg-parser', () => {
         process.argv = [...TEST_ARGV_PREFIX, '--blocked-by', 'WU-100', '--blocked-by', 'WU-200'];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.blockedBy],
         });
 
@@ -540,16 +548,80 @@ describe('arg-parser', () => {
         process.argv = [...TEST_ARGV_PREFIX, '--labels', 'urgent', '--labels', 'bug'];
 
         const opts = createWUParser({
-          name: 'test',
-          description: 'Test parser',
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
           options: [WU_OPTIONS.labels],
         });
 
         expect(opts.labels).toEqual(['urgent', 'bug']);
       });
     });
+
+    // WU-1300: CLI aliases for convenience
+    describe('CLI aliases (WU-1300)', () => {
+      it('should accept --code-path as alias for --code-paths', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          FLAG_CODE_PATH,
+          TEST_PATH_A,
+          FLAG_CODE_PATH,
+          TEST_PATH_B,
+        ];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          // Include both canonical and alias options
+          options: [WU_OPTIONS.codePaths, WU_OPTIONS.codePath],
+        });
+
+        // Alias --code-path should populate codePaths array
+        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
+      });
+
+      it('should accept --manual-test as alias for --test-paths-manual', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          FLAG_MANUAL_TEST,
+          MANUAL_TEST_PATH_A,
+          FLAG_MANUAL_TEST,
+          MANUAL_TEST_PATH_B,
+        ];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          // Include both canonical and alias options
+          options: [WU_OPTIONS.testPathsManual, WU_OPTIONS.manualTest],
+        });
+
+        // Alias --manual-test should populate testPathsManual array
+        expect(opts.testPathsManual).toEqual([MANUAL_TEST_PATH_A, MANUAL_TEST_PATH_B]);
+      });
+
+      it('should allow mixing alias and canonical flag', () => {
+        process.argv = [
+          ...TEST_ARGV_PREFIX,
+          '--code-paths',
+          TEST_PATH_A,
+          FLAG_CODE_PATH,
+          TEST_PATH_B,
+        ];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          // Include both canonical and alias options
+          options: [WU_OPTIONS.codePaths, WU_OPTIONS.codePath],
+        });
+
+        // Both --code-paths and --code-path should contribute to codePaths array
+        expect(opts.codePaths).toEqual([TEST_PATH_A, TEST_PATH_B]);
+      });
+    });
   });
 
+  /* eslint-disable sonarjs/deprecation -- Testing deprecated API for backward compat */
   describe('parseWUArgs (deprecated)', () => {
     let originalArgv: string[];
     let originalExit: typeof process.exit;
@@ -599,4 +671,5 @@ describe('arg-parser', () => {
       expect(opts.branchOnly).toBe(true);
     });
   });
+  /* eslint-enable sonarjs/deprecation */
 });
