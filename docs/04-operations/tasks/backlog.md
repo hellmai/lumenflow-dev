@@ -47,7 +47,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1297 — Fix init.ts CLI entry point missing runCLI call](wu/WU-1297.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -312,3 +311,4 @@ sections:
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml)
 - [WU-1295 — Fix build failure in wu-spawn-context optional mem-context import](wu/WU-1295.yaml)
 - [WU-1296 — Make release flow compatible with trunk protections (no direct push to main)](wu/WU-1296.yaml)
+- [WU-1297 — Fix init.ts CLI entry point missing runCLI call](wu/WU-1297.yaml)

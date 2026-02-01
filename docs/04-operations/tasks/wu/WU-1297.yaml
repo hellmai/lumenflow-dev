@@ -2,7 +2,7 @@ id: WU-1297
 title: Fix init.ts CLI entry point missing runCLI call
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -40,3 +40,5 @@ session_id: 918eaad8-181d-41d9-b281-81b2cf97613d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T11:29:41.264Z
+locked: true
+completed_at: 2026-02-01T11:37:24.430Z
