@@ -6,12 +6,13 @@ status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
-  - packages/@lumenflow/cli/src/commands/init.ts
+  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/core/src/arg-parser.ts
 tests:
   manual: []
   unit:
-    - packages/@lumenflow/cli/src/commands/__tests__/init.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1300.done
