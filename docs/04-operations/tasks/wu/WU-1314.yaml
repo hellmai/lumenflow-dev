@@ -9,10 +9,7 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md
-  - apps/docs/src/content/docs/reference/cli.mdx
-  - apps/docs/src/content/docs/reference/config.mdx
-  - apps/docs/src/content/docs/guides/initiatives/index.mdx
-  - apps/docs/src/content/docs/guides/wu-prep-workflow/index.mdx
+  - apps/docs/src/content/docs/guides/initiatives.mdx
 tests:
   manual:
     - Docs review
