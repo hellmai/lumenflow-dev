@@ -2,7 +2,7 @@ id: WU-1298
 title: Document missing CLI commands (initiative:plan, mem:context)
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -26,8 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Two CLI commands are exposed in package.json but missing from lumenflow.dev docs: initiative:plan and mem:context. Need to ensure docs:generate picks them up or add manual entries.'
+description: 'Two CLI commands are exposed in package.json but missing from lumenflow.dev docs:
+  initiative:plan and mem:context. Need to ensure docs:generate picks them up or add manual
+  entries.'
 acceptance:
   - initiative:plan command is documented in apps/docs/src/content/docs/reference/cli.mdx
   - mem:context command is documented in apps/docs/src/content/docs/reference/cli.mdx
   - pnpm docs:validate passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1298
+claimed_at: 2026-02-01T13:30:41.553Z
+baseline_main_sha: 2e748e0194ddceb7cb9e251e2e01265ae6137ec6
+session_id: 887064b6-8114-4beb-88cb-8af38ce3dd4d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T13:30:41.560Z
