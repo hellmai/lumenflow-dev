@@ -1,11 +1,27 @@
 id: INIT-013
 slug: wip-lock-policy
 title: Configurable lane lock policy + active-state WIP accounting
-description: ''
+description: 'Introduce configurable lane lock policy and active-state WIP accounting to reduce idle
+  time without sacrificing coordination safety. Provide lock_policy per lane (active|all|none),
+  release lane locks when WUs enter waiting/blocked, and ensure orchestrator/spawn respect the
+  configured policy. Pilot on low-conflict lanes (Content: Documentation) with clear rollback
+  guidance.'
 status: draft
 priority: P1
 owner: workflow
 created: 2026-02-01
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Define lock_policy semantics and state transitions
+    status: pending
+  - id: 2
+    title: Implement core enforcement (lane-lock + lane-checker + config)
+    status: pending
+  - id: 3
+    title: Update orchestrator/CLI + docs + pilot guidance
+    status: pending
+success_metrics:
+  - Lanes can set lock_policy and behavior changes as configured
+  - Waiting/blocked WUs no longer hold lane locks when policy=active
+  - Pilot lane shows reduced idle time without increased conflict rate
 labels: []
