@@ -16,6 +16,7 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1315.done
 dependencies: []
+initiative: INIT-013
 risks: []
 notes: ''
 requires_review: false
@@ -26,7 +27,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add a lightweight onboarding smoke test to the gates pipeline to catch regressions in lumenflow init + wu:create flows before release. The gate should create a temp repo, run lumenflow init --full, validate injected scripts, validate lane-inference format, and run wu:create with requireRemote=false.
+description: Add a lightweight onboarding smoke test to the gates pipeline to catch regressions in
+  lumenflow init + wu:create flows before release. The gate should create a temp repo, run lumenflow
+  init --full, validate injected scripts, validate lane-inference format, and run wu:create with
+  requireRemote=false.
 acceptance:
   - New onboarding smoke-test gate runs as part of pnpm gates
   - Gate verifies init scripts, lane-inference format, and wu:create with requireRemote=false
