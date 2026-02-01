@@ -550,5 +550,6 @@
 {"type":"claim","wuId":"WU-1302","timestamp":"2026-02-01T18:16:45.031Z","lane":"Framework: CLI","title":"wu:create UX: lane errors, required fields, local/offline mode"}
 {"type":"complete","wuId":"WU-1302","timestamp":"2026-02-01T18:29:22.567Z"}
 {"type":"complete","wuId":"WU-1304","timestamp":"2026-02-01T18:38:07.712Z"}
-{"type":"claim","wuId":"WU-1305","lane":"Content: Documentation","title":"Document workflow friction and recovery steps","timestamp":"2026-02-01T18:57:27.715Z"}
-{"type":"claim","wuId":"WU-1306","lane":"Framework: Core","title":"Fix WUOption interface missing type property","timestamp":"2026-02-01T19:00:34.173Z"}
+{"type":"claim","wuId":"WU-1305","timestamp":"2026-02-01T18:57:27.715Z","lane":"Content: Documentation","title":"Document workflow friction and recovery steps"}
+{"type":"claim","wuId":"WU-1306","timestamp":"2026-02-01T19:00:34.173Z","lane":"Framework: Core","title":"Fix WUOption interface missing type property"}
+{"type":"complete","wuId":"WU-1305","timestamp":"2026-02-01T19:01:19.253Z"}
