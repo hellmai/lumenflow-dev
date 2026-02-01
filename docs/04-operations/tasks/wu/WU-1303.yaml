@@ -2,7 +2,7 @@ id: WU-1303
 title: Clarify LumenFlow onboarding docs
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -28,9 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update onboarding docs to remove ambiguous or misleading guidance that caused day-1 setup failures (lane inference requirement, required wu:create fields, offline/remote behavior, and correct quick-ref link paths).
+description: Update onboarding docs to remove ambiguous or misleading guidance that caused day-1
+  setup failures (lane inference requirement, required wu:create fields, offline/remote behavior,
+  and correct quick-ref link paths).
 acceptance:
   - Quick-ref link in AGENTS.md matches actual onboarding doc path
   - Quickstart examples show a complete wu:create command with required fields
   - Docs explicitly state lane-inference file is required for sub-lanes
   - Docs explain local/offline behavior when no remote exists
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1303
+claimed_at: 2026-02-01T16:47:07.798Z
+baseline_main_sha: ee7d04c5cf4f29689b5e2e4e5fa4cafd6ef1af82
+session_id: 37028cc6-5db5-4039-9f97-e9330fed452e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T16:47:07.802Z
