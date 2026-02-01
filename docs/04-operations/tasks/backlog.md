@@ -20,10 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
-- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
-- [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — Framework: CLI
-- [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -44,9 +40,12 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
-- [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — Framework: Core
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — Framework: Core
+- [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — Content: Documentation
+- [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — Framework: CLI
+- [WU-1314 — Document plan tooling across internal docs and Starlight](wu/WU-1314.yaml) — Content: Documentation
+- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -54,6 +53,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
