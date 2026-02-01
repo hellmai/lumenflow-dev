@@ -1,0 +1,32 @@
+id: WU-1312
+title: Update wu-sizing-guide with doc-only exception and tuning guidance
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+tests:
+  manual:
+    - Docs review
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1312.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Refine wu-sizing-guide thresholds to add explicit doc-only exceptions and clarify when single-session overrides are allowed. Keep the guide conservative but practical, with examples for documentation-only changes and shallow multi-file edits.
+acceptance:
+  - Adds a documented exception for docs-only changes (higher file count tolerated)
+  - Clarifies single-session override criteria and required justification
+  - Includes examples for doc-only and shallow multi-file WUs
