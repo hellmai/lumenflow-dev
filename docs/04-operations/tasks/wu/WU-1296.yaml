@@ -7,11 +7,12 @@ priority: P1
 created: 2026-02-01
 code_paths:
   - packages/@lumenflow/cli/src/release.ts
-  - packages/@lumenflow/cli/src/wu-release.ts
+  - .husky/hooks/pre-push.mjs
 tests:
   manual: []
   unit:
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1296.done
