@@ -1,0 +1,36 @@
+id: WU-1303
+title: Clarify LumenFlow onboarding docs
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-01
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - AGENTS.md
+  - LUMENFLOW.md
+tests:
+  manual:
+    - Verify onboarding links resolve and examples run without missing required fields
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1303.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Update onboarding docs to remove ambiguous or misleading guidance that caused day-1 setup failures (lane inference requirement, required wu:create fields, offline/remote behavior, and correct quick-ref link paths).
+acceptance:
+  - Quick-ref link in AGENTS.md matches actual onboarding doc path
+  - Quickstart examples show a complete wu:create command with required fields
+  - Docs explicitly state lane-inference file is required for sub-lanes
+  - Docs explain local/offline behavior when no remote exists
