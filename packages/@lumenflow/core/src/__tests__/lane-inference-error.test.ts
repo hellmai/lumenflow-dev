@@ -40,7 +40,9 @@ describe('lane-inference error messages (WU-1302)', () => {
       // Ensure file doesn't exist
       expect(existsSync(missingConfigPath)).toBe(false);
 
-      expect(() => inferSubLane(['packages/core/src/index.ts'], 'Test WU', missingConfigPath)).toThrow();
+      expect(() =>
+        inferSubLane(['packages/core/src/index.ts'], 'Test WU', missingConfigPath),
+      ).toThrow();
     });
 
     it('error message includes the file name that is missing', () => {
