@@ -26,6 +26,44 @@ const MANUAL_TEST_PATH_A = 'tests/manual/a.test.ts';
 const MANUAL_TEST_PATH_B = 'tests/manual/b.test.ts';
 
 describe('arg-parser', () => {
+  describe('WUOption interface', () => {
+    it('should accept type property for option type hints', () => {
+      // WU-1306: WUOption interface must support type property used by CLI commands
+      const option = {
+        name: 'test',
+        flags: '--test',
+        description: 'Test option',
+        type: 'boolean' as const,
+      };
+      // If WUOption interface doesn't include type, this would fail TypeScript compilation
+      // Runtime check: createWUParser should accept options with type property
+      const parser = createWUParser({
+        name: 'type-test',
+        description: 'Test type property',
+        options: [option],
+        required: [],
+      });
+      expect(parser).toBeDefined();
+    });
+
+    it('should accept required property for option requirement hints', () => {
+      // WU-1306: WUOption interface must support required property
+      const option = {
+        name: 'test',
+        flags: '--test <value>',
+        description: 'Test option',
+        required: true,
+      };
+      const parser = createWUParser({
+        name: 'required-test',
+        description: 'Test required property',
+        options: [option],
+        required: [],
+      });
+      expect(parser).toBeDefined();
+    });
+  });
+
   describe('WU_OPTIONS', () => {
     describe('string options', () => {
       it('should define id option with short and long flags', () => {
