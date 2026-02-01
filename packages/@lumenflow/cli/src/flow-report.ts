@@ -30,6 +30,7 @@ import {
   type WUMetrics,
 } from '@lumenflow/metrics';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[flow:report]';
@@ -43,8 +44,8 @@ const OUTPUT_FORMATS = {
   TABLE: 'table',
 } as const;
 
-/** WU directory relative to repo root */
-const WU_DIR = 'docs/04-operations/tasks/wu';
+/** WU directory relative to repo root (WU-1301: uses config-based paths) */
+const WU_DIR = WU_PATHS.WU_DIR();
 
 /**
  * Parse command line arguments

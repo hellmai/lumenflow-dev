@@ -16,7 +16,8 @@
 
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import { PATTERNS, LUMENFLOW_PATHS, DIRECTORIES } from '@lumenflow/core/dist/wu-constants.js';
+import { PATTERNS, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 /** Local EMOJI constants for spawn-list output */
 const EMOJI = {
@@ -61,10 +62,10 @@ interface SpawnEvent {
 
 const LOG_PREFIX = '[spawn:list]';
 
-/** Default paths for spawn registry and WU files */
+/** Default paths for spawn registry and WU files (WU-1301: uses config-based paths) */
 const DEFAULT_PATHS = Object.freeze({
   REGISTRY_DIR: LUMENFLOW_PATHS.STATE_DIR,
-  WU_DIR: DIRECTORIES.WU_DIR,
+  WU_DIR: WU_PATHS.WU_DIR(),
 });
 
 /** Initiative ID pattern */

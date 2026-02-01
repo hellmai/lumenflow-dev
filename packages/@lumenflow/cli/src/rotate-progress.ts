@@ -19,10 +19,10 @@ import { parse as parseYaml } from 'yaml';
 import {
   EXIT_CODES,
   STATUS_SECTIONS,
-  DIRECTORIES,
   FILE_SYSTEM,
   PATTERNS,
 } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
@@ -72,7 +72,8 @@ export function parseRotateArgs(argv: string[]): RotateArgs {
  * Get WU status from YAML file
  */
 function getWuStatus(wuId: string, baseDir: string = process.cwd()): string | null {
-  const yamlPath = join(baseDir, DIRECTORIES.WU_DIR, `${wuId}.yaml`);
+  // WU-1301: Use config-based paths
+  const yamlPath = join(baseDir, WU_PATHS.WU(wuId));
   if (!existsSync(yamlPath)) {
     return null;
   }
@@ -91,7 +92,8 @@ function getWuStatus(wuId: string, baseDir: string = process.cwd()): string | nu
  */
 function getAllWuStatuses(baseDir: string = process.cwd()): Map<string, string> {
   const statuses = new Map<string, string>();
-  const wuDir = join(baseDir, DIRECTORIES.WU_DIR);
+  // WU-1301: Use config-based paths
+  const wuDir = join(baseDir, WU_PATHS.WU_DIR());
 
   if (!existsSync(wuDir)) {
     return statuses;
@@ -250,8 +252,8 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  // Read status.md
-  const statusPath = join(process.cwd(), DIRECTORIES.STATUS_PATH);
+  // Read status.md - WU-1301: Use config-based paths
+  const statusPath = join(process.cwd(), WU_PATHS.STATUS());
   if (!existsSync(statusPath)) {
     console.error(`${LOG_PREFIX} Error: ${statusPath} not found`);
     process.exit(EXIT_CODES.ERROR);

@@ -30,12 +30,13 @@ const LOG_PREFIX = '[state-bootstrap]';
 
 /**
  * Default configuration for state bootstrap
+ * WU-1301: Uses config-based paths instead of hardcoded values
  */
 export const STATE_BOOTSTRAP_DEFAULTS = {
-  /** Default WU directory path */
-  wuDir: 'docs/04-operations/tasks/wu',
-  /** Default state directory path */
-  stateDir: '.lumenflow/state',
+  /** Default WU directory path (from config) */
+  wuDir: WU_PATHS.WU_DIR(),
+  /** Default state directory path (from config) */
+  stateDir: WU_PATHS.STATE_DIR(),
 };
 
 /**

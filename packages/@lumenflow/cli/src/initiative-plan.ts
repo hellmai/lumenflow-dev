@@ -32,6 +32,7 @@ import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;
@@ -39,8 +40,8 @@ export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'initiative-plan';
 
-/** Standard plans directory relative to repo root */
-const PLANS_DIR = 'docs/04-operations/plans';
+/** Standard plans directory relative to repo root (WU-1301: uses config-based paths) */
+const PLANS_DIR = WU_PATHS.PLANS_DIR();
 
 /** LumenFlow URI scheme for plan references */
 const PLAN_URI_SCHEME = 'lumenflow://plans/';
