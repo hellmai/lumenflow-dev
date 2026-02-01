@@ -398,8 +398,10 @@ describe('lumenflow init', () => {
         expect(fs.existsSync(laneInferencePath)).toBe(true);
 
         const content = fs.readFileSync(laneInferencePath, 'utf-8');
-        // Should have lane definitions
-        expect(content).toContain('lanes:');
+        // WU-1307: Should have hierarchical lane definitions (not flat lanes: array)
+        expect(content).toContain('Framework:');
+        expect(content).toContain('Content:');
+        expect(content).toContain('Operations:');
       });
 
       it('should scaffold lane-inference with framework-specific lanes when --framework is provided', async () => {
