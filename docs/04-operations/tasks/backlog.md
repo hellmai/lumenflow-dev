@@ -49,7 +49,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1300 — lumenflow-init: scaffolding fixes and template portability](wu/WU-1300.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -318,3 +317,4 @@ sections:
 - [WU-1298 — Document missing CLI commands (initiative:plan, mem:context)](wu/WU-1298.yaml)
 - [WU-1299 — Improve --docs-only gate mode to skip unrelated package tests](wu/WU-1299.yaml)
 - [WU-1303 — Clarify LumenFlow onboarding docs](wu/WU-1303.yaml)
+- [WU-1300 — lumenflow-init: scaffolding fixes and template portability](wu/WU-1300.yaml)
