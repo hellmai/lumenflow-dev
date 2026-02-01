@@ -172,6 +172,8 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
   agentsDir: string;
   memoryBank: string;
   plansDir: string;
+  templatesDir: string;
+  onboardingDir: string;
 } {
   const projectRoot = options.projectRoot || getProjectRoot();
   const config = getConfig({ projectRoot });
@@ -188,6 +190,8 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
     agentsDir: path.join(projectRoot, config.directories.agentsDir),
     memoryBank: path.join(projectRoot, config.directories.memoryBank),
     plansDir: path.join(projectRoot, config.directories.plansDir),
+    templatesDir: path.join(projectRoot, config.directories.templatesDir),
+    onboardingDir: path.join(projectRoot, config.directories.onboardingDir),
   };
 }
 
@@ -262,6 +266,12 @@ directories:
   skillsDir: "${defaultConfig.directories.skillsDir}"
   # Agents directory
   agentsDir: "${defaultConfig.directories.agentsDir}"
+  # Plans directory
+  plansDir: "${defaultConfig.directories.plansDir}"
+  # Templates directory
+  templatesDir: "${defaultConfig.directories.templatesDir}"
+  # Onboarding directory
+  onboardingDir: "${defaultConfig.directories.onboardingDir}"
 
 # Beacon paths (.lumenflow directory structure)
 beacon:
