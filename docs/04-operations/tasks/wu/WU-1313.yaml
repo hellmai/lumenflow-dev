@@ -1,0 +1,49 @@
+id: WU-1313
+title: Introduce first-class plan tooling (create/link/edit/promote)
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-01
+code_paths:
+  - packages/@lumenflow/cli/src/plan-create.ts
+  - packages/@lumenflow/cli/src/plan-link.ts
+  - packages/@lumenflow/cli/src/plan-edit.ts
+  - packages/@lumenflow/cli/src/plan-promote.ts
+  - packages/@lumenflow/cli/src/initiative-plan.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/core/src/lumenflow-home.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/plan-create.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-link.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-promote.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-plan-replacement.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1313.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/plans/WU-1313-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Make plans first-class and repo-native. Replace initiative:plan with a unified plan toolset that supports WU and initiative plans, uses micro-worktree isolation, stores plans in repo directories.plansDir, and updates WU spec_refs/initiative related_plan atomically. Ensure wu:create guides users to plan:create when spec_refs are missing.
+acceptance:
+  - 'New plan commands exist: plan:create, plan:link, plan:edit, plan:promote (repo-native)'
+  - initiative:plan is removed and replaced by plan:link for initiatives
+  - Plan storage defaults to repo directories.plansDir (not LUMENFLOW_HOME)
+  - wu:create missing spec_refs message suggests plan:create
+  - All plan commands use micro-worktree isolation
+  - Unit tests cover plan create/link/edit/promote and initiative linking
