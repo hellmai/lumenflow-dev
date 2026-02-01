@@ -1349,21 +1349,27 @@ Plans use the `lumenflow://plans/` URI scheme:
 # [INIT-XXX | WU-XXX] Plan - Title
 
 ## Goal
+
 Primary objective
 
 ## Scope
+
 In scope and out of scope
 
 ## Approach
+
 Key phases, milestones, technical decisions
 
 ## Success Criteria
+
 Measurable outcomes
 
 ## Risks
+
 What could go wrong and mitigation
 
 ## References
+
 - Initiative/WU: [ID]
 - Created: [date]
 ```
