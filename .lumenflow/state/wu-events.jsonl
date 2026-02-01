@@ -533,3 +533,4 @@
 {"type":"complete","wuId":"WU-1296","timestamp":"2026-02-01T11:28:47.376Z"}
 {"type":"claim","wuId":"WU-1297","timestamp":"2026-02-01T11:29:41.289Z","lane":"Framework: CLI","title":"Fix init.ts CLI entry point missing runCLI call"}
 {"type":"complete","wuId":"WU-1297","timestamp":"2026-02-01T11:37:26.179Z"}
+{"type":"claim","wuId":"WU-1298","lane":"Content: Documentation","title":"Document missing CLI commands (initiative:plan, mem:context)","timestamp":"2026-02-01T13:30:41.593Z"}
