@@ -160,6 +160,26 @@ export const GitConfigSchema = z.object({
   branchDriftInfo: z.number().int().positive().default(10),
 
   /**
+   * WU-1302: Require a remote repository for wu:create and wu:claim.
+   * When true (default), operations fail if no remote 'origin' exists.
+   * When false, operations can proceed locally without pushing.
+   *
+   * Use `git.requireRemote: false` for:
+   * - Local-only development before remote is set up
+   * - Air-gapped environments
+   * - Testing/evaluation of LumenFlow
+   *
+   * @default true
+   *
+   * @example
+   * ```yaml
+   * git:
+   *   requireRemote: false  # Allow offline/local mode
+   * ```
+   */
+  requireRemote: z.boolean().default(true),
+
+  /**
    * Agent branch patterns to MERGE with the registry patterns.
    * These patterns are merged with patterns from lumenflow.dev/registry/agent-patterns.json.
    * Use this to add custom patterns that should work alongside the standard vendor patterns.

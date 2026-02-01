@@ -240,14 +240,25 @@ Without this file, sub-lane validation will fail.
 
 ## Local / Offline Behavior (No Remote)
 
-`wu:create` and `wu:claim` currently expect an `origin` remote and will fetch `origin/main`.
+By default, `wu:create` and `wu:claim` expect an `origin` remote and will fetch `origin/main`.
 
-If your repo has no remote yet:
+For local-only or offline development, add this to `.lumenflow.config.yaml`:
 
-1. Create and push a remote first, or
-2. Use `--no-push` where supported (e.g., `wu:claim`) for local-only work.
+```yaml
+git:
+  requireRemote: false
+```
 
-Full offline mode for `wu:create` is planned but not available yet.
+When `requireRemote: false`:
+
+- `wu:create` skips remote fetch operations
+- `wu:claim` works without pushing to origin
+- Useful for air-gapped environments, testing/evaluation, or pre-remote development
+
+When `requireRemote: true` (default):
+
+- Operations fail with a clear error if no `origin` remote exists
+- Ensures team visibility via remote branches
 
 ---
 

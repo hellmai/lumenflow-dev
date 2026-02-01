@@ -37,7 +37,13 @@ function loadConfig(configPath = null) {
   if (!existsSync(configPath)) {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
-      `Lane inference config not found: ${configPath}\n\nRun WU-906 to create infrastructure files.`,
+      `Lane inference config not found: ${configPath}\n\n` +
+        `This file defines the lane taxonomy for sub-lane validation.\n\n` +
+        `To fix this:\n` +
+        `  1. Generate a lane taxonomy from your codebase:\n` +
+        `     pnpm lane:suggest --output .lumenflow.lane-inference.yaml\n\n` +
+        `  2. Or copy from an example project and customize.\n\n` +
+        `See: LUMENFLOW.md "Setup Notes" section for details.`,
       { path: configPath },
     );
   }
