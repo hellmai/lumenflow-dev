@@ -2,7 +2,7 @@ id: WU-1307
 title: 'Fix lumenflow-init scaffolding: scripts + lane inference + default lanes'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-01
 code_paths:
@@ -48,3 +48,5 @@ session_id: d6f9b85c-5c0f-48fc-bd9f-41de4fcf89ed
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T22:59:35.760Z
+locked: true
+completed_at: 2026-02-01T23:13:03.548Z
