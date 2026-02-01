@@ -2,7 +2,7 @@ id: WU-1300
 title: 'lumenflow-init: scaffolding fixes and template portability'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - --docs-structure simple|arc42 flag works with auto-detect
   - Scripts injected into package.json during init
   - --code-path and --manual-test CLI aliases work
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1300
+claimed_at: 2026-02-01T17:01:20.010Z
+baseline_main_sha: 5276c3de5243f83e0e2996bdafa5171a5d027055
+session_id: 36a5e7ff-a8c2-4274-866a-45a06853822e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-01T17:01:20.017Z
