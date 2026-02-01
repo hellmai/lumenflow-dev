@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1297 — Fix init.ts CLI entry point missing runCLI call](wu/WU-1297.yaml) — Framework: CLI
 - [WU-1296 — Make release flow compatible with trunk protections (no direct push to main)](wu/WU-1296.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
