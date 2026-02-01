@@ -9,12 +9,6 @@ code_paths:
   - packages/@lumenflow/core/src/wu-paths.ts
   - packages/@lumenflow/core/src/lumenflow-config.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/cli/src/commands/wu-create.ts
-  - packages/@lumenflow/cli/src/commands/wu-claim.ts
-  - packages/@lumenflow/cli/src/commands/wu-done.ts
-  - packages/@lumenflow/core/src/wu-paths.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
-  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/core/src/context/wu-state-reader.ts
   - packages/@lumenflow/cli/src/flow-report.ts
   - packages/@lumenflow/cli/src/initiative-plan.ts
@@ -30,6 +24,7 @@ tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+    - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1301.done
