@@ -1,6 +1,6 @@
 id: WU-1301
 title: 'CLI path centralization: eliminate hardcoded docs paths'
-lane: 'Framework: CLI'
+lane: 'Framework: Core'
 type: refactor
 status: ready
 priority: P2
