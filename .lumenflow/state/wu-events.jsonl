@@ -545,3 +545,4 @@
 {"type":"claim","wuId":"WU-1300","timestamp":"2026-02-01T17:01:20.042Z","lane":"Framework: CLI","title":"lumenflow-init: scaffolding fixes and template portability"}
 {"type":"complete","wuId":"WU-1300","timestamp":"2026-02-01T17:25:23.465Z"}
 {"type":"claim","wuId":"WU-1304","lane":"Operations: Infrastructure","title":"Update lumenflow.dev docs for current tooling and workflow","timestamp":"2026-02-01T17:30:38.099Z"}
+{"type":"claim","wuId":"WU-1301","lane":"Framework: Core","title":"CLI path centralization: eliminate hardcoded docs paths","timestamp":"2026-02-01T17:31:23.362Z"}
