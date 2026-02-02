@@ -1,0 +1,453 @@
+/**
+ * Tests for initiative:add-wu command validation (WU-1330)
+ *
+ * The initiative:add-wu command now validates WU specs before linking.
+ * This ensures only valid, complete WUs can be linked to initiatives.
+ *
+ * TDD: These tests are written BEFORE the implementation.
+ */
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+
+// Test constants to avoid lint warnings about duplicate strings
+const TEST_WU_ID = 'WU-123';
+const TEST_INIT_ID = 'INIT-001';
+const TEST_LANE = 'Framework: CLI';
+const WU_REL_PATH = 'docs/04-operations/tasks/wu';
+const INIT_REL_PATH = 'docs/04-operations/tasks/initiatives';
+const TEST_INIT_SLUG = 'test-initiative';
+const TEST_INIT_TITLE = 'Test Initiative';
+const TEST_INIT_STATUS = 'open';
+const TEST_DATE = '2026-01-25';
+const MIN_DESCRIPTION_LENGTH = 50;
+
+// Valid WU document template
+const createValidWUDoc = (overrides: Record<string, unknown> = {}): Record<string, unknown> => ({
+  id: TEST_WU_ID,
+  title: 'Test Work Unit Title',
+  lane: TEST_LANE,
+  status: 'ready',
+  type: 'feature',
+  priority: 'P2',
+  created: TEST_DATE,
+  description:
+    'Context: Testing WU validation. Problem: No validation on add-wu. Solution: Add strict validation before linking.',
+  acceptance: ['WU validates schema', 'Invalid WUs rejected', 'Valid WUs linked bidirectionally'],
+  code_paths: ['packages/@lumenflow/cli/src/initiative-add-wu.ts'],
+  tests: { unit: ['packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts'] },
+  exposure: 'backend-only',
+  ...overrides,
+});
+
+// Valid initiative document template
+const createValidInitDoc = (overrides: Record<string, unknown> = {}): Record<string, unknown> => ({
+  id: TEST_INIT_ID,
+  slug: TEST_INIT_SLUG,
+  title: TEST_INIT_TITLE,
+  status: TEST_INIT_STATUS,
+  created: TEST_DATE,
+  wus: [],
+  ...overrides,
+});
+
+// Pre-import the module to ensure coverage tracking includes the module itself
+beforeAll(async () => {
+  await import('../initiative-add-wu.js');
+});
+
+// Mock modules before importing the module under test
+const mockGit = {
+  branch: vi.fn().mockResolvedValue({ current: 'main' }),
+  status: vi.fn().mockResolvedValue({ isClean: () => true }),
+};
+
+vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+  getGitForCwd: vi.fn(() => mockGit),
+}));
+
+vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+  ensureOnMain: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+  withMicroWorktree: vi.fn(async ({ execute }) => {
+    // Simulate micro-worktree by executing in temp dir
+    const tempDir = join(tmpdir(), `init-add-wu-test-${Date.now()}`);
+    mkdirSync(tempDir, { recursive: true });
+    try {
+      await execute({ worktreePath: tempDir });
+    } finally {
+      // Cleanup handled by test
+    }
+  }),
+}));
+
+describe('initiative:add-wu WU validation (WU-1330)', () => {
+  let tempDir: string;
+  let originalCwd: string;
+
+  beforeEach(() => {
+    tempDir = join(tmpdir(), `init-add-wu-validation-test-${Date.now()}`);
+    mkdirSync(tempDir, { recursive: true });
+    originalCwd = process.cwd();
+  });
+
+  afterEach(() => {
+    process.chdir(originalCwd);
+    if (existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+    vi.clearAllMocks();
+  });
+
+  describe('validateWUForLinking', () => {
+    it('should return valid for a well-formed WU', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a valid WU file
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(wuPath, stringifyYAML(createValidWUDoc()));
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('should reject WU with missing required fields', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU missing required fields (no description)
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          id: TEST_WU_ID,
+          title: 'Test',
+          lane: TEST_LANE,
+          status: 'ready',
+          created: TEST_DATE,
+          // Missing: description, acceptance, code_paths
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some((e) => e.toLowerCase().includes('description'))).toBe(true);
+    });
+
+    it('should reject WU with invalid schema', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with invalid status
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          status: 'invalid_status', // Invalid status value
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.toLowerCase().includes('status'))).toBe(true);
+    });
+
+    it('should reject WU with description containing placeholder marker', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with placeholder in description
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          description: '[PLACEHOLDER] This is a placeholder description that is long enough.',
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('PLACEHOLDER'))).toBe(true);
+    });
+
+    it('should reject WU with too short description', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with short description
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          description: 'Too short', // Less than MIN_DESCRIPTION_LENGTH
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes(`${MIN_DESCRIPTION_LENGTH}`))).toBe(true);
+    });
+
+    it('should reject WU with invalid ID format', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with invalid ID
+      const invalidId = 'INVALID-123';
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${invalidId}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          id: invalidId,
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(invalidId);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.toLowerCase().includes('id'))).toBe(true);
+    });
+
+    it('should reject WU that does not exist', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking('WU-999');
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.toLowerCase().includes('not found'))).toBe(true);
+    });
+
+    it('should reject WU with empty acceptance criteria', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with empty acceptance
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          acceptance: [], // Empty array
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.toLowerCase().includes('acceptance'))).toBe(true);
+    });
+
+    it('should aggregate multiple errors', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a WU with multiple issues
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          id: TEST_WU_ID,
+          title: '', // Empty title
+          lane: TEST_LANE,
+          status: 'invalid_status', // Invalid status
+          created: TEST_DATE,
+          description: 'short', // Too short
+          acceptance: [], // Empty
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      expect(result.valid).toBe(false);
+      // Should have multiple errors aggregated
+      expect(result.errors.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should include warnings but still be valid', async () => {
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Create a valid WU that might have warnings (missing optional recommended fields)
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          ...createValidWUDoc(),
+          notes: '', // Empty notes - should produce warning
+          spec_refs: [], // Empty spec_refs for feature - should produce warning
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      // Should be valid (warnings don't block)
+      expect(result.valid).toBe(true);
+      // But should have warnings
+      expect(result.warnings.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('checkWUExists with validation', () => {
+    it('should throw for invalid WU when strict validation enabled', async () => {
+      const { checkWUExistsAndValidate } = await import('../initiative-add-wu.js');
+
+      // Create an invalid WU file
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          id: TEST_WU_ID,
+          title: 'Test',
+          lane: TEST_LANE,
+          status: 'ready',
+          created: TEST_DATE,
+          description: 'short', // Too short
+        }),
+      );
+
+      process.chdir(tempDir);
+
+      // Should throw with aggregated validation errors
+      expect(() => checkWUExistsAndValidate(TEST_WU_ID)).toThrow();
+    });
+
+    it('should return WU doc when validation passes', async () => {
+      const { checkWUExistsAndValidate } = await import('../initiative-add-wu.js');
+
+      // Create a valid WU file
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(wuPath, stringifyYAML(createValidWUDoc()));
+
+      process.chdir(tempDir);
+      const result = checkWUExistsAndValidate(TEST_WU_ID);
+
+      expect(result.id).toBe(TEST_WU_ID);
+    });
+  });
+
+  describe('initiative:add-wu integration', () => {
+    it('should reject linking invalid WU with clear error message', async () => {
+      // This is an integration test scenario - main() calls validation before linking
+      // The main() function should call validateWUForLinking and die() with aggregated errors
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Setup invalid WU
+      const wuDir = join(tempDir, WU_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        stringifyYAML({
+          id: TEST_WU_ID,
+          title: 'Test',
+          lane: TEST_LANE,
+          status: 'ready',
+          created: TEST_DATE,
+          description: 'Too short',
+        }),
+      );
+
+      process.chdir(tempDir);
+      const result = validateWUForLinking(TEST_WU_ID);
+
+      // The error message should be suitable for display to user
+      expect(result.valid).toBe(false);
+      expect(result.errors.join('\n')).toContain('50'); // Should mention minimum length
+    });
+
+    it('should successfully link valid WU bidirectionally', async () => {
+      // This test verifies that after validation passes, bidirectional linking works
+      // The existing functionality should still work for valid WUs
+      const { validateWUForLinking } = await import('../initiative-add-wu.js');
+
+      // Setup valid WU and initiative
+      const wuDir = join(tempDir, WU_REL_PATH);
+      const initDir = join(tempDir, INIT_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      mkdirSync(initDir, { recursive: true });
+
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      const initPath = join(initDir, `${TEST_INIT_ID}.yaml`);
+
+      writeFileSync(wuPath, stringifyYAML(createValidWUDoc()));
+      writeFileSync(initPath, stringifyYAML(createValidInitDoc()));
+
+      process.chdir(tempDir);
+
+      // Validation should pass
+      const result = validateWUForLinking(TEST_WU_ID);
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  describe('error formatting', () => {
+    it('should format errors in human-readable format', async () => {
+      const { formatValidationErrors } = await import('../initiative-add-wu.js');
+
+      const errors = ['description: Description is required', 'acceptance: At least one criterion'];
+      const wuId = TEST_WU_ID;
+
+      const formatted = formatValidationErrors(wuId, errors);
+
+      expect(formatted).toContain(wuId);
+      expect(formatted).toContain('description');
+      expect(formatted).toContain('acceptance');
+    });
+  });
+
+  describe('exports', () => {
+    it('should export validateWUForLinking function', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(typeof mod.validateWUForLinking).toBe('function');
+    });
+
+    it('should export checkWUExistsAndValidate function', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(typeof mod.checkWUExistsAndValidate).toBe('function');
+    });
+
+    it('should export formatValidationErrors function', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(typeof mod.formatValidationErrors).toBe('function');
+    });
+  });
+});

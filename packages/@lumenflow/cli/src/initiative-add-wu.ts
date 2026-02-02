@@ -38,12 +38,109 @@ import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
 import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+import { validateSingleWU } from '@lumenflow/core/dist/validators/wu-tasks.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = INIT_LOG_PREFIX.ADD_WU;
 
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'initiative-add-wu';
+
+/**
+ * Validation result interface for WU linking (WU-1330)
+ */
+export interface WULinkValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+/**
+ * Validate WU spec for linking to an initiative (WU-1330)
+ *
+ * Performs validation including:
+ * - Schema validation (required fields, formats) - BLOCKING
+ * - Placeholder detection ([PLACEHOLDER] markers) - BLOCKING
+ * - Minimum description length (50 chars) - BLOCKING
+ * - Acceptance criteria present - BLOCKING
+ * - Completeness warnings (notes, spec_refs) - NON-BLOCKING
+ *
+ * Uses non-strict mode: schema errors block, completeness warnings don't.
+ *
+ * @param {string} wuId - WU ID to validate
+ * @returns {WULinkValidationResult} Validation result with errors and warnings
+ */
+export function validateWUForLinking(wuId: string): WULinkValidationResult {
+  const wuPath = WU_PATHS.WU(wuId);
+
+  // Check if file exists first
+  if (!existsSync(wuPath)) {
+    return {
+      valid: false,
+      errors: [`WU file not found: ${wuPath}`],
+      warnings: [],
+    };
+  }
+
+  // Use the core validator with non-strict mode
+  // Schema errors (required fields, format, placeholders) -> block
+  // Completeness warnings (notes, spec_refs) -> don't block
+  const result = validateSingleWU(wuPath, { strict: false });
+
+  return {
+    valid: result.valid,
+    errors: result.errors,
+    warnings: result.warnings,
+  };
+}
+
+/**
+ * Format validation errors for display to user (WU-1330)
+ *
+ * Creates a human-readable error message with all validation issues.
+ *
+ * @param {string} wuId - WU ID that failed validation
+ * @param {string[]} errors - Array of error messages
+ * @returns {string} Formatted error message
+ */
+export function formatValidationErrors(wuId: string, errors: string[]): string {
+  const errorList = errors.map((e) => `  - ${e}`).join('\n');
+  return (
+    `WU ${wuId} failed validation:\n\n${errorList}\n\n` +
+    `Fix the WU spec before linking to an initiative:\n` +
+    `  pnpm wu:edit --id ${wuId} ...\n\n` +
+    `Or validate the WU:\n` +
+    `  pnpm wu:validate --id ${wuId}`
+  );
+}
+
+/**
+ * Check if WU exists and is valid for linking (WU-1330)
+ *
+ * Combines existence check with strict validation.
+ * Throws with aggregated errors if validation fails.
+ *
+ * @param {string} wuId - WU ID to check and validate
+ * @returns {object} WU document if validation passes
+ * @throws {Error} If WU doesn't exist or validation fails
+ */
+export function checkWUExistsAndValidate(wuId: string) {
+  const wuPath = WU_PATHS.WU(wuId);
+
+  // Check existence
+  if (!existsSync(wuPath)) {
+    die(`WU not found: ${wuId}\n\nFile does not exist: ${wuPath}`);
+  }
+
+  // Validate WU
+  const validation = validateWUForLinking(wuId);
+  if (!validation.valid) {
+    die(formatValidationErrors(wuId, validation.errors));
+  }
+
+  // Return the document if validation passes
+  return readWU(wuPath, wuId);
+}
 
 /**
  * Validate Initiative ID format
@@ -66,19 +163,6 @@ function validateWuIdFormat(id) {
   if (!PATTERNS.WU_ID.test(id)) {
     die(`Invalid WU ID format: "${id}"\n\nExpected format: WU-<number> (e.g., WU-123)`);
   }
-}
-
-/**
- * Check if WU exists
- * @param {string} wuId - WU ID to check
- * @returns {object} WU document
- */
-function checkWUExists(wuId) {
-  const wuPath = WU_PATHS.WU(wuId);
-  if (!existsSync(wuPath)) {
-    die(`WU not found: ${wuId}\n\nFile does not exist: ${wuPath}`);
-  }
-  return readWU(wuPath, wuId);
 }
 
 /**
@@ -196,11 +280,13 @@ async function main() {
 
   console.log(`${LOG_PREFIX} Linking ${wuId} to ${initId}...`);
 
-  // Pre-flight validation
+  // Pre-flight validation: ID formats
   validateInitIdFormat(initId);
   validateWuIdFormat(wuId);
 
-  const wuDoc = checkWUExists(wuId);
+  // WU-1330: Validate WU spec before linking
+  // This ensures only valid, complete WUs can be linked to initiatives
+  const wuDoc = checkWUExistsAndValidate(wuId);
   const initDoc = checkInitiativeExists(initId);
 
   // Check for conflicting links
