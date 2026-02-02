@@ -303,6 +303,10 @@ export const LOG_PREFIX = {
   CONSISTENCY: '[wu-consistency]',
   PREFLIGHT: '[wu-preflight]',
   INITIATIVE_PLAN: '[initiative:plan]',
+  PLAN_CREATE: '[plan:create]',
+  PLAN_LINK: '[plan:link]',
+  PLAN_EDIT: '[plan:edit]',
+  PLAN_PROMOTE: '[plan:promote]',
 };
 
 /**
