@@ -1,0 +1,39 @@
+id: WU-1353
+title: Sync CLI templates with source docs and add release automation
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/cli/templates/core/.lumenflow/constraints.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/first-wu-mistakes.md.template
+  - scripts/templates-sync.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+tests:
+  manual:
+    - Run templates:sync and verify templates match source
+    - Verify drift detection catches intentional difference
+  unit:
+    - scripts/__tests__/templates-sync.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1353.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: CLI templates (packages/@lumenflow/cli/templates/) are out of sync with source docs. constraints.md.template is v1.0 with 6 constraints (source has v1.1 with 7 + 'never quick fix on main'). first-wu-mistakes.md.template has 10 mistakes (source has 11 + wu:prep refs). Need to sync templates and add automation to prevent future drift.
+acceptance:
+  - constraints.md.template synced with source (v1.1, 7 constraints, MANDATORY PRE-WRITE CHECK, NEVER QUICK FIX ON MAIN)
+  - first-wu-mistakes.md.template synced with source (11 mistakes including Quick Fixing on Main, wu:prep refs, spec_refs in checklist)
+  - templates:sync script added to scripts/ that copies source docs to templates with {{DATE}} placeholder
+  - release-process.md updated to include templates:sync as pre-publish step
+  - CI check added that warns if templates differ from source (drift detection)
