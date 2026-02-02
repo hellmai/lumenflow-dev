@@ -2,7 +2,7 @@ id: WU-1364
 title: Improve greenfield onboarding with initiative-first workflow
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -34,12 +34,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: LumenFlow 2.7.0 test revealed agents fail to properly bootstrap greenfield projects from product visions. Problem: (1) No guidance to create Initiatives from visions - agent created 7 orphan WUs instead of INIT-1 with phased WUs, (2) Agent told user to create WUs themselves, (3) wu:create fails with HEAD error (no initial commit), (4) wu:create fails with origin error (no remote), (5) Lane validation rejects intuitive names like 'Core: Platform', (6) CLI flag discoverability poor (agent guessed --unit-tests instead of --test-paths-unit). Solution: Update init output to show initiative-first workflow, add 'When Starting From Product Vision' section to starting-prompt.md, auto-commit after init, auto-detect local-only mode, improve default lane-inference template with Core/Feature parents, handle prettier gracefully in micro-worktrees."
+description: "Context: LumenFlow 2.7.0 test revealed agents fail to properly bootstrap greenfield
+  projects from product visions. Problem: (1) No guidance to create Initiatives from visions - agent
+  created 7 orphan WUs instead of INIT-1 with phased WUs, (2) Agent told user to create WUs
+  themselves, (3) wu:create fails with HEAD error (no initial commit), (4) wu:create fails with
+  origin error (no remote), (5) Lane validation rejects intuitive names like 'Core: Platform', (6)
+  CLI flag discoverability poor (agent guessed --unit-tests instead of --test-paths-unit). Solution:
+  Update init output to show initiative-first workflow, add 'When Starting From Product Vision'
+  section to starting-prompt.md, auto-commit after init, auto-detect local-only mode, improve
+  default lane-inference template with Core/Feature parents, handle prettier gracefully in
+  micro-worktrees."
 acceptance:
   - Init output includes initiative-first workflow guidance for product visions
-  - starting-prompt.md has 'When Starting From Product Vision' section with 4-step initiative workflow
+  - starting-prompt.md has 'When Starting From Product Vision' section with 4-step initiative
+    workflow
   - Init auto-creates initial commit when git repo has no commits
   - Init auto-sets git.requireRemote=false when no remote configured
   - Default lane-inference template includes Core and Feature as parent lanes
   - LUMENFLOW.md mentions initiatives and when to use them
   - Prettier errors in micro-worktrees are warnings not failures
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1364
+claimed_at: 2026-02-02T23:42:48.073Z
+baseline_main_sha: a33fec6863ee5d3b55d587638771c639ec6a051d
+session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T23:42:48.078Z
