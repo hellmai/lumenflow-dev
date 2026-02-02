@@ -2,7 +2,7 @@ id: WU-1328
 title: Add initiative:remove-wu command to unlink WUs from initiatives
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Command registered in package.json scripts
   - Added to quick-ref-commands.md internal docs
   - Added to apps/docs CLI reference (Starlight)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1328
+claimed_at: 2026-02-02T09:59:21.857Z
+baseline_main_sha: c2b1fecd89c709aa7d07b927763e00e6893f3f52
+session_id: f0749dc1-1161-472c-9f51-a079bdc85b84
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T09:59:21.861Z
