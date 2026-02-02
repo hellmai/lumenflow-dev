@@ -14,6 +14,7 @@ tests:
   manual: []
   unit:
     - packages/@lumenflow/cli/src/__tests__/docs-generate.test.ts
+    - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1358.done
@@ -28,10 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The docs generator (tools/generate-cli-docs.ts) only extracts options from WU_OPTIONS in core, missing options defined inline via Commander .option() in CLI files (e.g., --replace-acceptance in wu-edit.ts). This causes incomplete documentation on lumenflow.dev/reference/cli. Additionally, agent onboarding docs should guide agents to run --help before guessing command syntax.
+description: 'The docs generator (tools/generate-cli-docs.ts) only extracts options from WU_OPTIONS
+  in core, missing: (1) Commander .option() calls in CLI files, (2) createWUParser inline option
+  objects (e.g., EDIT_OPTIONS in wu-edit.ts). This causes incomplete documentation on
+  lumenflow.dev/reference/cli. Additionally, agent onboarding should guide agents to check --help.
+  Implementation must use TS/AST parsing (not runtime execution) to safely extract options without
+  side effects.'
 acceptance:
-  - Docs generator extracts all Commander options from CLI source files, not just WU_OPTIONS
+  - Docs generator extracts Commander .option() calls from CLI source files via AST parsing
+  - Docs generator extracts createWUParser inline option objects (e.g., EDIT_OPTIONS)
   - wu:edit --replace-* flags appear in generated cli.mdx documentation
   - All CLI commands show complete option lists in Starlight docs
-  - 'Agent onboarding docs include rule: always run pnpm <command> --help before using unfamiliar options'
-  - quick-ref-commands.md updated with note about --help for full options
+  - 'Agent onboarding docs include rule: always run <package_manager> <command> --help (generalized,
+    not pnpm-specific)'
+  - quick-ref-commands.md updated with note about --help for full options (package-manager agnostic)
+  - No runtime CLI execution during docs generation - pure AST/static analysis only
