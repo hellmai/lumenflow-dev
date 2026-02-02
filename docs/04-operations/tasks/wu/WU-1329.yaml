@@ -2,7 +2,7 @@ id: WU-1329
 title: Make WU validation strict by default
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -32,10 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Make wu:create, wu:edit, and wu:validate run strict validation by default. Add explicit --no-strict opt-out (logged). Strict should validate code_paths/test_paths existence and treat warnings as errors.
+description: Make wu:create, wu:edit, and wu:validate run strict validation by default. Add explicit
+  --no-strict opt-out (logged). Strict should validate code_paths/test_paths existence and treat
+  warnings as errors.
 acceptance:
   - wu:create runs strict validation by default
   - wu:edit runs strict validation by default
   - wu:validate treats warnings as errors by default
   - --no-strict bypasses strict mode and logs opt-out
   - Help text documents strict default and opt-out
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1329
+claimed_at: 2026-02-02T10:26:08.575Z
+baseline_main_sha: 95ca7495c3722e0b08834a2714e4514d63e20839
+session_id: ed86ec10-e930-470a-b394-3673368d5193
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T10:26:08.578Z
