@@ -664,11 +664,16 @@ export async function mergeWithRetry(
  * Push to origin/main with retry logic for race conditions
  *
  * WU-1179: When push fails because origin/main advanced (race condition with
- * parallel agents), this function rolls back local main to origin/main and
- * retries the full sequence: fetch -> rebase temp branch -> re-merge -> push.
+ * parallel agents), this function retries with fetch and rebase.
  *
- * This prevents the scenario where local main is left diverged from origin
- * after a push failure.
+ * WU-1348: The retry logic no longer resets the main checkout. Instead, it:
+ * 1. Fetches origin/main to get latest remote state
+ * 2. Rebases the temp branch onto origin/main (in the micro-worktree)
+ * 3. Re-merges the rebased temp branch to local main (ff-only)
+ * 4. Retries the push
+ *
+ * This preserves micro-worktree isolation - the main checkout files are never
+ * hard-reset, preventing file flash and preserving any uncommitted work.
  *
  * @param {Object} mainGit - GitAdapter instance for main checkout
  * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
@@ -698,32 +703,33 @@ export async function pushWithRetry(
       return;
     } catch (pushErr: unknown) {
       if (attempt < maxRetries) {
-        console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
+        console.log(
+          `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+        );
 
-        // Step 1: Rollback local main to origin/main
-        console.log(`${logPrefix} Rolling back local ${branch} to ${remote}/${branch}...`);
-        await mainGit.reset(`${remote}/${branch}`, { hard: true });
+        // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
+        // Instead, fetch latest remote state and rebase the temp branch
 
-        // Step 2: Fetch latest origin/main
+        // Step 1: Fetch latest origin/main
         console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
         await mainGit.fetch(remote, branch);
 
-        // Step 3: Update local main to match origin/main (ff-only)
-        console.log(`${logPrefix} Updating local ${branch}...`);
-        await mainGit.merge(`${remote}/${branch}`, { ffOnly: true });
+        // Step 2: Rebase temp branch onto updated origin/main
+        console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
+        await worktreeGit.rebase(`${remote}/${branch}`);
 
-        // Step 4: Rebase temp branch onto updated main
-        console.log(`${logPrefix} Rebasing temp branch onto ${branch}...`);
-        await worktreeGit.rebase(branch);
-
-        // Step 5: Re-merge temp branch to local main
+        // Step 3: Re-merge temp branch to local main (ff-only)
+        // This updates local main to include the rebased commits
         console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
         await mainGit.merge(tempBranchName, { ffOnly: true });
       } else {
         const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
         throw new Error(
           `Push failed after ${maxRetries} attempts. ` +
-            `Origin ${branch} may have significant traffic.\n` +
+            `Origin ${branch} may have significant traffic.\n\n` +
+            `Suggestions:\n` +
+            `  - Wait a few seconds and retry the operation\n` +
+            `  - Check if another agent is rapidly pushing changes\n` +
             `Error: ${errMsg}`,
         );
       }
@@ -737,6 +743,15 @@ export async function pushWithRetry(
  * Enhanced version of pushWithRetry that uses p-retry for exponential backoff
  * and supports configuration via PushRetryConfig. When push fails due to
  * non-fast-forward (origin moved), automatically rebases and retries.
+ *
+ * WU-1348: The retry logic no longer resets the main checkout. Instead, it:
+ * 1. Fetches origin/main to get latest remote state
+ * 2. Rebases the temp branch onto origin/main (in the micro-worktree)
+ * 3. Re-merges the rebased temp branch to local main (ff-only)
+ * 4. Retries the push
+ *
+ * This preserves micro-worktree isolation - the main checkout files are never
+ * hard-reset, preventing file flash and preserving any uncommitted work.
  *
  * @param {Object} mainGit - GitAdapter instance for main checkout
  * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
@@ -777,25 +792,23 @@ export async function pushWithRetryConfig(
         await mainGit.push(remote, branch);
         console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
       } catch (pushErr: unknown) {
-        console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
+        console.log(
+          `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+        );
 
-        // Rollback local main to origin/main
-        console.log(`${logPrefix} Rolling back local ${branch} to ${remote}/${branch}...`);
-        await mainGit.reset(`${remote}/${branch}`, { hard: true });
+        // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
+        // Instead, fetch latest remote state and rebase the temp branch
 
         // Fetch latest origin/main
         console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
         await mainGit.fetch(remote, branch);
 
-        // Update local main to match origin/main (ff-only)
-        console.log(`${logPrefix} Updating local ${branch}...`);
-        await mainGit.merge(`${remote}/${branch}`, { ffOnly: true });
+        // Rebase temp branch onto updated origin/main
+        console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
+        await worktreeGit.rebase(`${remote}/${branch}`);
 
-        // Rebase temp branch onto updated main
-        console.log(`${logPrefix} Rebasing temp branch onto ${branch}...`);
-        await worktreeGit.rebase(branch);
-
-        // Re-merge temp branch to local main
+        // Re-merge temp branch to local main (ff-only)
+        // This updates local main to include the rebased commits
         console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
         await mainGit.merge(tempBranchName, { ffOnly: true });
 
@@ -808,11 +821,8 @@ export async function pushWithRetryConfig(
       minTimeout: config.min_delay_ms,
       maxTimeout: config.max_delay_ms,
       randomize: config.jitter,
-      onFailedAttempt: (error) => {
-        // Log is handled in the try/catch above
-        if (error.retriesLeft === 0) {
-          // This will be the final failure
-        }
+      onFailedAttempt: () => {
+        // Logging is handled in the try/catch above
       },
     },
   ).catch(() => {
