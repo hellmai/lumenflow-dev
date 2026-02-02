@@ -2,7 +2,7 @@ id: WU-1354
 title: Add 'implied action paralysis' anti-pattern to agent docs
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -42,3 +42,5 @@ session_id: 5a6b6502-4a07-4f80-b97f-9dc7afe19e34
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:45:45.355Z
+locked: true
+completed_at: 2026-02-02T16:49:36.278Z
