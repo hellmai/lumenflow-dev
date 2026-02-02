@@ -2,7 +2,7 @@ id: WU-1220
 title: Investigate improper LUMENFLOW_FORCE usage in agent sessions
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Investigate why agent used LUMENFLOW_FORCE to commit directly to main instead of using proper worktree workflow. Document findings and add guardrails if needed.
+description: Investigate why agent used LUMENFLOW_FORCE to commit directly to main instead of using
+  proper worktree workflow. Document findings and add guardrails if needed.
 acceptance:
   - Root cause documented
   - Prevention recommendations provided
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1220
+claimed_at: 2026-02-02T23:57:43.910Z
+baseline_main_sha: b8f5c6763b9a1475a30036bced6453eed6dde3f4
+session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T23:57:43.914Z
