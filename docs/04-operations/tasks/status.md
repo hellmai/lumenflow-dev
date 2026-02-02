@@ -9,7 +9,6 @@ _Last updated: 2026-02-02_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml)
-- [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml)
 
 ## Completed
 
@@ -304,3 +303,4 @@ _Last updated: 2026-02-02_
 - [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — 2026-02-02
 - [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — 2026-02-02
 - [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — 2026-02-02
+- [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml) — 2026-02-02
