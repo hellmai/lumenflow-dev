@@ -16,7 +16,11 @@ artifacts:
   - .lumenflow/stamps/WU-1349.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  The npx @lumenflow/cli command doesn't work because npm packages with multiple
+  named bin entries require explicit bin names. The @lumenflow/cli package exports
+  40+ binaries (lumenflow, wu-create, wu-claim, etc.) with no default. Fixed by
+  removing the incorrect claim and emphasizing the dev dependency installation pattern.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
