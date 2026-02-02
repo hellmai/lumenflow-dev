@@ -107,14 +107,17 @@ WU (Work Unit) configuration
 
 Quality gates configuration
 
-| Field                       | Type    | Default | Description |
-| --------------------------- | ------- | ------- | ----------- |
-| `maxEslintWarnings`         | integer | `100`   |             |
-| `enableCoverage`            | boolean | `true`  |             |
-| `minCoverage`               | number  | `90`    |             |
-| `enableSafetyCriticalTests` | boolean | `true`  |             |
-| `enableInvariants`          | boolean | `true`  |             |
-| `execution`                 | object  | `-`     |             |
+| Field                       | Type     | Default           | Description |
+| --------------------------- | -------- | ----------------- | ----------- | -------- | --- |
+| `maxEslintWarnings`         | integer  | `100`             |             |
+| `enableCoverage`            | boolean  | `true`            |             |
+| `minCoverage`               | number   | `90`              |             |
+| `enableSafetyCriticalTests` | boolean  | `true`            |             |
+| `enableInvariants`          | boolean  | `true`            |             |
+| `execution`                 | object   | `-`               |             |
+| `commands`                  | object   | `[object Object]` |             |
+| `ignore_patterns`           | string[] | `-`               |             |
+| `lane_health`               | "warn"   | "error"           | "off"       | `"warn"` |     |
 
 ### memory
 
@@ -193,6 +196,64 @@ Client configuration (per-client settings)
 | `skillsDir` | string   | `-`     |             |
 | `blocks`    | object[] | `[]`    |             |
 | `skills`    | object   | `-`     |             |
+
+## Framework Agnostic Configuration
+
+LumenFlow supports different package managers and test runners. Configure these at the top level of your config file:
+
+| Field             | Type                                       | Default                                | Description                                |
+| ----------------- | ------------------------------------------ | -------------------------------------- | ------------------------------------------ |
+| `package_manager` | `"pnpm"` \| `"npm"` \| `"yarn"` \| `"bun"` | `"pnpm"`                               | Package manager for CLI operations         |
+| `test_runner`     | `"vitest"` \| `"jest"` \| `"mocha"`        | `"vitest"`                             | Test runner for incremental test detection |
+| `build_command`   | string                                     | `"pnpm --filter @lumenflow/cli build"` | Custom build command for CLI bootstrap     |
+
+### Example: npm + Jest
+
+```yaml
+version: '2.0'
+
+# WU-1356: Framework agnostic settings
+package_manager: npm
+test_runner: jest
+build_command: npm run build
+
+gates:
+  commands:
+    test_full: npm test
+    test_docs_only: npm test -- --testPathPattern=docs
+    test_incremental: npm test -- --onlyChanged
+```
+
+### Example: yarn + Nx
+
+```yaml
+version: '2.0'
+
+package_manager: yarn
+test_runner: jest
+build_command: yarn nx build @lumenflow/cli
+
+gates:
+  commands:
+    test_full: yarn nx run-many --target=test --all
+    test_docs_only: yarn nx test docs
+    test_incremental: yarn nx affected --target=test
+```
+
+### Example: bun
+
+```yaml
+version: '2.0'
+
+package_manager: bun
+test_runner: vitest
+build_command: bun run --filter @lumenflow/cli build
+
+gates:
+  commands:
+    test_full: bun test
+    test_incremental: bun test --changed
+```
 
 ## Environment Overrides
 

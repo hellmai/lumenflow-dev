@@ -70,9 +70,12 @@ import { runSystemMapValidation } from '@lumenflow/core/dist/system-map-validato
 // WU-1191: Lane health gate configuration
 // WU-1262: Coverage config from methodology policy
 // WU-1280: Test policy for tests_required (warn vs block on test failures)
+// WU-1356: Configurable package manager and test commands
 import {
   loadLaneHealthConfig,
   resolveTestPolicy,
+  resolveGatesCommands,
+  resolveTestRunner,
   type LaneHealthMode,
 } from '@lumenflow/core/dist/gates-config.js';
 // WU-1191: Lane health check
@@ -243,8 +246,24 @@ const PRETTIER_CONFIG_FILES = new Set([
   '.prettierignore',
 ]);
 
-const TEST_CONFIG_BASENAMES = new Set(['turbo.json', 'pnpm-lock.yaml', 'package.json']);
-const TEST_CONFIG_PATTERNS = [/^vitest\.config\.(ts|mts|js|mjs|cjs)$/i, /^tsconfig(\..+)?\.json$/i];
+// WU-1356: Extended to support multiple build tools and test runners
+const TEST_CONFIG_BASENAMES = new Set([
+  'turbo.json', // Turborepo
+  'nx.json', // Nx
+  'lerna.json', // Lerna
+  'pnpm-lock.yaml',
+  'package-lock.json',
+  'yarn.lock',
+  'bun.lockb',
+  'package.json',
+]);
+// WU-1356: Extended to support vitest, jest, and mocha config patterns
+const TEST_CONFIG_PATTERNS = [
+  /^vitest\.config\.(ts|mts|js|mjs|cjs)$/i,
+  /^jest\.config\.(ts|js|mjs|cjs|json)$/i,
+  /^\.mocharc\.(js|json|yaml|yml)$/i,
+  /^tsconfig(\..+)?\.json$/i,
+];
 
 function normalizePath(filePath: string): string {
   return filePath.replace(/\\/g, '/');
@@ -501,9 +520,11 @@ export function loadCurrentWUCodePaths(options: { cwd?: string } = {}): string[]
 
 /**
  * WU-1299: Run filtered tests for docs-only mode
+ * WU-1356: Updated to use configured test command
  *
  * When --docs-only is passed and code_paths contains packages, this runs tests
- * only for those specific packages using turbo's --filter flag.
+ * only for those specific packages. The filter syntax adapts to the configured
+ * build tool (turbo, nx, or plain package manager).
  *
  * @param options - Options including packages to test and agent log context
  * @returns Result object with ok status and duration
@@ -525,11 +546,23 @@ async function runDocsOnlyFilteredTests({
 
   logLine(`\n> Tests (docs-only filtered: ${packages.join(', ')})\n`);
 
-  // Build turbo filter args for each package
-  // turbo supports --filter=@scope/package or --filter=package
-  const filterArgs = packages.map((pkg) => `--filter=${pkg}`);
+  // WU-1356: Use configured test command with filter
+  const gatesCommands = resolveGatesCommands(process.cwd());
 
-  const result = run(pnpmCmd('turbo', 'run', 'test', ...filterArgs), { agentLog });
+  // If there's a configured test_docs_only command, use it
+  if (gatesCommands.test_docs_only) {
+    const result = run(gatesCommands.test_docs_only, { agentLog });
+    return { ok: result.ok, duration: Date.now() - start };
+  }
+
+  // Otherwise, use the full test command with filter args
+  // Build filter args for each package (works with turbo, nx, and pnpm/yarn workspaces)
+  const filterArgs = packages.map((pkg) => `--filter=${pkg}`);
+  const baseCmd = gatesCommands.test_full;
+
+  // Append filter args to the base command
+  const filteredCmd = `${baseCmd} ${filterArgs.join(' ')}`;
+  const result = run(filteredCmd, { agentLog });
 
   return { ok: result.ok, duration: Date.now() - start };
 }
@@ -1000,7 +1033,8 @@ async function runIncrementalLint({
 }
 
 /**
- * Run changed tests using Vitest's --changed flag from the repo root.
+ * Run changed tests using configured test runner's incremental mode.
+ * WU-1356: Updated to use configured commands from gates-config.
  * Falls back to full test suite if on main branch or if the run fails.
  *
  * @returns {{ ok: boolean, duration: number, isIncremental: boolean }}
@@ -1018,6 +1052,10 @@ async function runChangedTests({
     writeSync(agentLog.logFd, `${line}\n`);
   };
 
+  // WU-1356: Get configured commands
+  const gatesCommands = resolveGatesCommands(process.cwd());
+  const testRunner = resolveTestRunner(process.cwd());
+
   try {
     const git = getGitForCwd();
     const currentBranch = await git.getCurrentBranch();
@@ -1025,7 +1063,7 @@ async function runChangedTests({
 
     if (isMainBranch) {
       logLine('📋 On main branch - running full test suite');
-      const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
+      const result = run(gatesCommands.test_full, { agentLog });
       return { ...result, isIncremental: false };
     }
 
@@ -1069,20 +1107,35 @@ async function runChangedTests({
       }
 
       logLine('📋 Running full test suite to avoid missing coverage');
-      const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
+      const result = run(gatesCommands.test_full, { agentLog });
       return { ...result, duration: Date.now() - start, isIncremental: false };
     }
 
-    logLine('\n> Running tests (vitest --changed)\n');
-    const result = run(
-      pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch: 'origin/main' })),
-      { agentLog },
-    );
+    // WU-1356: Use configured incremental test command
+    logLine(`\n> Running tests (${testRunner} --changed)\n`);
 
-    return { ...result, duration: Date.now() - start, isIncremental: true };
+    // If test_incremental is configured, use it directly
+    if (gatesCommands.test_incremental) {
+      const result = run(gatesCommands.test_incremental, { agentLog });
+      return { ...result, duration: Date.now() - start, isIncremental: true };
+    }
+
+    // Fallback: For vitest, use the built-in changed args helper
+    if (testRunner === 'vitest') {
+      const result = run(
+        pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch: 'origin/main' })),
+        { agentLog },
+      );
+      return { ...result, duration: Date.now() - start, isIncremental: true };
+    }
+
+    // For other runners without configured incremental, fall back to full
+    logLine('⚠️  No incremental test command configured, running full suite');
+    const result = run(gatesCommands.test_full, { agentLog });
+    return { ...result, duration: Date.now() - start, isIncremental: false };
   } catch (error) {
     console.error('⚠️  Changed tests failed, falling back to full suite:', error.message);
-    const result = run(pnpmCmd('turbo', 'run', 'test'), { agentLog });
+    const result = run(gatesCommands.test_full, { agentLog });
     return { ...result, isIncremental: false };
   }
 }
@@ -1354,6 +1407,8 @@ async function executeGates(opts: {
   const testsRequired = resolvedTestPolicy.tests_required;
   // WU-1191: Lane health gate mode (warn, error, or off)
   const laneHealthMode = loadLaneHealthConfig(process.cwd());
+  // WU-1356: Resolve configured gates commands for test execution
+  const configuredGatesCommands = resolveGatesCommands(process.cwd());
 
   if (useAgentMode) {
     console.log(
@@ -1495,11 +1550,12 @@ async function executeGates(opts: {
         // WU-1920: Use changed tests by default, full suite with --full-tests
         // WU-2244: --full-coverage implies --full-tests for accurate coverage
         // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
+        // WU-1356: Use configured test command instead of hard-coded turbo
         {
           name: GATE_NAMES.TEST,
           cmd:
             isFullTests || isFullCoverage
-              ? pnpmCmd('turbo', 'run', 'test')
+              ? configuredGatesCommands.test_full
               : GATE_COMMANDS.INCREMENTAL_TEST,
           warnOnly: !testsRequired,
         },

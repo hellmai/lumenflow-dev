@@ -15,6 +15,94 @@ import { GatesExecutionConfigSchema } from './gates-config.js';
 import { MethodologyConfigSchema } from './resolve-policy.js';
 
 /**
+ * WU-1356: Package manager options
+ *
+ * Supported package managers for LumenFlow CLI operations.
+ * Used for build commands, dependency installation, and script execution.
+ *
+ * @example
+ * ```yaml
+ * package_manager: npm
+ * ```
+ */
+export const PackageManagerSchema = z.enum(['pnpm', 'npm', 'yarn', 'bun']).default('pnpm');
+
+/** WU-1356: TypeScript type for package manager */
+export type PackageManager = z.infer<typeof PackageManagerSchema>;
+
+/**
+ * WU-1356: Test runner options
+ *
+ * Supported test runners for incremental test detection and execution.
+ * Determines how changed tests are detected and ignore patterns are derived.
+ *
+ * @example
+ * ```yaml
+ * test_runner: jest
+ * ```
+ */
+export const TestRunnerSchema = z.enum(['vitest', 'jest', 'mocha']).default('vitest');
+
+/** WU-1356: TypeScript type for test runner */
+export type TestRunner = z.infer<typeof TestRunnerSchema>;
+
+/**
+ * WU-1356: Gates commands configuration
+ *
+ * Configurable test commands for gates execution.
+ * Replaces hard-coded turbo/vitest commands with user-configurable alternatives.
+ *
+ * @example
+ * ```yaml
+ * gates:
+ *   commands:
+ *     test_full: 'npm test'
+ *     test_docs_only: 'npm test -- --testPathPattern=docs'
+ *     test_incremental: 'npm test -- --onlyChanged'
+ * ```
+ */
+export const GatesCommandsConfigSchema = z.object({
+  /**
+   * Command to run full test suite.
+   * Default: 'pnpm turbo run test'
+   */
+  test_full: z.string().default('pnpm turbo run test'),
+
+  /**
+   * Command to run tests in docs-only mode.
+   * Default: empty (skip tests in docs-only mode)
+   */
+  test_docs_only: z.string().default(''),
+
+  /**
+   * Command to run incremental tests (changed files only).
+   * Default: 'pnpm vitest run --changed origin/main'
+   */
+  test_incremental: z.string().default('pnpm vitest run --changed origin/main'),
+
+  /**
+   * Command to run lint checks.
+   * Default: 'pnpm lint'
+   */
+  lint: z.string().optional(),
+
+  /**
+   * Command to run type checks.
+   * Default: 'pnpm typecheck'
+   */
+  typecheck: z.string().optional(),
+
+  /**
+   * Command to run format checks.
+   * Default: 'pnpm format:check'
+   */
+  format: z.string().optional(),
+});
+
+/** WU-1356: TypeScript type for gates commands config */
+export type GatesCommandsConfig = z.infer<typeof GatesCommandsConfigSchema>;
+
+/**
  * WU-1325: Lock policy for lane-level WIP enforcement
  *
  * Controls how lane locks behave:
@@ -372,6 +460,29 @@ export const GatesConfigSchema = z.object({
    * When set, gates runner uses these instead of hardcoded commands.
    */
   execution: GatesExecutionConfigSchema.optional(),
+
+  /**
+   * WU-1356: Configurable gate commands
+   * Replaces hard-coded turbo/vitest commands with user-configurable alternatives.
+   * Enables LumenFlow to work with npm/yarn/bun, Nx/plain scripts, Jest/Mocha, etc.
+   */
+  commands: GatesCommandsConfigSchema.default(() => GatesCommandsConfigSchema.parse({})),
+
+  /**
+   * WU-1356: Ignore patterns for test runners
+   * Patterns to ignore when detecting changed tests.
+   * Default: ['.turbo'] for vitest (derived from test_runner if not specified)
+   */
+  ignore_patterns: z.array(z.string()).optional(),
+
+  /**
+   * WU-1191: Lane health gate mode
+   * Controls how lane health check behaves during gates.
+   * - 'warn': Log warning if issues found (default)
+   * - 'error': Fail gates if issues found
+   * - 'off': Skip lane health check
+   */
+  lane_health: z.enum(['warn', 'error', 'off']).default('warn'),
 });
 
 /**
@@ -869,6 +980,46 @@ export const LumenFlowConfigSchema = z.object({
    * ```
    */
   lanes: LanesConfigSchema.optional(),
+
+  /**
+   * WU-1356: Package manager for CLI operations
+   * Determines which package manager is used for build commands,
+   * dependency installation, and script execution.
+   *
+   * @default 'pnpm'
+   *
+   * @example
+   * ```yaml
+   * package_manager: npm
+   * ```
+   */
+  package_manager: PackageManagerSchema,
+
+  /**
+   * WU-1356: Test runner for incremental test detection
+   * Determines how changed tests are detected and which ignore patterns to use.
+   *
+   * @default 'vitest'
+   *
+   * @example
+   * ```yaml
+   * test_runner: jest
+   * ```
+   */
+  test_runner: TestRunnerSchema,
+
+  /**
+   * WU-1356: Custom build command for CLI bootstrap
+   * Overrides the default build command used in cli-entry.mjs.
+   *
+   * @default 'pnpm --filter @lumenflow/cli build'
+   *
+   * @example
+   * ```yaml
+   * build_command: 'npm run build'
+   * ```
+   */
+  build_command: z.string().default('pnpm --filter @lumenflow/cli build'),
 });
 
 /**
@@ -903,6 +1054,8 @@ export type LaneDefinition = z.infer<typeof LaneDefinitionSchema>;
 // WU-1345: Lanes configuration types
 export type LanesEnforcement = z.infer<typeof LanesEnforcementSchema>;
 export type LanesConfig = z.infer<typeof LanesConfigSchema>;
+// WU-1356: Package manager, test runner, and gates commands types
+// Note: Types already exported via their schema definitions above
 // WU-1259: Re-export methodology types from resolve-policy
 export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';
 
