@@ -42,6 +42,7 @@ import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
 import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
 import { createWUParser, WU_CREATE_OPTIONS, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { validateWU } from '@lumenflow/core/dist/wu-schema.js';
 import {
   getPlanPath,
@@ -567,10 +568,11 @@ function updateBacklogInWorktree(worktreePath, id, lane, title) {
   const backlogAbsolutePath = join(worktreePath, backlogRelativePath);
 
   if (!existsSync(backlogAbsolutePath)) {
+    // WU-1311: Use config-based backlog path in error message
     die(
       `Backlog not found in micro-worktree: ${backlogAbsolutePath}\n\n` +
         `Options:\n` +
-        `  1. Ensure backlog.md exists at docs/04-operations/tasks/backlog.md\n` +
+        `  1. Ensure backlog.md exists at ${getConfig().directories.backlogPath}\n` +
         `  2. Run from repository root directory`,
     );
   }
