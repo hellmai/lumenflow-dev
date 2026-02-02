@@ -2,7 +2,7 @@ id: WU-1357
 title: Improve pre-commit block message to be educational rather than bypass-oriented
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,10 +25,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'The current pre-commit message when blocking commits to main is poorly designed: it immediately offers the bypass command, provides minimal explanation of WHY the protection exists, and assumes users already know what WUs and lanes are. This should be improved to educate users about the workflow, provide multiple paths forward, and put the bypass as a clearly-marked last resort.'
+description: 'The current pre-commit message when blocking commits to main is poorly designed: it
+  immediately offers the bypass command, provides minimal explanation of WHY the protection exists,
+  and assumes users already know what WUs and lanes are. This should be improved to educate users
+  about the workflow, provide multiple paths forward, and put the bypass as a clearly-marked last
+  resort.'
 acceptance:
   - Replace the current 'BLOCKED' message with educational content explaining WHY main is protected
   - 'Provide multiple paths: already have WU vs need to create WU'
   - Add pointers to help resources and documentation
   - Move emergency bypass to bottom with clear warning that it's logged
   - Add test coverage for the improved message
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1357
+claimed_at: 2026-02-02T17:41:02.873Z
+baseline_main_sha: 62f254cf23cce318e1d8a946b969ff8312638083
+session_id: da2f6457-bc68-4525-af2d-7ad24c444ecb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T17:41:02.880Z
