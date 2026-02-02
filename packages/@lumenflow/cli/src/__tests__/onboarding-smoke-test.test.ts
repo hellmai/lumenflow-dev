@@ -18,6 +18,11 @@ import {
   validateLaneInferenceFormat,
 } from '../onboarding-smoke-test.js';
 
+/** Constants for test files to avoid duplicate string literals */
+const PACKAGE_JSON_FILE = 'package.json';
+const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
+const TEST_PROJECT_NAME = 'test-project';
+
 describe('onboarding smoke-test gate (WU-1315)', () => {
   let tempDir: string;
 
@@ -75,7 +80,7 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
       try {
         // Create an empty package.json (missing required scripts)
         fs.writeFileSync(
-          path.join(testDir, 'package.json'),
+          path.join(testDir, PACKAGE_JSON_FILE),
           JSON.stringify({ name: 'test', scripts: {} }, null, 2),
         );
 
@@ -96,7 +101,7 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
     it('should pass when all required scripts are present', () => {
       // Create package.json with required scripts
       const packageJson = {
-        name: 'test-project',
+        name: TEST_PROJECT_NAME,
         scripts: {
           'wu:claim': 'wu-claim',
           'wu:done': 'wu-done',
@@ -104,7 +109,7 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
           gates: 'gates',
         },
       };
-      fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+      fs.writeFileSync(path.join(tempDir, PACKAGE_JSON_FILE), JSON.stringify(packageJson, null, 2));
 
       const result = validateInitScripts({ projectDir: tempDir });
 
@@ -115,12 +120,12 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
     it('should fail when required scripts are missing', () => {
       // Create package.json without LumenFlow scripts
       const packageJson = {
-        name: 'test-project',
+        name: TEST_PROJECT_NAME,
         scripts: {
           test: 'vitest',
         },
       };
-      fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+      fs.writeFileSync(path.join(tempDir, PACKAGE_JSON_FILE), JSON.stringify(packageJson, null, 2));
 
       const result = validateInitScripts({ projectDir: tempDir });
 
@@ -140,7 +145,7 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
     it('should verify scripts use standalone binary format', () => {
       // Scripts should be 'wu-claim' not 'pnpm exec lumenflow wu:claim'
       const packageJson = {
-        name: 'test-project',
+        name: TEST_PROJECT_NAME,
         scripts: {
           'wu:claim': 'pnpm exec lumenflow wu:claim', // Wrong format
           'wu:done': 'wu-done',
@@ -148,7 +153,7 @@ describe('onboarding smoke-test gate (WU-1315)', () => {
           gates: 'gates',
         },
       };
-      fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+      fs.writeFileSync(path.join(tempDir, PACKAGE_JSON_FILE), JSON.stringify(packageJson, null, 2));
 
       const result = validateInitScripts({ projectDir: tempDir });
 
@@ -177,7 +182,7 @@ Content:
     keywords:
       - 'docs'
 `;
-      fs.writeFileSync(path.join(tempDir, '.lumenflow.lane-inference.yaml'), laneInference);
+      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
@@ -193,7 +198,7 @@ lanes:
     code_paths:
       - 'packages/**'
 `;
-      fs.writeFileSync(path.join(tempDir, '.lumenflow.lane-inference.yaml'), laneInference);
+      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
@@ -216,7 +221,7 @@ framework:  # Should be 'Framework'
     code_paths:
       - 'packages/core/**'
 `;
-      fs.writeFileSync(path.join(tempDir, '.lumenflow.lane-inference.yaml'), laneInference);
+      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
@@ -232,7 +237,7 @@ Framework:
     keywords:
       - 'core'
 `;
-      fs.writeFileSync(path.join(tempDir, '.lumenflow.lane-inference.yaml'), laneInference);
+      fs.writeFileSync(path.join(tempDir, LANE_INFERENCE_FILE), laneInference);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
