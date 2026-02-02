@@ -140,6 +140,41 @@ The **Constraints Capsule** is a short list of 6 non‑negotiable rules that eve
 
 **See [`.lumenflow/constraints.md`](../../../../.lumenflow/constraints.md) for complete constraint descriptions, enforcement mechanisms, and usage guidance.**
 
+#### Strict WU Validation (WU-1329)
+
+WU validation commands run in **strict mode by default**. This ensures WU specs reference only files that actually exist.
+
+**What strict mode validates:**
+
+- `code_paths` files exist on disk
+- `test_paths` (unit/e2e) files exist on disk
+- Validation warnings are treated as blocking errors
+
+**Affected commands:**
+
+| Command             | Strict Behavior                            |
+| ------------------- | ------------------------------------------ |
+| `wu:create`         | Fails if code_paths/test_paths don't exist |
+| `wu:edit`           | Fails if edited paths don't exist          |
+| `wu:validate`       | Treats warnings as errors                  |
+| `initiative:add-wu` | Validates WU spec before linking (WU-1330) |
+
+**Bypassing strict mode:**
+
+Use `--no-strict` to bypass path existence checks (not recommended). Usage is logged for audit:
+
+```bash
+pnpm wu:create --lane "Framework: Core" --title "Plan ahead" \
+  --code-paths "src/future-file.ts" --no-strict
+```
+
+**Agent expectations:**
+
+1. Always prefer strict mode (default)
+2. Create files before referencing them in WU specs
+3. Only use `--no-strict` when planning WUs before implementation
+4. Fix path issues rather than bypassing validation
+
 #### Delivery Lanes
 
 Lanes keep focus while enabling parallelism. The default lane set is:

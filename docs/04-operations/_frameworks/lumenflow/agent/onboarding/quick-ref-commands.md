@@ -1,6 +1,6 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-02-01
+**Last updated:** 2026-02-02
 
 Complete reference for all CLI commands. Organized by category for quick discovery.
 
@@ -268,6 +268,62 @@ For code changes, you must include **all** of the following (or wu:create will f
 - `--spec-refs` (required for type: feature)
 
 Documentation WUs can omit code/test paths but should set `--type documentation` and `--exposure documentation`.
+
+---
+
+## Strict WU Validation (WU-1329)
+
+**WU validation is strict by default.** Commands validate that code paths and test paths actually exist on disk.
+
+### Affected Commands
+
+| Command             | Strict Behavior                                     |
+| ------------------- | --------------------------------------------------- |
+| `wu:create`         | Validates `--code-paths` and `--test-paths-*` exist |
+| `wu:edit`           | Validates edited paths exist                        |
+| `wu:validate`       | Treats warnings as errors by default                |
+| `initiative:add-wu` | Validates WU schema and completeness before linking |
+
+### Strict Mode (Default)
+
+When strict validation runs:
+
+- Non-existent `code_paths` cause **failure**
+- Non-existent `test_paths` cause **failure**
+- Validation warnings are treated as **errors**
+
+This prevents WU specs from referencing files that do not exist, improving spec quality and reducing broken WUs.
+
+### Bypassing Strict Validation
+
+Use `--no-strict` to bypass path existence checks (not recommended):
+
+```bash
+# Create WU with paths that don't exist yet (planning ahead)
+pnpm wu:create --lane "Framework: Core" --title "New feature" \
+  --code-paths "src/new-file.ts" \
+  --no-strict
+
+# Validate with warnings as advisory only
+pnpm wu:validate --id WU-XXX --no-strict
+```
+
+**When to use `--no-strict`:**
+
+- Planning WUs before implementation (paths don't exist yet)
+- Migrating specs from external systems
+- Emergency situations (logged for audit)
+
+**Usage is logged** for accountability.
+
+### Agent Expectations
+
+Agents should:
+
+1. **Prefer strict mode** (default) for all WU operations
+2. **Avoid `--no-strict`** unless explicitly necessary
+3. **Fix path issues** rather than bypassing validation
+4. **Create files first** before referencing them in WU specs
 
 ---
 

@@ -13,6 +13,12 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 <Aside type="tip">All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).</Aside>
 
+<Aside type="note" title="Strict Validation (WU-1329)">
+  WU validation is **strict by default**. Commands like `wu:create`, `wu:edit`, and `wu:validate`
+  validate that code paths and test paths exist on disk. Use `--no-strict` to bypass (logged for
+  audit). See individual command options for details.
+</Aside>
+
 ## Commands Overview
 
 | Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -106,7 +112,7 @@ pnpm flow:report
 
 ### initiative:add-wu
 
-Link a WU to an initiative bidirectionally
+Link a WU to an initiative bidirectionally. **Validates WU spec** before linking (WU-1330): rejects WUs with invalid schema, missing required fields, or bad paths.
 
 ```bash
 pnpm initiative:add-wu --initiative <ref> --wu <wuId>
@@ -903,6 +909,7 @@ pnpm wu:create --lane <lane> --title <title>
 | `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                        | No       |
 | `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure) | No       |
 | `--plan`                            | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)            | No       |
+| `--no-strict`                       | Bypass strict path validation (logged, not recommended)                           | No       |
 
 ### wu:delete
 
@@ -960,6 +967,7 @@ pnpm wu:edit --id <wuId>
 | `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                | No       |
 | `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                 | No       |
 | `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                            | No       |
+| `--no-strict`                       | Bypass strict path validation (logged, not recommended)                          | No       |
 
 ### wu:infer-lane
 
@@ -1117,10 +1125,12 @@ pnpm wu:unlock-lane
 
 ### wu:validate
 
-Validate WU YAML files against schema
+Validate WU YAML files against schema. **Strict by default** (WU-1329): warnings are treated as errors.
 
 ```bash
 pnpm wu:validate
+pnpm wu:validate --id WU-123          # Validate specific WU (strict)
+pnpm wu:validate --all --no-strict    # Validate all, warnings advisory
 ```
 
 **Options:**
@@ -1128,6 +1138,8 @@ pnpm wu:validate
 | Flag                    | Description                                                                      | Required |
 | ----------------------- | -------------------------------------------------------------------------------- | -------- |
 | `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--all`                 | Validate all WU YAML files                                                       | No       |
+| `--no-strict`           | Treat warnings as advisory (not errors). Bypasses strict mode.                   | No       |
 
 ---
 
