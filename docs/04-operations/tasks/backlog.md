@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
