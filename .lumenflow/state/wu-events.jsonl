@@ -632,3 +632,4 @@
 {"type":"complete","wuId":"WU-1353","timestamp":"2026-02-02T17:03:44.696Z"}
 {"type":"claim","wuId":"WU-1357","timestamp":"2026-02-02T17:41:02.911Z","lane":"Framework: CLI","title":"Improve pre-commit block message to be educational rather than bypass-oriented"}
 {"type":"complete","wuId":"WU-1357","timestamp":"2026-02-02T17:51:10.560Z"}
+{"type":"claim","wuId":"WU-1356","lane":"Framework: Core","title":"Make package manager and script names configurable in .lumenflow.config.yaml","timestamp":"2026-02-02T18:00:21.749Z"}

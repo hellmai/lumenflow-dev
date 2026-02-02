@@ -2,7 +2,7 @@ id: WU-1356
 title: Make package manager and script names configurable in .lumenflow.config.yaml
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - Update cli-entry.mjs to use configured package_manager for bootstrap
   - Add tests for npm+jest and yarn+nx configurations
   - Update Starlight docs (lumenflow.dev/reference/config) with full gates configuration examples
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1356
+claimed_at: 2026-02-02T18:00:21.732Z
+baseline_main_sha: b6448555187cbc24106572350362bbc4fc640818
+session_id: d93c694a-0e60-4ee7-98a2-4d9575c35f61
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T18:00:21.737Z
