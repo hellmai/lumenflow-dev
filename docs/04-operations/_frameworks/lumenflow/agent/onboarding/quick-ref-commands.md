@@ -8,6 +8,8 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ## Setup & Development
 
+**For this monorepo (development):**
+
 | Command                  | Description                             |
 | ------------------------ | --------------------------------------- |
 | `pnpm setup`             | Install deps and build CLI (first time) |
@@ -21,6 +23,21 @@ Complete reference for all CLI commands. Organized by category for quick discove
 | `pnpm sync:templates`    | Sync templates to project               |
 | `pnpm lumenflow:upgrade` | Upgrade LumenFlow packages              |
 | `pnpm lumenflow:doctor`  | Diagnose LumenFlow configuration        |
+
+**For external projects (end users):**
+
+```bash
+# Install CLI
+pnpm add -D @lumenflow/cli  # or: npm install -D @lumenflow/cli
+
+# Initialize LumenFlow
+pnpm exec lumenflow
+
+# With client-specific overlays
+pnpm exec lumenflow --client claude   # Claude Code
+pnpm exec lumenflow --client cursor   # Cursor IDE
+pnpm exec lumenflow --client all      # All clients
+```
 
 ---
 
