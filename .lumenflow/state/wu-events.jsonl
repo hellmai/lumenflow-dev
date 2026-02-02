@@ -638,7 +638,8 @@
 {"type":"claim","wuId":"WU-1360","timestamp":"2026-02-02T21:50:44.229Z","lane":"Content: Documentation","title":"Add rapid prototyping guide and workflow enforcement hooks"}
 {"type":"complete","wuId":"WU-1360","timestamp":"2026-02-02T22:00:11.017Z"}
 {"type":"complete","wuId":"WU-1359","timestamp":"2026-02-02T22:56:18.055Z"}
-{"type":"claim","wuId":"WU-1364","lane":"Framework: CLI","title":"Improve greenfield onboarding with initiative-first workflow","timestamp":"2026-02-02T23:42:48.103Z"}
-{"type":"claim","wuId":"WU-1338","lane":"Framework: Core","title":"Fix consumer-integration test failure for hardcoded paths in gates binary","timestamp":"2026-02-02T23:55:35.660Z"}
-{"type":"claim","wuId":"WU-1367","lane":"Framework: CLI","title":"Claude Code enforcement hooks: configurable workflow compliance via hooks","timestamp":"2026-02-02T23:57:25.685Z"}
-{"type":"claim","wuId":"WU-1220","lane":"Content: Documentation","title":"Investigate improper LUMENFLOW_FORCE usage in agent sessions","timestamp":"2026-02-02T23:57:43.928Z"}
+{"type":"claim","wuId":"WU-1364","timestamp":"2026-02-02T23:42:48.103Z","lane":"Framework: CLI","title":"Improve greenfield onboarding with initiative-first workflow"}
+{"type":"claim","wuId":"WU-1338","timestamp":"2026-02-02T23:55:35.660Z","lane":"Framework: Core","title":"Fix consumer-integration test failure for hardcoded paths in gates binary"}
+{"type":"claim","wuId":"WU-1367","timestamp":"2026-02-02T23:57:25.685Z","lane":"Framework: CLI","title":"Claude Code enforcement hooks: configurable workflow compliance via hooks"}
+{"type":"claim","wuId":"WU-1220","timestamp":"2026-02-02T23:57:43.928Z","lane":"Content: Documentation","title":"Investigate improper LUMENFLOW_FORCE usage in agent sessions"}
+{"type":"complete","wuId":"WU-1364","timestamp":"2026-02-02T23:59:29.543Z"}
