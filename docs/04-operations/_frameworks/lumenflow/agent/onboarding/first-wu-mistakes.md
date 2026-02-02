@@ -1,6 +1,6 @@
 # First WU Mistakes
 
-**Last updated:** 2026-02-01
+**Last updated:** 2026-02-02
 
 Common mistakes agents make on their first WU, and how to avoid them.
 
@@ -184,6 +184,43 @@ pnpm wu:claim --id WU-123 --lane Core
 cd worktrees/core-wu-123  # IMMEDIATELY
 vim src/feature.ts  # Now it's safe
 ```
+
+---
+
+## Mistake 11: "Quick Fixing" on Main
+
+### Wrong
+
+```bash
+# On main, see failing format check
+pnpm gates
+# Output: format:check failed
+
+# Instinct: "I should help fix this!"
+pnpm prettier --write apps/docs/src/content/docs/concepts/lanes.mdx
+# Files modified on main - BAD!
+```
+
+### Right
+
+```bash
+# On main, see failing format check
+pnpm gates
+# Output: format:check failed
+
+# Report to user or create a WU
+# "Format check is failing on main. Should I create a WU to fix it?"
+
+# If yes:
+pnpm wu:create --lane "Content: Documentation" --title "Fix format issues" ...
+pnpm wu:claim --id WU-XXX --lane "Content: Documentation"
+cd worktrees/content-documentation-wu-xxx
+pnpm prettier --write <files>  # Safe in worktree
+```
+
+**Why:** The "helpful fix" instinct is dangerous. Even small fixes (format, typos, lint) must go through a worktree. Commits are blocked by hooks, but files are still modified, requiring cleanup with `git checkout -- <files>`.
+
+**Rule:** If you're on main and want to change something—STOP. Create a WU first.
 
 ---
 
