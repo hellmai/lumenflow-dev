@@ -2,7 +2,7 @@ id: WU-1343
 title: Fix CLI naming and merge guidance in lumenflow.dev docs
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: External testing of LumenFlow 2.5.0 revealed documentation inconsistencies. Problem: (1) Docs say 'npx lumenflow-init' but package is '@lumenflow/cli' invoked as 'pnpm exec lumenflow' (2) No guidance for adding LumenFlow to existing projects (create-next-app fails in non-empty dirs). Solution: Update website docs with correct CLI invocation and add merge workflow documentation."
+description: "Context: External testing of LumenFlow 2.5.0 revealed documentation inconsistencies.
+  Problem: (1) Docs say 'npx lumenflow-init' but package is '@lumenflow/cli' invoked as 'pnpm exec
+  lumenflow' (2) No guidance for adding LumenFlow to existing projects (create-next-app fails in
+  non-empty dirs). Solution: Update website docs with correct CLI invocation and add merge workflow
+  documentation."
 acceptance:
   - 'All docs use correct invocation: pnpm add -D @lumenflow/cli && pnpm exec lumenflow'
   - Quickstart guide includes section on adding to existing projects
   - Framework overlay docs mention temp-dir workaround for create-next-app
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1343
+claimed_at: 2026-02-02T15:43:17.754Z
+baseline_main_sha: 9fd99fe4ba113879704dcdd7ced5769b7974236f
+session_id: b292076d-9e1f-4936-b4c8-6fd103885e08
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T15:43:17.761Z
