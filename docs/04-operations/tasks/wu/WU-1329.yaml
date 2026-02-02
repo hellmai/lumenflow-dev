@@ -11,7 +11,13 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-validate.ts
   - packages/@lumenflow/core/src/wu-preflight-validators.ts
 tests:
-  manual: []
+  manual:
+    - 'Run pnpm wu:create with non-existent code_paths and verify it fails with clear error message'
+    - 'Run pnpm wu:create --no-strict with non-existent code_paths and verify it passes with warning'
+    - 'Run pnpm wu:edit with non-existent code_paths and verify it fails with clear error message'
+    - 'Run pnpm wu:edit --no-strict with non-existent code_paths and verify it passes with warning'
+    - 'Run pnpm wu:validate and verify warnings are treated as errors by default'
+    - 'Run pnpm wu:validate --no-strict and verify warnings are advisory only'
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create-strict.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-edit-strict.test.ts
@@ -23,7 +29,11 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1329-plan.md
 risks: []
-notes: ''
+notes: |
+  Implementation adds strict validation to wu:create, wu:edit, and wu:validate commands.
+  Strict mode validates that code_paths and test_paths files exist on disk.
+  The --no-strict flag bypasses strict validation (logged when used).
+  This prevents WU specs from referencing non-existent files, improving spec quality.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

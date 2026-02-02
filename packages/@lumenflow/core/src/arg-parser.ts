@@ -485,6 +485,16 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description:
       'Skip automatic pnpm install in worktree after creation (faster claims when deps already built)',
   },
+
+  // WU-1329: Strict validation options
+  // NOTE: --no-strict is the opt-out flag; strict is the default behavior
+  noStrict: {
+    name: 'noStrict',
+    flags: '--no-strict',
+    description:
+      'Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used.',
+    isNegated: true,
+  },
 };
 
 /**
@@ -507,8 +517,10 @@ export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
 /**
  * Negated options that commander handles specially.
  * --no-foo creates opts.foo = false. We convert to noFoo = true.
+ *
+ * WU-1329: Export for testing purposes.
  */
-const NEGATED_OPTIONS = ['auto', 'remove', 'merge', 'autoRebase', 'push'];
+export const NEGATED_OPTIONS = ['auto', 'remove', 'merge', 'autoRebase', 'push', 'strict'];
 
 /**
  * Post-process commander opts to handle negated boolean options.

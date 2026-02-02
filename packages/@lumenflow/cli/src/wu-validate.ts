@@ -3,13 +3,15 @@
  * WU Validation Tool
  *
  * Validates WU YAML files against schema and checks for quality warnings.
- * Returns exit code 0 if valid (warnings are advisory, not blocking).
- * Returns exit code 1 only for schema errors.
+ *
+ * WU-1329: Strict mode is now the DEFAULT behavior.
+ * - Warnings are treated as errors by default
+ * - Use --no-strict to restore legacy advisory-only warnings behavior
  *
  * Usage:
- *   pnpm wu:validate --id WU-123         # Validate specific WU
- *   pnpm wu:validate --all               # Validate all WUs
- *   pnpm wu:validate --all --strict      # Fail on warnings too
+ *   pnpm wu:validate --id WU-123         # Validate with strict mode (default)
+ *   pnpm wu:validate --all               # Validate all WUs with strict mode
+ *   pnpm wu:validate --all --no-strict   # Warnings are advisory (legacy behavior)
  *
  * @see {@link packages/@lumenflow/cli/src/lib/wu-schema.ts} - Schema definitions
  */
@@ -30,12 +32,14 @@ const LOG_PREFIX = '[wu:validate]';
 /**
  * Validate a single WU file
  *
+ * WU-1329: strict defaults to true (warnings treated as errors)
+ *
  * @param {string} wuPath - Path to WU YAML file
  * @param {object} options - Validation options
- * @param {boolean} options.strict - Treat warnings as errors
+ * @param {boolean} options.strict - Treat warnings as errors (default: true)
  * @returns {{valid: boolean, warnings: string[], errors: string[]}}
  */
-function validateSingleWU(wuPath, { strict = false } = {}) {
+function validateSingleWU(wuPath, { strict = true } = {}) {
   const errors = [];
   const warnings = [];
 
@@ -85,11 +89,13 @@ function validateSingleWU(wuPath, { strict = false } = {}) {
 /**
  * Validate all WU files
  *
+ * WU-1329: strict defaults to true (warnings treated as errors)
+ *
  * @param {object} options - Validation options
- * @param {boolean} options.strict - Treat warnings as errors
+ * @param {boolean} options.strict - Treat warnings as errors (default: true)
  * @returns {{totalValid: number, totalInvalid: number, totalWarnings: number, results: object[]}}
  */
-function validateAllWUs({ strict = false } = {}) {
+function validateAllWUs({ strict = true } = {}) {
   const wuDir = WU_PATHS.WU_DIR();
 
   if (!existsSync(wuDir)) {
@@ -127,7 +133,7 @@ function validateAllWUs({ strict = false } = {}) {
 async function main() {
   const args = createWUParser({
     name: 'wu-validate',
-    description: 'Validate WU YAML files against schema',
+    description: 'Validate WU YAML files against schema (strict mode by default, WU-1329)',
     options: [
       WU_OPTIONS.id,
       {
@@ -136,18 +142,24 @@ async function main() {
         type: 'boolean',
         description: 'Validate all WUs',
       },
-      {
-        name: 'strict',
-        flags: '-s, --strict',
-        type: 'boolean',
-        description: 'Treat warnings as errors',
-      },
+      // WU-1329: Change from --strict to --no-strict (strict is now default)
+      WU_OPTIONS.noStrict,
     ],
     required: [],
     allowPositionalId: true,
   });
 
-  const { id, all, strict } = args;
+  const { id, all, noStrict } = args;
+
+  // WU-1329: Strict mode is the default, --no-strict opts out
+  const strict = !noStrict;
+
+  // WU-1329: Log when strict validation is bypassed
+  if (noStrict) {
+    console.warn(
+      `${LOG_PREFIX} WARNING: strict validation bypassed (--no-strict). Warnings will be advisory only.`,
+    );
+  }
 
   if (!id && !all) {
     die('Must specify --id WU-XXX or --all');

@@ -68,6 +68,11 @@ import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validator
 import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
 import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
+// WU-1329: Import path existence validators for strict mode
+import {
+  validateCodePathsExistence,
+  validateTestPathsExistence,
+} from '@lumenflow/core/dist/wu-preflight-validators.js';
 // WU-1025: Import placeholder validator for inline content validation
 import {
   validateNoPlaceholders,
@@ -260,6 +265,8 @@ interface CreateWUOptions {
   userJourney?: string;
   uiPairingWus?: string[];
   specRefs?: string[];
+  // WU-1329: Strict validation flag
+  strict?: boolean;
 }
 
 function mergeSpecRefs(specRefs?: string[], extraRef?: string): string[] {
@@ -375,6 +382,15 @@ function buildWUContent({
   };
 }
 
+/**
+ * Validate WU spec for creation
+ *
+ * WU-1329: Strict mode (default) validates that code_paths and test_paths exist on disk.
+ * Use opts.strict = false to bypass path existence checks.
+ *
+ * @param params - Validation parameters
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
 export function validateCreateSpec({
   id,
   lane,
@@ -392,6 +408,15 @@ export function validateCreateSpec({
 }) {
   const errors = [];
   const effectiveType = type || DEFAULT_TYPE;
+  // WU-1329: Strict mode is the default
+  const strict = opts.strict !== false;
+
+  // WU-1329: Log when strict validation is bypassed
+  if (!strict) {
+    console.warn(
+      `${LOG_PREFIX} WARNING: strict validation bypassed (--no-strict). Path existence checks skipped.`,
+    );
+  }
 
   if (!opts.description) {
     errors.push('--description is required');
@@ -465,6 +490,33 @@ export function validateCreateSpec({
   const completeness = validateSpecCompleteness(wuContent, id);
   if (!completeness.valid) {
     return { valid: false, errors: completeness.errors };
+  }
+
+  // WU-1329: Strict mode validates path existence
+  if (strict) {
+    const rootDir = process.cwd();
+
+    // Validate code_paths exist
+    if (opts.codePaths && opts.codePaths.length > 0) {
+      const codePathsResult = validateCodePathsExistence(opts.codePaths, rootDir);
+      if (!codePathsResult.valid) {
+        errors.push(...codePathsResult.errors);
+      }
+    }
+
+    // Validate test_paths exist (unit, e2e - not manual)
+    const testsObj = {
+      unit: opts.testPathsUnit || [],
+      e2e: opts.testPathsE2e || [],
+    };
+    const testPathsResult = validateTestPathsExistence(testsObj, rootDir);
+    if (!testPathsResult.valid) {
+      errors.push(...testPathsResult.errors);
+    }
+
+    if (errors.length > 0) {
+      return { valid: false, errors };
+    }
   }
 
   return { valid: true, errors: [] };
@@ -694,6 +746,8 @@ async function main() {
       WU_OPTIONS.uiPairingWus,
       // WU-1062: External plan options for wu:create
       WU_CREATE_OPTIONS.plan,
+      // WU-1329: Strict validation is default, --no-strict bypasses
+      WU_OPTIONS.noStrict,
     ],
     required: ['lane', 'title'], // WU-1246: --id is now optional (auto-generated if not provided)
     allowPositionalId: false,
@@ -779,6 +833,8 @@ async function main() {
       blocks: args.blocks,
       labels: args.labels,
       assignedTo,
+      // WU-1329: Strict validation is default, --no-strict bypasses
+      strict: !args.noStrict,
     },
   });
 

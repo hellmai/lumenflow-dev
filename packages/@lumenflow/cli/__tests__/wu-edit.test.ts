@@ -157,9 +157,11 @@ describe('wu:edit --exposure on done WUs (WU-1039)', () => {
 
 /**
  * WU-1073: Test --risks replace/append behavior
+ * WU-1225: Updated to append by default (consistent with other array fields)
  */
 describe('wu:edit --risks behavior (WU-1073)', () => {
-  it('should replace existing risks by default', () => {
+  // WU-1225: risks now append by default (changed from WU-1073's replace-by-default)
+  it('should append existing risks by default (WU-1225)', () => {
     const wu = {
       id: 'WU-1073',
       risks: ['Original risk'],
@@ -167,7 +169,7 @@ describe('wu:edit --risks behavior (WU-1073)', () => {
     const opts = { risks: ['New risk'] };
     const result = applyEdits(wu, opts);
 
-    expect(result.risks).toEqual(['New risk']);
+    expect(result.risks).toEqual(['Original risk', 'New risk']);
   });
 
   it('should append risks when --append is set', () => {
@@ -181,7 +183,8 @@ describe('wu:edit --risks behavior (WU-1073)', () => {
     expect(result.risks).toEqual(['Original risk', 'Additional risk']);
   });
 
-  it('should split comma-separated risks and replace by default', () => {
+  // WU-1225: risks now append by default (changed from WU-1073's replace-by-default)
+  it('should split comma-separated risks and append by default (WU-1225)', () => {
     const wu = {
       id: 'WU-1073',
       risks: ['Original risk'],
@@ -189,18 +192,18 @@ describe('wu:edit --risks behavior (WU-1073)', () => {
     const opts = { risks: ['New risk 1, New risk 2'] };
     const result = applyEdits(wu, opts);
 
-    expect(result.risks).toEqual(['New risk 1', 'New risk 2']);
+    expect(result.risks).toEqual(['Original risk', 'New risk 1', 'New risk 2']);
   });
 
-  it('should append multiple risks when repeated', () => {
+  it('should replace risks when --replace-risks is set (WU-1225)', () => {
     const wu = {
       id: 'WU-1073',
       risks: ['Original risk'],
     };
-    const opts = { risks: ['New risk 1', 'New risk 2'], append: true };
+    const opts = { risks: ['New risk 1', 'New risk 2'], replaceRisks: true };
     const result = applyEdits(wu, opts);
 
-    expect(result.risks).toEqual(['Original risk', 'New risk 1', 'New risk 2']);
+    expect(result.risks).toEqual(['New risk 1', 'New risk 2']);
   });
 });
 

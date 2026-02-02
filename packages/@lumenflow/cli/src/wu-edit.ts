@@ -80,6 +80,11 @@ import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/ini
 import { normalizeWUSchema } from '@lumenflow/core/dist/wu-schema-normalization.js';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
 import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
+// WU-1329: Import path existence validators for strict validation
+import {
+  validateCodePathsExistence,
+  validateTestPathsExistence,
+} from '@lumenflow/core/dist/wu-preflight-validators.js';
 /* eslint-disable security/detect-object-injection */
 
 const PREFIX = LOG_PREFIX.EDIT;
@@ -424,6 +429,8 @@ function parseArgs() {
       EDIT_OPTIONS.replaceDependencies,
       // WU-1039: Add exposure for done WU metadata updates
       WU_OPTIONS.exposure,
+      // WU-1329: Strict validation is default, --no-strict bypasses
+      WU_OPTIONS.noStrict,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1069,6 +1076,46 @@ async function main() {
   // WU-1750: CRITICAL - Use transformed data for all subsequent operations
   // This ensures embedded newlines are normalized before YAML output
   const normalizedWU = validationResult.data;
+
+  // WU-1329: Strict validation of path existence (default behavior)
+  // --no-strict bypasses these checks
+  const strict = !opts.noStrict;
+  if (!strict) {
+    console.warn(
+      `${PREFIX} WARNING: strict validation bypassed (--no-strict). Path existence checks skipped.`,
+    );
+  }
+
+  if (strict) {
+    const rootDir = process.cwd();
+    const strictErrors: string[] = [];
+
+    // Validate code_paths exist
+    if (normalizedWU.code_paths && normalizedWU.code_paths.length > 0) {
+      const codePathsResult = validateCodePathsExistence(normalizedWU.code_paths, rootDir);
+      if (!codePathsResult.valid) {
+        strictErrors.push(...codePathsResult.errors);
+      }
+    }
+
+    // Validate test_paths exist (unit, e2e - not manual)
+    if (normalizedWU.tests) {
+      const testPathsResult = validateTestPathsExistence(normalizedWU.tests, rootDir);
+      if (!testPathsResult.valid) {
+        strictErrors.push(...testPathsResult.errors);
+      }
+    }
+
+    if (strictErrors.length > 0) {
+      const errorList = strictErrors.map((e) => `  • ${e}`).join('\n');
+      die(
+        `${PREFIX} ❌ Strict validation failed:\n\n${errorList}\n\n` +
+          `Options:\n` +
+          `  1. Fix the paths in the WU spec to match actual files\n` +
+          `  2. Use --no-strict to bypass path existence checks (not recommended)`,
+      );
+    }
+  }
 
   // Validate lane format if present (WU-923: block parent-only lanes with taxonomy)
   if (normalizedWU.lane) {

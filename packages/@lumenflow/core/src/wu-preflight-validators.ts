@@ -25,7 +25,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { WU_PATHS } from './wu-paths.js';
 import { readWURaw } from './wu-yaml.js';
-import { PATTERNS, TEST_TYPES, LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { TEST_TYPES, LOG_PREFIX, EMOJI } from './wu-constants.js';
 // WU-1810: Import canonical schema for full validation
 import { BaseWUSchema } from './wu-schema.js';
 // WU-1810: Import fixer to detect fixable issues
@@ -129,11 +129,13 @@ function validateSchema(doc, id) {
 /**
  * Validate code_paths files exist
  *
+ * WU-1329: Exported for use by wu:create strict validation.
+ *
  * @param {string[]} codePaths - List of code paths from WU YAML
  * @param {string} rootDir - Root directory to resolve paths against
  * @returns {{ valid: boolean, errors: string[], missing: string[] }}
  */
-function validateCodePathsExistence(codePaths, rootDir) {
+export function validateCodePathsExistence(codePaths, rootDir) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return { valid: true, errors: [], missing: [] };
   }
@@ -165,11 +167,13 @@ function validateCodePathsExistence(codePaths, rootDir) {
  *
  * Manual tests are descriptions, not file paths, so they're skipped.
  *
+ * WU-1329: Exported for use by wu:create strict validation.
+ *
  * @param {object} tests - tests object from WU YAML
  * @param {string} rootDir - Root directory to resolve paths against
  * @returns {{ valid: boolean, errors: string[], missing: string[] }}
  */
-function validateTestPathsExistence(tests, rootDir) {
+export function validateTestPathsExistence(tests, rootDir) {
   if (!tests || typeof tests !== 'object') {
     return { valid: true, errors: [], missing: [] };
   }
