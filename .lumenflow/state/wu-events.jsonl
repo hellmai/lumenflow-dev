@@ -611,4 +611,5 @@
 {"type":"complete","wuId":"WU-1342","timestamp":"2026-02-02T15:51:09.052Z"}
 {"type":"claim","wuId":"WU-1344","timestamp":"2026-02-02T15:54:12.492Z","lane":"Framework: CLI","title":"wu:prep prints copy-paste skip-gates command on pre-existing failure"}
 {"type":"complete","wuId":"WU-1343","timestamp":"2026-02-02T15:55:21.399Z"}
-{"type":"claim","wuId":"WU-1345","lane":"Framework: Core","title":"Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)","timestamp":"2026-02-02T16:03:39.041Z"}
+{"type":"claim","wuId":"WU-1345","timestamp":"2026-02-02T16:03:39.041Z","lane":"Framework: Core","title":"Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)"}
+{"type":"complete","wuId":"WU-1344","timestamp":"2026-02-02T16:07:21.813Z"}

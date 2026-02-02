@@ -2,7 +2,7 @@ id: WU-1344
 title: wu:prep prints copy-paste skip-gates command on pre-existing failure
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -43,3 +43,5 @@ session_id: 8a1b52bf-bd93-4157-853c-e488c113fdd6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T15:54:12.458Z
+locked: true
+completed_at: 2026-02-02T16:07:19.257Z

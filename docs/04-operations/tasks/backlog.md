@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -52,6 +51,7 @@ sections:
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
 - [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml) — Framework: CLI
 - [WU-1347 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1347.yaml) — Framework: Core
+- [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -59,7 +59,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml) — Framework: CLI
 - [WU-1345 — Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)](wu/WU-1345.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -363,3 +362,4 @@ sections:
 - [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml)
 - [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml)
 - [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml)
+- [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml)
