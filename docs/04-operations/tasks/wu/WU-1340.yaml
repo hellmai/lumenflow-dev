@@ -6,19 +6,32 @@ status: in_progress
 priority: P0
 created: 2026-02-02
 code_paths:
-  - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
+  - packages/@lumenflow/initiatives/src/lane-config-resolver.ts
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/orchestrate-init-status.ts
+  - packages/@lumenflow/initiatives/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Run `pnpm orchestrate:initiative --initiative INIT-013 --dry-run` and confirm waves honor lane
+      lock_policy/wip_limit (no WIP=1 fallback).
+    - Run `pnpm orchestrate:init-status --initiative INIT-013` and confirm Lane Availability lists
+      lock_policy and wip_limit values.
+    - Run `pnpm wu:spawn --id <WU>` on a lane with WIP>1 and confirm warning shows lock_policy and
+      WIP values.
   unit:
-    - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/__tests__/orchestrate-init-status.test.ts
+    - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn-lane-warning.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1340.done
 dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-013.yaml
 risks: []
-notes: ''
+notes: 'Context: INIT-013 added lock_policy-aware helpers, but orchestration wiring still used legacy scheduling.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
