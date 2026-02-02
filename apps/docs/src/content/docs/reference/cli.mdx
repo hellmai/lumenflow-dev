@@ -13,19 +13,13 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 <Aside type="tip">All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).</Aside>
 
-<Aside type="note" title="Strict Validation (WU-1329)">
-  WU validation is **strict by default**. Commands like `wu:create`, `wu:edit`, and `wu:validate`
-  validate that code paths and test paths exist on disk. Use `--no-strict` to bypass (logged for
-  audit). See individual command options for details.
-</Aside>
-
 ## Commands Overview
 
 | Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -112,7 +106,7 @@ pnpm flow:report
 
 ### initiative:add-wu
 
-Link a WU to an initiative bidirectionally. **Validates WU spec** before linking (WU-1330): rejects WUs with invalid schema, missing required fields, or bad paths.
+Link a WU to an initiative bidirectionally
 
 ```bash
 pnpm initiative:add-wu --initiative <ref> --wu <wuId>
@@ -197,21 +191,6 @@ pnpm initiative:plan --initiative <ref>
 | Flag                       | Description                          | Required |
 | -------------------------- | ------------------------------------ | -------- |
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
-
-### initiative:remove-wu
-
-Unlink a WU from an initiative bidirectionally
-
-```bash
-pnpm initiative:remove-wu --initiative <ref> --wu <wuId>
-```
-
-**Options:**
-
-| Flag                       | Description                           | Required |
-| -------------------------- | ------------------------------------- | -------- |
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug)  | Yes      |
-| `--wu &lt;wuId&gt;`        | Work Unit ID to unlink (e.g., WU-123) | Yes      |
 
 ### initiative:status
 
@@ -541,11 +520,17 @@ pnpm guard:worktree-commit
 
 ### init:plan
 
-Run init:plan
+Link a plan file to an initiative
 
 ```bash
-pnpm init:plan
+pnpm init:plan --initiative <ref>
 ```
+
+**Options:**
+
+| Flag                       | Description                          | Required |
+| -------------------------- | ------------------------------------ | -------- |
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
 ### lane:health
 
@@ -884,32 +869,32 @@ pnpm wu:create --lane <lane> --title <title>
 
 **Options:**
 
-| Flag                                | Description                                                                       | Required |
-| ----------------------------------- | --------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.  | No       |
-| `-l, --lane &lt;lane&gt;`           | Lane name (e.g., "Operations: Tooling")                                           | Yes      |
-| `-t, --title &lt;title&gt;`         | Work Unit title                                                                   | Yes      |
-| `-p, --priority &lt;priority&gt;`   | Priority level (P0, P1, P2, P3)                                                   | No       |
-| `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                   | No       |
-| `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                              | No       |
-| `--phase &lt;number&gt;`            | Phase number within initiative                                                    | No       |
-| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable)                                            | No       |
-| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable)                                                | No       |
-| `--labels &lt;labels&gt;`           | Labels (repeatable)                                                               | No       |
-| `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                          | No       |
-| `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                    | No       |
-| `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                             | No       |
-| `--code-paths &lt;paths&gt;`        | Code paths (repeatable)                                                           | No       |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                             | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                 | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                  | No       |
-| `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)         | No       |
-| `--spec-refs &lt;paths&gt;`         | Spec/plan references (repeatable or comma-separated, required for type: feature)  | No       |
-| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                             | No       |
-| `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                        | No       |
-| `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure) | No       |
-| `--plan`                            | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)            | No       |
-| `--no-strict`                       | Bypass strict path validation (logged, not recommended)                           | No       |
+| Flag                                | Description                                                                                                           | Required |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                      | No       |
+| `-l, --lane &lt;lane&gt;`           | Lane name (e.g., "Operations: Tooling")                                                                               | Yes      |
+| `-t, --title &lt;title&gt;`         | Work Unit title                                                                                                       | Yes      |
+| `-p, --priority &lt;priority&gt;`   | Priority level (P0, P1, P2, P3)                                                                                       | No       |
+| `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                                                       | No       |
+| `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                                                                  | No       |
+| `--phase &lt;number&gt;`            | Phase number within initiative                                                                                        | No       |
+| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable)                                                                                | No       |
+| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable)                                                                                    | No       |
+| `--labels &lt;labels&gt;`           | Labels (repeatable)                                                                                                   | No       |
+| `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                                                              | No       |
+| `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                                                        | No       |
+| `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                                                                 | No       |
+| `--code-paths &lt;paths&gt;`        | Code paths (repeatable)                                                                                               | No       |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                                                                 | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                                                     | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                                                      | No       |
+| `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)                                             | No       |
+| `--spec-refs &lt;paths&gt;`         | Spec/plan references (repeatable or comma-separated, required for type: feature)                                      | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                                                                 | No       |
+| `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                                                            | No       |
+| `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure)                                     | No       |
+| `--no-strict`                       | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
+| `--plan`                            | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)                                                | No       |
 
 ### wu:delete
 
@@ -960,14 +945,14 @@ pnpm wu:edit --id <wuId>
 
 **Options:**
 
-| Flag                                | Description                                                                      | Required |
-| ----------------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                            | No       |
-| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                | No       |
-| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                 | No       |
-| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                            | No       |
-| `--no-strict`                       | Bypass strict path validation (logged, not recommended)                          | No       |
+| Flag                                | Description                                                                                                           | Required |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                      | Yes      |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                                                                 | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                                                     | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                                                      | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                                                                 | No       |
+| `--no-strict`                       | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
 
 ### wu:infer-lane
 
@@ -1125,21 +1110,18 @@ pnpm wu:unlock-lane
 
 ### wu:validate
 
-Validate WU YAML files against schema. **Strict by default** (WU-1329): warnings are treated as errors.
+Validate WU YAML files against schema (strict mode by default, WU-1329)
 
 ```bash
 pnpm wu:validate
-pnpm wu:validate --id WU-123          # Validate specific WU (strict)
-pnpm wu:validate --all --no-strict    # Validate all, warnings advisory
 ```
 
 **Options:**
 
-| Flag                    | Description                                                                      | Required |
-| ----------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
-| `--all`                 | Validate all WU YAML files                                                       | No       |
-| `--no-strict`           | Treat warnings as advisory (not errors). Bypasses strict mode.                   | No       |
+| Flag                    | Description                                                                                                           | Required |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                      | No       |
+| `--no-strict`           | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
 
 ---
 

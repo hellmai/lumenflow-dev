@@ -74,7 +74,7 @@
     "initiative-status": "./dist/initiative-status.js",
     "initiative-add-wu": "./dist/initiative-add-wu.js",
     "initiative-plan": "./dist/initiative-plan.js",
-    "init-plan": "./dist/init-plan.js",
+    "init-plan": "./dist/initiative-plan.js",
     "plan-create": "./dist/plan-create.js",
     "plan-link": "./dist/plan-link.js",
     "plan-edit": "./dist/plan-edit.js",

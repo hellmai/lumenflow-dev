@@ -2140,6 +2140,9 @@ export async function scaffoldProject(
     targetDir,
   );
 
+  // WU-1342: Create .gitignore with required exclusions
+  await scaffoldGitignore(targetDir, options, result);
+
   // Optional: full docs scaffolding
   if (options.full) {
     await scaffoldFullDocs(targetDir, options, result, tokenDefaults);
@@ -2162,17 +2165,116 @@ export async function scaffoldProject(
 }
 
 /**
+ * WU-1342: .gitignore template with required exclusions
+ * Includes node_modules, .lumenflow/state, and worktrees
+ */
+const GITIGNORE_TEMPLATE = `# Dependencies
+node_modules/
+
+# LumenFlow state (local only, not shared)
+.lumenflow/state/
+
+# Worktrees (isolated parallel work directories)
+worktrees/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+`;
+
+/** Gitignore file name constant to avoid duplicate string lint error */
+const GITIGNORE_FILE_NAME = '.gitignore';
+
+/**
+ * WU-1342: Scaffold .gitignore file with LumenFlow exclusions
+ * Supports merge mode to add exclusions to existing .gitignore
+ */
+async function scaffoldGitignore(
+  targetDir: string,
+  options: ScaffoldOptions,
+  result: ScaffoldResult,
+): Promise<void> {
+  const gitignorePath = path.join(targetDir, GITIGNORE_FILE_NAME);
+  const fileMode = getFileMode(options);
+
+  if (fileMode === 'merge' && fs.existsSync(gitignorePath)) {
+    // Merge mode: append LumenFlow exclusions if not already present
+    const existingContent = fs.readFileSync(gitignorePath, 'utf-8');
+    const linesToAdd: string[] = [];
+
+    // Check each required exclusion
+    const requiredExclusions = [
+      { pattern: 'node_modules', line: 'node_modules/' },
+      { pattern: '.lumenflow/state', line: '.lumenflow/state/' },
+      { pattern: 'worktrees', line: 'worktrees/' },
+    ];
+
+    for (const { pattern, line } of requiredExclusions) {
+      if (!existingContent.includes(pattern)) {
+        linesToAdd.push(line);
+      }
+    }
+
+    if (linesToAdd.length > 0) {
+      const separator = existingContent.endsWith('\n') ? '' : '\n';
+      const lumenflowBlock = `${separator}
+# LumenFlow (auto-added)
+${linesToAdd.join('\n')}
+`;
+      fs.writeFileSync(gitignorePath, existingContent + lumenflowBlock);
+      result.merged?.push(GITIGNORE_FILE_NAME);
+    } else {
+      result.skipped.push(GITIGNORE_FILE_NAME);
+    }
+    return;
+  }
+
+  // Skip or force mode
+  await createFile(gitignorePath, GITIGNORE_TEMPLATE, fileMode, result, targetDir);
+}
+
+/**
  * WU-1307: LumenFlow scripts to inject into package.json
+ * WU-1342: Expanded to include all 17 essential commands
  * Uses standalone binaries (wu-claim, wu-done, gates) that work in consumer projects
  * after installing @lumenflow/cli.
  */
 const LUMENFLOW_SCRIPTS: Record<string, string> = {
+  // Core WU lifecycle
   'wu:claim': 'wu-claim',
   'wu:done': 'wu-done',
   'wu:create': 'wu-create',
   'wu:status': 'wu-status',
   'wu:block': 'wu-block',
   'wu:unblock': 'wu-unblock',
+  // WU-1342: Additional critical commands
+  'wu:prep': 'wu-prep',
+  'wu:recover': 'wu-recover',
+  'wu:spawn': 'wu-spawn',
+  'wu:validate': 'wu-validate',
+  'wu:infer-lane': 'wu-infer-lane',
+  // Memory commands
+  'mem:init': 'mem-init',
+  'mem:checkpoint': 'mem-checkpoint',
+  'mem:inbox': 'mem-inbox',
+  // Lane commands
+  'lane:suggest': 'lane-suggest',
+  // Gates
   gates: 'gates',
   'gates:docs': 'gates --docs-only',
 };
