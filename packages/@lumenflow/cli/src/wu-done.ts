@@ -108,7 +108,8 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/dist/wu-done-ui.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { WU_PATHS, createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { writeWU, appendNote, parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import {
   PLACEHOLDER_SENTINEL,
@@ -1261,11 +1262,15 @@ async function runGatesInWorktree(
 async function validateStagedFiles(id, isDocsOnly = false) {
   const staged = await listStaged();
 
+  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  const config = getConfig();
+  const wuPath = `${config.directories.wuDir}/${id}.yaml`;
+
   // WU-1740: Include wu-events.jsonl to persist state store events
   const whitelist = [
-    `docs/04-operations/tasks/wu/${id}.yaml`,
-    'docs/04-operations/tasks/status.md',
-    'docs/04-operations/tasks/backlog.md',
+    wuPath,
+    config.directories.statusPath,
+    config.directories.backlogPath,
     WU_EVENTS_PATH,
   ];
 
@@ -1292,9 +1297,10 @@ async function validateStagedFiles(id, isDocsOnly = false) {
   });
 
   if (unexpected.length > 0) {
-    const otherWuYamlOnly = unexpected.every((f) =>
-      /^docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml$/.test(f),
-    );
+    // WU-1311: Use config-based pattern for WU YAML detection
+    const wuDirPattern = config.directories.wuDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const wuYamlRegex = new RegExp(`^${wuDirPattern}/WU-\\d+\\.yaml$`);
+    const otherWuYamlOnly = unexpected.every((f) => wuYamlRegex.test(f));
     if (otherWuYamlOnly) {
       console.warn(
         `${LOG_PREFIX.DONE} Warning: other WU YAMLs are staged; proceeding and committing only current WU files.`,
@@ -2036,9 +2042,11 @@ async function executePreFlightChecks({
   if (!specResult.valid) {
     console.error(`\n❌ Spec completeness validation failed for ${id}:\n`);
     specResult.errors.forEach((err) => console.error(`  - ${err}`));
+    // WU-1311: Use config-based path in error message
+    const specConfig = getConfig();
     console.error(
       `\nFix these issues before running wu:done:\n` +
-        `  1. Update docs/04-operations/tasks/wu/${id}.yaml\n` +
+        `  1. Update ${specConfig.directories.wuDir}/${id}.yaml\n` +
         `  2. Fill description with Context/Problem/Solution\n` +
         `  3. Replace ${PLACEHOLDER_SENTINEL} text with specific criteria\n` +
         `  4. List all modified files in code_paths\n` +

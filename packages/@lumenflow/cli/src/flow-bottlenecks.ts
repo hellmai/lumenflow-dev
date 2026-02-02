@@ -20,12 +20,9 @@ import {
   type BottleneckAnalysis,
   type DependencyGraph,
 } from '@lumenflow/metrics';
-import {
-  buildDependencyGraph,
-  buildDependencyGraphAsync,
-  renderMermaid,
-} from '@lumenflow/core/dist/dependency-graph.js';
+import { buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dist/dependency-graph.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[flow:bottlenecks]';
@@ -193,8 +190,9 @@ async function main() {
 
   if (coreGraph.size === 0) {
     console.log(`${LOG_PREFIX} No WUs found in dependency graph.`);
+    // WU-1311: Use config-based WU directory path
     console.log(
-      `${LOG_PREFIX} Ensure WU YAML files exist in docs/04-operations/tasks/wu/ with blocked_by/blocks fields.`,
+      `${LOG_PREFIX} Ensure WU YAML files exist in ${getConfig().directories.wuDir}/ with blocked_by/blocks fields.`,
     );
     return;
   }

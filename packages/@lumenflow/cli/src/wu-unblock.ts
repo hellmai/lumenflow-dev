@@ -23,6 +23,7 @@ import { die } from '@lumenflow/core/dist/error-handler.js';
 import { todayISO } from '@lumenflow/core/dist/date-utils.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS, defaultWorktreeFrom } from '@lumenflow/core/dist/wu-paths.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { readWU, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
 import {
   STATUS_SECTIONS,
@@ -112,7 +113,8 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
       `  1. Wait for ${laneCheck.occupiedBy} to complete or block\n` +
       `  2. Move ${id} to a different lane\n` +
       `  3. Use --force to override (P0 emergencies only)\n\n` +
-      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
+      // WU-1311: Use config-based status path
+      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" ${getConfig().directories.statusPath}`,
   );
 }
 

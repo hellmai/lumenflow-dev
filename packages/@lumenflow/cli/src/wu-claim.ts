@@ -124,11 +124,15 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
     .split(STRING_LITERALS.NEWLINE)
     .filter(Boolean)
     .filter((l) => l.startsWith('A ') || l.startsWith('M ') || l.startsWith('R '));
+  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  const config = getConfig();
+  const wuDirPattern = config.directories.wuDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const wuYamlRegex = new RegExp(`${wuDirPattern}/WU-\\d+\\.yaml`);
   const hasClaimFiles = staged.some(
     (l) =>
-      l.includes('docs/04-operations/tasks/status.md') ||
-      l.includes('docs/04-operations/tasks/backlog.md') ||
-      /docs\/04-operations\/tasks\/wu\/WU-\d+\.yaml/.test(l),
+      l.includes(config.directories.statusPath) ||
+      l.includes(config.directories.backlogPath) ||
+      wuYamlRegex.test(l),
   );
   if (!hasClaimFiles) {
     console.error(status);
@@ -520,12 +524,12 @@ async function appendClaimEventOnly(stateDir, id, title, lane) {
  * @returns {string[]} List of files to commit
  */
 export function getWorktreeCommitFiles(wuId) {
+  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  const config = getConfig();
   return [
-    `docs/04-operations/tasks/wu/${wuId}.yaml`,
+    `${config.directories.wuDir}/${wuId}.yaml`,
     LUMENFLOW_PATHS.WU_EVENTS, // WU-1740: Event store is source of truth
-    // WU-1746: Explicitly NOT including:
-    // - docs/04-operations/tasks/backlog.md
-    // - docs/04-operations/tasks/status.md
+    // WU-1746: Explicitly NOT including backlog.md and status.md
     // These generated files cause merge conflicts when main advances
   ];
 }
@@ -879,7 +883,8 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
       `  2. Choose a different lane\n` +
       `  3. Increase wip_limit in .lumenflow.config.yaml\n` +
       `  4. Use --force to override (P0 emergencies only)\n\n` +
-      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
+      // WU-1311: Use config-based status path
+      `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" ${getConfig().directories.statusPath}`,
   );
 }
 
@@ -917,6 +922,7 @@ function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
       })
       .join(STRING_LITERALS.NEWLINE);
 
+    // WU-1311: Use config-based status path in error message
     die(
       `Code path overlap detected with in-progress WUs:\n\n${conflictList}\n\n` +
         `Merge conflicts are guaranteed if both WUs proceed.\n\n` +
@@ -924,7 +930,7 @@ function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
         `  1. Wait for conflicting WU(s) to complete\n` +
         `  2. Coordinate with agent working on conflicting WU\n` +
         `  3. Use --force-overlap --reason "..." (emits telemetry for audit)\n\n` +
-        `To check WU status: grep "${STATUS_SECTIONS.IN_PROGRESS}" docs/04-operations/tasks/status.md`,
+        `To check WU status: grep "${STATUS_SECTIONS.IN_PROGRESS}" ${getConfig().directories.statusPath}`,
     );
   }
 
