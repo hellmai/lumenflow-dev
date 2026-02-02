@@ -53,6 +53,30 @@ cd /path/to/main && pnpm wu:done --id WU-XXXX
 
 ---
 
+## When to Use Initiatives
+
+Use **Initiatives** for multi-phase work spanning multiple WUs:
+
+- **Product visions**: "Build a task management app"
+- **Larger features**: Work requiring multiple WUs across lanes
+- **Complex projects**: Anything that needs phased delivery
+
+```bash
+# Create an initiative for multi-phase work
+pnpm initiative:create --id INIT-001 --title "Feature Name" \
+  --description "..." --phase "Phase 1: MVP" --phase "Phase 2: Polish"
+
+# Add WUs to the initiative
+pnpm initiative:add-wu --initiative INIT-001 --wu WU-XXX --phase 1
+
+# Track progress
+pnpm initiative:status --id INIT-001
+```
+
+**Skip initiatives** for: single-file bug fixes, small docs updates, isolated refactoring.
+
+---
+
 ## Setup Notes (Common First-Run Failures)
 
 ### Lane inference (sub-lanes)
