@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1357 — Improve pre-commit block message to be educational rather than bypass-oriented](wu/WU-1357.yaml) — Framework: CLI
 - [WU-1356 — Make package manager and script names configurable in .lumenflow.config.yaml](wu/WU-1356.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
