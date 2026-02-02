@@ -25,7 +25,6 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1313.done
 dependencies: []
-initiative: INIT-013
 spec_refs:
   - docs/04-operations/plans/WU-1313-plan.md
 risks: []
