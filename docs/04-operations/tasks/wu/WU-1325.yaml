@@ -2,7 +2,7 @@ id: WU-1325
 title: Update CLI commands to enforce lock_policy
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - wu:unblock re-acquires lane lock when policy=active
   - wu:spawn considers policy in lane availability check
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1325
+claimed_at: 2026-02-02T12:22:19.446Z
+baseline_main_sha: 16108753c356f542370bbf5a56ead62f8a7a034b
+session_id: e430b05b-52e8-4c96-8cf0-aba6aaf1eb38
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:22:19.450Z
