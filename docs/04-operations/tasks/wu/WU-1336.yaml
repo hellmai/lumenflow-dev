@@ -2,7 +2,7 @@ id: WU-1336
 title: Centralize retry exhaustion handling for micro-worktree operations
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -13,7 +13,8 @@ tests:
   manual:
     - Verify initiative:add-wu displays actionable retry message when push fails
     - Verify initiative:remove-wu displays actionable retry message when push fails
-    - Confirm core exports (isRetryExhaustionError, formatRetryExhaustionError, RetryExhaustionError) are importable
+    - Confirm core exports (isRetryExhaustionError, formatRetryExhaustionError,
+      RetryExhaustionError) are importable
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
@@ -57,3 +58,5 @@ session_id: f4c5dcba-97b3-4f1e-ac7c-6d39c8b90584
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T11:38:26.191Z
+locked: true
+completed_at: 2026-02-02T11:53:32.732Z
