@@ -2,7 +2,7 @@ id: WU-1313
 title: Introduce first-class plan tooling (create/link/edit/promote)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -57,3 +57,5 @@ session_id: e1dcca3e-5d68-4e1f-bc18-cc36e50dc757
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T00:15:25.492Z
+locked: true
+completed_at: 2026-02-02T00:43:12.882Z
