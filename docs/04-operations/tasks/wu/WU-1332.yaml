@@ -1,0 +1,37 @@
+id: WU-1332
+title: Retry/rebase micro-worktree push on non-fast-forward
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/core/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/git-operations.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+    - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1332.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1332-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add automatic rebase+retry behavior to micro-worktree push-only operations when origin/main has moved. Apply to all micro-worktree commands (wu:create, initiative:add/remove, etc.) to reduce non-fast-forward failures.
+acceptance:
+  - Non-fast-forward push triggers rebase onto origin/main and retries
+  - Retry count is bounded and logged
+  - Failure after max retries surfaces clear guidance
+  - No behavior change when push succeeds first try
