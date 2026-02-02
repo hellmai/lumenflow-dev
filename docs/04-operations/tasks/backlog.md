@@ -45,7 +45,6 @@ sections:
 - [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 - [WU-1320 — Fix no-console lint errors in CLI commands](wu/WU-1320.yaml) — Framework: CLI
 - [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
-- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
 - [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — Framework: Core
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 - [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
@@ -59,6 +58,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
+- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
