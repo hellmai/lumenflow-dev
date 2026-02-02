@@ -588,3 +588,4 @@
 {"type":"complete","wuId":"WU-1333","timestamp":"2026-02-02T11:31:38.443Z"}
 {"type":"claim","wuId":"WU-1336","timestamp":"2026-02-02T11:38:26.208Z","lane":"Framework: Core","title":"Centralize retry exhaustion handling for micro-worktree operations"}
 {"type":"complete","wuId":"WU-1336","timestamp":"2026-02-02T11:53:35.347Z"}
+{"type":"claim","wuId":"WU-1337","lane":"Framework: Core","title":"Add retry/rebase for push-only micro-worktree operations","timestamp":"2026-02-02T12:15:06.628Z"}
