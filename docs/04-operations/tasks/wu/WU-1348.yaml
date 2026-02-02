@@ -8,7 +8,8 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:create to trigger micro-worktree push and verify no file flash occurs in main checkout
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
