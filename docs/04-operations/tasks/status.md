@@ -11,6 +11,7 @@ _Last updated: 2026-02-02_
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml)
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml)
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml)
+- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml)
 
 ## Completed
 
