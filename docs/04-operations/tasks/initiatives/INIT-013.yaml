@@ -6,7 +6,7 @@ description: 'Introduce configurable lane lock policy and trunk-based active WIP
   (active|all|none), define active vs blocked behavior in trunk flow (blocked WUs release lane locks
   when policy=active), and ensure orchestrator/spawn respect the configured policy. Pilot on
   low-conflict lanes (Content: Documentation) with clear rollback guidance.'
-status: draft
+status: in_progress
 priority: P1
 owner: workflow
 created: 2026-02-01
