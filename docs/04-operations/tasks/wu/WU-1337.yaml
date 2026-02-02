@@ -2,7 +2,7 @@ id: WU-1337
 title: Add retry/rebase for push-only micro-worktree operations
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -44,3 +44,5 @@ session_id: e430b05b-52e8-4c96-8cf0-aba6aaf1eb38
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:15:06.599Z
+locked: true
+completed_at: 2026-02-02T12:23:12.423Z
