@@ -34,7 +34,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -354,3 +353,4 @@ sections:
 - [WU-1356 — Make package manager and script names configurable in .lumenflow.config.yaml](wu/WU-1356.yaml)
 - [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml)
 - [WU-1359 — Enhance init output and add wu:proto command for new user experience](wu/WU-1359.yaml)
+- [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml)
