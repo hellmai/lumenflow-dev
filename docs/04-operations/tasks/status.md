@@ -5,13 +5,13 @@ _Last updated: 2026-02-02_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml)
 
 ## Completed
 
-- [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — 2026-02-02
-- [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — 2026-02-02
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml) — 2026-01-18
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml) — 2026-01-18
@@ -285,3 +285,5 @@ _Last updated: 2026-02-02_
 - [WU-1310 — Centralize path defaults in core config (simple/arc42)](wu/WU-1310.yaml) — 2026-02-01
 - [WU-1312 — Update wu-sizing-guide with doc-only exception and tuning guidance](wu/WU-1312.yaml) — 2026-02-01
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml) — 2026-02-02
+- [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml) — 2026-02-02
+- [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml) — 2026-02-02

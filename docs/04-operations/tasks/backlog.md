@@ -40,7 +40,6 @@ sections:
 - [WU-1276 — Agent spawn and coordination tests](wu/WU-1276.yaml) — Framework: Agent
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
-- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
 - [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
 - [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
 - [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
@@ -53,6 +52,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
