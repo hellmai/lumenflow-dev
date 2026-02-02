@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
