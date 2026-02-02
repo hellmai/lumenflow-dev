@@ -8,7 +8,6 @@ _Last updated: 2026-02-02_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1337 — Add retry/rebase for push-only micro-worktree operations](wu/WU-1337.yaml)
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml)
 
 ## Completed
@@ -297,3 +296,4 @@ _Last updated: 2026-02-02_
 - [WU-1332 — Retry/rebase micro-worktree push on non-fast-forward](wu/WU-1332.yaml) — 2026-02-02
 - [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml) — 2026-02-02
 - [WU-1336 — Centralize retry exhaustion handling for micro-worktree operations](wu/WU-1336.yaml) — 2026-02-02
+- [WU-1337 — Add retry/rebase for push-only micro-worktree operations](wu/WU-1337.yaml) — 2026-02-02
