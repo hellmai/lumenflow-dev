@@ -39,7 +39,7 @@ import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from '@lumenflow/core/dist/wu
 // WU-1603: Check lane lock status before spawning
 // WU-1325: Import lock policy getter for lane availability check
 import { checkLaneLock } from '@lumenflow/core/dist/lane-lock.js';
-import { getLockPolicyForLane } from '@lumenflow/core/dist/lane-checker.js';
+import { getLockPolicyForLane, getWipLimitForLane } from '@lumenflow/core/dist/lane-checker.js';
 import { minimatch } from 'minimatch';
 // WU-2252: Import invariants loader for spawn output injection
 import { loadInvariants, INVARIANT_TYPES } from '@lumenflow/core/dist/invariants-runner.js';
@@ -50,6 +50,7 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/dist/wu-spawn-helpers.js';
+// eslint-disable-next-line sonarjs/deprecation -- legacy factory used by CLI spawns
 import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
 import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
@@ -1413,7 +1414,10 @@ export function generateLaneOccupationWarning(
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
-  warning += `   This violates WIP=1 (Work In Progress limit of 1 per lane).\n\n`;
+  const lockPolicy = getLockPolicyForLane(lockMetadata.lane);
+  const wipLimit = getWipLimitForLane(lockMetadata.lane);
+
+  warning += `   This violates WIP=${wipLimit} (lock_policy=${lockPolicy}).\n\n`;
 
   if (isStale) {
     warning += `   ⏰ This lock is STALE (>24 hours old) - the WU may be abandoned.\n`;
@@ -1619,6 +1623,7 @@ async function main(): Promise<void> {
   }
 
   // Create strategy
+  // eslint-disable-next-line sonarjs/deprecation -- legacy factory used by CLI spawns
   const strategy = SpawnStrategyFactory.create(clientName);
   const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
 

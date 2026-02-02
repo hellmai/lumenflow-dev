@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Orchestrate Initiative Status CLI
  *
@@ -11,11 +12,24 @@
 
 import { Command } from 'commander';
 import { existsSync, readdirSync } from 'node:fs';
-import { loadInitiativeWUs, calculateProgress, formatProgress } from '@lumenflow/initiatives';
+import {
+  loadInitiativeWUs,
+  calculateProgress,
+  formatProgress,
+  getLaneAvailability,
+  resolveLaneConfigsFromConfig,
+  type LaneAvailabilityResult,
+  type LaneConfig,
+} from '@lumenflow/initiatives';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import chalk from 'chalk';
 
 const LOG_PREFIX = '[orchestrate:init-status]';
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 function getCompletedWUs(wuIds: string[]): Set<string> {
   const completed = new Set<string>();
@@ -32,6 +46,26 @@ function getCompletedWUs(wuIds: string[]): Set<string> {
   }
 
   return completed;
+}
+
+function formatLaneAvailability(
+  availability: Record<string, LaneAvailabilityResult>,
+  laneConfigs: Record<string, LaneConfig>,
+): string {
+  const lanes = Object.keys(availability).sort((a, b) => a.localeCompare(b));
+  if (lanes.length === 0) {
+    return '  (no lanes found)';
+  }
+
+  return lanes
+    .map((lane) => {
+      const entry = availability[lane];
+      const wipLimit = laneConfigs[lane]?.wip_limit ?? 1;
+      const statusLabel = entry.available ? chalk.green('available') : chalk.red('occupied');
+      const occupiedBy = entry.occupiedBy ?? 'none';
+      return `  ${lane}: ${statusLabel} (wip_limit=${wipLimit}, lock_policy=${entry.policy}, in_progress=${entry.inProgressCount}, blocked=${entry.blockedCount}, occupied_by=${occupiedBy})`;
+    })
+    .join('\n');
 }
 
 const program = new Command()
@@ -57,17 +91,26 @@ const program = new Command()
 
       console.log(chalk.bold('WUs:'));
       for (const wu of wus) {
-        const status = completed.has(wu.id)
-          ? chalk.green('✓ done')
-          : wu.doc.status === 'in_progress'
-            ? chalk.yellow('⟳ in_progress')
-            : wu.doc.status === 'blocked'
-              ? chalk.red('⛔ blocked')
-              : chalk.gray('○ ready');
+        let status = chalk.gray('○ ready');
+        if (completed.has(wu.id)) {
+          status = chalk.green('✓ done');
+        } else if (wu.doc.status === 'in_progress') {
+          status = chalk.yellow('⟳ in_progress');
+        } else if (wu.doc.status === 'blocked') {
+          status = chalk.red('⛔ blocked');
+        }
+
         console.log(`  ${wu.id}: ${wu.doc.title} [${status}]`);
       }
-    } catch (err: any) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${err.message}`));
+
+      const laneConfigs = resolveLaneConfigsFromConfig(getConfig());
+      const availability = getLaneAvailability(wus, { laneConfigs });
+
+      console.log('');
+      console.log(chalk.bold('Lane Availability:'));
+      console.log(formatLaneAvailability(availability, laneConfigs));
+    } catch (err) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(err)}`));
       process.exit(EXIT_CODES.ERROR);
     }
   });

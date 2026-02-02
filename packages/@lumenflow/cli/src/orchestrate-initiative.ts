@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Orchestrate Initiative CLI
  *
@@ -15,7 +16,8 @@ import chalk from 'chalk';
 import {
   loadInitiativeWUs,
   loadMultipleInitiatives,
-  buildExecutionPlanAsync,
+  buildExecutionPlanWithLockPolicy,
+  resolveLaneConfigsFromConfig,
   formatExecutionPlan,
   formatExecutionPlanWithEmbeddedSpawns,
   calculateProgress,
@@ -25,8 +27,15 @@ import {
   validateCheckpointFlags,
   resolveCheckpointModeAsync,
   LOG_PREFIX,
+  type InitiativeDoc,
+  type WUEntry,
 } from '@lumenflow/initiatives';
 import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 const program = new Command()
   .name('orchestrate-initiative')
@@ -48,8 +57,8 @@ const program = new Command()
 
     try {
       validateCheckpointFlags({ checkpointPerWave, dryRun, noCheckpoint });
-    } catch (error: any) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${error.message}`));
+    } catch (error) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(error)}`));
       process.exit(EXIT_CODES.ERROR);
     }
 
@@ -65,8 +74,8 @@ const program = new Command()
     try {
       console.log(chalk.cyan(`${LOG_PREFIX} Loading initiative(s): ${initIds.join(', ')}`));
 
-      let wus: any[];
-      let initiative: any;
+      let wus: WUEntry[];
+      let initiative: InitiativeDoc;
 
       if (initIds.length === 1) {
         const result = loadInitiativeWUs(initIds[0]);
@@ -114,7 +123,8 @@ const program = new Command()
       }
 
       console.log(chalk.cyan(`${LOG_PREFIX} Building execution plan...`));
-      const plan = await buildExecutionPlanAsync(wus);
+      const laneConfigs = resolveLaneConfigsFromConfig(getConfig());
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
 
       if (plan.waves.length === 0) {
         console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
@@ -140,8 +150,8 @@ const program = new Command()
 
       console.log(chalk.green(`${LOG_PREFIX} Execution plan output complete.`));
       console.log(chalk.cyan('Copy the spawn XML above to execute agents.'));
-    } catch (error: any) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${error.message}`));
+    } catch (error) {
+      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(error)}`));
       process.exit(EXIT_CODES.ERROR);
     }
   });
