@@ -2,7 +2,7 @@ id: WU-1313
 title: Introduce first-class plan tooling (create/link/edit/promote)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - wu:create missing spec_refs message suggests plan:create
   - All plan commands use micro-worktree isolation
   - Unit tests cover plan create/link/edit/promote and initiative linking
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1313
+claimed_at: 2026-02-02T00:15:25.487Z
+baseline_main_sha: 2f9b97909c44f49c5cf30d3298c539bbd454ad2e
+session_id: e1dcca3e-5d68-4e1f-bc18-cc36e50dc757
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T00:15:25.492Z
