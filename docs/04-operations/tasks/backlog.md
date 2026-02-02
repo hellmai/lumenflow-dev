@@ -20,14 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1328 — Add initiative:remove-wu command to unlink WUs from initiatives](wu/WU-1328.yaml) — Framework: CLI
-- [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — Content: Documentation
-- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
-- [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — Framework: CLI
-- [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — Framework: Core
-- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
-- [WU-1322 — Add lock_policy field to lane configuration schema](wu/WU-1322.yaml) — Framework: Core
-- [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -53,6 +45,12 @@ sections:
 - [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 - [WU-1320 — Fix no-console lint errors in CLI commands](wu/WU-1320.yaml) — Framework: CLI
 - [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
+- [WU-1322 — Add lock_policy field to lane configuration schema](wu/WU-1322.yaml) — Framework: Core
+- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
+- [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — Framework: Core
+- [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — Framework: CLI
+- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
+- [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -60,6 +58,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1328 — Add initiative:remove-wu command to unlink WUs from initiatives](wu/WU-1328.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
