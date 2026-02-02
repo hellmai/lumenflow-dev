@@ -26,7 +26,6 @@ success_metrics:
   - Pilot lane shows reduced idle time without increased conflict rate
 labels: []
 wus:
-  - WU-1315
   - WU-1322
   - WU-1323
   - WU-1324
