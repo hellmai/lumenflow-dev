@@ -28,10 +28,10 @@ Welcome to the LumenFlow repository. This document helps you find the right star
 ```bash
 # 1. Install and initialize
 pnpm add -D @lumenflow/cli
-npx lumenflow-init
+pnpm exec lumenflow
 
 # 2. Verify it worked
-npx lumenflow-doctor
+pnpm exec lumenflow-doctor
 ```
 
 If `lumenflow doctor` shows "LumenFlow safety: ACTIVE", you're ready to go.
@@ -74,7 +74,7 @@ For detailed workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 | --------------------------------- | ---------------------------------- |
 | `lumenflow doctor` shows failures | Run `pnpm install && pnpm prepare` |
 | "Husky hooks not installed"       | Run `pnpm prepare`                 |
-| "AGENTS.md missing"               | Run `lumenflow init`               |
+| "AGENTS.md missing"               | Run `pnpm exec lumenflow`          |
 | WU stuck in wrong state           | Run `pnpm wu:recover --id WU-XXX`  |
 
 ### Get Help
@@ -123,7 +123,7 @@ Enhanced integrations available for popular tools:
 
 ```bash
 # Add enhanced integration for your AI (optional)
-lumenflow init --client claude   # or cursor, windsurf, cline, all
+pnpm exec lumenflow --client claude   # or cursor, windsurf, cline, all
 ```
 
 ---

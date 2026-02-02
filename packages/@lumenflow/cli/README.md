@@ -16,19 +16,22 @@ npm install @lumenflow/cli
 ## Quick Start
 
 ```bash
+# Install the CLI
+pnpm add -D @lumenflow/cli   # or: npm install -D @lumenflow/cli
+
 # Initialize LumenFlow (works with any AI)
-npx lumenflow-init
+pnpm exec lumenflow
 
 # Or specify your AI tool for enhanced integration
-npx lumenflow-init --client claude    # Claude Code
-npx lumenflow-init --client cursor    # Cursor
-npx lumenflow-init --client windsurf  # Windsurf
-npx lumenflow-init --client cline     # Cline
-npx lumenflow-init --client aider     # Aider
-npx lumenflow-init --client all       # All integrations
+pnpm exec lumenflow --client claude    # Claude Code
+pnpm exec lumenflow --client cursor    # Cursor
+pnpm exec lumenflow --client windsurf  # Windsurf
+pnpm exec lumenflow --client cline     # Cline
+pnpm exec lumenflow --client aider     # Aider
+pnpm exec lumenflow --client all       # All integrations
 ```
 
-The default `lumenflow-init` creates `AGENTS.md` and `LUMENFLOW.md` which work with **any AI coding assistant**. The `--client` flag adds vendor-specific configuration files for deeper integration.
+The default `lumenflow` command creates `AGENTS.md` and `LUMENFLOW.md` which work with **any AI coding assistant**. The `--client` flag adds vendor-specific configuration files for deeper integration.
 
 See [AI Integrations](https://lumenflow.dev/guides/ai-integrations) for details on each tool.
 

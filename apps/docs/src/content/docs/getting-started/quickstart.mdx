@@ -10,10 +10,19 @@ This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
 ## Try It Now (30 Seconds)
 
 ```bash
-npx lumenflow-init
+# Install the CLI
+pnpm add -D @lumenflow/cli
+
+# Initialize LumenFlow
+pnpm exec lumenflow
 ```
 
 That's it. Your project now speaks LumenFlow. Any AI coding assistant can read `AGENTS.md` and understand your workflow.
+
+<Aside type="tip" title="Alternative: npx">
+  If you prefer not to install first, you can run `npx @lumenflow/cli` directly. However, installing
+  as a dev dependency is recommended for consistent versioning across your team.
+</Aside>
 
 Want the full experience with worktree isolation, automated gates, and 40+ CLI commands? Keep reading.
 
@@ -44,7 +53,7 @@ The CLI provides the complete LumenFlow experience with automated workflows, wor
 2. **Initialize LumenFlow**
 
    ```bash
-   npx lumenflow-init
+   pnpm exec lumenflow
    ```
 
    This creates:
@@ -130,21 +139,21 @@ npx wu-done --id WU-XXX
 
 ### Key CLI Commands
 
-| Command          | Description                       |
-| ---------------- | --------------------------------- |
-| `lumenflow-init` | Initialize LumenFlow in a project |
-| `wu-create`      | Create a new Work Unit            |
-| `wu-claim`       | Claim a WU and create worktree    |
-| `wu-prep`        | Run gates in worktree             |
-| `wu-done`        | Complete WU, merge, and cleanup   |
-| `gates`          | Run quality gates (standalone)    |
-| `flow-report`    | Generate DORA metrics report      |
+| Command       | Description                       |
+| ------------- | --------------------------------- |
+| `lumenflow`   | Initialize LumenFlow in a project |
+| `wu-create`   | Create a new Work Unit            |
+| `wu-claim`    | Claim a WU and create worktree    |
+| `wu-prep`     | Run gates in worktree             |
+| `wu-done`     | Complete WU, merge, and cleanup   |
+| `gates`       | Run quality gates (standalone)    |
+| `flow-report` | Generate DORA metrics report      |
 
 Run any command with `--help` to see all options:
 
 ```bash
-npx wu-create --help
-npx gates --help
+pnpm exec wu-create --help
+pnpm exec gates --help
 ```
 
   </TabItem>

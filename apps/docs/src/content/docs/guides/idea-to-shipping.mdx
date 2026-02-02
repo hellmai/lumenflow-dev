@@ -77,12 +77,40 @@ Manual transaction categorization is tedious. Bank categories are inconsistent.
 
 Create your project and initialize LumenFlow.
 
+<Aside type="caution" title="create-next-app in Non-Empty Directories">
+  `pnpm create next-app .` fails in non-empty directories. If you already have files (e.g., a
+  README.md or .git), use the temp-dir workaround below.
+</Aside>
+
+### Option A: New Project (Empty Directory)
+
 ```bash
 mkdir spendsense && cd spendsense
 git init
 pnpm create next-app . --typescript --tailwind --app
 pnpm add -D @lumenflow/cli
-npx lumenflow-init --client claude --full
+pnpm exec lumenflow --client claude --full
+```
+
+### Option B: Existing Project or Non-Empty Directory
+
+When `create-next-app` fails because your directory is not empty, use a temp directory:
+
+```bash
+# 1. Create Next.js app in a temp directory
+pnpm create next-app /tmp/nextjs-scaffold --typescript --tailwind --app
+
+# 2. Merge the scaffolding into your existing project
+cp -rn /tmp/nextjs-scaffold/* .
+cp -rn /tmp/nextjs-scaffold/.* . 2>/dev/null || true
+
+# 3. Install dependencies and initialize LumenFlow
+pnpm install
+pnpm add -D @lumenflow/cli
+pnpm exec lumenflow --client claude --full
+
+# 4. Clean up
+rm -rf /tmp/nextjs-scaffold
 ```
 
 <Aside type="tip">
@@ -90,7 +118,7 @@ npx lumenflow-init --client claude --full
   multiple. The `--full` flag adds documentation scaffolding.
 </Aside>
 
-### What lumenflow-init Creates
+### What lumenflow Creates
 
 | File                        | You Use It For         | Agents Use It For                            |
 | --------------------------- | ---------------------- | -------------------------------------------- |

@@ -1,6 +1,6 @@
 # LumenFlow Agent Starting Prompt
 
-**Last updated:** 2026-01-27
+**Last updated:** 2026-02-02
 
 This is the complete onboarding document for AI agents working with LumenFlow. Read this entire document before starting any work.
 
@@ -338,20 +338,23 @@ Some clients have additional overlay files for client-specific features:
 When initializing LumenFlow, use the `--client` flag to generate client-specific files:
 
 ```bash
+# Install the CLI first
+pnpm add -D @lumenflow/cli
+
 # Universal setup (AGENTS.md only)
-lumenflow init
+pnpm exec lumenflow
 
 # Claude-specific setup
-lumenflow init --client claude
+pnpm exec lumenflow --client claude
 
 # Cursor-specific setup
-lumenflow init --client cursor
+pnpm exec lumenflow --client cursor
 
 # Windsurf-specific setup
-lumenflow init --client windsurf
+pnpm exec lumenflow --client windsurf
 
 # All clients
-lumenflow init --client all
+pnpm exec lumenflow --client all
 ```
 
 ### Adding LumenFlow to Existing Projects
@@ -359,14 +362,38 @@ lumenflow init --client all
 Use `--merge` mode to safely add LumenFlow configuration to existing files without overwriting your content:
 
 ```bash
+# Install the CLI first
+pnpm add -D @lumenflow/cli
+
 # Merge into existing AGENTS.md (preserves your content)
-lumenflow init --merge
+pnpm exec lumenflow --merge
 
 # Merge with client overlay
-lumenflow init --merge --client claude
+pnpm exec lumenflow --merge --client claude
 ```
 
 The merge mode uses bounded markers (`<!-- LUMENFLOW:START -->` and `<!-- LUMENFLOW:END -->`) to safely insert and update the LumenFlow block while preserving everything else.
+
+### Framework Scaffolding in Non-Empty Directories
+
+Many framework scaffolding tools (e.g., `create-next-app`, `create-react-app`) fail in non-empty directories. Use a temp directory workaround:
+
+```bash
+# 1. Scaffold in a temp directory
+pnpm create next-app /tmp/nextjs-scaffold --typescript --tailwind --app
+
+# 2. Copy scaffold files to your project (preserves existing files)
+cp -rn /tmp/nextjs-scaffold/* .
+cp -rn /tmp/nextjs-scaffold/.* . 2>/dev/null || true
+
+# 3. Install and initialize LumenFlow
+pnpm install
+pnpm add -D @lumenflow/cli
+pnpm exec lumenflow --client claude --full
+
+# 4. Clean up
+rm -rf /tmp/nextjs-scaffold
+```
 
 ---
 

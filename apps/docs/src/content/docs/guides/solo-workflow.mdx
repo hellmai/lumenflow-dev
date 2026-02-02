@@ -40,7 +40,7 @@ The simplest LumenFlow setup for solo work.
 2. **Initialize (minimal)**
 
    ```bash
-   npx lumenflow-init --minimal
+   pnpm exec lumenflow --minimal
    ```
 
    This creates only the essentials:
@@ -216,7 +216,7 @@ npx wu-spawn --id WU-015
 For solo work, you may not need a formal backlog. But if you want one:
 
 ```bash
-npx lumenflow-init --full
+pnpm exec lumenflow --full
 ```
 
 This adds `docs/04-operations/tasks/backlog.md` for tracking.
@@ -353,8 +353,8 @@ If you have multiple solo projects:
 npm install -g @lumenflow/cli
 
 # Each repo has its own config
-cd project-a && lumenflow-init --minimal
-cd project-b && lumenflow-init --minimal
+cd project-a && lumenflow --minimal
+cd project-b && lumenflow --minimal
 ```
 
 ## Tips for Solo Devs
