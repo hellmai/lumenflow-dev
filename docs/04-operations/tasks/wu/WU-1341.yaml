@@ -2,7 +2,7 @@ id: WU-1341
 title: Add Idea to Shipping guide for lumenflow.dev
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -26,7 +26,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create a real-world usage guide showing the complete workflow from product idea to deployed app. Uses SpendSense (personal finance categorizer) as example. Vendor-agnostic (works with any AI assistant), uses Claude Code as primary example.
+description: Create a real-world usage guide showing the complete workflow from product idea to
+  deployed app. Uses SpendSense (personal finance categorizer) as example. Vendor-agnostic (works
+  with any AI assistant), uses Claude Code as primary example.
 acceptance:
   - New guide file created in guides directory
   - Sidebar updated in astro.config.mjs
@@ -34,3 +36,11 @@ acceptance:
   - LumenFlow benefits woven throughout
   - Agent perspective shown - how any AI agent consumes LumenFlow
   - Vendor-agnostic messaging (AGENTS.md universal entry point)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1341
+claimed_at: 2026-02-02T15:25:27.173Z
+baseline_main_sha: 173cc75c119ad7fe9f5407c29bcec8a573ccd3a2
+session_id: 8373d24e-5487-4b54-b3d0-fd1218e59dbd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T15:25:27.179Z
