@@ -15,6 +15,7 @@ import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-pattern
 import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { findProjectRoot } from './lumenflow-config.js';
+import type { LockPolicy } from './lumenflow-config-schema.js';
 
 // Type definitions
 interface ValidateLaneOptions {
@@ -78,13 +79,8 @@ interface LaneConfigWithWip extends LaneConfig {
   wip_limit?: number;
   /** WU-1187: Required justification when wip_limit > 1 */
   wip_justification?: string;
-  /**
-   * WU-1325: Lock policy for this lane
-   * - 'all' (default): Lock held through block/unblock cycle
-   * - 'active': Lock released on block, re-acquired on unblock
-   * - 'none': No lock files, WIP checking disabled
-   */
-  lock_policy?: 'all' | 'active' | 'none';
+  /** WU-1325: Lock policy for this lane */
+  lock_policy?: LockPolicy;
 }
 
 interface WUDoc {
@@ -554,7 +550,7 @@ export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {
 }
 
 /** WU-1325: Default lock policy when not specified in config */
-const DEFAULT_LOCK_POLICY: 'all' | 'active' | 'none' = 'all';
+const DEFAULT_LOCK_POLICY: LockPolicy = 'all';
 
 /** WU-1325: Options for getLockPolicyForLane */
 interface GetLockPolicyOptions {
@@ -575,12 +571,9 @@ interface GetLockPolicyOptions {
  *
  * @param {string} lane - Lane name (e.g., "Framework: Core", "Content: Documentation")
  * @param {GetLockPolicyOptions} options - Options including configPath for testing
- * @returns {'all' | 'active' | 'none'} The lock policy for the lane (default: 'all')
+ * @returns {LockPolicy} The lock policy for the lane (default: 'all')
  */
-export function getLockPolicyForLane(
-  lane: string,
-  options: GetLockPolicyOptions = {},
-): 'all' | 'active' | 'none' {
+export function getLockPolicyForLane(lane: string, options: GetLockPolicyOptions = {}): LockPolicy {
   // Determine config path
   let resolvedConfigPath = options.configPath;
   if (!resolvedConfigPath) {
@@ -684,6 +677,43 @@ function extractInProgressSection(lines: string[]): { section: string; error: st
   return { section, error: null };
 }
 
+/** WU-1324: Blocked section header patterns */
+const BLOCKED_HEADERS = ['## blocked', '## ⛔ blocked'];
+
+/**
+ * WU-1324: Check if a line matches a Blocked section header.
+ * @param {string} line - Line to check (will be trimmed and lowercased)
+ * @returns {boolean} True if line is a Blocked header
+ */
+function isBlockedHeader(line: string): boolean {
+  const normalized = line.trim().toLowerCase();
+  return BLOCKED_HEADERS.some((header) => normalized === header || normalized.startsWith(header));
+}
+
+/**
+ * WU-1324: Extract Blocked section from status.md lines
+ * @returns Section content (may be empty if section doesn't exist)
+ */
+function extractBlockedSection(lines: string[]): { section: string } {
+  const blockedIdx = lines.findIndex((l) => isBlockedHeader(l));
+
+  if (blockedIdx === -1) {
+    // Blocked section doesn't exist - return empty
+    return { section: '' };
+  }
+
+  // Find end of Blocked section (next ## heading or end of file)
+  let endIdx = lines.slice(blockedIdx + 1).findIndex((l) => l.startsWith(SECTION_HEADING_PREFIX));
+  if (endIdx === -1) {
+    endIdx = lines.length - blockedIdx - 1;
+  } else {
+    endIdx = blockedIdx + 1 + endIdx;
+  }
+
+  const section = lines.slice(blockedIdx + 1, endIdx).join(STRING_LITERALS.NEWLINE);
+  return { section };
+}
+
 /**
  * WU-1197: Check if a WU belongs to the target lane
  * @returns The WU ID if it matches the target lane, null otherwise
@@ -757,11 +787,45 @@ function collectInProgressWUsForLane(
 }
 
 /**
- * Check if a lane is free (in_progress WU count is below wip_limit)
+ * WU-1324: Extract WU IDs from a section's WU links and filter by target lane
+ * @param section - Section content from status.md
+ * @param wuid - WU ID being claimed (excluded from results)
+ * @param projectRoot - Project root path
+ * @param targetLane - Target lane name (normalized lowercase)
+ * @returns Array of WU IDs in the target lane
+ */
+function extractWUsFromSection(
+  section: string,
+  wuid: string,
+  projectRoot: string,
+  targetLane: string,
+): string[] {
+  if (!section || section.includes(NO_ITEMS_MARKER)) {
+    return [];
+  }
+
+  // Extract WU IDs from links like [WU-334 — Title](wu/WU-334.yaml)
+  WU_LINK_PATTERN.lastIndex = 0; // Reset global regex state
+  const matches = [...section.matchAll(WU_LINK_PATTERN)];
+
+  if (matches.length === 0) {
+    return [];
+  }
+
+  return collectInProgressWUsForLane(matches, wuid, projectRoot, targetLane);
+}
+
+/**
+ * Check if a lane is free (WU count is below wip_limit)
  *
  * WU-1016: Now respects configurable wip_limit per lane from .lumenflow.config.yaml.
- * Lane is considered "free" if current in_progress count < wip_limit.
+ * Lane is considered "free" if current WU count < wip_limit.
  * Default wip_limit is 1 if not specified in config (backward compatible).
+ *
+ * WU-1324: Now respects lock_policy for WIP counting:
+ * - 'all' (default): Count in_progress + blocked WUs toward WIP limit
+ * - 'active': Count only in_progress WUs (blocked WUs release lane lock)
+ * - 'none': Disable WIP checking entirely (lane always free)
  *
  * @param {string} statusPath - Path to status.md
  * @param {string} lane - Lane name (e.g., "Operations", "Intelligence")
@@ -776,6 +840,17 @@ export function checkLaneFree(
   options: CheckLaneFreeOptions = {},
 ): CheckLaneFreeResult {
   try {
+    // WU-1016: Get WIP limit for this lane from config
+    const wipLimit = getWipLimitForLane(lane, { configPath: options.configPath });
+
+    // WU-1324: Get lock policy for this lane from config
+    const lockPolicy = getLockPolicyForLane(lane, { configPath: options.configPath });
+
+    // WU-1324: If policy is 'none', WIP checking is disabled - lane is always free
+    if (lockPolicy === 'none') {
+      return createEmptyLaneResult(wipLimit);
+    }
+
     // Read status.md
     if (!existsSync(statusPath)) {
       return { free: false, occupiedBy: null, error: `status.md not found: ${statusPath}` };
@@ -784,41 +859,38 @@ export function checkLaneFree(
     const content = readFileSync(statusPath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
 
-    const { section, error } = extractInProgressSection(lines);
+    // Extract In Progress section
+    const { section: inProgressSection, error } = extractInProgressSection(lines);
     if (error) {
       return { free: false, occupiedBy: null, error };
-    }
-
-    // WU-1016: Get WIP limit for this lane from config
-    const wipLimit = getWipLimitForLane(lane, { configPath: options.configPath });
-
-    // Check for "No items" marker or no WU links
-    if (section.includes(NO_ITEMS_MARKER)) {
-      return createEmptyLaneResult(wipLimit);
-    }
-
-    // Extract WU IDs from links like [WU-334 — Title](wu/WU-334.yaml)
-    WU_LINK_PATTERN.lastIndex = 0; // Reset global regex state
-    const matches = [...section.matchAll(WU_LINK_PATTERN)];
-
-    if (matches.length === 0) {
-      return createEmptyLaneResult(wipLimit);
     }
 
     // Get project root from statusPath (docs/04-operations/tasks/status.md)
     const projectRoot = path.dirname(path.dirname(path.dirname(path.dirname(statusPath))));
     const targetLane = lane.toString().trim().toLowerCase();
-    const inProgressWUs = collectInProgressWUsForLane(matches, wuid, projectRoot, targetLane);
 
-    // WU-1016: Check if lane is free based on WIP limit
-    const currentCount = inProgressWUs.length;
+    // Collect in_progress WUs
+    const inProgressWUs = extractWUsFromSection(inProgressSection, wuid, projectRoot, targetLane);
+
+    // WU-1324: If policy is 'all', also count blocked WUs
+    let blockedWUs: string[] = [];
+    if (lockPolicy === 'all') {
+      const { section: blockedSection } = extractBlockedSection(lines);
+      blockedWUs = extractWUsFromSection(blockedSection, wuid, projectRoot, targetLane);
+    }
+
+    // WU-1324: Calculate total count based on policy
+    // - 'all': in_progress + blocked
+    // - 'active': in_progress only
+    const allCountedWUs = [...inProgressWUs, ...blockedWUs];
+    const currentCount = allCountedWUs.length;
     const isFree = currentCount < wipLimit;
 
     return {
       free: isFree,
-      occupiedBy: isFree ? null : inProgressWUs[0] || null,
+      occupiedBy: isFree ? null : allCountedWUs[0] || null,
       error: null,
-      inProgressWUs,
+      inProgressWUs: allCountedWUs, // Include all counted WUs for visibility
       wipLimit,
       currentCount,
     };

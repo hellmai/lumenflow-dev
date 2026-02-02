@@ -17,6 +17,7 @@ import {
   getWipLimitForLane,
   checkWipJustification,
   getLockPolicyForLane,
+  checkLaneFree,
 } from '../lane-checker.js';
 import { stringifyYAML } from '../wu-yaml.js';
 import { CONFIG_FILES } from '../wu-constants.js';
@@ -32,6 +33,12 @@ const TEST_LANE_CONTENT = 'Content';
 
 /** Test directory prefix for lane-checker tests */
 const TEST_DIR_PREFIX = 'lane-checker-test-';
+
+/** Test directory path segments for tasks directory */
+const TEST_TASKS_DIR_SEGMENTS = ['docs', '04-operations', 'tasks'] as const;
+
+/** Test directory name for WU files */
+const TEST_WU_DIR_NAME = 'wu';
 
 /** Mock config for lumenflow-config.js in WU-1308 tests */
 const MOCK_GIT_CONFIG = {
@@ -55,11 +62,11 @@ describe('lane-checker WIP justification', () => {
     mkdirSync(testBaseDir, { recursive: true });
 
     // Create docs/04-operations/tasks directory structure
-    const tasksDir = join(testBaseDir, 'docs', '04-operations', 'tasks');
+    const tasksDir = join(testBaseDir, ...TEST_TASKS_DIR_SEGMENTS);
     mkdirSync(tasksDir, { recursive: true });
-    mkdirSync(join(tasksDir, 'wu'), { recursive: true });
+    mkdirSync(join(tasksDir, TEST_WU_DIR_NAME), { recursive: true });
 
-    configPath = join(testBaseDir, '.lumenflow.config.yaml');
+    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
   });
 
   afterEach(() => {
@@ -301,11 +308,11 @@ describe('lane-checker lock_policy (WU-1325)', () => {
     mkdirSync(testBaseDir, { recursive: true });
 
     // Create docs/04-operations/tasks directory structure
-    const tasksDir = join(testBaseDir, 'docs', '04-operations', 'tasks');
+    const tasksDir = join(testBaseDir, ...TEST_TASKS_DIR_SEGMENTS);
     mkdirSync(tasksDir, { recursive: true });
-    mkdirSync(join(tasksDir, 'wu'), { recursive: true });
+    mkdirSync(join(tasksDir, TEST_WU_DIR_NAME), { recursive: true });
 
-    configPath = join(testBaseDir, '.lumenflow.config.yaml');
+    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
   });
 
   afterEach(() => {
@@ -492,6 +499,268 @@ describe('lane-checker lock_policy (WU-1325)', () => {
 });
 
 /**
+ * WU-1324: Tests for checkLaneFree with lock_policy
+ *
+ * The lock_policy affects how WIP counting works:
+ * - 'all' (default): Count in_progress + blocked WUs toward WIP limit
+ * - 'active': Count only in_progress WUs (blocked WUs release lane lock)
+ * - 'none': Disable WIP checking entirely (lane always free)
+ */
+describe('lane-checker checkLaneFree with lock_policy (WU-1324)', () => {
+  let testBaseDir: string;
+  let configPath: string;
+  let statusPath: string;
+  let wuDir: string;
+
+  /** Test WU IDs */
+  const WU_IN_PROGRESS = 'WU-1001';
+  const WU_BLOCKED = 'WU-1002';
+  const WU_NEW = 'WU-1003';
+
+  beforeEach(() => {
+    // Create a unique test directory for each test
+    testBaseDir = join(
+      tmpdir(),
+      // eslint-disable-next-line sonarjs/pseudo-random -- Test isolation needs unique temp dirs
+      `${TEST_DIR_PREFIX}checklanefree-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    mkdirSync(testBaseDir, { recursive: true });
+
+    // Create docs/04-operations/tasks directory structure
+    const tasksDir = join(testBaseDir, ...TEST_TASKS_DIR_SEGMENTS);
+    mkdirSync(tasksDir, { recursive: true });
+    wuDir = join(tasksDir, TEST_WU_DIR_NAME);
+    mkdirSync(wuDir, { recursive: true });
+
+    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
+    statusPath = join(tasksDir, 'status.md');
+  });
+
+  afterEach(() => {
+    // Clean up test directory
+    try {
+      rmSync(testBaseDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  });
+
+  /**
+   * Helper to create a WU YAML file
+   */
+  function createWuFile(wuId: string, lane: string, status: string): void {
+    const wuContent = {
+      id: wuId,
+      title: `Test WU ${wuId}`,
+      lane,
+      status,
+      type: 'feature',
+    };
+    writeFileSync(join(wuDir, `${wuId}.yaml`), stringifyYAML(wuContent));
+  }
+
+  /**
+   * Helper to create a status.md file with In Progress and Blocked sections
+   */
+  function createStatusFile(inProgressWUs: string[], blockedWUs: string[]): void {
+    const inProgressSection = inProgressWUs
+      .map((id) => `- [${id} — Test WU](wu/${id}.yaml)`)
+      .join('\n');
+    const blockedSection = blockedWUs.map((id) => `- [${id} — Test WU](wu/${id}.yaml)`).join('\n');
+
+    const content = `# Work Unit Status
+
+_Last updated: 2026-02-02_
+
+## In Progress
+
+${inProgressWUs.length > 0 ? inProgressSection : 'No items currently in progress'}
+
+## Blocked
+
+${blockedWUs.length > 0 ? blockedSection : 'No blocked items'}
+
+## Completed
+
+No completed items
+`;
+    writeFileSync(statusPath, content);
+  }
+
+  describe('policy=all (default behavior)', () => {
+    it('should count both in_progress and blocked WUs toward WIP limit', () => {
+      // Setup config with policy=all (default)
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // Create WU files - one in_progress and one blocked
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createWuFile(WU_BLOCKED, TEST_LANE_FRAMEWORK_CORE, 'blocked');
+
+      // Status.md has one in_progress and one blocked
+      createStatusFile([WU_IN_PROGRESS], [WU_BLOCKED]);
+
+      // Test using the already imported checkLaneFree
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // With policy=all, both in_progress and blocked count
+      // WIP limit = 2, current count = 2 (1 in_progress + 1 blocked)
+      // So lane should NOT be free
+      expect(result.free).toBe(false);
+      expect(result.currentCount).toBe(2);
+      expect(result.wipLimit).toBe(2);
+    });
+
+    it('should maintain current behavior when lock_policy is not specified', () => {
+      // Setup config without lock_policy (defaults to 'all')
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2 }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // Create WU files
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createWuFile(WU_BLOCKED, TEST_LANE_FRAMEWORK_CORE, 'blocked');
+      createStatusFile([WU_IN_PROGRESS], [WU_BLOCKED]);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // Default policy is 'all', so blocked WUs count
+      expect(result.free).toBe(false);
+      expect(result.currentCount).toBe(2);
+    });
+  });
+
+  describe('policy=active', () => {
+    it('should exclude blocked WUs from WIP count', () => {
+      // Setup config with policy=active
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'active' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // Create WU files - one in_progress and one blocked
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createWuFile(WU_BLOCKED, TEST_LANE_FRAMEWORK_CORE, 'blocked');
+      createStatusFile([WU_IN_PROGRESS], [WU_BLOCKED]);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // With policy=active, only in_progress counts
+      // WIP limit = 2, current count = 1 (only in_progress)
+      // So lane SHOULD be free
+      expect(result.free).toBe(true);
+      expect(result.currentCount).toBe(1);
+      expect(result.wipLimit).toBe(2);
+    });
+
+    it('should still block when in_progress WUs exceed limit', () => {
+      // Setup config with policy=active and limit=1
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'active' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // One in_progress WU
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createStatusFile([WU_IN_PROGRESS], []);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // With limit=1 and 1 in_progress, lane is occupied
+      expect(result.free).toBe(false);
+      expect(result.currentCount).toBe(1);
+      expect(result.occupiedBy).toBe(WU_IN_PROGRESS);
+    });
+  });
+
+  describe('policy=none', () => {
+    it('should disable WIP checking entirely (always free)', () => {
+      // Setup config with policy=none
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // Multiple WUs in the lane
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createWuFile(WU_BLOCKED, TEST_LANE_FRAMEWORK_CORE, 'blocked');
+      createStatusFile([WU_IN_PROGRESS], [WU_BLOCKED]);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // With policy=none, WIP checking is disabled
+      // Lane should always be free regardless of WU count
+      expect(result.free).toBe(true);
+    });
+
+    it('should indicate WIP checking is disabled in result', () => {
+      // Setup config with policy=none
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+      createStatusFile([WU_IN_PROGRESS], []);
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // Result should indicate no error and lane is free
+      expect(result.free).toBe(true);
+      expect(result.error).toBeNull();
+    });
+  });
+
+  describe('backward compatibility', () => {
+    it('should work with status.md that has no Blocked section', () => {
+      // Setup config with policy=all
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
+        },
+      };
+      writeFileSync(configPath, stringifyYAML(config));
+
+      // Create status.md without Blocked section
+      const content = `# Work Unit Status
+
+## In Progress
+
+- [WU-1001 — Test WU](wu/WU-1001.yaml)
+
+## Completed
+
+No completed items
+`;
+      writeFileSync(statusPath, content);
+      createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
+
+      const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
+
+      // Should work and only count in_progress (since no blocked section)
+      expect(result.error).toBeNull();
+      expect(result.currentCount).toBe(1);
+      expect(result.free).toBe(true);
+    });
+  });
+});
+
+/**
  * WU-1308: Tests for lane-inference file missing error message
  *
  * When a sub-lane is used but .lumenflow.lane-inference.yaml is missing,
@@ -512,7 +781,7 @@ describe('lane-checker missing lane-inference file error (WU-1308)', () => {
     );
     mkdirSync(testBaseDir, { recursive: true });
 
-    configFilePath = join(testBaseDir, '.lumenflow.config.yaml');
+    configFilePath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
 
     // Create .lumenflow.config.yaml with parent lanes defined (via definitions)
     const config = {
