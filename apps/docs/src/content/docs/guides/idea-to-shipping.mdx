@@ -1,0 +1,324 @@
+---
+title: Idea to Shipping
+description: Build a complete app from validated idea to production using LumenFlow and AI agents
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+This guide walks through building **SpendSense**, a personal finance categorizer, from initial idea to deployed app. You'll see how LumenFlow structures AI-assisted development, enabling any coding agent to understand and execute your project.
+
+<Aside type="tip" title="Vendor Agnostic">
+  This guide uses Claude Code as the example, but LumenFlow works with **any AI coding assistant** —
+  Cursor, Windsurf, Cline, Aider, and more. The key is `AGENTS.md`: a universal entry point that any
+  agent can read to understand your workflow.
+</Aside>
+
+## What You'll Build
+
+**SpendSense** — a local-first personal finance app that:
+
+- Imports transactions from CSV (bank exports)
+- Auto-categorizes spending using a rules engine
+- Learns from your corrections
+- Shows monthly spending dashboards
+
+This isn't a trivial example. Building it requires research into transaction categorization, financial data patterns, and local-first architecture — perfect for showcasing LumenFlow's structured approach.
+
+## Phase 1: Deep Research
+
+Before writing code, validate your idea and make key technical decisions. Use your preferred AI tool (Claude, GPT, etc.) for market research and technical discovery.
+
+### Research Questions for SpendSense
+
+- **Categorization**: How do banks categorize transactions? (MCC codes, merchant matching)
+- **Data Sources**: Financial APIs (Plaid, Teller) vs CSV import — what's the MVP scope?
+- **Patterns**: Rule-based matching vs ML classification — which handles 80% of cases?
+- **Security**: How to handle financial data safely? (local-first, no credential storage)
+
+### Output: PRODUCT_BRIEF.md
+
+Your research crystallizes into a product brief — the source of truth for everything that follows.
+
+```markdown
+# SpendSense - Personal Finance Categorizer
+
+## Problem
+
+Manual transaction categorization is tedious. Bank categories are inconsistent.
+
+## Research Findings
+
+- MCC (Merchant Category Codes) provide baseline categorization
+- Rule-based matching (merchant name → category) handles 80% of cases
+- ML needed only for ambiguous merchants
+- Start with CSV import, add Plaid later (reduces initial scope)
+
+## MVP Features
+
+1. CSV transaction import (bank export format)
+2. Auto-categorization via rules engine
+3. Manual override with learning
+4. Monthly spending dashboard
+
+## Technical Decisions
+
+- Stack: Next.js + SQLite (local-first, no cloud dependency)
+- No auth in MVP (local file storage)
+- Categories: Standard set (Groceries, Transport, etc.) + custom user categories
+```
+
+<Aside>
+  **LumenFlow Benefit**: This brief becomes the source of truth. Agents reference it when generating
+  Work Units and making implementation decisions. No more "what did we decide about X?" — it's
+  documented.
+</Aside>
+
+## Phase 2: Project Setup
+
+Create your project and initialize LumenFlow.
+
+```bash
+mkdir spendsense && cd spendsense
+git init
+pnpm create next-app . --typescript --tailwind --app
+pnpm add -D @lumenflow/cli
+npx lumenflow-init --client claude --full
+```
+
+<Aside type="tip">
+  Use `--client claude` for Claude Code, `--client cursor` for Cursor, or `--client all` for
+  multiple. The `--full` flag adds documentation scaffolding.
+</Aside>
+
+### What lumenflow-init Creates
+
+| File                        | You Use It For         | Agents Use It For                            |
+| --------------------------- | ---------------------- | -------------------------------------------- |
+| `AGENTS.md`                 | Reference docs         | **Entry point** — first file any agent reads |
+| `CLAUDE.md`                 | Reference docs         | Client-specific instructions, skills, hooks  |
+| `.lumenflow.config.yaml`    | Configure lanes, gates | Lane definitions, gate commands to run       |
+| `.lumenflow/constraints.md` | Understand rules       | Non-negotiable constraints to follow         |
+| `docs/.../backlog.md`       | Track work visually    | Find ready WUs to claim                      |
+
+<Aside type="caution" title="Universal Entry Point">
+  With LumenFlow initialized, **any AI coding assistant** can understand your project by reading
+  `AGENTS.md`. No special prompting required. This is the key to vendor-agnostic AI development.
+</Aside>
+
+## Phase 3: Generate Your Roadmap
+
+This is the magic moment. Drop `PRODUCT_BRIEF.md` into your project and ask your agent:
+
+> "Read PRODUCT_BRIEF.md and create a LumenFlow initiative with WUs organized into phases: Foundation, Categorization Engine, UI, Polish."
+
+### What the Agent Does
+
+<Steps>
+
+1. **Reads PRODUCT_BRIEF.md** — extracts requirements, technical decisions, and MVP scope
+
+2. **Creates an Initiative** — the container for related work
+
+   ```bash
+   pnpm initiative:create --id INIT-001 --slug spendsense-mvp --title "SpendSense MVP"
+   ```
+
+3. **Generates Work Units** — each with full specs the agent (or another agent) can execute
+
+</Steps>
+
+### Sample Generated WU
+
+```yaml
+# WU-001.yaml - What the agent generates
+id: WU-001
+title: Set up SQLite schema for transactions
+lane: 'Framework: Core'
+type: feature
+status: ready
+initiative: INIT-001
+phase: 1
+description: |
+  Create the database schema for storing imported transactions.
+  Reference: PRODUCT_BRIEF.md#technical-decisions
+acceptance:
+  - Transaction table with: id, date, amount, description, merchant, category
+  - Category table with: id, name, parent_id (for hierarchy)
+  - Indexes on date and category for dashboard queries
+code_paths:
+  - src/lib/db/schema.ts
+  - src/lib/db/migrations/
+test_paths:
+  unit:
+    - src/lib/db/__tests__/schema.test.ts
+```
+
+<Aside>
+  **LumenFlow Benefit**: The WU YAML isn't just documentation — it's the agent's **work order**.
+  `code_paths` tells it where to write, `acceptance` defines done, `test_paths` guides TDD. Any
+  agent can pick up this WU and know exactly what to build.
+</Aside>
+
+### Generated Roadmap
+
+| WU     | Title                              | Lane              | Phase |
+| ------ | ---------------------------------- | ----------------- | ----- |
+| WU-001 | SQLite schema for transactions     | Framework: Core   | 1     |
+| WU-002 | CSV parser for bank formats        | Framework: Core   | 1     |
+| WU-003 | Rule-based categorization engine   | Framework: Core   | 2     |
+| WU-004 | Category learning from corrections | Framework: Core   | 2     |
+| WU-005 | Transaction list with filters      | Experience: UI    | 3     |
+| WU-006 | Monthly spending dashboard         | Experience: UI    | 3     |
+| WU-007 | Import flow wizard                 | Experience: UI    | 3     |
+| WU-008 | Error handling and edge cases      | Framework: Core   | 4     |
+| WU-009 | Deploy to Vercel                   | Operations: Infra | 4     |
+
+## Phase 4: Execute
+
+Now execute the roadmap. You can work WU-by-WU, or orchestrate parallel execution across lanes.
+
+### Single Agent Execution
+
+```bash
+pnpm wu:claim --id WU-001 --lane "Framework: Core"
+# Agent is now in worktrees/framework-core-wu-001
+```
+
+<Aside>
+  **LumenFlow Benefit (Worktree Isolation)**: Each WU gets its own git worktree — an isolated
+  branch. The agent can't accidentally break `main`, and multiple agents can work in parallel
+  without merge conflicts.
+</Aside>
+
+### What Happens When an Agent Claims a WU
+
+<Steps>
+
+1. **Worktree created** — isolated git branch, no conflicts with main
+
+2. **Agent reads WU YAML** — knows exactly what to build, where to put it
+
+3. **Loads relevant skills** — `/skill tdd-workflow` for test-first approach
+
+4. **Implements against acceptance criteria** — each criterion becomes a checklist item
+
+5. **Runs gates** — `pnpm wu:prep --id WU-001` validates format, lint, types, tests
+
+6. **Completes** — `pnpm wu:done --id WU-001` merges to main, creates completion stamp
+
+</Steps>
+
+<Aside>
+  **LumenFlow Benefit (Gates as Guardrails)**: Agents can't merge broken code. Gates run format,
+  lint, typecheck, and tests before allowing completion. This is especially valuable when agents
+  work autonomously.
+</Aside>
+
+### Parallel Agent Execution
+
+For larger initiatives, orchestrate multiple agents working in parallel:
+
+```bash
+# Preview the execution plan
+pnpm orchestrate:initiative --initiative INIT-001 --dry-run
+```
+
+Output:
+
+```
+Wave 0: WU-001, WU-002 (parallel - no dependencies)
+Wave 1: WU-003, WU-004 (depends on Wave 0)
+Wave 2: WU-005, WU-006, WU-007 (depends on Wave 1)
+Wave 3: WU-008, WU-009 (depends on Wave 2)
+```
+
+<Aside>
+  **LumenFlow Benefit (Wave-based Orchestration)**: The orchestrator analyzes dependencies and
+  spawns agents in waves. WU-001 and WU-002 run in parallel (different code paths, no conflicts).
+  WU-003 waits for both to complete. Lane separation ensures agents don't step on each other.
+</Aside>
+
+### Agent Coordination
+
+Agents don't work in isolation. The memory layer enables coordination:
+
+```bash
+# Agent signals progress
+pnpm mem:signal "Schema complete, ready for review" --wu WU-001
+
+# Other agents (or you) check inbox
+pnpm mem:inbox --since 1h
+```
+
+<Aside>
+  **LumenFlow Benefit (Memory Layer)**: Agents can signal progress, checkpoint state for resumption,
+  and coordinate handoffs. This is critical for long-running work and multi-agent scenarios.
+</Aside>
+
+## Phase 5: Ship It
+
+Once all WUs complete, verify and deploy:
+
+```bash
+# Check initiative completion
+pnpm initiative:status --id INIT-001
+
+# All stamps present = all WUs done
+ls .lumenflow/stamps/
+# WU-001.done  WU-002.done  WU-003.done ...
+
+# Deploy
+npx vercel
+```
+
+<Aside>
+  **LumenFlow Benefit (Stamps as Truth)**: Completion stamps (`.lumenflow/stamps/WU-XXX.done`) are
+  the source of truth. The orchestrator checks stamps before spawning dependent work. No stamp = not
+  done, regardless of what the YAML status says.
+</Aside>
+
+## What the Agent Learned
+
+From the agent's perspective, here's what it consumed and how:
+
+| What Agent Read          | What Agent Did                                  |
+| ------------------------ | ----------------------------------------------- |
+| `AGENTS.md`              | Understood project workflow, found entry points |
+| `PRODUCT_BRIEF.md`       | Extracted requirements, generated WUs           |
+| `WU-001.yaml`            | Knew scope, paths, acceptance criteria          |
+| `.lumenflow.config.yaml` | Understood lanes, ran correct gate commands     |
+| `/skill tdd-workflow`    | Applied test-first methodology                  |
+| `pnpm wu:prep` output    | Fixed issues before completion                  |
+| `.lumenflow/stamps/`     | Verified dependencies before proceeding         |
+
+This is the power of LumenFlow: **structured context that any agent can consume**.
+
+## Key Takeaways
+
+<CardGrid>
+  <Card title="Structured Chaos" icon="puzzle">
+    LumenFlow turns a product brief into executable work units. No more "where do I start?" — the
+    roadmap is generated.
+  </Card>
+  <Card title="Agent-Native" icon="rocket">
+    AGENTS.md + WU YAML = agents understand your project without special prompting. Works with any
+    AI coding assistant.
+  </Card>
+  <Card title="Parallel by Default" icon="random">
+    Worktree isolation + lane separation = safe concurrent execution. Multiple agents, no conflicts.
+  </Card>
+  <Card title="Gates as Guardrails" icon="approve-check">
+    Agents can't merge broken code. Format, lint, typecheck, and tests run before completion.
+  </Card>
+  <Card title="Coordination Built-In" icon="seti:todo">
+    Memory layer + stamps = agents know what's done and what's blocked. Handoffs happen
+    automatically.
+  </Card>
+</CardGrid>
+
+## Next Steps
+
+- [Work Units](/concepts/work-units) — Deep dive on WU structure and lifecycle
+- [Initiatives](/guides/initiatives) — Coordinating multi-phase projects
+- [AI Agent Integration](/guides/ai-agents) — Advanced agent patterns
+- [A Day with LumenFlow](/guides/a-day-with-lumenflow) — Daily workflow walkthrough

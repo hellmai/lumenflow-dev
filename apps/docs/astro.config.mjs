@@ -44,6 +44,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { label: 'A Day with LumenFlow', slug: 'guides/a-day-with-lumenflow' },
+            { label: 'Idea to Shipping', slug: 'guides/idea-to-shipping' },
             { label: 'Solo Developer Workflow', slug: 'guides/solo-workflow' },
             { label: 'Team Workflow', slug: 'guides/team-workflow' },
             { label: 'Existing Projects', slug: 'guides/existing-projects' },
