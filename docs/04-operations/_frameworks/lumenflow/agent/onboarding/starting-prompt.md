@@ -6,6 +6,51 @@ This is the complete onboarding document for AI agents working with LumenFlow. R
 
 ---
 
+## When Starting From Product Vision
+
+If you are starting a new project or feature from a product vision (e.g., "Build a task management app"), **do NOT create standalone WUs immediately**. Instead, follow the initiative-first workflow:
+
+### 4-Step Initiative Workflow
+
+1. **Create an Initiative**: Capture the vision as an initiative
+
+   ```bash
+   pnpm initiative:create --id INIT-001 --title "Task Management App" \
+     --description "Build a task management application with..." \
+     --phase "Phase 1: Core MVP" --phase "Phase 2: Collaboration"
+   ```
+
+2. **Define Phases**: Break the vision into logical phases (MVP, iteration, polish)
+
+3. **Create WUs under the Initiative**: Each WU belongs to a phase
+
+   ```bash
+   pnpm wu:create --lane "Core: Platform" --title "Add task model" \
+     --description "..." --acceptance "..." --code-paths "..." \
+     && pnpm initiative:add-wu --initiative INIT-001 --wu WU-XXX --phase 1
+   ```
+
+4. **Track Progress**: Use `pnpm initiative:status --id INIT-001` to see overall progress
+
+### Why Initiatives Matter
+
+- **Avoid orphan WUs**: Without initiative structure, agents create disconnected WUs that lack coherent scope
+- **Better coordination**: Phases enable parallel work across lanes
+- **Clear completion criteria**: The initiative tracks when all phases are done
+- **Visibility**: Stakeholders can see multi-phase progress
+
+### When to Skip Initiatives
+
+Only skip initiatives for:
+
+- Single-file bug fixes
+- Small documentation updates
+- Isolated refactoring tasks
+
+If work spans multiple WUs or multiple days, create an initiative first.
+
+---
+
 ## Quick Start (Copy This)
 
 ```bash
