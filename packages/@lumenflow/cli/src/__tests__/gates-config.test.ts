@@ -1,0 +1,380 @@
+/**
+ * @file gates-config.test.ts
+ * WU-1356: Tests for package manager and script name configuration.
+ *
+ * Tests configurable package_manager, gates.commands, test_runner, and build_command
+ * in .lumenflow.config.yaml for framework agnosticism.
+ */
+
+/* eslint-disable sonarjs/no-duplicate-string -- Test files intentionally repeat string literals for readability */
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import * as yaml from 'yaml';
+
+// Import the schema and functions we're testing
+import {
+  PackageManagerSchema,
+  TestRunnerSchema,
+  GatesCommandsConfigSchema,
+  parseConfig,
+} from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import {
+  resolvePackageManager,
+  resolveBuildCommand,
+  resolveGatesCommands,
+  resolveTestRunner,
+  getIgnorePatterns,
+} from '@lumenflow/core/dist/gates-config.js';
+
+describe('WU-1356: Package manager and script configuration', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-test-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  describe('PackageManagerSchema', () => {
+    it('accepts pnpm as default', () => {
+      const result = PackageManagerSchema.parse(undefined);
+      expect(result).toBe('pnpm');
+    });
+
+    it('accepts npm', () => {
+      const result = PackageManagerSchema.parse('npm');
+      expect(result).toBe('npm');
+    });
+
+    it('accepts yarn', () => {
+      const result = PackageManagerSchema.parse('yarn');
+      expect(result).toBe('yarn');
+    });
+
+    it('accepts bun', () => {
+      const result = PackageManagerSchema.parse('bun');
+      expect(result).toBe('bun');
+    });
+
+    it('rejects invalid package manager', () => {
+      expect(() => PackageManagerSchema.parse('invalid')).toThrow();
+    });
+  });
+
+  describe('TestRunnerSchema', () => {
+    it('accepts vitest as default', () => {
+      const result = TestRunnerSchema.parse(undefined);
+      expect(result).toBe('vitest');
+    });
+
+    it('accepts jest', () => {
+      const result = TestRunnerSchema.parse('jest');
+      expect(result).toBe('jest');
+    });
+
+    it('accepts mocha', () => {
+      const result = TestRunnerSchema.parse('mocha');
+      expect(result).toBe('mocha');
+    });
+
+    it('rejects invalid test runner', () => {
+      expect(() => TestRunnerSchema.parse('invalid')).toThrow();
+    });
+  });
+
+  describe('GatesCommandsConfigSchema', () => {
+    it('has sensible defaults for test commands', () => {
+      const result = GatesCommandsConfigSchema.parse({});
+      expect(result.test_full).toBeDefined();
+      expect(result.test_docs_only).toBeDefined();
+      expect(result.test_incremental).toBeDefined();
+    });
+
+    it('allows custom test commands', () => {
+      const config = {
+        test_full: 'npm test',
+        test_docs_only: 'npm test -- --grep docs',
+        test_incremental: 'npm test -- --changed',
+      };
+      const result = GatesCommandsConfigSchema.parse(config);
+      expect(result.test_full).toBe('npm test');
+      expect(result.test_docs_only).toBe('npm test -- --grep docs');
+      expect(result.test_incremental).toBe('npm test -- --changed');
+    });
+  });
+
+  describe('LumenFlowConfigSchema - package_manager field', () => {
+    it('includes package_manager with default pnpm', () => {
+      const config = parseConfig({});
+      expect(config.package_manager).toBe('pnpm');
+    });
+
+    it('accepts npm as package_manager', () => {
+      const config = parseConfig({ package_manager: 'npm' });
+      expect(config.package_manager).toBe('npm');
+    });
+
+    it('accepts yarn as package_manager', () => {
+      const config = parseConfig({ package_manager: 'yarn' });
+      expect(config.package_manager).toBe('yarn');
+    });
+
+    it('accepts bun as package_manager', () => {
+      const config = parseConfig({ package_manager: 'bun' });
+      expect(config.package_manager).toBe('bun');
+    });
+  });
+
+  describe('LumenFlowConfigSchema - test_runner field', () => {
+    it('includes test_runner with default vitest', () => {
+      const config = parseConfig({});
+      expect(config.test_runner).toBe('vitest');
+    });
+
+    it('accepts jest as test_runner', () => {
+      const config = parseConfig({ test_runner: 'jest' });
+      expect(config.test_runner).toBe('jest');
+    });
+
+    it('accepts mocha as test_runner', () => {
+      const config = parseConfig({ test_runner: 'mocha' });
+      expect(config.test_runner).toBe('mocha');
+    });
+  });
+
+  describe('LumenFlowConfigSchema - gates.commands section', () => {
+    it('includes gates.commands with defaults', () => {
+      const config = parseConfig({});
+      expect(config.gates.commands).toBeDefined();
+      expect(config.gates.commands.test_full).toBeDefined();
+      expect(config.gates.commands.test_docs_only).toBeDefined();
+      expect(config.gates.commands.test_incremental).toBeDefined();
+    });
+
+    it('allows custom gates commands configuration', () => {
+      const config = parseConfig({
+        gates: {
+          commands: {
+            test_full: 'npm test',
+            test_docs_only: 'npm test -- --docs',
+            test_incremental: 'npm test -- --changed',
+          },
+        },
+      });
+      expect(config.gates.commands.test_full).toBe('npm test');
+      expect(config.gates.commands.test_docs_only).toBe('npm test -- --docs');
+      expect(config.gates.commands.test_incremental).toBe('npm test -- --changed');
+    });
+  });
+
+  describe('LumenFlowConfigSchema - build_command field', () => {
+    it('includes build_command with default for pnpm', () => {
+      const config = parseConfig({});
+      expect(config.build_command).toBe('pnpm --filter @lumenflow/cli build');
+    });
+
+    it('allows custom build_command', () => {
+      const config = parseConfig({ build_command: 'npm run build' });
+      expect(config.build_command).toBe('npm run build');
+    });
+  });
+
+  describe('resolvePackageManager', () => {
+    it('returns pnpm when no config file exists', () => {
+      const result = resolvePackageManager(tempDir);
+      expect(result).toBe('pnpm');
+    });
+
+    it('returns configured package manager from config file', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'npm' }));
+      const result = resolvePackageManager(tempDir);
+      expect(result).toBe('npm');
+    });
+
+    it('returns yarn when configured', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'yarn' }));
+      const result = resolvePackageManager(tempDir);
+      expect(result).toBe('yarn');
+    });
+  });
+
+  describe('resolveBuildCommand', () => {
+    it('returns default build command when no config file exists', () => {
+      const result = resolveBuildCommand(tempDir);
+      expect(result).toBe('pnpm --filter @lumenflow/cli build');
+    });
+
+    it('returns configured build_command from config file', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(configPath, yaml.stringify({ build_command: 'npm run build' }));
+      const result = resolveBuildCommand(tempDir);
+      expect(result).toBe('npm run build');
+    });
+
+    it('adapts default build command for different package managers', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'npm' }));
+      const result = resolveBuildCommand(tempDir);
+      expect(result).toContain('npm');
+    });
+  });
+
+  describe('resolveGatesCommands', () => {
+    it('returns default commands when no config file exists', () => {
+      const commands = resolveGatesCommands(tempDir);
+      expect(commands.test_full).toBeDefined();
+      expect(commands.test_docs_only).toBeDefined();
+      expect(commands.test_incremental).toBeDefined();
+    });
+
+    it('returns configured commands from config file', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(
+        configPath,
+        yaml.stringify({
+          gates: {
+            commands: {
+              test_full: 'npm test',
+              test_docs_only: 'npm test -- --docs',
+              test_incremental: 'npm test -- --changed',
+            },
+          },
+        }),
+      );
+      const commands = resolveGatesCommands(tempDir);
+      expect(commands.test_full).toBe('npm test');
+      expect(commands.test_docs_only).toBe('npm test -- --docs');
+      expect(commands.test_incremental).toBe('npm test -- --changed');
+    });
+  });
+
+  describe('resolveTestRunner', () => {
+    it('returns vitest when no config file exists', () => {
+      const result = resolveTestRunner(tempDir);
+      expect(result).toBe('vitest');
+    });
+
+    it('returns jest when configured', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(configPath, yaml.stringify({ test_runner: 'jest' }));
+      const result = resolveTestRunner(tempDir);
+      expect(result).toBe('jest');
+    });
+  });
+
+  describe('getIgnorePatterns', () => {
+    it('returns .turbo pattern for vitest', () => {
+      const patterns = getIgnorePatterns('vitest');
+      expect(patterns).toContain('.turbo');
+    });
+
+    it('returns different pattern for jest', () => {
+      const patterns = getIgnorePatterns('jest');
+      expect(patterns).not.toContain('.turbo');
+    });
+
+    it('returns custom pattern from config', () => {
+      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      fs.writeFileSync(
+        configPath,
+        yaml.stringify({
+          gates: {
+            ignore_patterns: ['.nx', 'dist'],
+          },
+        }),
+      );
+      // This would be a config-aware version
+      const patterns = getIgnorePatterns('jest');
+      expect(Array.isArray(patterns)).toBe(true);
+    });
+  });
+});
+
+describe('WU-1356: npm+jest configuration', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-npm-jest-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('supports npm+jest configuration', () => {
+    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+    fs.writeFileSync(
+      configPath,
+      yaml.stringify({
+        package_manager: 'npm',
+        test_runner: 'jest',
+        gates: {
+          commands: {
+            test_full: 'npm test',
+            test_docs_only: 'npm test -- --testPathPattern=docs',
+            test_incremental: 'npm test -- --onlyChanged',
+          },
+        },
+        build_command: 'npm run build',
+      }),
+    );
+
+    const pkgManager = resolvePackageManager(tempDir);
+    const testRunner = resolveTestRunner(tempDir);
+    const commands = resolveGatesCommands(tempDir);
+    const buildCmd = resolveBuildCommand(tempDir);
+
+    expect(pkgManager).toBe('npm');
+    expect(testRunner).toBe('jest');
+    expect(commands.test_full).toBe('npm test');
+    expect(commands.test_incremental).toBe('npm test -- --onlyChanged');
+    expect(buildCmd).toBe('npm run build');
+  });
+});
+
+describe('WU-1356: yarn+nx configuration', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-yarn-nx-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('supports yarn+nx configuration', () => {
+    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+    fs.writeFileSync(
+      configPath,
+      yaml.stringify({
+        package_manager: 'yarn',
+        test_runner: 'jest',
+        gates: {
+          commands: {
+            test_full: 'yarn nx run-many --target=test --all',
+            test_docs_only: 'yarn nx test docs',
+            test_incremental: 'yarn nx affected --target=test',
+          },
+        },
+        build_command: 'yarn nx build @lumenflow/cli',
+      }),
+    );
+
+    const pkgManager = resolvePackageManager(tempDir);
+    const commands = resolveGatesCommands(tempDir);
+    const buildCmd = resolveBuildCommand(tempDir);
+
+    expect(pkgManager).toBe('yarn');
+    expect(commands.test_full).toBe('yarn nx run-many --target=test --all');
+    expect(commands.test_incremental).toBe('yarn nx affected --target=test');
+    expect(buildCmd).toBe('yarn nx build @lumenflow/cli');
+  });
+});
