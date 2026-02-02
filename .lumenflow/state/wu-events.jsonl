@@ -569,3 +569,4 @@
 {"type":"complete","wuId":"WU-1309","timestamp":"2026-02-02T00:10:51.079Z"}
 {"type":"claim","wuId":"WU-1313","timestamp":"2026-02-02T00:15:25.517Z","lane":"Framework: CLI","title":"Introduce first-class plan tooling (create/link/edit/promote)"}
 {"type":"complete","wuId":"WU-1311","timestamp":"2026-02-02T00:17:12.806Z"}
+{"type":"complete","wuId":"WU-1313","timestamp":"2026-02-02T00:43:14.557Z"}
