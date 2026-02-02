@@ -618,4 +618,5 @@
 {"type":"claim","wuId":"WU-1349","timestamp":"2026-02-02T16:15:36.477Z","lane":"Content: Documentation","title":"Fix npx command claim in quickstart docs"}
 {"type":"complete","wuId":"WU-1346","timestamp":"2026-02-02T16:17:11.651Z"}
 {"type":"complete","wuId":"WU-1349","timestamp":"2026-02-02T16:17:27.680Z"}
-{"type":"claim","wuId":"WU-1350","lane":"Content: Documentation","title":"Fix non-existent CLI commands in documentation","timestamp":"2026-02-02T16:27:09.114Z"}
+{"type":"claim","wuId":"WU-1350","timestamp":"2026-02-02T16:27:09.114Z","lane":"Content: Documentation","title":"Fix non-existent CLI commands in documentation"}
+{"type":"complete","wuId":"WU-1350","timestamp":"2026-02-02T16:29:55.347Z"}

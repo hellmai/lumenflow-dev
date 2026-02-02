@@ -2,7 +2,7 @@ id: WU-1350
 title: Fix non-existent CLI commands in documentation
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -48,3 +48,5 @@ session_id: 3ec40616-3715-4d73-9720-b193849e6479
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:27:09.095Z
+locked: true
+completed_at: 2026-02-02T16:29:52.841Z

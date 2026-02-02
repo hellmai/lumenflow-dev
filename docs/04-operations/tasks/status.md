@@ -8,7 +8,6 @@ _Last updated: 2026-02-02_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1350 — Fix non-existent CLI commands in documentation](wu/WU-1350.yaml)
 
 ## Completed
 
@@ -311,3 +310,4 @@ _Last updated: 2026-02-02_
 - [WU-1345 — Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)](wu/WU-1345.yaml) — 2026-02-02
 - [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml) — 2026-02-02
 - [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml) — 2026-02-02
+- [WU-1350 — Fix non-existent CLI commands in documentation](wu/WU-1350.yaml) — 2026-02-02
