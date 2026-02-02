@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -50,6 +49,7 @@ sections:
 - [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
+- [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -57,7 +57,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml) — Framework: CLI
 - [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml) — Content: Documentation
 
 ## ⛔ Blocked
@@ -359,3 +358,4 @@ sections:
 - [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml)
 - [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml)
 - [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml)
+- [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml)

@@ -8,7 +8,6 @@ _Last updated: 2026-02-02_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml)
 - [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml)
 
 ## Completed
@@ -306,3 +305,4 @@ _Last updated: 2026-02-02_
 - [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — 2026-02-02
 - [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml) — 2026-02-02
 - [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml) — 2026-02-02
+- [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml) — 2026-02-02
