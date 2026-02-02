@@ -8,12 +8,6 @@ created: 2026-02-01
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/templates/core/AGENTS.md.template
-  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/first-15-mins.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/local-only.md.template
-  - packages/@lumenflow/cli/templates/core/ai/onboarding/lane-inference.md.template
 tests:
   manual: []
   unit:
