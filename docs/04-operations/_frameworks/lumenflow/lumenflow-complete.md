@@ -229,6 +229,64 @@ Philosophy: **If you need WIP > 1, you need better lanes, not higher limits.**
 
 When `wip_limit` is greater than 1, the `wip_justification` field is required. This is soft enforcement - a warning is logged at `wu:claim` time if missing, but it doesn't block the claim.
 
+**Lane Lock Policy (INIT-013):**
+
+The `lock_policy` field controls how blocked WUs affect lane availability. By default, a blocked WU still occupies its lane (WIP=1 counts blocked work). With `lock_policy: active`, blocked WUs release the lane lock, allowing another WU to be claimed in that lane.
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Content: Documentation'
+      wip_limit: 4
+      lock_policy: active  # blocked WUs release lane lock
+      code_paths:
+        - 'docs/**'
+```
+
+| Policy   | Behavior                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| `all`    | Default. Blocked WUs count toward WIP. Lane stays occupied when blocked. |
+| `active` | Only in_progress WUs count. Blocked WUs release the lane lock.           |
+| `none`   | WIP checking disabled. Multiple WUs can be claimed regardless of status. |
+
+**When to use each policy:**
+
+- **`all` (default)**: High-conflict lanes where blocked work may resume soon. Prevents merge conflicts from overlapping claims.
+- **`active`**: Low-conflict lanes like documentation where blocked work is unlikely to cause merge conflicts. Reduces idle time when work is blocked on dependencies.
+- **`none`**: Experimental. Use only for lanes with guaranteed non-overlapping work (e.g., independent doc pages).
+
+**CLI behavior with `lock_policy: active`:**
+
+- `wu:claim`: Checks only in_progress WUs against WIP limit
+- `wu:block`: Releases the lane lock, freeing the lane for new claims
+- `wu:unblock`: Re-acquires the lane lock (may fail if lane is now occupied)
+- `wu:spawn`: Considers policy when checking lane availability
+
+**Pilot recommendation (INIT-013):**
+
+Start with `lock_policy: active` on the **Content: Documentation** lane:
+
+1. Documentation WUs are low-conflict (different files, few dependencies)
+2. Blocked docs WUs rarely resume immediately (often waiting for code WUs)
+3. Easy rollback: change `active` back to `all` in config
+
+**Rollback procedure:**
+
+If `lock_policy: active` causes issues (merge conflicts, coordination problems):
+
+1. Update `.lumenflow.config.yaml`: change `lock_policy: active` to `lock_policy: all`
+2. Run `pnpm wu:unlock-lane --lane "<lane>"` to clear any stale locks
+3. Any in_progress WUs will re-acquire locks on next commit
+
+**Troubleshooting:**
+
+| Issue                                    | Cause                                     | Fix                                                               |
+| ---------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
+| "Lane occupied" after unblock            | Another WU claimed while blocked          | Coordinate with other agent or wait for their WU to complete      |
+| Merge conflicts after claiming in active | Overlapping edits despite policy          | Split WU or change back to `policy: all`                          |
+| Lock not released after block            | Using `policy: all` (default behavior)    | Add `lock_policy: active` to lane config                          |
+| Wave builder not seeing available lane   | Orchestrator using old policy cache       | Restart orchestrator or wait for cache refresh                    |
+
 **Lane Health Command (WU-1188):**
 
 ```bash
