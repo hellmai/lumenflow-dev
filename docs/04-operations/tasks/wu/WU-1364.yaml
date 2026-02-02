@@ -9,7 +9,6 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
   - LUMENFLOW.md
-  - packages/@lumenflow/cli/src/wu-create.ts
 tests:
   manual:
     - Run lumenflow init in empty folder, verify initial commit exists
@@ -25,7 +24,13 @@ artifacts:
   - .lumenflow/stamps/WU-1364.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Implementation uses TDD with 16 greenfield tests covering all acceptance criteria.
+  Git helper functions use eslint-disable for sonarjs/no-os-command-from-path since
+  absolute paths to git are impractical cross-platform.
+  Prettier errors in micro-worktrees already handled as warnings per AC7 (pre-existing).
+spec_refs:
+  - lumenflow://plans/WU-1364-greenfield-onboarding.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
