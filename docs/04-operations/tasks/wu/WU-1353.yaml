@@ -2,7 +2,7 @@ id: WU-1353
 title: Sync CLI templates with source docs and add release automation
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -30,10 +30,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: CLI templates (packages/@lumenflow/cli/templates/) are out of sync with source docs. constraints.md.template is v1.0 with 6 constraints (source has v1.1 with 7 + 'never quick fix on main'). first-wu-mistakes.md.template has 10 mistakes (source has 11 + wu:prep refs). Need to sync templates and add automation to prevent future drift.
+description: CLI templates (packages/@lumenflow/cli/templates/) are out of sync with source docs.
+  constraints.md.template is v1.0 with 6 constraints (source has v1.1 with 7 + 'never quick fix on
+  main'). first-wu-mistakes.md.template has 10 mistakes (source has 11 + wu:prep refs). Need to sync
+  templates and add automation to prevent future drift.
 acceptance:
-  - constraints.md.template synced with source (v1.1, 7 constraints, MANDATORY PRE-WRITE CHECK, NEVER QUICK FIX ON MAIN)
-  - first-wu-mistakes.md.template synced with source (11 mistakes including Quick Fixing on Main, wu:prep refs, spec_refs in checklist)
-  - templates:sync script added to scripts/ that copies source docs to templates with {{DATE}} placeholder
+  - constraints.md.template synced with source (v1.1, 7 constraints, MANDATORY PRE-WRITE CHECK,
+    NEVER QUICK FIX ON MAIN)
+  - first-wu-mistakes.md.template synced with source (11 mistakes including Quick Fixing on Main,
+    wu:prep refs, spec_refs in checklist)
+  - templates:sync script added to scripts/ that copies source docs to templates with {{DATE}}
+    placeholder
   - release-process.md updated to include templates:sync as pre-publish step
   - CI check added that warns if templates differ from source (drift detection)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1353
+claimed_at: 2026-02-02T16:46:38.638Z
+baseline_main_sha: 77d16e906260eaebd459c2679414abfdfc64a9d9
+session_id: 5a6b6502-4a07-4f80-b97f-9dc7afe19e34
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:46:38.645Z
