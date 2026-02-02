@@ -13,7 +13,11 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - pnpm-lock.yaml
 tests:
-  manual: []
+  manual:
+    - Run pnpm test -- micro-worktree.test.ts and verify all 22 tests pass
+    - Verify pushWithRetryConfig function exists and accepts config parameter
+    - Verify PushRetryConfigSchema exported from lumenflow-config-schema.ts
+    - Check .lumenflow.config.yaml docs show git.push_retry config options
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
