@@ -9,22 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-edit.ts
-  - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/wu-block.ts
   - packages/@lumenflow/cli/src/wu-unblock.ts
-  - packages/@lumenflow/cli/src/wu-release.ts
   - packages/@lumenflow/cli/src/wu-deps.ts
-  - packages/@lumenflow/cli/src/wu-infer-lane.ts
-  - packages/@lumenflow/cli/src/state-doctor.ts
-  - packages/@lumenflow/cli/src/state-doctor-fix.ts
-  - packages/@lumenflow/cli/src/flow-report.ts
-  - packages/@lumenflow/cli/src/metrics-snapshot.ts
-  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
-  - packages/@lumenflow/cli/src/validate.ts
-  - packages/@lumenflow/cli/src/docs-sync.ts
-  - packages/@lumenflow/cli/src/sync-templates.ts
-  - packages/@lumenflow/cli/src/initiative-plan.ts
+  - packages/@lumenflow/cli/src/flow-bottlenecks.ts
+  - packages/@lumenflow/cli/src/__tests__/path-centralization-cli.test.ts
 tests:
   manual: []
   unit:
