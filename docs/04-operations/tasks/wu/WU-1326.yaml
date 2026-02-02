@@ -2,17 +2,18 @@ id: WU-1326
 title: Update orchestrator wave building for lock_policy
 lane: 'Framework: Initiatives'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
 tests:
   manual:
-    - 'pnpm vitest run packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts - all 51 tests pass'
-    - 'buildExecutionPlanWithLockPolicy allows multiple WUs per lane when policy=none'
-    - 'buildExecutionPlanWithLockPolicy allows ready WU when blocked WU exists with policy=active'
-    - 'getLaneAvailability returns correct policy-based availability'
+    - pnpm vitest run packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts -
+      all 51 tests pass
+    - buildExecutionPlanWithLockPolicy allows multiple WUs per lane when policy=none
+    - buildExecutionPlanWithLockPolicy allows ready WU when blocked WU exists with policy=active
+    - getLaneAvailability returns correct policy-based availability
   unit:
     - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
   e2e: []
@@ -21,10 +22,12 @@ artifacts:
 dependencies: []
 risks: []
 notes:
-  - 'Implementation adds buildExecutionPlanWithLockPolicy(), getLaneAvailability(), and getLockPolicyForLane() functions'
-  - 'Tests added for all acceptance criteria (12 new tests)'
-  - 'Pre-existing lint errors in test file (sonarjs/no-duplicate-string) - test data uses repeated patterns'
-  - 'Extracted DEFAULT_DEFERRED_REASON constant to fix duplicate string in implementation'
+  - Implementation adds buildExecutionPlanWithLockPolicy(), getLaneAvailability(), and
+    getLockPolicyForLane() functions
+  - Tests added for all acceptance criteria (12 new tests)
+  - Pre-existing lint errors in test file (sonarjs/no-duplicate-string) - test data uses repeated
+    patterns
+  - Extracted DEFAULT_DEFERRED_REASON constant to fix duplicate string in implementation
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -49,3 +52,5 @@ session_id: ee6f4e8a-ffee-416b-9702-a087d9c96dbf
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:23:47.303Z
+locked: true
+completed_at: 2026-02-02T12:45:41.785Z

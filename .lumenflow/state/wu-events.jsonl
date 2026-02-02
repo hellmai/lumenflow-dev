@@ -597,4 +597,5 @@
 {"type":"claim","wuId":"WU-1322","timestamp":"2026-02-02T12:28:14.261Z","lane":"Framework: Core","title":"Add lock_policy field to lane configuration schema"}
 {"type":"complete","wuId":"WU-1325","timestamp":"2026-02-02T12:36:35.534Z"}
 {"type":"complete","wuId":"WU-1322","timestamp":"2026-02-02T12:39:01.811Z"}
-{"type":"claim","wuId":"WU-1323","lane":"Framework: Core","title":"Update lane lock system to honor lock_policy","timestamp":"2026-02-02T12:41:49.593Z"}
+{"type":"claim","wuId":"WU-1323","timestamp":"2026-02-02T12:41:49.593Z","lane":"Framework: Core","title":"Update lane lock system to honor lock_policy"}
+{"type":"complete","wuId":"WU-1326","timestamp":"2026-02-02T12:45:44.507Z"}
