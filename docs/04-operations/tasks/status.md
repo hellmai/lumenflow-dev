@@ -9,6 +9,7 @@ _Last updated: 2026-02-02_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml)
+- [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml)
 
 ## Completed
 
