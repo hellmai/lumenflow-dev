@@ -2,7 +2,7 @@ id: WU-1343
 title: Fix CLI naming and merge guidance in lumenflow.dev docs
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -45,3 +45,5 @@ session_id: b292076d-9e1f-4936-b4c8-6fd103885e08
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T15:43:17.761Z
+locked: true
+completed_at: 2026-02-02T15:55:18.808Z
