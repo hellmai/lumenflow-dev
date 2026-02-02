@@ -1,0 +1,40 @@
+id: WU-1336
+title: Centralize retry exhaustion handling for micro-worktree operations
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/core/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/git-operations.ts
+  - packages/@lumenflow/cli/src/initiative-add-wu.ts
+  - packages/@lumenflow/cli/src/initiative-remove-wu.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1336.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1336-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Refactor retry exhaustion detection/formatting into core micro-worktree abstraction so CLI commands do not duplicate helpers. Use p-retry and simple-git via existing git-operations. Expose a typed error or helper from core and update initiative add/remove to use it.
+acceptance:
+  - micro-worktree exposes a single retry-exhaustion helper or error type
+  - initiative:add-wu and initiative:remove-wu use the shared helper (no duplicate helpers in CLI files)
+  - Retry exhaustion messaging still includes actionable next steps
+  - Tests updated to cover shared helper
