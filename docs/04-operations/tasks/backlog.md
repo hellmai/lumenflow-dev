@@ -23,13 +23,10 @@ sections:
 - [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
-- [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
-
-- [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
 
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
-- [WU-1355 — spec:linter fallback to main CLI dist not working in worktrees](wu/WU-1355.yaml) — Framework: CLI
+
 - [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — Framework: CLI
 - [WU-1361 — Lint debt cleanup (consolidated)](wu/WU-1361.yaml) — Framework: CLI
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — Framework: CLI
