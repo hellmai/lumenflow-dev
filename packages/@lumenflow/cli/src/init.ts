@@ -142,6 +142,63 @@ export type GatePresetType = 'node' | 'python' | 'go' | 'rust' | 'dotnet';
 /** WU-1300: Docs structure type for scaffolding */
 export type DocsStructureType = 'simple' | 'arc42';
 
+/**
+ * WU-1309: Docs paths for different structure types
+ */
+export interface DocsPathConfig {
+  /** Base operations directory */
+  operations: string;
+  /** Tasks directory */
+  tasks: string;
+  /** Agent onboarding docs directory */
+  onboarding: string;
+  /** Quick-ref link for AGENTS.md */
+  quickRefLink: string;
+}
+
+/**
+ * WU-1309: Get docs paths based on structure type
+ */
+export function getDocsPath(structure: DocsStructureType): DocsPathConfig {
+  if (structure === 'simple') {
+    return {
+      operations: 'docs',
+      tasks: 'docs/tasks',
+      onboarding: 'docs/_frameworks/lumenflow/agent/onboarding',
+      quickRefLink: 'docs/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+    };
+  }
+  // arc42 structure
+  return {
+    operations: 'docs/04-operations',
+    tasks: 'docs/04-operations/tasks',
+    onboarding: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+    quickRefLink: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+  };
+}
+
+/**
+ * WU-1309: Detect existing docs structure or return default
+ * Auto-detects arc42 when docs/04-operations or any numbered dir (01-*, 02-*, etc.) exists
+ */
+export function detectDocsStructure(targetDir: string): DocsStructureType {
+  const docsDir = path.join(targetDir, 'docs');
+
+  if (!fs.existsSync(docsDir)) {
+    return 'simple';
+  }
+
+  // Check for arc42 numbered directories (01-*, 02-*, ..., 04-operations, etc.)
+  const entries = fs.readdirSync(docsDir);
+  const hasNumberedDir = entries.some((entry) => /^\d{2}-/.test(entry));
+
+  if (hasNumberedDir) {
+    return 'arc42';
+  }
+
+  return 'simple';
+}
+
 export interface ScaffoldOptions {
   force: boolean;
   full: boolean;
@@ -174,8 +231,6 @@ const LUMENFLOW_DIR = '.lumenflow';
 const LUMENFLOW_AGENTS_DIR = `${LUMENFLOW_DIR}/agents`;
 const CLAUDE_DIR = '.claude';
 const CLAUDE_AGENTS_DIR = path.join(CLAUDE_DIR, 'agents');
-// Shared path segment for docs structure
-const DOCS_OPERATIONS_DIR = '04-operations';
 
 /**
  * WU-1177: Detect IDE environment from environment variables
@@ -424,6 +479,7 @@ function getRelativePath(targetDir: string, filePath: string): string {
 
 // WU-1171: Template for AGENTS.md (universal entry point)
 // WU-1300: Updated quick-ref link to correct path
+// WU-1309: Use {{QUICK_REF_LINK}} and <project-root> placeholder for portability
 const AGENTS_MD_TEMPLATE = `# Universal Agent Instructions
 
 **Last updated:** {{DATE}}
@@ -443,11 +499,11 @@ cd worktrees/<lane>-wu-xxxx
 pnpm gates
 
 # 3. Complete (ALWAYS run this!)
-cd {{PROJECT_ROOT}}
+cd <project-root>
 pnpm wu:done --id WU-XXXX
 \`\`\`
 
-> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **Complete CLI reference:** See [quick-ref-commands.md]({{QUICK_REF_LINK}})
 
 ---
 
@@ -487,13 +543,15 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 `;
 
 // Template for LUMENFLOW.md (main entry point)
-const LUMENFLOW_MD_TEMPLATE = `# LumenFlow Workflow Guide\n\n**Last updated:** {{DATE}}\n\nLumenFlow is a vendor-agnostic workflow framework for AI-native software development.\n\n---\n\n## Critical Rule: ALWAYS Run wu:done\n\n**After completing work on a WU, you MUST run \`pnpm wu:done --id WU-XXXX\` from the main checkout.**\n\nThis is the single most forgotten step. Do NOT:\n- Write "To Complete: pnpm wu:done" and stop\n- Ask if you should run wu:done\n- Forget to run wu:done\n\n**DO**: Run \`pnpm wu:done --id WU-XXXX\` immediately after gates pass.\n\n---\n\n## Quick Start\n\n\`\`\`bash\n# 1. Create a WU\npnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"\n\n# 2. Edit WU spec with acceptance criteria, then claim:\npnpm wu:claim --id WU-XXXX --lane <Lane>\ncd worktrees/<lane>-wu-xxxx\n\n# 3. Implement in worktree\n\n# 4. Run gates\npnpm gates --docs-only  # for docs changes\npnpm gates              # for code changes\n\n# 5. Complete (from main checkout)\ncd {{PROJECT_ROOT}}\npnpm wu:done --id WU-XXXX\n\`\`\`\n\n---\n\n## Core Principles\n\n1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)\n2. **Library-First**: Search existing libraries before custom code\n3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings\n4. **Worktree Discipline**: After \`wu:claim\`, work ONLY in the worktree\n5. **Gates Before Done**: All gates must pass before \`wu:done\`\n6. **Do Not Bypass Hooks**: No \`--no-verify\`, fix issues properly\n7. **Always wu:done**: Complete every WU by running \`pnpm wu:done\`\n\n---\n\n## Documentation Structure\n\n### Core (Vendor-Agnostic)\n\n- **LUMENFLOW.md** - This file, main entry point\n- **.lumenflow/constraints.md** - Non-negotiable workflow constraints\n- **.lumenflow/agents/** - Agent instructions (vendor-agnostic)\n- **.lumenflow.config.yaml** - Workflow configuration\n\n### Optional Overlays\n\n- **CLAUDE.md + .claude/agents/** - Claude Code overlay (auto if Claude Code detected)\n- **docs/04-operations/tasks/** - Task boards and WU storage (\`lumenflow init --full\`)\n- **docs/04-operations/_frameworks/<framework>/** - Framework overlay docs (\`lumenflow init --framework <name>\`)\n- **.lumenflow.framework.yaml** - Framework hint file (created with \`--framework\`)\n\n---\n\n## Worktree Discipline (IMMUTABLE LAW)\n\nAfter claiming a WU, you MUST work in its worktree:\n\n\`\`\`bash\n# 1. Claim creates worktree\npnpm wu:claim --id WU-XXX --lane <lane>\n\n# 2. IMMEDIATELY cd to worktree\ncd worktrees/<lane>-wu-xxx\n\n# 3. ALL work happens here\n\n# 4. Return to main ONLY to complete\ncd {{PROJECT_ROOT}}\npnpm wu:done --id WU-XXX\n\`\`\`\n\n---\n\n## Definition of Done\n\n- Acceptance criteria satisfied\n- Gates green (\`pnpm gates\` or \`pnpm gates --docs-only\`)\n- WU YAML status = \`done\`\n- \`wu:done\` has been run\n\n---\n\n## Commands Reference\n\n| Command           | Description                         |\n| ----------------- | ----------------------------------- |\n| \`pnpm wu:create\` | Create new WU spec                  |\n| \`pnpm wu:claim\`  | Claim WU and create worktree        |\n| \`pnpm wu:done\`   | Complete WU (merge, stamp, cleanup) |\n| \`pnpm gates\`     | Run quality gates                   |\n\n---\n\n## Constraints\n\nSee [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules.\n\n---\n\n## Agent Onboarding\n\n- Start with **CLAUDE.md** if present (Claude Code overlay).\n- Add vendor-agnostic guidance in **.lumenflow/agents/**.\n- Add framework-specific notes in **docs/04-operations/_frameworks/<framework>/**.\n`;
+// WU-1309: Use <project-root> placeholder for portability
+const LUMENFLOW_MD_TEMPLATE = `# LumenFlow Workflow Guide\n\n**Last updated:** {{DATE}}\n\nLumenFlow is a vendor-agnostic workflow framework for AI-native software development.\n\n---\n\n## Critical Rule: ALWAYS Run wu:done\n\n**After completing work on a WU, you MUST run \`pnpm wu:done --id WU-XXXX\` from the main checkout.**\n\nThis is the single most forgotten step. Do NOT:\n- Write "To Complete: pnpm wu:done" and stop\n- Ask if you should run wu:done\n- Forget to run wu:done\n\n**DO**: Run \`pnpm wu:done --id WU-XXXX\` immediately after gates pass.\n\n---\n\n## Quick Start\n\n\`\`\`bash\n# 1. Create a WU\npnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"\n\n# 2. Edit WU spec with acceptance criteria, then claim:\npnpm wu:claim --id WU-XXXX --lane <Lane>\ncd worktrees/<lane>-wu-xxxx\n\n# 3. Implement in worktree\n\n# 4. Run gates\npnpm gates --docs-only  # for docs changes\npnpm gates              # for code changes\n\n# 5. Complete (from main checkout)\ncd <project-root>\npnpm wu:done --id WU-XXXX\n\`\`\`\n\n---\n\n## Core Principles\n\n1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)\n2. **Library-First**: Search existing libraries before custom code\n3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings\n4. **Worktree Discipline**: After \`wu:claim\`, work ONLY in the worktree\n5. **Gates Before Done**: All gates must pass before \`wu:done\`\n6. **Do Not Bypass Hooks**: No \`--no-verify\`, fix issues properly\n7. **Always wu:done**: Complete every WU by running \`pnpm wu:done\`\n\n---\n\n## Documentation Structure\n\n### Core (Vendor-Agnostic)\n\n- **LUMENFLOW.md** - This file, main entry point\n- **.lumenflow/constraints.md** - Non-negotiable workflow constraints\n- **.lumenflow/agents/** - Agent instructions (vendor-agnostic)\n- **.lumenflow.config.yaml** - Workflow configuration\n\n### Optional Overlays\n\n- **CLAUDE.md + .claude/agents/** - Claude Code overlay (auto if Claude Code detected)\n- **{{DOCS_TASKS_PATH}}** - Task boards and WU storage (\`lumenflow init --full\`)\n- **{{DOCS_ONBOARDING_PATH}}** - Agent onboarding docs\n- **.lumenflow.framework.yaml** - Framework hint file (created with \`--framework\`)\n\n---\n\n## Worktree Discipline (IMMUTABLE LAW)\n\nAfter claiming a WU, you MUST work in its worktree:\n\n\`\`\`bash\n# 1. Claim creates worktree\npnpm wu:claim --id WU-XXX --lane <lane>\n\n# 2. IMMEDIATELY cd to worktree\ncd worktrees/<lane>-wu-xxx\n\n# 3. ALL work happens here\n\n# 4. Return to main ONLY to complete\ncd <project-root>\npnpm wu:done --id WU-XXX\n\`\`\`\n\n---\n\n## Definition of Done\n\n- Acceptance criteria satisfied\n- Gates green (\`pnpm gates\` or \`pnpm gates --docs-only\`)\n- WU YAML status = \`done\`\n- \`wu:done\` has been run\n\n---\n\n## Commands Reference\n\n| Command           | Description                         |\n| ----------------- | ----------------------------------- |\n| \`pnpm wu:create\` | Create new WU spec                  |\n| \`pnpm wu:claim\`  | Claim WU and create worktree        |\n| \`pnpm wu:done\`   | Complete WU (merge, stamp, cleanup) |\n| \`pnpm gates\`     | Run quality gates                   |\n\n---\n\n## Constraints\n\nSee [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules.\n\n---\n\n## Agent Onboarding\n\n- Start with **CLAUDE.md** if present (Claude Code overlay).\n- Add vendor-agnostic guidance in **.lumenflow/agents/**.\n- Check the onboarding docs in **{{DOCS_ONBOARDING_PATH}}** for detailed guidance.\n`;
 
 // Template for .lumenflow/constraints.md
 const CONSTRAINTS_MD_TEMPLATE = `# LumenFlow Constraints Capsule\n\n**Version:** 1.0\n**Last updated:** {{DATE}}\n\n## The 6 Non-Negotiable Constraints\n\n### 1. Worktree Discipline and Git Safety\nWork only in worktrees, treat main as read-only, never run destructive git commands on main.\n\n### 2. WUs Are Specs, Not Code\nRespect code_paths boundaries, no feature creep, no code blocks in WU YAML files.\n\n### 3. Docs-Only vs Code WUs\nDocumentation WUs use \`--docs-only\` gates, code WUs run full gates.\n\n### 4. LLM-First, Zero-Fallback Inference\nUse LLMs for semantic tasks, fall back to safe defaults (never regex/keywords).\n\n### 5. Gates and Skip-Gates\nComplete via \`pnpm wu:done\`; skip-gates only for pre-existing failures with \`--reason\` and \`--fix-wu\`.\n\n### 6. Safety and Governance\nRespect privacy rules, approved sources, security policies; when uncertain, choose safer path.\n\n---\n\n## Mini Audit Checklist\n\nBefore running \`wu:done\`, verify:\n\n- [ ] Working in worktree (not main)\n- [ ] Only modified files in \`code_paths\`\n- [ ] Gates pass\n- [ ] No forbidden git commands used\n- [ ] Acceptance criteria satisfied\n\n---\n\n## Escalation Triggers\n\nStop and ask a human when:\n- Same error repeats 3 times\n- Auth or permissions changes required\n- PII/PHI/safety issues discovered\n- Cloud spend or secrets involved\n`;
 
 // Template for root CLAUDE.md
-const CLAUDE_MD_TEMPLATE = `# Claude Code Instructions\n\n**Last updated:** {{DATE}}\n\nThis project uses LumenFlow workflow. For workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).\n\n---\n\n## Quick Start\n\n\`\`\`bash\n# 1. Claim a WU\npnpm wu:claim --id WU-XXXX --lane <Lane>\ncd worktrees/<lane>-wu-xxxx\n\n# 2. Work in worktree, run gates\npnpm gates\n\n# 3. Complete (ALWAYS run this!)\ncd {{PROJECT_ROOT}}\npnpm wu:done --id WU-XXXX\n\`\`\`\n\n---\n\n## Critical: Always wu:done\n\nAfter completing work, ALWAYS run \`pnpm wu:done --id WU-XXXX\`.\n\nSee [LUMENFLOW.md](LUMENFLOW.md) for full workflow documentation.\n`;
+// WU-1309: Use <project-root> placeholder for portability
+const CLAUDE_MD_TEMPLATE = `# Claude Code Instructions\n\n**Last updated:** {{DATE}}\n\nThis project uses LumenFlow workflow. For workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).\n\n---\n\n## Quick Start\n\n\`\`\`bash\n# 1. Claim a WU\npnpm wu:claim --id WU-XXXX --lane <Lane>\ncd worktrees/<lane>-wu-xxxx\n\n# 2. Work in worktree, run gates\npnpm gates\n\n# 3. Complete (ALWAYS run this!)\ncd <project-root>\npnpm wu:done --id WU-XXXX\n\`\`\`\n\n---\n\n## Critical: Always wu:done\n\nAfter completing work, ALWAYS run \`pnpm wu:done --id WU-XXXX\`.\n\nSee [LUMENFLOW.md](LUMENFLOW.md) for full workflow documentation.\n`;
 
 // Template for .claude/settings.json
 const CLAUDE_SETTINGS_TEMPLATE = `{
@@ -528,6 +586,7 @@ const CLAUDE_SETTINGS_TEMPLATE = `{
 `;
 
 // WU-1171: Template for .cursor/rules/lumenflow.md (updated path)
+// WU-1309: Use <project-root> placeholder for portability
 const CURSOR_RULES_TEMPLATE = `# Cursor LumenFlow Rules
 
 This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
@@ -557,12 +616,13 @@ cd worktrees/<lane>-wu-xxx
 pnpm gates
 
 # Complete (from main)
-cd {{PROJECT_ROOT}}
+cd <project-root>
 pnpm wu:done --id WU-XXX
 \`\`\`
 `;
 
 // WU-1171: Template for .windsurf/rules/lumenflow.md
+// WU-1309: Use <project-root> placeholder for portability
 const WINDSURF_RULES_TEMPLATE = `# Windsurf LumenFlow Rules
 
 This project uses LumenFlow workflow. See [LUMENFLOW.md](../../LUMENFLOW.md).
@@ -592,12 +652,13 @@ cd worktrees/<lane>-wu-xxx
 pnpm gates
 
 # Complete (from main)
-cd {{PROJECT_ROOT}}
+cd <project-root>
 pnpm wu:done --id WU-XXX
 \`\`\`
 `;
 
 // WU-1177: Template for .clinerules (Cline AI assistant)
+// WU-1309: Use <project-root> placeholder for portability
 const CLINE_RULES_TEMPLATE = `# Cline LumenFlow Rules
 
 This project uses LumenFlow workflow. See [LUMENFLOW.md](LUMENFLOW.md).
@@ -627,7 +688,7 @@ cd worktrees/<lane>-wu-xxx
 pnpm gates
 
 # Complete (from main)
-cd {{PROJECT_ROOT}}
+cd <project-root>
 pnpm wu:done --id WU-XXX
 \`\`\`
 `;
@@ -651,6 +712,7 @@ const FRAMEWORK_HINT_TEMPLATE = `# LumenFlow Framework Hint\n# Generated by: lum
 const FRAMEWORK_OVERLAY_TEMPLATE = `# {{FRAMEWORK_NAME}} Framework Overlay\n\n**Last updated:** {{DATE}}\n\nThis overlay captures framework-specific conventions, constraints, and references for {{FRAMEWORK_NAME}} projects.\n\n## Scope\n\n- Project structure conventions\n- Framework-specific testing guidance\n- Common pitfalls and mitigations\n\n## References\n\n- Add official docs links here\n`;
 
 // WU-1083: Agent onboarding docs templates
+// WU-1309: Updated quick-ref with --docs-structure and complete wu:create example
 const QUICK_REF_COMMANDS_TEMPLATE = `# Quick Reference: LumenFlow Commands
 
 **Last updated:** {{DATE}}
@@ -659,24 +721,57 @@ const QUICK_REF_COMMANDS_TEMPLATE = `# Quick Reference: LumenFlow Commands
 
 ## Project Setup
 
-| Command                                       | Description                             |
-| --------------------------------------------- | --------------------------------------- |
-| \`pnpm exec lumenflow init\`                    | Scaffold minimal LumenFlow core         |
-| \`pnpm exec lumenflow init --full\`             | Add docs/04-operations task scaffolding |
-| \`pnpm exec lumenflow init --framework <name>\` | Add framework hint + overlay docs       |
-| \`pnpm exec lumenflow init --force\`            | Overwrite existing files                |
+| Command                                              | Description                               |
+| ---------------------------------------------------- | ----------------------------------------- |
+| \`pnpm exec lumenflow init\`                         | Scaffold minimal LumenFlow core           |
+| \`pnpm exec lumenflow init --full\`                  | Add docs + agent onboarding scaffolding   |
+| \`pnpm exec lumenflow init --docs-structure simple\` | Use simple docs structure (docs/tasks)    |
+| \`pnpm exec lumenflow init --docs-structure arc42\`  | Use arc42 structure (docs/04-operations)  |
+| \`pnpm exec lumenflow init --framework <name>\`      | Add framework hint + overlay docs         |
+| \`pnpm exec lumenflow init --client <type>\`         | Add client overlay (claude, cursor, etc.) |
+| \`pnpm exec lumenflow init --force\`                 | Overwrite existing files                  |
 
 ---
 
 ## WU Management
 
-| Command                                                                                                                                                                                                               | Description                                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| \`pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "path" --test-paths-unit "path" --exposure backend-only --spec-refs "~/.lumenflow/plans/WU-XXX.md"\` | Create new WU                                 |
-| \`pnpm wu:claim --id WU-XXX --lane <Lane>\`                                                                                                                                                                             | Claim WU (creates worktree)                   |
-| \`pnpm wu:done --id WU-XXX\`                                                                                                                                                                                            | Complete WU (merge, stamp, cleanup)           |
-| \`pnpm wu:block --id WU-XXX --reason "Reason"\`                                                                                                                                                                         | Block a WU                                    |
-| \`pnpm wu:unblock --id WU-XXX\`                                                                                                                                                                                         | Unblock a WU                                  |
+| Command                                   | Description                     |
+| ----------------------------------------- | ------------------------------- |
+| \`pnpm wu:create ...\` (see example below) | Create new WU                   |
+| \`pnpm wu:claim --id WU-XXX --lane <Lane>\`| Claim WU (creates worktree)     |
+| \`pnpm wu:done --id WU-XXX\`               | Complete WU (merge, stamp)      |
+| \`pnpm wu:block --id WU-XXX --reason "..."\`| Block a WU                     |
+| \`pnpm wu:unblock --id WU-XXX\`            | Unblock a WU                    |
+| \`pnpm wu:status --id WU-XXX\`             | Check WU status and location    |
+
+---
+
+## Complete wu:create Example
+
+\`\`\`bash
+pnpm wu:create \\
+  --id WU-001 \\
+  --lane "Framework: Core" \\
+  --title "Add validation feature" \\
+  --description "Context: Users need input validation. Problem: No validation exists. Solution: Add Zod-based validation." \\
+  --acceptance "Validation rejects invalid input" \\
+  --acceptance "Unit tests cover edge cases with >90% coverage" \\
+  --acceptance "Documentation updated" \\
+  --code-paths "packages/@lumenflow/core/src/validation.ts" \\
+  --test-paths-unit "packages/@lumenflow/core/src/__tests__/validation.test.ts" \\
+  --exposure backend-only \\
+  --spec-refs "lumenflow://plans/WU-001-plan.md"
+\`\`\`
+
+**Required fields for code WUs:**
+- \`--lane\`: Format is "Parent: Sublane" (e.g., "Framework: Core")
+- \`--title\`: Short descriptive title
+- \`--description\`: Context, Problem, Solution
+- \`--acceptance\`: At least one (repeatable)
+- \`--code-paths\`: Files to modify (repeatable)
+- \`--test-paths-unit\` or \`--test-paths-e2e\`: Test files
+- \`--exposure\`: ui | api | backend-only | documentation
+- \`--spec-refs\`: Required for type: feature
 
 ---
 
@@ -711,7 +806,7 @@ const QUICK_REF_COMMANDS_TEMPLATE = `# Quick Reference: LumenFlow Commands
 cd worktrees/<lane>-wu-xxx
 
 # Return to main for wu:done
-cd /path/to/main
+cd <project-root>
 \`\`\`
 
 ---
@@ -719,13 +814,14 @@ cd /path/to/main
 ## Workflow Sequence
 
 \`\`\`bash
-# 1. Create
+# 1. Create (see complete example above)
 pnpm wu:create --id WU-001 --lane "Framework: Core" --title "Add feature" \\
-  --description "Context: ...\\nProblem: ...\\nSolution: ..." \\
-  --acceptance "Criterion 1" --acceptance "Criterion 2" \\
-  --code-paths "src/example.ts" \\
-  --test-paths-unit "src/__tests__/example.test.ts" \\
-  --exposure backend-only
+  --description "Context: ... Problem: ... Solution: ..." \\
+  --acceptance "Feature works" --acceptance "Tests pass" \\
+  --code-paths "src/feature.ts" \\
+  --test-paths-unit "src/__tests__/feature.test.ts" \\
+  --exposure backend-only \\
+  --spec-refs "lumenflow://plans/WU-001-plan.md"
 
 # 2. Claim
 pnpm wu:claim --id WU-001 --lane "Framework: Core"
@@ -742,8 +838,8 @@ git push origin lane/framework-core/wu-001
 # 5. Gates
 pnpm gates
 
-# 6. Complete
-cd /path/to/main
+# 6. Complete (from main checkout)
+cd <project-root>
 pnpm wu:done --id WU-001
 \`\`\`
 
@@ -751,12 +847,12 @@ pnpm wu:done --id WU-001
 
 ## File Paths
 
-| Path                                      | Description          |
-| ----------------------------------------- | -------------------- |
-| \`docs/04-operations/tasks/wu/WU-XXX.yaml\` | WU specification     |
-| \`docs/04-operations/tasks/status.md\`      | Current status board |
-| \`.lumenflow/stamps/WU-XXX.done\`           | Completion stamp     |
-| \`worktrees/<lane>-wu-xxx/\`                | Worktree directory   |
+| Path                                 | Description          |
+| ------------------------------------ | -------------------- |
+| \`{{DOCS_TASKS_PATH}}/wu/WU-XXX.yaml\` | WU specification     |
+| \`{{DOCS_TASKS_PATH}}/status.md\`      | Current status board |
+| \`.lumenflow/stamps/WU-XXX.done\`      | Completion stamp     |
+| \`worktrees/<lane>-wu-xxx/\`           | Worktree directory   |
 `;
 
 const FIRST_WU_MISTAKES_TEMPLATE = `# First WU Mistakes
@@ -1395,6 +1491,283 @@ pnpm wu:create \\
 3. cd to worktree: \`cd worktrees/<lane>-wu-xxx\`
 `;
 
+// WU-1309: First 15 Minutes template
+const FIRST_15_MINS_TEMPLATE = `# First 15 Minutes with LumenFlow
+
+**Last updated:** {{DATE}}
+
+A quick-start guide for your first session with LumenFlow.
+
+---
+
+## Minute 0-2: Verify Setup
+
+\`\`\`bash
+# Check LumenFlow is configured
+ls LUMENFLOW.md AGENTS.md .lumenflow.config.yaml
+
+# Run doctor to verify safety components
+pnpm exec lumenflow doctor
+\`\`\`
+
+---
+
+## Minute 2-5: Read Essential Docs
+
+1. Open **LUMENFLOW.md** - Main workflow guide
+2. Scan **AGENTS.md** - Quick reference for commands
+3. Review **.lumenflow/constraints.md** - The 6 rules you must follow
+
+---
+
+## Minute 5-8: Find a WU to Work On
+
+\`\`\`bash
+# Check status board
+cat docs/04-operations/tasks/status.md
+
+# List ready WUs
+ls docs/04-operations/tasks/wu/*.yaml | head -5
+\`\`\`
+
+---
+
+## Minute 8-12: Claim and Start
+
+\`\`\`bash
+# Claim a WU
+pnpm wu:claim --id WU-XXX --lane "Framework: Core"
+
+# IMPORTANT: cd to worktree immediately
+cd worktrees/framework-core-wu-xxx
+
+# Verify you're in the right place
+pwd  # Should end with worktrees/...
+\`\`\`
+
+---
+
+## Minute 12-15: Begin TDD Cycle
+
+\`\`\`bash
+# 1. Write a failing test
+# 2. Run it to confirm RED
+pnpm test -- --run
+
+# 3. Write minimal code to pass
+# 4. Run test again for GREEN
+pnpm test -- --run
+
+# 5. Run gates to check everything
+pnpm gates
+\`\`\`
+
+---
+
+## Key Reminders
+
+- **Stay in the worktree** after claiming
+- **TDD**: Test first, then code
+- **Gates before done**: Always run \`pnpm gates\`
+- **Always wu:done**: Never forget to complete
+
+---
+
+## When Done
+
+\`\`\`bash
+# From worktree: run gates
+pnpm gates
+
+# From main: complete WU
+cd <project-root>
+pnpm wu:done --id WU-XXX
+\`\`\`
+`;
+
+// WU-1309: Local-only / no remote template
+const LOCAL_ONLY_TEMPLATE = `# Local-Only Development
+
+**Last updated:** {{DATE}}
+
+Configure LumenFlow for local development without a remote repository.
+
+---
+
+## When to Use
+
+- Air-gapped environments
+- Testing/evaluation
+- Pre-remote development (haven't pushed to GitHub yet)
+- Offline development
+
+---
+
+## Configuration
+
+Add this to \`.lumenflow.config.yaml\`:
+
+\`\`\`yaml
+git:
+  requireRemote: false
+\`\`\`
+
+---
+
+## Behavior Changes
+
+When \`requireRemote: false\`:
+
+| Command | Default Behavior | Local-Only Behavior |
+|---------|------------------|---------------------|
+| \`wu:create\` | Fetches origin/main | Skips remote fetch |
+| \`wu:claim\` | Pushes lane branch | Creates local branch only |
+| \`wu:done\` | Pushes to origin | Commits to local main |
+
+---
+
+## Warnings
+
+With local-only mode:
+
+1. **No remote visibility** - Team members can't see your WUs
+2. **No backup** - Work is only on your machine
+3. **Manual sync required** - When adding a remote later
+
+---
+
+## Transitioning to Remote
+
+When you add an origin remote:
+
+1. Update config: \`git.requireRemote: true\` or remove the setting
+2. Push your main branch: \`git push -u origin main\`
+3. Resume normal workflow
+
+---
+
+## Troubleshooting
+
+### "No origin remote configured"
+
+**Cause:** \`requireRemote: true\` (default) but no origin exists.
+
+**Fix:** Add remote or set \`requireRemote: false\`:
+
+\`\`\`bash
+# Option 1: Add remote
+git remote add origin <url>
+
+# Option 2: Enable local-only mode
+echo "git:\\n  requireRemote: false" >> .lumenflow.config.yaml
+\`\`\`
+`;
+
+// WU-1309: Lane Inference template
+const LANE_INFERENCE_DOC_TEMPLATE = `# Lane Inference
+
+**Last updated:** {{DATE}}
+
+How LumenFlow determines which lane a WU belongs to.
+
+---
+
+## Lane Format
+
+LumenFlow uses hierarchical lanes: \`"Parent: Sublane"\`
+
+Examples:
+- \`"Framework: Core"\`
+- \`"Framework: CLI"\`
+- \`"Experience: UI"\`
+- \`"Operations: CI/CD"\`
+- \`"Content: Documentation"\`
+
+---
+
+## Lane Taxonomy File
+
+Lanes are defined in \`.lumenflow.lane-inference.yaml\`:
+
+\`\`\`yaml
+Framework:
+  Core:
+    description: 'Core library'
+    code_paths:
+      - 'packages/**/core/**'
+    keywords:
+      - 'core'
+      - 'library'
+
+  CLI:
+    description: 'CLI commands'
+    code_paths:
+      - 'packages/**/cli/**'
+      - 'bin/**'
+    keywords:
+      - 'cli'
+      - 'command'
+\`\`\`
+
+---
+
+## Auto-Inference
+
+Use \`wu:infer-lane\` to suggest a lane based on code paths:
+
+\`\`\`bash
+# Infer from WU code_paths
+pnpm wu:infer-lane --id WU-XXX
+
+# Infer from manual inputs
+pnpm wu:infer-lane --paths "packages/@lumenflow/cli/**" --desc "Add CLI command"
+\`\`\`
+
+---
+
+## Generating Lane Taxonomy
+
+If no taxonomy exists, generate one:
+
+\`\`\`bash
+pnpm lane:suggest --output .lumenflow.lane-inference.yaml
+\`\`\`
+
+---
+
+## Common Issues
+
+### "Lane format invalid"
+
+**Cause:** Missing colon or space.
+
+**Fix:** Use \`"Parent: Sublane"\` format (colon + space).
+
+### "Sub-lane validation failed"
+
+**Cause:** No \`.lumenflow.lane-inference.yaml\` file.
+
+**Fix:** Create the file or generate it:
+
+\`\`\`bash
+pnpm lane:suggest --output .lumenflow.lane-inference.yaml
+\`\`\`
+
+---
+
+## Lane Health
+
+Check lane configuration for issues:
+
+\`\`\`bash
+pnpm lane:health
+\`\`\`
+
+This detects:
+- Overlapping code paths between lanes
+- Code files not covered by any lane
+`;
+
 // WU-1083: Claude skills templates
 const WU_LIFECYCLE_SKILL_TEMPLATE = `---
 name: wu-lifecycle
@@ -1695,9 +2068,17 @@ export async function scaffoldProject(
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
+  // WU-1309: Detect or use specified docs structure
+  const docsStructure = options.docsStructure ?? detectDocsStructure(targetDir);
+  const docsPaths = getDocsPath(docsStructure);
+
   const tokenDefaults = {
     DATE: getCurrentDate(),
-    PROJECT_ROOT: targetDir,
+    PROJECT_ROOT: '<project-root>', // WU-1309: Use portable placeholder
+    QUICK_REF_LINK: docsPaths.quickRefLink,
+    DOCS_OPERATIONS_PATH: docsPaths.operations, // WU-1309: For framework overlay
+    DOCS_TASKS_PATH: docsPaths.tasks,
+    DOCS_ONBOARDING_PATH: docsPaths.onboarding,
   };
 
   // Create .lumenflow.config.yaml (WU-1067: includes gate preset if specified)
@@ -1853,7 +2234,9 @@ async function scaffoldFullDocs(
   result: ScaffoldResult,
   tokens: Record<string, string>,
 ): Promise<void> {
-  const tasksDir = path.join(targetDir, 'docs', DOCS_OPERATIONS_DIR, 'tasks');
+  // WU-1309: Use docs structure from tokens (computed in scaffoldProject)
+  const tasksPath = tokens.DOCS_TASKS_PATH;
+  const tasksDir = path.join(targetDir, tasksPath);
   const wuDir = path.join(tasksDir, 'wu');
   const templatesDir = path.join(tasksDir, 'templates');
 
@@ -1937,6 +2320,7 @@ async function scaffoldLaneInference(
 /**
  * WU-1083: Scaffold agent onboarding documentation
  * WU-1300: Added starting-prompt.md
+ * WU-1309: Added first-15-mins.md, local-only.md, lane-inference.md; use dynamic docs path
  */
 async function scaffoldAgentOnboardingDocs(
   targetDir: string,
@@ -1944,15 +2328,8 @@ async function scaffoldAgentOnboardingDocs(
   result: ScaffoldResult,
   tokens: Record<string, string>,
 ): Promise<void> {
-  const onboardingDir = path.join(
-    targetDir,
-    'docs',
-    DOCS_OPERATIONS_DIR,
-    '_frameworks',
-    'lumenflow',
-    'agent',
-    'onboarding',
-  );
+  // WU-1309: Use dynamic onboarding path from tokens
+  const onboardingDir = path.join(targetDir, tokens.DOCS_ONBOARDING_PATH);
 
   await createDirectory(onboardingDir, result, targetDir);
 
@@ -1960,6 +2337,33 @@ async function scaffoldAgentOnboardingDocs(
   await createFile(
     path.join(onboardingDir, 'starting-prompt.md'),
     processTemplate(STARTING_PROMPT_TEMPLATE, tokens),
+    options.force,
+    result,
+    targetDir,
+  );
+
+  // WU-1309: Add first-15-mins.md
+  await createFile(
+    path.join(onboardingDir, 'first-15-mins.md'),
+    processTemplate(FIRST_15_MINS_TEMPLATE, tokens),
+    options.force,
+    result,
+    targetDir,
+  );
+
+  // WU-1309: Add local-only.md
+  await createFile(
+    path.join(onboardingDir, 'local-only.md'),
+    processTemplate(LOCAL_ONLY_TEMPLATE, tokens),
+    options.force,
+    result,
+    targetDir,
+  );
+
+  // WU-1309: Add lane-inference.md
+  await createFile(
+    path.join(onboardingDir, 'lane-inference.md'),
+    processTemplate(LANE_INFERENCE_DOC_TEMPLATE, tokens),
     options.force,
     result,
     targetDir,
@@ -2076,7 +2480,8 @@ async function scaffoldFrameworkOverlay(
     targetDir,
   );
 
-  const overlayDir = path.join(targetDir, 'docs', DOCS_OPERATIONS_DIR, '_frameworks', slug);
+  // WU-1309: Use dynamic operations path from tokens
+  const overlayDir = path.join(targetDir, tokens.DOCS_OPERATIONS_PATH, '_frameworks', slug);
   await createDirectory(overlayDir, result, targetDir);
 
   await createFile(

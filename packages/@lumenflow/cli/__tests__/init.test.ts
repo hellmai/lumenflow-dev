@@ -2,7 +2,11 @@
  * @file init.test.ts
  * Test suite for lumenflow init command (WU-1045)
  * WU-1085: Added --help support tests
+ * WU-1309: Added docsStructure support
  */
+
+/* eslint-disable sonarjs/no-duplicate-string -- Test file with repeated assertion patterns */
+/* eslint-disable @typescript-eslint/no-dynamic-delete -- Necessary for cleanup in tests */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs';
@@ -25,6 +29,7 @@ describe('lumenflow init command (WU-1045)', () => {
     full: false,
     framework: undefined,
     defaultClient: 'none',
+    docsStructure: 'arc42', // WU-1309: Explicitly use arc42 for legacy test compatibility
   } as const;
 
   describe('scaffoldProject (minimal)', () => {

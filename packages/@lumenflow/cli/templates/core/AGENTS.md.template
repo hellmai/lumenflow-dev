@@ -17,11 +17,11 @@ cd worktrees/<lane>-wu-xxxx
 pnpm gates
 
 # 3. Complete (ALWAYS run this!)
-cd {{PROJECT_ROOT}}
+cd <project-root>
 pnpm wu:done --id WU-XXXX
 ```
 
-> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **Complete CLI reference:** See [quick-ref-commands.md]({{QUICK_REF_LINK}})
 
 ---
 

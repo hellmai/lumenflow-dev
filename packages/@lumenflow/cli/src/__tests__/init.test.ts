@@ -343,6 +343,7 @@ describe('lumenflow init', () => {
       const options: ScaffoldOptions = {
         force: false,
         full: true, // This is now the default when parsed
+        docsStructure: 'arc42', // WU-1309: Explicitly request arc42 for legacy test
       };
 
       await scaffoldProject(tempDir, options);
@@ -423,6 +424,7 @@ describe('lumenflow init', () => {
         const options: ScaffoldOptions = {
           force: false,
           full: true,
+          docsStructure: 'arc42', // WU-1309: Explicitly request arc42 for legacy test
         };
 
         await scaffoldProject(tempDir, options);
@@ -485,6 +487,7 @@ describe('lumenflow init', () => {
         const options: ScaffoldOptions = {
           force: false,
           full: true,
+          docsStructure: 'arc42', // WU-1309: Explicitly request arc42 for legacy test
         };
 
         await scaffoldProject(tempDir, options);
