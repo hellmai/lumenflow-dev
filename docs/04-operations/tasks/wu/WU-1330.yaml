@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/src/initiative-add-wu.ts
-  - packages/@lumenflow/core/src/validators/wu-tasks.ts
 tests:
   manual: []
   unit:
