@@ -2,7 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { filterStagedWUYamlFiles, validateWUYamlString } from '../pre-commit.mjs';
+import {
+  filterStagedWUYamlFiles,
+  validateWUYamlString,
+  formatMainBranchBlockMessage,
+} from '../pre-commit.mjs';
 
 describe('pre-commit hook (WU-1164)', () => {
   describe('filterStagedWUYamlFiles', () => {
@@ -122,6 +126,60 @@ describe('pre-commit hook (WU-1164)', () => {
       } finally {
         rmSync(workDir, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe('formatMainBranchBlockMessage (WU-1357)', () => {
+    it('explains WHY main is protected', () => {
+      const message = formatMainBranchBlockMessage('main');
+      expect(message).toContain('WHY THIS HAPPENS');
+      expect(message).toMatch(/track|coordinate|review/i);
+    });
+
+    it('provides multiple paths forward', () => {
+      const message = formatMainBranchBlockMessage('main');
+      // Path 1: Already have a WU
+      expect(message).toContain('wu:claim');
+      // Path 2: Need to create a WU
+      expect(message).toContain('wu:create');
+    });
+
+    it('includes help resources', () => {
+      const message = formatMainBranchBlockMessage('main');
+      expect(message).toMatch(/NEED HELP|LEARN MORE/i);
+      expect(message).toContain('LUMENFLOW.md');
+    });
+
+    it('puts emergency bypass at the bottom with warning', () => {
+      const message = formatMainBranchBlockMessage('main');
+      const lines = message.split('\n');
+
+      // Find positions
+      const bypassIndex = lines.findIndex((l) => l.includes('LUMENFLOW_FORCE'));
+      const claimIndex = lines.findIndex((l) => l.includes('wu:claim'));
+      const whyIndex = lines.findIndex((l) => l.includes('WHY'));
+
+      // Bypass should come after the main content
+      expect(bypassIndex).toBeGreaterThan(claimIndex);
+      expect(bypassIndex).toBeGreaterThan(whyIndex);
+
+      // Should have warning language near bypass
+      const bypassSection = lines.slice(bypassIndex - 3, bypassIndex + 3).join('\n');
+      expect(bypassSection).toMatch(/emergency|last resort|logged|sparingly/i);
+    });
+
+    it('uses consistent box characters from constants', () => {
+      const message = formatMainBranchBlockMessage('main');
+      // Should use box drawing characters for visual structure
+      expect(message).toMatch(/[═─┌┐└┘│║╔╗╚╝╠╣]/);
+    });
+
+    it('includes the blocked branch name', () => {
+      const message = formatMainBranchBlockMessage('main');
+      expect(message.toLowerCase()).toContain('main');
+
+      const masterMessage = formatMainBranchBlockMessage('master');
+      expect(masterMessage.toLowerCase()).toContain('master');
     });
   });
 });

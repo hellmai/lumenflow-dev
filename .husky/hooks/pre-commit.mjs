@@ -5,6 +5,7 @@
  * WU-1017: Vendor-agnostic git workflow enforcement
  * WU-1070: Audit logging for LUMENFLOW_FORCE bypass
  * WU-1164: Validate staged WU YAML files against schema
+ * WU-1357: Educational error messages for main branch blocks
  *
  * Rules:
  * - BLOCK commits to main/master (use wu:claim workflow)
@@ -18,6 +19,142 @@ import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readFileSync, appendFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+
+/**
+ * WU-1357: Educational message constants for main branch protection
+ *
+ * Design principles:
+ * - Explain WHY before showing WHAT to do
+ * - Provide multiple paths forward (not just one command)
+ * - Put emergency bypass LAST with clear warnings
+ * - Include help resources for learning
+ *
+ * Inlined for hook reliability (no external imports that could fail on broken builds)
+ */
+const MAIN_BRANCH_BLOCK_MESSAGES = {
+  BOX: {
+    TOP: '══════════════════════════════════════════════════════════════════',
+    DIVIDER: '──────────────────────────────────────────────────────────────────',
+  },
+  WHY: {
+    HEADER: 'WHY THIS HAPPENS',
+    LINES: [
+      'LumenFlow protects main from direct commits to ensure:',
+      '  • All work is tracked in Work Units (WUs)',
+      '  • Changes can be reviewed and coordinated',
+      '  • Parallel work across lanes stays isolated',
+    ],
+  },
+  ACTIONS: {
+    HEADER: 'WHAT TO DO',
+    HAVE_WU: {
+      HEADER: '1. If you have a Work Unit to implement:',
+      COMMANDS: ['pnpm wu:claim --id WU-XXXX --lane "<Lane>"', 'cd worktrees/<lane>-wu-xxxx'],
+      NOTE: 'Then make your commits in the worktree',
+    },
+    NEED_WU: {
+      HEADER: '2. If you need to create a new Work Unit:',
+      COMMANDS: ['pnpm wu:create --lane "<Lane>" --title "Your task"'],
+      NOTE: 'This generates a WU ID, then claim it as above',
+    },
+    LIST_LANES: {
+      HEADER: '3. Not sure what lane to use?',
+      COMMANDS: ['pnpm wu:list-lanes'],
+    },
+  },
+  HELP: {
+    HEADER: 'NEED HELP?',
+    RESOURCES: [
+      '• Read: LUMENFLOW.md (workflow overview)',
+      '• Read: docs/04-operations/_frameworks/lumenflow/agent/onboarding/',
+      '• Run:  pnpm wu:help',
+    ],
+  },
+  BYPASS: {
+    HEADER: 'EMERGENCY BYPASS (last resort, logged)',
+    WARNING: 'Bypasses are audit-logged. Only use for genuine emergencies.',
+    COMMAND: 'LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="<reason>" git commit ...',
+  },
+};
+
+/**
+ * Format the main branch block message for educational output
+ *
+ * WU-1357: Produces a structured, educational message explaining:
+ * 1. WHY main is protected
+ * 2. Multiple paths forward
+ * 3. Help resources
+ * 4. Emergency bypass (last)
+ *
+ * @param {string} branch - The blocked branch name (e.g., 'main', 'master')
+ * @returns {string} Formatted multi-line message
+ */
+export function formatMainBranchBlockMessage(branch) {
+  const { BOX, WHY, ACTIONS, HELP, BYPASS } = MAIN_BRANCH_BLOCK_MESSAGES;
+  const lines = [];
+
+  // Title with box
+  lines.push('');
+  lines.push(BOX.TOP);
+  lines.push(`  DIRECT COMMIT TO ${branch.toUpperCase()} BLOCKED`);
+  lines.push(BOX.TOP);
+  lines.push('');
+
+  // WHY section
+  lines.push(WHY.HEADER);
+  lines.push(BOX.DIVIDER);
+  for (const line of WHY.LINES) {
+    lines.push(line);
+  }
+  lines.push('');
+
+  // WHAT TO DO section
+  lines.push(ACTIONS.HEADER);
+  lines.push(BOX.DIVIDER);
+  lines.push('');
+
+  // Path 1: Have a WU
+  lines.push(ACTIONS.HAVE_WU.HEADER);
+  for (const cmd of ACTIONS.HAVE_WU.COMMANDS) {
+    lines.push(`     ${cmd}`);
+  }
+  lines.push(`   ${ACTIONS.HAVE_WU.NOTE}`);
+  lines.push('');
+
+  // Path 2: Need to create WU
+  lines.push(ACTIONS.NEED_WU.HEADER);
+  for (const cmd of ACTIONS.NEED_WU.COMMANDS) {
+    lines.push(`     ${cmd}`);
+  }
+  lines.push(`   ${ACTIONS.NEED_WU.NOTE}`);
+  lines.push('');
+
+  // Path 3: List lanes
+  lines.push(ACTIONS.LIST_LANES.HEADER);
+  for (const cmd of ACTIONS.LIST_LANES.COMMANDS) {
+    lines.push(`     ${cmd}`);
+  }
+  lines.push('');
+
+  // HELP section
+  lines.push(HELP.HEADER);
+  lines.push(BOX.DIVIDER);
+  for (const resource of HELP.RESOURCES) {
+    lines.push(resource);
+  }
+  lines.push('');
+
+  // BYPASS section (last, with clear warning)
+  lines.push(BOX.DIVIDER);
+  lines.push(BYPASS.HEADER);
+  lines.push(BOX.DIVIDER);
+  lines.push(BYPASS.WARNING);
+  lines.push(`  ${BYPASS.COMMAND}`);
+  lines.push(BOX.DIVIDER);
+  lines.push('');
+
+  return lines.join('\n');
+}
 
 // WU-1070: Inline audit logging (fail-open, no external imports for hook reliability)
 function logForceBypass(hookName, projectRoot) {
@@ -266,18 +403,7 @@ export async function main() {
   const LANE_PREFIX = 'lane/';
 
   if (MAIN_BRANCHES.includes(branch)) {
-    console.error('');
-    console.error('BLOCKED: Direct commit to', branch);
-    console.error('');
-    console.error('LumenFlow requires work to happen on lane branches.');
-    console.error('');
-    console.error('To start work on a WU:');
-    console.error('  pnpm wu:claim --id WU-XXXX --lane <Lane>');
-    console.error('  cd worktrees/<lane>-wu-xxxx');
-    console.error('');
-    console.error('To bypass (emergency only):');
-    console.error('  LUMENFLOW_FORCE=1 git commit ...');
-    console.error('');
+    console.error(formatMainBranchBlockMessage(branch));
     process.exit(1);
   }
 
