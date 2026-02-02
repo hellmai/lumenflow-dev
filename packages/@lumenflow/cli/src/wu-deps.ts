@@ -22,6 +22,7 @@ import {
 } from '@lumenflow/core/dist/dependency-graph.js';
 import { OUTPUT_FORMATS } from '@lumenflow/initiatives/dist/initiative-constants.js';
 import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 
 async function main() {
   const args = createWUParser({
@@ -46,7 +47,10 @@ async function main() {
   const graph = await buildDependencyGraphAsync();
 
   if (!graph.has(wuId)) {
-    die(`WU not found in graph: ${wuId}\n\nEnsure the WU exists in docs/04-operations/tasks/wu/`);
+    // WU-1311: Use config-based WU directory path
+    die(
+      `WU not found in graph: ${wuId}\n\nEnsure the WU exists in ${getConfig().directories.wuDir}/`,
+    );
   }
 
   const format = args.format || OUTPUT_FORMATS.ASCII;
