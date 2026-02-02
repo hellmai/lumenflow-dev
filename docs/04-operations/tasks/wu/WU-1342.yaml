@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/package.json
 tests:
-  manual: []
+  manual:
+    - 'Run: pnpm exec lumenflow init --full in a temp dir and verify package.json has 17+ scripts'
+    - 'Verify .gitignore is created with node_modules, .lumenflow/state, worktrees'
+    - 'Run: pnpm exec lumenflow init --client claude and verify .claude/ directory exists'
   unit:
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
@@ -20,7 +23,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/pure-moseying-minsky.md
 risks: []
-notes: ''
+notes: 'Implementation expanded LUMENFLOW_SCRIPTS from 8 to 17+ commands, added .gitignore scaffolding with merge mode support, and fixed init-plan binary path. All acceptance criteria verified via unit tests in init-scripts.test.ts.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
