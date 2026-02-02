@@ -2,7 +2,7 @@ id: WU-1350
 title: Fix non-existent CLI commands in documentation
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Documentation references CLI commands that don't exist: (1) wu-list in solo-workflow.mdx - should use backlog.md or wu:status, (2) backlog:regenerate and status:regenerate in troubleshooting.mdx - should use wu-repair. Also standardize npx vs pnpm patterns."
+description: "Documentation references CLI commands that don't exist: (1) wu-list in
+  solo-workflow.mdx - should use backlog.md or wu:status, (2) backlog:regenerate and
+  status:regenerate in troubleshooting.mdx - should use wu-repair. Also standardize npx vs pnpm
+  patterns."
 acceptance:
   - All CLI commands referenced in docs exist in @lumenflow/cli package.json
   - solo-workflow.mdx Quick Status section uses existing commands
   - troubleshooting.mdx WU status mismatch section uses wu-repair
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1350
+claimed_at: 2026-02-02T16:27:09.092Z
+baseline_main_sha: 8daeaa34c13ac5144767e8a0d88d5ade45d9ac70
+session_id: 3ec40616-3715-4d73-9720-b193849e6479
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:27:09.095Z
