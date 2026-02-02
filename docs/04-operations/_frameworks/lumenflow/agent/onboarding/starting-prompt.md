@@ -254,6 +254,7 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 | ----------------------------------------- | --------------------------------- | --------------------- |
 | `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
 | `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
+| `pnpm wu:edit --id WU-XXX --field value`  | Edit WU spec fields               | Update notes/desc     |
 | `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
 | `pnpm gates`                              | Run quality gates                 | Before wu:done        |
 | `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |

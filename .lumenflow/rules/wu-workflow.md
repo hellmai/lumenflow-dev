@@ -160,6 +160,8 @@ A WU is done when:
 - Use `--no-verify` to bypass hooks
 - Ask "should I run wu:done?" - just run it
 - Write "To Complete: pnpm wu:done" without running it
+- Present findings then go silent when user implies action ("so update X then?")
+- Ask "should I update the WU?" after user already implied yes
 
 ### DO:
 
