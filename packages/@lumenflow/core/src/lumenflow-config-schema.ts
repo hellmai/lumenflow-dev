@@ -697,6 +697,45 @@ export const TelemetryConfigSchema = z.object({
 });
 
 /**
+ * WU-1322: Lane definition schema for .lumenflow.config.yaml
+ *
+ * Extends the existing lane configuration with lock_policy field.
+ * Compatible with WU-1016 (wip_limit) and WU-1187 (wip_justification).
+ */
+export const LaneDefinitionSchema = z.object({
+  /** Lane name in "Parent: Sublane" format (e.g., "Framework: Core") */
+  name: z.string(),
+
+  /** WU-1016: Maximum WUs allowed in progress concurrently for this lane */
+  wip_limit: z.number().int().positive().optional(),
+
+  /** WU-1187: Required justification when wip_limit > 1 */
+  wip_justification: z.string().optional(),
+
+  /**
+   * WU-1322: Lock policy for this lane.
+   * - 'all': Lock lane for all other agents (default)
+   * - 'active': Lock only for agents with overlapping code_paths
+   * - 'none': No locking (suitable for documentation lanes)
+   *
+   * @default 'all'
+   *
+   * @example
+   * ```yaml
+   * lanes:
+   *   definitions:
+   *     - name: 'Content: Documentation'
+   *       wip_limit: 4
+   *       lock_policy: 'none'  # Docs can be worked in parallel
+   * ```
+   */
+  lock_policy: LockPolicySchema.default('all'),
+
+  /** Code paths associated with this lane (glob patterns) */
+  code_paths: z.array(z.string()).optional(),
+});
+
+/**
  * Complete LumenFlow configuration schema
  */
 export const LumenFlowConfigSchema = z.object({
@@ -784,6 +823,8 @@ export type ValidationMode = z.infer<typeof ValidationModeSchema>;
 export type MethodologyTelemetryConfig = z.infer<typeof MethodologyTelemetryConfigSchema>;
 export type TelemetryConfig = z.infer<typeof TelemetryConfigSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
+// WU-1322: Lane definition type (LockPolicy already exported by WU-1325)
+export type LaneDefinition = z.infer<typeof LaneDefinitionSchema>;
 // WU-1259: Re-export methodology types from resolve-policy
 export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';
 

@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
   - .lumenflow.config.yaml
 tests:
   manual: []
@@ -18,7 +17,9 @@ artifacts:
   - .lumenflow/stamps/WU-1322.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Schema-only WU, enforcement in subsequent WUs (WU-1323, WU-1324, WU-1325)'
+spec_refs:
+  - 'lumenflow://plans/INIT-013-phase1-lock-policy.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
