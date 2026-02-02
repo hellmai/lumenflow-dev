@@ -7,6 +7,9 @@ priority: P1
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
+  - package.json
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - apps/docs/src/content/docs/reference/cli.mdx
 tests:
   manual: []
   unit:
@@ -25,10 +28,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add initiative:remove-wu command that removes a WU from an initiative bidirectionally. Removes initiative field from WU YAML and removes WU from initiative wus list. Uses micro-worktree isolation like initiative:add-wu.
+description: Add initiative:remove-wu command that removes a WU from an initiative bidirectionally.
+  Removes initiative field from WU YAML and removes WU from initiative wus list. Uses micro-worktree
+  isolation like initiative:add-wu.
 acceptance:
   - initiative:remove-wu --initiative INIT-XXX --wu WU-XXX removes WU from initiative
   - Removes initiative field from WU YAML
   - Removes WU from initiative wus list
   - Uses micro-worktree isolation
   - Handles case where WU not in initiative gracefully
+  - Command registered in package.json scripts
+  - Added to quick-ref-commands.md internal docs
+  - Added to apps/docs CLI reference (Starlight)
