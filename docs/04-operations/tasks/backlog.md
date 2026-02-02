@@ -45,6 +45,7 @@ sections:
 - [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
 - [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 - [WU-1320 — Fix no-console lint errors in CLI commands](wu/WU-1320.yaml) — Framework: CLI
+- [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -52,7 +53,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1319 — Generate status.md from merged state during wu:done](wu/WU-1319.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -336,3 +336,4 @@ sections:
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml)
 - [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml)
 - [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml)
+- [WU-1319 — Generate status.md from merged state during wu:done](wu/WU-1319.yaml)

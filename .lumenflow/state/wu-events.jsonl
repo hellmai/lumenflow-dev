@@ -572,4 +572,5 @@
 {"type":"complete","wuId":"WU-1313","timestamp":"2026-02-02T00:43:14.557Z"}
 {"type":"claim","wuId":"WU-1315","timestamp":"2026-02-02T00:46:49.667Z","lane":"Framework: CLI","title":"Add onboarding smoke-test gate"}
 {"type":"complete","wuId":"WU-1315","timestamp":"2026-02-02T01:04:31.380Z"}
-{"type":"claim","wuId":"WU-1319","lane":"Framework: Core","title":"Generate status.md from merged state during wu:done","timestamp":"2026-02-02T08:50:36.044Z"}
+{"type":"claim","wuId":"WU-1319","timestamp":"2026-02-02T08:50:36.044Z","lane":"Framework: Core","title":"Generate status.md from merged state during wu:done"}
+{"type":"complete","wuId":"WU-1319","timestamp":"2026-02-02T09:02:32.180Z"}
