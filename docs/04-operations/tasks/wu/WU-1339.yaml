@@ -1,0 +1,30 @@
+id: WU-1339
+title: Fix lint errors in lane-lock.ts (pre-existing)
+lane: 'Framework: Core'
+type: chore
+status: ready
+priority: P2
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/core/src/lane-lock.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1339.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add file-level eslint-disable for console statements and fix require imports in lane-lock.ts
+acceptance:
+  - All lint errors in lane-lock.ts are resolved
