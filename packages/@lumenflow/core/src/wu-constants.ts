@@ -2057,6 +2057,91 @@ export const CONTEXT_VALIDATION = {
   } as const,
 } as const;
 
+/**
+ * Git hook error messages (WU-1357)
+ *
+ * Educational, structured messages for git hook blocks.
+ * Follows the "message bag" pattern: TITLE, WHY, ACTIONS, HELP, BYPASS.
+ *
+ * Design principles:
+ * - Explain WHY before showing WHAT to do
+ * - Provide multiple paths forward (not just one command)
+ * - Put emergency bypass LAST with clear warnings
+ * - Include help resources for learning
+ *
+ * @see .husky/hooks/pre-commit.mjs - Primary consumer
+ */
+export const HOOK_MESSAGES = {
+  /**
+   * Main branch protection block message components
+   */
+  MAIN_BRANCH_BLOCK: {
+    /** Box drawing for visual structure */
+    BOX: {
+      TOP: '══════════════════════════════════════════════════════════════',
+      DIVIDER: '──────────────────────────────────────────────────────────────',
+    },
+
+    /** Title shown at the top */
+    TITLE: (branch: string) => `DIRECT COMMIT TO ${branch.toUpperCase()} BLOCKED`,
+
+    /** Educational explanation of WHY the block exists */
+    WHY: {
+      HEADER: 'WHY THIS HAPPENS',
+      LINES: [
+        'LumenFlow protects main from direct commits to ensure:',
+        '  • All work is tracked in Work Units (WUs)',
+        '  • Changes can be reviewed and coordinated',
+        '  • Parallel work across lanes stays isolated',
+      ],
+    },
+
+    /** Action paths - multiple ways forward */
+    ACTIONS: {
+      HEADER: 'WHAT TO DO',
+      HAVE_WU: {
+        HEADER: '1. If you have a Work Unit to implement:',
+        COMMANDS: ['pnpm wu:claim --id WU-XXXX --lane "<Lane>"', 'cd worktrees/<lane>-wu-xxxx'],
+        NOTE: 'Then make your commits there',
+      },
+      NEED_WU: {
+        HEADER: '2. If you need to create a new Work Unit:',
+        COMMANDS: ['pnpm wu:create --lane "<Lane>" --title "Your task"'],
+        NOTE: 'This generates a WU ID, then claim it as above',
+      },
+      LIST_LANES: {
+        HEADER: '3. Not sure what lane to use?',
+        COMMANDS: ['pnpm wu:list-lanes'],
+      },
+    },
+
+    /** Help resources */
+    HELP: {
+      HEADER: 'NEED HELP?',
+      RESOURCES: [
+        '• Read: LUMENFLOW.md (workflow overview)',
+        '• Read: docs/04-operations/_frameworks/lumenflow/agent/onboarding/',
+        '• Run:  pnpm wu:help',
+      ],
+    },
+
+    /** Emergency bypass (shown last, with warnings) */
+    BYPASS: {
+      HEADER: 'EMERGENCY BYPASS (logged, use sparingly)',
+      WARNING: 'Bypasses are audit-logged. Only use for genuine emergencies.',
+      COMMAND: 'LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="<reason>" git commit ...',
+    },
+  },
+
+  /**
+   * Worktree discipline block message components
+   */
+  WORKTREE_BLOCK: {
+    TITLE: 'LANE BRANCH WORK SHOULD BE IN WORKTREE',
+    WHY: 'Worktrees provide isolation for parallel work. Working on a lane branch from the main checkout bypasses this isolation.',
+  },
+} as const;
+
 /** Type for location types */
 export type LocationType =
   (typeof CONTEXT_VALIDATION.LOCATION_TYPES)[keyof typeof CONTEXT_VALIDATION.LOCATION_TYPES];
