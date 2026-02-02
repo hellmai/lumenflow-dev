@@ -308,6 +308,7 @@ export type {
   LumenFlowConfig,
   Directories,
   BeaconPaths,
+  PushRetryConfig,
   GitConfig,
   WuConfig,
   GatesConfig,

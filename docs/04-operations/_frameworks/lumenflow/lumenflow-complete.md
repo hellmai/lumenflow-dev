@@ -280,6 +280,18 @@ gates:
 
 **Parallel execution:** Every claimed WU runs inside its own Git worktree. `pnpm wu:claim` updates canonical state on `origin/main` using a push-only micro-worktree, creates the lane branch, and provisions `worktrees/<lane>-wu-xxx/` (override with flags if required). By default it pushes the lane branch to `origin` so other agents can see the claim. From that moment, the main checkout is read/review/admin only for that WU: browse code, run scripts, or apply a non-WU typo fix, but **ALL WU edits, staging, commits, and tests stay inside the worktree**. If a WU stalls beyond a working session, move it to `blocked` with `pnpm wu:block`; once the dependency clears, return it to `in_progress` with `pnpm wu:unblock`. On completion, `pnpm wu:done` runs gates, updates docs, stamps, pushes, and removes the worktree. See `./02-playbook.md` §4.4 for the full flow.
 
+**Push retry on race conditions (WU-1332):** When multiple agents run micro-worktree operations concurrently (e.g., `wu:claim`, `wu:create`, `initiative:add`), pushes to `origin/main` may fail with non-fast-forward errors if another agent pushes first. LumenFlow automatically detects these failures and retries with exponential backoff: fetch latest, rebase, re-merge, and push again. Configure via `.lumenflow.config.yaml`:
+
+```yaml
+git:
+  push_retry:
+    enabled: true # Enable automatic retry (default)
+    retries: 3 # Max attempts including initial (default: 3)
+    min_delay_ms: 100 # Base delay for backoff (default: 100)
+    max_delay_ms: 1000 # Max delay cap (default: 1000)
+    jitter: true # Randomize delays (recommended for concurrent agents)
+```
+
 **Worktree discipline (IMMUTABLE law):**
 
 - After `pnpm wu:claim`, immediately `cd worktrees/<lane>-wu-xxx/` and stay there until `pnpm wu:done`.
