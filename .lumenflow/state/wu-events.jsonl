@@ -622,3 +622,4 @@
 {"type":"complete","wuId":"WU-1350","timestamp":"2026-02-02T16:29:55.347Z"}
 {"type":"claim","wuId":"WU-1351","timestamp":"2026-02-02T16:33:30.266Z","lane":"Content: Documentation","title":"Fix CLI command typos in documentation"}
 {"type":"complete","wuId":"WU-1351","timestamp":"2026-02-02T16:35:00.977Z"}
+{"type":"claim","wuId":"WU-1348","lane":"Framework: Core","title":"Avoid main checkout resets in micro-worktree push retry","timestamp":"2026-02-02T16:37:09.317Z"}
