@@ -625,5 +625,6 @@
 {"type":"claim","wuId":"WU-1348","timestamp":"2026-02-02T16:37:09.317Z","lane":"Framework: Core","title":"Avoid main checkout resets in micro-worktree push retry"}
 {"type":"claim","wuId":"WU-1352","timestamp":"2026-02-02T16:38:08.407Z","lane":"Content: Documentation","title":"Add 'never quick fix on main' anti-pattern to agent docs"}
 {"type":"complete","wuId":"WU-1352","timestamp":"2026-02-02T16:40:02.648Z"}
-{"type":"claim","wuId":"WU-1354","lane":"Content: Documentation","title":"Add 'implied action paralysis' anti-pattern to agent docs","timestamp":"2026-02-02T16:45:45.371Z"}
-{"type":"claim","wuId":"WU-1353","lane":"Framework: CLI","title":"Sync CLI templates with source docs and add release automation","timestamp":"2026-02-02T16:46:38.682Z"}
+{"type":"claim","wuId":"WU-1354","timestamp":"2026-02-02T16:45:45.371Z","lane":"Content: Documentation","title":"Add 'implied action paralysis' anti-pattern to agent docs"}
+{"type":"claim","wuId":"WU-1353","timestamp":"2026-02-02T16:46:38.682Z","lane":"Framework: CLI","title":"Sync CLI templates with source docs and add release automation"}
+{"type":"complete","wuId":"WU-1348","timestamp":"2026-02-02T16:47:05.780Z"}

@@ -2,14 +2,15 @@ id: WU-1348
 title: Avoid main checkout resets in micro-worktree push retry
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual:
-    - Run pnpm wu:create to trigger micro-worktree push and verify no file flash occurs in main checkout
+    - Run pnpm wu:create to trigger micro-worktree push and verify no file flash occurs in main
+      checkout
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
@@ -51,3 +52,5 @@ session_id: 0cc1e091-7c9c-4ad7-a840-cda59cad6f78
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:37:09.306Z
+locked: true
+completed_at: 2026-02-02T16:47:03.173Z
