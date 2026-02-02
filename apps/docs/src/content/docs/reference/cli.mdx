@@ -11,25 +11,23 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiatives, and more.
 
-<Aside type="tip">
-All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).
-</Aside>
+<Aside type="tip">All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).</Aside>
 
 ## Commands Overview
 
-| Category | Commands |
-|----------|----------|
-| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end) |
-| Flow Metrics | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport) |
-| Initiatives | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus) |
-| Memory Layer | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage) |
-| Metrics | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot) |
-| Orchestration | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor) |
-| Other | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`guard:locked`](#guardlocked), [`guard:main-branch`](#guardmain-branch), [`guard:worktree-commit`](#guardworktree-commit), [`init:plan`](#initplan), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`rotate:progress`](#rotateprogress), [`session:coordinator`](#sessioncoordinator), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`sync:templates`](#synctemplates), [`trace:gen`](#tracegen), [`validate`](#validate), [`validate:agent-skills`](#validateagent-skills), [`validate:agent-sync`](#validateagent-sync), [`validate:backlog-sync`](#validatebacklog-sync), [`validate:skills-spec`](#validateskills-spec) |
-| Quality Gates | [`gates`](#gates) |
-| Setup | [`lumenflow`](#lumenflow), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate) |
-| Sub-Agents | [`spawn:list`](#spawnlist) |
-| Work Units | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate) |
+| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Other           | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`guard:locked`](#guardlocked), [`guard:main-branch`](#guardmain-branch), [`guard:worktree-commit`](#guardworktree-commit), [`init:plan`](#initplan), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`rotate:progress`](#rotateprogress), [`session:coordinator`](#sessioncoordinator), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`sync:templates`](#synctemplates), [`trace:gen`](#tracegen), [`validate`](#validate), [`validate:agent-skills`](#validateagent-skills), [`validate:agent-sync`](#validateagent-sync), [`validate:backlog-sync`](#validatebacklog-sync), [`validate:skills-spec`](#validateskills-spec) |
+| Quality Gates   | [`gates`](#gates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ## Agent Lifecycle
 
@@ -51,16 +49,16 @@ pnpm agent:log-issue --category <cat> --severity <sev> --title <title> --descrip
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--category &lt;cat&gt;` | Issue category (workflow|tooling|confusion|violation|error) | Yes |
-| `--severity &lt;sev&gt;` | Severity level (blocker|major|minor|info) | Yes |
-| `--title &lt;title&gt;` | Short description (5-100 chars) | Yes |
-| `--description &lt;desc&gt;` | Detailed context (10-2000 chars) | Yes |
-| `--resolution &lt;res&gt;` | How the issue was resolved | No |
-| `--tag &lt;tag&gt;` | Tag for categorization (repeatable) | No |
-| `--step &lt;step&gt;` | Current workflow step (e.g., wu:done, gates) | No |
-| `--file &lt;file&gt;` | Related file path (repeatable) | No |
+| Flag                         | Description                                  | Required |
+| ---------------------------- | -------------------------------------------- | -------- | --------- | --------- | ------ | --- |
+| `--category &lt;cat&gt;`     | Issue category (workflow                     | tooling  | confusion | violation | error) | Yes |
+| `--severity &lt;sev&gt;`     | Severity level (blocker                      | major    | minor     | info)     | Yes    |
+| `--title &lt;title&gt;`      | Short description (5-100 chars)              | Yes      |
+| `--description &lt;desc&gt;` | Detailed context (10-2000 chars)             | Yes      |
+| `--resolution &lt;res&gt;`   | How the issue was resolved                   | No       |
+| `--tag &lt;tag&gt;`          | Tag for categorization (repeatable)          | No       |
+| `--step &lt;step&gt;`        | Current workflow step (e.g., wu:done, gates) | No       |
+| `--file &lt;file&gt;`        | Related file path (repeatable)               | No       |
 
 ### agent:session
 
@@ -72,11 +70,11 @@ pnpm agent:session --wu <wuId> --tier <tier>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | WU ID to work on (e.g., WU-1234) | Yes |
-| `--tier &lt;tier&gt;` | Context tier (1, 2, or 3) | Yes |
-| `--agent-type &lt;type&gt;` | Agent type (default: claude-code) | No |
+| Flag                        | Description                       | Required |
+| --------------------------- | --------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`         | WU ID to work on (e.g., WU-1234)  | Yes      |
+| `--tier &lt;tier&gt;`       | Context tier (1, 2, or 3)         | Yes      |
+| `--agent-type &lt;type&gt;` | Agent type (default: claude-code) | No       |
 
 ### agent:session-end
 
@@ -116,10 +114,10 @@ pnpm initiative:add-wu --initiative <ref> --wu <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes |
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+| Flag                       | Description                          | Required |
+| -------------------------- | ------------------------------------ | -------- |
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
+| `--wu &lt;wuId&gt;`        | Work Unit ID to link (e.g., WU-123)  | Yes      |
 
 ### initiative:bulk-assign-wus
 
@@ -131,11 +129,11 @@ pnpm initiative:bulk-assign-wus
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--config &lt;path&gt;` | Path to config file (tool-specific) | No |
-| `--apply` | Apply changes (default is dry-run) | No |
-| `--sync-from-initiative` | Ensure WU initiative fields exist for WUs listed in initiatives | No |
+| Flag                     | Description                                                     | Required |
+| ------------------------ | --------------------------------------------------------------- | -------- |
+| `--config &lt;path&gt;`  | Path to config file (tool-specific)                             | No       |
+| `--apply`                | Apply changes (default is dry-run)                              | No       |
+| `--sync-from-initiative` | Ensure WU initiative fields exist for WUs listed in initiatives | No       |
 
 ### initiative:create
 
@@ -147,14 +145,14 @@ pnpm initiative:create --id <wuId> --slug <slug> --title <title>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-s, --slug &lt;slug&gt;` | Initiative slug (kebab-case) | Yes |
-| `-t, --title &lt;title&gt;` | Work Unit title | Yes |
-| `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3) | No |
-| `-o, --owner &lt;owner&gt;` | Initiative owner (team or individual) | No |
-| `--target-date &lt;date&gt;` | Target completion date (YYYY-MM-DD) | No |
+| Flag                              | Description                                                                      | Required |
+| --------------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`           | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-s, --slug &lt;slug&gt;`         | Initiative slug (kebab-case)                                                     | Yes      |
+| `-t, --title &lt;title&gt;`       | Work Unit title                                                                  | Yes      |
+| `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3)                                                  | No       |
+| `-o, --owner &lt;owner&gt;`       | Initiative owner (team or individual)                                            | No       |
+| `--target-date &lt;date&gt;`      | Target completion date (YYYY-MM-DD)                                              | No       |
 
 ### initiative:edit
 
@@ -174,11 +172,11 @@ pnpm initiative:list
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
-| `--status &lt;status&gt;` | Filter by status | No |
-| `--color` | Enable colored output | No |
+| Flag                      | Description                                 | Required |
+| ------------------------- | ------------------------------------------- | -------- |
+| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No       |
+| `--status &lt;status&gt;` | Filter by status                            | No       |
+| `--color`                 | Enable colored output                       | No       |
 
 ### initiative:plan
 
@@ -190,9 +188,9 @@ pnpm initiative:plan --initiative <ref>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes |
+| Flag                       | Description                          | Required |
+| -------------------------- | ------------------------------------ | -------- |
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
 ### initiative:status
 
@@ -204,11 +202,11 @@ pnpm initiative:status
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
-| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
-| `--color` | Enable colored output | No |
+| Flag                      | Description                                                                      | Required |
+| ------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`   | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid)                                      | No       |
+| `--color`                 | Enable colored output                                                            | No       |
 
 ## Memory Layer
 
@@ -222,9 +220,9 @@ pnpm mem:checkpoint
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No       |
 
 ### mem:cleanup
 
@@ -244,9 +242,9 @@ pnpm mem:context --wu <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes      |
 
 ### mem:create
 
@@ -258,9 +256,9 @@ pnpm mem:create
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No       |
 
 ### mem:delete
 
@@ -280,9 +278,9 @@ pnpm mem:export
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No       |
 
 ### mem:inbox
 
@@ -294,10 +292,10 @@ pnpm mem:inbox
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
-| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
+| Flag                      | Description                             | Required |
+| ------------------------- | --------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`       | Work Unit ID to link (e.g., WU-123)     | No       |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No       |
 
 ### mem:init
 
@@ -317,9 +315,9 @@ pnpm mem:ready --wu <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes      |
 
 ### mem:signal
 
@@ -331,10 +329,10 @@ pnpm mem:signal
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
-| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
+| Flag                      | Description                             | Required |
+| ------------------------- | --------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`       | Work Unit ID to link (e.g., WU-123)     | No       |
+| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No       |
 
 ### mem:start
 
@@ -346,9 +344,9 @@ pnpm mem:start --wu <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | Yes      |
 
 ### mem:summarize
 
@@ -502,8 +500,6 @@ pnpm git:status
 
 ### guard:locked
 
-
-
 ```bash
 pnpm guard:locked
 ```
@@ -517,8 +513,6 @@ pnpm guard:main-branch
 ```
 
 ### guard:worktree-commit
-
-
 
 ```bash
 pnpm guard:worktree-commit
@@ -558,10 +552,10 @@ pnpm plan:create --id <wuId> --title <title>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-t, --title &lt;title&gt;` | Work Unit title | Yes |
+| Flag                        | Description                                                                      | Required |
+| --------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`     | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-t, --title &lt;title&gt;` | Work Unit title                                                                  | Yes      |
 
 ### plan:edit
 
@@ -573,9 +567,9 @@ pnpm plan:edit --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
 ### plan:link
 
@@ -587,9 +581,9 @@ pnpm plan:link --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
 ### plan:promote
 
@@ -601,9 +595,9 @@ pnpm plan:promote --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
 ### rotate:progress
 
@@ -671,15 +665,11 @@ pnpm trace:gen
 
 ### validate
 
-
-
 ```bash
 pnpm validate
 ```
 
 ### validate:agent-skills
-
-
 
 ```bash
 pnpm validate:agent-skills
@@ -687,23 +677,17 @@ pnpm validate:agent-skills
 
 ### validate:agent-sync
 
-
-
 ```bash
 pnpm validate:agent-sync
 ```
 
 ### validate:backlog-sync
 
-
-
 ```bash
 pnpm validate:backlog-sync
 ```
 
 ### validate:skills-spec
-
-
 
 ```bash
 pnpm validate:skills-spec
@@ -787,8 +771,6 @@ pnpm lumenflow:upgrade
 
 ### lumenflow:validate
 
-
-
 ```bash
 pnpm lumenflow:validate
 ```
@@ -805,9 +787,9 @@ pnpm spawn:list
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No |
+| Flag                | Description                         | Required |
+| ------------------- | ----------------------------------- | -------- |
+| `--wu &lt;wuId&gt;` | Work Unit ID to link (e.g., WU-123) | No       |
 
 ## Work Units
 
@@ -821,13 +803,13 @@ pnpm wu:block --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
-| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
-| `--remove-worktree` | Remove worktree when blocking | No |
-| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
+| Flag                          | Description                                                                      | Required |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                 | No       |
+| `-w, --worktree &lt;path&gt;` | Override worktree path                                                           | No       |
+| `--remove-worktree`           | Remove worktree when blocking                                                    | No       |
+| `--no-auto`                   | Skip auto-updating YAML/backlog/status                                           | No       |
 
 ### wu:claim
 
@@ -839,23 +821,23 @@ pnpm wu:claim --id <wuId> --lane <lane>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | Yes |
-| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
-| `-b, --branch &lt;branch&gt;` | Override branch name | No |
-| `--branch-only` | Use branch-only mode (no worktree) | No |
-| `--pr-mode` | Use PR mode (create PR instead of auto-merge) | No |
-| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
-| `-f, --force` | Force operation | No |
-| `--force-overlap` | Force claiming despite overlap (requires --reason) | No |
-| `--fix` | Auto-fix common YAML validation issues (WU-1359) | No |
-| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
-| `--allow-incomplete` | Allow claiming with incomplete spec (bypasses spec completeness, NOT schema errors) | No |
-| `--resume` | Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist. | No |
-| `--skip-setup` | Skip automatic pnpm install in worktree after creation (faster claims when deps already built) | No |
-| `--no-push` | Skip pushing claim branch or canonical updates (air-gapped/offline) | No |
+| Flag                          | Description                                                                                                                                                                                            | Required |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                                                                                                       | Yes      |
+| `-l, --lane &lt;lane&gt;`     | Lane name (e.g., "Operations: Tooling")                                                                                                                                                                | Yes      |
+| `-w, --worktree &lt;path&gt;` | Override worktree path                                                                                                                                                                                 | No       |
+| `-b, --branch &lt;branch&gt;` | Override branch name                                                                                                                                                                                   | No       |
+| `--branch-only`               | Use branch-only mode (no worktree)                                                                                                                                                                     | No       |
+| `--pr-mode`                   | Use PR mode (create PR instead of auto-merge)                                                                                                                                                          | No       |
+| `--no-auto`                   | Skip auto-updating YAML/backlog/status                                                                                                                                                                 | No       |
+| `-f, --force`                 | Force operation                                                                                                                                                                                        | No       |
+| `--force-overlap`             | Force claiming despite overlap (requires --reason)                                                                                                                                                     | No       |
+| `--fix`                       | Auto-fix common YAML validation issues (WU-1359)                                                                                                                                                       | No       |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                                                                                                                                       | No       |
+| `--allow-incomplete`          | Allow claiming with incomplete spec (bypasses spec completeness, NOT schema errors)                                                                                                                    | No       |
+| `--resume`                    | Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist. | No       |
+| `--skip-setup`                | Skip automatic pnpm install in worktree after creation (faster claims when deps already built)                                                                                                         | No       |
+| `--no-push`                   | Skip pushing claim branch or canonical updates (air-gapped/offline)                                                                                                                                    | No       |
 
 ### wu:cleanup
 
@@ -867,9 +849,9 @@ pnpm wu:cleanup
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
 
 ### wu:create
 
@@ -881,31 +863,31 @@ pnpm wu:create --lane <lane> --title <title>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
-| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | Yes |
-| `-t, --title &lt;title&gt;` | Work Unit title | Yes |
-| `-p, --priority &lt;priority&gt;` | Priority level (P0, P1, P2, P3) | No |
-| `--type &lt;type&gt;` | WU type (feature, bug, refactor, documentation) | No |
-| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | No |
-| `--phase &lt;number&gt;` | Phase number within initiative | No |
-| `--blocked-by &lt;wuIds&gt;` | WU IDs that block this WU (repeatable) | No |
-| `--blocks &lt;wuIds&gt;` | WU IDs this WU blocks (repeatable) | No |
-| `--labels &lt;labels&gt;` | Labels (repeatable) | No |
-| `--assigned-to &lt;email&gt;` | Override assigned_to (defaults to git config user.email) | No |
-| `--description &lt;text&gt;` | WU description text (Context/Problem/Solution) | No |
-| `--acceptance &lt;criterion&gt;` | Acceptance criterion (repeatable, use multiple times) | No |
-| `--code-paths &lt;paths&gt;` | Code paths (repeatable) | No |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable) | No |
-| `--test-paths-unit &lt;paths&gt;` | Unit test file paths (repeatable) | No |
-| `--test-paths-e2e &lt;paths&gt;` | E2E test file paths (repeatable) | No |
-| `--validate` | Validate spec completeness (requires description, acceptance, test paths) | No |
-| `--spec-refs &lt;paths&gt;` | Spec/plan references (repeatable or comma-separated, required for type: feature) | No |
-| `--exposure &lt;type&gt;` | Exposure level (ui, api, backend-only, documentation) | No |
-| `--user-journey &lt;text&gt;` | User journey description (recommended for ui/api exposure) | No |
-| `--ui-pairing-wus &lt;wuIds&gt;` | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure) | No |
-| `--plan` | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage) | No |
+| Flag                                | Description                                                                       | Required |
+| ----------------------------------- | --------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.  | No       |
+| `-l, --lane &lt;lane&gt;`           | Lane name (e.g., "Operations: Tooling")                                           | Yes      |
+| `-t, --title &lt;title&gt;`         | Work Unit title                                                                   | Yes      |
+| `-p, --priority &lt;priority&gt;`   | Priority level (P0, P1, P2, P3)                                                   | No       |
+| `--type &lt;type&gt;`               | WU type (feature, bug, refactor, documentation)                                   | No       |
+| `--initiative &lt;ref&gt;`          | Parent initiative (INIT-XXX or slug)                                              | No       |
+| `--phase &lt;number&gt;`            | Phase number within initiative                                                    | No       |
+| `--blocked-by &lt;wuIds&gt;`        | WU IDs that block this WU (repeatable)                                            | No       |
+| `--blocks &lt;wuIds&gt;`            | WU IDs this WU blocks (repeatable)                                                | No       |
+| `--labels &lt;labels&gt;`           | Labels (repeatable)                                                               | No       |
+| `--assigned-to &lt;email&gt;`       | Override assigned_to (defaults to git config user.email)                          | No       |
+| `--description &lt;text&gt;`        | WU description text (Context/Problem/Solution)                                    | No       |
+| `--acceptance &lt;criterion&gt;`    | Acceptance criterion (repeatable, use multiple times)                             | No       |
+| `--code-paths &lt;paths&gt;`        | Code paths (repeatable)                                                           | No       |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                             | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                 | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                  | No       |
+| `--validate`                        | Validate spec completeness (requires description, acceptance, test paths)         | No       |
+| `--spec-refs &lt;paths&gt;`         | Spec/plan references (repeatable or comma-separated, required for type: feature)  | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                             | No       |
+| `--user-journey &lt;text&gt;`       | User journey description (recommended for ui/api exposure)                        | No       |
+| `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure) | No       |
+| `--plan`                            | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)            | No       |
 
 ### wu:delete
 
@@ -917,9 +899,9 @@ pnpm wu:delete
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
 
 ### wu:deps
 
@@ -931,12 +913,12 @@ pnpm wu:deps
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
-| `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid) | No |
-| `-d, --depth &lt;number&gt;` | Maximum traversal depth | No |
-| `--direction &lt;dir&gt;` | Graph direction (up, down, both) | No |
+| Flag                         | Description                                                                      | Required |
+| ---------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`      | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--format &lt;format&gt;`    | Output format (table, json, ascii, mermaid)                                      | No       |
+| `-d, --depth &lt;number&gt;` | Maximum traversal depth                                                          | No       |
+| `--direction &lt;dir&gt;`    | Graph direction (up, down, both)                                                 | No       |
 
 ### wu:done
 
@@ -956,13 +938,13 @@ pnpm wu:edit --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable) | No |
-| `--test-paths-unit &lt;paths&gt;` | Unit test file paths (repeatable) | No |
-| `--test-paths-e2e &lt;paths&gt;` | E2E test file paths (repeatable) | No |
-| `--exposure &lt;type&gt;` | Exposure level (ui, api, backend-only, documentation) | No |
+| Flag                                | Description                                                                      | Required |
+| ----------------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`             | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `--test-paths-manual &lt;tests&gt;` | Manual test descriptions (repeatable)                                            | No       |
+| `--test-paths-unit &lt;paths&gt;`   | Unit test file paths (repeatable)                                                | No       |
+| `--test-paths-e2e &lt;paths&gt;`    | E2E test file paths (repeatable)                                                 | No       |
+| `--exposure &lt;type&gt;`           | Exposure level (ui, api, backend-only, documentation)                            | No       |
 
 ### wu:infer-lane
 
@@ -974,7 +956,7 @@ pnpm wu:infer-lane
 
 ### wu:preflight
 
-Fast validation of code_paths and test paths before gates run. 
+Fast validation of code_paths and test paths before gates run.
 
 ```bash
 pnpm wu:preflight --id <wuId>
@@ -982,10 +964,10 @@ pnpm wu:preflight --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
+| Flag                          | Description                                                                      | Required |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-w, --worktree &lt;path&gt;` | Override worktree path                                                           | No       |
 
 ### wu:prep
 
@@ -997,9 +979,9 @@ pnpm wu:prep --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
 ### wu:prune
 
@@ -1019,9 +1001,9 @@ pnpm wu:recover --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
 ### wu:release
 
@@ -1033,10 +1015,10 @@ pnpm wu:release --id <wuId> --reason <reason>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | Yes |
+| Flag                          | Description                                                                      | Required |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                 | Yes      |
 
 ### wu:repair
 
@@ -1056,17 +1038,17 @@ pnpm wu:spawn --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `--thinking` | Enable extended thinking for sub-agent WU execution | No |
-| `--no-thinking` | Explicitly disable extended thinking (default behavior) | No |
-| `--budget &lt;tokens&gt;` | Token budget for extended thinking (requires --thinking) | No |
-| `--codex` | Output a Codex/GPT-friendly Markdown prompt (instead of Claude Task antml) | No |
-| `--parent-wu &lt;wuId&gt;` | Parent WU ID for orchestrator context (e.g., WU-1000) | No |
-| `--client &lt;client&gt;` | Client name (claude-code, gemini-cli, etc) | No |
-| `--vendor &lt;vendor&gt;` | Deprecated alias for --client | No |
-| `--no-context` | Skip memory context injection in spawn prompts | No |
+| Flag                       | Description                                                                      | Required |
+| -------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`    | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `--thinking`               | Enable extended thinking for sub-agent WU execution                              | No       |
+| `--no-thinking`            | Explicitly disable extended thinking (default behavior)                          | No       |
+| `--budget &lt;tokens&gt;`  | Token budget for extended thinking (requires --thinking)                         | No       |
+| `--codex`                  | Output a Codex/GPT-friendly Markdown prompt (instead of Claude Task antml)       | No       |
+| `--parent-wu &lt;wuId&gt;` | Parent WU ID for orchestrator context (e.g., WU-1000)                            | No       |
+| `--client &lt;client&gt;`  | Client name (claude-code, gemini-cli, etc)                                       | No       |
+| `--vendor &lt;vendor&gt;`  | Deprecated alias for --client                                                    | No       |
+| `--no-context`             | Skip memory context injection in spawn prompts                                   | No       |
 
 ### wu:status
 
@@ -1078,9 +1060,9 @@ pnpm wu:status
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
 
 ### wu:unblock
 
@@ -1092,15 +1074,15 @@ pnpm wu:unblock --id <wuId>
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes |
-| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
-| `--create-worktree` | Create worktree when unblocking | No |
-| `-w, --worktree &lt;path&gt;` | Override worktree path | No |
-| `-b, --branch &lt;branch&gt;` | Override branch name | No |
-| `--no-auto` | Skip auto-updating YAML/backlog/status | No |
-| `-f, --force` | Force operation | No |
+| Flag                          | Description                                                                      | Required |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                 | No       |
+| `--create-worktree`           | Create worktree when unblocking                                                  | No       |
+| `-w, --worktree &lt;path&gt;` | Override worktree path                                                           | No       |
+| `-b, --branch &lt;branch&gt;` | Override branch name                                                             | No       |
+| `--no-auto`                   | Skip auto-updating YAML/backlog/status                                           | No       |
+| `-f, --force`                 | Force operation                                                                  | No       |
 
 ### wu:unlock-lane
 
@@ -1112,11 +1094,11 @@ pnpm wu:unlock-lane
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-l, --lane &lt;lane&gt;` | Lane name (e.g., "Operations: Tooling") | No |
-| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No |
-| `-f, --force` | Force operation | No |
+| Flag                          | Description                                                      | Required |
+| ----------------------------- | ---------------------------------------------------------------- | -------- |
+| `-l, --lane &lt;lane&gt;`     | Lane name (e.g., "Operations: Tooling")                          | No       |
+| `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No       |
+| `-f, --force`                 | Force operation                                                  | No       |
 
 ### wu:validate
 
@@ -1128,9 +1110,9 @@ pnpm wu:validate
 
 **Options:**
 
-| Flag | Description | Required |
-|------|-------------|----------|
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No |
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
 
 ---
 
