@@ -20,7 +20,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1333-plan.md
 risks: []
-notes: ''
+notes: Rely on micro-worktree retry (p-retry in core) for non-fast-forward handling; CLI should
+  surface retry exhaustion clearly.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -29,7 +30,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add CLI-level handling/tests for initiative:add-wu and initiative:remove-wu when origin/main moves mid-operation. Should rely on micro-worktree retry and surface clear errors if still failing.
+description: Add CLI-level handling/tests for initiative:add-wu and initiative:remove-wu when
+  origin/main moves mid-operation. Should rely on micro-worktree retry and surface clear errors if
+  still failing.
 acceptance:
   - initiative:add-wu succeeds when origin/main moves (retry path)
   - initiative:remove-wu succeeds when origin/main moves (retry path)
