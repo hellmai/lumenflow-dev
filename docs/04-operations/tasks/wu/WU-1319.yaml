@@ -2,7 +2,7 @@ id: WU-1319
 title: Generate status.md from merged state during wu:done
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -43,3 +43,5 @@ session_id: d99fd99c-10c1-4ac8-9a95-1f81c4b58a97
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T08:50:36.017Z
+locked: true
+completed_at: 2026-02-02T09:02:30.420Z
