@@ -56,7 +56,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml) — Content: Documentation
 - [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml) — Framework: CLI
 
 ## ⛔ Blocked
@@ -359,3 +358,4 @@ sections:
 - [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml)
 - [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml)
 - [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml)
+- [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml)
