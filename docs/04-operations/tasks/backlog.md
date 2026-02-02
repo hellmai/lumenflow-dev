@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1354 — Add 'implied action paralysis' anti-pattern to agent docs](wu/WU-1354.yaml) — Content: Documentation
 - [WU-1353 — Sync CLI templates with source docs and add release automation](wu/WU-1353.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
