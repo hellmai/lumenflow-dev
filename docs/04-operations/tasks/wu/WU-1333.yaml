@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-add-wu.ts
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm test -- initiative-add-wu.test.ts initiative-remove-wu.test.ts and verify all 59 tests pass
+    - Verify isRetryExhaustionError and formatRetryExhaustionError exported from both CLI commands
+    - Check that formatRetryExhaustionError output includes 'Next steps:' section
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts

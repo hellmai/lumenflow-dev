@@ -454,3 +454,98 @@ describe('initiative:remove-wu CLI integration', () => {
  * - main() function: Not unit tested (orchestration code)
  * - Overall file coverage: ~50% (acceptable for CLI commands)
  */
+
+/**
+ * WU-1333: Retry handling tests for initiative:remove-wu
+ *
+ * When origin/main moves during operation, the micro-worktree layer handles retry.
+ * When retries are exhausted, the error message should include actionable next steps.
+ */
+describe('initiative:remove-wu retry handling (WU-1333)', () => {
+  describe('isRetryExhaustionError', () => {
+    it('should detect retry exhaustion from error message', async () => {
+      const { isRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      // Should detect retry exhaustion error
+      const retryError = new Error(
+        'Push failed after 3 attempts. Origin main may have significant traffic.',
+      );
+      expect(isRetryExhaustionError(retryError)).toBe(true);
+    });
+
+    it('should detect retry exhaustion with any attempt count', async () => {
+      const { isRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      // Different attempt counts should still match
+      const error5 = new Error('Push failed after 5 attempts. Something.');
+      expect(isRetryExhaustionError(error5)).toBe(true);
+
+      const error1 = new Error('Push failed after 1 attempts. Something.');
+      expect(isRetryExhaustionError(error1)).toBe(true);
+    });
+
+    it('should not match other errors', async () => {
+      const { isRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      const otherError = new Error('Some other error');
+      expect(isRetryExhaustionError(otherError)).toBe(false);
+
+      const networkError = new Error('Network unreachable');
+      expect(isRetryExhaustionError(networkError)).toBe(false);
+    });
+  });
+
+  describe('formatRetryExhaustionError', () => {
+    it('should include actionable next steps', async () => {
+      const { formatRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      const retryError = new Error(
+        'Push failed after 3 attempts. Origin main may have significant traffic.',
+      );
+      const formatted = formatRetryExhaustionError(retryError, TEST_WU_ID, TEST_INIT_ID);
+
+      // Should include the original error
+      expect(formatted).toContain('Push failed after 3 attempts');
+
+      // Should include next steps heading
+      expect(formatted).toContain('Next steps:');
+
+      // Should include actionable suggestions
+      expect(formatted).toContain('Wait a few seconds and retry');
+      expect(formatted).toContain('initiative:remove-wu');
+    });
+
+    it('should include the retry command', async () => {
+      const { formatRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      const retryError = new Error('Push failed after 3 attempts.');
+      const formatted = formatRetryExhaustionError(retryError, TEST_WU_ID, TEST_INIT_ID);
+
+      // Should include command to retry
+      expect(formatted).toContain(`--wu ${TEST_WU_ID}`);
+      expect(formatted).toContain(`--initiative ${TEST_INIT_ID}`);
+    });
+
+    it('should suggest checking for concurrent agents', async () => {
+      const { formatRetryExhaustionError } = await import('../initiative-remove-wu.js');
+
+      const retryError = new Error('Push failed after 3 attempts.');
+      const formatted = formatRetryExhaustionError(retryError, TEST_WU_ID, TEST_INIT_ID);
+
+      // Should mention concurrent agents as possible cause
+      expect(formatted).toMatch(/concurrent|agent|traffic/i);
+    });
+  });
+
+  describe('exports for WU-1333', () => {
+    it('should export isRetryExhaustionError function', async () => {
+      const mod = await import('../initiative-remove-wu.js');
+      expect(typeof mod.isRetryExhaustionError).toBe('function');
+    });
+
+    it('should export formatRetryExhaustionError function', async () => {
+      const mod = await import('../initiative-remove-wu.js');
+      expect(typeof mod.formatRetryExhaustionError).toBe('function');
+    });
+  });
+});
