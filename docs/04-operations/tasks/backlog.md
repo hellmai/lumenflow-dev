@@ -24,8 +24,6 @@ sections:
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
 
-- [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
-- [WU-1271 — Fix wu-edit risks replace-by-default behavior](wu/WU-1271.yaml) — Framework: CLI
 - [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
 
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
