@@ -19,9 +19,13 @@ import {
   LumenFlowConfigSchema,
   parseConfig,
   getDefaultConfig,
+  LockPolicySchema,
+  LaneDefinitionSchema,
   type ProgressSignalsConfig,
   type EventArchivalConfig,
   type MemoryConfig,
+  type LockPolicy,
+  type LaneDefinition,
 } from '../lumenflow-config-schema.js';
 
 // Test constants for progress signals
@@ -360,6 +364,168 @@ describe('WU-1203: Progress Signals Config Schema', () => {
 
       expect(_memoryWithSignals.progress_signals).toBeDefined();
       expect(_memoryWithoutSignals.progress_signals).toBeUndefined();
+    });
+  });
+});
+
+/**
+ * WU-1322: Tests for lock_policy field in lane configuration
+ *
+ * Acceptance Criteria:
+ * 1. LaneConfigSchema includes lock_policy field with enum validation
+ * 2. Default value is 'all' for backward compatibility
+ * 3. TypeScript types exported: LockPolicy type
+ * 4. Example added to .lumenflow.config.yaml (commented)
+ * 5. All existing tests pass (no breaking changes)
+ */
+describe('WU-1322: LockPolicy Config Schema', () => {
+  // Test constants for lock_policy values
+  const LOCK_POLICY_ALL = 'all';
+  const LOCK_POLICY_ACTIVE = 'active';
+  const LOCK_POLICY_NONE = 'none';
+  // Test constants for lane names and paths (sonarjs/no-duplicate-string)
+  const TEST_LANE_FRAMEWORK_CORE = 'Framework: Core';
+  const TEST_LANE_CONTENT_DOCS = 'Content: Documentation';
+  const TEST_CODE_PATH_CORE = 'packages/@lumenflow/core/**';
+
+  describe('AC1: LockPolicySchema enum validation', () => {
+    it('should accept "all" as valid lock_policy', () => {
+      const result = LockPolicySchema.safeParse(LOCK_POLICY_ALL);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe(LOCK_POLICY_ALL);
+      }
+    });
+
+    it('should accept "active" as valid lock_policy', () => {
+      const result = LockPolicySchema.safeParse(LOCK_POLICY_ACTIVE);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe(LOCK_POLICY_ACTIVE);
+      }
+    });
+
+    it('should accept "none" as valid lock_policy', () => {
+      const result = LockPolicySchema.safeParse(LOCK_POLICY_NONE);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe(LOCK_POLICY_NONE);
+      }
+    });
+
+    it('should reject invalid lock_policy values', () => {
+      const result = LockPolicySchema.safeParse('invalid');
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject non-string lock_policy values', () => {
+      const result = LockPolicySchema.safeParse(123);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('AC2: Default value is "all" for backward compatibility', () => {
+    it('should default to "all" when lock_policy is not provided in lane definition', () => {
+      const result = LaneDefinitionSchema.safeParse({
+        name: TEST_LANE_FRAMEWORK_CORE,
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lock_policy).toBe(LOCK_POLICY_ALL);
+      }
+    });
+
+    it('should preserve explicit lock_policy when provided', () => {
+      const result = LaneDefinitionSchema.safeParse({
+        name: TEST_LANE_CONTENT_DOCS,
+        lock_policy: LOCK_POLICY_NONE,
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lock_policy).toBe(LOCK_POLICY_NONE);
+      }
+    });
+
+    it('should preserve existing lane config fields alongside lock_policy', () => {
+      const result = LaneDefinitionSchema.safeParse({
+        name: TEST_LANE_FRAMEWORK_CORE,
+        wip_limit: 2,
+        wip_justification: 'Test justification',
+        lock_policy: LOCK_POLICY_ACTIVE,
+        code_paths: [TEST_CODE_PATH_CORE],
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.name).toBe(TEST_LANE_FRAMEWORK_CORE);
+        expect(result.data.wip_limit).toBe(2);
+        expect(result.data.wip_justification).toBe('Test justification');
+        expect(result.data.lock_policy).toBe(LOCK_POLICY_ACTIVE);
+        expect(result.data.code_paths).toEqual([TEST_CODE_PATH_CORE]);
+      }
+    });
+  });
+
+  describe('AC3: TypeScript types exported', () => {
+    it('should export LockPolicy type (compile-time check)', () => {
+      // This is a compile-time check - if types are wrong, this won't compile
+      // Type inference test - should compile without errors
+      const _policy: LockPolicy = 'all';
+      expect(_policy).toBe('all');
+    });
+
+    it('should export LaneDefinition type (compile-time check)', () => {
+      // Compile-time check for LaneDefinition type
+      const _lane: LaneDefinition = {
+        name: TEST_LANE_FRAMEWORK_CORE,
+        lock_policy: LOCK_POLICY_ALL,
+      };
+      expect(_lane.name).toBe(TEST_LANE_FRAMEWORK_CORE);
+      expect(_lane.lock_policy).toBe(LOCK_POLICY_ALL);
+    });
+  });
+
+  describe('AC5: No breaking changes to existing lane config', () => {
+    it('should parse existing lane config without lock_policy', () => {
+      // Simulates existing .lumenflow.config.yaml lanes without lock_policy
+      const existingLaneConfig = {
+        name: TEST_LANE_FRAMEWORK_CORE,
+        wip_limit: 1,
+        code_paths: [TEST_CODE_PATH_CORE],
+      };
+
+      const result = LaneDefinitionSchema.safeParse(existingLaneConfig);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        // Should have default lock_policy
+        expect(result.data.lock_policy).toBe(LOCK_POLICY_ALL);
+        // Should preserve all other fields
+        expect(result.data.name).toBe(TEST_LANE_FRAMEWORK_CORE);
+        expect(result.data.wip_limit).toBe(1);
+      }
+    });
+
+    it('should parse lane with wip_justification (WU-1187 compatibility)', () => {
+      const laneWithJustification = {
+        name: TEST_LANE_CONTENT_DOCS,
+        wip_limit: 4,
+        wip_justification: 'Docs WUs are low-conflict parallel work',
+      };
+
+      const result = LaneDefinitionSchema.safeParse(laneWithJustification);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.wip_limit).toBe(4);
+        expect(result.data.wip_justification).toBe('Docs WUs are low-conflict parallel work');
+        expect(result.data.lock_policy).toBe(LOCK_POLICY_ALL);
+      }
     });
   });
 });
