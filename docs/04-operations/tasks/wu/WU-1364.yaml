@@ -2,7 +2,7 @@ id: WU-1364
 title: Improve greenfield onboarding with initiative-first workflow
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -66,3 +66,5 @@ session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T23:42:48.078Z
+locked: true
+completed_at: 2026-02-02T23:59:26.952Z
