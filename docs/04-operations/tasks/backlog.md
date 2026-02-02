@@ -58,7 +58,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -364,3 +363,4 @@ sections:
 - [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml)
 - [WU-1345 — Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)](wu/WU-1345.yaml)
 - [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml)
+- [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml)

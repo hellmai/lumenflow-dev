@@ -2,7 +2,7 @@ id: WU-1349
 title: Fix npx command claim in quickstart docs
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -42,3 +42,5 @@ session_id: 6abd9d24-b300-4c56-a1a6-39d0a92f2404
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:15:36.463Z
+locked: true
+completed_at: 2026-02-02T16:17:25.278Z
