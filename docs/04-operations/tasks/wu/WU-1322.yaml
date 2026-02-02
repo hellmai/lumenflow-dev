@@ -27,10 +27,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Add a new lock_policy field to the lane configuration schema. Values: all (default), active, none. This WU only adds the schema - enforcement is in subsequent WUs.'
+description: 'Add a new lock_policy field to the lane configuration schema. Values: all (default),
+  active, none. This WU only adds the schema - enforcement is in subsequent WUs.'
 acceptance:
   - LaneConfigSchema includes lock_policy field with enum validation
   - Default value is 'all' for backward compatibility
   - 'TypeScript types exported: LockPolicy type'
   - Example added to .lumenflow.config.yaml (commented)
   - All existing tests pass (no breaking changes)
+initiative: INIT-013
