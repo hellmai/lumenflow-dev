@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/cli-entry.mjs
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual: []
@@ -28,16 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Currently PKG_MANAGER is hardcoded to 'pnpm' and script names (lint, test, build,
-  format) are hardcoded in wu-constants.ts. For true vendor-agnosticism, these should be
-  configurable via .lumenflow.config.yaml with current values as defaults. This enables LumenFlow to
-  work with npm, yarn, bun, and custom script names.
+description: Full framework agnosticism for LumenFlow CLI. Currently hard-codes pnpm, Turborepo, and
+  Vitest throughout gates.ts, cli-entry.mjs, and wu-constants.ts. For true vendor-agnosticism, all
+  build tooling should be configurable via .lumenflow.config.yaml with current values as defaults.
+  This enables LumenFlow to work with npm/yarn/bun, Nx/plain scripts, Jest/Mocha, etc.
 acceptance:
-  - 'Add package_manager field to .lumenflow.config.yaml schema (default: pnpm)'
-  - 'Add scripts section to config schema with lint, test, build, format fields (defaults: current
-    values)'
-  - Update gates.ts to read package manager and script names from config
-  - Update wu-constants.ts to export functions that read from config instead of hardcoded values
-  - Add tests for npm, yarn, and bun package manager configurations
-  - Update Starlight docs (lumenflow.dev/reference/config) with package_manager and scripts examples
-    for npm users and AI agents
+  - 'Add package_manager field to config schema (default: pnpm, options: pnpm/npm/yarn/bun)'
+  - Add gates.commands section with configurable test commands (test_full, test_docs_only,
+    test_incremental) defaulting to current turbo/vitest
+  - 'Add test_runner field (default: vitest) for incremental test detection logic'
+  - 'Add build_command override for cli-entry.mjs bootstrap (default: pnpm --filter @lumenflow/cli
+    build)'
+  - Remove hard-coded turbo references in gates.ts - use configured commands instead
+  - Make .turbo ignore pattern configurable or derived from test_runner config
+  - Update cli-entry.mjs to use configured package_manager for bootstrap
+  - Add tests for npm+jest and yarn+nx configurations
+  - Update Starlight docs (lumenflow.dev/reference/config) with full gates configuration examples
