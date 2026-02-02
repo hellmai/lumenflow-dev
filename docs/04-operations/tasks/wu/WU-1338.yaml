@@ -2,7 +2,7 @@ id: WU-1338
 title: Fix consumer-integration test failure for hardcoded paths in gates binary
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,6 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The consumer-integration test 'should have all required CLI binaries properly resolved' fails because the gates binary contains 'packages/@lumenflow/' path. This is a regression that needs investigation - the published npm package may have monorepo-specific paths embedded.
+description: The consumer-integration test 'should have all required CLI binaries properly resolved'
+  fails because the gates binary contains 'packages/@lumenflow/' path. This is a regression that
+  needs investigation - the published npm package may have monorepo-specific paths embedded.
 acceptance:
   - consumer-integration test passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1338
+claimed_at: 2026-02-02T23:55:35.624Z
+baseline_main_sha: 39e384d64764d4dac9d1022cdff86262964d4144
+session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T23:55:35.629Z

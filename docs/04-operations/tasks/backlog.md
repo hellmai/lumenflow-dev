@@ -20,18 +20,15 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
-- [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
-- [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
-
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
-- [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
-
 - [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — Framework: CLI
 - [WU-1361 — Lint debt cleanup (consolidated)](wu/WU-1361.yaml) — Framework: CLI
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — Framework: CLI
 - [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml) — Framework: CLI
+- [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
+- [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
+- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -40,6 +37,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml) — Framework: CLI
+- [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
