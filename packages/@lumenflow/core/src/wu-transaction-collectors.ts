@@ -25,21 +25,16 @@
 
 /* eslint-disable security/detect-non-literal-fs-filename, security/detect-object-injection */
 import { existsSync, readFileSync } from 'node:fs';
-import path from 'node:path';
 import { stringifyYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter } from './backlog-parser.js';
 import { getSectionHeadingsWithDefaults } from './section-headings.js';
 import { todayISO } from './date-utils.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
-// WU-1574: BacklogManager removed - using state store + generator
-import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
-import { generateBacklog } from './backlog-generator.js';
-// WU-1734: Import proper path resolution utility
-import { getStateStoreDirFromBacklog } from './wu-paths.js';
-// WU-1145: Import concurrent merge utilities
+import { STRING_LITERALS } from './wu-constants.js';
+// WU-1145, WU-1319: Import concurrent merge utilities
 import {
   computeBacklogContentWithMainMerge,
+  computeStatusContentWithMainMerge,
   computeWUEventsContentWithMainMerge,
 } from './wu-done-concurrent-merge.js';
 
@@ -207,36 +202,6 @@ export function computeStatusContent(statusPath, id, title) {
   return frontmatterText + lines.join(STRING_LITERALS.NEWLINE);
 }
 
-function ensureTrailingNewline(content) {
-  if (content === '') return content;
-  if (content.endsWith(STRING_LITERALS.NEWLINE)) return content;
-  return content + STRING_LITERALS.NEWLINE;
-}
-
-async function computeCompletionUpdatesFromStateStore(backlogPath, wuId) {
-  const stateDir = getStateStoreDirFromBacklog(backlogPath);
-  const store = new WUStateStore(stateDir);
-  await store.load();
-
-  const current = store.getWUState(wuId);
-  if (!current) {
-    throw new Error(`WU ${wuId} is not in_progress`);
-  }
-
-  if (current.status === 'done') {
-    return { store, stateDir, shouldAppendCompleteEvent: false, completeEvent: null };
-  }
-
-  if (current.status !== 'in_progress') {
-    throw new Error(`WU ${wuId} is not in_progress`);
-  }
-
-  const completeEvent = store.createCompleteEvent(wuId);
-  store.applyEvent(completeEvent);
-
-  return { store, stateDir, shouldAppendCompleteEvent: true, completeEvent };
-}
-
 /**
  * Compute wu-events.jsonl content after completing a WU.
  *
@@ -269,6 +234,22 @@ export async function computeBacklogContent(backlogPath, id, _title) {
 }
 
 /**
+ * Compute updated status.md content from merged state store
+ *
+ * WU-1319: Generates status.md from merged state (origin/main + worktree events)
+ * instead of editing the local file snapshot. This prevents reintroducing
+ * stale "In Progress" entries when concurrent WUs complete on main.
+ *
+ * @param {string} backlogPath - Path to backlog.md (used to find state dir)
+ * @param {string} id - WU ID to mark complete
+ * @returns {Promise<string>} New status.md content
+ */
+export async function computeStatusContentFromMergedState(backlogPath, id) {
+  // WU-1319: Use merged state to preserve concurrent changes
+  return computeStatusContentWithMainMerge(backlogPath, id);
+}
+
+/**
  * Compute stamp file content
  *
  * @param {string} id - WU ID
@@ -283,6 +264,7 @@ export function computeStampContent(id, title) {
 /**
  * Collect all metadata updates for a transaction
  * WU-1574: Made async for computeBacklogContent
+ * WU-1319: Made status.md generation use merged state
  *
  * Convenience function that computes all file contents at once.
  * Returns an object with all computed content.
@@ -314,7 +296,8 @@ export async function collectMetadataUpdates({
     },
     status: {
       path: statusPath,
-      content: computeStatusContent(statusPath, id, title),
+      // WU-1319: Use merged state to preserve concurrent changes
+      content: await computeStatusContentFromMergedState(backlogPath, id),
       description: 'status.md',
     },
     backlog: {

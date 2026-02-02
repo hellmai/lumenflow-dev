@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
-import { generateBacklog } from './backlog-generator.js';
+import { generateBacklog, generateStatus } from './backlog-generator.js';
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
 import { getGitForCwd } from './git-adapter.js';
 import { REMOTES, BRANCHES, BEACON_PATHS } from './wu-constants.js';
@@ -350,6 +350,58 @@ export async function computeBacklogContentWithMainMerge(
 
   // Generate backlog from merged state
   return generateBacklog(mergedStore);
+}
+
+/**
+ * Compute status.md content with merged state from origin/main.
+ *
+ * WU-1319: This function generates status.md from the merged state store
+ * instead of editing the local file snapshot. This prevents reintroducing
+ * stale "In Progress" entries when concurrent WUs complete on main.
+ *
+ * @param backlogPath - Path to backlog.md in the worktree (used to find state dir)
+ * @param wuId - WU ID being completed
+ * @param mainStateDir - Optional explicit path to main state dir (for testing)
+ * @returns Merged status.md content
+ */
+export async function computeStatusContentWithMainMerge(
+  backlogPath: string,
+  wuId: string,
+  mainStateDir?: string,
+): Promise<string> {
+  const worktreeStateDir = getStateStoreDirFromBacklog(backlogPath);
+
+  let mergedStore: WUStateStore;
+
+  if (mainStateDir) {
+    // Direct merge with provided main state dir (for testing)
+    mergedStore = await mergeStateStores(worktreeStateDir, mainStateDir);
+  } else {
+    // Merge with main state via git show
+    mergedStore = await mergeWithMainState(worktreeStateDir);
+  }
+
+  // Check if the WU exists in the merged state
+  const currentState = mergedStore.getWUState(wuId);
+
+  if (!currentState) {
+    throw new Error(
+      `WU ${wuId} not found in merged state store. ` +
+        `This may indicate the WU was never properly claimed.`,
+    );
+  }
+
+  // If not already done, create and apply the complete event
+  if (currentState.status !== 'done') {
+    if (currentState.status !== 'in_progress') {
+      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "in_progress"`);
+    }
+    const completeEvent = mergedStore.createCompleteEvent(wuId);
+    mergedStore.applyEvent(completeEvent);
+  }
+
+  // Generate status from merged state
+  return generateStatus(mergedStore);
 }
 
 /**

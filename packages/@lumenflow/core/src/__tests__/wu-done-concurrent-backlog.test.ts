@@ -18,8 +18,12 @@ import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from 'nod
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { WUStateStore } from '../wu-state-store.js';
-import { generateBacklog } from '../backlog-generator.js';
-import { mergeStateStores, computeBacklogContentWithMerge } from '../wu-done-concurrent-merge.js';
+import { generateBacklog, generateStatus } from '../backlog-generator.js';
+import {
+  mergeStateStores,
+  computeBacklogContentWithMerge,
+  computeStatusContentWithMainMerge,
+} from '../wu-done-concurrent-merge.js';
 
 describe('WU-1145: Concurrent backlog modification', () => {
   let tempDir: string;
@@ -426,6 +430,207 @@ describe('WU-1145: Concurrent backlog modification', () => {
       // Assert: Should contain both WUs
       expect(backlogContent).toContain('WU-100');
       expect(backlogContent).toContain('WU-200');
+    });
+  });
+
+  describe('WU-1319: Concurrent status.md generation', () => {
+    it('should generate status.md from merged state (not reintroduce stale In Progress)', async () => {
+      // Setup: Worktree has WU-100 in_progress (stale view)
+      const worktreeEvents =
+        [
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:00:00.000Z',
+            lane: 'Framework: Core',
+            title: 'My WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:01:00.000Z',
+            lane: 'Framework: Core',
+            assignee: 'test',
+          }),
+          // WU-200 also in_progress in worktree's stale view
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:02:00.000Z',
+            lane: 'Framework: CLI',
+            title: 'Other WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:03:00.000Z',
+            lane: 'Framework: CLI',
+            assignee: 'other',
+          }),
+        ].join('\n') + '\n';
+
+      writeFileSync(join(worktreeStateDir, 'wu-events.jsonl'), worktreeEvents);
+
+      // Setup: Main has WU-200 completed concurrently
+      const mainEvents =
+        [
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:00:00.000Z',
+            lane: 'Framework: Core',
+            title: 'My WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:01:00.000Z',
+            lane: 'Framework: Core',
+            assignee: 'test',
+          }),
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:02:00.000Z',
+            lane: 'Framework: CLI',
+            title: 'Other WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:03:00.000Z',
+            lane: 'Framework: CLI',
+            assignee: 'other',
+          }),
+          // WU-200 was completed on main while worktree was active
+          JSON.stringify({
+            type: 'complete',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T11:00:00.000Z',
+          }),
+        ].join('\n') + '\n';
+
+      writeFileSync(join(mainStateDir, 'wu-events.jsonl'), mainEvents);
+
+      // Act: Generate status from merged state
+      const mergedStore = await mergeStateStores(worktreeStateDir, mainStateDir);
+      const statusContent = await generateStatus(mergedStore);
+
+      // Assert: WU-200 should NOT be in "In Progress" (it was completed on main)
+      // Instead it should be in "Completed"
+      expect(statusContent).toContain('## In Progress');
+      expect(statusContent).toContain('## Completed');
+
+      // Check that WU-200 is in Completed, not In Progress
+      const inProgressSection = statusContent.split('## In Progress')[1]?.split('## ')[0] ?? '';
+      const completedSection = statusContent.split('## Completed')[1] ?? '';
+
+      // WU-200 should be in Completed (done on main)
+      expect(completedSection).toContain('WU-200');
+      // WU-200 should NOT be in In Progress (stale state would have it there)
+      expect(inProgressSection).not.toContain('WU-200');
+
+      // WU-100 should still be in In Progress (not completed yet)
+      expect(inProgressSection).toContain('WU-100');
+    });
+
+    it('should use computeStatusContentWithMainMerge to preserve concurrent completions', async () => {
+      // Setup paths
+      const worktreeBacklogDir = join(tempDir, 'worktree', 'docs', '04-operations', 'tasks');
+      mkdirSync(worktreeBacklogDir, { recursive: true });
+
+      // Setup: Worktree has WU-100 in_progress and WU-200 in_progress (stale)
+      const worktreeEvents =
+        [
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:00:00.000Z',
+            lane: 'Framework: Core',
+            title: 'My WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:01:00.000Z',
+            lane: 'Framework: Core',
+            assignee: 'test',
+          }),
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:02:00.000Z',
+            lane: 'Framework: CLI',
+            title: 'Other WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:03:00.000Z',
+            lane: 'Framework: CLI',
+            assignee: 'other',
+          }),
+        ].join('\n') + '\n';
+
+      writeFileSync(join(worktreeStateDir, 'wu-events.jsonl'), worktreeEvents);
+      writeFileSync(join(worktreeBacklogDir, 'backlog.md'), '# Backlog\n');
+
+      // Setup: Main has WU-200 completed
+      const mainEvents =
+        [
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:00:00.000Z',
+            lane: 'Framework: Core',
+            title: 'My WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-100',
+            timestamp: '2026-01-27T10:01:00.000Z',
+            lane: 'Framework: Core',
+            assignee: 'test',
+          }),
+          JSON.stringify({
+            type: 'create',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:02:00.000Z',
+            lane: 'Framework: CLI',
+            title: 'Other WU',
+          }),
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T10:03:00.000Z',
+            lane: 'Framework: CLI',
+            assignee: 'other',
+          }),
+          JSON.stringify({
+            type: 'complete',
+            wuId: 'WU-200',
+            timestamp: '2026-01-27T11:00:00.000Z',
+          }),
+        ].join('\n') + '\n';
+
+      writeFileSync(join(mainStateDir, 'wu-events.jsonl'), mainEvents);
+
+      // Act: Compute status content with merge (completing WU-100)
+      const statusContent = await computeStatusContentWithMainMerge(
+        join(worktreeBacklogDir, 'backlog.md'),
+        'WU-100',
+        mainStateDir,
+      );
+
+      // Assert: WU-100 should be in Completed (just completed)
+      // WU-200 should also be in Completed (was completed on main)
+      expect(statusContent).toContain('WU-100');
+      expect(statusContent).toContain('WU-200');
+
+      // Neither should be in "In Progress"
+      const inProgressSection = statusContent.split('## In Progress')[1]?.split('## ')[0] ?? '';
+      expect(inProgressSection).not.toContain('WU-100');
+      expect(inProgressSection).not.toContain('WU-200');
     });
   });
 });

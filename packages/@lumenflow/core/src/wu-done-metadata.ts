@@ -14,7 +14,7 @@ import { createStamp } from './stamp-utils.js';
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import {
   computeWUYAMLContent,
-  computeStatusContent,
+  computeStatusContentFromMergedState,
   computeBacklogContent,
   computeWUEventsContentAfterComplete,
   computeStampContent,
@@ -191,8 +191,8 @@ export async function collectMetadataToTransaction({
   const wuYAMLContent = computeWUYAMLContent(doc);
   transaction.addWrite(wuPath, wuYAMLContent, 'WU YAML');
 
-  // Compute status.md content
-  const statusContent = computeStatusContent(statusPath, id, title);
+  // Compute status.md content (WU-1319: now uses merged state)
+  const statusContent = await computeStatusContentFromMergedState(backlogPath, id);
   transaction.addWrite(statusPath, statusContent, 'status.md');
 
   // Compute backlog.md content (WU-1574: now async)
