@@ -44,6 +44,16 @@ const TEST_CUSTOM_MEMORY_DIR = 'custom-memory/';
 const TEST_MEMORY_DIR = 'test/';
 const DESCRIBE_TYPE_SAFETY = 'Type safety';
 
+// Shared lane test constants (used by WU-1322, WU-1345)
+const TEST_LANE_FRAMEWORK_CORE = 'Framework: Core';
+const TEST_LANE_CONTENT_DOCS = 'Content: Documentation';
+const TEST_CODE_PATH_CORE = 'packages/@lumenflow/core/**';
+const TEST_CODE_PATH_DOCS = 'docs/**';
+const TEST_WIP_JUSTIFICATION = 'Docs WUs are low-conflict parallel work';
+const LOCK_POLICY_ALL = 'all';
+const LOCK_POLICY_ACTIVE = 'active';
+const LOCK_POLICY_NONE = 'none';
+
 describe('WU-1203: Progress Signals Config Schema', () => {
   describe('AC1: ProgressSignalsConfigSchema', () => {
     it('should have enabled field defaulting to false', () => {
@@ -379,15 +389,6 @@ describe('WU-1203: Progress Signals Config Schema', () => {
  * 5. All existing tests pass (no breaking changes)
  */
 describe('WU-1322: LockPolicy Config Schema', () => {
-  // Test constants for lock_policy values
-  const LOCK_POLICY_ALL = 'all';
-  const LOCK_POLICY_ACTIVE = 'active';
-  const LOCK_POLICY_NONE = 'none';
-  // Test constants for lane names and paths (sonarjs/no-duplicate-string)
-  const TEST_LANE_FRAMEWORK_CORE = 'Framework: Core';
-  const TEST_LANE_CONTENT_DOCS = 'Content: Documentation';
-  const TEST_CODE_PATH_CORE = 'packages/@lumenflow/core/**';
-
   describe('AC1: LockPolicySchema enum validation', () => {
     it('should accept "all" as valid lock_policy', () => {
       const result = LockPolicySchema.safeParse(LOCK_POLICY_ALL);
@@ -515,7 +516,7 @@ describe('WU-1322: LockPolicy Config Schema', () => {
       const laneWithJustification = {
         name: TEST_LANE_CONTENT_DOCS,
         wip_limit: 4,
-        wip_justification: 'Docs WUs are low-conflict parallel work',
+        wip_justification: TEST_WIP_JUSTIFICATION,
       };
 
       const result = LaneDefinitionSchema.safeParse(laneWithJustification);
@@ -523,7 +524,7 @@ describe('WU-1322: LockPolicy Config Schema', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.wip_limit).toBe(4);
-        expect(result.data.wip_justification).toBe('Docs WUs are low-conflict parallel work');
+        expect(result.data.wip_justification).toBe(TEST_WIP_JUSTIFICATION);
         expect(result.data.lock_policy).toBe(LOCK_POLICY_ALL);
       }
     });
@@ -670,6 +671,233 @@ describe('WU-1289: spawn_context_max_size Config Schema', () => {
       };
 
       expect(_memoryConfig.spawn_context_max_size).toBe(4096);
+    });
+  });
+});
+
+/**
+ * WU-1345: Tests for lanes field in LumenFlowConfigSchema
+ *
+ * Bug fix: resolveLaneConfigsFromConfig(getConfig()) receives undefined lanes
+ * because Zod strips unknown keys and lanes is not in the schema.
+ *
+ * Acceptance Criteria:
+ * 1. LumenFlowConfigSchema includes lanes field with proper typing
+ * 2. resolveLaneConfigsFromConfig receives typed lanes from getConfig()
+ * 3. Existing lane config from .lumenflow.config.yaml is correctly parsed
+ * 4. Unit tests verify lanes are preserved through Zod parsing
+ */
+describe('WU-1345: Lanes field in LumenFlowConfigSchema', () => {
+  describe('AC1: LumenFlowConfigSchema includes lanes field with proper typing', () => {
+    it('should accept lanes config with definitions array', () => {
+      const config = {
+        lanes: {
+          definitions: [
+            {
+              name: TEST_LANE_FRAMEWORK_CORE,
+              wip_limit: 1,
+              code_paths: [TEST_CODE_PATH_CORE],
+            },
+          ],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lanes).toBeDefined();
+        expect(result.data.lanes?.definitions).toHaveLength(1);
+        expect(result.data.lanes?.definitions?.[0]?.name).toBe(TEST_LANE_FRAMEWORK_CORE);
+      }
+    });
+
+    it('should accept lanes config with enforcement section', () => {
+      const config = {
+        lanes: {
+          enforcement: {
+            require_parent: true,
+            allow_custom: false,
+          },
+          definitions: [
+            {
+              name: TEST_LANE_FRAMEWORK_CORE,
+              wip_limit: 1,
+            },
+          ],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lanes?.enforcement?.require_parent).toBe(true);
+        expect(result.data.lanes?.enforcement?.allow_custom).toBe(false);
+      }
+    });
+
+    it('should preserve lock_policy in lane definitions', () => {
+      const config = {
+        lanes: {
+          definitions: [
+            {
+              name: TEST_LANE_CONTENT_DOCS,
+              wip_limit: 4,
+              wip_justification: TEST_WIP_JUSTIFICATION,
+              lock_policy: LOCK_POLICY_NONE,
+              code_paths: [TEST_CODE_PATH_DOCS],
+            },
+          ],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const lane = result.data.lanes?.definitions?.[0];
+        expect(lane?.lock_policy).toBe(LOCK_POLICY_NONE);
+        expect(lane?.wip_justification).toBe(TEST_WIP_JUSTIFICATION);
+      }
+    });
+
+    it('should accept engineering and business sections (alternate format)', () => {
+      const config = {
+        lanes: {
+          engineering: [
+            {
+              name: TEST_LANE_FRAMEWORK_CORE,
+              wip_limit: 1,
+            },
+          ],
+          business: [
+            {
+              name: TEST_LANE_CONTENT_DOCS,
+              wip_limit: 2,
+            },
+          ],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lanes?.engineering).toHaveLength(1);
+        expect(result.data.lanes?.business).toHaveLength(1);
+      }
+    });
+  });
+
+  describe('AC3: Existing lane config from .lumenflow.config.yaml is correctly parsed', () => {
+    it('should parse real-world lanes config structure', () => {
+      // Mirrors the actual .lumenflow.config.yaml structure
+      const realWorldConfig = {
+        lanes: {
+          enforcement: {
+            require_parent: true,
+            allow_custom: false,
+          },
+          definitions: [
+            {
+              name: TEST_LANE_FRAMEWORK_CORE,
+              wip_limit: 1,
+              code_paths: [TEST_CODE_PATH_CORE],
+            },
+            {
+              name: 'Framework: CLI',
+              wip_limit: 1,
+              code_paths: ['packages/@lumenflow/cli/**'],
+            },
+            {
+              name: TEST_LANE_CONTENT_DOCS,
+              wip_limit: 4,
+              wip_justification:
+                'Docs WUs are low-conflict parallel work targeting different pages',
+              code_paths: ['docs/**', 'apps/docs/**'],
+            },
+          ],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(realWorldConfig);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const lanes = result.data.lanes;
+        expect(lanes).toBeDefined();
+        expect(lanes?.definitions).toHaveLength(3);
+
+        // Check Framework: Core
+        const coreLane = lanes?.definitions?.find((l) => l.name === TEST_LANE_FRAMEWORK_CORE);
+        expect(coreLane?.wip_limit).toBe(1);
+
+        // Check Content: Documentation
+        const docsLane = lanes?.definitions?.find((l) => l.name === TEST_LANE_CONTENT_DOCS);
+        expect(docsLane?.wip_limit).toBe(4);
+        expect(docsLane?.wip_justification).toContain('low-conflict');
+      }
+    });
+  });
+
+  describe('AC4: parseConfig helper preserves lanes', () => {
+    it('should preserve lanes through parseConfig helper', () => {
+      const config = parseConfig({
+        lanes: {
+          definitions: [
+            {
+              name: TEST_LANE_FRAMEWORK_CORE,
+              wip_limit: 1,
+            },
+          ],
+        },
+      });
+
+      expect(config.lanes).toBeDefined();
+      expect(config.lanes?.definitions?.[0]?.name).toBe(TEST_LANE_FRAMEWORK_CORE);
+    });
+
+    it('should have undefined lanes in getDefaultConfig (not required)', () => {
+      const config = getDefaultConfig();
+      // lanes is optional, should be undefined by default
+      expect(config.lanes).toBeUndefined();
+    });
+  });
+
+  describe('Backwards compatibility', () => {
+    it('should parse config without lanes field (optional)', () => {
+      const config = {
+        version: '1.0.0',
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lanes).toBeUndefined();
+      }
+    });
+
+    it('should preserve all other config fields alongside lanes', () => {
+      const config = {
+        version: '2.0',
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
+        },
+        memory: {
+          directory: TEST_CUSTOM_MEMORY_DIR,
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.version).toBe('2.0');
+        expect(result.data.lanes?.definitions).toHaveLength(1);
+        expect(result.data.memory.directory).toBe(TEST_CUSTOM_MEMORY_DIR);
+      }
     });
   });
 });

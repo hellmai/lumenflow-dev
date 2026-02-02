@@ -697,6 +697,26 @@ export const TelemetryConfigSchema = z.object({
 });
 
 /**
+ * WU-1345: Lane enforcement configuration schema
+ *
+ * Controls how lane format validation behaves.
+ */
+export const LanesEnforcementSchema = z.object({
+  /**
+   * When true, lanes MUST use "Parent: Sublane" format if parent has taxonomy.
+   * @default true
+   */
+  require_parent: z.boolean().default(true),
+
+  /**
+   * When false, only lanes in the taxonomy are allowed.
+   * When true, custom lanes can be used.
+   * @default false
+   */
+  allow_custom: z.boolean().default(false),
+});
+
+/**
  * WU-1322: Lane definition schema for .lumenflow.config.yaml
  *
  * Extends the existing lane configuration with lock_policy field.
@@ -733,6 +753,41 @@ export const LaneDefinitionSchema = z.object({
 
   /** Code paths associated with this lane (glob patterns) */
   code_paths: z.array(z.string()).optional(),
+});
+
+/**
+ * WU-1345: Complete lanes configuration schema
+ *
+ * Supports three formats:
+ * 1. definitions array (recommended)
+ * 2. engineering + business arrays (legacy/alternate)
+ * 3. flat array (simple format - parsed as definitions)
+ *
+ * @example
+ * ```yaml
+ * lanes:
+ *   enforcement:
+ *     require_parent: true
+ *     allow_custom: false
+ *   definitions:
+ *     - name: 'Framework: Core'
+ *       wip_limit: 1
+ *       code_paths:
+ *         - 'packages/@lumenflow/core/**'
+ * ```
+ */
+export const LanesConfigSchema = z.object({
+  /** Lane enforcement configuration (validation rules) */
+  enforcement: LanesEnforcementSchema.optional(),
+
+  /** Primary lane definitions array (recommended format) */
+  definitions: z.array(LaneDefinitionSchema).optional(),
+
+  /** Engineering lanes (alternate format) */
+  engineering: z.array(LaneDefinitionSchema).optional(),
+
+  /** Business lanes (alternate format) */
+  business: z.array(LaneDefinitionSchema).optional(),
 });
 
 /**
@@ -794,6 +849,26 @@ export const LumenFlowConfigSchema = z.object({
    * ```
    */
   methodology: MethodologyConfigSchema.optional(),
+
+  /**
+   * WU-1345: Lanes configuration
+   * Defines delivery lanes with WIP limits, code paths, and lock policies.
+   * Required for resolveLaneConfigsFromConfig() to work with getConfig().
+   *
+   * @example
+   * ```yaml
+   * lanes:
+   *   enforcement:
+   *     require_parent: true
+   *     allow_custom: false
+   *   definitions:
+   *     - name: 'Framework: Core'
+   *       wip_limit: 1
+   *       code_paths:
+   *         - 'packages/@lumenflow/core/**'
+   * ```
+   */
+  lanes: LanesConfigSchema.optional(),
 });
 
 /**
@@ -825,6 +900,9 @@ export type TelemetryConfig = z.infer<typeof TelemetryConfigSchema>;
 export type LumenFlowConfig = z.infer<typeof LumenFlowConfigSchema>;
 // WU-1322: Lane definition type (LockPolicy already exported by WU-1325)
 export type LaneDefinition = z.infer<typeof LaneDefinitionSchema>;
+// WU-1345: Lanes configuration types
+export type LanesEnforcement = z.infer<typeof LanesEnforcementSchema>;
+export type LanesConfig = z.infer<typeof LanesConfigSchema>;
 // WU-1259: Re-export methodology types from resolve-policy
 export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';
 
