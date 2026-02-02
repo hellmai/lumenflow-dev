@@ -22,9 +22,9 @@ sections:
 
 - [WU-1361 — Close obsolete WUs from backlog triage](wu/WU-1361.yaml) — Content: Documentation
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
-- [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
+
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
-- [WU-1221 — Add gitignore setup to lumenflow init and state:doctor](wu/WU-1221.yaml) — Framework: CLI
+
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
 - [WU-1227 — init.ts writes tracked files without branch check (main pollution)](wu/WU-1227.yaml) — Framework: CLI
 - [WU-1228 — docs-sync.ts writes tracked docs without branch check (main pollution)](wu/WU-1228.yaml) — Framework: CLI
@@ -42,7 +42,7 @@ sections:
 - [WU-1277 — Initiative orchestration E2E test](wu/WU-1277.yaml) — Framework: Core
 - [WU-1294 — Fix pre-existing lint errors in wu-spawn.test.ts](wu/WU-1294.yaml) — Framework: CLI
 - [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
-- [WU-1317 — Update quickstart wu:create example with full required fields](wu/WU-1317.yaml) — Content: Documentation
+
 - [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
 - [WU-1320 — Fix no-console lint errors in CLI commands](wu/WU-1320.yaml) — Framework: CLI
 - [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
@@ -50,7 +50,7 @@ sections:
 - [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
-- [WU-1347 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1347.yaml) — Framework: Core
+
 - [WU-1355 — spec:linter fallback to main CLI dist not working in worktrees](wu/WU-1355.yaml) — Framework: CLI
 - [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — Framework: CLI
 
