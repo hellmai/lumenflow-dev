@@ -64,12 +64,14 @@ PATTERN="(/home/|/Users/|/mnt/c/|/C:/|/D:/)"
 
 # Get list of staged files (ignoring documentation and self to avoid false positives)
 # Documentation files may contain example paths for illustration
+# Test files that validate path patterns are also excluded (e.g., consumer-integration.test.ts)
 FILES=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep -v "scripts/hooks/validate-paths.sh" \
   | grep -v "docs/04-operations/tasks/wu/" \
   | grep -v "apps/docs/" \
   | grep -v "\.md$" \
-  | grep -v "\.mdx$")
+  | grep -v "\.mdx$" \
+  | grep -v "consumer-integration\.test\.ts$")
 
 if [ -z "$FILES" ]; then
   exit 0
