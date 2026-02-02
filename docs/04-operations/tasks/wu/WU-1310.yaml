@@ -18,7 +18,6 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1310.done
 dependencies: []
-initiative: INIT-013
 risks: []
 notes: ''
 requires_review: false
