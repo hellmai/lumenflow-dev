@@ -10,7 +10,7 @@ This is the complete onboarding document for AI agents working with LumenFlow. R
 
 ```bash
 # 1. Check your assigned WU
-cat docs/04-operations/tasks/wu/WU-XXXX.yaml
+cat {{DOCS_TASKS_PATH}}/wu/WU-XXXX.yaml
 
 # 2. Claim the WU (creates isolated worktree)
 pnpm wu:claim --id WU-XXXX --lane "Lane Name"
@@ -160,7 +160,7 @@ git add . && git commit -m "your message"
 **Fix:** Regenerate the backlog or manually add the missing WU:
 
 ```bash
-# In worktree, edit docs/04-operations/tasks/backlog.md
+# In worktree, edit {{DOCS_TASKS_PATH}}/backlog.md
 # Add the missing WU reference in the appropriate section
 ```
 
@@ -266,7 +266,7 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 
 ```
 /path/to/repo/
-├── docs/04-operations/tasks/
+├── {{DOCS_TASKS_PATH}}/
 │   ├── backlog.md              # All WUs listed here
 │   └── wu/WU-XXXX.yaml         # Individual WU specs
 ├── worktrees/
