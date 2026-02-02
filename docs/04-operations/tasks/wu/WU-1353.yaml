@@ -8,7 +8,7 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/templates/core/.lumenflow/constraints.md.template
   - packages/@lumenflow/cli/templates/core/ai/onboarding/first-wu-mistakes.md.template
-  - scripts/templates-sync.ts
+  - packages/@lumenflow/cli/src/sync-templates.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
 tests:
   manual:
