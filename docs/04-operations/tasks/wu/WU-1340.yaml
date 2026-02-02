@@ -2,7 +2,7 @@ id: WU-1340
 title: 'Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings'
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-02
 code_paths:
@@ -31,7 +31,8 @@ dependencies: []
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-013.yaml
 risks: []
-notes: 'Context: INIT-013 added lock_policy-aware helpers, but orchestration wiring still used legacy scheduling.'
+notes: 'Context: INIT-013 added lock_policy-aware helpers, but orchestration wiring still used
+  legacy scheduling.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -59,3 +60,5 @@ session_id: 8373d24e-5487-4b54-b3d0-fd1218e59dbd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T14:48:41.778Z
+locked: true
+completed_at: 2026-02-02T15:40:12.611Z
