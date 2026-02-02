@@ -77,6 +77,8 @@ import {
 } from '@lumenflow/core/dist/gates-config.js';
 // WU-1191: Lane health check
 import { runLaneHealthCheck } from './lane-health.js';
+// WU-1315: Onboarding smoke test
+import { runOnboardingSmokeTestGate } from './onboarding-smoke-test.js';
 import {
   BRANCHES,
   PACKAGES,
@@ -1425,6 +1427,11 @@ async function executeGates(opts: {
           run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
           warnOnly: laneHealthMode !== 'error',
         },
+        // WU-1315: Onboarding smoke test (init + wu:create validation)
+        {
+          name: GATE_NAMES.ONBOARDING_SMOKE_TEST,
+          cmd: GATE_COMMANDS.ONBOARDING_SMOKE_TEST,
+        },
         // WU-1299: Filtered tests for packages in code_paths (if any)
         // When docs-only mode has packages in code_paths, run tests only for those packages
         // This prevents pre-existing failures in unrelated packages from blocking
@@ -1472,6 +1479,11 @@ async function executeGates(opts: {
           name: GATE_NAMES.LANE_HEALTH,
           run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
           warnOnly: laneHealthMode !== 'error',
+        },
+        // WU-1315: Onboarding smoke test (init + wu:create validation)
+        {
+          name: GATE_NAMES.ONBOARDING_SMOKE_TEST,
+          cmd: GATE_COMMANDS.ONBOARDING_SMOKE_TEST,
         },
         // WU-2062: Safety-critical tests ALWAYS run
         // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
@@ -1600,6 +1612,17 @@ async function executeGates(opts: {
               },
             }
           : console,
+      });
+    } else if (gate.cmd === GATE_COMMANDS.ONBOARDING_SMOKE_TEST) {
+      // WU-1315: Onboarding smoke test (init + wu:create validation)
+      const logLine = useAgentMode
+        ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
+        : (line: string) => console.log(line);
+
+      logLine('\n> Onboarding smoke test\n');
+
+      result = await runOnboardingSmokeTestGate({
+        logger: { log: logLine },
       });
     } else {
       result = run(gate.cmd, { agentLog });
