@@ -2,7 +2,7 @@ id: WU-1337
 title: Add retry/rebase for push-only micro-worktree operations
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -28,9 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pushOnly path in micro-worktree currently bypasses retry/rebase and fails on non-fast-forward. Add retry handling (with p-retry) for pushRefspecWithForce so initiative:add/remove-wu and other push-only commands recover when origin moves.
+description: pushOnly path in micro-worktree currently bypasses retry/rebase and fails on
+  non-fast-forward. Add retry handling (with p-retry) for pushRefspecWithForce so
+  initiative:add/remove-wu and other push-only commands recover when origin moves.
 acceptance:
   - push-only path retries on non-fast-forward with rebase + re-merge
   - Uses git.push_retry config (enabled/retries/min/max/jitter)
   - Still uses LUMENFLOW_FORCE for refspec push
   - Clear error after retries exhausted
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1337
+claimed_at: 2026-02-02T12:15:06.593Z
+baseline_main_sha: 338aefd91f93a2e0fba18fac8b8c53458a839b58
+session_id: e430b05b-52e8-4c96-8cf0-aba6aaf1eb38
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:15:06.599Z
