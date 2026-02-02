@@ -1400,10 +1400,16 @@ export function checkLaneOccupation(
  * @param {string} targetWuId - WU ID being spawned
  * @param {Object} [options={}] - Options
  * @param {boolean} [options.isStale] - Whether the lock is stale (>24h old)
+ * @param {number} [options.wipLimit] - WU-1346: Injected WIP limit (for testing)
+ * @param {'all' | 'active' | 'none'} [options.lockPolicy] - WU-1346: Injected lock policy (for testing)
  * @returns {string} Warning message
  */
 interface LaneOccupationOptions {
   isStale?: boolean;
+  /** WU-1346: Injected WIP limit for testing (bypasses config lookup) */
+  wipLimit?: number;
+  /** WU-1346: Injected lock policy for testing (bypasses config lookup) */
+  lockPolicy?: 'all' | 'active' | 'none';
 }
 
 export function generateLaneOccupationWarning(
@@ -1414,8 +1420,9 @@ export function generateLaneOccupationWarning(
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
-  const lockPolicy = getLockPolicyForLane(lockMetadata.lane);
-  const wipLimit = getWipLimitForLane(lockMetadata.lane);
+  // WU-1346: Use injected values if provided, otherwise look up from config
+  const lockPolicy = options.lockPolicy ?? getLockPolicyForLane(lockMetadata.lane);
+  const wipLimit = options.wipLimit ?? getWipLimitForLane(lockMetadata.lane);
 
   warning += `   This violates WIP=${wipLimit} (lock_policy=${lockPolicy}).\n\n`;
 
