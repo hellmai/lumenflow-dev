@@ -50,7 +50,6 @@ sections:
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
 - [WU-1347 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1347.yaml) — Framework: Core
-- [WU-1353 — Sync CLI templates with source docs and add release automation](wu/WU-1353.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -60,6 +59,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml) — Framework: Core
 - [WU-1354 — Add 'implied action paralysis' anti-pattern to agent docs](wu/WU-1354.yaml) — Content: Documentation
+- [WU-1353 — Sync CLI templates with source docs and add release automation](wu/WU-1353.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
