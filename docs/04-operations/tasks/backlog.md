@@ -55,6 +55,8 @@ sections:
 - [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — Content: Documentation
 - [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml) — Framework: CLI
 - [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml) — Content: Documentation
+- [WU-1332 — Retry/rebase micro-worktree push on non-fast-forward](wu/WU-1332.yaml) — Framework: Core
+- [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -62,7 +64,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -348,3 +349,4 @@ sections:
 - [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml)
 - [WU-1319 — Generate status.md from merged state during wu:done](wu/WU-1319.yaml)
 - [WU-1328 — Add initiative:remove-wu command to unlink WUs from initiatives](wu/WU-1328.yaml)
+- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml)
