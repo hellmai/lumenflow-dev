@@ -63,6 +63,9 @@ lanes:
       wip_limit: 4
       # WU-1187: wip_justification required when wip_limit > 1
       wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
+      # WU-1322: lock_policy controls how lane branches are locked during WU execution
+      # Values: 'all' (default) | 'active' (overlap-based) | 'none' (no locking)
+      # lock_policy: 'none'  # Uncomment to allow parallel doc work without lane locking
       code_paths:
         - 'docs/**'
         - 'apps/docs/**'
