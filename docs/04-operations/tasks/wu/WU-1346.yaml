@@ -8,7 +8,9 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/__tests__/wu-spawn-lane-warning.test.ts
 tests:
-  manual: []
+  manual:
+    - Verify tests pass with injected config values
+    - Verify backward compatibility when no config values injected
   unit:
     - packages/@lumenflow/cli/__tests__/wu-spawn-lane-warning.test.ts
   e2e: []
@@ -16,7 +18,10 @@ artifacts:
   - .lumenflow/stamps/WU-1346.done
 dependencies: []
 risks: []
-notes: ''
+notes: >-
+  Added wipLimit and lockPolicy as optional fields to LaneOccupationOptions interface.
+  When provided, these values are used directly instead of calling getWipLimitForLane/getLockPolicyForLane.
+  This enables portable testing without depending on repo-specific config.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
