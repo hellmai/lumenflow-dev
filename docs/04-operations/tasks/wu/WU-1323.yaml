@@ -2,7 +2,7 @@ id: WU-1323
 title: Update lane lock system to honor lock_policy
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -34,3 +34,11 @@ acceptance:
   - policy=all behavior unchanged (backward compatible)
   - Tests cover all three policy values
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1323
+claimed_at: 2026-02-02T12:41:49.577Z
+baseline_main_sha: 75f90737597467265a5c6181d8b99bba643649ec
+session_id: 39e07859-f3c8-446f-a4fc-928d662deccc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:41:49.583Z
