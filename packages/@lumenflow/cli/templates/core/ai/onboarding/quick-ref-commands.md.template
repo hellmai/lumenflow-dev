@@ -6,6 +6,33 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 ---
 
+## Quick Start (Essential Commands)
+
+Most common workflow in 4 commands:
+
+```bash
+# 1. Claim WU and create isolated workspace
+pnpm wu:claim --id WU-XXX --lane "Lane Name"
+cd worktrees/<lane>-wu-xxx
+
+# 2. Work in worktree, then run gates
+pnpm gates                    # For code changes
+pnpm gates --docs-only        # For documentation only
+
+# 3. Prepare for completion (from worktree)
+pnpm wu:prep --id WU-XXX
+
+# 4. Complete (from main - copy command from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-XXX
+```
+
+**Key rules:**
+- Always work in worktrees, never on main
+- Always run `wu:done` to complete (not just documenting it)
+- Use `wu:prep` first (runs gates), then `wu:done` (merges)
+
+---
+
 ## Setup & Development
 
 **For this monorepo (development):**
