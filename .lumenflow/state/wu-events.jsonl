@@ -615,4 +615,5 @@
 {"type":"complete","wuId":"WU-1344","timestamp":"2026-02-02T16:07:21.813Z"}
 {"type":"claim","wuId":"WU-1346","timestamp":"2026-02-02T16:11:19.241Z","lane":"Framework: CLI","title":"Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)"}
 {"type":"complete","wuId":"WU-1345","timestamp":"2026-02-02T16:15:13.132Z"}
-{"type":"claim","wuId":"WU-1349","lane":"Content: Documentation","title":"Fix npx command claim in quickstart docs","timestamp":"2026-02-02T16:15:36.477Z"}
+{"type":"claim","wuId":"WU-1349","timestamp":"2026-02-02T16:15:36.477Z","lane":"Content: Documentation","title":"Fix npx command claim in quickstart docs"}
+{"type":"complete","wuId":"WU-1346","timestamp":"2026-02-02T16:17:11.651Z"}
