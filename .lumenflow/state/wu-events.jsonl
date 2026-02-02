@@ -625,3 +625,4 @@
 {"type":"claim","wuId":"WU-1348","timestamp":"2026-02-02T16:37:09.317Z","lane":"Framework: Core","title":"Avoid main checkout resets in micro-worktree push retry"}
 {"type":"claim","wuId":"WU-1352","timestamp":"2026-02-02T16:38:08.407Z","lane":"Content: Documentation","title":"Add 'never quick fix on main' anti-pattern to agent docs"}
 {"type":"complete","wuId":"WU-1352","timestamp":"2026-02-02T16:40:02.648Z"}
+{"type":"claim","wuId":"WU-1354","lane":"Content: Documentation","title":"Add 'implied action paralysis' anti-pattern to agent docs","timestamp":"2026-02-02T16:45:45.371Z"}

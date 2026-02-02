@@ -2,7 +2,7 @@ id: WU-1354
 title: Add 'implied action paralysis' anti-pattern to agent docs
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -27,8 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Agents sometimes fail to act when users imply action (e.g., 'so update 1348 then?'). Add Mistake 12 to first-wu-mistakes.md, update wu-workflow.md anti-patterns, and make wu:edit more discoverable.
+description: Agents sometimes fail to act when users imply action (e.g., 'so update 1348 then?').
+  Add Mistake 12 to first-wu-mistakes.md, update wu-workflow.md anti-patterns, and make wu:edit more
+  discoverable.
 acceptance:
   - Mistake 12 added to first-wu-mistakes.md with Wrong/Right examples
   - wu-workflow.md has 2 new anti-pattern entries
   - wu:edit added to starting-prompt.md commands table
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1354
+claimed_at: 2026-02-02T16:45:45.348Z
+baseline_main_sha: 6ea9e7c7794599cba5fce485f364f8692be0611f
+session_id: 5a6b6502-4a07-4f80-b97f-9dc7afe19e34
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:45:45.355Z
