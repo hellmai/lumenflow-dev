@@ -1,7 +1,7 @@
 id: WU-1360
 title: Add rapid prototyping guide and workflow enforcement hooks
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-02
@@ -25,10 +25,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-02T21:50:44.200Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1360
+session_id: 282d58aa-aa8d-4302-865f-64e7b0554414
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T21:50:44.206Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +51,3 @@ acceptance:
   - starting-prompt.md.template uses template variables for paths (not hardcoded arc42)
   - quick-ref-commands.md.template has 'Quick Start' section at top with essential commands
   - CLAUDE.md.template includes orchestration and memory commands
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1360
-claimed_at: 2026-02-02T21:50:44.200Z
-baseline_main_sha: 6e601107ab3b84e134046baa6a16ea647d85fc67
-session_id: 282d58aa-aa8d-4302-865f-64e7b0554414
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-02T21:50:44.206Z
