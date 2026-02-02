@@ -16,7 +16,13 @@ artifacts:
   - .lumenflow/stamps/WU-1351.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Fixed 5 command typos across 4 files:
+  - cookbook.mdx: initiative:add:wu → initiative:add-wu
+  - cookbook.mdx: initiative:bulk:assign:wus → initiative:bulk-assign-wus
+  - a-day-with-lumenflow.mdx: agent:session:end → agent:session-end
+  - custom-skills.mdx: validate:agent:skills → validate:agent-skills
+  - metrics.mdx: metrics:export → metrics:snapshot (command doesn't exist)
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
