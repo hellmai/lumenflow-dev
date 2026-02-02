@@ -594,3 +594,4 @@
 {"type":"claim","wuId":"WU-1326","timestamp":"2026-02-02T12:23:47.324Z","lane":"Framework: Initiatives","title":"Update orchestrator wave building for lock_policy"}
 {"type":"claim","wuId":"WU-1327","timestamp":"2026-02-02T12:25:30.174Z","lane":"Content: Documentation","title":"Document lock_policy and pilot guidance"}
 {"type":"complete","wuId":"WU-1327","timestamp":"2026-02-02T12:28:07.387Z"}
+{"type":"claim","wuId":"WU-1322","lane":"Framework: Core","title":"Add lock_policy field to lane configuration schema","timestamp":"2026-02-02T12:28:14.261Z"}
