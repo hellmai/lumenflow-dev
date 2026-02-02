@@ -86,6 +86,7 @@
     "lumenflow:doctor": "node packages/@lumenflow/cli/dist/doctor.js",
     "docs:sync": "node packages/@lumenflow/cli/dist/docs-sync.js",
     "sync:templates": "node packages/@lumenflow/cli/dist/sync-templates.js",
+    "templates:sync": "node packages/@lumenflow/cli/dist/sync-templates.js",
     "docs:generate": "npx tsx tools/generate-cli-docs.ts",
     "docs:validate": "npx tsx tools/generate-cli-docs.ts --validate",
     "changeset": "changeset",

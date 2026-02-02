@@ -1,0 +1,407 @@
+# LumenFlow Agent Starting Prompt
+
+**Last updated:** {{DATE}}
+
+This is the complete onboarding document for AI agents working with LumenFlow. Read this entire document before starting any work.
+
+---
+
+## Quick Start (Copy This)
+
+```bash
+# 1. Check your assigned WU
+cat docs/04-operations/tasks/wu/WU-XXXX.yaml
+
+# 2. Claim the WU (creates isolated worktree)
+pnpm wu:claim --id WU-XXXX --lane "Lane Name"
+
+# 3. IMMEDIATELY cd to worktree (CRITICAL!)
+cd worktrees/<lane>-wu-xxxx
+
+# 4. Do your work here (not in main!)
+
+# 5. Run gates before completion
+pnpm gates              # For code changes
+pnpm gates --docs-only  # For documentation changes
+
+# 6. Return to main and complete
+cd /path/to/main/checkout
+pnpm wu:done --id WU-XXXX
+```
+
+---
+
+## Before Creating WUs
+
+If you plan to use sub-lanes like `Experience: UI`, make sure lane inference is configured:
+
+- `.lumenflow.lane-inference.yaml` must exist for sub-lane validation, or
+- Generate it with `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`
+
+**No remote yet?** `wu:create` expects `origin/main`. If your repo is local-only, add a remote
+before running `wu:create`. `wu:claim` supports `--no-push` for local-only work.
+
+---
+
+## The 5 Rules You Must Follow
+
+### Rule 1: ALWAYS Work in Worktrees
+
+After `pnpm wu:claim`, you MUST immediately `cd` to the worktree. **Never edit files in the main checkout.**
+
+```bash
+# WRONG - editing in main
+pnpm wu:claim --id WU-123 --lane "Framework: CLI"
+vim packages/cli/src/index.ts  # BLOCKED BY HOOKS!
+
+# RIGHT - editing in worktree
+pnpm wu:claim --id WU-123 --lane "Framework: CLI"
+cd worktrees/framework-cli-wu-123  # IMMEDIATELY!
+vim packages/cli/src/index.ts  # Safe here
+```
+
+**Why:** Worktrees isolate your changes. Main checkout is protected by git hooks.
+
+### Rule 2: ALWAYS Run wu:done
+
+After gates pass, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout. Do not just write "To complete: run wu:done" - actually run it.
+
+```bash
+# WRONG
+"Work complete. Next step: run pnpm wu:done --id WU-123"
+
+# RIGHT
+cd /path/to/main
+pnpm wu:done --id WU-123
+# Then report: "WU-123 completed. Changes merged to main."
+```
+
+**Why:** wu:done merges your changes, creates the completion stamp, and releases the lane lock.
+
+### Rule 3: Use Relative Paths Only
+
+When writing or editing files, use paths relative to the worktree root.
+
+```bash
+# WRONG - absolute paths
+Write to: /home/user/project/worktrees/cli-wu-123/src/index.ts
+
+# RIGHT - relative paths
+Write to: src/index.ts
+# (from within the worktree directory)
+```
+
+**Why:** Absolute paths may accidentally write to main or wrong worktree.
+
+### Rule 4: Handle Gate Failures Properly
+
+When gates fail, read the error and fix it. Common failures and fixes:
+
+| Failure        | Cause                   | Fix                                    |
+| -------------- | ----------------------- | -------------------------------------- |
+| `format:check` | Prettier formatting     | `pnpm prettier --write <file>`         |
+| `backlog-sync` | WU missing from backlog | Regenerate backlog or add WU reference |
+| `typecheck`    | TypeScript errors       | Fix the type errors                    |
+| `lint`         | ESLint violations       | `pnpm lint --fix` or manual fix        |
+| `test`         | Failing tests           | Fix the tests or implementation        |
+
+**Pre-existing failures:** If failures exist on main before your changes:
+
+```bash
+pnpm wu:done --id WU-XXX --skip-gates \
+  --reason "Pre-existing format failures in apps/docs/*.mdx" \
+  --fix-wu WU-XXX
+```
+
+### Rule 5: Know When to Use LUMENFLOW_FORCE
+
+`LUMENFLOW_FORCE=1` bypasses git hooks. Use it ONLY for emergency fixes when hooks are incorrectly blocking you.
+
+```bash
+# Emergency: backlog fix when worktree hook blocks main writes
+LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="backlog corruption recovery" git commit -m "fix: ..."
+LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="backlog corruption recovery" git push
+```
+
+**Never use for:**
+
+- Skipping failing tests
+- Avoiding gate failures
+- Convenience
+
+**Always use with:**
+
+- `LUMENFLOW_FORCE_REASON="explanation"`
+
+---
+
+## Common Failure Scenarios and Recovery
+
+### Scenario 1: "BLOCKED: Direct commit to main"
+
+**Cause:** You're trying to commit in the main checkout, not the worktree.
+
+**Fix:**
+
+```bash
+# Check where you are
+pwd
+# Should be: .../worktrees/<lane>-wu-xxx
+# If in main, cd to worktree first
+
+cd worktrees/<lane>-wu-xxx
+git add . && git commit -m "your message"
+```
+
+### Scenario 2: "backlog-sync failed - WU not found in backlog.md"
+
+**Cause:** The backlog.md file is missing references to some WU YAML files.
+
+**Fix:** Regenerate the backlog or manually add the missing WU:
+
+```bash
+# In worktree, edit docs/04-operations/tasks/backlog.md
+# Add the missing WU reference in the appropriate section
+```
+
+### Scenario 3: "Auto-rebase failed: unstaged changes"
+
+**Cause:** Your worktree has uncommitted changes when wu:done tries to rebase.
+
+**Fix:**
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git status  # See what's uncommitted
+git add . && git commit -m "wip: complete changes"
+cd /path/to/main
+pnpm wu:done --id WU-XXX
+```
+
+### Scenario 4: "Working tree is not clean" (when running wu:done)
+
+**Cause:** Main checkout has uncommitted changes (possibly from another agent).
+
+**Fix:**
+
+```bash
+cd /path/to/main
+git status  # Check what's uncommitted
+# If your changes: commit them
+# If another agent's changes: DO NOT DELETE - coordinate with user
+git restore <file>  # Only if safe to discard
+```
+
+### Scenario 5: Gate fails but you didn't cause the failure
+
+**Cause:** Pre-existing failures on main that your WU didn't introduce.
+
+**Fix:**
+
+```bash
+# Verify the failure exists on main before your changes
+git stash
+pnpm gates  # If still fails, it's pre-existing
+git stash pop
+
+# Complete with skip-gates
+pnpm wu:done --id WU-XXX --skip-gates \
+  --reason "Pre-existing failure in X" \
+  --fix-wu WU-XXX
+```
+
+---
+
+## Spawning Sub-Agents with wu:spawn
+
+Use `wu:spawn` to create parallel sub-agents for complex WUs that require multiple agents working simultaneously on different aspects.
+
+### When to Use wu:spawn
+
+- **Parallel work:** Multiple agents needed on the same WU simultaneously
+- **Specialized expertise:** Different agents for different domains (frontend, backend, docs)
+- **Context isolation:** Preventing context limit issues on large WUs
+- **Wave-based execution:** Coordinating multiple phases of work
+
+### How to Use wu:spawn
+
+```bash
+# Spawn a sub-agent with client-specific context
+pnpm wu:spawn --id WU-XXXX --client <client-type>
+
+# Valid client values:
+# - claude-code    # Claude Code CLI
+# - cursor        # Cursor IDE
+# - windsurf      # Windsurf IDE
+# - gemini-cli    # Gemini CLI
+# - copilot       # GitHub Copilot CLI
+```
+
+**IMPORTANT:** The `--client` flag identifies your IDE/tool environment, NOT the underlying AI model. Use `--client windsurf` even if Windsurf is running a Claude agent.
+
+### Sub-Agent Coordination
+
+- Sub-agents work in isolated micro-worktrees
+- Use `pnpm mem:signal` for progress communication
+- Main agent coordinates and integrates results
+- Each sub-agent should focus on a specific aspect
+
+---
+
+## WU Lifecycle Commands
+
+| Command                                   | Description                       | When to Use           |
+| ----------------------------------------- | --------------------------------- | --------------------- |
+| `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
+| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
+| `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
+| `pnpm gates`                              | Run quality gates                 | Before wu:done        |
+| `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |
+| `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup       | After gates pass      |
+| `pnpm wu:recover --id WU-XXX`             | Fix inconsistent WU state         | When state is broken  |
+
+---
+
+## File Structure
+
+```
+/path/to/repo/
+├── docs/04-operations/tasks/
+│   ├── backlog.md              # All WUs listed here
+│   └── wu/WU-XXXX.yaml         # Individual WU specs
+├── worktrees/
+│   └── <lane>-wu-xxxx/         # Your isolated workspace
+├── .lumenflow/
+│   ├── constraints.md          # Non-negotiable rules
+│   ├── stamps/WU-XXXX.done     # Completion stamps
+│   └── state/wu-events.jsonl   # Event log
+└── LUMENFLOW.md                # Main workflow docs
+```
+
+---
+
+## Definition of Done
+
+Before reporting a WU complete, verify:
+
+- [ ] All acceptance criteria in WU YAML are satisfied
+- [ ] Gates pass (`pnpm gates` or `pnpm gates --docs-only`)
+- [ ] `pnpm wu:done --id WU-XXX` ran successfully
+- [ ] Output shows "Marked done, pushed, and cleaned up"
+- [ ] Worktree was removed (check `ls worktrees/`)
+
+---
+
+## Anti-Patterns (Don't Do These)
+
+1. **Don't write "To complete: run wu:done"** - Actually run it
+2. **Don't edit files in main checkout** - Use the worktree
+3. **Don't use absolute paths** - Use relative paths from worktree root
+4. **Don't ignore gate failures** - Fix them or use --skip-gates with reason
+5. **Don't use LUMENFLOW_FORCE casually** - Only for genuine emergencies
+6. **Don't delete another agent's uncommitted work** - Coordinate with user
+7. **Don't work after context compaction** - Spawn fresh agent instead
+
+---
+
+## Getting Help
+
+1. **Check WU status:** `pnpm wu:status --id WU-XXX`
+2. **Read error messages:** They usually include fix commands
+3. **Check gate logs:** `.logs/gates-*.log` in worktree
+4. **Recovery command:** `pnpm wu:recover --id WU-XXX`
+
+---
+
+## Universal Agent Entry Points
+
+LumenFlow uses **AGENTS.md** as the universal entry point for all AI agents. This file works with:
+
+- **Claude Code** - Reads AGENTS.md directly
+- **Cursor** - Reads AGENTS.md directly
+- **Windsurf** - Reads AGENTS.md directly
+- **OpenAI Codex** - Reads AGENTS.md directly
+
+### Client-Specific Overlays
+
+Some clients have additional overlay files for client-specific features:
+
+| Client   | Entry Point | Overlay Location             |
+| -------- | ----------- | ---------------------------- |
+| Claude   | AGENTS.md   | CLAUDE.md (root)             |
+| Cursor   | AGENTS.md   | .cursor/rules/lumenflow.md   |
+| Windsurf | AGENTS.md   | .windsurf/rules/lumenflow.md |
+| Codex    | AGENTS.md   | (no overlay, AGENTS.md only) |
+
+### Setting Up for Your Client
+
+When initializing LumenFlow, use the `--client` flag to generate client-specific files:
+
+```bash
+# Install the CLI first
+pnpm add -D @lumenflow/cli
+
+# Universal setup (AGENTS.md only)
+pnpm exec lumenflow
+
+# Claude-specific setup
+pnpm exec lumenflow --client claude
+
+# Cursor-specific setup
+pnpm exec lumenflow --client cursor
+
+# Windsurf-specific setup
+pnpm exec lumenflow --client windsurf
+
+# All clients
+pnpm exec lumenflow --client all
+```
+
+### Adding LumenFlow to Existing Projects
+
+Use `--merge` mode to safely add LumenFlow configuration to existing files without overwriting your content:
+
+```bash
+# Install the CLI first
+pnpm add -D @lumenflow/cli
+
+# Merge into existing AGENTS.md (preserves your content)
+pnpm exec lumenflow --merge
+
+# Merge with client overlay
+pnpm exec lumenflow --merge --client claude
+```
+
+The merge mode uses bounded markers (`<!-- LUMENFLOW:START -->` and `<!-- LUMENFLOW:END -->`) to safely insert and update the LumenFlow block while preserving everything else.
+
+### Framework Scaffolding in Non-Empty Directories
+
+Many framework scaffolding tools (e.g., `create-next-app`, `create-react-app`) fail in non-empty directories. Use a temp directory workaround:
+
+```bash
+# 1. Scaffold in a temp directory
+pnpm create next-app /tmp/nextjs-scaffold --typescript --tailwind --app
+
+# 2. Copy scaffold files to your project (preserves existing files)
+cp -rn /tmp/nextjs-scaffold/* .
+cp -rn /tmp/nextjs-scaffold/.* . 2>/dev/null || true
+
+# 3. Install and initialize LumenFlow
+pnpm install
+pnpm add -D @lumenflow/cli
+pnpm exec lumenflow --client claude --full
+
+# 4. Clean up
+rm -rf /tmp/nextjs-scaffold
+```
+
+---
+
+## Reference Documents
+
+- [LUMENFLOW.md](../../../../../LUMENFLOW.md) - Main workflow documentation
+- [AGENTS.md](../../../../../AGENTS.md) - Universal agent entry point
+- [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 6 non-negotiable rules
+- [troubleshooting-wu-done.md](troubleshooting-wu-done.md) - Why agents forget wu:done
+- [first-wu-mistakes.md](first-wu-mistakes.md) - Common mistakes to avoid
+- [quick-ref-commands.md](quick-ref-commands.md) - Command reference

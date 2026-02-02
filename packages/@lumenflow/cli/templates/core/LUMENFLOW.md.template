@@ -8,17 +8,18 @@ LumenFlow is a vendor-agnostic workflow framework for AI-native software develop
 
 ---
 
-## Critical Rule: ALWAYS Run wu:done
+## Critical Rule: Use wu:prep Then wu:done
 
-**After completing work on a WU, you MUST run `pnpm wu:done --id WU-XXXX` from the main checkout.**
+**WU-1223 NEW WORKFLOW:**
 
-This is the single most forgotten step. Do NOT:
+1. From worktree: `pnpm wu:prep --id WU-XXXX` (runs gates, prints copy-paste instruction)
+2. From main: `pnpm wu:done --id WU-XXXX` (merge + cleanup only)
 
-- Write "To Complete: pnpm wu:done" and stop
-- Ask if you should run wu:done
-- Forget to run wu:done
+**DO NOT:**
 
-**DO**: Run `pnpm wu:done --id WU-XXXX` immediately after gates pass.
+- Run `wu:done` from a worktree (it will error)
+- Forget to run `wu:done` after `wu:prep`
+- Skip `wu:prep` and go directly to `wu:done` (gates won't run in worktree)
 
 See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
 
@@ -30,8 +31,8 @@ See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting
 # 1. Setup (first time only)
 pnpm setup
 
-# 2. Create a WU (default: creates spec/wu-xxxx branch, never writes to main)
-pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title" \
+# 2. Create a WU (--id is optional, auto-generates next sequential ID if omitted)
+pnpm wu:create --lane <Lane> --title "Title" \
   --description "..." --acceptance "..." --code-paths "..." \
   --test-paths-unit "..." --exposure backend-only \
   --spec-refs "lumenflow://plans/WU-XXXX-plan.md"
@@ -42,14 +43,48 @@ cd worktrees/<lane>-wu-xxxx
 
 # 4. Implement in worktree
 
-# 5. Run gates
-pnpm gates --docs-only  # for docs changes
-pnpm gates              # for code changes
+# 5. Prepare (runs gates in worktree) - WU-1223 NEW
+pnpm wu:prep --id WU-XXXX
+# This prints a copy-paste instruction for the next step
 
-# 6. Complete (from main checkout)
-cd /path/to/main
-pnpm wu:done --id WU-XXXX
+# 6. Complete (from main checkout - copy-paste from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-XXXX
 ```
+
+---
+
+## Setup Notes (Common First-Run Failures)
+
+### Lane inference (sub-lanes)
+
+If you use sub-lanes like `Experience: UI`, you must have a lane taxonomy:
+
+- Ensure `.lumenflow.lane-inference.yaml` exists, or
+- Generate it with `pnpm lane:suggest --output .lumenflow.lane-inference.yaml`
+
+Without this file, sub-lane validation will fail.
+
+### Local-only / no remote
+
+By default, `wu:create` expects an `origin` remote and will fetch `origin/main`.
+
+For local-only or offline development, add this to `.lumenflow.config.yaml`:
+
+```yaml
+git:
+  requireRemote: false
+```
+
+When `requireRemote: false`:
+
+- `wu:create` skips remote fetch operations
+- `wu:claim` works without pushing to origin
+- Useful for air-gapped environments, testing/evaluation, or pre-remote development
+
+When `requireRemote: true` (default):
+
+- Operations fail with a clear error if no `origin` remote exists
+- Ensures team visibility via remote branches
 
 ---
 
@@ -63,6 +98,18 @@ pnpm wu:done --id WU-XXXX
 6. **Gates Before Done**: All gates must pass before `wu:done`
 7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
 8. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+
+---
+
+## Universal Agent Safety (WU-1170)
+
+LumenFlow enforces safety at the repository level so protections apply to all agents and humans.
+
+- **Git wrapper**: `scripts/safe-git` blocks destructive operations (e.g. `worktree remove`, `reset --hard`, `clean -fd`, `push --force`).
+- **Husky hooks**: staged secret scanning, absolute-path scanning, lockfile sync, and worktree discipline.
+- **Audit logs**:
+  - `.beacon/safety-blocks.log`
+  - `.beacon/force-bypasses.log`
 
 ---
 
@@ -83,17 +130,31 @@ air-gapped/offline work; it creates a local-only claim and warns explicitly.
 
 ### Core (Vendor-Agnostic)
 
-- **LUMENFLOW.md** - This file, main entry point
+- **AGENTS.md** - Universal entry point for AI agents (Codex, Cursor, Windsurf)
+- **LUMENFLOW.md** - This file, main workflow documentation
 - **.lumenflow/constraints.md** - Non-negotiable workflow constraints
 - **.lumenflow/rules/** - Workflow rules (git-safety.md, wu-workflow.md, etc.)
 - **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/** - Agent onboarding documentation
 
-### Vendor Integrations
+### Client/Vendor Overlays
 
-- **.claude/** - Claude Code (settings.json, hooks, .claude/CLAUDE.md)
-- **.cursor/** - Cursor (rules, settings)
-- **.aider.conf.yml** - Aider configuration
-- **.continue/** - Continue configuration
+- **CLAUDE.md** - Claude Code overlay (single file at root)
+- **.claude/** - Claude Code settings, hooks, skills, agents
+- **.cursor/rules/lumenflow.md** - Cursor rules overlay
+- **.windsurf/rules/lumenflow.md** - Windsurf rules overlay
+
+Use `lumenflow init --client <type>` to generate client-specific files:
+
+```bash
+lumenflow init                     # Creates AGENTS.md + LUMENFLOW.md (universal)
+lumenflow init --client claude     # + CLAUDE.md, .claude/
+lumenflow init --client cursor     # + .cursor/rules/lumenflow.md
+lumenflow init --client windsurf   # + .windsurf/rules/lumenflow.md
+lumenflow init --client all        # All of the above
+lumenflow init --merge             # Safe merge into existing files
+```
+
+The `--merge` flag uses bounded markers (`LUMENFLOW:START`/`END`) to safely insert or update LumenFlow config in existing files without overwriting user content.
 
 ---
 
@@ -131,7 +192,7 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ## Core Commands
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](ai/onboarding/quick-ref-commands.md)
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 | Command                         | Description                                            |
 | ------------------------------- | ------------------------------------------------------ |
@@ -161,7 +222,7 @@ When validation fails, commands provide copy-paste ready fix commands:
 ERROR: WRONG_LOCATION - wu:done must be run from main checkout
 
 FIX: Run this command:
-  cd {{PROJECT_ROOT}} && pnpm wu:done --id WU-1090
+  cd <repo-root> && pnpm wu:done --id WU-1090
 ```
 
 Configure validation behavior in `.lumenflow.config.yaml`:
@@ -210,6 +271,7 @@ If you're an AI agent, read the onboarding docs:
 2. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md) - First WU pitfalls
 3. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/agent-safety-card.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md) - Safety guardrails
 4. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) - Command reference
+5. [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/test-ratchet.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/test-ratchet.md) - Test baseline ratchet pattern
 
 ---
 

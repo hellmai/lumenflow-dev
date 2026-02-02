@@ -1,7 +1,7 @@
 ---
 name: wu-lifecycle
-description: Work Unit claim/block/done workflow automation. Use when claiming WUs, blocking/unblocking, running wu:done, or understanding WU state transitions.
-version: 2.1.0
+description: Work Unit claim/block/done workflow automation. Use when claiming WUs, blocking/unblocking, running wu:prep + wu:done, or understanding WU state transitions.
+version: 2.2.0
 source: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 source_sections: §2.4, §6 (WU Lifecycle)
 last_updated: {{DATE}}
@@ -38,9 +38,13 @@ ready → in_progress → waiting/blocked → done
 pnpm wu:claim --id WU-XXX --lane <lane>
 cd worktrees/<lane>-wu-xxx   # IMMEDIATELY
 
-# Complete WU (from main)
-cd ../..
-pnpm wu:done --id WU-XXX
+# Complete WU - TWO STEPS (WU-1223)
+# Step 1: From worktree, run wu:prep
+pnpm wu:prep --id WU-XXX
+# This prints: cd /path/to/main && pnpm wu:done --id WU-XXX
+
+# Step 2: From main, run wu:done (copy-paste from wu:prep output)
+cd /path/to/main && pnpm wu:done --id WU-XXX
 
 # Block/Unblock
 pnpm wu:block --id WU-XXX --reason "..."
@@ -59,11 +63,18 @@ pnpm wu:prune --execute     # Clean stale worktrees
 pnpm wu:cleanup --id WU-XXX # After PR merge
 ```
 
-## wu:done Workflow
+## wu:prep + wu:done Workflow (WU-1223)
 
-1. Runs gates in worktree
+**Two-step completion:**
+
+1. `wu:prep` (from worktree): Runs gates, prints copy-paste instruction
+2. `wu:done` (from main): Fast-forward merge, stamp, cleanup
+
+**wu:done workflow (from main):**
+
+1. Validates running from main (errors if in worktree)
 2. Fast-forward merge to main
-3. Creates `.beacon/stamps/WU-XXX.done`
+3. Creates `.lumenflow/stamps/WU-XXX.done`
 4. Updates backlog.md + status.md
 5. Removes worktree
 

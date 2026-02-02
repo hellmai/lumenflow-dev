@@ -1,8 +1,17 @@
-# Troubleshooting: wu:done Not Run
+# Troubleshooting: wu:prep and wu:done Workflow
 
 **Last updated:** {{DATE}}
 
-This is the most common mistake agents make. This document explains why it happens and how to fix it.
+This is the most common mistake agents make. This document explains the two-step completion workflow introduced in WU-1223.
+
+---
+
+## The New Workflow (WU-1223)
+
+As of WU-1223, completion is a **two-step process**:
+
+1. **From worktree**: Run `pnpm wu:prep --id WU-XXX` (runs gates, prints copy-paste instruction)
+2. **From main**: Run `pnpm wu:done --id WU-XXX` (merge + cleanup only)
 
 ---
 
@@ -21,54 +30,87 @@ Agents complete their work, write "To Complete: pnpm wu:done --id WU-XXX" in the
 
 ## The Fix
 
-### Rule: ALWAYS Run wu:done
+### Rule: Use wu:prep Then wu:done
 
-After gates pass, you MUST run:
+After implementation is complete:
 
 ```bash
-cd /path/to/main
-pnpm wu:done --id WU-XXX
+# Step 1: From worktree, run wu:prep
+pnpm wu:prep --id WU-XXX
+# This runs gates and prints a copy-paste instruction
+
+# Step 2: Copy-paste the instruction from wu:prep output
+cd /path/to/main && pnpm wu:done --id WU-XXX
 ```
 
 Do NOT:
 
 - Ask "Should I run wu:done?"
 - Write "To Complete: pnpm wu:done"
-- Wait for permission
-- Treat it as a "future step"
+- Run wu:done directly from a worktree (it will error)
+- Skip wu:prep and go directly to wu:done from main (gates won't run in worktree)
 
 ---
 
 ## Correct Completion Flow
 
 ```bash
-# 1. In worktree, run gates
-pnpm gates
+# 1. In worktree, run wu:prep
+pnpm wu:prep --id WU-XXX
+# Output includes: cd /path/to/main && pnpm wu:done --id WU-XXX
 
-# 2. If gates pass, return to main
-cd /path/to/main
+# 2. Copy-paste the wu:done command from the output
+cd /path/to/main && pnpm wu:done --id WU-XXX
 
-# 3. IMMEDIATELY run wu:done
-pnpm wu:done --id WU-XXX
-
-# 4. Report success with the wu:done output
+# 3. Report success with the wu:done output
 ```
 
 ---
 
-## What wu:done Does
+## What wu:prep Does (WU-1223)
 
-When you run `pnpm wu:done --id WU-XXX`:
+When you run `pnpm wu:prep --id WU-XXX` from a worktree:
 
-1. Validates the worktree exists and has commits
-2. Runs gates in the worktree (not main)
-3. Fast-forward merges to main
-4. Creates the done stamp
-5. Updates status and backlog docs
-6. Removes the worktree
-7. Pushes to origin
+1. Validates you're in a worktree (errors if in main)
+2. Runs gates in the worktree
+3. Prints copy-paste instruction for wu:done
 
-**This is the ONLY way to complete a WU.** Manual steps will leave things in an inconsistent state.
+## What wu:done Does (WU-1223)
+
+When you run `pnpm wu:done --id WU-XXX` from main:
+
+1. Validates you're in main checkout (errors if in worktree)
+2. Fast-forward merges the lane branch to main
+3. Creates the done stamp
+4. Updates status and backlog docs
+5. Removes the worktree
+6. Pushes to origin
+
+**This two-step process is the ONLY way to complete a WU.** Manual steps will leave things in an inconsistent state.
+
+---
+
+## Error Messages
+
+### "wu:done must be run from main checkout"
+
+If you see this error, you ran wu:done from a worktree. Use wu:prep instead:
+
+```bash
+# You're in the worktree - use wu:prep
+pnpm wu:prep --id WU-XXX
+# Then follow the copy-paste instruction it prints
+```
+
+### "wu:prep must be run from a worktree"
+
+If you see this error, you ran wu:prep from main. Navigate to the worktree:
+
+```bash
+# Navigate to worktree first
+cd worktrees/<lane>-wu-xxx
+pnpm wu:prep --id WU-XXX
+```
 
 ---
 
@@ -76,8 +118,8 @@ When you run `pnpm wu:done --id WU-XXX`:
 
 If a WU is missing `exposure`, `wu:done` auto-sets a safe default:
 
-- **Content lanes** → `documentation`
-- **Framework/Operations lanes** → `backend-only`
+- **Content lanes** -> `documentation`
+- **Framework/Operations lanes** -> `backend-only`
 
 Existing exposure values are preserved.
 
@@ -102,11 +144,12 @@ If a previous agent forgot to run wu:done:
 # 1. Check worktree exists
 ls worktrees/
 
-# 2. If it does, run wu:done
-pnpm wu:done --id WU-XXX
+# 2. If it does, navigate there and run wu:prep
+cd worktrees/<lane>-wu-xxx
+pnpm wu:prep --id WU-XXX
 
-# 3. If worktree was deleted but branch exists
-# This is a bad state - may need manual recovery
+# 3. Follow the copy-paste instruction
+cd /path/to/main && pnpm wu:done --id WU-XXX
 ```
 
 ---
@@ -124,9 +167,9 @@ An incomplete WU causes problems:
 
 ## Checklist Before Ending Session
 
-- [ ] Did I run `pnpm gates` in the worktree?
-- [ ] Did gates pass?
-- [ ] Did I `cd` back to main?
+- [ ] Did I run `pnpm wu:prep --id WU-XXX` in the worktree?
+- [ ] Did wu:prep (gates) pass?
+- [ ] Did I `cd` back to main using the copy-paste instruction?
 - [ ] Did I run `pnpm wu:done --id WU-XXX`?
 - [ ] Did wu:done complete successfully?
 
@@ -143,12 +186,22 @@ I've completed all the work. To finish:
 1. Run `pnpm wu:done --id WU-123`
 ```
 
+### ALSO WRONG:
+
+```bash
+# Running wu:done from worktree (will error)
+pnpm wu:done --id WU-123
+```
+
 ### RIGHT:
 
 ```bash
-# Actually run it
-cd /home/project/main
-pnpm wu:done --id WU-123
+# Step 1: From worktree, run wu:prep
+pnpm wu:prep --id WU-123
+# Output: cd /path/to/main && pnpm wu:done --id WU-123
+
+# Step 2: Copy-paste the instruction
+cd /path/to/main && pnpm wu:done --id WU-123
 # Output: WU-123 completed successfully
 ```
 

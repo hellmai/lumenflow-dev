@@ -1,7 +1,7 @@
 ---
 name: orchestration
 description: Agent orchestration dashboard and initiative execution. Use when running initiatives, monitoring spawned agents, or debugging stuck spawns.
-version: 2.4.0
+version: 2.5.0
 source: packages/@lumenflow/cli/src/orchestrate.ts
 last_updated: {{DATE}}
 allowed-tools: Read, Bash, Grep
@@ -44,6 +44,49 @@ pnpm wu:spawn --id WU-XXX
 3. Direct Task spawns bypass all safety mechanisms, coordination signals, and spawn registry tracking
 
 **If you see agents running without proper worktree claims, STOP and investigate.**
+
+---
+
+## Verbatim Output Verification (WU-1131)
+
+When using `wu:spawn` output to invoke Task agents, you **MUST** verify the output was not truncated.
+
+### Truncation Detection
+
+`wu:spawn` output includes:
+
+- **Warning banner** at the start with truncation instructions
+- **End sentinel** `<!-- LUMENFLOW_SPAWN_END -->` after the constraints block
+
+### Verification Checklist
+
+Before spawning a sub-agent with `wu:spawn` output:
+
+1. **Check for end sentinel**: The output MUST end with `<!-- LUMENFLOW_SPAWN_END -->`
+2. **Verify constraints block**: Look for `</constraints>` before the end sentinel
+3. **Check warning banner**: The start should contain `LUMENFLOW_TRUNCATION_WARNING`
+
+```bash
+# Quick verification commands
+pnpm wu:spawn --id WU-XXX | tail -5    # Should show LUMENFLOW_SPAWN_END
+pnpm wu:spawn --id WU-XXX | head -20   # Should show TRUNCATION_WARNING
+pnpm wu:spawn --id WU-XXX | grep -c 'constraints'  # Should return 2 (open and close tags)
+```
+
+### What Truncation Causes
+
+If spawn output is truncated, sub-agents will:
+
+- Miss TDD directives (skip writing tests first)
+- Miss constraints block (ignore safety rules)
+- Miss worktree discipline (edit main instead of worktree)
+- Miss wu:done instructions (ask for permission instead of completing)
+
+### If Truncation Is Detected
+
+1. Re-run `wu:spawn` and capture full output
+2. If context window is too small, use `--codex` for shorter Markdown format
+3. Consider breaking WU into smaller sub-WUs if prompt is too large
 
 ---
 
@@ -171,12 +214,13 @@ pnpm wu:spawn --id WU-XXX
 
 ```
 Starting WU?
-├── Run: pnpm orchestrate:monitor
-└── Review agent status and recommendations
+├── Run: pnpm wu:spawn --id WU-XXX
+└── Review generated prompt with agent recommendations
 
 Initiative with multiple WUs?
 ├── Run: pnpm orchestrate:initiative -i INIT-XXX --dry-run
-└── Review wave plan, then execute
+├── Review wave plan
+└── Run: pnpm orchestrate:init-status -i INIT-XXX for progress
 
 Agent appears stuck or crashed?
 ├── Run: pnpm orchestrate:monitor

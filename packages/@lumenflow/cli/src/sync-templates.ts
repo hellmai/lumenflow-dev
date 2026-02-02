@@ -8,10 +8,18 @@
  * - Claude skills -> templates/vendors/claude/.claude/skills/
  * - Core docs (LUMENFLOW.md, constraints.md) -> templates/core/
  */
+/* eslint-disable no-console -- CLI tool requires console output */
+/* eslint-disable security/detect-non-literal-fs-filename -- CLI tool syncs templates from known paths */
+/* eslint-disable security/detect-non-literal-regexp -- Dynamic date pattern for template substitution */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createWUParser } from '@lumenflow/core';
+
+// Directory name constants to avoid duplicate strings
+const LUMENFLOW_DIR = '.lumenflow';
+const CLAUDE_DIR = '.claude';
+const SKILLS_DIR = 'skills';
 
 // Template variable patterns
 const DATE_PATTERN = /\d{4}-\d{2}-\d{2}/g;
@@ -25,6 +33,12 @@ export interface SyncSummary {
   onboarding: SyncResult;
   skills: SyncResult;
   core: SyncResult;
+}
+
+export interface DriftResult {
+  hasDrift: boolean;
+  driftingFiles: string[];
+  checkedFiles: string[];
 }
 
 /**
@@ -43,6 +57,12 @@ const SYNC_TEMPLATES_OPTIONS = {
     description: 'Show detailed output',
     default: false,
   },
+  checkDrift: {
+    name: 'check-drift',
+    flags: '--check-drift',
+    description: 'Check for template drift without syncing (CI mode)',
+    default: false,
+  },
 };
 
 /**
@@ -51,6 +71,7 @@ const SYNC_TEMPLATES_OPTIONS = {
 export function parseSyncTemplatesOptions(): {
   dryRun: boolean;
   verbose: boolean;
+  checkDrift: boolean;
 } {
   const opts = createWUParser({
     name: 'sync-templates',
@@ -61,6 +82,7 @@ export function parseSyncTemplatesOptions(): {
   return {
     dryRun: opts['dry-run'] ?? false,
     verbose: opts.verbose ?? false,
+    checkDrift: opts['check-drift'] ?? false,
   };
 }
 
@@ -175,13 +197,13 @@ export async function syncSkillsToTemplates(
 ): Promise<SyncResult> {
   const result: SyncResult = { synced: [], errors: [] };
 
-  const sourceDir = path.join(projectRoot, '.claude', 'skills');
+  const sourceDir = path.join(projectRoot, CLAUDE_DIR, SKILLS_DIR);
   const targetDir = path.join(
     getTemplatesDir(projectRoot),
     'vendors',
     'claude',
-    '.claude',
-    'skills',
+    CLAUDE_DIR,
+    SKILLS_DIR,
   );
 
   if (!fs.existsSync(sourceDir)) {
@@ -226,11 +248,11 @@ export async function syncCoreDocs(
   syncFile(lumenflowSource, lumenflowTarget, projectRoot, result, dryRun);
 
   // Sync constraints.md
-  const constraintsSource = path.join(projectRoot, '.lumenflow', 'constraints.md');
+  const constraintsSource = path.join(projectRoot, LUMENFLOW_DIR, 'constraints.md');
   const constraintsTarget = path.join(
     templatesDir,
     'core',
-    '.lumenflow',
+    LUMENFLOW_DIR,
     'constraints.md.template',
   );
   syncFile(constraintsSource, constraintsTarget, projectRoot, result, dryRun);
@@ -253,12 +275,163 @@ export async function syncTemplates(
 }
 
 /**
+ * Compare source file content with template content (ignoring date placeholders)
+ */
+function compareContent(
+  sourceContent: string,
+  templateContent: string,
+  projectRoot: string,
+): boolean {
+  // Convert source to template format for comparison
+  const convertedSource = convertToTemplate(sourceContent, projectRoot);
+  return convertedSource === templateContent;
+}
+
+/**
+ * Check if a single template file is in sync with its source
+ */
+function checkFileDrift(
+  sourcePath: string,
+  templatePath: string,
+  projectRoot: string,
+): { isDrifting: boolean; relativePath: string } {
+  const relativePath = path.relative(projectRoot, templatePath);
+
+  if (!fs.existsSync(sourcePath)) {
+    return { isDrifting: false, relativePath }; // Source doesn't exist, can't drift
+  }
+
+  if (!fs.existsSync(templatePath)) {
+    return { isDrifting: true, relativePath }; // Template missing, definitely drifting
+  }
+
+  const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
+  const templateContent = fs.readFileSync(templatePath, 'utf-8');
+
+  const isDrifting = !compareContent(sourceContent, templateContent, projectRoot);
+  return { isDrifting, relativePath };
+}
+
+/**
+ * Check for template drift - compares source docs with templates (WU-1353)
+ *
+ * This function compares source documents with their template counterparts
+ * to detect if templates have drifted out of sync. Used by CI to warn
+ * when templates need to be re-synced.
+ */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Multi-category drift check requires nested iteration
+export async function checkTemplateDrift(projectRoot: string): Promise<DriftResult> {
+  const driftingFiles: string[] = [];
+  const checkedFiles: string[] = [];
+  const templatesDir = getTemplatesDir(projectRoot);
+
+  // Check core docs
+  const coreChecks = [
+    {
+      source: path.join(projectRoot, 'LUMENFLOW.md'),
+      template: path.join(templatesDir, 'core', 'LUMENFLOW.md.template'),
+    },
+    {
+      source: path.join(projectRoot, LUMENFLOW_DIR, 'constraints.md'),
+      template: path.join(templatesDir, 'core', LUMENFLOW_DIR, 'constraints.md.template'),
+    },
+  ];
+
+  for (const check of coreChecks) {
+    const result = checkFileDrift(check.source, check.template, projectRoot);
+    checkedFiles.push(result.relativePath);
+    if (result.isDrifting) {
+      driftingFiles.push(result.relativePath);
+    }
+  }
+
+  // Check onboarding docs
+  const onboardingSourceDir = path.join(
+    projectRoot,
+    'docs',
+    '04-operations',
+    '_frameworks',
+    'lumenflow',
+    'agent',
+    'onboarding',
+  );
+  const onboardingTargetDir = path.join(templatesDir, 'core', 'ai', 'onboarding');
+
+  if (fs.existsSync(onboardingSourceDir)) {
+    const files = fs.readdirSync(onboardingSourceDir).filter((f) => f.endsWith('.md'));
+    for (const file of files) {
+      const sourcePath = path.join(onboardingSourceDir, file);
+      const templatePath = path.join(onboardingTargetDir, `${file}.template`);
+      const result = checkFileDrift(sourcePath, templatePath, projectRoot);
+      checkedFiles.push(result.relativePath);
+      if (result.isDrifting) {
+        driftingFiles.push(result.relativePath);
+      }
+    }
+  }
+
+  // Check skills
+  const skillsSourceDir = path.join(projectRoot, CLAUDE_DIR, SKILLS_DIR);
+  const skillsTargetDir = path.join(templatesDir, 'vendors', 'claude', CLAUDE_DIR, SKILLS_DIR);
+
+  if (fs.existsSync(skillsSourceDir)) {
+    const skillDirs = fs
+      .readdirSync(skillsSourceDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+
+    for (const skillName of skillDirs) {
+      const skillFile = path.join(skillsSourceDir, skillName, 'SKILL.md');
+      const templatePath = path.join(skillsTargetDir, skillName, 'SKILL.md.template');
+      if (fs.existsSync(skillFile)) {
+        const result = checkFileDrift(skillFile, templatePath, projectRoot);
+        checkedFiles.push(result.relativePath);
+        if (result.isDrifting) {
+          driftingFiles.push(result.relativePath);
+        }
+      }
+    }
+  }
+
+  return {
+    hasDrift: driftingFiles.length > 0,
+    driftingFiles,
+    checkedFiles,
+  };
+}
+
+/**
  * CLI entry point
  */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- CLI main() handles multiple modes and output formatting
 export async function main(): Promise<void> {
   const opts = parseSyncTemplatesOptions();
   const projectRoot = process.cwd();
 
+  // Check-drift mode: verify templates match source without syncing
+  if (opts.checkDrift) {
+    console.log('[sync-templates] Checking for template drift...');
+    const drift = await checkTemplateDrift(projectRoot);
+
+    if (opts.verbose) {
+      console.log(`  Checked ${drift.checkedFiles.length} files`);
+    }
+
+    if (drift.hasDrift) {
+      console.log('\n[sync-templates] WARNING: Template drift detected!');
+      console.log('  The following templates are out of sync with their source:');
+      for (const file of drift.driftingFiles) {
+        console.log(`    - ${file}`);
+      }
+      console.log('\n  Run `pnpm sync:templates` to update templates.');
+      process.exitCode = 1;
+    } else {
+      console.log('[sync-templates] All templates are in sync.');
+    }
+    return;
+  }
+
+  // Sync mode: update templates from source
   console.log('[sync-templates] Syncing internal docs to CLI templates...');
   if (opts.dryRun) {
     console.log('  (dry-run mode - no files will be written)');
@@ -303,5 +476,5 @@ export async function main(): Promise<void> {
 // CLI entry point
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }
