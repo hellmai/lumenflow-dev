@@ -29,9 +29,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update wu:claim, wu:block, wu:unblock, wu:spawn to respect lock_policy. wu:block releases lock when policy=active, wu:unblock re-acquires. Depends on WU-1323 and WU-1324.
+description: Update wu:claim, wu:block, wu:unblock, wu:spawn to respect lock_policy. wu:block
+  releases lock when policy=active, wu:unblock re-acquires. Depends on WU-1323 and WU-1324.
 acceptance:
   - wu:claim checks lock_policy before acquiring
   - wu:block releases lane lock when policy=active
   - wu:unblock re-acquires lane lock when policy=active
   - wu:spawn considers policy in lane availability check
+initiative: INIT-013
