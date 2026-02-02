@@ -2,7 +2,7 @@ id: WU-1315
 title: Add onboarding smoke-test gate
 lane: 'Framework: CLI'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - Gate verifies init scripts, lane-inference format, and wu:create with requireRemote=false
   - Test runs in temp dir and cleans up
   - Unit/e2e tests cover smoke-test helper
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1315
+claimed_at: 2026-02-02T00:46:49.642Z
+baseline_main_sha: c35268b19beb73f901e38920607860883a7e9e4b
+session_id: 8faaca99-4bb2-47a7-988c-0ff6b877e8a8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T00:46:49.648Z
