@@ -2,7 +2,7 @@ id: WU-1331
 title: Document strict WU validation usage
 lane: 'Content: Documentation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - quick-ref-commands.md includes strict validation guidance
   - CLI reference documents strict-by-default and --no-strict
   - Internal LumenFlow docs mention strict validation expectations for agents
+locked: true
+completed_at: 2026-02-02T11:07:53.549Z
