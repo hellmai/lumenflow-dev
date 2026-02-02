@@ -49,7 +49,6 @@ sections:
 - [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
-- [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -58,6 +57,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml) — Framework: CLI
+- [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
