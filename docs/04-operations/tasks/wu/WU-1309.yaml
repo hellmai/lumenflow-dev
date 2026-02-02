@@ -2,7 +2,7 @@ id: WU-1309
 title: Fix init docs structure + portability + onboarding docs + quick-ref
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-01
 code_paths:
@@ -49,3 +49,5 @@ session_id: 8e56560d-f2ef-4503-84b3-9a0aa552b044
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T23:32:40.899Z
+locked: true
+completed_at: 2026-02-02T00:10:49.448Z

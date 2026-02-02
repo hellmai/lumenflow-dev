@@ -566,3 +566,4 @@
 {"type":"claim","wuId":"WU-1312","timestamp":"2026-02-01T23:48:27.653Z","lane":"Content: Documentation","title":"Update wu-sizing-guide with doc-only exception and tuning guidance"}
 {"type":"claim","wuId":"WU-1311","timestamp":"2026-02-01T23:53:18.041Z","lane":"Framework: Core","title":"Remove hardcoded docs/04-operations paths in CLI commands"}
 {"type":"complete","wuId":"WU-1312","timestamp":"2026-02-01T23:55:45.483Z"}
+{"type":"complete","wuId":"WU-1309","timestamp":"2026-02-02T00:10:51.079Z"}
