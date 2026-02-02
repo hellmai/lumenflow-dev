@@ -2,7 +2,7 @@ id: WU-1360
 title: Add rapid prototyping guide and workflow enforcement hooks
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -30,7 +30,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Agents bypass Lumenflow workflow when users ask to 'prototype quickly'. Problem: No documentation explains how to be fast WITHIN the workflow. No enforcement prevents direct commits to main. Solution: (1) Create rapid-prototyping.md guide explaining speed through parallel WUs, (2) Add Husky pre-commit hook template (vendor-agnostic), (3) Add Claude PreToolUse hook for stronger enforcement, (4) Fix template path references for simple docsStructure."
+description: "Context: Agents bypass Lumenflow workflow when users ask to 'prototype quickly'.
+  Problem: No documentation explains how to be fast WITHIN the workflow. No enforcement prevents
+  direct commits to main. Solution: (1) Create rapid-prototyping.md guide explaining speed through
+  parallel WUs, (2) Add Husky pre-commit hook template (vendor-agnostic), (3) Add Claude PreToolUse
+  hook for stronger enforcement, (4) Fix template path references for simple docsStructure."
 acceptance:
   - rapid-prototyping.md exists explaining 'speed comes from parallel WUs, not skipping WUs'
   - Husky pre-commit.template blocks code commits to main/master with clear guidance
@@ -38,3 +42,11 @@ acceptance:
   - starting-prompt.md.template uses template variables for paths (not hardcoded arc42)
   - quick-ref-commands.md.template has 'Quick Start' section at top with essential commands
   - CLAUDE.md.template includes orchestration and memory commands
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1360
+claimed_at: 2026-02-02T21:50:44.200Z
+baseline_main_sha: 6e601107ab3b84e134046baa6a16ea647d85fc67
+session_id: 282d58aa-aa8d-4302-865f-64e7b0554414
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T21:50:44.206Z
