@@ -9,7 +9,6 @@ _Last updated: 2026-02-02_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml)
-- [WU-1352 — Add 'never quick fix on main' anti-pattern to agent docs](wu/WU-1352.yaml)
 
 ## Completed
 
@@ -314,3 +313,4 @@ _Last updated: 2026-02-02_
 - [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml) — 2026-02-02
 - [WU-1350 — Fix non-existent CLI commands in documentation](wu/WU-1350.yaml) — 2026-02-02
 - [WU-1351 — Fix CLI command typos in documentation](wu/WU-1351.yaml) — 2026-02-02
+- [WU-1352 — Add 'never quick fix on main' anti-pattern to agent docs](wu/WU-1352.yaml) — 2026-02-02
