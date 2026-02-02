@@ -2,7 +2,7 @@ id: WU-1345
 title: Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/initiatives/src/lane-config-resolver.ts
 tests:
   manual:
-    - Run orchestrate:init-status and verify Lane Availability shows correct wip_limit values from config
+    - Run orchestrate:init-status and verify Lane Availability shows correct wip_limit values from
+      config
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
   e2e: []
@@ -27,9 +28,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-1340 wired resolveLaneConfigsFromConfig(getConfig()) but getConfig() returns Zod-parsed config which strips unknown keys. Since lanes is not in LumenFlowConfigSchema, config.lanes is always undefined and policy-aware scheduling falls back to defaults. Fix: add lanes field to schema with proper typing.'
+description: 'WU-1340 wired resolveLaneConfigsFromConfig(getConfig()) but getConfig() returns
+  Zod-parsed config which strips unknown keys. Since lanes is not in LumenFlowConfigSchema,
+  config.lanes is always undefined and policy-aware scheduling falls back to defaults. Fix: add
+  lanes field to schema with proper typing.'
 acceptance:
-  - LumenFlowConfigSchema includes lanes field with proper typing (array or object with definitions/engineering/business sections)
+  - LumenFlowConfigSchema includes lanes field with proper typing (array or object with
+    definitions/engineering/business sections)
   - resolveLaneConfigsFromConfig receives typed lanes from getConfig() instead of always-empty object
-  - Existing lane config from .lumenflow.config.yaml is correctly parsed and available to orchestrator
+  - Existing lane config from .lumenflow.config.yaml is correctly parsed and available to
+    orchestrator
   - Unit tests verify lanes are preserved through Zod parsing
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1345
+claimed_at: 2026-02-02T16:03:39.008Z
+baseline_main_sha: 8385516a3ac543e802b963961241efa94f9c4163
+session_id: 4e8c428a-0fcc-4298-8752-58d62a98f3d1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:03:39.016Z
