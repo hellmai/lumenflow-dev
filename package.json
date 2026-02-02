@@ -69,6 +69,7 @@
     "initiative:list": "node packages/@lumenflow/cli/dist/initiative-list.js",
     "initiative:status": "node packages/@lumenflow/cli/dist/initiative-status.js",
     "initiative:add-wu": "node packages/@lumenflow/cli/dist/initiative-add-wu.js",
+    "initiative:remove-wu": "node packages/@lumenflow/cli/dist/initiative-remove-wu.js",
     "initiative:plan": "node packages/@lumenflow/cli/dist/initiative-plan.js",
     "init:plan": "node packages/@lumenflow/cli/dist/init-plan.js",
     "orchestrate:initiative": "node packages/@lumenflow/cli/dist/orchestrate-initiative.js",

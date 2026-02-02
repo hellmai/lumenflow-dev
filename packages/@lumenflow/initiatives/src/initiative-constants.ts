@@ -83,6 +83,15 @@ export const INIT_COMMIT_FORMATS = {
     `docs: link ${wuId.toLowerCase()} to ${initId.toLowerCase()}`,
 
   /**
+   * Unlink WU from initiative commit message (WU-1328)
+   * @param wuId - WU ID
+   * @param initId - Initiative ID
+   * @returns Commit message
+   */
+  UNLINK_WU: (wuId: string, initId: string): string =>
+    `docs: unlink ${wuId.toLowerCase()} from ${initId.toLowerCase()}`,
+
+  /**
    * Edit initiative commit message (WU-1451)
    * @param id - Initiative ID
    * @returns Commit message
@@ -98,6 +107,7 @@ export const INIT_LOG_PREFIX = {
   LIST: '[initiative:list]',
   STATUS: '[initiative:status]',
   ADD_WU: '[initiative:add-wu]',
+  REMOVE_WU: '[initiative:remove-wu]', // WU-1328: Remove WU from initiative
   EDIT: '[initiative:edit]', // WU-1451: Initiative edit operation
 };
 

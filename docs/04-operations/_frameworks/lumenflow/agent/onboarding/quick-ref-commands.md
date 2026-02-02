@@ -163,14 +163,15 @@ Plans use the `lumenflow://plans/` URI scheme for references:
 
 ## Initiatives
 
-| Command                                     | Description                   |
-| ------------------------------------------- | ----------------------------- |
-| `pnpm initiative:create --id INIT-XXX ...`  | Create new initiative         |
-| `pnpm initiative:edit --id INIT-XXX ...`    | Edit initiative fields        |
-| `pnpm initiative:list`                      | List all initiatives          |
-| `pnpm initiative:status --id INIT-XXX`      | Show initiative status        |
-| `pnpm initiative:add-wu --id INIT-XXX ...`  | Add WU to initiative          |
-| `pnpm initiative:bulk-assign --id INIT-XXX` | Bulk assign WUs to initiative |
+| Command                                                       | Description                   |
+| ------------------------------------------------------------- | ----------------------------- |
+| `pnpm initiative:create --id INIT-XXX ...`                    | Create new initiative         |
+| `pnpm initiative:edit --id INIT-XXX ...`                      | Edit initiative fields        |
+| `pnpm initiative:list`                                        | List all initiatives          |
+| `pnpm initiative:status --id INIT-XXX`                        | Show initiative status        |
+| `pnpm initiative:add-wu --initiative INIT-XXX --wu WU-XXX`    | Add WU to initiative          |
+| `pnpm initiative:remove-wu --initiative INIT-XXX --wu WU-XXX` | Remove WU from initiative     |
+| `pnpm initiative:bulk-assign --id INIT-XXX`                   | Bulk assign WUs to initiative |
 
 ---
 
