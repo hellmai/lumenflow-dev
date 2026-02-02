@@ -8,7 +8,6 @@ _Last updated: 2026-02-02_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml)
 
 ## Completed
 
@@ -290,3 +289,4 @@ _Last updated: 2026-02-02_
 - [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — 2026-02-02
 - [WU-1319 — Generate status.md from merged state during wu:done](wu/WU-1319.yaml) — 2026-02-02
 - [WU-1328 — Add initiative:remove-wu command to unlink WUs from initiatives](wu/WU-1328.yaml) — 2026-02-02
+- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml) — 2026-02-02

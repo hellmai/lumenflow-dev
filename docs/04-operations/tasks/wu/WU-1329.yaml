@@ -2,7 +2,7 @@ id: WU-1329
 title: Make WU validation strict by default
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -12,12 +12,12 @@ code_paths:
   - packages/@lumenflow/core/src/wu-preflight-validators.ts
 tests:
   manual:
-    - 'Run pnpm wu:create with non-existent code_paths and verify it fails with clear error message'
-    - 'Run pnpm wu:create --no-strict with non-existent code_paths and verify it passes with warning'
-    - 'Run pnpm wu:edit with non-existent code_paths and verify it fails with clear error message'
-    - 'Run pnpm wu:edit --no-strict with non-existent code_paths and verify it passes with warning'
-    - 'Run pnpm wu:validate and verify warnings are treated as errors by default'
-    - 'Run pnpm wu:validate --no-strict and verify warnings are advisory only'
+    - Run pnpm wu:create with non-existent code_paths and verify it fails with clear error message
+    - Run pnpm wu:create --no-strict with non-existent code_paths and verify it passes with warning
+    - Run pnpm wu:edit with non-existent code_paths and verify it fails with clear error message
+    - Run pnpm wu:edit --no-strict with non-existent code_paths and verify it passes with warning
+    - Run pnpm wu:validate and verify warnings are treated as errors by default
+    - Run pnpm wu:validate --no-strict and verify warnings are advisory only
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create-strict.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-edit-strict.test.ts
@@ -59,3 +59,5 @@ session_id: ed86ec10-e930-470a-b394-3673368d5193
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T10:26:08.578Z
+locked: true
+completed_at: 2026-02-02T10:53:04.539Z
