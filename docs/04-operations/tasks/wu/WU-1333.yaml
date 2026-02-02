@@ -2,7 +2,7 @@ id: WU-1333
 title: Ensure initiative:add/remove-wu handles moving origin
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
 tests:
   manual:
-    - Run pnpm test -- initiative-add-wu.test.ts initiative-remove-wu.test.ts and verify all 59 tests pass
+    - Run pnpm test -- initiative-add-wu.test.ts initiative-remove-wu.test.ts and verify all 59
+      tests pass
     - Verify isRetryExhaustionError and formatRetryExhaustionError exported from both CLI commands
     - Check that formatRetryExhaustionError output includes 'Next steps:' section
   unit:
@@ -48,3 +49,5 @@ session_id: 2dd19a52-5acd-4e10-868e-3e215d005c65
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T11:24:48.099Z
+locked: true
+completed_at: 2026-02-02T11:31:35.868Z
