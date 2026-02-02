@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — Framework: CLI
 - [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — Framework: Core
 - [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
