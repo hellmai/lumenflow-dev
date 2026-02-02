@@ -33,6 +33,7 @@ import { existsSync, rmSync, mkdtempSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import pRetry from 'p-retry';
 import {
   BRANCHES,
   REMOTES,
@@ -44,6 +45,7 @@ import {
 } from './wu-constants.js';
 import { getConfig } from './lumenflow-config.js';
 import type { GitAdapter } from './git-adapter.js';
+import type { PushRetryConfig } from './lumenflow-config-schema.js';
 
 /**
  * Context passed to the execute function in withMicroWorktree
@@ -103,8 +105,24 @@ export const MAX_MERGE_RETRIES = 3;
  * WU-1179: When push fails due to race condition (origin advanced while we
  * were working), rollback local main to origin/main and retry.
  * Each retry: fetch -> rebase temp branch -> re-merge -> push.
+ *
+ * @deprecated Use DEFAULT_PUSH_RETRY_CONFIG.retries instead (WU-1332)
  */
 export const MAX_PUSH_RETRIES = 3;
+
+/**
+ * WU-1332: Default push retry configuration
+ *
+ * Provides sensible defaults for micro-worktree push operations.
+ * Can be overridden via .lumenflow.config.yaml git.push_retry section.
+ */
+export const DEFAULT_PUSH_RETRY_CONFIG: PushRetryConfig = {
+  enabled: true,
+  retries: 3,
+  min_delay_ms: 100,
+  max_delay_ms: 1000,
+  jitter: true,
+};
 
 /**
  * Environment variable name for LUMENFLOW_FORCE bypass
@@ -541,16 +559,18 @@ export async function pushWithRetry(
   tempBranchName: string,
   logPrefix: string = DEFAULT_LOG_PREFIX,
 ): Promise<void> {
-  for (let attempt = 1; attempt <= MAX_PUSH_RETRIES; attempt++) {
+  // eslint-disable-next-line sonarjs/deprecation -- Using deprecated constant for backwards compatibility
+  const maxRetries = MAX_PUSH_RETRIES;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(
-        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attempt}/${MAX_PUSH_RETRIES})...`,
+        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attempt}/${maxRetries})...`,
       );
       await mainGit.push(remote, branch);
       console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
       return;
     } catch (pushErr: unknown) {
-      if (attempt < MAX_PUSH_RETRIES) {
+      if (attempt < maxRetries) {
         console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
 
         // Step 1: Rollback local main to origin/main
@@ -575,13 +595,110 @@ export async function pushWithRetry(
       } else {
         const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
         throw new Error(
-          `Push failed after ${MAX_PUSH_RETRIES} attempts. ` +
+          `Push failed after ${maxRetries} attempts. ` +
             `Origin ${branch} may have significant traffic.\n` +
             `Error: ${errMsg}`,
         );
       }
     }
   }
+}
+
+/**
+ * WU-1332: Push to origin with configurable retry using p-retry
+ *
+ * Enhanced version of pushWithRetry that uses p-retry for exponential backoff
+ * and supports configuration via PushRetryConfig. When push fails due to
+ * non-fast-forward (origin moved), automatically rebases and retries.
+ *
+ * @param {Object} mainGit - GitAdapter instance for main checkout
+ * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
+ * @param {string} remote - Remote name (e.g., 'origin')
+ * @param {string} branch - Branch name (e.g., 'main')
+ * @param {string} tempBranchName - Temp branch that was merged (for rebase)
+ * @param {string} logPrefix - Log prefix for console output
+ * @param {PushRetryConfig} config - Push retry configuration
+ * @throws {Error} If push fails after all retries or if retry is disabled
+ */
+export async function pushWithRetryConfig(
+  mainGit: GitAdapter,
+  worktreeGit: GitAdapter,
+  remote: string,
+  branch: string,
+  tempBranchName: string,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+  config: PushRetryConfig = DEFAULT_PUSH_RETRY_CONFIG,
+): Promise<void> {
+  // If retry is disabled, just try once and throw on failure
+  if (!config.enabled) {
+    console.log(`${logPrefix} Pushing to ${remote}/${branch} (retry disabled)...`);
+    await mainGit.push(remote, branch);
+    console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+    return;
+  }
+
+  let attemptNumber = 0;
+
+  await pRetry(
+    async () => {
+      attemptNumber++;
+      console.log(
+        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attemptNumber}/${config.retries})...`,
+      );
+
+      try {
+        await mainGit.push(remote, branch);
+        console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+      } catch (pushErr: unknown) {
+        console.log(`${logPrefix} ⚠️  Push failed (origin moved). Rolling back and retrying...`);
+
+        // Rollback local main to origin/main
+        console.log(`${logPrefix} Rolling back local ${branch} to ${remote}/${branch}...`);
+        await mainGit.reset(`${remote}/${branch}`, { hard: true });
+
+        // Fetch latest origin/main
+        console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
+        await mainGit.fetch(remote, branch);
+
+        // Update local main to match origin/main (ff-only)
+        console.log(`${logPrefix} Updating local ${branch}...`);
+        await mainGit.merge(`${remote}/${branch}`, { ffOnly: true });
+
+        // Rebase temp branch onto updated main
+        console.log(`${logPrefix} Rebasing temp branch onto ${branch}...`);
+        await worktreeGit.rebase(branch);
+
+        // Re-merge temp branch to local main
+        console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
+        await mainGit.merge(tempBranchName, { ffOnly: true });
+
+        // Re-throw to trigger p-retry
+        throw pushErr;
+      }
+    },
+    {
+      retries: config.retries - 1, // p-retry counts retries after first attempt
+      minTimeout: config.min_delay_ms,
+      maxTimeout: config.max_delay_ms,
+      randomize: config.jitter,
+      onFailedAttempt: (error) => {
+        // Log is handled in the try/catch above
+        if (error.retriesLeft === 0) {
+          // This will be the final failure
+        }
+      },
+    },
+  ).catch(() => {
+    // p-retry exhausted all retries, throw descriptive error
+    throw new Error(
+      `Push failed after ${config.retries} attempts. ` +
+        `Origin ${branch} may have significant traffic.\n\n` +
+        `Suggestions:\n` +
+        `  - Wait a few seconds and retry the operation\n` +
+        `  - Increase git.push_retry.retries in .lumenflow.config.yaml\n` +
+        `  - Check if another agent is rapidly pushing changes`,
+    );
+  });
 }
 
 /**

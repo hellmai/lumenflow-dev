@@ -138,6 +138,50 @@ export const BeaconPathsSchema = z.object({
 });
 
 /**
+ * WU-1332: Push retry configuration for micro-worktree operations
+ *
+ * When non-fast-forward push errors occur (origin/main moved during operation),
+ * retry with exponential backoff. Uses p-retry for robust retry behavior.
+ */
+export const PushRetryConfigSchema = z.object({
+  /**
+   * Enable push retry with rebase on non-fast-forward errors.
+   * When true, failed pushes trigger automatic rebase and retry.
+   * When false, the original error is thrown immediately.
+   * @default true
+   */
+  enabled: z.boolean().default(true),
+
+  /**
+   * Maximum number of retry attempts (including the initial attempt).
+   * After this many failures, the operation fails with clear guidance.
+   * @default 3
+   */
+  retries: z.number().int().positive().default(3),
+
+  /**
+   * Minimum delay in milliseconds between retries.
+   * Used as the base for exponential backoff.
+   * @default 100
+   */
+  min_delay_ms: z.number().int().nonnegative().default(100),
+
+  /**
+   * Maximum delay in milliseconds between retries.
+   * Caps the exponential backoff to prevent excessive waits.
+   * @default 1000
+   */
+  max_delay_ms: z.number().int().positive().default(1000),
+
+  /**
+   * Add randomization to retry delays (recommended for concurrent agents).
+   * Helps prevent thundering herd when multiple agents retry simultaneously.
+   * @default true
+   */
+  jitter: z.boolean().default(true),
+});
+
+/**
  * Git configuration
  */
 export const GitConfigSchema = z.object({
@@ -237,6 +281,24 @@ export const GitConfigSchema = z.object({
    * ```
    */
   disableAgentPatternRegistry: z.boolean().default(false),
+
+  /**
+   * WU-1332: Push retry configuration for micro-worktree operations.
+   * When push fails due to non-fast-forward (origin moved), automatically
+   * rebase and retry with exponential backoff.
+   *
+   * @example
+   * ```yaml
+   * git:
+   *   push_retry:
+   *     enabled: true
+   *     retries: 5        # Try 5 times total
+   *     min_delay_ms: 200 # Start with 200ms delay
+   *     max_delay_ms: 2000 # Cap at 2 second delay
+   *     jitter: true      # Add randomization
+   * ```
+   */
+  push_retry: PushRetryConfigSchema.default(() => PushRetryConfigSchema.parse({})),
 });
 
 /**
@@ -678,6 +740,7 @@ export const LumenFlowConfigSchema = z.object({
  */
 export type Directories = z.infer<typeof DirectoriesSchema>;
 export type BeaconPaths = z.infer<typeof BeaconPathsSchema>;
+export type PushRetryConfig = z.infer<typeof PushRetryConfigSchema>;
 export type GitConfig = z.infer<typeof GitConfigSchema>;
 export type WuConfig = z.infer<typeof WuConfigSchema>;
 export type GatesConfig = z.infer<typeof GatesConfigSchema>;
