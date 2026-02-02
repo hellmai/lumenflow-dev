@@ -26,6 +26,7 @@ const ORIGIN_MAIN_REF = 'origin/main';
 const TEST_OPERATION_INIT_ADD = 'initiative-add-wu';
 const TEST_OPERATION_INIT_REMOVE = 'initiative-remove-wu';
 const TEST_OPERATION = 'test-op';
+const TEST_PUSH_ONLY_REASON = 'push-only test';
 
 describe('micro-worktree', () => {
   describe('pushRefspecWithForce', () => {
@@ -800,6 +801,347 @@ describe('micro-worktree', () => {
 
       expect(formatted).toContain('git.push_retry.retries');
       expect(formatted).toContain('.lumenflow.config.yaml');
+    });
+  });
+
+  /**
+   * WU-1337: Tests for push-only path retry with rebase
+   *
+   * When micro-worktree operations use pushOnly mode (e.g., initiative:add-wu,
+   * wu:claim), the push should retry with rebase on non-fast-forward errors
+   * using the git.push_retry configuration.
+   */
+  describe('pushRefspecWithRetry (WU-1337)', () => {
+    const originalEnv = { ...process.env };
+
+    beforeEach(() => {
+      vi.resetModules();
+      delete process.env.LUMENFLOW_FORCE;
+      delete process.env.LUMENFLOW_FORCE_REASON;
+    });
+
+    afterEach(() => {
+      process.env = { ...originalEnv };
+      vi.restoreAllMocks();
+    });
+
+    it('should export pushRefspecWithRetry function', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+      expect(typeof pushRefspecWithRetry).toBe('function');
+    });
+
+    it('should succeed on first push attempt', async () => {
+      const { pushRefspecWithRetry, DEFAULT_PUSH_RETRY_CONFIG } =
+        await import('../micro-worktree.js');
+
+      // Track what env vars were set during the push
+      let envDuringPush: { force?: string; reason?: string } = {};
+
+      const mockGitWorktree = {
+        pushRefspec: vi.fn().mockImplementation(async () => {
+          envDuringPush = {
+            force: process.env.LUMENFLOW_FORCE,
+            reason: process.env.LUMENFLOW_FORCE_REASON,
+          };
+        }),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushRefspecWithRetry(
+        mockGitWorktree as never,
+        mockMainGit as never,
+        TEST_REMOTE,
+        TEST_TEMP_BRANCH,
+        TEST_BRANCH,
+        TEST_PUSH_ONLY_REASON,
+        TEST_LOG_PREFIX,
+        DEFAULT_PUSH_RETRY_CONFIG,
+      );
+
+      // Verify LUMENFLOW_FORCE was set during the push
+      expect(envDuringPush.force).toBe('1');
+      expect(envDuringPush.reason).toBe(TEST_PUSH_ONLY_REASON);
+
+      // Push should be called exactly once
+      expect(mockGitWorktree.pushRefspec).toHaveBeenCalledTimes(1);
+
+      // No rebase operations needed
+      expect(mockGitWorktree.rebase).not.toHaveBeenCalled();
+    });
+
+    it('should retry with rebase on non-fast-forward error', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+
+      // First push fails (non-fast-forward), second succeeds
+      const mockGitWorktree = {
+        pushRefspec: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: 3,
+        min_delay_ms: 10, // Fast for tests
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushRefspecWithRetry(
+        mockGitWorktree as never,
+        mockMainGit as never,
+        TEST_REMOTE,
+        TEST_TEMP_BRANCH,
+        TEST_BRANCH,
+        TEST_PUSH_ONLY_REASON,
+        TEST_LOG_PREFIX,
+        config,
+      );
+
+      // Push should be called twice
+      expect(mockGitWorktree.pushRefspec).toHaveBeenCalledTimes(2);
+
+      // Should fetch origin/main and rebase before retry
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+      expect(mockGitWorktree.rebase).toHaveBeenCalledWith(TEST_BRANCH);
+    });
+
+    it('should respect configured retry count', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+
+      // All push attempts fail
+      const mockGitWorktree = {
+        pushRefspec: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      // Configure with 5 retries
+      const config = {
+        enabled: true,
+        retries: 5,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await expect(
+        pushRefspecWithRetry(
+          mockGitWorktree as never,
+          mockMainGit as never,
+          TEST_REMOTE,
+          TEST_TEMP_BRANCH,
+          TEST_BRANCH,
+          TEST_PUSH_ONLY_REASON,
+          TEST_LOG_PREFIX,
+          config,
+        ),
+      ).rejects.toThrow(/Push failed after 5 attempts/);
+
+      // Push should be called 5 times
+      expect(mockGitWorktree.pushRefspec).toHaveBeenCalledTimes(5);
+
+      // Rebase should happen after each failure (5 times total, including last attempt)
+      // because rebase is part of the retry preparation logic that runs after each failure
+      expect(mockGitWorktree.rebase).toHaveBeenCalledTimes(5);
+    });
+
+    it('should not retry when push_retry.enabled is false', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+
+      // First push fails
+      const mockGitWorktree = {
+        pushRefspec: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      // Disable retries
+      const config = {
+        enabled: false,
+        retries: 3,
+        min_delay_ms: 100,
+        max_delay_ms: 1000,
+        jitter: true,
+      };
+
+      await expect(
+        pushRefspecWithRetry(
+          mockGitWorktree as never,
+          mockMainGit as never,
+          TEST_REMOTE,
+          TEST_TEMP_BRANCH,
+          TEST_BRANCH,
+          TEST_PUSH_ONLY_REASON,
+          TEST_LOG_PREFIX,
+          config,
+        ),
+      ).rejects.toThrow('non-fast-forward');
+
+      // Push should only be called once (no retry)
+      expect(mockGitWorktree.pushRefspec).toHaveBeenCalledTimes(1);
+      // No rebase operations
+      expect(mockGitWorktree.rebase).not.toHaveBeenCalled();
+    });
+
+    it('should still use LUMENFLOW_FORCE for refspec push on retries', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+
+      // Track env vars for each push attempt
+      const envDuringPushes: Array<{ force?: string; reason?: string }> = [];
+
+      // First push fails, second succeeds
+      const mockGitWorktree = {
+        pushRefspec: vi.fn().mockImplementation(async () => {
+          envDuringPushes.push({
+            force: process.env.LUMENFLOW_FORCE,
+            reason: process.env.LUMENFLOW_FORCE_REASON,
+          });
+          if (envDuringPushes.length === 1) {
+            throw new Error(NON_FAST_FORWARD_ERROR);
+          }
+        }),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: 3,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushRefspecWithRetry(
+        mockGitWorktree as never,
+        mockMainGit as never,
+        TEST_REMOTE,
+        TEST_TEMP_BRANCH,
+        TEST_BRANCH,
+        TEST_PUSH_ONLY_REASON,
+        TEST_LOG_PREFIX,
+        config,
+      );
+
+      // Both push attempts should have LUMENFLOW_FORCE set
+      expect(envDuringPushes.length).toBe(2);
+      expect(envDuringPushes[0]?.force).toBe('1');
+      expect(envDuringPushes[0]?.reason).toBe(TEST_PUSH_ONLY_REASON);
+      expect(envDuringPushes[1]?.force).toBe('1');
+      expect(envDuringPushes[1]?.reason).toBe(TEST_PUSH_ONLY_REASON);
+    });
+
+    it('should throw RetryExhaustionError after retries exhausted', async () => {
+      const { pushRefspecWithRetry, isRetryExhaustionError } = await import('../micro-worktree.js');
+
+      // All push attempts fail
+      const mockGitWorktree = {
+        pushRefspec: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: 3,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      try {
+        await pushRefspecWithRetry(
+          mockGitWorktree as never,
+          mockMainGit as never,
+          TEST_REMOTE,
+          TEST_TEMP_BRANCH,
+          TEST_BRANCH,
+          TEST_PUSH_ONLY_REASON,
+          TEST_LOG_PREFIX,
+          config,
+        );
+        expect.fail('Should have thrown');
+      } catch (error) {
+        // Should be detectable as retry exhaustion error
+        expect(isRetryExhaustionError(error)).toBe(true);
+        expect((error as Error).message).toContain('3 attempts');
+      }
+    });
+
+    it('should log retry attempts with attempt number', async () => {
+      const { pushRefspecWithRetry } = await import('../micro-worktree.js');
+      const consoleSpy = vi.spyOn(console, 'log');
+
+      // First two pushes fail, third succeeds
+      const mockGitWorktree = {
+        pushRefspec: vi
+          .fn()
+          .mockRejectedValueOnce(new Error('rejected'))
+          .mockRejectedValueOnce(new Error('rejected'))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockMainGit = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: 3,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushRefspecWithRetry(
+        mockGitWorktree as never,
+        mockMainGit as never,
+        TEST_REMOTE,
+        TEST_TEMP_BRANCH,
+        TEST_BRANCH,
+        TEST_PUSH_ONLY_REASON,
+        TEST_LOG_PREFIX,
+        config,
+      );
+
+      // Should log attempt numbers
+      const logCalls = consoleSpy.mock.calls.map((c) => c[0]);
+      expect(logCalls.some((log) => log.includes('attempt 1'))).toBe(true);
+      expect(logCalls.some((log) => log.includes('attempt 2'))).toBe(true);
+      expect(logCalls.some((log) => log.includes('attempt 3'))).toBe(true);
+
+      consoleSpy.mockRestore();
     });
   });
 

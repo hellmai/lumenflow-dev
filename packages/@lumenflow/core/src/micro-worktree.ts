@@ -881,6 +881,94 @@ export async function pushRefspecWithForce(
 }
 
 /**
+ * WU-1337: Push using refspec with LUMENFLOW_FORCE and retry logic
+ *
+ * Enhanced version of pushRefspecWithForce that adds retry with rebase
+ * on non-fast-forward errors. Uses p-retry for exponential backoff and
+ * respects git.push_retry configuration.
+ *
+ * On each retry:
+ * 1. Fetch origin/main to get latest state
+ * 2. Rebase the temp branch onto the updated main
+ * 3. Retry the push with LUMENFLOW_FORCE
+ *
+ * This is used by pushOnly mode in withMicroWorktree to handle race conditions
+ * when multiple agents are pushing to origin/main concurrently.
+ *
+ * @param {GitAdapter} gitWorktree - GitAdapter instance for the worktree (for rebase)
+ * @param {GitAdapter} mainGit - GitAdapter instance for main checkout (for fetch)
+ * @param {string} remote - Remote name (e.g., 'origin')
+ * @param {string} localRef - Local ref to push (e.g., 'tmp/wu-claim/wu-123')
+ * @param {string} remoteRef - Remote ref to update (e.g., 'main')
+ * @param {string} reason - Audit reason for the LUMENFLOW_FORCE bypass
+ * @param {string} logPrefix - Log prefix for console output
+ * @param {PushRetryConfig} config - Push retry configuration
+ * @returns {Promise<void>}
+ * @throws {RetryExhaustionError} If push fails after all retries
+ */
+export async function pushRefspecWithRetry(
+  gitWorktree: GitAdapter,
+  mainGit: GitAdapter,
+  remote: string,
+  localRef: string,
+  remoteRef: string,
+  reason: string,
+  logPrefix: string = DEFAULT_LOG_PREFIX,
+  config: PushRetryConfig = DEFAULT_PUSH_RETRY_CONFIG,
+): Promise<void> {
+  // If retry is disabled, just try once and throw on failure
+  if (!config.enabled) {
+    console.log(`${logPrefix} Pushing to ${remote}/${remoteRef} (push-only, retry disabled)...`);
+    await pushRefspecWithForce(gitWorktree, remote, localRef, remoteRef, reason);
+    console.log(`${logPrefix} ✅ Pushed to ${remote}/${remoteRef}`);
+    return;
+  }
+
+  let attemptNumber = 0;
+
+  await pRetry(
+    async () => {
+      attemptNumber++;
+      console.log(
+        `${logPrefix} Pushing to ${remote}/${remoteRef} (push-only, attempt ${attemptNumber}/${config.retries})...`,
+      );
+
+      try {
+        await pushRefspecWithForce(gitWorktree, remote, localRef, remoteRef, reason);
+        console.log(`${logPrefix} ✅ Pushed to ${remote}/${remoteRef}`);
+      } catch (pushErr: unknown) {
+        console.log(
+          `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+        );
+
+        // Fetch latest origin/main
+        console.log(`${logPrefix} Fetching ${remote}/${remoteRef}...`);
+        await mainGit.fetch(remote, remoteRef);
+
+        // Rebase temp branch onto updated main
+        console.log(`${logPrefix} Rebasing temp branch onto ${remoteRef}...`);
+        await gitWorktree.rebase(remoteRef);
+
+        // Re-throw to trigger p-retry
+        throw pushErr;
+      }
+    },
+    {
+      retries: config.retries - 1, // p-retry counts retries after first attempt
+      minTimeout: config.min_delay_ms,
+      maxTimeout: config.max_delay_ms,
+      randomize: config.jitter,
+      onFailedAttempt: () => {
+        // Logging is handled in the try/catch above
+      },
+    },
+  ).catch(() => {
+    // p-retry exhausted all retries, throw typed error
+    throw new RetryExhaustionError('push-only', config.retries);
+  });
+}
+
+/**
  * Execute an operation in a micro-worktree with full isolation
  *
  * This is the main entry point for micro-worktree operations.
@@ -889,6 +977,7 @@ export async function pushRefspecWithForce(
  *
  * WU-1435: Added pushOnly option to keep local main pristine.
  * WU-2237: Added pre-creation cleanup of orphaned temp branches/worktrees.
+ * WU-1337: Push-only path now uses retry with rebase.
  *
  * @param {Object} options - Options for the operation
  * @param {string} options.operation - Operation name (e.g., 'wu-create', 'wu-edit')
@@ -973,17 +1062,22 @@ export async function withMicroWorktree(
     } else if (pushOnly) {
       // WU-1435: Push directly to origin/main without touching local main
       // WU-1081: Use LUMENFLOW_FORCE to bypass pre-push hooks for micro-worktree pushes
-      console.log(
-        `${logPrefix} Pushing directly to ${REMOTES.ORIGIN}/${BRANCHES.MAIN} (push-only)...`,
-      );
-      await pushRefspecWithForce(
+      // WU-1337: Use pushRefspecWithRetry to handle race conditions with rebase
+
+      // Get push_retry config from LumenFlow config
+      const config = getConfig();
+      const pushRetryConfig = config.git.push_retry || DEFAULT_PUSH_RETRY_CONFIG;
+
+      await pushRefspecWithRetry(
         gitWorktree,
+        mainGit,
         REMOTES.ORIGIN,
         tempBranchName,
         BRANCHES.MAIN,
         `micro-worktree push for ${operation} (automated)`,
+        logPrefix,
+        pushRetryConfig,
       );
-      console.log(`${logPrefix} ✅ Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
 
       // Fetch to update remote tracking ref (FETCH_HEAD)
       console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN}...`);
