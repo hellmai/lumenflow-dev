@@ -47,6 +47,46 @@ export const LOG_PREFIX = INIT_LOG_PREFIX.REMOVE_WU;
 export const OPERATION_NAME = 'initiative-remove-wu';
 
 /**
+ * WU-1333: Pattern to detect retry exhaustion errors
+ *
+ * Matches error messages like "Push failed after N attempts"
+ */
+const RETRY_EXHAUSTION_PATTERN = /Push failed after \d+ attempts/;
+
+/**
+ * WU-1333: Check if an error is a retry exhaustion error
+ *
+ * Detects when micro-worktree push retries have been exhausted.
+ *
+ * @param {Error} error - Error to check
+ * @returns {boolean} True if this is a retry exhaustion error
+ */
+export function isRetryExhaustionError(error: Error): boolean {
+  return RETRY_EXHAUSTION_PATTERN.test(error.message);
+}
+
+/**
+ * WU-1333: Format retry exhaustion error with actionable next steps
+ *
+ * When push retries are exhausted, provides clear guidance on how to proceed.
+ *
+ * @param {Error} error - The retry exhaustion error
+ * @param {string} wuId - WU ID being unlinked
+ * @param {string} initId - Initiative ID being unlinked from
+ * @returns {string} Formatted error message with next steps
+ */
+export function formatRetryExhaustionError(error: Error, wuId: string, initId: string): string {
+  return (
+    `${error.message}\n\n` +
+    `Next steps:\n` +
+    `  1. Wait a few seconds and retry the operation:\n` +
+    `     pnpm initiative:remove-wu --wu ${wuId} --initiative ${initId}\n` +
+    `  2. If the issue persists, check if another agent is rapidly pushing changes\n` +
+    `  3. Consider increasing git.push_retry.retries in .lumenflow.config.yaml`
+  );
+}
+
+/**
  * Validate Initiative ID format
  * @param {string} id - Initiative ID to validate
  */
