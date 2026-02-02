@@ -1131,6 +1131,8 @@ export const GATE_NAMES = {
   SYSTEM_MAP_VALIDATE: 'system-map:validate',
   /** WU-1191: Lane health check (overlap detection) */
   LANE_HEALTH: 'lane-health',
+  /** WU-1315: Onboarding smoke test (init + wu:create validation) */
+  ONBOARDING_SMOKE_TEST: 'onboarding-smoke-test',
 };
 
 /**
@@ -1151,6 +1153,8 @@ export const GATE_COMMANDS = {
   SAFETY_CRITICAL_TEST: 'safety-critical-test',
   /** WU-2062: Triggers tiered test execution based on risk */
   TIERED_TEST: 'tiered-test',
+  /** WU-1315: Triggers onboarding smoke test */
+  ONBOARDING_SMOKE_TEST: 'onboarding-smoke-test',
 };
 
 /**
