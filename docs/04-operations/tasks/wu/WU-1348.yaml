@@ -2,7 +2,7 @@ id: WU-1348
 title: Avoid main checkout resets in micro-worktree push retry
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - Main checkout files are untouched during retry attempts
   - Retry path uses micro-worktree isolation end-to-end or fails cleanly with retry guidance
   - Unit tests updated to reflect new retry behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1348
+claimed_at: 2026-02-02T16:37:09.301Z
+baseline_main_sha: a5d194d627ded80051a5a631558c4eeff4f717a8
+session_id: 0cc1e091-7c9c-4ad7-a840-cda59cad6f78
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:37:09.306Z
