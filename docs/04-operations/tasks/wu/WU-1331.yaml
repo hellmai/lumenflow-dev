@@ -2,7 +2,7 @@ id: WU-1331
 title: Document strict WU validation usage
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -27,8 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Document strict-by-default WU validation, the --no-strict opt-out, and initiative:add-wu strict validation. Update quick ref and CLI reference.
+description: Document strict-by-default WU validation, the --no-strict opt-out, and
+  initiative:add-wu strict validation. Update quick ref and CLI reference.
 acceptance:
   - quick-ref-commands.md includes strict validation guidance
   - CLI reference documents strict-by-default and --no-strict
   - Internal LumenFlow docs mention strict validation expectations for agents
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1331
+claimed_at: 2026-02-02T11:02:05.731Z
+baseline_main_sha: dca964d0099d4cd8d79e41de20b459cf35c24aca
+session_id: 1f75705c-c382-44b4-b126-56093c1c7825
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T11:02:05.737Z

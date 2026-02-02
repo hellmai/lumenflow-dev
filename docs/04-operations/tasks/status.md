@@ -10,6 +10,7 @@ _Last updated: 2026-02-02_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml)
 - [WU-1332 — Retry/rebase micro-worktree push on non-fast-forward](wu/WU-1332.yaml)
+- [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml)
 
 ## Completed
 
