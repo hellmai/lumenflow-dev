@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml) — Content: Documentation
 - [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml) — Framework: CLI
 - [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI

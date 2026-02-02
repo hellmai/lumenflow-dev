@@ -1,0 +1,34 @@
+id: WU-1331
+title: Document strict WU validation usage
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-02
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+tests:
+  manual:
+    - Docs updated and reviewed for strict validation guidance
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1331.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Document strict-by-default WU validation, the --no-strict opt-out, and initiative:add-wu strict validation. Update quick ref and CLI reference.
+acceptance:
+  - quick-ref-commands.md includes strict validation guidance
+  - CLI reference documents strict-by-default and --no-strict
+  - Internal LumenFlow docs mention strict validation expectations for agents
