@@ -8,15 +8,23 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
 tests:
-  manual: []
+  manual:
+    - 'pnpm vitest run packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts - all 51 tests pass'
+    - 'buildExecutionPlanWithLockPolicy allows multiple WUs per lane when policy=none'
+    - 'buildExecutionPlanWithLockPolicy allows ready WU when blocked WU exists with policy=active'
+    - 'getLaneAvailability returns correct policy-based availability'
   unit:
-    - packages/@lumenflow/initiatives/src/__tests__/initiative-orchestrator.test.ts
+    - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1326.done
 dependencies: []
 risks: []
-notes: ''
+notes:
+  - 'Implementation adds buildExecutionPlanWithLockPolicy(), getLaneAvailability(), and getLockPolicyForLane() functions'
+  - 'Tests added for all acceptance criteria (12 new tests)'
+  - 'Pre-existing lint errors in test file (sonarjs/no-duplicate-string) - test data uses repeated patterns'
+  - 'Extracted DEFAULT_DEFERRED_REASON constant to fix duplicate string in implementation'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
