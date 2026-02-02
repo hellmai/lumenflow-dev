@@ -2259,6 +2259,7 @@ const LUMENFLOW_SCRIPTS: Record<string, string> = {
   'wu:claim': 'wu-claim',
   'wu:done': 'wu-done',
   'wu:create': 'wu-create',
+  'wu:proto': 'wu-proto', // WU-1359: Prototype WU with relaxed validation
   'wu:status': 'wu-status',
   'wu:block': 'wu-block',
   'wu:unblock': 'wu-unblock',
@@ -2887,10 +2888,21 @@ export async function main(): Promise<void> {
     result.warnings.forEach((w) => console.log(`  ⚠ ${w}`));
   }
 
+  // WU-1359: Show complete lifecycle with auto-ID (no --id flag required)
   console.log('\n[lumenflow init] Done! Next steps:');
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
-  console.log('  3. Run: pnpm wu:create --id WU-0001 --lane <lane> --title "First WU"');
+  console.log('  3. Start your first WU:');
+  console.log('');
+  console.log('     # Create (auto-generates ID):');
+  console.log('     pnpm wu:create --lane <lane> --title "First WU" \\');
+  console.log('       --description "Context: ... Problem: ... Solution: ..." \\');
+  console.log('       --acceptance "Criterion 1" --code-paths "src/..." --exposure backend-only');
+  console.log('');
+  console.log('     # Or for rapid prototyping (minimal validation):');
+  console.log('     pnpm wu:proto --lane <lane> --title "Quick experiment"');
+  console.log('');
+  console.log('  4. Full lifecycle: wu:create -> wu:claim -> wu:prep -> wu:done');
   /* eslint-enable no-console */
 }
 

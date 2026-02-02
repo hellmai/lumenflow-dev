@@ -7,8 +7,8 @@ priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/commands/wu-proto.ts
-  - packages/@lumenflow/cli/src/commands/initiative-create.ts
+  - packages/@lumenflow/cli/src/wu-proto.ts
+  - packages/@lumenflow/initiatives/src/initiative-paths.ts
 tests:
   manual: []
   unit:
