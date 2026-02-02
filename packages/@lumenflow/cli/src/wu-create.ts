@@ -420,7 +420,11 @@ export function validateCreateSpec({
   }
 
   if (effectiveType === 'feature' && !opts.specRefs) {
-    errors.push('--spec-refs is required for type: feature WUs');
+    errors.push(
+      '--spec-refs is required for type: feature WUs\n' +
+        '    Tip: Create a plan first with: pnpm plan:create --id <WU-ID> --title "..."\n' +
+        '    Then use --plan flag or --spec-refs lumenflow://plans/<WU-ID>-plan.md',
+    );
   }
 
   if (errors.length > 0) {

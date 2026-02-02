@@ -10,11 +10,9 @@ code_paths:
   - packages/@lumenflow/cli/src/plan-link.ts
   - packages/@lumenflow/cli/src/plan-edit.ts
   - packages/@lumenflow/cli/src/plan-promote.ts
-  - packages/@lumenflow/cli/src/initiative-plan.ts
-  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/core/src/lumenflow-home.ts
-  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/core/src/wu-constants.ts
 tests:
   manual: []
   unit:
