@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
 - [WU-1322 — Add lock_policy field to lane configuration schema](wu/WU-1322.yaml) — Framework: Core
 - [WU-1321 — Fix pre-existing lint errors in core package wu-done files](wu/WU-1321.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
