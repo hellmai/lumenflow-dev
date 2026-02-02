@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml) — Framework: CLI
 - [WU-1332 — Retry/rebase micro-worktree push on non-fast-forward](wu/WU-1332.yaml) — Framework: Core
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
