@@ -7,17 +7,15 @@ priority: P1
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
-  - packages/@lumenflow/core/src/git-operations.ts
   - packages/@lumenflow/core/package.json
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/core/src/lumenflow-config.ts
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
-  - apps/docs/src/content/docs/reference/config.mdx
+  - pnpm-lock.yaml
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
-    - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1332.done
