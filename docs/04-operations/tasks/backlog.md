@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml) — Framework: CLI
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — Framework: CLI
 - [WU-1361 — Lint debt cleanup (consolidated)](wu/WU-1361.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
