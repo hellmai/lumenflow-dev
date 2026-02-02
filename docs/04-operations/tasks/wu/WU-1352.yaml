@@ -2,7 +2,7 @@ id: WU-1352
 title: Add 'never quick fix on main' anti-pattern to agent docs
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -41,3 +41,5 @@ session_id: 0cc1e091-7c9c-4ad7-a840-cda59cad6f78
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:38:08.378Z
+locked: true
+completed_at: 2026-02-02T16:40:00.056Z
