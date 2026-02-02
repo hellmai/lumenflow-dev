@@ -5,7 +5,6 @@ _Last updated: 2026-02-01_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
-- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml)
 
