@@ -76,6 +76,47 @@ WIP (Work-in-Progress) limits enforce **one active WU per lane** (WIP=1). This p
 
 **Parallel work:** Use multiple lanes to work in parallel. Each lane can have one active WU, enabling concurrent work across different domains.
 
+## Lock Policy
+
+The `lock_policy` field controls how blocked WUs affect lane availability:
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Content: Documentation'
+      wip_limit: 1
+      lock_policy: active  # blocked WUs release lane lock
+      code_paths:
+        - 'docs/**'
+```
+
+| Policy   | Behavior                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| `all`    | Default. Blocked WUs count toward WIP. Lane stays occupied when blocked. |
+| `active` | Only in_progress WUs count. Blocked WUs release the lane lock.           |
+| `none`   | WIP checking disabled. Multiple WUs can be claimed regardless of status. |
+
+### When to Use Each Policy
+
+- **`all` (default)**: High-conflict lanes where blocked work may resume soon
+- **`active`**: Low-conflict lanes like documentation where blocked work is unlikely to cause merge conflicts
+- **`none`**: Experimental. Use only for lanes with guaranteed non-overlapping work
+
+### Pilot Recommendation
+
+Start with `lock_policy: active` on low-conflict lanes like **Content: Documentation**:
+
+1. Documentation WUs are low-conflict (different files, few dependencies)
+2. Blocked docs WUs rarely resume immediately
+3. Easy rollback: change `active` back to `all` in config
+
+### Rollback
+
+If `lock_policy: active` causes issues:
+
+1. Update `.lumenflow.config.yaml`: change `lock_policy: active` to `lock_policy: all`
+2. Run `pnpm wu:unlock-lane --lane "<lane>"` to clear stale locks
+
 ### Why WIP=1 Matters
 
 ```
