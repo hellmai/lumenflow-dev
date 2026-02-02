@@ -9,6 +9,10 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual: []
   unit:
@@ -27,11 +31,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Currently PKG_MANAGER is hardcoded to 'pnpm' and script names (lint, test, build, format) are hardcoded in wu-constants.ts. For true vendor-agnosticism, these should be configurable via .lumenflow.config.yaml with current values as defaults. This enables LumenFlow to work with npm, yarn, bun, and custom script names.
+description: Currently PKG_MANAGER is hardcoded to 'pnpm' and script names (lint, test, build,
+  format) are hardcoded in wu-constants.ts. For true vendor-agnosticism, these should be
+  configurable via .lumenflow.config.yaml with current values as defaults. This enables LumenFlow to
+  work with npm, yarn, bun, and custom script names.
 acceptance:
   - 'Add package_manager field to .lumenflow.config.yaml schema (default: pnpm)'
-  - 'Add scripts section to config schema with lint, test, build, format fields (defaults: current values)'
+  - 'Add scripts section to config schema with lint, test, build, format fields (defaults: current
+    values)'
   - Update gates.ts to read package manager and script names from config
   - Update wu-constants.ts to export functions that read from config instead of hardcoded values
   - Add tests for npm, yarn, and bun package manager configurations
   - Update documentation to describe new configuration options
+  - 'Add package_manager field to .lumenflow.config.yaml schema (default: pnpm)'
+  - 'Add scripts section to config schema with lint, test, build, format fields (defaults: current
+    values)'
+  - Update gates.ts to read package manager and script names from config
+  - Update wu-constants.ts to export functions that read from config instead of hardcoded values
+  - Add tests for npm, yarn, and bun package manager configurations
+  - Update Starlight docs (lumenflow.dev/reference/config) with package_manager and scripts examples
+    for npm users and AI agents
