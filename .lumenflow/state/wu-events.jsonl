@@ -622,5 +622,6 @@
 {"type":"complete","wuId":"WU-1350","timestamp":"2026-02-02T16:29:55.347Z"}
 {"type":"claim","wuId":"WU-1351","timestamp":"2026-02-02T16:33:30.266Z","lane":"Content: Documentation","title":"Fix CLI command typos in documentation"}
 {"type":"complete","wuId":"WU-1351","timestamp":"2026-02-02T16:35:00.977Z"}
-{"type":"claim","wuId":"WU-1348","lane":"Framework: Core","title":"Avoid main checkout resets in micro-worktree push retry","timestamp":"2026-02-02T16:37:09.317Z"}
-{"type":"claim","wuId":"WU-1352","lane":"Content: Documentation","title":"Add 'never quick fix on main' anti-pattern to agent docs","timestamp":"2026-02-02T16:38:08.407Z"}
+{"type":"claim","wuId":"WU-1348","timestamp":"2026-02-02T16:37:09.317Z","lane":"Framework: Core","title":"Avoid main checkout resets in micro-worktree push retry"}
+{"type":"claim","wuId":"WU-1352","timestamp":"2026-02-02T16:38:08.407Z","lane":"Content: Documentation","title":"Add 'never quick fix on main' anti-pattern to agent docs"}
+{"type":"complete","wuId":"WU-1352","timestamp":"2026-02-02T16:40:02.648Z"}
