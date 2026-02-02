@@ -570,4 +570,5 @@
 {"type":"claim","wuId":"WU-1313","timestamp":"2026-02-02T00:15:25.517Z","lane":"Framework: CLI","title":"Introduce first-class plan tooling (create/link/edit/promote)"}
 {"type":"complete","wuId":"WU-1311","timestamp":"2026-02-02T00:17:12.806Z"}
 {"type":"complete","wuId":"WU-1313","timestamp":"2026-02-02T00:43:14.557Z"}
-{"type":"claim","wuId":"WU-1315","lane":"Framework: CLI","title":"Add onboarding smoke-test gate","timestamp":"2026-02-02T00:46:49.667Z"}
+{"type":"claim","wuId":"WU-1315","timestamp":"2026-02-02T00:46:49.667Z","lane":"Framework: CLI","title":"Add onboarding smoke-test gate"}
+{"type":"complete","wuId":"WU-1315","timestamp":"2026-02-02T01:04:31.380Z"}

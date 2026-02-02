@@ -2,7 +2,7 @@ id: WU-1315
 title: Add onboarding smoke-test gate
 lane: 'Framework: CLI'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -44,3 +44,5 @@ session_id: 8faaca99-4bb2-47a7-988c-0ff6b877e8a8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T00:46:49.648Z
+locked: true
+completed_at: 2026-02-02T01:04:29.524Z
