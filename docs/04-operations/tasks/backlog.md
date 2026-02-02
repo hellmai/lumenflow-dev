@@ -23,11 +23,11 @@ sections:
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
 - [WU-1224 — Auto-run state:cleanup after wu:done success](wu/WU-1224.yaml) — Framework: CLI
-- [WU-1229 — Harden micro-worktree error handling and cleanup](wu/WU-1229.yaml) — Framework: CLI
+
 - [WU-1254 — Extract hardcoded prompt templates to .lumenflow/templates/](wu/WU-1254.yaml) — Framework: Core
 - [WU-1271 — Fix wu-edit risks replace-by-default behavior](wu/WU-1271.yaml) — Framework: CLI
 - [WU-1316 — Aggregate wu:create required-field errors](wu/WU-1316.yaml) — Framework: CLI
-- [WU-1318 — Skip prettier formatting when unavailable in micro-worktree](wu/WU-1318.yaml) — Framework: Core
+
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1355 — spec:linter fallback to main CLI dist not working in worktrees](wu/WU-1355.yaml) — Framework: CLI
