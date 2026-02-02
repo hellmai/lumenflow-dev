@@ -8,7 +8,6 @@ _Last updated: 2026-02-02_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml)
 
 ## Completed
 
@@ -294,3 +293,4 @@ _Last updated: 2026-02-02_
 - [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml) — 2026-02-02
 - [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml) — 2026-02-02
 - [WU-1332 — Retry/rebase micro-worktree push on non-fast-forward](wu/WU-1332.yaml) — 2026-02-02
+- [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml) — 2026-02-02

@@ -584,4 +584,5 @@
 {"type":"complete","wuId":"WU-1331","timestamp":"2026-02-02T11:08:01.443Z"}
 {"type":"complete","wuId":"WU-1330","timestamp":"2026-02-02T11:12:50.186Z"}
 {"type":"complete","wuId":"WU-1332","timestamp":"2026-02-02T11:19:08.623Z"}
-{"type":"claim","wuId":"WU-1333","lane":"Framework: CLI","title":"Ensure initiative:add/remove-wu handles moving origin","timestamp":"2026-02-02T11:24:48.112Z"}
+{"type":"claim","wuId":"WU-1333","timestamp":"2026-02-02T11:24:48.112Z","lane":"Framework: CLI","title":"Ensure initiative:add/remove-wu handles moving origin"}
+{"type":"complete","wuId":"WU-1333","timestamp":"2026-02-02T11:31:38.443Z"}
