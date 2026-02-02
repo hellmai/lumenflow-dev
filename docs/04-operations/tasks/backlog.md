@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml) — Content: Documentation
 - [WU-1359 — Enhance init output and add wu:proto command for new user experience](wu/WU-1359.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
