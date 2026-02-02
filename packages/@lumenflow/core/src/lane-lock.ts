@@ -12,7 +12,13 @@
  * Lock file location: .lumenflow/locks/<lane-kebab>.lock
  * Lock file format: JSON with wuId, timestamp, agentSession, pid
  *
+ * Lock policy support (WU-1323):
+ * - 'all' (default): Lock held through entire WU lifecycle
+ * - 'active': Lock released on block, re-acquired on unblock (CLI behavior)
+ * - 'none': No lock files created, WIP checking disabled for the lane
+ *
  * @see WU-1603 - Race condition fix for wu:claim
+ * @see WU-1323 - Lock policy integration tests
  */
 
 import {
