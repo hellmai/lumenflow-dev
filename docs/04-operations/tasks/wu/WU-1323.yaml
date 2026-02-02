@@ -2,7 +2,7 @@ id: WU-1323
 title: Update lane lock system to honor lock_policy
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -42,3 +42,5 @@ session_id: 39e07859-f3c8-446f-a4fc-928d662deccc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:41:49.583Z
+locked: true
+completed_at: 2026-02-02T12:49:15.702Z
