@@ -9,7 +9,6 @@ _Last updated: 2026-02-02_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1359 — Enhance init output and add wu:proto command for new user experience](wu/WU-1359.yaml)
-- [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml)
 
 ## Completed
 
@@ -320,3 +319,4 @@ _Last updated: 2026-02-02_
 - [WU-1353 — Sync CLI templates with source docs and add release automation](wu/WU-1353.yaml) — 2026-02-02
 - [WU-1357 — Improve pre-commit block message to be educational rather than bypass-oriented](wu/WU-1357.yaml) — 2026-02-02
 - [WU-1356 — Make package manager and script names configurable in .lumenflow.config.yaml](wu/WU-1356.yaml) — 2026-02-02
+- [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml) — 2026-02-02
