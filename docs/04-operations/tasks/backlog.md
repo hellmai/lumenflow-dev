@@ -53,6 +53,7 @@ sections:
 - [WU-1347 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1347.yaml) — Framework: Core
 - [WU-1355 — spec:linter fallback to main CLI dist not working in worktrees](wu/WU-1355.yaml) — Framework: CLI
 - [WU-1356 — Make package manager and script names configurable in .lumenflow.config.yaml](wu/WU-1356.yaml) — Framework: Core
+- [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -60,7 +61,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1357 — Improve pre-commit block message to be educational rather than bypass-oriented](wu/WU-1357.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -373,3 +373,4 @@ sections:
 - [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml)
 - [WU-1354 — Add 'implied action paralysis' anti-pattern to agent docs](wu/WU-1354.yaml)
 - [WU-1353 — Sync CLI templates with source docs and add release automation](wu/WU-1353.yaml)
+- [WU-1357 — Improve pre-commit block message to be educational rather than bypass-oriented](wu/WU-1357.yaml)
