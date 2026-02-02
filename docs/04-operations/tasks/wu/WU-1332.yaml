@@ -2,7 +2,7 @@ id: WU-1332
 title: Retry/rebase micro-worktree push on non-fast-forward
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - Retry count is bounded and logged
   - Failure after max retries surfaces clear guidance
   - No behavior change when push succeeds first try
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1332
+claimed_at: 2026-02-02T11:01:17.242Z
+baseline_main_sha: 7e1288afaa1430724e853c366b10950758e0a320
+session_id: 1f75705c-c382-44b4-b126-56093c1c7825
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T11:01:17.246Z
