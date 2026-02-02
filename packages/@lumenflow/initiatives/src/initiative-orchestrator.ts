@@ -241,6 +241,12 @@ export const CHECKPOINT_AUTO_THRESHOLDS = {
 const MANIFEST_WU_STATUS = 'queued';
 
 /**
+ * Default reason string for deferred WUs when no specific reason is provided.
+ * Extracted to constant to avoid sonarjs/no-duplicate-string lint warnings.
+ */
+const DEFAULT_DEFERRED_REASON = 'waiting for dependencies';
+
+/**
  * WU-1200: Get the status string used in wave manifests for WUs.
  *
  * Returns 'queued' instead of 'spawned' to prevent confusion.
@@ -528,7 +534,7 @@ export function buildExecutionPlan(wus: WUEntry[]): ExecutionPlan {
       deferred.push({
         id: wu.id,
         blockedBy: Array.from(blockerSet),
-        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : 'waiting for dependencies',
+        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : DEFAULT_DEFERRED_REASON,
       });
     }
   }
@@ -754,7 +760,7 @@ export async function buildExecutionPlanAsync(wus: WUEntry[]): Promise<Execution
       deferred.push({
         id: wu.id,
         blockedBy: Array.from(blockerSet),
-        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : 'waiting for dependencies',
+        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : DEFAULT_DEFERRED_REASON,
       });
     }
   }
@@ -1792,6 +1798,478 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
   }
 
   return lines.join(STRING_LITERALS.NEWLINE);
+}
+
+/**
+ * WU-1326: Lock policy type for lane configuration.
+ *
+ * - 'all' (default): Blocked WUs hold lane lock (current behavior)
+ * - 'active': Blocked WUs do NOT hold lane lock (only in_progress holds)
+ * - 'none': No WIP checking at all (unlimited parallel WUs in lane)
+ */
+export type LockPolicy = 'all' | 'active' | 'none';
+
+/**
+ * WU-1326: Lane configuration with lock_policy.
+ */
+export interface LaneConfig {
+  lock_policy?: LockPolicy;
+  wip_limit?: number;
+}
+
+/**
+ * WU-1326: Options for lock_policy-aware execution plan building.
+ */
+export interface LockPolicyOptions {
+  laneConfigs?: Record<string, LaneConfig>;
+}
+
+/**
+ * WU-1326: Lane availability result for policy-aware status display.
+ */
+export interface LaneAvailabilityResult {
+  available: boolean;
+  policy: LockPolicy;
+  occupiedBy?: string;
+  blockedCount: number;
+  inProgressCount: number;
+}
+
+/**
+ * WU-1326: Get lock_policy for a lane from configuration.
+ *
+ * Returns the lock_policy from config if specified, otherwise defaults to 'all'
+ * for backward compatibility.
+ *
+ * @param {string} lane - Lane name (e.g., 'Framework: Core')
+ * @param {Record<string, LaneConfig> | undefined} laneConfigs - Lane configurations
+ * @returns {LockPolicy} The lock_policy for the lane ('all' | 'active' | 'none')
+ */
+export function getLockPolicyForLane(
+  lane: string,
+  laneConfigs?: Record<string, LaneConfig>,
+): LockPolicy {
+  if (!laneConfigs) {
+    return 'all'; // Default for backward compatibility
+  }
+
+  const config = laneConfigs[lane];
+  if (!config || !config.lock_policy) {
+    return 'all'; // Default for unspecified lanes
+  }
+
+  return config.lock_policy;
+}
+
+/**
+ * WU-1326: Check if a WU status holds the lane lock based on lock_policy.
+ *
+ * - policy=all: both 'in_progress' and 'blocked' hold lane lock
+ * - policy=active: only 'in_progress' holds lane lock
+ * - policy=none: nothing holds lane lock (no WIP checking)
+ *
+ * @param {string} status - WU status
+ * @param {LockPolicy} policy - Lane lock policy
+ * @returns {boolean} True if status holds lane lock
+ */
+function _statusHoldsLaneLock(status: string, policy: LockPolicy): boolean {
+  if (policy === 'none') {
+    return false; // No WIP checking
+  }
+
+  if (policy === 'active') {
+    // Only in_progress holds lane lock
+    return status === WU_STATUS.IN_PROGRESS;
+  }
+
+  // policy === 'all' (default) - both in_progress and blocked hold lane
+  return status === WU_STATUS.IN_PROGRESS || status === WU_STATUS.BLOCKED;
+}
+
+/**
+ * WU-1326: Build execution plan respecting lock_policy per lane.
+ *
+ * This is an enhanced version of buildExecutionPlan that respects lock_policy
+ * when determining lane occupancy for wave building.
+ *
+ * When policy=active, blocked WUs do NOT prevent ready WUs in the same lane
+ * from being scheduled in the same wave.
+ *
+ * @param {Array<{id: string, doc: object}>} wus - WUs to plan
+ * @param {LockPolicyOptions} options - Lock policy options including laneConfigs
+ * @returns {ExecutionPlan} Execution plan with waves, skipped, and deferred WUs
+ */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- wave-building logic inherently complex
+export function buildExecutionPlanWithLockPolicy(
+  wus: WUEntry[],
+  options: LockPolicyOptions = {},
+): ExecutionPlan {
+  const { laneConfigs = {} } = options;
+
+  // WU-2430: Enhanced categorisation of WUs
+  const skipped: string[] = []; // IDs of done WUs (backwards compat)
+  const skippedWithReasons: SkippedWUEntry[] = []; // WU-2430: Non-ready WUs with reasons
+  const deferred: DeferredWUEntry[] = []; // WU-2430: Ready WUs waiting on external blockers
+
+  const doneStatuses = new Set([WU_STATUS.DONE, WU_STATUS.COMPLETED]);
+
+  // Categorise WUs by status
+  for (const wu of wus) {
+    const status = wu.doc.status ?? 'unknown';
+    if (doneStatuses.has(status)) {
+      skipped.push(wu.id);
+    } else if (status !== WU_STATUS.READY) {
+      skippedWithReasons.push({ id: wu.id, reason: `status: ${status}` });
+    }
+  }
+
+  // WU-2430: Only ready WUs are candidates for execution
+  const readyWUs = wus.filter((wu) => wu.doc.status === WU_STATUS.READY);
+
+  if (readyWUs.length === 0) {
+    return { waves: [], skipped, skippedWithReasons, deferred };
+  }
+
+  // Build a map for quick lookup
+  const wuMap = new Map(readyWUs.map((wu) => [wu.id, wu]));
+  const wuIds = new Set(wuMap.keys());
+  const allWuMap = new Map(wus.map((wu) => [wu.id, wu]));
+  const allWuIds = new Set(allWuMap.keys());
+
+  // Build dependency graph for validation (check cycles)
+  const graph = buildDependencyGraph();
+  const { cycles } = validateGraph(graph);
+
+  // Filter cycles to only those involving our WUs
+  const relevantCycles = cycles.filter((cycle: string[]) =>
+    cycle.some((id: string) => wuIds.has(id)),
+  );
+
+  if (relevantCycles.length > 0) {
+    const cycleStr = relevantCycles.map((c: string[]) => c.join(' → ')).join('; ');
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Circular dependencies detected: ${cycleStr}`, {
+      cycles: relevantCycles,
+    });
+  }
+
+  // WU-2430: Check for external blockers without stamps
+  const deferredIds = new Set<string>();
+  const deferredReasons = new Map<string, Set<string>>();
+  const deferredBlockers = new Map<string, Set<string>>();
+
+  const addDeferredEntry = (wuId: string, blockers: string[], reason: string): void => {
+    deferredIds.add(wuId);
+    let reasonSet = deferredReasons.get(wuId);
+    let blockerSet = deferredBlockers.get(wuId);
+    if (!reasonSet) {
+      reasonSet = new Set<string>();
+      deferredReasons.set(wuId, reasonSet);
+    }
+    if (!blockerSet) {
+      blockerSet = new Set<string>();
+      deferredBlockers.set(wuId, blockerSet);
+    }
+    for (const blockerId of blockers) {
+      blockerSet.add(blockerId);
+    }
+    reasonSet.add(reason);
+  };
+
+  for (const wu of readyWUs) {
+    const blockers = getAllDependencies(wu.doc);
+    const externalBlockers = blockers.filter((blockerId: string) => !allWuIds.has(blockerId));
+    const internalBlockers = blockers.filter((blockerId: string) => allWuIds.has(blockerId));
+
+    if (externalBlockers.length > 0) {
+      const unstampedBlockers = externalBlockers.filter(
+        (blockerId: string) => !hasStamp(blockerId),
+      );
+      if (unstampedBlockers.length > 0) {
+        addDeferredEntry(
+          wu.id,
+          unstampedBlockers,
+          `waiting for external: ${unstampedBlockers.join(', ')}`,
+        );
+      }
+    }
+
+    if (internalBlockers.length > 0) {
+      const nonReadyInternal = internalBlockers.filter((blockerId) => {
+        const blocker = allWuMap.get(blockerId);
+        const status = blocker?.doc?.status ?? 'unknown';
+        if (status === WU_STATUS.READY) {
+          return false;
+        }
+        return !doneStatuses.has(status);
+      });
+
+      if (nonReadyInternal.length > 0) {
+        const details = nonReadyInternal.map((blockerId) => {
+          const status = allWuMap.get(blockerId)?.doc?.status ?? 'unknown';
+          return `${blockerId} (status: ${status})`;
+        });
+        addDeferredEntry(wu.id, nonReadyInternal, `waiting for internal: ${details.join(', ')}`);
+      }
+    }
+  }
+
+  let hasNewDeferral = true;
+  while (hasNewDeferral) {
+    hasNewDeferral = false;
+    for (const wu of readyWUs) {
+      if (deferredIds.has(wu.id)) {
+        continue;
+      }
+      const blockers = getAllDependencies(wu.doc);
+      const deferredInternal = blockers.filter(
+        (blockerId) => allWuIds.has(blockerId) && deferredIds.has(blockerId),
+      );
+
+      if (deferredInternal.length > 0) {
+        const details = deferredInternal.map((blockerId) => {
+          const status = allWuMap.get(blockerId)?.doc?.status ?? 'unknown';
+          return `${blockerId} (status: ${status})`;
+        });
+        addDeferredEntry(wu.id, deferredInternal, `waiting for internal: ${details.join(', ')}`);
+        hasNewDeferral = true;
+      }
+    }
+  }
+
+  for (const wu of readyWUs) {
+    if (deferredIds.has(wu.id)) {
+      const blockerSet = deferredBlockers.get(wu.id) || new Set();
+      const reasonSet = deferredReasons.get(wu.id) || new Set();
+      deferred.push({
+        id: wu.id,
+        blockedBy: Array.from(blockerSet),
+        reason: reasonSet.size > 0 ? Array.from(reasonSet).join('; ') : DEFAULT_DEFERRED_REASON,
+      });
+    }
+  }
+
+  // Remove deferred WUs from candidates
+  const schedulableWUs = readyWUs.filter((wu) => !deferredIds.has(wu.id));
+  const schedulableMap = new Map(schedulableWUs.map((wu) => [wu.id, wu]));
+  const schedulableIds = new Set(schedulableMap.keys());
+
+  if (schedulableIds.size === 0) {
+    return { waves: [], skipped, skippedWithReasons, deferred };
+  }
+
+  // WU-1326: Build set of lanes currently occupied based on policy
+  // Track which lanes are occupied by in_progress or blocked WUs
+  const lanesOccupiedByInProgress = new Set<string>();
+  const lanesOccupiedByBlocked = new Set<string>();
+
+  for (const wu of wus) {
+    const status = wu.doc.status ?? 'unknown';
+    const lane = wu.doc.lane;
+    if (lane) {
+      if (status === WU_STATUS.IN_PROGRESS) {
+        lanesOccupiedByInProgress.add(lane);
+      } else if (status === WU_STATUS.BLOCKED) {
+        lanesOccupiedByBlocked.add(lane);
+      }
+    }
+  }
+
+  // Build waves using Kahn's algorithm (topological sort by levels)
+  // WU-1326: Enforce lane WIP based on lock_policy
+  const waves: WUEntry[][] = [];
+  const remaining = new Set(schedulableIds);
+  const completed = new Set(skipped);
+
+  // Also treat stamped external deps as completed
+  for (const wu of wus) {
+    const blockers = getAllDependencies(wu.doc);
+    for (const blockerId of blockers) {
+      if (!allWuIds.has(blockerId) && hasStamp(blockerId)) {
+        completed.add(blockerId);
+      }
+    }
+  }
+
+  while (remaining.size > 0) {
+    const wave: WUEntry[] = [];
+    const lanesInWave = new Set<string>(); // Track lanes used in this wave
+    const deferredToNextWave: WUEntry[] = []; // WUs that could run but lane is occupied
+
+    for (const id of remaining) {
+      const wu = schedulableMap.get(id);
+      if (!wu) continue; // Should not happen - remaining only contains valid IDs
+      const blockers = getAllDependencies(wu.doc);
+
+      // Check if all blockers are either done or completed in previous waves
+      const allBlockersDone = blockers.every((blockerId) => completed.has(blockerId));
+
+      if (allBlockersDone) {
+        const lane = wu.doc.lane ?? '';
+
+        // WU-1326: Get lock_policy for this lane
+        const policy = getLockPolicyForLane(lane, laneConfigs);
+
+        // WU-1326: Check if lane is already occupied in this wave
+        // Skip this check when policy=none (allows unlimited parallel WUs in same lane)
+        if (policy !== 'none' && lanesInWave.has(lane)) {
+          // Defer to next wave (lane conflict within this wave)
+          deferredToNextWave.push(wu);
+          continue;
+        }
+
+        // WU-1326: Check if lane is occupied by existing WUs based on policy
+        // policy=none: laneBlocked stays false (no WIP checking)
+        // policy=active: only in_progress blocks
+        // policy=all: both in_progress and blocked block
+        let laneBlocked = false;
+
+        if (policy === 'active') {
+          // Only in_progress WUs block the lane
+          laneBlocked = lanesOccupiedByInProgress.has(lane);
+        } else if (policy === 'all') {
+          // policy === 'all' (default): both in_progress and blocked block lane
+          laneBlocked = lanesOccupiedByInProgress.has(lane) || lanesOccupiedByBlocked.has(lane);
+        }
+        // policy === 'none': laneBlocked remains false
+
+        if (laneBlocked) {
+          // Lane is occupied by existing WU based on policy
+          deferredToNextWave.push(wu);
+        } else {
+          wave.push(wu);
+          lanesInWave.add(lane);
+        }
+      }
+    }
+
+    // Deadlock detection: if no WUs can be scheduled but remaining exist
+    if (wave.length === 0 && remaining.size > 0 && deferredToNextWave.length === 0) {
+      const stuckIds = Array.from(remaining);
+      throw createError(
+        ErrorCodes.VALIDATION_ERROR,
+        `Circular or unresolvable dependencies detected. Stuck WUs: ${stuckIds.join(', ')}`,
+        { stuckIds },
+      );
+    }
+
+    // Add wave and mark WUs as completed
+    if (wave.length > 0) {
+      waves.push(wave);
+      for (const wu of wave) {
+        remaining.delete(wu.id);
+        completed.add(wu.id);
+      }
+    }
+
+    // Add deferred WUs back to remaining for next wave (if wave had items)
+    // If wave was empty but we have deferred items, we need to make progress
+    if (wave.length === 0 && deferredToNextWave.length > 0) {
+      // Schedule one deferred WU per lane to make progress
+      const processedLanes = new Set<string>();
+      for (const wu of deferredToNextWave) {
+        const lane = wu.doc.lane ?? '';
+        if (!processedLanes.has(lane)) {
+          wave.push(wu);
+          processedLanes.add(lane);
+        }
+      }
+      if (wave.length > 0) {
+        waves.push(wave);
+        for (const wu of wave) {
+          remaining.delete(wu.id);
+          completed.add(wu.id);
+        }
+      }
+    }
+  }
+
+  return { waves, skipped, skippedWithReasons, deferred };
+}
+
+/**
+ * WU-1326: Get lane availability respecting lock_policy.
+ *
+ * Returns availability status for each lane based on current WU states
+ * and configured lock_policy.
+ *
+ * @param {Array<{id: string, doc: object}>} wus - WUs to check
+ * @param {LockPolicyOptions} options - Lock policy options
+ * @returns {Record<string, LaneAvailabilityResult>} Lane availability map
+ */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- lane availability logic with multiple policy branches
+export function getLaneAvailability(
+  wus: WUEntry[],
+  options: LockPolicyOptions = {},
+): Record<string, LaneAvailabilityResult> {
+  const { laneConfigs = {} } = options;
+  const result: Record<string, LaneAvailabilityResult> = {};
+
+  // Group WUs by lane
+  const wusByLane = new Map<string, WUEntry[]>();
+  for (const wu of wus) {
+    const lane = wu.doc.lane;
+    if (lane) {
+      const laneWUs = wusByLane.get(lane);
+      if (laneWUs) {
+        laneWUs.push(wu);
+      } else {
+        wusByLane.set(lane, [wu]);
+      }
+    }
+  }
+
+  // Calculate availability for each lane
+  for (const [lane, laneWUs] of wusByLane) {
+    const policy = getLockPolicyForLane(lane, laneConfigs);
+
+    let inProgressCount = 0;
+    let blockedCount = 0;
+    let occupiedBy: string | undefined;
+
+    for (const wu of laneWUs) {
+      const status = wu.doc.status ?? 'unknown';
+      if (status === WU_STATUS.IN_PROGRESS) {
+        inProgressCount++;
+        if (!occupiedBy) {
+          occupiedBy = wu.id;
+        }
+      } else if (status === WU_STATUS.BLOCKED) {
+        blockedCount++;
+        // Only set occupiedBy for blocked if policy=all
+        if (policy === 'all' && !occupiedBy) {
+          occupiedBy = wu.id;
+        }
+      }
+    }
+
+    // Determine availability based on policy
+    let available = false;
+
+    if (policy === 'none') {
+      // No WIP checking - always available
+      available = true;
+      occupiedBy = undefined;
+    } else if (policy === 'active') {
+      // Only in_progress blocks
+      available = inProgressCount === 0;
+      if (available) {
+        occupiedBy = undefined;
+      }
+    } else {
+      // policy === 'all': both in_progress and blocked block
+      available = inProgressCount === 0 && blockedCount === 0;
+    }
+
+    result[lane] = {
+      available,
+      policy,
+      occupiedBy,
+      blockedCount,
+      inProgressCount,
+    };
+  }
+
+  return result;
 }
 
 export { LOG_PREFIX };

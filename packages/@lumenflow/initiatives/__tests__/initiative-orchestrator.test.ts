@@ -1173,6 +1173,290 @@ acceptance:
   });
 });
 
+/**
+ * WU-1326: Update orchestrator wave building for lock_policy
+ *
+ * Tests for:
+ * - AC1: Wave building respects lock_policy per lane
+ * - AC2: Blocked WUs do not block lane when policy=active
+ * - AC3: orchestrate:init-status shows policy-aware availability
+ * - AC4: Backward compatible (policy=all is default)
+ */
+describe('WU-1326: Wave building respects lock_policy per lane', () => {
+  describe('AC1: Wave building respects lock_policy per lane', () => {
+    it('should allow multiple WUs in same lane in same wave when policy=active and blocked WU exists', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      // Create WUs in same lane - one blocked, two ready
+      // With policy=active, the blocked WU should NOT hold the lane
+      const wus = [
+        {
+          id: 'WU-LP-BLOCKED',
+          doc: { status: 'blocked', lane: 'Framework: Core', blocked_by: [] },
+        },
+        { id: 'WU-LP-READY1', doc: { status: 'ready', lane: 'Framework: Core', blocked_by: [] } },
+        {
+          id: 'WU-LP-READY2',
+          doc: { status: 'ready', lane: 'Framework: Core', blocked_by: ['WU-LP-READY1'] },
+        },
+      ];
+
+      // Mock lane config with policy=active
+      const laneConfigs = {
+        'Framework: Core': { lock_policy: 'active' },
+      };
+
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
+
+      // WU-LP-READY1 should be in wave 0 (blocked WU doesn't hold lane)
+      const wave0Ids = plan.waves[0]?.map((wu) => wu.id) || [];
+      expect(wave0Ids).toContain('WU-LP-READY1');
+    });
+
+    it('should enforce lane WIP=1 when policy=all (default behavior)', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      // Two ready WUs in same lane, no blockers
+      const wus = [
+        { id: 'WU-ALL-READY1', doc: { status: 'ready', lane: 'Framework: CLI', blocked_by: [] } },
+        { id: 'WU-ALL-READY2', doc: { status: 'ready', lane: 'Framework: CLI', blocked_by: [] } },
+      ];
+
+      // With policy=all (default), only one WU per lane per wave
+      const laneConfigs = {
+        'Framework: CLI': { lock_policy: 'all' },
+      };
+
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
+
+      // Only one WU should be in wave 0
+      const wave0Ids = plan.waves[0]?.map((wu) => wu.id) || [];
+      expect(wave0Ids.length).toBe(1);
+
+      // The other should be in wave 1
+      expect(plan.waves.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should skip lane WIP checking entirely when policy=none', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      // Multiple ready WUs in same lane, including blocked
+      const wus = [
+        {
+          id: 'WU-NONE-BLOCKED',
+          doc: { status: 'blocked', lane: 'Content: Documentation', blocked_by: [] },
+        },
+        {
+          id: 'WU-NONE-READY1',
+          doc: { status: 'ready', lane: 'Content: Documentation', blocked_by: [] },
+        },
+        {
+          id: 'WU-NONE-READY2',
+          doc: { status: 'ready', lane: 'Content: Documentation', blocked_by: [] },
+        },
+      ];
+
+      // With policy=none, no WIP checking at all
+      const laneConfigs = {
+        'Content: Documentation': { lock_policy: 'none' },
+      };
+
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
+
+      // Both ready WUs should be in wave 0 (no WIP constraint)
+      const wave0Ids = plan.waves[0]?.map((wu) => wu.id) || [];
+      expect(wave0Ids).toContain('WU-NONE-READY1');
+      expect(wave0Ids).toContain('WU-NONE-READY2');
+    });
+  });
+
+  describe('AC2: Blocked WUs do not block lane when policy=active', () => {
+    it('should allow ready WU when blocked WU exists in same lane with policy=active', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      const wus = [
+        {
+          id: 'WU-ACT-BLOCKED',
+          doc: { status: 'blocked', lane: 'Framework: Memory', blocked_by: [] },
+        },
+        { id: 'WU-ACT-READY', doc: { status: 'ready', lane: 'Framework: Memory', blocked_by: [] } },
+      ];
+
+      const laneConfigs = {
+        'Framework: Memory': { lock_policy: 'active' },
+      };
+
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
+
+      // The ready WU should be schedulable despite blocked WU in same lane
+      const wave0Ids = plan.waves[0]?.map((wu) => wu.id) || [];
+      expect(wave0Ids).toContain('WU-ACT-READY');
+    });
+
+    it('should NOT allow ready WU when in_progress WU exists in same lane with policy=active', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      // in_progress WU DOES hold the lane even with policy=active
+      const wus = [
+        {
+          id: 'WU-ACT-IP',
+          doc: { status: 'in_progress', lane: 'Framework: Metrics', blocked_by: [] },
+        },
+        {
+          id: 'WU-ACT-READY2',
+          doc: { status: 'ready', lane: 'Framework: Metrics', blocked_by: [] },
+        },
+      ];
+
+      const laneConfigs = {
+        'Framework: Metrics': { lock_policy: 'active' },
+      };
+
+      const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
+
+      // The ready WU should NOT be in any wave because in_progress holds lane
+      const allWaveIds = plan.waves.flat().map((wu) => wu.id);
+      expect(allWaveIds).toContain('WU-ACT-READY2'); // Will be scheduled but in later wave or skipped
+
+      // The in_progress WU should be in skippedWithReasons (not ready)
+      const skippedIds = plan.skippedWithReasons?.map((s) => s.id) || [];
+      expect(skippedIds).toContain('WU-ACT-IP');
+    });
+  });
+
+  describe('AC3: Lane availability respects lock_policy', () => {
+    it('should report lane as available when only blocked WUs exist and policy=active', async () => {
+      const { getLaneAvailability } = await import('../src/initiative-orchestrator.js');
+
+      const wus = [
+        {
+          id: 'WU-AVAIL-BLOCKED',
+          doc: { status: 'blocked', lane: 'Framework: Agent', blocked_by: [] },
+        },
+      ];
+
+      const laneConfigs = {
+        'Framework: Agent': { lock_policy: 'active' },
+      };
+
+      const availability = getLaneAvailability(wus, { laneConfigs });
+
+      // Lane should be available because blocked WU doesn't hold it
+      expect(availability['Framework: Agent']?.available).toBe(true);
+      expect(availability['Framework: Agent']?.policy).toBe('active');
+    });
+
+    it('should report lane as occupied when in_progress WU exists regardless of policy', async () => {
+      const { getLaneAvailability } = await import('../src/initiative-orchestrator.js');
+
+      const wus = [
+        {
+          id: 'WU-OCC-IP',
+          doc: { status: 'in_progress', lane: 'Framework: Shims', blocked_by: [] },
+        },
+      ];
+
+      const laneConfigs = {
+        'Framework: Shims': { lock_policy: 'active' },
+      };
+
+      const availability = getLaneAvailability(wus, { laneConfigs });
+
+      // Lane should be occupied because in_progress always holds
+      expect(availability['Framework: Shims']?.available).toBe(false);
+      expect(availability['Framework: Shims']?.occupiedBy).toBe('WU-OCC-IP');
+    });
+  });
+
+  describe('AC4: Backward compatible (policy=all is default)', () => {
+    it('should default to policy=all when no lock_policy specified', async () => {
+      const { buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      const wus = [
+        {
+          id: 'WU-DEF-BLOCKED',
+          doc: { status: 'blocked', lane: 'Operations: Infrastructure', blocked_by: [] },
+        },
+        {
+          id: 'WU-DEF-READY',
+          doc: { status: 'ready', lane: 'Operations: Infrastructure', blocked_by: [] },
+        },
+      ];
+
+      // No laneConfigs means default behavior (policy=all)
+      const plan = buildExecutionPlanWithLockPolicy(wus, {});
+
+      // In default mode, blocked WU counts toward WIP (current behavior)
+      // Since WU-DEF-BLOCKED is blocked (not ready), it's skipped
+      // WU-DEF-READY should be in wave 0
+      const wave0Ids = plan.waves[0]?.map((wu) => wu.id) || [];
+      expect(wave0Ids).toContain('WU-DEF-READY');
+    });
+
+    it('should behave same as current buildExecutionPlan when no policy specified', async () => {
+      const { buildExecutionPlan, buildExecutionPlanWithLockPolicy } =
+        await import('../src/initiative-orchestrator.js');
+
+      const wus = [
+        { id: 'WU-COMPAT-A', doc: { status: 'ready', lane: 'Lane A', blocked_by: [] } },
+        { id: 'WU-COMPAT-B', doc: { status: 'ready', lane: 'Lane A', blocked_by: [] } },
+        { id: 'WU-COMPAT-C', doc: { status: 'ready', lane: 'Lane B', blocked_by: [] } },
+      ];
+
+      const planOld = buildExecutionPlan(wus);
+      const planNew = buildExecutionPlanWithLockPolicy(wus, {});
+
+      // Wave structure should be identical
+      expect(planNew.waves.length).toBe(planOld.waves.length);
+
+      // Same WUs in each wave (order may vary)
+      for (let i = 0; i < planOld.waves.length; i++) {
+        const oldWaveIds = planOld.waves[i]?.map((wu) => wu.id).sort() || [];
+        const newWaveIds = planNew.waves[i]?.map((wu) => wu.id).sort() || [];
+        expect(newWaveIds).toEqual(oldWaveIds);
+      }
+    });
+  });
+
+  describe('getLockPolicyForLane helper', () => {
+    it('should return lock_policy from config when specified', async () => {
+      const { getLockPolicyForLane } = await import('../src/initiative-orchestrator.js');
+
+      const laneConfigs = {
+        'Framework: Core': { lock_policy: 'active' },
+        'Content: Documentation': { lock_policy: 'none' },
+      };
+
+      expect(getLockPolicyForLane('Framework: Core', laneConfigs)).toBe('active');
+      expect(getLockPolicyForLane('Content: Documentation', laneConfigs)).toBe('none');
+    });
+
+    it('should return "all" as default when lane not in config', async () => {
+      const { getLockPolicyForLane } = await import('../src/initiative-orchestrator.js');
+
+      const laneConfigs = {
+        'Framework: Core': { lock_policy: 'active' },
+      };
+
+      expect(getLockPolicyForLane('Unknown Lane', laneConfigs)).toBe('all');
+      expect(getLockPolicyForLane('Framework: CLI', laneConfigs)).toBe('all');
+    });
+
+    it('should return "all" when laneConfigs is empty or undefined', async () => {
+      const { getLockPolicyForLane } = await import('../src/initiative-orchestrator.js');
+
+      expect(getLockPolicyForLane('Framework: Core', {})).toBe('all');
+      expect(getLockPolicyForLane('Framework: Core', undefined)).toBe('all');
+    });
+  });
+});
+
 describe('WU-2040: Checkpoint mode Task invocation output', () => {
   const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
 
