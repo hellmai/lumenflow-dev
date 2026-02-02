@@ -15,13 +15,20 @@ tests:
     - Run templates:sync and verify templates match source
     - Verify drift detection catches intentional difference
   unit:
-    - scripts/__tests__/templates-sync.test.ts
+    - packages/@lumenflow/cli/src/__tests__/templates-sync.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1353.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Implementation adds sync-templates.ts CLI script that:
+  1. Syncs source docs to CLI templates with {{DATE}} placeholder substitution
+  2. Provides --check-drift mode for CI to detect template drift
+  3. Supports dry-run mode for testing without file writes
+  Run with: pnpm sync:templates or pnpm templates:sync
+spec_refs:
+  - lumenflow://plans/template-sync-automation
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

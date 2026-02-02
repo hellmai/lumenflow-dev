@@ -1,7 +1,7 @@
 ---
 name: context-management
 description: Session checkpoint patterns, output bypass for large results, when to spawn fresh sub-agents. Use for long-running sessions, context exhaustion, or agent coordination.
-version: 1.2.0
+version: 1.3.0
 source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
 source_sections: Context Tiers, Session Management, Wave Orchestration
 last_updated: {{DATE}}
@@ -75,6 +75,17 @@ pnpm mem:checkpoint --wu WU-123 --note "Completed step 2, starting API integrati
 pnpm mem:ready --wu WU-123  # Shows pending work
 pnpm mem:inbox --wu WU-123  # Check signals from other agents
 ```
+
+### Optional: Pre-Clear Checkpoint Hook
+
+If your client supports hooks, add a pre-clear/pre-compaction hook that runs:
+
+```bash
+pnpm mem:checkpoint "Pre-clear: <summary>" --wu WU-XXX --trigger pre-clear
+```
+
+This is a safety net for when humans forget to checkpoint. It does **not** replace the
+spawn-fresh protocol; still exit and spawn a new agent after `/clear`.
 
 ## Output Bypass Pattern
 
@@ -151,5 +162,6 @@ Always load context in this order for best comprehension:
 
 ## Version History
 
+- **v1.3.0** ({{DATE}}): Added pre-clear checkpoint hook guidance
 - **v1.1.0** ({{DATE}}): Added wave orchestration pattern cross-reference
 - **v1.0.0** ({{DATE}}): Initial skill created

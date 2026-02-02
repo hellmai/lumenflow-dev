@@ -30,10 +30,11 @@ pnpm release --release-version 1.3.0
 
 1. Validates semver version format
 2. Ensures clean working directory on main branch
-3. Bumps all `@lumenflow/*` package versions using micro-worktree isolation
-4. Builds all packages
-5. Creates and pushes git tag `vX.Y.Z`
-6. Publishes to npm
+3. Syncs templates with source docs (`pnpm sync:templates`)
+4. Bumps all `@lumenflow/*` package versions using micro-worktree isolation
+5. Builds all packages
+6. Creates and pushes git tag `vX.Y.Z`
+7. Publishes to npm
 
 ### Options
 
@@ -70,6 +71,58 @@ export NODE_AUTH_TOKEN=<your-npm-token>
 ```
 
 Get a token at: https://www.npmjs.com/settings/tokens
+
+---
+
+## Template Synchronization (WU-1353)
+
+CLI templates (`packages/@lumenflow/cli/templates/`) are synced from source docs to ensure new projects get up-to-date onboarding content.
+
+### Sync Templates
+
+```bash
+# Sync source docs to CLI templates
+pnpm sync:templates
+
+# Preview without writing files
+pnpm sync:templates --dry-run
+```
+
+### Check for Drift (CI)
+
+```bash
+# Check if templates are out of sync with source
+pnpm sync:templates --check-drift
+```
+
+The `--check-drift` flag compares templates with their source files. If drift is detected:
+
+- Exit code 1 (fails CI)
+- Lists drifting files
+- Suggests running `pnpm sync:templates`
+
+### What Gets Synced
+
+| Source                           | Template                                                      |
+| -------------------------------- | ------------------------------------------------------------- |
+| `.lumenflow/constraints.md`      | `templates/core/.lumenflow/constraints.md.template`           |
+| `LUMENFLOW.md`                   | `templates/core/LUMENFLOW.md.template`                        |
+| `docs/.../agent/onboarding/*.md` | `templates/core/ai/onboarding/*.md.template`                  |
+| `.claude/skills/*/SKILL.md`      | `templates/vendors/claude/.claude/skills/*/SKILL.md.template` |
+
+### Template Variables
+
+During sync, content is transformed:
+
+- `YYYY-MM-DD` dates become `{{DATE}}`
+- Absolute paths become `{{PROJECT_ROOT}}` (when applicable)
+
+### When to Sync
+
+- Before every release (included in release checklist)
+- After updating source onboarding docs
+- After modifying constraints or workflow rules
+- CI drift check runs on every push to main
 
 ---
 
@@ -241,6 +294,7 @@ The `apps/github-app/package.json` must have `"private": true` to prevent npm pu
 - [ ] All acceptance criteria met
 - [ ] Gates pass (`pnpm gates`)
 - [ ] Pre-release checks pass (`pnpm pre-release:check`)
+- [ ] Templates synced (`pnpm sync:templates` - ensures CLI templates match source docs)
 - [ ] CHANGELOG updated (if maintained)
 
 ### Release Steps (Automated)

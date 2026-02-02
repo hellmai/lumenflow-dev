@@ -26,17 +26,20 @@ cd worktrees/core-wu-123
 vim src/feature.ts
 git commit -m "feat: add feature"
 git push origin lane/core/wu-123
-cd /path/to/main
-pnpm wu:done --id WU-123
+pnpm wu:prep --id WU-123  # WU-1223: runs gates, prints copy-paste instruction
+cd /path/to/main && pnpm wu:done --id WU-123  # Copy-paste from wu:prep output
 ```
 
 ---
 
-## Mistake 2: Forgetting to Run wu:done
+## Mistake 2: Forgetting to Run wu:prep and wu:done
 
 See [troubleshooting-wu-done.md](troubleshooting-wu-done.md) for the full explanation.
 
-**TL;DR:** After gates pass, ALWAYS run `pnpm wu:done --id WU-XXX`.
+**TL;DR (WU-1223):**
+
+1. From worktree: `pnpm wu:prep --id WU-XXX` (runs gates)
+2. From main: `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep output)
 
 ---
 
@@ -159,7 +162,8 @@ Start coding immediately based on the title.
 2. Understand acceptance criteria
 3. Review code_paths
 4. Check dependencies
-5. Then start
+5. Check spec_refs for linked plans (if present, read the plan document)
+6. Then start
 
 ---
 
@@ -183,16 +187,54 @@ vim src/feature.ts  # Now it's safe
 
 ---
 
+## Mistake 11: "Quick Fixing" on Main
+
+### Wrong
+
+```bash
+# On main, see failing format check
+pnpm gates
+# Output: format:check failed
+
+# Instinct: "I should help fix this!"
+pnpm prettier --write apps/docs/src/content/docs/concepts/lanes.mdx
+# Files modified on main - BAD!
+```
+
+### Right
+
+```bash
+# On main, see failing format check
+pnpm gates
+# Output: format:check failed
+
+# Report to user or create a WU
+# "Format check is failing on main. Should I create a WU to fix it?"
+
+# If yes:
+pnpm wu:create --lane "Content: Documentation" --title "Fix format issues" ...
+pnpm wu:claim --id WU-XXX --lane "Content: Documentation"
+cd worktrees/content-documentation-wu-xxx
+pnpm prettier --write <files>  # Safe in worktree
+```
+
+**Why:** The "helpful fix" instinct is dangerous. Even small fixes (format, typos, lint) must go through a worktree. Commits are blocked by hooks, but files are still modified, requiring cleanup with `git checkout -- <files>`.
+
+**Rule:** If you're on main and want to change something—STOP. Create a WU first.
+
+---
+
 ## Quick Checklist
 
 Before starting any WU:
 
 - [ ] Read the full WU spec
 - [ ] Understand acceptance criteria
+- [ ] Check spec_refs for plans (read linked plans if present)
 - [ ] Claim the WU with `pnpm wu:claim`
 - [ ] cd to the worktree IMMEDIATELY
 - [ ] Work only in the worktree
 - [ ] Stay within code_paths
 - [ ] Follow TDD
-- [ ] Run gates before wu:done
-- [ ] ALWAYS run wu:done
+- [ ] Run wu:prep from worktree (runs gates)
+- [ ] Run wu:done from main (copy-paste from wu:prep output)

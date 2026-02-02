@@ -1,7 +1,7 @@
 ---
 name: execution-memory
 description: Memory layer for session tracking, context recovery, and agent coordination. Use when resuming work after /clear, coordinating with parallel agents, or managing long-running sessions.
-version: 1.1.0
+version: 1.2.0
 source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 source_sections: Memory Commands
 last_updated: {{DATE}}
@@ -26,22 +26,17 @@ Activate automatically when:
 
 ## Quick Reference: Storage Location
 
-All memory data is stored in `.beacon/memory/`:
+All memory data is stored in `.lumenflow/memory/` as append-only JSONL:
 
 ```
-.beacon/memory/
-├── sessions/               # Session metadata by session ID
-│   └── <session-id>.json   # Session start time, WU link, tier
-├── checkpoints/            # Progress checkpoints
-│   └── <wu-id>/            # Checkpoints grouped by WU
-│       └── <timestamp>.md  # Individual checkpoint
-├── discoveries/            # Bugs, ideas, discoveries
-│   └── <node-id>.json      # Discovery node with type, status
-├── signals/                # Inter-agent coordination signals
-│   └── <timestamp>-<wu>.json  # Signal with lane, message
-└── summaries/              # Rollup summaries for compaction
-    └── <wu-id>-summary.md  # Summarised session history
+.lumenflow/memory/
+├── memory.jsonl        # Session/checkpoint/discovery/summary nodes
+├── relationships.jsonl # Optional node relationships (blocks, related)
+├── signals.jsonl       # Inter-agent coordination signals
+└── config.yaml         # Retention policy defaults
 ```
+
+Legacy docs may mention `.beacon/memory/`; the current source of truth is `.lumenflow/memory/`.
 
 ## Automatic Integration
 
@@ -51,7 +46,7 @@ The memory layer integrates automatically with WU lifecycle commands:
 
 When you run `pnpm wu:claim`:
 
-1. Creates session node in `.beacon/memory/sessions/`
+1. Creates session node in `.lumenflow/memory/memory.jsonl`
 2. Links session to WU ID
 3. Records baseline main SHA for recovery
 
@@ -60,7 +55,7 @@ When you run `pnpm wu:claim`:
 When you run `pnpm wu:done`:
 
 1. Creates pre-gates checkpoint (recovery point if gates fail)
-2. Broadcasts completion signal to parallel agents
+2. Broadcasts completion signal to parallel agents (`signals.jsonl`)
 3. Checks `mem:inbox` for recent signals from other agents
 4. Ends session and marks as completed
 
@@ -180,6 +175,9 @@ For long sessions (>20 tool calls):
 3. **Reload minimal context**: Tier 1 docs + WU YAML
 4. **Query ready nodes**: `pnpm mem:ready --wu WU-XXX`
 5. **Continue from checkpoint**
+
+If your client supports hooks, add a pre-clear hook that runs `pnpm mem:checkpoint` automatically
+before `/clear` or `/compact` to avoid losing context.
 
 ## Discovery Lifecycle
 
