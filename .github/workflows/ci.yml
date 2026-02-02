@@ -74,3 +74,6 @@ jobs:
 
       - name: Validate docs sync
         run: pnpm docs:validate
+
+      - name: Check template drift
+        run: pnpm sync:templates --check-drift

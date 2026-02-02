@@ -1,0 +1,219 @@
+# AI Coding Assistant Integrations
+
+**Last updated:** {{DATE}}
+
+---
+
+## Works with Any AI
+
+**LumenFlow is friction-free for any AI coding assistant.** If your AI can read project files, it can use LumenFlow.
+
+### Universal Entry Points
+
+Every LumenFlow project includes these plain markdown files that work with ANY AI:
+
+| File                        | Purpose                                  |
+| --------------------------- | ---------------------------------------- |
+| `AGENTS.md`                 | Universal agent instructions             |
+| `LUMENFLOW.md`              | Workflow fundamentals and critical rules |
+| `.lumenflow/constraints.md` | Non-negotiable constraints               |
+
+**No vendor lock-in.** Point any AI at these files and it understands the workflow.
+
+```bash
+# Initialize with universal files only (works with any AI)
+lumenflow init
+```
+
+---
+
+## Enhanced Integrations
+
+For popular AI coding assistants, LumenFlow provides **optional enhanced integrations** with deeper features like auto-detection, skills, and vendor-specific configurations.
+
+| Assistant   | Config File                    | Auto-detected | Enhanced Features               |
+| ----------- | ------------------------------ | ------------- | ------------------------------- |
+| Claude Code | `CLAUDE.md`, `.claude/`        | Yes           | Skills, agents, hooks, settings |
+| Cursor      | `.cursor/rules/lumenflow.md`   | Yes           | Rules integration               |
+| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes           | Rules integration               |
+| Cline       | `.clinerules`                  | No            | Rules file                      |
+| Codex       | `AGENTS.md` (native)           | No            | Uses universal files directly   |
+| Aider       | `.aider.conf.yml`              | No            | Config file                     |
+| Antigravity | `AGENTS.md` (native)           | Unknown       | Research phase                  |
+
+---
+
+## Integration Details
+
+### Claude Code (Anthropic)
+
+Claude Code is Anthropic's official CLI for Claude. It has the deepest integration with LumenFlow.
+
+**Config Files:**
+
+- `CLAUDE.md` - Root-level instructions
+- `.claude/settings.json` - Permission configuration
+- `.claude/agents/` - Agent definitions
+- `.claude/skills/` - Skill definitions
+
+**Auto-detection:** Environment variables `CLAUDE_PROJECT_DIR` or `CLAUDE_CODE`
+
+**Initialize:**
+
+```bash
+lumenflow init --client claude
+```
+
+### Cursor
+
+Cursor is an AI-first code editor built on VS Code.
+
+**Config Files:**
+
+- `.cursor/rules/lumenflow.md` - LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `CURSOR_`
+
+**Initialize:**
+
+```bash
+lumenflow init --client cursor
+```
+
+### Windsurf
+
+Windsurf (Codeium) is an AI IDE with agentic capabilities.
+
+**Config Files:**
+
+- `.windsurf/rules/lumenflow.md` - LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `WINDSURF_`
+
+**Initialize:**
+
+```bash
+lumenflow init --client windsurf
+```
+
+### Cline
+
+Cline is an autonomous coding agent that works in VS Code.
+
+**Config Files:**
+
+- `.clinerules` - LumenFlow rules (root-level)
+
+**Auto-detection:** Not supported
+
+**Initialize:**
+
+```bash
+lumenflow init --client cline
+```
+
+### OpenAI Codex
+
+Codex reads the AGENTS.md file directly for universal instructions.
+
+**Config Files:**
+
+- `AGENTS.md` - Universal agent instructions (always created)
+
+**Initialize:**
+
+```bash
+lumenflow init  # AGENTS.md is created by default
+```
+
+### Aider
+
+Aider is a terminal-based pair programming tool.
+
+**Config Files:**
+
+- `.aider.conf.yml` - Aider configuration
+
+**Initialize:**
+
+```bash
+lumenflow init --client aider
+```
+
+---
+
+## Antigravity (Research Phase)
+
+**Status:** Research Phase
+
+Antigravity is Google's AI IDE, announced in November 2025. It is MCP-based and appears to read `AGENTS.md` natively.
+
+### What We Know
+
+- **Announced:** November 2025
+- **Platform:** Google's AI IDE
+- **Protocol:** MCP (Model Context Protocol)
+- **Agent Config:** Appears to read `AGENTS.md` natively (similar to Codex)
+
+### Research Links
+
+- [Google Codelabs - Getting Started with Antigravity](https://codelabs.developers.google.com/getting-started-google-antigravity)
+- Google AI documentation (when available)
+
+### Current Recommendation
+
+For projects using Antigravity:
+
+1. Ensure `AGENTS.md` is present (created by default with `lumenflow init`)
+2. The universal instructions in AGENTS.md should work out of the box
+3. Report any issues for future vendor-specific support
+
+---
+
+## Using Another AI?
+
+If your AI coding assistant isn't listed above, LumenFlow still works:
+
+1. Run `lumenflow init` to create universal entry points
+2. Tell your AI to read `AGENTS.md` and `LUMENFLOW.md`
+3. The workflow commands (`wu:claim`, `wu:done`, `gates`) work the same
+
+**Want enhanced integration for your AI?** See [Adding New Integrations](#adding-new-integrations) below.
+
+---
+
+## All Integrations Setup
+
+To configure all enhanced integrations at once:
+
+```bash
+lumenflow init --client all
+```
+
+This creates all vendor-specific configuration files alongside the universal entry points.
+
+---
+
+## Sync Vendor Configs
+
+To ensure all vendor configs are in sync with the template:
+
+```bash
+# Check if configs are in sync
+./scripts/sync-vendor-configs.sh --check
+
+# Regenerate all configs from template
+./scripts/sync-vendor-configs.sh
+```
+
+---
+
+## Adding New Integrations
+
+To add enhanced integration for a new AI coding assistant:
+
+1. Update `templates/vendor-rules.template.md` (single source of truth)
+2. Add vendor config path to `scripts/sync-vendor-configs.sh`
+3. Add scaffolding in `packages/@lumenflow/cli/src/init.ts`
+4. Update this integrations document
+5. Test with `lumenflow init --client <vendor>`

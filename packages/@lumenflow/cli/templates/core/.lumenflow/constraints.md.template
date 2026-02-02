@@ -1,13 +1,13 @@
 # LumenFlow Constraints Capsule
 
-**Version:** 1.0
+**Version:** 1.1
 **Last updated:** {{DATE}}
 
-This document contains the 6 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
+This document contains the 7 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
 ---
 
-## The 6 Non-Negotiable Constraints
+## The 7 Non-Negotiable Constraints
 
 ### 1. Worktree Discipline and Git Safety
 
@@ -19,7 +19,39 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 - Hooks block WU commits from main checkout
 - Forbidden commands on main: `git reset --hard`, `git stash`, `git clean -fd`, `git push --force`
 
+**MANDATORY PRE-WRITE CHECK**
+
+Before ANY Write/Edit/Read operation:
+
+1. **Verify worktree location**:
+
+   ```bash
+   pwd
+   # Must show: .../worktrees/<lane>-wu-xxx
+   ```
+
+2. **Verify relative paths only**:
+   - ✅ `docs/...`, `packages/...`, `apps/...`, `./...`
+   - ❌ `/home/...`, `/Users/...`, or full repo paths
+
+3. **Docs-only exception (documentation WUs)**:
+   - You may run **read-only** commands from main (e.g., `pnpm gates --docs-only`).
+   - **All file writes still require a worktree**. If no worktree exists, claim one first.
+
 **Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch.
+
+**NEVER "QUICK FIX" ON MAIN**
+
+If you see something broken on main (failing gates, format issues, typos, lint errors):
+
+- ❌ **Don't** fix it directly, even if it seems small or helpful
+- ❌ **Don't** run `prettier --write`, `pnpm lint --fix`, or any command that modifies files
+- ✅ **Do** report the issue to the user
+- ✅ **Do** create a WU if a fix is needed
+
+**Why this matters:** The "helpful fix" instinct causes agents to modify files on main without a worktree. While commits are blocked by hooks, the files are still modified, requiring manual cleanup. Every change—no matter how small—needs a worktree.
+
+**If you're on main and want to change something: STOP. Create a WU first.**
 
 ---
 
@@ -91,6 +123,32 @@ This document contains the 6 non-negotiable constraints that every agent must ke
 - Stop-and-ask for auth/PII/spend changes
 
 **Why:** Safety first. Some mistakes are irreversible.
+
+---
+
+### 7. Test Ratchet Pattern (WU-1253)
+
+**Rule:** NEW test failures block gates; pre-existing failures (in baseline) warn but do not block.
+
+**Baseline File:** `.lumenflow/test-baseline.json`
+
+**Enforcement:**
+
+- Gates compare current test results against baseline
+- NEW failures (not in baseline) = **BLOCK** (must fix or add to baseline)
+- Pre-existing failures (in baseline) = **WARNING** (continue, do not block WU)
+- Fixed tests auto-removed from baseline (ratchet forward)
+
+**When gates fail due to tests:**
+
+1. Check baseline: `cat .lumenflow/test-baseline.json`
+2. If failure is pre-existing: warning shown, WU proceeds
+3. If failure is NEW: fix the test or add to baseline with:
+   ```bash
+   pnpm baseline:add --test "<test_name>" --reason "<why>" --fix-wu WU-XXXX
+   ```
+
+**Why:** Agents should not be blocked by unrelated failures. The ratchet ensures quality improves over time (failures can only be removed, never added without justification).
 
 ---
 

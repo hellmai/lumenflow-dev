@@ -1,0 +1,131 @@
+# Test Ratchet Pattern (WU-1253)
+
+**Purpose:** Enable agents to work on WUs without being blocked by unrelated test failures, while preventing introduction of NEW failures.
+
+---
+
+## Overview
+
+The test ratchet pattern tracks known test failures in a baseline file. When gates run:
+
+- **NEW failures** (not in baseline) **BLOCK** the gate
+- **Pre-existing failures** (in baseline) show **WARNING** but do not block
+- When tests are **FIXED**, baseline auto-updates (ratchet forward)
+
+This creates a "ratchet" effect: test failures can only decrease over time, never increase without explicit justification.
+
+---
+
+## Baseline File
+
+Location: `.lumenflow/test-baseline.json`
+
+```json
+{
+  "version": 1,
+  "updated_at": "{{DATE}}T12:00:00.000Z",
+  "updated_by": "WU-1253",
+  "known_failures": [
+    {
+      "test_name": "should handle edge case",
+      "file_path": "packages/@lumenflow/core/src/__tests__/foo.test.ts",
+      "failure_reason": "WU-1210 changed implementation without updating test",
+      "added_at": "{{DATE}}T10:00:00.000Z",
+      "added_by_wu": "WU-1239",
+      "expected_fix_wu": "WU-1300"
+    }
+  ],
+  "stats": {
+    "total_known_failures": 1,
+    "last_ratchet_forward": "{{DATE}}T15:00:00.000Z"
+  }
+}
+```
+
+---
+
+## When Gates Fail Due to Tests
+
+### Step 1: Check if failure is in baseline
+
+```bash
+cat .lumenflow/test-baseline.json | grep -i "<test_name>"
+```
+
+### Step 2: Determine action
+
+| Failure Type | In Baseline? | Action                                  |
+| ------------ | ------------ | --------------------------------------- |
+| Pre-existing | Yes          | Continue - warning only, does not block |
+| NEW          | No           | Must fix test OR add to baseline        |
+
+### Step 3: If NEW failure, choose resolution
+
+**Option A: Fix the test** (preferred)
+
+- Debug and fix the failing test
+- Ensure test passes
+- Re-run gates
+
+**Option B: Add to baseline** (for infrastructure issues only)
+
+```bash
+pnpm baseline:add \
+  --test "should handle edge case" \
+  --file "path/to/test.ts" \
+  --reason "CI flakiness - infrastructure issue" \
+  --fix-wu WU-XXXX
+```
+
+---
+
+## Ratchet Forward (Auto-Update)
+
+When a test that was in the baseline now passes, gates automatically:
+
+1. Remove the fixed test from `known_failures`
+2. Update `stats.total_known_failures`
+3. Record `stats.last_ratchet_forward` timestamp
+4. Commit the baseline update with WU reference
+
+This ensures the baseline only shrinks over time.
+
+---
+
+## Skip-Gates Integration
+
+The test ratchet works with skip-gates:
+
+- Pre-existing failures (in baseline) do NOT require `--skip-gates`
+- Only truly NEW failures or infrastructure issues need skip-gates
+- The `expected_fix_wu` field tracks accountability
+
+---
+
+## Agent Checklist
+
+When encountering test failures:
+
+- [ ] Check if failure is in baseline
+- [ ] If pre-existing: continue (warning is expected)
+- [ ] If NEW: fix the test (preferred) or add to baseline with reason
+- [ ] If adding to baseline: specify `expected_fix_wu` for accountability
+- [ ] Re-run gates to verify
+
+---
+
+## Why This Matters
+
+1. **Unblocking agents**: Unrelated test failures shouldn't block your WU
+2. **Quality ratchet**: Failures can only decrease, never increase
+3. **Accountability**: Every baselined failure has a reason and fix-WU
+4. **TDD compliance**: You still must write tests FIRST for your changes
+5. **Visibility**: Team can track technical debt via baseline
+
+---
+
+## Related Documentation
+
+- [constraints.md](../../../../../../.lumenflow/constraints.md) - Constraint #7: Test Ratchet
+- [lumenflow-complete.md](../../lumenflow-complete.md) - Definition of Done
+- [troubleshooting-wu-done.md](./troubleshooting-wu-done.md) - wu:done issues
