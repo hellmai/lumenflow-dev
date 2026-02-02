@@ -52,7 +52,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -335,3 +334,4 @@ sections:
 - [WU-1309 — Fix init docs structure + portability + onboarding docs + quick-ref](wu/WU-1309.yaml)
 - [WU-1311 — Remove hardcoded docs/04-operations paths in CLI commands](wu/WU-1311.yaml)
 - [WU-1313 — Introduce first-class plan tooling (create/link/edit/promote)](wu/WU-1313.yaml)
+- [WU-1315 — Add onboarding smoke-test gate](wu/WU-1315.yaml)
