@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
 - [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
