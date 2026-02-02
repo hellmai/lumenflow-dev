@@ -609,4 +609,5 @@
 {"type":"claim","wuId":"WU-1342","timestamp":"2026-02-02T15:41:15.026Z","lane":"Framework: CLI","title":"Fix lumenflow init scaffolding bugs from 2.5.0 testing"}
 {"type":"claim","wuId":"WU-1343","timestamp":"2026-02-02T15:43:17.787Z","lane":"Content: Documentation","title":"Fix CLI naming and merge guidance in lumenflow.dev docs"}
 {"type":"complete","wuId":"WU-1342","timestamp":"2026-02-02T15:51:09.052Z"}
-{"type":"claim","wuId":"WU-1344","lane":"Framework: CLI","title":"wu:prep prints copy-paste skip-gates command on pre-existing failure","timestamp":"2026-02-02T15:54:12.492Z"}
+{"type":"claim","wuId":"WU-1344","timestamp":"2026-02-02T15:54:12.492Z","lane":"Framework: CLI","title":"wu:prep prints copy-paste skip-gates command on pre-existing failure"}
+{"type":"complete","wuId":"WU-1343","timestamp":"2026-02-02T15:55:21.399Z"}
