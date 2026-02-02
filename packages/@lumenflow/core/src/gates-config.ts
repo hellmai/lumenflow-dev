@@ -576,3 +576,237 @@ export function resolveTestPolicy(projectRoot: string): TestPolicy {
     tests_required: policy.tests_required,
   };
 }
+
+/**
+ * WU-1356: Supported package managers type
+ * Re-exported from lumenflow-config-schema to avoid circular import
+ */
+type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
+
+/**
+ * WU-1356: Supported test runners type
+ * Re-exported from lumenflow-config-schema to avoid circular import
+ */
+type TestRunner = 'vitest' | 'jest' | 'mocha';
+
+/**
+ * WU-1356: Gates commands configuration type
+ */
+export interface GatesCommands {
+  test_full: string;
+  test_docs_only: string;
+  test_incremental: string;
+  lint?: string;
+  typecheck?: string;
+  format?: string;
+}
+
+/**
+ * WU-1356: Default gates commands by package manager
+ *
+ * Provides sensible defaults for different package manager and test runner combinations.
+ */
+const DEFAULT_GATES_COMMANDS: Record<PackageManager, GatesCommands> = {
+  pnpm: {
+    test_full: 'pnpm turbo run test',
+    test_docs_only: '',
+    test_incremental: 'pnpm vitest run --changed origin/main',
+    lint: 'pnpm lint',
+    typecheck: 'pnpm typecheck',
+    format: 'pnpm format:check',
+  },
+  npm: {
+    test_full: 'npm test',
+    test_docs_only: '',
+    test_incremental: 'npm test -- --onlyChanged',
+    lint: 'npm run lint',
+    typecheck: 'npm run typecheck',
+    format: 'npm run format:check',
+  },
+  yarn: {
+    test_full: 'yarn test',
+    test_docs_only: '',
+    test_incremental: 'yarn test --onlyChanged',
+    lint: 'yarn lint',
+    typecheck: 'yarn typecheck',
+    format: 'yarn format:check',
+  },
+  bun: {
+    test_full: 'bun test',
+    test_docs_only: '',
+    test_incremental: 'bun test --changed',
+    lint: 'bun run lint',
+    typecheck: 'bun run typecheck',
+    format: 'bun run format:check',
+  },
+};
+
+/**
+ * WU-1356: Default build commands by package manager
+ */
+const DEFAULT_BUILD_COMMANDS: Record<PackageManager, string> = {
+  pnpm: 'pnpm --filter @lumenflow/cli build',
+  npm: 'npm run build --workspace @lumenflow/cli',
+  yarn: 'yarn workspace @lumenflow/cli build',
+  bun: 'bun run --filter @lumenflow/cli build',
+};
+
+/**
+ * WU-1356: Ignore patterns by test runner
+ *
+ * Different test runners use different cache directories that should be ignored.
+ */
+const IGNORE_PATTERNS_BY_RUNNER: Record<TestRunner, string[]> = {
+  vitest: ['.turbo'],
+  jest: ['coverage', '.jest-cache'],
+  mocha: ['coverage', '.nyc_output'],
+};
+
+/**
+ * WU-1356: Resolve package manager from configuration
+ *
+ * Reads the package_manager field from .lumenflow.config.yaml.
+ * Returns 'pnpm' as default if not configured.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Resolved package manager ('pnpm', 'npm', 'yarn', or 'bun')
+ */
+export function resolvePackageManager(projectRoot: string): PackageManager {
+  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+
+  if (!fs.existsSync(configPath)) {
+    return 'pnpm';
+  }
+
+  try {
+    const content = fs.readFileSync(configPath, 'utf8');
+    const data = yaml.parse(content);
+
+    const pm = data?.package_manager;
+    if (pm && ['pnpm', 'npm', 'yarn', 'bun'].includes(pm)) {
+      return pm as PackageManager;
+    }
+
+    return 'pnpm';
+  } catch {
+    return 'pnpm';
+  }
+}
+
+/**
+ * WU-1356: Resolve test runner from configuration
+ *
+ * Reads the test_runner field from .lumenflow.config.yaml.
+ * Returns 'vitest' as default if not configured.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Resolved test runner ('vitest', 'jest', or 'mocha')
+ */
+export function resolveTestRunner(projectRoot: string): TestRunner {
+  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+
+  if (!fs.existsSync(configPath)) {
+    return 'vitest';
+  }
+
+  try {
+    const content = fs.readFileSync(configPath, 'utf8');
+    const data = yaml.parse(content);
+
+    const runner = data?.test_runner;
+    if (runner && ['vitest', 'jest', 'mocha'].includes(runner)) {
+      return runner as TestRunner;
+    }
+
+    return 'vitest';
+  } catch {
+    return 'vitest';
+  }
+}
+
+/**
+ * WU-1356: Resolve build command from configuration
+ *
+ * Reads the build_command field from .lumenflow.config.yaml.
+ * If not configured, uses default based on package_manager.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Resolved build command
+ */
+export function resolveBuildCommand(projectRoot: string): string {
+  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+  const defaultPm = resolvePackageManager(projectRoot);
+
+  if (!fs.existsSync(configPath)) {
+    return DEFAULT_BUILD_COMMANDS[defaultPm];
+  }
+
+  try {
+    const content = fs.readFileSync(configPath, 'utf8');
+    const data = yaml.parse(content);
+
+    // If explicit build_command is set, use it
+    if (data?.build_command && typeof data.build_command === 'string') {
+      return data.build_command;
+    }
+
+    // Otherwise, use default for the configured package manager
+    return DEFAULT_BUILD_COMMANDS[defaultPm];
+  } catch {
+    return DEFAULT_BUILD_COMMANDS[defaultPm];
+  }
+}
+
+/**
+ * WU-1356: Resolve gates commands from configuration
+ *
+ * Reads gates.commands from .lumenflow.config.yaml.
+ * Merges with defaults based on package_manager if not fully specified.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Resolved gates commands configuration
+ */
+export function resolveGatesCommands(projectRoot: string): GatesCommands {
+  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+  const pm = resolvePackageManager(projectRoot);
+  const defaults = DEFAULT_GATES_COMMANDS[pm];
+
+  if (!fs.existsSync(configPath)) {
+    return defaults;
+  }
+
+  try {
+    const content = fs.readFileSync(configPath, 'utf8');
+    const data = yaml.parse(content);
+
+    const commands = data?.gates?.commands;
+    if (!commands) {
+      return defaults;
+    }
+
+    // Merge user config with defaults (user config wins)
+    return {
+      test_full: commands.test_full ?? defaults.test_full,
+      test_docs_only: commands.test_docs_only ?? defaults.test_docs_only,
+      test_incremental: commands.test_incremental ?? defaults.test_incremental,
+      lint: commands.lint ?? defaults.lint,
+      typecheck: commands.typecheck ?? defaults.typecheck,
+      format: commands.format ?? defaults.format,
+    };
+  } catch {
+    return defaults;
+  }
+}
+
+/**
+ * WU-1356: Get ignore patterns for test runner
+ *
+ * Returns patterns to ignore when detecting changed tests,
+ * based on the test runner configuration.
+ *
+ * @param testRunner - Test runner type (vitest, jest, mocha)
+ * @returns Array of ignore patterns
+ */
+export function getIgnorePatterns(testRunner: TestRunner): string[] {
+  return IGNORE_PATTERNS_BY_RUNNER[testRunner] ?? ['.turbo'];
+}

@@ -582,6 +582,71 @@ function generateConfigMdx(sections: ConfigSection[]): string {
     lines.push('');
   }
 
+  // WU-1356: Add framework agnostic configuration examples
+  lines.push('## Framework Agnostic Configuration', '');
+  lines.push(
+    'LumenFlow supports different package managers and test runners. Configure these at the top level of your config file:',
+    '',
+  );
+  lines.push('');
+  lines.push('| Field | Type | Default | Description |');
+  lines.push('|-------|------|---------|-------------|');
+  lines.push(
+    '| `package_manager` | `"pnpm"` \\| `"npm"` \\| `"yarn"` \\| `"bun"` | `"pnpm"` | Package manager for CLI operations |',
+  );
+  lines.push(
+    '| `test_runner` | `"vitest"` \\| `"jest"` \\| `"mocha"` | `"vitest"` | Test runner for incremental test detection |',
+  );
+  lines.push(
+    '| `build_command` | string | `"pnpm --filter @lumenflow/cli build"` | Custom build command for CLI bootstrap |',
+  );
+  lines.push('');
+  lines.push('### Example: npm + Jest', '');
+  lines.push('```yaml');
+  lines.push("version: '2.0'");
+  lines.push('');
+  lines.push('# WU-1356: Framework agnostic settings');
+  lines.push('package_manager: npm');
+  lines.push('test_runner: jest');
+  lines.push('build_command: npm run build');
+  lines.push('');
+  lines.push('gates:');
+  lines.push('  commands:');
+  lines.push('    test_full: npm test');
+  lines.push('    test_docs_only: npm test -- --testPathPattern=docs');
+  lines.push('    test_incremental: npm test -- --onlyChanged');
+  lines.push('```');
+  lines.push('');
+  lines.push('### Example: yarn + Nx', '');
+  lines.push('```yaml');
+  lines.push("version: '2.0'");
+  lines.push('');
+  lines.push('package_manager: yarn');
+  lines.push('test_runner: jest');
+  lines.push('build_command: yarn nx build @lumenflow/cli');
+  lines.push('');
+  lines.push('gates:');
+  lines.push('  commands:');
+  lines.push('    test_full: yarn nx run-many --target=test --all');
+  lines.push('    test_docs_only: yarn nx test docs');
+  lines.push('    test_incremental: yarn nx affected --target=test');
+  lines.push('```');
+  lines.push('');
+  lines.push('### Example: bun', '');
+  lines.push('```yaml');
+  lines.push("version: '2.0'");
+  lines.push('');
+  lines.push('package_manager: bun');
+  lines.push('test_runner: vitest');
+  lines.push('build_command: bun run --filter @lumenflow/cli build');
+  lines.push('');
+  lines.push('gates:');
+  lines.push('  commands:');
+  lines.push('    test_full: bun test');
+  lines.push('    test_incremental: bun test --changed');
+  lines.push('```');
+  lines.push('');
+
   // Add environment overrides section
   lines.push('## Environment Overrides', '');
   lines.push('Config values can be overridden via environment variables:', '');
