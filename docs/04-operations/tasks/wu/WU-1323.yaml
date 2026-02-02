@@ -25,9 +25,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Modify lane-lock.ts to respect lock_policy: policy=none skips lock acquisition, policy=active allows acquisition (release on block handled by CLI WU), policy=all is current behavior. Depends on WU-1322.'
+description: 'Modify lane-lock.ts to respect lock_policy: policy=none skips lock acquisition,
+  policy=active allows acquisition (release on block handled by CLI WU), policy=all is current
+  behavior. Depends on WU-1322.'
 acceptance:
   - acquireLaneLock() checks lane policy before acquiring
   - policy=none lanes have no lock files created
   - policy=all behavior unchanged (backward compatible)
   - Tests cover all three policy values
+initiative: INIT-013
