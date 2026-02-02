@@ -2,7 +2,7 @@ id: WU-1322
 title: Add lock_policy field to lane configuration schema
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - Example added to .lumenflow.config.yaml (commented)
   - All existing tests pass (no breaking changes)
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1322
+claimed_at: 2026-02-02T12:28:14.242Z
+baseline_main_sha: 6e991fe0ebe10130cd0a8a89cbc5a24e60e55b4f
+session_id: ee6f4e8a-ffee-416b-9702-a087d9c96dbf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:28:14.246Z
