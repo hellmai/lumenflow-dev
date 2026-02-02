@@ -2,7 +2,7 @@ id: WU-1342
 title: Fix lumenflow init scaffolding bugs from 2.5.0 testing
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -29,12 +29,27 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: External testing of LumenFlow 2.5.0 on fresh Next.js project revealed multiple scaffolding bugs. Problem: (1) LUMENFLOW_SCRIPTS only generates 8 commands but docs reference 17+, missing critical wu:prep (2) init-plan binary references non-existent dist/init-plan.js (3) No .gitignore generated, risking node_modules commit (4) Path inconsistency between config default and actual scaffold (5) Lane config/inference mismatch when using --framework (6) Missing .claude/ directory despite config reference. Solution: Update init.ts to fix all scaffolding issues and package.json binary path.'
+description: 'Context: External testing of LumenFlow 2.5.0 on fresh Next.js project revealed
+  multiple scaffolding bugs. Problem: (1) LUMENFLOW_SCRIPTS only generates 8 commands but docs
+  reference 17+, missing critical wu:prep (2) init-plan binary references non-existent
+  dist/init-plan.js (3) No .gitignore generated, risking node_modules commit (4) Path inconsistency
+  between config default and actual scaffold (5) Lane config/inference mismatch when using
+  --framework (6) Missing .claude/ directory despite config reference. Solution: Update init.ts to
+  fix all scaffolding issues and package.json binary path.'
 acceptance:
-  - LUMENFLOW_SCRIPTS includes all 17 essential commands (wu:prep, wu:recover, wu:spawn, wu:validate, wu:infer-lane, mem:init, mem:checkpoint, mem:inbox, lane:suggest)
+  - LUMENFLOW_SCRIPTS includes all 17 essential commands (wu:prep, wu:recover, wu:spawn,
+    wu:validate, wu:infer-lane, mem:init, mem:checkpoint, mem:inbox, lane:suggest)
   - init-plan binary path corrected in package.json to point to initiative-plan.js
   - .gitignore file generated with node_modules, .lumenflow/state, worktrees exclusions
   - Config paths match actual scaffolded structure
   - Lane inference matches config lanes when --framework used
   - .claude/ directory created when --client claude specified
   - 'Fresh project test passes: pnpm wu:prep --help works after init'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1342
+claimed_at: 2026-02-02T15:41:15.008Z
+baseline_main_sha: de0d36710ed69a0c6ba6b1f54f7561bcdf895eae
+session_id: b292076d-9e1f-4936-b4c8-6fd103885e08
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T15:41:15.014Z
