@@ -2,7 +2,7 @@ id: WU-1324
 title: Update lane checker WIP counting for lock_policy
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -33,3 +33,11 @@ acceptance:
   - policy=none disables WIP checking entirely
   - policy=all maintains current behavior
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1324
+claimed_at: 2026-02-02T12:53:17.629Z
+baseline_main_sha: 07ba1b7ed9b5896060403aa15bd7ad21959240d6
+session_id: 177828b7-2429-447a-b013-0f8c479c8b44
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:53:17.636Z

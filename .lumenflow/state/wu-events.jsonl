@@ -600,3 +600,4 @@
 {"type":"claim","wuId":"WU-1323","timestamp":"2026-02-02T12:41:49.593Z","lane":"Framework: Core","title":"Update lane lock system to honor lock_policy"}
 {"type":"complete","wuId":"WU-1326","timestamp":"2026-02-02T12:45:44.507Z"}
 {"type":"complete","wuId":"WU-1323","timestamp":"2026-02-02T12:49:18.191Z"}
+{"type":"claim","wuId":"WU-1324","lane":"Framework: Core","title":"Update lane checker WIP counting for lock_policy","timestamp":"2026-02-02T12:53:17.662Z"}
