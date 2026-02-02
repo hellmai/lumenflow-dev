@@ -119,8 +119,8 @@ Events are written to `.lumenflow/telemetry/` as JSONL files. Integrate with you
 # Stream to Datadog
 tail -f .lumenflow/telemetry/events.jsonl | datadog-agent
 
-# Export to Prometheus
-pnpm metrics:export --format prometheus
+# Generate metrics snapshot for analysis
+pnpm metrics:snapshot --format json > metrics.json
 ```
 
 ## Best Practices
