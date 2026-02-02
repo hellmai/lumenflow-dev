@@ -20,8 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1336 — Centralize retry exhaustion handling for micro-worktree operations](wu/WU-1336.yaml) — Framework: Core
-- [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -62,6 +60,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1336 — Centralize retry exhaustion handling for micro-worktree operations](wu/WU-1336.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
