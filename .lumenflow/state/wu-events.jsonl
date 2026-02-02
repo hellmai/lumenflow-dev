@@ -592,3 +592,4 @@
 {"type":"claim","wuId":"WU-1325","timestamp":"2026-02-02T12:22:19.462Z","lane":"Framework: CLI","title":"Update CLI commands to enforce lock_policy"}
 {"type":"complete","wuId":"WU-1337","timestamp":"2026-02-02T12:23:14.813Z"}
 {"type":"claim","wuId":"WU-1326","lane":"Framework: Initiatives","title":"Update orchestrator wave building for lock_policy","timestamp":"2026-02-02T12:23:47.324Z"}
+{"type":"claim","wuId":"WU-1327","lane":"Content: Documentation","title":"Document lock_policy and pilot guidance","timestamp":"2026-02-02T12:25:30.174Z"}
