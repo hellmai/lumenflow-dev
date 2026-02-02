@@ -20,9 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml) — Content: Documentation
-- [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml) — Framework: CLI
-- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml) — Framework: CLI
 - [WU-1205 — Fix pre-existing lint errors in CLI wu-spawn.ts](wu/WU-1205.yaml) — Framework: CLI
 - [WU-1212 — Fix wu-spawn test failures (checkpoint handling)](wu/WU-1212.yaml) — Framework: CLI
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — Content: Documentation
@@ -54,6 +51,8 @@ sections:
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — Framework: CLI
 - [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
 - [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — Content: Documentation
+- [WU-1330 — Validate WU specs on initiative:add-wu](wu/WU-1330.yaml) — Framework: CLI
+- [WU-1331 — Document strict WU validation usage](wu/WU-1331.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
@@ -61,6 +60,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1329 — Make WU validation strict by default](wu/WU-1329.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

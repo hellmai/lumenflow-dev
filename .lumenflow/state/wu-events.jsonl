@@ -576,3 +576,4 @@
 {"type":"complete","wuId":"WU-1319","timestamp":"2026-02-02T09:02:32.180Z"}
 {"type":"claim","wuId":"WU-1328","timestamp":"2026-02-02T09:59:21.886Z","lane":"Framework: CLI","title":"Add initiative:remove-wu command to unlink WUs from initiatives"}
 {"type":"complete","wuId":"WU-1328","timestamp":"2026-02-02T10:13:26.536Z"}
+{"type":"claim","wuId":"WU-1329","lane":"Framework: CLI","title":"Make WU validation strict by default","timestamp":"2026-02-02T10:26:08.591Z"}
