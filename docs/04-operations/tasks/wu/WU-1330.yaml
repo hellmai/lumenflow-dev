@@ -2,7 +2,7 @@ id: WU-1330
 title: Validate WU specs on initiative:add-wu
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -41,3 +41,5 @@ session_id: 1f75705c-c382-44b4-b126-56093c1c7825
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T10:59:19.413Z
+locked: true
+completed_at: 2026-02-02T11:12:47.634Z
