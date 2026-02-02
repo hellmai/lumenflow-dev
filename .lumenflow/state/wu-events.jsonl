@@ -603,3 +603,4 @@
 {"type":"claim","wuId":"WU-1324","timestamp":"2026-02-02T12:53:17.662Z","lane":"Framework: Core","title":"Update lane checker WIP counting for lock_policy"}
 {"type":"complete","wuId":"WU-1324","timestamp":"2026-02-02T13:04:38.277Z"}
 {"type":"claim","wuId":"WU-1340","lane":"Framework: Initiatives","title":"Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings","timestamp":"2026-02-02T14:48:41.803Z"}
+{"type":"claim","wuId":"WU-1341","lane":"Content: Documentation","title":"Add Idea to Shipping guide for lumenflow.dev","timestamp":"2026-02-02T15:25:27.193Z"}
