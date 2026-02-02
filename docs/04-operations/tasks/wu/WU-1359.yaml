@@ -2,7 +2,7 @@ id: WU-1359
 title: Enhance init output and add wu:proto command for new user experience
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -27,7 +27,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Testing Lumenflow 2.6.0 in new projects revealed that agents miss auto-ID feature and abandon workflow under 'prototype quickly' pressure. Problem: Init output teaches manual --id even though auto-ID exists (WU-1246). No fast path exists within workflow, causing agents to bypass it entirely. Solution: (1) Fix init.ts output to show auto-ID and full wu:prep → wu:done lifecycle, (2) Add wu:proto convenience command with type:prototype and relaxed validation, (3) Make initiative paths config-aware using getConfig()."
+description: "Context: Testing Lumenflow 2.6.0 in new projects revealed that agents miss auto-ID
+  feature and abandon workflow under 'prototype quickly' pressure. Problem: Init output teaches
+  manual --id even though auto-ID exists (WU-1246). No fast path exists within workflow, causing
+  agents to bypass it entirely. Solution: (1) Fix init.ts output to show auto-ID and full wu:prep →
+  wu:done lifecycle, (2) Add wu:proto convenience command with type:prototype and relaxed
+  validation, (3) Make initiative paths config-aware using getConfig()."
 acceptance:
   - Init 'Next steps' output shows wu:create WITHOUT --id flag
   - 'Init output shows complete lifecycle: wu:create → wu:claim → wu:prep → wu:done'
@@ -37,3 +42,11 @@ acceptance:
   - Initiative path resolution uses getConfig().directories instead of hardcoded arc42 paths
   - All existing tests pass
   - New tests cover wu:proto command
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1359
+claimed_at: 2026-02-02T21:48:59.707Z
+baseline_main_sha: ab5597d03d12b63ca6b7b03a17446e4e6ef90bb8
+session_id: 282d58aa-aa8d-4302-865f-64e7b0554414
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T21:48:59.713Z
