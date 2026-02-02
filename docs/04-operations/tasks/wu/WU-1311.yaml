@@ -2,7 +2,7 @@ id: WU-1311
 title: Remove hardcoded docs/04-operations paths in CLI commands
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -51,3 +51,5 @@ session_id: 71b69930-c12b-487e-8c2d-60beb2747880
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-01T23:53:17.992Z
+locked: true
+completed_at: 2026-02-02T00:17:11.044Z
