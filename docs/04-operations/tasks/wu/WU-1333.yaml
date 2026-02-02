@@ -2,7 +2,7 @@ id: WU-1333
 title: Ensure initiative:add/remove-wu handles moving origin
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - initiative:add-wu succeeds when origin/main moves (retry path)
   - initiative:remove-wu succeeds when origin/main moves (retry path)
   - If retries exhausted, error message includes next steps
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1333
+claimed_at: 2026-02-02T11:24:48.095Z
+baseline_main_sha: b2fd58622aea5971779206d5dae9dc1aa4e87ce4
+session_id: 2dd19a52-5acd-4e10-868e-3e215d005c65
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T11:24:48.099Z
