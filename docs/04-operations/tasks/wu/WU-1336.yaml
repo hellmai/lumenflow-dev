@@ -2,7 +2,7 @@ id: WU-1336
 title: Centralize retry exhaustion handling for micro-worktree operations
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Refactor retry exhaustion detection/formatting into core micro-worktree abstraction so CLI commands do not duplicate helpers. Use p-retry and simple-git via existing git-operations. Expose a typed error or helper from core and update initiative add/remove to use it.
+description: Refactor retry exhaustion detection/formatting into core micro-worktree abstraction so
+  CLI commands do not duplicate helpers. Use p-retry and simple-git via existing git-operations.
+  Expose a typed error or helper from core and update initiative add/remove to use it.
 acceptance:
   - micro-worktree exposes a single retry-exhaustion helper or error type
-  - initiative:add-wu and initiative:remove-wu use the shared helper (no duplicate helpers in CLI files)
+  - initiative:add-wu and initiative:remove-wu use the shared helper (no duplicate helpers in CLI
+    files)
   - Retry exhaustion messaging still includes actionable next steps
   - Tests updated to cover shared helper
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1336
+claimed_at: 2026-02-02T11:38:26.185Z
+baseline_main_sha: f6fb91487b92855822dabe5b172f966b96c51a80
+session_id: f4c5dcba-97b3-4f1e-ac7c-6d39c8b90584
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T11:38:26.191Z
