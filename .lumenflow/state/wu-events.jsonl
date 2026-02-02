@@ -578,3 +578,4 @@
 {"type":"complete","wuId":"WU-1328","timestamp":"2026-02-02T10:13:26.536Z"}
 {"type":"claim","wuId":"WU-1329","timestamp":"2026-02-02T10:26:08.591Z","lane":"Framework: CLI","title":"Make WU validation strict by default"}
 {"type":"complete","wuId":"WU-1329","timestamp":"2026-02-02T10:53:06.991Z"}
+{"type":"claim","wuId":"WU-1330","lane":"Framework: CLI","title":"Validate WU specs on initiative:add-wu","timestamp":"2026-02-02T10:59:19.439Z"}

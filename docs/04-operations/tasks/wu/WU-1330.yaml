@@ -2,7 +2,7 @@ id: WU-1330
 title: Validate WU specs on initiative:add-wu
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -28,8 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Make initiative:add-wu enforce strict WU validation before linking. Should reject WUs with invalid schema, missing required fields, or bad paths. Provide clear error output.
+description: Make initiative:add-wu enforce strict WU validation before linking. Should reject WUs
+  with invalid schema, missing required fields, or bad paths. Provide clear error output.
 acceptance:
   - initiative:add-wu validates WU schema and completeness before linking
   - invalid WUs are rejected with aggregated errors
   - successful validation links WU bidirectionally
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1330
+claimed_at: 2026-02-02T10:59:19.406Z
+baseline_main_sha: a587611f04ff721d4e5c8f7db694c446ed697daf
+session_id: 1f75705c-c382-44b4-b126-56093c1c7825
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T10:59:19.413Z
