@@ -20,8 +20,10 @@ const TEST_LOG_PREFIX = '[test]';
 const ORIGINAL_FORCE = 'original-force';
 const ORIGINAL_REASON = 'original-reason';
 const NON_FAST_FORWARD_ERROR = 'rejected: non-fast-forward';
-const HARD_RESET_OPTION = { hard: true };
+// WU-1348: HARD_RESET_OPTION removed - retry logic no longer resets main checkout
 const FF_ONLY_OPTION = { ffOnly: true };
+const TEST_RETRIES = 3;
+const EXPECT_FAIL_MSG = 'Should have thrown';
 const ORIGIN_MAIN_REF = 'origin/main';
 const TEST_OPERATION_INIT_ADD = 'initiative-add-wu';
 const TEST_OPERATION_INIT_REMOVE = 'initiative-remove-wu';
@@ -248,17 +250,17 @@ describe('micro-worktree', () => {
       // Push should be called twice
       expect(mockMainGit.push).toHaveBeenCalledTimes(2);
 
-      // Rollback should happen: reset local main to origin/main
-      expect(mockMainGit.reset).toHaveBeenCalledWith(ORIGIN_MAIN_REF, HARD_RESET_OPTION);
+      // WU-1348: NO hard reset should happen - preserve micro-worktree isolation
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
 
       // Fetch origin/main
       expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
 
-      // Update local main via ff-only merge
-      expect(mockMainGit.merge).toHaveBeenCalledWith(ORIGIN_MAIN_REF, FF_ONLY_OPTION);
+      // Re-merge temp branch to local main (ff-only) after rebase
+      expect(mockMainGit.merge).toHaveBeenCalledWith(TEST_TEMP_BRANCH, FF_ONLY_OPTION);
 
-      // Rebase temp branch on updated main
-      expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(TEST_BRANCH);
+      // Rebase temp branch on updated origin/main
+      expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
     });
 
     it('should fail after MAX_PUSH_RETRIES attempts', async () => {
@@ -291,11 +293,14 @@ describe('micro-worktree', () => {
       // Push should be called MAX_PUSH_RETRIES times
       expect(mockMainGit.push).toHaveBeenCalledTimes(expectedRetries);
 
-      // Rollback should happen MAX_PUSH_RETRIES - 1 times (not on last failure)
-      expect(mockMainGit.reset).toHaveBeenCalledTimes(expectedRetries - 1);
+      // WU-1348: NO hard reset should happen - preserve micro-worktree isolation
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+
+      // Rebase should happen for each retry (not on last failure)
+      expect(mockWorktreeGit.rebase).toHaveBeenCalledTimes(expectedRetries - 1);
     });
 
-    it('should roll back local main to origin/main on push failure', async () => {
+    it('should fetch and rebase (not reset) on push failure', async () => {
       const { pushWithRetry } = await import('../micro-worktree.js');
 
       // First push fails, second succeeds
@@ -319,8 +324,10 @@ describe('micro-worktree', () => {
         TEST_LOG_PREFIX,
       );
 
-      // Key acceptance criterion: rollback local main to origin/main
-      expect(mockMainGit.reset).toHaveBeenCalledWith(ORIGIN_MAIN_REF, HARD_RESET_OPTION);
+      // WU-1348: Key change - NO hard reset, use fetch+rebase instead
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+      expect(mockWorktreeGit.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
     });
   });
 
@@ -496,7 +503,7 @@ describe('micro-worktree', () => {
       // Disable retries
       const config = {
         enabled: false,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 100,
         max_delay_ms: 1000,
         jitter: true,
@@ -541,7 +548,7 @@ describe('micro-worktree', () => {
       // Configure with measurable delays (no jitter for predictability)
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 50,
         max_delay_ms: 200,
         jitter: false,
@@ -600,7 +607,7 @@ describe('micro-worktree', () => {
           TEST_LOG_PREFIX,
           config,
         );
-        expect.fail('Should have thrown');
+        expect.fail(EXPECT_FAIL_MSG);
       } catch (error) {
         const message = (error as Error).message;
         // Should include retry count
@@ -628,7 +635,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 100,
         max_delay_ms: 1000,
         jitter: true,
@@ -672,7 +679,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 10,
         max_delay_ms: 50,
         jitter: false,
@@ -893,7 +900,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 10, // Fast for tests
         max_delay_ms: 50,
         jitter: false,
@@ -979,7 +986,7 @@ describe('micro-worktree', () => {
       // Disable retries
       const config = {
         enabled: false,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 100,
         max_delay_ms: 1000,
         jitter: true,
@@ -1031,7 +1038,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 10,
         max_delay_ms: 50,
         jitter: false,
@@ -1072,7 +1079,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 10,
         max_delay_ms: 50,
         jitter: false,
@@ -1089,7 +1096,7 @@ describe('micro-worktree', () => {
           TEST_LOG_PREFIX,
           config,
         );
-        expect.fail('Should have thrown');
+        expect.fail(EXPECT_FAIL_MSG);
       } catch (error) {
         // Should be detectable as retry exhaustion error
         expect(isRetryExhaustionError(error)).toBe(true);
@@ -1118,7 +1125,7 @@ describe('micro-worktree', () => {
 
       const config = {
         enabled: true,
-        retries: 3,
+        retries: TEST_RETRIES,
         min_delay_ms: 10,
         max_delay_ms: 50,
         jitter: false,
@@ -1142,6 +1149,275 @@ describe('micro-worktree', () => {
       expect(logCalls.some((log) => log.includes('attempt 3'))).toBe(true);
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  /**
+   * WU-1348: Tests for main checkout isolation during push retry
+   *
+   * The retry logic should NEVER perform hard reset on the main checkout.
+   * This prevents mutation of user's working directory and file flash.
+   * Retry should happen via micro-worktree isolation (fetch + rebase temp branch).
+   */
+  describe('main checkout isolation in push retry (WU-1348)', () => {
+    const originalEnv = { ...process.env };
+
+    beforeEach(() => {
+      vi.resetModules();
+      delete process.env.LUMENFLOW_FORCE;
+      delete process.env.LUMENFLOW_FORCE_REASON;
+    });
+
+    afterEach(() => {
+      process.env = { ...originalEnv };
+      vi.restoreAllMocks();
+    });
+
+    it('pushWithRetry should NOT hard-reset the main checkout on push failure', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // First push fails (race condition), second succeeds
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+      );
+
+      // WU-1348: reset should NEVER be called with hard option on main checkout
+      // The retry logic should use rebase on temp branch instead
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+    });
+
+    it('pushWithRetryConfig should NOT hard-reset the main checkout on push failure', async () => {
+      const { pushWithRetryConfig } = await import('../micro-worktree.js');
+
+      // First push fails (race condition), second succeeds
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: TEST_RETRIES,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushWithRetryConfig(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        config,
+      );
+
+      // WU-1348: reset should NEVER be called with hard option on main checkout
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+    });
+
+    it('pushWithRetry should only fetch and rebase temp branch, not touch main checkout', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // First push fails, second succeeds
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+      );
+
+      // Should fetch origin/main to get latest state
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+
+      // Should rebase temp branch - the ref could be 'main' or 'origin/main'
+      // depending on implementation (both are valid after fetch)
+      expect(mockWorktreeGit.rebase).toHaveBeenCalled();
+
+      // Should NOT reset main checkout
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+    });
+
+    it('pushWithRetryConfig should only fetch and rebase temp branch, not touch main checkout', async () => {
+      const { pushWithRetryConfig } = await import('../micro-worktree.js');
+
+      // First push fails, second succeeds
+      const mockMainGit = {
+        push: vi
+          .fn()
+          .mockRejectedValueOnce(new Error(NON_FAST_FORWARD_ERROR))
+          .mockResolvedValueOnce(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: TEST_RETRIES,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushWithRetryConfig(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        config,
+      );
+
+      // Should fetch origin/main to get latest state
+      expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+
+      // Should rebase temp branch - the ref could be 'main' or 'origin/main'
+      expect(mockWorktreeGit.rebase).toHaveBeenCalled();
+
+      // Should NOT reset main checkout
+      expect(mockMainGit.reset).not.toHaveBeenCalled();
+    });
+
+    it('retry should fail cleanly with actionable guidance when retries exhausted', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // All push attempts fail
+      const mockMainGit = {
+        push: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+        reset: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      try {
+        await pushWithRetry(
+          mockMainGit as never,
+          mockWorktreeGit as never,
+          TEST_REMOTE,
+          TEST_BRANCH,
+          TEST_TEMP_BRANCH,
+          TEST_LOG_PREFIX,
+        );
+        expect.fail(EXPECT_FAIL_MSG);
+      } catch (error) {
+        // WU-1348: Should never have called reset during retry attempts
+        expect(mockMainGit.reset).not.toHaveBeenCalled();
+
+        // Should provide actionable error message
+        const message = (error as Error).message;
+        expect(message).toContain('attempts');
+        expect(message).toMatch(/retry|wait/i);
+      }
+    });
+
+    it('main checkout files should remain untouched during multiple retry attempts', async () => {
+      const { pushWithRetryConfig } = await import('../micro-worktree.js');
+
+      // Track operations that would modify main checkout
+      const mainModifyingOps: string[] = [];
+
+      const mockMainGit = {
+        push: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockImplementation(() => {
+          mainModifyingOps.push('merge');
+          return Promise.resolve();
+        }),
+        reset: vi.fn().mockImplementation(() => {
+          mainModifyingOps.push('reset');
+          return Promise.resolve();
+        }),
+        checkout: vi.fn().mockImplementation(() => {
+          mainModifyingOps.push('checkout');
+          return Promise.resolve();
+        }),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: TEST_RETRIES,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      try {
+        await pushWithRetryConfig(
+          mockMainGit as never,
+          mockWorktreeGit as never,
+          TEST_REMOTE,
+          TEST_BRANCH,
+          TEST_TEMP_BRANCH,
+          TEST_LOG_PREFIX,
+          config,
+        );
+      } catch {
+        // Expected to fail after retries exhausted
+      }
+
+      // WU-1348: No main-checkout-modifying operations should have occurred during retry
+      // (reset and checkout would modify files on disk)
+      expect(mainModifyingOps).not.toContain('reset');
+      expect(mainModifyingOps).not.toContain('checkout');
     });
   });
 
