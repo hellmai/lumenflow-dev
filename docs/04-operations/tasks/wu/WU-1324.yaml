@@ -2,14 +2,14 @@ id: WU-1324
 title: Update lane checker WIP counting for lock_policy
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/lane-checker.ts
 tests:
   manual:
-    - 'Verify wu:claim respects lock_policy when checking lane availability'
+    - Verify wu:claim respects lock_policy when checking lane availability
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
@@ -24,7 +24,7 @@ notes: |
   - active: in_progress section only
   - none: skip WIP checking entirely
 spec_refs:
-  - 'lumenflow://docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md#lane-lock-policy-init-013'
+  - lumenflow://docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md#lane-lock-policy-init-013
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -49,3 +49,5 @@ session_id: 177828b7-2429-447a-b013-0f8c479c8b44
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:53:17.636Z
+locked: true
+completed_at: 2026-02-02T13:04:35.732Z
