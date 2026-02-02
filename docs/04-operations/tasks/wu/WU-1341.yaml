@@ -17,7 +17,12 @@ artifacts:
   - .lumenflow/stamps/WU-1341.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Guide showcases the complete idea-to-shipping workflow using SpendSense as example.
+  Emphasizes vendor-agnostic approach (AGENTS.md universal entry point).
+  Highlights LumenFlow benefits: worktree isolation, gates, memory layer, stamps.
+spec_refs:
+  - lumenflow://plans/wise-moseying-papert.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
