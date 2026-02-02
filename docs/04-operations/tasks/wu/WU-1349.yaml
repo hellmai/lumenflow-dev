@@ -2,7 +2,7 @@ id: WU-1349
 title: Fix npx command claim in quickstart docs
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,6 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "The quickstart docs claim 'npx @lumenflow/cli' works directly, but this fails because: (1) the package has no default bin entry, and (2) the JS files are missing shebang lines. Fix the documentation to reflect the correct installation flow."
+description: "The quickstart docs claim 'npx @lumenflow/cli' works directly, but this fails because:
+  (1) the package has no default bin entry, and (2) the JS files are missing shebang lines. Fix the
+  documentation to reflect the correct installation flow."
 acceptance:
   - Quickstart no longer claims npx @lumenflow/cli works without installation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1349
+claimed_at: 2026-02-02T16:15:36.459Z
+baseline_main_sha: e80683bcb49bdf121c2ae394b1b55374b8744fe3
+session_id: 6abd9d24-b300-4c56-a1a6-39d0a92f2404
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:15:36.463Z
