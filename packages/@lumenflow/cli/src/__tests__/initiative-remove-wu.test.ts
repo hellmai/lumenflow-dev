@@ -48,18 +48,22 @@ vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
-  withMicroWorktree: vi.fn(async ({ execute }) => {
-    // Simulate micro-worktree by executing in temp dir
-    const tempDir = join(tmpdir(), `init-remove-wu-test-${Date.now()}`);
-    mkdirSync(tempDir, { recursive: true });
-    try {
-      await execute({ worktreePath: tempDir });
-    } finally {
-      // Cleanup handled by test
-    }
-  }),
-}));
+vi.mock('@lumenflow/core/dist/micro-worktree.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lumenflow/core/dist/micro-worktree.js')>();
+  return {
+    ...actual,
+    withMicroWorktree: vi.fn(async ({ execute }) => {
+      // Simulate micro-worktree by executing in temp dir
+      const tempDir = join(tmpdir(), `init-remove-wu-test-${Date.now()}`);
+      mkdirSync(tempDir, { recursive: true });
+      try {
+        await execute({ worktreePath: tempDir });
+      } finally {
+        // Cleanup handled by test
+      }
+    }),
+  };
+});
 
 describe('initiative:remove-wu command', () => {
   let tempDir: string;

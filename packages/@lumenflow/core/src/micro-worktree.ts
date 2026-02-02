@@ -146,6 +146,133 @@ export const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 export const DEFAULT_LOG_PREFIX = '[micro-wt]';
 
 /**
+ * WU-1336: Pattern to detect retry exhaustion errors from error messages
+ *
+ * Matches error messages like "Push failed after N attempts"
+ * Used for backwards compatibility with legacy error messages.
+ */
+const RETRY_EXHAUSTION_PATTERN = /Push failed after \d+ attempts/;
+
+/**
+ * WU-1336: Typed error for retry exhaustion in micro-worktree operations
+ *
+ * Thrown when push retries are exhausted due to race conditions with parallel agents.
+ * CLI commands should use `isRetryExhaustionError` to detect this error type and
+ * `formatRetryExhaustionError` to generate actionable user-facing messages.
+ *
+ * This centralizes retry exhaustion handling so CLI commands do not need to
+ * duplicate detection logic or error formatting.
+ *
+ * @example
+ * ```typescript
+ * import { RetryExhaustionError, isRetryExhaustionError, formatRetryExhaustionError } from '@lumenflow/core';
+ *
+ * try {
+ *   await withMicroWorktree({ ... });
+ * } catch (error) {
+ *   if (isRetryExhaustionError(error)) {
+ *     console.error(formatRetryExhaustionError(error, { command: 'pnpm initiative:add-wu ...' }));
+ *   } else {
+ *     throw error;
+ *   }
+ * }
+ * ```
+ */
+export class RetryExhaustionError extends Error {
+  /** Name of the error class (for instanceof checks across module boundaries) */
+  readonly name = 'RetryExhaustionError';
+
+  /** Operation that was being performed (e.g., 'initiative-add-wu') */
+  readonly operation: string;
+
+  /** Number of retry attempts that were exhausted */
+  readonly retries: number;
+
+  constructor(operation: string, retries: number) {
+    super(
+      `Push failed after ${retries} attempts. ` +
+        `Origin main may have significant traffic during ${operation}.`,
+    );
+    this.operation = operation;
+    this.retries = retries;
+
+    // Maintain proper prototype chain for instanceof checks
+    Object.setPrototypeOf(this, RetryExhaustionError.prototype);
+  }
+}
+
+/**
+ * WU-1336: Options for formatting retry exhaustion error messages
+ */
+export interface FormatRetryExhaustionOptions {
+  /** Command to suggest for retrying (e.g., 'pnpm initiative:add-wu --wu WU-123 --initiative INIT-001') */
+  command: string;
+}
+
+/**
+ * WU-1336: Type guard to check if an error is a retry exhaustion error
+ *
+ * Detects both the typed `RetryExhaustionError` class and legacy error messages
+ * that match the "Push failed after N attempts" pattern.
+ *
+ * @param {unknown} error - Error to check
+ * @returns {boolean} True if this is a retry exhaustion error
+ *
+ * @example
+ * ```typescript
+ * if (isRetryExhaustionError(error)) {
+ *   // Handle retry exhaustion
+ * }
+ * ```
+ */
+export function isRetryExhaustionError(error: unknown): error is Error {
+  if (error instanceof RetryExhaustionError) {
+    return true;
+  }
+
+  // Also detect legacy error messages for backwards compatibility
+  if (error instanceof Error) {
+    return RETRY_EXHAUSTION_PATTERN.test(error.message);
+  }
+
+  return false;
+}
+
+/**
+ * WU-1336: Format retry exhaustion error with actionable next steps
+ *
+ * When push retries are exhausted, provides clear guidance on how to proceed.
+ * CLI commands should use this instead of duplicating error formatting logic.
+ *
+ * @param {Error} error - The retry exhaustion error
+ * @param {FormatRetryExhaustionOptions} options - Formatting options
+ * @returns {string} Formatted error message with next steps
+ *
+ * @example
+ * ```typescript
+ * const message = formatRetryExhaustionError(error, {
+ *   command: 'pnpm initiative:add-wu --wu WU-123 --initiative INIT-001',
+ * });
+ * console.error(message);
+ * ```
+ */
+export function formatRetryExhaustionError(
+  error: Error,
+  options: FormatRetryExhaustionOptions,
+): string {
+  const { command } = options;
+
+  return (
+    `${error.message}\n\n` +
+    `Next steps:\n` +
+    `  1. Wait a few seconds and retry the operation:\n` +
+    `     ${command}\n` +
+    `  2. If the issue persists, check if another agent is rapidly pushing changes\n` +
+    `  3. Consider increasing git.push_retry.retries in .lumenflow.config.yaml`
+  );
+}
+
+/**
  * WU-1308: Check if remote operations should be skipped based on git.requireRemote config
  *
  * When git.requireRemote is false, micro-worktree operations skip:

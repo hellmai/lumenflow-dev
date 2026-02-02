@@ -7,11 +7,13 @@ priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
-  - packages/@lumenflow/core/src/git-operations.ts
   - packages/@lumenflow/cli/src/initiative-add-wu.ts
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
 tests:
-  manual: []
+  manual:
+    - Verify initiative:add-wu displays actionable retry message when push fails
+    - Verify initiative:remove-wu displays actionable retry message when push fails
+    - Confirm core exports (isRetryExhaustionError, formatRetryExhaustionError, RetryExhaustionError) are importable
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
@@ -23,7 +25,13 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1336-plan.md
 risks: []
-notes: ''
+notes: |
+  Implementation centralizes retry exhaustion handling into @lumenflow/core:
+  - Added RetryExhaustionError class with operation and retries properties
+  - Added isRetryExhaustionError type guard detecting both Error class and message pattern
+  - Added formatRetryExhaustionError helper with FormatRetryExhaustionOptions interface
+  - CLI commands (initiative-add-wu, initiative-remove-wu) now delegate to core helpers
+  - Tests use importOriginal pattern to preserve actual exports while mocking withMicroWorktree
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

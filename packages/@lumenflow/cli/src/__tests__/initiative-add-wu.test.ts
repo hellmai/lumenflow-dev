@@ -72,18 +72,22 @@ vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
-  withMicroWorktree: vi.fn(async ({ execute }) => {
-    // Simulate micro-worktree by executing in temp dir
-    const tempDir = join(tmpdir(), `init-add-wu-test-${Date.now()}`);
-    mkdirSync(tempDir, { recursive: true });
-    try {
-      await execute({ worktreePath: tempDir });
-    } finally {
-      // Cleanup handled by test
-    }
-  }),
-}));
+vi.mock('@lumenflow/core/dist/micro-worktree.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lumenflow/core/dist/micro-worktree.js')>();
+  return {
+    ...actual,
+    withMicroWorktree: vi.fn(async ({ execute }) => {
+      // Simulate micro-worktree by executing in temp dir
+      const tempDir = join(tmpdir(), `init-add-wu-test-${Date.now()}`);
+      mkdirSync(tempDir, { recursive: true });
+      try {
+        await execute({ worktreePath: tempDir });
+      } finally {
+        // Cleanup handled by test
+      }
+    }),
+  };
+});
 
 describe('initiative:add-wu WU validation (WU-1330)', () => {
   let tempDir: string;

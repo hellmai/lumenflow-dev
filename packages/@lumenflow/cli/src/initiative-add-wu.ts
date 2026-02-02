@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable no-console -- CLI tool requires console output */
 /**
  * Initiative Add WU Command (WU-1389)
  *
@@ -35,7 +36,11 @@ import {
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/dist/micro-worktree.js';
 import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
 import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 import { validateSingleWU } from '@lumenflow/core/dist/validators/wu-tasks.js';
@@ -95,28 +100,23 @@ export function validateWUForLinking(wuId: string): WULinkValidationResult {
 }
 
 /**
- * WU-1333: Pattern to detect retry exhaustion errors
- *
- * Matches error messages like "Push failed after N attempts"
- */
-const RETRY_EXHAUSTION_PATTERN = /Push failed after \d+ attempts/;
-
-/**
- * WU-1333: Check if an error is a retry exhaustion error
+ * WU-1333/WU-1336: Check if an error is a retry exhaustion error
  *
  * Detects when micro-worktree push retries have been exhausted.
+ * Delegates to the shared helper from @lumenflow/core.
  *
  * @param {Error} error - Error to check
  * @returns {boolean} True if this is a retry exhaustion error
  */
 export function isRetryExhaustionError(error: Error): boolean {
-  return RETRY_EXHAUSTION_PATTERN.test(error.message);
+  return coreIsRetryExhaustionError(error);
 }
 
 /**
- * WU-1333: Format retry exhaustion error with actionable next steps
+ * WU-1333/WU-1336: Format retry exhaustion error with actionable next steps
  *
  * When push retries are exhausted, provides clear guidance on how to proceed.
+ * Delegates to the shared helper from @lumenflow/core with command-specific options.
  *
  * @param {Error} error - The retry exhaustion error
  * @param {string} wuId - WU ID being linked
@@ -124,14 +124,9 @@ export function isRetryExhaustionError(error: Error): boolean {
  * @returns {string} Formatted error message with next steps
  */
 export function formatRetryExhaustionError(error: Error, wuId: string, initId: string): string {
-  return (
-    `${error.message}\n\n` +
-    `Next steps:\n` +
-    `  1. Wait a few seconds and retry the operation:\n` +
-    `     pnpm initiative:add-wu --wu ${wuId} --initiative ${initId}\n` +
-    `  2. If the issue persists, check if another agent is rapidly pushing changes\n` +
-    `  3. Consider increasing git.push_retry.retries in .lumenflow.config.yaml`
-  );
+  return coreFormatRetryExhaustionError(error, {
+    command: `pnpm initiative:add-wu --wu ${wuId} --initiative ${initId}`,
+  });
 }
 
 /**
@@ -402,5 +397,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }
