@@ -28,7 +28,6 @@ sections:
 - [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml) — Framework: CLI
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 - [WU-1366 — CLI command runtime fixes (consolidated)](wu/WU-1366.yaml) — Framework: CLI
-- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -38,6 +37,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
+- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

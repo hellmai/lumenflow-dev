@@ -2,7 +2,7 @@ id: WU-1367
 title: 'Claude Code enforcement hooks: configurable workflow compliance via hooks'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -30,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Add configurable Claude Code enforcement hooks. When enabled, hooks block non-compliant operations (Write/Edit outside worktree, commits without wu:prep) rather than relying on agents to remember workflow rules. Addresses the bootstrap problem: agents forget to follow LumenFlow even in the LumenFlow repo.'
+description: 'Add configurable Claude Code enforcement hooks. When enabled, hooks block
+  non-compliant operations (Write/Edit outside worktree, commits without wu:prep) rather than
+  relying on agents to remember workflow rules. Addresses the bootstrap problem: agents forget to
+  follow LumenFlow even in the LumenFlow repo.'
 acceptance:
   - Config schema accepts enforcement block under agents.clients.claude-code
   - pnpm lumenflow:integrate --client claude-code generates hooks in .claude/
@@ -40,3 +43,11 @@ acceptance:
   - Hooks degrade gracefully if LumenFlow state cannot be determined
   - pnpm setup syncs hooks when enforcement.hooks=true
   - Documentation updated in CLAUDE.md and agent onboarding docs
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1367
+claimed_at: 2026-02-02T23:57:25.649Z
+baseline_main_sha: c7b8a95f1647e67884df0a457222bc60e64be8d6
+session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T23:57:25.656Z
