@@ -19,9 +19,10 @@ pnpm exec lumenflow
 
 That's it. Your project now speaks LumenFlow. Any AI coding assistant can read `AGENTS.md` and understand your workflow.
 
-<Aside type="tip" title="Alternative: npx">
-  If you prefer not to install first, you can run `npx @lumenflow/cli` directly. However, installing
-  as a dev dependency is recommended for consistent versioning across your team.
+<Aside type="tip" title="Why Install as a Dev Dependency?">
+  Installing `@lumenflow/cli` as a dev dependency ensures your whole team uses the same version,
+  and the 40+ CLI commands (like `wu-claim`, `gates`, `flow-report`) are always available via
+  `pnpm exec <command>`.
 </Aside>
 
 Want the full experience with worktree isolation, automated gates, and 40+ CLI commands? Keep reading.
