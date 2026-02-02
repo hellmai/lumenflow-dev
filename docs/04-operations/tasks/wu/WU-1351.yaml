@@ -2,7 +2,7 @@ id: WU-1351
 title: Fix CLI command typos in documentation
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,6 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Found 5 CLI command typos: (1) initiative:add:wu should be initiative:add-wu, (2) initiative:bulk:assign:wus should be initiative:bulk-assign-wus, (3) agent:session:end should be agent:session-end, (4) validate:agent:skills should be validate:agent-skills, (5) metrics:export doesn't exist"
+description: "Found 5 CLI command typos: (1) initiative:add:wu should be initiative:add-wu, (2)
+  initiative:bulk:assign:wus should be initiative:bulk-assign-wus, (3) agent:session:end should be
+  agent:session-end, (4) validate:agent:skills should be validate:agent-skills, (5) metrics:export
+  doesn't exist"
 acceptance:
   - All CLI command names match package.json bin entries
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1351
+claimed_at: 2026-02-02T16:33:30.248Z
+baseline_main_sha: a675bdb15f0109e625c4c02b78840c234658b4c5
+session_id: 0d748772-f220-4000-8d70-88fdd4008be4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:33:30.251Z

@@ -620,3 +620,4 @@
 {"type":"complete","wuId":"WU-1349","timestamp":"2026-02-02T16:17:27.680Z"}
 {"type":"claim","wuId":"WU-1350","timestamp":"2026-02-02T16:27:09.114Z","lane":"Content: Documentation","title":"Fix non-existent CLI commands in documentation"}
 {"type":"complete","wuId":"WU-1350","timestamp":"2026-02-02T16:29:55.347Z"}
+{"type":"claim","wuId":"WU-1351","lane":"Content: Documentation","title":"Fix CLI command typos in documentation","timestamp":"2026-02-02T16:33:30.266Z"}
