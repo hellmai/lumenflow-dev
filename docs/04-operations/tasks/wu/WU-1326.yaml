@@ -2,7 +2,7 @@ id: WU-1326
 title: Update orchestrator wave building for lock_policy
 lane: 'Framework: Initiatives'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -33,3 +33,11 @@ acceptance:
   - orchestrate:init-status shows policy-aware availability
   - Backward compatible (policy=all is default)
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-initiatives-wu-1326
+claimed_at: 2026-02-02T12:23:47.297Z
+baseline_main_sha: fb7d2867ef8befbfe41f9d120d60bbc2d961f9c0
+session_id: ee6f4e8a-ffee-416b-9702-a087d9c96dbf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:23:47.303Z
