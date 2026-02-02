@@ -1,0 +1,36 @@
+id: WU-1337
+title: Add retry/rebase for push-only micro-worktree operations
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/core/src/micro-worktree.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+    - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1337.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1337-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: pushOnly path in micro-worktree currently bypasses retry/rebase and fails on non-fast-forward. Add retry handling (with p-retry) for pushRefspecWithForce so initiative:add/remove-wu and other push-only commands recover when origin moves.
+acceptance:
+  - push-only path retries on non-fast-forward with rebase + re-merge
+  - Uses git.push_retry config (enabled/retries/min/max/jitter)
+  - Still uses LUMENFLOW_FORCE for refspec push
+  - Clear error after retries exhausted
