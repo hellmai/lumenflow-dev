@@ -2,7 +2,7 @@ id: WU-1328
 title: Add initiative:remove-wu command to unlink WUs from initiatives
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -48,3 +48,5 @@ session_id: f0749dc1-1161-472c-9f51-a079bdc85b84
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T09:59:21.861Z
+locked: true
+completed_at: 2026-02-02T10:13:24.826Z
