@@ -606,3 +606,4 @@
 {"type":"claim","wuId":"WU-1341","timestamp":"2026-02-02T15:25:27.193Z","lane":"Content: Documentation","title":"Add Idea to Shipping guide for lumenflow.dev"}
 {"type":"complete","wuId":"WU-1341","timestamp":"2026-02-02T15:29:12.729Z"}
 {"type":"complete","wuId":"WU-1340","timestamp":"2026-02-02T15:40:15.099Z"}
+{"type":"claim","wuId":"WU-1342","lane":"Framework: CLI","title":"Fix lumenflow init scaffolding bugs from 2.5.0 testing","timestamp":"2026-02-02T15:41:15.026Z"}
