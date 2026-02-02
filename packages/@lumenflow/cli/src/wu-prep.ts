@@ -1,15 +1,21 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI command uses console for status output */
 /**
  * WU Prep Helper (WU-1223)
  *
  * Prepares a WU for completion by running gates and generating docs in the worktree.
  * After successful prep, prints copy-paste instruction to run wu:done from main.
  *
+ * WU-1344: When gates fail on spec:linter due to pre-existing WU validation errors
+ * (not caused by the current WU), prints a ready-to-copy wu:done --skip-gates
+ * command with reason and fix-wu placeholders.
+ *
  * Workflow:
  * 1. Verify we're in a worktree (error if in main checkout)
  * 2. Run gates in the worktree
- * 3. Generate docs (if applicable)
- * 4. Print copy-paste instruction for wu:done from main
+ * 3. If gates fail, check if failures are pre-existing on main
+ * 4. If pre-existing, print skip-gates command; otherwise, print fix guidance
+ * 5. On success, print copy-paste instruction for wu:done from main
  *
  * Usage:
  *   pnpm wu:prep --id WU-XXX [--docs-only]
@@ -17,7 +23,7 @@
  * @module
  */
 
-import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
@@ -26,7 +32,6 @@ import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import {
   CONTEXT_VALIDATION,
   PATTERNS,
-  LOG_PREFIX,
   EXIT_CODES,
   WU_STATUS,
   EMOJI,
@@ -51,6 +56,112 @@ const PREP_OPTIONS = {
     description: 'Run docs-only gates (format, spec-linter)',
   },
 };
+
+/**
+ * WU-1344: Check if a gate name is the spec:linter gate.
+ * Used to identify when spec:linter fails so we can check for pre-existing failures.
+ *
+ * @param gateName - Name of the gate that failed
+ * @returns true if this is the spec:linter gate
+ */
+export function isPreExistingSpecLinterFailure(gateName: string): boolean {
+  const normalizedName = gateName.toLowerCase().replace(/[:-]/g, '');
+  return normalizedName === 'speclinter';
+}
+
+/**
+ * WU-1344: Format a skip-gates command for wu:done.
+ * Includes --reason and --fix-wu placeholders.
+ *
+ * @param options - Configuration options
+ * @param options.wuId - The WU ID being completed
+ * @param options.mainCheckout - Path to main checkout
+ * @returns Formatted command string ready to copy-paste
+ */
+export function formatSkipGatesCommand(options: { wuId: string; mainCheckout: string }): string {
+  const { wuId, mainCheckout } = options;
+  return `cd ${mainCheckout} && pnpm wu:done --id ${wuId} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX`;
+}
+
+/**
+ * WU-1344: Result of checking for pre-existing failures on main.
+ */
+export type PreExistingCheckResult = {
+  hasPreExisting: boolean;
+  error?: string;
+};
+
+/**
+ * WU-1344: Type for the exec function used to run commands on main.
+ */
+export type ExecOnMainFn = (cmd: string) => Promise<{
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}>;
+
+/**
+ * WU-1344: Default implementation of execOnMain using spawnSync.
+ * Uses spawnSync with pnpm executable for safety (no shell injection risk).
+ */
+function defaultExecOnMain(mainCheckout: string): ExecOnMainFn {
+  return async (cmd: string) => {
+    // Parse command to extract pnpm script name and args
+    // Expected format: "pnpm spec:linter" or similar
+    const parts = cmd.split(/\s+/);
+    const executable = parts[0];
+    const args = parts.slice(1);
+
+    const result = spawnSync(executable, args, {
+      cwd: mainCheckout,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    return {
+      exitCode: result.status ?? 1,
+      stdout: result.stdout ?? '',
+      stderr: result.stderr ?? '',
+    };
+  };
+}
+
+/**
+ * WU-1344: Check if spec:linter failures are pre-existing on main branch.
+ *
+ * Runs spec:linter on the main checkout to determine if the failures
+ * already exist there (i.e., not caused by the current WU).
+ *
+ * @param options - Configuration options
+ * @param options.mainCheckout - Path to main checkout
+ * @param options.execOnMain - Optional function to execute commands on main (for testing)
+ * @returns Result indicating whether failures are pre-existing
+ */
+export async function checkPreExistingFailures(options: {
+  mainCheckout: string;
+  execOnMain?: ExecOnMainFn;
+}): Promise<PreExistingCheckResult> {
+  const { mainCheckout, execOnMain = defaultExecOnMain(mainCheckout) } = options;
+
+  try {
+    // Run spec:linter on main checkout
+    const result = await execOnMain('pnpm spec:linter');
+
+    // If spec:linter fails on main, the failures are pre-existing
+    if (result.exitCode !== 0) {
+      return { hasPreExisting: true };
+    }
+
+    return { hasPreExisting: false };
+  } catch (error) {
+    // If we can't check main, assume failures are NOT pre-existing
+    // (safer to require fixing rather than skipping)
+    return {
+      hasPreExisting: false,
+      error: (error as Error).message,
+    };
+  }
+}
 
 /**
  * Print success message with copy-paste instruction.
@@ -135,6 +246,41 @@ async function main(): Promise<void> {
   console.log(`${PREP_PREFIX} Main checkout: ${location.mainCheckout}`);
   console.log('');
 
+  // WU-1344: Check for pre-existing spec:linter failures on main BEFORE running gates.
+  // We do this first because runGates() calls die() on failure, which exits the process
+  // before we can check. By checking first, we can set up an exit handler to show
+  // the skip-gates command if gates fail.
+  console.log(`${PREP_PREFIX} Checking for pre-existing spec:linter failures on main...`);
+  const preExistingCheck = await checkPreExistingFailures({
+    mainCheckout: location.mainCheckout,
+  });
+
+  if (preExistingCheck.hasPreExisting) {
+    console.log(`${PREP_PREFIX} ${EMOJI.WARNING} Pre-existing failures detected on main.`);
+
+    // Set up an exit handler to print the skip-gates command when gates fail
+    // This runs before process.exit() fully terminates the process
+    process.on('exit', (code) => {
+      if (code !== EXIT_CODES.SUCCESS) {
+        console.log('');
+        console.log(
+          `${PREP_PREFIX} ${EMOJI.WARNING} Since failures are pre-existing on main, you can skip gates:`,
+        );
+        console.log('');
+        console.log(
+          `    ${formatSkipGatesCommand({ wuId: id, mainCheckout: location.mainCheckout })}`,
+        );
+        console.log('');
+        console.log(`${PREP_PREFIX} Replace WU-XXXX with the WU that will fix these spec issues.`);
+        console.log('');
+      }
+    });
+  } else {
+    console.log(`${PREP_PREFIX} No pre-existing failures on main.`);
+  }
+
+  console.log('');
+
   // Run gates in the worktree
   console.log(`${PREP_PREFIX} Running gates in worktree...`);
   const gatesResult = await runGates({
@@ -143,17 +289,27 @@ async function main(): Promise<void> {
   });
 
   if (!gatesResult) {
-    die(
-      `${EMOJI.FAILURE} Gates failed in worktree.\n\n` +
-        `Fix the gate failures and run wu:prep again.`,
-    );
+    // Gates failed - if pre-existing check was already done and showed failures,
+    // the exit handler above will print the skip-gates command.
+    // Otherwise, tell the user to fix the failures.
+    if (!preExistingCheck.hasPreExisting) {
+      die(
+        `${EMOJI.FAILURE} Gates failed in worktree.\n\n` +
+          `Fix the gate failures and run wu:prep again.`,
+      );
+    }
+    // Pre-existing failures - exit with error, handler will print skip-gates command
+    process.exit(EXIT_CODES.ERROR);
   }
 
   // Success - print copy-paste instruction
   printSuccessMessage(id, location.mainCheckout);
 }
 
-main().catch((e) => {
-  console.error((e as Error).message);
-  process.exit(EXIT_CODES.ERROR);
-});
+// WU-1181: Use import.meta.main instead of process.argv[1] comparison
+// The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
+// path but import.meta.url resolves to the real path - they never match
+import { runCLI } from './cli-entry-point.js';
+if (import.meta.main) {
+  void runCLI(main);
+}
