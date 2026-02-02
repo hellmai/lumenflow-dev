@@ -1,0 +1,34 @@
+id: WU-1328
+title: Add initiative:remove-wu command to unlink WUs from initiatives
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-02
+code_paths:
+  - packages/@lumenflow/cli/src/initiative-remove-wu.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1328.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add initiative:remove-wu command that removes a WU from an initiative bidirectionally. Removes initiative field from WU YAML and removes WU from initiative wus list. Uses micro-worktree isolation like initiative:add-wu.
+acceptance:
+  - initiative:remove-wu --initiative INIT-XXX --wu WU-XXX removes WU from initiative
+  - Removes initiative field from WU YAML
+  - Removes WU from initiative wus list
+  - Uses micro-worktree isolation
+  - Handles case where WU not in initiative gracefully

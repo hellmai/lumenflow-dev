@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1328 — Add initiative:remove-wu command to unlink WUs from initiatives](wu/WU-1328.yaml) — Framework: CLI
 - [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — Content: Documentation
 - [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — Framework: CLI
