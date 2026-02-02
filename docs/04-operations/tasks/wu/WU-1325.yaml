@@ -2,7 +2,7 @@ id: WU-1325
 title: Update CLI commands to enforce lock_policy
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -47,3 +47,5 @@ session_id: e430b05b-52e8-4c96-8cf0-aba6aaf1eb38
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:22:19.450Z
+locked: true
+completed_at: 2026-02-02T12:36:33.071Z
