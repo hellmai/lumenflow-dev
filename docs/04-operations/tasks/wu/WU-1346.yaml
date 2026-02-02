@@ -2,7 +2,7 @@ id: WU-1346
 title: Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu-spawn-lane-warning.test.ts hard-codes WIP=4 based on repo config for Content: Documentation lane. Test will fail if config changes or runs outside this repo. Fix: mock getWipLimitForLane/getLockPolicyForLane or allow generateLaneOccupationWarning to accept injected config.'
+description: 'wu-spawn-lane-warning.test.ts hard-codes WIP=4 based on repo config for Content:
+  Documentation lane. Test will fail if config changes or runs outside this repo. Fix: mock
+  getWipLimitForLane/getLockPolicyForLane or allow generateLaneOccupationWarning to accept injected
+  config.'
 acceptance:
   - Test does not depend on repo-specific lane config values
   - Test uses mocked getWipLimitForLane/getLockPolicyForLane or dependency injection
   - Test passes regardless of .lumenflow.config.yaml content
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1346
+claimed_at: 2026-02-02T16:11:19.211Z
+baseline_main_sha: 752f3701a05bca9088f3e921db46d93ee5aeb25b
+session_id: 0f5b51d9-3f3e-4b31-9c25-04c911fded09
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T16:11:19.219Z
