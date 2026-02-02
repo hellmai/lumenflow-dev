@@ -58,7 +58,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1351 — Fix CLI command typos in documentation](wu/WU-1351.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -366,3 +365,4 @@ sections:
 - [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml)
 - [WU-1349 — Fix npx command claim in quickstart docs](wu/WU-1349.yaml)
 - [WU-1350 — Fix non-existent CLI commands in documentation](wu/WU-1350.yaml)
+- [WU-1351 — Fix CLI command typos in documentation](wu/WU-1351.yaml)

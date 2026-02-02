@@ -2,7 +2,7 @@ id: WU-1351
 title: Fix CLI command typos in documentation
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -45,3 +45,5 @@ session_id: 0d748772-f220-4000-8d70-88fdd4008be4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:33:30.251Z
+locked: true
+completed_at: 2026-02-02T16:34:58.207Z
