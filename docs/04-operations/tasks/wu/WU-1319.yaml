@@ -2,7 +2,7 @@ id: WU-1319
 title: Generate status.md from merged state during wu:done
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-01
 code_paths:
@@ -26,8 +26,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: wu:done updates status.md by editing the local file snapshot in the worktree. When other WUs complete in parallel, this stale status.md can be replayed on rebase, reintroducing completed WUs into 'In Progress' and causing noisy auto-repair commits during later claims. Solution: compute status.md from the merged state store (origin/main + worktree events) similar to backlog generation, and use that in wu:done metadata collection."
+description: "Context: wu:done updates status.md by editing the local file snapshot in the worktree.
+  When other WUs complete in parallel, this stale status.md can be replayed on rebase, reintroducing
+  completed WUs into 'In Progress' and causing noisy auto-repair commits during later claims.
+  Solution: compute status.md from the merged state store (origin/main + worktree events) similar to
+  backlog generation, and use that in wu:done metadata collection."
 acceptance:
   - status.md generation uses merged state store (same source as backlog)
   - Concurrent completion does not reintroduce stale 'In Progress' entries
   - Unit test covers concurrent status generation behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1319
+claimed_at: 2026-02-02T08:50:36.012Z
+baseline_main_sha: 764a18534a5fcc423baea2972aed44c72011084a
+session_id: d99fd99c-10c1-4ac8-9a95-1f81c4b58a97
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T08:50:36.017Z
