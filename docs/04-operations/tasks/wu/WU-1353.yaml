@@ -2,7 +2,7 @@ id: WU-1353
 title: Sync CLI templates with source docs and add release automation
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -58,3 +58,5 @@ session_id: 5a6b6502-4a07-4f80-b97f-9dc7afe19e34
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T16:46:38.645Z
+locked: true
+completed_at: 2026-02-02T17:03:42.235Z
