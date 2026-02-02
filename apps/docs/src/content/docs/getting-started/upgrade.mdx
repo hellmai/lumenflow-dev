@@ -72,7 +72,7 @@ After upgrading, sync your agent documentation to get the latest skills and guid
 2. **Verify the upgrade**
 
    ```bash
-   pnpm lumenflow --version
+   pnpm list @lumenflow/cli
    ```
 
 3. **Check for config changes**
@@ -92,13 +92,13 @@ for details and migration notes.
 
 ```bash
 # 1. Upgrade packages
-pnpm lumenflow:upgrade --latest
+pnpm add -D @lumenflow/cli@latest
 
 # 2. Sync documentation
-pnpm exec lumenflow docs:sync --force
+npx lumenflow-docs-sync --force
 
 # 3. Verify
-pnpm lumenflow --version  # Should show 2.3.2
+pnpm list @lumenflow/cli  # Should show latest version
 ```
 
 ## Upgrading from v1.x to v2.x

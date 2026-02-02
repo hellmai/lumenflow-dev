@@ -245,14 +245,17 @@ git log --oneline --grep="wu(wu-"
 ### Quick Status
 
 ```bash
-# See all WUs by status
-npx wu-list
+# See all WUs organized by status
+cat docs/04-operations/tasks/backlog.md
 
-# What's in progress?
-npx wu-list --status in_progress
+# Check a specific WU's status
+pnpm wu:status --id WU-XXX
 
-# What did I complete?
-npx wu-list --status done --since "7 days"
+# What did I complete this week?
+find .lumenflow/stamps -mtime -7 -name "*.done"
+
+# List recent WU completions from git history
+git log --oneline --grep="wu:done" --since="7 days"
 ```
 
 ## AI Agent Configuration

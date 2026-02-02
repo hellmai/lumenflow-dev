@@ -224,11 +224,11 @@ See [Migration Guide](/guides/migration) for detailed instructions.
 ### Checking Compatibility
 
 ```bash
-# Check current versions
-pnpm lumenflow --version
+# Check current version
+pnpm list @lumenflow/cli
 
 # Validate config compatibility
-pnpm lumenflow:validate
+npx lumenflow-validate
 
 # Check for updates
 pnpm outdated @lumenflow/*

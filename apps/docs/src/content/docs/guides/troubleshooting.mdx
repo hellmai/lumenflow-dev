@@ -162,9 +162,11 @@ pnpm wu:recover --id WU-042 --action cleanup  # Remove orphaned worktree
 **Fix:**
 
 ```bash
-# Regenerate docs from state store
-pnpm exec lumenflow backlog:regenerate
-pnpm exec lumenflow status:regenerate
+# Check for state inconsistencies
+pnpm wu:repair --all --check
+
+# Fix detected inconsistencies (regenerates backlog.md and status.md from state store)
+pnpm wu:repair --all
 ```
 
 ### Lane already has a WU in progress

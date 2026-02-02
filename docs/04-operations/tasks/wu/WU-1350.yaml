@@ -7,6 +7,8 @@ priority: P2
 created: 2026-02-02
 code_paths:
   - apps/docs/src/content/docs/guides/
+  - apps/docs/src/content/docs/getting-started/
+  - apps/docs/src/content/docs/reference/
 tests:
   manual:
     - Verify all documented commands work when run
@@ -16,7 +18,12 @@ artifacts:
   - .lumenflow/stamps/WU-1350.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Fixed non-existent CLI commands across 4 files:
+  - solo-workflow.mdx: Replaced wu-list (doesn't exist) with backlog.md/wu:status/stamps
+  - troubleshooting.mdx: Replaced backlog:regenerate/status:regenerate with wu-repair
+  - upgrade.mdx: Fixed lumenflow:upgrade -> pnpm add, docs:sync -> lumenflow-docs-sync
+  - compatibility.mdx: Fixed version check and validate commands
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
