@@ -2,7 +2,7 @@ id: WU-1322
 title: Add lock_policy field to lane configuration schema
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-02
 code_paths:
@@ -17,9 +17,9 @@ artifacts:
   - .lumenflow/stamps/WU-1322.done
 dependencies: []
 risks: []
-notes: 'Schema-only WU, enforcement in subsequent WUs (WU-1323, WU-1324, WU-1325)'
+notes: Schema-only WU, enforcement in subsequent WUs (WU-1323, WU-1324, WU-1325)
 spec_refs:
-  - 'lumenflow://plans/INIT-013-phase1-lock-policy.md'
+  - lumenflow://plans/INIT-013-phase1-lock-policy.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -45,3 +45,5 @@ session_id: ee6f4e8a-ffee-416b-9702-a087d9c96dbf
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T12:28:14.246Z
+locked: true
+completed_at: 2026-02-02T12:38:59.202Z
