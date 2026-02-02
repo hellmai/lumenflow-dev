@@ -1,7 +1,7 @@
 # LumenFlow Constraints Capsule
 
 **Version:** 1.1
-**Last updated:** 2026-01-30
+**Last updated:** 2026-02-02
 
 This document contains the 7 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
@@ -39,6 +39,19 @@ Before ANY Write/Edit/Read operation:
    - **All file writes still require a worktree**. If no worktree exists, claim one first.
 
 **Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch.
+
+**NEVER "QUICK FIX" ON MAIN**
+
+If you see something broken on main (failing gates, format issues, typos, lint errors):
+
+- ❌ **Don't** fix it directly, even if it seems small or helpful
+- ❌ **Don't** run `prettier --write`, `pnpm lint --fix`, or any command that modifies files
+- ✅ **Do** report the issue to the user
+- ✅ **Do** create a WU if a fix is needed
+
+**Why this matters:** The "helpful fix" instinct causes agents to modify files on main without a worktree. While commits are blocked by hooks, the files are still modified, requiring manual cleanup. Every change—no matter how small—needs a worktree.
+
+**If you're on main and want to change something: STOP. Create a WU first.**
 
 ---
 
