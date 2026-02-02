@@ -2,7 +2,7 @@ id: WU-1356
 title: Make package manager and script names configurable in .lumenflow.config.yaml
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -14,9 +14,10 @@ code_paths:
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
   manual:
-    - 'Verify npm+jest config works by setting package_manager to npm and test_runner to jest in .lumenflow.config.yaml'
-    - 'Verify yarn+nx config works by setting package_manager to yarn and custom gates.commands'
-    - 'Verify bun config works by setting package_manager to bun in .lumenflow.config.yaml'
+    - Verify npm+jest config works by setting package_manager to npm and test_runner to jest in
+      .lumenflow.config.yaml
+    - Verify yarn+nx config works by setting package_manager to yarn and custom gates.commands
+    - Verify bun config works by setting package_manager to bun in .lumenflow.config.yaml
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
   e2e: []
@@ -66,3 +67,5 @@ session_id: d93c694a-0e60-4ee7-98a2-4d9575c35f61
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T18:00:21.737Z
+locked: true
+completed_at: 2026-02-02T18:17:29.545Z
