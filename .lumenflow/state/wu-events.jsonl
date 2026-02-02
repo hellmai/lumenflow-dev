@@ -634,3 +634,4 @@
 {"type":"complete","wuId":"WU-1357","timestamp":"2026-02-02T17:51:10.560Z"}
 {"type":"claim","wuId":"WU-1356","timestamp":"2026-02-02T18:00:21.749Z","lane":"Framework: Core","title":"Make package manager and script names configurable in .lumenflow.config.yaml"}
 {"type":"complete","wuId":"WU-1356","timestamp":"2026-02-02T18:17:32.149Z"}
+{"type":"claim","wuId":"WU-1359","lane":"Framework: CLI","title":"Enhance init output and add wu:proto command for new user experience","timestamp":"2026-02-02T21:48:59.739Z"}
