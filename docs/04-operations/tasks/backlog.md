@@ -57,7 +57,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — Framework: Initiatives
 - [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -354,3 +353,4 @@ sections:
 - [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml)
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml)
 - [WU-1322 — Add lock_policy field to lane configuration schema](wu/WU-1322.yaml)
+- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml)
