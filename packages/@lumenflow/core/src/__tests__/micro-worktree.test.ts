@@ -23,6 +23,9 @@ const NON_FAST_FORWARD_ERROR = 'rejected: non-fast-forward';
 const HARD_RESET_OPTION = { hard: true };
 const FF_ONLY_OPTION = { ffOnly: true };
 const ORIGIN_MAIN_REF = 'origin/main';
+const TEST_OPERATION_INIT_ADD = 'initiative-add-wu';
+const TEST_OPERATION_INIT_REMOVE = 'initiative-remove-wu';
+const TEST_OPERATION = 'test-op';
 
 describe('micro-worktree', () => {
   describe('pushRefspecWithForce', () => {
@@ -691,6 +694,112 @@ describe('micro-worktree', () => {
       expect(logCalls.some((log) => log.includes('attempt 3'))).toBe(true);
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  /**
+   * WU-1336: Tests for centralized retry exhaustion handling
+   *
+   * When micro-worktree push retries are exhausted, provide a typed error
+   * and helper functions so CLI commands do not need to duplicate detection logic.
+   */
+  describe('retry exhaustion handling (WU-1336)', () => {
+    it('should export RetryExhaustionError class', async () => {
+      const { RetryExhaustionError } = await import('../micro-worktree.js');
+      expect(RetryExhaustionError).toBeDefined();
+      expect(typeof RetryExhaustionError).toBe('function');
+    });
+
+    it('should create RetryExhaustionError with operation and retries', async () => {
+      const { RetryExhaustionError } = await import('../micro-worktree.js');
+
+      const error = new RetryExhaustionError(TEST_OPERATION_INIT_ADD, 3);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.name).toBe('RetryExhaustionError');
+      expect(error.operation).toBe(TEST_OPERATION_INIT_ADD);
+      expect(error.retries).toBe(3);
+      expect(error.message).toContain('3 attempts');
+    });
+
+    it('should export isRetryExhaustionError type guard', async () => {
+      const { isRetryExhaustionError, RetryExhaustionError } = await import('../micro-worktree.js');
+
+      expect(typeof isRetryExhaustionError).toBe('function');
+
+      // Should return true for RetryExhaustionError
+      const retryError = new RetryExhaustionError(TEST_OPERATION, 3);
+      expect(isRetryExhaustionError(retryError)).toBe(true);
+
+      // Should return false for regular errors
+      const regularError = new Error('Some other error');
+      expect(isRetryExhaustionError(regularError)).toBe(false);
+    });
+
+    it('should detect legacy retry exhaustion error messages', async () => {
+      const { isRetryExhaustionError } = await import('../micro-worktree.js');
+
+      // Should also detect errors thrown by the legacy pushWithRetryConfig
+      const legacyError = new Error(
+        'Push failed after 3 attempts. Origin main may have significant traffic.',
+      );
+      expect(isRetryExhaustionError(legacyError)).toBe(true);
+    });
+
+    it('should export formatRetryExhaustionError helper', async () => {
+      const { formatRetryExhaustionError, RetryExhaustionError } =
+        await import('../micro-worktree.js');
+
+      expect(typeof formatRetryExhaustionError).toBe('function');
+
+      const error = new RetryExhaustionError(TEST_OPERATION_INIT_ADD, 3);
+      const formatted = formatRetryExhaustionError(error, {
+        command: 'pnpm initiative:add-wu --wu WU-123 --initiative INIT-001',
+      });
+
+      // Should include actionable next steps
+      expect(formatted).toContain('Next steps:');
+      expect(formatted).toContain('Wait a few seconds');
+      expect(formatted).toContain('initiative:add-wu');
+    });
+
+    it('should include the retry command in formatted error', async () => {
+      const { formatRetryExhaustionError, RetryExhaustionError } =
+        await import('../micro-worktree.js');
+
+      const error = new RetryExhaustionError(TEST_OPERATION_INIT_REMOVE, 5);
+      const formatted = formatRetryExhaustionError(error, {
+        command: 'pnpm initiative:remove-wu --wu WU-456 --initiative INIT-002',
+      });
+
+      expect(formatted).toContain('--wu WU-456');
+      expect(formatted).toContain('--initiative INIT-002');
+    });
+
+    it('should suggest concurrent agent check in formatted error', async () => {
+      const { formatRetryExhaustionError, RetryExhaustionError } =
+        await import('../micro-worktree.js');
+
+      const error = new RetryExhaustionError(TEST_OPERATION, 3);
+      const formatted = formatRetryExhaustionError(error, {
+        command: 'pnpm test:command',
+      });
+
+      // Should mention concurrent agents as possible cause
+      expect(formatted).toMatch(/concurrent|agent|traffic/i);
+    });
+
+    it('should suggest increasing retries in config', async () => {
+      const { formatRetryExhaustionError, RetryExhaustionError } =
+        await import('../micro-worktree.js');
+
+      const error = new RetryExhaustionError(TEST_OPERATION, 3);
+      const formatted = formatRetryExhaustionError(error, {
+        command: 'pnpm test:command',
+      });
+
+      expect(formatted).toContain('git.push_retry.retries');
+      expect(formatted).toContain('.lumenflow.config.yaml');
     });
   });
 

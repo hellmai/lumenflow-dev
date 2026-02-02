@@ -36,7 +36,11 @@ import {
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/dist/micro-worktree.js';
 import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
 import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 
@@ -47,28 +51,23 @@ export const LOG_PREFIX = INIT_LOG_PREFIX.REMOVE_WU;
 export const OPERATION_NAME = 'initiative-remove-wu';
 
 /**
- * WU-1333: Pattern to detect retry exhaustion errors
- *
- * Matches error messages like "Push failed after N attempts"
- */
-const RETRY_EXHAUSTION_PATTERN = /Push failed after \d+ attempts/;
-
-/**
- * WU-1333: Check if an error is a retry exhaustion error
+ * WU-1333/WU-1336: Check if an error is a retry exhaustion error
  *
  * Detects when micro-worktree push retries have been exhausted.
+ * Delegates to the shared helper from @lumenflow/core.
  *
  * @param {Error} error - Error to check
  * @returns {boolean} True if this is a retry exhaustion error
  */
 export function isRetryExhaustionError(error: Error): boolean {
-  return RETRY_EXHAUSTION_PATTERN.test(error.message);
+  return coreIsRetryExhaustionError(error);
 }
 
 /**
- * WU-1333: Format retry exhaustion error with actionable next steps
+ * WU-1333/WU-1336: Format retry exhaustion error with actionable next steps
  *
  * When push retries are exhausted, provides clear guidance on how to proceed.
+ * Delegates to the shared helper from @lumenflow/core with command-specific options.
  *
  * @param {Error} error - The retry exhaustion error
  * @param {string} wuId - WU ID being unlinked
@@ -76,14 +75,9 @@ export function isRetryExhaustionError(error: Error): boolean {
  * @returns {string} Formatted error message with next steps
  */
 export function formatRetryExhaustionError(error: Error, wuId: string, initId: string): string {
-  return (
-    `${error.message}\n\n` +
-    `Next steps:\n` +
-    `  1. Wait a few seconds and retry the operation:\n` +
-    `     pnpm initiative:remove-wu --wu ${wuId} --initiative ${initId}\n` +
-    `  2. If the issue persists, check if another agent is rapidly pushing changes\n` +
-    `  3. Consider increasing git.push_retry.retries in .lumenflow.config.yaml`
-  );
+  return coreFormatRetryExhaustionError(error, {
+    command: `pnpm initiative:remove-wu --wu ${wuId} --initiative ${initId}`,
+  });
 }
 
 /**
