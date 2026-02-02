@@ -49,7 +49,6 @@ sections:
 - [WU-1335 — Fix pre-existing lint errors in initiative-add-wu.ts](wu/WU-1335.yaml) — Framework: CLI
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — Framework: Core
 - [WU-1339 — Fix lint errors in lane-lock.ts (pre-existing)](wu/WU-1339.yaml) — Framework: Core
-- [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml) — Framework: CLI
 - [WU-1347 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1347.yaml) — Framework: Core
 - [WU-1348 — Avoid main checkout resets in micro-worktree push retry](wu/WU-1348.yaml) — Framework: Core
 
@@ -60,6 +59,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1345 — Add lanes field to LumenFlowConfigSchema (WU-1340 bug fix)](wu/WU-1345.yaml) — Framework: Core
+- [WU-1346 — Fix wu-spawn-lane-warning test brittleness (WU-1340 bug fix)](wu/WU-1346.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
