@@ -578,6 +578,7 @@
 {"type":"complete","wuId":"WU-1328","timestamp":"2026-02-02T10:13:26.536Z"}
 {"type":"claim","wuId":"WU-1329","timestamp":"2026-02-02T10:26:08.591Z","lane":"Framework: CLI","title":"Make WU validation strict by default"}
 {"type":"complete","wuId":"WU-1329","timestamp":"2026-02-02T10:53:06.991Z"}
-{"type":"claim","wuId":"WU-1330","lane":"Framework: CLI","title":"Validate WU specs on initiative:add-wu","timestamp":"2026-02-02T10:59:19.439Z"}
-{"type":"claim","wuId":"WU-1332","lane":"Framework: Core","title":"Retry/rebase micro-worktree push on non-fast-forward","timestamp":"2026-02-02T11:01:17.272Z"}
-{"type":"claim","wuId":"WU-1331","lane":"Content: Documentation","title":"Document strict WU validation usage","timestamp":"2026-02-02T11:02:05.751Z"}
+{"type":"claim","wuId":"WU-1330","timestamp":"2026-02-02T10:59:19.439Z","lane":"Framework: CLI","title":"Validate WU specs on initiative:add-wu"}
+{"type":"claim","wuId":"WU-1332","timestamp":"2026-02-02T11:01:17.272Z","lane":"Framework: Core","title":"Retry/rebase micro-worktree push on non-fast-forward"}
+{"type":"claim","wuId":"WU-1331","timestamp":"2026-02-02T11:02:05.751Z","lane":"Content: Documentation","title":"Document strict WU validation usage"}
+{"type":"complete","wuId":"WU-1331","timestamp":"2026-02-02T11:08:01.443Z"}
