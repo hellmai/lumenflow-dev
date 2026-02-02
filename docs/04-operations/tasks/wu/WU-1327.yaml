@@ -2,7 +2,7 @@ id: WU-1327
 title: Document lock_policy and pilot guidance
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - Rollback procedure documented
   - lumenflow.dev updated with lock_policy in lanes concept page
 initiative: INIT-013
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1327
+claimed_at: 2026-02-02T12:25:30.154Z
+baseline_main_sha: 07227c2f9d80428abc09c4ff05e2a1f0a3131921
+session_id: ee6f4e8a-ffee-416b-9702-a087d9c96dbf
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-02T12:25:30.158Z

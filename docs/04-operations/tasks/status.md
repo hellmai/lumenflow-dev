@@ -10,6 +10,7 @@ _Last updated: 2026-02-02_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml)
 - [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml)
+- [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml)
 
 ## Completed
 
