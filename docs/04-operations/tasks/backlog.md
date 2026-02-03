@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1388 — Document lumenflow commands in CLI reference and agent docs](wu/WU-1388.yaml) — Content: Documentation
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml) — Framework: CLI
@@ -31,6 +30,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1388 — Document lumenflow commands in CLI reference and agent docs](wu/WU-1388.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

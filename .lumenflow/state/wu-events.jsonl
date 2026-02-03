@@ -682,3 +682,4 @@
 {"type":"claim","wuId":"WU-1385","timestamp":"2026-02-03T16:06:57.245Z","lane":"Framework: CLI","title":"Include wu-sizing-guide.md in lumenflow init onboarding docs"}
 {"type":"complete","wuId":"WU-1378","timestamp":"2026-02-03T16:10:24.409Z"}
 {"type":"complete","wuId":"WU-1385","timestamp":"2026-02-03T16:13:11.731Z"}
+{"type":"claim","wuId":"WU-1388","lane":"Content: Documentation","title":"Document lumenflow commands in CLI reference and agent docs","timestamp":"2026-02-03T16:14:25.769Z"}

@@ -2,7 +2,7 @@ id: WU-1388
 title: Document lumenflow commands in CLI reference and agent docs
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-1378 added lumenflow commands but failed to document it. Missing from: Starlight CLI reference, quick-ref-commands.md, CLAUDE.md files.'
+description: 'WU-1378 added lumenflow commands but failed to document it. Missing from: Starlight
+  CLI reference, quick-ref-commands.md, CLAUDE.md files.'
 acceptance:
   - lumenflow commands appears in quick-ref-commands.md
   - lumenflow commands appears in Starlight CLI docs after docs:generate
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1388
+claimed_at: 2026-02-03T16:14:25.736Z
+baseline_main_sha: dcdbaf10711a2d70babf9fae150cd8c920cfdd23
+session_id: f0199071-40fa-4662-9335-9983dfebf53b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T16:14:25.742Z
