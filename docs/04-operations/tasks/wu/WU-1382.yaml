@@ -2,7 +2,7 @@ id: WU-1382
 title: Improve generated file templates for agent clarity
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -49,3 +49,5 @@ session_id: d910222a-e552-413e-98c1-41d242ca467c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T13:51:34.320Z
+locked: true
+completed_at: 2026-02-03T13:55:17.484Z
