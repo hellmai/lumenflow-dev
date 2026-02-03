@@ -5,9 +5,14 @@ description: Get LumenFlow running in 5 minutes
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
-<Aside type="caution" title="AI Agents: Follow These Steps Exactly">
-  This quickstart is designed for AI agents and humans alike. Execute commands in order. Do not skip
-  steps. Do not manually edit managed files. Each command produces the correct output—trust the CLI.
+<Aside type="tip" title="AI Agents">
+  If you are an AI agent, use the [Agent Start Here](/getting-started/agent-start/) guide instead.
+  It provides a strict, command-only workflow optimized for autonomous execution.
+</Aside>
+
+<Aside type="caution" title="Follow These Steps Exactly">
+  Execute commands in order. Do not skip steps. Do not manually edit managed files. Each command
+  produces the correct output—trust the CLI.
 </Aside>
 
 ## Prerequisites
@@ -63,24 +68,23 @@ This creates:
 
 ---
 
-## Step 3: Add Scripts to package.json
+## Step 3: Verify Scripts Were Injected
 
-Add these scripts to your `package.json`.
+LumenFlow automatically adds scripts to your `package.json` during initialization. Verify they exist.
 
-```json
-{
-  "scripts": {
-    "wu:create": "wu-create",
-    "wu:claim": "wu-claim",
-    "wu:prep": "wu-prep",
-    "wu:done": "wu-done",
-    "gates": "gates"
-  }
-}
+```bash
+pnpm wu:create --help
 ```
 
-<Aside type="danger" title="DO NOT">
-  Do not rename these scripts. Other LumenFlow tools expect these exact names.
+If this command works, scripts are correctly installed. If not, re-run initialization.
+
+```bash
+pnpm exec lumenflow --force
+```
+
+<Aside type="tip" title="Scripts are auto-managed">
+  You do not need to manually add scripts. LumenFlow injects them during `pnpm exec lumenflow`.
+  Re-run with `--force` if scripts are missing.
 </Aside>
 
 ---
@@ -209,20 +213,20 @@ After `wu:done` completes, verify these conditions.
 
 LumenFlow manages certain files automatically. Understand which files you own.
 
-| File/Directory                        | Owner     | Action                                                  |
-| ------------------------------------- | --------- | ------------------------------------------------------- |
-| `.lumenflow.config.yaml`              | LumenFlow | Do not edit manually. Use CLI commands.                 |
-| `LUMENFLOW.md`                        | LumenFlow | Do not edit. Regenerated on init.                       |
-| `AGENTS.md`                           | LumenFlow | Do not edit. Regenerated on init.                       |
-| `.lumenflow/constraints.md`           | LumenFlow | Do not edit. Contains workflow rules.                   |
-| `.lumenflow/stamps/`                  | LumenFlow | Do not create manually. Created by `wu:done`.           |
-| `docs/04-operations/tasks/wu/*.yaml`  | LumenFlow | Do not create/edit manually. Use `wu:create`/`wu:edit`. |
-| `docs/04-operations/tasks/backlog.md` | LumenFlow | Do not edit. Regenerated from state.                    |
-| `docs/04-operations/tasks/status.md`  | LumenFlow | Do not edit. Regenerated from state.                    |
-| `worktrees/`                          | LumenFlow | Do not create manually. Created by `wu:claim`.          |
-| Your source code                      | You       | Edit freely inside worktrees.                           |
-| Your tests                            | You       | Edit freely inside worktrees.                           |
-| `package.json` scripts                | You       | Add the required scripts once.                          |
+| File/Directory                        | Owner     | Action                                                       |
+| ------------------------------------- | --------- | ------------------------------------------------------------ |
+| `.lumenflow.config.yaml`              | LumenFlow | Do not edit manually. Use CLI commands.                      |
+| `LUMENFLOW.md`                        | LumenFlow | Do not edit. Regenerated on init.                            |
+| `AGENTS.md`                           | LumenFlow | Do not edit. Regenerated on init.                            |
+| `.lumenflow/constraints.md`           | LumenFlow | Do not edit. Contains workflow rules.                        |
+| `.lumenflow/stamps/`                  | LumenFlow | Do not create manually. Created by `wu:done`.                |
+| `docs/04-operations/tasks/wu/*.yaml`  | LumenFlow | Do not create/edit manually. Use `wu:create`/`wu:edit`.      |
+| `docs/04-operations/tasks/backlog.md` | LumenFlow | Do not edit. Regenerated from state.                         |
+| `docs/04-operations/tasks/status.md`  | LumenFlow | Do not edit. Regenerated from state.                         |
+| `worktrees/`                          | LumenFlow | Do not create manually. Created by `wu:claim`.               |
+| Your source code                      | You       | Edit freely inside worktrees.                                |
+| Your tests                            | You       | Edit freely inside worktrees.                                |
+| `package.json` scripts                | LumenFlow | Auto-injected during init. Re-run with `--force` if missing. |
 
 ---
 
