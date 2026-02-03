@@ -24,9 +24,6 @@ sections:
 
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 
-- [WU-1375 — Init should warn if config files exist from manual writes](wu/WU-1375.yaml) — Framework: CLI
-- [WU-1374 — Enable enforcement hooks by default for --client claude](wu/WU-1374.yaml) — Framework: CLI
-
   (No items ready)
 
 ## 🔧 In progress
