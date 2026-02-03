@@ -118,6 +118,34 @@ experimental:
   show_next_steps: true # Show guidance after success
 ```
 
+### Enforcement Hooks (WU-1367)
+
+Claude Code hooks can enforce LumenFlow workflow compliance at the tool level.
+When enabled, hooks block non-compliant operations instead of relying on agents
+to remember workflow rules.
+
+Configure in `.lumenflow.config.yaml`:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      enforcement:
+        hooks: true # Enable enforcement hooks
+        block_outside_worktree: true # Block Write/Edit outside worktree
+        require_wu_for_edits: true # Require claimed WU for edits
+        warn_on_stop_without_wu_done: true # Warn on session end without wu:done
+```
+
+Generate hooks after configuration:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+Hooks implement graceful degradation: if LumenFlow state cannot be determined,
+operations are allowed to prevent blocking legitimate work.
+
 ---
 
 ## Known Bootstrap Issues
