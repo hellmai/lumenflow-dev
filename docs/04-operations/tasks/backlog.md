@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1390 — Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery](wu/WU-1390.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
