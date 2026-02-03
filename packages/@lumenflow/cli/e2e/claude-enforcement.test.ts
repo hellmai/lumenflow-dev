@@ -8,11 +8,15 @@
  * 3. Hook script functionality
  */
 
+// Test file lint exceptions
+/* eslint-disable sonarjs/no-duplicate-string */
+
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
-import { execSync } from 'node:child_process';
+
+const CLAUDE_CODE_CLIENT = 'claude-code';
 
 describe('WU-1367: Claude Enforcement E2E', () => {
   let testDir: string;
@@ -58,20 +62,24 @@ agents:
       const rawConfig = yaml.parse(content);
       const config = parseConfig(rawConfig);
 
-      expect(config.agents.clients['claude-code']).toBeDefined();
-      expect(config.agents.clients['claude-code'].enforcement).toBeDefined();
-      expect(config.agents.clients['claude-code'].enforcement?.hooks).toBe(true);
-      expect(config.agents.clients['claude-code'].enforcement?.block_outside_worktree).toBe(true);
-      expect(config.agents.clients['claude-code'].enforcement?.require_wu_for_edits).toBe(false);
-      expect(config.agents.clients['claude-code'].enforcement?.warn_on_stop_without_wu_done).toBe(
+      expect(config.agents.clients[CLAUDE_CODE_CLIENT]).toBeDefined();
+      expect(config.agents.clients[CLAUDE_CODE_CLIENT].enforcement).toBeDefined();
+      expect(config.agents.clients[CLAUDE_CODE_CLIENT].enforcement?.hooks).toBe(true);
+      expect(config.agents.clients[CLAUDE_CODE_CLIENT].enforcement?.block_outside_worktree).toBe(
         true,
       );
+      expect(config.agents.clients[CLAUDE_CODE_CLIENT].enforcement?.require_wu_for_edits).toBe(
+        false,
+      );
+      expect(
+        config.agents.clients[CLAUDE_CODE_CLIENT].enforcement?.warn_on_stop_without_wu_done,
+      ).toBe(true);
     });
   });
 
   describe('Hook Generation', () => {
     it('should generate hooks via integrateClaudeCode function', async () => {
-      const { integrateClaudeCode } = await import('../../src/commands/integrate.js');
+      const { integrateClaudeCode } = await import('../src/commands/integrate.js');
 
       await integrateClaudeCode(testDir, {
         enforcement: {
@@ -105,7 +113,7 @@ agents:
     });
 
     it('should generate executable hook scripts', async () => {
-      const { integrateClaudeCode } = await import('../../src/commands/integrate.js');
+      const { integrateClaudeCode } = await import('../src/commands/integrate.js');
 
       await integrateClaudeCode(testDir, {
         enforcement: {
@@ -145,7 +153,7 @@ agents:
 `,
       );
 
-      const { syncEnforcementHooks } = await import('../../src/hooks/enforcement-sync.js');
+      const { syncEnforcementHooks } = await import('../src/hooks/enforcement-sync.js');
 
       const result = await syncEnforcementHooks(testDir);
 
@@ -170,7 +178,7 @@ agents:
 `,
       );
 
-      const { syncEnforcementHooks } = await import('../../src/hooks/enforcement-sync.js');
+      const { syncEnforcementHooks } = await import('../src/hooks/enforcement-sync.js');
 
       const result = await syncEnforcementHooks(testDir);
 
@@ -186,7 +194,7 @@ agents:
       // Remove .lumenflow directory
       fs.rmSync(path.join(testDir, '.lumenflow'), { recursive: true, force: true });
 
-      const { checkWorktreeEnforcement } = await import('../../src/hooks/enforcement-checks.js');
+      const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
       // Set CLAUDE_PROJECT_DIR to test directory
       const originalEnv = process.env.CLAUDE_PROJECT_DIR;

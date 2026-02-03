@@ -5,13 +5,19 @@
  * TDD: Write failing tests first, then implement.
  */
 
+// Test file lint exceptions
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable sonarjs/no-duplicate-string */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 
 // Mock fs before importing module under test
 vi.mock('node:fs');
 vi.mock('node:child_process');
+
+const TEST_PROJECT_DIR = '/test/project';
+const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 
 describe('WU-1367: Enforcement Hooks Config Schema', () => {
   describe('ClientConfigSchema enforcement block', () => {
@@ -156,8 +162,8 @@ describe('WU-1367: Integrate Command', () => {
   describe('integrateClaudeCode', () => {
     it('should create .claude/hooks directory when enforcement.hooks=true', async () => {
       const mockMkdirSync = vi.mocked(fs.mkdirSync);
-      const mockWriteFileSync = vi.mocked(fs.writeFileSync);
-      const mockExistsSync = vi.mocked(fs.existsSync).mockReturnValue(false);
+      vi.mocked(fs.writeFileSync);
+      vi.mocked(fs.existsSync).mockReturnValue(false);
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
@@ -170,7 +176,7 @@ describe('WU-1367: Integrate Command', () => {
         },
       };
 
-      await integrateClaudeCode('/test/project', config);
+      await integrateClaudeCode(TEST_PROJECT_DIR, config);
 
       expect(mockMkdirSync).toHaveBeenCalledWith(
         expect.stringContaining('.claude/hooks'),
@@ -194,7 +200,7 @@ describe('WU-1367: Integrate Command', () => {
         },
       };
 
-      await integrateClaudeCode('/test/project', config);
+      await integrateClaudeCode(TEST_PROJECT_DIR, config);
 
       expect(mockWriteFileSync).toHaveBeenCalledWith(
         expect.stringContaining('enforce-worktree.sh'),
@@ -205,7 +211,7 @@ describe('WU-1367: Integrate Command', () => {
 
     it('should update settings.json with hook configuration', async () => {
       const mockWriteFileSync = vi.mocked(fs.writeFileSync);
-      const mockReadFileSync = vi.mocked(fs.readFileSync).mockReturnValue(
+      vi.mocked(fs.readFileSync).mockReturnValue(
         JSON.stringify({
           permissions: { allow: ['Bash'] },
         }),
@@ -224,7 +230,7 @@ describe('WU-1367: Integrate Command', () => {
         },
       };
 
-      await integrateClaudeCode('/test/project', config);
+      await integrateClaudeCode(TEST_PROJECT_DIR, config);
 
       // Should write updated settings.json with hooks config
       const settingsCall = mockWriteFileSync.mock.calls.find((call) =>
@@ -291,14 +297,13 @@ describe('WU-1367: Setup Hook Sync', () => {
     // but return true for the config file
     vi.mocked(fs.existsSync).mockImplementation((p) => {
       const pathStr = String(p);
-      if (pathStr.endsWith('.lumenflow.config.yaml')) return true;
-      return false;
+      return pathStr.endsWith(CONFIG_FILE_NAME);
     });
 
     // Config file is YAML, not JSON
     vi.mocked(fs.readFileSync).mockImplementation((p) => {
       const pathStr = String(p);
-      if (pathStr.endsWith('.lumenflow.config.yaml')) {
+      if (pathStr.endsWith(CONFIG_FILE_NAME)) {
         return `
 agents:
   clients:
@@ -317,7 +322,7 @@ agents:
 
     const { syncEnforcementHooks } = await import('../../hooks/enforcement-sync.js');
 
-    const result = await syncEnforcementHooks('/test/project');
+    const result = await syncEnforcementHooks(TEST_PROJECT_DIR);
 
     // Should have written hook files
     expect(result).toBe(true);
@@ -329,13 +334,12 @@ agents:
 
     vi.mocked(fs.existsSync).mockImplementation((p) => {
       const pathStr = String(p);
-      if (pathStr.endsWith('.lumenflow.config.yaml')) return true;
-      return false;
+      return pathStr.endsWith(CONFIG_FILE_NAME);
     });
 
     vi.mocked(fs.readFileSync).mockImplementation((p) => {
       const pathStr = String(p);
-      if (pathStr.endsWith('.lumenflow.config.yaml')) {
+      if (pathStr.endsWith(CONFIG_FILE_NAME)) {
         return `
 agents:
   clients:
@@ -352,7 +356,7 @@ agents:
 
     const { syncEnforcementHooks } = await import('../../hooks/enforcement-sync.js');
 
-    const result = await syncEnforcementHooks('/test/project');
+    const result = await syncEnforcementHooks(TEST_PROJECT_DIR);
 
     // Should NOT have written hook files
     expect(result).toBe(false);
