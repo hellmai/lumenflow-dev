@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1368 — Fix sync:templates --check-drift and add micro-worktree isolation](wu/WU-1368.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
