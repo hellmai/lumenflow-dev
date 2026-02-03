@@ -20,7 +20,15 @@ artifacts:
   - .lumenflow/stamps/WU-1396.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Implements Elon Musk's 5-step algorithm as guidance for agents:
+  1. Question requirements
+  2. Try to delete (10% rule)
+  3. Simplify/optimize
+  4. Speed up
+  5. Automate (last, not first)
+spec_refs:
+  - 'lumenflow://plans/imperative-juggling-boole.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
