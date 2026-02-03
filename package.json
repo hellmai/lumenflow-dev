@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "setup": "pnpm install && turbo build --filter=@lumenflow/cli",
+    "setup": "pnpm install && turbo build --filter=@lumenflow/cli && node packages/@lumenflow/cli/dist/commands/integrate.js --client claude-code 2>/dev/null || true",
     "build": "turbo build",
     "build:dist": "turbo build:dist",
     "dev": "turbo dev",
@@ -82,6 +82,7 @@
     "initiative:bulk-assign": "node packages/@lumenflow/cli/dist/initiative-bulk-assign-wus.js",
     "agent:issues-query": "node packages/@lumenflow/cli/dist/agent-issues-query.js",
     "lumenflow:init": "node packages/@lumenflow/cli/dist/init.js",
+    "lumenflow:integrate": "node packages/@lumenflow/cli/dist/commands/integrate.js",
     "lumenflow:upgrade": "node packages/@lumenflow/cli/dist/lumenflow-upgrade.js",
     "lumenflow:doctor": "node packages/@lumenflow/cli/dist/doctor.js",
     "docs:sync": "node packages/@lumenflow/cli/dist/docs-sync.js",
