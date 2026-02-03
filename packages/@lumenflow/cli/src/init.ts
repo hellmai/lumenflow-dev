@@ -20,6 +20,8 @@ import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
 import { updateMergeBlock } from './merge-block.js';
 // WU-1362: Import worktree guard utilities for branch checking
 import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
+// WU-1386: Import doctor for auto-run after init
+import { runDoctorForInit } from './doctor.js';
 
 /**
  * WU-1085: CLI option definitions for init command
@@ -3282,6 +3284,18 @@ export async function main(): Promise<void> {
   if (result.warnings && result.warnings.length > 0) {
     console.log('\nWarnings:');
     result.warnings.forEach((w) => console.log(`  ⚠ ${w}`));
+  }
+
+  // WU-1386: Run doctor auto-check (non-blocking)
+  // This provides feedback on workflow health without failing init
+  try {
+    const doctorResult = await runDoctorForInit(targetDir);
+    if (doctorResult.output) {
+      console.log('');
+      console.log(doctorResult.output);
+    }
+  } catch {
+    // Doctor check is non-blocking - if it fails, continue with init
   }
 
   // WU-1359: Show complete lifecycle with auto-ID (no --id flag required)
