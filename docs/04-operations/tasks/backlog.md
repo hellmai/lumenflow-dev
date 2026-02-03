@@ -28,7 +28,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -368,3 +367,4 @@ sections:
 - [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml)
 - [WU-1388 — Document lumenflow commands in CLI reference and agent docs](wu/WU-1388.yaml)
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml)
+- [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml)

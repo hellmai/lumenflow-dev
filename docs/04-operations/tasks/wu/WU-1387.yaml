@@ -2,7 +2,7 @@ id: WU-1387
 title: Fix doctor agent-friction check edge cases
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,7 +25,7 @@ notes: |
   3. runDoctorForInit now includes lane health and prerequisite details in output
   4. getGitRepoRoot helper added for correct subdirectory handling
 spec_refs:
-  - 'lumenflow://plans/WU-1387-doctor-edge-cases.md'
+  - lumenflow://plans/WU-1387-doctor-edge-cases.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -56,3 +56,5 @@ session_id: c7ab8e3c-b3cd-4a3d-a3b9-279581774c0b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T16:19:05.587Z
+locked: true
+completed_at: 2026-02-03T16:33:00.610Z
