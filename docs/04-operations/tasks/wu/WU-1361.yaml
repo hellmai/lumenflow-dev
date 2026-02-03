@@ -2,7 +2,7 @@ id: WU-1361
 title: Lint debt cleanup (consolidated)
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -42,3 +42,5 @@ session_id: 2891a2ae-00e5-4795-9045-53a554421645
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T01:20:21.279Z
+locked: true
+completed_at: 2026-02-03T02:42:05.544Z
