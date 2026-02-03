@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1374 — Enable enforcement hooks by default for --client claude](wu/WU-1374.yaml) — Framework: CLI
 - [WU-1373 — Make CLAUDE.md template more aggressive about reading docs first](wu/WU-1373.yaml) — Framework: CLI
 - [WU-1372 — Add initiative-first workflow to Starlight quickstart](wu/WU-1372.yaml) — Content: Documentation
   (No items ready)
