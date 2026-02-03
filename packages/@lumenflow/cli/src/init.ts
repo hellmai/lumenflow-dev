@@ -1655,6 +1655,7 @@ LumenFlow uses Work Units (WUs) to track all changes:
 - [quick-ref-commands.md](quick-ref-commands.md) - Complete command reference
 - [agent-safety-card.md](agent-safety-card.md) - Safety guidelines
 - [wu-create-checklist.md](wu-create-checklist.md) - WU creation guide
+- [wu-sizing-guide.md](wu-sizing-guide.md) - WU complexity and context management
 `;
 
 const WU_CREATE_CHECKLIST_TEMPLATE = `# WU Creation Checklist
@@ -2046,6 +2047,97 @@ pnpm lane:health
 This detects:
 - Overlapping code paths between lanes
 - Code files not covered by any lane
+`;
+
+// WU-1385: WU sizing guide template for agent onboarding
+const WU_SIZING_GUIDE_TEMPLATE = `# Work Unit Sizing & Strategy Guide
+
+**Last updated:** {{DATE}}
+
+**Purpose:** Decision framework for agents to determine execution strategy based on task complexity.
+
+**Status:** Active — Thresholds are **mandatory limits**, not guidelines.
+
+---
+
+## Complexity Assessment Matrix
+
+Before claiming a WU, estimate its "weight" using these heuristics.
+
+| Complexity    | Files | Tool Calls | Context Budget | Strategy                                     |
+| :------------ | :---- | :--------- | :------------- | :------------------------------------------- |
+| **Simple**    | <20   | <50        | <30%           | **Single Session** (Tier 2 Context)          |
+| **Medium**    | 20-50 | 50-100     | 30-50%         | **Checkpoint-Resume** (Standard Handoff)     |
+| **Complex**   | 50+   | 100+       | >50%           | **Orchestrator-Worker** OR **Decomposition** |
+| **Oversized** | 100+  | 200+       | —              | **MUST Split** (See Patterns below)          |
+
+**These thresholds are mandatory.** Exceeding them leads to context exhaustion and rule loss. Agents operate in context windows and tool calls, not clock time.
+
+---
+
+## Context Safety Triggers
+
+If you hit ANY of these triggers during a session, you MUST checkpoint and spawn fresh:
+
+- **Token Limit:** Context usage hits **50% (Warning)** or **80% (Critical)**.
+- **Tool Volume:** **50+ tool calls** in current session.
+- **File Volume:** **20+ files** modified in \`git status\`.
+- **Session Staleness:** Repeated redundant queries or forgotten context.
+
+---
+
+## Spawn Fresh, Don't Continue
+
+**When approaching context limits, spawn a fresh agent instead of continuing after compaction.**
+
+Context compaction causes agents to lose critical rules. The disciplined approach:
+
+1. Checkpoint your progress: \`pnpm mem:checkpoint --wu WU-XXX\`
+2. Commit and push work
+3. Generate fresh agent prompt: \`pnpm wu:spawn --id WU-XXX\`
+4. EXIT current session (do NOT continue after compaction)
+
+---
+
+## Splitting Patterns
+
+When a WU is Oversized or Complex, split it using approved patterns:
+
+- **Tracer Bullet**: WU-1 proves skeleton works, WU-2 implements real logic
+- **Layer Split**: WU-1 for ports/application, WU-2 for infrastructure
+- **UI/Logic Split**: WU-1 for backend, WU-2 for frontend
+- **Feature Flag**: WU-1 behind flag, WU-2 removes flag
+
+---
+
+## Quick Reference
+
+| Scenario                            | Strategy            | Action                                       |
+| :---------------------------------- | :------------------ | :------------------------------------------- |
+| Bug fix, single file, <20 calls     | Simple              | Claim, fix, commit, \`wu:done\`              |
+| Feature 50-100 calls, clear phases  | Checkpoint-Resume   | Phase 1 → checkpoint → Phase 2 → done        |
+| Multi-domain, must land atomically  | Orchestrator-Worker | Main agent coordinates, spawns sub-agents    |
+| Large refactor 100+ calls           | Feature Flag Split  | WU-A: New behind flag → WU-B: Remove flag    |
+
+---
+
+## Documentation-Only Exception
+
+Documentation WUs (\`type: documentation\`) have relaxed file count thresholds:
+
+| Complexity | Files (docs) | Tool Calls | Strategy          |
+| :--------- | :----------- | :--------- | :---------------- |
+| **Simple** | <40          | <50        | Single Session    |
+| **Medium** | 40-80        | 50-100     | Checkpoint-Resume |
+
+**Applies when ALL true:**
+- WU \`type: documentation\`
+- Only modifies: \`docs/**\`, \`*.md\`
+- Does NOT touch code paths
+
+---
+
+For complete sizing guidance, see the canonical [wu-sizing-guide.md](https://lumenflow.dev/reference/wu-sizing-guide/) documentation.
 `;
 
 // WU-1083: Claude skills templates
@@ -2910,6 +3002,15 @@ async function scaffoldAgentOnboardingDocs(
   await createFile(
     path.join(onboardingDir, 'wu-create-checklist.md'),
     processTemplate(WU_CREATE_CHECKLIST_TEMPLATE, tokens),
+    options.force,
+    result,
+    targetDir,
+  );
+
+  // WU-1385: Add wu-sizing-guide.md to onboarding docs
+  await createFile(
+    path.join(onboardingDir, 'wu-sizing-guide.md'),
+    processTemplate(WU_SIZING_GUIDE_TEMPLATE, tokens),
     options.force,
     result,
     targetDir,
