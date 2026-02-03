@@ -9,6 +9,7 @@ code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
   - apps/docs/astro.config.mjs
   - apps/docs/src/content/docs/index.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
   manual:
     - Quickstart includes explicit "Do NOT edit managed files" warnings near init and WU creation
@@ -30,10 +31,17 @@ risks: []
 notes: 'Origin: Haven 2.8.0 onboarding report. Rewrite quickstart as imperative, agent-safe sequence
   with explicit prohibitions and command-first structure.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T16:19:21.643Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1380
+session_id: c7ab8e3c-b3cd-4a3d-a3b9-279581774c0b
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T16:19:21.651Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +59,3 @@ acceptance:
   - File Ownership table showing managed vs user files
   - Quickstart includes an agent callout banner at the top with "Follow these steps exactly"
     guidance.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1380
-claimed_at: 2026-02-03T16:19:21.643Z
-baseline_main_sha: 74d1571ea02f70d513091b7daf5d8b664d95cf5e
-session_id: c7ab8e3c-b3cd-4a3d-a3b9-279581774c0b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T16:19:21.651Z
