@@ -2,7 +2,7 @@ id: WU-1380
 title: Rewrite Starlight quickstart as agent-native documentation
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-03
 code_paths:
@@ -56,3 +56,5 @@ acceptance:
   - File Ownership table showing managed vs user files
   - Quickstart includes an agent callout banner at the top with "Follow these steps exactly"
     guidance.
+locked: true
+completed_at: 2026-02-03T16:24:35.009Z

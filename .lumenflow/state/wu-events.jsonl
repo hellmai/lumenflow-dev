@@ -684,5 +684,6 @@
 {"type":"complete","wuId":"WU-1385","timestamp":"2026-02-03T16:13:11.731Z"}
 {"type":"claim","wuId":"WU-1388","timestamp":"2026-02-03T16:14:25.769Z","lane":"Content: Documentation","title":"Document lumenflow commands in CLI reference and agent docs"}
 {"type":"complete","wuId":"WU-1388","timestamp":"2026-02-03T16:18:10.422Z"}
-{"type":"claim","wuId":"WU-1387","lane":"Framework: CLI","title":"Fix doctor agent-friction check edge cases","timestamp":"2026-02-03T16:19:05.616Z"}
-{"type":"claim","wuId":"WU-1380","lane":"Content: Documentation","title":"Rewrite Starlight quickstart as agent-native documentation","timestamp":"2026-02-03T16:19:21.679Z"}
+{"type":"claim","wuId":"WU-1387","timestamp":"2026-02-03T16:19:05.616Z","lane":"Framework: CLI","title":"Fix doctor agent-friction check edge cases"}
+{"type":"claim","wuId":"WU-1380","timestamp":"2026-02-03T16:19:21.679Z","lane":"Content: Documentation","title":"Rewrite Starlight quickstart as agent-native documentation"}
+{"type":"complete","wuId":"WU-1380","timestamp":"2026-02-03T16:24:37.445Z"}

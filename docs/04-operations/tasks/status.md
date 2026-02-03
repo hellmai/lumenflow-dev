@@ -9,7 +9,6 @@ _Last updated: 2026-02-03_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml)
-- [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml)
 
 ## Completed
 
@@ -344,3 +343,4 @@ _Last updated: 2026-02-03_
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — 2026-02-03
 - [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml) — 2026-02-03
 - [WU-1388 — Document lumenflow commands in CLI reference and agent docs](wu/WU-1388.yaml) — 2026-02-03
+- [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — 2026-02-03
