@@ -28,9 +28,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Rework docs so /getting-started/quickstart is the agent setup guide, move human
-  quickstart content to a guide, and update docs landing copy to instruct humans to share the agent
-  link.
+description: Rework docs so /getting-started/quickstart is the agent setup guide, move human quickstart content to a guide, and update docs landing copy to instruct humans to share the agent link.
 acceptance:
   - Quickstart page is agent-first with explicit Session 0 boundaries
   - Human-oriented quickstart content moved to a guide with updated links
@@ -43,3 +41,5 @@ session_id: d00d0149-38e8-4bca-8ec8-821df75ae261
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T23:03:21.141Z
+spec_refs:
+  - lumenflow://plans/WU-1395-plan.md
