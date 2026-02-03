@@ -23,6 +23,9 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1390.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/wise-shimmying-matsumoto.md
+  - lumenflow://plans/WU-1390-mem-recover.md
 risks: []
 notes: >
   Implementation uses durable recovery pattern: PreCompact writes recovery file to
@@ -31,8 +34,6 @@ notes: >
   SessionStart reads and deletes it. This ensures recovery survives context compaction.
 
   mem:recover is vendor-agnostic (core in @lumenflow/memory), hooks are Claude Code overlay.
-spec_refs:
-  - lumenflow://plans/wise-shimmying-matsumoto.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

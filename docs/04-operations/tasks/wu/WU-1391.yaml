@@ -17,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1391.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Follow-up WU-1392 added missing initiative --id examples and corrected AGENTS marker casing.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
