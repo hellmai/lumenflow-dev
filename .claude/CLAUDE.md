@@ -74,6 +74,7 @@ Available agents in `.claude/agents/`:
 
 ## Quick Reminders
 
+- Load `/skill design-first` before implementing features (question, delete, simplify).
 - Always claim WUs with `pnpm wu:claim` and work in the worktree.
 - Run `pnpm gates` before `pnpm wu:done`.
 - Complete work with `pnpm wu:done --id WU-XXX` from the main checkout.

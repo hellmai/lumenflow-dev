@@ -7,6 +7,7 @@ Master registry of all available skills for LumenFlow development.
 | Skill                                                         | Trigger               | Description                                            |
 | ------------------------------------------------------------- | --------------------- | ------------------------------------------------------ |
 | [bug-classification](bug-classification/SKILL.md)             | Bug discovered mid-WU | Classify bugs (P0-P3), fix-in-place vs separate WU     |
+| [design-first](design-first/SKILL.md)                         | Before features       | 5-step design validation before implementation         |
 | [code-quality](code-quality/SKILL.md)                         | Code review           | SOLID/DRY patterns, hex architecture compliance        |
 | [context-management](context-management/SKILL.md)             | Long sessions         | Session checkpoints, output bypass, sub-agent spawning |
 | [execution-memory](execution-memory/SKILL.md)                 | After /clear          | Session tracking, context recovery, agent coordination |
@@ -30,6 +31,7 @@ Master registry of all available skills for LumenFlow development.
 
 ### Quality & Testing
 
+- **[design-first](design-first/SKILL.md)** — 5-step validation before implementation (question, delete, simplify)
 - **[tdd-workflow](tdd-workflow/SKILL.md)** — Test-driven development (RED-GREEN-REFACTOR)
 - **[code-quality](code-quality/SKILL.md)** — SOLID/DRY review, hex architecture
 - **[lumenflow-gates](lumenflow-gates/SKILL.md)** — Gate troubleshooting
