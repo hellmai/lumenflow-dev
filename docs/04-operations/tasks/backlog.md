@@ -32,7 +32,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1382 — Improve generated file templates for agent clarity](wu/WU-1382.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -365,3 +364,4 @@ sections:
 - [WU-1371 — Auto-generate CLI README.md from docs generator](wu/WU-1371.yaml)
 - [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml)
 - [WU-1381 — Document cloud agent branch workflow](wu/WU-1381.yaml)
+- [WU-1382 — Improve generated file templates for agent clarity](wu/WU-1382.yaml)
