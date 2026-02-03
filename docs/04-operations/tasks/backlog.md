@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1386 — Extend lumenflow doctor with agent-friction checks](wu/WU-1386.yaml) — Framework: CLI
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 - [WU-1383 — Add CLI safeguards against manual file editing](wu/WU-1383.yaml) — Framework: CLI
