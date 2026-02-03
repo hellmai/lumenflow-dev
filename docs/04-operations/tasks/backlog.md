@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1397 — Landing page UX: copy button + simplified CTAs](wu/WU-1397.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
