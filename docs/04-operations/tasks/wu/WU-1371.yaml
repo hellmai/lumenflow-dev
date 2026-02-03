@@ -2,7 +2,7 @@ id: WU-1371
 title: Auto-generate CLI README.md from docs generator
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -26,7 +26,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Extend tools/generate-cli-docs.ts to also generate packages/@lumenflow/cli/README.md from the same source data used for Starlight cli.mdx. This eliminates manual maintenance drift between README.md and cli.mdx (discovered in WU-1369 analysis: 10 commands missing from README but present in Starlight).'
+description: 'Extend tools/generate-cli-docs.ts to also generate packages/@lumenflow/cli/README.md
+  from the same source data used for Starlight cli.mdx. This eliminates manual maintenance drift
+  between README.md and cli.mdx (discovered in WU-1369 analysis: 10 commands missing from README but
+  present in Starlight).'
 acceptance:
   - generateReadmeMd() function added to tools/generate-cli-docs.ts
   - README.md generated with same command tables as current manual version
@@ -34,3 +37,11 @@ acceptance:
   - pnpm docs:validate checks README.md for drift
   - Pre-release check passes (validates README.md has all bin entries)
   - WU-1369 can be closed as superseded
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1371
+claimed_at: 2026-02-03T09:19:15.805Z
+baseline_main_sha: 7350b6d5129c4e7291bb4061087e846ba07b2ee2
+session_id: 4bcb09b4-69a5-49d3-98e1-f1786a3e416b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T09:19:15.811Z
