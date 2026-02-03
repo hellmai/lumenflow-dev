@@ -24,7 +24,7 @@ import path from 'node:path';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { STRING_LITERALS, DEFAULTS } from './wu-constants.js';
 
-/* eslint-disable security/detect-non-literal-fs-filename -- CLI tool operates on validated worktree paths */
+ 
 
 /**
  * Result of orphan detection

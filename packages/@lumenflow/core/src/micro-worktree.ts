@@ -437,7 +437,7 @@ export async function cleanupOrphanedMicroWorktree(
  */
 function tryFilesystemCleanup(worktreePath: string): void {
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
+     
     if (existsSync(worktreePath)) {
       rmSync(worktreePath, { recursive: true, force: true });
     }
@@ -497,7 +497,7 @@ export async function cleanupMicroWorktree(
   const mainGit = getGitForCwd();
 
   // Remove the known worktree path first (must be done before deleting branch)
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
+   
   if (existsSync(worktreePath)) {
     await removeWorktreeSafe(mainGit, worktreePath, logPrefix);
   }
@@ -602,7 +602,7 @@ export function isPrettierAvailable(): boolean {
   try {
     // Check if prettier is available by running pnpm prettier --version
     // Note: This uses execSync with a known-safe command (no user input)
-    // eslint-disable-next-line sonarjs/os-command -- CLI tool executing known safe prettier version check
+     
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} --version`, {
       encoding: 'utf-8',
       stdio: STDIO_MODES.PIPE,
@@ -662,7 +662,7 @@ export async function formatFiles(
 
   try {
     // Note: This uses execSync with validated paths (built from worktreePath and file list)
-    // eslint-disable-next-line sonarjs/os-command -- CLI tool executing known safe prettier command with validated paths
+     
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} ${pathArgs}`, {
       encoding: 'utf-8',
       stdio: STDIO_MODES.PIPE,
@@ -762,7 +762,7 @@ export async function pushWithRetry(
   tempBranchName: string,
   logPrefix: string = DEFAULT_LOG_PREFIX,
 ): Promise<void> {
-  // eslint-disable-next-line sonarjs/deprecation -- Using deprecated constant for backwards compatibility
+   
   const maxRetries = MAX_PUSH_RETRIES;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
+ 
 /**
  * Initiative Remove WU Command (WU-1328)
  *

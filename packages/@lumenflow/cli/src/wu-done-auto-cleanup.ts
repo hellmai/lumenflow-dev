@@ -13,7 +13,7 @@
  * @see {@link packages/@lumenflow/core/src/lumenflow-config-schema.ts} - CleanupConfigSchema
  */
 
-/* eslint-disable no-console -- CLI module requires console output for user feedback */
+ 
 
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { cleanupState, type StateCleanupResult } from '@lumenflow/core/dist/state-cleanup-core.js';

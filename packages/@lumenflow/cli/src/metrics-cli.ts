@@ -232,7 +232,7 @@ async function loadGitCommits(weekStart: Date, weekEnd: Date): Promise<GitCommit
       const wuIdMatch = message.match(/\b(WU-\d+)\b/i);
       const wuId = wuIdMatch ? wuIdMatch[1].toUpperCase() : undefined;
 
-      const typeMatch = message.match(/^(feat|fix|docs|chore|refactor|test|style|perf|ci)[\(:]?/i);
+      const typeMatch = message.match(/^(feat|fix|docs|chore|refactor|test|style|perf|ci)[(:]?/i);
       const type = typeMatch ? typeMatch[1].toLowerCase() : undefined;
 
       commits.push({

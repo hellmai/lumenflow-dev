@@ -179,7 +179,7 @@ async function loadGitCommits(weekStart: Date, weekEnd: Date): Promise<GitCommit
       const wuId = wuIdMatch ? wuIdMatch[1].toUpperCase() : undefined;
 
       // Determine commit type from conventional commit prefix
-      const typeMatch = message.match(/^(feat|fix|docs|chore|refactor|test|style|perf|ci)[\(:]?/i);
+      const typeMatch = message.match(/^(feat|fix|docs|chore|refactor|test|style|perf|ci)[(:]?/i);
       const type = typeMatch ? typeMatch[1].toLowerCase() : undefined;
 
       commits.push({

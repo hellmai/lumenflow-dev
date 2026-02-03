@@ -1,4 +1,4 @@
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';

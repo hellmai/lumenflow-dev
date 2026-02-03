@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Unblock Helper
  *
@@ -71,7 +71,7 @@ function branchExists(branch) {
 
 function createWorktree(doc, worktreePath, branchName) {
   if (!worktreePath) die('Worktree path required to create a worktree');
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool checks worktree
+   
   if (existsSync(worktreePath)) {
     console.warn(`${PREFIX} Worktree ${worktreePath} already exists; skipping creation.`);
     return;

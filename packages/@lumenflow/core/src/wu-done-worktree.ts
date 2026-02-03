@@ -760,7 +760,7 @@ const WU_EVENTS_PATH = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
 function normalizeEventForKey(event) {
   const normalized = {};
   for (const key of Object.keys(event).sort()) {
-    // eslint-disable-next-line security/detect-object-injection -- keys derived from object keys
+     
     normalized[key] = event[key];
   }
   return normalized;

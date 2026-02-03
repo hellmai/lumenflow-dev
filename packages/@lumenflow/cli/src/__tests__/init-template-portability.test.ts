@@ -113,7 +113,7 @@ describe('template portability', () => {
       if (fs.existsSync(startingPromptPath)) {
         const content = fs.readFileSync(startingPromptPath, 'utf-8');
         // Should use relative paths like ../../../../../../LUMENFLOW.md
-        // eslint-disable-next-line sonarjs/slow-regex -- Simple path pattern, no backtracking risk
+         
         expect(content).toMatch(/\[.*?\]\([./]+.*?\.md\)/);
       }
     });

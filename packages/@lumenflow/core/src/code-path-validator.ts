@@ -22,7 +22,7 @@
  * Part of INIT-023: Workflow Integrity initiative.
  */
 
-/* eslint-disable security/detect-non-literal-fs-filename, security/detect-object-injection */
+ 
 
 import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';

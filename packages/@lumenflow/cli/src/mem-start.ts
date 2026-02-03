@@ -42,12 +42,12 @@ async function writeAuditLog(baseDir, entry) {
     const logDir = path.dirname(logPath);
 
     // Ensure telemetry directory exists
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory
+     
     await fs.mkdir(logDir, { recursive: true });
 
     // Append NDJSON entry
     const line = `${JSON.stringify(entry)}\n`;
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes audit log
+     
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors

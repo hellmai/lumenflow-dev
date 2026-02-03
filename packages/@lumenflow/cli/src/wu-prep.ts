@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI command uses console for status output */
+ 
 /**
  * WU Prep Helper (WU-1223)
  *

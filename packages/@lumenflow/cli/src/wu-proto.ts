@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Proto Helper (WU-1359)
  *

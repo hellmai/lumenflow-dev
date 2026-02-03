@@ -25,7 +25,7 @@ import {
   WU_STATUS,
   STRING_LITERALS,
 } from '@lumenflow/core/dist/wu-constants.js';
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 
 /** Log prefix for consistent output */
 const LOG_PREFIX = '[backlog-prune]';

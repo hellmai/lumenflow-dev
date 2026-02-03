@@ -10,7 +10,7 @@
  * Used by wu:done, wu:recovery, and validation tools
  */
 
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { readFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';

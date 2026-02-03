@@ -33,7 +33,7 @@
  */
 
 // WU-2542: Import from @lumenflow/core to establish shim layer dependency
-// eslint-disable-next-line no-unused-vars -- Validates @lumenflow/core package link
+ 
 import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
 
 // WU-1153: wu:done guard for uncommitted code_paths is implemented in core package
@@ -1399,7 +1399,7 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
  * @param {string} backlogPath - Path to backlog.md (WU-1230)
  * @param {string} statusPath - Path to status.md (WU-1230)
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
+ 
 async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, statusPath) {
   console.error(
     `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} ROLLING BACK TRANSACTION (WU-755 + WU-1230 + WU-1255 + WU-1280)...`,
@@ -1612,7 +1612,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
  * @param {string|null} overrideReason - Reason for override
  * @returns {{valid: boolean, error: string|null, auditEntry: object|null}}
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
+ 
 async function checkOwnership(id, doc, worktreePath, overrideOwner = false, overrideReason = null) {
   // Missing worktree means WU was not claimed properly (unless escape hatch applies)
   if (!worktreePath || !existsSync(worktreePath)) {
@@ -2141,7 +2141,7 @@ async function executePreFlightChecks({
  * @param {string|null} params.worktreePath - Worktree path (null for branch-only)
  * @param {string} [params.branchName] - Lane branch name for checkpoint
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
+ 
 interface ExecuteGatesParams {
   id: string;
   args: Record<string, unknown>;
@@ -2614,7 +2614,9 @@ async function main() {
         try {
           const lane = docMain.lane;
           if (lane) releaseLaneLock(lane, { wuId: id });
-        } catch {}
+        } catch {
+          // Intentionally ignore lock release errors during cleanup
+        }
         process.exit(EXIT_CODES.SUCCESS);
       }
     } catch (err) {
@@ -2622,7 +2624,9 @@ async function main() {
       try {
         const lane = docMain.lane;
         if (lane) releaseLaneLock(lane, { wuId: id });
-      } catch {}
+      } catch {
+        // Intentionally ignore lock release errors during error handling
+      }
 
       // WU-1811: Check if cleanup is safe before removing worktree
       // If cleanupSafe is false (or undefined), preserve worktree for recovery

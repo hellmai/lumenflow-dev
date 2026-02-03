@@ -157,7 +157,7 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * lane:suggest CLI Command (WU-1189, WU-1190)
  *

@@ -183,7 +183,7 @@ function safeGitExec(args: string[], cwd: string): string {
     // 1. 'git' is a fixed command from PATH (trusted)
     // 2. args are internally constructed, not from user input
     // 3. cwd is validated by the caller (projectRoot from CLI)
-    // eslint-disable-next-line sonarjs/os-command -- safe: git is trusted, args are static
+     
     const result = execSync(cmd, {
       cwd,
       encoding: 'utf-8',
@@ -222,7 +222,7 @@ export function extractGitContext(
   try {
     // Check if this is a git repo using execSync directly
     // SECURITY: This is a static command with no user input
-    // eslint-disable-next-line sonarjs/no-os-command-from-path -- safe: static command
+     
     execSync('git rev-parse --is-inside-work-tree', {
       cwd: projectRoot,
       encoding: 'utf-8',
@@ -581,7 +581,7 @@ export function getChurnMetrics(projectRoot: string, options: ChurnOptions = {})
   try {
     /// SECURITY: all args are constructed internally (no user input)
     const cmd = ['git', ...args].join(' ');
-    // eslint-disable-next-line sonarjs/os-command -- safe: git is trusted, args are static
+     
     output = execSync(cmd, {
       cwd: projectRoot,
       encoding: 'utf-8',

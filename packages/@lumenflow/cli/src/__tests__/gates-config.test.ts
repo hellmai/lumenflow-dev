@@ -6,7 +6,7 @@
  * in .lumenflow.config.yaml for framework agnosticism.
  */
 
-/* eslint-disable sonarjs/no-duplicate-string -- Test files intentionally repeat string literals for readability */
+ 
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';

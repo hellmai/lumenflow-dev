@@ -129,7 +129,7 @@ function validateAllWUs({ strict = true } = {}) {
 /**
  * Main entry point
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
+ 
 async function main() {
   const args = createWUParser({
     name: 'wu-validate',

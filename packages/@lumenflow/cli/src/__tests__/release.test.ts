@@ -167,7 +167,7 @@ describe('release command', () => {
       const content = await import('node:fs/promises').then((fs) =>
         fs.readFile(packagePath, 'utf-8'),
       );
-      expect(content).toMatch(/{\n  "name"/); // Preserve 2-space indent
+      expect(content).toMatch(/{\n {2}"name"/); // Preserve 2-space indent
     });
   });
 

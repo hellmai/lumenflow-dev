@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Claim Helper
  *
@@ -17,7 +17,7 @@
  */
 
 // WU-2542: Import from @lumenflow/core to establish shim layer dependency
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, sonarjs/unused-import -- Validates @lumenflow/core package link
+// eslint-disable-next-line sonarjs/unused-import -- Validates @lumenflow/core package link
 import { VERSION as _LUMENFLOW_VERSION } from '@lumenflow/core';
 
 import { existsSync, readFileSync, rmSync } from 'node:fs';
@@ -42,7 +42,7 @@ import {
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
 // WU-1213: Using deprecated sync API - async validate() requires larger refactor (separate WU)
 import {
-  // eslint-disable-next-line sonarjs/deprecation -- sync API required for current architecture
+   
   validateLaneCodePaths,
   logLaneValidationWarnings,
 } from '@lumenflow/core/dist/code-path-validator.js';
@@ -148,7 +148,7 @@ const PREFIX = LOG_PREFIX.CLAIM;
  */
 function preflightValidateWU(WU_PATH, id) {
   // Check file exists
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   if (!existsSync(WU_PATH)) {
     die(
       `WU file not found: ${WU_PATH}\n\n` +
@@ -161,7 +161,7 @@ function preflightValidateWU(WU_PATH, id) {
   }
 
   // Parse and validate YAML structure
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const text = readFileSync(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   let doc;
   try {
@@ -283,7 +283,7 @@ async function updateWUYaml(
   // Read file
   let text;
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+     
     text = await readFile(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   } catch (e) {
     die(
@@ -368,7 +368,7 @@ async function updateWUYaml(
   // WU-1352: Use centralized stringify for consistent output
   const out = stringifyYAML(doc);
   // Write file
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
+   
   await writeFile(WU_PATH, out, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   // WU-1211: Return both title and initiative for status progression check
   return { title: doc.title || '', initiative: doc.initiative || null };
@@ -444,7 +444,7 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   const rel = `wu/${id}.yaml`;
   const bullet = `- [${id} — ${title}](${rel})`;
   // Read file
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
+   
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(STRING_LITERALS.NEWLINE);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
@@ -458,7 +458,7 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   if (section.includes(rel) || section.includes(`[${id}`)) return; // already listed
   // Remove "No items" marker if present
   for (let i = startIdx + 1; i < endIdx; i++) {
-    // eslint-disable-next-line security/detect-object-injection -- array index loop
+     
     if (lines[i] && lines[i].includes('No items currently in progress')) {
       lines.splice(i, 1);
       endIdx--;
@@ -468,7 +468,7 @@ async function addOrReplaceInProgressStatus(statusPath, id, title) {
   // Insert bullet right after header
   lines.splice(startIdx + 1, 0, '', bullet);
   // Write file
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
+   
   await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   });
@@ -564,10 +564,10 @@ async function applyStagedChangesToMicroWorktree(worktreePath, stagedChanges) {
       continue;
     }
     const sourcePath = path.join(process.cwd(), filePath);
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool applies staged files
+     
     const contents = await readFile(sourcePath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
     await mkdir(path.dirname(targetPath), { recursive: true });
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool applies staged files
+     
     await writeFile(targetPath, contents, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   }
 }
@@ -680,11 +680,11 @@ async function readWUTitle(id) {
     return null;
   }
   // Read file
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const text = await readFile(p, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   // Match title field - use RegExp.exec for sonarjs/prefer-regexp-exec compliance
   // Regex is safe: runs on trusted WU YAML files with bounded input
-  // eslint-disable-next-line sonarjs/slow-regex -- Bounded input from WU YAML files
+   
   const titlePattern = /^title:\s*"?([^"\n]+)"?$/m;
   const m = titlePattern.exec(text);
   return m ? m[1] : null;
@@ -709,7 +709,7 @@ async function checkExistingBranchOnlyWU(statusPath, currentWU) {
   }
 
   // Read file
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
+   
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(STRING_LITERALS.NEWLINE);
 
@@ -746,7 +746,7 @@ async function checkExistingBranchOnlyWU(statusPath, currentWU) {
 
     try {
       // Read file
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+       
       const text = await readFile(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
       const doc = parseYAML(text);
       if (doc && doc.claimed_mode === CLAIMED_MODES.BRANCH_ONLY) {
@@ -892,10 +892,10 @@ function handleLaneOccupancy(laneCheck, lane, id, force) {
  * Handle code path overlap detection (WU-901)
  */
 function handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   if (!existsSync(WU_PATH)) return;
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const wuContent = readFileSync(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
@@ -1074,7 +1074,7 @@ async function claimBranchOnlyMode(ctx) {
   console.log(`  /wu-prompt ${id}  (generates full context prompt)`);
 
   // Emit mandatory agent advisory based on code_paths (WU-1324)
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const wuContent = await readFile(WU_PATH, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const wuDoc = parseYAML(wuContent);
   const codePaths = wuDoc.code_paths || [];
@@ -1291,7 +1291,7 @@ async function claimWorktreeMode(ctx) {
   // Emit mandatory agent advisory based on code_paths (WU-1324)
   // Read from worktree since that's where the updated YAML is
   const wtWUPathForAdvisory = path.join(worktreePath, WU_PATH);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const wuContent = await readFile(wtWUPathForAdvisory, {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   });
@@ -1551,7 +1551,7 @@ async function main() {
   }
 
   // WU-1372: Lane-to-code_paths consistency check (advisory only, never blocks)
-  // eslint-disable-next-line sonarjs/deprecation -- sync API required for current architecture
+   
   const laneValidation = validateLaneCodePaths(doc, args.lane);
   logLaneValidationWarnings(laneValidation, PREFIX);
 

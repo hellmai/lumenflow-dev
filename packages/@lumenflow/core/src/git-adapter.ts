@@ -546,7 +546,7 @@ export class GitAdapter {
     } catch (err) {
       // If git fails, we still want to clean up the directory
       // Re-throw after cleanup attempt to report the original error
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
+       
       if (existsSync(worktreePath)) {
         rmSync(worktreePath, { recursive: true, force: true });
       }
@@ -555,7 +555,7 @@ export class GitAdapter {
 
     // Layer 1 defense (WU-1476): Explicit cleanup if directory still exists
     // This handles edge cases where git worktree remove succeeds but leaves the directory
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool with validated worktree path
+     
     if (existsSync(worktreePath)) {
       try {
         rmSync(worktreePath, { recursive: true, force: true });

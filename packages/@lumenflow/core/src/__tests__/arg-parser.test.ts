@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-// eslint-disable-next-line sonarjs/deprecation -- Testing deprecated API for backward compat
+ 
 import { WU_OPTIONS, WU_CREATE_OPTIONS, createWUParser, parseWUArgs } from '../arg-parser.js';
 
 // Test fixture constants (WU-1173: avoid duplicate string lint errors)
@@ -659,7 +659,7 @@ describe('arg-parser', () => {
     });
   });
 
-  /* eslint-disable sonarjs/deprecation -- Testing deprecated API for backward compat */
+   
   describe('parseWUArgs (deprecated)', () => {
     let originalArgv: string[];
     let originalExit: typeof process.exit;
@@ -709,5 +709,5 @@ describe('arg-parser', () => {
       expect(opts.branchOnly).toBe(true);
     });
   });
-  /* eslint-enable sonarjs/deprecation */
+   
 });
