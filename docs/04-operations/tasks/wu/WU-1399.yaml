@@ -2,7 +2,7 @@ id: WU-1399
 title: Tighten agent quickstart enforcement and decision rules
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -42,3 +42,5 @@ acceptance:
     complete
   - Quickstart explicitly forbids editing .lumenflow.config.yaml
   - Quickstart includes a next-step decision ladder (Discovery WU vs Task WU vs Initiative)
+locked: true
+completed_at: 2026-02-03T23:53:55.003Z
