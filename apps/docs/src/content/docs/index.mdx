@@ -18,7 +18,7 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 
 ## Why LumenFlow?
 
@@ -39,52 +39,22 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ## Give your agent one link
 
-LumenFlow is designed for agent-first setup. Give your agent this link and it will install the CLI,
-initialize LumenFlow, create the first WU, and stop.
+<Aside type="tip" title="Copy this prompt">
+Paste this into Claude Code, Cursor, Codex, Windsurf, Cline, or any AI coding assistant:
 
 ```text
-Set up LumenFlow for this repo using the Agent Quickstart:
-https://lumenflow.dev/getting-started/quickstart/
+Set up LumenFlow for this project: https://lumenflow.dev/getting-started/quickstart/
 ```
 
-Works with Claude Code, Cursor, Codex, Windsurf, Cline, and any AI that can read docs.
+</Aside>
 
-## How it works
-
-```yaml
-# 1. Define your lanes
-lanes:
-  - name: 'Framework: Core'
-    wip_limit: 1
-  - name: 'Experience: UI'
-    wip_limit: 2
-
-# 2. Create a Work Unit (ID auto-generated)
-# pnpm wu:create --title "Add auth" --lane "Framework: Core" \
-#   --type feature --exposure api \
-#   --description "Add login and session handling" \
-#   --acceptance "Users can log in with email/password" \
-#   --code-paths "src/auth/" \
-#   --test-paths-unit "src/auth/__tests__/auth.test.ts" \
-#   --plan
-
-# 3. Claim and work (use generated ID, example: WU-123)
-# pnpm wu:claim --id WU-123 --lane "Framework: Core"
-# cd worktrees/framework-core-wu-123
-
-# 4. Run gates in worktree, then complete from main
-# pnpm wu:prep --id WU-123
-# cd /path/to/main && pnpm wu:done --id WU-123
-```
+Your agent will install LumenFlow, create the first Work Unit, and stop — ready for you to review before implementation begins.
 
 ## Get Started
 
 <CardGrid>
   <Card title="Agent Quickstart" icon="seti:robot">
     [Give your agent this link →](/getting-started/quickstart/)
-  </Card>
-  <Card title="Manual Quickstart (Humans)" icon="rocket">
-    [Run setup yourself →](/guides/manual-quickstart/)
   </Card>
   <Card title="Core Concepts" icon="open-book">
     [Understand WUs, Lanes, Gates →](/concepts/work-units/)
