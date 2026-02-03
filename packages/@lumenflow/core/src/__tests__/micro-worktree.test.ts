@@ -1422,6 +1422,103 @@ describe('micro-worktree', () => {
   });
 
   /**
+   * WU-1365: Tests for LUMENFLOW_WU_TOOL environment variable export
+   *
+   * The pre-push hook checks for LUMENFLOW_WU_TOOL to allow micro-worktree operations.
+   * The constant should be exported for use by CLI commands.
+   */
+  describe('LUMENFLOW_WU_TOOL_ENV constant (WU-1365)', () => {
+    it('should export LUMENFLOW_WU_TOOL_ENV constant', async () => {
+      const { LUMENFLOW_WU_TOOL_ENV } = await import('../micro-worktree.js');
+      expect(LUMENFLOW_WU_TOOL_ENV).toBe('LUMENFLOW_WU_TOOL');
+    });
+  });
+
+  /**
+   * WU-1365: Tests for prettier availability handling in formatFiles
+   *
+   * When prettier is not installed or not available, formatFiles should:
+   * 1. Skip formatting gracefully without throwing
+   * 2. Log a clear, actionable warning message
+   */
+  describe('formatFiles prettier availability (WU-1365)', () => {
+    it('should export isPrettierAvailable function', async () => {
+      const { isPrettierAvailable } = await import('../micro-worktree.js');
+      expect(typeof isPrettierAvailable).toBe('function');
+    });
+
+    it('isPrettierAvailable should return boolean', async () => {
+      const { isPrettierAvailable } = await import('../micro-worktree.js');
+      const result = isPrettierAvailable();
+      expect(typeof result).toBe('boolean');
+    });
+  });
+
+  /**
+   * WU-1365: Tests for cleanup on failure
+   *
+   * Failed operations should always clean up temp worktrees before exit.
+   */
+  describe('cleanup on failure (WU-1365)', () => {
+    const originalEnv = { ...process.env };
+
+    beforeEach(() => {
+      vi.resetModules();
+    });
+
+    afterEach(() => {
+      process.env = { ...originalEnv };
+      vi.restoreAllMocks();
+    });
+
+    it('should call cleanupMicroWorktree even when execute throws', async () => {
+      const mockBranchExists = vi.fn().mockResolvedValue(false);
+      const mockDeleteBranch = vi.fn().mockResolvedValue(undefined);
+      const mockWorktreeRemove = vi.fn().mockResolvedValue(undefined);
+      const mockWorktreeList = vi.fn().mockResolvedValue('');
+      const mockCreateBranchNoCheckout = vi.fn().mockResolvedValue(undefined);
+      const mockWorktreeAddExisting = vi.fn().mockResolvedValue(undefined);
+      const mockFetch = vi.fn().mockResolvedValue(undefined);
+      const mockMerge = vi.fn().mockResolvedValue(undefined);
+
+      const mainGitMock = {
+        fetch: mockFetch,
+        merge: mockMerge,
+        createBranchNoCheckout: mockCreateBranchNoCheckout,
+        worktreeAddExisting: mockWorktreeAddExisting,
+        worktreeList: mockWorktreeList,
+        branchExists: mockBranchExists,
+        worktreeRemove: mockWorktreeRemove,
+        deleteBranch: mockDeleteBranch,
+      };
+
+      const createMainGit = (): typeof mainGitMock => mainGitMock;
+      const createWorktreeGit = (): Record<string, never> => ({});
+      vi.doMock('../git-adapter.js', () => ({
+        getGitForCwd: vi.fn(createMainGit),
+        createGitForPath: vi.fn(createWorktreeGit),
+      }));
+
+      const { withMicroWorktree } = await import('../micro-worktree.js');
+
+      const mockExecute = vi.fn().mockRejectedValue(new Error('Execute failed'));
+
+      await expect(
+        withMicroWorktree({
+          operation: 'test-op',
+          id: 'WU-TEST',
+          logPrefix: '[test]',
+          pushOnly: false,
+          execute: mockExecute,
+        }),
+      ).rejects.toThrow('Execute failed');
+
+      // Verify cleanup was attempted (branch existence check or deletion attempt)
+      expect(mockBranchExists).toHaveBeenCalled();
+    });
+  });
+
+  /**
    * WU-1332: Tests for PushRetryConfig schema
    */
   describe('PushRetryConfigSchema (WU-1332)', () => {
