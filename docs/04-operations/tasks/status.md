@@ -1,6 +1,6 @@
 # Work Unit Status
 
-_Last updated: 2026-02-02_
+_Last updated: 2026-02-03_
 
 ## In Progress
 
@@ -10,7 +10,6 @@ _Last updated: 2026-02-02_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml)
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml)
-- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml)
 
 ## Completed
 
@@ -324,3 +323,4 @@ _Last updated: 2026-02-02_
 - [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml) — 2026-02-02
 - [WU-1359 — Enhance init output and add wu:proto command for new user experience](wu/WU-1359.yaml) — 2026-02-02
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml) — 2026-02-02
+- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — 2026-02-03

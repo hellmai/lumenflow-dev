@@ -2,7 +2,7 @@ id: WU-1220
 title: Investigate improper LUMENFLOW_FORCE usage in agent sessions
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-01-29
 code_paths:
@@ -38,3 +38,5 @@ session_id: b44b24b9-29f7-4899-9c2e-6eddf30a9205
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-02T23:57:43.914Z
+locked: true
+completed_at: 2026-02-03T00:00:52.920Z
