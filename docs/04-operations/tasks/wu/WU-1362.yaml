@@ -2,7 +2,7 @@ id: WU-1362
 title: Add branch guards to prevent main pollution (consolidated)
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -43,3 +43,5 @@ session_id: 38ad5bcb-b7a7-4ff2-a220-de70b3924d0a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T02:46:41.040Z
+locked: true
+completed_at: 2026-02-03T02:56:24.470Z
