@@ -8,7 +8,6 @@ _Last updated: 2026-02-03_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1389 — Create Agent Start Here entrypoint and route quickstart](wu/WU-1389.yaml)
 
 ## Completed
 
@@ -345,3 +344,4 @@ _Last updated: 2026-02-03_
 - [WU-1388 — Document lumenflow commands in CLI reference and agent docs](wu/WU-1388.yaml) — 2026-02-03
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — 2026-02-03
 - [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml) — 2026-02-03
+- [WU-1389 — Create Agent Start Here entrypoint and route quickstart](wu/WU-1389.yaml) — 2026-02-03

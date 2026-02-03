@@ -688,4 +688,5 @@
 {"type":"claim","wuId":"WU-1380","timestamp":"2026-02-03T16:19:21.679Z","lane":"Content: Documentation","title":"Rewrite Starlight quickstart as agent-native documentation"}
 {"type":"complete","wuId":"WU-1380","timestamp":"2026-02-03T16:24:37.445Z"}
 {"type":"complete","wuId":"WU-1387","timestamp":"2026-02-03T16:33:03.179Z"}
-{"type":"claim","wuId":"WU-1389","lane":"Content: Documentation","title":"Create Agent Start Here entrypoint and route quickstart","timestamp":"2026-02-03T18:17:08.321Z"}
+{"type":"claim","wuId":"WU-1389","timestamp":"2026-02-03T18:17:08.321Z","lane":"Content: Documentation","title":"Create Agent Start Here entrypoint and route quickstart"}
+{"type":"complete","wuId":"WU-1389","timestamp":"2026-02-03T18:23:13.803Z"}

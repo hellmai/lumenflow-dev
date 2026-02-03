@@ -2,7 +2,7 @@ id: WU-1389
 title: Create Agent Start Here entrypoint and route quickstart
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -51,3 +51,5 @@ acceptance:
   - Quickstart links to Agent Start Here and removes manual package.json script step.
   - Quickstart adds initiative step before WU creation and clarifies AGENTS.md is user-owned.
   - Sidebar and homepage include Agent Start Here link.
+locked: true
+completed_at: 2026-02-03T18:23:11.328Z
