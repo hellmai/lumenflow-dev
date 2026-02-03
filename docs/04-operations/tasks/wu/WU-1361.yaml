@@ -2,7 +2,7 @@ id: WU-1361
 title: Lint debt cleanup (consolidated)
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -27,8 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Consolidates 9 lint WUs: WU-1205, WU-1247, WU-1252, WU-1265, WU-1294, WU-1320, WU-1321, WU-1335, WU-1339. Fix all pre-existing lint warnings across CLI, Core, and Initiatives packages.'
+description: 'Consolidates 9 lint WUs: WU-1205, WU-1247, WU-1252, WU-1265, WU-1294, WU-1320,
+  WU-1321, WU-1335, WU-1339. Fix all pre-existing lint warnings across CLI, Core, and Initiatives
+  packages.'
 acceptance:
   - pnpm eslint packages/@lumenflow/cli/src --max-warnings 0 passes
   - pnpm eslint packages/@lumenflow/core/src --max-warnings 0 passes
   - pnpm eslint packages/@lumenflow/initiatives/src --max-warnings 0 passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1361
+claimed_at: 2026-02-03T01:20:21.272Z
+baseline_main_sha: e38e5b82856ad2dbea42553efa990848699512a2
+session_id: 2891a2ae-00e5-4795-9045-53a554421645
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T01:20:21.279Z
