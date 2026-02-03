@@ -2,7 +2,7 @@ id: WU-1368
 title: Fix sync:templates --check-drift and add micro-worktree isolation
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -42,3 +42,5 @@ session_id: cfd2aaf9-689c-4acb-b2d3-97e29d6b1ec0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T09:04:07.353Z
+locked: true
+completed_at: 2026-02-03T09:15:50.643Z
