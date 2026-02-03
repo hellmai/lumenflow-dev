@@ -2,7 +2,7 @@ id: WU-1399
 title: Tighten agent quickstart enforcement and decision rules
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,10 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Refine agent quickstart to treat enforcement warnings as blockers, forbid manual config edits, and add a clear next-step decision ladder after setup.
+description: Refine agent quickstart to treat enforcement warnings as blockers, forbid manual config
+  edits, and add a clear next-step decision ladder after setup.
 acceptance:
-  - Quickstart instructs agents to resolve or escalate enforcement warnings before declaring setup complete
+  - Quickstart instructs agents to resolve or escalate enforcement warnings before declaring setup
+    complete
   - Quickstart explicitly forbids editing .lumenflow.config.yaml
   - Quickstart includes a next-step decision ladder (Discovery WU vs Task WU vs Initiative)
 spec_refs:
   - lumenflow://plans/WU-1399-plan.md
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1399
+claimed_at: 2026-02-03T23:51:16.712Z
+baseline_main_sha: 1e7fdd7f54587e01ff3e27bf8234d0eff96582b9
+session_id: 2a4930e5-b0c9-4ceb-a044-2c94b47b49d8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T23:51:16.719Z

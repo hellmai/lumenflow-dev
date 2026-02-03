@@ -711,3 +711,4 @@
 {"type":"complete","wuId":"WU-1397","timestamp":"2026-02-03T23:29:42.093Z"}
 {"type":"claim","wuId":"WU-1398","timestamp":"2026-02-03T23:42:41.427Z","lane":"Content: Documentation","title":"Add Session 0 exit criteria to agent quickstart"}
 {"type":"complete","wuId":"WU-1398","timestamp":"2026-02-03T23:45:30.100Z"}
+{"type":"claim","wuId":"WU-1399","lane":"Content: Documentation","title":"Tighten agent quickstart enforcement and decision rules","timestamp":"2026-02-03T23:51:16.745Z"}
