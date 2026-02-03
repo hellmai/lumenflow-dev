@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1383 — Add CLI safeguards against manual file editing](wu/WU-1383.yaml) — Framework: CLI
 - [WU-1382 — Improve generated file templates for agent clarity](wu/WU-1382.yaml) — Framework: CLI
 - [WU-1381 — Document cloud agent branch workflow](wu/WU-1381.yaml) — Content: Documentation
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
