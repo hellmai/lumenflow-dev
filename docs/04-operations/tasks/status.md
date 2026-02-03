@@ -7,10 +7,7 @@ _Last updated: 2026-02-03_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-
-## Blocked
-
-- [WU-1395 — Fix init docs paths for simple structure](wu/WU-1395.yaml) — Abandoned - created accidentally during support request
+- [WU-1395 — Make Quickstart agent-first + add human-facing landing copy](wu/WU-1395.yaml)
 
 ## Completed
 
