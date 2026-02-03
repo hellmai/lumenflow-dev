@@ -21,7 +21,7 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
-- [WU-1379 — Add File Ownership section to LUMENFLOW.md template](wu/WU-1379.yaml) — Content: Documentation
+
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1377 — Add managed file header comments to generated files](wu/WU-1377.yaml) — Framework: CLI
 
