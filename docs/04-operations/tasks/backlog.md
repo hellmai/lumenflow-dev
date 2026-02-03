@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml) — Framework: CLI
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
