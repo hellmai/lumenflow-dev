@@ -2,7 +2,7 @@ id: WU-1381
 title: Document cloud agent branch workflow
 lane: 'Content: Documentation'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/playbook.md
 tests:
   manual:
-    - Verify .lumenflow.config.yaml includes agent_branch_patterns entries for agent/*, claude/*, codex/*
+    - Verify .lumenflow.config.yaml includes agent_branch_patterns entries for agent/*, claude/*,
+      codex/*
     - Verify playbook includes Cloud Agent Workflow section with branch-only and agent-branch steps
   unit: []
   e2e: []
@@ -48,3 +49,5 @@ session_id: 6592e3af-ab7d-49d7-a37e-391d4515cfe4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T12:54:04.309Z
+locked: true
+completed_at: 2026-02-03T13:00:44.016Z
