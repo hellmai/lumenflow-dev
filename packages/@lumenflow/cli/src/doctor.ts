@@ -1,4 +1,4 @@
-/* eslint-disable no-console -- CLI command uses console for status output */
+ 
 /**
  * @file doctor.ts
  * LumenFlow health check command (WU-1177)
@@ -245,7 +245,7 @@ function getCommandVersion(command: string, args: string[]): string {
  * Parse semver version string to compare
  */
 function parseVersion(versionStr: string): number[] {
-  // eslint-disable-next-line sonarjs/slow-regex, sonarjs/prefer-regexp-exec -- Simple semver extraction, no backtracking risk
+   
   const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
   if (!match) {
     return [0, 0, 0];

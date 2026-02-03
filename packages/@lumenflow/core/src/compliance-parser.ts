@@ -235,7 +235,7 @@ export class ComplianceParser {
 
       // Parse blockers
       if (inBlockers && trimmedLine.startsWith('-') && !trimmedLine.includes('None')) {
-        const blockerText = trimmedLine.replace(/^-\s*/, '').replace(/^[🔴🟡]\s*/, '');
+        const blockerText = trimmedLine.replace(/^-\s*/, '').replace(/^[🔴🟡]\s*/u, '');
         if (blockerText.trim()) {
           currentGap.blockers.push(blockerText.trim());
           // Also extract any GAP references

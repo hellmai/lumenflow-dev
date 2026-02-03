@@ -21,7 +21,7 @@
  * @module cleanup-lock
  */
 
-/* eslint-disable security/detect-non-literal-fs-filename -- Lock file paths are computed from trusted sources */
+ 
 import {
   existsSync,
   readFileSync,

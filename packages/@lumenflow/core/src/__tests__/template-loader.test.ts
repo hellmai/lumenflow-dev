@@ -7,7 +7,7 @@
  * TDD: These tests are written first (RED phase) before implementation.
  */
 
-/* eslint-disable sonarjs/no-duplicate-string -- Test fixtures use repeated paths for clarity */
+ 
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';

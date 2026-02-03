@@ -8,7 +8,7 @@
  * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Consumer (rollbackTransaction function)
  */
 
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 import { writeFileSync, unlinkSync } from 'node:fs';
 import { FILE_SYSTEM } from './wu-constants.js';
 

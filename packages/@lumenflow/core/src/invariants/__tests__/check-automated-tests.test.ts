@@ -497,7 +497,7 @@ code_paths:
         );
 
         // Should not throw, just skip invalid files
-        // eslint-disable-next-line sonarjs/no-nested-functions -- Standard test pattern
+         
         expect(() => checkAutomatedTestsInvariant({ baseDir: TEST_DIR })).not.toThrow();
       });
 

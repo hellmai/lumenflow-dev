@@ -24,7 +24,7 @@ const PROGRESS_SIGNALS_OPTIONAL = 'Progress Signals (Optional)';
 /**
  * Creates a mock config for testing progress signals
  */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Test helper with inferred return type
+ 
 function createMockConfig(progressSignals?: Partial<ProgressSignalsConfig>) {
   return {
     memory: {

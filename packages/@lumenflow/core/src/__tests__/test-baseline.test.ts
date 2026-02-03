@@ -8,7 +8,7 @@
  * - Provides agent guidance about the ratchet rule
  */
 
-/* eslint-disable sonarjs/no-duplicate-string -- Test fixtures use repeated values for clarity */
+ 
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import {

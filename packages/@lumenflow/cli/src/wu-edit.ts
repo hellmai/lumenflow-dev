@@ -85,7 +85,7 @@ import {
   validateCodePathsExistence,
   validateTestPathsExistence,
 } from '@lumenflow/core/dist/wu-preflight-validators.js';
-/* eslint-disable security/detect-object-injection */
+ 
 
 const PREFIX = LOG_PREFIX.EDIT;
 
@@ -315,14 +315,14 @@ const EDIT_OPTIONS = {
  * @param {string} newInitId - New initiative ID
  * @returns {Array<string>} Array of relative file paths that were modified
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
+ 
 function updateInitiativeWusArrays(worktreePath, wuId, oldInitId, newInitId) {
   const modifiedFiles = [];
 
   // Remove from old initiative if it exists and is different from new
   if (oldInitId && oldInitId !== newInitId) {
     const oldInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(oldInitId));
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
+     
     if (existsSync(oldInitPath)) {
       try {
         const oldInit = readInitiative(oldInitPath, oldInitId);
@@ -341,7 +341,7 @@ function updateInitiativeWusArrays(worktreePath, wuId, oldInitId, newInitId) {
 
   // Add to new initiative
   const newInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(newInitId));
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
+   
   if (existsSync(newInitPath)) {
     try {
       const newInit = readInitiative(newInitPath, newInitId);
@@ -382,7 +382,7 @@ function validateInitiativeFormat(initId) {
  */
 function validateInitiativeExists(initId) {
   const initPath = INIT_PATHS.INITIATIVE(initId);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
+   
   if (!existsSync(initPath)) {
     die(`Initiative not found: ${initId}\n\nFile does not exist: ${initPath}`);
   }
@@ -540,12 +540,12 @@ function normalizeWUDates(wu) {
  */
 function validateWUEditable(id) {
   const wuPath = WU_PATHS.WU(id);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   if (!existsSync(wuPath)) {
     die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
   }
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates WU files
+   
   const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   const wu = parseYAML(content);
 
@@ -593,7 +593,7 @@ function validateWUEditable(id) {
  * @param {string} id - WU ID (for error messages)
  */
 function validateWorktreeExists(worktreePath, id) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates worktree paths
+   
   if (!existsSync(worktreePath)) {
     die(
       `Cannot edit WU ${id}: worktree path missing from disk.\n\n` +
@@ -682,7 +682,7 @@ async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
   // Emergency fix Session 2: Use centralized stringifyYAML helper
   const yamlContent = stringifyYAML(updatedWU);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
+   
   writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   console.log(`${PREFIX} ✅ Updated ${id}.yaml in worktree`);
 
@@ -774,12 +774,12 @@ export function mergeStringField(
  */
 function loadSpecFile(specPath, originalWU) {
   const resolvedPath = resolve(specPath);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates spec files
+   
   if (!existsSync(resolvedPath)) {
     die(`Spec file not found: ${resolvedPath}`);
   }
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates spec files
+   
   const specContent = readFileSync(resolvedPath, {
     encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
   });
@@ -1217,7 +1217,7 @@ async function main() {
           // Emergency fix Session 2: Use centralized stringifyYAML helper
           const yamlContent = stringifyYAML(normalizedWU);
 
-          // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes WU files
+           
           writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
           console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
 

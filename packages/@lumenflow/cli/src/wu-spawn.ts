@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Spawn Helper
  *
@@ -50,7 +50,7 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/dist/wu-spawn-helpers.js';
-// eslint-disable-next-line sonarjs/deprecation -- legacy factory used by CLI spawns
+ 
 import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
 import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
@@ -1630,7 +1630,7 @@ async function main(): Promise<void> {
   }
 
   // Create strategy
-  // eslint-disable-next-line sonarjs/deprecation -- legacy factory used by CLI spawns
+   
   const strategy = SpawnStrategyFactory.create(clientName);
   const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
 

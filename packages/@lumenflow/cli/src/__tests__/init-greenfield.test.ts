@@ -11,9 +11,9 @@
  * - LUMENFLOW.md mentions initiatives and when to use them
  */
 
-/* eslint-disable sonarjs/no-os-command-from-path -- Test file requires git commands for repo setup */
-/* eslint-disable sonarjs/no-duplicate-string -- Test assertions naturally repeat strings */
-/* eslint-disable no-console -- Test captures console.log output */
+ 
+ 
+ 
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';

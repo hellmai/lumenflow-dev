@@ -173,7 +173,7 @@ describe('micro-worktree', () => {
    */
   describe('MAX_PUSH_RETRIES constant (WU-1179)', () => {
     it('should export MAX_PUSH_RETRIES constant with value 3', async () => {
-      // eslint-disable-next-line sonarjs/deprecation -- Testing deprecated export for backwards compat
+       
       const { MAX_PUSH_RETRIES } = await import('../micro-worktree.js');
       expect(MAX_PUSH_RETRIES).toBe(3);
     });

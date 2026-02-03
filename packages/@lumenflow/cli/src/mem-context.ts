@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * Memory Context CLI (WU-1234, WU-1292)
  *
@@ -118,11 +118,11 @@ async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): P
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory
+     
     await fs.mkdir(logDir, { recursive: true });
 
     const line = `${JSON.stringify(entry)}\n`;
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes audit log
+     
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors

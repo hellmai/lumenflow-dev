@@ -65,7 +65,7 @@ export function containsPnpmDependencyCommand(command) {
     return false;
   }
 
-  // eslint-disable-next-line security/detect-non-literal-regexp -- Pattern built from const array, not user input
+   
   const pattern = new RegExp(`pnpm\\s+(${DEPENDENCY_COMMANDS.join('|')})\\b`, 'i');
   return pattern.test(command);
 }

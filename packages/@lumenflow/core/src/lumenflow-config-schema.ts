@@ -1177,7 +1177,7 @@ export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.j
  * @param data - Configuration data to validate
  * @returns Validation result with parsed config or errors
  */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Zod v4 return type inference
+ 
 export function validateConfig(data: unknown) {
   return LumenFlowConfigSchema.safeParse(data);
 }

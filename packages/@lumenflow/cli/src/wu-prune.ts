@@ -39,7 +39,7 @@ import {
   LOG_PREFIX,
   WORKTREE_WARNINGS,
 } from '@lumenflow/core/dist/wu-constants.js';
-/* eslint-disable security/detect-object-injection, security/detect-non-literal-fs-filename */
+ 
 
 interface PruneArgs {
   dryRun: boolean;

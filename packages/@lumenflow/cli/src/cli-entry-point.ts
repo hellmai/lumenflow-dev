@@ -1,4 +1,4 @@
-/* eslint-disable no-console -- CLI entry point uses console for error output */
+ 
 /**
  * Shared CLI entry point wrapper
  *

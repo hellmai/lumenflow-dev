@@ -82,7 +82,7 @@ function checkSymlinkTarget(linkTarget, basePath) {
     : path.resolve(basePath, linkTarget);
 
   const isWorktreePath = absoluteTarget.includes(WORKTREES_PATH_SEGMENT);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path from symlink
+   
   const isBroken = isWorktreePath && !fs.existsSync(absoluteTarget);
 
   return { isWorktreePath, absoluteTarget, isBroken };
@@ -96,7 +96,7 @@ function checkSymlinkTarget(linkTarget, basePath) {
  * @param {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}} result - Result object to mutate
  */
 function processSymlinkEntry(entryPath, basePath, result) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path from directory scan
+   
   const linkTarget = fs.readlinkSync(entryPath);
   const check = checkSymlinkTarget(linkTarget, basePath);
 
@@ -118,7 +118,7 @@ function processSymlinkEntry(entryPath, basePath, result) {
 function scanPnpmForWorktreeSymlinks(pnpmPath) {
   const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+   
   const entries = fs.readdirSync(pnpmPath, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -144,12 +144,12 @@ function scanPnpmForWorktreeSymlinks(pnpmPath) {
 export function hasWorktreePathSymlinks(nodeModulesPath) {
   const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+   
   if (!fs.existsSync(nodeModulesPath)) {
     return result;
   }
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated path
+   
   const entries = fs.readdirSync(nodeModulesPath, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -177,7 +177,7 @@ export function hasWorktreePathSymlinks(nodeModulesPath) {
  */
 function nodeModulesExists(targetPath) {
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated worktree path
+     
     fs.lstatSync(targetPath);
     return true;
   } catch {
@@ -251,7 +251,7 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
   }
 
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated worktree path
+     
     fs.symlinkSync(RELATIVE_NODE_MODULES_PATH, targetPath);
 
     if (logger.info) {
@@ -277,11 +277,11 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
  * @returns {boolean} True if should skip
  */
 function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+   
   if (!fs.existsSync(targetDir)) {
     return true;
   }
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+   
   if (!fs.existsSync(sourceNodeModules)) {
     return true;
   }
@@ -300,7 +300,7 @@ function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
 function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, errors) {
   let targetStat;
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+     
     targetStat = fs.lstatSync(targetNodeModules);
   } catch {
     return 'create'; // Doesn't exist, create symlink
@@ -317,7 +317,7 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
   }
 
   // Check if directory has meaningful content
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+   
   const contents = fs.readdirSync(targetNodeModules);
   const hasMeaningfulContent = contents.some(
     (item) => !item.startsWith('.') && item !== '.vite' && item !== '.turbo',
@@ -384,7 +384,7 @@ export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = nu
 
     try {
       const relativePath = path.relative(targetDir, sourceNodeModules);
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- validated paths
+       
       fs.symlinkSync(relativePath, targetNodeModules);
       created++;
 

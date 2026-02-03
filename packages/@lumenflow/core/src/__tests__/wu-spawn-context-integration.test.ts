@@ -29,7 +29,7 @@ import {
   getMemoryContextMaxSize,
 } from '../wu-spawn-context.js';
 import { generateTaskInvocation } from '../wu-spawn.js';
-// eslint-disable-next-line sonarjs/deprecation -- SpawnStrategyFactory is still used in production
+ 
 import { SpawnStrategyFactory } from '../spawn-strategy.js';
 
 // Constants for test values
@@ -131,7 +131,7 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
    * Helper to create a spawn strategy
    */
   function createStrategy() {
-    // eslint-disable-next-line sonarjs/deprecation -- SpawnStrategyFactory is still used in production
+     
     return SpawnStrategyFactory.create(TEST_CLIENT);
   }
 
