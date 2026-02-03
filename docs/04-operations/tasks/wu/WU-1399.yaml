@@ -15,13 +15,23 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1399.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1399-plan.md
 risks: []
-notes: ''
+notes: Adds enforcement-blocker guidance, a decision ladder for next steps, and explicit
+  prohibitions against manual config edits.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T23:51:16.712Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1399
+session_id: 2a4930e5-b0c9-4ceb-a044-2c94b47b49d8
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T23:51:16.719Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -32,13 +42,3 @@ acceptance:
     complete
   - Quickstart explicitly forbids editing .lumenflow.config.yaml
   - Quickstart includes a next-step decision ladder (Discovery WU vs Task WU vs Initiative)
-spec_refs:
-  - lumenflow://plans/WU-1399-plan.md
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1399
-claimed_at: 2026-02-03T23:51:16.712Z
-baseline_main_sha: 1e7fdd7f54587e01ff3e27bf8234d0eff96582b9
-session_id: 2a4930e5-b0c9-4ceb-a044-2c94b47b49d8
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T23:51:16.719Z
