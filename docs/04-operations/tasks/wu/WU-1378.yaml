@@ -2,7 +2,7 @@ id: WU-1378
 title: Add lumenflow commands discovery command
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Commands are grouped by category in the output.
   - Each command entry includes a short description.
   - Output includes a hint to run `<command> --help` for details.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1378
+claimed_at: 2026-02-03T16:04:46.249Z
+baseline_main_sha: 12cbc9b4f1388751c9b9e4f71c35c85eaa28c849
+session_id: 757ddb4a-7d84-4351-a99d-c30d637c98eb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T16:04:46.252Z
