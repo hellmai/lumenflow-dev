@@ -6,8 +6,6 @@
  * .claude/settings.json to enforce LumenFlow workflow compliance.
  */
 
-import type { ClientEnforcement } from '@lumenflow/core/dist/lumenflow-config-schema.js';
-
 /**
  * Hook definition for Claude Code settings.json
  */

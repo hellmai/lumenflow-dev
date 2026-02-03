@@ -7,9 +7,11 @@
  * determined, operations are allowed.
  */
 
+// Note: fs operations use runtime-provided paths from LumenFlow configuration
+/* eslint-disable security/detect-non-literal-fs-filename */
+
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { execFileSync } from 'node:child_process';
 
 /**
  * Result of an enforcement check

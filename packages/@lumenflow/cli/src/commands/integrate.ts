@@ -9,6 +9,11 @@
  *   pnpm lumenflow:integrate --client claude-code
  */
 
+// CLI tool - console output is intentional for user feedback
+/* eslint-disable no-console */
+// fs operations use runtime-provided paths from LumenFlow configuration
+/* eslint-disable security/detect-non-literal-fs-filename */
+
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
