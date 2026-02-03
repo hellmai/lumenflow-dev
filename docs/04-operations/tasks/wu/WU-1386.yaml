@@ -21,7 +21,10 @@ artifacts:
   - .lumenflow/stamps/WU-1386.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Origin: Haven 2.8.0 report identified agent drift from CLI workflow. Extends existing
+  doctor.ts (WU-1177) - do not create new command. Key decisions: Default doctor stays fast, --deep
+  runs heavier wu:validate. Auto-run after init is non-blocking. Use wu:validate for WU checks. Spec
+  ref: ~/.claude/plans/delegated-imagining-fairy.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -30,9 +33,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Haven 2.8.0 agent manually edited config files and created WUs outside CLI workflow. Existing lumenflow doctor (WU-1177) doesn't detect these issues. Problem: Doctor checks infrastructure health but not workflow compliance. Agents can drift from CLI workflow without any diagnostic feedback. Solution: Extend existing doctor with managed-file dirty checks, WU validation, and worktree sanity checks. Add --deep mode for heavier checks."
+description: "Context: Haven 2.8.0 agent manually edited config files and created WUs outside CLI
+  workflow. Existing lumenflow doctor (WU-1177) doesn't detect these issues. Problem: Doctor checks
+  infrastructure health but not workflow compliance. Agents can drift from CLI workflow without any
+  diagnostic feedback. Solution: Extend existing doctor with managed-file dirty checks, WU
+  validation, and worktree sanity checks. Add --deep mode for heavier checks."
 acceptance:
-  - 'Managed-file dirty check: warns if git status shows changes to .lumenflow.config.yaml, .lumenflow.lane-inference.yaml, docs/04-operations/tasks/**, AGENTS.md, CLAUDE.md'
+  - 'Managed-file dirty check: warns if git status shows changes to .lumenflow.config.yaml,
+    .lumenflow.lane-inference.yaml, docs/04-operations/tasks/**, AGENTS.md, CLAUDE.md'
   - 'WU validity check: runs wu:validate --all in warn-only mode (with --deep flag)'
   - 'Worktree sanity check: reuses wu:prune --check logic, warns on orphans'
   - 'Exit codes: 0=healthy, 1=warnings, 2=errors (missing critical safety)'
