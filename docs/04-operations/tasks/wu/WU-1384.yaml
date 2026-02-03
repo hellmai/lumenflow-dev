@@ -1,35 +1,43 @@
 id: WU-1384
-title: Fix spec-linter required fields on ready WUs
-lane: 'Content: Documentation'
-type: documentation
+title: Relax spec completeness checks for done/cancelled WUs
+lane: 'Framework: Core'
+type: tooling
 status: ready
 priority: P2
 created: 2026-02-03
 code_paths:
-  - docs/04-operations/tasks/wu/WU-1368.yaml
-  - docs/04-operations/tasks/wu/WU-1378.yaml
-  - docs/04-operations/tasks/wu/WU-1380.yaml
-  - docs/04-operations/tasks/wu/WU-1382.yaml
-  - docs/04-operations/tasks/wu/WU-1383.yaml
+  - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
 tests:
-  manual: []
-  unit: []
+  manual:
+    - Run `pnpm wu:validate --all` and confirm done/cancelled WUs with missing notes/tests/spec_refs
+      no longer fail.
+    - Create a ready WU missing notes/tests/spec_refs and confirm `pnpm wu:validate --id WU-XXXX`
+      still fails in strict mode.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-validate-strict.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1384.done
 dependencies: []
+spec_refs:
+  - lumenflow://inline
 risks: []
-notes: ''
+notes: Re-scoped to address legacy done WUs blocking spec:linter. Enforce completeness for active
+  WUs only (ready/in_progress/blocked).
 requires_review: false
 assigned_to: tom@hellm.ai
-exposure: documentation
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: spec:linter currently fails on main due to missing notes/tests/spec_refs in several ready WUs. Problem: wu:prep fails for unrelated work. Solution: add required fields to WU-1368, WU-1378, WU-1380, WU-1382, and WU-1383 to satisfy strict validation.'
+description: 'Context: spec:linter currently fails on main because legacy done/cancelled WUs are
+  missing notes/tests/spec_refs. Problem: done WUs are immutable, so strict completeness should
+  focus on active work. Solution: update completeness validation to skip done/cancelled WUs while
+  keeping strict checks for ready/in_progress/blocked.'
 acceptance:
-  - Add missing notes fields to the listed WUs
-  - Add tests.manual entries where required
-  - Add spec_refs entries for each affected WU
+  - wu:validate ignores completeness warnings for WUs with status done or cancelled.
+  - Completeness warnings still fail validation for ready/in_progress/blocked WUs in strict mode.
+  - Unit test updated to cover done/cancelled status behavior.
