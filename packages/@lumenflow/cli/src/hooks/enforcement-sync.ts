@@ -18,8 +18,22 @@ import {
   generateEnforceWorktreeScript,
   generateRequireWuScript,
   generateWarnIncompleteScript,
+  generatePreCompactCheckpointScript,
+  generateSessionStartRecoveryScript,
+  HOOK_SCRIPTS,
   type GeneratedHooks,
 } from './enforcement-generator.js';
+
+/**
+ * Hook entry structure for Claude Code settings.json
+ */
+interface HookEntry {
+  matcher: string;
+  hooks: Array<{
+    type: string;
+    command: string;
+  }>;
+}
 
 /**
  * Claude Code settings.json structure
@@ -32,20 +46,10 @@ interface ClaudeSettings {
     disableBypassPermissionsMode?: string;
   };
   hooks?: {
-    PreToolUse?: Array<{
-      matcher: string;
-      hooks: Array<{
-        type: string;
-        command: string;
-      }>;
-    }>;
-    Stop?: Array<{
-      matcher: string;
-      hooks: Array<{
-        type: string;
-        command: string;
-      }>;
-    }>;
+    PreToolUse?: HookEntry[];
+    Stop?: HookEntry[];
+    PreCompact?: HookEntry[];
+    SessionStart?: HookEntry[];
   };
 }
 
@@ -244,6 +248,54 @@ function mergeHooksIntoSettings(
     }
   }
 
+  // Merge PreCompact hooks (WU-1394)
+  if (generated.preCompact) {
+    if (!result.hooks.PreCompact) {
+      result.hooks.PreCompact = [];
+    }
+
+    for (const newHook of generated.preCompact) {
+      const existingIndex = result.hooks.PreCompact.findIndex((h) => h.matcher === newHook.matcher);
+
+      if (existingIndex >= 0) {
+        const existing = result.hooks.PreCompact[existingIndex];
+        for (const hook of newHook.hooks) {
+          const isDuplicate = existing.hooks.some((h) => h.command === hook.command);
+          if (!isDuplicate) {
+            existing.hooks.push(hook);
+          }
+        }
+      } else {
+        result.hooks.PreCompact.push(newHook);
+      }
+    }
+  }
+
+  // Merge SessionStart hooks (WU-1394)
+  if (generated.sessionStart) {
+    if (!result.hooks.SessionStart) {
+      result.hooks.SessionStart = [];
+    }
+
+    for (const newHook of generated.sessionStart) {
+      const existingIndex = result.hooks.SessionStart.findIndex(
+        (h) => h.matcher === newHook.matcher,
+      );
+
+      if (existingIndex >= 0) {
+        const existing = result.hooks.SessionStart[existingIndex];
+        for (const hook of newHook.hooks) {
+          const isDuplicate = existing.hooks.some((h) => h.command === hook.command);
+          if (!isDuplicate) {
+            existing.hooks.push(hook);
+          }
+        }
+      } else {
+        result.hooks.SessionStart.push(newHook);
+      }
+    }
+  }
+
   return result;
 }
 
@@ -278,16 +330,29 @@ export async function syncEnforcementHooks(projectDir: string): Promise<boolean>
 
   // Write hook scripts
   if (enforcement.block_outside_worktree) {
-    writeHookScript(projectDir, 'enforce-worktree.sh', generateEnforceWorktreeScript());
+    writeHookScript(projectDir, HOOK_SCRIPTS.ENFORCE_WORKTREE, generateEnforceWorktreeScript());
   }
 
   if (enforcement.require_wu_for_edits) {
-    writeHookScript(projectDir, 'require-wu.sh', generateRequireWuScript());
+    writeHookScript(projectDir, HOOK_SCRIPTS.REQUIRE_WU, generateRequireWuScript());
   }
 
   if (enforcement.warn_on_stop_without_wu_done) {
-    writeHookScript(projectDir, 'warn-incomplete.sh', generateWarnIncompleteScript());
+    writeHookScript(projectDir, HOOK_SCRIPTS.WARN_INCOMPLETE, generateWarnIncompleteScript());
   }
+
+  // Always write recovery hook scripts when enforcement.hooks is enabled (WU-1394)
+  // These enable durable context recovery after compaction
+  writeHookScript(
+    projectDir,
+    HOOK_SCRIPTS.PRE_COMPACT_CHECKPOINT,
+    generatePreCompactCheckpointScript(),
+  );
+  writeHookScript(
+    projectDir,
+    HOOK_SCRIPTS.SESSION_START_RECOVERY,
+    generateSessionStartRecoveryScript(),
+  );
 
   // Update settings.json
   const existingSettings = readClaudeSettings(projectDir);
@@ -309,8 +374,8 @@ export async function removeEnforcementHooks(projectDir: string): Promise<void> 
     return;
   }
 
-  // Remove enforcement-related hooks
-  const enforcementCommands = ['enforce-worktree.sh', 'require-wu.sh', 'warn-incomplete.sh'];
+  // Remove enforcement-related hooks (includes all LumenFlow hook scripts)
+  const enforcementCommands = Object.values(HOOK_SCRIPTS);
 
   if (settings.hooks.PreToolUse) {
     settings.hooks.PreToolUse = settings.hooks.PreToolUse.map((entry) => ({

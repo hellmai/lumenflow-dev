@@ -131,10 +131,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Verification & Gates
 
-| Command           | Description                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------ |
-| `gates`           | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
-| `lumenflow-gates` | Alias for `gates` - run quality gates                                                      |
+| Command | Description                                                                                |
+| ------- | ------------------------------------------------------------------------------------------ |
+| `gates` | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
 
 ### System & Setup
 
