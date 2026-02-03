@@ -2,7 +2,7 @@ id: WU-1366
 title: CLI command runtime fixes (consolidated)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -50,3 +50,5 @@ session_id: 778083a5-a140-472a-8e89-7c4c3baeca17
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T00:34:39.086Z
+locked: true
+completed_at: 2026-02-03T00:54:21.016Z
