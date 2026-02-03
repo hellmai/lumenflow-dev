@@ -155,6 +155,8 @@ import {
   validateFeatureAccessibility,
 } from '@lumenflow/core/dist/wu-validation.js';
 import { ensureCleanWorktree } from './wu-done-check.js';
+// WU-1366: Auto cleanup after wu:done success
+import { runAutoCleanupAfterDone } from './wu-done-auto-cleanup.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -2721,6 +2723,10 @@ async function main() {
   // WU-1983: Migration deployment nudge - only if supabase paths in code_paths
   const codePaths = docMain.code_paths || [];
   await printMigrationDeploymentNudge(codePaths, mainCheckoutPath);
+
+  // WU-1366: Auto state cleanup after successful completion
+  // Non-fatal: errors are logged but do not block completion
+  await runAutoCleanupAfterDone(mainCheckoutPath);
 }
 
 /**
