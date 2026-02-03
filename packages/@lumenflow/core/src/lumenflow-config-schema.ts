@@ -869,6 +869,45 @@ export const TelemetryConfigSchema = z.object({
 });
 
 /**
+ * WU-1366: Cleanup trigger options
+ *
+ * Controls when automatic state cleanup runs:
+ * - 'on_done': Run after wu:done success (default)
+ * - 'on_init': Run during lumenflow init
+ * - 'manual': Only run via pnpm state:cleanup
+ */
+export const CleanupTriggerSchema = z.enum(['on_done', 'on_init', 'manual']).default('on_done');
+
+/** WU-1366: TypeScript type for cleanup trigger */
+export type CleanupTrigger = z.infer<typeof CleanupTriggerSchema>;
+
+/**
+ * WU-1366: Cleanup configuration schema
+ *
+ * Controls when and how automatic state cleanup runs.
+ *
+ * @example
+ * ```yaml
+ * cleanup:
+ *   trigger: on_done  # on_done | on_init | manual
+ * ```
+ */
+export const CleanupConfigSchema = z.object({
+  /**
+   * When to trigger automatic state cleanup.
+   * - 'on_done': Run after wu:done success (default)
+   * - 'on_init': Run during lumenflow init
+   * - 'manual': Only run via pnpm state:cleanup
+   *
+   * @default 'on_done'
+   */
+  trigger: CleanupTriggerSchema,
+});
+
+/** WU-1366: TypeScript type for cleanup config */
+export type CleanupConfig = z.infer<typeof CleanupConfigSchema>;
+
+/**
  * WU-1345: Lane enforcement configuration schema
  *
  * Controls how lane format validation behaves.
@@ -998,6 +1037,18 @@ export const LumenFlowConfigSchema = z.object({
 
   /** Experimental features (WU-1090) */
   experimental: ExperimentalConfigSchema.default(() => ExperimentalConfigSchema.parse({})),
+
+  /**
+   * WU-1366: Cleanup configuration
+   * Controls when automatic state cleanup runs.
+   *
+   * @example
+   * ```yaml
+   * cleanup:
+   *   trigger: on_done  # on_done | on_init | manual
+   * ```
+   */
+  cleanup: CleanupConfigSchema.default(() => CleanupConfigSchema.parse({})),
 
   /**
    * WU-1270: Telemetry configuration
