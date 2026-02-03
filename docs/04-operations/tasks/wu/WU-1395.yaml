@@ -1,0 +1,35 @@
+id: WU-1395
+title: Make Quickstart agent-first + add human-facing landing copy
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/getting-started/agent-start.mdx
+  - apps/docs/src/content/docs/index.mdx
+  - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/guides
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1395.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Rework docs so /getting-started/quickstart is the agent setup guide, move human quickstart content to a guide, and update docs landing copy to instruct humans to share the agent link.
+acceptance:
+  - Quickstart page is agent-first with explicit Session 0 boundaries
+  - Human-oriented quickstart content moved to a guide with updated links
+  - Docs landing page copy centers on sharing the agent quickstart link
