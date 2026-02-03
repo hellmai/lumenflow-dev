@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1394 — Fix mem:recover hook propagation and documentation (WU-1390 follow-up)](wu/WU-1394.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
@@ -29,6 +28,7 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1394 — Fix mem:recover hook propagation and documentation (WU-1390 follow-up)](wu/WU-1394.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
