@@ -2,7 +2,7 @@ id: WU-1378
 title: Add lumenflow commands discovery command
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
