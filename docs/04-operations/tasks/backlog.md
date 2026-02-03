@@ -23,11 +23,9 @@ sections:
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
-- [WU-1377 — Add managed file header comments to generated files](wu/WU-1377.yaml) — Framework: CLI
 
 - [WU-1375 — Init should warn if config files exist from manual writes](wu/WU-1375.yaml) — Framework: CLI
 - [WU-1374 — Enable enforcement hooks by default for --client claude](wu/WU-1374.yaml) — Framework: CLI
-- [WU-1373 — Make CLAUDE.md template more aggressive about reading docs first](wu/WU-1373.yaml) — Framework: CLI
 
   (No items ready)
 
