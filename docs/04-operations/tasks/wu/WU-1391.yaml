@@ -2,7 +2,7 @@ id: WU-1391
 title: Fix Agent Start Here CLI commands and quickstart gaps
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -43,3 +43,5 @@ session_id: 8bd4faaf-98e7-4064-a84f-1288383fa58c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T18:30:06.688Z
+locked: true
+completed_at: 2026-02-03T18:33:40.473Z

@@ -690,5 +690,6 @@
 {"type":"complete","wuId":"WU-1387","timestamp":"2026-02-03T16:33:03.179Z"}
 {"type":"claim","wuId":"WU-1389","timestamp":"2026-02-03T18:17:08.321Z","lane":"Content: Documentation","title":"Create Agent Start Here entrypoint and route quickstart"}
 {"type":"complete","wuId":"WU-1389","timestamp":"2026-02-03T18:23:13.803Z"}
-{"type":"claim","wuId":"WU-1390","lane":"Framework: CLI","title":"Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery","timestamp":"2026-02-03T18:26:40.750Z"}
-{"type":"claim","wuId":"WU-1391","lane":"Content: Documentation","title":"Fix Agent Start Here CLI commands and quickstart gaps","timestamp":"2026-02-03T18:30:06.714Z"}
+{"type":"claim","wuId":"WU-1390","timestamp":"2026-02-03T18:26:40.750Z","lane":"Framework: CLI","title":"Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery"}
+{"type":"claim","wuId":"WU-1391","timestamp":"2026-02-03T18:30:06.714Z","lane":"Content: Documentation","title":"Fix Agent Start Here CLI commands and quickstart gaps"}
+{"type":"complete","wuId":"WU-1391","timestamp":"2026-02-03T18:33:43.115Z"}
