@@ -2,7 +2,7 @@ id: WU-1394
 title: Fix mem:recover hook propagation and documentation (WU-1390 follow-up)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -61,3 +61,11 @@ acceptance:
   - quick-ref-commands.md documents mem:recover
   - context-management skill documents actual hook files, mem:recover, and durable recovery pattern
   - .claude/CLAUDE.md mentions recovery hooks and mem:recover
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1394
+claimed_at: 2026-02-03T19:11:06.358Z
+baseline_main_sha: 23e73622b1445adcce6189e588218010d51cf554
+session_id: 93e4f765-744c-4c3b-a350-7be4e98cad6d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T19:11:06.362Z
