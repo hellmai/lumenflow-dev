@@ -883,6 +883,297 @@ function generateConfigMdx(sections: ConfigSection[]): string {
 }
 
 // ============================================================================
+// WU-1371: Generate CLI README.md
+// ============================================================================
+
+/**
+ * README.md category structure matching the manual README.md format.
+ * Maps internal categories to README section names.
+ */
+const README_CATEGORIES: Record<string, string> = {
+  'Work Units': 'Work Unit Management',
+  'Memory Layer': 'Memory & Session',
+  Initiatives: 'Initiative Orchestration',
+  Orchestration: 'Initiative Orchestration',
+  'Sub-Agents': 'Initiative Orchestration',
+  'Flow Metrics': 'Metrics & Analytics',
+  Metrics: 'Metrics & Analytics',
+  'Quality Gates': 'Verification & Gates',
+  'Agent Lifecycle': 'Memory & Session',
+  Setup: 'System & Setup',
+  Other: 'System & Setup',
+};
+
+/**
+ * Generate README.md for the CLI package.
+ *
+ * The README has static sections (badges, installation, etc.) that are preserved,
+ * and a dynamic Commands section that is auto-generated.
+ *
+ * WU-1371: Single source of truth - commands generated from same data as cli.mdx.
+ *
+ * @param commands - Command metadata extracted from package.json
+ * @returns README.md content string
+ */
+function generateReadmeMd(commands: CommandMetadata[]): string {
+  const lines: string[] = [];
+
+  // Static header section
+  lines.push('# @lumenflow/cli');
+  lines.push('');
+  lines.push(
+    '[![npm version](https://img.shields.io/npm/v/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)',
+  );
+  lines.push(
+    '[![npm downloads](https://img.shields.io/npm/dm/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)',
+  );
+  lines.push(
+    '[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/os/blob/main/LICENSE)',
+  );
+  lines.push('[![node](https://img.shields.io/node/v/@lumenflow/cli.svg)](https://nodejs.org)');
+  lines.push('');
+  lines.push('> Command-line interface for LumenFlow workflow framework');
+  lines.push('');
+
+  // Installation section
+  lines.push('## Installation');
+  lines.push('');
+  lines.push('```bash');
+  lines.push('npm install @lumenflow/cli');
+  lines.push('```');
+  lines.push('');
+
+  // Quick Start section
+  lines.push('## Quick Start');
+  lines.push('');
+  lines.push('```bash');
+  lines.push('# Install the CLI');
+  lines.push('pnpm add -D @lumenflow/cli   # or: npm install -D @lumenflow/cli');
+  lines.push('');
+  lines.push('# Initialize LumenFlow (works with any AI)');
+  lines.push('pnpm exec lumenflow');
+  lines.push('');
+  lines.push('# Or specify your AI tool for enhanced integration');
+  lines.push('pnpm exec lumenflow --client claude    # Claude Code');
+  lines.push('pnpm exec lumenflow --client cursor    # Cursor');
+  lines.push('pnpm exec lumenflow --client windsurf  # Windsurf');
+  lines.push('pnpm exec lumenflow --client cline     # Cline');
+  lines.push('pnpm exec lumenflow --client aider     # Aider');
+  lines.push('pnpm exec lumenflow --client all       # All integrations');
+  lines.push('```');
+  lines.push('');
+  lines.push(
+    'The default `lumenflow` command creates `AGENTS.md` and `LUMENFLOW.md` which work with **any AI coding assistant**. The `--client` flag adds vendor-specific configuration files for deeper integration.',
+  );
+  lines.push('');
+  lines.push(
+    'See [AI Integrations](https://lumenflow.dev/guides/ai-integrations) for details on each tool.',
+  );
+  lines.push('');
+
+  // Overview section
+  lines.push('## Overview');
+  lines.push('');
+  lines.push('This package provides CLI commands for the LumenFlow workflow framework, including:');
+  lines.push('');
+  lines.push('- **WU (Work Unit) management**: Claim, complete, block, and track work units');
+  lines.push('- **Memory layer**: Session tracking, context recovery, and agent coordination');
+  lines.push('- **Initiative orchestration**: Multi-phase project coordination');
+  lines.push('- **Quality gates**: Pre-merge validation and checks');
+  lines.push('');
+
+  // Commands section - AUTO-GENERATED
+  lines.push('## Commands');
+  lines.push('');
+  lines.push('<!-- AUTO-GENERATED SECTION - DO NOT EDIT DIRECTLY -->');
+  lines.push('<!-- Run `pnpm docs:generate` to regenerate from source -->');
+  lines.push('');
+
+  // Group commands by README category
+  const byReadmeCategory = new Map<string, CommandMetadata[]>();
+  for (const cmd of commands) {
+    const readmeCategory = README_CATEGORIES[cmd.category] || 'System & Setup';
+    if (!byReadmeCategory.has(readmeCategory)) {
+      byReadmeCategory.set(readmeCategory, []);
+    }
+    byReadmeCategory.get(readmeCategory)!.push(cmd);
+  }
+
+  // Define the category order to match manual README
+  const categoryOrder = [
+    'Work Unit Management',
+    'Memory & Session',
+    'Initiative Orchestration',
+    'Metrics & Analytics',
+    'Lane Tooling',
+    'Verification & Gates',
+    'System & Setup',
+    'File & Git Operations',
+  ];
+
+  // Add Lane Tooling category for lane-* commands
+  const laneCommands = commands.filter((cmd) => cmd.binName.startsWith('lane-'));
+  if (laneCommands.length > 0) {
+    byReadmeCategory.set('Lane Tooling', laneCommands);
+  }
+
+  // Add File & Git Operations category
+  const fileGitCommands = commands.filter(
+    (cmd) => cmd.binName.startsWith('file-') || cmd.binName.startsWith('git-'),
+  );
+  if (fileGitCommands.length > 0) {
+    byReadmeCategory.set('File & Git Operations', fileGitCommands);
+  }
+
+  // Generate command tables for each category
+  for (const category of categoryOrder) {
+    const cmds = byReadmeCategory.get(category);
+    if (!cmds || cmds.length === 0) continue;
+
+    // Filter out duplicates (commands that appear in multiple categories)
+    const uniqueCmds = cmds.filter((cmd, index, self) => {
+      // Skip if this command is a lane/file/git command but we're not in that category
+      if (category !== 'Lane Tooling' && cmd.binName.startsWith('lane-')) return false;
+      if (category !== 'File & Git Operations' && cmd.binName.startsWith('file-')) return false;
+      if (category !== 'File & Git Operations' && cmd.binName.startsWith('git-')) return false;
+      // Remove duplicates within the category
+      return self.findIndex((c) => c.binName === cmd.binName) === index;
+    });
+
+    if (uniqueCmds.length === 0) continue;
+
+    lines.push(`### ${category}`);
+    lines.push('');
+    lines.push('| Command | Description |');
+    lines.push('| ------- | ----------- |');
+
+    // Sort commands alphabetically within each category
+    const sortedCmds = [...uniqueCmds].sort((a, b) => a.binName.localeCompare(b.binName));
+
+    for (const cmd of sortedCmds) {
+      // Use bin name (wu-claim) instead of pnpm command (wu:claim) for README
+      const description = cmd.description.replace(/\|/g, '\\|');
+      lines.push(`| \`${cmd.binName}\` | ${description} |`);
+    }
+    lines.push('');
+  }
+
+  lines.push('<!-- END AUTO-GENERATED SECTION -->');
+  lines.push('');
+
+  // Usage section
+  lines.push('## Usage');
+  lines.push('');
+  lines.push('Commands are typically invoked via pnpm scripts in your project:');
+  lines.push('');
+  lines.push('```bash');
+  lines.push('# WU workflow');
+  lines.push('pnpm wu:claim --id WU-123 --lane operations');
+  lines.push('pnpm wu:done --id WU-123');
+  lines.push('');
+  lines.push('# Memory operations');
+  lines.push('pnpm mem:checkpoint "Completed port definitions" --wu WU-123');
+  lines.push('pnpm mem:inbox --unread');
+  lines.push('');
+  lines.push('# Initiative management');
+  lines.push('pnpm initiative:status INIT-007');
+  lines.push('');
+  lines.push('# Quality gates');
+  lines.push('pnpm gates');
+  lines.push('```');
+  lines.push('');
+
+  // Direct CLI Usage section
+  lines.push('### Direct CLI Usage');
+  lines.push('');
+  lines.push('```bash');
+  lines.push('# After installing the package');
+  lines.push('npx wu-claim --id WU-123 --lane operations');
+  lines.push('npx gates');
+  lines.push('```');
+  lines.push('');
+
+  // Global Flags section
+  lines.push('## Global Flags');
+  lines.push('');
+  lines.push('All commands support these flags:');
+  lines.push('');
+  lines.push('| Flag | Description |');
+  lines.push('| ---- | ----------- |');
+  lines.push('| `--help`, `-h` | Show help for the command |');
+  lines.push('| `--version`, `-V` | Show version number |');
+  lines.push('| `--no-color` | Disable colored output |');
+  lines.push('');
+
+  // Environment Variables section
+  lines.push('## Environment Variables');
+  lines.push('');
+  lines.push('| Variable | Description |');
+  lines.push('| -------- | ----------- |');
+  lines.push(
+    '| `NO_COLOR` | Disable colored output when set (any value, per [no-color.org](https://no-color.org/)) |',
+  );
+  lines.push(
+    '| `FORCE_COLOR` | Override color level: `0` (disabled), `1` (basic), `2` (256 colors), `3` (16m colors) |',
+  );
+  lines.push('');
+
+  // Integration section
+  lines.push('## Integration');
+  lines.push('');
+  lines.push('The CLI integrates with other LumenFlow packages:');
+  lines.push('');
+  lines.push('- `@lumenflow/core` - Git operations, worktree management');
+  lines.push('- `@lumenflow/memory` - Session and context persistence');
+  lines.push('- `@lumenflow/agent` - Agent session management');
+  lines.push('- `@lumenflow/initiatives` - Initiative tracking');
+  lines.push('');
+
+  // Documentation section
+  lines.push('## Documentation');
+  lines.push('');
+  lines.push(
+    'For complete documentation, see [lumenflow.dev](https://lumenflow.dev/reference/cli).',
+  );
+  lines.push('');
+
+  // Upgrading section
+  lines.push('## Upgrading');
+  lines.push('');
+  lines.push('To upgrade LumenFlow packages:');
+  lines.push('');
+  lines.push('```bash');
+  lines.push('# Check for available updates');
+  lines.push('pnpm outdated @lumenflow/*');
+  lines.push('');
+  lines.push('# Update all LumenFlow packages');
+  lines.push(
+    'pnpm update @lumenflow/cli @lumenflow/core @lumenflow/memory @lumenflow/agent @lumenflow/initiatives',
+  );
+  lines.push('');
+  lines.push('# Sync documentation and templates');
+  lines.push('pnpm exec lumenflow docs:sync');
+  lines.push('```');
+  lines.push('');
+  lines.push(
+    '**Important**: Always run `docs:sync` after upgrading to update agent onboarding documentation, workflow rules, and vendor-specific configurations.',
+  );
+  lines.push('');
+  lines.push(
+    'For detailed upgrade instructions, migration guides, and troubleshooting, see [UPGRADING.md](https://lumenflow.dev/upgrading).',
+  );
+  lines.push('');
+
+  // License section
+  lines.push('## License');
+  lines.push('');
+  lines.push('Apache-2.0');
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+// ============================================================================
 // Format generated files with Prettier
 // ============================================================================
 
@@ -948,14 +1239,20 @@ async function main() {
   console.log('📝 Generating config reference...');
   const configMdx = generateConfigMdx(configSections);
 
+  // WU-1371: Generate README.md from same data
+  console.log('📝 Generating CLI README.md...');
+  const readmeMd = generateReadmeMd(commands);
+
   // Output paths
   const cliPath = join(ROOT, 'apps/docs/src/content/docs/reference/cli.mdx');
   const configPath = join(ROOT, 'apps/docs/src/content/docs/reference/config.mdx');
+  const readmePath = join(ROOT, 'packages/@lumenflow/cli/README.md');
 
   if (validateOnly) {
     // Format the generated content to match what would be written to files
     const formattedCliMdx = formatContent(cliMdx);
     const formattedConfigMdx = formatContent(configMdx);
+    const formattedReadmeMd = formatContent(readmeMd);
 
     // Compare with existing files
     let hasChanges = false;
@@ -986,6 +1283,20 @@ async function main() {
       hasChanges = true;
     }
 
+    // WU-1371: Also check README.md for drift
+    if (existsSync(readmePath)) {
+      const existing = readFileSync(readmePath, 'utf-8');
+      if (existing !== formattedReadmeMd) {
+        console.log('❌ README.md is out of sync');
+        hasChanges = true;
+      } else {
+        console.log('✅ README.md is up to date');
+      }
+    } else {
+      console.log('❌ README.md file does not exist');
+      hasChanges = true;
+    }
+
     if (hasChanges) {
       console.log('\n⚠️  Documentation drift detected!');
       console.log('   Run `pnpm docs:generate` to update.\n');
@@ -1003,8 +1314,12 @@ async function main() {
   writeFileSync(configPath, configMdx);
   console.log(`   ✅ Written: ${configPath}`);
 
+  // WU-1371: Write README.md
+  writeFileSync(readmePath, readmeMd);
+  console.log(`   ✅ Written: ${readmePath}`);
+
   // Format generated files to prevent format:check failures
-  formatGeneratedFiles(cliPath, configPath);
+  formatGeneratedFiles(cliPath, configPath, readmePath);
 
   console.log('\n✅ Documentation generated successfully\n');
   console.log('Next steps:');
