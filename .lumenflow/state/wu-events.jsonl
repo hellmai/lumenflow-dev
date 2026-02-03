@@ -695,3 +695,4 @@
 {"type":"complete","wuId":"WU-1391","timestamp":"2026-02-03T18:33:43.115Z"}
 {"type":"claim","wuId":"WU-1392","timestamp":"2026-02-03T18:41:31.298Z","lane":"Content: Documentation","title":"Fix quickstart initiative examples and AGENTS markers"}
 {"type":"complete","wuId":"WU-1392","timestamp":"2026-02-03T18:46:32.188Z"}
+{"type":"claim","wuId":"WU-1393","lane":"Content: Documentation","title":"Fix WU spec:linter issues on main","timestamp":"2026-02-03T18:48:48.341Z"}
