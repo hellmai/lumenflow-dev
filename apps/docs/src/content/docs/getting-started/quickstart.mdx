@@ -29,8 +29,24 @@ You are here to set up LumenFlow. That is your **only** job in Session 0.
 ## Session 0 Exit Criteria (Must be true)
 
 1. LumenFlow installed and activated. CLI installed; `pnpm exec lumenflow --full --client <client>` completed; `pnpm wu:create --help` works.
-2. LumenFlow enforced. Work happens only in claimed WUs; no edits on main; gates run before `wu:done`.
+2. LumenFlow enforced. Run `pnpm exec lumenflow-doctor`; errors are blockers. Work happens only in claimed WUs; no edits on main; gates run before `wu:done`.
 3. Next step chosen with the user. Create one of: Discovery WU, concrete task WU, or Initiative for multi-phase vision. Stop after selection.
+
+<Aside type="danger" title="Enforcement warnings are blockers">
+  If init or `lumenflow-doctor` reports errors (e.g., Husky hooks not installed, safe-git missing),
+  do not declare setup complete. Surface the errors, ask the user to resolve or acknowledge, and
+  stop.
+</Aside>
+
+## Decide the next step (with the user)
+
+Use this ladder after setup:
+
+1. **Multi-phase vision or roadmap** → Create an Initiative, then a Discovery WU to translate it into a small backlog.
+2. **Clear single task** → Create one concrete WU for that task.
+3. **Unclear or exploratory** → Create a Discovery WU: "Define next steps after LumenFlow setup."
+
+Stop after creating the next artifact. Do not claim a WU without explicit approval.
 
 ## Allowed commands (Session 0 only)
 
@@ -45,6 +61,7 @@ If a command is not listed here, do not run it in Session 0.
 | `pnpm add -D @lumenflow/cli`                           | Install LumenFlow CLI                  |
 | `pnpm exec lumenflow --full --client <client>`         | Initialize LumenFlow (new repos)       |
 | `pnpm exec lumenflow --full --client <client> --merge` | Initialize LumenFlow (existing repos)  |
+| `pnpm exec lumenflow-doctor`                           | Verify enforcement (errors block)      |
 | `pnpm wu:create --help`                                | Verify scripts were injected           |
 | `pnpm initiative:create ...`                           | Create an initiative                   |
 | `pnpm initiative:edit ...`                             | Add initiative phases                  |
@@ -71,6 +88,11 @@ git --version    # Requires 2.0.0+
    ```bash
    git init
    ```
+
+   <Aside type="caution" title="Avoid pnpm init by default">
+     Do not run `pnpm init` unless the user explicitly asked for a bare Node project. LumenFlow does
+     not require it.
+   </Aside>
 
 3. **Scaffold a tech stack only if the user explicitly asked**
 
@@ -263,6 +285,8 @@ These actions will break the workflow.
 | Run `wu:done` from a worktree            | Run from main checkout                     |
 | Use `--no-verify` to skip hooks          | Fix hook failures properly                 |
 | Manually edit backlog.md or status.md    | Let CLI regenerate from state              |
+| Manually edit `.lumenflow.config.yaml`   | Use CLI commands and `lumenflow-doctor`    |
+| Run `pnpm init` by default               | Only if user requested a bare Node project |
 | Ask more than 2 setup questions          | Use defaults; ask only essential questions |
 | Scaffold tech stack after LumenFlow init | Scaffold before init, or skip              |
 | Write feature code before a WU exists    | Create a WU first                          |
