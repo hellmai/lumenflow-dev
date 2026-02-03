@@ -2,7 +2,7 @@ id: WU-1388
 title: Document lumenflow commands in CLI reference and agent docs
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -38,3 +38,5 @@ description: 'WU-1378 added lumenflow commands but failed to document it. Missin
 acceptance:
   - lumenflow commands appears in quick-ref-commands.md
   - lumenflow commands appears in Starlight CLI docs after docs:generate
+locked: true
+completed_at: 2026-02-03T16:18:07.888Z
