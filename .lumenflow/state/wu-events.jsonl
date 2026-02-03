@@ -643,3 +643,4 @@
 {"type":"claim","wuId":"WU-1367","timestamp":"2026-02-02T23:57:25.685Z","lane":"Framework: CLI","title":"Claude Code enforcement hooks: configurable workflow compliance via hooks"}
 {"type":"claim","wuId":"WU-1220","timestamp":"2026-02-02T23:57:43.928Z","lane":"Content: Documentation","title":"Investigate improper LUMENFLOW_FORCE usage in agent sessions"}
 {"type":"complete","wuId":"WU-1364","timestamp":"2026-02-02T23:59:29.543Z"}
+{"type":"complete","wuId":"WU-1220","timestamp":"2026-02-03T00:00:55.310Z"}
