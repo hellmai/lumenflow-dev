@@ -38,7 +38,7 @@ description: 'Context: Haven 2.8.0 testing showed agents dont know about WU sizi
   source at docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md.'
 acceptance:
   - Init --full creates wu-sizing-guide.md in onboarding directory
-  - Content sourced from docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - Content sourced from the canonical WU sizing guide
   - starting-prompt.md references sizing guide
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1385
