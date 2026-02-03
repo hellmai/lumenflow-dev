@@ -2,7 +2,7 @@ id: WU-1389
 title: Create Agent Start Here entrypoint and route quickstart
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
 tests:
   manual:
     - Verify Agent Start Here page renders and is linked from quickstart, sidebar, and homepage.
-    - Verify quickstart includes initiative-first step, session-0 stop point, and no manual scripts step.
+    - Verify quickstart includes initiative-first step, session-0 stop point, and no manual scripts
+      step.
   unit: []
   e2e: []
 artifacts:
@@ -31,10 +32,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Humans and agents miss the correct agent-safe path. Quickstart mixes human and agent steps, omits initiatives, and includes manual edits. Problem: Agents start in the wrong place and go off-rails. Solution: Add a dedicated Agent Start Here page, route Quickstart/Home/Sidebar to it, and make Quickstart agent-safe (initiative-first, no manual script edits, clarify AGENTS.md ownership, docs structure note).'
+description: 'Context: Humans and agents miss the correct agent-safe path. Quickstart mixes human
+  and agent steps, omits initiatives, and includes manual edits. Problem: Agents start in the wrong
+  place and go off-rails. Solution: Add a dedicated Agent Start Here page, route
+  Quickstart/Home/Sidebar to it, and make Quickstart agent-safe (initiative-first, no manual script
+  edits, clarify AGENTS.md ownership, docs structure note).'
 acceptance:
   - Add Agent Start Here page with strict command-only runbook (new vs existing project forks).
   - Agent Start Here includes initiative-first workflow, session-0 stop point, and handoff prompt.
   - Quickstart links to Agent Start Here and removes manual package.json script step.
   - Quickstart adds initiative step before WU creation and clarifies AGENTS.md is user-owned.
   - Sidebar and homepage include Agent Start Here link.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1389
+claimed_at: 2026-02-03T18:17:08.297Z
+baseline_main_sha: cda0a2a0eff12840f408f62f7e755c425aea48e9
+session_id: 4779cdcb-e39a-4b67-92da-108e858961d7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:17:08.300Z
