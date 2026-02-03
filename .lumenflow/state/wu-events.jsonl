@@ -645,3 +645,4 @@
 {"type":"complete","wuId":"WU-1364","timestamp":"2026-02-02T23:59:29.543Z"}
 {"type":"complete","wuId":"WU-1220","timestamp":"2026-02-03T00:00:55.310Z"}
 {"type":"complete","wuId":"WU-1338","timestamp":"2026-02-03T00:03:13.621Z"}
+{"type":"claim","wuId":"WU-1334","lane":"Content: Documentation","title":"Backfill existing WU specs with strict validation fields","timestamp":"2026-02-03T00:05:26.729Z"}

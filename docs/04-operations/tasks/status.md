@@ -9,6 +9,7 @@ _Last updated: 2026-02-03_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml)
+- [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml)
 
 ## Completed
 

@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 - [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — Framework: CLI
 - [WU-1361 — Lint debt cleanup (consolidated)](wu/WU-1361.yaml) — Framework: CLI
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — Framework: CLI
@@ -35,6 +34,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
+- [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

@@ -2,7 +2,7 @@ id: WU-1334
 title: Backfill existing WU specs with strict validation fields
 lane: 'Content: Documentation'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add missing notes, tests.manual, and spec_refs fields to all existing WU specs that fail strict validation
+description: Add missing notes, tests.manual, and spec_refs fields to all existing WU specs that
+  fail strict validation
 acceptance:
   - All WU specs pass strict validation
   - spec:linter gate passes with zero failures
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1334
+claimed_at: 2026-02-03T00:05:26.704Z
+baseline_main_sha: 68ab16bfcd3931d8e8991a4e6bf1073d15407f5f
+session_id: cf250dc8-db3b-4f08-8489-0249bfcab00b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T00:05:26.714Z
