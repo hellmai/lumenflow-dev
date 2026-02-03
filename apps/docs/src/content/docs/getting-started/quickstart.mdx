@@ -63,7 +63,7 @@ This creates:
 - `docs/tasks/` — Task storage (default path, or `docs/04-operations/tasks/` for arc42 projects)
 
 <Aside type="tip" title="AGENTS.md is user-owned">
-  You can add your own content to AGENTS.md. LumenFlow uses bounded markers (`<!-- lumenflow:start -->` / `<!-- lumenflow:end -->`) to manage its section without overwriting yours. Use `--merge` when re-running init on existing projects.
+  You can add your own content to AGENTS.md. LumenFlow uses bounded markers (`<!-- LUMENFLOW:START -->` / `<!-- LUMENFLOW:END -->`) to manage its section without overwriting yours. Use `--merge` when re-running init on existing projects.
 </Aside>
 
 <Aside type="danger" title="DO NOT">
@@ -100,6 +100,7 @@ For multi-phase projects or product visions, create an Initiative first.
 
 ```bash
 pnpm initiative:create \
+  --id INIT-001 \
   --slug "my-project" \
   --title "My Project" \
   --owner "team@example.com"
@@ -141,7 +142,7 @@ The CLI prints a WU ID (example: `WU-123`). Use this ID in subsequent commands.
 
 ## Step 6: Claim the Work Unit
 
-Run this command with the ID from Step 4.
+Run this command with the ID from Step 5.
 
 ```bash
 pnpm wu:claim --id WU-123 --lane "Experience: UI"
