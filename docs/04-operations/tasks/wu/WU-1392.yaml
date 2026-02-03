@@ -1,7 +1,7 @@
 id: WU-1392
 title: Fix quickstart initiative examples and AGENTS markers
 lane: 'Content: Documentation'
-type: documentation
+type: bug
 status: in_progress
 priority: P2
 created: 2026-02-03
