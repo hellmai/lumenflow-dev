@@ -131,10 +131,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Verification & Gates
 
-| Command           | Description                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------ |
-| `gates`           | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
-| `lumenflow-gates` | Alias for `gates` - run quality gates                                                      |
+| Command | Description                                                                                |
+| ------- | ------------------------------------------------------------------------------------------ |
+| `gates` | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
 
 ### System & Setup
 
@@ -147,10 +146,11 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `guard-main-branch`        | Guard Main Branch CLI Tool                                                        |
 | `guard-worktree-commit`    |                                                                                   |
 | `init-plan`                | Link a plan file to an initiative                                                 |
-| `lumenflow`                | Initialize LumenFlow in a project                                                 |
+| `lumenflow`                | Initialize LumenFlow in a project\n\n                                             |
+| `lumenflow-commands`       | List all available LumenFlow CLI commands                                         |
 | `lumenflow-docs-sync`      | Sync agent onboarding docs to existing projects (skips existing files by default) |
 | `lumenflow-doctor`         | Check LumenFlow safety components and configuration                               |
-| `lumenflow-init`           | Initialize LumenFlow in a project                                                 |
+| `lumenflow-init`           | Initialize LumenFlow in a project\n\n                                             |
 | `lumenflow-integrate`      | Integrate LumenFlow enforcement with AI client tools                              |
 | `lumenflow-metrics`        | Unified Metrics CLI with subcommands (WU-1110)                                    |
 | `lumenflow-release`        | Release Command                                                                   |
