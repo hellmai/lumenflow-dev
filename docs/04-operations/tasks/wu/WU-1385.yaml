@@ -9,24 +9,33 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 tests:
-  manual: []
+  manual:
+    - Run `pnpm exec lumenflow init --full` and verify onboarding docs include `wu-sizing-guide.md`.
+    - Verify `starting-prompt.md` references the sizing guide by link.
   unit:
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1385.done
 dependencies: []
+spec_refs:
+  - lumenflow://inline
 risks: []
-notes: ''
+notes: 'Origin: Haven 2.8.0 agents lacked WU sizing guidance. Ensure init scaffolds the sizing guide
+  and references it in onboarding.'
 requires_review: false
 assigned_to: tom@hellm.ai
-exposure: documentation
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Haven 2.8.0 testing showed agents dont know about WU sizing constraints from docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md. Problem: Init creates onboarding docs but not the sizing guide. Agents may create oversized WUs that exhaust context limits. Solution: Add wu-sizing-guide.md to the docs created by lumenflow init --full, referencing the canonical source at docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md.'
+description: 'Context: Haven 2.8.0 testing showed agents dont know about WU sizing constraints from
+  docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md. Problem: Init creates onboarding docs
+  but not the sizing guide. Agents may create oversized WUs that exhaust context limits. Solution:
+  Add wu-sizing-guide.md to the docs created by lumenflow init --full, referencing the canonical
+  source at docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md.'
 acceptance:
   - Init --full creates wu-sizing-guide.md in onboarding directory
   - Content sourced from docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
