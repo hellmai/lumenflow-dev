@@ -21,7 +21,7 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1385 — Include sizing guide in lumenflow init onboarding docs](wu/WU-1385.yaml) — Framework: CLI
-- [WU-1384 — Add agent entry route to Starlight docs](wu/WU-1384.yaml) — Content: Documentation
+
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 - [WU-1382 — Improve generated file templates for agent clarity](wu/WU-1382.yaml) — Framework: CLI
