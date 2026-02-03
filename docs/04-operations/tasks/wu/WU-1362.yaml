@@ -2,7 +2,7 @@ id: WU-1362
 title: Add branch guards to prevent main pollution (consolidated)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -29,8 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Consolidates 3 WUs: WU-1227, WU-1228, WU-1232. Add branch checks to init.ts, docs-sync.ts, and fix state:doctor retry logic.'
+description: 'Consolidates 3 WUs: WU-1227, WU-1228, WU-1232. Add branch checks to init.ts,
+  docs-sync.ts, and fix state:doctor retry logic.'
 acceptance:
   - init.ts checks branch before writing tracked files
   - docs-sync.ts checks branch before writing tracked files
   - state:doctor --fix has retry logic for push failures
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1362
+claimed_at: 2026-02-03T02:46:41.033Z
+baseline_main_sha: 1ddf59769b441ba59474d3a39e94cb3f28784190
+session_id: 38ad5bcb-b7a7-4ff2-a220-de70b3924d0a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T02:46:41.040Z
