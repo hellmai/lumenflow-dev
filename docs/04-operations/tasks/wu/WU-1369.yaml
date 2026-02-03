@@ -6,9 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
-  - apps/docs/src/content/docs/reference
+  - packages/@lumenflow/cli/README.md
 tests:
-  manual: []
+  manual:
+    - Verify pnpm pre-release:check passes without errors
+    - Verify lumenflow-gates appears in CLI README Verification & Gates table
   unit:
     - tools/__tests__/pre-release-checks.test.ts
   e2e: []
@@ -16,7 +18,12 @@ artifacts:
   - .lumenflow/stamps/WU-1369.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  The original WU description mentioned 10 missing commands in Starlight docs, but all 10 were
+  already documented in apps/docs/src/content/docs/reference/cli.mdx. The actual pre-release check
+  failure was due to lumenflow-gates (alias for gates) missing from the CLI README.md.
+spec_refs:
+  - 'lumenflow://docs/cli-readme'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
