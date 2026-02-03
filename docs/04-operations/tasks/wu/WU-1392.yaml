@@ -1,7 +1,7 @@
 id: WU-1392
 title: Fix quickstart initiative examples and AGENTS markers
 lane: 'Content: Documentation'
-type: bug
+type: documentation
 status: in_progress
 priority: P2
 created: 2026-02-03
@@ -9,7 +9,10 @@ code_paths:
   - apps/docs/src/content/docs/getting-started/agent-start.mdx
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual: []
+  manual:
+    - Verify Agent Start Here + Quickstart initiative examples include --id
+    - AGENTS markers are LUMENFLOW:START/END
+    - and Step 6 references Step 5
   unit: []
   e2e: []
 artifacts:
