@@ -2,7 +2,7 @@ id: WU-1370
 title: Fix nested micro-worktree in repairWUInconsistency causing local main drift
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,9 +25,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When handleOrphanCheck calls repairWUInconsistency with projectRoot, the repair function creates its own micro-worktree without pushOnly:true. This nested micro-worktree merges to local main before pushing, causing local main to drift ahead of origin/main after every wu:claim that triggers orphan repair.
+description: When handleOrphanCheck calls repairWUInconsistency with projectRoot, the repair
+  function creates its own micro-worktree without pushOnly:true. This nested micro-worktree merges
+  to local main before pushing, causing local main to drift ahead of origin/main after every
+  wu:claim that triggers orphan repair.
 acceptance:
-  - When projectRoot is provided to repairWUInconsistency, skip micro-worktree creation and work directly on projectRoot
+  - When projectRoot is provided to repairWUInconsistency, skip micro-worktree creation and work
+    directly on projectRoot
   - Existing wu:repair CLI behavior (no projectRoot) unchanged - still creates micro-worktree
   - After wu:claim with orphan repair, local main equals origin/main (no drift)
   - Add test for nested micro-worktree scenario
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1370
+claimed_at: 2026-02-03T09:17:38.552Z
+baseline_main_sha: dadcdd60566a96e3092dda6ab8fd488334f0e622
+session_id: 4bcb09b4-69a5-49d3-98e1-f1786a3e416b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T09:17:38.558Z
