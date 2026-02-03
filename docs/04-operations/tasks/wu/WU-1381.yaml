@@ -2,7 +2,7 @@ id: WU-1381
 title: Document cloud agent branch workflow
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,8 +25,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: cloud agents (Claude/Codex web) work on hosted branches outside local worktrees. Problem: current guidance doesn’t clearly tell integrators how to reconcile agent branches with LumenFlow’s wu:prep + wu:done workflow. Solution: add explicit agent-branch bypass guidance and config defaults, and document the integration steps.'
+description: 'Context: cloud agents (Claude/Codex web) work on hosted branches outside local
+  worktrees. Problem: current guidance doesn’t clearly tell integrators how to reconcile agent
+  branches with LumenFlow’s wu:prep + wu:done workflow. Solution: add explicit agent-branch bypass
+  guidance and config defaults, and document the integration steps.'
 acceptance:
-  - Add git.agentBranchPatterns defaults for cloud agents (agent/*, claude/*, codex/*) in .lumenflow.config.yaml
-  - Document a Cloud Agent Workflow section in docs/04-operations/_frameworks/lumenflow/playbook.md covering branch-only vs agent-branch bypass
-  - Include explicit integrator steps (claim WU, cherry-pick agent commits into worktree, run wu:prep and wu:done)
+  - Add git.agentBranchPatterns defaults for cloud agents (agent/*, claude/*, codex/*) in
+    .lumenflow.config.yaml
+  - Document a Cloud Agent Workflow section in docs/04-operations/_frameworks/lumenflow/playbook.md
+    covering branch-only vs agent-branch bypass
+  - Include explicit integrator steps (claim WU, cherry-pick agent commits into worktree, run
+    wu:prep and wu:done)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1381
+claimed_at: 2026-02-03T12:54:04.302Z
+baseline_main_sha: bc00a804fdbd0da0689a1d1a08abddd243e7e0c3
+session_id: 6592e3af-ab7d-49d7-a37e-391d4515cfe4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T12:54:04.309Z
