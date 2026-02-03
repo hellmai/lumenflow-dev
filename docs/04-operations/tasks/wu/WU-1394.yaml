@@ -1,0 +1,43 @@
+id: WU-1394
+title: Fix mem:recover hook propagation and documentation (WU-1390 follow-up)
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/vendors/claude/.claude/settings.json.template
+  - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
+  - .claude/hooks/session-start-recovery.sh
+  - packages/@lumenflow/memory/src/mem-recover-core.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - .claude/skills/context-management/SKILL.md
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/init-hooks.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-recover-core.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1394.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Codex review + docs audit found WU-1390 gaps: CODE: (1) init.ts doesn't scaffold hooks, (2) settings.json.template missing hooks, (3) enforcement-sync.ts doesn't handle PreCompact/SessionStart, (4) SessionStart uses placeholder WU-XXXX, (5) comment mismatch in formatRecoveryPrompt. DOCS: (6) mem:recover missing from quick-ref-commands.md, (7) context-management skill outdated, (8) CLAUDE.md missing recovery hooks"
+acceptance:
+  - lumenflow init scaffolds hook scripts with executable permissions
+  - settings.json.template includes PreCompact and SessionStart hooks
+  - enforcement-sync.ts merges PreCompact/SessionStart when enabled
+  - SessionStart hook uses actual WU_ID not placeholder
+  - Comment in formatRecoveryPrompt matches actual behavior
+  - mem:recover documented in quick-ref-commands.md
+  - context-management skill updated with actual hook implementation
