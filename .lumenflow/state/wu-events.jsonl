@@ -652,4 +652,5 @@
 {"type":"complete","wuId":"WU-1367","timestamp":"2026-02-03T00:30:59.351Z"}
 {"type":"claim","wuId":"WU-1366","timestamp":"2026-02-03T00:34:39.116Z","lane":"Framework: CLI","title":"CLI command runtime fixes (consolidated)"}
 {"type":"complete","wuId":"WU-1366","timestamp":"2026-02-03T00:54:23.440Z"}
-{"type":"claim","wuId":"WU-1358","lane":"Framework: CLI","title":"Fix CLI docs generation to include all Commander options and add agent --help guidance","timestamp":"2026-02-03T00:56:01.826Z"}
+{"type":"claim","wuId":"WU-1358","timestamp":"2026-02-03T00:56:01.826Z","lane":"Framework: CLI","title":"Fix CLI docs generation to include all Commander options and add agent --help guidance"}
+{"type":"complete","wuId":"WU-1358","timestamp":"2026-02-03T01:15:59.741Z"}

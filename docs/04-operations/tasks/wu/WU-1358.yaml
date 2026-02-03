@@ -2,7 +2,7 @@ id: WU-1358
 title: Fix CLI docs generation to include all Commander options and add agent --help guidance
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -54,3 +54,5 @@ session_id: 7aff917e-966e-4d33-b406-029fee59ee0b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T00:56:01.815Z
+locked: true
+completed_at: 2026-02-03T01:15:57.225Z
