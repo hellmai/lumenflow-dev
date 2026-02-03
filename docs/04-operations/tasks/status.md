@@ -5,9 +5,9 @@ _Last updated: 2026-02-03_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml)
 
 ## Completed
 
@@ -340,3 +340,4 @@ _Last updated: 2026-02-03_
 - [WU-1383 — Add CLI safeguards against manual file editing](wu/WU-1383.yaml) — 2026-02-03
 - [WU-1386 — Extend lumenflow doctor with agent-friction checks](wu/WU-1386.yaml) — 2026-02-03
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — 2026-02-03
+- [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml) — 2026-02-03
