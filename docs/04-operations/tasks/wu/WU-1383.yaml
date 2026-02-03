@@ -2,7 +2,7 @@ id: WU-1383
 title: Add CLI safeguards against manual file editing
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -46,3 +46,5 @@ claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T13:57:57.048Z
+locked: true
+completed_at: 2026-02-03T14:18:28.372Z
