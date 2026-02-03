@@ -2,7 +2,7 @@ id: WU-1369
 title: Add Starlight docs for 10 missing CLI bin entries
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,7 +25,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Pre-release check found 10 bin entries without Starlight documentation: wu-prep, wu-proto, mem-context, mem-delete, initiative-plan, plan-create, plan-link, plan-edit, plan-promote, lumenflow-integrate. These commands exist and work but are not documented on lumenflow.dev.'
+description: 'Pre-release check found 10 bin entries without Starlight documentation: wu-prep,
+  wu-proto, mem-context, mem-delete, initiative-plan, plan-create, plan-link, plan-edit,
+  plan-promote, lumenflow-integrate. These commands exist and work but are not documented on
+  lumenflow.dev.'
 acceptance:
   - wu-prep command documented in Starlight
   - wu-proto command documented in Starlight
@@ -38,3 +41,11 @@ acceptance:
   - plan-promote command documented in Starlight
   - lumenflow-integrate command documented in Starlight
   - pnpm pre-release:check passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1369
+claimed_at: 2026-02-03T09:31:41.928Z
+baseline_main_sha: 5391099e0c6e9999adfb58506ea9dc3008294904
+session_id: 7b072d6c-438c-4527-bb9a-248c04d94f0b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T09:31:41.933Z
