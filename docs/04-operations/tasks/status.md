@@ -8,7 +8,6 @@ _Last updated: 2026-02-03_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml)
 
 ## Completed
 
@@ -335,3 +334,4 @@ _Last updated: 2026-02-03_
 - [WU-1368 — Fix sync:templates --check-drift and add micro-worktree isolation](wu/WU-1368.yaml) — 2026-02-03
 - [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml) — 2026-02-03
 - [WU-1371 — Auto-generate CLI README.md from docs generator](wu/WU-1371.yaml) — 2026-02-03
+- [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml) — 2026-02-03
