@@ -2,7 +2,7 @@ id: WU-1371
 title: Auto-generate CLI README.md from docs generator
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -20,8 +20,8 @@ artifacts:
 dependencies: []
 risks: []
 notes: 'WU-1371 implementation: generateReadmeMd() function added to tools/generate-cli-docs.ts.
-  README.md auto-generated from same source data as Starlight cli.mdx, eliminating
-  maintenance drift.'
+  README.md auto-generated from same source data as Starlight cli.mdx, eliminating maintenance
+  drift.'
 spec_refs:
   - lumenflow://inline
 requires_review: false
@@ -51,3 +51,5 @@ session_id: 4bcb09b4-69a5-49d3-98e1-f1786a3e416b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T09:19:15.811Z
+locked: true
+completed_at: 2026-02-03T09:29:49.920Z
