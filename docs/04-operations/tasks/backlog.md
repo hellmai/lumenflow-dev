@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1391 — Fix Agent Start Here CLI commands and quickstart gaps](wu/WU-1391.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
