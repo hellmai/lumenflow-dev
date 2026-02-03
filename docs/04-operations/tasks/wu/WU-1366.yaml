@@ -2,7 +2,7 @@ id: WU-1366
 title: CLI command runtime fixes (consolidated)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -32,9 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Consolidates WU-1224, WU-1316, WU-1355. Fixes: (1) wu:done should auto-run state:cleanup after success, (2) wu:create should aggregate required-field errors, (3) cli-entry.mjs should fallback to main CLI dist before attempting build in worktrees.'
+description: 'Consolidates WU-1224, WU-1316, WU-1355. Fixes: (1) wu:done should auto-run
+  state:cleanup after success, (2) wu:create should aggregate required-field errors, (3)
+  cli-entry.mjs should fallback to main CLI dist before attempting build in worktrees.'
 acceptance:
   - State cleanup runs automatically after wu:done success (non-fatal)
   - Add cleanup.trigger config option (on_done | on_init | manual) with on_done default
   - Missing required fields in wu:create are reported together in a single error block
   - spec:linter runs successfully in worktrees without built CLI by falling back to main CLI dist
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1366
+claimed_at: 2026-02-03T00:34:39.081Z
+baseline_main_sha: aed41508c5f6d7860e1a3b7233d13b1005f1a2a0
+session_id: 778083a5-a140-472a-8e89-7c4c3baeca17
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T00:34:39.086Z
