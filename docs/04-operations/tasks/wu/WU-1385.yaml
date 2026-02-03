@@ -2,7 +2,7 @@ id: WU-1385
 title: Include wu-sizing-guide.md in lumenflow init onboarding docs
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Init --full creates wu-sizing-guide.md in onboarding directory
   - Content sourced from docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
   - starting-prompt.md references sizing guide
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1385
+claimed_at: 2026-02-03T16:06:57.207Z
+baseline_main_sha: 392ef5c647af7b41b2096936ebe7c5cc89b236ab
+session_id: 757ddb4a-7d84-4351-a99d-c30d637c98eb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T16:06:57.215Z

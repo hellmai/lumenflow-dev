@@ -5,9 +5,11 @@ _Last updated: 2026-02-03_
 ## In Progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml)
+- [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml)
 
 ## Completed
 
