@@ -20,11 +20,16 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1386.done
 dependencies: []
+spec_refs:
+  - ~/.claude/plans/delegated-imagining-fairy.md
 risks: []
-notes: 'Origin: Haven 2.8.0 report identified agent drift from CLI workflow. Extends existing
-  doctor.ts (WU-1177) - do not create new command. Key decisions: Default doctor stays fast, --deep
-  runs heavier wu:validate. Auto-run after init is non-blocking. Use wu:validate for WU checks. Spec
-  ref: ~/.claude/plans/delegated-imagining-fairy.md'
+notes: |
+  Origin: Haven 2.8.0 report identified agent drift from CLI workflow.
+  Extends existing doctor.ts (WU-1177) - do not create new command.
+  Key decisions:
+  - Default doctor stays fast, --deep runs heavier wu:validate
+  - Auto-run after init is non-blocking (exit 0 even with warnings)
+  - Use wu:validate for WU checks, not custom _meta.created_by field
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
