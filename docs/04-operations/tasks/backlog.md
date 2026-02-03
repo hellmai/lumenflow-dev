@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml) — Framework: CLI
 - [WU-1384 — Fix spec-linter required fields on ready WUs](wu/WU-1384.yaml) — Content: Documentation
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
