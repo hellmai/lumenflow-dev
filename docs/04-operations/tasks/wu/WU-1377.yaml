@@ -1,0 +1,33 @@
+id: WU-1377
+title: Add managed file header comments to generated files
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1377.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Haven 2.8.0 agent report showed agent edited .lumenflow.config.yaml manually because no warning indicated it was managed. Problem: Generated files look like regular YAML, agents assume they should edit them. Solution: Add prominent header comments to generated files indicating they are Lumenflow-managed and suggesting CLI alternatives.'
+acceptance:
+  - Config template has LUMENFLOW MANAGED FILE header block
+  - Header includes warning about manual edits
+  - Header suggests CLI commands for customization
+  - Lane-inference template also has managed header
