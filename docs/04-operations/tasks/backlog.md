@@ -28,7 +28,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -359,3 +358,4 @@ sections:
 - [WU-1368 — Fix sync:templates --check-drift and add micro-worktree isolation](wu/WU-1368.yaml)
 - [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml)
 - [WU-1371 — Auto-generate CLI README.md from docs generator](wu/WU-1371.yaml)
+- [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml)
