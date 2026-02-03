@@ -430,13 +430,41 @@ function checkPrerequisites(): DoctorResult['prerequisites'] {
 }
 
 /**
+ * WU-1387: Get git repository root directory
+ * This ensures managed-file detection works from subdirectories
+ */
+function getGitRepoRoot(projectDir: string): string | null {
+  try {
+    const repoRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+      cwd: projectDir,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+    return repoRoot;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * WU-1386: Check for uncommitted changes to managed files
+ * WU-1387: Uses git repo root for path resolution (works from subdirectories)
  */
 async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesDirtyResult> {
   try {
-    // Get git status output
+    // WU-1387: Get git repo root to handle subdirectory execution
+    const repoRoot = getGitRepoRoot(projectDir);
+    if (!repoRoot) {
+      return {
+        passed: true,
+        files: [],
+        message: 'Git status check skipped (not a git repository)',
+      };
+    }
+
+    // Run git status from repo root, not the passed projectDir
     const statusOutput = execFileSync('git', ['status', '--porcelain'], {
-      cwd: projectDir,
+      cwd: repoRoot,
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -484,8 +512,66 @@ async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesD
 }
 
 /**
+ * WU-1387: Parse wu:prune output for worktree issues
+ * Detects orphan directories, missing tracked worktrees, stale, blocked, and unclaimed worktrees
+ */
+interface WorktreePruneParseResult {
+  orphans: number;
+  stale: number;
+  blocked: number;
+  unclaimed: number;
+  missing: number;
+  warnings: number;
+  errors: number;
+}
+
+function parseWorktreePruneOutput(output: string): WorktreePruneParseResult {
+  // Parse summary line for orphan directories: "Orphan directories: N"
+  const orphanSummaryMatch = output.match(/Orphan directories:\s*(\d+)/);
+  const orphansFromSummary = orphanSummaryMatch ? parseInt(orphanSummaryMatch[1], 10) : 0;
+
+  // Also count "orphan director" mentions (the detailed output)
+  const orphanDetailMatches = output.match(/orphan director/gi) || [];
+  const orphansFromDetail = orphanDetailMatches.length;
+
+  // Use the higher count (summary is authoritative, but detail catches other mentions)
+  const orphans = Math.max(orphansFromSummary, orphansFromDetail > 0 ? 1 : 0);
+
+  // Parse specific worktree warnings from wu:prune output
+  // These appear as "Stale worktree:", "Blocked worktree:", "Unclaimed worktree:"
+  const staleCount = (output.match(/Stale worktree:/gi) || []).length;
+  const blockedCount = (output.match(/Blocked worktree:/gi) || []).length;
+  const unclaimedCount = (output.match(/Unclaimed worktree:/gi) || []).length;
+
+  // Parse missing tracked worktrees: "Missing tracked worktree" header
+  const missingMatch = output.match(/Missing tracked worktree/gi) || [];
+  const missingCount = missingMatch.length > 0 ? 1 : 0; // At least one if header present
+
+  // Also count specific missing path lines
+  const missingPathMatches = output.match(/worktrees \(tracked by git but directory missing\)/gi);
+  const missingFromDetail = missingPathMatches ? missingPathMatches.length : 0;
+
+  // Parse summary warnings and errors
+  const warningSummaryMatch = output.match(/Warnings:\s*(\d+)/);
+  const warnings = warningSummaryMatch ? parseInt(warningSummaryMatch[1], 10) : 0;
+
+  const errorSummaryMatch = output.match(/Errors:\s*(\d+)/);
+  const errors = errorSummaryMatch ? parseInt(errorSummaryMatch[1], 10) : 0;
+
+  return {
+    orphans,
+    stale: staleCount,
+    blocked: blockedCount,
+    unclaimed: unclaimedCount,
+    missing: Math.max(missingCount, missingFromDetail),
+    warnings,
+    errors,
+  };
+}
+
+/**
  * WU-1386: Check worktree sanity by calling wu:prune in dry-run mode
- * This reuses the full wu:prune logic including orphan detection, status mismatches, etc.
+ * WU-1387: Enhanced parsing for orphan, missing, stale, blocked, and unclaimed worktrees
  */
 async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityResult> {
   try {
@@ -524,7 +610,7 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
         errorMsg.includes('ENOENT') ||
         errorMsg.includes('Missing script') ||
         errorMsg.includes('command not found') ||
-        !pruneOutput.includes('[wu:prune]')
+        !pruneOutput.includes('[wu-prune]')
       ) {
         // Command couldn't run - gracefully skip
         return {
@@ -538,27 +624,34 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
       commandFailed = true;
     }
 
-    // Parse output for orphan and stale counts
-    // wu:prune outputs lines like "Orphaned worktree:" and "Stale worktree:"
-    const orphanCount = (pruneOutput.match(/Orphaned worktree:/g) || []).length;
-    const staleCount = (pruneOutput.match(/Stale worktree:/g) || []).length;
+    // WU-1387: Enhanced parsing for all worktree issue types
+    const parsed = parseWorktreePruneOutput(pruneOutput);
 
-    // Pass if no issues found and command didn't fail with worktree problems
-    const hasIssues = orphanCount > 0 || staleCount > 0;
+    // Calculate total issues (orphans count as issues, plus stale, blocked, unclaimed, missing)
+    const totalIssues =
+      parsed.orphans + parsed.stale + parsed.blocked + parsed.unclaimed + parsed.missing;
+    const hasIssues = totalIssues > 0 || parsed.warnings > 0 || parsed.errors > 0;
     const passed = !hasIssues && !commandFailed;
 
+    // Build descriptive message
     let message = 'All worktrees are valid';
     if (!passed) {
       const parts: string[] = [];
-      if (orphanCount > 0) parts.push(`${orphanCount} orphan(s)`);
-      if (staleCount > 0) parts.push(`${staleCount} stale`);
+      if (parsed.orphans > 0) parts.push(`${parsed.orphans} orphan(s)`);
+      if (parsed.missing > 0) parts.push(`${parsed.missing} missing`);
+      if (parsed.stale > 0) parts.push(`${parsed.stale} stale`);
+      if (parsed.blocked > 0) parts.push(`${parsed.blocked} blocked`);
+      if (parsed.unclaimed > 0) parts.push(`${parsed.unclaimed} unclaimed`);
+      if (parts.length === 0 && (parsed.warnings > 0 || parsed.errors > 0)) {
+        parts.push(`${parsed.warnings} warning(s), ${parsed.errors} error(s)`);
+      }
       message = parts.length > 0 ? `Worktree issues: ${parts.join(', ')}` : 'Worktree issues found';
     }
 
     return {
       passed,
-      orphans: orphanCount,
-      stale: staleCount,
+      orphans: parsed.orphans,
+      stale: parsed.stale + parsed.blocked + parsed.unclaimed + parsed.missing, // Combined for API compat
       message,
     };
   } catch {
@@ -574,6 +667,7 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
 
 /**
  * WU-1386: Run WU validation (--deep mode only)
+ * WU-1387: Sets passed=false with clear message when CLI fails to run
  * Calls wu:validate --all --no-strict for full schema/lint validation in warn-only mode
  */
 async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
@@ -594,7 +688,8 @@ async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
     // Call wu:validate --all --no-strict to get warn-only validation
     // This runs the full schema + lint validation, treating warnings as advisory
     let validateOutput: string;
-    let exitCode = 0;
+    let cliError = false;
+    let cliErrorMessage = '';
     try {
       validateOutput = execFileSync('pnpm', ['wu:validate', '--all', '--no-strict'], {
         cwd: projectDir,
@@ -604,9 +699,47 @@ async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
       });
     } catch (e: unknown) {
       // wu:validate exits non-zero if validation fails
-      const execError = e as { stdout?: string; stderr?: string; status?: number };
+      const execError = e as {
+        stdout?: string;
+        stderr?: string;
+        status?: number;
+        message?: string;
+        code?: string;
+      };
       validateOutput = (execError.stdout || '') + (execError.stderr || '');
-      exitCode = execError.status || 1;
+      const errorMsg = execError.message || '';
+
+      // WU-1387: Distinguish between CLI execution failure and validation failure
+      // CLI failure = script missing, command not found, ENOENT
+      // Validation failure = script ran but found invalid WUs
+      if (
+        errorMsg.includes('ERR_PNPM') ||
+        errorMsg.includes('ENOENT') ||
+        errorMsg.includes('Missing script') ||
+        errorMsg.includes('command not found') ||
+        execError.code === 'ENOENT' ||
+        // If no recognizable wu:validate output, assume CLI failed
+        (!validateOutput.includes('[wu:validate]') && !validateOutput.includes('Valid:'))
+      ) {
+        cliError = true;
+        cliErrorMessage = errorMsg.includes('Missing script')
+          ? 'wu:validate script not found'
+          : errorMsg.includes('ENOENT')
+            ? 'pnpm command not available'
+            : 'wu:validate could not run';
+      }
+    }
+
+    // WU-1387: If CLI failed to run, report as failure with clear message
+    if (cliError) {
+      return {
+        passed: false,
+        total: 0,
+        valid: 0,
+        invalid: 0,
+        warnings: 0,
+        message: `WU validation failed: ${cliErrorMessage}`,
+      };
     }
 
     // Parse output for counts
@@ -638,14 +771,16 @@ async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
           : 'No WUs to validate'
         : `${invalidCount}/${total} WU(s) have issues`,
     };
-  } catch {
+  } catch (e: unknown) {
+    // WU-1387: Unexpected errors should report failure, not silently pass
+    const error = e as Error;
     return {
-      passed: true,
+      passed: false,
       total: 0,
       valid: 0,
       invalid: 0,
       warnings: 0,
-      message: 'WU validation skipped (could not run wu:validate)',
+      message: `WU validation failed: ${error.message || 'unknown error'}`,
     };
   }
 }
@@ -717,6 +852,7 @@ export async function runDoctor(
 
 /**
  * WU-1386: Run doctor for init (non-blocking, warnings only)
+ * WU-1387: Shows accurate status including lane health and prerequisite failures
  * This is used after lumenflow init to provide feedback without blocking
  */
 export async function runDoctorForInit(projectDir: string): Promise<DoctorForInitResult> {
@@ -739,6 +875,13 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
     }
   }
 
+  // WU-1387: Count prerequisite failures as warnings
+  for (const [, prereq] of Object.entries(result.prerequisites)) {
+    if (!prereq.passed) {
+      warnings++;
+    }
+  }
+
   // Count workflow health issues as warnings (not errors)
   if (result.workflowHealth) {
     if (!result.workflowHealth.managedFilesDirty.passed) warnings++;
@@ -749,7 +892,7 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
   const lines: string[] = [];
   lines.push('[lumenflow doctor] Quick health check...');
 
-  if (result.exitCode === 0) {
+  if (result.exitCode === 0 && warnings === 0) {
     lines.push('  All checks passed');
   } else {
     // Show critical errors first
@@ -763,7 +906,29 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
       lines.push('  Error: AGENTS.md not found');
     }
 
-    // Then warnings
+    // WU-1387: Show lane health issues
+    if (!result.checks.laneHealth.passed) {
+      lines.push(`  Warning: Lane overlap detected - ${result.checks.laneHealth.message}`);
+    }
+
+    // WU-1387: Show prerequisite failures
+    if (!result.prerequisites.node.passed) {
+      lines.push(
+        `  Warning: Node.js version ${result.prerequisites.node.version} (required: ${result.prerequisites.node.required})`,
+      );
+    }
+    if (!result.prerequisites.pnpm.passed) {
+      lines.push(
+        `  Warning: pnpm version ${result.prerequisites.pnpm.version} (required: ${result.prerequisites.pnpm.required})`,
+      );
+    }
+    if (!result.prerequisites.git.passed) {
+      lines.push(
+        `  Warning: Git version ${result.prerequisites.git.version} (required: ${result.prerequisites.git.required})`,
+      );
+    }
+
+    // Workflow health warnings
     if (result.workflowHealth?.managedFilesDirty.files.length) {
       lines.push(
         `  Warning: ${result.workflowHealth.managedFilesDirty.files.length} managed file(s) have uncommitted changes`,
@@ -776,6 +941,13 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
       lines.push(
         `  Warning: ${result.workflowHealth.worktreeSanity.orphans} orphan worktree(s) found`,
       );
+    }
+    if (result.workflowHealth && !result.workflowHealth.worktreeSanity.passed) {
+      // WU-1387: Show worktree sanity message if there are issues beyond orphans
+      const wsSanity = result.workflowHealth.worktreeSanity;
+      if (wsSanity.stale > 0 && wsSanity.orphans === 0) {
+        lines.push(`  Warning: ${wsSanity.message}`);
+      }
     }
   }
 
