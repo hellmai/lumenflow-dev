@@ -1,39 +1,41 @@
 id: WU-1391
-title: Document Prompt Debugging checklist
-lane: 'Content: Documentation'
-type: documentation
+title: Add --retrospective flag to mem:checkpoint
+lane: 'Framework: Memory'
+type: feature
 status: ready
 priority: P2
 created: 2026-02-03
 description: >
-  Context: When prompts fail, agents lack systematic debugging approach.
-  Problem: Ad-hoc troubleshooting wastes context and time.
-  Solution: Create checklist pattern for diagnosing prompt failures.
-  Research source: Miles Deutscher "Prompt Engineer Master" framework.
+  Context: Checkpoints capture state but not reasoning.
+  Problem: Post-mortems and handoffs lack context on what worked/didn't.
+  Solution: Add optional --retrospective flag to capture reasoning in JSONL.
+  Research source: AgentWorkforce/trajectories pattern.
 acceptance:
-  - Create docs/04-operations/_frameworks/lumenflow/patterns/prompt-debugging.md
-  - Include checklist (intent clear, role specified, constraints defined, format explicit)
-  - Include before/after examples
-  - Document common failure modes and fixes
-  - Add cross-references to related skills
+  - Add --retrospective <text> flag to mem:checkpoint command
+  - Store retrospective field in checkpoint JSONL node
+  - Display retrospective in mem:export output
+  - Unit tests for retrospective storage and retrieval
+  - Update --help output
 code_paths:
-  - docs/04-operations/_frameworks/lumenflow/patterns/prompt-debugging.md
+  - packages/@lumenflow/memory/src/checkpoint.ts
+  - packages/@lumenflow/cli/src/commands/mem-checkpoint.ts
 tests:
   manual:
-    - Verify documentation renders correctly
-    - Verify checklist is actionable
-  unit: []
+    - Run mem:checkpoint with --retrospective and verify storage
+    - Run mem:export and verify retrospective displayed
+  unit:
+    - packages/@lumenflow/memory/src/__tests__/checkpoint.test.ts
   e2e: []
 artifacts: []
 dependencies: []
 risks: []
 notes: >
-  Phase 3 of INIT-014. Documentation-only, can run in parallel.
-  Prerequisite for WU-1392 (Claude skill binding).
+  Phase 3 of INIT-014. Independent of other WUs - can run in parallel.
+  Adopts trajectory pattern from AgentWorkforce research.
 spec_refs:
   - lumenflow://initiatives/INIT-014
 requires_review: false
-exposure: documentation
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false

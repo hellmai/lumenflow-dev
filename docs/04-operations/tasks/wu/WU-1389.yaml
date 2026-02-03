@@ -1,37 +1,36 @@
 id: WU-1389
-title: Add --retrospective flag to mem:checkpoint
-lane: 'Framework: Memory'
+title: Create vendor-agnostic rules directory
+lane: 'Framework: Core'
 type: feature
 status: ready
 priority: P2
 created: 2026-02-03
 description: >
-  Context: Checkpoints capture state but not reasoning.
-  Problem: Post-mortems and handoffs lack context on what worked/didn't.
-  Solution: Add optional --retrospective flag to capture reasoning in JSONL.
-  Research source: AgentWorkforce/trajectories pattern.
+  Context: Rules are duplicated across .claude/, .cursor/, .windsurf/.
+  Problem: DRY violation, manual sync required when rules change.
+  Solution: Create .lumenflow/rules/ as single source of truth, refactor client configs to reference it.
 acceptance:
-  - Add --retrospective <text> flag to mem:checkpoint command
-  - Store retrospective field in checkpoint JSONL node
-  - Display retrospective in mem:export output
-  - Unit tests for retrospective storage and retrieval
-  - Update --help output
+  - Create .lumenflow/rules/ directory structure
+  - Extract core rules from .claude/CLAUDE.md into .lumenflow/rules/core.md
+  - Extract workflow rules into .lumenflow/rules/workflow.md
+  - Update .claude/CLAUDE.md to reference .lumenflow/rules/
+  - Verify existing functionality unchanged
 code_paths:
-  - packages/@lumenflow/memory/src/checkpoint.ts
-  - packages/@lumenflow/cli/src/commands/mem-checkpoint.ts
+  - .lumenflow/rules/core.md
+  - .lumenflow/rules/workflow.md
+  - .claude/CLAUDE.md
 tests:
   manual:
-    - Run mem:checkpoint with --retrospective and verify storage
-    - Run mem:export and verify retrospective displayed
-  unit:
-    - packages/@lumenflow/memory/src/__tests__/checkpoint.test.ts
+    - Verify rules are correctly extracted
+    - Verify .claude/CLAUDE.md references work
+  unit: []
   e2e: []
 artifacts: []
 dependencies: []
-risks: []
+risks:
+  - Breaking existing client configs if references incorrect
 notes: >
-  Phase 3 of INIT-014. Independent of other WUs - can run in parallel.
-  Adopts trajectory pattern from AgentWorkforce research.
+  Phase 1 of INIT-014. Creates foundation for multi-client generation.
 spec_refs:
   - lumenflow://initiatives/INIT-014
 requires_review: false
