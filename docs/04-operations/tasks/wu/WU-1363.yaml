@@ -2,7 +2,7 @@ id: WU-1363
 title: CLI integration test suite (consolidated)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -29,10 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Consolidates 5 WUs: WU-1273, WU-1274, WU-1275, WU-1276, WU-1277. Add integration tests for WU lifecycle and memory layer.'
+description: 'Consolidates 5 WUs: WU-1273, WU-1274, WU-1275, WU-1276, WU-1277. Add integration tests
+  for WU lifecycle and memory layer.'
 acceptance:
   - Integration tests for wu:create, wu:claim, wu:status
   - Integration tests for wu:prep, wu:done workflow
   - Integration tests for memory checkpoint, signal, inbox
   - Integration tests for agent spawn coordination
   - E2E test for initiative orchestration
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1363
+claimed_at: 2026-02-03T03:00:53.543Z
+baseline_main_sha: 98e3d7ddaed9f16da700f90214a265690d994a00
+session_id: 5687a3ae-f92b-4702-8c83-686ea0a5e35f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T03:00:53.548Z
