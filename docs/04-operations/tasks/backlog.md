@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml) — Content: Documentation
 - [WU-1368 — Fix sync:templates --check-drift and add micro-worktree isolation](wu/WU-1368.yaml) — Framework: CLI
   (No items ready)
 
