@@ -10,6 +10,7 @@ code_paths:
   - docs/04-operations/tasks/wu/WU-1385.yaml
   - docs/04-operations/tasks/wu/WU-1390.yaml
   - docs/04-operations/tasks/wu/WU-1391.yaml
+  - docs/04-operations/tasks/wu/WU-1392.yaml
 tests:
   manual: []
   unit: []
@@ -20,10 +21,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T18:48:48.308Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1393
+session_id: 846c293a-0a77-4afd-bbe5-3b4d5097ea83
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:48:48.314Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +44,3 @@ acceptance:
   - WU-1390 includes notes, tests.manual, spec_refs
   - WU-1391 includes notes
   - WU-1385 acceptance references only files listed in code_paths
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1393
-claimed_at: 2026-02-03T18:48:48.308Z
-baseline_main_sha: c852e714ef4a8f633668d468becf4c89e1618674
-session_id: 846c293a-0a77-4afd-bbe5-3b4d5097ea83
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T18:48:48.314Z
