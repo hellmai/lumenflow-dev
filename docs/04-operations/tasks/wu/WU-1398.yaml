@@ -15,27 +15,28 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1398.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1398-plan.md
 risks: []
-notes: ''
+notes: Adds Session 0 exit criteria block clarifying installation, enforcement, and next-step selection.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T23:42:41.396Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1398
+session_id: c948d827-e86b-4fa6-9fab-f3cf06e5e3b7
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
-requires_cso_approval: false
-requires_cto_approval: false
-requires_design_approval: false
-description: Clarify Session 0 exit criteria so agents ensure LumenFlow is installed/enforced and choose next step with the user.
-acceptance:
-  - Quickstart includes a Session 0 exit criteria section covering installation, enforcement, and next-step selection
-  - Guidance states to stop after selecting the next step
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1398
-claimed_at: 2026-02-03T23:42:41.396Z
-baseline_main_sha: 5396e8af35b58e4d0c35163165bbd0bbb7175915
-session_id: c948d827-e86b-4fa6-9fab-f3cf06e5e3b7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T23:42:41.400Z
-spec_refs:
-  - lumenflow://plans/WU-1398-plan.md
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Clarify Session 0 exit criteria so agents ensure LumenFlow is installed/enforced and
+  choose next step with the user.
+acceptance:
+  - Quickstart includes a Session 0 exit criteria section covering installation, enforcement, and
+    next-step selection
+  - Guidance states to stop after selecting the next step
