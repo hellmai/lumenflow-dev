@@ -107,6 +107,8 @@ export function generateEnforcementHooks(config: EnforcementConfig): GeneratedHo
  * state cannot be determined.
  */
 export function generateEnforceWorktreeScript(): string {
+  // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
+  /* eslint-disable no-useless-escape */
   return `#!/bin/bash
 #
 # enforce-worktree.sh (WU-1367)
@@ -237,6 +239,7 @@ fi
 # Path is outside repo entirely - allow
 exit 0
 `;
+  /* eslint-enable no-useless-escape */
 }
 
 /**
@@ -247,6 +250,8 @@ exit 0
  * state cannot be determined.
  */
 export function generateRequireWuScript(): string {
+  // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
+  /* eslint-disable no-useless-escape */
   return `#!/bin/bash
 #
 # require-wu.sh (WU-1367)
@@ -343,6 +348,7 @@ echo "See: LUMENFLOW.md for workflow details" >&2
 echo "======================" >&2
 exit 2
 `;
+  /* eslint-enable no-useless-escape */
 }
 
 /**
@@ -352,6 +358,8 @@ exit 2
  * Always exits 0 (warning only, never blocks).
  */
 export function generateWarnIncompleteScript(): string {
+  // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
+  /* eslint-disable no-useless-escape */
   return `#!/bin/bash
 #
 # warn-incomplete.sh (WU-1367)
@@ -399,4 +407,5 @@ echo "====================================" >&2
 
 exit 0
 `;
+  /* eslint-enable no-useless-escape */
 }
