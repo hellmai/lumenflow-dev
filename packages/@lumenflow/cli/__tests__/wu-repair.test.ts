@@ -1,12 +1,16 @@
 /**
- * wu:repair micro-worktree isolation tests (WU-1078)
+ * wu:repair micro-worktree isolation tests (WU-1078, WU-1370)
  *
  * Tests that wu:repair uses micro-worktree for all file changes,
  * never writing directly to main checkout.
+ *
+ * WU-1370: When projectRoot is explicitly provided, repairs work directly
+ * in that directory (no micro-worktree). This prevents nested micro-worktrees
+ * when repair is called from within another micro-worktree context.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -130,9 +134,12 @@ acceptance:
     }
   });
 
-  describe('repairWUInconsistency', () => {
-    it('should use micro-worktree isolation for YAML_DONE_NO_STAMP repair', async () => {
-      // Import from @lumenflow/core to get the function that handles repairs
+  describe('repairWUInconsistency with projectRoot (direct mode)', () => {
+    // WU-1370: When projectRoot is provided, repairs work directly in that directory
+    // without creating a micro-worktree. This is used when repair is called from
+    // within a micro-worktree context (e.g., handleOrphanCheck during wu:claim).
+
+    it('should NOT use micro-worktree when projectRoot is provided (WU-1370)', async () => {
       const { repairWUInconsistency } =
         await import('@lumenflow/core/dist/wu-consistency-checker.js');
       const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
@@ -151,18 +158,45 @@ acceptance:
         ],
       };
 
+      // When projectRoot is provided, direct mode is used (no micro-worktree)
       await repairWUInconsistency(report, { projectRoot: testProjectRoot });
 
-      // Verify micro-worktree was used for the repair
-      expect(withMicroWorktree).toHaveBeenCalled();
-      expect(withMicroWorktreeCalls.length).toBeGreaterThan(0);
-      expect(withMicroWorktreeCalls[0]).toMatchObject({
-        operation: expect.stringContaining('repair'),
-        id: expect.stringContaining('WU-'),
-      });
+      // Verify micro-worktree was NOT used
+      expect(withMicroWorktree).not.toHaveBeenCalled();
+      expect(withMicroWorktreeCalls).toHaveLength(0);
     });
 
-    it('should use micro-worktree isolation for YAML_DONE_STATUS_IN_PROGRESS repair', async () => {
+    it('should create stamp file directly in projectRoot when provided', async () => {
+      const { repairWUInconsistency } =
+        await import('@lumenflow/core/dist/wu-consistency-checker.js');
+
+      const report = {
+        valid: false,
+        errors: [
+          {
+            type: 'YAML_DONE_NO_STAMP',
+            wuId: 'WU-9999',
+            title: 'Test WU',
+            description: 'WU done but no stamp',
+            repairAction: 'Create stamp file',
+            canAutoRepair: true,
+          },
+        ],
+      };
+
+      await repairWUInconsistency(report, { projectRoot: testProjectRoot });
+
+      // Verify stamp was created directly in projectRoot
+      const stampPath = path.join(testProjectRoot, '.lumenflow/stamps/WU-9999.done');
+      expect(existsSync(stampPath)).toBe(true);
+
+      // Verify stamp content
+      const stampContent = readFileSync(stampPath, 'utf-8');
+      expect(stampContent).toContain('WU-9999');
+      expect(stampContent).toContain('Test WU');
+    });
+
+    it('should work directly for YAML_DONE_STATUS_IN_PROGRESS repair when projectRoot provided', async () => {
       const { repairWUInconsistency } =
         await import('@lumenflow/core/dist/wu-consistency-checker.js');
       const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
@@ -188,58 +222,11 @@ acceptance:
 
       await repairWUInconsistency(report, { projectRoot: testProjectRoot });
 
-      expect(withMicroWorktree).toHaveBeenCalled();
+      // Verify micro-worktree was NOT used (direct mode)
+      expect(withMicroWorktree).not.toHaveBeenCalled();
     });
 
-    it('should use micro-worktree isolation for STAMP_EXISTS_YAML_NOT_DONE repair', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
-      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
-
-      // Create stamp file
-      writeFileSync(
-        path.join(testProjectRoot, '.lumenflow/stamps/WU-9999.done'),
-        'WU WU-9999 - Test WU\nCompleted: 2026-01-23\n',
-      );
-
-      // Update WU YAML to not-done status
-      const wuNotDone = `id: WU-9999
-title: Test WU
-lane: 'Framework: CLI'
-type: bug
-status: in_progress
-priority: P2
-created: 2026-01-23
-code_paths: []
-description: Test WU for repair testing
-acceptance:
-  - Test acceptance criteria
-`;
-      writeFileSync(
-        path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-9999.yaml'),
-        wuNotDone,
-      );
-
-      const report = {
-        valid: false,
-        errors: [
-          {
-            type: 'STAMP_EXISTS_YAML_NOT_DONE',
-            wuId: 'WU-9999',
-            title: 'Test WU',
-            description: 'Stamp exists but YAML not done',
-            repairAction: 'Update YAML to done+locked+completed',
-            canAutoRepair: true,
-          },
-        ],
-      };
-
-      await repairWUInconsistency(report, { projectRoot: testProjectRoot });
-
-      expect(withMicroWorktree).toHaveBeenCalled();
-    });
-
-    it('should batch multiple repairs into a single micro-worktree operation', async () => {
+    it('should batch multiple repairs directly when projectRoot provided', async () => {
       const { repairWUInconsistency } =
         await import('@lumenflow/core/dist/wu-consistency-checker.js');
       const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
@@ -294,9 +281,56 @@ acceptance: []
 
       await repairWUInconsistency(report, { projectRoot: testProjectRoot });
 
-      // Should use a single micro-worktree for all repairs (batch mode)
-      // Currently will be called once per repair, but ideally should batch
-      expect(withMicroWorktree).toHaveBeenCalled();
+      // Verify micro-worktree was NOT used (direct mode)
+      expect(withMicroWorktree).not.toHaveBeenCalled();
+
+      // Verify all stamps were created directly
+      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9999.done'))).toBe(true);
+      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9998.done'))).toBe(true);
+      expect(existsSync(path.join(testProjectRoot, '.lumenflow/stamps/WU-9997.done'))).toBe(true);
+    });
+  });
+
+  describe('repairWUInconsistency without projectRoot (CLI mode)', () => {
+    // When no projectRoot is provided (CLI invocation), micro-worktree should be used
+
+    it('should use micro-worktree isolation when no projectRoot provided', async () => {
+      const { repairWUInconsistency } =
+        await import('@lumenflow/core/dist/wu-consistency-checker.js');
+      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
+
+      // Mock process.cwd to return our test directory
+      const originalCwd = process.cwd;
+      vi.spyOn(process, 'cwd').mockReturnValue(testProjectRoot);
+
+      try {
+        const report = {
+          valid: false,
+          errors: [
+            {
+              type: 'YAML_DONE_NO_STAMP',
+              wuId: 'WU-9999',
+              title: 'Test WU',
+              description: 'WU done but no stamp',
+              repairAction: 'Create stamp file',
+              canAutoRepair: true,
+            },
+          ],
+        };
+
+        // When no projectRoot is provided, micro-worktree should be used
+        await repairWUInconsistency(report);
+
+        // Verify micro-worktree WAS used
+        expect(withMicroWorktree).toHaveBeenCalled();
+        expect(withMicroWorktreeCalls.length).toBeGreaterThan(0);
+        expect(withMicroWorktreeCalls[0]).toMatchObject({
+          operation: expect.stringContaining('repair'),
+          id: expect.stringContaining('WU-'),
+        });
+      } finally {
+        process.cwd = originalCwd;
+      }
     });
   });
 });
