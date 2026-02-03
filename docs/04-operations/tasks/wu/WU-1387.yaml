@@ -1,0 +1,33 @@
+id: WU-1387
+title: Fix doctor agent-friction check edge cases
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - packages/@lumenflow/cli/src/doctor.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1387.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-1386 review identified edge cases. Problem: (1) Worktree sanity misses blocked/unclaimed/orphan-directory warnings, (2) WU validity silently skips on CLI errors, (3) runDoctorForInit message inaccurate, (4) Managed-file detection fails from subdirectories. Solution: Fix all four issues with proper parsing and path handling.'
+acceptance:
+  - Worktree sanity detects all wu:prune warning types
+  - WU validity distinguishes CLI failure from validation failure
+  - runDoctorForInit shows accurate status
+  - Managed-file detection works from subdirectories
