@@ -7,9 +7,13 @@
  * 1. No direct file modifications on main branch
  * 2. Removal of stale WU references from backlog.md and status.md
  * 3. All changes pushed via merge, not direct file modification
+ * 4. WU-1362: Retry logic for push failures (inherited from withMicroWorktree)
+ *
+ * Retry behavior is configured via .lumenflow.config.yaml git.push_retry section.
+ * Default: 3 retries with exponential backoff and jitter.
  *
  * @see {@link ./state-doctor.ts} - Main CLI that uses these deps
- * @see {@link @lumenflow/core/dist/micro-worktree.js} - Micro-worktree infrastructure
+ * @see {@link @lumenflow/core/dist/micro-worktree.js} - Micro-worktree infrastructure with retry logic
  */
 
 import fs from 'node:fs/promises';

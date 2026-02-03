@@ -5,6 +5,7 @@
  * WU-1028: Vendor-agnostic core + vendor overlays
  * WU-1085: Added createWUParser for proper --help support
  * WU-1171: Added --merge mode, --client flag, AGENTS.md, updated vendor paths
+ * WU-1362: Added branch guard to check branch before writing tracked files
  */
 
 import * as fs from 'node:fs';
@@ -17,6 +18,8 @@ import { getDefaultConfig, createWUParser, WU_OPTIONS } from '@lumenflow/core';
 import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
 // WU-1171: Import merge block utilities
 import { updateMergeBlock } from './merge-block.js';
+// WU-1362: Import worktree guard utilities for branch checking
+import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
 
 /**
  * WU-1085: CLI option definitions for init command
@@ -231,6 +234,49 @@ const LUMENFLOW_DIR = '.lumenflow';
 const LUMENFLOW_AGENTS_DIR = `${LUMENFLOW_DIR}/agents`;
 const CLAUDE_DIR = '.claude';
 const CLAUDE_AGENTS_DIR = path.join(CLAUDE_DIR, 'agents');
+
+/**
+ * WU-1362: Check branch guard before writing tracked files
+ *
+ * Warns (but does not block) if:
+ * - On main branch AND
+ * - Not in a worktree directory AND
+ * - Git repository exists (has .git)
+ *
+ * This prevents accidental main branch pollution during init operations.
+ * Uses warning instead of error to allow initial project setup.
+ *
+ * @param targetDir - Directory where files will be written
+ * @param result - ScaffoldResult to add warnings to
+ */
+async function checkBranchGuard(targetDir: string, result: ScaffoldResult): Promise<void> {
+  result.warnings = result.warnings ?? [];
+
+  // Only check if target is a git repository
+  const gitDir = path.join(targetDir, '.git');
+  if (!fs.existsSync(gitDir)) {
+    // Not a git repo - allow scaffold (initial setup)
+    return;
+  }
+
+  // Check if we're in a worktree (always allow)
+  if (isInWorktree({ cwd: targetDir })) {
+    return;
+  }
+
+  // Check if on main branch
+  try {
+    const onMain = await isMainBranch();
+    if (onMain) {
+      result.warnings.push(
+        'Running init on main branch in main checkout. ' +
+          'Consider using a worktree for changes to tracked files.',
+      );
+    }
+  } catch {
+    // Git error (e.g., not initialized) - silently allow
+  }
+}
 
 /**
  * WU-1177: Detect IDE environment from environment variables
@@ -2252,6 +2298,7 @@ function loadTemplate(templatePath: string): string {
 /**
  * Scaffold a new LumenFlow project
  * WU-1171: Added AGENTS.md, --merge mode, updated vendor/client handling
+ * WU-1362: Added branch guard to prevent main branch pollution
  */
 export async function scaffoldProject(
   targetDir: string,
@@ -2263,6 +2310,11 @@ export async function scaffoldProject(
     merged: [],
     warnings: [],
   };
+
+  // WU-1362: Check branch before writing tracked files
+  // Only block if we're on main branch AND not in a worktree
+  // This allows scaffold to run in worktrees and during initial setup
+  await checkBranchGuard(targetDir, result);
 
   const defaultClient = options.defaultClient ?? detectDefaultClient();
   // WU-1171: Use resolveClientType with both client and vendor (vendor is deprecated but kept for backwards compat)
