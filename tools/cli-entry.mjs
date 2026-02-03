@@ -162,6 +162,18 @@ export function ensureCliDist({
     return { path: entryPath, built: false, source: 'repo' };
   }
 
+  // WU-1366: Check main repo fallback BEFORE attempting build
+  // This allows worktrees to use the already-built CLI from main
+  // without triggering a potentially slow/failing build
+  if (mainRepoPath) {
+    const mainFallback = resolveCliDistEntry(mainRepoPath, entry);
+    if (exists(mainFallback)) {
+      logger.warn(`[cli-entry] Using main repo CLI dist for ${entry}.`);
+      return { path: mainFallback, built: false, source: 'main' };
+    }
+  }
+
+  // No existing dist found - attempt build
   logger.log(`[cli-entry] Missing CLI dist for ${entry}; building...`);
 
   // WU-1356: Use configured package manager and build command
@@ -175,18 +187,7 @@ export function ensureCliDist({
     return { path: entryPath, built: true, source: 'repo' };
   }
 
-  const fallbackPath = selectCliEntryPath({
-    repoRoot,
-    entry,
-    mainRepoPath,
-    exists,
-  });
-
-  if (fallbackPath) {
-    logger.warn(`[cli-entry] Using main repo CLI dist for ${entry}.`);
-    return { path: fallbackPath, built: false, source: 'main' };
-  }
-
+  // Build failed or dist still doesn't exist
   return { path: null, built: false, source: 'none' };
 }
 
