@@ -11,7 +11,14 @@ code_paths:
   - apps/docs/src/content/docs/index.mdx
 tests:
   manual:
-    - Verify agent following quickstart cannot make mistakes
+    - Quickstart includes explicit "Do NOT edit managed files" warnings near init and WU creation
+      steps.
+    - Quickstart presents a single command-first sequence (install → init → initiative:create →
+      wu:create → wu:claim → wu:prep → wu:done) without branching options.
+    - Quickstart includes a File Ownership table (managed vs user-owned) and a Common Mistakes table
+      with check/X symbols.
+    - Quickstart does not instruct manual edits to .lumenflow.config.yaml or manual creation of
+      WU/initiative YAML files.
   unit: []
   e2e: []
 artifacts:
@@ -42,4 +49,5 @@ acceptance:
   - Commands shown before concepts explained
   - Common Mistakes table with check and X symbols
   - File Ownership table showing managed vs user files
-  - Agent entry route exists (lumenflow.dev/agent) OR banner on all pages
+  - Quickstart includes an agent callout banner at the top with "Follow these steps exactly"
+    guidance.
