@@ -2,7 +2,7 @@ id: WU-1390
 title: Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -13,9 +13,10 @@ code_paths:
   - .claude/settings.json
 tests:
   manual:
-    - 'Run pnpm mem:recover --wu WU-1390 and verify output contains constraints, CLI commands, and spawn guidance'
-    - 'Verify .claude/settings.json has PreCompact and SessionStart hooks configured'
-    - 'Verify hook templates exist in packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/'
+    - Run pnpm mem:recover --wu WU-1390 and verify output contains constraints, CLI commands, and
+      spawn guidance
+    - Verify .claude/settings.json has PreCompact and SessionStart hooks configured
+    - Verify hook templates exist in packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/
   unit:
     - packages/@lumenflow/memory/__tests__/mem-recover-core.test.ts
   e2e: []
@@ -23,9 +24,12 @@ artifacts:
   - .lumenflow/stamps/WU-1390.done
 dependencies: []
 risks: []
-notes: |
-  Implementation uses durable recovery pattern: PreCompact writes recovery file to .lumenflow/state/,
+notes: >
+  Implementation uses durable recovery pattern: PreCompact writes recovery file to
+  .lumenflow/state/,
+
   SessionStart reads and deletes it. This ensures recovery survives context compaction.
+
   mem:recover is vendor-agnostic (core in @lumenflow/memory), hooks are Claude Code overlay.
 spec_refs:
   - lumenflow://plans/wise-shimmying-matsumoto.md
@@ -54,3 +58,5 @@ session_id: 8bd4faaf-98e7-4064-a84f-1288383fa58c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T18:26:40.731Z
+locked: true
+completed_at: 2026-02-03T18:50:46.666Z
