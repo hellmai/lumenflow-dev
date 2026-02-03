@@ -2,7 +2,7 @@ id: WU-1386
 title: Extend lumenflow doctor with agent-friction checks
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -52,3 +52,11 @@ acceptance:
   - New --deep flag for heavier checks (default stays fast)
   - Auto-runs after lumenflow init (non-blocking, warnings only)
   - Never blocks init - prints warnings and returns success
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1386
+claimed_at: 2026-02-03T14:09:12.364Z
+baseline_main_sha: 525d1039c87d2cf45cff6d8e6886682bb0b4ca06
+session_id: 7d39bda2-167f-4e00-9a52-441b8d232adb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T14:09:12.370Z
