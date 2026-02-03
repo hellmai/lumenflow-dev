@@ -701,7 +701,8 @@
 {"type":"claim","wuId":"WU-1394","timestamp":"2026-02-03T19:11:06.388Z","lane":"Framework: CLI","title":"Fix mem:recover hook propagation and documentation (WU-1390 follow-up)"}
 {"type":"complete","wuId":"WU-1142","timestamp":"2026-02-03T19:24:21.076Z"}
 {"type":"complete","wuId":"WU-1394","timestamp":"2026-02-03T19:49:25.369Z"}
-{"type":"claim","wuId":"WU-1395","lane":"Framework: CLI","title":"Fix init docs paths for simple structure","timestamp":"2026-02-03T22:36:27.647Z"}
-{"type":"block","wuId":"WU-1395","reason":"Abandoned - created accidentally during support request","timestamp":"2026-02-03T22:38:27.267Z"}
-{"type":"claim","wuId":"WU-1395","lane":"Content: Documentation","title":"Make Quickstart agent-first + add human-facing landing copy","timestamp":"2026-02-03T23:03:21.155Z"}
-{"type":"claim","wuId":"WU-1396","lane":"Content: Documentation","title":"Add design-first skill (5-step algorithm)","timestamp":"2026-02-03T23:03:44.219Z"}
+{"type":"claim","wuId":"WU-1395","timestamp":"2026-02-03T22:36:27.647Z","lane":"Framework: CLI","title":"Fix init docs paths for simple structure"}
+{"type":"block","wuId":"WU-1395","timestamp":"2026-02-03T22:38:27.267Z","reason":"Abandoned - created accidentally during support request"}
+{"type":"claim","wuId":"WU-1395","timestamp":"2026-02-03T23:03:21.155Z","lane":"Content: Documentation","title":"Make Quickstart agent-first + add human-facing landing copy"}
+{"type":"claim","wuId":"WU-1396","timestamp":"2026-02-03T23:03:44.219Z","lane":"Content: Documentation","title":"Add design-first skill (5-step algorithm)"}
+{"type":"complete","wuId":"WU-1396","timestamp":"2026-02-03T23:07:08.733Z"}
