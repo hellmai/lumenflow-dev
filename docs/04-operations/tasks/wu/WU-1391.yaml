@@ -1,0 +1,42 @@
+id: WU-1391
+title: Document Prompt Debugging checklist
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-03
+description: >
+  Context: When prompts fail, agents lack systematic debugging approach.
+  Problem: Ad-hoc troubleshooting wastes context and time.
+  Solution: Create checklist pattern for diagnosing prompt failures.
+  Research source: Miles Deutscher "Prompt Engineer Master" framework.
+acceptance:
+  - Create docs/04-operations/_frameworks/lumenflow/patterns/prompt-debugging.md
+  - Include checklist (intent clear, role specified, constraints defined, format explicit)
+  - Include before/after examples
+  - Document common failure modes and fixes
+  - Add cross-references to related skills
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/patterns/prompt-debugging.md
+tests:
+  manual:
+    - Verify documentation renders correctly
+    - Verify checklist is actionable
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: >
+  Phase 3 of INIT-014. Documentation-only, can run in parallel.
+  Prerequisite for WU-1392 (Claude skill binding).
+spec_refs:
+  - lumenflow://initiatives/INIT-014
+requires_review: false
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+initiative: INIT-014

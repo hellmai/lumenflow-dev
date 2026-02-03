@@ -1,0 +1,49 @@
+id: WU-1393
+title: Research agent frameworks and create INIT-014
+lane: 'Content: Documentation'
+type: documentation
+status: in_progress
+priority: P2
+created: 2026-02-03
+description: >
+  Research AgentWorkforce/relay, Claude Code best practices, Claude-Flow swarm patterns,
+  and Prompt Engineer Master framework. Create INIT-014 initiative with 6 WUs for
+  vendor-agnostic multi-client architecture. Establishes foundation for IDE-agnostic
+  LumenFlow positioning.
+acceptance:
+  - INIT-014 initiative created with phases and success metrics
+  - 6 WUs created for vendor-agnostic multi-client architecture (WU-1387 through WU-1392)
+  - Research findings documented in WU descriptions and acceptance criteria
+code_paths:
+  - docs/04-operations/tasks/initiatives/INIT-014.yaml
+  - docs/04-operations/tasks/wu/WU-1387.yaml
+  - docs/04-operations/tasks/wu/WU-1388.yaml
+  - docs/04-operations/tasks/wu/WU-1389.yaml
+  - docs/04-operations/tasks/wu/WU-1390.yaml
+  - docs/04-operations/tasks/wu/WU-1391.yaml
+  - docs/04-operations/tasks/wu/WU-1392.yaml
+tests:
+  manual:
+    - Verify INIT-014.yaml exists and is valid
+    - Verify 6 WUs are linked to INIT-014
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: >
+  Research sources: AgentWorkforce/trajectories, Claude Code best practices,
+  Claude-Flow patterns, Prompt Engineer Master framework.
+spec_refs:
+  - lumenflow://research/agent-frameworks
+requires_review: false
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+initiative: null
+claimed_mode: worktree
+worktree_path: /home/user/os/worktrees/content-documentation-wu-1372
+claimed_at: 2026-02-03T12:10:00.000Z

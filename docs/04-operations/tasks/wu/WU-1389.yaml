@@ -1,0 +1,44 @@
+id: WU-1389
+title: Add --retrospective flag to mem:checkpoint
+lane: 'Framework: Memory'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+description: >
+  Context: Checkpoints capture state but not reasoning.
+  Problem: Post-mortems and handoffs lack context on what worked/didn't.
+  Solution: Add optional --retrospective flag to capture reasoning in JSONL.
+  Research source: AgentWorkforce/trajectories pattern.
+acceptance:
+  - Add --retrospective <text> flag to mem:checkpoint command
+  - Store retrospective field in checkpoint JSONL node
+  - Display retrospective in mem:export output
+  - Unit tests for retrospective storage and retrieval
+  - Update --help output
+code_paths:
+  - packages/@lumenflow/memory/src/checkpoint.ts
+  - packages/@lumenflow/cli/src/commands/mem-checkpoint.ts
+tests:
+  manual:
+    - Run mem:checkpoint with --retrospective and verify storage
+    - Run mem:export and verify retrospective displayed
+  unit:
+    - packages/@lumenflow/memory/src/__tests__/checkpoint.test.ts
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: >
+  Phase 3 of INIT-014. Independent of other WUs - can run in parallel.
+  Adopts trajectory pattern from AgentWorkforce research.
+spec_refs:
+  - lumenflow://initiatives/INIT-014
+requires_review: false
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+initiative: INIT-014

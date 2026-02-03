@@ -1,0 +1,38 @@
+id: INIT-014
+slug: vendor-agnostic-multi-client
+title: Vendor-Agnostic Multi-Client Architecture
+description: >
+  Establish vendor-agnostic patterns layer (.lumenflow/rules/, patterns/) and multi-client
+  generation (Cursor, Windsurf). Adopt research patterns: retrospective checkpoints,
+  writer/reviewer workflow, prompt debugging. Eliminates DRY violations in client configs
+  and positions LumenFlow as IDE-agnostic framework.
+status: planning
+priority: P2
+owner: workflow
+created: 2026-02-03
+phases:
+  - id: 1
+    title: Infrastructure - vendor-agnostic rules directory
+    status: pending
+  - id: 2
+    title: Multi-client integrate command extension
+    status: pending
+  - id: 3
+    title: Adopt research patterns (retrospective, writer/reviewer, prompt debugging)
+    status: pending
+success_metrics:
+  - Single source of truth for rules in .lumenflow/rules/
+  - lumenflow:integrate generates configs for Claude, Cursor, and Windsurf
+  - Checkpoints support retrospective capture
+  - Patterns documented in vendor-agnostic location
+labels:
+  - vendor-agnostic
+  - multi-client
+  - research-adoption
+wus:
+  - WU-1387
+  - WU-1388
+  - WU-1389
+  - WU-1390
+  - WU-1391
+  - WU-1392

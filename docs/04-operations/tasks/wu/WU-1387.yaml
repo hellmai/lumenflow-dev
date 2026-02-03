@@ -1,0 +1,43 @@
+id: WU-1387
+title: Create vendor-agnostic rules directory
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+description: >
+  Context: Rules are duplicated across .claude/, .cursor/, .windsurf/.
+  Problem: DRY violation, manual sync required when rules change.
+  Solution: Create .lumenflow/rules/ as single source of truth, refactor client configs to reference it.
+acceptance:
+  - Create .lumenflow/rules/ directory structure
+  - Extract core rules from .claude/CLAUDE.md into .lumenflow/rules/core.md
+  - Extract workflow rules into .lumenflow/rules/workflow.md
+  - Update .claude/CLAUDE.md to reference .lumenflow/rules/
+  - Verify existing functionality unchanged
+code_paths:
+  - .lumenflow/rules/core.md
+  - .lumenflow/rules/workflow.md
+  - .claude/CLAUDE.md
+tests:
+  manual:
+    - Verify rules are correctly extracted
+    - Verify .claude/CLAUDE.md references work
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks:
+  - Breaking existing client configs if references incorrect
+notes: >
+  Phase 1 of INIT-014. Creates foundation for multi-client generation.
+spec_refs:
+  - lumenflow://initiatives/INIT-014
+requires_review: false
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+initiative: INIT-014

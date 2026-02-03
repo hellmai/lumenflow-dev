@@ -1,0 +1,41 @@
+id: WU-1390
+title: Document Writer/Reviewer pattern
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-03
+description: >
+  Context: Anthropic recommends fresh-context review for better code quality.
+  Problem: Pattern not documented in LumenFlow.
+  Solution: Create pattern doc explaining when and how to use separate write/review agents.
+  Research source: Anthropic Claude Code best practices.
+acceptance:
+  - Create docs/04-operations/_frameworks/lumenflow/patterns/writer-reviewer.md
+  - Document when to use pattern (code reviews, complex features)
+  - Document how to implement with wu:spawn
+  - Include example spawn commands
+  - Link from multi-agent-coordination skill
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/patterns/writer-reviewer.md
+tests:
+  manual:
+    - Verify documentation renders correctly
+    - Verify links work
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: >
+  Phase 3 of INIT-014. Documentation-only, can run in parallel.
+spec_refs:
+  - lumenflow://initiatives/INIT-014
+requires_review: false
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+initiative: INIT-014
