@@ -3,320 +3,272 @@ title: Quickstart
 description: Get LumenFlow running in 5 minutes
 ---
 
-import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
-This guide gets you from zero to a working LumenFlow setup in under 5 minutes.
-
-## Try It Now (30 Seconds)
-
-```bash
-# Install the CLI
-pnpm add -D @lumenflow/cli
-
-# Initialize LumenFlow
-pnpm exec lumenflow
-```
-
-That's it. Your project now speaks LumenFlow. Any AI coding assistant can read `AGENTS.md` and understand your workflow.
-
-<Aside type="tip" title="Why Install as a Dev Dependency?">
-  Installing `@lumenflow/cli` as a dev dependency ensures your whole team uses the same version,
-  and the 40+ CLI commands (like `wu-claim`, `gates`, `flow-report`) are always available via
-  `pnpm exec <command>`.
+<Aside type="caution" title="AI Agents: Follow These Steps Exactly">
+  This quickstart is designed for AI agents and humans alike. Execute commands in order. Do not skip
+  steps. Do not manually edit managed files. Each command produces the correct output—trust the CLI.
 </Aside>
 
-Want the full experience with worktree isolation, automated gates, and 40+ CLI commands? Keep reading.
+## Prerequisites
+
+Verify these tools are installed before proceeding.
+
+```bash
+node --version   # Requires 22.0.0+
+pnpm --version   # Requires 9.0.0+
+git --version    # Requires 2.0.0+
+```
+
+<Aside type="danger" title="DO NOT">
+  Do not proceed if any version check fails. Install missing tools first.
+</Aside>
 
 ---
 
-<Tabs>
-  <TabItem label="npm CLI (Recommended)">
+## Step 1: Install the CLI
 
-## Full Setup with CLI
-
-The CLI provides the complete LumenFlow experience with automated workflows, worktree isolation, and 40+ commands for managing your development process.
-
-### Prerequisites
-
-- Node.js 22+ (LTS recommended)
-- pnpm (recommended) or npm
-- A Git repository
-
-<Steps>
-
-1. **Install the CLI**
-
-   <Tabs syncKey="pkg">
-     <TabItem label="pnpm">```bash pnpm add -D @lumenflow/cli ```</TabItem>
-     <TabItem label="npm">```bash npm install -D @lumenflow/cli ```</TabItem>
-   </Tabs>
-
-2. **Initialize LumenFlow**
-
-   ```bash
-   pnpm exec lumenflow
-   ```
-
-   This creates:
-   - `.lumenflow.config.yaml` – Your configuration
-   - `LUMENFLOW.md` – Workflow entry point
-   - `AGENTS.md` – Universal AI agent entry point
-   - `.lumenflow/constraints.md` – Non-negotiable constraints
-   - `.lumenflow/agents/` – Vendor-agnostic agent guidance
-
-   Optional flags:
-   - `--full` – Add `docs/04-operations/tasks/` (backlog, status, templates)
-   - `--framework nextjs` – Add framework hint + overlay docs
-   - `--client claude|cursor|windsurf|cline|codex|all` – Add client-specific overlay files
-   - `--merge` – Safely merge into existing files (preserves your content)
-
-3. **Add scripts to package.json**
-
-   ```json
-   {
-     "scripts": {
-       "wu:create": "wu-create",
-       "wu:claim": "wu-claim",
-       "wu:prep": "wu-prep",
-       "wu:done": "wu-done",
-       "gates": "gates"
-     }
-   }
-   ```
-
-4. **Create your first Work Unit**
-
-   ```bash
-   # ID is auto-generated if not provided (use the printed ID in later steps)
-   npx wu-create \
-     --title "Fix login error banner" \
-     --lane "Experience: UI" \
-     --type bug \
-     --exposure ui \
-     --description "Fix error banner overlap on small screens" \
-     --acceptance "Error banner no longer overlaps the form on mobile widths" \
-     --code-paths "src/components/LoginError.tsx" \
-     --test-paths-unit "src/components/__tests__/LoginError.test.tsx"
-
-   # If you need a specific ID (e.g., to reference a plan), add --id WU-001
-   ```
-
-   <Aside type="tip">
-     `wu:create` validates a full spec up front. Use `wu:edit` later if you need to refine details.
-   </Aside>
-
-5. **Claim and start work**
-
-   ```bash
-   # Use the ID printed by wu-create (example: WU-123)
-   npx wu-claim --id WU-123 --lane "Experience: UI"
-   cd worktrees/experience-ui-wu-123
-   ```
-
-</Steps>
-
-### Daily CLI Workflow
+Run this command in your project root.
 
 ```bash
-# 1. Claim a WU from the backlog
-npx wu-claim --id WU-XXX --lane "Framework: Core"
-
-# 2. Work in the worktree (isolated branch)
-cd worktrees/framework-core-wu-xxx
-# ... make changes ...
-
-# 3. Run gates in the worktree
-npx wu-prep --id WU-XXX
-
-# 4. Complete the WU (merges to main, from repo root)
-cd /path/to/repo
-npx wu-done --id WU-XXX
+pnpm add -D @lumenflow/cli
 ```
 
-<Aside type="caution">
-  Run `wu:prep` from the worktree (it runs gates there), then run `wu:done` from the main repository
-  checkout. The worktree is automatically cleaned up after completion.
+<Aside type="danger" title="DO NOT">
+  Do not install globally with `-g`. Install as a dev dependency so the whole team uses the same
+  version.
 </Aside>
 
-### Key CLI Commands
+---
 
-| Command       | Description                       |
-| ------------- | --------------------------------- |
-| `lumenflow`   | Initialize LumenFlow in a project |
-| `wu-create`   | Create a new Work Unit            |
-| `wu-claim`    | Claim a WU and create worktree    |
-| `wu-prep`     | Run gates in worktree             |
-| `wu-done`     | Complete WU, merge, and cleanup   |
-| `gates`       | Run quality gates (standalone)    |
-| `flow-report` | Generate DORA metrics report      |
+## Step 2: Initialize LumenFlow
 
-Run any command with `--help` to see all options:
+Run this command. It creates all required configuration files.
 
 ```bash
-pnpm exec wu-create --help
-pnpm exec gates --help
+pnpm exec lumenflow
 ```
 
-  </TabItem>
-  <TabItem label="GitHub App Only">
+This creates:
 
-## Lightweight Setup (No CLI)
+- `.lumenflow.config.yaml` — Configuration (managed)
+- `LUMENFLOW.md` — Workflow entry point (managed)
+- `AGENTS.md` — Universal AI agent entry point (managed)
+- `.lumenflow/constraints.md` — Non-negotiable constraints (managed)
 
-If you prefer not to install the CLI, you can use LumenFlow with just the GitHub App. You'll manage WU YAML files manually, and the GitHub App handles PR validation and gate enforcement.
-
-<Steps>
-
-1. **Install the GitHub App**
-
-   Go to the [GitHub Marketplace](https://github.com/apps/lumenflow-gates) and click **Install**.
-   Select your repository and authorize.
-
-2. **Add configuration file**
-
-   Create `.lumenflow.config.yaml` in your repo root:
-
-   ```yaml
-   version: '2.0'
-
-   directories:
-     wu_specs: docs/04-operations/tasks/wu
-     stamps: .lumenflow/stamps
-
-   lanes:
-     enforcement:
-       require_parent: true
-       allow_custom: false
-     definitions:
-       - name: 'Framework: Core'
-         wip_limit: 3
-       - name: 'Operations: Infrastructure'
-         wip_limit: 2
-
-   gates:
-     execution:
-       format: 'npm run format:check'
-       lint: 'npm run lint'
-       typecheck: 'npm run typecheck'
-       test: 'npm test'
-   ```
-
-3. **Create the tasks directory**
-
-   Create `docs/04-operations/tasks/backlog.md`:
-
-   ```markdown
-   # Backlog
-
-   ## Ready
-
-   - [WU-001 — My first task](wu/WU-001.yaml)
-
-   ## In Progress
-
-   ## Done
-   ```
-
-4. **Create your first Work Unit**
-
-   Create `docs/04-operations/tasks/wu/WU-001.yaml`:
-
-   ```yaml
-   id: WU-001
-   title: My first task
-   lane: 'Framework: Core'
-   type: feature
-   status: ready
-   priority: P2
-   description: |
-     A simple task to test LumenFlow.
-   acceptance:
-     - The feature works
-   code_paths:
-     - src/
-   ```
-
-   <Aside type="tip">
-     Lane names must use the "Parent: Sublane" format (e.g., `Framework: Core`, `Operations:
-     Infrastructure`). This is enforced by the `lanes.enforcement.require_parent` setting.
-   </Aside>
-
-5. **Open a Pull Request**
-
-   Create a branch, make changes, and open a PR. The LumenFlow GitHub App will:
-   - Validate your WU spec
-   - Run your configured gates
-   - Add status checks to the PR
-
-</Steps>
-
-<Aside>
-  With the GitHub App only approach, you manage WU YAML files manually. For automated worktree
-  management, metrics, and agent coordination, also install the CLI (`npm install -g
-  @lumenflow/cli`).
+<Aside type="danger" title="DO NOT">
+  Do not manually create these files. Do not edit `.lumenflow.config.yaml` by hand. Use CLI commands
+  to modify configuration.
 </Aside>
 
-  </TabItem>
-</Tabs>
+---
 
-## Verify It's Working
+## Step 3: Add Scripts to package.json
 
-After your first PR or `wu:done`, you should see:
+Add these scripts to your `package.json`.
 
-- ✅ WU status changed to `done`
-- ✅ Stamp file created in `.lumenflow/stamps/`
-- ✅ PR checks pass (if using GitHub App)
-- ✅ Backlog updated
-
-## Sample Configuration
-
-Here's a complete `.lumenflow.config.yaml` for reference:
-
-```yaml
-version: '2.0'
-
-directories:
-  wu_specs: docs/04-operations/tasks/wu
-  backlog: docs/04-operations/tasks/backlog.md
-  status: docs/04-operations/tasks/status.md
-  stamps: .lumenflow/stamps
-
-worktree_pattern: 'worktrees/{lane}-{wu_id}'
-
-lanes:
-  enforcement:
-    require_parent: true # Lanes must be "Parent: Sublane" format
-    allow_custom: false # Only predefined lanes allowed
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 3
-      code_paths:
-        - packages/core/**
-    - name: 'Experience: UI'
-      wip_limit: 2
-      code_paths:
-        - apps/web/**
-        - packages/components/**
-    - name: 'Operations: Infrastructure'
-      wip_limit: 2
-      code_paths:
-        - .github/**
-        - infra/**
-
-gates:
-  execution:
-    preset: 'node' # Or use custom commands
-    format: 'npx prettier --check .'
-    lint: 'npm run lint'
-    typecheck: 'npm run typecheck'
-    test: 'npm test'
-
-git:
-  main_branch: main
+```json
+{
+  "scripts": {
+    "wu:create": "wu-create",
+    "wu:claim": "wu-claim",
+    "wu:prep": "wu-prep",
+    "wu:done": "wu-done",
+    "gates": "gates"
+  }
+}
 ```
+
+<Aside type="danger" title="DO NOT">
+  Do not rename these scripts. Other LumenFlow tools expect these exact names.
+</Aside>
+
+---
+
+## Step 4: Create Your First Work Unit
+
+Run this command. Replace the values with your actual task details.
+
+```bash
+pnpm wu:create \
+  --title "Fix login error banner" \
+  --lane "Experience: UI" \
+  --type bug \
+  --exposure ui \
+  --description "Fix error banner overlap on small screens" \
+  --acceptance "Error banner no longer overlaps the form on mobile widths" \
+  --code-paths "src/components/LoginError.tsx" \
+  --test-paths-unit "src/components/__tests__/LoginError.test.tsx"
+```
+
+The CLI prints a WU ID (example: `WU-123`). Use this ID in subsequent commands.
+
+<Aside type="danger" title="DO NOT">
+  Do not manually create WU YAML files in `docs/04-operations/tasks/wu/`. Do not manually edit WU
+  YAML files. Use `pnpm wu:create` and `pnpm wu:edit` commands.
+</Aside>
+
+---
+
+## Step 5: Claim the Work Unit
+
+Run this command with the ID from Step 4.
+
+```bash
+pnpm wu:claim --id WU-123 --lane "Experience: UI"
+```
+
+This creates a worktree at `worktrees/experience-ui-wu-123/`.
+
+<Aside type="danger" title="DO NOT">
+  Do not skip this step. Do not work on main branch. Do not use `git worktree add` directly.
+</Aside>
+
+---
+
+## Step 6: Enter the Worktree
+
+Run this command immediately after claiming.
+
+```bash
+cd worktrees/experience-ui-wu-123
+```
+
+All work happens inside this directory.
+
+<Aside type="danger" title="DO NOT">
+  Do not edit files on main branch. Do not use absolute paths that point outside the worktree.
+  Always use relative paths.
+</Aside>
+
+---
+
+## Step 7: Implement and Commit
+
+Write your code. Write tests. Commit your changes.
+
+```bash
+# Write code and tests, then commit
+git add .
+git commit -m "fix: resolve error banner overlap on mobile"
+```
+
+<Aside type="danger" title="DO NOT">
+  Do not commit without tests. Do not use `--no-verify` to skip hooks. Fix any hook failures
+  properly.
+</Aside>
+
+---
+
+## Step 8: Run Gates in Worktree
+
+Run this command from inside the worktree.
+
+```bash
+pnpm wu:prep --id WU-123
+```
+
+This runs all quality gates (format, lint, typecheck, test). It prints the next command to run.
+
+<Aside type="danger" title="DO NOT">
+  Do not skip gates. Do not proceed if gates fail. Fix failures before continuing.
+</Aside>
+
+---
+
+## Step 9: Complete the Work Unit
+
+Run this command from the **main checkout** (not the worktree).
+
+```bash
+cd /path/to/your/repo
+pnpm wu:done --id WU-123
+```
+
+This merges your work to main, creates a completion stamp, and removes the worktree.
+
+<Aside type="danger" title="DO NOT">
+  Do not run `wu:done` from inside the worktree. Do not manually merge branches. Do not manually
+  create stamp files.
+</Aside>
+
+---
+
+## Verify Success
+
+After `wu:done` completes, verify these conditions.
+
+- WU YAML status is `done`
+- Stamp file exists at `.lumenflow/stamps/WU-123.done`
+- Worktree directory is removed
+- Changes are on main branch
+
+---
+
+## File Ownership
+
+LumenFlow manages certain files automatically. Understand which files you own.
+
+| File/Directory                        | Owner     | Action                                                  |
+| ------------------------------------- | --------- | ------------------------------------------------------- |
+| `.lumenflow.config.yaml`              | LumenFlow | Do not edit manually. Use CLI commands.                 |
+| `LUMENFLOW.md`                        | LumenFlow | Do not edit. Regenerated on init.                       |
+| `AGENTS.md`                           | LumenFlow | Do not edit. Regenerated on init.                       |
+| `.lumenflow/constraints.md`           | LumenFlow | Do not edit. Contains workflow rules.                   |
+| `.lumenflow/stamps/`                  | LumenFlow | Do not create manually. Created by `wu:done`.           |
+| `docs/04-operations/tasks/wu/*.yaml`  | LumenFlow | Do not create/edit manually. Use `wu:create`/`wu:edit`. |
+| `docs/04-operations/tasks/backlog.md` | LumenFlow | Do not edit. Regenerated from state.                    |
+| `docs/04-operations/tasks/status.md`  | LumenFlow | Do not edit. Regenerated from state.                    |
+| `worktrees/`                          | LumenFlow | Do not create manually. Created by `wu:claim`.          |
+| Your source code                      | You       | Edit freely inside worktrees.                           |
+| Your tests                            | You       | Edit freely inside worktrees.                           |
+| `package.json` scripts                | You       | Add the required scripts once.                          |
+
+---
+
+## Common Mistakes
+
+Avoid these errors. The left column shows correct behavior. The right column shows mistakes.
+
+| Correct                                     | Mistake                                |
+| ------------------------------------------- | -------------------------------------- |
+| `pnpm wu:create --title "..."`              | Manually creating WU YAML files        |
+| `pnpm wu:claim --id WU-123`                 | Using `git worktree add` directly      |
+| `cd worktrees/experience-ui-wu-123`         | Editing files on main branch           |
+| `pnpm wu:prep --id WU-123` (from worktree)  | Skipping gates                         |
+| `pnpm wu:done --id WU-123` (from main)      | Running `wu:done` from inside worktree |
+| Use relative paths inside worktree          | Using absolute paths to main checkout  |
+| Fix hook failures                           | Using `--no-verify` to skip hooks      |
+| `pnpm wu:edit --id WU-123 --status blocked` | Manually editing WU YAML status field  |
+| Let CLI manage backlog.md                   | Manually editing backlog.md            |
+| Let CLI manage stamps                       | Manually creating `.done` stamp files  |
+
+---
+
+## Command Reference
+
+| Command                                  | Description                    |
+| ---------------------------------------- | ------------------------------ |
+| `pnpm exec lumenflow`                    | Initialize LumenFlow           |
+| `pnpm wu:create --title "..." ...`       | Create a new Work Unit         |
+| `pnpm wu:claim --id WU-XXX --lane "..."` | Claim WU and create worktree   |
+| `pnpm wu:prep --id WU-XXX`               | Run gates in worktree          |
+| `pnpm wu:done --id WU-XXX`               | Complete WU, merge, cleanup    |
+| `pnpm wu:edit --id WU-XXX --field value` | Edit WU fields                 |
+| `pnpm gates`                             | Run quality gates (standalone) |
+
+Run any command with `--help` for all options.
+
+```bash
+pnpm wu:create --help
+pnpm gates --help
+```
+
+---
 
 ## Next Steps
 
-- [Install GitHub App](/getting-started/github-app) – PR validation and team enforcement
-- [Work Units](/concepts/work-units) – Deep dive on WUs
-- [Gates](/concepts/gates) – Understanding quality gates
-- [Configuration](/reference/config) – Full config reference
+- [Install GitHub App](/getting-started/github-app) — Add PR validation and team enforcement
+- [Work Units](/concepts/work-units) — Understand WU lifecycle and fields
+- [Gates](/concepts/gates) — Learn about quality gates
+- [Configuration](/reference/config) — Full configuration reference
