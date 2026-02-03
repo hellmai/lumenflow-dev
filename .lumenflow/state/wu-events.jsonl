@@ -707,4 +707,5 @@
 {"type":"claim","wuId":"WU-1396","timestamp":"2026-02-03T23:03:44.219Z","lane":"Content: Documentation","title":"Add design-first skill (5-step algorithm)"}
 {"type":"complete","wuId":"WU-1396","timestamp":"2026-02-03T23:07:08.733Z"}
 {"type":"complete","wuId":"WU-1395","timestamp":"2026-02-03T23:19:49.329Z"}
-{"type":"claim","wuId":"WU-1397","lane":"Content: Documentation","title":"Landing page UX: copy button + simplified CTAs","timestamp":"2026-02-03T23:24:16.510Z"}
+{"type":"claim","wuId":"WU-1397","timestamp":"2026-02-03T23:24:16.510Z","lane":"Content: Documentation","title":"Landing page UX: copy button + simplified CTAs"}
+{"type":"complete","wuId":"WU-1397","timestamp":"2026-02-03T23:29:42.093Z"}

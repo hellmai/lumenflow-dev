@@ -2,7 +2,7 @@ id: WU-1397
 title: 'Landing page UX: copy button + simplified CTAs'
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -24,7 +24,7 @@ notes: |
   - Steps 4-5: N/A for static docs
   Page reduced from 96 to 65 lines.
 spec_refs:
-  - 'lumenflow://plans/design-first-validation'
+  - lumenflow://plans/design-first-validation
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -47,3 +47,5 @@ session_id: 28cdb4cd-db7c-4124-9bbb-43ea60d71cad
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T23:24:16.484Z
+locked: true
+completed_at: 2026-02-03T23:29:39.689Z
