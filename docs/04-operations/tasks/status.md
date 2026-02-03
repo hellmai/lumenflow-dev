@@ -8,7 +8,6 @@ _Last updated: 2026-02-03_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml)
 
 ## Completed
 
@@ -331,3 +330,4 @@ _Last updated: 2026-02-03_
 - [WU-1358 — Fix CLI docs generation to include all Commander options and add agent --help guidance](wu/WU-1358.yaml) — 2026-02-03
 - [WU-1361 — Lint debt cleanup (consolidated)](wu/WU-1361.yaml) — 2026-02-03
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — 2026-02-03
+- [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml) — 2026-02-03
