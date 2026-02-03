@@ -7,15 +7,17 @@ priority: P2
 created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-done-auto-cleanup.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - tools/cli-entry.mjs
 tests:
   manual:
     - Verify acceptance criteria met
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
-    - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done-auto-cleanup.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
+    - packages/@lumenflow/core/src/__tests__/cleanup-trigger-config.test.ts
+    - tools/__tests__/cli-entry.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1366.done
