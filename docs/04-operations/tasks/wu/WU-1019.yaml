@@ -19,6 +19,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1019.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: Follow-up from WU-1017 notes about missing sublane config. Adapted from ExampleApp pattern.
 requires_review: false

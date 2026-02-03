@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-edit.ts
   - .husky/hooks/pre-push.mjs
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []

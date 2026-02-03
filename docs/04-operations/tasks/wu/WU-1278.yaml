@@ -8,7 +8,8 @@ created: 2026-01-31
 code_paths:
   - packages/@lumenflow/cli/src/orchestrate-monitor.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/orchestrate-monitor.test.ts
   e2e: []
@@ -17,7 +18,7 @@ artifacts:
 dependencies: []
 initiative: INIT-008
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

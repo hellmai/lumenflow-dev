@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
   - tools/generate-cli-docs.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-spawn-progress-signals.test.ts
@@ -19,8 +20,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1203.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

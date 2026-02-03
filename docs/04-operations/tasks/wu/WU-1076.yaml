@@ -18,7 +18,7 @@ dependencies: []
 spec_refs:
   - https://block.github.io/goose/blog/2025/12/10/stop-ai-agent-unwanted-changes/
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

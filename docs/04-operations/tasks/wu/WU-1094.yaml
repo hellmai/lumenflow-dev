@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/usecases/
   - packages/@lumenflow/core/src/context-di.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/adapters/
     - packages/@lumenflow/core/src/__tests__/usecases/
@@ -26,8 +27,10 @@ labels:
   - hex-architecture
   - adapters
   - di
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

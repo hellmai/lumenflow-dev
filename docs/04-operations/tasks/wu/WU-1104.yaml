@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
   - packages/@lumenflow/core/src/__tests__/dependency-guard.test.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
     - packages/@lumenflow/core/src/__tests__/date-utils.test.ts
@@ -30,7 +31,7 @@ blocked_by:
 spec_refs:
   - lumenflow://plans/unified-rolling-music.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/metrics/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/metrics/__tests__/methodology-telemetry.test.ts
   e2e: []
@@ -23,7 +24,7 @@ phase: 3
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-010.yaml
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

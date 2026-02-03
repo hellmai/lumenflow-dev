@@ -19,8 +19,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1057.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

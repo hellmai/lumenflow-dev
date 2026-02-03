@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/recovery/recovery-analyzer.ts
   - packages/@lumenflow/core/src/context/location-resolver.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/recovery/recovery-analyzer.test.ts
     - packages/@lumenflow/core/src/__tests__/context/location-resolver.test.ts

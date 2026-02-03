@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/lane-suggest-prompt.ts
   - packages/@lumenflow/cli/package.json
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/lane-suggest.test.ts
   e2e: []
@@ -18,8 +19,10 @@ artifacts:
   - .lumenflow/stamps/WU-1189.done
 dependencies: []
 initiative: INIT-006
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

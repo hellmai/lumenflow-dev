@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/memory/src/mem-index-core.ts
   - packages/@lumenflow/cli/src/mem-index.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/memory/__tests__/mem-index-core.test.ts
     - packages/@lumenflow/cli/__tests__/mem-index.test.ts
@@ -19,8 +20,10 @@ artifacts:
 dependencies: []
 initiative: INIT-008
 phase: 1
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

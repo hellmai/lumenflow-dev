@@ -12,7 +12,8 @@ code_paths:
   - .claude/skills/orchestration/SKILL.md
   - apps/docs/src/content/docs/reference/cli.mdx
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-plan.test.ts
   e2e: []

@@ -8,7 +8,8 @@ created: 2026-02-01
 code_paths:
   - packages/@lumenflow/core/src/wu-spawn-context.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
   e2e: []
@@ -16,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1295.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

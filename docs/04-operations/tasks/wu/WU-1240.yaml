@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn-context-integration.test.ts
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
@@ -22,8 +23,10 @@ dependencies:
   - WU-1234
 initiative: INIT-008
 phase: 2
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

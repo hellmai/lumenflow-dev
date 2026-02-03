@@ -11,7 +11,8 @@ code_paths:
   - .lumenflow/templates/manifest.yaml
   - packages/@lumenflow/core/src/template-loader.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
   e2e: []
@@ -23,7 +24,7 @@ phase: 2
 spec_refs:
   - ~/.claude/plans/linear-moseying-comet.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -20,6 +20,8 @@ artifacts:
 dependencies: []
 initiative: INIT-001
 phase: 2
+spec_refs:
+  - internal
 risks:
   - Parallel WUs in same lane may cause merge conflicts
   - Increased complexity in lane occupancy tracking

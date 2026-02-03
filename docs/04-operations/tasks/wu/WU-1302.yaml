@@ -11,7 +11,8 @@ code_paths:
   - LUMENFLOW.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-inference-error.test.ts
     - packages/@lumenflow/core/src/__tests__/git-require-remote-config.test.ts
@@ -20,8 +21,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1302.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

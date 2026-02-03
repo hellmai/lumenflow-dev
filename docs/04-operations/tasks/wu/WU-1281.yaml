@@ -8,7 +8,8 @@ created: 2026-01-31
 code_paths:
   - packages/@lumenflow/memory/src/mem-context-core.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/memory/__tests__/mem-context-core.test.ts
   e2e: []
@@ -17,7 +18,7 @@ artifacts:
 dependencies: []
 initiative: INIT-008
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

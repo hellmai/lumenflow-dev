@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/index.ts
   - apps/docs/src/content/docs/reference/ports.mdx
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/domain/context.schemas.test.ts
     - packages/@lumenflow/core/src/__tests__/domain/recovery.schemas.test.ts
@@ -22,7 +23,7 @@ dependencies: []
 spec_refs:
   - lumenflow://audit/string-literals
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

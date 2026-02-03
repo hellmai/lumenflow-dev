@@ -22,6 +22,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1115.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: |
   Manual verification completed:

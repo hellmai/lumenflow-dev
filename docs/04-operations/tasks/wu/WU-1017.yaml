@@ -38,6 +38,8 @@ artifacts:
   - .husky/hooks/prepare-commit-msg.mjs
   - .husky/hooks/pre-push.mjs
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Hooks may break workflows in unexpected edge cases
   - Worktree compatibility requires tracking .husky/_/husky.sh
@@ -77,7 +79,7 @@ description: |
   - Track .husky/ in git for worktree compatibility
 acceptance:
   - Husky installed with prepare script
-  - .husky/ tracked in git including _/husky.sh
+  - .husky/ tracked in git including .husky/_/husky.sh
   - All hooks skip tmp/* branches
   - pre-commit blocks direct commits to main/master
   - pre-commit allows Branch-Only mode (checks claimed_mode)

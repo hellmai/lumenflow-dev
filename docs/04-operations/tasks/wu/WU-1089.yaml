@@ -8,7 +8,8 @@ created: 2026-01-24
 code_paths:
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/agent-patterns-registry.test.ts
   e2e: []
@@ -18,7 +19,7 @@ dependencies: []
 spec_refs:
   - https://lumenflow.dev/registry/agent-patterns.json
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

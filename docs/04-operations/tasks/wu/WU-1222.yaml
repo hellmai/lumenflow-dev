@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1222.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: 'Released (2026-01-29): Prioritizing WU-1223 (wu:done worktree fix) which blocks this work
   conceptually'

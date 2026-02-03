@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/package.json
   - package.json
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/init.test.ts
     - packages/@lumenflow/cli/__tests__/docs-sync.test.ts
@@ -19,8 +20,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1083.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

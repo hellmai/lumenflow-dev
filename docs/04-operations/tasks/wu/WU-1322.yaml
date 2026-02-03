@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - .lumenflow.config.yaml
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
   e2e: []

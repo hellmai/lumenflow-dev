@@ -8,7 +8,8 @@ created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/init.test.ts
   e2e: []
@@ -16,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1184.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

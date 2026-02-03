@@ -21,6 +21,8 @@ dependencies:
   - WU-1009
 initiative: INIT-001
 phase: 2
+spec_refs:
+  - internal
 risks:
   - Maintenance burden across multiple repos
   - Language-specific gates may need work

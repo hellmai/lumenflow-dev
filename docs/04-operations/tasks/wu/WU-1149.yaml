@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1149.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: 'IMPORTANT: --client flag identifies the IDE/tool environment, NOT the underlying AI model.
   Use --client windsurf even if Windsurf is running a Codex agent. Use --client cursor even if

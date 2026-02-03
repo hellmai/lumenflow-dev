@@ -20,8 +20,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1043.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []

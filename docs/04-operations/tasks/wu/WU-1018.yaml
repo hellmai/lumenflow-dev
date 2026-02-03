@@ -26,6 +26,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1018.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Breaking changes to existing ExampleApp scripts if function signatures differ
 notes: |

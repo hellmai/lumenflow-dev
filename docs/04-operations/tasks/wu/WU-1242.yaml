@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/patrol-loop.ts
   - packages/@lumenflow/core/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/orchestrate-monitor-watch.test.ts
     - packages/@lumenflow/core/src/__tests__/patrol-loop.test.ts
@@ -21,8 +22,10 @@ dependencies:
   - WU-1241
 initiative: INIT-008
 phase: 2
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

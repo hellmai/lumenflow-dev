@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-bulk-assign-wus.ts
   - packages/@lumenflow/cli/src/metrics-cli.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/validators/backlog-sync.test.ts
     - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
@@ -24,7 +25,7 @@ artifacts:
   - .lumenflow/stamps/WU-1158.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

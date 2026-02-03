@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/index.ts
   - packages/@lumenflow/initiatives/src/initiative-validator.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/dependency-graph.test.ts
     - packages/@lumenflow/core/src/__tests__/cycle-detector.test.ts

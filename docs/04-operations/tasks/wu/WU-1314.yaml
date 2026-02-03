@@ -18,8 +18,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1314.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 locked: true
 completed_at: 2026-02-01T23:44:56.248Z

@@ -24,10 +24,12 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1026.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - 'Security: New bypass patterns could weaken worktree discipline if misconfigured'
   - 'Mitigation: Fail-closed design, unknown branches blocked, narrow defaults'
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []

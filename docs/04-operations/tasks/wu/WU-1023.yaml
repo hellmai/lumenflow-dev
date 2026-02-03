@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1023.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: 'Repeated friction: WU-1017 and WU-1016 both hit bootstrap issue where agents must figure out
   to run pnpm install. LumenFlow should be frictionless for agents.'

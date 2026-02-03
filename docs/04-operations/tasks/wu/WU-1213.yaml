@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/initiative-create.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
     - packages/@lumenflow/cli/__tests__/wu-create.test.ts
@@ -19,7 +20,7 @@ artifacts:
   - .lumenflow/stamps/WU-1213.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

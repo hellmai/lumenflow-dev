@@ -33,7 +33,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1177-friction-free-onboarding.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

@@ -21,6 +21,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1069.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: Prevents agents from storing plans inside repo. Part of vendor-agnostic enforcement layer.
 requires_review: false

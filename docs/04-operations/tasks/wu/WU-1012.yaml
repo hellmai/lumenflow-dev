@@ -21,6 +21,8 @@ dependencies:
   - WU-1011
 initiative: INIT-001
 phase: 1
+spec_refs:
+  - internal
 risks:
   - Could be abused to skip gates on non-docs WUs
 notes: |-

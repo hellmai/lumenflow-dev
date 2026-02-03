@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/mem-delete.ts
   - packages/@lumenflow/memory/src/mem-delete-core.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/memory/__tests__/mem-delete.test.ts
   e2e: []
@@ -18,8 +19,10 @@ artifacts:
 dependencies: []
 initiative: INIT-012
 phase: 3
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 locked: true
 completed_at: 2026-01-31T17:18:09.855Z

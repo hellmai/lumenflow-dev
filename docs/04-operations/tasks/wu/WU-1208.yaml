@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/state-cleanup.ts
   - packages/@lumenflow/core/src/state-cleanup-core.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/state-cleanup-core.test.ts
   e2e: []
@@ -21,8 +22,10 @@ phase: 3
 blocked_by:
   - WU-1204
   - WU-1207
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

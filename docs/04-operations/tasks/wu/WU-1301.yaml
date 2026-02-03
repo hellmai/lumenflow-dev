@@ -21,7 +21,8 @@ code_paths:
   - packages/@lumenflow/cli/src/trace-gen.ts
   - packages/@lumenflow/cli/src/wu-infer-lane.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
     - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
@@ -30,7 +31,7 @@ artifacts:
   - .lumenflow/stamps/WU-1301.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

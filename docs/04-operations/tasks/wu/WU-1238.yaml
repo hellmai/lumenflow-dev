@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/memory/src/index.ts
   - packages/@lumenflow/memory/README.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/memory/__tests__/decay-scoring.test.ts
     - packages/@lumenflow/memory/__tests__/access-tracking.test.ts
@@ -29,8 +30,10 @@ dependencies:
   - WU-1237
 initiative: INIT-008
 phase: 3
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

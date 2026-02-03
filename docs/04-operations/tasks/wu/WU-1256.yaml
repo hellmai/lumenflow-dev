@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-edit.ts
   - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
   e2e: []
@@ -20,7 +21,7 @@ dependencies: []
 spec_refs:
   - lumenflow://discovery/mem-8b65
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

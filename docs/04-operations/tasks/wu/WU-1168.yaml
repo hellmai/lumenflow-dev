@@ -8,7 +8,8 @@ created: 2026-01-28
 code_paths:
   - packages/@lumenflow/core/src/dependency-graph.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/dependency-graph.test.ts
   e2e: []
@@ -16,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1168.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

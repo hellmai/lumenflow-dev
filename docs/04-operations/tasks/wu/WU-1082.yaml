@@ -14,7 +14,8 @@ code_paths:
   - apps/docs/astro.config.mjs
   - packages/@lumenflow/core/README.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/agent-patterns-registry.test.ts
     - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
@@ -25,7 +26,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1082-plan.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

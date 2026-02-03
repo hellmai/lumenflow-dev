@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/lane-suggest.ts
   - packages/@lumenflow/core/src/git-context-extractor.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/__tests__/git-context-extractor.test.ts
   e2e: []
@@ -19,8 +20,10 @@ dependencies: []
 initiative: INIT-006
 blocked_by:
   - WU-1189
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

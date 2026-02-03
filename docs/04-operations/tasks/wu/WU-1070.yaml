@@ -23,6 +23,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1070.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Audit logging must not block the bypass (fail-open for audit, fail-closed would defeat purpose)
 notes: 'Security hardening: agents should not use LUMENFLOW_FORCE without explicit user approval'
