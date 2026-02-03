@@ -34,6 +34,7 @@ Complete reference for all CLI commands. Organized by category for quick discove
 | `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages              |
 | `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration        |
 | `pnpm lumenflow:integrate` | Generate enforcement hooks for client   |
+| `pnpm lumenflow commands`  | List all available CLI commands         |
 
 **For external projects (end users):**
 
