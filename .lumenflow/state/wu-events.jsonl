@@ -649,3 +649,4 @@
 {"type":"claim","wuId":"WU-1365","timestamp":"2026-02-03T00:10:36.596Z","lane":"Framework: Core","title":"Micro-worktree robustness: error handling, cleanup, and prettier availability"}
 {"type":"complete","wuId":"WU-1334","timestamp":"2026-02-03T00:12:07.414Z"}
 {"type":"complete","wuId":"WU-1365","timestamp":"2026-02-03T00:20:56.433Z"}
+{"type":"complete","wuId":"WU-1367","timestamp":"2026-02-03T00:30:59.351Z"}

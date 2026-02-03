@@ -8,7 +8,6 @@ _Last updated: 2026-02-03_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml)
 
 ## Completed
 
@@ -326,3 +325,4 @@ _Last updated: 2026-02-03_
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — 2026-02-03
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — 2026-02-03
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — 2026-02-03
+- [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — 2026-02-03
