@@ -658,3 +658,4 @@
 {"type":"complete","wuId":"WU-1361","timestamp":"2026-02-03T02:42:08.148Z"}
 {"type":"claim","wuId":"WU-1362","timestamp":"2026-02-03T02:46:41.064Z","lane":"Framework: CLI","title":"Add branch guards to prevent main pollution (consolidated)"}
 {"type":"complete","wuId":"WU-1362","timestamp":"2026-02-03T02:56:26.895Z"}
+{"type":"claim","wuId":"WU-1363","lane":"Framework: CLI","title":"CLI integration test suite (consolidated)","timestamp":"2026-02-03T03:00:53.573Z"}
