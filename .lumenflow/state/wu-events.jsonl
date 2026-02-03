@@ -702,3 +702,4 @@
 {"type":"complete","wuId":"WU-1142","timestamp":"2026-02-03T19:24:21.076Z"}
 {"type":"complete","wuId":"WU-1394","timestamp":"2026-02-03T19:49:25.369Z"}
 {"type":"claim","wuId":"WU-1395","lane":"Framework: CLI","title":"Fix init docs paths for simple structure","timestamp":"2026-02-03T22:36:27.647Z"}
+{"type":"block","wuId":"WU-1395","reason":"Abandoned - created accidentally during support request","timestamp":"2026-02-03T22:38:27.267Z"}
