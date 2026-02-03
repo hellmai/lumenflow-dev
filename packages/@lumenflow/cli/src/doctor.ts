@@ -2,6 +2,7 @@
  * @file doctor.ts
  * LumenFlow health check command (WU-1177)
  * WU-1191: Lane health check integration
+ * WU-1386: Agent-friction checks (managed-file dirty, WU validity, worktree sanity)
  * Verifies all safety components are installed and configured correctly
  */
 
@@ -40,10 +41,53 @@ export interface PrerequisiteResult {
 }
 
 /**
+ * WU-1386: Managed files dirty check result
+ */
+export interface ManagedFilesDirtyResult {
+  passed: boolean;
+  files: string[];
+  message: string;
+}
+
+/**
+ * WU-1386: Worktree sanity check result
+ */
+export interface WorktreeSanityResult {
+  passed: boolean;
+  orphans: number;
+  stale: number;
+  message: string;
+}
+
+/**
+ * WU-1386: WU validity check result (--deep mode only)
+ */
+export interface WUValidityResult {
+  passed: boolean;
+  total: number;
+  valid: number;
+  invalid: number;
+  warnings: number;
+  message: string;
+}
+
+/**
+ * WU-1386: Workflow health checks section
+ */
+export interface WorkflowHealthResult {
+  managedFilesDirty: ManagedFilesDirtyResult;
+  worktreeSanity: WorktreeSanityResult;
+  /** Only present with --deep flag */
+  wuValidity?: WUValidityResult;
+}
+
+/**
  * Complete doctor result
  */
 export interface DoctorResult {
   status: 'ACTIVE' | 'INCOMPLETE';
+  /** WU-1386: New exit code system (0=healthy, 1=warnings, 2=errors) */
+  exitCode: 0 | 1 | 2;
   checks: {
     husky: CheckResult;
     safeGit: CheckResult;
@@ -64,10 +108,44 @@ export interface DoctorResult {
     pnpm: PrerequisiteResult;
     git: PrerequisiteResult;
   };
+  /** WU-1386: Workflow health checks (agent-friction detection) */
+  workflowHealth?: WorkflowHealthResult;
 }
 
 /**
+ * WU-1386: Options for runDoctor
+ */
+export interface DoctorOptions {
+  /** Run heavier WU validity checks */
+  deep?: boolean;
+}
+
+/**
+ * WU-1386: Result for non-blocking init auto-run
+ */
+export interface DoctorForInitResult {
+  blocked: boolean;
+  warnings: number;
+  errors: number;
+  output: string;
+}
+
+/**
+ * WU-1386: Managed files that should not have uncommitted changes
+ */
+const MANAGED_FILE_PATTERNS = [
+  '.lumenflow.config.yaml',
+  '.lumenflow.lane-inference.yaml',
+  'AGENTS.md',
+  'CLAUDE.md',
+];
+
+/** WU-1386: Managed directories with glob patterns */
+const MANAGED_DIR_PATTERNS = ['docs/04-operations/tasks/'];
+
+/**
  * CLI option definitions for doctor command
+ * WU-1386: Added --deep flag
  */
 const DOCTOR_OPTIONS = {
   verbose: {
@@ -80,14 +158,21 @@ const DOCTOR_OPTIONS = {
     flags: '--json',
     description: 'Output results as JSON',
   },
+  deep: {
+    name: 'deep',
+    flags: '--deep',
+    description: 'Run heavier checks including WU validation (slower)',
+  },
 };
 
 /**
  * Parse doctor command options
+ * WU-1386: Added deep flag
  */
 export function parseDoctorOptions(): {
   verbose: boolean;
   json: boolean;
+  deep: boolean;
 } {
   const opts = createWUParser({
     name: 'lumenflow-doctor',
@@ -98,6 +183,7 @@ export function parseDoctorOptions(): {
   return {
     verbose: opts.verbose ?? false,
     json: opts.json ?? false,
+    deep: opts.deep ?? false,
   };
 }
 
@@ -344,9 +430,234 @@ function checkPrerequisites(): DoctorResult['prerequisites'] {
 }
 
 /**
- * Run all doctor checks
+ * WU-1386: Check for uncommitted changes to managed files
  */
-export async function runDoctor(projectDir: string): Promise<DoctorResult> {
+async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesDirtyResult> {
+  try {
+    // Get git status output
+    const statusOutput = execFileSync('git', ['status', '--porcelain'], {
+      cwd: projectDir,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    const dirtyFiles: string[] = [];
+
+    // Parse status output and check each line
+    const lines = statusOutput.split('\n').filter((line) => line.trim());
+    for (const line of lines) {
+      // Status format: XY filename (where XY is 2-char status)
+      const filePath = line.slice(3).trim();
+      if (!filePath) continue;
+
+      // Check if file matches managed patterns
+      const isManaged =
+        MANAGED_FILE_PATTERNS.some((pattern) => filePath === pattern) ||
+        MANAGED_DIR_PATTERNS.some((dir) => filePath.startsWith(dir));
+
+      if (isManaged) {
+        dirtyFiles.push(filePath);
+      }
+    }
+
+    if (dirtyFiles.length > 0) {
+      return {
+        passed: false,
+        files: dirtyFiles,
+        message: `${dirtyFiles.length} managed file(s) have uncommitted changes`,
+      };
+    }
+
+    return {
+      passed: true,
+      files: [],
+      message: 'No uncommitted changes to managed files',
+    };
+  } catch {
+    // Not a git repo or git not available - graceful degradation
+    return {
+      passed: true,
+      files: [],
+      message: 'Git status check skipped (not a git repository)',
+    };
+  }
+}
+
+/**
+ * WU-1386: Check worktree sanity by calling wu:prune in dry-run mode
+ * This reuses the full wu:prune logic including orphan detection, status mismatches, etc.
+ */
+async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityResult> {
+  try {
+    // First check if this is a git repo
+    execFileSync('git', ['rev-parse', '--git-dir'], {
+      cwd: projectDir,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    // Call wu:prune in dry-run mode (default) via pnpm
+    // Capture both stdout and stderr to parse the output
+    let pruneOutput: string;
+    let commandFailed = false;
+    try {
+      pruneOutput = execFileSync('pnpm', ['wu:prune'], {
+        cwd: projectDir,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 30000, // 30 second timeout
+      });
+    } catch (e: unknown) {
+      const execError = e as {
+        stdout?: string;
+        stderr?: string;
+        status?: number;
+        message?: string;
+      };
+      pruneOutput = (execError.stdout || '') + (execError.stderr || '');
+
+      // Check if this is a "command not found" type error vs wu:prune finding issues
+      // If pnpm can't run the script (no package.json, script not defined, etc.), gracefully skip
+      const errorMsg = execError.message || pruneOutput || '';
+      if (
+        errorMsg.includes('ERR_PNPM') ||
+        errorMsg.includes('ENOENT') ||
+        errorMsg.includes('Missing script') ||
+        errorMsg.includes('command not found') ||
+        !pruneOutput.includes('[wu:prune]')
+      ) {
+        // Command couldn't run - gracefully skip
+        return {
+          passed: true,
+          orphans: 0,
+          stale: 0,
+          message: 'Worktree check skipped (wu:prune not available)',
+        };
+      }
+      // Otherwise, wu:prune ran but found issues (non-zero exit)
+      commandFailed = true;
+    }
+
+    // Parse output for orphan and stale counts
+    // wu:prune outputs lines like "Orphaned worktree:" and "Stale worktree:"
+    const orphanCount = (pruneOutput.match(/Orphaned worktree:/g) || []).length;
+    const staleCount = (pruneOutput.match(/Stale worktree:/g) || []).length;
+
+    // Pass if no issues found and command didn't fail with worktree problems
+    const hasIssues = orphanCount > 0 || staleCount > 0;
+    const passed = !hasIssues && !commandFailed;
+
+    let message = 'All worktrees are valid';
+    if (!passed) {
+      const parts: string[] = [];
+      if (orphanCount > 0) parts.push(`${orphanCount} orphan(s)`);
+      if (staleCount > 0) parts.push(`${staleCount} stale`);
+      message = parts.length > 0 ? `Worktree issues: ${parts.join(', ')}` : 'Worktree issues found';
+    }
+
+    return {
+      passed,
+      orphans: orphanCount,
+      stale: staleCount,
+      message,
+    };
+  } catch {
+    // Not a git repo or git not available
+    return {
+      passed: true,
+      orphans: 0,
+      stale: 0,
+      message: 'Worktree check skipped (not a git repository)',
+    };
+  }
+}
+
+/**
+ * WU-1386: Run WU validation (--deep mode only)
+ * Calls wu:validate --all --no-strict for full schema/lint validation in warn-only mode
+ */
+async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
+  const wuDir = path.join(projectDir, 'docs', '04-operations', 'tasks', 'wu');
+
+  if (!fs.existsSync(wuDir)) {
+    return {
+      passed: true,
+      total: 0,
+      valid: 0,
+      invalid: 0,
+      warnings: 0,
+      message: 'No WU directory found',
+    };
+  }
+
+  try {
+    // Call wu:validate --all --no-strict to get warn-only validation
+    // This runs the full schema + lint validation, treating warnings as advisory
+    let validateOutput: string;
+    let exitCode = 0;
+    try {
+      validateOutput = execFileSync('pnpm', ['wu:validate', '--all', '--no-strict'], {
+        cwd: projectDir,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 60000, // 60 second timeout for full validation
+      });
+    } catch (e: unknown) {
+      // wu:validate exits non-zero if validation fails
+      const execError = e as { stdout?: string; stderr?: string; status?: number };
+      validateOutput = (execError.stdout || '') + (execError.stderr || '');
+      exitCode = execError.status || 1;
+    }
+
+    // Parse output for counts
+    // wu:validate outputs summary like:
+    //   ✓ Valid: N
+    //   ✗ Invalid: N
+    //   ⚠ Warnings: N
+    const validMatch = validateOutput.match(/Valid:\s*(\d+)/);
+    const invalidMatch = validateOutput.match(/Invalid:\s*(\d+)/);
+    const warningMatch = validateOutput.match(/Warnings:\s*(\d+)/);
+
+    const validCount = validMatch ? parseInt(validMatch[1], 10) : 0;
+    const invalidCount = invalidMatch ? parseInt(invalidMatch[1], 10) : 0;
+    const warningCount = warningMatch ? parseInt(warningMatch[1], 10) : 0;
+    const total = validCount + invalidCount;
+
+    // In warn-only mode (--no-strict), we only fail on actual invalid WUs
+    const passed = invalidCount === 0;
+
+    return {
+      passed,
+      total,
+      valid: validCount,
+      invalid: invalidCount,
+      warnings: warningCount,
+      message: passed
+        ? total > 0
+          ? `All ${total} WU(s) valid${warningCount > 0 ? ` (${warningCount} warning(s))` : ''}`
+          : 'No WUs to validate'
+        : `${invalidCount}/${total} WU(s) have issues`,
+    };
+  } catch {
+    return {
+      passed: true,
+      total: 0,
+      valid: 0,
+      invalid: 0,
+      warnings: 0,
+      message: 'WU validation skipped (could not run wu:validate)',
+    };
+  }
+}
+
+/**
+ * Run all doctor checks
+ * WU-1386: Added options parameter for --deep flag
+ */
+export async function runDoctor(
+  projectDir: string,
+  options: DoctorOptions = {},
+): Promise<DoctorResult> {
   const checks = {
     husky: checkHusky(projectDir),
     safeGit: checkSafeGit(projectDir),
@@ -359,21 +670,126 @@ export async function runDoctor(projectDir: string): Promise<DoctorResult> {
   const vendorConfigs = checkVendorConfigs(projectDir);
   const prerequisites = checkPrerequisites();
 
+  // WU-1386: Workflow health checks
+  const managedFilesDirty = await checkManagedFilesDirty(projectDir);
+  const worktreeSanity = await checkWorktreeSanity(projectDir);
+
+  const workflowHealth: WorkflowHealthResult = {
+    managedFilesDirty,
+    worktreeSanity,
+  };
+
+  // WU-1386: WU validity check only in --deep mode
+  if (options.deep) {
+    workflowHealth.wuValidity = await checkWUValidity(projectDir);
+  }
+
   // Determine overall status
   // Note: laneHealth is advisory (not included in critical checks)
   const criticalChecks = [checks.husky, checks.safeGit, checks.agentsMd];
   const allCriticalPassed = criticalChecks.every((check) => check.passed);
 
+  // WU-1386: Calculate exit code
+  // 0 = healthy (all checks pass, no warnings)
+  // 1 = warnings (non-critical issues)
+  // 2 = errors (critical safety checks failed)
+  let exitCode: 0 | 1 | 2 = 0;
+
+  if (!allCriticalPassed) {
+    exitCode = 2;
+  } else if (
+    !managedFilesDirty.passed ||
+    !worktreeSanity.passed ||
+    (workflowHealth.wuValidity && !workflowHealth.wuValidity.passed)
+  ) {
+    exitCode = 1;
+  }
+
   return {
     status: allCriticalPassed ? 'ACTIVE' : 'INCOMPLETE',
+    exitCode,
     checks,
     vendorConfigs,
     prerequisites,
+    workflowHealth,
+  };
+}
+
+/**
+ * WU-1386: Run doctor for init (non-blocking, warnings only)
+ * This is used after lumenflow init to provide feedback without blocking
+ */
+export async function runDoctorForInit(projectDir: string): Promise<DoctorForInitResult> {
+  const result = await runDoctor(projectDir, { deep: false });
+
+  // Count warnings and errors using check keys, not messages
+  let warnings = 0;
+  let errors = 0;
+
+  // Critical checks that count as errors (if they fail, safety is compromised)
+  const criticalCheckKeys = ['husky', 'safeGit', 'agentsMd'] as const;
+
+  for (const [key, check] of Object.entries(result.checks)) {
+    if (!check.passed) {
+      if (criticalCheckKeys.includes(key as (typeof criticalCheckKeys)[number])) {
+        errors++;
+      } else {
+        warnings++;
+      }
+    }
+  }
+
+  // Count workflow health issues as warnings (not errors)
+  if (result.workflowHealth) {
+    if (!result.workflowHealth.managedFilesDirty.passed) warnings++;
+    if (!result.workflowHealth.worktreeSanity.passed) warnings++;
+  }
+
+  // Format concise output
+  const lines: string[] = [];
+  lines.push('[lumenflow doctor] Quick health check...');
+
+  if (result.exitCode === 0) {
+    lines.push('  All checks passed');
+  } else {
+    // Show critical errors first
+    if (!result.checks.husky.passed) {
+      lines.push('  Error: Husky hooks not installed');
+    }
+    if (!result.checks.safeGit.passed) {
+      lines.push('  Error: safe-git script not found');
+    }
+    if (!result.checks.agentsMd.passed) {
+      lines.push('  Error: AGENTS.md not found');
+    }
+
+    // Then warnings
+    if (result.workflowHealth?.managedFilesDirty.files.length) {
+      lines.push(
+        `  Warning: ${result.workflowHealth.managedFilesDirty.files.length} managed file(s) have uncommitted changes`,
+      );
+      for (const file of result.workflowHealth.managedFilesDirty.files.slice(0, 3)) {
+        lines.push(`    -> ${file}`);
+      }
+    }
+    if (result.workflowHealth?.worktreeSanity.orphans) {
+      lines.push(
+        `  Warning: ${result.workflowHealth.worktreeSanity.orphans} orphan worktree(s) found`,
+      );
+    }
+  }
+
+  return {
+    blocked: false, // Never blocks init
+    warnings,
+    errors,
+    output: lines.join('\n'),
   };
 }
 
 /**
  * Format doctor output for terminal display
+ * WU-1386: Added workflow health section
  */
 export function formatDoctorOutput(result: DoctorResult): string {
   const lines: string[] = [];
@@ -400,6 +816,34 @@ export function formatDoctorOutput(result: DoctorResult): string {
   lines.push('');
   lines.push('Lane Health:');
   lines.push(formatCheck(result.checks.laneHealth));
+
+  // WU-1386: Workflow Health section
+  if (result.workflowHealth) {
+    lines.push('');
+    lines.push('Workflow Health:');
+    const mfd = result.workflowHealth.managedFilesDirty;
+    const mfdSymbol = mfd.passed ? '✓' : '⚠';
+    lines.push(`  ${mfdSymbol} ${mfd.message}`);
+    if (!mfd.passed && mfd.files.length > 0) {
+      for (const file of mfd.files.slice(0, 5)) {
+        lines.push(`     → ${file}`);
+      }
+      if (mfd.files.length > 5) {
+        lines.push(`     → ... and ${mfd.files.length - 5} more`);
+      }
+    }
+
+    const ws = result.workflowHealth.worktreeSanity;
+    const wsSymbol = ws.passed ? '✓' : '⚠';
+    lines.push(`  ${wsSymbol} ${ws.message}`);
+
+    // WU validity (only in --deep mode)
+    if (result.workflowHealth.wuValidity) {
+      const wv = result.workflowHealth.wuValidity;
+      const wvSymbol = wv.passed ? '✓' : '⚠';
+      lines.push(`  ${wvSymbol} ${wv.message}`);
+    }
+  }
 
   // Vendor configs
   lines.push('');
@@ -430,7 +874,11 @@ export function formatDoctorOutput(result: DoctorResult): string {
   lines.push('─'.repeat(45));
   lines.push(`LumenFlow safety: ${result.status}`);
 
-  if (result.status === 'INCOMPLETE') {
+  // WU-1386: Show exit code meaning
+  if (result.exitCode === 1) {
+    lines.push('');
+    lines.push('Warnings detected (exit code 1). Use --deep for full WU validation.');
+  } else if (result.exitCode === 2) {
     lines.push('');
     lines.push('To fix missing components:');
     lines.push('  pnpm install && pnpm prepare  # Install Husky hooks');
@@ -451,12 +899,13 @@ export function formatDoctorJson(result: DoctorResult): string {
 
 /**
  * CLI entry point
+ * WU-1386: Updated to use new exit codes
  */
 export async function main(): Promise<void> {
   const opts = parseDoctorOptions();
   const projectDir = process.cwd();
 
-  const result = await runDoctor(projectDir);
+  const result = await runDoctor(projectDir, { deep: opts.deep });
 
   if (opts.json) {
     console.log(formatDoctorJson(result));
@@ -464,16 +913,14 @@ export async function main(): Promise<void> {
     console.log(formatDoctorOutput(result));
   }
 
-  // Exit with error code if incomplete
-  if (result.status === 'INCOMPLETE') {
-    process.exit(1);
-  }
+  // WU-1386: Use new exit code system
+  process.exit(result.exitCode);
 }
 
 // CLI invocation when run directly
 if (import.meta.main) {
   main().catch((error) => {
     console.error('Doctor failed:', error);
-    process.exit(1);
+    process.exit(2);
   });
 }
