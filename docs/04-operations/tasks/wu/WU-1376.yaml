@@ -1,0 +1,33 @@
+id: WU-1376
+title: Add For AI Agents page to Starlight docs
+lane: 'Content: Documentation'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+tests:
+  manual:
+    - Verify new page renders correctly in Starlight
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1376.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Haven 2.8.0 agent report identified missing agent-specific guidance. Problem: Agents default to write files approach because docs assume human readers who explore. Solution: Create dedicated agent integration page with golden rules, common mistakes, and correct workflow sequences.'
+acceptance:
+  - Page includes Golden Rules section with NEVER and ALWAYS guidance
+  - Page includes Common Mistakes section with examples
+  - Page includes Correct Workflow section with copy-paste commands
+  - Navigation updated to include new page
