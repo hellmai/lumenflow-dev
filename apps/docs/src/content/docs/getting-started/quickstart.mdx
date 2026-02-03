@@ -58,8 +58,13 @@ This creates:
 
 - `.lumenflow.config.yaml` — Configuration (managed)
 - `LUMENFLOW.md` — Workflow entry point (managed)
-- `AGENTS.md` — Universal AI agent entry point (managed)
+- `AGENTS.md` — Universal AI agent entry point (user-owned, LumenFlow inserts managed section)
 - `.lumenflow/constraints.md` — Non-negotiable constraints (managed)
+- `docs/tasks/` — Task storage (default path, or `docs/04-operations/tasks/` for arc42 projects)
+
+<Aside type="tip" title="AGENTS.md is user-owned">
+  You can add your own content to AGENTS.md. LumenFlow uses bounded markers (`<!-- lumenflow:start -->` / `<!-- lumenflow:end -->`) to manage its section without overwriting yours. Use `--merge` when re-running init on existing projects.
+</Aside>
 
 <Aside type="danger" title="DO NOT">
   Do not manually create these files. Do not edit `.lumenflow.config.yaml` by hand. Use CLI commands
@@ -89,7 +94,26 @@ pnpm exec lumenflow --force
 
 ---
 
-## Step 4: Create Your First Work Unit
+## Step 4: Create an Initiative (Optional)
+
+For multi-phase projects or product visions, create an Initiative first.
+
+```bash
+pnpm initiative:create \
+  --slug "my-project" \
+  --title "My Project" \
+  --owner "team@example.com"
+
+# Add phases after creation
+pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: MVP"
+pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Polish"
+```
+
+Skip this step for single-task work or bug fixes.
+
+---
+
+## Step 5: Create Your First Work Unit
 
 Run this command. Replace the values with your actual task details.
 
@@ -108,13 +132,14 @@ pnpm wu:create \
 The CLI prints a WU ID (example: `WU-123`). Use this ID in subsequent commands.
 
 <Aside type="danger" title="DO NOT">
-  Do not manually create WU YAML files in `docs/04-operations/tasks/wu/`. Do not manually edit WU
-  YAML files. Use `pnpm wu:create` and `pnpm wu:edit` commands.
+  Do not manually create WU YAML files. Do not manually edit WU YAML files. Use `pnpm wu:create` and
+  `pnpm wu:edit` commands. Default path is `docs/tasks/wu/` (or `docs/04-operations/tasks/wu/` for
+  arc42 projects).
 </Aside>
 
 ---
 
-## Step 5: Claim the Work Unit
+## Step 6: Claim the Work Unit
 
 Run this command with the ID from Step 4.
 
@@ -130,7 +155,7 @@ This creates a worktree at `worktrees/experience-ui-wu-123/`.
 
 ---
 
-## Step 6: Enter the Worktree
+## Step 7: Enter the Worktree
 
 Run this command immediately after claiming.
 
@@ -147,7 +172,7 @@ All work happens inside this directory.
 
 ---
 
-## Step 7: Implement and Commit
+## Step 8: Implement and Commit
 
 Write your code. Write tests. Commit your changes.
 
@@ -164,7 +189,7 @@ git commit -m "fix: resolve error banner overlap on mobile"
 
 ---
 
-## Step 8: Run Gates in Worktree
+## Step 9: Run Gates in Worktree
 
 Run this command from inside the worktree.
 
@@ -180,7 +205,7 @@ This runs all quality gates (format, lint, typecheck, test). It prints the next 
 
 ---
 
-## Step 9: Complete the Work Unit
+## Step 10: Complete the Work Unit
 
 Run this command from the **main checkout** (not the worktree).
 
@@ -213,20 +238,20 @@ After `wu:done` completes, verify these conditions.
 
 LumenFlow manages certain files automatically. Understand which files you own.
 
-| File/Directory                        | Owner     | Action                                                       |
-| ------------------------------------- | --------- | ------------------------------------------------------------ |
-| `.lumenflow.config.yaml`              | LumenFlow | Do not edit manually. Use CLI commands.                      |
-| `LUMENFLOW.md`                        | LumenFlow | Do not edit. Regenerated on init.                            |
-| `AGENTS.md`                           | LumenFlow | Do not edit. Regenerated on init.                            |
-| `.lumenflow/constraints.md`           | LumenFlow | Do not edit. Contains workflow rules.                        |
-| `.lumenflow/stamps/`                  | LumenFlow | Do not create manually. Created by `wu:done`.                |
-| `docs/04-operations/tasks/wu/*.yaml`  | LumenFlow | Do not create/edit manually. Use `wu:create`/`wu:edit`.      |
-| `docs/04-operations/tasks/backlog.md` | LumenFlow | Do not edit. Regenerated from state.                         |
-| `docs/04-operations/tasks/status.md`  | LumenFlow | Do not edit. Regenerated from state.                         |
-| `worktrees/`                          | LumenFlow | Do not create manually. Created by `wu:claim`.               |
-| Your source code                      | You       | Edit freely inside worktrees.                                |
-| Your tests                            | You       | Edit freely inside worktrees.                                |
-| `package.json` scripts                | LumenFlow | Auto-injected during init. Re-run with `--force` if missing. |
+| File/Directory              | Owner     | Action                                                       |
+| --------------------------- | --------- | ------------------------------------------------------------ |
+| `.lumenflow.config.yaml`    | LumenFlow | Do not edit manually. Use CLI commands.                      |
+| `LUMENFLOW.md`              | LumenFlow | Do not edit. Regenerated on init.                            |
+| `AGENTS.md`                 | You       | User-owned. LumenFlow manages section via markers.           |
+| `.lumenflow/constraints.md` | LumenFlow | Do not edit. Contains workflow rules.                        |
+| `.lumenflow/stamps/`        | LumenFlow | Do not create manually. Created by `wu:done`.                |
+| `docs/tasks/wu/*.yaml`      | LumenFlow | Do not create/edit manually. Use `wu:create`/`wu:edit`.      |
+| `docs/tasks/backlog.md`     | LumenFlow | Do not edit. Regenerated from state.                         |
+| `docs/tasks/status.md`      | LumenFlow | Do not edit. Regenerated from state.                         |
+| `worktrees/`                | LumenFlow | Do not create manually. Created by `wu:claim`.               |
+| Your source code            | You       | Edit freely inside worktrees.                                |
+| Your tests                  | You       | Edit freely inside worktrees.                                |
+| `package.json` scripts      | LumenFlow | Auto-injected during init. Re-run with `--force` if missing. |
 
 ---
 
