@@ -2,7 +2,7 @@ id: WU-1391
 title: Fix Agent Start Here CLI commands and quickstart gaps
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -26,10 +26,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-1389 deployed with incorrect CLI flags. Fixes: --client claude not claude-code, initiative:create then edit --add-phase, pnpm exec lumenflow commands, quickstart initiative step, AGENTS.md ownership, --merge flag.'
+description: 'WU-1389 deployed with incorrect CLI flags. Fixes: --client claude not claude-code,
+  initiative:create then edit --add-phase, pnpm exec lumenflow commands, quickstart initiative step,
+  AGENTS.md ownership, --merge flag.'
 acceptance:
   - Agent Start Here uses valid CLI flags
   - Initiative example uses create then edit --add-phase
   - Quickstart includes initiative step
   - Quickstart clarifies AGENTS.md ownership
   - Existing project path mentions --merge
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1391
+claimed_at: 2026-02-03T18:30:06.684Z
+baseline_main_sha: 7109f6e65a0d35dc3215b26eebc8c63982fb9951
+session_id: 8bd4faaf-98e7-4064-a84f-1288383fa58c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:30:06.688Z
