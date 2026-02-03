@@ -22,10 +22,9 @@ export default defineConfig({
         {
           label: 'Getting Started',
           items: [
-            { label: 'Agent Start Here', slug: 'getting-started/agent-start' },
+            { label: 'Quickstart (Agents)', slug: 'getting-started/quickstart' },
             { label: 'What is LumenFlow?', slug: 'getting-started/introduction' },
             { label: 'Why LumenFlow?', slug: 'getting-started/why-lumenflow' },
-            { label: 'Quickstart', slug: 'getting-started/quickstart' },
             { label: 'Install GitHub App', slug: 'getting-started/github-app' },
             { label: 'Upgrading', slug: 'getting-started/upgrade' },
             { label: 'FAQ', slug: 'getting-started/faq' },
@@ -45,6 +44,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { label: 'A Day with LumenFlow', slug: 'guides/a-day-with-lumenflow' },
+            { label: 'Manual Quickstart (Humans)', slug: 'guides/manual-quickstart' },
             { label: 'Idea to Shipping', slug: 'guides/idea-to-shipping' },
             { label: 'Solo Developer Workflow', slug: 'guides/solo-workflow' },
             { label: 'Team Workflow', slug: 'guides/team-workflow' },

@@ -3,18 +3,18 @@ title: LumenFlow
 description: AI-native workflow for software teams
 template: splash
 hero:
-  tagline: Ship faster with clarity. Every Work Unit (WU) is a small, testable promise. Gates enforce quality. Memory preserves context.
+  tagline: Give your AI agent a workflow it can't break. Share one link and it will set up LumenFlow correctly - lanes, WUs, gates, and guardrails.
   image:
     dark: ../../assets/logo-dark.png
     light: ../../assets/logo-light.png
     alt: LumenFlow - Clarity over chaos
   actions:
-    - text: Get Started
+    - text: Share Agent Quickstart
       link: /getting-started/quickstart/
       icon: right-arrow
-    - text: Install GitHub App
-      link: https://github.com/apps/lumenflow-by-hellmai
-      icon: github
+    - text: Explore Concepts
+      link: /concepts/work-units/
+      icon: open-book
       variant: minimal
 ---
 
@@ -36,6 +36,18 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     Lane-based WIP limits prevent overload. Finish work before starting new work.
   </Card>
 </CardGrid>
+
+## Give your agent one link
+
+LumenFlow is designed for agent-first setup. Give your agent this link and it will install the CLI,
+initialize LumenFlow, create the first WU, and stop.
+
+```text
+Set up LumenFlow for this repo using the Agent Quickstart:
+https://lumenflow.dev/getting-started/quickstart/
+```
+
+Works with Claude Code, Cursor, Codex, Windsurf, Cline, and any AI that can read docs.
 
 ## How it works
 
@@ -68,11 +80,11 @@ lanes:
 ## Get Started
 
 <CardGrid>
-  <Card title="Agent Start Here" icon="seti:robot">
-    [AI agents start here →](/getting-started/agent-start/)
+  <Card title="Agent Quickstart" icon="seti:robot">
+    [Give your agent this link →](/getting-started/quickstart/)
   </Card>
-  <Card title="Quickstart" icon="rocket">
-    [Get running in 5 minutes →](/getting-started/quickstart/)
+  <Card title="Manual Quickstart (Humans)" icon="rocket">
+    [Run setup yourself →](/guides/manual-quickstart/)
   </Card>
   <Card title="Core Concepts" icon="open-book">
     [Understand WUs, Lanes, Gates →](/concepts/work-units/)
