@@ -1,7 +1,7 @@
 id: WU-1392
 title: Fix quickstart initiative examples and AGENTS markers
 lane: 'Content: Documentation'
-type: documentation
+type: bug
 status: in_progress
 priority: P2
 created: 2026-02-03
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T18:41:31.280Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1392
+session_id: a82163e1-ca6e-442e-a721-444b3da9e6a3
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:41:31.284Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -32,11 +39,3 @@ acceptance:
   - initiative:create examples include --id consistent with INIT-001 usage
   - AGENTS.md marker casing matches LUMENFLOW:START/END
   - Step reference for WU ID is corrected
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1392
-claimed_at: 2026-02-03T18:41:31.280Z
-baseline_main_sha: 3745062f30118f89c74dfe88892d985f9933dcc2
-session_id: a82163e1-ca6e-442e-a721-444b3da9e6a3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T18:41:31.284Z
