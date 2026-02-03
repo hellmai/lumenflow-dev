@@ -25,9 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1386 review identified edge cases. Problem: (1) Worktree sanity misses blocked/unclaimed/orphan-directory warnings, (2) WU validity silently skips on CLI errors, (3) runDoctorForInit message inaccurate, (4) Managed-file detection fails from subdirectories. Solution: Fix all four issues with proper parsing and path handling.'
+description: 'Context: WU-1386 review identified edge cases. Problem: (1) Worktree sanity misses
+  blocked/unclaimed/orphan-directory warnings, (2) WU validity silently skips on CLI errors, (3)
+  runDoctorForInit message inaccurate, (4) Managed-file detection fails from subdirectories.
+  Solution: Fix all four issues with proper parsing and path handling.'
 acceptance:
-  - Worktree sanity detects all wu:prune warning types
-  - WU validity distinguishes CLI failure from validation failure
-  - runDoctorForInit shows accurate status
-  - Managed-file detection works from subdirectories
+  - Worktree sanity detects orphan directories, missing tracked worktrees, stale, blocked, and
+    unclaimed worktrees from wu:prune
+  - WU validity sets passed=false with clear message when wu:validate fails to run (missing script,
+    pnpm error) rather than silently passing
+  - runDoctorForInit shows accurate status including lane health and prerequisite failures, not just
+    exitCode
+  - Managed-file detection uses git repo root for path resolution, works from subdirectories
+  - Tests cover real output parsing for worktree sanity and WU validity, not just graceful
+    degradation
