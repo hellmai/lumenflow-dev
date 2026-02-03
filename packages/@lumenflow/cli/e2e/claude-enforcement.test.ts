@@ -10,6 +10,8 @@
 
 // Test file lint exceptions
 /* eslint-disable sonarjs/no-duplicate-string */
+// Object injection is expected in tests accessing parsed config properties
+/* eslint-disable security/detect-object-injection */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
