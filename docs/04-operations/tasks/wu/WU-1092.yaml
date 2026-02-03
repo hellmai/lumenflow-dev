@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/context/context-computer.ts
   - packages/@lumenflow/core/src/validation/command-registry.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/validation/command-registry.test.ts
   e2e: []
@@ -23,7 +24,7 @@ labels:
   - validation
   - wu-1090
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

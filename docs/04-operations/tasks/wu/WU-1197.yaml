@@ -8,15 +8,18 @@ created: 2026-01-29
 code_paths:
   - packages/@lumenflow/core/src/lane-checker.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1197.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

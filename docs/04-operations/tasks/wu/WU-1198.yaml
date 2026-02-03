@@ -31,8 +31,10 @@ blocked_by:
   - WU-1189
   - WU-1190
   - WU-1191
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

@@ -8,13 +8,16 @@ created: 2026-01-26
 code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/memory/__tests__/mem-export-core.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1137.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: Gates fail on pre-existing prettier issues in apps/docs reference pages; tracked in WU-1138.
 requires_review: false

@@ -18,6 +18,8 @@ artifacts:
   - .lumenflow/stamps/WU-1009.done
 dependencies:
   - WU-1008
+spec_refs:
+  - internal
 risks:
   - Guide may become outdated if CLI changes
 exposure: documentation

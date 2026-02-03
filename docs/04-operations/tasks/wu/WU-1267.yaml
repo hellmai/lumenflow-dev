@@ -8,7 +8,8 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/core/src/__tests__/
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/methodology-regression.test.ts
   e2e: []
@@ -20,7 +21,7 @@ phase: 1
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-010.yaml
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

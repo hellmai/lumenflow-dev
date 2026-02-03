@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1066.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: 'SUPERSEDED: See WU-1067 which implements config-driven gates instead of hardcoded language
   presets. This WU took the wrong approach by adding another hardcoded preset.'

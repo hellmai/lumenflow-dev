@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-concurrent-merge.ts
   - packages/@lumenflow/core/src/wu-transaction-collectors.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-concurrent-backlog.test.ts
   e2e: []
@@ -17,7 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1319.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

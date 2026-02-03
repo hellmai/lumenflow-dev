@@ -18,6 +18,8 @@ artifacts:
 dependencies:
   - WU-1008
   - WU-1009
+spec_refs:
+  - internal
 risks:
   - Marketplace review may take 1-2 weeks
   - May need additional metadata/branding assets

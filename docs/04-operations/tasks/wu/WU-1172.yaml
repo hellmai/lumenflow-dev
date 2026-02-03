@@ -27,7 +27,7 @@ spec_refs:
   - WU-1170
   - lumenflow://plans/WU-1177-friction-free-onboarding.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

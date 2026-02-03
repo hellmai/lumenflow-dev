@@ -8,7 +8,8 @@ created: 2026-01-29
 code_paths:
   - packages/@lumenflow/cli/src/wu-edit.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
   e2e: []

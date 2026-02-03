@@ -17,8 +17,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1354.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

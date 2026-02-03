@@ -8,7 +8,8 @@ created: 2026-01-25
 code_paths:
   - packages/@lumenflow/core/src/wu-helpers.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-helpers.test.ts
   e2e: []
@@ -20,7 +21,7 @@ labels:
   - web-agents
   - p1
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

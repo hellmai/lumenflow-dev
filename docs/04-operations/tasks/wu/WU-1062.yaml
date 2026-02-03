@@ -26,6 +26,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1062.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - External plans not version-controlled by default
   - Breaking change if wu:claim assumes WU always on main

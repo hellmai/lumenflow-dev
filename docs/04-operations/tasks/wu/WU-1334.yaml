@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
-  - docs/04-operations/tasks/wu/*.yaml
+  - docs/04-operations/tasks/wu/
 tests:
   manual:
     - Run pnpm gates and verify spec:linter passes
@@ -16,7 +16,12 @@ artifacts:
   - .lumenflow/stamps/WU-1334.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Backfilled 254 WU specs with missing strict validation fields:
+  - notes: 210 backfilled with "Completed per acceptance criteria."
+  - tests.manual: 151 backfilled with "Verify acceptance criteria met"
+  - spec_refs: 111 backfilled with "internal" for feature-type WUs
+  Also fixed WU-1017 acceptance text to use full path .husky/_/husky.sh
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation

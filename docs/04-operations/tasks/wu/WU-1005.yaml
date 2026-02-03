@@ -18,9 +18,11 @@ artifacts:
   - .lumenflow/stamps/WU-1005.done
 dependencies:
   - WU-1002
+spec_refs:
+  - internal
 risks:
   - Template content may need iteration based on user feedback
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []

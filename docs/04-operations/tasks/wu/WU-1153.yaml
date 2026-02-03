@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/wu-done-validation.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/wu-done.test.ts
   e2e: []
@@ -17,7 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1153.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

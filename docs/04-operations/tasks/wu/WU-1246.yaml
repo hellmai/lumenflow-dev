@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/core/src/wu-id-generator.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-id-generator.test.ts
     - packages/@lumenflow/cli/__tests__/wu-create-auto-id.test.ts
@@ -17,8 +18,10 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1246.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

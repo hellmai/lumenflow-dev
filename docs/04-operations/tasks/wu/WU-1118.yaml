@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/gates-config.ts
   - apps/docs/src/content/docs/concepts/gates.mdx
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []
@@ -19,7 +20,7 @@ dependencies: []
 spec_refs:
   - .claude/plans/goofy-honking-goblet.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

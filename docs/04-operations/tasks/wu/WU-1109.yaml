@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/src/git-branch.ts
   - packages/@lumenflow/cli/src/guard-main-branch.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/git-operations.test.ts
   e2e: []
@@ -24,8 +25,10 @@ phase: 4
 blocked_by:
   - WU-1101
   - WU-1103
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

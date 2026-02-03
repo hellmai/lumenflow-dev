@@ -19,6 +19,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1117.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: Re-scoped from 8 languages to 2 highest-impact. Other languages split to WU-1121 and WU-1122.
 requires_review: false

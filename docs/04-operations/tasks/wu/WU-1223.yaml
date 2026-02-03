@@ -24,7 +24,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/first-wu-mistakes.md
   - .claude/skills/wu-lifecycle/SKILL.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/validation/command-registry.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
@@ -32,6 +33,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1223.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: 'Unblocked (2026-01-30): WU-1226 completed, lane free - WU-1142 is actually done (stale backlog)'
 requires_review: false

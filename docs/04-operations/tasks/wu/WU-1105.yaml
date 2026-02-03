@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/package.json
   - package.json
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/init-plan.test.ts
   e2e: []
@@ -24,8 +25,10 @@ blocked_by:
   - WU-1102
   - WU-1103
   - WU-1104
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

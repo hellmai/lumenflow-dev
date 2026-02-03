@@ -8,7 +8,8 @@ created: 2026-01-30
 code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
   e2e: []
@@ -16,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1226.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

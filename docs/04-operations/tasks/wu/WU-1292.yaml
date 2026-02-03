@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/mem-context.ts
   - packages/@lumenflow/cli/__tests__/mem-context.test.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/mem-context.test.ts
   e2e: []
@@ -21,7 +22,7 @@ phase: 3
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-012.yaml
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

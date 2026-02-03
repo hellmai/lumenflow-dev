@@ -12,7 +12,8 @@ code_paths:
   - .lumenflow/templates/manifest.yaml
   - .lumenflow/templates/spawn-prompt/
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/template-loader.test.ts
   e2e: []

@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1025.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: Discovered via WU-1020/WU-1022 blocking gates for unrelated WUs
 requires_review: false
