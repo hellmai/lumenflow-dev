@@ -8,7 +8,6 @@ _Last updated: 2026-02-03_
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml)
 - [WU-1371 — Auto-generate CLI README.md from docs generator](wu/WU-1371.yaml)
 
 ## Completed
@@ -334,3 +333,4 @@ _Last updated: 2026-02-03_
 - [WU-1362 — Add branch guards to prevent main pollution (consolidated)](wu/WU-1362.yaml) — 2026-02-03
 - [WU-1363 — CLI integration test suite (consolidated)](wu/WU-1363.yaml) — 2026-02-03
 - [WU-1368 — Fix sync:templates --check-drift and add micro-worktree isolation](wu/WU-1368.yaml) — 2026-02-03
+- [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml) — 2026-02-03

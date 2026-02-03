@@ -2,7 +2,7 @@ id: WU-1370
 title: Fix nested micro-worktree in repairWUInconsistency causing local main drift
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -17,7 +17,10 @@ artifacts:
   - .lumenflow/stamps/WU-1370.done
 dependencies: []
 risks: []
-notes: 'Implementation: When projectRoot is explicitly provided to repairWUInconsistency, the function now skips micro-worktree creation and works directly in the provided directory. This prevents nested micro-worktrees from merging to local main when repair is called from within another micro-worktree context (e.g., handleOrphanCheck during wu:claim).'
+notes: 'Implementation: When projectRoot is explicitly provided to repairWUInconsistency, the
+  function now skips micro-worktree creation and works directly in the provided directory. This
+  prevents nested micro-worktrees from merging to local main when repair is called from within
+  another micro-worktree context (e.g., handleOrphanCheck during wu:claim).'
 spec_refs:
   - lumenflow://plans/WU-1370-fix-nested-worktree.md
 requires_review: false
@@ -46,3 +49,5 @@ session_id: 4bcb09b4-69a5-49d3-98e1-f1786a3e416b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T09:17:38.558Z
+locked: true
+completed_at: 2026-02-03T09:24:14.223Z
