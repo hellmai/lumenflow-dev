@@ -2,7 +2,7 @@ id: WU-1382
 title: Improve generated file templates for agent clarity
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - CLAUDE.md template has warning about manual YAML editing
   - Config yaml template has managed file header block
   - Lane-inference yaml template has managed file header
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1382
+claimed_at: 2026-02-03T13:51:34.313Z
+baseline_main_sha: e88a05d8e07129917e1eb5c2a11e93b4bc141ec7
+session_id: d910222a-e552-413e-98c1-41d242ca467c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T13:51:34.320Z
