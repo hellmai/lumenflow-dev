@@ -2,7 +2,7 @@ id: WU-1363
 title: CLI integration test suite (consolidated)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -45,3 +45,5 @@ session_id: 5687a3ae-f92b-4702-8c83-686ea0a5e35f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T03:00:53.548Z
+locked: true
+completed_at: 2026-02-03T03:14:52.355Z
