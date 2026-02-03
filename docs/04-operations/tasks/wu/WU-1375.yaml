@@ -1,0 +1,32 @@
+id: WU-1375
+title: Init should warn if config files exist from manual writes
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1375.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Haven 2.8.0 testing showed agent wrote .lumenflow.config.yaml manually via Write tool BEFORE running lumenflow init. Problem: Init silently skipped these files, agent never learned to use CLI. Solution: Init should detect manually-written config files and warn that CLI commands should be used instead, or suggest --merge mode.'
+acceptance:
+  - Init warns if .lumenflow.config.yaml exists but was not created by init
+  - Warning message suggests using CLI commands instead of manual YAML
+  - Warning shows how to use --merge mode for intentional customization
