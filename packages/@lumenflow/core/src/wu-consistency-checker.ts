@@ -344,6 +344,11 @@ function categorizeErrors(errors: ConsistencyError[]): {
  * in a micro-worktree, then committed and pushed to origin/main.
  * This prevents direct writes to the main checkout.
  *
+ * WU-1370: When projectRoot is explicitly provided (not process.cwd()), the caller
+ * is already inside a micro-worktree context (e.g., handleOrphanCheck during wu:claim).
+ * In this case, skip creating a nested micro-worktree and work directly in projectRoot.
+ * This prevents local main drift from nested micro-worktrees merging before pushing.
+ *
  * @param {object} report - Report from checkWUConsistency()
  * @param {RepairWUInconsistencyOptions} [options={}] - Repair options
  * @returns {Promise<object>} Result with repaired, skipped, and failed counts
@@ -352,7 +357,12 @@ export async function repairWUInconsistency(
   report: { valid: boolean; errors: ConsistencyError[] },
   options: RepairWUInconsistencyOptions = {},
 ) {
-  const { dryRun = false, projectRoot = process.cwd() } = options;
+  const { dryRun = false, projectRoot } = options;
+
+  // WU-1370: Detect if projectRoot was explicitly provided
+  // If provided, we're inside a micro-worktree and should work directly in projectRoot
+  const isInsideMicroWorktree = projectRoot !== undefined;
+  const effectiveProjectRoot = projectRoot ?? process.cwd();
 
   if (report.valid) {
     return { repaired: 0, skipped: 0, failed: 0 };
@@ -373,61 +383,98 @@ export async function repairWUInconsistency(
     };
   }
 
-  // Step 1: Process file-based repairs via micro-worktree (batched)
+  // Step 1: Process file-based repairs
   if (fileRepairs.length > 0) {
-    try {
-      // Generate a batch ID from the WU IDs being repaired
-      const batchId = `batch-${fileRepairs.map((e) => e.wuId).join('-')}`.slice(0, 50);
+    // WU-1370: When projectRoot is provided, we're already in a micro-worktree context
+    // (e.g., called from handleOrphanCheck during wu:claim). Work directly in projectRoot
+    // instead of creating a nested micro-worktree.
+    if (isInsideMicroWorktree) {
+      // Direct repair mode: work in the provided projectRoot
+      for (const error of fileRepairs) {
+        try {
+          // When inside a micro-worktree, worktreePath === projectRoot
+          // We're both reading from and writing to the same location
+          const result = await repairSingleErrorInWorktree(
+            error,
+            effectiveProjectRoot,
+            effectiveProjectRoot,
+          );
+          if (result.success && result.files) {
+            repaired++;
+          } else if (result.skipped) {
+            skipped++;
+            if (result.reason) {
+              console.warn(`${LOG_PREFIX.REPAIR} Skipped ${error.type}: ${result.reason}`);
+            }
+          } else {
+            failed++;
+          }
+        } catch (err) {
+          const errMessage = err instanceof Error ? err.message : String(err);
+          console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${errMessage}`);
+          failed++;
+        }
+      }
+    } else {
+      // Standard mode: create micro-worktree for isolation
+      try {
+        // Generate a batch ID from the WU IDs being repaired
+        const batchId = `batch-${fileRepairs.map((e) => e.wuId).join('-')}`.slice(0, 50);
 
-      await withMicroWorktree({
-        operation: 'wu-repair',
-        id: batchId,
-        logPrefix: LOG_PREFIX.REPAIR,
-        execute: async ({ worktreePath }) => {
-          const filesModified: string[] = [];
+        await withMicroWorktree({
+          operation: 'wu-repair',
+          id: batchId,
+          logPrefix: LOG_PREFIX.REPAIR,
+          execute: async ({ worktreePath }) => {
+            const filesModified: string[] = [];
 
-          for (const error of fileRepairs) {
-            try {
-              const result = await repairSingleErrorInWorktree(error, worktreePath, projectRoot);
-              if (result.success && result.files) {
-                filesModified.push(...result.files);
-                repaired++;
-              } else if (result.skipped) {
-                skipped++;
-                if (result.reason) {
-                  console.warn(`${LOG_PREFIX.REPAIR} Skipped ${error.type}: ${result.reason}`);
+            for (const error of fileRepairs) {
+              try {
+                const result = await repairSingleErrorInWorktree(
+                  error,
+                  worktreePath,
+                  effectiveProjectRoot,
+                );
+                if (result.success && result.files) {
+                  filesModified.push(...result.files);
+                  repaired++;
+                } else if (result.skipped) {
+                  skipped++;
+                  if (result.reason) {
+                    console.warn(`${LOG_PREFIX.REPAIR} Skipped ${error.type}: ${result.reason}`);
+                  }
+                } else {
+                  failed++;
                 }
-              } else {
+              } catch (err) {
+                const errMessage = err instanceof Error ? err.message : String(err);
+                console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${errMessage}`);
                 failed++;
               }
-            } catch (err) {
-              const errMessage = err instanceof Error ? err.message : String(err);
-              console.error(`${LOG_PREFIX.REPAIR} Failed to repair ${error.type}: ${errMessage}`);
-              failed++;
             }
-          }
 
-          // Deduplicate files
-          const uniqueFiles = [...new Set(filesModified)];
+            // Deduplicate files
+            const uniqueFiles = [...new Set(filesModified)];
 
-          return {
-            commitMessage: `fix: repair ${repaired} WU inconsistencies`,
-            files: uniqueFiles,
-          };
-        },
-      });
-    } catch (err) {
-      // If micro-worktree fails, mark all file repairs as failed
-      const errMessage = err instanceof Error ? err.message : String(err);
-      console.error(`${LOG_PREFIX.REPAIR} Micro-worktree operation failed: ${errMessage}`);
-      failed += fileRepairs.length - repaired;
+            return {
+              commitMessage: `fix: repair ${repaired} WU inconsistencies`,
+              files: uniqueFiles,
+            };
+          },
+        });
+      } catch (err) {
+        // If micro-worktree fails, mark all file repairs as failed
+        const errMessage = err instanceof Error ? err.message : String(err);
+        console.error(`${LOG_PREFIX.REPAIR} Micro-worktree operation failed: ${errMessage}`);
+        failed += fileRepairs.length - repaired;
+      }
     }
   }
 
   // Step 2: Process git-only repairs (worktree/branch cleanup) directly
   for (const error of gitOnlyRepairs) {
     try {
-      const result = await repairGitOnlyError(error, projectRoot);
+      const result = await repairGitOnlyError(error, effectiveProjectRoot);
       if (result.success) {
         repaired++;
       } else if (result.skipped) {
