@@ -2,7 +2,7 @@ id: WU-1383
 title: Add CLI safeguards against manual file editing
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -44,10 +44,6 @@ acceptance:
   - Post-init output shows available commands prominently
   - Warning message suggests CLI commands not manual editing
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1383
-claimed_at: 2026-02-03T13:57:57.044Z
-baseline_main_sha: 7206abcffa8e12f5c79ff30f6c7fa8b993a47620
-session_id: 7d39bda2-167f-4e00-9a52-441b8d232adb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T13:57:57.048Z
