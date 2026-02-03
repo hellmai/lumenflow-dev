@@ -2,7 +2,7 @@ id: WU-1397
 title: 'Landing page UX: copy button + simplified CTAs'
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Follow-up to WU-1395. Add copy-to-clipboard for agent prompt, make prompt block more visually distinct, simplify bottom card section.
+description: Follow-up to WU-1395. Add copy-to-clipboard for agent prompt, make prompt block more
+  visually distinct, simplify bottom card section.
 acceptance:
   - Copy-to-clipboard button works for agent prompt
   - Prompt block is visually distinct callout, not plain code block
   - Bottom cards simplified - remove redundant Manual Quickstart card
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1397
+claimed_at: 2026-02-03T23:24:16.480Z
+baseline_main_sha: 6b9d27b0f6c4613e4a77e75dbbc9126a19957314
+session_id: 28cdb4cd-db7c-4124-9bbb-43ea60d71cad
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T23:24:16.484Z
