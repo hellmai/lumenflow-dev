@@ -2,6 +2,10 @@
  * @file sync-templates.ts
  * Sync internal docs to CLI templates for release-cycle maintenance (WU-1123)
  *
+ * WU-1368: Fixed two bugs:
+ * 1. --check-drift flag now is truly read-only (compares without writing)
+ * 2. sync:templates uses micro-worktree isolation for safe atomic commits
+ *
  * This script syncs source docs from the hellmai/os repo to the templates
  * directory, applying template variable substitutions:
  * - Onboarding docs -> templates/core/ai/onboarding/
@@ -11,7 +15,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { createWUParser } from '@lumenflow/core';
+import { createWUParser, withMicroWorktree } from '@lumenflow/core';
 
 // Directory name constants to avoid duplicate strings
 const LUMENFLOW_DIR = '.lumenflow';
@@ -20,6 +24,12 @@ const SKILLS_DIR = 'skills';
 
 // Template variable patterns
 const DATE_PATTERN = /\d{4}-\d{2}-\d{2}/g;
+
+// Log prefix for console output
+const LOG_PREFIX = '[sync-templates]';
+
+// Micro-worktree operation name
+const OPERATION_NAME = 'sync-templates';
 
 export interface SyncResult {
   synced: string[];
@@ -398,45 +408,187 @@ export async function checkTemplateDrift(projectRoot: string): Promise<DriftResu
 }
 
 /**
- * CLI entry point
+ * Sync a single file to templates within a worktree path
+ *
+ * WU-1368: Internal helper for micro-worktree sync operations.
+ * Writes to worktreePath instead of projectRoot for isolation.
  */
-
-export async function main(): Promise<void> {
-  const opts = parseSyncTemplatesOptions();
-  const projectRoot = process.cwd();
-
-  // Check-drift mode: verify templates match source without syncing
-  if (opts.checkDrift) {
-    console.log('[sync-templates] Checking for template drift...');
-    const drift = await checkTemplateDrift(projectRoot);
-
-    if (opts.verbose) {
-      console.log(`  Checked ${drift.checkedFiles.length} files`);
+function syncFileToWorktree(
+  sourcePath: string,
+  targetPath: string,
+  projectRoot: string,
+  result: SyncResult,
+): void {
+  try {
+    if (!fs.existsSync(sourcePath)) {
+      result.errors.push(`Source not found: ${sourcePath}`);
+      return;
     }
 
-    if (drift.hasDrift) {
-      console.log('\n[sync-templates] WARNING: Template drift detected!');
-      console.log('  The following templates are out of sync with their source:');
-      for (const file of drift.driftingFiles) {
-        console.log(`    - ${file}`);
-      }
-      console.log('\n  Run `pnpm sync:templates` to update templates.');
-      process.exitCode = 1;
+    const content = fs.readFileSync(sourcePath, 'utf-8');
+    const templateContent = convertToTemplate(content, projectRoot);
+
+    ensureDir(path.dirname(targetPath));
+    fs.writeFileSync(targetPath, templateContent);
+
+    // Store relative path from project root (not worktree path)
+    const relPath = targetPath.includes('templates/')
+      ? targetPath.substring(targetPath.indexOf('packages/'))
+      : path.basename(targetPath);
+    result.synced.push(relPath);
+  } catch (error) {
+    result.errors.push(`Error syncing ${sourcePath}: ${(error as Error).message}`);
+  }
+}
+
+/**
+ * Sync templates using micro-worktree isolation (WU-1368)
+ *
+ * This function uses the micro-worktree pattern to atomically sync templates:
+ * 1. Create temp branch in micro-worktree
+ * 2. Sync all templates to micro-worktree
+ * 3. Commit and push atomically
+ * 4. Cleanup
+ *
+ * Benefits:
+ * - Never modifies main checkout directly
+ * - Atomic commit with all template changes
+ * - Race-safe with other operations
+ *
+ * @param {string} projectRoot - Project root directory (source for templates)
+ * @returns {Promise<SyncSummary>} Summary of synced files
+ */
+export async function syncTemplatesWithWorktree(projectRoot: string): Promise<SyncSummary> {
+  // Generate unique operation ID using timestamp
+  const operationId = `templates-${Date.now()}`;
+
+  console.log(`${LOG_PREFIX} Using micro-worktree isolation for atomic sync...`);
+
+  // Set env var for pre-push hook
+  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+  process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+
+  try {
+    let syncResult: SyncSummary = {
+      onboarding: { synced: [], errors: [] },
+      skills: { synced: [], errors: [] },
+      core: { synced: [], errors: [] },
+    };
+
+    await withMicroWorktree({
+      operation: OPERATION_NAME,
+      id: operationId,
+      logPrefix: LOG_PREFIX,
+      execute: async ({ worktreePath }) => {
+        const templatesDir = path.join(worktreePath, 'packages', '@lumenflow', 'cli', 'templates');
+
+        // Sync core docs
+        const coreResult: SyncResult = { synced: [], errors: [] };
+        const lumenflowSource = path.join(projectRoot, 'LUMENFLOW.md');
+        const lumenflowTarget = path.join(templatesDir, 'core', 'LUMENFLOW.md.template');
+        syncFileToWorktree(lumenflowSource, lumenflowTarget, projectRoot, coreResult);
+
+        const constraintsSource = path.join(projectRoot, LUMENFLOW_DIR, 'constraints.md');
+        const constraintsTarget = path.join(
+          templatesDir,
+          'core',
+          LUMENFLOW_DIR,
+          'constraints.md.template',
+        );
+        syncFileToWorktree(constraintsSource, constraintsTarget, projectRoot, coreResult);
+
+        // Sync onboarding docs
+        const onboardingResult: SyncResult = { synced: [], errors: [] };
+        const onboardingSourceDir = path.join(
+          projectRoot,
+          'docs',
+          '04-operations',
+          '_frameworks',
+          'lumenflow',
+          'agent',
+          'onboarding',
+        );
+        const onboardingTargetDir = path.join(templatesDir, 'core', 'ai', 'onboarding');
+
+        if (fs.existsSync(onboardingSourceDir)) {
+          const files = fs.readdirSync(onboardingSourceDir).filter((f) => f.endsWith('.md'));
+          for (const file of files) {
+            const sourcePath = path.join(onboardingSourceDir, file);
+            const targetPath = path.join(onboardingTargetDir, `${file}.template`);
+            syncFileToWorktree(sourcePath, targetPath, projectRoot, onboardingResult);
+          }
+        } else {
+          onboardingResult.errors.push(
+            `Onboarding source directory not found: ${onboardingSourceDir}`,
+          );
+        }
+
+        // Sync skills
+        const skillsResult: SyncResult = { synced: [], errors: [] };
+        const skillsSourceDir = path.join(projectRoot, CLAUDE_DIR, SKILLS_DIR);
+        const skillsTargetDir = path.join(
+          templatesDir,
+          'vendors',
+          'claude',
+          CLAUDE_DIR,
+          SKILLS_DIR,
+        );
+
+        if (fs.existsSync(skillsSourceDir)) {
+          const skillDirs = fs
+            .readdirSync(skillsSourceDir, { withFileTypes: true })
+            .filter((d) => d.isDirectory())
+            .map((d) => d.name);
+
+          for (const skillName of skillDirs) {
+            const skillFile = path.join(skillsSourceDir, skillName, 'SKILL.md');
+            if (fs.existsSync(skillFile)) {
+              const targetPath = path.join(skillsTargetDir, skillName, 'SKILL.md.template');
+              syncFileToWorktree(skillFile, targetPath, projectRoot, skillsResult);
+            }
+          }
+        } else {
+          skillsResult.errors.push(`Skills source directory not found: ${skillsSourceDir}`);
+        }
+
+        syncResult = {
+          onboarding: onboardingResult,
+          skills: skillsResult,
+          core: coreResult,
+        };
+
+        // Collect all synced files for commit
+        const allSyncedFiles = [
+          ...coreResult.synced,
+          ...onboardingResult.synced,
+          ...skillsResult.synced,
+        ];
+
+        const totalSynced = allSyncedFiles.length;
+        const commitMessage = `chore(sync:templates): sync ${totalSynced} template files`;
+
+        return {
+          commitMessage,
+          files: allSyncedFiles,
+        };
+      },
+    });
+
+    return syncResult;
+  } finally {
+    // Restore env var
+    if (previousWuTool === undefined) {
+      delete process.env.LUMENFLOW_WU_TOOL;
     } else {
-      console.log('[sync-templates] All templates are in sync.');
+      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
     }
-    return;
   }
+}
 
-  // Sync mode: update templates from source
-  console.log('[sync-templates] Syncing internal docs to CLI templates...');
-  if (opts.dryRun) {
-    console.log('  (dry-run mode - no files will be written)');
-  }
-
-  const result = await syncTemplates(projectRoot, opts.dryRun);
-
-  // Print results
+/**
+ * Print sync results summary
+ */
+function printSyncResults(result: SyncSummary): { totalSynced: number; totalErrors: number } {
   const sections = [
     { name: 'Onboarding docs', data: result.onboarding },
     { name: 'Claude skills', data: result.skills },
@@ -462,7 +614,60 @@ export async function main(): Promise<void> {
     }
   }
 
-  console.log(`\n[sync-templates] Done! Synced ${totalSynced} files.`);
+  return { totalSynced, totalErrors };
+}
+
+/**
+ * CLI entry point
+ */
+
+export async function main(): Promise<void> {
+  const opts = parseSyncTemplatesOptions();
+  const projectRoot = process.cwd();
+
+  // Check-drift mode: verify templates match source without syncing (read-only)
+  if (opts.checkDrift) {
+    console.log(`${LOG_PREFIX} Checking for template drift...`);
+    const drift = await checkTemplateDrift(projectRoot);
+
+    if (opts.verbose) {
+      console.log(`  Checked ${drift.checkedFiles.length} files`);
+    }
+
+    if (drift.hasDrift) {
+      console.log(`\n${LOG_PREFIX} WARNING: Template drift detected!`);
+      console.log('  The following templates are out of sync with their source:');
+      for (const file of drift.driftingFiles) {
+        console.log(`    - ${file}`);
+      }
+      console.log('\n  Run `pnpm sync:templates` to update templates.');
+      process.exitCode = 1;
+    } else {
+      console.log(`${LOG_PREFIX} All templates are in sync.`);
+    }
+    return;
+  }
+
+  // Dry-run mode: show what would be synced without writing
+  if (opts.dryRun) {
+    console.log(`${LOG_PREFIX} Dry-run mode - showing what would be synced...`);
+    const result = await syncTemplates(projectRoot, true);
+    const { totalSynced, totalErrors } = printSyncResults(result);
+    console.log(`\n${LOG_PREFIX} Dry run complete. Would sync ${totalSynced} files.`);
+    if (totalErrors > 0) {
+      console.log(`  ${totalErrors} error(s) would occur.`);
+      process.exitCode = 1;
+    }
+    return;
+  }
+
+  // Sync mode: update templates using micro-worktree isolation (WU-1368)
+  console.log(`${LOG_PREFIX} Syncing internal docs to CLI templates...`);
+
+  const result = await syncTemplatesWithWorktree(projectRoot);
+  const { totalSynced, totalErrors } = printSyncResults(result);
+
+  console.log(`\n${LOG_PREFIX} Done! Synced ${totalSynced} files.`);
 
   if (totalErrors > 0) {
     console.log(`  ${totalErrors} error(s) occurred.`);
