@@ -2,7 +2,7 @@ id: WU-1386
 title: Extend lumenflow doctor with agent-friction checks
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-03
 code_paths:
@@ -60,3 +60,5 @@ session_id: 7d39bda2-167f-4e00-9a52-441b8d232adb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T14:09:12.370Z
+locked: true
+completed_at: 2026-02-03T15:16:10.781Z
