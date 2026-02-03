@@ -25,10 +25,8 @@ sections:
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
-- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1394 — Fix mem:recover hook propagation and documentation (WU-1390 follow-up)](wu/WU-1394.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -374,3 +372,5 @@ sections:
 - [WU-1392 — Fix quickstart initiative examples and AGENTS markers](wu/WU-1392.yaml)
 - [WU-1390 — Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery](wu/WU-1390.yaml)
 - [WU-1393 — Fix WU spec:linter issues on main](wu/WU-1393.yaml)
+- [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml)
+- [WU-1394 — Fix mem:recover hook propagation and documentation (WU-1390 follow-up)](wu/WU-1394.yaml)
