@@ -114,14 +114,15 @@ When `requireRemote: true` (default):
 
 ## Core Principles
 
-1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
-2. **Library-First**: Search existing libraries before custom code
-3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
-4. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-5. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
-6. **Gates Before Done**: All gates must pass before `wu:done`
-7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-8. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+1. **Design-First**: Question requirements, delete unnecessary, simplify before optimizing (load `/skill design-first`)
+2. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
+3. **Library-First**: Search existing libraries before custom code
+4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+6. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
+7. **Gates Before Done**: All gates must pass before `wu:done`
+8. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+9. **Always wu:done**: Complete every WU by running `pnpm wu:done`
 
 ---
 
