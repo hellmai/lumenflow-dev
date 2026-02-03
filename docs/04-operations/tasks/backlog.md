@@ -33,7 +33,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1367 — Claude Code enforcement hooks: configurable workflow compliance via hooks](wu/WU-1367.yaml) — Framework: CLI
-- [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — Content: Documentation
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -354,3 +353,4 @@ sections:
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml)
 - [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml)
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml)
+- [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml)
