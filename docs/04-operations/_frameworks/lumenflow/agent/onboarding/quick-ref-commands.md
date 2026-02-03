@@ -10,19 +10,20 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 **For this monorepo (development):**
 
-| Command                  | Description                             |
-| ------------------------ | --------------------------------------- |
-| `pnpm setup`             | Install deps and build CLI (first time) |
-| `pnpm build`             | Build all packages                      |
-| `pnpm build:dist`        | Build distribution packages             |
-| `pnpm dev`               | Start development mode                  |
-| `pnpm clean`             | Clean build artifacts and caches        |
-| `pnpm pack:all`          | Pack all packages for distribution      |
-| `pnpm lumenflow:init`    | Scaffold LumenFlow in a project         |
-| `pnpm docs:sync`         | Sync agent docs (for upgrades)          |
-| `pnpm sync:templates`    | Sync templates to project               |
-| `pnpm lumenflow:upgrade` | Upgrade LumenFlow packages              |
-| `pnpm lumenflow:doctor`  | Diagnose LumenFlow configuration        |
+| Command                    | Description                             |
+| -------------------------- | --------------------------------------- |
+| `pnpm setup`               | Install deps and build CLI (first time) |
+| `pnpm build`               | Build all packages                      |
+| `pnpm build:dist`          | Build distribution packages             |
+| `pnpm dev`                 | Start development mode                  |
+| `pnpm clean`               | Clean build artifacts and caches        |
+| `pnpm pack:all`            | Pack all packages for distribution      |
+| `pnpm lumenflow:init`      | Scaffold LumenFlow in a project         |
+| `pnpm docs:sync`           | Sync agent docs (for upgrades)          |
+| `pnpm sync:templates`      | Sync templates to project               |
+| `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages              |
+| `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration        |
+| `pnpm lumenflow:integrate` | Generate enforcement hooks for client   |
 
 **For external projects (end users):**
 
@@ -417,3 +418,30 @@ pnpm mem:inbox --since 30m       # Check for signals (NOT TaskOutput)
 # Capture bug, don't fix out-of-scope
 pnpm mem:create 'Bug: description' --type discovery --tags bug --wu WU-XXX
 ```
+
+### Enforcement Hooks (WU-1367)
+
+Configure hooks that enforce workflow compliance for Claude Code:
+
+```yaml
+# In .lumenflow.config.yaml
+agents:
+  clients:
+    claude-code:
+      enforcement:
+        hooks: true
+        block_outside_worktree: true
+        require_wu_for_edits: true
+        warn_on_stop_without_wu_done: true
+```
+
+```bash
+# Generate hooks after configuration
+pnpm lumenflow:integrate --client claude-code
+```
+
+Hooks provide automatic enforcement at the tool level:
+
+- **block_outside_worktree**: Blocks Write/Edit to main when worktrees exist
+- **require_wu_for_edits**: Requires a claimed WU for Write/Edit operations
+- **warn_on_stop_without_wu_done**: Warns when session ends with active worktrees
