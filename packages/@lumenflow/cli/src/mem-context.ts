@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Memory Context CLI (WU-1234, WU-1292)
  *
@@ -118,11 +118,10 @@ async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): P
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
-     
     await fs.mkdir(logDir, { recursive: true });
 
     const line = `${JSON.stringify(entry)}\n`;
-     
+
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors

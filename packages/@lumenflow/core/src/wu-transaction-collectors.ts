@@ -23,7 +23,6 @@
  * ```
  */
 
- 
 import { existsSync, readFileSync } from 'node:fs';
 import { stringifyYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter } from './backlog-parser.js';

@@ -113,7 +113,7 @@ describe('template portability', () => {
       if (fs.existsSync(startingPromptPath)) {
         const content = fs.readFileSync(startingPromptPath, 'utf-8');
         // Should use relative paths like ../../../../../../LUMENFLOW.md
-         
+
         expect(content).toMatch(/\[.*?\]\([./]+.*?\.md\)/);
       }
     });

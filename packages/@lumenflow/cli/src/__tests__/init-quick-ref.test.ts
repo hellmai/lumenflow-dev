@@ -159,7 +159,7 @@ describe('quick-ref commands', () => {
       const content = fs.readFileSync(quickRefPath, 'utf-8');
 
       // Should have a project setup section
-       
+
       expect(content).toMatch(/##.*?Setup|##.*?Project/i);
       expect(content).toContain('lumenflow init');
     });

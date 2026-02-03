@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * lane:suggest CLI Command (WU-1189, WU-1190)
  *

@@ -1720,7 +1720,7 @@ export function formatTaskInvocationWithEmbeddedSpawn(wu: WUEntry): string {
  * @param {{waves: Array<Array<{id: string, doc: object}>>, skipped: string[]}} plan - Execution plan
  * @returns {string} Formatted output with embedded Task invocations
  */
- 
+
 export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): string {
   const lines = [];
 

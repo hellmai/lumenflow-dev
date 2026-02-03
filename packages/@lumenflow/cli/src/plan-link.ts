@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Plan Link Command (WU-1313)
  *

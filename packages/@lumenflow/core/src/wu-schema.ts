@@ -995,7 +995,6 @@ function detectNormalizationChanges(original, normalized) {
     return true;
   }
   for (let i = 0; i < origPaths.length; i++) {
-     
     if (origPaths[i] !== normPaths[i]) {
       return true;
     }
@@ -1007,7 +1006,6 @@ function detectNormalizationChanges(original, normalized) {
       return true;
     }
     for (let i = 0; i < original.acceptance.length; i++) {
-       
       if (original.acceptance[i] !== normalized.acceptance[i]) {
         return true;
       }

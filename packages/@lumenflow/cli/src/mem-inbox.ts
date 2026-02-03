@@ -87,11 +87,10 @@ async function writeAuditLog(baseDir, entry) {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
-     
     await fs.mkdir(logDir, { recursive: true });
 
     const line = `${JSON.stringify(entry)}\n`;
-     
+
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors

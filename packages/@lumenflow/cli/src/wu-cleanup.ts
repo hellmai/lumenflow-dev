@@ -40,7 +40,6 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-2278: Import ownership validation for cross-agent protection
 import { validateWorktreeOwnership } from '@lumenflow/core/dist/worktree-ownership.js';
- 
 
 const CLEANUP_OPTIONS = {
   artifacts: {

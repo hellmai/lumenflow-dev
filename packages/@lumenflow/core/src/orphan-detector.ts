@@ -24,8 +24,6 @@ import path from 'node:path';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { STRING_LITERALS, DEFAULTS } from './wu-constants.js';
 
- 
-
 /**
  * Result of orphan detection
  * @typedef {object} OrphanDetectionResult

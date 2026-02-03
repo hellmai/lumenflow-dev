@@ -497,7 +497,7 @@ code_paths:
         );
 
         // Should not throw, just skip invalid files
-         
+
         expect(() => checkAutomatedTestsInvariant({ baseDir: TEST_DIR })).not.toThrow();
       });
 

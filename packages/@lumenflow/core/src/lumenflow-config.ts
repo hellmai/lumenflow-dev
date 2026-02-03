@@ -69,7 +69,6 @@ function loadConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
     const data = yaml.parse(content);
     return data || {};
   } catch (error) {
-     
     console.warn(`Warning: Failed to parse ${CONFIG_FILE_NAME}:`, error);
     return null;
   }

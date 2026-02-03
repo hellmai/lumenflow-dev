@@ -85,7 +85,6 @@ import {
   validateCodePathsExistence,
   validateTestPathsExistence,
 } from '@lumenflow/core/dist/wu-preflight-validators.js';
- 
 
 const PREFIX = LOG_PREFIX.EDIT;
 
@@ -315,14 +314,14 @@ const EDIT_OPTIONS = {
  * @param {string} newInitId - New initiative ID
  * @returns {Array<string>} Array of relative file paths that were modified
  */
- 
+
 function updateInitiativeWusArrays(worktreePath, wuId, oldInitId, newInitId) {
   const modifiedFiles = [];
 
   // Remove from old initiative if it exists and is different from new
   if (oldInitId && oldInitId !== newInitId) {
     const oldInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(oldInitId));
-     
+
     if (existsSync(oldInitPath)) {
       try {
         const oldInit = readInitiative(oldInitPath, oldInitId);
@@ -341,7 +340,7 @@ function updateInitiativeWusArrays(worktreePath, wuId, oldInitId, newInitId) {
 
   // Add to new initiative
   const newInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(newInitId));
-   
+
   if (existsSync(newInitPath)) {
     try {
       const newInit = readInitiative(newInitPath, newInitId);
@@ -382,7 +381,7 @@ function validateInitiativeFormat(initId) {
  */
 function validateInitiativeExists(initId) {
   const initPath = INIT_PATHS.INITIATIVE(initId);
-   
+
   if (!existsSync(initPath)) {
     die(`Initiative not found: ${initId}\n\nFile does not exist: ${initPath}`);
   }
@@ -540,12 +539,11 @@ function normalizeWUDates(wu) {
  */
 function validateWUEditable(id) {
   const wuPath = WU_PATHS.WU(id);
-   
+
   if (!existsSync(wuPath)) {
     die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
   }
 
-   
   const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   const wu = parseYAML(content);
 
@@ -593,7 +591,6 @@ function validateWUEditable(id) {
  * @param {string} id - WU ID (for error messages)
  */
 function validateWorktreeExists(worktreePath, id) {
-   
   if (!existsSync(worktreePath)) {
     die(
       `Cannot edit WU ${id}: worktree path missing from disk.\n\n` +
@@ -682,7 +679,6 @@ async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
   // Emergency fix Session 2: Use centralized stringifyYAML helper
   const yamlContent = stringifyYAML(updatedWU);
 
-   
   writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   console.log(`${PREFIX} ✅ Updated ${id}.yaml in worktree`);
 
@@ -774,12 +770,11 @@ export function mergeStringField(
  */
 function loadSpecFile(specPath, originalWU) {
   const resolvedPath = resolve(specPath);
-   
+
   if (!existsSync(resolvedPath)) {
     die(`Spec file not found: ${resolvedPath}`);
   }
 
-   
   const specContent = readFileSync(resolvedPath, {
     encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
   });
@@ -1217,7 +1212,6 @@ async function main() {
           // Emergency fix Session 2: Use centralized stringifyYAML helper
           const yamlContent = stringifyYAML(normalizedWU);
 
-           
           writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
           console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Memory Promote CLI (WU-1237)
  *

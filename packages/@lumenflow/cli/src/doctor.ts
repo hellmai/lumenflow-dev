@@ -1,4 +1,3 @@
- 
 /**
  * @file doctor.ts
  * LumenFlow health check command (WU-1177)
@@ -245,7 +244,6 @@ function getCommandVersion(command: string, args: string[]): string {
  * Parse semver version string to compare
  */
 function parseVersion(versionStr: string): number[] {
-   
   const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
   if (!match) {
     return [0, 0, 0];

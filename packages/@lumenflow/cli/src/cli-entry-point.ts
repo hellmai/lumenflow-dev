@@ -1,4 +1,3 @@
- 
 /**
  * Shared CLI entry point wrapper
  *

@@ -8,8 +8,6 @@
  * - Provides agent guidance about the ratchet rule
  */
 
- 
-
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   TestBaselineSchema,

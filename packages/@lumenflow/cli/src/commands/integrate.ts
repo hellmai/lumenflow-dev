@@ -10,11 +10,10 @@
  */
 
 // CLI tool - console output is intentional for user feedback
- 
+
 // fs operations use runtime-provided paths from LumenFlow configuration
- 
+
 // Object injection sink warnings are false positives for array indexing
- 
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';

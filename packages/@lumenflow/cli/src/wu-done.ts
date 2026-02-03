@@ -33,7 +33,7 @@
  */
 
 // WU-2542: Import from @lumenflow/core to establish shim layer dependency
- 
+
 import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
 
 // WU-1153: wu:done guard for uncommitted code_paths is implemented in core package
@@ -1399,7 +1399,7 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
  * @param {string} backlogPath - Path to backlog.md (WU-1230)
  * @param {string} statusPath - Path to status.md (WU-1230)
  */
- 
+
 async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, statusPath) {
   console.error(
     `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} ROLLING BACK TRANSACTION (WU-755 + WU-1230 + WU-1255 + WU-1280)...`,
@@ -1612,7 +1612,7 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
  * @param {string|null} overrideReason - Reason for override
  * @returns {{valid: boolean, error: string|null, auditEntry: object|null}}
  */
- 
+
 async function checkOwnership(id, doc, worktreePath, overrideOwner = false, overrideReason = null) {
   // Missing worktree means WU was not claimed properly (unless escape hatch applies)
   if (!worktreePath || !existsSync(worktreePath)) {
@@ -2141,7 +2141,7 @@ async function executePreFlightChecks({
  * @param {string|null} params.worktreePath - Worktree path (null for branch-only)
  * @param {string} [params.branchName] - Lane branch name for checkpoint
  */
- 
+
 interface ExecuteGatesParams {
   id: string;
   args: Record<string, unknown>;

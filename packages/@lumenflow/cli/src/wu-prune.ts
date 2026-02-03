@@ -39,7 +39,6 @@ import {
   LOG_PREFIX,
   WORKTREE_WARNINGS,
 } from '@lumenflow/core/dist/wu-constants.js';
- 
 
 interface PruneArgs {
   dryRun: boolean;

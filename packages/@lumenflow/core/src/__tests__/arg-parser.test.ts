@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
- 
+
 import { WU_OPTIONS, WU_CREATE_OPTIONS, createWUParser, parseWUArgs } from '../arg-parser.js';
 
 // Test fixture constants (WU-1173: avoid duplicate string lint errors)
@@ -659,7 +659,6 @@ describe('arg-parser', () => {
     });
   });
 
-   
   describe('parseWUArgs (deprecated)', () => {
     let originalArgv: string[];
     let originalExit: typeof process.exit;
@@ -709,5 +708,4 @@ describe('arg-parser', () => {
       expect(opts.branchOnly).toBe(true);
     });
   });
-   
 });

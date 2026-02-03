@@ -259,23 +259,22 @@ export function validateLaneInferenceFormat(options: {
  * Initialize a git repository in the given directory
  */
 function initializeGitRepo(projectDir: string): void {
-   
   execFileSync(GIT_BINARY, ['init'], { cwd: projectDir, stdio: 'pipe' });
-   
+
   execFileSync(GIT_BINARY, ['config', 'user.email', 'test@example.com'], {
     cwd: projectDir,
     stdio: 'pipe',
   });
-   
+
   execFileSync(GIT_BINARY, ['config', 'user.name', 'Test User'], {
     cwd: projectDir,
     stdio: 'pipe',
   });
 
   // Create initial commit
-   
+
   execFileSync(GIT_BINARY, ['add', '-A'], { cwd: projectDir, stdio: 'pipe' });
-   
+
   execFileSync(GIT_BINARY, ['commit', '-m', 'Initial commit', '--allow-empty'], {
     cwd: projectDir,
     stdio: 'pipe',

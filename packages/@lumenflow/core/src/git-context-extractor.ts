@@ -183,7 +183,7 @@ function safeGitExec(args: string[], cwd: string): string {
     // 1. 'git' is a fixed command from PATH (trusted)
     // 2. args are internally constructed, not from user input
     // 3. cwd is validated by the caller (projectRoot from CLI)
-     
+
     const result = execSync(cmd, {
       cwd,
       encoding: 'utf-8',
@@ -222,7 +222,7 @@ export function extractGitContext(
   try {
     // Check if this is a git repo using execSync directly
     // SECURITY: This is a static command with no user input
-     
+
     execSync('git rev-parse --is-inside-work-tree', {
       cwd: projectRoot,
       encoding: 'utf-8',
@@ -581,7 +581,7 @@ export function getChurnMetrics(projectRoot: string, options: ChurnOptions = {})
   try {
     /// SECURITY: all args are constructed internally (no user input)
     const cmd = ['git', ...args].join(' ');
-     
+
     output = execSync(cmd, {
       cwd: projectRoot,
       encoding: 'utf-8',

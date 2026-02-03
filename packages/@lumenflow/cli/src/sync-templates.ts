@@ -8,9 +8,6 @@
  * - Claude skills -> templates/vendors/claude/.claude/skills/
  * - Core docs (LUMENFLOW.md, constraints.md) -> templates/core/
  */
- 
- 
- 
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -319,7 +316,7 @@ function checkFileDrift(
  * to detect if templates have drifted out of sync. Used by CI to warn
  * when templates need to be re-synced.
  */
- 
+
 export async function checkTemplateDrift(projectRoot: string): Promise<DriftResult> {
   const driftingFiles: string[] = [];
   const checkedFiles: string[] = [];
@@ -403,7 +400,7 @@ export async function checkTemplateDrift(projectRoot: string): Promise<DriftResu
 /**
  * CLI entry point
  */
- 
+
 export async function main(): Promise<void> {
   const opts = parseSyncTemplatesOptions();
   const projectRoot = process.cwd();

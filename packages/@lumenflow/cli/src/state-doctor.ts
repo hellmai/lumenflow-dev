@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * State Doctor CLI (WU-1209)
  *
@@ -127,11 +127,10 @@ async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): P
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
-     
     await fs.mkdir(logDir, { recursive: true });
 
     const line = `${JSON.stringify(entry)}\n`;
-     
+
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors
@@ -176,7 +175,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
         for (const file of wuFiles) {
           try {
             const filePath = path.join(wuDir, file);
-             
+
             const content = await fs.readFile(filePath, 'utf-8');
             const wu = parseYaml(content) as {
               id?: string;
@@ -225,7 +224,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
     listSignals: async (): Promise<MockSignal[]> => {
       try {
         const signalsPath = path.join(baseDir, SIGNALS_FILE);
-         
+
         const content = await fs.readFile(signalsPath, 'utf-8');
         const signals: MockSignal[] = [];
 
@@ -264,7 +263,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
     listEvents: async (): Promise<MockEvent[]> => {
       try {
         const eventsPath = path.join(baseDir, WU_EVENTS_FILE);
-         
+
         const content = await fs.readFile(eventsPath, 'utf-8');
         const events: MockEvent[] = [];
 
@@ -300,7 +299,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     removeSignal: async (id: string): Promise<void> => {
       const signalsPath = path.join(baseDir, SIGNALS_FILE);
-       
+
       const content = await fs.readFile(signalsPath, 'utf-8');
       const lines = content.split('\n').filter((line) => {
         if (!line.trim()) return false;
@@ -312,7 +311,6 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
         }
       });
 
-       
       await fs.writeFile(signalsPath, lines.join('\n') + '\n', 'utf-8');
     },
 
@@ -321,7 +319,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     removeEvent: async (wuId: string): Promise<void> => {
       const eventsPath = path.join(baseDir, WU_EVENTS_FILE);
-       
+
       const content = await fs.readFile(eventsPath, 'utf-8');
       const lines = content.split('\n').filter((line) => {
         if (!line.trim()) return false;
@@ -333,7 +331,6 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
         }
       });
 
-       
       await fs.writeFile(eventsPath, lines.join('\n') + '\n', 'utf-8');
     },
 
@@ -343,7 +340,6 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
     createStamp: async (wuId: string, title: string): Promise<void> => {
       const stampsDir = path.join(baseDir, LUMENFLOW_PATHS.STAMPS_DIR);
 
-       
       await fs.mkdir(stampsDir, { recursive: true });
 
       await createStamp({

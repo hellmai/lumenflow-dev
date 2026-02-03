@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * WU Block Helper
  *
@@ -89,7 +89,6 @@ function removeFromInProgressSection(lines, inProgIdx, rel, id) {
   endIdx = endIdx === -1 ? lines.length : inProgIdx + 1 + endIdx;
 
   for (let i = inProgIdx + 1; i < endIdx; i++) {
-     
     if (lines[i] && (lines[i].includes(rel) || lines[i].includes(`[${id}`))) {
       lines.splice(i, 1);
       endIdx--;
@@ -137,7 +136,7 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   if (!fileExists) die(`Missing ${statusPath}`);
 
   const rel = `wu/${id}.yaml`;
-   
+
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
@@ -160,7 +159,6 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   if (lines.slice(sectionStart).some((l) => l.includes(rel))) return; // already listed
   lines.splice(sectionStart, 0, '', bullet);
 
-   
   await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   });

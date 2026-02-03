@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Memory Index CLI (WU-1235)
  *

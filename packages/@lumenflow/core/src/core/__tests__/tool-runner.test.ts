@@ -442,7 +442,7 @@ describe('tool-runner', () => {
     it('should handle non-Error exceptions gracefully', async () => {
       const tool = createMockTool({
         execute: mock.fn(async () => {
-          throw 'string error';  
+          throw 'string error';
         }),
       });
       const deps = createMockDependencies();

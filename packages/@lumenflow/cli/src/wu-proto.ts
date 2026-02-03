@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * WU Proto Helper (WU-1359)
  *

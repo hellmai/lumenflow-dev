@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Plan Promote Command (WU-1313)
  *

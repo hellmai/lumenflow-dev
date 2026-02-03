@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * WU Prep Helper (WU-1223)
  *

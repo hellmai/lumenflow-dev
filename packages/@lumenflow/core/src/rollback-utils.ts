@@ -8,7 +8,6 @@
  * @see {@link packages/@lumenflow/cli/src/wu-done.ts} - Consumer (rollbackTransaction function)
  */
 
- 
 import { writeFileSync, unlinkSync } from 'node:fs';
 import { FILE_SYSTEM } from './wu-constants.js';
 

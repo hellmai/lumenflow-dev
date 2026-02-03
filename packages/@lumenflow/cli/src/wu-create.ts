@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * WU Create Helper (WU-1262, WU-1439)
  *
@@ -711,7 +711,6 @@ async function getDefaultAssignedTo() {
   }
 }
 
- 
 async function main() {
   const args = createWUParser({
     name: 'wu-create',

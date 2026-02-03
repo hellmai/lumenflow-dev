@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * WU Unblock Helper
  *
@@ -71,7 +71,7 @@ function branchExists(branch) {
 
 function createWorktree(doc, worktreePath, branchName) {
   if (!worktreePath) die('Worktree path required to create a worktree');
-   
+
   if (existsSync(worktreePath)) {
     console.warn(`${PREFIX} Worktree ${worktreePath} already exists; skipping creation.`);
     return;

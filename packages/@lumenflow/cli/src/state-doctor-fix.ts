@@ -66,7 +66,6 @@ function removeWuReferences(content: string, wuId: string): string {
  */
 async function readFileSafe(filePath: string): Promise<string> {
   try {
-     
     return await fs.readFile(filePath, 'utf-8');
   } catch {
     return '';
@@ -113,7 +112,6 @@ export function createStateDoctorFixDeps(
             }
           });
 
-           
           await fs.writeFile(signalsPath, lines.join('\n') + '\n', 'utf-8');
 
           return {
@@ -155,7 +153,6 @@ export function createStateDoctorFixDeps(
               }
             });
 
-             
             await fs.writeFile(eventsPath, lines.join('\n') + '\n', 'utf-8');
             modifiedFiles.push(WU_EVENTS_FILE);
           }
@@ -166,7 +163,7 @@ export function createStateDoctorFixDeps(
 
           if (backlogContent && backlogContent.includes(wuId)) {
             const updatedBacklog = removeWuReferences(backlogContent, wuId);
-             
+
             await fs.writeFile(backlogPath, updatedBacklog, 'utf-8');
             modifiedFiles.push(BACKLOG_FILE);
           }
@@ -177,7 +174,7 @@ export function createStateDoctorFixDeps(
 
           if (statusContent && statusContent.includes(wuId)) {
             const updatedStatus = removeWuReferences(statusContent, wuId);
-             
+
             await fs.writeFile(statusPath, updatedStatus, 'utf-8');
             modifiedFiles.push(STATUS_FILE);
           }
@@ -202,13 +199,12 @@ export function createStateDoctorFixDeps(
         execute: async ({ worktreePath }) => {
           const stampsDir = path.join(worktreePath, '.lumenflow/stamps');
 
-           
           await fs.mkdir(stampsDir, { recursive: true });
 
           // Create stamp file in micro-worktree
           const stampPath = path.join(stampsDir, `${wuId}.done`);
           const stampContent = `# ${wuId} Done\n\nTitle: ${title}\nCreated by: state:doctor --fix\nTimestamp: ${new Date().toISOString()}\n`;
-           
+
           await fs.writeFile(stampPath, stampContent, 'utf-8');
 
           return {

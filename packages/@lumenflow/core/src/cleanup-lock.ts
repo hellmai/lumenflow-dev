@@ -21,7 +21,6 @@
  * @module cleanup-lock
  */
 
- 
 import {
   existsSync,
   readFileSync,

@@ -463,7 +463,7 @@ function normalizeFrameworkName(framework: string): { name: string; slug: string
     .replace(/[^a-z0-9_-]+/g, '-')
     // Remove leading dashes and trailing dashes separately (explicit precedence)
     .replace(/^-+/, '')
-     
+
     .replace(/-+$/, '');
 
   if (!slug) {
@@ -2131,7 +2131,6 @@ function getFileMode(options: ScaffoldOptions): FileMode {
  */
 function isGitRepo(targetDir: string): boolean {
   try {
-     
     execFileSync('git', ['rev-parse', '--git-dir'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2147,7 +2146,6 @@ function isGitRepo(targetDir: string): boolean {
  */
 function hasGitCommits(targetDir: string): boolean {
   try {
-     
     execFileSync('git', ['rev-parse', 'HEAD'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2163,7 +2161,6 @@ function hasGitCommits(targetDir: string): boolean {
  */
 function hasOriginRemote(targetDir: string): boolean {
   try {
-     
     const result = execFileSync('git', ['remote', 'get-url', 'origin'], {
       cwd: targetDir,
       encoding: 'utf-8',
@@ -2185,10 +2182,10 @@ function createInitialCommitIfNeeded(targetDir: string): boolean {
 
   try {
     // Stage all files
-     
+
     execFileSync('git', ['add', '.'], { cwd: targetDir, stdio: 'pipe' });
     // Create initial commit
-     
+
     execFileSync('git', ['commit', '-m', 'chore: initialize LumenFlow project'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2269,7 +2266,7 @@ export async function scaffoldProject(
 
   const defaultClient = options.defaultClient ?? detectDefaultClient();
   // WU-1171: Use resolveClientType with both client and vendor (vendor is deprecated but kept for backwards compat)
-   
+
   const client = resolveClientType(options.client, options.vendor, defaultClient);
   const fileMode = getFileMode(options);
 
@@ -3057,7 +3054,6 @@ function writeNewFile(
  * WU-1171: Added --merge and --client support
  */
 export async function main(): Promise<void> {
-   
   const opts = parseInitOptions();
   const targetDir = process.cwd();
 
@@ -3128,14 +3124,12 @@ export async function main(): Promise<void> {
   console.log('     pnpm wu:proto --lane <lane> --title "Quick experiment"');
   console.log('');
   console.log('  Full lifecycle: wu:create -> wu:claim -> wu:prep -> wu:done');
-   
 }
 
 // WU-1297: Use import.meta.main instead of exporting main() without calling it
 // This ensures main() runs when the script is executed as a CLI entry point
 if (import.meta.main) {
   main().catch((err: unknown) => {
-     
     console.error('[lumenflow init] Error:', err instanceof Error ? err.message : String(err));
     process.exit(1);
   });

@@ -13,8 +13,6 @@
  * @see {@link packages/@lumenflow/core/src/lumenflow-config-schema.ts} - CleanupConfigSchema
  */
 
- 
-
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { cleanupState, type StateCleanupResult } from '@lumenflow/core/dist/state-cleanup-core.js';
 import { cleanupSignals } from '@lumenflow/memory/dist/signal-cleanup-core.js';

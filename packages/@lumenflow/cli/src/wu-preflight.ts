@@ -31,7 +31,6 @@ import { PATTERNS, EXIT_CODES, LOG_PREFIX, EMOJI } from '@lumenflow/core/dist/wu
 import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
- 
 
 /**
  * Detect worktree path from WU YAML or calculate from lane

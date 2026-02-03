@@ -20,7 +20,6 @@
  * - Reusable by wu:done for early validation
  */
 
- 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { WU_PATHS } from './wu-paths.js';
@@ -288,7 +287,8 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
     try {
       suggestedTestPaths = await findSuggestedTestPaths(missingTestPaths, searchRoot);
     } catch (err) {
-      if (process.env.DEBUG) console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
+      if (process.env.DEBUG)
+        console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
     }
   }
 

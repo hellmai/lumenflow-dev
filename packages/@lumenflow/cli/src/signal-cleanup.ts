@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Signal Cleanup CLI (WU-1204)
  *
@@ -102,11 +102,10 @@ async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): P
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
 
-     
     await fs.mkdir(logDir, { recursive: true });
 
     const line = `${JSON.stringify(entry)}\n`;
-     
+
     await fs.appendFile(logPath, line, 'utf-8');
   } catch {
     // Audit logging is non-fatal - silently ignore errors
@@ -156,7 +155,7 @@ async function getActiveWuIds(baseDir: string): Promise<Set<string>> {
     for (const file of wuFiles) {
       try {
         const filePath = path.join(wuDir, file);
-         
+
         const content = await fs.readFile(filePath, 'utf-8');
         const wu = parseYaml(content) as { id?: string; status?: string };
 

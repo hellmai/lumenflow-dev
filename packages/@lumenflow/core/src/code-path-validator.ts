@@ -22,8 +22,6 @@
  * Part of INIT-023: Workflow Integrity initiative.
  */
 
- 
-
 import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { execSync, type ExecSyncOptionsWithStringEncoding } from 'node:child_process';

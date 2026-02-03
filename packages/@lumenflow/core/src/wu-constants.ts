@@ -1622,7 +1622,7 @@ export const PATH_LITERALS = {
   PLAN_FILE_SUFFIX: '-plan.md',
 
   /** Trailing slash regex pattern */
-   
+
   TRAILING_SLASH_REGEX: /\/+$/,
 };
 

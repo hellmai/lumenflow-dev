@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Plan Create Command (WU-1313)
  *

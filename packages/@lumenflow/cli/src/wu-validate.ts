@@ -129,7 +129,7 @@ function validateAllWUs({ strict = true } = {}) {
 /**
  * Main entry point
  */
- 
+
 async function main() {
   const args = createWUParser({
     name: 'wu-validate',

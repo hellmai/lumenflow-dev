@@ -6,7 +6,6 @@
  */
 
 // Test file lint exceptions
- 
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'node:fs';

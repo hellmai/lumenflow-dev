@@ -11,10 +11,6 @@
  * - LUMENFLOW.md mentions initiatives and when to use them
  */
 
- 
- 
- 
-
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';

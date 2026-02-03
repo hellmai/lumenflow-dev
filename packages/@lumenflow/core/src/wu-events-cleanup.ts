@@ -248,7 +248,6 @@ async function loadAllEvents(baseDir: string): Promise<WUEvent[]> {
   const eventsPath = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
 
   try {
-     
     const content = await fs.readFile(eventsPath, { encoding: 'utf-8' as BufferEncoding });
     const lines = content.split('\n').filter((line) => line.trim());
     return lines.map((line) => {
@@ -442,7 +441,7 @@ async function appendToArchive(
   const content = events.map((e) => JSON.stringify(e)).join('\n') + '\n';
 
   // Append to archive file (creates if doesn't exist)
-   
+
   await fs.appendFile(fullPath, content, 'utf-8');
 }
 

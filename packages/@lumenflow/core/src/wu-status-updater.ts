@@ -7,7 +7,6 @@
  * Used by both main wu:done flow AND recovery mode (DRY principle)
  */
 
- 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { parseBacklogFrontmatter } from './backlog-parser.js';
 import { getSectionHeadingsWithDefaults } from './section-headings.js';

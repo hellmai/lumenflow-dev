@@ -394,9 +394,9 @@ export function formatLaneHealthReport(report: LaneHealthReport): string {
 // ============================================================================
 
 /** Logger for CLI output */
- 
+
 const log = console.log.bind(console);
- 
+
 const warn = console.warn.bind(console);
 
 /**

@@ -344,7 +344,7 @@ function validateParentOnlyFormat(
       throw createError(ErrorCodes.INVALID_LANE, message, { lane: trimmed, validSubLanes });
     }
     // Non-strict mode: warn only for existing WU validation
-     
+
     console.warn(`${PREFIX} ⚠️  ${message}`);
   }
 
@@ -732,7 +732,6 @@ function checkWuLaneMatch(
   const wuPath = path.join(projectRoot, WU_PATHS.WU(activeWuid));
 
   if (!existsSync(wuPath)) {
-     
     console.warn(
       `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`,
     );
@@ -744,7 +743,6 @@ function checkWuLaneMatch(
     const wuDoc = parseYAML(wuContent) as WUDoc;
 
     if (!wuDoc || !wuDoc.lane) {
-       
       console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
       return null;
     }
@@ -757,7 +755,7 @@ function checkWuLaneMatch(
     }
   } catch (e) {
     const errMessage = e instanceof Error ? e.message : String(e);
-     
+
     console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${errMessage}`);
   }
 
@@ -975,13 +973,11 @@ export function checkWipJustification(
     resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
   }
 
-   
   if (!existsSync(resolvedConfigPath)) {
     return NO_JUSTIFICATION_REQUIRED;
   }
 
   try {
-     
     const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
     const config = parseYAML(configContent) as LumenflowConfig;
     const allLanes = extractAllLanesFromConfig(config);

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Initiative Add WU Command (WU-1389)
  *

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Memory Profile CLI (WU-1237)
  *

@@ -29,7 +29,7 @@ import {
   getMemoryContextMaxSize,
 } from '../wu-spawn-context.js';
 import { generateTaskInvocation } from '../wu-spawn.js';
- 
+
 import { SpawnStrategyFactory } from '../spawn-strategy.js';
 
 // Constants for test values
@@ -131,7 +131,6 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
    * Helper to create a spawn strategy
    */
   function createStrategy() {
-     
     return SpawnStrategyFactory.create(TEST_CLIENT);
   }
 

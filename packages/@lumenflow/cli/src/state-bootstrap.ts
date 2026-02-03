@@ -23,7 +23,6 @@ import {
   EMOJI,
   STRING_LITERALS,
 } from '@lumenflow/core/dist/wu-constants.js';
- 
 
 /** Log prefix for consistent output */
 const LOG_PREFIX = '[state-bootstrap]';

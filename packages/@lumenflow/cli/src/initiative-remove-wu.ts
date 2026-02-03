@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Initiative Remove WU Command (WU-1328)
  *

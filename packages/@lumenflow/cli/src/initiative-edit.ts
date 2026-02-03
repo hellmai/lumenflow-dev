@@ -1,6 +1,5 @@
 #!/usr/bin/env node
- 
- 
+
 /**
  * Initiative Edit Helper
  *
@@ -256,7 +255,7 @@ function validateCreatedDate(date) {
  */
 function loadInitiative(id) {
   const initPath = INIT_PATHS.INITIATIVE(id);
-   
+
   if (!existsSync(initPath)) {
     die(
       `Initiative ${id} not found at ${initPath}\n\n` +
@@ -264,7 +263,6 @@ function loadInitiative(id) {
     );
   }
 
-   
   const content = readFileSync(initPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   return parseYAML(content as string);
 }
@@ -501,7 +499,6 @@ async function main() {
         const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
         const yamlContent = stringifyYAML(updatedInit);
 
-         
         writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
         console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
 

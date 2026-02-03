@@ -760,7 +760,6 @@ const WU_EVENTS_PATH = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
 function normalizeEventForKey(event) {
   const normalized = {};
   for (const key of Object.keys(event).sort()) {
-     
     normalized[key] = event[key];
   }
   return normalized;

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * Initiative Plan Command (WU-1105, renamed in WU-1193)
  *

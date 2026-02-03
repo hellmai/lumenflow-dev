@@ -17,7 +17,7 @@ const TEST_INIT_DIR = 'docs/04-operations/tasks/initiatives';
 const TEST_INIT_ID = 'INIT-001';
 const TEST_INIT_PLAN_URI = `lumenflow://plans/${TEST_INIT_ID}-plan.md`;
 const TEST_PLANS_DIR = 'docs/04-operations/plans';
- 
+
 const TEST_LUMENFLOW_HOME_BAD = '/tmp/lumenflow-home-should-not-be-used';
 const TEST_INIT_SLUG = 'test-initiative';
 const TEST_INIT_TITLE = 'Test Initiative';

@@ -10,9 +10,6 @@
  * - Monthly rollup of archived events
  */
 
- 
- 
-
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';

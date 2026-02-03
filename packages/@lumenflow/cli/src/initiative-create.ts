@@ -1,7 +1,5 @@
 #!/usr/bin/env node
- 
- 
- 
+
 /**
  * Initiative Create Helper (WU-1247, WU-1439)
  *

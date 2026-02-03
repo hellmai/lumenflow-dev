@@ -24,7 +24,7 @@ const PROGRESS_SIGNALS_OPTIONAL = 'Progress Signals (Optional)';
 /**
  * Creates a mock config for testing progress signals
  */
- 
+
 function createMockConfig(progressSignals?: Partial<ProgressSignalsConfig>) {
   return {
     memory: {

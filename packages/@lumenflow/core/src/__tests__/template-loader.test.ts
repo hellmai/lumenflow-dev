@@ -7,8 +7,6 @@
  * TDD: These tests are written first (RED phase) before implementation.
  */
 
- 
-
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';

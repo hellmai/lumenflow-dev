@@ -82,7 +82,7 @@ function checkSymlinkTarget(linkTarget, basePath) {
     : path.resolve(basePath, linkTarget);
 
   const isWorktreePath = absoluteTarget.includes(WORKTREES_PATH_SEGMENT);
-   
+
   const isBroken = isWorktreePath && !fs.existsSync(absoluteTarget);
 
   return { isWorktreePath, absoluteTarget, isBroken };
@@ -96,7 +96,6 @@ function checkSymlinkTarget(linkTarget, basePath) {
  * @param {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}} result - Result object to mutate
  */
 function processSymlinkEntry(entryPath, basePath, result) {
-   
   const linkTarget = fs.readlinkSync(entryPath);
   const check = checkSymlinkTarget(linkTarget, basePath);
 
@@ -118,7 +117,6 @@ function processSymlinkEntry(entryPath, basePath, result) {
 function scanPnpmForWorktreeSymlinks(pnpmPath) {
   const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
-   
   const entries = fs.readdirSync(pnpmPath, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -144,12 +142,10 @@ function scanPnpmForWorktreeSymlinks(pnpmPath) {
 export function hasWorktreePathSymlinks(nodeModulesPath) {
   const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
-   
   if (!fs.existsSync(nodeModulesPath)) {
     return result;
   }
 
-   
   const entries = fs.readdirSync(nodeModulesPath, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -177,7 +173,6 @@ export function hasWorktreePathSymlinks(nodeModulesPath) {
  */
 function nodeModulesExists(targetPath) {
   try {
-     
     fs.lstatSync(targetPath);
     return true;
   } catch {
@@ -251,7 +246,6 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
   }
 
   try {
-     
     fs.symlinkSync(RELATIVE_NODE_MODULES_PATH, targetPath);
 
     if (logger.info) {
@@ -277,11 +271,10 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
  * @returns {boolean} True if should skip
  */
 function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
-   
   if (!fs.existsSync(targetDir)) {
     return true;
   }
-   
+
   if (!fs.existsSync(sourceNodeModules)) {
     return true;
   }
@@ -300,7 +293,6 @@ function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
 function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, errors) {
   let targetStat;
   try {
-     
     targetStat = fs.lstatSync(targetNodeModules);
   } catch {
     return 'create'; // Doesn't exist, create symlink
@@ -317,7 +309,7 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
   }
 
   // Check if directory has meaningful content
-   
+
   const contents = fs.readdirSync(targetNodeModules);
   const hasMeaningfulContent = contents.some(
     (item) => !item.startsWith('.') && item !== '.vite' && item !== '.turbo',
@@ -384,7 +376,7 @@ export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = nu
 
     try {
       const relativePath = path.relative(targetDir, sourceNodeModules);
-       
+
       fs.symlinkSync(relativePath, targetNodeModules);
       created++;
 

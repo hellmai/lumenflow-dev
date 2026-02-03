@@ -1177,7 +1177,7 @@ export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.j
  * @param data - Configuration data to validate
  * @returns Validation result with parsed config or errors
  */
- 
+
 export function validateConfig(data: unknown) {
   return LumenFlowConfigSchema.safeParse(data);
 }

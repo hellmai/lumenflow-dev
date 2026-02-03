@@ -13,7 +13,6 @@
  * - Backward compatible: old entries are parsed with user='unknown' and outcome='unknown'
  */
 
- 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
