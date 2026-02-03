@@ -2,7 +2,7 @@ id: WU-1396
 title: Add design-first skill (5-step algorithm)
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -28,7 +28,7 @@ notes: |
   4. Speed up
   5. Automate (last, not first)
 spec_refs:
-  - 'lumenflow://plans/imperative-juggling-boole.md'
+  - lumenflow://plans/imperative-juggling-boole.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -49,3 +49,5 @@ session_id: d00d0149-38e8-4bca-8ec8-821df75ae261
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T23:03:44.199Z
+locked: true
+completed_at: 2026-02-03T23:07:06.300Z
