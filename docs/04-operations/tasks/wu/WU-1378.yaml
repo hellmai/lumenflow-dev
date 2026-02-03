@@ -2,7 +2,7 @@ id: WU-1378
 title: Add lumenflow commands discovery command
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -44,3 +44,5 @@ claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T16:04:46.252Z
+locked: true
+completed_at: 2026-02-03T16:10:21.888Z
