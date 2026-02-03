@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-03
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/commands/integrate.ts
 tests:
   manual:
     - Run `pnpm exec lumenflow init --client claude` and verify enforcement hooks are enabled by
