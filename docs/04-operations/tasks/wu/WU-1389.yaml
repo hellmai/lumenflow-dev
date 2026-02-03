@@ -1,0 +1,40 @@
+id: WU-1389
+title: Create Agent Start Here entrypoint and route quickstart
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P1
+created: 2026-02-03
+code_paths:
+  - apps/docs/src/content/docs/getting-started/agent-start.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/index.mdx
+  - apps/docs/astro.config.mjs
+tests:
+  manual:
+    - Verify Agent Start Here page renders and is linked from quickstart, sidebar, and homepage.
+    - Verify quickstart includes initiative-first step, session-0 stop point, and no manual scripts step.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1389.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/2026-02-03-agent-start-entrypoint.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Humans and agents miss the correct agent-safe path. Quickstart mixes human and agent steps, omits initiatives, and includes manual edits. Problem: Agents start in the wrong place and go off-rails. Solution: Add a dedicated Agent Start Here page, route Quickstart/Home/Sidebar to it, and make Quickstart agent-safe (initiative-first, no manual script edits, clarify AGENTS.md ownership, docs structure note).'
+acceptance:
+  - Add Agent Start Here page with strict command-only runbook (new vs existing project forks).
+  - Agent Start Here includes initiative-first workflow, session-0 stop point, and handoff prompt.
+  - Quickstart links to Agent Start Here and removes manual package.json script step.
+  - Quickstart adds initiative step before WU creation and clarifies AGENTS.md is user-owned.
+  - Sidebar and homepage include Agent Start Here link.
