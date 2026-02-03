@@ -3,12 +3,15 @@
  * LumenFlow docs:sync command for syncing agent docs to existing projects (WU-1083)
  * WU-1085: Added createWUParser for proper --help support
  * WU-1124: Refactored to read templates from bundled files (INIT-004 Phase 2)
+ * WU-1362: Added branch guard to check branch before writing tracked files
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+// WU-1362: Import worktree guard utilities for branch checking
+import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
 
 export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
 
@@ -54,6 +57,8 @@ export interface SyncOptions {
 export interface SyncResult {
   created: string[];
   skipped: string[];
+  /** WU-1362: Warnings from branch guard or other checks */
+  warnings?: string[];
 }
 
 /**
@@ -266,8 +271,50 @@ export async function syncSkills(targetDir: string, options: SyncOptions): Promi
 }
 
 /**
+ * WU-1362: Check branch guard before writing tracked files
+ *
+ * Warns (but does not block) if:
+ * - On main branch AND
+ * - Not in a worktree directory AND
+ * - Git repository exists (has .git)
+ *
+ * @param targetDir - Directory where files will be written
+ * @returns Array of warning messages
+ */
+async function checkBranchGuard(targetDir: string): Promise<string[]> {
+  const warnings: string[] = [];
+
+  // Only check if target is a git repository
+  const gitDir = path.join(targetDir, '.git');
+  if (!fs.existsSync(gitDir)) {
+    return warnings;
+  }
+
+  // Check if we're in a worktree (always allow)
+  if (isInWorktree({ cwd: targetDir })) {
+    return warnings;
+  }
+
+  // Check if on main branch
+  try {
+    const onMain = await isMainBranch();
+    if (onMain) {
+      warnings.push(
+        'Running docs:sync on main branch in main checkout. ' +
+          'Consider using a worktree for changes to tracked files.',
+      );
+    }
+  } catch {
+    // Git error - silently allow
+  }
+
+  return warnings;
+}
+
+/**
  * CLI entry point for docs:sync command
  * WU-1085: Updated to use parseDocsSyncOptions for proper --help support
+ * WU-1362: Added branch guard check
  */
 export async function main(): Promise<void> {
   const opts = parseDocsSyncOptions();
@@ -277,11 +324,15 @@ export async function main(): Promise<void> {
   console.log(`  Vendor: ${opts.vendor}`);
   console.log(`  Force: ${opts.force}`);
 
+  // WU-1362: Check branch guard before writing files
+  const branchWarnings = await checkBranchGuard(targetDir);
+
   const docsResult = await syncAgentDocs(targetDir, { force: opts.force });
   const skillsResult = await syncSkills(targetDir, { force: opts.force, vendor: opts.vendor });
 
   const created = [...docsResult.created, ...skillsResult.created];
   const skipped = [...docsResult.skipped, ...skillsResult.skipped];
+  const warnings = [...branchWarnings];
 
   if (created.length > 0) {
     console.log('\nCreated:');
@@ -291,6 +342,11 @@ export async function main(): Promise<void> {
   if (skipped.length > 0) {
     console.log('\nSkipped (already exists, use --force to overwrite):');
     skipped.forEach((f) => console.log(`  - ${f}`));
+  }
+
+  if (warnings.length > 0) {
+    console.log('\nWarnings:');
+    warnings.forEach((w) => console.log(`  ! ${w}`));
   }
 
   console.log('\n[lumenflow docs:sync] Done!');
