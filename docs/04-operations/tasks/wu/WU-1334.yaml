@@ -2,7 +2,7 @@ id: WU-1334
 title: Backfill existing WU specs with strict validation fields
 lane: 'Content: Documentation'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -43,3 +43,5 @@ session_id: cf250dc8-db3b-4f08-8489-0249bfcab00b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T00:05:26.714Z
+locked: true
+completed_at: 2026-02-03T00:12:04.801Z
