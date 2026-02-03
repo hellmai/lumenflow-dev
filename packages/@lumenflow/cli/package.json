@@ -131,7 +131,8 @@
     "lane-health": "./dist/lane-health.js",
     "lane-suggest": "./dist/lane-suggest.js",
     "state-cleanup": "./dist/state-cleanup.js",
-    "state-doctor": "./dist/state-doctor.js"
+    "state-doctor": "./dist/state-doctor.js",
+    "lumenflow-integrate": "./dist/commands/integrate.js"
   },
   "files": [
     "dist",
