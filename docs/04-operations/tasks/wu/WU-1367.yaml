@@ -8,8 +8,8 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/cli/src/hooks/
   - packages/@lumenflow/cli/src/commands/integrate.ts
-  - packages/@lumenflow/cli/src/commands/setup.ts
-  - packages/@lumenflow/core/src/config/schema.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/__tests__/docs-sync.test.ts
 tests:
   manual:
     - Enable enforcement hooks in .lumenflow.config.yaml and run pnpm lumenflow:integrate
