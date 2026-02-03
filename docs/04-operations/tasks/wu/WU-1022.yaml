@@ -10,15 +10,18 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   - .lumenflow.config.yaml
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1022.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 claimed_at: 2026-01-19T12:30:00.000Z

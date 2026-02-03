@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/cli/src/rotate-progress.ts
   - packages/@lumenflow/cli/src/trace-gen.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/deps-operations.test.ts
     - packages/@lumenflow/cli/src/__tests__/lumenflow-upgrade.test.ts

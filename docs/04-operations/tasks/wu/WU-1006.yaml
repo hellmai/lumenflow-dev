@@ -20,6 +20,8 @@ artifacts:
   - .lumenflow/stamps/WU-1006.done
 dependencies:
   - WU-1005
+spec_refs:
+  - internal
 risks:
   - Changing date parsing could affect existing stamps if not careful
 exposure: backend-only

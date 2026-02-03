@@ -18,7 +18,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/linters/supabase-docs-linter.js
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
@@ -33,7 +34,7 @@ artifacts:
   - .lumenflow/stamps/WU-1152.done
 dependencies: []
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

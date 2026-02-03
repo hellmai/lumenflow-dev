@@ -8,7 +8,8 @@ created: 2026-02-02
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
     - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
@@ -19,7 +20,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1337-plan.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -10,15 +10,18 @@ code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/reference/config.mdx
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1157.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

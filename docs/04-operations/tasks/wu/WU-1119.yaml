@@ -24,6 +24,8 @@ artifacts:
 dependencies: []
 blocked_by:
   - WU-1116
+spec_refs:
+  - internal
 risks: []
 notes: |
   Manual verification completed:

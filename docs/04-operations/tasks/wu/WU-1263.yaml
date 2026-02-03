@@ -27,7 +27,7 @@ blocked_by:
 spec_refs:
   - ~/.claude/plans/linear-moseying-comet.md
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/metrics-cli.ts
   - packages/@lumenflow/cli/package.json
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/metrics-cli.test.ts
   e2e: []
@@ -21,8 +22,10 @@ phase: 5
 blocked_by:
   - WU-1101
   - WU-1102
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai

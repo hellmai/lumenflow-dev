@@ -8,7 +8,8 @@ created: 2026-01-24
 code_paths:
   - packages/@lumenflow/core/src/wu-done-preflight.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
   e2e: []
@@ -18,7 +19,7 @@ dependencies: []
 spec_refs:
   - lumenflow://constraints/bug-fix
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

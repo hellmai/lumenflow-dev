@@ -20,6 +20,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1326.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes:
   - Implementation adds buildExecutionPlanWithLockPolicy(), getLaneAvailability(), and

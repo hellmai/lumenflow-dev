@@ -12,15 +12,18 @@ code_paths:
   - .windsurf/rules/lumenflow.md
   - .claude/CLAUDE.md
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/spawn-strategy.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1283.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

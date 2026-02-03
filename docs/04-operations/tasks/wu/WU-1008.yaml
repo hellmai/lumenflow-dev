@@ -17,6 +17,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1008.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Domain registration if not already owned
   - Hosting setup (Vercel recommended)

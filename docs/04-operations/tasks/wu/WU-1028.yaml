@@ -39,6 +39,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1028.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Breaking change to init command if templates missing
 notes: Critical - if LumenFlow can't do LumenFlow, no one can

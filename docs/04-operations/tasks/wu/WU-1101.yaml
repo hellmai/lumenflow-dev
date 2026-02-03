@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/ports/core-tools.ports.ts
   - packages/@lumenflow/core/src/ports/index.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/core-tools-ports.test.ts
   e2e: []

@@ -9,15 +9,18 @@ code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
   - packages/@lumenflow/cli/src/wu-block.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1365.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

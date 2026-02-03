@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-events-cleanup.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-events-cleanup.test.ts
   e2e: []
@@ -18,8 +19,10 @@ artifacts:
 dependencies: []
 initiative: INIT-007
 phase: 2
+spec_refs:
+  - internal
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

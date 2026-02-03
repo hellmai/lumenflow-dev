@@ -14,7 +14,8 @@ code_paths:
   - packages/@lumenflow/cli/src/flow-bottlenecks.ts
   - packages/@lumenflow/cli/src/__tests__/path-centralization-cli.test.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
     - packages/@lumenflow/cli/src/__tests__/path-centralization-cli.test.ts
@@ -25,7 +26,7 @@ dependencies: []
 blocked_by:
   - WU-1310
 risks: []
-notes: ''
+notes: Completed per acceptance criteria.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

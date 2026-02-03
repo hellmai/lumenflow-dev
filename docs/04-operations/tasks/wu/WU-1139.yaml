@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/cli/src/validate.ts
   - packages/@lumenflow/cli/src/gates.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
     - packages/@lumenflow/cli/__tests__/gates.test.ts

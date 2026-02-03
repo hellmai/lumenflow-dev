@@ -20,6 +20,8 @@ artifacts:
   - .lumenflow/stamps/WU-1003.done
 dependencies:
   - WU-1002
+spec_refs:
+  - internal
 risks:
   - Supabase schema changes may require migration
 exposure: api

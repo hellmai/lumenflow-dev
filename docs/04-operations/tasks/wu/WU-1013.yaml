@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-001
 phase: 2
+spec_refs:
+  - internal
 risks: []
 notes: >-
 

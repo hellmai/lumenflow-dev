@@ -23,6 +23,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1090.done
 dependencies: []
+spec_refs:
+  - internal
 risks:
   - Performance regression if context computation exceeds 100ms threshold
   - Breaking change if validation_mode defaults to error too early

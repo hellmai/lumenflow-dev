@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/gates-config.ts
   - packages/@lumenflow/cli/src/gates.ts
 tests:
-  manual: []
+  manual:
+    - Verify acceptance criteria met
   unit:
     - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
   e2e: []

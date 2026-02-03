@@ -16,6 +16,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1015.done
 dependencies: []
+spec_refs:
+  - internal
 risks: []
 notes: |
   AUDIT COMPLETED 2026-01-18:
