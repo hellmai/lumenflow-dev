@@ -2,7 +2,7 @@ id: WU-1398
 title: Add Session 0 exit criteria to agent quickstart
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - Quickstart includes a Session 0 exit criteria section covering installation, enforcement, and
     next-step selection
   - Guidance states to stop after selecting the next step
+locked: true
+completed_at: 2026-02-03T23:45:27.622Z
