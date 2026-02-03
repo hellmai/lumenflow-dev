@@ -139,6 +139,16 @@ export const LUMENFLOW_FORCE_ENV = 'LUMENFLOW_FORCE';
 export const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /**
+ * Environment variable name for LUMENFLOW_WU_TOOL
+ *
+ * WU-1365: Exported for use by CLI commands that use micro-worktree operations.
+ * The pre-push hook checks this env var to allow micro-worktree pushes to main.
+ * Valid values are: wu-create, wu-edit, wu-done, wu-delete, wu-claim, wu-block,
+ * wu-unblock, initiative-create, initiative-edit, release
+ */
+export const LUMENFLOW_WU_TOOL_ENV = 'LUMENFLOW_WU_TOOL';
+
+/**
  * Default log prefix for micro-worktree operations
  *
  * Extracted to constant to satisfy sonarjs/no-duplicate-string rule.
@@ -577,9 +587,58 @@ export async function stageChangesWithDeletions(
 }
 
 /**
+ * WU-1365: Check if prettier is available in the project
+ *
+ * Checks if prettier is installed and executable. Returns false if:
+ * - prettier is not in node_modules
+ * - pnpm prettier command is not available
+ *
+ * This allows micro-worktree operations to skip formatting gracefully
+ * when prettier is not installed (e.g., in bootstrap or minimal setups).
+ *
+ * @returns {boolean} True if prettier is available, false otherwise
+ */
+export function isPrettierAvailable(): boolean {
+  try {
+    // Check if prettier is available by running pnpm prettier --version
+    // Note: This uses execSync with a known-safe command (no user input)
+    // eslint-disable-next-line sonarjs/os-command -- CLI tool executing known safe prettier version check
+    execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} --version`, {
+      encoding: 'utf-8',
+      stdio: STDIO_MODES.PIPE,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * WU-1365: Pattern to detect prettier not found errors
+ */
+const PRETTIER_NOT_FOUND_PATTERNS = [
+  /ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL/,
+  /prettier.*not found/i,
+  /Cannot find module.*prettier/i,
+  /Command failed.*prettier/i,
+  /No script.*prettier/i,
+];
+
+/**
+ * WU-1365: Check if an error indicates prettier is not available
+ *
+ * @param {string} errMsg - Error message to check
+ * @returns {boolean} True if the error indicates prettier is not installed/available
+ */
+function isPrettierNotFoundError(errMsg: string): boolean {
+  return PRETTIER_NOT_FOUND_PATTERNS.some((pattern) => pattern.test(errMsg));
+}
+
+/**
  * Format files using prettier before committing
  *
  * WU-1435: Ensures committed files pass format gates.
+ * WU-1365: Gracefully handles missing prettier installation.
  * Runs prettier --write on specified files within the micro-worktree.
  *
  * @param {string[]} files - Relative file paths to format
@@ -602,6 +661,7 @@ export async function formatFiles(
   const pathArgs = absolutePaths.map((p) => JSON.stringify(p)).join(' ');
 
   try {
+    // Note: This uses execSync with validated paths (built from worktreePath and file list)
     // eslint-disable-next-line sonarjs/os-command -- CLI tool executing known safe prettier command with validated paths
     execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} ${pathArgs}`, {
       encoding: 'utf-8',
@@ -610,8 +670,19 @@ export async function formatFiles(
     });
     console.log(`${logPrefix} ✅ Files formatted`);
   } catch (err: unknown) {
-    // Log warning but don't fail - some files may not need formatting
     const errMsg = err instanceof Error ? err.message : String(err);
+
+    // WU-1365: Check if the error is due to prettier not being available
+    if (isPrettierNotFoundError(errMsg)) {
+      console.warn(
+        `${logPrefix} ⚠️  Skipping formatting: prettier not available.\n` +
+          `    To enable formatting, install prettier: pnpm add -D prettier\n` +
+          `    Files will be committed without formatting.`,
+      );
+      return;
+    }
+
+    // Log warning but don't fail - some files may not need formatting
     console.warn(`${logPrefix} ⚠️  Formatting warning: ${errMsg}`);
   }
 }
