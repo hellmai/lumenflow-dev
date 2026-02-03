@@ -238,7 +238,7 @@ lanes:
   definitions:
     - name: 'Content: Documentation'
       wip_limit: 4
-      lock_policy: active  # blocked WUs release lane lock
+      lock_policy: active # blocked WUs release lane lock
       code_paths:
         - 'docs/**'
 ```
@@ -280,12 +280,12 @@ If `lock_policy: active` causes issues (merge conflicts, coordination problems):
 
 **Troubleshooting:**
 
-| Issue                                    | Cause                                     | Fix                                                               |
-| ---------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
-| "Lane occupied" after unblock            | Another WU claimed while blocked          | Coordinate with other agent or wait for their WU to complete      |
-| Merge conflicts after claiming in active | Overlapping edits despite policy          | Split WU or change back to `policy: all`                          |
-| Lock not released after block            | Using `policy: all` (default behavior)    | Add `lock_policy: active` to lane config                          |
-| Wave builder not seeing available lane   | Orchestrator using old policy cache       | Restart orchestrator or wait for cache refresh                    |
+| Issue                                    | Cause                                  | Fix                                                          |
+| ---------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| "Lane occupied" after unblock            | Another WU claimed while blocked       | Coordinate with other agent or wait for their WU to complete |
+| Merge conflicts after claiming in active | Overlapping edits despite policy       | Split WU or change back to `policy: all`                     |
+| Lock not released after block            | Using `policy: all` (default behavior) | Add `lock_policy: active` to lane config                     |
+| Wave builder not seeing available lane   | Orchestrator using old policy cache    | Restart orchestrator or wait for cache refresh               |
 
 **Lane Health Command (WU-1188):**
 
