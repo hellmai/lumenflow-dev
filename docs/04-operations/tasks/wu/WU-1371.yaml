@@ -9,7 +9,9 @@ code_paths:
   - tools/generate-cli-docs.ts
   - packages/@lumenflow/cli/README.md
 tests:
-  manual: []
+  manual:
+    - Run pnpm docs:generate and verify README.md is created with AUTO-GENERATED marker
+    - Run pnpm docs:validate and verify it passes for all docs including README.md
   unit:
     - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
@@ -17,7 +19,11 @@ artifacts:
   - .lumenflow/stamps/WU-1371.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'WU-1371 implementation: generateReadmeMd() function added to tools/generate-cli-docs.ts.
+  README.md auto-generated from same source data as Starlight cli.mdx, eliminating
+  maintenance drift.'
+spec_refs:
+  - lumenflow://inline
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

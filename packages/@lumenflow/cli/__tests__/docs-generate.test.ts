@@ -352,6 +352,163 @@ describe('docs:generate', () => {
     });
   });
 
+  /**
+   * WU-1371: Auto-generate CLI README.md from docs generator
+   *
+   * Extend tools/generate-cli-docs.ts to also generate packages/@lumenflow/cli/README.md
+   * from the same source data used for Starlight cli.mdx. This eliminates manual
+   * maintenance drift between README.md and cli.mdx.
+   */
+  describe('WU-1371: README.md generation', () => {
+    const README_PATH = 'packages/@lumenflow/cli/README.md';
+
+    it('should generate README.md with auto-generated marker', { timeout: 60000 }, () => {
+      // Run the generator
+      execSync(DOCS_GENERATE_CMD, {
+        cwd: ROOT,
+        encoding: 'utf-8',
+        timeout: 30000,
+      });
+
+      // Check README.md exists
+      const readmePath = join(ROOT, README_PATH);
+      expect(existsSync(readmePath)).toBe(true);
+
+      // Read and validate content
+      const content = readFileSync(readmePath, 'utf-8');
+
+      // Should have auto-generated marker for the Commands section
+      expect(content).toContain('AUTO-GENERATED');
+    });
+
+    it('should include all bin entries in README.md command tables', { timeout: 60000 }, () => {
+      // Run the generator
+      execSync(DOCS_GENERATE_CMD, {
+        cwd: ROOT,
+        encoding: 'utf-8',
+        timeout: 30000,
+      });
+
+      // Read package.json for bin entries
+      const pkgPath = join(ROOT, 'packages/@lumenflow/cli/package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      const binEntries = Object.keys(pkg.bin || {});
+
+      // Read generated README.md
+      const readmePath = join(ROOT, README_PATH);
+      const content = readFileSync(readmePath, 'utf-8');
+
+      // Key commands should be documented in README
+      // Skip aliases (lumenflow-gates -> gates, lumenflow-validate -> validate, etc.)
+      const aliasPatterns = [
+        'lumenflow-gates',
+        'lumenflow-validate',
+        'lumenflow-doctor',
+        'init-plan',
+        'metrics',
+        'sync-templates',
+      ];
+      const nonAliasCommands = binEntries.filter((cmd) => !aliasPatterns.includes(cmd));
+
+      // At minimum, core commands should be present
+      expect(content).toContain('wu-claim');
+      expect(content).toContain('wu-done');
+      expect(content).toContain('wu-create');
+      expect(content).toContain('gates');
+      expect(content).toContain('mem-checkpoint');
+      expect(content).toContain('initiative-create');
+
+      // Count how many bin entries are documented
+      const documentedCount = nonAliasCommands.filter((cmd) => content.includes(cmd)).length;
+
+      // Should document at least 90% of non-alias commands
+      expect(documentedCount).toBeGreaterThanOrEqual(Math.floor(nonAliasCommands.length * 0.9));
+    });
+
+    it(
+      'should maintain same command tables as manual README.md version',
+      { timeout: 60000 },
+      () => {
+        // Run the generator
+        execSync(DOCS_GENERATE_CMD, {
+          cwd: ROOT,
+          encoding: 'utf-8',
+          timeout: 30000,
+        });
+
+        const readmePath = join(ROOT, README_PATH);
+        const content = readFileSync(readmePath, 'utf-8');
+
+        // Should have command category sections like the manual version
+        expect(content).toContain('### Work Unit Management');
+        expect(content).toContain('### Memory & Session');
+        expect(content).toContain('### Initiative Orchestration');
+        expect(content).toContain('### Verification & Gates');
+      },
+    );
+
+    it('docs:validate should check README.md for drift', { timeout: 60000 }, () => {
+      // First ensure we have fresh generated docs
+      execSync(DOCS_GENERATE_CMD, {
+        cwd: ROOT,
+        encoding: 'utf-8',
+        timeout: 30000,
+      });
+
+      // Now modify the README to create drift
+      const readmePath = join(ROOT, README_PATH);
+      const original = readFileSync(readmePath, 'utf-8');
+
+      // Add fake content to simulate drift
+      writeFileSync(readmePath, original + '\n<!-- MODIFIED -->');
+
+      try {
+        // Validate should detect drift and exit with code 1
+        execSync(DOCS_VALIDATE_CMD, {
+          cwd: ROOT,
+          encoding: 'utf-8',
+          timeout: 30000,
+        });
+        // If we get here, validation didn't fail as expected
+        expect.fail('docs:validate should have exited with code 1 for README drift');
+      } catch (error: unknown) {
+        // Expected - validation failed
+        const execError = error as { status?: number; stdout?: string };
+        expect(execError.status).toBe(1);
+      } finally {
+        // Restore original
+        writeFileSync(readmePath, original);
+      }
+    });
+
+    it(
+      'should preserve static README.md sections (badges, installation, etc.)',
+      { timeout: 60000 },
+      () => {
+        // Run the generator
+        execSync(DOCS_GENERATE_CMD, {
+          cwd: ROOT,
+          encoding: 'utf-8',
+          timeout: 30000,
+        });
+
+        const readmePath = join(ROOT, README_PATH);
+        const content = readFileSync(readmePath, 'utf-8');
+
+        // Static sections that should be preserved
+        expect(content).toContain('# @lumenflow/cli');
+        expect(content).toContain('## Installation');
+        expect(content).toContain('## Quick Start');
+        expect(content).toContain('## License');
+        expect(content).toContain('Apache-2.0');
+
+        // Badges should be preserved
+        expect(content).toContain('npm version');
+        expect(content).toContain('img.shields.io');
+      },
+    );
+  });
+
   describe('Quality requirements', () => {
     it('should escape MDX special characters in generated CLI output', { timeout: 60000 }, () => {
       // Generate docs
