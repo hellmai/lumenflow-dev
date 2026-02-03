@@ -2,7 +2,7 @@ id: WU-1390
 title: Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -27,9 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-1136 documented pre-compaction hook guidance but never implemented it. This WU implements: (1) mem:recover command for vendor-agnostic recovery context generation, (2) PreCompact hook that saves checkpoint and writes recovery file, (3) SessionStart hook that reads recovery file and injects context after compaction.'
+description: 'WU-1136 documented pre-compaction hook guidance but never implemented it. This WU
+  implements: (1) mem:recover command for vendor-agnostic recovery context generation, (2)
+  PreCompact hook that saves checkpoint and writes recovery file, (3) SessionStart hook that reads
+  recovery file and injects context after compaction.'
 acceptance:
   - mem:recover command outputs recovery context with constraints, checkpoint, and CLI ref (max 2KB)
   - PreCompact hook creates recovery file at .lumenflow/state/recovery-pending-WU-XXX.md
   - SessionStart hook (compact/resume/clear matchers) reads and displays recovery file
   - Hook templates added for lumenflow init propagation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1390
+claimed_at: 2026-02-03T18:26:40.725Z
+baseline_main_sha: 760e05b83a93883217fa6c4666445a556bbfa347
+session_id: 8bd4faaf-98e7-4064-a84f-1288383fa58c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:26:40.731Z
