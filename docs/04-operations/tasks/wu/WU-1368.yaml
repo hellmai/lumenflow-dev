@@ -2,7 +2,7 @@ id: WU-1368
 title: Fix sync:templates --check-drift and add micro-worktree isolation
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,10 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Two bugs: (1) --check-drift flag syncs files instead of only checking - should be read-only. (2) sync:templates writes directly to main checkout - should use micro-worktree isolation like wu:create for safe atomic commits.'
+description: 'Two bugs: (1) --check-drift flag syncs files instead of only checking - should be
+  read-only. (2) sync:templates writes directly to main checkout - should use micro-worktree
+  isolation like wu:create for safe atomic commits.'
 acceptance:
   - '--check-drift flag is read-only: compares templates without writing'
   - --check-drift exits 1 if drift detected, exits 0 if in sync
   - sync:templates (without --check-drift) uses micro-worktree isolation
   - Atomic commit created via micro-worktree pattern
   - Unit tests verify --check-drift does not modify filesystem
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1368
+claimed_at: 2026-02-03T09:04:07.347Z
+baseline_main_sha: 0c89f4c97a72f98c14569f4abe2dd94d1b3e9cbc
+session_id: cfd2aaf9-689c-4acb-b2d3-97e29d6b1ec0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T09:04:07.353Z
