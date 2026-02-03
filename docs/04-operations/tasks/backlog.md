@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1372 — Add initiative-first workflow to Starlight quickstart](wu/WU-1372.yaml) — Content: Documentation
+  (No items ready)
 
 ## 🔧 In progress
 
