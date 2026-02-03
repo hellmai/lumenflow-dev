@@ -2,7 +2,7 @@ id: WU-1392
 title: Fix quickstart initiative examples and AGENTS markers
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -42,3 +42,5 @@ acceptance:
   - initiative:create examples include --id consistent with INIT-001 usage
   - AGENTS.md marker casing matches LUMENFLOW:START/END
   - Step reference for WU ID is corrected
+locked: true
+completed_at: 2026-02-03T18:46:29.663Z
