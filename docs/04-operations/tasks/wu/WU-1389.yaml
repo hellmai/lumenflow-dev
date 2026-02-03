@@ -1,7 +1,7 @@
 id: WU-1389
 title: Create Agent Start Here entrypoint and route quickstart
 lane: 'Content: Documentation'
-type: feature
+type: documentation
 status: in_progress
 priority: P1
 created: 2026-02-03
@@ -23,7 +23,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/2026-02-03-agent-start-entrypoint.md
 risks: []
-notes: ''
+notes: Implementation creates Agent Start Here page with strict command-only workflow for AI agents.
+  Routes from quickstart and homepage.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
