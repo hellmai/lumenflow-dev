@@ -1,7 +1,7 @@
 id: WU-1389
 title: Create Agent Start Here entrypoint and route quickstart
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P1
 created: 2026-02-03
@@ -25,10 +25,17 @@ spec_refs:
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T18:17:08.297Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1389
+session_id: 4779cdcb-e39a-4b67-92da-108e858961d7
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:17:08.300Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +50,3 @@ acceptance:
   - Quickstart links to Agent Start Here and removes manual package.json script step.
   - Quickstart adds initiative step before WU creation and clarifies AGENTS.md is user-owned.
   - Sidebar and homepage include Agent Start Here link.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1389
-claimed_at: 2026-02-03T18:17:08.297Z
-baseline_main_sha: cda0a2a0eff12840f408f62f7e755c425aea48e9
-session_id: 4779cdcb-e39a-4b67-92da-108e858961d7
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T18:17:08.300Z
