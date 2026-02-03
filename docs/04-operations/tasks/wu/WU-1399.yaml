@@ -30,3 +30,5 @@ acceptance:
   - Quickstart instructs agents to resolve or escalate enforcement warnings before declaring setup complete
   - Quickstart explicitly forbids editing .lumenflow.config.yaml
   - Quickstart includes a next-step decision ladder (Discovery WU vs Task WU vs Initiative)
+spec_refs:
+  - lumenflow://plans/WU-1399-plan.md
