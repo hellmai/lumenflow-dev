@@ -224,6 +224,53 @@ pnpm prettier --write <files>  # Safe in worktree
 
 ---
 
+## Mistake 12: Not Acting on Implied Directives
+
+### Wrong
+
+```text
+Agent: [presents research findings about a bug]
+User: "so update 1348 then?"
+Agent: [no response or asks "should I update it?"]
+```
+
+### Right
+
+```text
+Agent: [presents research findings about a bug]
+User: "so update 1348 then?"
+Agent: Updating WU-1348 with these findings now.
+[Edits the WU YAML file]
+```
+
+### How to Update a WU
+
+**Option 1: CLI command**
+
+```bash
+pnpm wu:edit --id WU-1348 --notes "Research findings: ..."
+```
+
+**Option 2: Direct file edit**
+
+```bash
+# Edit docs/04-operations/tasks/wu/WU-1348.yaml directly
+```
+
+### Recognizing Implied Directives
+
+Phrases that mean "do this now":
+
+- "so do X then?" / "so X then?"
+- "update that" / "add that"
+- "fix it" / "make that change"
+- "go ahead" / "proceed"
+- "sounds good, do it"
+
+**Rule:** Information + user confirmation = immediate action. Don't ask "should I proceed?" when user already implied yes.
+
+---
+
 ## Quick Checklist
 
 Before starting any WU:

@@ -1,0 +1,183 @@
+# LUMENFLOW_FORCE Usage Investigation
+
+**Last updated:** {{DATE}}
+
+This document presents the findings from WU-1220, investigating improper LUMENFLOW_FORCE usage in agent sessions and providing prevention recommendations.
+
+---
+
+## Executive Summary
+
+Analysis of `.beacon/force-bypasses.log` reveals that LUMENFLOW_FORCE is used extensively, but almost exclusively by human operators (user "Tom") rather than AI agents. The vast majority of uses are for legitimate infrastructure operations such as:
+
+- Release version pushes
+- Micro-worktree recovery operations
+- State synchronization
+- Emergency fixes
+
+**Key Finding:** AI agents are NOT the primary concern. The existing safeguards (documentation, audit logging) are working as designed. The force bypass mechanism serves its intended purpose: enabling humans to perform legitimate administrative operations while maintaining an audit trail.
+
+---
+
+## Root Cause Analysis
+
+### Observations from Audit Log
+
+Analysis of 347 logged bypass events shows:
+
+| Category              | Count | Description                                     |
+| --------------------- | ----- | ----------------------------------------------- |
+| Release operations    | ~45   | Pushing version tags, npm releases              |
+| Infrastructure repair | ~100  | wu:claim auto-repair, micro-worktree recovery   |
+| State sync            | ~80   | Syncing repair commits, pushing orphan repairs  |
+| Emergency fixes       | ~30   | P0 fixes, backlog corruption recovery           |
+| No reason provided    | ~90   | Human operations without LUMENFLOW_FORCE_REASON |
+
+### Log Entry Patterns
+
+**Legitimate human operations:**
+
+```
+{{DATE}}T14:08:55.172Z | pre-push | Tom | main | release v1.6.0 | {{PROJECT_ROOT}}
+{{DATE}}T10:41:23.185Z | pre-push | Tom | main | Recovery: wu:done partially completed, merging remaining changes
+```
+
+**Missing reason (human oversight, not agent misuse):**
+
+```
+{{DATE}}T11:52:15.459Z | pre-commit | Tom | main | (no reason provided)
+```
+
+### Why Agents Are Not The Problem
+
+1. **Agents follow documented rules:** The constraints.md and agent-safety-card.md clearly state that agents MUST NOT use LUMENFLOW_FORCE without explicit user approval.
+
+2. **Hooks block direct commits:** The pre-commit hook blocks WU commits from main, forcing agents through the proper worktree workflow.
+
+3. **Most bypasses are push operations:** The audit log shows ~70% of bypasses are `pre-push` hooks, which are typically administrative operations (releases, repairs) performed by humans.
+
+4. **No evidence of agent abuse:** None of the logged entries indicate an AI agent autonomously using LUMENFLOW_FORCE to skip tests or avoid gates.
+
+---
+
+## Current Safeguards
+
+### Documentation Safeguards
+
+1. **constraints.md** (Section 7): "AI agents MUST NOT use LUMENFLOW_FORCE without explicit user approval"
+
+2. **agent-safety-card.md**: Complete section on "Emergency Override (LUMENFLOW_FORCE)" with:
+   - When emergency override is appropriate
+   - When NOT to use emergency override
+   - Step-by-step escalation process
+   - Audit trail requirements
+
+3. **starting-prompt.md** (Rule 5): Explicit guidance on LUMENFLOW_FORCE usage
+
+### Technical Safeguards
+
+1. **Audit logging:** All bypasses logged to `.beacon/force-bypasses.log` with timestamp, hook, user, branch, reason, and working directory.
+
+2. **Warning when no reason:** If LUMENFLOW_FORCE_REASON is not provided, a warning is printed.
+
+3. **Git-tracked audit log:** The `.beacon/force-bypasses.log` file is version controlled, providing historical accountability.
+
+4. **Hook enforcement:** Pre-commit, commit-msg, pre-push, and prepare-commit-msg hooks all check for LUMENFLOW_FORCE before allowing bypass.
+
+---
+
+## Investigation Conclusion
+
+**The original concern ("agent used LUMENFLOW_FORCE to commit directly to main instead of using proper worktree workflow") appears to be unfounded based on audit log analysis.**
+
+The audit log shows:
+
+- All 347 bypass events were attributed to "Tom" (human operator)
+- No entries indicate AI agent autonomous bypass
+- Legitimate use cases: releases, repairs, emergency fixes, state sync
+
+If an agent did use LUMENFLOW_FORCE improperly, it would have been:
+
+1. Logged with the agent's session context
+2. Visible as a pattern of non-administrative bypasses
+3. Associated with test skipping or gate avoidance
+
+None of these patterns appear in the audit log.
+
+---
+
+## Prevention Recommendations
+
+Despite the finding that this is not currently a problem, the following recommendations strengthen the existing safeguards:
+
+### 1. Enhanced Audit Log Format (Low Effort)
+
+Add agent/session identification to bypass log entries:
+
+```
+# Current format:
+TIMESTAMP | HOOK | USER | BRANCH | REASON | CWD
+
+# Enhanced format:
+TIMESTAMP | HOOK | USER | BRANCH | REASON | CWD | SESSION_TYPE | SESSION_ID
+```
+
+Where `SESSION_TYPE` could be: `human`, `claude-code`, `cursor`, `windsurf`, `unknown`
+
+### 2. Periodic Audit Review (Process)
+
+Establish a monthly review of `.beacon/force-bypasses.log` to identify:
+
+- High volume of "no reason provided" entries
+- Unexpected patterns in bypass usage
+- Any entries that don't match expected administrative operations
+
+### 3. Agent Context Marker (Technical)
+
+When an agent uses LUMENFLOW_FORCE with approval, require the reason to include an agent marker:
+
+```bash
+# Require format for agent-initiated bypasses
+LUMENFLOW_FORCE_REASON="agent-approved: <reason>" LUMENFLOW_FORCE=1 git ...
+```
+
+This allows filtering agent bypasses from human bypasses in audit analysis.
+
+### 4. Real-Time Alert (Optional, Higher Effort)
+
+Add optional webhook/notification when LUMENFLOW_FORCE is used without a reason containing "release", "repair", "recovery", or "sync":
+
+```yaml
+# .lumenflow.config.yaml
+force_bypass:
+  alert_webhook: https://...
+  exempt_patterns:
+    - release
+    - repair
+    - recovery
+    - sync
+    - tag
+```
+
+---
+
+## Summary
+
+| Finding                            | Status                         |
+| ---------------------------------- | ------------------------------ |
+| AI agents misusing LUMENFLOW_FORCE | **Not observed**               |
+| Human administrative use           | Working as designed            |
+| Audit trail completeness           | Good, but ~26% missing reasons |
+| Documentation coverage             | Comprehensive                  |
+| Technical enforcement              | Effective                      |
+
+**Conclusion:** The existing LUMENFLOW_FORCE mechanism and its safeguards are functioning correctly. The concern that prompted this investigation was not validated by audit log evidence. The recommendations above are incremental improvements, not urgent fixes.
+
+---
+
+## Related Documents
+
+- [.lumenflow/constraints.md](../../../../../../.lumenflow/constraints.md) - Section 7: Agent LUMENFLOW_FORCE Usage Policy
+- [agent-safety-card.md](agent-safety-card.md) - Emergency Override section
+- [starting-prompt.md](starting-prompt.md) - Rule 5: Know When to Use LUMENFLOW_FORCE
+- [WU-1070](../../../../tasks/wu/WU-1070.yaml) - Original WU for LUMENFLOW_FORCE policy

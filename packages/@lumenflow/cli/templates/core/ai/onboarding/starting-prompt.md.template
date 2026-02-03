@@ -6,11 +6,56 @@ This is the complete onboarding document for AI agents working with LumenFlow. R
 
 ---
 
+## When Starting From Product Vision
+
+If you are starting a new project or feature from a product vision (e.g., "Build a task management app"), **do NOT create standalone WUs immediately**. Instead, follow the initiative-first workflow:
+
+### 4-Step Initiative Workflow
+
+1. **Create an Initiative**: Capture the vision as an initiative
+
+   ```bash
+   pnpm initiative:create --id INIT-001 --title "Task Management App" \
+     --description "Build a task management application with..." \
+     --phase "Phase 1: Core MVP" --phase "Phase 2: Collaboration"
+   ```
+
+2. **Define Phases**: Break the vision into logical phases (MVP, iteration, polish)
+
+3. **Create WUs under the Initiative**: Each WU belongs to a phase
+
+   ```bash
+   pnpm wu:create --lane "Core: Platform" --title "Add task model" \
+     --description "..." --acceptance "..." --code-paths "..." \
+     && pnpm initiative:add-wu --initiative INIT-001 --wu WU-XXX --phase 1
+   ```
+
+4. **Track Progress**: Use `pnpm initiative:status --id INIT-001` to see overall progress
+
+### Why Initiatives Matter
+
+- **Avoid orphan WUs**: Without initiative structure, agents create disconnected WUs that lack coherent scope
+- **Better coordination**: Phases enable parallel work across lanes
+- **Clear completion criteria**: The initiative tracks when all phases are done
+- **Visibility**: Stakeholders can see multi-phase progress
+
+### When to Skip Initiatives
+
+Only skip initiatives for:
+
+- Single-file bug fixes
+- Small documentation updates
+- Isolated refactoring tasks
+
+If work spans multiple WUs or multiple days, create an initiative first.
+
+---
+
 ## Quick Start (Copy This)
 
 ```bash
 # 1. Check your assigned WU
-cat {{DOCS_TASKS_PATH}}/wu/WU-XXXX.yaml
+cat docs/04-operations/tasks/wu/WU-XXXX.yaml
 
 # 2. Claim the WU (creates isolated worktree)
 pnpm wu:claim --id WU-XXXX --lane "Lane Name"
@@ -160,7 +205,7 @@ git add . && git commit -m "your message"
 **Fix:** Regenerate the backlog or manually add the missing WU:
 
 ```bash
-# In worktree, edit {{DOCS_TASKS_PATH}}/backlog.md
+# In worktree, edit docs/04-operations/tasks/backlog.md
 # Add the missing WU reference in the appropriate section
 ```
 
@@ -254,6 +299,7 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 | ----------------------------------------- | --------------------------------- | --------------------- |
 | `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
 | `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
+| `pnpm wu:edit --id WU-XXX --field value`  | Edit WU spec fields               | Update notes/desc     |
 | `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
 | `pnpm gates`                              | Run quality gates                 | Before wu:done        |
 | `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |
@@ -266,7 +312,7 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 
 ```
 /path/to/repo/
-├── {{DOCS_TASKS_PATH}}/
+├── docs/04-operations/tasks/
 │   ├── backlog.md              # All WUs listed here
 │   └── wu/WU-XXXX.yaml         # Individual WU specs
 ├── worktrees/
@@ -310,6 +356,24 @@ Before reporting a WU complete, verify:
 2. **Read error messages:** They usually include fix commands
 3. **Check gate logs:** `.logs/gates-*.log` in worktree
 4. **Recovery command:** `pnpm wu:recover --id WU-XXX`
+5. **Use --help for full options:** `<package_manager> <command> --help`
+
+### Rule: Always Check --help for Full Options (WU-1358)
+
+CLI documentation may not include all available options. Before using a command, **always run `--help`** to see the complete list:
+
+```bash
+# Examples (substitute your package manager)
+pnpm wu:edit --help
+npm run wu:claim -- --help
+yarn wu:create --help
+```
+
+This ensures you see:
+
+- All available flags (including inline options not in generated docs)
+- Required vs optional parameters
+- Default values and descriptions
 
 ---
 

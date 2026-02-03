@@ -4,32 +4,15 @@
 
 Complete reference for all CLI commands. Organized by category for quick discovery.
 
----
-
-## Quick Start (Essential Commands)
-
-Most common workflow in 4 commands:
-
-```bash
-# 1. Claim WU and create isolated workspace
-pnpm wu:claim --id WU-XXX --lane "Lane Name"
-cd worktrees/<lane>-wu-xxx
-
-# 2. Work in worktree, then run gates
-pnpm gates                    # For code changes
-pnpm gates --docs-only        # For documentation only
-
-# 3. Prepare for completion (from worktree)
-pnpm wu:prep --id WU-XXX
-
-# 4. Complete (from main - copy command from wu:prep output)
-cd /path/to/main && pnpm wu:done --id WU-XXX
-```
-
-**Key rules:**
-- Always work in worktrees, never on main
-- Always run `wu:done` to complete (not just documenting it)
-- Use `wu:prep` first (runs gates), then `wu:done` (merges)
+> **Tip (WU-1358):** For complete option lists, always run `<package_manager> <command> --help`.
+> This shows all available flags including inline options that may not appear in generated docs.
+>
+> ```bash
+> # Examples
+> pnpm wu:edit --help      # See all wu:edit options
+> npm run wu:claim -- --help
+> yarn wu:create --help
+> ```
 
 ---
 
@@ -37,19 +20,21 @@ cd /path/to/main && pnpm wu:done --id WU-XXX
 
 **For this monorepo (development):**
 
-| Command                  | Description                             |
-| ------------------------ | --------------------------------------- |
-| `pnpm setup`             | Install deps and build CLI (first time) |
-| `pnpm build`             | Build all packages                      |
-| `pnpm build:dist`        | Build distribution packages             |
-| `pnpm dev`               | Start development mode                  |
-| `pnpm clean`             | Clean build artifacts and caches        |
-| `pnpm pack:all`          | Pack all packages for distribution      |
-| `pnpm lumenflow:init`    | Scaffold LumenFlow in a project         |
-| `pnpm docs:sync`         | Sync agent docs (for upgrades)          |
-| `pnpm sync:templates`    | Sync templates to project               |
-| `pnpm lumenflow:upgrade` | Upgrade LumenFlow packages              |
-| `pnpm lumenflow:doctor`  | Diagnose LumenFlow configuration        |
+| Command                    | Description                             |
+| -------------------------- | --------------------------------------- |
+| `pnpm setup`               | Install deps and build CLI (first time) |
+| `pnpm build`               | Build all packages                      |
+| `pnpm build:dist`          | Build distribution packages             |
+| `pnpm dev`                 | Start development mode                  |
+| `pnpm clean`               | Clean build artifacts and caches        |
+| `pnpm pack:all`            | Pack all packages for distribution      |
+| `pnpm lumenflow:init`      | Scaffold LumenFlow in a project         |
+| `pnpm docs:sync`           | Sync agent docs (for upgrades)          |
+| `pnpm sync:templates`      | Sync templates to project               |
+| `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages              |
+| `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration        |
+| `pnpm lumenflow:integrate` | Generate enforcement hooks for client   |
+| `pnpm lumenflow commands`  | List all available CLI commands         |
 
 **For external projects (end users):**
 
@@ -120,22 +105,23 @@ pnpm exec lumenflow --client all      # All clients
 
 ## Memory & Sessions
 
-| Command                             | Description                        |
-| ----------------------------------- | ---------------------------------- |
-| `pnpm mem:init --wu WU-XXX`         | Initialize memory for WU           |
-| `pnpm mem:start --wu WU-XXX`        | Start a memory session             |
-| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint           |
-| `pnpm mem:ready --wu WU-XXX`        | Check pending nodes                |
-| `pnpm mem:export --wu WU-XXX`       | Export memory as markdown          |
-| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery) |
-| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal      |
-| `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals         |
-| `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context           |
-| `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs             |
-| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU    |
-| `pnpm mem:context ... --lane <L>`   | Filter context by lane (WU-1292)   |
-| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node       |
-| `pnpm mem:cleanup`                  | Clean up stale memory data         |
+| Command                             | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| `pnpm mem:init --wu WU-XXX`         | Initialize memory for WU            |
+| `pnpm mem:start --wu WU-XXX`        | Start a memory session              |
+| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint            |
+| `pnpm mem:recover --wu WU-XXX`      | Generate recovery context (WU-1390) |
+| `pnpm mem:ready --wu WU-XXX`        | Check pending nodes                 |
+| `pnpm mem:export --wu WU-XXX`       | Export memory as markdown           |
+| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery)  |
+| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal       |
+| `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals          |
+| `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context            |
+| `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs              |
+| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU     |
+| `pnpm mem:context ... --lane <L>`   | Filter context by lane (WU-1292)    |
+| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node        |
+| `pnpm mem:cleanup`                  | Clean up stale memory data          |
 
 ---
 
@@ -444,3 +430,30 @@ pnpm mem:inbox --since 30m       # Check for signals (NOT TaskOutput)
 # Capture bug, don't fix out-of-scope
 pnpm mem:create 'Bug: description' --type discovery --tags bug --wu WU-XXX
 ```
+
+### Enforcement Hooks (WU-1367)
+
+Configure hooks that enforce workflow compliance for Claude Code:
+
+```yaml
+# In .lumenflow.config.yaml
+agents:
+  clients:
+    claude-code:
+      enforcement:
+        hooks: true
+        block_outside_worktree: true
+        require_wu_for_edits: true
+        warn_on_stop_without_wu_done: true
+```
+
+```bash
+# Generate hooks after configuration
+pnpm lumenflow:integrate --client claude-code
+```
+
+Hooks provide automatic enforcement at the tool level:
+
+- **block_outside_worktree**: Blocks Write/Edit to main when worktrees exist
+- **require_wu_for_edits**: Requires a claimed WU for Write/Edit operations
+- **warn_on_stop_without_wu_done**: Warns when session ends with active worktrees
