@@ -26,6 +26,18 @@ Then read `LUMENFLOW.md` for workflow details.
 | `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity |
 | `pnpm mem:inbox --since 30m`               | Check coordination signals   |
 | `pnpm mem:checkpoint --wu WU-XXX`          | Save progress checkpoint     |
+| `pnpm mem:recover --wu WU-XXX`             | Generate recovery context    |
+
+### Context Recovery (WU-1394)
+
+Recovery hooks automatically preserve context across compaction:
+
+- **PreCompact hook**: Saves checkpoint and writes recovery file before `/compact`
+- **SessionStart hook**: Reads recovery context after compaction/resume/clear
+
+Hook files are scaffolded by `lumenflow init --client claude` in `.claude/hooks/`.
+
+For manual recovery: `pnpm mem:recover --wu WU-XXX`
 
 ## Skills
 

@@ -105,22 +105,23 @@ pnpm exec lumenflow --client all      # All clients
 
 ## Memory & Sessions
 
-| Command                             | Description                        |
-| ----------------------------------- | ---------------------------------- |
-| `pnpm mem:init --wu WU-XXX`         | Initialize memory for WU           |
-| `pnpm mem:start --wu WU-XXX`        | Start a memory session             |
-| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint           |
-| `pnpm mem:ready --wu WU-XXX`        | Check pending nodes                |
-| `pnpm mem:export --wu WU-XXX`       | Export memory as markdown          |
-| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery) |
-| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal      |
-| `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals         |
-| `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context           |
-| `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs             |
-| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU    |
-| `pnpm mem:context ... --lane <L>`   | Filter context by lane (WU-1292)   |
-| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node       |
-| `pnpm mem:cleanup`                  | Clean up stale memory data         |
+| Command                             | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| `pnpm mem:init --wu WU-XXX`         | Initialize memory for WU            |
+| `pnpm mem:start --wu WU-XXX`        | Start a memory session              |
+| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint            |
+| `pnpm mem:recover --wu WU-XXX`      | Generate recovery context (WU-1390) |
+| `pnpm mem:ready --wu WU-XXX`        | Check pending nodes                 |
+| `pnpm mem:export --wu WU-XXX`       | Export memory as markdown           |
+| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery)  |
+| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal       |
+| `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals          |
+| `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context            |
+| `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs              |
+| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU     |
+| `pnpm mem:context ... --lane <L>`   | Filter context by lane (WU-1292)    |
+| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node        |
+| `pnpm mem:cleanup`                  | Clean up stale memory data          |
 
 ---
 

@@ -535,6 +535,67 @@ describe('lumenflow init command (WU-1045)', () => {
     });
   });
 
+  // WU-1394: Recovery hooks scaffolding
+  describe('recovery hooks scaffolding (WU-1394)', () => {
+    it('should scaffold pre-compact-checkpoint.sh with executable permissions when Claude client is used', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'claude' });
+
+      const hookPath = path.join(tempDir, '.claude', 'hooks', 'pre-compact-checkpoint.sh');
+      expect(fs.existsSync(hookPath)).toBe(true);
+
+      // Check executable permission (0o755 = rwxr-xr-x)
+      const stats = fs.statSync(hookPath);
+      // eslint-disable-next-line no-bitwise
+      expect(stats.mode & 0o755).toBe(0o755);
+    });
+
+    it('should scaffold session-start-recovery.sh with executable permissions when Claude client is used', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'claude' });
+
+      const hookPath = path.join(tempDir, '.claude', 'hooks', 'session-start-recovery.sh');
+      expect(fs.existsSync(hookPath)).toBe(true);
+
+      // Check executable permission
+      const stats = fs.statSync(hookPath);
+      // eslint-disable-next-line no-bitwise
+      expect(stats.mode & 0o755).toBe(0o755);
+    });
+
+    it('should include PreCompact and SessionStart hooks in generated settings.json', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'claude' });
+
+      const settingsPath = path.join(tempDir, '.claude', 'settings.json');
+      expect(fs.existsSync(settingsPath)).toBe(true);
+
+      const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+      expect(settings.hooks).toBeDefined();
+      expect(settings.hooks.PreCompact).toBeDefined();
+      expect(settings.hooks.SessionStart).toBeDefined();
+
+      // Verify PreCompact hook points to the correct script
+      expect(settings.hooks.PreCompact[0].hooks[0].command).toContain('pre-compact-checkpoint.sh');
+
+      // Verify SessionStart hooks for compact, resume, clear
+      const sessionStartMatchers = settings.hooks.SessionStart.map(
+        (h: { matcher: string }) => h.matcher,
+      );
+      expect(sessionStartMatchers).toContain('compact');
+      expect(sessionStartMatchers).toContain('resume');
+      expect(sessionStartMatchers).toContain('clear');
+    });
+
+    it('should not scaffold recovery hooks when client is not claude', async () => {
+      const { scaffoldProject } = await import('../src/init.js');
+      await scaffoldProject(tempDir, { ...baseOptions, client: 'cursor' });
+
+      const hookPath = path.join(tempDir, '.claude', 'hooks', 'pre-compact-checkpoint.sh');
+      expect(fs.existsSync(hookPath)).toBe(false);
+    });
+  });
+
   // WU-1177: Prerequisite checking (non-blocking)
   describe('checkPrerequisites (WU-1177)', () => {
     it('should check Node.js version', async () => {

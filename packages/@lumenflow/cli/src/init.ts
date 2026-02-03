@@ -13,7 +13,7 @@ import * as path from 'node:path';
 import * as yaml from 'yaml';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { getDefaultConfig, createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { getDefaultConfig, createWUParser, WU_OPTIONS, CLAUDE_HOOKS } from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
 import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
 // WU-1171: Import merge block utilities
@@ -3133,13 +3133,53 @@ async function scaffoldClientFiles(
       targetDir,
     );
 
+    // WU-1394: Load settings.json from template (includes PreCompact/SessionStart hooks)
+    let settingsContent: string;
+    try {
+      settingsContent = loadTemplate(CLAUDE_HOOKS.TEMPLATES.SETTINGS);
+    } catch {
+      settingsContent = CLAUDE_SETTINGS_TEMPLATE;
+    }
+
     await createFile(
       path.join(targetDir, CLAUDE_DIR, 'settings.json'),
-      CLAUDE_SETTINGS_TEMPLATE,
+      settingsContent,
       options.force ? 'force' : 'skip',
       result,
       targetDir,
     );
+
+    // WU-1394: Scaffold recovery hook scripts with executable permissions
+    const hooksDir = path.join(targetDir, CLAUDE_DIR, 'hooks');
+    await createDirectory(hooksDir, result, targetDir);
+
+    // Load and write pre-compact-checkpoint.sh
+    try {
+      const preCompactScript = loadTemplate(CLAUDE_HOOKS.TEMPLATES.PRE_COMPACT);
+      await createExecutableScript(
+        path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.PRE_COMPACT_CHECKPOINT),
+        preCompactScript,
+        options.force ? 'force' : 'skip',
+        result,
+        targetDir,
+      );
+    } catch {
+      // Template not found - hook won't be scaffolded
+    }
+
+    // Load and write session-start-recovery.sh
+    try {
+      const sessionStartScript = loadTemplate(CLAUDE_HOOKS.TEMPLATES.SESSION_START);
+      await createExecutableScript(
+        path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.SESSION_START_RECOVERY),
+        sessionStartScript,
+        options.force ? 'force' : 'skip',
+        result,
+        targetDir,
+      );
+    } catch {
+      // Template not found - hook won't be scaffolded
+    }
 
     // WU-1083: Scaffold Claude skills
     await scaffoldClaudeSkills(targetDir, options, result, tokens);
@@ -3331,6 +3371,40 @@ function writeNewFile(
   }
 
   fs.writeFileSync(filePath, content);
+  result.created.push(relativePath);
+}
+
+/**
+ * WU-1394: Create an executable script file with proper permissions
+ * Similar to createFile but sets 0o755 mode for shell scripts
+ */
+async function createExecutableScript(
+  filePath: string,
+  content: string,
+  mode: FileMode | boolean,
+  result: ScaffoldResult,
+  targetDir: string,
+): Promise<void> {
+  const relativePath = getRelativePath(targetDir, filePath);
+  const resolvedMode = resolveBooleanToFileMode(mode);
+
+  result.merged = result.merged ?? [];
+  result.warnings = result.warnings ?? [];
+
+  const fileExists = fs.existsSync(filePath);
+
+  if (fileExists && resolvedMode === 'skip') {
+    result.skipped.push(relativePath);
+    return;
+  }
+
+  // Write file with executable permissions
+  const parentDir = path.dirname(filePath);
+  if (!fs.existsSync(parentDir)) {
+    fs.mkdirSync(parentDir, { recursive: true });
+  }
+
+  fs.writeFileSync(filePath, content, { mode: 0o755 });
   result.created.push(relativePath);
 }
 

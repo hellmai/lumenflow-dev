@@ -195,6 +195,9 @@ export * from './context-validation-integration.js';
 export { CONTEXT_VALIDATION } from './wu-constants.js';
 export type { ValidationErrorCode, PredicateSeverity, ValidationMode } from './wu-constants.js';
 
+// WU-1394: Claude Code hook constants for enforcement and recovery
+export { CLAUDE_HOOKS, getHookCommand } from './wu-constants.js';
+
 // WU-1126: Enum-style constants for port interfaces (const + type pairs)
 // These provide named constants to avoid magic string literals in code
 // The const objects serve as both runtime values AND types via TypeScript's const/type pattern

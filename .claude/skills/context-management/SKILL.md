@@ -1,10 +1,10 @@
 ---
 name: context-management
 description: Session checkpoint patterns, output bypass for large results, when to spawn fresh sub-agents. Use for long-running sessions, context exhaustion, or agent coordination.
-version: 1.3.0
+version: 1.4.0
 source: docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
 source_sections: Context Tiers, Session Management, Wave Orchestration
-last_updated: 2026-01-26
+last_updated: 2026-02-03
 allowed-tools: Read, Write, Bash
 ---
 
@@ -76,16 +76,33 @@ pnpm mem:ready --wu WU-123  # Shows pending work
 pnpm mem:inbox --wu WU-123  # Check signals from other agents
 ```
 
-### Optional: Pre-Clear Checkpoint Hook
+### Durable Recovery Pattern (WU-1390/1394)
 
-If your client supports hooks, add a pre-clear/pre-compaction hook that runs:
+LumenFlow implements automatic recovery hooks that preserve context across compaction:
+
+**Hook Files** (scaffolded by `lumenflow init --client claude`):
+
+- `.claude/hooks/pre-compact-checkpoint.sh` — PreCompact hook: saves checkpoint + writes recovery file
+- `.claude/hooks/session-start-recovery.sh` — SessionStart hook: reads recovery file on compact/resume/clear
+
+**How It Works:**
+
+1. **Before compaction**: PreCompact hook writes `.lumenflow/state/recovery-pending-WU-XXX.md`
+2. **After session start**: SessionStart hook reads + displays recovery context, then deletes the file
+3. **Recovery file persists** through compaction — this is the durable part
+
+**Manual Recovery:**
 
 ```bash
-pnpm mem:checkpoint "Pre-clear: <summary>" --wu WU-XXX --trigger pre-clear
+# Generate recovery context manually (if hooks didn't fire)
+pnpm mem:recover --wu WU-XXX
+
+# Generate spawn prompt with full context
+pnpm wu:spawn --id WU-XXX
 ```
 
-This is a safety net for when humans forget to checkpoint. It does **not** replace the
-spawn-fresh protocol; still exit and spawn a new agent after `/clear`.
+**Important**: The recovery hooks are a safety net. The recommended approach is still to spawn
+a fresh agent before compaction rather than relying on post-compaction recovery.
 
 ## Output Bypass Pattern
 

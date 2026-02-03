@@ -1215,6 +1215,7 @@ export const DIRECTORIES = {
   WORKTREES: 'worktrees/',
   AI: 'ai/',
   CLAUDE: '.claude/',
+  CLAUDE_HOOKS: '.claude/hooks/',
   DOCS: 'docs/',
   PACKAGES: 'packages/',
   TOOLS: 'tools/',
@@ -1225,6 +1226,49 @@ export const DIRECTORIES = {
   BACKLOG_PATH: 'docs/04-operations/tasks/backlog.md',
   STATUS_PATH: 'docs/04-operations/tasks/status.md',
 };
+
+/**
+ * Claude Code hook script constants (WU-1394)
+ *
+ * Centralized constants for Claude Code enforcement and recovery hooks.
+ * Used by enforcement-generator.ts, enforcement-sync.ts, and init.ts.
+ *
+ * @see packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
+ * @see packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
+ */
+export const CLAUDE_HOOKS = {
+  /** Hook script filenames */
+  SCRIPTS: {
+    ENFORCE_WORKTREE: 'enforce-worktree.sh',
+    REQUIRE_WU: 'require-wu.sh',
+    WARN_INCOMPLETE: 'warn-incomplete.sh',
+    PRE_COMPACT_CHECKPOINT: 'pre-compact-checkpoint.sh',
+    SESSION_START_RECOVERY: 'session-start-recovery.sh',
+  },
+
+  /** Hook command path prefix (uses Claude Code's $CLAUDE_PROJECT_DIR variable) */
+  PATH_PREFIX: '$CLAUDE_PROJECT_DIR/.claude/hooks',
+
+  /** Hook matchers for settings.json */
+  MATCHERS: {
+    ALL: '.*',
+    WRITE_EDIT: 'Write|Edit',
+    COMPACT: 'compact',
+    RESUME: 'resume',
+    CLEAR: 'clear',
+  },
+
+  /** Template paths (relative to templates directory) */
+  TEMPLATES: {
+    SETTINGS: 'vendors/claude/.claude/settings.json.template',
+    PRE_COMPACT: 'vendors/claude/.claude/hooks/pre-compact-checkpoint.sh',
+    SESSION_START: 'vendors/claude/.claude/hooks/session-start-recovery.sh',
+  },
+} as const;
+
+/** Build full hook command path from script name */
+export const getHookCommand = (scriptName: string): string =>
+  `${CLAUDE_HOOKS.PATH_PREFIX}/${scriptName}`;
 
 /**
  * ESLint cache strategy values

@@ -6,6 +6,11 @@
  * .claude/settings.json to enforce LumenFlow workflow compliance.
  */
 
+import { CLAUDE_HOOKS, getHookCommand } from '@lumenflow/core';
+
+// Re-export for backwards compatibility (WU-1394)
+export const HOOK_SCRIPTS = CLAUDE_HOOKS.SCRIPTS;
+
 /**
  * Hook definition for Claude Code settings.json
  */
@@ -28,6 +33,8 @@ export interface HookEntry {
 export interface GeneratedHooks {
   preToolUse?: HookEntry[];
   stop?: HookEntry[];
+  preCompact?: HookEntry[];
+  sessionStart?: HookEntry[];
 }
 
 /**
@@ -56,20 +63,20 @@ export function generateEnforcementHooks(config: EnforcementConfig): GeneratedHo
     if (config.block_outside_worktree) {
       writeEditHooks.push({
         type: 'command',
-        command: '$CLAUDE_PROJECT_DIR/.claude/hooks/enforce-worktree.sh',
+        command: getHookCommand(HOOK_SCRIPTS.ENFORCE_WORKTREE),
       });
     }
 
     if (config.require_wu_for_edits) {
       writeEditHooks.push({
         type: 'command',
-        command: '$CLAUDE_PROJECT_DIR/.claude/hooks/require-wu.sh',
+        command: getHookCommand(HOOK_SCRIPTS.REQUIRE_WU),
       });
     }
 
     if (writeEditHooks.length > 0) {
       preToolUseHooks.push({
-        matcher: 'Write|Edit',
+        matcher: CLAUDE_HOOKS.MATCHERS.WRITE_EDIT,
         hooks: writeEditHooks,
       });
     }
@@ -83,16 +90,60 @@ export function generateEnforcementHooks(config: EnforcementConfig): GeneratedHo
   if (config.warn_on_stop_without_wu_done) {
     hooks.stop = [
       {
-        matcher: '.*',
+        matcher: CLAUDE_HOOKS.MATCHERS.ALL,
         hooks: [
           {
             type: 'command',
-            command: '$CLAUDE_PROJECT_DIR/.claude/hooks/warn-incomplete.sh',
+            command: getHookCommand(HOOK_SCRIPTS.WARN_INCOMPLETE),
           },
         ],
       },
     ];
   }
+
+  // Always generate PreCompact and SessionStart recovery hooks (WU-1394)
+  // These enable durable context recovery after compaction
+  hooks.preCompact = [
+    {
+      matcher: CLAUDE_HOOKS.MATCHERS.ALL,
+      hooks: [
+        {
+          type: 'command',
+          command: getHookCommand(HOOK_SCRIPTS.PRE_COMPACT_CHECKPOINT),
+        },
+      ],
+    },
+  ];
+
+  hooks.sessionStart = [
+    {
+      matcher: CLAUDE_HOOKS.MATCHERS.COMPACT,
+      hooks: [
+        {
+          type: 'command',
+          command: getHookCommand(HOOK_SCRIPTS.SESSION_START_RECOVERY),
+        },
+      ],
+    },
+    {
+      matcher: CLAUDE_HOOKS.MATCHERS.RESUME,
+      hooks: [
+        {
+          type: 'command',
+          command: getHookCommand(HOOK_SCRIPTS.SESSION_START_RECOVERY),
+        },
+      ],
+    },
+    {
+      matcher: CLAUDE_HOOKS.MATCHERS.CLEAR,
+      hooks: [
+        {
+          type: 'command',
+          command: getHookCommand(HOOK_SCRIPTS.SESSION_START_RECOVERY),
+        },
+      ],
+    },
+  ];
 
   return hooks;
 }
@@ -402,6 +453,214 @@ echo "  pnpm wu:done --id WU-XXXX  (from main)" >&2
 echo "" >&2
 echo "If work is incomplete, it will be preserved in the worktree." >&2
 echo "====================================" >&2
+
+exit 0
+`;
+  /* eslint-enable no-useless-escape */
+}
+
+/**
+ * Generate the pre-compact-checkpoint.sh hook script content.
+ *
+ * This PreCompact hook saves a checkpoint and writes a durable recovery file
+ * before context compaction. The recovery file survives compaction and is
+ * read by session-start-recovery.sh on the next session start.
+ *
+ * Part of WU-1394: Durable recovery pattern for context preservation.
+ */
+export function generatePreCompactCheckpointScript(): string {
+  // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
+  /* eslint-disable no-useless-escape */
+  return `#!/bin/bash
+#
+# pre-compact-checkpoint.sh
+#
+# PreCompact hook - auto-checkpoint + durable recovery marker (WU-1390)
+#
+# Fires before context compaction to:
+# 1. Save a checkpoint with the current WU progress
+# 2. Write a durable recovery file that survives compaction
+#
+# The recovery file is read by session-start-recovery.sh on the next
+# session start (after compact, resume, or clear) to restore context.
+#
+# Exit codes:
+#   0 = Always allow (cannot block compaction)
+#
+# Uses python3 for JSON parsing (consistent with other hooks)
+#
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+
+# Derive repo paths from CLAUDE_PROJECT_DIR
+if [[ -n "\${CLAUDE_PROJECT_DIR:-}" ]]; then
+  REPO_PATH="\$CLAUDE_PROJECT_DIR"
+else
+  REPO_PATH=\$(git rev-parse --show-toplevel 2>/dev/null || echo "")
+  if [[ -z "\$REPO_PATH" ]]; then
+    exit 0
+  fi
+fi
+
+# Read JSON input from stdin
+INPUT=\$(cat)
+
+# Parse trigger from hook input (defensive - default to "auto")
+# PreCompact provides: { "trigger": "manual" | "auto" }
+TRIGGER=\$(python3 -c "
+import json
+import sys
+try:
+    data = json.loads('''\$INPUT''')
+    trigger = data.get('trigger', 'auto')
+    print(trigger if trigger else 'auto')
+except:
+    print('auto')
+" 2>/dev/null || echo "auto")
+
+# Get WU ID from worktree context (wu:status --json)
+# Location.worktreeWuId is set when in a worktree
+WU_ID=\$(pnpm wu:status --json 2>/dev/null | python3 -c "
+import json
+import sys
+try:
+    data = json.load(sys.stdin)
+    location = data.get('location', {})
+    wu_id = location.get('worktreeWuId') or ''
+    print(wu_id)
+except:
+    print('')
+" 2>/dev/null || echo "")
+
+# Only proceed if we have a WU ID (working in a worktree)
+if [[ -n "\$WU_ID" ]]; then
+  # Save checkpoint with pre-compact trigger
+  # Note: This may fail if CLI not built, but that's OK - recovery file is more important
+  pnpm mem:checkpoint "Auto: pre-\${TRIGGER}-compaction" --wu "\$WU_ID" --trigger "pre-compact" --quiet 2>/dev/null || true
+
+  # Write durable recovery marker (survives compaction)
+  # This is the key mechanism - file persists and is read by session-start-recovery.sh
+  RECOVERY_DIR="\${REPO_PATH}/.lumenflow/state"
+  RECOVERY_FILE="\${RECOVERY_DIR}/recovery-pending-\${WU_ID}.md"
+
+  mkdir -p "\$RECOVERY_DIR"
+
+  # Generate recovery context using mem:recover
+  # The --quiet flag outputs only the recovery context without headers
+  pnpm mem:recover --wu "\$WU_ID" --quiet > "\$RECOVERY_FILE" 2>/dev/null || {
+    # Fallback minimal recovery if mem:recover fails
+    cat > "\$RECOVERY_FILE" << EOF
+# POST-COMPACTION RECOVERY
+
+You are resuming work after context compaction. Your previous context was lost.
+**WU:** \${WU_ID}
+
+## Next Action
+Run \\\`pnpm wu:spawn --id \${WU_ID}\\\` to spawn a fresh agent with full context.
+EOF
+  }
+
+  # Output brief warning to stderr (may be compacted away, but recovery file persists)
+  echo "" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+  echo "⚠️  COMPACTION: Checkpoint saved for \${WU_ID}" >&2
+  echo "Recovery context: \${RECOVERY_FILE}" >&2
+  echo "Next: pnpm wu:spawn --id \${WU_ID}" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+fi
+
+# Always exit 0 - cannot block compaction
+exit 0
+`;
+  /* eslint-enable no-useless-escape */
+}
+
+/**
+ * Generate the session-start-recovery.sh hook script content.
+ *
+ * This SessionStart hook checks for pending recovery files written by
+ * pre-compact-checkpoint.sh and displays the recovery context to the agent.
+ * After displaying, the recovery file is deleted (one-time recovery).
+ *
+ * Part of WU-1394: Durable recovery pattern for context preservation.
+ */
+export function generateSessionStartRecoveryScript(): string {
+  // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
+  /* eslint-disable no-useless-escape */
+  return `#!/bin/bash
+#
+# session-start-recovery.sh
+#
+# SessionStart hook - check for pending recovery and inject context (WU-1390)
+#
+# Fires after session start (on compact, resume, or clear) to:
+# 1. Check for recovery-pending-*.md files written by pre-compact-checkpoint.sh
+# 2. Display the recovery context to the agent
+# 3. Remove the recovery file (one-time recovery)
+#
+# This completes the durable recovery pattern:
+#   PreCompact writes file → SessionStart reads and deletes it
+#
+# Exit codes:
+#   0 = Always allow (informational hook)
+#
+
+set -euo pipefail
+
+# Derive repo paths from CLAUDE_PROJECT_DIR
+if [[ -n "\${CLAUDE_PROJECT_DIR:-}" ]]; then
+  REPO_PATH="\$CLAUDE_PROJECT_DIR"
+else
+  REPO_PATH=\$(git rev-parse --show-toplevel 2>/dev/null || echo "")
+  if [[ -z "\$REPO_PATH" ]]; then
+    exit 0
+  fi
+fi
+
+RECOVERY_DIR="\${REPO_PATH}/.lumenflow/state"
+
+# Check if recovery directory exists
+if [[ ! -d "\$RECOVERY_DIR" ]]; then
+  exit 0
+fi
+
+# Find any pending recovery files
+FOUND_RECOVERY=false
+
+for recovery_file in "\$RECOVERY_DIR"/recovery-pending-*.md; do
+  # Check if glob matched any files (bash glob returns literal pattern if no match)
+  [[ -f "\$recovery_file" ]] || continue
+
+  FOUND_RECOVERY=true
+
+  # Extract WU ID from filename for display
+  WU_ID=\$(basename "\$recovery_file" | sed 's/recovery-pending-\\(.*\\)\\.md/\\1/')
+
+  echo "" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+  echo "⚠️  POST-COMPACTION RECOVERY DETECTED" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+  echo "" >&2
+
+  # Display the recovery context
+  cat "\$recovery_file" >&2
+
+  echo "" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+  echo "" >&2
+
+  # Remove after displaying (one-time recovery)
+  rm -f "\$recovery_file"
+done
+
+# Additional context if recovery was displayed
+if [[ "\$FOUND_RECOVERY" == "true" ]]; then
+  echo "IMPORTANT: Your context was compacted. Review the recovery info above." >&2
+  echo "Recommended: Run 'pnpm wu:spawn --id \$WU_ID' for fresh full context." >&2
+  echo "" >&2
+fi
 
 exit 0
 `;
