@@ -699,3 +699,4 @@
 {"type":"complete","wuId":"WU-1390","timestamp":"2026-02-03T18:50:49.063Z"}
 {"type":"complete","wuId":"WU-1393","timestamp":"2026-02-03T18:52:43.013Z"}
 {"type":"claim","wuId":"WU-1394","lane":"Framework: CLI","title":"Fix mem:recover hook propagation and documentation (WU-1390 follow-up)","timestamp":"2026-02-03T19:11:06.388Z"}
+{"type":"complete","wuId":"WU-1142","timestamp":"2026-02-03T19:24:21.076Z"}
