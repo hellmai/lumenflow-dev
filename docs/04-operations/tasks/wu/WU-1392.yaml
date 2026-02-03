@@ -2,7 +2,7 @@ id: WU-1392
 title: Fix quickstart initiative examples and AGENTS markers
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -25,8 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Agent Start Here + Quickstart examples omit required initiative:create --id and use incorrect AGENTS.md marker casing. Problem: Commands fail; merge markers misleading. Solution: Update docs to include --id and correct marker casing; fix step reference.'
+description: 'Context: Agent Start Here + Quickstart examples omit required initiative:create --id
+  and use incorrect AGENTS.md marker casing. Problem: Commands fail; merge markers misleading.
+  Solution: Update docs to include --id and correct marker casing; fix step reference.'
 acceptance:
   - initiative:create examples include --id consistent with INIT-001 usage
   - AGENTS.md marker casing matches LUMENFLOW:START/END
   - Step reference for WU ID is corrected
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1392
+claimed_at: 2026-02-03T18:41:31.280Z
+baseline_main_sha: 3745062f30118f89c74dfe88892d985f9933dcc2
+session_id: a82163e1-ca6e-442e-a721-444b3da9e6a3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T18:41:31.284Z
