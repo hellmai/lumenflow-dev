@@ -73,6 +73,12 @@ lanes:
 git:
   main_branch: main
   branch_pattern: 'lane/{lane}/{wu_id}'
+  # Agent branch patterns - branches matching these can bypass worktree requirements
+  # Use for cloud agents (Claude/Codex web) that manage their own isolation
+  agent_branch_patterns:
+    - 'agent/*'
+    - 'claude/*'
+    - 'codex/*'
 
 directories:
   wu_specs: 'docs/04-operations/tasks/wu'
