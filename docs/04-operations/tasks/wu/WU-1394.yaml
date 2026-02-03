@@ -35,7 +35,10 @@ artifacts:
   - .lumenflow/stamps/WU-1394.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Documentation gaps to close: quick-ref-commands.md missing mem:recover;
+  context-management/SKILL.md still says to add a hook but does not document the implemented hooks,
+  mem:recover, or durable recovery file pattern; .claude/CLAUDE.md missing recovery
+  hooks/mem:recover guidance. Also ensure templates/settings + enforcement sync propagate hooks.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
