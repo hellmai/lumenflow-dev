@@ -16,12 +16,20 @@ artifacts:
   - .lumenflow/stamps/WU-1388.done
 dependencies: []
 risks: []
-notes: ''
+notes: Follow-up to WU-1378 which added lumenflow commands but didn't update documentation. Added
+  command to quick-ref-commands.md and regenerated Starlight CLI docs.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-03T16:14:25.736Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1388
+session_id: f0199071-40fa-4662-9335-9983dfebf53b
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T16:14:25.742Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -30,11 +38,3 @@ description: 'WU-1378 added lumenflow commands but failed to document it. Missin
 acceptance:
   - lumenflow commands appears in quick-ref-commands.md
   - lumenflow commands appears in Starlight CLI docs after docs:generate
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1388
-claimed_at: 2026-02-03T16:14:25.736Z
-baseline_main_sha: dcdbaf10711a2d70babf9fae150cd8c920cfdd23
-session_id: f0199071-40fa-4662-9335-9983dfebf53b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-03T16:14:25.742Z
