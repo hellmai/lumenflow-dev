@@ -2,7 +2,7 @@ id: WU-1395
 title: Fix init docs paths for simple structure
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: blocked
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -17,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1395.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Blocked (2026-02-03): Abandoned - created accidentally during support request'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
