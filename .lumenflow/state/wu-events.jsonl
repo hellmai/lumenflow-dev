@@ -660,3 +660,4 @@
 {"type":"complete","wuId":"WU-1362","timestamp":"2026-02-03T02:56:26.895Z"}
 {"type":"claim","wuId":"WU-1363","timestamp":"2026-02-03T03:00:53.573Z","lane":"Framework: CLI","title":"CLI integration test suite (consolidated)"}
 {"type":"complete","wuId":"WU-1363","timestamp":"2026-02-03T03:14:54.761Z"}
+{"type":"claim","wuId":"WU-1368","lane":"Framework: CLI","title":"Fix sync:templates --check-drift and add micro-worktree isolation","timestamp":"2026-02-03T09:04:07.367Z"}
