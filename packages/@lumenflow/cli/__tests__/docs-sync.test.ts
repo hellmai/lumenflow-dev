@@ -228,7 +228,7 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
 
       // Both should have the same structural content (after placeholder replacement)
       expect(quickRefContent).toContain('Quick Reference');
-      expect(quickRefContent).toContain('WU Management');
+      expect(quickRefContent).toContain('WU Lifecycle');
       // Template placeholders should be replaced
       expect(quickRefContent).not.toContain('{{DATE}}');
 
