@@ -223,8 +223,8 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
         'utf-8',
       );
 
-      // Load template directly to compare
-      const templateContent = loadTemplate('core/ai/onboarding/quick-ref-commands.md.template');
+      // Load template directly to compare (verifies template exists and is loadable)
+      const _templateContent = loadTemplate('core/ai/onboarding/quick-ref-commands.md.template');
 
       // Both should have the same structural content (after placeholder replacement)
       expect(quickRefContent).toContain('Quick Reference');
