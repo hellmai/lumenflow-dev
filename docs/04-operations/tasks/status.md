@@ -9,6 +9,7 @@ _Last updated: 2026-02-03_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1387 — Fix doctor agent-friction check edge cases](wu/WU-1387.yaml)
+- [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml)
 
 ## Completed
 
