@@ -709,4 +709,5 @@
 {"type":"complete","wuId":"WU-1395","timestamp":"2026-02-03T23:19:49.329Z"}
 {"type":"claim","wuId":"WU-1397","timestamp":"2026-02-03T23:24:16.510Z","lane":"Content: Documentation","title":"Landing page UX: copy button + simplified CTAs"}
 {"type":"complete","wuId":"WU-1397","timestamp":"2026-02-03T23:29:42.093Z"}
-{"type":"claim","wuId":"WU-1398","lane":"Content: Documentation","title":"Add Session 0 exit criteria to agent quickstart","timestamp":"2026-02-03T23:42:41.427Z"}
+{"type":"claim","wuId":"WU-1398","timestamp":"2026-02-03T23:42:41.427Z","lane":"Content: Documentation","title":"Add Session 0 exit criteria to agent quickstart"}
+{"type":"complete","wuId":"WU-1398","timestamp":"2026-02-03T23:45:30.100Z"}

@@ -7,7 +7,6 @@ _Last updated: 2026-02-03_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1398 — Add Session 0 exit criteria to agent quickstart](wu/WU-1398.yaml)
 
 ## Completed
 
@@ -354,3 +353,4 @@ _Last updated: 2026-02-03_
 - [WU-1396 — Add design-first skill (5-step algorithm)](wu/WU-1396.yaml) — 2026-02-03
 - [WU-1395 — Make Quickstart agent-first + add human-facing landing copy](wu/WU-1395.yaml) — 2026-02-03
 - [WU-1397 — Landing page UX: copy button + simplified CTAs](wu/WU-1397.yaml) — 2026-02-03
+- [WU-1398 — Add Session 0 exit criteria to agent quickstart](wu/WU-1398.yaml) — 2026-02-03
