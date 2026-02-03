@@ -45,7 +45,7 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { ensureStaged } from '@lumenflow/core/dist/git-staged-validator.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { withMicroWorktree, LUMENFLOW_WU_TOOL_ENV } from '@lumenflow/core/dist/micro-worktree.js';
 import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
 // WU-1603: Atomic lane locking - release lock when WU is blocked
 import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
@@ -55,6 +55,29 @@ import { getLockPolicyForLane } from '@lumenflow/core/dist/lane-checker.js';
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
 // ensureStaged() moved to git-staged-validator.ts (WU-1341)
 // defaultWorktreeFrom() moved to wu-paths.ts (WU-1341)
+
+/**
+ * WU-1365: Execute a function with LUMENFLOW_WU_TOOL set, restoring afterwards
+ *
+ * Sets the LUMENFLOW_WU_TOOL env var to allow pre-push hook bypass, then
+ * restores the original value (or deletes it) after execution completes.
+ *
+ * @param toolName - Value to set for LUMENFLOW_WU_TOOL
+ * @param fn - Async function to execute
+ */
+async function withWuToolEnv<T>(toolName: string, fn: () => Promise<T>): Promise<T> {
+  const previousWuTool = process.env[LUMENFLOW_WU_TOOL_ENV];
+  process.env[LUMENFLOW_WU_TOOL_ENV] = toolName;
+  try {
+    return await fn();
+  } finally {
+    if (previousWuTool === undefined) {
+      Reflect.deleteProperty(process.env, LUMENFLOW_WU_TOOL_ENV);
+    } else {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = previousWuTool;
+    }
+  }
+}
 
 /**
  * Remove WU entry from in-progress section of lines array
@@ -78,6 +101,34 @@ function removeFromInProgressSection(lines, inProgIdx, rel, id) {
   if (section.length === 0) lines.splice(endIdx, 0, '', '(No items currently in progress)', '');
 }
 
+/**
+ * WU-1365: Create missing blocked section in status.md
+ *
+ * Extracts this logic to reduce cognitive complexity of moveFromInProgressToBlocked.
+ *
+ * @param lines - Array of lines from status.md
+ * @param inProgIdx - Index of "## In Progress" header (-1 if not found)
+ * @returns Index of the blocked section header after creation
+ */
+function createMissingBlockedSection(lines: string[], inProgIdx: number): number {
+  console.log(
+    `${LOG_PREFIX.BLOCK} Creating missing "${STATUS_SECTIONS.BLOCKED}" section in status.md`,
+  );
+  // Find a good insertion point - after in_progress section or at end
+  const insertIdx = inProgIdx !== -1 ? inProgIdx + 1 : lines.length;
+  // Skip to end of in_progress section content if it exists
+  let insertPoint = insertIdx;
+  if (inProgIdx !== -1) {
+    // Find where the next section starts
+    const nextSectionIdx = lines.slice(inProgIdx + 1).findIndex((l) => l.startsWith('## '));
+    insertPoint = nextSectionIdx === -1 ? lines.length : inProgIdx + 1 + nextSectionIdx;
+  }
+  // Insert the blocked section
+  lines.splice(insertPoint, 0, '', STATUS_SECTIONS.BLOCKED, '');
+  // Return the index of the newly created section header
+  return insertPoint + 1;
+}
+
 async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   // Check file exists
   const fileExists = await access(statusPath)
@@ -91,14 +142,20 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   const lines = content.split(/\r?\n/);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
-  const blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
-  if (blockedIdx === -1) die(`Could not find "${STATUS_SECTIONS.BLOCKED}" in status.md`);
+  let blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
+
+  // WU-1365: Handle missing blocked section gracefully by creating it
+  if (blockedIdx === -1) {
+    blockedIdx = createMissingBlockedSection(lines, inProgIdx);
+  }
 
   removeFromInProgressSection(lines, inProgIdx, rel, id);
 
   // Add bullet to blocked
   const reasonSuffix = reason ? ` — ${reason}` : '';
   const bullet = `- [${id} — ${title}](${rel})${reasonSuffix}`;
+  // Recalculate blockedIdx after removeFromInProgressSection may have changed line positions
+  blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
   const sectionStart = blockedIdx + 1;
   if (lines.slice(sectionStart).some((l) => l.includes(rel))) return; // already listed
   lines.splice(sectionStart, 0, '', bullet);
@@ -200,53 +257,56 @@ async function main() {
   const commitMsg = args.reason ? `${baseMsg} — ${args.reason}` : baseMsg;
 
   if (!args.noAuto) {
-    // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
-    await withMicroWorktree({
-      operation: MICRO_WORKTREE_OPERATIONS.WU_BLOCK,
-      id,
-      logPrefix: LOG_PREFIX.BLOCK,
-      pushOnly: true, // Push directly to origin/main without touching local main
-      execute: async ({ worktreePath }) => {
-        // Build paths relative to micro-worktree
-        const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
-        const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
-        const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
+    // WU-1365: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass for micro-worktree pushes
+    await withWuToolEnv(MICRO_WORKTREE_OPERATIONS.WU_BLOCK, async () => {
+      // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
+      await withMicroWorktree({
+        operation: MICRO_WORKTREE_OPERATIONS.WU_BLOCK,
+        id,
+        logPrefix: LOG_PREFIX.BLOCK,
+        pushOnly: true, // Push directly to origin/main without touching local main
+        execute: async ({ worktreePath }) => {
+          // Build paths relative to micro-worktree
+          const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
+          const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
+          const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
 
-        // Update WU YAML in micro-worktree
-        const microDoc = readWU(microWUPath, id);
-        microDoc.status = WU_STATUS.BLOCKED;
-        const noteLine = args.reason
-          ? `Blocked (${todayISO()}): ${args.reason}`
-          : `Blocked (${todayISO()})`;
-        appendNote(microDoc, noteLine);
-        writeWU(microWUPath, microDoc);
+          // Update WU YAML in micro-worktree
+          const microDoc = readWU(microWUPath, id);
+          microDoc.status = WU_STATUS.BLOCKED;
+          const noteLine = args.reason
+            ? `Blocked (${todayISO()}): ${args.reason}`
+            : `Blocked (${todayISO()})`;
+          appendNote(microDoc, noteLine);
+          writeWU(microWUPath, microDoc);
 
-        // Update status.md in micro-worktree
-        await moveFromInProgressToBlocked(microStatusPath, id, title, args.reason);
+          // Update status.md in micro-worktree
+          await moveFromInProgressToBlocked(microStatusPath, id, title, args.reason);
 
-        // Update backlog.md in micro-worktree (WU-1574: regenerate from state store)
-        await regenerateBacklogFromState(microBacklogPath);
+          // Update backlog.md in micro-worktree (WU-1574: regenerate from state store)
+          await regenerateBacklogFromState(microBacklogPath);
 
-        // Append block event to WUStateStore (WU-1573)
-        const stateDir = path.join(worktreePath, '.lumenflow', 'state');
-        const store = new WUStateStore(stateDir);
-        await store.load();
-        await store.block(id, args.reason || 'No reason provided');
+          // Append block event to WUStateStore (WU-1573)
+          const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+          const store = new WUStateStore(stateDir);
+          await store.load();
+          await store.block(id, args.reason || 'No reason provided');
 
-        return {
-          commitMessage: commitMsg,
-          files: [
-            WU_PATHS.WU(id),
-            WU_PATHS.STATUS(),
-            WU_PATHS.BACKLOG(),
-            '.lumenflow/state/wu-events.jsonl',
-          ],
-        };
-      },
+          return {
+            commitMessage: commitMsg,
+            files: [
+              WU_PATHS.WU(id),
+              WU_PATHS.STATUS(),
+              WU_PATHS.BACKLOG(),
+              '.lumenflow/state/wu-events.jsonl',
+            ],
+          };
+        },
+      });
+
+      // Fetch to update local main tracking
+      await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
     });
-
-    // Fetch to update local main tracking
-    await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
   } else {
     // Manual mode: expect files already staged
     ensureStaged([mainWUPath, WU_PATHS.STATUS(), WU_PATHS.BACKLOG()]);
