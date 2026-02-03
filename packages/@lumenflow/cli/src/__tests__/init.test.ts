@@ -710,6 +710,144 @@ describe('lumenflow init', () => {
     });
   });
 
+  // WU-1383: CLI safeguards against manual file editing
+  describe('WU-1383: CLI safeguards for Claude client', () => {
+    const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+
+    describe('enforcement hooks enabled by default for --client claude', () => {
+      it('should add enforcement hooks config when --client claude is used', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
+        expect(fs.existsSync(configPath)).toBe(true);
+
+        const content = fs.readFileSync(configPath, 'utf-8');
+        // Should have enforcement hooks enabled for claude-code
+        expect(content).toContain('claude-code');
+        expect(content).toContain('enforcement');
+        expect(content).toContain('hooks: true');
+      });
+
+      it('should set block_outside_worktree to true by default for claude client', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
+        const content = fs.readFileSync(configPath, 'utf-8');
+        expect(content).toContain('block_outside_worktree: true');
+      });
+
+      it('should NOT add enforcement hooks for other clients like cursor', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'cursor',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
+        const content = fs.readFileSync(configPath, 'utf-8');
+        // Should NOT have claude-code enforcement section (check for the nested enforcement block)
+        // Note: The default config has agents.defaultClient: claude-code, but no enforcement section
+        expect(content).not.toContain('block_outside_worktree');
+        expect(content).not.toMatch(/claude-code:\s*\n\s*enforcement/);
+      });
+    });
+
+    describe('warning when config already exists', () => {
+      it('should add warning to result when config yaml already exists', async () => {
+        // Create existing config file
+        fs.writeFileSync(
+          path.join(tempDir, CONFIG_FILE_NAME),
+          '# Existing config\ndirectories:\n  tasksDir: docs/tasks\n',
+        );
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        // Should have warning about existing config
+        expect(result.warnings).toBeDefined();
+        expect(result.warnings?.some((w) => w.includes('already exists'))).toBe(true);
+        // Warning should suggest CLI commands
+        expect(result.warnings?.some((w) => w.includes('CLI') || w.includes('lumenflow'))).toBe(
+          true,
+        );
+      });
+
+      it('should skip config file when it already exists (not force)', async () => {
+        const existingContent = '# My custom config\n';
+        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), existingContent);
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        expect(result.skipped).toContain(CONFIG_FILE_NAME);
+        // Content should not be changed
+        const content = fs.readFileSync(path.join(tempDir, CONFIG_FILE_NAME), 'utf-8');
+        expect(content).toBe(existingContent);
+      });
+    });
+
+    describe('post-init output shows CLI commands prominently', () => {
+      // Note: These test the ScaffoldResult which contains info for the CLI output
+      // The main() function uses these to print output
+
+      it('should include CLI usage guidance in warnings when config exists', async () => {
+        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), '# Existing\n');
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        // Warning should mention CLI commands for editing config
+        expect(result.warnings?.some((w) => /pnpm|lumenflow|CLI/i.test(w))).toBe(true);
+      });
+    });
+
+    describe('warning message suggests CLI commands not manual editing', () => {
+      it('should warn users to use CLI commands instead of manual editing', async () => {
+        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), '# Existing config\n');
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        // Should have a warning that mentions not to manually edit
+        expect(
+          result.warnings?.some(
+            (w) => w.includes('manual') || w.includes('CLI') || w.includes('lumenflow'),
+          ),
+        ).toBe(true);
+      });
+    });
+  });
+
   // WU-1362: Branch guard tests for init.ts
   describe('WU-1362: branch guard for tracked file writes', () => {
     it('should block scaffold when on main branch and targeting main checkout', async () => {

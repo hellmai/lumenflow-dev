@@ -459,10 +459,12 @@ const DEFAULT_LANE_DEFINITIONS = [
  * WU-1067: Supports --preset option for config-driven gates
  * WU-1307: Includes default lane definitions for onboarding
  * WU-1364: Supports git config overrides (requireRemote)
+ * WU-1383: Adds enforcement hooks config for Claude client by default
  */
 function generateLumenflowConfigYaml(
   gatePreset?: GatePresetType,
   gitConfigOverride?: { requireRemote: boolean } | null,
+  client?: ClientType,
 ): string {
   // WU-1382: Add managed file header to prevent manual edits
   const header = `# ============================================================================
@@ -500,6 +502,23 @@ function generateLumenflowConfigYaml(
   if (gitConfigOverride) {
     (config as Record<string, unknown>).git = {
       requireRemote: gitConfigOverride.requireRemote,
+    };
+  }
+
+  // WU-1383: Add enforcement hooks for Claude client by default
+  // This prevents agents from working on main and editing config files manually
+  if (client === 'claude') {
+    (config as Record<string, unknown>).agents = {
+      clients: {
+        'claude-code': {
+          enforcement: {
+            hooks: true,
+            block_outside_worktree: true,
+            require_wu_for_edits: true,
+            warn_on_stop_without_wu_done: true,
+          },
+        },
+      },
     };
   }
 
@@ -2440,10 +2459,23 @@ export async function scaffoldProject(
 
   // Create .lumenflow.config.yaml (WU-1067: includes gate preset if specified)
   // WU-1364: Includes git config overrides (e.g., requireRemote: false for local-only)
+  // WU-1383: Includes enforcement hooks for Claude client
   // Note: Config files don't use merge mode (always skip or force)
+  const configPath = path.join(targetDir, CONFIG_FILE_NAME);
+
+  // WU-1383: Warn if config already exists to discourage manual editing
+  if (fs.existsSync(configPath) && !options.force) {
+    result.warnings = result.warnings ?? [];
+    result.warnings.push(
+      `${CONFIG_FILE_NAME} already exists. ` +
+        'To modify configuration, use CLI commands (e.g., pnpm lumenflow:init --force) ' +
+        'instead of manual editing.',
+    );
+  }
+
   await createFile(
-    path.join(targetDir, CONFIG_FILE_NAME),
-    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride),
+    configPath,
+    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client),
     options.force ? 'force' : 'skip',
     result,
     targetDir,
