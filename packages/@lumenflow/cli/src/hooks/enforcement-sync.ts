@@ -7,9 +7,9 @@
  */
 
 // fs operations use runtime-provided paths from LumenFlow configuration
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 // Object injection sink warnings are false positives for array indexing
-/* eslint-disable security/detect-object-injection */
+ 
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';

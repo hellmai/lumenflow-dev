@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- Gates runner uses console for status output; refactoring to logger is tracked for future work */
+ 
 /**
  * Quality Gates Runner
  *
@@ -611,7 +611,7 @@ export function formatFormatCheckGuidance(files: string[]): string[] {
 function collectPrettierListDifferent(cwd: string, files: string[] = []): string[] {
   const filesArg = files.length > 0 ? quoteShellArgs(files) : '.';
   const cmd = pnpmCmd(SCRIPTS.PRETTIER, PRETTIER_ARGS.LIST_DIFFERENT, filesArg);
-  // eslint-disable-next-line sonarjs/os-command -- Pre-existing: executes trusted pnpm prettier command
+   
   const result = spawnSync(cmd, [], {
     shell: true,
     cwd,
@@ -694,7 +694,7 @@ function run(
   if (!agentLog) {
     console.log(`\n> ${cmd}\n`);
     try {
-      // eslint-disable-next-line sonarjs/os-command -- Pre-existing: cmd is built from trusted constants
+       
       execSync(cmd, { stdio: 'inherit', encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
       return { ok: true, duration: Date.now() - start };
     } catch {
@@ -703,7 +703,7 @@ function run(
   }
 
   writeSync(agentLog.logFd, `\n> ${cmd}\n\n`);
-  // eslint-disable-next-line sonarjs/os-command -- Pre-existing: cmd is built from trusted constants
+   
   const result = spawnSync(cmd, [], {
     shell: true,
     stdio: ['ignore', agentLog.logFd, agentLog.logFd],
@@ -907,14 +907,14 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
   }
 
   if (plan.mode === 'full') {
-    /* eslint-disable sonarjs/no-nested-conditional -- Pre-existing: simple reason mapping, readable as-is */
+     
     const reason =
       plan.reason === 'prettier-config'
         ? ' (prettier config changed)'
         : plan.reason === 'file-list-error'
           ? ' (file list unavailable)'
           : '';
-    /* eslint-enable sonarjs/no-nested-conditional */
+     
     logLine(`📋 Running full format check${reason}`);
     const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
     return { ...result, duration: Date.now() - start, fileCount: -1 };
@@ -1738,7 +1738,7 @@ async function executeGates(opts: {
 // The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
 // path but import.meta.url resolves to the real path - they never match
 if (import.meta.main) {
-  // eslint-disable-next-line sonarjs/deprecation -- Pre-existing: parseGatesArgs kept for backwards compatibility
+   
   const opts = parseGatesArgs();
   executeGates({ ...opts, argv: process.argv.slice(2) })
     .then((ok) => {

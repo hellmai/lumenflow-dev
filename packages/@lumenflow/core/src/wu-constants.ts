@@ -1622,7 +1622,7 @@ export const PATH_LITERALS = {
   PLAN_FILE_SUFFIX: '-plan.md',
 
   /** Trailing slash regex pattern */
-  // eslint-disable-next-line sonarjs/slow-regex -- False positive: simple end-anchor regex, no catastrophic backtracking possible
+   
   TRAILING_SLASH_REGEX: /\/+$/,
 };
 

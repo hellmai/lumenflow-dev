@@ -40,7 +40,7 @@ import {
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-2278: Import ownership validation for cross-agent protection
 import { validateWorktreeOwnership } from '@lumenflow/core/dist/worktree-ownership.js';
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 
 const CLEANUP_OPTIONS = {
   artifacts: {

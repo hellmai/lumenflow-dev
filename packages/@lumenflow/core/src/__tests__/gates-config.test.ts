@@ -8,7 +8,7 @@
  * of relying on hardcoded language presets.
  */
 
-/* eslint-disable sonarjs/no-duplicate-string -- Test file uses repeated config file name for clarity */
+ 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';

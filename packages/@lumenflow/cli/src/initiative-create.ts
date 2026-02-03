@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-disable no-console -- CLI tool requires console output */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- CLI tool uses dynamic YAML types */
+ 
+ 
+ 
 /**
  * Initiative Create Helper (WU-1247, WU-1439)
  *

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Block Helper
  *
@@ -89,7 +89,7 @@ function removeFromInProgressSection(lines, inProgIdx, rel, id) {
   endIdx = endIdx === -1 ? lines.length : inProgIdx + 1 + endIdx;
 
   for (let i = inProgIdx + 1; i < endIdx; i++) {
-    // eslint-disable-next-line security/detect-object-injection -- array index loop
+     
     if (lines[i] && (lines[i].includes(rel) || lines[i].includes(`[${id}`))) {
       lines.splice(i, 1);
       endIdx--;
@@ -137,7 +137,7 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   if (!fileExists) die(`Missing ${statusPath}`);
 
   const rel = `wu/${id}.yaml`;
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates status file
+   
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
   const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
@@ -160,7 +160,7 @@ async function moveFromInProgressToBlocked(statusPath, id, title, reason) {
   if (lines.slice(sectionStart).some((l) => l.includes(rel))) return; // already listed
   lines.splice(sectionStart, 0, '', bullet);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes status file
+   
   await writeFile(statusPath, lines.join(STRING_LITERALS.NEWLINE), {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   });

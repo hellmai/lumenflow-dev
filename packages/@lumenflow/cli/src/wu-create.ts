@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
+ 
 /**
  * WU Create Helper (WU-1262, WU-1439)
  *
@@ -711,7 +711,7 @@ async function getDefaultAssignedTo() {
   }
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity -- main() orchestrates multi-step WU creation workflow
+ 
 async function main() {
   const args = createWUParser({
     name: 'wu-create',

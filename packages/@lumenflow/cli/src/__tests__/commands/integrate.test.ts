@@ -4,8 +4,8 @@
  */
 
 // Test file lint exceptions
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable sonarjs/no-duplicate-string */
+ 
+ 
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'node:fs';

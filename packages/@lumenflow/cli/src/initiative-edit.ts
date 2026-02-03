@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- CLI tool uses dynamic YAML types */
+ 
+ 
 /**
  * Initiative Edit Helper
  *
@@ -256,7 +256,7 @@ function validateCreatedDate(date) {
  */
 function loadInitiative(id) {
   const initPath = INIT_PATHS.INITIATIVE(id);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
+   
   if (!existsSync(initPath)) {
     die(
       `Initiative ${id} not found at ${initPath}\n\n` +
@@ -264,7 +264,7 @@ function loadInitiative(id) {
     );
   }
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool validates init files
+   
   const content = readFileSync(initPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   return parseYAML(content as string);
 }
@@ -501,7 +501,7 @@ async function main() {
         const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
         const yamlContent = stringifyYAML(updatedInit);
 
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes init files
+         
         writeFileSync(initPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
         console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
 

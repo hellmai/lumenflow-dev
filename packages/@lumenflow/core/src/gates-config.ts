@@ -226,7 +226,7 @@ export function loadGatesConfig(projectRoot: string): GatesExecutionConfig | nul
     // Validate the config
     const result = GatesExecutionConfigSchema.safeParse(executionConfig);
     if (!result.success) {
-      // eslint-disable-next-line no-console -- Intentional warning for invalid config
+       
       console.warn('Warning: Invalid gates.execution config:', result.error.message);
       return null;
     }
@@ -240,7 +240,7 @@ export function loadGatesConfig(projectRoot: string): GatesExecutionConfig | nul
 
     return merged;
   } catch (error) {
-    // eslint-disable-next-line no-console -- Intentional warning for parse failure
+     
     console.warn(
       `Warning: Failed to parse ${CONFIG_FILE_NAME}:`,
       error instanceof Error ? error.message : String(error),
@@ -365,7 +365,7 @@ export function loadLaneHealthConfig(projectRoot: string): LaneHealthMode {
     // Validate the config value
     const result = LaneHealthModeSchema.safeParse(laneHealthConfig);
     if (!result.success) {
-      // eslint-disable-next-line no-console -- Intentional warning for invalid config
+       
       console.warn(
         `Warning: Invalid gates.lane_health value '${laneHealthConfig}', expected 'warn', 'error', or 'off'. Using default 'warn'.`,
       );
@@ -374,7 +374,7 @@ export function loadLaneHealthConfig(projectRoot: string): LaneHealthMode {
 
     return result.data;
   } catch (error) {
-    // eslint-disable-next-line no-console -- Intentional warning for parse failure
+     
     console.warn(
       `Warning: Failed to parse ${CONFIG_FILE_NAME} for lane_health config:`,
       error instanceof Error ? error.message : String(error),

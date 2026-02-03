@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI tool requires console output */
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
+ 
 /**
  * Plan Link Command (WU-1313)
  *

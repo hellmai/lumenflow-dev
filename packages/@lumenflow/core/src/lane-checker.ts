@@ -344,7 +344,7 @@ function validateParentOnlyFormat(
       throw createError(ErrorCodes.INVALID_LANE, message, { lane: trimmed, validSubLanes });
     }
     // Non-strict mode: warn only for existing WU validation
-    // eslint-disable-next-line no-console -- Intentional operational logging
+     
     console.warn(`${PREFIX} ⚠️  ${message}`);
   }
 
@@ -732,7 +732,7 @@ function checkWuLaneMatch(
   const wuPath = path.join(projectRoot, WU_PATHS.WU(activeWuid));
 
   if (!existsSync(wuPath)) {
-    // eslint-disable-next-line no-console -- Intentional operational logging
+     
     console.warn(
       `${PREFIX} Warning: ${activeWuid} referenced in status.md but ${wuPath} not found`,
     );
@@ -744,7 +744,7 @@ function checkWuLaneMatch(
     const wuDoc = parseYAML(wuContent) as WUDoc;
 
     if (!wuDoc || !wuDoc.lane) {
-      // eslint-disable-next-line no-console -- Intentional operational logging
+       
       console.warn(`${PREFIX} Warning: ${activeWuid} has no lane field`);
       return null;
     }
@@ -757,7 +757,7 @@ function checkWuLaneMatch(
     }
   } catch (e) {
     const errMessage = e instanceof Error ? e.message : String(e);
-    // eslint-disable-next-line no-console -- Intentional operational logging
+     
     console.warn(`${PREFIX} Warning: Failed to parse ${activeWuid} YAML: ${errMessage}`);
   }
 
@@ -975,13 +975,13 @@ export function checkWipJustification(
     resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
   }
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Config path is validated
+   
   if (!existsSync(resolvedConfigPath)) {
     return NO_JUSTIFICATION_REQUIRED;
   }
 
   try {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- Config path is validated
+     
     const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
     const config = parseYAML(configContent) as LumenflowConfig;
     const allLanes = extractAllLanesFromConfig(config);

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable security/detect-non-literal-fs-filename */
+ 
 /**
  * Initiative Plan Command (WU-1105, renamed in WU-1193)
  *

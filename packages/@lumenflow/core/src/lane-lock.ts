@@ -259,7 +259,7 @@ export function acquireLaneLock(
   // WU-1325: Check lock policy before acquiring
   const lockPolicy = getLockPolicyForLane(lane);
   if (lockPolicy === 'none') {
-    // eslint-disable-next-line no-console -- CLI tool status message
+     
     console.log(`${LOG_PREFIX} Skipping lock acquisition for "${lane}" (lock_policy=none)`);
     return {
       acquired: true,

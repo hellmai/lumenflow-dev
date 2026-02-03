@@ -10,8 +10,8 @@
  * - Monthly rollup of archived events
  */
 
-/* eslint-disable sonarjs/no-duplicate-string -- Test files use descriptive repeated IDs */
-/* eslint-disable sonarjs/no-nested-functions -- Test structure requires nested describe/it blocks */
+ 
+ 
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';

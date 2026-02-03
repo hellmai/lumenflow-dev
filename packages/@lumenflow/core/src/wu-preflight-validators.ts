@@ -20,7 +20,7 @@
  * - Reusable by wu:done for early validation
  */
 
-/* eslint-disable security/detect-non-literal-fs-filename, security/detect-object-injection */
+ 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { WU_PATHS } from './wu-paths.js';
@@ -245,7 +245,7 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
 
   // Debug logging for YAML source (WU-1830)
   if (options.worktreePath && options.worktreePath !== rootDir) {
-    process.env.DEBUG && console.log(`[wu-preflight] Reading WU YAML from worktree: ${wuPath}`);
+    if (process.env.DEBUG) console.log(`[wu-preflight] Reading WU YAML from worktree: ${wuPath}`);
   }
 
   let doc;
@@ -288,7 +288,7 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
     try {
       suggestedTestPaths = await findSuggestedTestPaths(missingTestPaths, searchRoot);
     } catch (err) {
-      process.env.DEBUG && console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
+      if (process.env.DEBUG) console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
     }
   }
 

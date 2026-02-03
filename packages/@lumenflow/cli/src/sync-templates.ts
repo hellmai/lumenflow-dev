@@ -8,9 +8,9 @@
  * - Claude skills -> templates/vendors/claude/.claude/skills/
  * - Core docs (LUMENFLOW.md, constraints.md) -> templates/core/
  */
-/* eslint-disable no-console -- CLI tool requires console output */
-/* eslint-disable security/detect-non-literal-fs-filename -- CLI tool syncs templates from known paths */
-/* eslint-disable security/detect-non-literal-regexp -- Dynamic date pattern for template substitution */
+ 
+ 
+ 
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -319,7 +319,7 @@ function checkFileDrift(
  * to detect if templates have drifted out of sync. Used by CI to warn
  * when templates need to be re-synced.
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Multi-category drift check requires nested iteration
+ 
 export async function checkTemplateDrift(projectRoot: string): Promise<DriftResult> {
   const driftingFiles: string[] = [];
   const checkedFiles: string[] = [];
@@ -403,7 +403,7 @@ export async function checkTemplateDrift(projectRoot: string): Promise<DriftResu
 /**
  * CLI entry point
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- CLI main() handles multiple modes and output formatting
+ 
 export async function main(): Promise<void> {
   const opts = parseSyncTemplatesOptions();
   const projectRoot = process.cwd();
