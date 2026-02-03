@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml) — Framework: Core
 - [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml) — Content: Documentation
 
 ## 🔧 In progress
