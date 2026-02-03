@@ -1,0 +1,2 @@
+WU WU-1390 — Implement mem:recover command and PreCompact/SessionStart hooks for post-compaction recovery
+Completed: 2026-02-03
