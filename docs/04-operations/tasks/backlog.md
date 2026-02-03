@@ -24,7 +24,7 @@ sections:
 - [WU-1379 — Add File Ownership section to LUMENFLOW.md template](wu/WU-1379.yaml) — Content: Documentation
 - [WU-1378 — Add lumenflow commands discovery command](wu/WU-1378.yaml) — Framework: CLI
 - [WU-1377 — Add managed file header comments to generated files](wu/WU-1377.yaml) — Framework: CLI
-- [WU-1376 — Add For AI Agents page to Starlight docs](wu/WU-1376.yaml) — Content: Documentation
+
 - [WU-1375 — Init should warn if config files exist from manual writes](wu/WU-1375.yaml) — Framework: CLI
 - [WU-1374 — Enable enforcement hooks by default for --client claude](wu/WU-1374.yaml) — Framework: CLI
 - [WU-1373 — Make CLAUDE.md template more aggressive about reading docs first](wu/WU-1373.yaml) — Framework: CLI
