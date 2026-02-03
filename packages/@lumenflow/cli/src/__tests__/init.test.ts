@@ -630,6 +630,86 @@ describe('lumenflow init', () => {
     });
   });
 
+  // WU-1382: Improved templates for agent clarity
+  describe('WU-1382: improved templates for agent clarity', () => {
+    describe('CLAUDE.md template enhancements', () => {
+      it('should include CLI commands table inline in CLAUDE.md', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const claudeMdPath = path.join(tempDir, 'CLAUDE.md');
+        expect(fs.existsSync(claudeMdPath)).toBe(true);
+
+        const content = fs.readFileSync(claudeMdPath, 'utf-8');
+        // Should have CLI commands table with common commands
+        expect(content).toContain('| Command');
+        expect(content).toContain('wu:claim');
+        expect(content).toContain('wu:done');
+        expect(content).toContain('wu:status');
+        expect(content).toContain('gates');
+      });
+
+      it('should include warning about manual YAML editing in CLAUDE.md', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const claudeMdPath = path.join(tempDir, 'CLAUDE.md');
+        const content = fs.readFileSync(claudeMdPath, 'utf-8');
+        // Should warn against manual WU YAML edits
+        expect(content).toMatch(/do\s+not\s+(manually\s+)?edit|never\s+(manually\s+)?edit/i);
+        expect(content).toMatch(/wu.*yaml|yaml.*wu/i);
+      });
+    });
+
+    describe('config.yaml managed file header', () => {
+      it('should include managed file header in .lumenflow.config.yaml', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+        expect(fs.existsSync(configPath)).toBe(true);
+
+        const content = fs.readFileSync(configPath, 'utf-8');
+        // Should have managed file header
+        expect(content).toMatch(/LUMENFLOW\s+MANAGED\s+FILE/i);
+        expect(content).toMatch(/do\s+not\s+(manually\s+)?edit/i);
+      });
+    });
+
+    describe('lane-inference.yaml managed file header', () => {
+      it('should include managed file header in .lumenflow.lane-inference.yaml', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const laneInferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
+        expect(fs.existsSync(laneInferencePath)).toBe(true);
+
+        const content = fs.readFileSync(laneInferencePath, 'utf-8');
+        // Should have managed file header
+        expect(content).toMatch(/LUMENFLOW\s+MANAGED\s+FILE/i);
+        expect(content).toMatch(/do\s+not\s+(manually\s+)?edit/i);
+      });
+    });
+  });
+
   // WU-1362: Branch guard tests for init.ts
   describe('WU-1362: branch guard for tracked file writes', () => {
     it('should block scaffold when on main branch and targeting main checkout', async () => {
