@@ -1,0 +1,33 @@
+id: WU-1370
+title: Fix nested micro-worktree in repairWUInconsistency causing local main drift
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-03
+code_paths:
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-consistency-checker.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1370.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: When handleOrphanCheck calls repairWUInconsistency with projectRoot, the repair function creates its own micro-worktree without pushOnly:true. This nested micro-worktree merges to local main before pushing, causing local main to drift ahead of origin/main after every wu:claim that triggers orphan repair.
+acceptance:
+  - When projectRoot is provided to repairWUInconsistency, skip micro-worktree creation and work directly on projectRoot
+  - Existing wu:repair CLI behavior (no projectRoot) unchanged - still creates micro-worktree
+  - After wu:claim with orphan repair, local main equals origin/main (no drift)
+  - Add test for nested micro-worktree scenario
