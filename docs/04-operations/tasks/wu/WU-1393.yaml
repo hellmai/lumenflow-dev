@@ -2,7 +2,7 @@ id: WU-1393
 title: Fix WU spec:linter issues on main
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -44,3 +44,5 @@ acceptance:
   - WU-1390 includes notes, tests.manual, spec_refs
   - WU-1391 includes notes
   - WU-1385 acceptance references only files listed in code_paths
+locked: true
+completed_at: 2026-02-03T18:52:40.539Z
