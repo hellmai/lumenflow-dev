@@ -723,10 +723,11 @@ Configuration in `.lumenflow.config.yaml`:
 
 ```yaml
 git:
-  mainBranch: main
-  agentBranchPatterns:
+  main_branch: main
+  agent_branch_patterns:
     - 'agent/*' # Default: agent-created branches
-    - 'claude/*' # Optional: add vendor-specific patterns
+    - 'claude/*' # Claude Code web branches
+    - 'codex/*' # OpenAI Codex web branches
 ```
 
 **How it works:**
@@ -754,6 +755,24 @@ This bypasses worktree checks for automation that manages its own isolation.
 4. Protected branch → protected
 5. Lane branch → protected (use worktree)
 6. Unknown branch → protected (fail-closed)
+
+---
+
+#### Cloud Agent Workflow (Claude/Codex Web)
+
+Cloud agents work on hosted branches, not local worktrees. To stay compliant:
+
+Choose one of the first two modes below, then continue with steps 4-7.
+
+1. **Create the WU** on main with `pnpm wu:create` (or confirm it already exists).
+2. **Branch-only mode (when allowed)**: `pnpm wu:claim -- --id WU-XXXX --lane "<Lane>" --branch-only`
+3. **Agent-branch bypass mode**: keep the WU claimed locally in a worktree.
+4. **Agent works in cloud branch** (e.g., `claude/<topic>` or `codex/<topic>`) and pushes commits.
+5. **Integrator cherry-picks** agent commits into the lane worktree.
+6. **Run gates in worktree**: `pnpm wu:prep --id WU-XXXX`
+7. **Merge via tooling**: from main, run `pnpm wu:done --id WU-XXXX`
+
+**Rule:** Cloud agents never merge to `main`. Only `wu:done` completes a WU.
 
 ---
 
