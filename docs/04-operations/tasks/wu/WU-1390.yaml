@@ -8,9 +8,14 @@ created: 2026-02-03
 code_paths:
   - packages/@lumenflow/memory/src/mem-recover-core.ts
   - packages/@lumenflow/cli/src/mem-recover.ts
-  - .claude/hooks/**
+  - .claude/hooks/pre-compact-checkpoint.sh
+  - .claude/hooks/session-start-recovery.sh
+  - .claude/settings.json
 tests:
-  manual: []
+  manual:
+    - 'Run pnpm mem:recover --wu WU-1390 and verify output contains constraints, CLI commands, and spawn guidance'
+    - 'Verify .claude/settings.json has PreCompact and SessionStart hooks configured'
+    - 'Verify hook templates exist in packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/'
   unit:
     - packages/@lumenflow/memory/__tests__/mem-recover-core.test.ts
   e2e: []
@@ -18,7 +23,12 @@ artifacts:
   - .lumenflow/stamps/WU-1390.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Implementation uses durable recovery pattern: PreCompact writes recovery file to .lumenflow/state/,
+  SessionStart reads and deletes it. This ensures recovery survives context compaction.
+  mem:recover is vendor-agnostic (core in @lumenflow/memory), hooks are Claude Code overlay.
+spec_refs:
+  - lumenflow://plans/wise-shimmying-matsumoto.md
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

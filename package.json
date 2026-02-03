@@ -52,6 +52,7 @@
     "mem:signal": "node packages/@lumenflow/cli/dist/mem-signal.js",
     "mem:cleanup": "node packages/@lumenflow/cli/dist/mem-cleanup.js",
     "mem:context": "node packages/@lumenflow/cli/dist/mem-context.js",
+    "mem:recover": "node packages/@lumenflow/cli/dist/mem-recover.js",
     "signal:cleanup": "node packages/@lumenflow/cli/dist/signal-cleanup.js",
     "state:cleanup": "node packages/@lumenflow/cli/dist/state-cleanup.js",
     "state:doctor": "node packages/@lumenflow/cli/dist/state-doctor.js",
