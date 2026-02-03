@@ -2,7 +2,7 @@ id: WU-1365
 title: 'Micro-worktree robustness: error handling, cleanup, and prettier availability'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -26,10 +26,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Consolidates WU-1229 and WU-1318. Issues: (1) wu:block fails if status.md missing sections, (2) auto-repair push blocked by pre-push hook (missing LUMENFLOW_WU_TOOL env), (3) orphaned temp worktrees not cleaned up on failure, (4) noisy prettier warning when not installed. Solution: harden error handling, set env vars, ensure cleanup, gracefully handle missing prettier.'
+description: 'Consolidates WU-1229 and WU-1318. Issues: (1) wu:block fails if status.md missing
+  sections, (2) auto-repair push blocked by pre-push hook (missing LUMENFLOW_WU_TOOL env), (3)
+  orphaned temp worktrees not cleaned up on failure, (4) noisy prettier warning when not installed.
+  Solution: harden error handling, set env vars, ensure cleanup, gracefully handle missing
+  prettier.'
 acceptance:
   - wu:block handles missing status.md sections gracefully
   - Micro-worktree operations set LUMENFLOW_WU_TOOL to bypass pre-push hook
   - Failed operations clean up temp worktrees before exit
   - formatFiles skips formatting when prettier unavailable without throwing
   - Warning message is clear and actionable if formatting skipped
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1365
+claimed_at: 2026-02-03T00:10:36.569Z
+baseline_main_sha: c34b092be3f9961a7fc37e5d2757089adcc3697a
+session_id: cf250dc8-db3b-4f08-8489-0249bfcab00b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-03T00:10:36.576Z
