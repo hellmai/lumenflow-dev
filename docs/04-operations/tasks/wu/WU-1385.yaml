@@ -2,7 +2,7 @@ id: WU-1385
 title: Include wu-sizing-guide.md in lumenflow init onboarding docs
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -48,3 +48,5 @@ session_id: 757ddb4a-7d84-4351-a99d-c30d637c98eb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T16:06:57.215Z
+locked: true
+completed_at: 2026-02-03T16:13:09.040Z
