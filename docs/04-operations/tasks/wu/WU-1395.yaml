@@ -2,7 +2,7 @@ id: WU-1395
 title: Make Quickstart agent-first + add human-facing landing copy
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -22,8 +22,9 @@ artifacts:
   - .lumenflow/stamps/WU-1395.done
 dependencies: []
 risks: []
-notes: |
-  Moves the canonical quickstart to the agent guide, adds a manual quickstart, and updates landing copy/navigation.
+notes: >
+  Moves the canonical quickstart to the agent guide, adds a manual quickstart, and updates landing
+  copy/navigation.
 spec_refs:
   - lumenflow://plans/WU-1395-plan.md
 requires_review: false
@@ -49,3 +50,5 @@ session_id: d00d0149-38e8-4bca-8ec8-821df75ae261
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T23:03:21.141Z
+locked: true
+completed_at: 2026-02-03T23:19:46.896Z
