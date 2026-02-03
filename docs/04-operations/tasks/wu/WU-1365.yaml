@@ -2,7 +2,7 @@ id: WU-1365
 title: 'Micro-worktree robustness: error handling, cleanup, and prettier availability'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-02
 code_paths:
@@ -48,3 +48,5 @@ session_id: cf250dc8-db3b-4f08-8489-0249bfcab00b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-03T00:10:36.576Z
+locked: true
+completed_at: 2026-02-03T00:20:53.842Z
