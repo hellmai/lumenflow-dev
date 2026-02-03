@@ -26,6 +26,8 @@ sections:
 - [WU-1380 — Rewrite Starlight quickstart as agent-native documentation](wu/WU-1380.yaml) — Content: Documentation
 - [WU-1382 — Improve generated file templates for agent clarity](wu/WU-1382.yaml) — Framework: CLI
 - [WU-1383 — Add CLI safeguards against manual file editing](wu/WU-1383.yaml) — Framework: CLI
+- [WU-1384 — Fix spec-linter required fields on ready WUs](wu/WU-1384.yaml) — Content: Documentation
+- [WU-1385 — Include wu-sizing-guide.md in lumenflow init onboarding docs](wu/WU-1385.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -33,7 +35,6 @@ sections:
 - [WU-1142 — Make wu:spawn prompts type-aware for testing requirements](wu/WU-1142.yaml) — Framework: CLI
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1381 — Document cloud agent branch workflow](wu/WU-1381.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -365,3 +366,4 @@ sections:
 - [WU-1370 — Fix nested micro-worktree in repairWUInconsistency causing local main drift](wu/WU-1370.yaml)
 - [WU-1371 — Auto-generate CLI README.md from docs generator](wu/WU-1371.yaml)
 - [WU-1369 — Add Starlight docs for 10 missing CLI bin entries](wu/WU-1369.yaml)
+- [WU-1381 — Document cloud agent branch workflow](wu/WU-1381.yaml)
