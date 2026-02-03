@@ -679,3 +679,4 @@
 {"type":"complete","wuId":"WU-1383","timestamp":"2026-02-03T14:18:30.912Z"}
 {"type":"complete","wuId":"WU-1386","timestamp":"2026-02-03T15:16:13.366Z"}
 {"type":"claim","wuId":"WU-1378","lane":"Framework: CLI","title":"Add lumenflow commands discovery command","timestamp":"2026-02-03T16:04:46.265Z"}
+{"type":"claim","wuId":"WU-1385","lane":"Framework: CLI","title":"Include wu-sizing-guide.md in lumenflow init onboarding docs","timestamp":"2026-02-03T16:06:57.245Z"}
