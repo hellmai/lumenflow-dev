@@ -17,8 +17,11 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1380.done
 dependencies: []
+spec_refs:
+  - lumenflow://inline
 risks: []
-notes: ''
+notes: 'Origin: Haven 2.8.0 onboarding report. Rewrite quickstart as imperative, agent-safe sequence
+  with explicit prohibitions and command-first structure.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
