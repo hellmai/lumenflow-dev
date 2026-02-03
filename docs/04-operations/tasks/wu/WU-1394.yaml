@@ -10,14 +10,11 @@ code_paths:
   - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/settings.json.template
-  - packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/pre-compact-checkpoint.sh
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/hooks/session-start-recovery.sh
-  - packages/@lumenflow/cli/templates/vendors/claude/.claude/CLAUDE.md.template
-  - .claude/hooks/pre-compact-checkpoint.sh
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/index.ts
   - .claude/hooks/session-start-recovery.sh
-  - .claude/settings.json
   - .claude/CLAUDE.md
-  - packages/@lumenflow/memory/src/mem-recover-core.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - .claude/skills/context-management/SKILL.md
 tests:
