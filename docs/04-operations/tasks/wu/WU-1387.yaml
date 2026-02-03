@@ -8,7 +8,9 @@ created: 2026-02-03
 code_paths:
   - packages/@lumenflow/cli/src/doctor.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm lumenflow:doctor --deep and verify output shows lane health and prerequisite status
+    - Run pnpm lumenflow:doctor from a subdirectory and verify managed file detection works
   unit:
     - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
   e2e: []
@@ -16,7 +18,14 @@ artifacts:
   - .lumenflow/stamps/WU-1387.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  WU-1387 fixes four edge cases identified during WU-1386 review:
+  1. parseWorktreePruneOutput helper added for real wu:prune output parsing
+  2. checkWUValidity now distinguishes CLI execution failure from validation failure
+  3. runDoctorForInit now includes lane health and prerequisite details in output
+  4. getGitRepoRoot helper added for correct subdirectory handling
+spec_refs:
+  - 'lumenflow://plans/WU-1387-doctor-edge-cases.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
