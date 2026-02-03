@@ -13,6 +13,8 @@
 /* eslint-disable no-console */
 // fs operations use runtime-provided paths from LumenFlow configuration
 /* eslint-disable security/detect-non-literal-fs-filename */
+// Object injection sink warnings are false positives for array indexing
+/* eslint-disable security/detect-object-injection */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -130,6 +132,8 @@ function readClaudeSettings(projectDir: string): ClaudeSettings {
 /**
  * Merge generated hooks into existing settings
  */
+// Complexity is acceptable for hook merging logic - alternative would over-abstract
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function mergeHooksIntoSettings(
   existing: ClaudeSettings,
   generated: GeneratedHooks,

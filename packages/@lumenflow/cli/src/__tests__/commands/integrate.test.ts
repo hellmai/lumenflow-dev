@@ -3,12 +3,17 @@
  * Tests for Claude Code integration command (WU-1367)
  */
 
+// Test file lint exceptions
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable sonarjs/no-duplicate-string */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 
 // Mock fs
 vi.mock('node:fs');
+
+const TEST_PROJECT_DIR = '/test/project';
 
 describe('WU-1367: Integrate Command', () => {
   beforeEach(() => {
@@ -23,7 +28,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: false,
         },
@@ -35,13 +40,13 @@ describe('WU-1367: Integrate Command', () => {
 
     it('should create hooks directory when it does not exist', async () => {
       const mockMkdirSync = vi.mocked(fs.mkdirSync);
-      const mockWriteFileSync = vi.mocked(fs.writeFileSync);
+      vi.mocked(fs.writeFileSync);
       vi.mocked(fs.existsSync).mockReturnValue(false);
       vi.mocked(fs.readFileSync).mockReturnValue('{}');
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: true,
@@ -61,7 +66,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: true,
@@ -85,7 +90,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: false,
@@ -108,7 +113,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: false,
@@ -136,7 +141,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: true,
@@ -162,7 +167,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: false,
@@ -197,7 +202,7 @@ describe('WU-1367: Integrate Command', () => {
 
       const { integrateClaudeCode } = await import('../../commands/integrate.js');
 
-      await integrateClaudeCode('/test/project', {
+      await integrateClaudeCode(TEST_PROJECT_DIR, {
         enforcement: {
           hooks: true,
           block_outside_worktree: true,
