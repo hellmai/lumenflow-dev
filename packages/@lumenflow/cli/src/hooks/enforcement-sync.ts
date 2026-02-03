@@ -6,6 +6,11 @@
  * enforcement.hooks=true in the configuration.
  */
 
+// fs operations use runtime-provided paths from LumenFlow configuration
+/* eslint-disable security/detect-non-literal-fs-filename */
+// Object injection sink warnings are false positives for array indexing
+/* eslint-disable security/detect-object-injection */
+
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
@@ -180,6 +185,8 @@ function writeHookScript(projectDir: string, filename: string, content: string):
  * @param generated - Generated hooks
  * @returns Merged settings
  */
+// Complexity is acceptable for hook merging logic - alternative would over-abstract
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function mergeHooksIntoSettings(
   existing: ClaudeSettings,
   generated: GeneratedHooks,
