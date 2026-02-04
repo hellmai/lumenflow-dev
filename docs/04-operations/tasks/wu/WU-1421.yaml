@@ -2,7 +2,7 @@ id: WU-1421
 title: Rename .beacon to .lumenflow (complete ExampleApp migration)
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: .beacon/ directory is a legacy artifact from migrating LumenFlow out of ExampleApp. Problem: Confusing naming - '.beacon' has no meaning in LumenFlow context. spawn-monitor.ts uses .beacon/locks/ while lane-lock.ts uses .lumenflow/locks/, creating inconsistency. Solution: Rename all .beacon references to .lumenflow, consolidate lock directories, update all code paths."
+description: "Context: .beacon/ directory is a legacy artifact from migrating LumenFlow out of
+  ExampleApp. Problem: Confusing naming - '.beacon' has no meaning in LumenFlow context.
+  spawn-monitor.ts uses .beacon/locks/ while lane-lock.ts uses .lumenflow/locks/, creating
+  inconsistency. Solution: Rename all .beacon references to .lumenflow, consolidate lock
+  directories, update all code paths."
 acceptance:
   - .beacon directory renamed to .lumenflow or consolidated into existing .lumenflow
   - spawn-monitor.ts uses .lumenflow/locks/ (same as lane-lock.ts)
   - No references to 'beacon' remain in codebase (except git history)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1421
+claimed_at: 2026-02-04T16:24:40.178Z
+baseline_main_sha: 87d096b926f0325aebbc8fa17b602ef459c90f0c
+session_id: 5c3c5fd5-c213-4547-99c2-299b40fe4be2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T16:24:40.183Z
