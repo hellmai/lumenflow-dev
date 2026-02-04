@@ -14,7 +14,11 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1434.done
-dependencies: []
+dependencies:
+  - WU-1426
+  - WU-1432
+initiative: INIT-MCP-FULL
+phase: 7
 spec_refs:
   - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
@@ -35,4 +39,3 @@ acceptance:
   - MCP reference page includes all Validation tools (5)
   - MCP reference page includes all Setup tools (8)
   - Tool list matches public CLI manifest from WU-1432
-initiative: INIT-MCP-FULL
