@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1431 — Create shared Zod schemas for CLI/MCP parity](wu/WU-1431.yaml)
 
 ## Completed
 
@@ -384,3 +383,4 @@ _Last updated: 2026-02-04_
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — 2026-02-04
 - [WU-1422 — MCP: Complete WU tools (+17)](wu/WU-1422.yaml) — 2026-02-04
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — 2026-02-04
+- [WU-1431 — Create shared Zod schemas for CLI/MCP parity](wu/WU-1431.yaml) — 2026-02-04
