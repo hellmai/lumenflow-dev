@@ -8,18 +8,21 @@ priority: P2
 created: 2026-02-04
 phases:
   - id: 1
-    title: WU tools (+17)
+    title: Shared Zod schemas for CLI/MCP parity
     status: pending
   - id: 2
-    title: Initiative + Memory tools (+21)
+    title: WU tools (+17)
     status: pending
   - id: 3
-    title: Agent + Orchestration tools (+8)
+    title: Initiative + Memory tools (+21)
     status: pending
   - id: 4
-    title: Flow + Validation + Setup tools (+17)
+    title: Agent + Orchestration tools (+8)
     status: pending
   - id: 5
+    title: Flow + Validation + Setup tools (+17)
+    status: pending
+  - id: 6
     title: Documentation on lumenflow.dev
     status: pending
 success_metrics:
