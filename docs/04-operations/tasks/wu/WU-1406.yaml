@@ -1,7 +1,7 @@
 id: WU-1406
 title: Forbid template-selection questions during setup
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-04
@@ -17,10 +17,17 @@ dependencies: []
 risks: []
 notes: 'Released (2026-02-04): cleanup orphan claim'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T11:14:47.551Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1406
+session_id: 51bf55e5-8c42-4b54-a28b-5ce90bc21682
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T11:14:47.556Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +38,3 @@ description: 'Context: Agents ask users to choose a project template during Lume
 acceptance:
   - Prompt forbids asking users to choose templates/frameworks during setup
   - Prompt says stack discussion becomes a WU after setup
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T11:14:47.556Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1406
-claimed_at: 2026-02-04T11:14:47.551Z
-baseline_main_sha: 0a3802ecb9ee15d77d4f0223b642a80ed2fca4a1
-session_id: 51bf55e5-8c42-4b54-a28b-5ce90bc21682
