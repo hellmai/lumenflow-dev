@@ -873,3 +873,73 @@ describe('Lock utilities (WU-1102)', () => {
     });
   });
 });
+
+/**
+ * WU-1419: Tests for wu:recover reset action emitting release event
+ *
+ * This test suite verifies that when wu:recover --action reset is called,
+ * the state store receives a release event to transition the WU from
+ * in_progress to ready. Without this, re-claiming fails due to WIP limits.
+ */
+describe('WU State Store - Reset Recovery with Release Event (WU-1419)', () => {
+  let tempDir: string;
+  let store: WUStateStore;
+
+  beforeEach(async () => {
+    tempDir = await mkdtemp(path.join(tmpdir(), 'wu-state-store-reset-test-'));
+    store = new WUStateStore(tempDir);
+  });
+
+  afterEach(async () => {
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  describe('Reset scenario requiring release event', () => {
+    it('should allow reclaim after release event is emitted', async () => {
+      // Simulate the wu:recover --action reset workflow:
+      // 1. WU is claimed (in_progress in state store)
+      await store.claim('WU-1419', 'Framework: Core', 'Test reset WU');
+      expect(store.getWUState('WU-1419')?.status).toBe('in_progress');
+
+      // 2. Release event is emitted (transitions to ready)
+      await store.release('WU-1419', 'Reset via wu:recover');
+      expect(store.getWUState('WU-1419')?.status).toBe('ready');
+
+      // 3. WU can be re-claimed (no longer blocked by WIP limit)
+      await store.claim('WU-1419', 'Framework: Core', 'Test reset WU');
+      expect(store.getWUState('WU-1419')?.status).toBe('in_progress');
+    });
+
+    it('should free lane WIP after release event', async () => {
+      // Claim WU - lane should show this WU as in_progress
+      await store.claim('WU-1419', 'Framework: Core', 'Test WU');
+      expect(store.getByStatus('in_progress').has('WU-1419')).toBe(true);
+      expect(store.getByLane('Framework: Core').has('WU-1419')).toBe(true);
+
+      // Release WU - should transition to ready
+      await store.release('WU-1419', 'Reset via wu:recover');
+      expect(store.getByStatus('ready').has('WU-1419')).toBe(true);
+      expect(store.getByStatus('in_progress').has('WU-1419')).toBe(false);
+    });
+
+    it('should persist release event to events file', async () => {
+      await store.claim('WU-1419', 'Framework: Core', 'Test WU');
+      await store.release('WU-1419', 'Reset via wu:recover');
+
+      // Verify event was persisted by loading in new store instance
+      const store2 = new WUStateStore(tempDir);
+      await store2.load();
+      expect(store2.getWUState('WU-1419')?.status).toBe('ready');
+    });
+
+    it('should include reason in release event', async () => {
+      await store.claim('WU-1419', 'Framework: Core', 'Test WU');
+      await store.release('WU-1419', 'Reset via wu:recover --action reset');
+
+      // Read the events file to verify reason is included
+      const eventsContent = await readFile(path.join(tempDir, WU_EVENTS_FILE_NAME), 'utf-8');
+      expect(eventsContent).toContain('Reset via wu:recover --action reset');
+      expect(eventsContent).toContain('"type":"release"');
+    });
+  });
+});

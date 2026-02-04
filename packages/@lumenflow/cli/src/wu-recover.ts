@@ -16,7 +16,7 @@
  *   pnpm wu:recover --id WU-123 --action nuke --force  # Destructive
  */
 
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync, rmSync, writeFileSync } from 'node:fs';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { computeContext } from '@lumenflow/core/dist/context/index.js';
 import {
@@ -32,9 +32,13 @@ import {
   WU_STATUS,
   DEFAULTS,
   toKebab,
+  FILE_SYSTEM,
 } from '@lumenflow/core/dist/wu-constants.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
+import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
 import { join, relative } from 'node:path';
 
 const { RECOVERY_ACTIONS } = CONTEXT_VALIDATION;
@@ -197,6 +201,7 @@ async function executeResume(wuId: string): Promise<boolean> {
  * Execute reset action - discard worktree and reset to ready
  *
  * WU-1226: Uses micro-worktree isolation for WU YAML state changes.
+ * WU-1419: Emits release event to state store so WU can be re-claimed.
  * Worktree removal still happens directly (git operation, not file write).
  * Changes are pushed via merge, not direct file modification on main.
  */
@@ -211,6 +216,7 @@ async function executeReset(wuId: string): Promise<boolean> {
 
   const doc = readWU(wuPath, wuId);
   const worktreePath = getWorktreePath(wuId, doc.lane || '');
+  const lane = doc.lane || '';
 
   // Remove worktree if exists (git operation, safe to do directly)
   // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
@@ -235,6 +241,7 @@ async function executeReset(wuId: string): Promise<boolean> {
   }
 
   // WU-1226: Use micro-worktree isolation for WU YAML state changes
+  // WU-1419: Also emit release event to state store
   try {
     await withMicroWorktree({
       operation: OPERATION_NAME,
@@ -255,12 +262,65 @@ async function executeReset(wuId: string): Promise<boolean> {
         Reflect.deleteProperty(microDoc, 'baseline_main_sha');
         writeWU(microWuPath, microDoc);
 
+        // WU-1419: Emit release event to state store so re-claiming works
+        // Without this, state store still thinks WU is in_progress, blocking re-claim
+        const stateDir = join(microPath, '.lumenflow', 'state');
+        const store = new WUStateStore(stateDir);
+        await store.load();
+
+        // Only emit release event if WU is currently in_progress in state store
+        const currentState = store.getWUState(wuId);
+        if (currentState && currentState.status === 'in_progress') {
+          await store.release(wuId, 'Reset via wu:recover --action reset');
+          console.log(`${LOG_PREFIX} Emitted release event to state store`);
+
+          // Regenerate backlog.md and status.md from state store
+          const microBacklogPath = join(microPath, WU_PATHS.BACKLOG());
+          const microStatusPath = join(microPath, WU_PATHS.STATUS());
+
+          const backlogContent = await generateBacklog(store);
+          writeFileSync(microBacklogPath, backlogContent, {
+            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+          });
+
+          const statusContent = await generateStatus(store);
+          writeFileSync(microStatusPath, statusContent, {
+            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+          });
+
+          return {
+            commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and emit release event`,
+            files: [
+              relative(process.cwd(), wuPath),
+              WU_PATHS.STATUS(),
+              WU_PATHS.BACKLOG(),
+              '.lumenflow/state/wu-events.jsonl',
+            ],
+          };
+        }
+
+        // WU not in state store as in_progress, just update YAML
         return {
           commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and set status to ready`,
           files: [relative(process.cwd(), wuPath)],
         };
       },
     });
+
+    // Release lane lock so another WU can be claimed
+    if (lane) {
+      try {
+        const releaseResult = releaseLaneLock(lane, { wuId });
+        if (releaseResult.released && !releaseResult.notFound) {
+          console.log(`${LOG_PREFIX} Lane lock released for "${lane}"`);
+        }
+      } catch (err) {
+        // Non-blocking: lock release failure should not block the reset operation
+        console.warn(
+          `${LOG_PREFIX} Warning: Could not release lane lock: ${(err as Error).message}`,
+        );
+      }
+    }
 
     console.log(
       `${LOG_PREFIX} ${EMOJI.SUCCESS} Reset completed - ${wuId} is now ready for re-claiming`,
