@@ -1,7 +1,7 @@
 id: WU-1409
 title: Require --help before unknown commands
 lane: 'Content: Documentation'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-02-04
@@ -17,12 +17,22 @@ artifacts:
   - .lumenflow/stamps/WU-1409.done
 dependencies: []
 risks: []
-notes: 'Released (2026-02-04): claim timed out; resetting worktree'
+notes: |-
+  Released (2026-02-04): claim timed out; resetting worktree
+
+  Updated type to refactor due to code_paths under apps/docs (WU-2310).
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T13:07:25.154Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1409
+session_id: 106c1d52-61d7-43db-8d84-9ba4534e690a
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T13:07:25.159Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +43,3 @@ description: 'Context: Agents guess command syntax and edit YAML directly. Probl
 acceptance:
   - 'Quickstart includes rule: run --help if unsure before any command'
   - LUMENFLOW.md includes same rule in core workflow guidance
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T13:07:25.159Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1409
-claimed_at: 2026-02-04T13:07:25.154Z
-baseline_main_sha: e401aa5493fccd07ef470ce501296aa7c730e472
-session_id: 106c1d52-61d7-43db-8d84-9ba4534e690a
