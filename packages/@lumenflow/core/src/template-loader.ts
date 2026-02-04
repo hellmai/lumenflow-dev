@@ -20,6 +20,7 @@ import { join } from 'node:path';
 import matter from 'gray-matter';
 import yaml from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Template frontmatter parsed from YAML.
@@ -107,8 +108,9 @@ export interface TemplateContext {
   [key: string]: string | undefined;
 }
 
-const MANIFEST_PATH = '.lumenflow/templates/manifest.yaml';
-const TEMPLATES_DIR = '.lumenflow/templates/spawn-prompt';
+/** WU-1430: Use centralized constants for template paths */
+const MANIFEST_PATH = LUMENFLOW_PATHS.TEMPLATE_MANIFEST;
+const TEMPLATES_DIR = LUMENFLOW_PATHS.SPAWN_PROMPT_DIR;
 
 /**
  * Validate a template entry from the manifest.
@@ -322,7 +324,11 @@ export function loadTemplatesWithOverrides(
 ): Map<string, LoadedTemplate> {
   const templates = new Map<string, LoadedTemplate>();
   const baseTemplatesDir = join(baseDir, TEMPLATES_DIR);
-  const clientTemplatesDir = join(baseDir, `.lumenflow/templates.${clientName}/spawn-prompt`);
+  // WU-1430: Construct client templates path from constants
+  const clientTemplatesDir = join(
+    baseDir,
+    `${LUMENFLOW_PATHS.BASE}/templates.${clientName}/spawn-prompt`,
+  );
 
   // Load base templates first
   if (existsSync(baseTemplatesDir)) {

@@ -24,6 +24,7 @@
 import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import type { LumenFlowConfig } from './lumenflow-config-schema.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Default maximum context size in bytes (4KB)
@@ -31,10 +32,10 @@ import type { LumenFlowConfig } from './lumenflow-config-schema.js';
 const DEFAULT_MAX_SIZE = 4096;
 
 /**
- * Memory layer paths
+ * Memory layer paths (WU-1430: Use centralized constants)
  */
 const MEMORY_PATHS = {
-  MEMORY_DIR: '.lumenflow/memory',
+  MEMORY_DIR: LUMENFLOW_PATHS.MEMORY_DIR,
   MEMORY_FILE: 'memory.jsonl',
 } as const;
 

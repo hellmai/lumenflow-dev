@@ -44,12 +44,9 @@ export type { EventArchivalConfig };
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * LumenFlow paths for state and archive
+ * Import centralized path constants (WU-1430)
  */
-const LUMENFLOW_PATHS = {
-  STATE_DIR: '.lumenflow/state',
-  ARCHIVE_DIR: '.lumenflow/archive',
-};
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Default event archival configuration

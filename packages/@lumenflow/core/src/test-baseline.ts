@@ -15,13 +15,14 @@
 
 import { z } from 'zod';
 import { parseISO, isValid } from 'date-fns';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-/** Default path for the test baseline file */
-export const DEFAULT_BASELINE_PATH = '.lumenflow/test-baseline.json';
+/** Default path for the test baseline file (WU-1430: Use centralized constant) */
+export const DEFAULT_BASELINE_PATH = LUMENFLOW_PATHS.TEST_BASELINE;
 
 /** Environment variable to override baseline path */
 export const BASELINE_PATH_ENV = 'LUMENFLOW_TEST_BASELINE';

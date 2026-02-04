@@ -45,6 +45,7 @@ import {
   WU_STATUS,
   GIT_COMMANDS,
   GIT_FLAGS,
+  LUMENFLOW_PATHS,
 } from './wu-constants.js';
 import { RECOVERY, REBASE, PREFLIGHT, MERGE } from './wu-done-messages.js';
 import { getDriftLevel, DRIFT_LEVELS } from './branch-drift.js';
@@ -361,7 +362,7 @@ export async function executeWorktreeCompletion(context) {
     // WU-2310: Capture file state before transaction commit
     // This allows rollback if git commit fails AFTER files are written
     // Note: We use the relative paths since we're already chdir'd into the worktree
-    const workingEventsPath = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
+    const workingEventsPath = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
     const pathsToSnapshot = [
       workingWUPath,
       workingStatusPath,
@@ -748,14 +749,15 @@ export async function checkBranchDrift(branch) {
  * that would break if paths are rearranged.
  */
 const APPEND_ONLY_FILES = [
-  // State store events file (append-only by design)
-  path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME),
+  // State store events file (append-only by design) - WU-1430: Use centralized constant
+  path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME),
   // Status and backlog are generated from state store but may conflict during rebase
   WU_PATHS.STATUS(),
   WU_PATHS.BACKLOG(),
 ];
 
-const WU_EVENTS_PATH = path.join('.lumenflow', 'state', WU_EVENTS_FILE_NAME);
+// WU-1430: Use centralized constant
+const WU_EVENTS_PATH = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
 
 function normalizeEventForKey(event) {
   const normalized = {};

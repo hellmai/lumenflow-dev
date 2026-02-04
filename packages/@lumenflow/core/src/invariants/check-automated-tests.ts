@@ -19,6 +19,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML } from '../wu-yaml.js';
 import { validateAutomatedTestRequirement, isCodeFile } from '../manual-test-validator.js';
+import { DIRECTORIES } from '../wu-constants.js';
 
 /**
  * Invariant metadata
@@ -35,8 +36,9 @@ const ACTIVE_STATUSES = Object.freeze(['in_progress', 'blocked']);
 
 /**
  * Default path to WU YAML files relative to base directory.
+ * WU-1430: Use centralized constant instead of hardcoded path.
  */
-const WU_YAML_PATH = 'docs/04-operations/tasks/wu';
+const WU_YAML_PATH = DIRECTORIES.WU_DIR;
 
 /**
  * Options for checking WU file

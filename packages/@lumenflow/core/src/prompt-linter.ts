@@ -18,7 +18,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 import yaml from 'yaml';
-import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,8 +27,8 @@ const ROOT_DIR = resolve(__dirname, '../..');
 // Default config path
 const DEFAULT_CONFIG_PATH = resolve(ROOT_DIR, 'config/prompts/linter.yml');
 
-// Telemetry cache path (for storing previous metrics)
-const METRICS_CACHE_PATH = resolve(ROOT_DIR, '.lumenflow/telemetry/prompt-metrics.json');
+// Telemetry cache path (for storing previous metrics) - WU-1430: Use centralized constant
+const METRICS_CACHE_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.PROMPT_METRICS);
 
 /**
  * Load config from YAML file with fallback to defaults
@@ -160,8 +160,8 @@ async function log(level, event, data, output: LogOutputOptions = {}) {
     ...data,
   };
 
-  // For CLI, write to .lumenflow/telemetry/prompt-lint.ndjson
-  const ndjsonPath = resolve(ROOT_DIR, '.lumenflow/telemetry/prompt-lint.ndjson');
+  // For CLI, write to telemetry prompt lint file - WU-1430: Use centralized constant
+  const ndjsonPath = resolve(ROOT_DIR, LUMENFLOW_PATHS.PROMPT_LINT);
   const line = `${JSON.stringify(entry)}${STRING_LITERALS.NEWLINE}`;
 
   try {

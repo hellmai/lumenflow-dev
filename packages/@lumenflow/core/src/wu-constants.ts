@@ -1526,6 +1526,9 @@ export const LUMENFLOW_PATHS = {
   /** Stamp directory (WU completion markers) */
   STAMPS_DIR: '.lumenflow/stamps',
 
+  /** Archive directory for old WU events (WU-1430) */
+  ARCHIVE_DIR: '.lumenflow/archive',
+
   /** Merge lock file (runtime coordination, WU-1747) */
   MERGE_LOCK: '.lumenflow/merge.lock',
 
@@ -1570,6 +1573,42 @@ export const LUMENFLOW_PATHS = {
 
   /** Force bypass audit log */
   FORCE_BYPASSES: '.lumenflow/force-bypasses.log',
+
+  /** Test baseline file for ratchet pattern (WU-1430) */
+  TEST_BASELINE: '.lumenflow/test-baseline.json',
+
+  /** Templates directory (WU-1430) */
+  TEMPLATES_DIR: '.lumenflow/templates',
+
+  /** Spawn prompt templates (WU-1430) */
+  SPAWN_PROMPT_DIR: '.lumenflow/templates/spawn-prompt',
+
+  /** Template manifest file (WU-1430) */
+  TEMPLATE_MANIFEST: '.lumenflow/templates/manifest.yaml',
+
+  /** Skills directory for agent skills (WU-1430) */
+  SKILLS_DIR: '.lumenflow/skills',
+
+  /** Agents directory for agent definitions (WU-1430) */
+  AGENTS_DIR: '.lumenflow/agents',
+
+  /** Methodology log for spawn telemetry (WU-1430) */
+  METHODOLOGY_LOG: '.lumenflow/telemetry/methodology.ndjson',
+
+  /** Prompt metrics cache (WU-1430) */
+  PROMPT_METRICS: '.lumenflow/telemetry/prompt-metrics.json',
+
+  /** Prompt lint results (WU-1430) */
+  PROMPT_LINT: '.lumenflow/telemetry/prompt-lint.ndjson',
+
+  /** Recovery markers directory (WU-1430) */
+  RECOVERY_DIR: '.lumenflow/recovery',
+
+  /** Checkpoints directory (WU-1430) */
+  CHECKPOINTS_DIR: '.lumenflow/checkpoints',
+
+  /** Cache directory under user home (WU-1430) */
+  HOME_CACHE: 'cache',
 
   /**
    * WU-1174: Runtime lock directory for merge/cleanup locks
@@ -1659,8 +1698,13 @@ export const PATH_LITERALS = {
   PLAN_FILE_SUFFIX: '-plan.md',
 
   /** Trailing slash regex pattern */
-
   TRAILING_SLASH_REGEX: /\/+$/,
+
+  /** .lumenflow path prefix for internal path detection (WU-1430) */
+  LUMENFLOW_PREFIX: '.lumenflow/',
+
+  /** Current directory prefix for repo-internal paths (WU-1430) */
+  CURRENT_DIR_PREFIX: './',
 };
 
 /**
