@@ -10,6 +10,9 @@
  *          initiative_add_wu, initiative_remove_wu, initiative_bulk_assign, initiative_plan
  *          Memory tools: mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup, mem_context,
  *          mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage
+ * WU-1425: Agent tools: agent_session, agent_session_end, agent_log_issue, agent_issues_query
+ *          Orchestration tools: orchestrate_initiative, orchestrate_init_status, orchestrate_monitor
+ *          Spawn tools: spawn_list
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  *
  * Architecture:
@@ -116,6 +119,10 @@ const CliArgs = {
   INITIATIVE: '--initiative',
   PHASE: '--phase',
   JSON: '--json',
+  DRY_RUN: '--dry-run',
+  THRESHOLD: '--threshold',
+  RECOVER: '--recover',
+  WU: '--wu',
 } as const;
 
 /**
@@ -123,8 +130,17 @@ const CliArgs = {
  */
 const SchemaDescriptions = {
   INITIATIVE_ID: 'Initiative ID',
+  INITIATIVE_ID_EXAMPLE: 'Initiative ID (e.g., INIT-001)',
   OUTPUT_AS_JSON: 'Output as JSON',
   PHASE_NUMBER: 'Phase number within initiative',
+} as const;
+
+/**
+ * Shared error messages to avoid duplication across different tool categories
+ */
+const SharedErrorMessages = {
+  WU_REQUIRED: 'wu is required',
+  INITIATIVE_REQUIRED: 'initiative is required',
 } as const;
 
 /**
@@ -843,7 +859,7 @@ export const wuDeleteTool: ToolDefinition = {
 
     const args: string[] = [];
     if (input.id) args.push('--id', input.id as string);
-    if (input.dry_run) args.push('--dry-run');
+    if (input.dry_run) args.push(CliArgs.DRY_RUN);
     if (input.batch) args.push('--batch', input.batch as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -1068,11 +1084,11 @@ const InitiativeErrorCodes = {
 } as const;
 
 /**
- * Error messages for initiative tools
+ * Error messages for initiative tools (uses shared messages to avoid duplication)
  */
 const InitiativeErrorMessages = {
-  INITIATIVE_REQUIRED: 'initiative is required',
-  WU_REQUIRED: 'wu is required',
+  INITIATIVE_REQUIRED: SharedErrorMessages.INITIATIVE_REQUIRED,
+  WU_REQUIRED: SharedErrorMessages.WU_REQUIRED,
 } as const;
 
 /**
@@ -1117,7 +1133,7 @@ export const initiativeStatusTool: ToolDefinition = {
   name: 'initiative_status',
   description: 'Get detailed status of a specific initiative including WUs and progress',
   inputSchema: z.object({
-    id: z.string().describe('Initiative ID (e.g., INIT-001)'),
+    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
     json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
   }),
 
@@ -1155,7 +1171,7 @@ export const initiativeCreateTool: ToolDefinition = {
   name: 'initiative_create',
   description: 'Create a new initiative for multi-phase project orchestration',
   inputSchema: z.object({
-    id: z.string().describe('Initiative ID (e.g., INIT-001)'),
+    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
     title: z.string().describe('Initiative title'),
     description: z.string().optional().describe('Initiative description'),
     phases: z.array(z.string()).optional().describe('Phase names (e.g., "Phase 1: MVP")'),
@@ -1394,10 +1410,10 @@ const MemoryErrorCodes = {
 } as const;
 
 /**
- * Error messages for memory tools
+ * Error messages for memory tools (uses shared messages to avoid duplication)
  */
 const MemoryErrorMessages = {
-  WU_REQUIRED: 'wu is required',
+  WU_REQUIRED: SharedErrorMessages.WU_REQUIRED,
   MESSAGE_REQUIRED: 'message is required',
 } as const;
 
@@ -1546,7 +1562,7 @@ export const memCleanupTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.dry_run) args.push('--dry-run');
+    if (input.dry_run) args.push(CliArgs.DRY_RUN);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('mem:cleanup', args, cliOptions);
@@ -1718,7 +1734,7 @@ export const memInboxTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.since) args.push('--since', input.since as string);
-    if (input.wu) args.push('--wu', input.wu as string);
+    if (input.wu) args.push(CliArgs.WU, input.wu as string);
     if (input.lane) args.push('--lane', input.lane as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -1846,6 +1862,396 @@ export const memTriageTool: ToolDefinition = {
   },
 };
 
+// ============================================================================
+// Agent Operations (WU-1425)
+// ============================================================================
+
+/**
+ * Error codes for agent tools
+ */
+const AgentErrorCodes = {
+  AGENT_SESSION_ERROR: 'AGENT_SESSION_ERROR',
+  AGENT_SESSION_END_ERROR: 'AGENT_SESSION_END_ERROR',
+  AGENT_LOG_ISSUE_ERROR: 'AGENT_LOG_ISSUE_ERROR',
+  AGENT_ISSUES_QUERY_ERROR: 'AGENT_ISSUES_QUERY_ERROR',
+} as const;
+
+/**
+ * Error messages for agent tools
+ */
+const AgentErrorMessages = {
+  WU_REQUIRED: SharedErrorMessages.WU_REQUIRED,
+  TIER_REQUIRED: 'tier is required',
+  CATEGORY_REQUIRED: 'category is required',
+  SEVERITY_REQUIRED: 'severity is required',
+  TITLE_REQUIRED: 'title is required',
+  DESCRIPTION_REQUIRED: 'description is required',
+} as const;
+
+/**
+ * agent_session - Start an agent session for tracking WU execution
+ */
+export const agentSessionTool: ToolDefinition = {
+  name: 'agent_session',
+  description: 'Start an agent session for tracking WU execution',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to work on (e.g., WU-1234)'),
+    tier: z.number().min(1).max(3).describe('Context tier (1, 2, or 3)'),
+    agent_type: z.string().optional().describe('Agent type (default: claude-code)'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(AgentErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (input.tier === undefined || input.tier === null) {
+      return error(AgentErrorMessages.TIER_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string, '--tier', String(input.tier)];
+    if (input.agent_type) args.push('--agent-type', input.agent_type as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('agent:session', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Session started' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'agent:session failed',
+        AgentErrorCodes.AGENT_SESSION_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * agent_session_end - End the current agent session
+ */
+export const agentSessionEndTool: ToolDefinition = {
+  name: 'agent_session_end',
+  description: 'End the current agent session and return summary',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('agent:session:end', [], cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Session ended' });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'agent:session:end failed',
+        AgentErrorCodes.AGENT_SESSION_END_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * agent_log_issue - Log a workflow issue or incident during agent execution
+ */
+export const agentLogIssueTool: ToolDefinition = {
+  name: 'agent_log_issue',
+  description: 'Log a workflow issue or incident during agent execution',
+  inputSchema: z.object({
+    category: z
+      .enum(['workflow', 'tooling', 'confusion', 'violation', 'error'])
+      .describe('Issue category'),
+    severity: z.enum(['blocker', 'major', 'minor', 'info']).describe('Severity level'),
+    title: z.string().describe('Short description (5-100 chars)'),
+    description: z.string().describe('Detailed context (10-2000 chars)'),
+    resolution: z.string().optional().describe('How the issue was resolved'),
+    tags: z.array(z.string()).optional().describe('Tags for categorization'),
+    step: z.string().optional().describe('Current workflow step (e.g., wu:done, gates)'),
+    files: z.array(z.string()).optional().describe('Related file paths'),
+  }),
+
+  async execute(input, options) {
+    if (!input.category) {
+      return error(AgentErrorMessages.CATEGORY_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.severity) {
+      return error(AgentErrorMessages.SEVERITY_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.title) {
+      return error(AgentErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.description) {
+      return error(AgentErrorMessages.DESCRIPTION_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = [
+      '--category',
+      input.category as string,
+      '--severity',
+      input.severity as string,
+      '--title',
+      input.title as string,
+      '--description',
+      input.description as string,
+    ];
+    if (input.resolution) args.push('--resolution', input.resolution as string);
+    if (input.tags) {
+      for (const tag of input.tags as string[]) {
+        args.push('--tag', tag);
+      }
+    }
+    if (input.step) args.push('--step', input.step as string);
+    if (input.files) {
+      for (const file of input.files as string[]) {
+        args.push('--file', file);
+      }
+    }
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('agent:log-issue', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Issue logged' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'agent:log-issue failed',
+        AgentErrorCodes.AGENT_LOG_ISSUE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * agent_issues_query - Query and display logged agent incidents
+ */
+export const agentIssuesQueryTool: ToolDefinition = {
+  name: 'agent_issues_query',
+  description: 'Query and display logged agent incidents/issues summary',
+  inputSchema: z.object({
+    since: z.number().optional().describe('Days to include (default: 7)'),
+    category: z.string().optional().describe('Filter by category'),
+    severity: z
+      .enum(['blocker', 'major', 'minor', 'trivial'])
+      .optional()
+      .describe('Filter by severity'),
+  }),
+
+  async execute(input, options) {
+    const args = ['summary'];
+    if (input.since) args.push('--since', String(input.since));
+    if (input.category) args.push('--category', input.category as string);
+    if (input.severity) args.push('--severity', input.severity as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('agent:issues-query', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Query complete' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'agent:issues-query failed',
+        AgentErrorCodes.AGENT_ISSUES_QUERY_ERROR,
+      );
+    }
+  },
+};
+
+// ============================================================================
+// Orchestration Operations (WU-1425)
+// ============================================================================
+
+/**
+ * Error codes for orchestration tools
+ */
+const OrchestrationErrorCodes = {
+  ORCHESTRATE_INITIATIVE_ERROR: 'ORCHESTRATE_INITIATIVE_ERROR',
+  ORCHESTRATE_INIT_STATUS_ERROR: 'ORCHESTRATE_INIT_STATUS_ERROR',
+  ORCHESTRATE_MONITOR_ERROR: 'ORCHESTRATE_MONITOR_ERROR',
+} as const;
+
+/**
+ * Error messages for orchestration tools
+ */
+const OrchestrationErrorMessages = {
+  INITIATIVE_REQUIRED: SharedErrorMessages.INITIATIVE_REQUIRED,
+} as const;
+
+/**
+ * orchestrate_initiative - Orchestrate initiative execution with parallel agent spawning
+ */
+export const orchestrateInitiativeTool: ToolDefinition = {
+  name: 'orchestrate_initiative',
+  description: 'Orchestrate initiative execution with parallel agent spawning',
+  inputSchema: z.object({
+    initiative: z.string().describe('Initiative ID to orchestrate (e.g., INIT-001)'),
+    dry_run: z.boolean().optional().describe('Show execution plan without spawning agents'),
+    progress: z.boolean().optional().describe('Show current progress only'),
+    checkpoint_per_wave: z.boolean().optional().describe('Spawn next wave then exit (no polling)'),
+  }),
+
+  async execute(input, options) {
+    if (!input.initiative) {
+      return error(OrchestrationErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = [CliArgs.INITIATIVE, input.initiative as string];
+    if (input.dry_run) args.push(CliArgs.DRY_RUN);
+    if (input.progress) args.push('--progress');
+    if (input.checkpoint_per_wave) args.push('--checkpoint-per-wave');
+
+    const cliOptions: CliRunnerOptions = {
+      projectRoot: options?.projectRoot,
+      timeout: 300000, // 5 minutes for orchestration
+    };
+    const result = await runCliCommand('orchestrate:initiative', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Orchestration complete' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'orchestrate:initiative failed',
+        OrchestrationErrorCodes.ORCHESTRATE_INITIATIVE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * orchestrate_init_status - Show initiative progress status
+ */
+export const orchestrateInitStatusTool: ToolDefinition = {
+  name: 'orchestrate_init_status',
+  description: 'Show compact initiative progress status including WUs and lane availability',
+  inputSchema: z.object({
+    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
+  }),
+
+  async execute(input, options) {
+    if (!input.initiative) {
+      return error(OrchestrationErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = [CliArgs.INITIATIVE, input.initiative as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('orchestrate:init-status', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Status displayed' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'orchestrate:init-status failed',
+        OrchestrationErrorCodes.ORCHESTRATE_INIT_STATUS_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * orchestrate_monitor - Monitor spawned agent progress and spawn health
+ */
+export const orchestrateMonitorTool: ToolDefinition = {
+  name: 'orchestrate_monitor',
+  description: 'Monitor spawned agent progress and spawn health (stuck detection, zombie locks)',
+  inputSchema: z.object({
+    threshold: z.number().optional().describe('Stuck detection threshold in minutes (default: 30)'),
+    recover: z.boolean().optional().describe('Run recovery actions for stuck spawns'),
+    dry_run: z.boolean().optional().describe('Show what would be done without taking action'),
+    since: z.string().optional().describe('Show signals since (e.g., 30m, 1h)'),
+    wu: z.string().optional().describe('Filter by WU ID'),
+    signals_only: z.boolean().optional().describe('Only show signals (skip spawn analysis)'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.threshold) args.push(CliArgs.THRESHOLD, String(input.threshold));
+    if (input.recover) args.push(CliArgs.RECOVER);
+    if (input.dry_run) args.push(CliArgs.DRY_RUN);
+    if (input.since) args.push('--since', input.since as string);
+    if (input.wu) args.push(CliArgs.WU, input.wu as string);
+    if (input.signals_only) args.push('--signals-only');
+
+    const cliOptions: CliRunnerOptions = {
+      projectRoot: options?.projectRoot,
+      timeout: 180000, // 3 minutes for monitoring
+    };
+    const result = await runCliCommand('orchestrate:monitor', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Monitor complete' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'orchestrate:monitor failed',
+        OrchestrationErrorCodes.ORCHESTRATE_MONITOR_ERROR,
+      );
+    }
+  },
+};
+
+// ============================================================================
+// Spawn Operations (WU-1425)
+// ============================================================================
+
+/**
+ * Error codes for spawn tools
+ */
+const SpawnErrorCodes = {
+  SPAWN_LIST_ERROR: 'SPAWN_LIST_ERROR',
+} as const;
+
+/**
+ * Error messages for spawn tools
+ */
+const SpawnErrorMessages = {
+  WU_OR_INITIATIVE_REQUIRED: 'Either wu or initiative is required',
+} as const;
+
+/**
+ * spawn_list - Display spawn trees for WUs or initiatives
+ */
+export const spawnListTool: ToolDefinition = {
+  name: 'spawn_list',
+  description: 'Display spawn trees for WUs or initiatives',
+  inputSchema: z.object({
+    wu: z.string().optional().describe('WU ID to show spawns for (e.g., WU-1234)'),
+    initiative: z
+      .string()
+      .optional()
+      .describe('Initiative ID to show all spawns for (e.g., INIT-001)'),
+    json: z.boolean().optional().describe('Output as JSON'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu && !input.initiative) {
+      return error(SpawnErrorMessages.WU_OR_INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args: string[] = [];
+    if (input.wu) args.push(CliArgs.WU, input.wu as string);
+    if (input.initiative) args.push(CliArgs.INITIATIVE, input.initiative as string);
+    if (input.json) args.push('--json');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('spawn:list', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Spawn list displayed' });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'spawn:list failed',
+        SpawnErrorCodes.SPAWN_LIST_ERROR,
+      );
+    }
+  },
+};
+
 /**
  * All available tools
  */
@@ -1897,4 +2303,15 @@ export const allTools: ToolDefinition[] = [
   memSignalTool,
   memSummarizeTool,
   memTriageTool,
+  // WU-1425: Agent tools
+  agentSessionTool,
+  agentSessionEndTool,
+  agentLogIssueTool,
+  agentIssuesQueryTool,
+  // WU-1425: Orchestration tools
+  orchestrateInitiativeTool,
+  orchestrateInitStatusTool,
+  orchestrateMonitorTool,
+  // WU-1425: Spawn tools
+  spawnListTool,
 ];
