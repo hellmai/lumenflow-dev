@@ -713,4 +713,5 @@
 {"type":"complete","wuId":"WU-1398","timestamp":"2026-02-03T23:45:30.100Z"}
 {"type":"claim","wuId":"WU-1399","timestamp":"2026-02-03T23:51:16.745Z","lane":"Content: Documentation","title":"Tighten agent quickstart enforcement and decision rules"}
 {"type":"complete","wuId":"WU-1399","timestamp":"2026-02-03T23:53:57.398Z"}
-{"type":"claim","wuId":"WU-1400","lane":"Content: Documentation","title":"Clarify non-Node framework setup rules in agent quickstart","timestamp":"2026-02-04T00:08:37.870Z"}
+{"type":"claim","wuId":"WU-1400","timestamp":"2026-02-04T00:08:37.870Z","lane":"Content: Documentation","title":"Clarify non-Node framework setup rules in agent quickstart"}
+{"type":"complete","wuId":"WU-1400","timestamp":"2026-02-04T00:11:16.903Z"}
