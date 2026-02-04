@@ -29,7 +29,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -389,3 +388,4 @@ sections:
 - [WU-1404 — Add design-first to general-purpose agent skills](wu/WU-1404.yaml)
 - [WU-1405 — Block scaffolding during setup in agent quickstart](wu/WU-1405.yaml)
 - [WU-1406 — Forbid template-selection questions during setup](wu/WU-1406.yaml)
+- [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml)
