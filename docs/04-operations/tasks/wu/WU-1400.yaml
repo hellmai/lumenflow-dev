@@ -2,7 +2,7 @@ id: WU-1400
 title: Clarify non-Node framework setup rules in agent quickstart
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -40,3 +40,5 @@ acceptance:
   - Quickstart explains how to handle non-Node projects (minimal package.json for LumenFlow only)
   - Allowed commands include pnpm init -y only with explicit user approval
   - Guidance states not to scaffold Node stacks for non-Node frameworks unless asked
+locked: true
+completed_at: 2026-02-04T00:11:14.360Z
