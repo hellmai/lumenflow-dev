@@ -1353,9 +1353,8 @@ export function emitMethodologyTelemetry(config: LumenFlowConfig, policy: Resolv
     event_context: 'spawn',
   };
 
-  // Use the telemetry emit function from telemetry.ts
-  const METHODOLOGY_LOG = '.lumenflow/telemetry/methodology.ndjson';
-  emitTelemetry(METHODOLOGY_LOG, event);
+  // Use the telemetry emit function from telemetry.ts - WU-1430: Use centralized constant
+  emitTelemetry(LUMENFLOW_PATHS.METHODOLOGY_LOG, event);
 }
 
 /**

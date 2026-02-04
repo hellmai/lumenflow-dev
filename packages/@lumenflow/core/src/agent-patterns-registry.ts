@@ -13,6 +13,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 /** Default agent branch patterns (narrow: just agent/*) */
 export const DEFAULT_AGENT_PATTERNS = ['agent/*'];
@@ -115,9 +116,10 @@ export interface ResolveAgentPatternsOptions {
 export function getCacheDir(): string {
   const lumenflowHome = process.env.LUMENFLOW_HOME;
   if (lumenflowHome) {
-    return path.join(lumenflowHome, 'cache');
+    return path.join(lumenflowHome, LUMENFLOW_PATHS.HOME_CACHE);
   }
-  return path.join(os.homedir(), '.lumenflow', 'cache');
+  // WU-1430: Compose home cache path from centralized constants
+  return path.join(os.homedir(), LUMENFLOW_PATHS.BASE, LUMENFLOW_PATHS.HOME_CACHE);
 }
 
 /**

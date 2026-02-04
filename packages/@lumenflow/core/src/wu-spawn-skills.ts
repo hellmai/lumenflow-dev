@@ -1,14 +1,17 @@
 import { existsSync } from 'node:fs';
 import type { ClientConfig } from './lumenflow-config-schema.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
+/** WU-1430: Compose known skills directories from centralized constants */
 const KNOWN_SKILLS_DIRS = [
-  '.lumenflow/skills',
+  LUMENFLOW_PATHS.SKILLS_DIR,
   '.claude/skills',
   '.codex/skills',
   '.gemini/skills',
 ];
+/** WU-1430: Compose known agents directories from centralized constants */
 const KNOWN_AGENTS_DIRS = [
-  '.lumenflow/agents',
+  LUMENFLOW_PATHS.AGENTS_DIR,
   '.claude/agents',
   '.codex/agents',
   '.gemini/agents',

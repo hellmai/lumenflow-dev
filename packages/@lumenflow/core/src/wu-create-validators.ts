@@ -16,12 +16,13 @@
  */
 
 import { isExternalPath, normalizeSpecRef } from './lumenflow-home.js';
+import { PATH_LITERALS } from './wu-constants.js';
 
 /** Confidence threshold for showing suggestion (percentage) */
 const CONFIDENCE_THRESHOLD_LOW = 30;
 
-/** Prefixes that indicate repo-internal paths (WU-1069) */
-const REPO_INTERNAL_PREFIXES = ['./', '.lumenflow/'];
+/** Prefixes that indicate repo-internal paths (WU-1069, WU-1430: Use centralized constants) */
+const REPO_INTERNAL_PREFIXES = [PATH_LITERALS.CURRENT_DIR_PREFIX, PATH_LITERALS.LUMENFLOW_PREFIX];
 
 /**
  * WU-1069: Check if a path is a repo-internal path that should be rejected
