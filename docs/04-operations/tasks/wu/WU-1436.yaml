@@ -2,7 +2,7 @@ id: WU-1436
 title: 'Fix core test dependency: add memfs'
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -28,7 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: core tests use memfs in wu-list.test.ts. Problem: pnpm gates fails because memfs is missing, causing test import error. Solution: add memfs as devDependency for @lumenflow/core and confirm tests pass.'
+description: 'Context: core tests use memfs in wu-list.test.ts. Problem: pnpm gates fails because
+  memfs is missing, causing test import error. Solution: add memfs as devDependency for
+  @lumenflow/core and confirm tests pass.'
 acceptance:
   - '@lumenflow/core test suite no longer fails with missing memfs.'
   - pnpm test --filter @lumenflow/core passes for wu-list.test.ts.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1436
+claimed_at: 2026-02-04T23:08:33.657Z
+baseline_main_sha: 5da2f06272fac87367fdef29f71bff9b403e672f
+session_id: 199ca55a-8a79-44c8-a1ed-c821484df9f8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T23:08:33.660Z
