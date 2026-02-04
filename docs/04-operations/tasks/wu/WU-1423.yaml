@@ -1,0 +1,40 @@
+id: WU-1423
+title: 'Complete beacon→lumenflow migration: rename config schema and all references'
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-04
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/wu-list.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-done-validation.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1423.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: WU-1421 renamed .beacon/ directory but config schema still uses 'beacon' key. Problem: ~55 files still reference 'beacon' including BeaconPathsSchema, config.beacon.*, and documentation. Solution: Rename BeaconPathsSchema→StatePathsSchema (or LumenflowPathsSchema), config.beacon→config.state, update all references in code and docs. Keep beacon-migration.ts as utility for users migrating from older versions."
+acceptance:
+  - BeaconPathsSchema renamed to StatePathsSchema or LumenflowPathsSchema
+  - config.beacon.* renamed to config.state.* throughout codebase
+  - All documentation references to beacon updated
+  - Only beacon-migration.ts and its tests may reference 'beacon' (migration utility)
+  - rg beacon --type ts returns only beacon-migration files
