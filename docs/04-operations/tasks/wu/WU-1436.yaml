@@ -7,10 +7,10 @@ priority: P2
 created: 2026-02-04
 code_paths:
   - packages/@lumenflow/core/package.json
-  - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
+  - pnpm-lock.yaml
+  - docs/04-operations/tasks/wu/WU-1435.yaml
 tests:
-  manual:
-    - Run pnpm test --filter @lumenflow/core -- --run src/__tests__/wu-list.test.ts
+  manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
   e2e: []
@@ -20,8 +20,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1436-plan.md
 risks: []
-notes: Adds memfs devDependency to satisfy wu-list.test.ts import. Fixes gates failure due to
-  missing test dependency.
+notes: ''
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
