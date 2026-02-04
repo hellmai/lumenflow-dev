@@ -8,14 +8,17 @@ created: 2026-02-04
 code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual: []
+  manual:
+    - Open quickstart page and verify no 'Session 0' wording remains; headings now use 'Setup' and
+      instructions still scope to setup only.
   unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1402.done
 dependencies: []
 risks: []
-notes: ''
+notes: Replaced all 'Session 0' terminology with plain 'setup' language in agent quickstart; no
+  behavioral change beyond wording.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
