@@ -84,14 +84,14 @@ Stop after creating the next artifact. Do not claim a WU without explicit approv
 If the user says the project is multi-phase or shares a vision doc, create an Initiative before any WU:
 
 ```bash
-pnpm initiative:create \
+pnpm exec initiative-create \
   --id INIT-001 \
   --slug "project-name" \
   --title "Project Name" \
   --owner "team@example.com"
 
-pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: MVP"
-pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core"
+pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 1: MVP"
+pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 2: Core"
 ```
 
 ## Allowed commands (setup only)
@@ -117,14 +117,17 @@ If a command is not listed here, do not run it during setup.
 | `cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git` | Fix enforcement (only with approval)         |
 | `chmod +x scripts/safe-git`                                    | Fix enforcement (only with approval)         |
 | `pnpm exec lumenflow-integrate --client claude-code`           | Claude Code only: generate enforcement hooks |
-| `pnpm initiative:create ...`                                   | Create an initiative                         |
-| `pnpm initiative:edit ...`                                     | Add initiative phases                        |
+| `pnpm exec initiative-create ...`                              | Create an initiative                         |
+| `pnpm exec initiative-edit ...`                                | Add initiative phases                        |
 | `pnpm wu:create ...`                                           | Create first WU                              |
 | `pnpm wu:status --id WU-XXX`                                   | Confirm WU status                            |
 | `pnpm wu:claim --id WU-XXX --lane "..."`                       | Only if user explicitly says "proceed"       |
 | `git add -A && git commit -m "..."`                            | Commit scaffold/LumenFlow setup only         |
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
+
+If a script command is not found, use the binary via `pnpm exec` (e.g.,
+`pnpm exec initiative-create`, `pnpm exec initiative-edit`, `pnpm exec wu-create`).
 
 ## Setup: New project
 
@@ -212,14 +215,14 @@ Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 8.  **Create initiative (only if a vision doc exists)**
 
     ```bash
-    pnpm initiative:create \
+    pnpm exec initiative-create \
       --id INIT-001 \
       --slug "project-name" \
       --title "Project Name" \
       --owner "team@example.com"
 
-    pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: Foundation"
-    pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core Features"
+    pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 1: Foundation"
+    pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 2: Core Features"
     ```
 
 9.  **Create the first WU (do not implement)**
@@ -293,7 +296,7 @@ Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
     If the user provided a vision doc or multi-phase plan:
 
     ```bash
-    pnpm initiative:create \
+    pnpm exec initiative-create \
       --id INIT-001 \
       --slug "project-name" \
       --title "Project Name" \
