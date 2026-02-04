@@ -28,7 +28,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
-- [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -401,3 +400,4 @@ sections:
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
+- [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml)
