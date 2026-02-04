@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
-  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - docs/**
 tests:
   manual:
     - Test prompt with fresh repo to verify command sequence works
@@ -18,7 +18,9 @@ dependencies: []
 spec_refs:
   - /home/tom/.claude/plans/peaceful-discovering-sky.md
 risks: []
-notes: ''
+notes: 'Updated quickstart prompt copy in apps/docs/src/content/docs/getting-started/quickstart.mdx:
+  removed --full, added client list with --client none fallback, added doctor --deep optional, added
+  Claude-only integrate command.'
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
