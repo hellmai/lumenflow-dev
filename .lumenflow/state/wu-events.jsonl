@@ -776,3 +776,4 @@
 {"type":"claim","wuId":"WU-1432","lane":"Framework: CLI","title":"MCP schema autogen from CLI options","timestamp":"2026-02-04T18:58:19.678Z"}
 {"type":"release","wuId":"WU-1432","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T18:59:37.044Z"}
 {"type":"claim","wuId":"WU-1432","lane":"Framework: CLI","title":"MCP schema autogen from CLI options","timestamp":"2026-02-04T19:00:02.705Z"}
+{"type":"release","wuId":"WU-1432","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T19:09:17.208Z"}

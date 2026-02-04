@@ -2,7 +2,7 @@ id: WU-1432
 title: MCP schema autogen from CLI options
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -50,7 +50,3 @@ claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T19:00:02.675Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1432
-claimed_at: 2026-02-04T19:00:02.668Z
-baseline_main_sha: ee9cd9c907bc7a2b390120b29bf841f379099583
-session_id: 044661eb-7d62-45b2-9117-f5f30af9438a
