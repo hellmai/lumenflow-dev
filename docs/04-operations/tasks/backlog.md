@@ -32,7 +32,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -410,3 +409,4 @@ sections:
 - [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml)
+- [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml)
