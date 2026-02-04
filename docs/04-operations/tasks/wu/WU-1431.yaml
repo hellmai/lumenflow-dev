@@ -7,13 +7,20 @@ priority: P2
 created: 2026-02-04
 code_paths:
   - packages/@lumenflow/core/src/schemas
+  - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/mcp/src/tools.ts
   - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-status.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual:
     - Add new CLI flag to wu:create, verify MCP tool schema updated automatically
   unit:
     - packages/@lumenflow/core/src/__tests__/schema-parity.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1431.done
@@ -32,12 +39,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: CLI and MCP define argument schemas separately, causing drift. Problem: When
-  CLI adds flags (e.g., --notes), MCP tools dont get them automatically. Solution: Create
-  @lumenflow/core/schemas with shared Zod schemas that both CLI and MCP import. Add parity test to
-  gates.'
+description: 'Context: CLI and MCP define argument schemas separately, causing drift. Problem: when
+  CLI flags change, MCP tools fall behind. Solution: centralize command specs/Zod schemas in
+  @lumenflow/core and derive both CLI parsing and MCP inputSchema/arg mapping from that single
+  source, with parity tests.'
 acceptance:
-  - Shared Zod schemas created in @lumenflow/core/src/schemas/
-  - Existing 7 MCP tools migrated to use shared schemas
-  - CLI commands (wu:create, wu:claim, wu:done, gates) use shared schemas for validation
-  - 'Parity test added: gates fail if CLI options dont match MCP inputSchema'
+  - Shared command specs/Zod schemas live in @lumenflow/core and cover wu:create, wu:claim,
+    wu:status, wu:done, and gates
+  - Existing MCP tools derive inputSchema and CLI arg mapping from shared specs (no manual per-tool
+    schemas for those commands)
+  - CLI commands (wu:create, wu:claim, wu:status, wu:done, gates) validate inputs using shared specs
+  - Alias flags (--code-path, --manual-test) remain CLI-only and are not exposed in MCP schemas
+  - 'Parity test: gates fail if CLI options drift from MCP inputSchema for shared commands'
+  - Unit tests cover schema generation and CLI arg mapping
