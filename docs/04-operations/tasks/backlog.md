@@ -30,7 +30,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1424 — MCP: Initiative + Memory tools (+21)](wu/WU-1424.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -412,3 +411,4 @@ sections:
 - [WU-1422 — MCP: Complete WU tools (+17)](wu/WU-1422.yaml)
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml)
 - [WU-1431 — Create shared Zod schemas for CLI/MCP parity](wu/WU-1431.yaml)
+- [WU-1424 — MCP: Initiative + Memory tools (+21)](wu/WU-1424.yaml)
