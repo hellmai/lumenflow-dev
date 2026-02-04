@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/mcp/**
   - .lumenflow.lane-inference.yaml
 tests:
-  manual: []
+  manual:
+    - Verify MCP server responds to stdio handshake
   unit:
     - packages/@lumenflow/mcp/src/__tests__/cli-runner.test.ts
     - packages/@lumenflow/mcp/src/__tests__/stdio-handshake.test.ts
@@ -23,7 +24,7 @@ phase: 1
 spec_refs:
   - lumenflow://plans/WU-1412-plan.md
 risks: []
-notes: ''
+notes: Creates @lumenflow/mcp package for AI-native interface to WU operations
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
