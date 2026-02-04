@@ -140,8 +140,6 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | Command                    | Description                                                                       |
 | -------------------------- | --------------------------------------------------------------------------------- |
 | `backlog-prune`            | Backlog Prune Command                                                             |
-| `deps-add`                 | Deps Add CLI Command                                                              |
-| `deps-remove`              | Deps Remove CLI Command                                                           |
 | `init-plan`                | Link a plan file to an initiative                                                 |
 | `lumenflow`                | Initialize LumenFlow in a project\n\n                                             |
 | `lumenflow-commands`       | List all available LumenFlow CLI commands                                         |
