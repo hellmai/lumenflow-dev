@@ -2,7 +2,7 @@ id: WU-1432
 title: Define public CLI surface + align MCP parity
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -13,8 +13,8 @@ code_paths:
   - docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml
 tests:
   manual:
-    - 'Run pnpm test --filter @lumenflow/cli -- --run commands.test.ts to verify manifest alignment'
-    - 'Check that internal commands (guard-*, validate-*, etc.) are NOT in package.json bin'
+    - Run pnpm test --filter @lumenflow/cli -- --run commands.test.ts to verify manifest alignment
+    - Check that internal commands (guard-*, validate-*, etc.) are NOT in package.json bin
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
   e2e: []
@@ -26,7 +26,9 @@ phase: 1
 spec_refs:
   - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
-notes: 'Public manifest (public-manifest.ts) is the single source of truth for which CLI commands are user-facing vs internal. Internal commands remain available for hooks/development but are not published as npm binaries.'
+notes: Public manifest (public-manifest.ts) is the single source of truth for which CLI commands are
+  user-facing vs internal. Internal commands remain available for hooks/development but are not
+  published as npm binaries.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -53,3 +55,5 @@ session_id: fe89650d-d43f-4b8e-a0fa-583a0e83a4c4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T22:18:43.217Z
+locked: true
+completed_at: 2026-02-04T22:29:49.105Z
