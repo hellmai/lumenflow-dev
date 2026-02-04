@@ -2,7 +2,7 @@ id: WU-1434
 title: Update MCP docs with final tools
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - MCP reference page includes all Validation tools (5)
   - MCP reference page includes all Setup tools (8)
   - Tool list matches public CLI manifest from WU-1432
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1434
+claimed_at: 2026-02-04T22:32:51.211Z
+baseline_main_sha: 326d847742c3f846d17ee9478a4412dd5bdeb26e
+session_id: 7409467e-56e3-4068-a3df-49c56296e9d1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T22:32:51.217Z
