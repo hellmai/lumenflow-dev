@@ -8,6 +8,7 @@ _Last updated: 2026-02-04_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml)
+- [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml)
 
 ## Completed
 
