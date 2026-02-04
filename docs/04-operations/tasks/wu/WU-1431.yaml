@@ -2,7 +2,7 @@ id: WU-1431
 title: Create shared Zod schemas for CLI/MCP parity
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -62,3 +62,5 @@ session_id: 044661eb-7d62-45b2-9117-f5f30af9438a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T20:00:12.076Z
+locked: true
+completed_at: 2026-02-04T20:16:29.017Z
