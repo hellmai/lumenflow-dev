@@ -82,6 +82,8 @@ const ALLOWED_WU_TOOLS = new Set([
   'wu-claim', // WU-1245: WU claiming with micro-worktree
   'wu-block', // WU-1245: WU blocking
   'wu-unblock', // WU-1245: WU unblocking
+  'wu-repair', // WU-1418: WU consistency repair with micro-worktree
+  'wu-admin-repair', // WU-1418: WU admin repair with micro-worktree
   'initiative-create', // WU-1255: Initiative creation with micro-worktree
   'initiative-edit', // WU-1255: Initiative editing with micro-worktree
   'release', // WU-1296: npm release with micro-worktree isolation

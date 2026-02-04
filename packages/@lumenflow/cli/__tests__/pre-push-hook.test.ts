@@ -90,4 +90,16 @@ describe('pre-push hook policy (WU-1030)', () => {
     const result = runHook({ LUMENFLOW_WU_TOOL: 'release' });
     expect(result.status).toBe(0);
   });
+
+  // WU-1418: wu:repair uses micro-worktree isolation for consistency repairs
+  it('allows wu:repair pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-repair' });
+    expect(result.status).toBe(0);
+  });
+
+  // WU-1418: wu:admin-repair uses micro-worktree isolation for admin repairs
+  it('allows wu:admin-repair pushes to main when LUMENFLOW_WU_TOOL is set', () => {
+    const result = runHook({ LUMENFLOW_WU_TOOL: 'wu-admin-repair' });
+    expect(result.status).toBe(0);
+  });
 });

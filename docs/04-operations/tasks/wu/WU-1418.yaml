@@ -6,13 +6,20 @@ status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
-  - packages/@lumenflow/cli/src/wu-repair.ts
-  - .husky/pre-push
+  - packages/@lumenflow/core/src/micro-worktree.ts
+  - .husky/hooks/pre-push.mjs
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:repair --id WU-XXXX on a WU with status.md inconsistency
+    - Verify push completes without LUMENFLOW_FORCE=1 manual intervention
+    - Verify pre-push hook allows wu-repair tool pushes
   unit:
     - packages/@lumenflow/cli/__tests__/wu-repair.test.ts
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
+spec_refs:
+  - lumenflow://plans/WU-1418-plan.md
 artifacts:
   - .lumenflow/stamps/WU-1418.done
 dependencies: []
