@@ -2,7 +2,7 @@ id: WU-1420
 title: state:doctor should detect and fix YAML vs state store status mismatches
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run state:doctor on a repo with YAML=ready but events show in_progress (no release), verify STATUS_MISMATCH detected
+    - Run state:doctor on a repo with YAML=ready but events show in_progress (no release), verify
+      STATUS_MISMATCH detected
     - Run state:doctor --fix and verify release event emitted to reconcile state
     - Run wu:claim after fix and verify it succeeds
   unit:
@@ -53,3 +54,5 @@ session_id: be22d8fd-54f0-40e5-b0a4-cf1e00f5cde1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T16:14:40.448Z
+locked: true
+completed_at: 2026-02-04T16:22:57.327Z
