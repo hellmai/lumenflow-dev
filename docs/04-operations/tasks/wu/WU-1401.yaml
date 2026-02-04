@@ -2,7 +2,7 @@ id: WU-1401
 title: Enforce Husky/safe-git and initiative decision rules in agent quickstart
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -43,3 +43,5 @@ acceptance:
     as blockers
   - Quickstart includes explicit fix commands for Husky and safe-git, gated by user approval
   - Quickstart requires initiative creation when user indicates multi-phase or vision
+locked: true
+completed_at: 2026-02-04T00:24:12.121Z
