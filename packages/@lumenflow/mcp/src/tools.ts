@@ -109,6 +109,25 @@ const ErrorMessages = {
 } as const;
 
 /**
+ * CLI argument constants for commonly used flags
+ */
+const CliArgs = {
+  DESCRIPTION: '--description',
+  INITIATIVE: '--initiative',
+  PHASE: '--phase',
+  JSON: '--json',
+} as const;
+
+/**
+ * Schema description constants for commonly used descriptions
+ */
+const SchemaDescriptions = {
+  INITIATIVE_ID: 'Initiative ID',
+  OUTPUT_AS_JSON: 'Output as JSON',
+  PHASE_NUMBER: 'Phase number within initiative',
+} as const;
+
+/**
  * Create a successful tool result
  */
 function success(data: unknown): ToolResult {
@@ -264,7 +283,7 @@ export const wuCreateTool: ToolDefinition = {
     const args: string[] = ['--lane', input.lane as string, '--title', input.title as string];
 
     if (input.id) args.push('--id', input.id as string);
-    if (input.description) args.push('--description', input.description as string);
+    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.acceptance) {
       for (const criterion of input.acceptance as string[]) {
         args.push('--acceptance', criterion);
@@ -506,8 +525,8 @@ export const wuEditTool: ToolDefinition = {
     code_paths: z.array(z.string()).optional().describe('Code paths to add'),
     lane: z.string().optional().describe('New lane assignment'),
     priority: z.enum(['P0', 'P1', 'P2', 'P3']).optional().describe('New priority'),
-    initiative: z.string().optional().describe('Initiative ID'),
-    phase: z.number().optional().describe('Phase number within initiative'),
+    initiative: z.string().optional().describe(SchemaDescriptions.INITIATIVE_ID),
+    phase: z.number().optional().describe(SchemaDescriptions.PHASE_NUMBER),
     no_strict: z.boolean().optional().describe('Bypass strict validation'),
   }),
 
@@ -517,7 +536,7 @@ export const wuEditTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string];
-    if (input.description) args.push('--description', input.description as string);
+    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.acceptance) {
       for (const criterion of input.acceptance as string[]) {
         args.push('--acceptance', criterion);
@@ -531,8 +550,8 @@ export const wuEditTool: ToolDefinition = {
     }
     if (input.lane) args.push('--lane', input.lane as string);
     if (input.priority) args.push('--priority', input.priority as string);
-    if (input.initiative) args.push('--initiative', input.initiative as string);
-    if (input.phase) args.push('--phase', String(input.phase));
+    if (input.initiative) args.push(CliArgs.INITIATIVE, input.initiative as string);
+    if (input.phase) args.push(CliArgs.PHASE, String(input.phase));
     if (input.no_strict) args.push('--no-strict');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -595,7 +614,7 @@ export const wuRecoverTool: ToolDefinition = {
       .optional()
       .describe('Recovery action to take'),
     force: z.boolean().optional().describe('Required for destructive actions like nuke'),
-    json: z.boolean().optional().describe('Output as JSON'),
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
   }),
 
   async execute(input, options) {
@@ -606,7 +625,7 @@ export const wuRecoverTool: ToolDefinition = {
     const args = ['--id', input.id as string];
     if (input.action) args.push('--action', input.action as string);
     if (input.force) args.push('--force');
-    if (input.json) args.push('--json');
+    if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('wu:recover', args, cliOptions);
@@ -1064,13 +1083,13 @@ export const initiativeListTool: ToolDefinition = {
   description: 'List all initiatives with optional status filter',
   inputSchema: z.object({
     status: z.enum(['active', 'completed', 'paused']).optional().describe('Filter by status'),
-    json: z.boolean().optional().describe('Output as JSON'),
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
   }),
 
   async execute(input, options) {
     const args: string[] = [];
     if (input.status) args.push('--status', input.status as string);
-    if (input.json) args.push('--json');
+    if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:list', args, cliOptions);
@@ -1099,7 +1118,7 @@ export const initiativeStatusTool: ToolDefinition = {
   description: 'Get detailed status of a specific initiative including WUs and progress',
   inputSchema: z.object({
     id: z.string().describe('Initiative ID (e.g., INIT-001)'),
-    json: z.boolean().optional().describe('Output as JSON'),
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
   }),
 
   async execute(input, options) {
@@ -1108,7 +1127,7 @@ export const initiativeStatusTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string];
-    if (input.json) args.push('--json');
+    if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:status', args, cliOptions);
@@ -1151,10 +1170,10 @@ export const initiativeCreateTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string, '--title', input.title as string];
-    if (input.description) args.push('--description', input.description as string);
+    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.phases) {
       for (const phase of input.phases as string[]) {
-        args.push('--phase', phase);
+        args.push(CliArgs.PHASE, phase);
       }
     }
 
@@ -1192,7 +1211,7 @@ export const initiativeEditTool: ToolDefinition = {
 
     const args = ['--id', input.id as string];
     if (input.title) args.push('--title', input.title as string);
-    if (input.description) args.push('--description', input.description as string);
+    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.status) args.push('--status', input.status as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -1216,7 +1235,7 @@ export const initiativeAddWuTool: ToolDefinition = {
   name: 'initiative_add_wu',
   description: 'Add a Work Unit to an initiative, optionally assigning to a phase',
   inputSchema: z.object({
-    initiative: z.string().describe('Initiative ID'),
+    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
     wu: z.string().describe('WU ID to add'),
     phase: z.number().optional().describe('Phase number to assign (1-based)'),
   }),
@@ -1229,8 +1248,8 @@ export const initiativeAddWuTool: ToolDefinition = {
       return error(InitiativeErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--initiative', input.initiative as string, '--wu', input.wu as string];
-    if (input.phase !== undefined) args.push('--phase', String(input.phase));
+    const args = [CliArgs.INITIATIVE, input.initiative as string, '--wu', input.wu as string];
+    if (input.phase !== undefined) args.push(CliArgs.PHASE, String(input.phase));
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:add-wu', args, cliOptions);
@@ -1253,7 +1272,7 @@ export const initiativeRemoveWuTool: ToolDefinition = {
   name: 'initiative_remove_wu',
   description: 'Remove a Work Unit from an initiative',
   inputSchema: z.object({
-    initiative: z.string().describe('Initiative ID'),
+    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
     wu: z.string().describe('WU ID to remove'),
   }),
 
@@ -1265,7 +1284,7 @@ export const initiativeRemoveWuTool: ToolDefinition = {
       return error(InitiativeErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--initiative', input.initiative as string, '--wu', input.wu as string];
+    const args = [CliArgs.INITIATIVE, input.initiative as string, '--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:remove-wu', args, cliOptions);
@@ -1288,7 +1307,7 @@ export const initiatiBulkAssignTool: ToolDefinition = {
   name: 'initiative_bulk_assign',
   description: 'Bulk assign WUs to an initiative based on pattern matching',
   inputSchema: z.object({
-    id: z.string().describe('Initiative ID'),
+    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
     pattern: z.string().optional().describe('Pattern to match WU titles (e.g., "MCP:*")'),
     phase: z.number().optional().describe('Phase to assign matched WUs'),
   }),
@@ -1300,7 +1319,7 @@ export const initiatiBulkAssignTool: ToolDefinition = {
 
     const args = ['--id', input.id as string];
     if (input.pattern) args.push('--pattern', input.pattern as string);
-    if (input.phase !== undefined) args.push('--phase', String(input.phase));
+    if (input.phase !== undefined) args.push(CliArgs.PHASE, String(input.phase));
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:bulk-assign', args, cliOptions);
@@ -1323,7 +1342,7 @@ export const initiativePlanTool: ToolDefinition = {
   name: 'initiative_plan',
   description: 'Link an existing plan or create a new plan template for an initiative',
   inputSchema: z.object({
-    initiative: z.string().describe('Initiative ID'),
+    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
     plan: z.string().optional().describe('Path to existing plan file'),
     create: z.boolean().optional().describe('Create a new plan template'),
   }),
@@ -1333,7 +1352,7 @@ export const initiativePlanTool: ToolDefinition = {
       return error(InitiativeErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--initiative', input.initiative as string];
+    const args = [CliArgs.INITIATIVE, input.initiative as string];
     if (input.plan) args.push('--plan', input.plan as string);
     if (input.create) args.push('--create');
 
