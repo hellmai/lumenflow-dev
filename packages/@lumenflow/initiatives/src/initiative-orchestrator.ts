@@ -1190,7 +1190,7 @@ export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPl
   // Add coordination guidance for multi-wave plans (WU-1592)
   if (plan.waves.length > 1) {
     lines.push('Coordination Guidance:');
-    lines.push('  - Poll mem:inbox between waves: pnpm mem:inbox --unread');
+    lines.push('  - Poll mem:inbox between waves: pnpm mem:inbox --since 10m');
     lines.push('  - Check for bug discoveries from sub-agents');
     lines.push('  - Review signals before proceeding to next wave');
     lines.push('');
@@ -1589,7 +1589,7 @@ export function formatCheckpointOutput(waveData: CheckpointWaveResult): string {
     lines.push(waveData.waitingMessage || 'No WUs can spawn until dependencies have stamps.');
     lines.push('');
     lines.push('Check dependency progress with:');
-    lines.push(`  pnpm mem:inbox --unread`);
+    lines.push(`  pnpm mem:inbox --since 10m`);
     lines.push(`  pnpm orchestrate:initiative -i ${waveData.initiative} -c`);
     return lines.join(STRING_LITERALS.NEWLINE);
   }
@@ -1792,7 +1792,7 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
 
     if (waveIndex < plan.waves.length - 1) {
       lines.push(`After all Wave ${waveIndex} agents complete, proceed to Wave ${waveIndex + 1}.`);
-      lines.push('Before next wave: pnpm mem:inbox --unread (check for bug discoveries)');
+      lines.push('Before next wave: pnpm mem:inbox --since 10m (check for bug discoveries)');
       lines.push('');
     }
   }

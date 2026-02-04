@@ -201,7 +201,7 @@ pnpm wu:done --id WU-123
 
 # Memory operations
 pnpm mem:checkpoint "Completed port definitions" --wu WU-123
-pnpm mem:inbox --unread
+pnpm mem:inbox --since 10m
 
 # Initiative management
 pnpm initiative:status INIT-007

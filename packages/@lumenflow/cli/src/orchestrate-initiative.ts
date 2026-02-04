@@ -137,7 +137,25 @@ const program = new Command()
 
       if (dryRun) {
         console.log(chalk.yellow(`${LOG_PREFIX} Dry run mode - no agents spawned`));
-        console.log(chalk.cyan('To execute this plan, remove the --dry-run flag.'));
+        console.log('');
+        console.log(chalk.bold('Next Steps (Recommended Defaults):'));
+        console.log('');
+        console.log(chalk.cyan('  Option 1 (Recommended): Checkpoint-per-wave mode'));
+        console.log('    pnpm orchestrate:initiative -i ' + initIds[0] + ' -c');
+        console.log('    Best for: Large initiatives, context management, idempotent resumption');
+        console.log('');
+        console.log(chalk.cyan('  Option 2: Full execution (polling mode)'));
+        console.log('    pnpm orchestrate:initiative -i ' + initIds[0]);
+        console.log('    Best for: Small initiatives (<4 WUs), quick execution');
+        console.log('');
+        console.log(chalk.cyan('  Option 3: Manual spawn per WU'));
+        console.log('    pnpm wu:spawn --id <WU-ID> --client claude-code');
+        console.log('    Best for: Testing, debugging, single WU execution');
+        console.log('');
+        console.log(chalk.bold('Monitoring Commands:'));
+        console.log('  pnpm mem:inbox --since 10m          # Check for signals from agents');
+        console.log('  pnpm orchestrate:init-status -i ' + initIds[0] + '   # Check progress');
+        console.log('  pnpm orchestrate:monitor            # Live agent activity');
         return;
       }
 

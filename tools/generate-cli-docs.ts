@@ -1073,7 +1073,7 @@ function generateReadmeMd(commands: CommandMetadata[]): string {
   lines.push('');
   lines.push('# Memory operations');
   lines.push('pnpm mem:checkpoint "Completed port definitions" --wu WU-123');
-  lines.push('pnpm mem:inbox --unread');
+  lines.push('pnpm mem:inbox --since 10m');
   lines.push('');
   lines.push('# Initiative management');
   lines.push('pnpm initiative:status INIT-007');

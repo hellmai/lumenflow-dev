@@ -166,7 +166,18 @@ For AI-assisted execution, use the orchestration commands:
 pnpm orchestrate:initiative --initiative INIT-001 --dry-run
 ```
 
-Shows the execution plan without spawning agents.
+Shows the execution plan without spawning agents. The output includes:
+
+- Wave breakdown with WU assignments
+- Bottleneck WUs (prioritize these for fastest unblocking)
+- Recommended next steps with defaults
+
+<Aside type="tip">
+  After dry-run, the output provides three options: 1. **Checkpoint-per-wave** (recommended): `pnpm
+  orchestrate:initiative -i INIT-001 -c` - best for large initiatives 2. **Full execution**: `pnpm
+  orchestrate:initiative -i INIT-001` - best for small initiatives 3. **Manual spawn**: `pnpm
+  wu:spawn --id WU-XXX` - best for testing individual WUs
+</Aside>
 
 ### Execute with Checkpoints
 
@@ -188,9 +199,12 @@ Spawns agents for all ready WUs and polls for completion.
 
 ```bash
 pnpm orchestrate:monitor --since 30m
+pnpm mem:inbox --since 10m  # Check for coordination signals
+pnpm orchestrate:init-status -i INIT-001  # Compact progress view
 ```
 
-Shows signals from spawned agents.
+Shows signals from spawned agents. Use `mem:inbox --since <duration>` to check for
+coordination signals between waves.
 
 ## Editing Initiatives
 

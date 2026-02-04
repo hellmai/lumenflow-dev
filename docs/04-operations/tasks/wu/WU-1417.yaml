@@ -15,7 +15,11 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
   - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
-  manual: []
+  manual:
+    - Run 'pnpm orchestrate:initiative -i INIT-XXX --dry-run' and verify output includes Next Steps with recommended defaults
+    - Verify dry-run output contains 'Option 1', 'Option 2', 'Option 3' guidance
+    - Verify no '--unread' flag appears in any orchestration output
+    - Verify mem:inbox guidance uses '--since 10m' format
   unit:
     - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
     - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts

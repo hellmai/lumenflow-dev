@@ -1452,7 +1452,8 @@ describe('WU-1326: Wave building respects lock_policy per lane', () => {
       const { getLockPolicyForLane } = await import('../src/initiative-orchestrator.js');
 
       expect(getLockPolicyForLane('Framework: Core', {})).toBe('all');
-      expect(getLockPolicyForLane('Framework: Core', undefined)).toBe('all');
+      // Test undefined by not passing second arg (optional parameter)
+      expect(getLockPolicyForLane('Framework: Core')).toBe('all');
     });
   });
 });
@@ -1580,6 +1581,166 @@ acceptance:
 
       // Should have proper function_calls wrapper
       expect(output).toContain('antml:function_calls');
+    });
+  });
+});
+
+/**
+ * WU-1417: Orchestration dry-run guide + docs sync
+ *
+ * Tests for:
+ * - AC1: orchestrate:initiative --dry-run prints recommended defaults + alternatives guide
+ * - AC2: Orchestration guidance uses valid mem:inbox --since 10m (no --unread)
+ */
+describe('WU-1417: Dry-run guide and mem:inbox guidance', () => {
+  describe('AC1: Dry-run prints recommended defaults + alternatives guide', () => {
+    it('should include coordination guidance in formatExecutionPlan for multi-wave plans', async () => {
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      // Multi-wave plan to trigger coordination guidance
+      const plan = {
+        waves: [
+          [{ id: 'WU-1', doc: { title: 'Wave 0 WU', lane: 'Lane A', blocked_by: [] } }],
+          [{ id: 'WU-2', doc: { title: 'Wave 1 WU', lane: 'Lane A', blocked_by: ['WU-1'] } }],
+        ],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // Should have coordination guidance for multi-wave plans
+      expect(output).toContain('Coordination Guidance');
+    });
+
+    it('should NOT include coordination guidance for single-wave plans', async () => {
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      const plan = {
+        waves: [[{ id: 'WU-1', doc: { title: 'Ready WU', lane: 'Lane A', blocked_by: [] } }]],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // Single-wave plans don't need coordination guidance
+      expect(output).not.toContain('Coordination Guidance');
+    });
+
+    it('should provide recommended defaults for monitoring in multi-wave plans', async () => {
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      // Create a multi-wave plan to trigger coordination guidance
+      const plan = {
+        waves: [
+          [{ id: 'WU-1', doc: { title: 'Wave 0 WU', lane: 'Lane A', blocked_by: [] } }],
+          [{ id: 'WU-2', doc: { title: 'Wave 1 WU', lane: 'Lane A', blocked_by: ['WU-1'] } }],
+        ],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // Should mention recommended monitoring command with valid --since flag
+      expect(output).toContain('--since');
+      expect(output).toContain('mem:inbox');
+    });
+  });
+
+  describe('AC2: Orchestration guidance uses valid mem:inbox --since (no --unread)', () => {
+    it('should NOT use --unread flag in formatExecutionPlan coordination guidance', async () => {
+      const { formatExecutionPlan } = await import('../src/initiative-orchestrator.js');
+
+      const initiative = { id: 'INIT-TEST', title: 'Test Initiative' };
+      const plan = {
+        waves: [
+          [{ id: 'WU-1', doc: { title: 'Wave 0 WU', lane: 'Lane A', blocked_by: [] } }],
+          [{ id: 'WU-2', doc: { title: 'Wave 1 WU', lane: 'Lane A', blocked_by: ['WU-1'] } }],
+        ],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlan(initiative, plan);
+
+      // Should NOT contain --unread (invalid flag)
+      expect(output).not.toContain('--unread');
+      // Should use --since instead
+      expect(output).toContain('--since');
+    });
+
+    it('should NOT use --unread flag in formatCheckpointOutput blocked output', async () => {
+      const { formatCheckpointOutput } = await import('../src/initiative-orchestrator.js');
+
+      // Mock waveData with blocking dependencies
+      const waveData = {
+        initiative: 'INIT-TEST',
+        wave: -1,
+        wus: [],
+        manifestPath: null,
+        blockedBy: ['WU-BLOCKER'],
+        waitingMessage: 'Waiting for WU-BLOCKER to complete',
+      };
+
+      const output = formatCheckpointOutput(waveData);
+
+      // Should NOT contain --unread (invalid flag)
+      expect(output).not.toContain('--unread');
+      // Should use --since instead
+      expect(output).toContain('--since');
+    });
+
+    it('should NOT use --unread flag in formatExecutionPlanWithEmbeddedSpawns', async () => {
+      const { formatExecutionPlanWithEmbeddedSpawns } =
+        await import('../src/initiative-orchestrator.js');
+
+      const plan = {
+        waves: [
+          [
+            {
+              id: 'WU-1',
+              doc: {
+                title: 'Wave 0 WU',
+                lane: 'Lane A',
+                blocked_by: [],
+                status: 'ready',
+                type: 'task',
+              },
+            },
+          ],
+          [
+            {
+              id: 'WU-2',
+              doc: {
+                title: 'Wave 1 WU',
+                lane: 'Lane A',
+                blocked_by: ['WU-1'],
+                status: 'ready',
+                type: 'task',
+              },
+            },
+          ],
+        ],
+        skipped: [],
+        skippedWithReasons: [],
+        deferred: [],
+      };
+
+      const output = formatExecutionPlanWithEmbeddedSpawns(plan);
+
+      // Should NOT contain --unread (invalid flag)
+      expect(output).not.toContain('--unread');
+      // Should use --since instead for multi-wave guidance
+      expect(output).toContain('--since');
     });
   });
 });
