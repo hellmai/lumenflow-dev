@@ -104,7 +104,7 @@ If a command is not listed here, do not run it during setup.
 | `pnpm --version`                                               | Verify toolchain (require ≥9)                |
 | `git --version`                                                | Verify toolchain (require ≥2)                |
 | `git init`                                                     | New project only                             |
-| `pnpm init -y`                                                 | Only if no `package.json` and user approved  |
+| `pnpm init`                                                    | Only if no `package.json` and user approved  |
 | `pnpm add -D @lumenflow/cli`                                   | Install LumenFlow CLI                        |
 | `pnpm exec lumenflow --client <client>`                        | Initialize LumenFlow (new repos)             |
 | `pnpm exec lumenflow --client <client> --merge`                | Initialize LumenFlow (existing repos)        |
@@ -150,7 +150,7 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
 
     <Aside type="caution" title="Non-Node projects still need a package.json">
       For .NET, Go, Python, etc., LumenFlow uses `package.json` only to install the CLI and scripts.
-      If there is no `package.json`, ask permission to run `pnpm init -y`. Do not scaffold a Node
+    If there is no `package.json`, ask permission to run `pnpm init`. Do not scaffold a Node
       stack or change the project's framework.
     </Aside>
 
