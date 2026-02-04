@@ -22,6 +22,7 @@ sections:
 
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
+- [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -29,7 +30,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
-- [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -397,3 +397,4 @@ sections:
 - [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml)
 - [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml)
 - [WU-1415 — Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)](wu/WU-1415.yaml)
+- [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml)

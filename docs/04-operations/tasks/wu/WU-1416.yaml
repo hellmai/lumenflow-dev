@@ -2,7 +2,7 @@ id: WU-1416
 title: Document LumenFlow product strategy and MCP architecture
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -43,3 +43,5 @@ session_id: 9ba05cd6-c99e-4be0-b139-d1bcd1a83b44
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T15:27:44.516Z
+locked: true
+completed_at: 2026-02-04T15:32:02.372Z

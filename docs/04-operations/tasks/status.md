@@ -7,7 +7,7 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml)
+- [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 
 ## Completed
 
@@ -371,3 +371,4 @@ _Last updated: 2026-02-04_
 - [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml) — 2026-02-04
 - [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml) — 2026-02-04
 - [WU-1415 — Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)](wu/WU-1415.yaml) — 2026-02-04
+- [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml) — 2026-02-04
