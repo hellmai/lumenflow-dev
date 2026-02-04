@@ -2,7 +2,7 @@ id: WU-1438
 title: Repair WU-1436 metadata for spec-linter
 lane: 'Framework: Core'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -38,3 +38,5 @@ session_id: 5b69a164-2f0f-42d4-9635-d54cc64f0397
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T23:25:14.627Z
+locked: true
+completed_at: 2026-02-04T23:26:31.715Z
