@@ -315,6 +315,10 @@ Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
     If you created an initiative, add: `--initiative INIT-001`.
 
     Do **not** claim or implement unless the user explicitly says "proceed".
+    
+    If the user shares a product/vision document during setup, **do not** save
+    it to the repo yet. Create a Discovery WU titled "Ingest product document"
+    and stop. The document should only be saved inside a claimed WU worktree.
 
 </Steps>
 
@@ -343,6 +347,10 @@ Note: The commands below are for the agent to run in a later session (not the us
 5. Implement the WU acceptance criteria
 6. Run gates: `pnpm wu:prep --id WU-0001`
 7. Complete (from main): `pnpm wu:done --id WU-0001`
+
+If the user provided a document during setup, do **not** save it on main. Create
+an "Ingest product document" WU and stop. Save the doc only inside that WU's
+worktree after claim.
 
 ### Critical Rules
 
@@ -378,6 +386,8 @@ These actions will break the workflow.
 | Ask more than 2 setup questions          | Use defaults; ask only essential questions     |
 | Ask user to choose templates/frameworks  | Ask only for client; defer stack choices to WU |
 | Scaffold a tech stack during setup       | Create a WU after setup, then scaffold         |
+| Save user-provided docs during setup     | Create a Discovery WU, save in worktree later  |
+| Create files/folders after setup         | Only create files inside a claimed WU          |
 | Write feature code before a WU exists    | Create a WU first                              |
 | Continue after setup                     | Stop, hand off, and wait                       |
 
