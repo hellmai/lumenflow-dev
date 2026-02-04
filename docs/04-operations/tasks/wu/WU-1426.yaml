@@ -2,7 +2,7 @@ id: WU-1426
 title: 'MCP: Flow + Validation + Setup tools (+17)'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -53,3 +53,5 @@ session_id: 21a79f17-f65f-430b-94f9-5c87ab9983db
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T22:06:57.530Z
+locked: true
+completed_at: 2026-02-04T22:14:02.987Z
