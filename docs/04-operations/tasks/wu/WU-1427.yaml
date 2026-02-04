@@ -33,9 +33,9 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: MCP server exists but has no public documentation. Problem: Users cannot
-  discover or learn how to use MCP interface. Solution: Add MCP reference page with all 70 tools,
-  add MCP setup guide for configuration, update getting-started and architecture pages to mention
-  MCP.'
+  discover or learn how to use MCP interface. Solution: Add MCP reference page with all public CLI
+  tools (~73), add MCP setup guide for configuration, update getting-started and architecture pages
+  to mention MCP.'
 acceptance:
   - MCP reference page created with all tools documented
   - MCP setup guide created with configuration examples
