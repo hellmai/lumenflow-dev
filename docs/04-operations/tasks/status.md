@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1439 — Regenerate CLI docs after public manifest update](wu/WU-1439.yaml)
 
 ## Completed
 
@@ -394,3 +393,4 @@ _Last updated: 2026-02-04_
 - [WU-1435 — Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)](wu/WU-1435.yaml) — 2026-02-04
 - [WU-1438 — Repair WU-1436 metadata for spec-linter](wu/WU-1438.yaml) — 2026-02-04
 - [WU-1437 — Investigate initiatives test timeout in gates](wu/WU-1437.yaml) — 2026-02-04
+- [WU-1439 — Regenerate CLI docs after public manifest update](wu/WU-1439.yaml) — 2026-02-04
