@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-MCP-FULL
 phase: 5
+spec_refs:
+  - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
 notes: 'Documentation WU. Create MCP reference page similar to CLI reference. See plan:
   lumenflow://plans/partitioned-foraging-ocean.md'
