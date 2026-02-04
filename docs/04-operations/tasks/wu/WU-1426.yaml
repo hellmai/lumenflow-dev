@@ -2,7 +2,7 @@ id: WU-1426
 title: 'MCP: Flow + Validation + Setup tools (+17)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - All 5 validation tools implemented
   - All 8 setup tools implemented
   - Unit tests for each category
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1426
+claimed_at: 2026-02-04T22:06:57.525Z
+baseline_main_sha: d4c3f38e6d0214319447e6696cae4a9b87cf9489
+session_id: 21a79f17-f65f-430b-94f9-5c87ab9983db
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T22:06:57.530Z
