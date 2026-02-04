@@ -22,7 +22,11 @@ phase: 7
 spec_refs:
   - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
-notes: ''
+notes: 'Missing from WU-1427 docs (added by WU-1426): flow_bottlenecks, flow_report, metrics,
+  metrics_snapshot, validate, validate_agent_skills, validate_agent_sync, validate_backlog_sync,
+  validate_skills_spec, lumenflow_init, lumenflow_doctor, lumenflow_integrate, lumenflow_upgrade,
+  lumenflow_commands, lumenflow_docs_sync, lumenflow_release, lumenflow_sync_templates. Agent should
+  read public manifest from WU-1432 output and ensure docs cover exactly those tools.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
