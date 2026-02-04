@@ -6,6 +6,8 @@ _Last updated: 2026-02-04_
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
+- [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml)
 
 ## Completed
 
