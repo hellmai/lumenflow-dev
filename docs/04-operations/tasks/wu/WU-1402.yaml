@@ -2,7 +2,7 @@ id: WU-1402
 title: Remove Session 0 terminology from agent quickstart
 lane: 'Content: Documentation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -41,3 +41,5 @@ description: "Context: Agent quickstart uses internal term 'Session 0' which con
 acceptance:
   - No 'Session 0' wording remains in agent quickstart
   - Headings and copy still clearly communicate setup-only scope
+locked: true
+completed_at: 2026-02-04T00:32:25.166Z
