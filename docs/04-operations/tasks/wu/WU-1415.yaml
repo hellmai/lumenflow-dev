@@ -2,7 +2,7 @@ id: WU-1415
 title: Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -26,7 +26,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: gates.ts integration test and docs-only modes. Problem: (1) vitest run --include is not a valid vitest CLI option, causing CACError. (2) docs-only mode uses directory names as turbo package filters which fail. Solution: (1) Remove --include flags and pass glob patterns as positional arguments. (2) Fix docs-only turbo filter logic to use actual package names or skip tests for pure docs changes.'
+description: 'Context: gates.ts integration test and docs-only modes. Problem: (1) vitest run
+  --include is not a valid vitest CLI option, causing CACError. (2) docs-only mode uses directory
+  names as turbo package filters which fail. Solution: (1) Remove --include flags and pass glob
+  patterns as positional arguments. (2) Fix docs-only turbo filter logic to use actual package names
+  or skip tests for pure docs changes.'
 acceptance:
   - Integration tests run without CACError when pnpm gates runs on high-risk WU
   - docs-only mode does not fail with turbo package filter error
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1415
+claimed_at: 2026-02-04T15:11:15.464Z
+baseline_main_sha: dbbc379f947643be63e43d6d26a16cd8d814e1f7
+session_id: c95556d2-6f91-4521-beae-246689f88a39
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T15:11:15.471Z
