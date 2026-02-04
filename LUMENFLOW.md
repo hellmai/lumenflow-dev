@@ -120,9 +120,10 @@ When `requireRemote: true` (default):
 4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
 5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
 6. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
-7. **Gates Before Done**: All gates must pass before `wu:done`
-8. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-9. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+7. **Command Clarity**: If you are unsure about a command, run `<command> --help` first. Do not guess.
+8. **Gates Before Done**: All gates must pass before `wu:done`
+9. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+10. **Always wu:done**: Complete every WU by running `pnpm wu:done`
 
 ---
 
