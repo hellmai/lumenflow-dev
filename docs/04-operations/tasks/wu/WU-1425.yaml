@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-MCP-FULL
 phase: 3
+spec_refs:
+  - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
 notes: 'Sizing: Simple (~24 tool calls). Agent (4) + Orchestration (3) + Spawn (1) tools. See plan:
   lumenflow://plans/partitioned-foraging-ocean.md'
