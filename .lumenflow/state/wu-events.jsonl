@@ -773,10 +773,11 @@
 {"type":"claim","wuId":"WU-1430","timestamp":"2026-02-04T18:16:35.652Z","lane":"Framework: Core","title":"Audit and centralize hardcoded path strings into constants"}
 {"type":"complete","wuId":"WU-1429","timestamp":"2026-02-04T18:20:33.525Z"}
 {"type":"complete","wuId":"WU-1430","timestamp":"2026-02-04T18:28:23.409Z"}
-{"type":"claim","wuId":"WU-1432","lane":"Framework: CLI","title":"MCP schema autogen from CLI options","timestamp":"2026-02-04T18:58:19.678Z"}
-{"type":"release","wuId":"WU-1432","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T18:59:37.044Z"}
-{"type":"claim","wuId":"WU-1432","lane":"Framework: CLI","title":"MCP schema autogen from CLI options","timestamp":"2026-02-04T19:00:02.705Z"}
-{"type":"release","wuId":"WU-1432","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T19:09:17.208Z"}
-{"type":"claim","wuId":"WU-1422","lane":"Framework: CLI","title":"MCP: Complete WU tools (+17)","timestamp":"2026-02-04T19:56:36.973Z"}
-{"type":"claim","wuId":"WU-1427","lane":"Content: Documentation","title":"Document MCP server on lumenflow.dev","timestamp":"2026-02-04T19:58:11.673Z"}
-{"type":"claim","wuId":"WU-1431","lane":"Framework: Core","title":"Create shared Zod schemas for CLI/MCP parity","timestamp":"2026-02-04T20:00:12.112Z"}
+{"type":"claim","wuId":"WU-1432","timestamp":"2026-02-04T18:58:19.678Z","lane":"Framework: CLI","title":"MCP schema autogen from CLI options"}
+{"type":"release","wuId":"WU-1432","timestamp":"2026-02-04T18:59:37.044Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1432","timestamp":"2026-02-04T19:00:02.705Z","lane":"Framework: CLI","title":"MCP schema autogen from CLI options"}
+{"type":"release","wuId":"WU-1432","timestamp":"2026-02-04T19:09:17.208Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1422","timestamp":"2026-02-04T19:56:36.973Z","lane":"Framework: CLI","title":"MCP: Complete WU tools (+17)"}
+{"type":"claim","wuId":"WU-1427","timestamp":"2026-02-04T19:58:11.673Z","lane":"Content: Documentation","title":"Document MCP server on lumenflow.dev"}
+{"type":"claim","wuId":"WU-1431","timestamp":"2026-02-04T20:00:12.112Z","lane":"Framework: Core","title":"Create shared Zod schemas for CLI/MCP parity"}
+{"type":"complete","wuId":"WU-1422","timestamp":"2026-02-04T20:03:27.706Z"}
