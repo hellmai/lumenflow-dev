@@ -2,7 +2,7 @@ id: WU-1425
 title: 'MCP: Agent + Orchestration + Spawn tools (+8)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - All 3 orchestration tools implemented
   - spawn_list tool implemented
   - Unit tests for coordination tools
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1425
+claimed_at: 2026-02-04T21:52:44.423Z
+baseline_main_sha: 2209b06f99095397f1c0c4236d1e81720c1ba00d
+session_id: b9ac9ea6-269f-4de4-880d-8a70e61017f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T21:52:44.429Z
