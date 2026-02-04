@@ -2,7 +2,7 @@ id: WU-1403
 title: Optimize setup agent prompt for lumenflow.dev
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -27,10 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Optimize the LumenFlow setup agent prompt based on Claude 4.5 and GPT-5.2 best practices. Fix command syntax errors, add version requirements, improve structure with XML tags, and make integrate command conditional for Claude Code only.
+description: Optimize the LumenFlow setup agent prompt based on Claude 4.5 and GPT-5.2 best
+  practices. Fix command syntax errors, add version requirements, improve structure with XML tags,
+  and make integrate command conditional for Claude Code only.
 acceptance:
   - 'Prompt uses correct command syntax: pnpm exec lumenflow --client <client>'
   - 'Integrate command is conditional: only for Claude Code users who want hooks'
   - 'Version requirements specified: Node ≥22, pnpm ≥9, Git ≥2'
   - Prompt uses XML tags for structure (CTCO pattern)
   - Client types enumerated to prevent guessing
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1403
+claimed_at: 2026-02-04T10:18:18.287Z
+baseline_main_sha: df7966c9f409d451a61a3438bafd7476384cba49
+session_id: 8b9101c7-f8d1-44b2-9026-04d130bc083e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T10:18:18.291Z
