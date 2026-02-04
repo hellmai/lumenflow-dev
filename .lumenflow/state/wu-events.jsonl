@@ -773,3 +773,4 @@
 {"type":"claim","wuId":"WU-1430","timestamp":"2026-02-04T18:16:35.652Z","lane":"Framework: Core","title":"Audit and centralize hardcoded path strings into constants"}
 {"type":"complete","wuId":"WU-1429","timestamp":"2026-02-04T18:20:33.525Z"}
 {"type":"complete","wuId":"WU-1430","timestamp":"2026-02-04T18:28:23.409Z"}
+{"type":"claim","wuId":"WU-1432","lane":"Framework: CLI","title":"MCP schema autogen from CLI options","timestamp":"2026-02-04T18:58:19.678Z"}

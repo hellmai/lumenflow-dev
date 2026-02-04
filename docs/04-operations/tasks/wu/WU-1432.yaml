@@ -2,7 +2,7 @@ id: WU-1432
 title: MCP schema autogen from CLI options
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -36,9 +36,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: MCP tool schemas are manually duplicated from CLI option definitions. Problem: schema drift whenever CLI flags change. Solution: centralize CLI command specs in core, generate MCP input schemas/CLI args from them, and update MCP tools to use the shared specs.'
+description: 'Context: MCP tool schemas are manually duplicated from CLI option definitions.
+  Problem: schema drift whenever CLI flags change. Solution: centralize CLI command specs in core,
+  generate MCP input schemas/CLI args from them, and update MCP tools to use the shared specs.'
 acceptance:
-  - Shared CLI command specs exported from @lumenflow/core for wu:create, wu:claim, wu:status, wu:done, and gates
-  - MCP tools derive inputSchema and CLI arg mapping from shared specs (no manual per-tool schemas for those commands)
+  - Shared CLI command specs exported from @lumenflow/core for wu:create, wu:claim, wu:status,
+    wu:done, and gates
+  - MCP tools derive inputSchema and CLI arg mapping from shared specs (no manual per-tool schemas
+    for those commands)
   - Alias flags (e.g., code-path/manual-test) are not exposed in MCP schemas but still work in CLI
   - Unit tests cover schema generation and CLI arg mapping
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1432
+claimed_at: 2026-02-04T18:58:19.648Z
+baseline_main_sha: 4ce4d7f0894cbdb37c17920118adbc9d73f2ef80
+session_id: 044661eb-7d62-45b2-9117-f5f30af9438a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T18:58:19.652Z
