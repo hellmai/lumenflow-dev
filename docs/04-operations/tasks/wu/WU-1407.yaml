@@ -2,7 +2,7 @@ id: WU-1407
 title: Mandate design-first before implementation
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
   - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
   - wu-template.yaml includes reminder to load design-first for feature/refactor types
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1407
+claimed_at: 2026-02-04T12:48:10.647Z
+baseline_main_sha: 5d8bc1145ad7c4a640d1a64a5b8d62d11f6b7e6f
+session_id: 9ff91a49-1d80-441c-a9a4-7332eabf47f8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T12:48:10.652Z
