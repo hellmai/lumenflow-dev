@@ -195,7 +195,7 @@ describe('Orchestration Schemas', () => {
       dodProgress: 8,
       dodTotal: DOD_TOTAL,
       agents: {
-        'beacon-guardian': 'pass',
+        'llm-reviewer': 'pass',
         'test-engineer': 'pass',
         'code-reviewer': 'pending',
       },
@@ -246,7 +246,7 @@ describe('Orchestration Schemas', () => {
     it('rejects invalid agent status', () => {
       const progress = {
         ...validWUProgress,
-        agents: { 'beacon-guardian': 'invalid-status' },
+        agents: { 'llm-reviewer': 'invalid-status' },
       };
       const result = WUProgressSchema.safeParse(progress);
       expect(result.success).toBe(false);
@@ -256,7 +256,7 @@ describe('Orchestration Schemas', () => {
       for (const status of AGENT_RESULT_STATUSES) {
         const progress = {
           ...validWUProgress,
-          agents: { 'beacon-guardian': status },
+          agents: { 'llm-reviewer': status },
         };
         const result = WUProgressSchema.safeParse(progress);
         expect(result.success).toBe(true);
@@ -400,7 +400,7 @@ describe('Orchestration Schemas', () => {
     const validExecutionPlan = {
       wuId: 'WU-1234',
       steps: [
-        { order: 1, agent: 'beacon-guardian', status: 'pending' },
+        { order: 1, agent: 'llm-reviewer', status: 'pending' },
         { order: 2, agent: 'test-engineer', status: 'pending' },
         { order: 3, action: 'gates', status: 'pending' },
       ],
@@ -427,7 +427,7 @@ describe('Orchestration Schemas', () => {
     it('rejects invalid step status', () => {
       const plan = {
         ...validExecutionPlan,
-        steps: [{ order: 1, agent: 'beacon-guardian', status: 'invalid' }],
+        steps: [{ order: 1, agent: 'llm-reviewer', status: 'invalid' }],
       };
       const result = ExecutionPlanSchema.safeParse(plan);
       expect(result.success).toBe(false);

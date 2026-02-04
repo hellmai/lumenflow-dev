@@ -1377,8 +1377,8 @@ export const PATH_PATTERNS = {
   /** Matches WU YAML paths in both legacy and current locations */
   WU_YAML: /(?:memory-bank|docs\/04-operations)\/tasks\/wu\/(WU-\d+)\.ya?ml$/i,
 
-  /** Matches stamp file paths (supports both .beacon and .lumenflow for migration) */
-  STAMP: /\.(?:beacon|lumenflow)\/stamps\/(WU-\d+)\.done$/i,
+  /** Matches stamp file paths */
+  STAMP: /\.lumenflow\/stamps\/(WU-\d+)\.done$/i,
 };
 
 /**
@@ -1515,8 +1515,6 @@ export const LOCK_DIR_NAME = '.lumenflow-locks';
  *
  * Centralized paths for .lumenflow directory structure to eliminate hardcoded strings.
  * Used by telemetry, agent-session, agent-incidents, memory, and commands-logger modules.
- *
- * @since 1.4.0 Renamed from BEACON_PATHS (WU-1075)
  */
 export const LUMENFLOW_PATHS = {
   /** Base directory for all LumenFlow runtime data */
@@ -1587,11 +1585,6 @@ export const LUMENFLOW_PATHS = {
    */
   LOCK_DIR: path.join(tmpdir(), LOCK_DIR_NAME),
 };
-
-/**
- * @deprecated Use LUMENFLOW_PATHS instead. Will be removed in v2.0.
- */
-export const BEACON_PATHS = LUMENFLOW_PATHS;
 
 /**
  * File extensions

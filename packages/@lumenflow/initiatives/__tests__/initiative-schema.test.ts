@@ -101,7 +101,7 @@ describe('initiative-schema', () => {
           { id: 2, title: 'Integration', status: 'in_progress' },
         ],
         success_metrics: ['Zero regex', 'Witness-only on shock_turn1'],
-        labels: ['safety', 'beacon', 'p0-critical'],
+        labels: ['safety', 'llm', 'p0-critical'],
       };
       const result = InitiativeSchema.safeParse(complete);
       expect(result.success).toBe(true);

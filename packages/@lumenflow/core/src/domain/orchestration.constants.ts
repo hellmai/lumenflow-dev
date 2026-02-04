@@ -135,7 +135,7 @@ export type MandatoryAgentName = (typeof MANDATORY_AGENT_NAMES)[number];
  *
  * Example application-specific triggers (configure in your project):
  * - security-auditor: supabase/migrations/**, auth/**, rls/**
- * - beacon-guardian: prompts/**, llm/**
+ * - llm-reviewer: prompts/**, llm/**
  *
  * Usage:
  * ```typescript

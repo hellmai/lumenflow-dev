@@ -19,7 +19,7 @@ import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import { generateBacklog, generateStatus } from './backlog-generator.js';
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
 import { getGitForCwd } from './git-adapter.js';
-import { REMOTES, BRANCHES, BEACON_PATHS } from './wu-constants.js';
+import { REMOTES, BRANCHES, LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Creates a unique key for an event to detect duplicates.
@@ -50,7 +50,7 @@ export async function fetchMainEventsContent(): Promise<string | null> {
     }
 
     // Try to read wu-events.jsonl from origin/main
-    const eventsPath = `${BEACON_PATHS.STATE_DIR}/${WU_EVENTS_FILE_NAME}`;
+    const eventsPath = `${LUMENFLOW_PATHS.STATE_DIR}/${WU_EVENTS_FILE_NAME}`;
     const content = await git.raw(['show', `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${eventsPath}`]);
     return content;
   } catch (error) {

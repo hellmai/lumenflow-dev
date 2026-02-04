@@ -87,7 +87,7 @@ export type AgentMetric = z.infer<typeof AgentMetricSchema>;
  *   title: 'LLM Classification Feature',
  *   dodProgress: 8,
  *   dodTotal: 11,
- *   agents: { 'beacon-guardian': 'pass', 'code-reviewer': 'pending' },
+ *   agents: { 'llm-reviewer': 'pass', 'code-reviewer': 'pending' },
  *   headline: 'Blocked on code-reviewer - awaiting approval',
  * };
  */
@@ -142,7 +142,7 @@ export type Suggestion = z.infer<typeof SuggestionSchema>;
  * const plan: ExecutionPlan = {
  *   wuId: 'WU-1234',
  *   steps: [
- *     { order: 1, agent: 'beacon-guardian', status: 'pending' },
+ *     { order: 1, agent: 'llm-reviewer', status: 'pending' },
  *     { order: 2, action: 'gates', status: 'pending' },
  *   ],
  *   estimatedTokens: 5000,

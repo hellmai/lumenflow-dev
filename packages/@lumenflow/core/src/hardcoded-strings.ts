@@ -175,7 +175,7 @@ export function classifyPath(pathStr) {
  */
 const REMEDIATION_MESSAGES = Object.freeze({
   [PATH_TYPES.ROUTE]:
-    'Route path - use an endpoint constant or config (e.g., BEACON_API_ENDPOINT, API_ROUTES.ASSISTANT)',
+    'Route path - use an endpoint constant or config (e.g., API_ENDPOINT, API_ROUTES.ASSISTANT)',
   [PATH_TYPES.FILESYSTEM]: 'File path - use path.join() with constants',
   [PATH_TYPES.UNKNOWN]: 'Path string - use a constant or configuration value',
 });

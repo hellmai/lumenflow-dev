@@ -26,7 +26,7 @@ import {
   PKG_MANAGER,
   SCRIPTS,
   PRETTIER_FLAGS,
-  BEACON_PATHS,
+  LUMENFLOW_PATHS,
 } from './wu-constants.js';
 import { applyExposureDefaults } from './wu-done-validation.js';
 import { createFileNotFoundError, createValidationError } from './wu-done-errors.js';
@@ -230,7 +230,7 @@ export async function stageAndFormatMetadata({ id, wuPath, statusPath, backlogPa
   const gitCwd = getGitForCwd();
 
   // Stage files
-  const wuEventsPath = path.join(BEACON_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+  const wuEventsPath = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
   const filesToStage = [wuPath, statusPath, backlogPath, stampsDir];
   if (existsSync(wuEventsPath)) {
     filesToStage.push(wuEventsPath);

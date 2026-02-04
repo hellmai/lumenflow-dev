@@ -208,9 +208,6 @@ export const DirectoriesSchema = z.object({
 
 /**
  * State paths configuration (.lumenflow directory structure)
- *
- * WU-1423: Renamed from BeaconPathsSchema to StatePathsSchema as part of
- * the beacon→lumenflow migration. The config key changed from 'beacon' to 'state'.
  */
 export const StatePathsSchema = z.object({
   /** Base state directory (default: '.lumenflow') */

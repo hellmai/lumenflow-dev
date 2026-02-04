@@ -16,7 +16,7 @@ const TEST_EMAIL = 'test@test.com';
 const TEST_USERNAME = 'Test';
 const FORCE_BYPASSES_LOG = 'force-bypasses.log';
 
-// Create a temporary directory for testing to avoid polluting the real .beacon directory
+// Create a temporary directory for testing to avoid polluting the real .lumenflow directory
 const createTempDir = (): string => {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'safe-git-test-'));
 };
@@ -143,7 +143,7 @@ describe('safe-git', () => {
       });
 
       // Check that the force bypass log exists and contains the entry
-      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
+      const bypassLog = path.join(testRepo, '.lumenflow', FORCE_BYPASSES_LOG);
       expect(fs.existsSync(bypassLog)).toBe(true);
       const logContent = fs.readFileSync(bypassLog, 'utf-8');
       expect(logContent).toContain('reset --hard');
@@ -174,7 +174,7 @@ describe('safe-git', () => {
         env: { ...process.env, LUMENFLOW_FORCE: '1', LUMENFLOW_FORCE_REASON: testReason },
       });
 
-      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
+      const bypassLog = path.join(testRepo, '.lumenflow', FORCE_BYPASSES_LOG);
       const logContent = fs.readFileSync(bypassLog, 'utf-8');
       expect(logContent).toContain(testReason);
     });
@@ -205,7 +205,7 @@ describe('safe-git', () => {
       });
 
       // Check the bypasslog for the NO_REASON marker
-      const bypassLog = path.join(testRepo, '.beacon', FORCE_BYPASSES_LOG);
+      const bypassLog = path.join(testRepo, '.lumenflow', FORCE_BYPASSES_LOG);
       const logContent = fs.readFileSync(bypassLog, 'utf-8');
       expect(logContent).toContain('NO_REASON');
     });

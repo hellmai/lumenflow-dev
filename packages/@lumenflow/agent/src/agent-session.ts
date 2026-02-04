@@ -3,9 +3,9 @@ import { readFile, writeFile, mkdir, unlink, access } from 'node:fs/promises';
 import { join } from 'path';
 import { simpleGit } from 'simple-git';
 import { appendIncident } from './agent-incidents.js';
-import { PATTERNS, INCIDENT_SEVERITY, BEACON_PATHS } from '@lumenflow/core/lib/wu-constants.js';
+import { PATTERNS, INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
 
-const SESSION_DIR = BEACON_PATHS.SESSIONS;
+const SESSION_DIR = LUMENFLOW_PATHS.SESSIONS;
 const SESSION_FILE = join(SESSION_DIR, 'current.json');
 
 /**

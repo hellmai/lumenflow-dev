@@ -24,7 +24,7 @@
 
 import path from 'node:path';
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
-import { BEACON_PATHS, DIRECTORIES, FILE_EXTENSIONS, STRING_LITERALS } from './wu-constants.js';
+import { LUMENFLOW_PATHS, DIRECTORIES, FILE_EXTENSIONS, STRING_LITERALS } from './wu-constants.js';
 
 const POSIX = path.posix;
 
@@ -36,8 +36,8 @@ const DOCS_ONLY_PREFIXES = Object.freeze([
 ]);
 
 const TOOLS_TESTS_PREFIX = `${POSIX.join(DIRECTORIES.TOOLS, '__tests__')}${STRING_LITERALS.SLASH}`;
-const STAMPS_PREFIX = `${BEACON_PATHS.STAMPS_DIR}${STRING_LITERALS.SLASH}`;
-const WU_EVENTS_PATH = POSIX.join(BEACON_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+const STAMPS_PREFIX = `${LUMENFLOW_PATHS.STAMPS_DIR}${STRING_LITERALS.SLASH}`;
+const WU_EVENTS_PATH = POSIX.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
 
 /**
  * Check if a file path is allowed for docs-only WUs

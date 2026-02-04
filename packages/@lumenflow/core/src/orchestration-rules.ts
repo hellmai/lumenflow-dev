@@ -153,7 +153,7 @@ const AGENT_TRIGGER_DESCRIPTIONS: Record<string, string> = {
   // No mandatory agent triggers for LumenFlow framework development.
   // Example for application-specific triggers:
   // 'security-auditor': 'supabase/migrations/**, auth/**, rls/**',
-  // 'beacon-guardian': 'prompts/**, llm/**',
+  // 'llm-reviewer': 'prompts/**, llm/**',
 };
 
 /**

@@ -777,10 +777,10 @@ When creating \`.lumenflow/\` stamps or other artifacts:
 # CORRECT: Create stamp in worktree
 WORKTREE_ROOT=$(git rev-parse --show-toplevel)
 mkdir -p "$WORKTREE_ROOT/.lumenflow/agent-runs"
-touch "$WORKTREE_ROOT/.lumenflow/agent-runs/beacon-guardian.stamp"
+touch "$WORKTREE_ROOT/.lumenflow/agent-runs/code-reviewer.stamp"
 
 # WRONG: Hardcoded path to main
-# touch /path/to/main/.lumenflow/agent-runs/beacon-guardian.stamp
+# touch /path/to/main/.lumenflow/agent-runs/code-reviewer.stamp
 \`\`\`
 
 ### Why This Matters

@@ -12,9 +12,6 @@ export * from './date-utils.js';
 export * from './error-handler.js';
 export * from './retry-strategy.js';
 
-// Migration utilities (WU-1075)
-export * from './beacon-migration.js';
-
 // Cycle detection (WU-1088 - extracted from initiatives to break circular dependency)
 export * from './cycle-detector.js';
 
@@ -176,7 +173,7 @@ export * from './lumenflow-home.js';
 export * from './force-bypass-audit.js';
 
 // WU-1075: LumenFlow directory paths (exported from wu-constants)
-export { LUMENFLOW_PATHS, BEACON_PATHS } from './wu-constants.js';
+export { LUMENFLOW_PATHS } from './wu-constants.js';
 
 // WU-1233: Stream error handling (EPIPE protection)
 export { STREAM_ERRORS, EXIT_CODES } from './wu-constants.js';

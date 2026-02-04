@@ -305,7 +305,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
       vi.restoreAllMocks();
     });
 
-    it('uses LUMENFLOW_PATHS.LOCKS_DIR not .beacon/locks', async () => {
+    it('uses LUMENFLOW_PATHS.LOCKS_DIR', async () => {
       // Spy on fs.access to capture the path being checked
       const accessSpy = vi.spyOn(fs, 'access').mockRejectedValue(new Error('ENOENT'));
 
@@ -316,9 +316,8 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
       expect(accessSpy).toHaveBeenCalled();
       const calledPath = accessSpy.mock.calls[0][0] as string;
 
-      // Should use .lumenflow/locks, NOT .beacon/locks
+      // Should use .lumenflow/locks
       expect(calledPath).toContain(LUMENFLOW_PATHS.LOCKS_DIR);
-      expect(calledPath).not.toContain('.beacon');
       expect(calledPath).toBe(`${baseDir}/${LUMENFLOW_PATHS.LOCKS_DIR}`);
     });
 

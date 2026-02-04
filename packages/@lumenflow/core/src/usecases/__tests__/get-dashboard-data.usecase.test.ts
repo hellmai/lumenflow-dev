@@ -48,7 +48,7 @@ describe('GetDashboardDataUseCase', () => {
         result: 'pass',
       },
     },
-    'beacon-guardian': {
+    'llm-reviewer': {
       invoked: 8,
       passRate: 100,
       avgDurationMs: 60000,
@@ -67,7 +67,7 @@ describe('GetDashboardDataUseCase', () => {
       title: 'LLM Classification',
       dodProgress: 8,
       dodTotal: DOD_TOTAL,
-      agents: { 'beacon-guardian': 'pass' },
+      agents: { 'llm-reviewer': 'pass' },
       headline: 'In progress - 8/11 checkpoints',
     },
     {
@@ -86,7 +86,7 @@ describe('GetDashboardDataUseCase', () => {
       timestamp: '2025-01-15T10:00:00Z',
       event: 'agent',
       wuId: 'WU-1234',
-      detail: 'beacon-guardian passed',
+      detail: 'llm-reviewer passed',
       severity: 'info',
     },
     {
