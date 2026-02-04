@@ -39,9 +39,26 @@ lumenflow-mcp
 | `LUMENFLOW_PROJECT_ROOT`  | Project root directory               | `process.cwd()` |
 | `LUMENFLOW_MCP_LOG_LEVEL` | Log level (debug, info, warn, error) | `info`          |
 
-## Tools
+## Tools Overview
 
-The MCP server exposes 7 tools for LumenFlow operations:
+The MCP server exposes **68 tools** organized into 10 categories:
+
+| Category                 | Count | Description                                   |
+| ------------------------ | ----- | --------------------------------------------- |
+| Core WU Operations       | 7     | Basic WU lifecycle and context                |
+| Additional WU Operations | 16    | Extended WU management                        |
+| Initiative Operations    | 8     | Multi-phase project orchestration             |
+| Memory Operations        | 13    | Session tracking and agent coordination       |
+| Agent Operations         | 4     | Agent session management and issue logging    |
+| Orchestration Operations | 3     | Initiative execution and monitoring           |
+| Spawn Operations         | 1     | Sub-agent spawn tree management               |
+| Flow/Metrics Operations  | 3     | DORA metrics and flow analysis                |
+| Validation Operations    | 5     | WU and configuration validation               |
+| Setup Operations         | 8     | LumenFlow initialization and configuration    |
+
+---
+
+## Core WU Operations
 
 ### context_get
 
@@ -150,6 +167,663 @@ Run LumenFlow quality gates (lint, typecheck, tests).
 | `docs_only` | boolean | No | Run docs-only gates (skip lint/typecheck/tests) |
 
 **Output:** Gate results or error details.
+
+---
+
+## Additional WU Operations
+
+### wu_block
+
+Block a Work Unit and move it from in_progress to blocked status.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------------- | ------- | -------- | ---------------------------------- |
+| `id` | string | Yes | WU ID to block |
+| `reason` | string | Yes | Reason for blocking |
+| `remove_worktree` | boolean | No | Remove worktree when blocking |
+
+### wu_unblock
+
+Unblock a Work Unit and move it from blocked to in_progress status.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------------- | ------- | -------- | ---------------------------------- |
+| `id` | string | Yes | WU ID to unblock |
+| `reason` | string | No | Reason for unblocking |
+| `create_worktree` | boolean | No | Create worktree when unblocking |
+
+### wu_edit
+
+Edit Work Unit spec fields with micro-worktree isolation.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | -------- | -------- | ---------------------------------------- |
+| `id` | string | Yes | WU ID to edit |
+| `description`| string | No | New description text |
+| `acceptance` | string[] | No | Acceptance criteria to add |
+| `notes` | string | No | Notes text to add |
+| `code_paths` | string[] | No | Code paths to add |
+| `lane` | string | No | New lane assignment |
+| `priority` | string | No | New priority (P0, P1, P2, P3) |
+| `initiative` | string | No | Initiative ID |
+| `phase` | number | No | Phase number within initiative |
+| `no_strict` | boolean | No | Bypass strict validation |
+
+### wu_release
+
+Release an orphaned WU from in_progress back to ready state for reclaiming.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ----------------------- |
+| `id` | string | Yes | WU ID to release |
+| `reason` | string | No | Reason for releasing |
+
+### wu_recover
+
+Analyze and fix WU state inconsistencies.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `id` | string | Yes | WU ID to recover |
+| `action` | string | No | Recovery action (resume, reset, nuke, cleanup) |
+| `force` | boolean| No | Required for destructive actions |
+| `json` | boolean| No | Output as JSON |
+
+### wu_repair
+
+Unified WU repair tool - detect and fix WU state issues.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| -------------- | ------- | -------- | ---------------------------- |
+| `id` | string | No | WU ID to check/repair |
+| `check` | boolean | No | Audit only, no changes |
+| `all` | boolean | No | Check/repair all WUs |
+| `claim` | boolean | No | Claim repair mode |
+| `admin` | boolean | No | Admin repair mode |
+| `repair_state` | boolean | No | State repair mode |
+
+### wu_deps
+
+Visualize WU dependency graph.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------ | -------- | ---------------------------------------- |
+| `id` | string | Yes | WU ID to analyze |
+| `format` | string | No | Output format (table, json, ascii, mermaid) |
+| `depth` | number | No | Maximum traversal depth |
+| `direction` | string | No | Graph direction (up, down, both) |
+
+### wu_prep
+
+Prepare WU for completion by running gates in worktree.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ---------- | ------- | -------- | ----------------------- |
+| `id` | string | Yes | WU ID to prepare |
+| `docs_only`| boolean | No | Run docs-only gates |
+
+### wu_preflight
+
+Fast validation of code_paths and test paths before gates run (under 5 seconds vs 2+ minutes).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ---------- | ------ | -------- | ----------------------- |
+| `id` | string | Yes | WU ID to preflight |
+| `worktree` | string | No | Override worktree path |
+
+### wu_prune
+
+Clean stale worktrees (dry-run by default).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ------------------------------------ |
+| `execute` | boolean | No | Execute cleanup (default is dry-run) |
+
+### wu_delete
+
+Safely delete WU YAML files with micro-worktree isolation.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | --------------------------------------------- |
+| `id` | string | No | WU ID to delete |
+| `dry_run` | boolean | No | Show what would be deleted without changes |
+| `batch` | string | No | Delete multiple WUs (comma-separated) |
+
+### wu_cleanup
+
+Clean up worktree and branch after PR merge (PR-based completion workflow).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------- | -------- | --------------------------- |
+| `id` | string | Yes | WU ID to cleanup |
+| `artifacts` | boolean | No | Remove build artifacts |
+
+### wu_spawn
+
+Generate sub-agent spawn prompt for WU execution.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------- | -------- | ---------------------------------------- |
+| `id` | string | Yes | WU ID to spawn |
+| `client` | string | No | Client name (claude-code, gemini-cli, etc) |
+| `thinking` | boolean | No | Enable extended thinking |
+| `budget` | number | No | Token budget for extended thinking |
+| `parent_wu` | string | No | Parent WU ID for orchestrator context |
+| `no_context`| boolean | No | Skip memory context injection |
+
+### wu_validate
+
+Validate WU YAML files against schema (strict mode by default).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------- | -------- | --------------------------- |
+| `id` | string | Yes | WU ID to validate |
+| `no_strict` | boolean | No | Bypass strict validation |
+
+### wu_infer_lane
+
+Suggest lane for a WU based on code paths and description.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | -------- | -------- | --------------------------------- |
+| `id` | string | No | WU ID to analyze (reads YAML) |
+| `paths` | string[] | No | Code paths to analyze |
+| `desc` | string | No | WU description/title text |
+
+### wu_unlock_lane
+
+Safely unlock a lane lock with audit logging.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | -------------------------------------- |
+| `lane` | string | No | Lane name to unlock |
+| `reason` | string | No | Reason for unlocking |
+| `force` | boolean | No | Force operation |
+| `list` | boolean | No | List all current lane locks |
+| `status` | boolean | No | Show detailed status for the lane |
+
+---
+
+## Initiative Operations
+
+### initiative_list
+
+List all initiatives with optional status filter.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------------------------ |
+| `status` | string | No | Filter by status (active, completed, paused) |
+| `json` | boolean| No | Output as JSON |
+
+### initiative_status
+
+Get detailed status of a specific initiative including WUs and progress.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ------------------------------ |
+| `id` | string | Yes | Initiative ID (e.g., INIT-001) |
+| `json` | boolean | No | Output as JSON |
+
+### initiative_create
+
+Create a new initiative for multi-phase project orchestration.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------- | -------- | -------- | ---------------------------------------- |
+| `id` | string | Yes | Initiative ID (e.g., INIT-001) |
+| `title` | string | Yes | Initiative title |
+| `description` | string | No | Initiative description |
+| `phases` | string[] | No | Phase names (e.g., "Phase 1: MVP") |
+
+### initiative_edit
+
+Edit initiative fields.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------- | ------ | -------- | ---------------------------------------- |
+| `id` | string | Yes | Initiative ID to edit |
+| `title` | string | No | New title |
+| `description` | string | No | New description |
+| `status` | string | No | New status (active, completed, paused) |
+
+### initiative_add_wu
+
+Add a Work Unit to an initiative, optionally assigning to a phase.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------ | -------- | ------------------------------- |
+| `initiative` | string | Yes | Initiative ID |
+| `wu` | string | Yes | WU ID to add |
+| `phase` | number | No | Phase number to assign (1-based) |
+
+### initiative_remove_wu
+
+Remove a Work Unit from an initiative.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------ | -------- | --------------- |
+| `initiative` | string | Yes | Initiative ID |
+| `wu` | string | Yes | WU ID to remove |
+
+### initiative_bulk_assign
+
+Bulk assign WUs to an initiative based on pattern matching.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `id` | string | Yes | Initiative ID |
+| `pattern` | string | No | Pattern to match WU titles (e.g., "MCP:*") |
+| `phase` | number | No | Phase to assign matched WUs |
+
+### initiative_plan
+
+Link an existing plan or create a new plan template for an initiative.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------- | -------- | ---------------------------- |
+| `initiative` | string | Yes | Initiative ID |
+| `plan` | string | No | Path to existing plan file |
+| `create` | boolean | No | Create a new plan template |
+
+---
+
+## Memory Operations
+
+### mem_init
+
+Initialize memory layer for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------------------ |
+| `wu` | string | Yes | WU ID to initialize memory for |
+
+### mem_start
+
+Start a memory session for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | --------------------------- |
+| `wu` | string | Yes | WU ID to start session for |
+| `lane` | string | No | Lane name |
+
+### mem_ready
+
+Check pending memory nodes for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | --------------- |
+| `wu` | string | Yes | WU ID to check |
+
+### mem_checkpoint
+
+Save a progress checkpoint for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------- |
+| `wu` | string | Yes | WU ID to checkpoint |
+| `message` | string | No | Checkpoint message |
+
+### mem_cleanup
+
+Clean up stale memory data.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ---------------------------------------- |
+| `dry_run` | boolean | No | Preview cleanup without making changes |
+
+### mem_context
+
+Get memory context for a Work Unit, optionally filtered by lane.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------------- |
+| `wu` | string | Yes | WU ID to get context for |
+| `lane` | string | No | Filter by lane |
+
+### mem_create
+
+Create a memory node (e.g., for bug discovery).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | -------- | -------- | ---------------------------- |
+| `message` | string | Yes | Memory node message |
+| `wu` | string | Yes | WU ID to associate with |
+| `type` | string | No | Node type (e.g., "discovery") |
+| `tags` | string[] | No | Tags for the node |
+
+### mem_delete
+
+Delete or archive a memory node.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ----------------------- |
+| `id` | string | Yes | Memory node ID to delete |
+
+### mem_export
+
+Export memory for a Work Unit as markdown or JSON.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | --------------------- |
+| `wu` | string | Yes | WU ID to export |
+| `format` | string | No | Export format (markdown, json) |
+
+### mem_inbox
+
+Check coordination signals from other agents.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | --------------------------------- |
+| `since` | string | No | Time filter (e.g., "30m", "1h") |
+| `wu` | string | No | Filter by WU ID |
+| `lane` | string | No | Filter by lane |
+
+### mem_signal
+
+Broadcast a coordination signal to other agents.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------------ |
+| `message` | string | Yes | Signal message |
+| `wu` | string | Yes | WU ID to associate with |
+
+### mem_summarize
+
+Summarize memory context for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------- |
+| `wu` | string | Yes | WU ID to summarize |
+
+### mem_triage
+
+Triage discovered issues and bugs for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ---------------- |
+| `wu` | string | Yes | WU ID to triage |
+
+---
+
+## Agent Operations
+
+### agent_session
+
+Start an agent session for tracking WU execution.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------ | -------- | --------------------------------- |
+| `wu` | string | Yes | WU ID to work on (e.g., WU-1234) |
+| `tier` | number | Yes | Context tier (1, 2, or 3) |
+| `agent_type` | string | No | Agent type (default: claude-code) |
+
+### agent_session_end
+
+End the current agent session and return summary.
+
+**Input:** None
+
+### agent_log_issue
+
+Log a workflow issue or incident during agent execution.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------- | -------- | -------- | ---------------------------------------- |
+| `category` | string | Yes | Issue category (workflow, tooling, confusion, violation, error) |
+| `severity` | string | Yes | Severity level (blocker, major, minor, info) |
+| `title` | string | Yes | Short description (5-100 chars) |
+| `description` | string | Yes | Detailed context (10-2000 chars) |
+| `resolution` | string | No | How the issue was resolved |
+| `tags` | string[] | No | Tags for categorization |
+| `step` | string | No | Current workflow step (e.g., wu:done, gates) |
+| `files` | string[] | No | Related file paths |
+
+### agent_issues_query
+
+Query and display logged agent incidents/issues summary.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ---------- | ------ | -------- | ------------------------------------ |
+| `since` | number | No | Days to include (default: 7) |
+| `category` | string | No | Filter by category |
+| `severity` | string | No | Filter by severity (blocker, major, minor, trivial) |
+
+---
+
+## Orchestration Operations
+
+### orchestrate_initiative
+
+Orchestrate initiative execution with parallel agent spawning.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| -------------------- | ------- | -------- | ---------------------------------------- |
+| `initiative` | string | Yes | Initiative ID to orchestrate (e.g., INIT-001) |
+| `dry_run` | boolean | No | Show execution plan without spawning agents |
+| `progress` | boolean | No | Show current progress only |
+| `checkpoint_per_wave`| boolean | No | Spawn next wave then exit (no polling) |
+
+### orchestrate_init_status
+
+Show compact initiative progress status including WUs and lane availability.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------ | -------- | ------------------------------ |
+| `initiative` | string | Yes | Initiative ID (e.g., INIT-001) |
+
+### orchestrate_monitor
+
+Monitor spawned agent progress and spawn health (stuck detection, zombie locks).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| -------------- | ------- | -------- | ---------------------------------------- |
+| `threshold` | number | No | Stuck detection threshold in minutes (default: 30) |
+| `recover` | boolean | No | Run recovery actions for stuck spawns |
+| `dry_run` | boolean | No | Show what would be done without action |
+| `since` | string | No | Show signals since (e.g., 30m, 1h) |
+| `wu` | string | No | Filter by WU ID |
+| `signals_only` | boolean | No | Only show signals (skip spawn analysis) |
+
+---
+
+## Spawn Operations
+
+### spawn_list
+
+Display spawn trees for WUs or initiatives.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ------------ | ------- | -------- | ---------------------------------------- |
+| `wu` | string | No | WU ID to show spawns for (e.g., WU-1234) |
+| `initiative` | string | No | Initiative ID to show all spawns for |
+| `json` | boolean | No | Output as JSON |
+
+<Aside type="note">
+  Either `wu` or `initiative` is required.
+</Aside>
+
+---
+
+## Flow/Metrics Operations
+
+### flow_bottlenecks
+
+Identify flow bottlenecks in the workflow (WIP violations, stuck WUs, etc.).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | --------------- |
+| `json` | boolean | No | Output as JSON |
+
+### flow_report
+
+Generate flow metrics report with cycle time, throughput, and other DORA metrics.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ---------------------------------------- |
+| `since` | string | No | Start date or duration (e.g., "7d", "2025-01-01") |
+| `until` | string | No | End date (e.g., "now", "2025-01-31") |
+| `json` | boolean | No | Output as JSON |
+
+### metrics_snapshot
+
+Capture a snapshot of current LumenFlow metrics.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | --------------- |
+| `json` | boolean | No | Output as JSON |
+
+---
+
+## Validation Operations
+
+### validate
+
+Validate WU YAML files and status consistency.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------- | -------- | ------------------------- |
+| `id` | string | No | Specific WU ID to validate |
+| `strict` | boolean | No | Fail on warnings too |
+| `done_only` | boolean | No | Only validate done WUs |
+
+### validate_agent_skills
+
+Validate agent skill definitions in .claude/skills/.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `skill` | string | No | Specific skill to validate (e.g., "wu-lifecycle") |
+
+### validate_agent_sync
+
+Validate agent synchronization state.
+
+**Input:** None
+
+### validate_backlog_sync
+
+Validate backlog synchronization between WU YAMLs and backlog.md.
+
+**Input:** None
+
+### validate_skills_spec
+
+Validate skills specification files.
+
+**Input:** None
+
+---
+
+## Setup Operations
+
+### lumenflow_init
+
+Initialize LumenFlow workflow framework in a project.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ---------------------------------------- |
+| `client` | string | No | Client type (claude, cursor, windsurf, all) |
+| `merge` | boolean | No | Merge into existing files using bounded markers |
+
+### lumenflow_doctor
+
+Diagnose LumenFlow configuration and safety components.
+
+**Input:** None
+
+### lumenflow_integrate
+
+Generate enforcement hooks for a specific client (e.g., claude-code).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | --------------------------------- |
+| `client` | string | Yes | Client name (claude-code, cursor, etc.) |
+
+### lumenflow_upgrade
+
+Upgrade LumenFlow packages to latest versions.
+
+**Input:** None
+
+### lumenflow_commands
+
+List all available LumenFlow CLI commands.
+
+**Input:** None
+
+### lumenflow_docs_sync
+
+Sync agent documentation after upgrading LumenFlow packages.
+
+**Input:** None
+
+### lumenflow_release
+
+Run LumenFlow release workflow (versioning, npm publish).
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------- | -------- | ------------------------------------ |
+| `dry_run` | boolean | No | Preview release without publishing |
+
+### lumenflow_sync_templates
+
+Sync LumenFlow templates to the project.
+
+**Input:** None
+
+---
 
 ## Resources
 
@@ -281,37 +955,179 @@ interface ToolResult {
 
 ### Error Codes
 
-| Code                | Description                          |
-| ------------------- | ------------------------------------ |
-| `MISSING_PARAMETER` | Required parameter not provided      |
-| `CONTEXT_ERROR`     | Failed to compute LumenFlow context  |
-| `WU_LIST_ERROR`     | Failed to list WUs                   |
-| `WU_STATUS_ERROR`   | Failed to get WU status              |
-| `WU_CREATE_ERROR`   | Failed to create WU                  |
-| `WU_CLAIM_ERROR`    | Failed to claim WU                   |
-| `WU_DONE_ERROR`     | Failed to complete WU                |
-| `WRONG_LOCATION`    | Operation called from wrong location |
-| `GATES_ERROR`       | Gates failed                         |
+| Code | Description |
+| ---- | ----------- |
+| `MISSING_PARAMETER` | Required parameter not provided |
+| `CONTEXT_ERROR` | Failed to compute LumenFlow context |
+| `WU_LIST_ERROR` | Failed to list WUs |
+| `WU_STATUS_ERROR` | Failed to get WU status |
+| `WU_CREATE_ERROR` | Failed to create WU |
+| `WU_CLAIM_ERROR` | Failed to claim WU |
+| `WU_DONE_ERROR` | Failed to complete WU |
+| `WRONG_LOCATION` | Operation called from wrong location |
+| `GATES_ERROR` | Gates failed |
+| `WU_BLOCK_ERROR` | Failed to block WU |
+| `WU_UNBLOCK_ERROR` | Failed to unblock WU |
+| `WU_EDIT_ERROR` | Failed to edit WU |
+| `WU_RELEASE_ERROR` | Failed to release WU |
+| `WU_RECOVER_ERROR` | Failed to recover WU |
+| `WU_REPAIR_ERROR` | Failed to repair WU |
+| `WU_DEPS_ERROR` | Failed to get WU dependencies |
+| `WU_PREP_ERROR` | Failed to prep WU |
+| `WU_PREFLIGHT_ERROR` | Failed to preflight WU |
+| `WU_PRUNE_ERROR` | Failed to prune worktrees |
+| `WU_DELETE_ERROR` | Failed to delete WU |
+| `WU_CLEANUP_ERROR` | Failed to cleanup WU |
+| `WU_SPAWN_ERROR` | Failed to spawn WU |
+| `WU_VALIDATE_ERROR` | Failed to validate WU |
+| `WU_INFER_LANE_ERROR` | Failed to infer lane |
+| `WU_UNLOCK_LANE_ERROR` | Failed to unlock lane |
+| `INITIATIVE_LIST_ERROR` | Failed to list initiatives |
+| `INITIATIVE_STATUS_ERROR` | Failed to get initiative status |
+| `INITIATIVE_CREATE_ERROR` | Failed to create initiative |
+| `INITIATIVE_EDIT_ERROR` | Failed to edit initiative |
+| `INITIATIVE_ADD_WU_ERROR` | Failed to add WU to initiative |
+| `INITIATIVE_REMOVE_WU_ERROR` | Failed to remove WU from initiative |
+| `INITIATIVE_BULK_ASSIGN_ERROR` | Failed to bulk assign WUs |
+| `INITIATIVE_PLAN_ERROR` | Failed to link plan |
+| `MEM_INIT_ERROR` | Failed to initialize memory |
+| `MEM_START_ERROR` | Failed to start session |
+| `MEM_READY_ERROR` | Failed to check ready nodes |
+| `MEM_CHECKPOINT_ERROR` | Failed to save checkpoint |
+| `MEM_CLEANUP_ERROR` | Failed to cleanup memory |
+| `MEM_CONTEXT_ERROR` | Failed to get memory context |
+| `MEM_CREATE_ERROR` | Failed to create memory node |
+| `MEM_DELETE_ERROR` | Failed to delete memory node |
+| `MEM_EXPORT_ERROR` | Failed to export memory |
+| `MEM_INBOX_ERROR` | Failed to check inbox |
+| `MEM_SIGNAL_ERROR` | Failed to send signal |
+| `MEM_SUMMARIZE_ERROR` | Failed to summarize memory |
+| `MEM_TRIAGE_ERROR` | Failed to triage issues |
+| `AGENT_SESSION_ERROR` | Failed to start agent session |
+| `AGENT_SESSION_END_ERROR` | Failed to end agent session |
+| `AGENT_LOG_ISSUE_ERROR` | Failed to log issue |
+| `AGENT_ISSUES_QUERY_ERROR` | Failed to query issues |
+| `ORCHESTRATE_INITIATIVE_ERROR` | Failed to orchestrate initiative |
+| `ORCHESTRATE_INIT_STATUS_ERROR` | Failed to get initiative status |
+| `ORCHESTRATE_MONITOR_ERROR` | Failed to monitor spawns |
+| `SPAWN_LIST_ERROR` | Failed to list spawns |
+| `FLOW_BOTTLENECKS_ERROR` | Failed to analyze bottlenecks |
+| `FLOW_REPORT_ERROR` | Failed to generate flow report |
+| `METRICS_SNAPSHOT_ERROR` | Failed to capture metrics |
+| `VALIDATE_ERROR` | Validation failed |
+| `VALIDATE_AGENT_SKILLS_ERROR` | Failed to validate skills |
+| `VALIDATE_AGENT_SYNC_ERROR` | Failed to validate agent sync |
+| `VALIDATE_BACKLOG_SYNC_ERROR` | Failed to validate backlog sync |
+| `VALIDATE_SKILLS_SPEC_ERROR` | Failed to validate skills spec |
+| `LUMENFLOW_INIT_ERROR` | Failed to initialize LumenFlow |
+| `LUMENFLOW_DOCTOR_ERROR` | Doctor found issues |
+| `LUMENFLOW_INTEGRATE_ERROR` | Failed to integrate hooks |
+| `LUMENFLOW_UPGRADE_ERROR` | Failed to upgrade |
+| `LUMENFLOW_COMMANDS_ERROR` | Failed to list commands |
+| `LUMENFLOW_DOCS_SYNC_ERROR` | Failed to sync docs |
+| `LUMENFLOW_RELEASE_ERROR` | Failed to run release |
+| `LUMENFLOW_SYNC_TEMPLATES_ERROR` | Failed to sync templates |
 
 ## Architecture
 
 The MCP server follows a thin wrapper pattern:
 
 - **Read operations** (context_get) use `@lumenflow/core` directly
-- **Write operations** (wu_create, wu_claim, wu_done, gates_run) shell out to CLI commands
+- **Write operations** (all others) shell out to CLI commands for consistency and safety
 
 This ensures consistency with CLI behavior and respects all safety hooks.
 
 ```
 MCP Server (@lumenflow/mcp)
-├── Tools (7)
-│   ├── context_get → @lumenflow/core
-│   ├── wu_list → CLI: wu:validate
-│   ├── wu_status → CLI: wu:status
-│   ├── wu_create → CLI: wu:create
-│   ├── wu_claim → CLI: wu:claim
-│   ├── wu_done → CLI: wu:done
-│   └── gates_run → CLI: gates
+├── Tools (68)
+│   ├── Core WU Operations (7)
+│   │   ├── context_get → @lumenflow/core
+│   │   ├── wu_list → CLI: wu:validate
+│   │   ├── wu_status → CLI: wu:status
+│   │   ├── wu_create → CLI: wu:create
+│   │   ├── wu_claim → CLI: wu:claim
+│   │   ├── wu_done → CLI: wu:done
+│   │   └── gates_run → CLI: gates
+│   │
+│   ├── Additional WU Operations (16)
+│   │   ├── wu_block → CLI: wu:block
+│   │   ├── wu_unblock → CLI: wu:unblock
+│   │   ├── wu_edit → CLI: wu:edit
+│   │   ├── wu_release → CLI: wu:release
+│   │   ├── wu_recover → CLI: wu:recover
+│   │   ├── wu_repair → CLI: wu:repair
+│   │   ├── wu_deps → CLI: wu:deps
+│   │   ├── wu_prep → CLI: wu:prep
+│   │   ├── wu_preflight → CLI: wu:preflight
+│   │   ├── wu_prune → CLI: wu:prune
+│   │   ├── wu_delete → CLI: wu:delete
+│   │   ├── wu_cleanup → CLI: wu:cleanup
+│   │   ├── wu_spawn → CLI: wu:spawn
+│   │   ├── wu_validate → CLI: wu:validate
+│   │   ├── wu_infer_lane → CLI: wu:infer-lane
+│   │   └── wu_unlock_lane → CLI: wu:unlock-lane
+│   │
+│   ├── Initiative Operations (8)
+│   │   ├── initiative_list → CLI: initiative:list
+│   │   ├── initiative_status → CLI: initiative:status
+│   │   ├── initiative_create → CLI: initiative:create
+│   │   ├── initiative_edit → CLI: initiative:edit
+│   │   ├── initiative_add_wu → CLI: initiative:add-wu
+│   │   ├── initiative_remove_wu → CLI: initiative:remove-wu
+│   │   ├── initiative_bulk_assign → CLI: initiative:bulk-assign
+│   │   └── initiative_plan → CLI: initiative:plan
+│   │
+│   ├── Memory Operations (13)
+│   │   ├── mem_init → CLI: mem:init
+│   │   ├── mem_start → CLI: mem:start
+│   │   ├── mem_ready → CLI: mem:ready
+│   │   ├── mem_checkpoint → CLI: mem:checkpoint
+│   │   ├── mem_cleanup → CLI: mem:cleanup
+│   │   ├── mem_context → CLI: mem:context
+│   │   ├── mem_create → CLI: mem:create
+│   │   ├── mem_delete → CLI: mem:delete
+│   │   ├── mem_export → CLI: mem:export
+│   │   ├── mem_inbox → CLI: mem:inbox
+│   │   ├── mem_signal → CLI: mem:signal
+│   │   ├── mem_summarize → CLI: mem:summarize
+│   │   └── mem_triage → CLI: mem:triage
+│   │
+│   ├── Agent Operations (4)
+│   │   ├── agent_session → CLI: agent:session
+│   │   ├── agent_session_end → CLI: agent:session:end
+│   │   ├── agent_log_issue → CLI: agent:log-issue
+│   │   └── agent_issues_query → CLI: agent:issues-query
+│   │
+│   ├── Orchestration Operations (3)
+│   │   ├── orchestrate_initiative → CLI: orchestrate:initiative
+│   │   ├── orchestrate_init_status → CLI: orchestrate:init-status
+│   │   └── orchestrate_monitor → CLI: orchestrate:monitor
+│   │
+│   ├── Spawn Operations (1)
+│   │   └── spawn_list → CLI: spawn:list
+│   │
+│   ├── Flow/Metrics Operations (3)
+│   │   ├── flow_bottlenecks → CLI: flow:bottlenecks
+│   │   ├── flow_report → CLI: flow:report
+│   │   └── metrics_snapshot → CLI: metrics:snapshot
+│   │
+│   ├── Validation Operations (5)
+│   │   ├── validate → CLI: validate
+│   │   ├── validate_agent_skills → CLI: validate:agent-skills
+│   │   ├── validate_agent_sync → CLI: validate:agent-sync
+│   │   ├── validate_backlog_sync → CLI: validate:backlog-sync
+│   │   └── validate_skills_spec → CLI: validate:skills-spec
+│   │
+│   └── Setup Operations (8)
+│       ├── lumenflow_init → CLI: lumenflow:init
+│       ├── lumenflow_doctor → CLI: lumenflow:doctor
+│       ├── lumenflow_integrate → CLI: lumenflow:integrate
+│       ├── lumenflow_upgrade → CLI: lumenflow:upgrade
+│       ├── lumenflow_commands → CLI: lumenflow commands
+│       ├── lumenflow_docs_sync → CLI: docs:sync
+│       ├── lumenflow_release → CLI: release
+│       └── lumenflow_sync_templates → CLI: sync:templates
+│
 └── Resources (3)
     ├── lumenflow://context → @lumenflow/core
     ├── lumenflow://wu/{id} → CLI: wu:status
