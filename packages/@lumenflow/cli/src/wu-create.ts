@@ -153,6 +153,40 @@ export function warnIfBetterLaneExists(
   }
 }
 
+export function collectInitiativeWarnings({
+  initiativeId,
+  initiativeDoc,
+  phase,
+  specRefs,
+}: {
+  initiativeId: string;
+  initiativeDoc: Record<string, unknown>;
+  phase?: string;
+  specRefs?: string[];
+}): string[] {
+  const warnings: string[] = [];
+  const phaseCheck = checkInitiativePhases(initiativeDoc);
+
+  if (!phaseCheck.hasPhases && phaseCheck.warning) {
+    warnings.push(phaseCheck.warning);
+  }
+
+  if (phaseCheck.hasPhases && !phase) {
+    warnings.push(
+      `Initiative ${initiativeId} has phases defined. Consider adding --phase to link this WU to a phase.`,
+    );
+  }
+
+  const relatedPlan = initiativeDoc.related_plan as string | undefined;
+  if (relatedPlan && (!specRefs || specRefs.length === 0)) {
+    warnings.push(
+      `Initiative ${initiativeId} has related_plan (${relatedPlan}). Consider adding --spec-refs to link this WU to the plan.`,
+    );
+  }
+
+  return warnings;
+}
+
 /**
  * Check if WU already exists
  * @param {string} id - WU ID to check
@@ -257,6 +291,7 @@ interface CreateWUOptions {
   assignedTo?: string;
   description?: string;
   acceptance?: string[];
+  notes?: string;
   codePaths?: string[];
   testPathsManual?: string[];
   testPathsUnit?: string[];
@@ -307,7 +342,7 @@ function createPlanTemplate(wuId: string, title: string): string {
   return planPath;
 }
 
-function buildWUContent({
+export function buildWUContent({
   id,
   lane,
   title,
@@ -327,6 +362,7 @@ function buildWUContent({
   const {
     description,
     acceptance,
+    notes,
     codePaths,
     testPathsManual,
     testPathsUnit,
@@ -367,7 +403,7 @@ function buildWUContent({
     artifacts: [`.lumenflow/stamps/${id}.done`],
     dependencies: [],
     risks: [],
-    notes: '',
+    notes: notes ?? '',
     requires_review: false,
     ...(initiative && { initiative }),
     ...(phase && { phase: parseInt(phase, 10) }),
@@ -444,7 +480,7 @@ export function validateCreateSpec({
     }
   }
 
-  if (effectiveType === 'feature' && !opts.specRefs) {
+  if (effectiveType === 'feature' && (!opts.specRefs || opts.specRefs.length === 0)) {
     errors.push(
       '--spec-refs is required for type: feature WUs\n' +
         '    Tip: Create a plan first with: pnpm plan:create --id <WU-ID> --title "..."\n' +
@@ -732,6 +768,7 @@ async function main() {
       // WU-1364: Full spec inline options
       WU_OPTIONS.description,
       WU_OPTIONS.acceptance,
+      WU_OPTIONS.notes,
       WU_OPTIONS.codePaths,
       WU_OPTIONS.testPathsManual,
       WU_OPTIONS.testPathsUnit,
@@ -818,6 +855,7 @@ async function main() {
     opts: {
       description: args.description,
       acceptance: args.acceptance,
+      notes: args.notes,
       codePaths: args.codePaths,
       testPathsManual: args.testPathsManual,
       testPathsUnit: args.testPathsUnit,
@@ -846,17 +884,6 @@ async function main() {
 
   console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
 
-  // WU-1211: Warn if linking to initiative with no phases defined
-  if (args.initiative) {
-    const initiative = findInitiative(args.initiative);
-    if (initiative) {
-      const phaseCheck = checkInitiativePhases(initiative.doc);
-      if (!phaseCheck.hasPhases && phaseCheck.warning) {
-        console.warn(`${LOG_PREFIX} ⚠️  ${phaseCheck.warning}`);
-      }
-    }
-  }
-
   const specRefsList = mergedSpecRefs;
   const specRefsValidation = validateSpecRefs(specRefsList);
   if (!specRefsValidation.valid) {
@@ -868,6 +895,21 @@ async function main() {
   if (specRefsValidation.warnings.length > 0) {
     for (const warning of specRefsValidation.warnings) {
       console.warn(`${LOG_PREFIX} ⚠️  ${warning}`);
+    }
+  }
+
+  if (args.initiative) {
+    const initiative = findInitiative(args.initiative);
+    if (initiative) {
+      const warnings = collectInitiativeWarnings({
+        initiativeId: initiative.id,
+        initiativeDoc: initiative.doc as Record<string, unknown>,
+        phase: args.phase,
+        specRefs: specRefsList,
+      });
+      for (const warning of warnings) {
+        console.warn(`${LOG_PREFIX} ⚠️  ${warning}`);
+      }
     }
   }
 
@@ -908,6 +950,7 @@ async function main() {
               // WU-1364: Full spec inline options
               description: args.description,
               acceptance: args.acceptance,
+              notes: args.notes,
               codePaths: args.codePaths,
               testPathsManual: args.testPathsManual,
               testPathsUnit: args.testPathsUnit,
