@@ -374,3 +374,6 @@ export {
 
 // WU-1411: WU list helper for MCP server and other tools
 export { listWUs, type WUListEntry, type ListWUsOptions } from './wu-list.js';
+
+// WU-1431: Shared CLI/MCP command schemas for parity
+export * from './schemas/index.js';

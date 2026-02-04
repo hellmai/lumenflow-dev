@@ -6,16 +6,29 @@
  * WU-1422: Additional WU tools: wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair,
  *          wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate,
  *          wu_infer_lane, wu_unlock_lane
+ * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  *
  * Architecture:
  * - Read operations (context_get) use @lumenflow/core directly for context
  * - All other operations shell out to CLI for consistency and safety
+ * - Input schemas are derived from shared schemas in @lumenflow/core (WU-1431)
  */
 
 import { z } from 'zod';
 import { runCliCommand, type CliRunnerOptions } from './cli-runner.js';
 
-// Import core functions for context operations only
+// WU-1431: Import shared command schemas for CLI/MCP parity
+// These are the single source of truth for command validation
+import {
+  wuCreateSchema,
+  wuClaimSchema,
+  wuStatusSchema,
+  wuDoneSchema,
+  gatesSchema,
+  wuStatusEnum,
+} from '@lumenflow/core';
+
+// Import core functions for context operations only (async to avoid circular deps)
 let coreModule: typeof import('@lumenflow/core') | null = null;
 
 async function getCore() {
@@ -133,12 +146,16 @@ export const contextGetTool: ToolDefinition = {
 /**
  * wu_list - List all WUs with optional status filter
  * Uses CLI shell-out for consistency with other tools
+ *
+ * WU-1431: Uses shared wuStatusEnum for status filter
  */
 export const wuListTool: ToolDefinition = {
   name: 'wu_list',
   description: 'List all Work Units (WUs) with optional status filter',
+  // WU-1431: Uses shared wuStatusEnum for status filter
+  // (wu_list is MCP-specific, not a shared CLI command, so inline schema is OK)
   inputSchema: z.object({
-    status: z.enum(['ready', 'in_progress', 'blocked', 'waiting', 'done']).optional(),
+    status: wuStatusEnum.optional(),
     lane: z.string().optional(),
   }),
 
@@ -179,11 +196,16 @@ export const wuListTool: ToolDefinition = {
 /**
  * wu_status - Get status of a specific WU
  * Uses CLI shell-out for consistency
+ *
+ * WU-1431: Uses shared wuStatusSchema for parity with CLI
+ * Note: CLI allows id to be optional (auto-detect from worktree), but MCP requires it
+ * since there's no "current directory" concept for MCP clients
  */
 export const wuStatusTool: ToolDefinition = {
   name: 'wu_status',
   description: 'Get detailed status of a specific Work Unit',
-  inputSchema: z.object({
+  // WU-1431: Extend shared schema to require id for MCP (CLI allows optional for auto-detect)
+  inputSchema: wuStatusSchema.extend({
     id: z.string().describe('WU ID (e.g., WU-1412)'),
   }),
 
@@ -218,19 +240,14 @@ export const wuStatusTool: ToolDefinition = {
 
 /**
  * wu_create - Create a new WU
+ *
+ * WU-1431: Uses shared wuCreateSchema for CLI/MCP parity
  */
 export const wuCreateTool: ToolDefinition = {
   name: 'wu_create',
   description: 'Create a new Work Unit specification',
-  inputSchema: z.object({
-    id: z.string().optional().describe('WU ID (auto-generated if omitted)'),
-    lane: z.string().describe('Lane (e.g., "Framework: CLI")'),
-    title: z.string().describe('WU title'),
-    description: z.string().optional().describe('Context: ... Problem: ... Solution: ...'),
-    acceptance: z.array(z.string()).optional().describe('Acceptance criteria'),
-    code_paths: z.array(z.string()).optional().describe('Code paths'),
-    exposure: z.enum(['ui', 'api', 'backend-only', 'documentation']).optional(),
-  }),
+  // WU-1431: Use shared schema - CLI-only aliases are not exposed here
+  inputSchema: wuCreateSchema,
 
   async execute(input, options) {
     if (!input.lane) {
@@ -272,14 +289,14 @@ export const wuCreateTool: ToolDefinition = {
 
 /**
  * wu_claim - Claim a WU and create worktree
+ *
+ * WU-1431: Uses shared wuClaimSchema for CLI/MCP parity
  */
 export const wuClaimTool: ToolDefinition = {
   name: 'wu_claim',
   description: 'Claim a Work Unit and create worktree for implementation',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to claim'),
-    lane: z.string().describe('Lane for the WU'),
-  }),
+  // WU-1431: Use shared schema
+  inputSchema: wuClaimSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -306,16 +323,14 @@ export const wuClaimTool: ToolDefinition = {
 
 /**
  * wu_done - Complete a WU (must be run from main checkout)
+ *
+ * WU-1431: Uses shared wuDoneSchema for CLI/MCP parity
  */
 export const wuDoneTool: ToolDefinition = {
   name: 'wu_done',
   description: 'Complete a Work Unit (merge, stamp, cleanup). MUST be run from main checkout.',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to complete'),
-    skip_gates: z.boolean().optional().describe('Skip gates (requires reason)'),
-    reason: z.string().optional().describe('Reason for skipping gates'),
-    fix_wu: z.string().optional().describe('WU ID that will fix the skipped issue'),
-  }),
+  // WU-1431: Use shared schema
+  inputSchema: wuDoneSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -363,13 +378,14 @@ export const wuDoneTool: ToolDefinition = {
 
 /**
  * gates_run - Run quality gates
+ *
+ * WU-1431: Uses shared gatesSchema for CLI/MCP parity
  */
 export const gatesRunTool: ToolDefinition = {
   name: 'gates_run',
   description: 'Run LumenFlow quality gates (lint, typecheck, tests)',
-  inputSchema: z.object({
-    docs_only: z.boolean().optional().describe('Run docs-only gates (skip lint/typecheck/tests)'),
-  }),
+  // WU-1431: Use shared schema
+  inputSchema: gatesSchema,
 
   async execute(input, options) {
     const args: string[] = [];
