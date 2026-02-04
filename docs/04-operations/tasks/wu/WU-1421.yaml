@@ -8,8 +8,6 @@ created: 2026-02-04
 code_paths:
   - packages/@lumenflow/core/src/spawn-monitor.ts
   - packages/@lumenflow/core/src/spawn-escalation.ts
-  - packages/@lumenflow/core/src/spawn-recovery.ts
-  - packages/@lumenflow/core/src/wu-constants.ts
 tests:
   manual:
     - Run pnpm test spawn-monitor to verify checkZombieLocks uses LUMENFLOW_PATHS.LOCKS_DIR
