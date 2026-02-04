@@ -296,16 +296,18 @@ describe('docs-only mode package filtering (WU-1299)', () => {
       expect(packages).toEqual(['@lumenflow/cli', '@lumenflow/core']);
     });
 
-    it('extracts app names from apps/* paths', () => {
+    // WU-1415: apps/ paths are no longer extracted because they aren't valid turbo packages
+    // Turbo --filter expects actual package names from package.json, not directory names
+    it('skips apps/* paths (not valid turbo packages)', () => {
       const codePaths = ['apps/web/src/app.tsx', 'apps/docs/content.mdx'];
       const packages = extractPackagesFromCodePaths(codePaths);
-      expect(packages).toEqual(['web', 'docs']);
+      expect(packages).toEqual([]);
     });
 
-    it('handles mixed packages and apps paths', () => {
+    it('handles mixed packages and apps paths (apps skipped)', () => {
       const codePaths = ['packages/@lumenflow/cli/src/gates.ts', 'apps/web/src/app.tsx'];
       const packages = extractPackagesFromCodePaths(codePaths);
-      expect(packages).toEqual(['@lumenflow/cli', 'web']);
+      expect(packages).toEqual(['@lumenflow/cli']);
     });
 
     it('deduplicates package names', () => {

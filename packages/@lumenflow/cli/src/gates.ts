@@ -403,13 +403,9 @@ function extractPackageFromPath(codePath: string): string | null {
     }
   }
 
-  // Handle apps/name/...
-  if (normalized.startsWith('apps/')) {
-    const parts = normalized.slice('apps/'.length).split('/');
-    if (parts[0]) {
-      return parts[0];
-    }
-  }
+  // WU-1415: Skip apps/ paths - they aren't valid turbo packages for test filtering
+  // apps/ directories (e.g., apps/docs, apps/github-app) don't have turbo test tasks
+  // and using directory names as --filter args causes "No package found" errors
 
   return null;
 }
@@ -1262,12 +1258,14 @@ async function runIntegrationTests({
   try {
     logLine('\n> Integration tests (high-risk changes detected)\n');
 
+    // WU-1415: vitest doesn't support --include flag
+    // Pass glob patterns as positional arguments instead
     const result = run(
       `RUN_INTEGRATION_TESTS=1 ${pnpmCmd(
         'vitest',
         'run',
-        "--include='**/*.integration.*'",
-        "--include='**/golden-*.test.*'",
+        "'**/*.integration.*'",
+        "'**/golden-*.test.*'",
       )}`,
       { agentLog },
     );
