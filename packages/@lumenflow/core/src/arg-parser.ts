@@ -351,6 +351,11 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description: 'Acceptance criterion (repeatable, use multiple times)',
     isRepeatable: true,
   },
+  notes: {
+    name: 'notes',
+    flags: '--notes <text>',
+    description: 'Implementation notes or context (optional)',
+  },
   codePaths: {
     name: 'codePaths',
     flags: '--code-paths <paths>',
