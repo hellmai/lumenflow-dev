@@ -793,7 +793,8 @@
 {"type":"complete","wuId":"WU-1432","timestamp":"2026-02-04T22:29:51.573Z"}
 {"type":"claim","wuId":"WU-1434","timestamp":"2026-02-04T22:32:51.229Z","lane":"Content: Documentation","title":"Update MCP docs with final tools"}
 {"type":"complete","wuId":"WU-1434","timestamp":"2026-02-04T22:40:35.260Z"}
-{"type":"claim","wuId":"WU-1435","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)","timestamp":"2026-02-04T22:48:54.624Z"}
-{"type":"release","wuId":"WU-1435","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T22:50:18.047Z"}
-{"type":"claim","wuId":"WU-1435","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)","timestamp":"2026-02-04T22:50:35.155Z"}
-{"type":"claim","wuId":"WU-1436","lane":"Framework: Core","title":"Fix core test dependency: add memfs","timestamp":"2026-02-04T23:08:33.687Z"}
+{"type":"claim","wuId":"WU-1435","timestamp":"2026-02-04T22:48:54.624Z","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)"}
+{"type":"release","wuId":"WU-1435","timestamp":"2026-02-04T22:50:18.047Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1435","timestamp":"2026-02-04T22:50:35.155Z","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)"}
+{"type":"claim","wuId":"WU-1436","timestamp":"2026-02-04T23:08:33.687Z","lane":"Framework: Core","title":"Fix core test dependency: add memfs"}
+{"type":"complete","wuId":"WU-1436","timestamp":"2026-02-04T23:14:06.324Z"}
