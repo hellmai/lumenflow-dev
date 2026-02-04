@@ -8,14 +8,17 @@ created: 2026-02-04
 code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual: []
+  manual:
+    - Open quickstart and verify the prompt forbids scaffolding during setup; verify decision ladder
+      includes stack-setup WU guidance.
   unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1405.done
 dependencies: []
 risks: []
-notes: ''
+notes: Updated quickstart prompt to forbid scaffolding during setup and added decision ladder item
+  directing stack setup into a WU.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
