@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml) — Content: Documentation
 - [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml) — Framework: CLI
 - [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
