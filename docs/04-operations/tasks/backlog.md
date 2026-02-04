@@ -26,7 +26,6 @@ sections:
 - [WU-1425 — MCP: Agent + Orchestration + Spawn tools (+8)](wu/WU-1425.yaml) — Framework: CLI
 - [WU-1426 — MCP: Flow + Validation + Setup tools (+17)](wu/WU-1426.yaml) — Framework: CLI
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — Content: Documentation
-- [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -34,6 +33,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — Framework: CLI
+- [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

@@ -2,7 +2,7 @@ id: WU-1430
 title: Audit and centralize hardcoded path strings into constants
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - Regression guard in path-centralization test fails if new .lumenflow or docs/04-operations
     literals appear in core source
   - Scope is core-only; no repo-wide sweep
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1430
+claimed_at: 2026-02-04T18:16:35.622Z
+baseline_main_sha: 75c78c808a95a6013dac0b7cf803160c8346e784
+session_id: 152a77a2-9ffa-4f06-81f3-63b6bcd09af0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T18:16:35.628Z

@@ -770,3 +770,4 @@
 {"type":"release","wuId":"WU-1429","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T18:00:30.538Z"}
 {"wuId":"WU-1412","type":"complete","reason":"manual backfill: reconcile state store with YAML done status","timestamp":"2026-02-04T18:05:39.769Z"}
 {"type":"claim","wuId":"WU-1429","lane":"Framework: CLI","title":"wu:create: tighten spec_refs + add notes flag + contextual warnings","timestamp":"2026-02-04T18:06:55.414Z"}
+{"type":"claim","wuId":"WU-1430","lane":"Framework: Core","title":"Audit and centralize hardcoded path strings into constants","timestamp":"2026-02-04T18:16:35.652Z"}
