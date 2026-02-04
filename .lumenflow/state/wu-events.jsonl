@@ -721,3 +721,4 @@
 {"type":"complete","wuId":"WU-1402","timestamp":"2026-02-04T00:32:27.678Z"}
 {"type":"claim","wuId":"WU-1403","timestamp":"2026-02-04T10:18:18.304Z","lane":"Content: Documentation","title":"Optimize setup agent prompt for lumenflow.dev"}
 {"type":"complete","wuId":"WU-1403","timestamp":"2026-02-04T10:37:20.869Z"}
+{"type":"claim","wuId":"WU-1404","lane":"Content: Documentation","title":"Add design-first to general-purpose agent skills","timestamp":"2026-02-04T10:39:34.748Z"}

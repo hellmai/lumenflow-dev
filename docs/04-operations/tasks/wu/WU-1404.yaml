@@ -2,7 +2,7 @@ id: WU-1404
 title: Add design-first to general-purpose agent skills
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -28,3 +28,11 @@ requires_design_approval: false
 description: Add design-first skill to general-purpose agent frontmatter so it auto-loads for all spawned agents
 acceptance:
   - general-purpose agent loads design-first skill
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1404
+claimed_at: 2026-02-04T10:39:34.715Z
+baseline_main_sha: 622f2a757d65266c67ec2c5805a9a7fe84260e06
+session_id: ffa62256-40d3-4d36-9e9c-46f2360394ea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T10:39:34.722Z
