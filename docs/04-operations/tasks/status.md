@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1406 — Forbid template-selection questions during setup](wu/WU-1406.yaml)
 
 ## Completed
 
@@ -362,3 +361,4 @@ _Last updated: 2026-02-04_
 - [WU-1403 — Optimize setup agent prompt for lumenflow.dev](wu/WU-1403.yaml) — 2026-02-04
 - [WU-1404 — Add design-first to general-purpose agent skills](wu/WU-1404.yaml) — 2026-02-04
 - [WU-1405 — Block scaffolding during setup in agent quickstart](wu/WU-1405.yaml) — 2026-02-04
+- [WU-1406 — Forbid template-selection questions during setup](wu/WU-1406.yaml) — 2026-02-04
