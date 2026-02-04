@@ -2,7 +2,7 @@ id: WU-1413
 title: Scaffold .mcp.json in init and document MCP
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -33,9 +33,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: MCP server needs easy bootstrap and documentation. Problem: lumenflow init does not create .mcp.json and CLI docs lack MCP setup guidance. Solution: add .mcp.json scaffolding for --client claude|all and update README/onboarding templates.'
+description: 'Context: MCP server needs easy bootstrap and documentation. Problem: lumenflow init
+  does not create .mcp.json and CLI docs lack MCP setup guidance. Solution: add .mcp.json
+  scaffolding for --client claude|all and update README/onboarding templates.'
 acceptance:
   - lumenflow init --client claude|all generates .mcp.json
   - lumenflow init --client none does not generate .mcp.json
   - CLI README includes MCP setup snippet
   - vendor support onboarding mentions MCP integration
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1413
+claimed_at: 2026-02-04T14:44:50.763Z
+baseline_main_sha: 423564152455f29a1a5d12540a2e051b79ba8c01
+session_id: 0ef73dcb-df98-4aa3-92ec-92865d73de30
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:44:50.768Z

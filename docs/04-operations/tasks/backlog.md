@@ -21,7 +21,6 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
-- [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml) — Framework: CLI
 - [WU-1415 — Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)](wu/WU-1415.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -29,6 +28,8 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
+- [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -36,7 +37,6 @@ sections:
 
 ## ✅ Done
 
-- [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml)
 - [WU-1002 — Publish @lumenflow packages to npm](wu/WU-1002.yaml)
 - [WU-1003 — Add rate limiting to Gates Action](wu/WU-1003.yaml)
