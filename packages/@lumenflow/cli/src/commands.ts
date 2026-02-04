@@ -54,9 +54,7 @@ const SCRIPT_COMMANDS: CommandCategory[] = [
   },
   {
     name: 'Setup & Development',
-    commands: [
-      { name: 'setup', description: 'Install deps and build CLI (first time)' },
-    ],
+    commands: [{ name: 'setup', description: 'Install deps and build CLI (first time)' }],
   },
 ];
 
