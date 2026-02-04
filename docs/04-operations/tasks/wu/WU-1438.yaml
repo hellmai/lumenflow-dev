@@ -2,7 +2,7 @@ id: WU-1438
 title: Repair WU-1436 metadata for spec-linter
 lane: 'Framework: Core'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -25,6 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: spec:linter fails because WU-1436 lacks notes/manual tests. Problem: done WU metadata is incomplete and blocks gates. Solution: update WU-1436 YAML to include notes and manual test steps.'
+description: 'Context: spec:linter fails because WU-1436 lacks notes/manual tests. Problem: done WU
+  metadata is incomplete and blocks gates. Solution: update WU-1436 YAML to include notes and manual
+  test steps.'
 acceptance:
   - WU-1436 contains notes and at least one manual test entry
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1438
+claimed_at: 2026-02-04T23:25:14.620Z
+baseline_main_sha: 374cf3e9548b99aa31f76e96e3c3d1830d57cc68
+session_id: 5b69a164-2f0f-42d4-9635-d54cc64f0397
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T23:25:14.627Z
