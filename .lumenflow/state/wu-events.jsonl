@@ -781,3 +781,4 @@
 {"type":"claim","wuId":"WU-1427","timestamp":"2026-02-04T19:58:11.673Z","lane":"Content: Documentation","title":"Document MCP server on lumenflow.dev"}
 {"type":"claim","wuId":"WU-1431","timestamp":"2026-02-04T20:00:12.112Z","lane":"Framework: Core","title":"Create shared Zod schemas for CLI/MCP parity"}
 {"type":"complete","wuId":"WU-1422","timestamp":"2026-02-04T20:03:27.706Z"}
+{"type":"complete","wuId":"WU-1427","timestamp":"2026-02-04T20:03:42.196Z"}
