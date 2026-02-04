@@ -2,7 +2,7 @@ id: WU-1408
 title: Bundle safe-git and generate sane pre-commit hook
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -19,11 +19,15 @@ artifacts:
   - .lumenflow/stamps/WU-1408.done
 dependencies: []
 risks: []
-notes: |
+notes: >
   Implementation adds scaffoldSafetyScripts() to init.ts which creates:
+
   - scripts/safe-git: Blocks dangerous git operations (worktree remove)
+
   - .husky/pre-commit: Blocks direct commits to main/master without assuming pnpm test exists
-  Templates are in templates/core/ directory. Fallback hardcoded templates exist if template files missing.
+
+  Templates are in templates/core/ directory. Fallback hardcoded templates exist if template files
+  missing.
 spec_refs:
   - lumenflow://plans/agent-setup-reliability.md
 requires_review: false
@@ -51,3 +55,5 @@ session_id: 106c1d52-61d7-43db-8d84-9ba4534e690a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T13:09:38.434Z
+locked: true
+completed_at: 2026-02-04T13:31:37.708Z
