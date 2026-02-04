@@ -20,7 +20,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1437-plan.md
 risks: []
-notes: 'Investigated gates failure: initiatives tests pass locally; root cause was spec:linter failing
+notes:
+  'Investigated gates failure: initiatives tests pass locally; root cause was spec:linter failing
   on WU-1436 missing notes/manual tests. Fix captured in WU-1438.'
 requires_review: false
 assigned_to: tom@hellm.ai
