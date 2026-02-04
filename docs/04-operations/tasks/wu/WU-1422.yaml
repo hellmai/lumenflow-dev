@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-MCP-FULL
 phase: 1
+spec_refs:
+  - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
 notes: 'Sizing: Simple-Medium (~51 tool calls). Each tool follows same pattern: Zod schema + CLI
   shell-out via cli-runner.ts. See plan: lumenflow://plans/partitioned-foraging-ocean.md'
