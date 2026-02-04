@@ -801,5 +801,6 @@
 {"type":"complete","wuId":"WU-1435","timestamp":"2026-02-04T23:20:29.110Z"}
 {"type":"claim","wuId":"WU-1435","timestamp":"2026-02-04T23:21:16.111Z","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)"}
 {"type":"complete","wuId":"WU-1435","timestamp":"2026-02-04T23:21:58.943Z"}
-{"type":"claim","wuId":"WU-1437","lane":"Framework: Initiatives","title":"Investigate initiatives test timeout in gates","timestamp":"2026-02-04T23:22:19.757Z"}
-{"type":"claim","wuId":"WU-1438","lane":"Framework: Core","title":"Repair WU-1436 metadata for spec-linter","timestamp":"2026-02-04T23:25:14.649Z"}
+{"type":"claim","wuId":"WU-1437","timestamp":"2026-02-04T23:22:19.757Z","lane":"Framework: Initiatives","title":"Investigate initiatives test timeout in gates"}
+{"type":"claim","wuId":"WU-1438","timestamp":"2026-02-04T23:25:14.649Z","lane":"Framework: Core","title":"Repair WU-1436 metadata for spec-linter"}
+{"type":"complete","wuId":"WU-1438","timestamp":"2026-02-04T23:26:34.320Z"}
