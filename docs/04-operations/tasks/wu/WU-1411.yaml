@@ -2,7 +2,7 @@ id: WU-1411
 title: Add listWUs helper to core
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -30,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: MCP server needs a consistent list of WUs. Problem: today WU listing logic is duplicated across tools and YAML/state merge is scattered. Solution: add a core listWUs helper that merges WUStateStore with YAML metadata and supports filters.'
+description: 'Context: MCP server needs a consistent list of WUs. Problem: today WU listing logic is
+  duplicated across tools and YAML/state merge is scattered. Solution: add a core listWUs helper
+  that merges WUStateStore with YAML metadata and supports filters.'
 acceptance:
   - listWUs returns WUs from state store with YAML title/lane merged
   - status and lane filters work for listWUs
   - core exports listWUs and WUListEntry
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1411
+claimed_at: 2026-02-04T14:12:02.170Z
+baseline_main_sha: c213217babbbf5b4534e6f6a705348153a8443bc
+session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:12:02.177Z
