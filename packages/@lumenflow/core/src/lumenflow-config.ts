@@ -184,8 +184,8 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
     backlogPath: path.join(projectRoot, config.directories.backlogPath),
     statusPath: path.join(projectRoot, config.directories.statusPath),
     worktrees: path.join(projectRoot, config.directories.worktrees),
-    stampsDir: path.join(projectRoot, config.beacon.stampsDir),
-    stateDir: path.join(projectRoot, config.beacon.stateDir),
+    stampsDir: path.join(projectRoot, config.state.stampsDir),
+    stateDir: path.join(projectRoot, config.state.stateDir),
     skillsDir: path.join(projectRoot, config.directories.skillsDir),
     agentsDir: path.join(projectRoot, config.directories.agentsDir),
     memoryBank: path.join(projectRoot, config.directories.memoryBank),
@@ -273,11 +273,11 @@ directories:
   # Onboarding directory
   onboardingDir: "${defaultConfig.directories.onboardingDir}"
 
-# Beacon paths (.lumenflow directory structure)
-beacon:
-  base: "${defaultConfig.beacon.base}"
-  stampsDir: "${defaultConfig.beacon.stampsDir}"
-  stateDir: "${defaultConfig.beacon.stateDir}"
+# State paths (.lumenflow directory structure)
+state:
+  base: "${defaultConfig.state.base}"
+  stampsDir: "${defaultConfig.state.stampsDir}"
+  stateDir: "${defaultConfig.state.stateDir}"
 
 # Git configuration
 git:
@@ -307,7 +307,7 @@ gates:
 export type {
   LumenFlowConfig,
   Directories,
-  BeaconPaths,
+  StatePaths,
   PushRetryConfig,
   GitConfig,
   WuConfig,

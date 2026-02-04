@@ -207,10 +207,13 @@ export const DirectoriesSchema = z.object({
 });
 
 /**
- * Beacon paths configuration (.lumenflow directory structure)
+ * State paths configuration (.lumenflow directory structure)
+ *
+ * WU-1423: Renamed from BeaconPathsSchema to StatePathsSchema as part of
+ * the beacon→lumenflow migration. The config key changed from 'beacon' to 'state'.
  */
-export const BeaconPathsSchema = z.object({
-  /** Base beacon directory (default: '.lumenflow') */
+export const StatePathsSchema = z.object({
+  /** Base state directory (default: '.lumenflow') */
   base: z.string().default('.lumenflow'),
 
   /** State directory (default: '.lumenflow/state') */
@@ -1011,8 +1014,8 @@ export const LumenFlowConfigSchema = z.object({
   /** Directory paths */
   directories: DirectoriesSchema.default(() => DirectoriesSchema.parse({})),
 
-  /** Beacon paths */
-  beacon: BeaconPathsSchema.default(() => BeaconPathsSchema.parse({})),
+  /** State paths (.lumenflow directory structure) */
+  state: StatePathsSchema.default(() => StatePathsSchema.parse({})),
 
   /** Git configuration */
   git: GitConfigSchema.default(() => GitConfigSchema.parse({})),
@@ -1138,7 +1141,7 @@ export const LumenFlowConfigSchema = z.object({
  * TypeScript types inferred from schemas
  */
 export type Directories = z.infer<typeof DirectoriesSchema>;
-export type BeaconPaths = z.infer<typeof BeaconPathsSchema>;
+export type StatePaths = z.infer<typeof StatePathsSchema>;
 export type PushRetryConfig = z.infer<typeof PushRetryConfigSchema>;
 export type GitConfig = z.infer<typeof GitConfigSchema>;
 export type WuConfig = z.infer<typeof WuConfigSchema>;

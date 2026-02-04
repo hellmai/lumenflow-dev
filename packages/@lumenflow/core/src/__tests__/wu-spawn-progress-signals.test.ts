@@ -36,7 +36,7 @@ function createMockConfig(progressSignals?: Partial<ProgressSignalsConfig>) {
     },
     version: '1.0.0',
     directories: {} as never,
-    beacon: {} as never,
+    state: {} as never,
     git: {} as never,
     wu: {} as never,
     gates: {} as never,

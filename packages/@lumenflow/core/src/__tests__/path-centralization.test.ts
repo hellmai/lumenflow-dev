@@ -105,10 +105,10 @@ describe('WU-1301: CLI path centralization', () => {
       expect(defaultConfig.directories.backlogPath).toBeDefined();
       expect(defaultConfig.directories.statusPath).toBeDefined();
 
-      // Worktree and beacon paths
+      // Worktree and state paths
       expect(defaultConfig.directories.worktrees).toBeDefined();
-      expect(defaultConfig.beacon.stampsDir).toBeDefined();
-      expect(defaultConfig.beacon.stateDir).toBeDefined();
+      expect(defaultConfig.state.stampsDir).toBeDefined();
+      expect(defaultConfig.state.stateDir).toBeDefined();
 
       // Agent paths
       expect(defaultConfig.directories.skillsDir).toBeDefined();

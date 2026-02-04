@@ -29,7 +29,7 @@ import {
   WU_CREATE_OPTIONS,
   type WUOption,
   DirectoriesSchema,
-  BeaconPathsSchema,
+  StatePathsSchema,
   GitConfigSchema,
   WuConfigSchema,
   GatesConfigSchema,
@@ -524,9 +524,9 @@ const SCHEMA_DEFINITIONS: SchemaDefinition[] = [
     schema: DirectoriesSchema,
   },
   {
-    name: 'beacon',
-    description: 'Beacon paths configuration (.beacon directory structure)',
-    schema: BeaconPathsSchema,
+    name: 'state',
+    description: 'State paths configuration (.lumenflow directory structure)',
+    schema: StatePathsSchema,
   },
   {
     name: 'git',

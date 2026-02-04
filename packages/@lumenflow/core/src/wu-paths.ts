@@ -49,7 +49,7 @@ export function resolveRepoRoot(absolutePath: string, depth: number): string {
 export function getStateStoreDirFromBacklog(backlogPath: string): string {
   const config = getConfig();
   const repoRoot = resolveRepoRoot(backlogPath, PATH_DEPTHS.BACKLOG);
-  return path.join(repoRoot, config.beacon.stateDir);
+  return path.join(repoRoot, config.state.stateDir);
 }
 
 /**
@@ -92,20 +92,20 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
      * Get path to stamps directory
      * @returns Path to stamps directory
      */
-    STAMPS_DIR: () => config.beacon.stampsDir,
+    STAMPS_DIR: () => config.state.stampsDir,
 
     /**
      * Get path to WU done stamp file
      * @param id - WU ID (e.g., 'WU-123')
      * @returns Path to stamp file
      */
-    STAMP: (id: string) => path.join(config.beacon.stampsDir, `${id}.done`),
+    STAMP: (id: string) => path.join(config.state.stampsDir, `${id}.done`),
 
     /**
      * Get path to state directory
      * @returns Path to state directory
      */
-    STATE_DIR: () => config.beacon.stateDir,
+    STATE_DIR: () => config.state.stateDir,
 
     /**
      * Get path to initiatives directory

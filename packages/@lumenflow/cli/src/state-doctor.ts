@@ -211,7 +211,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     listStamps: async (): Promise<string[]> => {
       try {
-        const stampsDir = path.join(baseDir, config.beacon.stampsDir);
+        const stampsDir = path.join(baseDir, config.state.stampsDir);
         const stampFiles = await fg('WU-*.done', { cwd: stampsDir });
         return stampFiles.map((file) => file.replace('.done', ''));
       } catch {
