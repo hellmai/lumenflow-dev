@@ -23,14 +23,20 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1435-plan.md
 risks: []
-notes:
-  'Decision: deps:add/remove are internal (worktree-only guardrails); backlog:prune stays public.
+notes: 'Decision: deps:add/remove are internal (worktree-only guardrails); backlog:prune stays public.
   Added docs:sync and gates:docs aliases as public commands.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T22:50:35.119Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1435
+session_id: 199ca55a-8a79-44c8-a1ed-c821484df9f8
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T22:50:35.126Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +48,3 @@ acceptance:
   - deps:add and deps:remove removed from public manifest and package bin/public registry.
   - docs:sync and gates:docs added as public aliases in manifest and appear in CLI reference.
   - commands/test alignment updated and passing.
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T22:50:35.126Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1435
-claimed_at: 2026-02-04T22:50:35.119Z
-baseline_main_sha: d56089239feeea3b0ad1a837d6582c02a04269c2
-session_id: 199ca55a-8a79-44c8-a1ed-c821484df9f8
