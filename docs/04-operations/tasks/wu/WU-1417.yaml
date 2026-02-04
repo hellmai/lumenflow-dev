@@ -1,0 +1,42 @@
+id: WU-1417
+title: Orchestration dry-run guide + docs sync
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-04
+code_paths:
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
+  - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
+  - packages/@lumenflow/cli/README.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
+  - apps/docs/src/content/docs/guides/initiatives.mdx
+  - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
+  - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
+    - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1417.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1417-plan.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: users run orchestrate:initiative --dry-run without clear next steps. Problem: output lacks recommended defaults and guidance still references invalid mem:inbox --unread. Solution: add a dry-run guide with recommended defaults + alternatives, fix orchestration guidance strings, and update NPM/internal/Starlight docs to match.'
+acceptance:
+  - orchestrate:initiative --dry-run prints recommended defaults + alternatives guide
+  - Orchestration guidance uses valid mem:inbox --since 10m (no --unread)
+  - NPM/internal/Starlight docs reflect the new guidance
