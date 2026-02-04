@@ -6,16 +6,20 @@ status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
-  - packages/@lumenflow/mcp/src/**
+  - packages/@lumenflow/mcp/src/bin.ts
+  - packages/@lumenflow/mcp/src/cli-runner.ts
+  - packages/@lumenflow/mcp/src/index.ts
+  - packages/@lumenflow/mcp/src/resources.ts
+  - packages/@lumenflow/mcp/src/server.ts
+  - packages/@lumenflow/mcp/src/tools.ts
   - packages/@lumenflow/mcp/package.json
-  - packages/@lumenflow/mcp/tsconfig.json
   - .lumenflow.lane-inference.yaml
 tests:
   manual:
     - Verify MCP server responds to stdio handshake
-    - 'Run npx @lumenflow/mcp from project root and verify it starts without errors'
-    - 'Verify SIGINT (Ctrl+C) gracefully shuts down the server'
-    - 'Configure in .mcp.json and verify Claude Code can discover tools'
+    - Run npx @lumenflow/mcp from project root and verify it starts without errors
+    - Verify SIGINT (Ctrl+C) gracefully shuts down the server
+    - Configure in .mcp.json and verify Claude Code can discover tools
   unit:
     - packages/@lumenflow/mcp/src/__tests__/cli-runner.test.ts
     - packages/@lumenflow/mcp/src/__tests__/stdio-handshake.test.ts
@@ -35,10 +39,17 @@ notes: |
   tool includes fail-fast validation requiring main checkout. Server uses StdioServerTransport
   from @modelcontextprotocol/sdk. Resources provide read access via URI patterns.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T14:13:24.239Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1412
+session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:13:24.244Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -52,11 +63,3 @@ acceptance:
   - 'Resources available: context, wu/{id}, backlog'
   - wu_done fails fast if not on main checkout
   - 'Environment variables supported: LUMENFLOW_PROJECT_ROOT and LUMENFLOW_MCP_LOG_LEVEL'
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1412
-claimed_at: 2026-02-04T14:13:24.239Z
-baseline_main_sha: db02eb0c6e3fd587d261287cc0a6480ff98f9755
-session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T14:13:24.244Z
