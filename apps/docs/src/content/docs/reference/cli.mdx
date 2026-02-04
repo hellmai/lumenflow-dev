@@ -15,19 +15,19 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 ## Commands Overview
 
-| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                                                                            |
-| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Other           | [`backlog:prune`](#backlogprune), [`deps:add`](#depsadd), [`deps:remove`](#depsremove), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`init:plan`](#initplan), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`sync:templates`](#synctemplates), [`validate`](#validate) |
-| Quality Gates   | [`gates`](#gates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                                                                                                               |
-| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                    |
+| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                          |
+| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                      |
+| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Other           | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`init:plan`](#initplan), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`sync:templates`](#synctemplates), [`validate`](#validate) |
+| Quality Gates   | [`gates`](#gates), [`gates:docs`](#gatesdocs)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`docs:sync`](#docssync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                               |
+| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                              |
 
 ## Agent Lifecycle
 
@@ -125,6 +125,22 @@ Bulk-assign orphaned WUs to initiatives based on lane prefix rules
 
 ```bash
 pnpm initiative:bulk-assign-wus
+```
+
+**Options:**
+
+| Flag                     | Description                                                     | Required |
+| ------------------------ | --------------------------------------------------------------- | -------- |
+| `--config &lt;path&gt;`  | Path to config file (tool-specific)                             | No       |
+| `--apply`                | Apply changes (default is dry-run)                              | No       |
+| `--sync-from-initiative` | Ensure WU initiative fields exist for WUs listed in initiatives | No       |
+
+### initiative:bulk-assign
+
+Bulk assign WUs to initiative
+
+```bash
+pnpm initiative:bulk-assign
 ```
 
 **Options:**
@@ -531,22 +547,6 @@ Backlog Prune Command
 pnpm backlog:prune
 ```
 
-### deps:add
-
-Deps Add CLI Command
-
-```bash
-pnpm deps:add
-```
-
-### deps:remove
-
-Deps Remove CLI Command
-
-```bash
-pnpm deps:remove
-```
-
 ### file:delete
 
 File Delete CLI Tool
@@ -788,6 +788,14 @@ Run quality gates with support for docs-only mode, incremental linting, and tier
 pnpm gates
 ```
 
+### gates:docs
+
+Run docs-only quality gates (alias)
+
+```bash
+pnpm gates:docs
+```
+
 ## Setup
 
 ### lumenflow
@@ -812,6 +820,14 @@ Sync agent onboarding docs to existing projects (skips existing files by default
 
 ```bash
 pnpm lumenflow:docs-sync
+```
+
+### docs:sync
+
+Sync agent docs (for upgrades) (alias)
+
+```bash
+pnpm docs:sync
 ```
 
 ### lumenflow:doctor

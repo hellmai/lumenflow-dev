@@ -41,6 +41,7 @@ import {
   AgentsConfigSchema,
   ClientConfigSchema,
 } from '../packages/@lumenflow/core/dist/index.js';
+import { PUBLIC_MANIFEST } from '../packages/@lumenflow/cli/src/public-manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -307,6 +308,8 @@ function extractCommandMetadata(): CommandMetadata[] {
 
   const binEntries = cliPackageJson.bin as Record<string, string>;
   const commands: CommandMetadata[] = [];
+  const commandsByBin = new Map<string, CommandMetadata>();
+  const pnpmCommands = new Set<string>();
 
   // Command categories based on prefix
   const categories: Record<string, string> = {
@@ -320,6 +323,11 @@ function extractCommandMetadata(): CommandMetadata[] {
     metrics: 'Metrics',
     gates: 'Quality Gates',
     lumenflow: 'Setup',
+  };
+
+  const manifestCategoryOverrides: Record<string, string> = {
+    'Gates & Quality': 'Quality Gates',
+    'Setup & Development': 'Setup',
   };
 
   // Manual descriptions for commands - these are authoritative
@@ -483,7 +491,7 @@ function extractCommandMetadata(): CommandMetadata[] {
       required = manualRequired[binName] || required;
     }
 
-    commands.push({
+    const command: CommandMetadata = {
       name: binName,
       binName,
       pnpmCommand,
@@ -491,6 +499,32 @@ function extractCommandMetadata(): CommandMetadata[] {
       description,
       options,
       required,
+    };
+
+    commands.push(command);
+    commandsByBin.set(binName, command);
+    pnpmCommands.add(pnpmCommand);
+  }
+
+  // Include public manifest aliases (e.g., docs:sync, gates:docs) not captured by bin entries
+  for (const manifestCommand of PUBLIC_MANIFEST) {
+    if (!manifestCommand.name.includes(':')) continue;
+    if (pnpmCommands.has(manifestCommand.name)) continue;
+
+    const baseCommand = commandsByBin.get(manifestCommand.binName);
+    const category =
+      manifestCategoryOverrides[manifestCommand.category] ||
+      categories[manifestCommand.name.split(':')[0]] ||
+      'Other';
+
+    commands.push({
+      name: manifestCommand.binName,
+      binName: manifestCommand.binName,
+      pnpmCommand: manifestCommand.name,
+      category,
+      description: manifestCommand.description,
+      options: baseCommand?.options ?? [],
+      required: baseCommand?.required ?? [],
     });
   }
 
