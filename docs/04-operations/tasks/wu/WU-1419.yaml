@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
   - packages/@lumenflow/core/src/wu-state-store.ts
 tests:
-  manual: []
+  manual:
+    - 'Claim a WU, then run wu:recover --action reset to verify it emits release event and allows re-claim'
   unit:
     - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-state-store.test.ts
@@ -18,7 +19,7 @@ artifacts:
   - .lumenflow/stamps/WU-1419.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Fix modifies executeReset() in wu-recover.ts to emit release event to state store, regenerate backlog/status docs, and release lane lock. Pattern follows wu-release.ts.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
