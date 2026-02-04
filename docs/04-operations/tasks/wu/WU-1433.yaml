@@ -12,7 +12,15 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/init-onboarding-docs.test.ts
   - packages/@lumenflow/cli/templates
 tests:
-  manual: []
+  manual:
+    - Run pnpm exec lumenflow init in a clean temp repo and verify package.json scripts include
+      docs:sync
+    - gates:docs
+    - and all public commands.
+    - Run pnpm exec lumenflow init --docs-structure simple and verify docs/tasks + docs/_frameworks
+      paths are used.
+    - Run pnpm exec lumenflow init --docs-structure arc42 and verify docs/04-operations paths are
+      used.
   unit:
     - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-docs-structure.test.ts
@@ -25,7 +33,8 @@ dependencies:
 spec_refs:
   - lumenflow://plans/WU-1433-plan.md
 risks: []
-notes: ''
+notes: Depends on public manifest from WU-1432; init must derive scripts from manifest and apply
+  alias mappings (docs:sync, gates:docs).
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
