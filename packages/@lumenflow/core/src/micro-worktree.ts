@@ -760,48 +760,67 @@ export async function pushWithRetry(
   branch: string,
   tempBranchName: string,
   logPrefix: string = DEFAULT_LOG_PREFIX,
+  operation?: string,
 ): Promise<void> {
   const maxRetries = MAX_PUSH_RETRIES;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(
-        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attempt}/${maxRetries})...`,
-      );
-      await mainGit.push(remote, branch);
-      console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
-      return;
-    } catch (pushErr: unknown) {
-      if (attempt < maxRetries) {
+
+  // WU-1418: Save original LUMENFLOW_WU_TOOL value
+  const originalWuTool = process.env[LUMENFLOW_WU_TOOL_ENV];
+
+  try {
+    // WU-1418: Set LUMENFLOW_WU_TOOL to allow pre-push hook to recognize this as an automated operation
+    if (operation) {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = operation;
+    }
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
         console.log(
-          `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+          `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attempt}/${maxRetries})...`,
         );
+        await mainGit.push(remote, branch);
+        console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+        return;
+      } catch (pushErr: unknown) {
+        if (attempt < maxRetries) {
+          console.log(
+            `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+          );
 
-        // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
-        // Instead, fetch latest remote state and rebase the temp branch
+          // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
+          // Instead, fetch latest remote state and rebase the temp branch
 
-        // Step 1: Fetch latest origin/main
-        console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
-        await mainGit.fetch(remote, branch);
+          // Step 1: Fetch latest origin/main
+          console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
+          await mainGit.fetch(remote, branch);
 
-        // Step 2: Rebase temp branch onto updated origin/main
-        console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
-        await worktreeGit.rebase(`${remote}/${branch}`);
+          // Step 2: Rebase temp branch onto updated origin/main
+          console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
+          await worktreeGit.rebase(`${remote}/${branch}`);
 
-        // Step 3: Re-merge temp branch to local main (ff-only)
-        // This updates local main to include the rebased commits
-        console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
-        await mainGit.merge(tempBranchName, { ffOnly: true });
-      } else {
-        const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
-        throw new Error(
-          `Push failed after ${maxRetries} attempts. ` +
-            `Origin ${branch} may have significant traffic.\n\n` +
-            `Suggestions:\n` +
-            `  - Wait a few seconds and retry the operation\n` +
-            `  - Check if another agent is rapidly pushing changes\n` +
-            `Error: ${errMsg}`,
-        );
+          // Step 3: Re-merge temp branch to local main (ff-only)
+          // This updates local main to include the rebased commits
+          console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
+          await mainGit.merge(tempBranchName, { ffOnly: true });
+        } else {
+          const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
+          throw new Error(
+            `Push failed after ${maxRetries} attempts. ` +
+              `Origin ${branch} may have significant traffic.\n\n` +
+              `Suggestions:\n` +
+              `  - Wait a few seconds and retry the operation\n` +
+              `  - Check if another agent is rapidly pushing changes\n` +
+              `Error: ${errMsg}`,
+          );
+        }
       }
+    }
+  } finally {
+    // WU-1418: Restore original LUMENFLOW_WU_TOOL value
+    if (originalWuTool === undefined) {
+      Reflect.deleteProperty(process.env, LUMENFLOW_WU_TOOL_ENV);
+    } else {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = originalWuTool;
     }
   }
 }
@@ -839,72 +858,90 @@ export async function pushWithRetryConfig(
   tempBranchName: string,
   logPrefix: string = DEFAULT_LOG_PREFIX,
   config: PushRetryConfig = DEFAULT_PUSH_RETRY_CONFIG,
+  operation?: string,
 ): Promise<void> {
-  // If retry is disabled, just try once and throw on failure
-  if (!config.enabled) {
-    console.log(`${logPrefix} Pushing to ${remote}/${branch} (retry disabled)...`);
-    await mainGit.push(remote, branch);
-    console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
-    return;
-  }
+  // WU-1418: Save original LUMENFLOW_WU_TOOL value
+  const originalWuTool = process.env[LUMENFLOW_WU_TOOL_ENV];
 
-  let attemptNumber = 0;
+  try {
+    // WU-1418: Set LUMENFLOW_WU_TOOL to allow pre-push hook to recognize this as an automated operation
+    if (operation) {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = operation;
+    }
 
-  await pRetry(
-    async () => {
-      attemptNumber++;
-      console.log(
-        `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attemptNumber}/${config.retries})...`,
-      );
+    // If retry is disabled, just try once and throw on failure
+    if (!config.enabled) {
+      console.log(`${logPrefix} Pushing to ${remote}/${branch} (retry disabled)...`);
+      await mainGit.push(remote, branch);
+      console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+      return;
+    }
 
-      try {
-        await mainGit.push(remote, branch);
-        console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
-      } catch (pushErr: unknown) {
+    let attemptNumber = 0;
+
+    await pRetry(
+      async () => {
+        attemptNumber++;
         console.log(
-          `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+          `${logPrefix} Pushing to ${remote}/${branch} (attempt ${attemptNumber}/${config.retries})...`,
         );
 
-        // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
-        // Instead, fetch latest remote state and rebase the temp branch
+        try {
+          await mainGit.push(remote, branch);
+          console.log(`${logPrefix} ✅ Pushed to ${remote}/${branch}`);
+        } catch (pushErr: unknown) {
+          console.log(
+            `${logPrefix} ⚠️  Push failed (origin moved). Fetching and rebasing before retry...`,
+          );
 
-        // Fetch latest origin/main
-        console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
-        await mainGit.fetch(remote, branch);
+          // WU-1348: Do NOT reset main checkout - preserve micro-worktree isolation
+          // Instead, fetch latest remote state and rebase the temp branch
 
-        // Rebase temp branch onto updated origin/main
-        console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
-        await worktreeGit.rebase(`${remote}/${branch}`);
+          // Fetch latest origin/main
+          console.log(`${logPrefix} Fetching ${remote}/${branch}...`);
+          await mainGit.fetch(remote, branch);
 
-        // Re-merge temp branch to local main (ff-only)
-        // This updates local main to include the rebased commits
-        console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
-        await mainGit.merge(tempBranchName, { ffOnly: true });
+          // Rebase temp branch onto updated origin/main
+          console.log(`${logPrefix} Rebasing temp branch onto ${remote}/${branch}...`);
+          await worktreeGit.rebase(`${remote}/${branch}`);
 
-        // Re-throw to trigger p-retry
-        throw pushErr;
-      }
-    },
-    {
-      retries: config.retries - 1, // p-retry counts retries after first attempt
-      minTimeout: config.min_delay_ms,
-      maxTimeout: config.max_delay_ms,
-      randomize: config.jitter,
-      onFailedAttempt: () => {
-        // Logging is handled in the try/catch above
+          // Re-merge temp branch to local main (ff-only)
+          // This updates local main to include the rebased commits
+          console.log(`${logPrefix} Re-merging temp branch to ${branch}...`);
+          await mainGit.merge(tempBranchName, { ffOnly: true });
+
+          // Re-throw to trigger p-retry
+          throw pushErr;
+        }
       },
-    },
-  ).catch(() => {
-    // p-retry exhausted all retries, throw descriptive error
-    throw new Error(
-      `Push failed after ${config.retries} attempts. ` +
-        `Origin ${branch} may have significant traffic.\n\n` +
-        `Suggestions:\n` +
-        `  - Wait a few seconds and retry the operation\n` +
-        `  - Increase git.push_retry.retries in .lumenflow.config.yaml\n` +
-        `  - Check if another agent is rapidly pushing changes`,
-    );
-  });
+      {
+        retries: config.retries - 1, // p-retry counts retries after first attempt
+        minTimeout: config.min_delay_ms,
+        maxTimeout: config.max_delay_ms,
+        randomize: config.jitter,
+        onFailedAttempt: () => {
+          // Logging is handled in the try/catch above
+        },
+      },
+    ).catch(() => {
+      // p-retry exhausted all retries, throw descriptive error
+      throw new Error(
+        `Push failed after ${config.retries} attempts. ` +
+          `Origin ${branch} may have significant traffic.\n\n` +
+          `Suggestions:\n` +
+          `  - Wait a few seconds and retry the operation\n` +
+          `  - Increase git.push_retry.retries in .lumenflow.config.yaml\n` +
+          `  - Check if another agent is rapidly pushing changes`,
+      );
+    });
+  } finally {
+    // WU-1418: Restore original LUMENFLOW_WU_TOOL value
+    if (originalWuTool === undefined) {
+      Reflect.deleteProperty(process.env, LUMENFLOW_WU_TOOL_ENV);
+    } else {
+      process.env[LUMENFLOW_WU_TOOL_ENV] = originalWuTool;
+    }
+  }
 }
 
 /**
@@ -1172,6 +1209,7 @@ export async function withMicroWorktree(
 
       // WU-1179: Use pushWithRetry to handle race conditions
       // On push failure, rollback local main and retry with rebase
+      // WU-1418: Pass operation name to set LUMENFLOW_WU_TOOL for pre-push hook bypass
       await pushWithRetry(
         mainGit,
         gitWorktree,
@@ -1179,6 +1217,7 @@ export async function withMicroWorktree(
         BRANCHES.MAIN,
         tempBranchName,
         logPrefix,
+        operation,
       );
 
       return { ...result, ref: BRANCHES.MAIN };

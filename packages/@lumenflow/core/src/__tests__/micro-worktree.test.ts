@@ -1518,6 +1518,193 @@ describe('micro-worktree', () => {
   });
 
   /**
+   * WU-1418: Tests for LUMENFLOW_WU_TOOL setting during standard push mode
+   *
+   * When micro-worktree operations use standard mode (not pushOnly), they should
+   * set LUMENFLOW_WU_TOOL to the operation name so the pre-push hook recognizes
+   * them as legitimate automated operations.
+   */
+  describe('LUMENFLOW_WU_TOOL in standard push mode (WU-1418)', () => {
+    const originalEnv = { ...process.env };
+
+    beforeEach(() => {
+      vi.resetModules();
+      delete process.env.LUMENFLOW_FORCE;
+      delete process.env.LUMENFLOW_FORCE_REASON;
+      delete process.env.LUMENFLOW_WU_TOOL;
+    });
+
+    afterEach(() => {
+      process.env = { ...originalEnv };
+      vi.restoreAllMocks();
+    });
+
+    it('pushWithRetry should set LUMENFLOW_WU_TOOL during push', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // Track env var during push
+      let envDuringPush: string | undefined;
+
+      const mockMainGit = {
+        push: vi.fn().mockImplementation(async () => {
+          envDuringPush = process.env.LUMENFLOW_WU_TOOL;
+        }),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        'wu-repair', // operation name
+      );
+
+      // Verify LUMENFLOW_WU_TOOL was set during push
+      expect(envDuringPush).toBe('wu-repair');
+    });
+
+    it('pushWithRetry should restore LUMENFLOW_WU_TOOL after push', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // Set an original value
+      process.env.LUMENFLOW_WU_TOOL = 'original-tool';
+
+      const mockMainGit = {
+        push: vi.fn().mockResolvedValue(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        'wu-repair',
+      );
+
+      // Original value should be restored
+      expect(process.env.LUMENFLOW_WU_TOOL).toBe('original-tool');
+    });
+
+    it('pushWithRetry should restore undefined LUMENFLOW_WU_TOOL after push', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      // Ensure env var is not set
+      delete process.env.LUMENFLOW_WU_TOOL;
+
+      const mockMainGit = {
+        push: vi.fn().mockResolvedValue(undefined),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await pushWithRetry(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        'wu-repair',
+      );
+
+      // Should still be undefined
+      expect(process.env.LUMENFLOW_WU_TOOL).toBeUndefined();
+    });
+
+    it('pushWithRetry should restore env var even if push fails', async () => {
+      const { pushWithRetry } = await import('../micro-worktree.js');
+
+      process.env.LUMENFLOW_WU_TOOL = 'original-tool';
+
+      const mockMainGit = {
+        push: vi.fn().mockRejectedValue(new Error(NON_FAST_FORWARD_ERROR)),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      await expect(
+        pushWithRetry(
+          mockMainGit as never,
+          mockWorktreeGit as never,
+          TEST_REMOTE,
+          TEST_BRANCH,
+          TEST_TEMP_BRANCH,
+          TEST_LOG_PREFIX,
+          'wu-repair',
+        ),
+      ).rejects.toThrow();
+
+      // Original value should be restored even after failure
+      expect(process.env.LUMENFLOW_WU_TOOL).toBe('original-tool');
+    });
+
+    it('pushWithRetryConfig should set LUMENFLOW_WU_TOOL during push', async () => {
+      const { pushWithRetryConfig } = await import('../micro-worktree.js');
+
+      // Track env var during push
+      let envDuringPush: string | undefined;
+
+      const mockMainGit = {
+        push: vi.fn().mockImplementation(async () => {
+          envDuringPush = process.env.LUMENFLOW_WU_TOOL;
+        }),
+        fetch: vi.fn().mockResolvedValue(undefined),
+        merge: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const mockWorktreeGit = {
+        rebase: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const config = {
+        enabled: true,
+        retries: TEST_RETRIES,
+        min_delay_ms: 10,
+        max_delay_ms: 50,
+        jitter: false,
+      };
+
+      await pushWithRetryConfig(
+        mockMainGit as never,
+        mockWorktreeGit as never,
+        TEST_REMOTE,
+        TEST_BRANCH,
+        TEST_TEMP_BRANCH,
+        TEST_LOG_PREFIX,
+        config,
+        'wu-repair', // operation name
+      );
+
+      // Verify LUMENFLOW_WU_TOOL was set during push
+      expect(envDuringPush).toBe('wu-repair');
+    });
+  });
+
+  /**
    * WU-1332: Tests for PushRetryConfig schema
    */
   describe('PushRetryConfigSchema (WU-1332)', () => {
