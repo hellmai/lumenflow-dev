@@ -18,7 +18,9 @@ artifacts:
   - .lumenflow/stamps/WU-1407.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Self-documenting docs change. Design-first skill prevented over-engineering in WU-1406.'
+spec_refs:
+  - 'Self-documenting: see description'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation

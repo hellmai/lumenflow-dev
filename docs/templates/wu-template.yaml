@@ -17,6 +17,7 @@ lane: 'Framework: CLI'
 
 # Required: Type of work
 type: 'feature' # feature | bug | documentation | process | tooling | chore | refactor
+# NOTE: For feature/refactor WUs, load /skill design-first before implementation
 
 # Required: Current status
 status: 'ready' # ready | in_progress | blocked | done | cancelled
