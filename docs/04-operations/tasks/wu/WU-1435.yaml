@@ -2,7 +2,7 @@ id: WU-1435
 title: Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -30,8 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Public CLI manifest defines customer-facing commands. Problem: deps:add/remove are confusing for end users and should be internal; docs:sync and gates:docs aliases should be public. Solution: update public-manifest to remove deps:add/remove, keep backlog:prune public, and add docs:sync + gates:docs aliases; align commands registry/docs/tests.'
+description: 'Context: Public CLI manifest defines customer-facing commands. Problem:
+  deps:add/remove are confusing for end users and should be internal; docs:sync and gates:docs
+  aliases should be public. Solution: update public-manifest to remove deps:add/remove, keep
+  backlog:prune public, and add docs:sync + gates:docs aliases; align commands registry/docs/tests.'
 acceptance:
   - deps:add and deps:remove removed from public manifest and package bin/public registry.
   - docs:sync and gates:docs added as public aliases in manifest and appear in CLI reference.
   - commands/test alignment updated and passing.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1435
+claimed_at: 2026-02-04T22:48:54.605Z
+baseline_main_sha: 7176a2b74f4010761230a56a69ddddcb3d5d8ec9
+session_id: 199ca55a-8a79-44c8-a1ed-c821484df9f8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T22:48:54.611Z
