@@ -2,7 +2,7 @@ id: WU-1412
 title: Add @lumenflow/mcp stdio server
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -32,10 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow needs an AI-native interface. Problem: agents cannot call WU lifecycle operations directly, and MCP integration is missing. Solution: create @lumenflow/mcp with stdio transport, read ops via core, and write ops via CLI shell-out with a shared cli-runner.'
+description: 'Context: LumenFlow needs an AI-native interface. Problem: agents cannot call WU
+  lifecycle operations directly, and MCP integration is missing. Solution: create @lumenflow/mcp
+  with stdio transport, read ops via core, and write ops via CLI shell-out with a shared
+  cli-runner.'
 acceptance:
   - MCP server runs via npx @lumenflow/mcp over stdio
   - 'Tools available: context_get, wu_list, wu_status, wu_create, wu_claim, wu_done, gates_run'
   - 'Resources available: context, wu/{id}, backlog'
   - wu_done fails fast if not on main checkout
   - 'Environment variables supported: LUMENFLOW_PROJECT_ROOT and LUMENFLOW_MCP_LOG_LEVEL'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1412
+claimed_at: 2026-02-04T14:13:24.239Z
+baseline_main_sha: db02eb0c6e3fd587d261287cc0a6480ff98f9755
+session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:13:24.244Z

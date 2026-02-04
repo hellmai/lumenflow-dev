@@ -21,7 +21,6 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
-- [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
 - [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml) — Framework: CLI
 
 ## 🔧 In progress
@@ -31,6 +30,7 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml) — Content: Documentation
 - [WU-1411 — Add listWUs helper to core](wu/WU-1411.yaml) — Framework: Core
+- [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

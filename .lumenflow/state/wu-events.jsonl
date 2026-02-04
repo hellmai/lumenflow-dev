@@ -741,3 +741,4 @@
 {"type":"complete","wuId":"WU-1410","timestamp":"2026-02-04T13:46:14.931Z"}
 {"type":"claim","wuId":"WU-1414","lane":"Content: Documentation","title":"Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App","timestamp":"2026-02-04T14:09:44.669Z"}
 {"type":"claim","wuId":"WU-1411","lane":"Framework: Core","title":"Add listWUs helper to core","timestamp":"2026-02-04T14:12:02.206Z"}
+{"type":"claim","wuId":"WU-1412","lane":"Framework: CLI","title":"Add @lumenflow/mcp stdio server","timestamp":"2026-02-04T14:13:24.272Z"}
