@@ -18,7 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1425.done
 dependencies: []
 initiative: INIT-MCP-FULL
-phase: 3
+phase: 4
 spec_refs:
   - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
