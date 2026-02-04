@@ -9,7 +9,6 @@ code_paths:
   - packages/@lumenflow/cli/src/orchestrate-initiative.ts
   - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
   - packages/@lumenflow/cli/README.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - apps/docs/src/content/docs/guides/initiatives.mdx
   - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
