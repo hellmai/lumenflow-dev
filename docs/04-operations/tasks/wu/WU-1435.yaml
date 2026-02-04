@@ -23,7 +23,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1435-plan.md
 risks: []
-notes: 'Decision: deps:add/remove are internal (worktree-only guardrails); backlog:prune stays public.
+notes:
+  'Decision: deps:add/remove are internal (worktree-only guardrails); backlog:prune stays public.
   Added docs:sync and gates:docs aliases as public commands.'
 requires_review: false
 claimed_mode: worktree
