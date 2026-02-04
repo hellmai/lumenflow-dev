@@ -28,6 +28,8 @@ sections:
 - [WU-1425 — MCP: Agent + Orchestration + Spawn tools (+8)](wu/WU-1425.yaml) — Framework: CLI
 - [WU-1426 — MCP: Flow + Validation + Setup tools (+17)](wu/WU-1426.yaml) — Framework: CLI
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — Content: Documentation
+- [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — Framework: CLI
+- [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -35,7 +37,6 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
-- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -410,3 +411,4 @@ sections:
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
 - [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml)
 - [WU-1423 — Complete beacon→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml)
+- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml)

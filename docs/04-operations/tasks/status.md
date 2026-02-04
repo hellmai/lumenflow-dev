@@ -8,7 +8,6 @@ _Last updated: 2026-02-04_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
-- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml)
 
 ## Completed
 
@@ -379,3 +378,4 @@ _Last updated: 2026-02-04_
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — 2026-02-04
 - [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml) — 2026-02-04
 - [WU-1423 — Complete beacon→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml) — 2026-02-04
+- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml) — 2026-02-04
