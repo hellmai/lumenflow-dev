@@ -3,7 +3,7 @@ slug: mcp-server
 title: LumenFlow MCP Server MVP
 description: MCP server MVP for LumenFlow to expose WU lifecycle tools over stdio, with core helper
   and init/docs scaffolding. VS Code plugin explicitly out of scope.
-status: draft
+status: in_progress
 priority: P2
 created: 2026-02-04
 phases:
@@ -18,4 +18,3 @@ success_metrics:
   - lumenflow_wu_list returns merged state + YAML metadata
   - lumenflow init --client claude|all writes .mcp.json
 labels: []
-related_plan: lumenflow://plans/partitioned-foraging-ocean.md
