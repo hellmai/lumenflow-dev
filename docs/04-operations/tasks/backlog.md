@@ -28,7 +28,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1439 — Regenerate CLI docs after public manifest update](wu/WU-1439.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -419,3 +418,4 @@ sections:
 - [WU-1435 — Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)](wu/WU-1435.yaml)
 - [WU-1438 — Repair WU-1436 metadata for spec-linter](wu/WU-1438.yaml)
 - [WU-1437 — Investigate initiatives test timeout in gates](wu/WU-1437.yaml)
+- [WU-1439 — Regenerate CLI docs after public manifest update](wu/WU-1439.yaml)
