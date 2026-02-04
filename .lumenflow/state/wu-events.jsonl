@@ -755,3 +755,4 @@
 {"type":"complete","wuId":"WU-1418","timestamp":"2026-02-04T15:51:06.258Z"}
 {"type":"claim","wuId":"WU-1419","timestamp":"2026-02-04T15:59:07.503Z","lane":"Framework: Core","title":"wu:recover reset action should emit release event to state store"}
 {"type":"complete","wuId":"WU-1419","timestamp":"2026-02-04T16:06:08.482Z"}
+{"type":"release","wuId":"WU-1417","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T16:08:11.163Z"}
