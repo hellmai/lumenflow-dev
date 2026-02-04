@@ -753,4 +753,5 @@
 {"type":"claim","wuId":"WU-1417","timestamp":"2026-02-04T15:39:41.919Z","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync"}
 {"type":"claim","wuId":"WU-1418","timestamp":"2026-02-04T15:42:59.595Z","lane":"Operations: Infrastructure","title":"wu:repair should bypass pre-push hook for admin fixes"}
 {"type":"complete","wuId":"WU-1418","timestamp":"2026-02-04T15:51:06.258Z"}
-{"type":"claim","wuId":"WU-1419","lane":"Framework: Core","title":"wu:recover reset action should emit release event to state store","timestamp":"2026-02-04T15:59:07.503Z"}
+{"type":"claim","wuId":"WU-1419","timestamp":"2026-02-04T15:59:07.503Z","lane":"Framework: Core","title":"wu:recover reset action should emit release event to state store"}
+{"type":"complete","wuId":"WU-1419","timestamp":"2026-02-04T16:06:08.482Z"}

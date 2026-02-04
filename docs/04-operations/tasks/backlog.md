@@ -29,7 +29,6 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
-- [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -399,3 +398,4 @@ sections:
 - [WU-1415 — Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)](wu/WU-1415.yaml)
 - [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml)
 - [WU-1418 — wu:repair should bypass pre-push hook for admin fixes](wu/WU-1418.yaml)
+- [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
