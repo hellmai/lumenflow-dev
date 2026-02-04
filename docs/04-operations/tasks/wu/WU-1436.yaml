@@ -2,7 +2,7 @@ id: WU-1436
 title: 'Fix core test dependency: add memfs'
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -42,3 +42,5 @@ description: 'Context: core tests use memfs in wu-list.test.ts. Problem: pnpm ga
 acceptance:
   - '@lumenflow/core test suite no longer fails with missing memfs.'
   - pnpm test --filter @lumenflow/core passes for wu-list.test.ts.
+locked: true
+completed_at: 2026-02-04T23:14:03.791Z
