@@ -2,7 +2,7 @@ id: WU-1419
 title: wu:recover reset action should emit release event to state store
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -27,8 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: wu:recover --action reset updates WU YAML status to ready but doesn't emit a release event to the state store. Problem: State store still thinks WU is in_progress, blocking re-claim. Solution: Emit release event when resetting WU status."
+description: "Context: wu:recover --action reset updates WU YAML status to ready but doesn't emit a
+  release event to the state store. Problem: State store still thinks WU is in_progress, blocking
+  re-claim. Solution: Emit release event when resetting WU status."
 acceptance:
   - wu:recover --action reset emits release event to state store
   - State store transitions WU from in_progress to ready on release event
   - Re-claiming a reset WU succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1419
+claimed_at: 2026-02-04T15:59:07.471Z
+baseline_main_sha: f86f44cbfd602b4ee77d211bc8c38c004edef35d
+session_id: 42e37ec4-fb03-4f0c-a467-dd1a69f2b54f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T15:59:07.475Z
