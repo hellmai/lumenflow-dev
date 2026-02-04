@@ -762,4 +762,5 @@
 {"type":"claim","wuId":"WU-1421","timestamp":"2026-02-04T16:24:40.203Z","lane":"Framework: Core","title":"Rename .beacon to .lumenflow (complete ExampleApp migration)"}
 {"type":"complete","wuId":"WU-1417","timestamp":"2026-02-04T16:28:00.334Z"}
 {"type":"complete","wuId":"WU-1421","timestamp":"2026-02-04T16:36:00.707Z"}
-{"type":"claim","wuId":"WU-1423","lane":"Framework: Core","title":"Complete beacon→lumenflow migration: rename config schema and all references","timestamp":"2026-02-04T17:00:06.323Z"}
+{"type":"claim","wuId":"WU-1423","timestamp":"2026-02-04T17:00:06.323Z","lane":"Framework: Core","title":"Complete beacon→lumenflow migration: rename config schema and all references"}
+{"type":"complete","wuId":"WU-1423","timestamp":"2026-02-04T17:14:07.699Z"}
