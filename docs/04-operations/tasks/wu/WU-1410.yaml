@@ -34,4 +34,3 @@ acceptance:
     -D
   - AGENTS.md has new Safe Alternatives section with wu:recover, wu:release, wu:prune
   - 'LUMENFLOW.md reinforces that all worktree management must use wu: commands'
-  - Safe Alternatives section includes wu:edit for modifying WU specs
