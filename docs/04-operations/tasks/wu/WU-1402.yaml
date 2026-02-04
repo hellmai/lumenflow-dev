@@ -2,7 +2,7 @@ id: WU-1402
 title: Remove Session 0 terminology from agent quickstart
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -24,7 +24,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Agent quickstart uses internal term 'Session 0' which confuses users. Problem: Users object to Session 0 terminology and want setup guidance without it. Solution: Replace all 'Session 0' references with plain 'Setup phase' language and adjust headings/notes accordingly."
+description: "Context: Agent quickstart uses internal term 'Session 0' which confuses users.
+  Problem: Users object to Session 0 terminology and want setup guidance without it. Solution:
+  Replace all 'Session 0' references with plain 'Setup phase' language and adjust headings/notes
+  accordingly."
 acceptance:
   - No 'Session 0' wording remains in agent quickstart
   - Headings and copy still clearly communicate setup-only scope
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1402
+claimed_at: 2026-02-04T00:27:10.991Z
+baseline_main_sha: a3d90813cd9314bab2c380d1bdc96c3ea830bc3e
+session_id: 00cf667e-6e2c-431f-98cc-6d40a565beeb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T00:27:10.997Z
