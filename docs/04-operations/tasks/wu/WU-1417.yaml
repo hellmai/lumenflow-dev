@@ -2,7 +2,7 @@ id: WU-1417
 title: Orchestration dry-run guide + docs sync
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
   manual:
-    - Run 'pnpm orchestrate:initiative -i INIT-XXX --dry-run' and verify output includes Next Steps with recommended defaults
+    - Run 'pnpm orchestrate:initiative -i INIT-XXX --dry-run' and verify output includes Next Steps
+      with recommended defaults
     - Verify dry-run output contains 'Option 1', 'Option 2', 'Option 3' guidance
     - Verify no '--unread' flag appears in any orchestration output
     - Verify mem:inbox guidance uses '--since 10m' format
@@ -54,3 +55,5 @@ worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1417
 claimed_at: 2026-02-04T16:08:47.692Z
 baseline_main_sha: e9cddcebb914cc7c6c8f1c3c397a7a5aff34b118
 session_id: be22d8fd-54f0-40e5-b0a4-cf1e00f5cde1
+locked: true
+completed_at: 2026-02-04T16:27:57.774Z
