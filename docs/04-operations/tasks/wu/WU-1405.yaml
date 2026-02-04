@@ -8,19 +8,29 @@ created: 2026-02-04
 code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual: []
+  manual:
+    - Open quickstart and verify the prompt forbids scaffolding during setup; verify decision ladder
+      includes stack-setup WU guidance.
   unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1405.done
 dependencies: []
 risks: []
-notes: ''
+notes: Updated quickstart prompt to forbid scaffolding during setup and added decision ladder item
+  directing stack setup into a WU.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T10:50:52.443Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1405
+session_id: 41bd7b1e-6783-4fa1-ab8c-60e98fbddc0a
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T10:50:52.448Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +41,3 @@ acceptance:
   - Prompt forbids scaffolding/templates during setup
   - Prompt instructs to create a WU when user asks for stack/scaffold
   - Decision ladder includes stack-setup WU guidance
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1405
-claimed_at: 2026-02-04T10:50:52.443Z
-baseline_main_sha: 188a0c3c7f88d20e60f0891052d42c4777d756c2
-session_id: 41bd7b1e-6783-4fa1-ab8c-60e98fbddc0a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T10:50:52.448Z
