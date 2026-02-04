@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/README.md
   - packages/@lumenflow/cli/templates/core/.mcp.json.template
 tests:
-  manual: []
+  manual:
+    - Verify lumenflow init --client claude creates .mcp.json
   unit:
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
   e2e: []
@@ -23,7 +24,7 @@ phase: 2
 spec_refs:
   - lumenflow://plans/WU-1413-plan.md
 risks: []
-notes: ''
+notes: Adds MCP configuration scaffolding to lumenflow init and updates documentation
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
