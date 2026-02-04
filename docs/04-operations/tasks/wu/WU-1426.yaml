@@ -21,6 +21,8 @@ artifacts:
 dependencies: []
 initiative: INIT-MCP-FULL
 phase: 4
+spec_refs:
+  - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
 notes: 'Sizing: Simple-Medium (~51 tool calls). Flow/Metrics (4) + Validation (5) + Setup (8) tools.
   See plan: lumenflow://plans/partitioned-foraging-ocean.md'
