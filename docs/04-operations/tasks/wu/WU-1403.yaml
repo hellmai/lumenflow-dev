@@ -18,7 +18,9 @@ dependencies: []
 spec_refs:
   - /home/tom/.claude/plans/peaceful-discovering-sky.md
 risks: []
-notes: ''
+notes: |
+  Plan: /home/tom/.claude/plans/peaceful-discovering-sky.md
+  Updated quickstart.mdx with correct command syntax and Claude Code integrate.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
