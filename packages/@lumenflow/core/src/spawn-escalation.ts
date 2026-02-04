@@ -24,6 +24,7 @@ import path from 'node:path';
 import { SpawnRegistryStore } from './spawn-registry-store.js';
 import { SpawnStatus } from './spawn-registry-schema.js';
 import { RECOVERY_DIR_NAME } from './spawn-recovery.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 // Optional import from @lumenflow/memory
 type SignalResult = { signal: { id: string } };
@@ -106,7 +107,8 @@ export const SuggestedAction = Object.freeze({
  * @returns {Promise<number>} Number of previous escalation attempts
  */
 async function countEscalationAttempts(baseDir, spawnId) {
-  const recoveryDir = path.join(baseDir, '.beacon', RECOVERY_DIR_NAME);
+  // WU-1421: Use LUMENFLOW_PATHS.BASE for consistency
+  const recoveryDir = path.join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_DIR_NAME);
 
   try {
     const files = await fs.readdir(recoveryDir);
@@ -153,7 +155,8 @@ function determineEscalationLevel(attempts) {
  * @returns {Promise<AuditLogEntry|null>} Audit log entry or null if not found
  */
 async function findEscalationAuditLog(baseDir, spawnId) {
-  const recoveryDir = path.join(baseDir, '.beacon', RECOVERY_DIR_NAME);
+  // WU-1421: Use LUMENFLOW_PATHS.BASE for consistency
+  const recoveryDir = path.join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_DIR_NAME);
 
   try {
     const files = await fs.readdir(recoveryDir);
@@ -220,7 +223,7 @@ function buildSpawnFailureSignal(spawn, auditLog, attempts) {
  *
  * @param {string} spawnId - ID of the stuck spawn
  * @param {Object} options - Options
- * @param {string} options.baseDir - Base directory for .beacon/
+ * @param {string} options.baseDir - Base directory for .lumenflow/
  * @param {boolean} [options.dryRun=false] - If true, returns signal without sending
  * @returns {Promise<EscalationResult>} Escalation result with signal details
  *
@@ -234,7 +237,7 @@ function buildSpawnFailureSignal(spawn, auditLog, attempts) {
  * console.log(`Signal sent: ${result.signalId}, action: ${result.signal.suggested_action}`);
  */
 export interface EscalateStuckSpawnOptions {
-  /** Base directory for .beacon/ */
+  /** Base directory for .lumenflow/ */
   baseDir?: string;
   /** If true, return spec only without sending signal */
   dryRun?: boolean;
@@ -242,7 +245,8 @@ export interface EscalateStuckSpawnOptions {
 
 export async function escalateStuckSpawn(spawnId, options: EscalateStuckSpawnOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
-  const registryDir = path.join(baseDir, '.beacon', 'state');
+  // WU-1421: Use LUMENFLOW_PATHS.STATE_DIR for consistency
+  const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
   // Load spawn registry
   const store = new SpawnRegistryStore(registryDir);

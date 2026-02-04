@@ -5,16 +5,19 @@
  * These tests verify the core monitoring logic used by orchestrate:monitor CLI.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import fs from 'node:fs/promises';
 import {
   analyzeSpawns,
   detectStuckSpawns,
   generateSuggestions,
   formatMonitorOutput,
   formatRecoveryResults,
+  checkZombieLocks,
   DEFAULT_THRESHOLD_MINUTES,
   LOG_PREFIX,
 } from '../spawn-monitor.js';
+import { LUMENFLOW_PATHS } from '../wu-constants.js';
 import { type SpawnEvent } from '../spawn-registry-schema.js';
 
 // Test constants to avoid duplicate string literals
@@ -290,6 +293,41 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
   describe('LOG_PREFIX constant', () => {
     it('exports log prefix for consistent logging', () => {
       expect(LOG_PREFIX).toBe('[spawn-monitor]');
+    });
+  });
+
+  describe('checkZombieLocks (WU-1421)', () => {
+    beforeEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('uses LUMENFLOW_PATHS.LOCKS_DIR not .beacon/locks', async () => {
+      // Spy on fs.access to capture the path being checked
+      const accessSpy = vi.spyOn(fs, 'access').mockRejectedValue(new Error('ENOENT'));
+
+      const baseDir = '/test/project';
+      await checkZombieLocks({ baseDir });
+
+      // Verify the path used is from LUMENFLOW_PATHS.LOCKS_DIR
+      expect(accessSpy).toHaveBeenCalled();
+      const calledPath = accessSpy.mock.calls[0][0] as string;
+
+      // Should use .lumenflow/locks, NOT .beacon/locks
+      expect(calledPath).toContain(LUMENFLOW_PATHS.LOCKS_DIR);
+      expect(calledPath).not.toContain('.beacon');
+      expect(calledPath).toBe(`${baseDir}/${LUMENFLOW_PATHS.LOCKS_DIR}`);
+    });
+
+    it('returns empty array when locks directory does not exist', async () => {
+      vi.spyOn(fs, 'access').mockRejectedValue(new Error('ENOENT'));
+
+      const result = await checkZombieLocks({ baseDir: '/nonexistent' });
+
+      expect(result).toEqual([]);
     });
   });
 });

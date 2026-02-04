@@ -31,6 +31,7 @@ import {
   SPAWN_FAILURE_SIGNAL_TYPE,
   SuggestedAction,
 } from './spawn-escalation.js';
+import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 // Optional import from @lumenflow/memory
 type Signal = { id: string; message: string };
@@ -207,7 +208,8 @@ interface SpawnMonitorBaseDirOptions {
 
 export async function checkZombieLocks(options: SpawnMonitorBaseDirOptions = {}) {
   const { baseDir = process.cwd() } = options;
-  const locksDir = path.join(baseDir, '.beacon', 'locks');
+  // WU-1421: Use LUMENFLOW_PATHS.LOCKS_DIR (same as lane-lock.ts) for consistency
+  const locksDir = path.join(baseDir, LUMENFLOW_PATHS.LOCKS_DIR);
   const zombies = [];
 
   try {
