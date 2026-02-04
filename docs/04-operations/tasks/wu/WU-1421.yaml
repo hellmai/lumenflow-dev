@@ -2,7 +2,7 @@ id: WU-1421
 title: Rename .beacon to .lumenflow (complete ExampleApp migration)
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -21,10 +21,10 @@ artifacts:
 dependencies: []
 risks: []
 notes: >
-  Implementation notes: Fixed spawn-monitor.ts and spawn-escalation.ts to use
-  LUMENFLOW_PATHS constants instead of hardcoded .beacon paths. Removed the legacy
-  .beacon/state/wu-events.jsonl file. Migration utilities (beacon-migration.ts) and
-  backward compatibility patterns preserved for legacy project support.
+  Implementation notes: Fixed spawn-monitor.ts and spawn-escalation.ts to use LUMENFLOW_PATHS
+  constants instead of hardcoded .beacon paths. Removed the legacy .beacon/state/wu-events.jsonl
+  file. Migration utilities (beacon-migration.ts) and backward compatibility patterns preserved for
+  legacy project support.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -50,3 +50,5 @@ session_id: 5c3c5fd5-c213-4547-99c2-299b40fe4be2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T16:24:40.183Z
+locked: true
+completed_at: 2026-02-04T16:35:58.191Z
