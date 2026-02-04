@@ -1,6 +1,6 @@
 id: WU-1418
 title: wu:repair should bypass pre-push hook for admin fixes
-lane: 'Framework: CLI'
+lane: 'Operations: Infrastructure'
 type: feature
 status: ready
 priority: P2
@@ -17,7 +17,10 @@ artifacts:
   - .lumenflow/stamps/WU-1418.done
 dependencies: []
 risks: []
-notes: ''
+notes: |-
+
+
+  [ADMIN-REPAIR 2026-02-04]: lane changed from 'Framework: CLI' to 'Operations: Infrastructure'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -26,7 +29,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:repair detects and fixes state inconsistencies (e.g., status.md out of sync with YAML). Problem: The repair commit gets blocked by the pre-push hook that prevents direct main pushes. Currently requires manual LUMENFLOW_FORCE=1 git push. Solution: wu:repair should internally handle pushing its own admin fix commits, either via LUMENFLOW_FORCE env var or a commit signature the hook recognizes.'
+description: 'Context: wu:repair detects and fixes state inconsistencies (e.g., status.md out of
+  sync with YAML). Problem: The repair commit gets blocked by the pre-push hook that prevents direct
+  main pushes. Currently requires manual LUMENFLOW_FORCE=1 git push. Solution: wu:repair should
+  internally handle pushing its own admin fix commits, either via LUMENFLOW_FORCE env var or a
+  commit signature the hook recognizes.'
 acceptance:
   - wu:repair successfully pushes its fix commits without manual intervention
   - Pre-push hook recognizes and allows wu:repair commits (via env var or commit signature)
