@@ -2,7 +2,7 @@ id: WU-1415
 title: Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -42,3 +42,5 @@ session_id: c95556d2-6f91-4521-beae-246689f88a39
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T15:11:15.471Z
+locked: true
+completed_at: 2026-02-04T15:16:25.804Z
