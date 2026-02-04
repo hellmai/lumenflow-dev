@@ -27,7 +27,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1410 — Improve forbidden commands docs and safe alternatives](wu/WU-1410.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -390,3 +389,4 @@ sections:
 - [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml)
 - [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml)
 - [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml)
+- [WU-1410 — Improve forbidden commands docs and safe alternatives](wu/WU-1410.yaml)

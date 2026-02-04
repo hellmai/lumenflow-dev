@@ -2,7 +2,7 @@ id: WU-1410
 title: Improve forbidden commands docs and safe alternatives
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -42,3 +42,5 @@ session_id: ce17c6b7-bae2-4c67-8fde-4979dbf5eb26
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T13:43:52.674Z
+locked: true
+completed_at: 2026-02-04T13:46:12.396Z
