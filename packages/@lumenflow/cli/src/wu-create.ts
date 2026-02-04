@@ -49,7 +49,7 @@ import {
   getPlanProtocolRef,
   getPlansDir,
 } from '@lumenflow/core/dist/lumenflow-home.js';
-import { validateSpecRefs } from '@lumenflow/core/dist/wu-create-validators.js';
+import { hasSpecRefs, validateSpecRefs } from '@lumenflow/core/dist/wu-create-validators.js';
 import {
   COMMIT_FORMATS,
   FILE_SYSTEM,
@@ -178,7 +178,7 @@ export function collectInitiativeWarnings({
   }
 
   const relatedPlan = initiativeDoc.related_plan as string | undefined;
-  if (relatedPlan && (!specRefs || specRefs.length === 0)) {
+  if (relatedPlan && !hasSpecRefs(specRefs)) {
     warnings.push(
       `Initiative ${initiativeId} has related_plan (${relatedPlan}). Consider adding --spec-refs to link this WU to the plan.`,
     );
@@ -480,7 +480,7 @@ export function validateCreateSpec({
     }
   }
 
-  if (effectiveType === 'feature' && (!opts.specRefs || opts.specRefs.length === 0)) {
+  if (effectiveType === 'feature' && !hasSpecRefs(opts.specRefs)) {
     errors.push(
       '--spec-refs is required for type: feature WUs\n' +
         '    Tip: Create a plan first with: pnpm plan:create --id <WU-ID> --title "..."\n' +
