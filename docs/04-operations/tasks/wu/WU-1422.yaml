@@ -2,7 +2,7 @@ id: WU-1422
 title: 'MCP: Complete WU tools (+17)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - All 17 WU tools implemented in tools.ts
   - Each tool shells out to CLI via cli-runner.ts
   - Unit tests for input validation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1422
+claimed_at: 2026-02-04T19:56:36.937Z
+baseline_main_sha: 5c7bcf67ff813fa40b932cc8f95b7ec6fe86169d
+session_id: 044661eb-7d62-45b2-9117-f5f30af9438a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T19:56:36.944Z
