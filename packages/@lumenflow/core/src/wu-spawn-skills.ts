@@ -34,7 +34,7 @@ const CONTEXT_HINTS = {
   tddWorkflow: '- `tdd-workflow` — TDD is mandatory for feature/enhancement WUs',
   bugClassification: '- `bug-classification` — Bug severity assessment',
   lumenflowGates: '- `lumenflow-gates` — Tooling often affects gates',
-  legacyCompliance: '- `legacy-compliance` — Intelligence lane requires Legacy validation',
+  llmCompliance: '- `llm-compliance` — Intelligence lane requires LLM validation',
   promptManagement: '- `prompt-management` — For prompt template work',
   frontendDesign: '- `frontend-design` — For UI component work',
 };
@@ -42,7 +42,7 @@ const ADDITIONAL_SKILLS_TABLE = `| Skill | Use When |
 |-------|----------|
 | lumenflow-gates | Gates fail, debugging format/lint/typecheck errors |
 | bug-classification | Bug discovered mid-WU, need priority classification |
-| legacy-compliance | Code touches LLM, prompts, classification |
+| llm-compliance | Code touches LLM, prompts, classification |
 | prompt-management | Working with prompt templates, golden datasets |
 | frontend-design | Building UI components, pages |
 | initiative-management | Multi-phase projects, INIT-XXX coordination |
@@ -190,7 +190,7 @@ export function generateSkillsSelectionSection(doc, config, clientName) {
     contextHints.push(CONTEXT_HINTS.lumenflowGates);
   }
   if (laneParent === 'Intelligence') {
-    contextHints.push(CONTEXT_HINTS._legacyCompliance);
+    contextHints.push(CONTEXT_HINTS.llmCompliance);
     contextHints.push(CONTEXT_HINTS.promptManagement);
   }
   if (laneParent === 'Experience') {

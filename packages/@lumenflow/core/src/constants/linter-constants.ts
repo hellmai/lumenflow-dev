@@ -12,7 +12,7 @@ export const LINTER_CONFIG = {
 
   /**
    * Maximum allowed glass surfaces in UI components.
-   * Per Legacy spec glass cap artifacts rule.
+   * Per design system glass cap artifacts rule.
    */
   MAX_GLASS_SURFACES: 6,
 };

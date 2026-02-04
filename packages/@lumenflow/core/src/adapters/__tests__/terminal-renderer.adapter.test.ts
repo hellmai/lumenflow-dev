@@ -37,7 +37,7 @@ describe('TerminalDashboardRenderer', () => {
         globalStatus: createMockGlobalStatus(),
         agentMetrics: {
           'security-auditor': createMockAgentMetric('pass'),
-          'legacy-guardian': createMockAgentMetric('pending'),
+          'code-reviewer': createMockAgentMetric('pending'),
         },
         wuProgress: [createMockWUProgress('WU-1320', 8, 11)],
         timeline: [createMockTimelineEvent()],
@@ -60,7 +60,7 @@ describe('TerminalDashboardRenderer', () => {
       // Section 2: Agent Small Multiples (table)
       expect(output).toContain('Agent Metrics');
       expect(output).toContain('security-auditor');
-      expect(output).toContain('legacy-guardian');
+      expect(output).toContain('code-reviewer');
 
       // Section 3: WU Progress
       expect(output).toContain('WU Progress');
@@ -131,7 +131,7 @@ describe('TerminalDashboardRenderer', () => {
         globalStatus: createMockGlobalStatus(),
         agentMetrics: {
           'security-auditor': createMockAgentMetric('pass'),
-          'legacy-guardian': createMockAgentMetric('fail'),
+          'code-reviewer': createMockAgentMetric('fail'),
         },
         wuProgress: [],
         timeline: [],
@@ -162,7 +162,7 @@ describe('TerminalDashboardRenderer', () => {
         globalStatus: createMockGlobalStatus(),
         agentMetrics: {
           'security-auditor': createMockAgentMetric('pass'),
-          'legacy-guardian': createMockAgentMetric('pass'),
+          'code-reviewer': createMockAgentMetric('pass'),
           'test-engineer': createMockAgentMetric('pending'),
           'code-reviewer': createMockAgentMetric('pending'),
         },
@@ -322,7 +322,7 @@ describe('TerminalDashboardRenderer', () => {
               result: 'pass',
             },
           },
-          'legacy-guardian': {
+          'code-reviewer': {
             invoked: 2,
             passRate: 50,
             avgDurationMs: 180000,
@@ -349,8 +349,8 @@ describe('TerminalDashboardRenderer', () => {
             title: 'Metrics Collector',
             dodProgress: 3,
             dodTotal: 11,
-            agents: { 'legacy-guardian': 'pending' },
-            headline: 'Awaiting legacy-guardian review',
+            agents: { 'code-reviewer': 'pending' },
+            headline: 'Awaiting code-reviewer review',
           },
         ],
         timeline: [
