@@ -2,7 +2,7 @@ id: WU-1429
 title: 'wu:create: tighten spec_refs + add notes flag + contextual warnings'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -44,4 +44,8 @@ acceptance:
 claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-04T17:58:48.499Z
+approved_at: 2026-02-04T18:06:55.399Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1429
+claimed_at: 2026-02-04T18:06:55.396Z
+baseline_main_sha: d91393d0f446a49814370ec39a5e44c20af9a7cd
+session_id: 152a77a2-9ffa-4f06-81f3-63b6bcd09af0
