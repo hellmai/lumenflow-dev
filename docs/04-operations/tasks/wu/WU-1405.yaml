@@ -2,7 +2,7 @@ id: WU-1405
 title: Block scaffolding during setup in agent quickstart
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -24,8 +24,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Agents are asking to scaffold frameworks during LumenFlow setup. Problem: Setup must be LumenFlow-only; stack scaffolding should be a separate WU. Solution: Add explicit prompt constraints and decision ladder guidance to defer scaffolding into a WU.'
+description: 'Context: Agents are asking to scaffold frameworks during LumenFlow setup. Problem:
+  Setup must be LumenFlow-only; stack scaffolding should be a separate WU. Solution: Add explicit
+  prompt constraints and decision ladder guidance to defer scaffolding into a WU.'
 acceptance:
   - Prompt forbids scaffolding/templates during setup
   - Prompt instructs to create a WU when user asks for stack/scaffold
   - Decision ladder includes stack-setup WU guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1405
+claimed_at: 2026-02-04T10:50:52.443Z
+baseline_main_sha: 188a0c3c7f88d20e60f0891052d42c4777d756c2
+session_id: 41bd7b1e-6783-4fa1-ab8c-60e98fbddc0a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T10:50:52.448Z
