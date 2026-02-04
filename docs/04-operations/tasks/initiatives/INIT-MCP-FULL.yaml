@@ -29,4 +29,5 @@ success_metrics:
   - 70 MCP tools available (100% CLI parity)
   - All tools documented on lumenflow.dev/reference/mcp
   - MCP setup guide published
+  - Public CLI manifest defines source of truth
 labels: []
