@@ -16,7 +16,8 @@ artifacts:
   - .lumenflow/stamps/WU-1410.done
 dependencies: []
 risks: []
-notes: ''
+notes: Added wu:edit to scope after discussion - agents should use wu:edit instead of manually
+  editing YAML files or using rm to delete and recreate.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -25,8 +26,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Codex ran 'git worktree remove --force' despite docs. Problem: AGENTS.md Forbidden Commands is incomplete and lacks safe alternatives. Solution: Expand list and add Safe Alternatives section. Benefits all agents."
+description: "Context: Codex ran 'git worktree remove --force' despite docs. Problem: AGENTS.md
+  Forbidden Commands is incomplete and lacks safe alternatives. Solution: Expand list and add Safe
+  Alternatives section. Benefits all agents."
 acceptance:
-  - AGENTS.md Forbidden Commands includes git worktree remove, git clean, git checkout ., git branch -D
+  - AGENTS.md Forbidden Commands includes git worktree remove, git clean, git checkout ., git branch
+    -D
   - AGENTS.md has new Safe Alternatives section with wu:recover, wu:release, wu:prune
   - 'LUMENFLOW.md reinforces that all worktree management must use wu: commands'
+  - Safe Alternatives section includes wu:edit for modifying WU specs
