@@ -1,7 +1,7 @@
 id: WU-1414
 title: Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App
 lane: 'Content: Documentation'
-type: documentation
+type: tooling
 status: in_progress
 priority: P1
 created: 2026-02-04
@@ -21,10 +21,17 @@ dependencies: []
 risks: []
 notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T14:09:44.652Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1414
+session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:09:44.658Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +50,3 @@ acceptance:
   - apps/github-app/ directory deleted
   - Internal product docs updated to CLI-only distribution (product-lines.md, DISTRIBUTION.md)
   - existing-projects.mdx and solo-workflow.mdx manual husky instructions removed or updated
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1414
-claimed_at: 2026-02-04T14:09:44.652Z
-baseline_main_sha: db563f06cc0d998e97b31d63b85fecdeb7b0d4bc
-session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T14:09:44.658Z
