@@ -2,7 +2,7 @@ id: WU-1411
 title: Add listWUs helper to core
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -10,9 +10,9 @@ code_paths:
   - packages/@lumenflow/core/src/index.ts
 tests:
   manual:
-    - 'Verify listWUs returns WUs from state store with YAML metadata merged'
-    - 'Verify status filter correctly filters WU list'
-    - 'Verify lane filter correctly filters WU list'
+    - Verify listWUs returns WUs from state store with YAML metadata merged
+    - Verify status filter correctly filters WU list
+    - Verify lane filter correctly filters WU list
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
   e2e: []
@@ -52,3 +52,5 @@ session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T14:12:02.177Z
+locked: true
+completed_at: 2026-02-04T14:24:38.025Z
