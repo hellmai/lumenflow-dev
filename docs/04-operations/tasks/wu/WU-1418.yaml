@@ -2,7 +2,7 @@ id: WU-1418
 title: wu:repair should bypass pre-push hook for admin fixes
 lane: 'Operations: Infrastructure'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - wu:repair successfully pushes its fix commits without manual intervention
   - Pre-push hook recognizes and allows wu:repair commits (via env var or commit signature)
   - Existing pre-push protections remain intact for non-repair pushes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1418
+claimed_at: 2026-02-04T15:42:59.560Z
+baseline_main_sha: 2d5b1c409075acacb5877a8d6c69ea30cf552bbb
+session_id: 2c62c29c-8504-49e6-9ced-164a1283bda5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T15:42:59.566Z
