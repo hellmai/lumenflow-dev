@@ -131,10 +131,9 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Verification & Gates
 
-| Command           | Description                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------ |
-| `gates`           | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
-| `lumenflow-gates` | Alias for `gates` command                                                                  |
+| Command | Description                                                                                |
+| ------- | ------------------------------------------------------------------------------------------ |
+| `gates` | Run quality gates with support for docs-only mode, incremental linting, and tiered testing |
 
 ### System & Setup
 
@@ -143,9 +142,6 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `backlog-prune`            | Backlog Prune Command                                                             |
 | `deps-add`                 | Deps Add CLI Command                                                              |
 | `deps-remove`              | Deps Remove CLI Command                                                           |
-| `guard-locked`             |                                                                                   |
-| `guard-main-branch`        | Guard Main Branch CLI Tool                                                        |
-| `guard-worktree-commit`    |                                                                                   |
 | `init-plan`                | Link a plan file to an initiative                                                 |
 | `lumenflow`                | Initialize LumenFlow in a project\n\n                                             |
 | `lumenflow-commands`       | List all available LumenFlow CLI commands                                         |
@@ -162,19 +158,12 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `plan-edit`                | Edit a section in a plan file                                                     |
 | `plan-link`                | Link a plan file to a WU or initiative                                            |
 | `plan-promote`             | Promote a plan to approved status                                                 |
-| `rotate-progress`          | Rotate Progress CLI Command                                                       |
-| `session-coordinator`      | Session Coordinator CLI Command                                                   |
 | `signal-cleanup`           | Prune old signals based on TTL policy to prevent unbounded growth                 |
 | `state-bootstrap`          | State Bootstrap Command                                                           |
 | `state-cleanup`            | Orchestrate all state cleanup: signals, memory, events                            |
 | `state-doctor`             | Check state integrity and optionally repair issues                                |
 | `sync-templates`           | Sync internal docs to CLI templates for release-cycle maintenance                 |
-| `trace-gen`                | Trace Generator CLI Command                                                       |
 | `validate`                 |                                                                                   |
-| `validate-agent-skills`    |                                                                                   |
-| `validate-agent-sync`      |                                                                                   |
-| `validate-backlog-sync`    |                                                                                   |
-| `validate-skills-spec`     |                                                                                   |
 
 ### File & Git Operations
 
