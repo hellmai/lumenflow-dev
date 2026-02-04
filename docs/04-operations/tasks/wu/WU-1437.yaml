@@ -2,7 +2,7 @@ id: WU-1437
 title: Investigate initiatives test timeout in gates
 lane: 'Framework: Initiatives'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -34,3 +34,11 @@ description: 'Context: pnpm gates fails due to initiatives test timeout in
   completion. Solution: investigate and fix test timeout or adjust test timeout settings.'
 acceptance:
   - Initiatives test suite passes without timeout in orchestrate-initiative-wu1251.test.ts.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-initiatives-wu-1437
+claimed_at: 2026-02-04T23:22:19.721Z
+baseline_main_sha: 60fd76304b025962bbf76b02480d41144567c349
+session_id: 5b69a164-2f0f-42d4-9635-d54cc64f0397
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T23:22:19.728Z
