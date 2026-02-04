@@ -22,6 +22,7 @@ sections:
 
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1413 — Scaffold .mcp.json in init and document MCP](wu/WU-1413.yaml) — Framework: CLI
+- [WU-1415 — Fix gates infrastructure bugs (vitest --include, docs-only turbo filter)](wu/WU-1415.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
