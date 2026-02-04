@@ -759,4 +759,5 @@
 {"type":"claim","wuId":"WU-1417","timestamp":"2026-02-04T16:08:47.711Z","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync"}
 {"type":"claim","wuId":"WU-1420","timestamp":"2026-02-04T16:14:40.483Z","lane":"Framework: Core","title":"state:doctor should detect and fix YAML vs state store status mismatches"}
 {"type":"complete","wuId":"WU-1420","timestamp":"2026-02-04T16:22:59.856Z"}
-{"type":"claim","wuId":"WU-1421","lane":"Framework: Core","title":"Rename .beacon to .lumenflow (complete ExampleApp migration)","timestamp":"2026-02-04T16:24:40.203Z"}
+{"type":"claim","wuId":"WU-1421","timestamp":"2026-02-04T16:24:40.203Z","lane":"Framework: Core","title":"Rename .beacon to .lumenflow (complete ExampleApp migration)"}
+{"type":"complete","wuId":"WU-1417","timestamp":"2026-02-04T16:28:00.334Z"}
