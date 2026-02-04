@@ -2,7 +2,7 @@ id: WU-1427
 title: Document MCP server on lumenflow.dev
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -50,3 +50,5 @@ acceptance:
   - MCP setup guide created with configuration examples
   - Getting started page updated to mention MCP option
   - Architecture page updated to show MCP in stack diagram
+locked: true
+completed_at: 2026-02-04T20:03:39.607Z
