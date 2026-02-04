@@ -11,7 +11,9 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/.beacon
 tests:
-  manual: []
+  manual:
+    - Verify no .beacon directory exists after migration
+    - Verify spawn locks are created under .lumenflow/locks/
   unit:
     - packages/@lumenflow/core/src/__tests__/spawn-monitor.test.ts
   e2e: []
@@ -19,7 +21,7 @@ artifacts:
   - .lumenflow/stamps/WU-1421.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'ExampleApp to LumenFlow naming cleanup'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
