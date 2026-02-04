@@ -1,0 +1,42 @@
+id: WU-1432
+title: Define public CLI surface + align MCP parity
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-04
+code_paths:
+  - packages/@lumenflow/cli/src/commands.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/README.md
+  - docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1432.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 1
+spec_refs:
+  - lumenflow://plans/partitioned-foraging-ocean.md
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: npm publishes internal CLI commands that shouldn't be public and MCP parity is defined against full CLI surface. Problem: public surface is undefined, docs and MCP parity are inconsistent. Solution: define a public CLI manifest as source of truth, derive commands list/docs from it, trim published bins to public commands, and update initiative metrics to public parity."
+acceptance:
+  - Public CLI manifest exists and enumerates public commands (source of truth)
+  - commands.ts derives its categories/entries from the public manifest
+  - packages/@lumenflow/cli/package.json bin only includes public commands
+  - INIT-MCP-FULL success metrics updated to reflect public CLI parity
+  - Unit tests updated to assert manifest ↔ commands list ↔ package.json bin alignment

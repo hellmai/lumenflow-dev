@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1432 — Define public CLI surface + align MCP parity](wu/WU-1432.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1422 — MCP: Complete WU tools (+17)](wu/WU-1422.yaml) — Framework: CLI
 - [WU-1424 — MCP: Initiative + Memory tools (+21)](wu/WU-1424.yaml) — Framework: CLI
