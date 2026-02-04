@@ -6,7 +6,9 @@ status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
-  - packages/@lumenflow/mcp/**
+  - packages/@lumenflow/mcp/src/**
+  - packages/@lumenflow/mcp/package.json
+  - packages/@lumenflow/mcp/tsconfig.json
   - .lumenflow.lane-inference.yaml
 tests:
   manual:
