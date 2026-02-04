@@ -30,3 +30,5 @@ acceptance:
   - Quickstart explains how to handle non-Node projects (minimal package.json for LumenFlow only)
   - Allowed commands include pnpm init -y only with explicit user approval
   - Guidance states not to scaffold Node stacks for non-Node frameworks unless asked
+spec_refs:
+  - lumenflow://plans/WU-1400-plan.md
