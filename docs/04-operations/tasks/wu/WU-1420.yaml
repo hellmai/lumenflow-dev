@@ -2,7 +2,7 @@ id: WU-1420
 title: state:doctor should detect and fix YAML vs state store status mismatches
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -28,8 +28,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: state:doctor checks for orphaned WUs, dangling signals, and broken events, but not YAML vs state store status mismatches. Problem: When WU YAML says 'ready' but state store says 'in_progress' (no release event after claim), wu:claim fails with 'already in_progress'. state:doctor reports healthy. Solution: Add STATUS_MISMATCH issue type that compares YAML status against state store derived status, and with --fix emits appropriate corrective events (e.g., release for in_progress→ready)."
+description: "Context: state:doctor checks for orphaned WUs, dangling signals, and broken events,
+  but not YAML vs state store status mismatches. Problem: When WU YAML says 'ready' but state store
+  says 'in_progress' (no release event after claim), wu:claim fails with 'already in_progress'.
+  state:doctor reports healthy. Solution: Add STATUS_MISMATCH issue type that compares YAML status
+  against state store derived status, and with --fix emits appropriate corrective events (e.g.,
+  release for in_progress→ready)."
 acceptance:
   - state:doctor detects when WU YAML status differs from state store derived status
   - state:doctor --fix emits corrective events (release, complete) to reconcile state
   - Documentation updated if state:doctor behavior changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1420
+claimed_at: 2026-02-04T16:14:40.439Z
+baseline_main_sha: 9b13e5eef373f0a93963f14308606d2808898201
+session_id: be22d8fd-54f0-40e5-b0a4-cf1e00f5cde1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T16:14:40.448Z
