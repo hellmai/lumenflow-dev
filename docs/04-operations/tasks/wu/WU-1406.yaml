@@ -1,14 +1,15 @@
 id: WU-1406
 title: Forbid template-selection questions during setup
 lane: 'Content: Documentation'
-type: feature
+type: documentation
 status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual: []
+  manual:
+    - Verify quickstart doc renders correctly on lumenflow.dev
   unit: []
   e2e: []
 artifacts:
