@@ -8,7 +8,9 @@ created: 2026-02-04
 code_paths:
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
-  manual: []
+  manual:
+    - Verify each tool returns structured JSON response
+    - Verify error handling returns proper error codes
   unit:
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
   e2e: []
@@ -16,8 +18,10 @@ artifacts:
   - .lumenflow/stamps/WU-1422.done
 dependencies: []
 initiative: INIT-MCP-FULL
+phase: 1
 risks: []
-notes: ''
+notes: 'Sizing: Simple-Medium (~51 tool calls). Each tool follows same pattern: Zod schema + CLI
+  shell-out via cli-runner.ts. See plan: lumenflow://plans/partitioned-foraging-ocean.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -26,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: MCP server has 7 tools, CLI has 21 WU commands. Problem: 17 WU commands missing from MCP. Solution: Add wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair, wu_deps, wu_prep, wu_preflight, wu_proto, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate, wu_infer_lane, wu_unlock_lane.'
+description: 'Context: MCP server has 7 tools, CLI has 21 WU commands. Problem: 17 WU commands
+  missing from MCP. Solution: Add wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair,
+  wu_deps, wu_prep, wu_preflight, wu_proto, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate,
+  wu_infer_lane, wu_unlock_lane.'
 acceptance:
   - All 17 WU tools implemented in tools.ts
   - Each tool shells out to CLI via cli-runner.ts
