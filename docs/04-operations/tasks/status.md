@@ -9,7 +9,6 @@ _Last updated: 2026-02-04_
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
-- [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
 
 ## Completed
 
@@ -376,3 +375,4 @@ _Last updated: 2026-02-04_
 - [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml) — 2026-02-04
 - [WU-1418 — wu:repair should bypass pre-push hook for admin fixes](wu/WU-1418.yaml) — 2026-02-04
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml) — 2026-02-04
+- [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml) — 2026-02-04

@@ -22,6 +22,7 @@ sections:
 
 - [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
+- [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml) — Framework: Core
 
 ## 🔧 In progress
 
@@ -30,7 +31,6 @@ sections:
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
-- [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -401,3 +401,4 @@ sections:
 - [WU-1416 — Document LumenFlow product strategy and MCP architecture](wu/WU-1416.yaml)
 - [WU-1418 — wu:repair should bypass pre-push hook for admin fixes](wu/WU-1418.yaml)
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
+- [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
