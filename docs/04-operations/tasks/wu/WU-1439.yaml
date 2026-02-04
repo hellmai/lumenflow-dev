@@ -17,7 +17,7 @@ artifacts:
   - .lumenflow/stamps/WU-1439.done
 dependencies: []
 risks: []
-notes: ''
+notes: Updated docs generator to include public alias commands (docs:sync, gates:docs).
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
