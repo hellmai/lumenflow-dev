@@ -2,7 +2,7 @@ id: WU-1429
 title: 'wu:create: tighten spec_refs + add notes flag + contextual warnings'
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - Warning emitted if --initiative has phases but no --phase provided
   - Warning emitted if initiative has related_plan but no spec_refs
   - Unit tests cover new validations and --notes flag
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1429
+claimed_at: 2026-02-04T17:58:48.493Z
+baseline_main_sha: 117bd5e6378517e544070a3c4106fb540d6194cd
+session_id: 152a77a2-9ffa-4f06-81f3-63b6bcd09af0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T17:58:48.499Z
