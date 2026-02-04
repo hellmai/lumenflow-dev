@@ -2,7 +2,7 @@ id: WU-1407
 title: Mandate design-first before implementation
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -18,7 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1407.done
 dependencies: []
 risks: []
-notes: 'Self-documenting docs change. Design-first skill prevented over-engineering in WU-1406.'
+notes: Self-documenting docs change. Design-first skill prevented over-engineering in WU-1406.
 spec_refs:
   - 'Self-documenting: see description'
 requires_review: false
@@ -45,3 +45,5 @@ session_id: 9ff91a49-1d80-441c-a9a4-7332eabf47f8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T12:48:10.652Z
+locked: true
+completed_at: 2026-02-04T12:53:41.135Z
