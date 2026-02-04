@@ -6,6 +6,10 @@
  * WU-1422: Additional WU tools: wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair,
  *          wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate,
  *          wu_infer_lane, wu_unlock_lane
+ * WU-1424: Initiative tools: initiative_list, initiative_status, initiative_create, initiative_edit,
+ *          initiative_add_wu, initiative_remove_wu, initiative_bulk_assign, initiative_plan
+ *          Memory tools: mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup, mem_context,
+ *          mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  *
  * Architecture:
@@ -1026,6 +1030,803 @@ export const wuUnlockLaneTool: ToolDefinition = {
   },
 };
 
+// ============================================================================
+// Initiative Operations (WU-1424)
+// ============================================================================
+
+/**
+ * Error codes for initiative tools
+ */
+const InitiativeErrorCodes = {
+  INITIATIVE_LIST_ERROR: 'INITIATIVE_LIST_ERROR',
+  INITIATIVE_STATUS_ERROR: 'INITIATIVE_STATUS_ERROR',
+  INITIATIVE_CREATE_ERROR: 'INITIATIVE_CREATE_ERROR',
+  INITIATIVE_EDIT_ERROR: 'INITIATIVE_EDIT_ERROR',
+  INITIATIVE_ADD_WU_ERROR: 'INITIATIVE_ADD_WU_ERROR',
+  INITIATIVE_REMOVE_WU_ERROR: 'INITIATIVE_REMOVE_WU_ERROR',
+  INITIATIVE_BULK_ASSIGN_ERROR: 'INITIATIVE_BULK_ASSIGN_ERROR',
+  INITIATIVE_PLAN_ERROR: 'INITIATIVE_PLAN_ERROR',
+} as const;
+
+/**
+ * Error messages for initiative tools
+ */
+const InitiativeErrorMessages = {
+  INITIATIVE_REQUIRED: 'initiative is required',
+  WU_REQUIRED: 'wu is required',
+} as const;
+
+/**
+ * initiative_list - List all initiatives
+ */
+export const initiativeListTool: ToolDefinition = {
+  name: 'initiative_list',
+  description: 'List all initiatives with optional status filter',
+  inputSchema: z.object({
+    status: z.enum(['active', 'completed', 'paused']).optional().describe('Filter by status'),
+    json: z.boolean().optional().describe('Output as JSON'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.status) args.push('--status', input.status as string);
+    if (input.json) args.push('--json');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:list', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:list failed',
+        InitiativeErrorCodes.INITIATIVE_LIST_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_status - Get status of a specific initiative
+ */
+export const initiativeStatusTool: ToolDefinition = {
+  name: 'initiative_status',
+  description: 'Get detailed status of a specific initiative including WUs and progress',
+  inputSchema: z.object({
+    id: z.string().describe('Initiative ID (e.g., INIT-001)'),
+    json: z.boolean().optional().describe('Output as JSON'),
+  }),
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string];
+    if (input.json) args.push('--json');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:status', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:status failed',
+        InitiativeErrorCodes.INITIATIVE_STATUS_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_create - Create a new initiative
+ */
+export const initiativeCreateTool: ToolDefinition = {
+  name: 'initiative_create',
+  description: 'Create a new initiative for multi-phase project orchestration',
+  inputSchema: z.object({
+    id: z.string().describe('Initiative ID (e.g., INIT-001)'),
+    title: z.string().describe('Initiative title'),
+    description: z.string().optional().describe('Initiative description'),
+    phases: z.array(z.string()).optional().describe('Phase names (e.g., "Phase 1: MVP")'),
+  }),
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.title) {
+      return error(ErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string, '--title', input.title as string];
+    if (input.description) args.push('--description', input.description as string);
+    if (input.phases) {
+      for (const phase of input.phases as string[]) {
+        args.push('--phase', phase);
+      }
+    }
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:create', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Initiative created successfully' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:create failed',
+        InitiativeErrorCodes.INITIATIVE_CREATE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_edit - Edit initiative fields
+ */
+export const initiativeEditTool: ToolDefinition = {
+  name: 'initiative_edit',
+  description: 'Edit initiative fields',
+  inputSchema: z.object({
+    id: z.string().describe('Initiative ID to edit'),
+    title: z.string().optional().describe('New title'),
+    description: z.string().optional().describe('New description'),
+    status: z.enum(['active', 'completed', 'paused']).optional().describe('New status'),
+  }),
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string];
+    if (input.title) args.push('--title', input.title as string);
+    if (input.description) args.push('--description', input.description as string);
+    if (input.status) args.push('--status', input.status as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:edit', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Initiative edited successfully' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:edit failed',
+        InitiativeErrorCodes.INITIATIVE_EDIT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_add_wu - Add a WU to an initiative
+ */
+export const initiativeAddWuTool: ToolDefinition = {
+  name: 'initiative_add_wu',
+  description: 'Add a Work Unit to an initiative, optionally assigning to a phase',
+  inputSchema: z.object({
+    initiative: z.string().describe('Initiative ID'),
+    wu: z.string().describe('WU ID to add'),
+    phase: z.number().optional().describe('Phase number to assign (1-based)'),
+  }),
+
+  async execute(input, options) {
+    if (!input.initiative) {
+      return error(InitiativeErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.wu) {
+      return error(InitiativeErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--initiative', input.initiative as string, '--wu', input.wu as string];
+    if (input.phase !== undefined) args.push('--phase', String(input.phase));
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:add-wu', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'WU added to initiative' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:add-wu failed',
+        InitiativeErrorCodes.INITIATIVE_ADD_WU_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_remove_wu - Remove a WU from an initiative
+ */
+export const initiativeRemoveWuTool: ToolDefinition = {
+  name: 'initiative_remove_wu',
+  description: 'Remove a Work Unit from an initiative',
+  inputSchema: z.object({
+    initiative: z.string().describe('Initiative ID'),
+    wu: z.string().describe('WU ID to remove'),
+  }),
+
+  async execute(input, options) {
+    if (!input.initiative) {
+      return error(InitiativeErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.wu) {
+      return error(InitiativeErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--initiative', input.initiative as string, '--wu', input.wu as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:remove-wu', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'WU removed from initiative' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:remove-wu failed',
+        InitiativeErrorCodes.INITIATIVE_REMOVE_WU_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_bulk_assign - Bulk assign WUs to an initiative
+ */
+export const initiatiBulkAssignTool: ToolDefinition = {
+  name: 'initiative_bulk_assign',
+  description: 'Bulk assign WUs to an initiative based on pattern matching',
+  inputSchema: z.object({
+    id: z.string().describe('Initiative ID'),
+    pattern: z.string().optional().describe('Pattern to match WU titles (e.g., "MCP:*")'),
+    phase: z.number().optional().describe('Phase to assign matched WUs'),
+  }),
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string];
+    if (input.pattern) args.push('--pattern', input.pattern as string);
+    if (input.phase !== undefined) args.push('--phase', String(input.phase));
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:bulk-assign', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Bulk assignment completed' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:bulk-assign failed',
+        InitiativeErrorCodes.INITIATIVE_BULK_ASSIGN_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * initiative_plan - Link or create a plan for an initiative
+ */
+export const initiativePlanTool: ToolDefinition = {
+  name: 'initiative_plan',
+  description: 'Link an existing plan or create a new plan template for an initiative',
+  inputSchema: z.object({
+    initiative: z.string().describe('Initiative ID'),
+    plan: z.string().optional().describe('Path to existing plan file'),
+    create: z.boolean().optional().describe('Create a new plan template'),
+  }),
+
+  async execute(input, options) {
+    if (!input.initiative) {
+      return error(InitiativeErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--initiative', input.initiative as string];
+    if (input.plan) args.push('--plan', input.plan as string);
+    if (input.create) args.push('--create');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('initiative:plan', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Plan linked to initiative' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'initiative:plan failed',
+        InitiativeErrorCodes.INITIATIVE_PLAN_ERROR,
+      );
+    }
+  },
+};
+
+// ============================================================================
+// Memory Operations (WU-1424)
+// ============================================================================
+
+/**
+ * Error codes for memory tools
+ */
+const MemoryErrorCodes = {
+  MEM_INIT_ERROR: 'MEM_INIT_ERROR',
+  MEM_START_ERROR: 'MEM_START_ERROR',
+  MEM_READY_ERROR: 'MEM_READY_ERROR',
+  MEM_CHECKPOINT_ERROR: 'MEM_CHECKPOINT_ERROR',
+  MEM_CLEANUP_ERROR: 'MEM_CLEANUP_ERROR',
+  MEM_CONTEXT_ERROR: 'MEM_CONTEXT_ERROR',
+  MEM_CREATE_ERROR: 'MEM_CREATE_ERROR',
+  MEM_DELETE_ERROR: 'MEM_DELETE_ERROR',
+  MEM_EXPORT_ERROR: 'MEM_EXPORT_ERROR',
+  MEM_INBOX_ERROR: 'MEM_INBOX_ERROR',
+  MEM_SIGNAL_ERROR: 'MEM_SIGNAL_ERROR',
+  MEM_SUMMARIZE_ERROR: 'MEM_SUMMARIZE_ERROR',
+  MEM_TRIAGE_ERROR: 'MEM_TRIAGE_ERROR',
+} as const;
+
+/**
+ * Error messages for memory tools
+ */
+const MemoryErrorMessages = {
+  WU_REQUIRED: 'wu is required',
+  MESSAGE_REQUIRED: 'message is required',
+} as const;
+
+/**
+ * mem_init - Initialize memory for a WU
+ */
+export const memInitTool: ToolDefinition = {
+  name: 'mem_init',
+  description: 'Initialize memory layer for a Work Unit',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to initialize memory for'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:init', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Memory initialized' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:init failed',
+        MemoryErrorCodes.MEM_INIT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_start - Start a memory session
+ */
+export const memStartTool: ToolDefinition = {
+  name: 'mem_start',
+  description: 'Start a memory session for a Work Unit',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to start session for'),
+    lane: z.string().optional().describe('Lane name'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.lane) args.push('--lane', input.lane as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:start', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Session started' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:start failed',
+        MemoryErrorCodes.MEM_START_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_ready - Check pending nodes
+ */
+export const memReadyTool: ToolDefinition = {
+  name: 'mem_ready',
+  description: 'Check pending memory nodes for a Work Unit',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to check'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:ready', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:ready failed',
+        MemoryErrorCodes.MEM_READY_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_checkpoint - Save progress checkpoint
+ */
+export const memCheckpointTool: ToolDefinition = {
+  name: 'mem_checkpoint',
+  description: 'Save a progress checkpoint for a Work Unit',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to checkpoint'),
+    message: z.string().optional().describe('Checkpoint message'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.message) args.push('--message', input.message as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:checkpoint', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Checkpoint saved' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:checkpoint failed',
+        MemoryErrorCodes.MEM_CHECKPOINT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_cleanup - Clean up stale memory data
+ */
+export const memCleanupTool: ToolDefinition = {
+  name: 'mem_cleanup',
+  description: 'Clean up stale memory data',
+  inputSchema: z.object({
+    dry_run: z.boolean().optional().describe('Preview cleanup without making changes'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.dry_run) args.push('--dry-run');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:cleanup', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Cleanup completed' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:cleanup failed',
+        MemoryErrorCodes.MEM_CLEANUP_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_context - Get context for current lane/WU
+ */
+export const memContextTool: ToolDefinition = {
+  name: 'mem_context',
+  description: 'Get memory context for a Work Unit, optionally filtered by lane',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to get context for'),
+    lane: z.string().optional().describe('Filter by lane'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.lane) args.push('--lane', input.lane as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:context', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:context failed',
+        MemoryErrorCodes.MEM_CONTEXT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_create - Create a memory node
+ */
+export const memCreateTool: ToolDefinition = {
+  name: 'mem_create',
+  description: 'Create a memory node (e.g., for bug discovery)',
+  inputSchema: z.object({
+    message: z.string().describe('Memory node message'),
+    wu: z.string().describe('WU ID to associate with'),
+    type: z.string().optional().describe('Node type (e.g., "discovery")'),
+    tags: z.array(z.string()).optional().describe('Tags for the node'),
+  }),
+
+  async execute(input, options) {
+    if (!input.message) {
+      return error(MemoryErrorMessages.MESSAGE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = [input.message as string, '--wu', input.wu as string];
+    if (input.type) args.push('--type', input.type as string);
+    if (input.tags) args.push('--tags', (input.tags as string[]).join(','));
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:create', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Memory node created' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:create failed',
+        MemoryErrorCodes.MEM_CREATE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_delete - Delete/archive a memory node
+ */
+export const memDeleteTool: ToolDefinition = {
+  name: 'mem_delete',
+  description: 'Delete or archive a memory node',
+  inputSchema: z.object({
+    id: z.string().describe('Memory node ID to delete'),
+  }),
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:delete', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Memory node deleted' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:delete failed',
+        MemoryErrorCodes.MEM_DELETE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_export - Export memory as markdown
+ */
+export const memExportTool: ToolDefinition = {
+  name: 'mem_export',
+  description: 'Export memory for a Work Unit as markdown or JSON',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to export'),
+    format: z.enum(['markdown', 'json']).optional().describe('Export format'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.format) args.push('--format', input.format as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:export', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:export failed',
+        MemoryErrorCodes.MEM_EXPORT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_inbox - Check coordination signals
+ */
+export const memInboxTool: ToolDefinition = {
+  name: 'mem_inbox',
+  description: 'Check coordination signals from other agents',
+  inputSchema: z.object({
+    since: z.string().optional().describe('Time filter (e.g., "30m", "1h")'),
+    wu: z.string().optional().describe('Filter by WU ID'),
+    lane: z.string().optional().describe('Filter by lane'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.since) args.push('--since', input.since as string);
+    if (input.wu) args.push('--wu', input.wu as string);
+    if (input.lane) args.push('--lane', input.lane as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:inbox', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:inbox failed',
+        MemoryErrorCodes.MEM_INBOX_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_signal - Broadcast coordination signal
+ */
+export const memSignalTool: ToolDefinition = {
+  name: 'mem_signal',
+  description: 'Broadcast a coordination signal to other agents',
+  inputSchema: z.object({
+    message: z.string().describe('Signal message'),
+    wu: z.string().describe('WU ID to associate with'),
+  }),
+
+  async execute(input, options) {
+    if (!input.message) {
+      return error(MemoryErrorMessages.MESSAGE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = [input.message as string, '--wu', input.wu as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:signal', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Signal broadcast' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:signal failed',
+        MemoryErrorCodes.MEM_SIGNAL_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_summarize - Summarize memory context
+ */
+export const memSummarizeTool: ToolDefinition = {
+  name: 'mem_summarize',
+  description: 'Summarize memory context for a Work Unit',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to summarize'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:summarize', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:summarize failed',
+        MemoryErrorCodes.MEM_SUMMARIZE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * mem_triage - Triage discovered bugs
+ */
+export const memTriageTool: ToolDefinition = {
+  name: 'mem_triage',
+  description: 'Triage discovered bugs for a Work Unit, optionally promoting to WU',
+  inputSchema: z.object({
+    wu: z.string().describe('WU ID to triage discoveries for'),
+    promote: z.string().optional().describe('Memory node ID to promote to Bug WU'),
+    lane: z.string().optional().describe('Lane for promoted Bug WU'),
+  }),
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.promote) args.push('--promote', input.promote as string);
+    if (input.lane) args.push('--lane', input.lane as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:triage', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:triage failed',
+        MemoryErrorCodes.MEM_TRIAGE_ERROR,
+      );
+    }
+  },
+};
+
 /**
  * All available tools
  */
@@ -1054,4 +1855,27 @@ export const allTools: ToolDefinition[] = [
   wuValidateTool,
   wuInferLaneTool,
   wuUnlockLaneTool,
+  // WU-1424: Initiative tools
+  initiativeListTool,
+  initiativeStatusTool,
+  initiativeCreateTool,
+  initiativeEditTool,
+  initiativeAddWuTool,
+  initiativeRemoveWuTool,
+  initiatiBulkAssignTool,
+  initiativePlanTool,
+  // WU-1424: Memory tools
+  memInitTool,
+  memStartTool,
+  memReadyTool,
+  memCheckpointTool,
+  memCleanupTool,
+  memContextTool,
+  memCreateTool,
+  memDeleteTool,
+  memExportTool,
+  memInboxTool,
+  memSignalTool,
+  memSummarizeTool,
+  memTriageTool,
 ];
