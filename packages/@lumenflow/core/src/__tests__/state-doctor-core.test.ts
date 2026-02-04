@@ -415,4 +415,245 @@ describe('state-doctor-core', () => {
       expect(issue.suggestion).toBeDefined();
     });
   });
+
+  describe('status mismatch detection (WU-1420)', () => {
+    it('should detect when YAML status is ready but state store says in_progress', async () => {
+      // WU YAML says 'ready' but events show it was claimed (in_progress) without release
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(false);
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+      expect(result.issues[0].wuId).toBe('WU-100');
+      expect(result.issues[0].severity).toBe(ISSUE_SEVERITY.WARNING);
+      expect(result.issues[0].canAutoFix).toBe(true);
+      expect(result.issues[0].description).toContain('ready');
+      expect(result.issues[0].description).toContain('in_progress');
+    });
+
+    it('should detect when YAML status is in_progress but state store says ready', async () => {
+      // WU YAML says 'in_progress' but events show it was released
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'in_progress', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi.fn().mockResolvedValue([
+          { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          { wuId: 'WU-100', type: 'release', reason: 'Orphan cleanup' },
+        ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(false);
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+      expect(result.issues[0].wuId).toBe('WU-100');
+      expect(result.issues[0].description).toContain('in_progress');
+      expect(result.issues[0].description).toContain('ready');
+    });
+
+    it('should detect when YAML status is in_progress but state store says done', async () => {
+      // WU YAML says 'in_progress' but events show complete
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'in_progress', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listStamps: vi.fn().mockResolvedValue(['WU-100']),
+        listEvents: vi.fn().mockResolvedValue([
+          { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          { wuId: 'WU-100', type: 'complete' },
+        ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(false);
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+      expect(result.issues[0].wuId).toBe('WU-100');
+      expect(result.issues[0].description).toContain('in_progress');
+      expect(result.issues[0].description).toContain('done');
+    });
+
+    it('should not flag when YAML status matches state store derived status', async () => {
+      // Consistent: WU claimed, YAML says in_progress, events say in_progress
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'in_progress', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(true);
+      expect(result.issues).toHaveLength(0);
+    });
+
+    it('should not flag WUs with no events (not in state store)', async () => {
+      // WU exists in YAML but has no events - this is fine for ready WUs
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi.fn().mockResolvedValue([]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(true);
+      expect(result.issues).toHaveLength(0);
+    });
+
+    it('should include status mismatch count in summary', async () => {
+      const deps = createMockDeps({
+        listWUs: vi.fn().mockResolvedValue([
+          { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU 1' },
+          { id: 'WU-101', status: 'ready', lane: 'Framework: Core', title: 'Test WU 2' },
+        ]),
+        listEvents: vi.fn().mockResolvedValue([
+          { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU 1' },
+          { wuId: 'WU-101', type: 'claim', lane: 'Framework: Core', title: 'Test WU 2' },
+        ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.summary.statusMismatches).toBe(2);
+      expect(result.summary.totalIssues).toBe(2);
+    });
+  });
+
+  describe('status mismatch --fix behavior (WU-1420)', () => {
+    it('should emit release event when YAML=ready but state=in_progress', async () => {
+      const emitEvent = vi.fn().mockResolvedValue(undefined);
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        emitEvent,
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps, { fix: true });
+
+      expect(emitEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wuId: 'WU-100',
+          type: 'release',
+          reason: expect.stringContaining('state:doctor'),
+        }),
+      );
+      expect(result.fixed).toHaveLength(1);
+      expect(result.fixed[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+    });
+
+    it('should emit complete event when YAML=done but state=in_progress', async () => {
+      const emitEvent = vi.fn().mockResolvedValue(undefined);
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'done', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listStamps: vi.fn().mockResolvedValue(['WU-100']),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        emitEvent,
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps, { fix: true });
+
+      expect(emitEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wuId: 'WU-100',
+          type: 'complete',
+        }),
+      );
+      expect(result.fixed).toHaveLength(1);
+      expect(result.fixed[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+    });
+
+    it('should not fix status mismatch in dry-run mode', async () => {
+      const emitEvent = vi.fn();
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        emitEvent,
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps, { fix: true, dryRun: true });
+
+      expect(emitEvent).not.toHaveBeenCalled();
+      expect(result.wouldFix).toHaveLength(1);
+      expect(result.wouldFix?.[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+    });
+
+    it('should handle fix errors gracefully for status mismatch', async () => {
+      const emitEvent = vi.fn().mockRejectedValue(new Error('Write failed'));
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'ready', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi
+          .fn()
+          .mockResolvedValue([
+            { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        emitEvent,
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps, { fix: true });
+
+      expect(result.fixed).toHaveLength(0);
+      expect(result.fixErrors).toHaveLength(1);
+      expect(result.fixErrors[0].wuId).toBe('WU-100');
+      expect(result.fixErrors[0].error).toContain('Write failed');
+    });
+  });
 });

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * State Doctor CLI (WU-1209)
+ * State Doctor CLI (WU-1209, WU-1420)
  *
  * Integrity checker for LumenFlow state that detects:
  * - Orphaned WUs (done status but no stamp)
  * - Dangling signals (reference non-existent WUs)
  * - Broken memory relationships (events for missing WU specs)
+ * - Status mismatches between WU YAML and state store (WU-1420)
  *
  * Inspired by Beads bd doctor command.
  *
@@ -377,6 +378,8 @@ function getIssueTypeLabel(type: string): string {
       return 'Dangling Signal';
     case ISSUE_TYPES.BROKEN_EVENT:
       return 'Broken Event';
+    case ISSUE_TYPES.STATUS_MISMATCH:
+      return 'Status Mismatch';
     default:
       return type;
   }
@@ -387,10 +390,11 @@ function getIssueTypeLabel(type: string): string {
  */
 function printSummary(result: StateDiagnosis): void {
   console.log('=== Summary ===');
-  console.log(`  Orphaned WUs:     ${result.summary.orphanedWUs}`);
-  console.log(`  Dangling Signals: ${result.summary.danglingSignals}`);
-  console.log(`  Broken Events:    ${result.summary.brokenEvents}`);
-  console.log(`  Total Issues:     ${result.summary.totalIssues}`);
+  console.log(`  Orphaned WUs:      ${result.summary.orphanedWUs}`);
+  console.log(`  Dangling Signals:  ${result.summary.danglingSignals}`);
+  console.log(`  Broken Events:     ${result.summary.brokenEvents}`);
+  console.log(`  Status Mismatches: ${result.summary.statusMismatches}`);
+  console.log(`  Total Issues:      ${result.summary.totalIssues}`);
 }
 
 /**

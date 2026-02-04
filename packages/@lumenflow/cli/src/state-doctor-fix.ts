@@ -1,5 +1,5 @@
 /**
- * State Doctor Fix Operations (WU-1230)
+ * State Doctor Fix Operations (WU-1230, WU-1420)
  *
  * Provides fix dependencies for state:doctor --fix that use micro-worktree
  * isolation for all tracked file changes. This ensures:
@@ -8,6 +8,7 @@
  * 2. Removal of stale WU references from backlog.md and status.md
  * 3. All changes pushed via merge, not direct file modification
  * 4. WU-1362: Retry logic for push failures (inherited from withMicroWorktree)
+ * 5. WU-1420: Emit corrective events to reconcile YAML vs state store mismatches
  *
  * Retry behavior is configured via .lumenflow.config.yaml git.push_retry section.
  * Default: 3 retries with exponential backoff and jitter.
@@ -19,7 +20,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import type { StateDoctorDeps } from '@lumenflow/core/dist/state-doctor-core.js';
+import type { StateDoctorDeps, EmitEventPayload } from '@lumenflow/core/dist/state-doctor-core.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
 
 /**
@@ -82,12 +83,15 @@ async function readFileSafe(filePath: string): Promise<string> {
  * WU-1230: All file modifications happen in a micro-worktree and are pushed
  * to origin/main via merge. This prevents direct modifications to local main.
  *
+ * WU-1420: Includes emitEvent for fixing status mismatches by emitting
+ * corrective events (release, complete) to reconcile state store with YAML.
+ *
  * @param baseDir - Project base directory
  * @returns Partial StateDoctorDeps with fix operations
  */
 export function createStateDoctorFixDeps(
   _baseDir: string,
-): Pick<StateDoctorDeps, 'removeSignal' | 'removeEvent' | 'createStamp'> {
+): Pick<StateDoctorDeps, 'removeSignal' | 'removeEvent' | 'createStamp' | 'emitEvent'> {
   return {
     /**
      * Remove a signal by ID using micro-worktree isolation
@@ -214,6 +218,41 @@ export function createStateDoctorFixDeps(
           return {
             commitMessage: `fix(state-doctor): create missing stamp for ${wuId}`,
             files: [`.lumenflow/stamps/${wuId}.done`],
+          };
+        },
+      });
+    },
+
+    /**
+     * Emit a corrective event to fix status mismatch (WU-1420)
+     *
+     * Appends a release or complete event to wu-events.jsonl to reconcile
+     * the state store with the WU YAML status.
+     */
+    emitEvent: async (event: EmitEventPayload): Promise<void> => {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: `emit-event-${event.wuId.toLowerCase()}-${event.type}`,
+        logPrefix: LOG_PREFIX,
+        pushOnly: true,
+        execute: async ({ worktreePath }) => {
+          const eventsPath = path.join(worktreePath, WU_EVENTS_FILE);
+
+          // Build the event object
+          const eventLine = JSON.stringify({
+            wuId: event.wuId,
+            type: event.type,
+            reason: event.reason,
+            timestamp: event.timestamp || new Date().toISOString(),
+          });
+
+          // Append to events file (create if needed)
+          await fs.mkdir(path.dirname(eventsPath), { recursive: true });
+          await fs.appendFile(eventsPath, eventLine + '\n', 'utf-8');
+
+          return {
+            commitMessage: `fix(state-doctor): emit ${event.type} event for ${event.wuId} to reconcile state`,
+            files: [WU_EVENTS_FILE],
           };
         },
       });
