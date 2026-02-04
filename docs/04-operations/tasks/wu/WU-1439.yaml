@@ -2,7 +2,7 @@ id: WU-1439
 title: Regenerate CLI docs after public manifest update
 lane: 'Framework: CLI'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -26,6 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: public CLI manifest changed (remove deps:*; add docs:sync/gates:docs). Problem: generated CLI reference and README are stale. Solution: re-run docs:generate and commit updated CLI docs.'
+description: 'Context: public CLI manifest changed (remove deps:*; add docs:sync/gates:docs).
+  Problem: generated CLI reference and README are stale. Solution: re-run docs:generate and commit
+  updated CLI docs.'
 acceptance:
-  - CLI reference and CLI README reflect public manifest (no deps:*; include docs:sync and gates:docs)
+  - CLI reference and CLI README reflect public manifest (no deps:*; include docs:sync and
+    gates:docs)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1439
+claimed_at: 2026-02-04T23:29:11.951Z
+baseline_main_sha: c731e3cc276ce57ee6b154c66145d3ab87d1a0a8
+session_id: 237f53d8-f905-4a77-8ba1-16a05ecbe7c0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T23:29:11.956Z
