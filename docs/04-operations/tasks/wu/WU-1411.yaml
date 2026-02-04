@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/core/src/wu-list.ts
   - packages/@lumenflow/core/src/index.ts
 tests:
-  manual: []
+  manual:
+    - 'Verify listWUs returns WUs from state store with YAML metadata merged'
+    - 'Verify status filter correctly filters WU list'
+    - 'Verify lane filter correctly filters WU list'
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
   e2e: []
@@ -21,7 +24,11 @@ phase: 1
 spec_refs:
   - lumenflow://plans/WU-1411-plan.md
 risks: []
-notes: ''
+notes: |
+  Implementation uses WUStateStore for runtime status and YAML for metadata.
+  Status precedence: state store > YAML (state store is more current).
+  Gracefully handles missing directories and invalid YAML files.
+  Uses wuDir/stateDir overrides for testing with virtual filesystems (memfs).
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
