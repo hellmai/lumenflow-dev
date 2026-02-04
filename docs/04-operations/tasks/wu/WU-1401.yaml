@@ -15,13 +15,23 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1401.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1401-plan.md
 risks: []
-notes: ''
+notes: Adds explicit enforcement fix steps for husky/safe-git, uses lumenflow-doctor command, and
+  requires initiative creation for multi-phase projects.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T00:19:46.487Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1401
+session_id: 20b86e34-8a28-456e-a16a-7bca7387267d
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T00:19:46.492Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,13 +43,3 @@ acceptance:
     as blockers
   - Quickstart includes explicit fix commands for Husky and safe-git, gated by user approval
   - Quickstart requires initiative creation when user indicates multi-phase or vision
-spec_refs:
-  - lumenflow://plans/WU-1401-plan.md
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1401
-claimed_at: 2026-02-04T00:19:46.487Z
-baseline_main_sha: 4edebb24d70036398140b5c45632ce6496ca7b8b
-session_id: 20b86e34-8a28-456e-a16a-7bca7387267d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T00:19:46.492Z
