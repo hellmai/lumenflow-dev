@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 
 ## Completed
@@ -369,3 +368,4 @@ _Last updated: 2026-02-04_
 - [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml) — 2026-02-04
 - [WU-1410 — Improve forbidden commands docs and safe alternatives](wu/WU-1410.yaml) — 2026-02-04
 - [WU-1411 — Add listWUs helper to core](wu/WU-1411.yaml) — 2026-02-04
+- [WU-1414 — Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App](wu/WU-1414.yaml) — 2026-02-04
