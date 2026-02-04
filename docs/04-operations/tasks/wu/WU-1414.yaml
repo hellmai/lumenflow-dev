@@ -2,7 +2,7 @@ id: WU-1414
 title: Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -28,7 +28,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1408 added auto-scaffolding of safe-git and pre-commit to lumenflow init. The GitHub App was developed separately and is completely out of sync with current CLI (wrong stamp paths, wrong WU types, PR-based workflow). Problem: (1) Starlight docs tell users NOT to install Husky/safe-git when init now handles this automatically, (2) GitHub App references point to non-existent/outdated functionality that would not work with current LumenFlow. Solution: (1) Update quickstart.mdx, existing-projects.mdx, solo-workflow.mdx for auto-scaffolding reality, (2) Remove all GitHub App references from lumenflow.dev, (3) Delete apps/github-app/ directory, (4) Update internal docs to CLI-only distribution model.'
+description: 'Context: WU-1408 added auto-scaffolding of safe-git and pre-commit to lumenflow init.
+  The GitHub App was developed separately and is completely out of sync with current CLI (wrong
+  stamp paths, wrong WU types, PR-based workflow). Problem: (1) Starlight docs tell users NOT to
+  install Husky/safe-git when init now handles this automatically, (2) GitHub App references point
+  to non-existent/outdated functionality that would not work with current LumenFlow. Solution: (1)
+  Update quickstart.mdx, existing-projects.mdx, solo-workflow.mdx for auto-scaffolding reality, (2)
+  Remove all GitHub App references from lumenflow.dev, (3) Delete apps/github-app/ directory, (4)
+  Update internal docs to CLI-only distribution model.'
 acceptance:
   - quickstart.mdx no longer says 'do not install Husky, copy safe-git'
   - github-app.mdx deleted from apps/docs/
@@ -36,3 +43,11 @@ acceptance:
   - apps/github-app/ directory deleted
   - Internal product docs updated to CLI-only distribution (product-lines.md, DISTRIBUTION.md)
   - existing-projects.mdx and solo-workflow.mdx manual husky instructions removed or updated
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1414
+claimed_at: 2026-02-04T14:09:44.652Z
+baseline_main_sha: db563f06cc0d998e97b31d63b85fecdeb7b0d4bc
+session_id: 2f4d5f80-0f02-49b4-8a16-5efe033472c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T14:09:44.658Z
