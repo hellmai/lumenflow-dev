@@ -735,4 +735,5 @@
 {"type":"complete","wuId":"WU-1407","timestamp":"2026-02-04T12:53:43.654Z"}
 {"type":"claim","wuId":"WU-1409","timestamp":"2026-02-04T13:07:25.172Z","lane":"Content: Documentation","title":"Require --help before unknown commands"}
 {"type":"complete","wuId":"WU-1409","timestamp":"2026-02-04T13:09:25.104Z"}
-{"type":"claim","wuId":"WU-1408","lane":"Framework: CLI","title":"Bundle safe-git and generate sane pre-commit hook","timestamp":"2026-02-04T13:09:38.462Z"}
+{"type":"claim","wuId":"WU-1408","timestamp":"2026-02-04T13:09:38.462Z","lane":"Framework: CLI","title":"Bundle safe-git and generate sane pre-commit hook"}
+{"type":"complete","wuId":"WU-1408","timestamp":"2026-02-04T13:31:40.190Z"}

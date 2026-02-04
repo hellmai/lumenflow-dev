@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml)
 
 ## Completed
 
@@ -365,3 +364,4 @@ _Last updated: 2026-02-04_
 - [WU-1406 — Forbid template-selection questions during setup](wu/WU-1406.yaml) — 2026-02-04
 - [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml) — 2026-02-04
 - [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml) — 2026-02-04
+- [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml) — 2026-02-04
