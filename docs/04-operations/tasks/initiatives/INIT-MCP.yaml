@@ -18,3 +18,4 @@ success_metrics:
   - lumenflow_wu_list returns merged state + YAML metadata
   - lumenflow init --client claude|all writes .mcp.json
 labels: []
+related_plan: lumenflow://plans/partitioned-foraging-ocean.md
