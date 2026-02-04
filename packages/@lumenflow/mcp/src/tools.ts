@@ -13,6 +13,11 @@
  * WU-1425: Agent tools: agent_session, agent_session_end, agent_log_issue, agent_issues_query
  *          Orchestration tools: orchestrate_initiative, orchestrate_init_status, orchestrate_monitor
  *          Spawn tools: spawn_list
+ * WU-1426: Flow/Metrics tools: flow_bottlenecks, flow_report, metrics_snapshot
+ *          Validation tools: validate, validate_agent_skills, validate_agent_sync,
+ *          validate_backlog_sync, validate_skills_spec
+ *          Setup tools: lumenflow_init, lumenflow_doctor, lumenflow_integrate, lumenflow_upgrade,
+ *          lumenflow_commands, lumenflow_docs_sync, lumenflow_release, lumenflow_sync_templates
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  *
  * Architecture:
@@ -99,6 +104,25 @@ const ErrorCodes = {
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
   WU_INFER_LANE_ERROR: 'WU_INFER_LANE_ERROR',
   WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
+  // WU-1426: Flow/Metrics error codes
+  FLOW_BOTTLENECKS_ERROR: 'FLOW_BOTTLENECKS_ERROR',
+  FLOW_REPORT_ERROR: 'FLOW_REPORT_ERROR',
+  METRICS_SNAPSHOT_ERROR: 'METRICS_SNAPSHOT_ERROR',
+  // WU-1426: Validation error codes
+  VALIDATE_ERROR: 'VALIDATE_ERROR',
+  VALIDATE_AGENT_SKILLS_ERROR: 'VALIDATE_AGENT_SKILLS_ERROR',
+  VALIDATE_AGENT_SYNC_ERROR: 'VALIDATE_AGENT_SYNC_ERROR',
+  VALIDATE_BACKLOG_SYNC_ERROR: 'VALIDATE_BACKLOG_SYNC_ERROR',
+  VALIDATE_SKILLS_SPEC_ERROR: 'VALIDATE_SKILLS_SPEC_ERROR',
+  // WU-1426: Setup error codes
+  LUMENFLOW_INIT_ERROR: 'LUMENFLOW_INIT_ERROR',
+  LUMENFLOW_DOCTOR_ERROR: 'LUMENFLOW_DOCTOR_ERROR',
+  LUMENFLOW_INTEGRATE_ERROR: 'LUMENFLOW_INTEGRATE_ERROR',
+  LUMENFLOW_UPGRADE_ERROR: 'LUMENFLOW_UPGRADE_ERROR',
+  LUMENFLOW_COMMANDS_ERROR: 'LUMENFLOW_COMMANDS_ERROR',
+  LUMENFLOW_DOCS_SYNC_ERROR: 'LUMENFLOW_DOCS_SYNC_ERROR',
+  LUMENFLOW_RELEASE_ERROR: 'LUMENFLOW_RELEASE_ERROR',
+  LUMENFLOW_SYNC_TEMPLATES_ERROR: 'LUMENFLOW_SYNC_TEMPLATES_ERROR',
 } as const;
 
 /**
@@ -109,6 +133,7 @@ const ErrorMessages = {
   LANE_REQUIRED: 'lane is required',
   TITLE_REQUIRED: 'title is required',
   REASON_REQUIRED: 'reason is required',
+  CLIENT_REQUIRED: 'client is required',
 } as const;
 
 /**
@@ -2252,6 +2277,454 @@ export const spawnListTool: ToolDefinition = {
   },
 };
 
+// ============================================================================
+// Flow/Metrics Operations (WU-1426)
+// ============================================================================
+
+/**
+ * flow_bottlenecks - Identify flow bottlenecks
+ */
+export const flowBottlenecksTool: ToolDefinition = {
+  name: 'flow_bottlenecks',
+  description: 'Identify flow bottlenecks in the workflow (WIP violations, stuck WUs, etc.)',
+  inputSchema: z.object({
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.json) args.push(CliArgs.JSON);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('flow:bottlenecks', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Bottleneck analysis complete' });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'flow:bottlenecks failed',
+        ErrorCodes.FLOW_BOTTLENECKS_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * flow_report - Generate flow metrics report
+ */
+export const flowReportTool: ToolDefinition = {
+  name: 'flow_report',
+  description: 'Generate flow metrics report with cycle time, throughput, and other DORA metrics',
+  inputSchema: z.object({
+    since: z.string().optional().describe('Start date or duration (e.g., "7d", "2025-01-01")'),
+    until: z.string().optional().describe('End date (e.g., "now", "2025-01-31")'),
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.since) args.push('--since', input.since as string);
+    if (input.until) args.push('--until', input.until as string);
+    if (input.json) args.push(CliArgs.JSON);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('flow:report', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Flow report generated' });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'flow:report failed',
+        ErrorCodes.FLOW_REPORT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * metrics_snapshot - Capture metrics snapshot
+ */
+export const metricsSnapshotTool: ToolDefinition = {
+  name: 'metrics_snapshot',
+  description: 'Capture a snapshot of current LumenFlow metrics',
+  inputSchema: z.object({
+    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.json) args.push(CliArgs.JSON);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('metrics:snapshot', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Metrics snapshot captured' });
+      }
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'metrics:snapshot failed',
+        ErrorCodes.METRICS_SNAPSHOT_ERROR,
+      );
+    }
+  },
+};
+
+// ============================================================================
+// Validation Operations (WU-1426)
+// ============================================================================
+
+/**
+ * validate - Validate WU YAML files
+ */
+export const validateTool: ToolDefinition = {
+  name: 'validate',
+  description: 'Validate WU YAML files and status consistency',
+  inputSchema: z.object({
+    id: z.string().optional().describe('Specific WU ID to validate'),
+    strict: z.boolean().optional().describe('Fail on warnings too'),
+    done_only: z.boolean().optional().describe('Only validate done WUs'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.id) args.push('--id', input.id as string);
+    if (input.strict) args.push('--strict');
+    if (input.done_only) args.push('--done-only');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Validation passed' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'Validation failed',
+        ErrorCodes.VALIDATE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * validate_agent_skills - Validate agent skill definitions
+ */
+export const validateAgentSkillsTool: ToolDefinition = {
+  name: 'validate_agent_skills',
+  description: 'Validate agent skill definitions in .claude/skills/',
+  inputSchema: z.object({
+    skill: z.string().optional().describe('Specific skill to validate (e.g., "wu-lifecycle")'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.skill) args.push('--skill', input.skill as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate:agent-skills', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'All skills valid' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'validate:agent-skills failed',
+        ErrorCodes.VALIDATE_AGENT_SKILLS_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * validate_agent_sync - Validate agent sync state
+ */
+export const validateAgentSyncTool: ToolDefinition = {
+  name: 'validate_agent_sync',
+  description: 'Validate agent synchronization state',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate:agent-sync', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Agent sync valid' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'validate:agent-sync failed',
+        ErrorCodes.VALIDATE_AGENT_SYNC_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * validate_backlog_sync - Validate backlog synchronization
+ */
+export const validateBacklogSyncTool: ToolDefinition = {
+  name: 'validate_backlog_sync',
+  description: 'Validate backlog synchronization between WU YAMLs and backlog.md',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate:backlog-sync', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Backlog sync valid' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'validate:backlog-sync failed',
+        ErrorCodes.VALIDATE_BACKLOG_SYNC_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * validate_skills_spec - Validate skills specification
+ */
+export const validateSkillsSpecTool: ToolDefinition = {
+  name: 'validate_skills_spec',
+  description: 'Validate skills specification files',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate:skills-spec', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Skills spec valid' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'validate:skills-spec failed',
+        ErrorCodes.VALIDATE_SKILLS_SPEC_ERROR,
+      );
+    }
+  },
+};
+
+// ============================================================================
+// Setup/LumenFlow Operations (WU-1426)
+// ============================================================================
+
+/**
+ * lumenflow_init - Initialize LumenFlow in a project
+ */
+export const lumenflowInitTool: ToolDefinition = {
+  name: 'lumenflow_init',
+  description: 'Initialize LumenFlow workflow framework in a project',
+  inputSchema: z.object({
+    client: z.string().optional().describe('Client type (claude, cursor, windsurf, all)'),
+    merge: z.boolean().optional().describe('Merge into existing files using bounded markers'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.client) args.push('--client', input.client as string);
+    if (input.merge) args.push('--merge');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow:init', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'LumenFlow initialized' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'lumenflow:init failed',
+        ErrorCodes.LUMENFLOW_INIT_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_doctor - Diagnose LumenFlow configuration
+ */
+export const lumenflowDoctorTool: ToolDefinition = {
+  name: 'lumenflow_doctor',
+  description: 'Diagnose LumenFlow configuration and safety components',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow:doctor', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'LumenFlow safety: ACTIVE' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'Doctor found issues',
+        ErrorCodes.LUMENFLOW_DOCTOR_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_integrate - Generate enforcement hooks for a client
+ */
+export const lumenflowIntegrateTool: ToolDefinition = {
+  name: 'lumenflow_integrate',
+  description: 'Generate enforcement hooks for a specific client (e.g., claude-code)',
+  inputSchema: z.object({
+    client: z.string().describe('Client name (claude-code, cursor, etc.)'),
+  }),
+
+  async execute(input, options) {
+    if (!input.client) {
+      return error(ErrorMessages.CLIENT_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--client', input.client as string];
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow:integrate', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Hooks generated' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'lumenflow:integrate failed',
+        ErrorCodes.LUMENFLOW_INTEGRATE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_upgrade - Upgrade LumenFlow packages
+ */
+export const lumenflowUpgradeTool: ToolDefinition = {
+  name: 'lumenflow_upgrade',
+  description: 'Upgrade LumenFlow packages to latest versions',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow:upgrade', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'LumenFlow upgraded' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'lumenflow:upgrade failed',
+        ErrorCodes.LUMENFLOW_UPGRADE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_commands - List all available CLI commands
+ */
+export const lumenflowCommandsTool: ToolDefinition = {
+  name: 'lumenflow_commands',
+  description: 'List all available LumenFlow CLI commands',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow', ['commands'], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Commands listed' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'lumenflow commands failed',
+        ErrorCodes.LUMENFLOW_COMMANDS_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_docs_sync - Sync agent documentation
+ */
+export const lumenflowDocsSyncTool: ToolDefinition = {
+  name: 'lumenflow_docs_sync',
+  description: 'Sync agent documentation after upgrading LumenFlow packages',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('docs:sync', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Docs synced' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'docs:sync failed',
+        ErrorCodes.LUMENFLOW_DOCS_SYNC_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_release - Run release workflow
+ */
+export const lumenflowReleaseTool: ToolDefinition = {
+  name: 'lumenflow_release',
+  description: 'Run LumenFlow release workflow (versioning, npm publish)',
+  inputSchema: z.object({
+    dry_run: z.boolean().optional().describe('Preview release without publishing'),
+  }),
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.dry_run) args.push(CliArgs.DRY_RUN);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('release', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Release complete' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'release failed',
+        ErrorCodes.LUMENFLOW_RELEASE_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * lumenflow_sync_templates - Sync templates to project
+ */
+export const lumenflowSyncTemplatesTool: ToolDefinition = {
+  name: 'lumenflow_sync_templates',
+  description: 'Sync LumenFlow templates to the project',
+  inputSchema: z.object({}),
+
+  async execute(_input, options) {
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('sync:templates', [], cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Templates synced' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'sync:templates failed',
+        ErrorCodes.LUMENFLOW_SYNC_TEMPLATES_ERROR,
+      );
+    }
+  },
+};
+
 /**
  * All available tools
  */
@@ -2314,4 +2787,23 @@ export const allTools: ToolDefinition[] = [
   orchestrateMonitorTool,
   // WU-1425: Spawn tools
   spawnListTool,
+  // WU-1426: Flow/Metrics tools
+  flowBottlenecksTool,
+  flowReportTool,
+  metricsSnapshotTool,
+  // WU-1426: Validation tools
+  validateTool,
+  validateAgentSkillsTool,
+  validateAgentSyncTool,
+  validateBacklogSyncTool,
+  validateSkillsSpecTool,
+  // WU-1426: Setup tools
+  lumenflowInitTool,
+  lumenflowDoctorTool,
+  lumenflowIntegrateTool,
+  lumenflowUpgradeTool,
+  lumenflowCommandsTool,
+  lumenflowDocsSyncTool,
+  lumenflowReleaseTool,
+  lumenflowSyncTemplatesTool,
 ];
