@@ -7,9 +7,8 @@ priority: P2
 created: 2026-02-04
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/cli/src/wu-create-validators.ts
-  - packages/@lumenflow/cli/src/arg-parser.ts
-  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/core/src/wu-create-validators.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
 tests:
   manual:
     - Run wu:create with empty spec_refs array for feature type and verify error
