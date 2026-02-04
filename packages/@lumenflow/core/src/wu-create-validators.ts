@@ -226,6 +226,16 @@ export function hasExternalSpecRefs(specRefs: string[]): boolean {
 }
 
 /**
+ * WU-1429: Check if spec_refs is non-empty
+ *
+ * @param {string[]|undefined} specRefs - Array of spec reference paths
+ * @returns {boolean} True if spec_refs contains at least one entry
+ */
+export function hasSpecRefs(specRefs: string[] | undefined): boolean {
+  return Array.isArray(specRefs) && specRefs.length > 0;
+}
+
+/**
  * WU-1062: Normalize all spec_refs paths
  *
  * Expands external paths to absolute paths while keeping repo-relative paths unchanged.
