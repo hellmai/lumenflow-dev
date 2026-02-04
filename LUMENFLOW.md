@@ -114,7 +114,7 @@ When `requireRemote: true` (default):
 
 ## Core Principles
 
-1. **Design-First**: Question requirements, delete unnecessary, simplify before optimizing (load `/skill design-first`)
+1. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
 2. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
 3. **Library-First**: Search existing libraries before custom code
 4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
