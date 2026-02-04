@@ -8,3 +8,4 @@ created: 2026-02-04
 phases: []
 success_metrics: []
 labels: []
+related_plan: lumenflow://plans/partitioned-foraging-ocean.md
