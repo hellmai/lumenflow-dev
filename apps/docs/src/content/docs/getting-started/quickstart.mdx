@@ -52,23 +52,24 @@ Stop after creating the next artifact. Do not claim a WU without explicit approv
 
 If a command is not listed here, do not run it in Session 0.
 
-| Command                                                | Purpose                                |
-| ------------------------------------------------------ | -------------------------------------- |
-| `node --version`                                       | Verify toolchain                       |
-| `pnpm --version`                                       | Verify toolchain                       |
-| `git --version`                                        | Verify toolchain                       |
-| `git init`                                             | New project only                       |
-| `pnpm add -D @lumenflow/cli`                           | Install LumenFlow CLI                  |
-| `pnpm exec lumenflow --full --client <client>`         | Initialize LumenFlow (new repos)       |
-| `pnpm exec lumenflow --full --client <client> --merge` | Initialize LumenFlow (existing repos)  |
-| `pnpm exec lumenflow-doctor`                           | Verify enforcement (errors block)      |
-| `pnpm wu:create --help`                                | Verify scripts were injected           |
-| `pnpm initiative:create ...`                           | Create an initiative                   |
-| `pnpm initiative:edit ...`                             | Add initiative phases                  |
-| `pnpm wu:create ...`                                   | Create first WU                        |
-| `pnpm wu:status --id WU-XXX`                           | Confirm WU status                      |
-| `pnpm wu:claim --id WU-XXX --lane "..."`               | Only if user explicitly says "proceed" |
-| `git add -A && git commit -m "..."`                    | Commit scaffold/LumenFlow setup only   |
+| Command                                                | Purpose                                     |
+| ------------------------------------------------------ | ------------------------------------------- |
+| `node --version`                                       | Verify toolchain                            |
+| `pnpm --version`                                       | Verify toolchain                            |
+| `git --version`                                        | Verify toolchain                            |
+| `git init`                                             | New project only                            |
+| `pnpm init -y`                                         | Only if no `package.json` and user approved |
+| `pnpm add -D @lumenflow/cli`                           | Install LumenFlow CLI                       |
+| `pnpm exec lumenflow --full --client <client>`         | Initialize LumenFlow (new repos)            |
+| `pnpm exec lumenflow --full --client <client> --merge` | Initialize LumenFlow (existing repos)       |
+| `pnpm exec lumenflow-doctor`                           | Verify enforcement (errors block)           |
+| `pnpm wu:create --help`                                | Verify scripts were injected                |
+| `pnpm initiative:create ...`                           | Create an initiative                        |
+| `pnpm initiative:edit ...`                             | Add initiative phases                       |
+| `pnpm wu:create ...`                                   | Create first WU                             |
+| `pnpm wu:status --id WU-XXX`                           | Confirm WU status                           |
+| `pnpm wu:claim --id WU-XXX --lane "..."`               | Only if user explicitly says "proceed"      |
+| `git add -A && git commit -m "..."`                    | Commit scaffold/LumenFlow setup only        |
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 
@@ -89,9 +90,10 @@ git --version    # Requires 2.0.0+
    git init
    ```
 
-   <Aside type="caution" title="Avoid pnpm init by default">
-     Do not run `pnpm init` unless the user explicitly asked for a bare Node project. LumenFlow does
-     not require it.
+   <Aside type="caution" title="Non-Node projects still need a package.json">
+     For .NET, Go, Python, etc., LumenFlow uses `package.json` only to install the CLI and scripts.
+     If there is no `package.json`, ask permission to run `pnpm init -y`. Do not scaffold a Node
+     stack or change the project's framework.
    </Aside>
 
 3. **Scaffold a tech stack only if the user explicitly asked**
@@ -276,21 +278,22 @@ Copy this template and fill in the values:
 
 These actions will break the workflow.
 
-| Do Not                                   | Instead                                    |
-| ---------------------------------------- | ------------------------------------------ |
-| Work on main branch                      | Work in a worktree after `wu:claim`        |
-| Manually create WU YAML files            | Use `pnpm wu:create`                       |
-| Manually edit WU YAML status             | Use `pnpm wu:edit --status`                |
-| Use `git worktree add` directly          | Use `pnpm wu:claim`                        |
-| Run `wu:done` from a worktree            | Run from main checkout                     |
-| Use `--no-verify` to skip hooks          | Fix hook failures properly                 |
-| Manually edit backlog.md or status.md    | Let CLI regenerate from state              |
-| Manually edit `.lumenflow.config.yaml`   | Use CLI commands and `lumenflow-doctor`    |
-| Run `pnpm init` by default               | Only if user requested a bare Node project |
-| Ask more than 2 setup questions          | Use defaults; ask only essential questions |
-| Scaffold tech stack after LumenFlow init | Scaffold before init, or skip              |
-| Write feature code before a WU exists    | Create a WU first                          |
-| Continue after Session 0                 | Stop, hand off, and wait                   |
+| Do Not                                   | Instead                                        |
+| ---------------------------------------- | ---------------------------------------------- |
+| Work on main branch                      | Work in a worktree after `wu:claim`            |
+| Manually create WU YAML files            | Use `pnpm wu:create`                           |
+| Manually edit WU YAML status             | Use `pnpm wu:edit --status`                    |
+| Use `git worktree add` directly          | Use `pnpm wu:claim`                            |
+| Run `wu:done` from a worktree            | Run from main checkout                         |
+| Use `--no-verify` to skip hooks          | Fix hook failures properly                     |
+| Manually edit backlog.md or status.md    | Let CLI regenerate from state                  |
+| Manually edit `.lumenflow.config.yaml`   | Use CLI commands and `lumenflow-doctor`        |
+| Run `pnpm init` by default               | Only if user requested a bare Node project     |
+| Ask more than 2 setup questions          | Use defaults; ask only essential questions     |
+| Scaffold a Node stack for non-Node repo  | Only scaffold the framework the user asked for |
+| Scaffold tech stack after LumenFlow init | Scaffold before init, or skip                  |
+| Write feature code before a WU exists    | Create a WU first                              |
+| Continue after Session 0                 | Stop, hand off, and wait                       |
 
 ---
 
