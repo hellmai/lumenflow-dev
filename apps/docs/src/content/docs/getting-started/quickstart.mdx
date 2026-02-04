@@ -38,37 +38,21 @@ You are here to set up LumenFlow. That is your **only** job in the setup phase.
 
 If you don't know the user's client, ask before running init. If their client isn't listed, use `--client none` for generic files only.
 
-<Aside type="danger" title="Enforcement warnings are blockers">
-  If init or `lumenflow-doctor` reports errors (e.g., Husky hooks not installed, safe-git missing),
-  do not declare setup complete. Surface the errors, ask the user to resolve or acknowledge, and
-  stop.
+<Aside type="danger" title="Enforcement errors = setup incomplete">
+  If `lumenflow-doctor` reports errors, setup is incomplete. Do not proceed to work.
 </Aside>
 
 ## If `lumenflow-doctor` reports errors
 
-Stop and ask for approval before fixing anything. If the user approves, only run the fixes below:
+Setup is incomplete. Do not install Husky, copy safe-git, or edit hooks during setup.
 
-**Husky hooks (required):**
+1. Tell the user: "Setup incomplete—enforcement failed (Husky/safe-git). Creating a WU to fix this."
+2. Create a WU: `pnpm wu:create --lane "Operations: Infrastructure" --title "Fix LumenFlow enforcement" --type refactor`
+3. Stop. Do not proceed to create feature WUs or claim work.
 
-```bash
-pnpm add -D husky
-pnpm exec husky init
-```
+If the user explicitly accepts incomplete enforcement, record that in the WU notes and stop anyway. No repo writes occur after setup completes.
 
-**Safe-git wrapper (required):**
-
-```bash
-mkdir -p scripts
-cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git
-chmod +x scripts/safe-git
-```
-
-If the safe-git file is missing, stop and ask for direction. Do not guess or search for alternate paths.
-
-Re-run `pnpm exec lumenflow-doctor`. If errors remain, stop and ask for direction.
-
-Lane overlap warnings are not fixed during setup. Create a follow-up WU later. Do not edit
-`.lumenflow.config.yaml` during setup.
+**Lane overlap warnings:** Informational only. Do not edit `.lumenflow.config.yaml` during setup.
 
 ## Decide the next step (with the user)
 
@@ -111,11 +95,6 @@ If a command is not listed here, do not run it during setup.
 | `pnpm exec lumenflow-doctor`                                   | Verify enforcement (errors block)            |
 | `pnpm exec lumenflow-doctor --deep`                            | Optional: extended WU validation             |
 | `pnpm wu:create --help`                                        | Verify scripts were injected                 |
-| `pnpm add -D husky`                                            | Fix enforcement (only with approval)         |
-| `pnpm exec husky init`                                         | Fix enforcement (only with approval)         |
-| `mkdir -p scripts`                                             | Fix enforcement (only with approval)         |
-| `cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git` | Fix enforcement (only with approval)         |
-| `chmod +x scripts/safe-git`                                    | Fix enforcement (only with approval)         |
 | `pnpm exec lumenflow-integrate --client claude-code`           | Claude Code only: generate enforcement hooks |
 | `pnpm exec initiative-create ...`                              | Create an initiative                         |
 | `pnpm exec initiative-edit ...`                                | Add initiative phases                        |
