@@ -38,38 +38,80 @@ You are here to set up LumenFlow. That is your **only** job in Session 0.
   stop.
 </Aside>
 
+## If `lumenflow-doctor` reports errors
+
+Stop and ask for approval before fixing anything. If the user approves, only run the fixes below:
+
+**Husky hooks (required):**
+
+```bash
+pnpm add -D husky
+pnpm exec husky init
+```
+
+**Safe-git wrapper (required):**
+
+```bash
+mkdir -p scripts
+cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git
+chmod +x scripts/safe-git
+```
+
+Re-run `pnpm exec lumenflow-doctor`. If errors remain, stop and ask for direction.
+
+Lane overlap warnings are not fixed in Session 0. Create a follow-up WU later. Do not edit
+`.lumenflow.config.yaml` in Session 0.
+
 ## Decide the next step (with the user)
 
 Use this ladder after setup:
 
-1. **Multi-phase vision or roadmap** → Create an Initiative, then a Discovery WU to translate it into a small backlog.
+1. **Multi-phase vision or roadmap** → Create an Initiative first, then a Discovery WU to translate it into a small backlog.
 2. **Clear single task** → Create one concrete WU for that task.
 3. **Unclear or exploratory** → Create a Discovery WU: "Define next steps after LumenFlow setup."
 
 Stop after creating the next artifact. Do not claim a WU without explicit approval.
 
+If the user says the project is multi-phase or shares a vision doc, create an Initiative before any WU:
+
+```bash
+pnpm initiative:create \
+  --id INIT-001 \
+  --slug "project-name" \
+  --title "Project Name" \
+  --owner "team@example.com"
+
+pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: MVP"
+pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core"
+```
+
 ## Allowed commands (Session 0 only)
 
 If a command is not listed here, do not run it in Session 0.
 
-| Command                                                | Purpose                                     |
-| ------------------------------------------------------ | ------------------------------------------- |
-| `node --version`                                       | Verify toolchain                            |
-| `pnpm --version`                                       | Verify toolchain                            |
-| `git --version`                                        | Verify toolchain                            |
-| `git init`                                             | New project only                            |
-| `pnpm init -y`                                         | Only if no `package.json` and user approved |
-| `pnpm add -D @lumenflow/cli`                           | Install LumenFlow CLI                       |
-| `pnpm exec lumenflow --full --client <client>`         | Initialize LumenFlow (new repos)            |
-| `pnpm exec lumenflow --full --client <client> --merge` | Initialize LumenFlow (existing repos)       |
-| `pnpm exec lumenflow-doctor`                           | Verify enforcement (errors block)           |
-| `pnpm wu:create --help`                                | Verify scripts were injected                |
-| `pnpm initiative:create ...`                           | Create an initiative                        |
-| `pnpm initiative:edit ...`                             | Add initiative phases                       |
-| `pnpm wu:create ...`                                   | Create first WU                             |
-| `pnpm wu:status --id WU-XXX`                           | Confirm WU status                           |
-| `pnpm wu:claim --id WU-XXX --lane "..."`               | Only if user explicitly says "proceed"      |
-| `git add -A && git commit -m "..."`                    | Commit scaffold/LumenFlow setup only        |
+| Command                                                        | Purpose                                     |
+| -------------------------------------------------------------- | ------------------------------------------- |
+| `node --version`                                               | Verify toolchain                            |
+| `pnpm --version`                                               | Verify toolchain                            |
+| `git --version`                                                | Verify toolchain                            |
+| `git init`                                                     | New project only                            |
+| `pnpm init -y`                                                 | Only if no `package.json` and user approved |
+| `pnpm add -D @lumenflow/cli`                                   | Install LumenFlow CLI                       |
+| `pnpm exec lumenflow --full --client <client>`                 | Initialize LumenFlow (new repos)            |
+| `pnpm exec lumenflow --full --client <client> --merge`         | Initialize LumenFlow (existing repos)       |
+| `pnpm exec lumenflow-doctor`                                   | Verify enforcement (errors block)           |
+| `pnpm wu:create --help`                                        | Verify scripts were injected                |
+| `pnpm add -D husky`                                            | Fix enforcement (only with approval)        |
+| `pnpm exec husky init`                                         | Fix enforcement (only with approval)        |
+| `mkdir -p scripts`                                             | Fix enforcement (only with approval)        |
+| `cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git` | Fix enforcement (only with approval)        |
+| `chmod +x scripts/safe-git`                                    | Fix enforcement (only with approval)        |
+| `pnpm initiative:create ...`                                   | Create an initiative                        |
+| `pnpm initiative:edit ...`                                     | Add initiative phases                       |
+| `pnpm wu:create ...`                                           | Create first WU                             |
+| `pnpm wu:status --id WU-XXX`                                   | Confirm WU status                           |
+| `pnpm wu:claim --id WU-XXX --lane "..."`                       | Only if user explicitly says "proceed"      |
+| `git add -A && git commit -m "..."`                            | Commit scaffold/LumenFlow setup only        |
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 
@@ -289,6 +331,8 @@ These actions will break the workflow.
 | Manually edit backlog.md or status.md    | Let CLI regenerate from state                  |
 | Manually edit `.lumenflow.config.yaml`   | Use CLI commands and `lumenflow-doctor`        |
 | Run `pnpm init` by default               | Only if user requested a bare Node project     |
+| Run `pnpm exec lumenflow doctor`         | Use `pnpm exec lumenflow-doctor`               |
+| Fix enforcement without approval         | Ask, then apply explicit fixes if approved     |
 | Ask more than 2 setup questions          | Use defaults; ask only essential questions     |
 | Scaffold a Node stack for non-Node repo  | Only scaffold the framework the user asked for |
 | Scaffold tech stack after LumenFlow init | Scaffold before init, or skip                  |
