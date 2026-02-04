@@ -1,0 +1,34 @@
+id: WU-1419
+title: wu:recover reset action should emit release event to state store
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-04
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/core/src/wu-state-store.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-state-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1419.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: wu:recover --action reset updates WU YAML status to ready but doesn't emit a release event to the state store. Problem: State store still thinks WU is in_progress, blocking re-claim. Solution: Emit release event when resetting WU status."
+acceptance:
+  - wu:recover --action reset emits release event to state store
+  - State store transitions WU from in_progress to ready on release event
+  - Re-claiming a reset WU succeeds

@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
