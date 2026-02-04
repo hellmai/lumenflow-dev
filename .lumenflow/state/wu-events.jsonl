@@ -744,4 +744,5 @@
 {"type":"claim","wuId":"WU-1412","timestamp":"2026-02-04T14:13:24.272Z","lane":"Framework: CLI","title":"Add @lumenflow/mcp stdio server"}
 {"type":"complete","wuId":"WU-1411","timestamp":"2026-02-04T14:24:40.612Z"}
 {"type":"complete","wuId":"WU-1414","timestamp":"2026-02-04T14:27:06.238Z"}
-{"type":"claim","wuId":"WU-1413","lane":"Framework: CLI","title":"Scaffold .mcp.json in init and document MCP","timestamp":"2026-02-04T14:44:50.796Z"}
+{"type":"claim","wuId":"WU-1413","timestamp":"2026-02-04T14:44:50.796Z","lane":"Framework: CLI","title":"Scaffold .mcp.json in init and document MCP"}
+{"type":"complete","wuId":"WU-1413","timestamp":"2026-02-04T15:05:13.657Z"}
