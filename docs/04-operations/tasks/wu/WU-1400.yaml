@@ -15,13 +15,22 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1400.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1400-plan.md
 risks: []
-notes: ''
+notes: Adds non-Node setup guidance and explicit pnpm init approval rule for LumenFlow CLI installation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T00:08:37.833Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1400
+session_id: c84b80c8-8f5b-4511-a60a-4543e914649a
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T00:08:37.840Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,13 +40,3 @@ acceptance:
   - Quickstart explains how to handle non-Node projects (minimal package.json for LumenFlow only)
   - Allowed commands include pnpm init -y only with explicit user approval
   - Guidance states not to scaffold Node stacks for non-Node frameworks unless asked
-spec_refs:
-  - lumenflow://plans/WU-1400-plan.md
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1400
-claimed_at: 2026-02-04T00:08:37.833Z
-baseline_main_sha: 64fd391797159cfb82f157f9f23cd8cd910c2b21
-session_id: c84b80c8-8f5b-4511-a60a-4543e914649a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T00:08:37.840Z
