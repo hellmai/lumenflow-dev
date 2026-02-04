@@ -1,13 +1,22 @@
 /**
  * @file commands.ts
  * LumenFlow CLI commands discovery feature (WU-1378)
+ * Updated to derive from public-manifest.ts (WU-1432)
  *
  * Provides a way to discover all available CLI commands grouped by category.
  * This helps agents and users find CLI workflows without reading docs.
+ *
+ * The command registry is now derived from the public manifest to ensure
+ * a single source of truth for public commands.
  */
 
 import { createWUParser } from '@lumenflow/core';
 import { runCLI } from './cli-entry-point.js';
+import {
+  getCommandsByCategory,
+  COMMAND_CATEGORIES,
+  type PublicCommand,
+} from './public-manifest.js';
 
 /**
  * Individual command entry
@@ -30,102 +39,86 @@ export interface CommandCategory {
 }
 
 /**
- * Command categories organized by function
- * Based on quick-ref-commands.md structure
+ * Commands that are pnpm scripts, not CLI binaries
+ * These are included in the discovery output but not in the public manifest
  */
-const COMMAND_CATEGORIES: CommandCategory[] = [
-  {
-    name: 'WU Lifecycle',
-    commands: [
-      { name: 'wu:create', description: 'Create new WU spec' },
-      { name: 'wu:claim', description: 'Claim WU and create worktree' },
-      { name: 'wu:prep', description: 'Run gates in worktree, prep for wu:done' },
-      { name: 'wu:done', description: 'Complete WU (merge, stamp, cleanup) from main' },
-      { name: 'wu:edit', description: 'Edit WU spec fields' },
-      { name: 'wu:block', description: 'Block WU with reason' },
-      { name: 'wu:unblock', description: 'Unblock WU' },
-      { name: 'wu:release', description: 'Release orphaned WU (in_progress to ready)' },
-      { name: 'wu:status', description: 'Show WU status, location, valid commands' },
-      { name: 'wu:spawn', description: 'Generate sub-agent spawn prompt' },
-      { name: 'wu:validate', description: 'Validate WU spec' },
-      { name: 'wu:recover', description: 'Analyze and fix WU state inconsistencies' },
-    ],
-  },
+const SCRIPT_COMMANDS: CommandCategory[] = [
   {
     name: 'Gates & Quality',
     commands: [
-      { name: 'gates', description: 'Run all quality gates' },
       { name: 'format', description: 'Format all files (Prettier)' },
       { name: 'lint', description: 'Run ESLint' },
       { name: 'typecheck', description: 'Run TypeScript type checking' },
       { name: 'test', description: 'Run all tests (Vitest)' },
-      { name: 'lane:health', description: 'Check lane config health' },
-    ],
-  },
-  {
-    name: 'Memory & Sessions',
-    commands: [
-      { name: 'mem:init', description: 'Initialize memory for WU' },
-      { name: 'mem:checkpoint', description: 'Save progress checkpoint' },
-      { name: 'mem:signal', description: 'Broadcast coordination signal' },
-      { name: 'mem:inbox', description: 'Check coordination signals' },
-      { name: 'mem:create', description: 'Create memory node (bug discovery)' },
-      { name: 'mem:context', description: 'Get context for current lane/WU' },
-    ],
-  },
-  {
-    name: 'Initiatives',
-    commands: [
-      { name: 'initiative:create', description: 'Create new initiative' },
-      { name: 'initiative:edit', description: 'Edit initiative fields' },
-      { name: 'initiative:list', description: 'List all initiatives' },
-      { name: 'initiative:status', description: 'Show initiative status' },
-      { name: 'initiative:add-wu', description: 'Add WU to initiative' },
-    ],
-  },
-  {
-    name: 'Orchestration',
-    commands: [
-      { name: 'orchestrate:initiative', description: 'Orchestrate initiative execution' },
-      { name: 'orchestrate:init-status', description: 'Compact initiative progress view' },
-      { name: 'orchestrate:monitor', description: 'Monitor spawn/agent activity' },
-      { name: 'spawn:list', description: 'List active spawned agents' },
     ],
   },
   {
     name: 'Setup & Development',
     commands: [
       { name: 'setup', description: 'Install deps and build CLI (first time)' },
-      { name: 'lumenflow', description: 'Initialize LumenFlow in a project' },
-      { name: 'lumenflow:doctor', description: 'Diagnose LumenFlow configuration' },
-      { name: 'lumenflow:upgrade', description: 'Upgrade LumenFlow packages' },
       { name: 'docs:sync', description: 'Sync agent docs (for upgrades)' },
     ],
   },
-  {
-    name: 'Metrics & Flow',
-    commands: [
-      { name: 'flow:report', description: 'Generate flow metrics report' },
-      { name: 'flow:bottlenecks', description: 'Identify flow bottlenecks' },
-      { name: 'metrics:snapshot', description: 'Capture metrics snapshot' },
-    ],
-  },
-  {
-    name: 'State Management',
-    commands: [
-      { name: 'state:doctor', description: 'Diagnose state store issues' },
-      { name: 'state:cleanup', description: 'Clean up stale state data' },
-      { name: 'state:bootstrap', description: 'Bootstrap state store' },
-    ],
-  },
 ];
+
+/**
+ * Build the command registry from the public manifest
+ * Merges manifest commands with script commands for complete discovery
+ */
+function buildCommandRegistry(): CommandCategory[] {
+  const manifestByCategory = getCommandsByCategory();
+  const categories: CommandCategory[] = [];
+
+  // Define category order for consistent output
+  const categoryOrder = [
+    COMMAND_CATEGORIES.WU_LIFECYCLE,
+    COMMAND_CATEGORIES.WU_MAINTENANCE,
+    COMMAND_CATEGORIES.GATES_QUALITY,
+    COMMAND_CATEGORIES.MEMORY_SESSIONS,
+    COMMAND_CATEGORIES.INITIATIVES,
+    COMMAND_CATEGORIES.PLANS,
+    COMMAND_CATEGORIES.ORCHESTRATION,
+    COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    COMMAND_CATEGORIES.METRICS_FLOW,
+    COMMAND_CATEGORIES.STATE_MANAGEMENT,
+  ];
+
+  // Build categories from manifest
+  for (const categoryName of categoryOrder) {
+    const manifestCommands = manifestByCategory.get(categoryName) || [];
+
+    // Convert to CommandEntry format
+    const commands: CommandEntry[] = manifestCommands.map((cmd: PublicCommand) => ({
+      name: cmd.name,
+      description: cmd.description,
+    }));
+
+    // Add script commands for certain categories
+    const scriptCategory = SCRIPT_COMMANDS.find((sc) => sc.name === categoryName);
+    if (scriptCategory) {
+      commands.push(...scriptCategory.commands);
+    }
+
+    if (commands.length > 0) {
+      categories.push({
+        name: categoryName,
+        commands,
+      });
+    }
+  }
+
+  return categories;
+}
+
+// Build registry once at module load
+const COMMAND_REGISTRY = buildCommandRegistry();
 
 /**
  * Get the complete commands registry
  * @returns Array of command categories with their commands
  */
 export function getCommandsRegistry(): CommandCategory[] {
-  return COMMAND_CATEGORIES;
+  return COMMAND_REGISTRY;
 }
 
 /**
@@ -139,7 +132,7 @@ export function formatCommandsOutput(): string {
   lines.push('======================');
   lines.push('');
 
-  for (const category of COMMAND_CATEGORIES) {
+  for (const category of COMMAND_REGISTRY) {
     lines.push(`## ${category.name}`);
     lines.push('');
 
