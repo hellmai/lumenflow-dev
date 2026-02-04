@@ -49,13 +49,14 @@ cd /home/USER/source/hellmai/os && pnpm wu:done --id WU-XXXX
 ## Core Principles
 
 1. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
-2. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
-3. **Library-First**: Search context7 before custom code
-4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
-5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-6. **Gates Before Done**: All gates must pass before `wu:done`
-7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-8. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
+2. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
+3. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
+4. **Library-First**: Search context7 before custom code
+5. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+6. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+7. **Gates Before Done**: All gates must pass before `wu:done`
+8. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+9. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
 
 ## Lanes
 
