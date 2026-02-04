@@ -16,7 +16,11 @@ artifacts:
   - .lumenflow/stamps/WU-1404.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Ensures design-first skill auto-loads for all spawned general-purpose agents.
+  Follow-up to WU-1396 which created the design-first skill.
+spec_refs:
+  - 'lumenflow://wu/WU-1396'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

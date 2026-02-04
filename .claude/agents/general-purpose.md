@@ -3,7 +3,7 @@ name: general-purpose
 description: General-purpose agent for LumenFlow-compliant WU work. Automatically loads context before task execution.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: opus
-skills: wu-lifecycle, worktree-discipline, lumenflow-gates
+skills: design-first, wu-lifecycle, worktree-discipline, lumenflow-gates
 ---
 
 # General Purpose Agent
