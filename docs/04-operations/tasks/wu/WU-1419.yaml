@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-04
 code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
-  - packages/@lumenflow/core/src/wu-state-store.ts
 tests:
   manual:
     - 'Claim a WU, then run wu:recover --action reset to verify it emits release event and allows re-claim'
