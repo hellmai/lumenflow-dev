@@ -1,8 +1,8 @@
 id: INIT-MCP-FULL
 slug: mcp-full-coverage
 title: Full MCP CLI Parity
-description: Implement all 63 remaining MCP tools to achieve 100% CLI command coverage. Enables AI
-  agents to use any documented LumenFlow CLI command via MCP protocol.
+description: Implement MCP tools to achieve 100% public CLI parity (~73 commands). Enables AI agents
+  to use any public LumenFlow CLI command via MCP protocol. Internal/maintainer commands excluded.
 status: in_progress
 priority: P2
 created: 2026-02-04
