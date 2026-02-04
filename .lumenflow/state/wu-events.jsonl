@@ -750,3 +750,4 @@
 {"type":"complete","wuId":"WU-1415","timestamp":"2026-02-04T15:16:28.325Z"}
 {"type":"claim","wuId":"WU-1416","timestamp":"2026-02-04T15:27:44.531Z","lane":"Content: Documentation","title":"Document LumenFlow product strategy and MCP architecture"}
 {"type":"complete","wuId":"WU-1416","timestamp":"2026-02-04T15:32:05.023Z"}
+{"type":"claim","wuId":"WU-1417","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync","timestamp":"2026-02-04T15:39:41.919Z"}

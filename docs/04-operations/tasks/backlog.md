@@ -20,10 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1418 — wu:repair should bypass pre-push hook for admin fixes](wu/WU-1418.yaml) — Framework: CLI
-- [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
-- [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
+- [WU-1418 — wu:repair should bypass pre-push hook for admin fixes](wu/WU-1418.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
@@ -31,6 +29,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — Framework: CLI
+- [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
