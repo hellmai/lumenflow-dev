@@ -25,6 +25,9 @@ phases:
   - id: 6
     title: Documentation on lumenflow.dev
     status: pending
+  - id: 7
+    title: Final documentation update
+    status: pending
 success_metrics:
   - 70 MCP tools available (100% CLI parity)
   - All tools documented on lumenflow.dev/reference/mcp
