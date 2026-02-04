@@ -16,6 +16,8 @@ artifacts:
   - .lumenflow/stamps/WU-1406.done
 dependencies: []
 risks: []
+spec_refs:
+  - ~/.claude/plans/composed-munching-forest.md
 notes: 'Released (2026-02-04): cleanup orphan claim'
 requires_review: false
 claimed_mode: worktree
