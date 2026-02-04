@@ -798,3 +798,4 @@
 {"type":"claim","wuId":"WU-1435","timestamp":"2026-02-04T22:50:35.155Z","lane":"Framework: CLI","title":"Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)"}
 {"type":"claim","wuId":"WU-1436","timestamp":"2026-02-04T23:08:33.687Z","lane":"Framework: Core","title":"Fix core test dependency: add memfs"}
 {"type":"complete","wuId":"WU-1436","timestamp":"2026-02-04T23:14:06.324Z"}
+{"type":"complete","wuId":"WU-1435","timestamp":"2026-02-04T23:20:29.110Z"}

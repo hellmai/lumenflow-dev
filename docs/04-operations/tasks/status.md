@@ -7,7 +7,6 @@ _Last updated: 2026-02-04_
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
-- [WU-1435 — Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)](wu/WU-1435.yaml)
 
 ## Completed
 
@@ -391,3 +390,4 @@ _Last updated: 2026-02-04_
 - [WU-1432 — Define public CLI surface + align MCP parity](wu/WU-1432.yaml) — 2026-02-04
 - [WU-1434 — Update MCP docs with final tools](wu/WU-1434.yaml) — 2026-02-04
 - [WU-1436 — Fix core test dependency: add memfs](wu/WU-1436.yaml) — 2026-02-04
+- [WU-1435 — Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)](wu/WU-1435.yaml) — 2026-02-04
