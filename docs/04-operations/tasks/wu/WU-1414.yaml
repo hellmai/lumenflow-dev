@@ -1,7 +1,7 @@
 id: WU-1414
 title: Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App
 lane: 'Content: Documentation'
-type: documentation
+type: tooling
 status: in_progress
 priority: P1
 created: 2026-02-04
