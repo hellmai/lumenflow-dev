@@ -2,7 +2,7 @@ id: WU-1412
 title: Add @lumenflow/mcp stdio server
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
