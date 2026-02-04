@@ -6,7 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
-  - docs/**
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
   manual:
