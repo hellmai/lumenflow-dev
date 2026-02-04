@@ -2,7 +2,7 @@ id: WU-1424
 title: 'MCP: Initiative + Memory tools (+21)'
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - All 8 initiative tools implemented
   - All 13 memory tools implemented
   - Unit tests for each tool category
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1424
+claimed_at: 2026-02-04T20:54:34.763Z
+baseline_main_sha: 183c1a469ba705ea52d7589f0ea418869c4acd09
+session_id: ea7feb90-1a29-42d8-8487-6d250a0124a9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T20:54:34.769Z

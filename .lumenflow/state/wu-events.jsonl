@@ -783,3 +783,4 @@
 {"type":"complete","wuId":"WU-1422","timestamp":"2026-02-04T20:03:27.706Z"}
 {"type":"complete","wuId":"WU-1427","timestamp":"2026-02-04T20:03:42.196Z"}
 {"type":"complete","wuId":"WU-1431","timestamp":"2026-02-04T20:16:31.689Z"}
+{"type":"claim","wuId":"WU-1424","lane":"Framework: CLI","title":"MCP: Initiative + Memory tools (+21)","timestamp":"2026-02-04T20:54:34.805Z"}
