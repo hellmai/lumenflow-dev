@@ -24,13 +24,13 @@ sections:
 - [WU-1432 — MCP schema autogen from CLI options](wu/WU-1432.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1426 — MCP: Flow + Validation + Setup tools (+17)](wu/WU-1426.yaml) — Framework: CLI
+- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1425 — MCP: Agent + Orchestration + Spawn tools (+8)](wu/WU-1425.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -413,3 +413,4 @@ sections:
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml)
 - [WU-1431 — Create shared Zod schemas for CLI/MCP parity](wu/WU-1431.yaml)
 - [WU-1424 — MCP: Initiative + Memory tools (+21)](wu/WU-1424.yaml)
+- [WU-1425 — MCP: Agent + Orchestration + Spawn tools (+8)](wu/WU-1425.yaml)
