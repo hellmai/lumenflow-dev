@@ -17,6 +17,7 @@ You are here to set up LumenFlow. That is your **only** job in the setup phase.
 - ❌ Do not write schemas/models/components
 - ❌ Do not refactor or optimize code
 - ❌ Do not scaffold project templates (Next.js/Vite/etc.) during setup. If the user wants a stack, create a WU after setup.
+- ❌ Do not ask the user to choose templates/frameworks during setup. Ask only for client type; defer stack choices to a WU.
 - ❌ Do not proceed past setup without explicit user approval
 
 <Aside type="danger" title="Setup ends after LumenFlow init">
@@ -61,6 +62,8 @@ mkdir -p scripts
 cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git
 chmod +x scripts/safe-git
 ```
+
+If the safe-git file is missing, stop and ask for direction. Do not guess or search for alternate paths.
 
 Re-run `pnpm exec lumenflow-doctor`. If errors remain, stop and ask for direction.
 
@@ -322,6 +325,8 @@ Copy this template and fill in the values:
 ```markdown
 ## Setup Complete - Handoff
 
+Note: The commands below are for the agent to run in a later session (not the user).
+
 ### Current State
 
 - LumenFlow initialized: Yes
@@ -371,8 +376,8 @@ These actions will break the workflow.
 | Run `pnpm exec lumenflow doctor`         | Use `pnpm exec lumenflow-doctor`               |
 | Fix enforcement without approval         | Ask, then apply explicit fixes if approved     |
 | Ask more than 2 setup questions          | Use defaults; ask only essential questions     |
-| Scaffold a Node stack for non-Node repo  | Only scaffold the framework the user asked for |
-| Scaffold tech stack after LumenFlow init | Scaffold before init, or skip                  |
+| Ask user to choose templates/frameworks  | Ask only for client; defer stack choices to WU |
+| Scaffold a tech stack during setup       | Create a WU after setup, then scaffold         |
 | Write feature code before a WU exists    | Create a WU first                              |
 | Continue after setup                     | Stop, hand off, and wait                       |
 
