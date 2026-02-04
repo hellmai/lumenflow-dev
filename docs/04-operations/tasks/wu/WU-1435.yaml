@@ -8,8 +8,8 @@ created: 2026-02-04
 code_paths:
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/src/commands.ts
-  - packages/@lumenflow/cli/README.md
   - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+  - packages/@lumenflow/cli/package.json
 tests:
   manual:
     - Run pnpm exec lumenflow-commands and verify docs:sync + gates:docs appear.
