@@ -8,6 +8,9 @@ created: 2026-02-04
 code_paths:
   - CLAUDE.md
   - LUMENFLOW.md
+  - CLAUDE.md
+  - LUMENFLOW.md
+  - docs/templates/wu-template.yaml
 tests:
   manual:
     - Agent loads design-first when claiming feature WU
@@ -26,7 +29,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: design-first skill catches over-engineering (saved 20+ lines in WU-1406). Problem: It's opt-in, so agents skip it. Solution: Add to CLAUDE.md Core Principles and LUMENFLOW.md workflow steps. No hooks, no automation—just docs."
+description: "Context: design-first skill catches over-engineering (saved 20+ lines in WU-1406).
+  Problem: It's opt-in, so agents skip it. Solution: Add mandate to CLAUDE.md, LUMENFLOW.md, and
+  wu-template.yaml. Scope: mandatory for feature/refactor WUs, optional for chores/ops/docs. No
+  hooks, no automation—just docs."
 acceptance:
   - CLAUDE.md Core Principles includes design-first mandate
   - LUMENFLOW.md workflow shows design-first before TDD
+  - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
+  - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
+  - wu-template.yaml includes reminder to load design-first for feature/refactor types
