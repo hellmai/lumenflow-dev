@@ -19,6 +19,7 @@ artifacts:
   - .lumenflow/stamps/WU-1431.done
 dependencies: []
 initiative: INIT-MCP-FULL
+phase: 1
 spec_refs:
   - lumenflow://plans/partitioned-foraging-ocean.md
 risks: []
@@ -31,7 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: CLI and MCP define argument schemas separately, causing drift. Problem: When CLI adds flags (e.g., --notes), MCP tools dont get them automatically. Solution: Create @lumenflow/core/schemas with shared Zod schemas that both CLI and MCP import. Add parity test to gates.'
+description: 'Context: CLI and MCP define argument schemas separately, causing drift. Problem: When
+  CLI adds flags (e.g., --notes), MCP tools dont get them automatically. Solution: Create
+  @lumenflow/core/schemas with shared Zod schemas that both CLI and MCP import. Add parity test to
+  gates.'
 acceptance:
   - Shared Zod schemas created in @lumenflow/core/src/schemas/
   - Existing 7 MCP tools migrated to use shared schemas
