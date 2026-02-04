@@ -2,7 +2,7 @@ id: WU-1417
 title: Orchestration dry-run guide + docs sync
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-04
 code_paths:
