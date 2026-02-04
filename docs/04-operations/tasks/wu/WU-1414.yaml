@@ -1,7 +1,7 @@
 id: WU-1414
 title: Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App
 lane: 'Content: Documentation'
-type: tooling
+type: documentation
 status: in_progress
 priority: P1
 created: 2026-02-04
@@ -12,7 +12,10 @@ code_paths:
   - docs/01-product/product-lines.md
   - docs/DISTRIBUTION.md
 tests:
-  manual: []
+  manual:
+    - Verify github-app.mdx is deleted from Starlight docs
+    - Verify no GitHub App references in astro.config.mjs sidebar
+    - Verify quickstart.mdx reflects auto-scaffolding of safe-git and pre-commit
   unit: []
   e2e: []
 artifacts:
