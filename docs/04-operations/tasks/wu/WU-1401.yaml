@@ -2,7 +2,7 @@ id: WU-1401
 title: Enforce Husky/safe-git and initiative decision rules in agent quickstart
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -25,10 +25,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Tighten the agent quickstart to require lumenflow-doctor checks, treat enforcement errors as blockers, provide explicit fix commands for Husky/safe-git, and require initiative creation for multi-phase projects.
+description: Tighten the agent quickstart to require lumenflow-doctor checks, treat enforcement
+  errors as blockers, provide explicit fix commands for Husky/safe-git, and require initiative
+  creation for multi-phase projects.
 acceptance:
-  - Quickstart instructs to run pnpm exec lumenflow-doctor (not lumenflow doctor) and treat errors as blockers
+  - Quickstart instructs to run pnpm exec lumenflow-doctor (not lumenflow doctor) and treat errors
+    as blockers
   - Quickstart includes explicit fix commands for Husky and safe-git, gated by user approval
   - Quickstart requires initiative creation when user indicates multi-phase or vision
 spec_refs:
   - lumenflow://plans/WU-1401-plan.md
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1401
+claimed_at: 2026-02-04T00:19:46.487Z
+baseline_main_sha: 4edebb24d70036398140b5c45632ce6496ca7b8b
+session_id: 20b86e34-8a28-456e-a16a-7bca7387267d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T00:19:46.492Z
