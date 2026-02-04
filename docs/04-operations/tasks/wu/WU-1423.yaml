@@ -13,7 +13,10 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-done-validation.ts
 tests:
-  manual: []
+  manual:
+    - Verify `rg beacon --type ts` returns only beacon-migration files and legacy support regex
+    - Verify `pnpm build` succeeds with no TypeScript errors
+    - Verify `pnpm test --filter @lumenflow/core` passes
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
@@ -22,7 +25,7 @@ artifacts:
   - .lumenflow/stamps/WU-1423.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Completes the beacon to lumenflow migration for config schema. Agent names like beacon-guardian are unchanged as they are distinct from the config key.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
