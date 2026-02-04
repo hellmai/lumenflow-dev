@@ -1,24 +1,21 @@
 id: WU-1405
 title: Block scaffolding during setup in agent quickstart
 lane: 'Content: Documentation'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual:
-    - Open quickstart and verify the prompt forbids scaffolding during setup; verify decision ladder
-      includes stack-setup WU guidance.
+  manual: []
   unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1405.done
 dependencies: []
 risks: []
-notes: Updated quickstart prompt to forbid scaffolding during setup and added decision ladder item
-  directing stack setup into a WU.
+notes: ''
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
