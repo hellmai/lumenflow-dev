@@ -2,7 +2,7 @@ id: WU-1400
 title: Clarify non-Node framework setup rules in agent quickstart
 lane: 'Content: Documentation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -25,10 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Ensure agent quickstart guidance covers non-Node frameworks (.NET, Go, Python) and clarifies when to create a minimal package.json for LumenFlow without changing the tech stack.
+description: Ensure agent quickstart guidance covers non-Node frameworks (.NET, Go, Python) and
+  clarifies when to create a minimal package.json for LumenFlow without changing the tech stack.
 acceptance:
   - Quickstart explains how to handle non-Node projects (minimal package.json for LumenFlow only)
   - Allowed commands include pnpm init -y only with explicit user approval
   - Guidance states not to scaffold Node stacks for non-Node frameworks unless asked
 spec_refs:
   - lumenflow://plans/WU-1400-plan.md
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1400
+claimed_at: 2026-02-04T00:08:37.833Z
+baseline_main_sha: 64fd391797159cfb82f157f9f23cd8cd910c2b21
+session_id: c84b80c8-8f5b-4511-a60a-4543e914649a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T00:08:37.840Z
