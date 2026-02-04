@@ -222,6 +222,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.GATES_QUALITY,
   },
   {
+    name: 'gates:docs',
+    binName: 'gates',
+    binPath: './dist/gates.js',
+    description: 'Run docs-only quality gates (alias)',
+    category: COMMAND_CATEGORIES.GATES_QUALITY,
+  },
+  {
     name: 'lumenflow-gates',
     binName: 'lumenflow-gates',
     binPath: './dist/gates.js',
@@ -557,6 +564,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
+    name: 'docs:sync',
+    binName: 'lumenflow-docs-sync',
+    binPath: './dist/docs-sync.js',
+    description: 'Sync agent docs (for upgrades) (alias)',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
+  {
     name: 'lumenflow:sync-templates',
     binName: 'lumenflow-sync-templates',
     binPath: './dist/sync-templates.js',
@@ -582,20 +596,6 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binName: 'lumenflow-integrate',
     binPath: './dist/commands/integrate.js',
     description: 'Generate enforcement hooks for client',
-    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
-  },
-  {
-    name: 'deps:add',
-    binName: 'deps-add',
-    binPath: './dist/deps-add.js',
-    description: 'Add dependency to package',
-    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
-  },
-  {
-    name: 'deps:remove',
-    binName: 'deps-remove',
-    binPath: './dist/deps-remove.js',
-    description: 'Remove dependency from package',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
@@ -743,6 +743,8 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
 // - guard-worktree-commit: Pre-commit hook enforcement
 // - guard-locked: Pre-push lock enforcement
 // - guard-main-branch: Main branch protection
+// - deps-add: Maintainer-only wrapper for pnpm add (worktree enforcement)
+// - deps-remove: Maintainer-only wrapper for pnpm remove (worktree enforcement)
 // - validate-agent-skills: Internal skill validation
 // - validate-agent-sync: Internal agent sync validation
 // - validate-backlog-sync: Internal backlog sync validation

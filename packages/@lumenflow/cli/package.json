@@ -111,8 +111,6 @@
     "file-delete": "./dist/file-delete.js",
     "validate": "./dist/validate.js",
     "lumenflow-validate": "./dist/validate.js",
-    "deps-add": "./dist/deps-add.js",
-    "deps-remove": "./dist/deps-remove.js",
     "lumenflow-upgrade": "./dist/lumenflow-upgrade.js",
     "git-status": "./dist/git-status.js",
     "git-diff": "./dist/git-diff.js",
