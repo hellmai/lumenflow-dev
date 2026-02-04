@@ -767,3 +767,4 @@
 {"type":"claim","wuId":"WU-1428","timestamp":"2026-02-04T17:19:16.361Z","lane":"Framework: Core","title":"Remove all beacon references: delete migration utility and purge codebase"}
 {"type":"complete","wuId":"WU-1428","timestamp":"2026-02-04T17:35:54.404Z"}
 {"type":"claim","wuId":"WU-1429","lane":"Framework: CLI","title":"wu:create: tighten spec_refs + add notes flag + contextual warnings","timestamp":"2026-02-04T17:58:48.511Z"}
+{"type":"release","wuId":"WU-1429","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T18:00:30.538Z"}

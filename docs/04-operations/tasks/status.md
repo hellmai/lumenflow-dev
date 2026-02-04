@@ -8,7 +8,6 @@ _Last updated: 2026-02-04_
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
-- [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml)
 
 ## Completed
 
