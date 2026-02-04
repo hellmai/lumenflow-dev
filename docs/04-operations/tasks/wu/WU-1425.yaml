@@ -2,7 +2,7 @@ id: WU-1425
 title: 'MCP: Agent + Orchestration + Spawn tools (+8)'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -49,3 +49,5 @@ session_id: b9ac9ea6-269f-4de4-880d-8a70e61017f2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T21:52:44.429Z
+locked: true
+completed_at: 2026-02-04T22:00:49.488Z
