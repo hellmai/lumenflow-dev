@@ -8,7 +8,9 @@ created: 2026-02-04
 code_paths:
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
-  manual: []
+  manual:
+    - Verify initiative tools return structured data
+    - Verify memory tools handle JSONL correctly
   unit:
     - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/memory-tools.test.ts
@@ -17,8 +19,10 @@ artifacts:
   - .lumenflow/stamps/WU-1424.done
 dependencies: []
 initiative: INIT-MCP-FULL
+phase: 2
 risks: []
-notes: ''
+notes: 'Sizing: Medium (~63 tool calls). Initiative tools (8) + Memory tools (13). See plan:
+  lumenflow://plans/partitioned-foraging-ocean.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,7 +31,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Initiative and Memory CLI commands have no MCP equivalents. Problem: Agents cannot manage initiatives or use memory layer via MCP. Solution: Add initiative_list, initiative_status, initiative_create, initiative_edit, initiative_add_wu, initiative_remove_wu, initiative_bulk_assign, initiative_plan, mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup, mem_context, mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage.'
+description: 'Context: Initiative and Memory CLI commands have no MCP equivalents. Problem: Agents
+  cannot manage initiatives or use memory layer via MCP. Solution: Add initiative_list,
+  initiative_status, initiative_create, initiative_edit, initiative_add_wu, initiative_remove_wu,
+  initiative_bulk_assign, initiative_plan, mem_init, mem_start, mem_ready, mem_checkpoint,
+  mem_cleanup, mem_context, mem_create, mem_delete, mem_export, mem_inbox, mem_signal,
+  mem_summarize, mem_triage.'
 acceptance:
   - All 8 initiative tools implemented
   - All 13 memory tools implemented
