@@ -725,6 +725,7 @@
 {"type":"complete","wuId":"WU-1404","timestamp":"2026-02-04T10:40:34.359Z"}
 {"type":"claim","wuId":"WU-1405","timestamp":"2026-02-04T10:50:52.460Z","lane":"Content: Documentation","title":"Block scaffolding during setup in agent quickstart"}
 {"type":"complete","wuId":"WU-1405","timestamp":"2026-02-04T10:56:16.986Z"}
-{"type":"claim","wuId":"WU-1406","lane":"Content: Documentation","title":"Forbid template-selection questions during setup","timestamp":"2026-02-04T11:04:49.226Z"}
-{"type":"release","wuId":"WU-1406","reason":"cleanup orphan claim","timestamp":"2026-02-04T11:14:28.012Z"}
-{"type":"claim","wuId":"WU-1406","lane":"Content: Documentation","title":"Forbid template-selection questions during setup","timestamp":"2026-02-04T11:14:47.582Z"}
+{"type":"claim","wuId":"WU-1406","timestamp":"2026-02-04T11:04:49.226Z","lane":"Content: Documentation","title":"Forbid template-selection questions during setup"}
+{"type":"release","wuId":"WU-1406","timestamp":"2026-02-04T11:14:28.012Z","reason":"cleanup orphan claim"}
+{"type":"claim","wuId":"WU-1406","timestamp":"2026-02-04T11:14:47.582Z","lane":"Content: Documentation","title":"Forbid template-selection questions during setup"}
+{"type":"complete","wuId":"WU-1406","timestamp":"2026-02-04T11:56:49.890Z"}
