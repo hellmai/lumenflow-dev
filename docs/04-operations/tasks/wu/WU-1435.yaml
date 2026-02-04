@@ -2,7 +2,7 @@ id: WU-1435
 title: Adjust public CLI manifest (deps internal, add docs:sync and gates:docs aliases)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -39,10 +39,6 @@ acceptance:
   - docs:sync and gates:docs added as public aliases in manifest and appear in CLI reference.
   - commands/test alignment updated and passing.
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1435
-claimed_at: 2026-02-04T22:48:54.605Z
-baseline_main_sha: 7176a2b74f4010761230a56a69ddddcb3d5d8ec9
-session_id: 199ca55a-8a79-44c8-a1ed-c821484df9f8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T22:48:54.611Z
