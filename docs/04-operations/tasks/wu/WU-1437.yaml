@@ -2,7 +2,7 @@ id: WU-1437
 title: Investigate initiatives test timeout in gates
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -20,9 +20,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1437-plan.md
 risks: []
-notes:
-  'Investigated gates failure: initiatives tests pass locally; root cause was spec:linter failing
-  on WU-1436 missing notes/manual tests. Fix captured in WU-1438.'
+notes: 'Investigated gates failure: initiatives tests pass locally; root cause was spec:linter
+  failing on WU-1436 missing notes/manual tests. Fix captured in WU-1438.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -45,3 +44,5 @@ session_id: 5b69a164-2f0f-42d4-9635-d54cc64f0397
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T23:22:19.728Z
+locked: true
+completed_at: 2026-02-04T23:27:59.119Z
