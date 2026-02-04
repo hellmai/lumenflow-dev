@@ -2631,6 +2631,10 @@ export async function scaffoldProject(
   // WU-1342: Create .gitignore with required exclusions
   await scaffoldGitignore(targetDir, options, result);
 
+  // WU-1408: Scaffold safe-git wrapper and pre-commit hook
+  // These are core safety components needed for all projects
+  await scaffoldSafetyScripts(targetDir, options, result);
+
   // Optional: full docs scaffolding
   if (options.full) {
     await scaffoldFullDocs(targetDir, options, result, tokenDefaults);
@@ -2774,6 +2778,136 @@ const LUMENFLOW_SCRIPTS: Record<string, string> = {
   gates: 'gates',
   'gates:docs': 'gates --docs-only',
 };
+
+/** WU-1408: Safety script path constants */
+const SCRIPTS_DIR = 'scripts';
+const SAFE_GIT_FILE = 'safe-git';
+const HUSKY_DIR = '.husky';
+const PRE_COMMIT_FILE = 'pre-commit';
+const SAFE_GIT_TEMPLATE_PATH = 'core/scripts/safe-git.template';
+const PRE_COMMIT_TEMPLATE_PATH = 'core/.husky/pre-commit.template';
+
+/**
+ * WU-1408: Scaffold safety scripts (safe-git wrapper and pre-commit hook)
+ * These are core safety components needed for LumenFlow enforcement:
+ * - scripts/safe-git: Blocks dangerous git operations (e.g., manual worktree remove)
+ * - .husky/pre-commit: Blocks direct commits to main/master, enforces WU workflow
+ *
+ * Both scripts are scaffolded in all modes (full and minimal) because they are
+ * required for lumenflow-doctor to pass.
+ */
+async function scaffoldSafetyScripts(
+  targetDir: string,
+  options: ScaffoldOptions,
+  result: ScaffoldResult,
+): Promise<void> {
+  const fileMode = getFileMode(options);
+
+  // Scaffold scripts/safe-git
+  const safeGitPath = path.join(targetDir, SCRIPTS_DIR, SAFE_GIT_FILE);
+  try {
+    const safeGitTemplate = loadTemplate(SAFE_GIT_TEMPLATE_PATH);
+    await createExecutableScript(safeGitPath, safeGitTemplate, fileMode, result, targetDir);
+  } catch {
+    // Fallback to hardcoded template if template file not found
+    await createExecutableScript(safeGitPath, SAFE_GIT_TEMPLATE, fileMode, result, targetDir);
+  }
+
+  // Scaffold .husky/pre-commit
+  const preCommitPath = path.join(targetDir, HUSKY_DIR, PRE_COMMIT_FILE);
+  try {
+    const preCommitTemplate = loadTemplate(PRE_COMMIT_TEMPLATE_PATH);
+    await createExecutableScript(preCommitPath, preCommitTemplate, fileMode, result, targetDir);
+  } catch {
+    // Fallback to hardcoded template if template file not found
+    await createExecutableScript(preCommitPath, PRE_COMMIT_TEMPLATE, fileMode, result, targetDir);
+  }
+}
+
+/**
+ * WU-1408: Fallback safe-git template
+ * Blocks dangerous git operations in LumenFlow environment
+ */
+const SAFE_GIT_TEMPLATE = `#!/bin/sh
+#
+# safe-git - LumenFlow safety wrapper for git
+#
+# Blocks dangerous operations that can corrupt agent state.
+# For all other commands, passes through to system git.
+#
+
+set -e
+
+# Block 'worktree remove'
+if [ "$1" = "worktree" ] && [ "$2" = "remove" ]; then
+  echo "" >&2
+  echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
+  echo "" >&2
+  echo "BLOCKED: Manual 'git worktree remove' is unsafe in this environment." >&2
+  echo "" >&2
+  echo "REASON: Manual removal leaves orphan directories and corrupts agent state." >&2
+  echo "" >&2
+  echo "USE INSTEAD:" >&2
+  echo "  pnpm wu:done --id <ID>    (To complete a task)" >&2
+  echo "  pnpm wu:cleanup --id <ID> (To discard a task)" >&2
+  echo "==============================" >&2
+  exit 1
+fi
+
+# Pass through to real git
+exec git "$@"
+`;
+
+/**
+ * WU-1408: Fallback pre-commit template
+ * Blocks direct commits to main/master, allows commits on lane branches
+ * Does NOT run pnpm test (which fails on new projects)
+ */
+const PRE_COMMIT_TEMPLATE = `#!/bin/sh
+#
+# LumenFlow Pre-Commit Hook
+#
+# Enforces worktree discipline by blocking direct commits to main/master.
+# Does NOT assume pnpm test or any other commands exist.
+#
+# Rules:
+#   1. BLOCK commits to main/master (use WU workflow instead)
+#   2. ALLOW commits on lane branches (lane/*/wu-*)
+#   3. ALLOW commits on tmp/* branches (CLI micro-worktrees)
+#
+
+# Skip on tmp/* branches (CLI micro-worktrees)
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+case "$BRANCH" in tmp/*) exit 0 ;; esac
+
+# Check for force bypass
+if [ "$LUMENFLOW_FORCE" = "1" ]; then
+  exit 0
+fi
+
+# Block direct commits to main/master
+case "$BRANCH" in
+  main|master)
+    echo "" >&2
+    echo "=== DIRECT COMMIT TO \${BRANCH} BLOCKED ===" >&2
+    echo "" >&2
+    echo "LumenFlow protects main from direct commits." >&2
+    echo "" >&2
+    echo "USE INSTEAD:" >&2
+    echo "  pnpm wu:claim --id WU-XXXX --lane \\"<Lane>\\"" >&2
+    echo "  cd worktrees/<lane>-wu-xxxx" >&2
+    echo "  # Make commits in the worktree" >&2
+    echo "" >&2
+    echo "EMERGENCY BYPASS (logged):" >&2
+    echo "  LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "==========================================" >&2
+    exit 1
+    ;;
+esac
+
+# Allow commits on other branches
+exit 0
+`;
 
 /**
  * WU-1300: Inject LumenFlow scripts into package.json

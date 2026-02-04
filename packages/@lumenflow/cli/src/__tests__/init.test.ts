@@ -949,4 +949,135 @@ describe('lumenflow init', () => {
       });
     });
   });
+
+  // WU-1408: safe-git and pre-commit hook scaffolding
+  describe('WU-1408: safe-git and pre-commit scaffolding', () => {
+    describe('safe-git wrapper', () => {
+      it('should scaffold scripts/safe-git', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const safeGitPath = path.join(tempDir, 'scripts', 'safe-git');
+        expect(fs.existsSync(safeGitPath)).toBe(true);
+      });
+
+      it('should make safe-git executable', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const safeGitPath = path.join(tempDir, 'scripts', 'safe-git');
+        const stats = fs.statSync(safeGitPath);
+        // Check for executable bit (owner, group, or other)
+        // eslint-disable-next-line no-bitwise
+        const isExecutable = (stats.mode & 0o111) !== 0;
+        expect(isExecutable).toBe(true);
+      });
+
+      it('should include worktree remove block in safe-git', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const safeGitPath = path.join(tempDir, 'scripts', 'safe-git');
+        const content = fs.readFileSync(safeGitPath, 'utf-8');
+        expect(content).toContain('worktree');
+        expect(content).toContain('remove');
+        expect(content).toContain('BLOCKED');
+      });
+
+      it('should scaffold safe-git even in minimal mode', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false, // minimal mode
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const safeGitPath = path.join(tempDir, 'scripts', 'safe-git');
+        expect(fs.existsSync(safeGitPath)).toBe(true);
+      });
+    });
+
+    describe('pre-commit hook', () => {
+      it('should scaffold .husky/pre-commit', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const preCommitPath = path.join(tempDir, '.husky', 'pre-commit');
+        expect(fs.existsSync(preCommitPath)).toBe(true);
+      });
+
+      it('should make pre-commit executable', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const preCommitPath = path.join(tempDir, '.husky', 'pre-commit');
+        const stats = fs.statSync(preCommitPath);
+        // eslint-disable-next-line no-bitwise
+        const isExecutable = (stats.mode & 0o111) !== 0;
+        expect(isExecutable).toBe(true);
+      });
+
+      it('should NOT run pnpm test in pre-commit hook', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const preCommitPath = path.join(tempDir, '.husky', 'pre-commit');
+        const content = fs.readFileSync(preCommitPath, 'utf-8');
+        // The pre-commit hook should NOT assume pnpm test exists
+        expect(content).not.toContain('pnpm test');
+        expect(content).not.toContain('npm test');
+      });
+
+      it('should block commits to main/master in pre-commit', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: true,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const preCommitPath = path.join(tempDir, '.husky', 'pre-commit');
+        const content = fs.readFileSync(preCommitPath, 'utf-8');
+        // Should protect main branch
+        expect(content).toContain('main');
+        expect(content).toContain('BLOCK');
+      });
+
+      it('should scaffold pre-commit even in minimal mode', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false, // minimal mode
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const preCommitPath = path.join(tempDir, '.husky', 'pre-commit');
+        expect(fs.existsSync(preCommitPath)).toBe(true);
+      });
+    });
+  });
 });

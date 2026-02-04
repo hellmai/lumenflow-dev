@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# safe-git
+#
+# A wrapper around git that blocks dangerous operations in the LumenFlow environment.
+# Specifically intercepts 'worktree remove' to prevent orphan directories and state corruption.
+# For all other commands, it passes through to the system git.
+#
+
+set -e
+
+# Block 'worktree remove'
+if [ "$1" = "worktree" ] && [ "$2" = "remove" ]; then
+  echo "" >&2
+  echo "=== LUMENFLOW SAFETY BLOCK ===" >&2
+  echo "" >&2
+  echo "BLOCKED: Manual 'git worktree remove' is unsafe in this environment." >&2
+  echo "" >&2
+  echo "REASON: Manual removal leaves orphan directories and corrupts agent state." >&2
+  echo "" >&2
+  echo "USE INSTEAD:" >&2
+  echo "  pnpm wu:done --id <ID>    (To complete a task)" >&2
+  echo "  pnpm wu:cleanup --id <ID> (To discard a task)" >&2
+  echo "==============================" >&2
+  exit 1
+fi
+
+# Pass through to real git
+exec git "$@"
