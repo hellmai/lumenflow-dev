@@ -11,6 +11,9 @@ code_paths:
   - CLAUDE.md
   - LUMENFLOW.md
   - docs/templates/wu-template.yaml
+  - CLAUDE.md
+  - LUMENFLOW.md
+  - docs/templates/wu-template.yaml
 tests:
   manual:
     - Agent loads design-first when claiming feature WU
@@ -36,6 +39,9 @@ description: "Context: design-first skill catches over-engineering (saved 20+ li
 acceptance:
   - CLAUDE.md Core Principles includes design-first mandate
   - LUMENFLOW.md workflow shows design-first before TDD
+  - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
+  - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
+  - wu-template.yaml includes reminder to load design-first for feature/refactor types
   - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
   - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
   - wu-template.yaml includes reminder to load design-first for feature/refactor types
