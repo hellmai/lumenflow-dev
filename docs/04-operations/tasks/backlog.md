@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1408 — Bundle safe-git and generate sane pre-commit hook](wu/WU-1408.yaml) — Framework: CLI
 
@@ -28,7 +29,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1409 — Require --help before unknown commands](wu/WU-1409.yaml) — Content: Documentation
 - [WU-1407 — Mandate design-first before implementation](wu/WU-1407.yaml) — Content: Documentation
 
 ## ⛔ Blocked
