@@ -2,7 +2,7 @@ id: WU-1409
 title: Require --help before unknown commands
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -36,4 +36,8 @@ acceptance:
 claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-04T12:44:35.075Z
+approved_at: 2026-02-04T13:07:25.159Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1409
+claimed_at: 2026-02-04T13:07:25.154Z
+baseline_main_sha: e401aa5493fccd07ef470ce501296aa7c730e472
+session_id: 106c1d52-61d7-43db-8d84-9ba4534e690a
