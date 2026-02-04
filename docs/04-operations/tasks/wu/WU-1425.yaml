@@ -8,7 +8,9 @@ created: 2026-02-04
 code_paths:
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
-  manual: []
+  manual:
+    - Verify agent session tools track state correctly
+    - Verify orchestration tools return progress data
   unit:
     - packages/@lumenflow/mcp/src/__tests__/coordination-tools.test.ts
   e2e: []
@@ -16,8 +18,10 @@ artifacts:
   - .lumenflow/stamps/WU-1425.done
 dependencies: []
 initiative: INIT-MCP-FULL
+phase: 3
 risks: []
-notes: ''
+notes: 'Sizing: Simple (~24 tool calls). Agent (4) + Orchestration (3) + Spawn (1) tools. See plan:
+  lumenflow://plans/partitioned-foraging-ocean.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -26,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Agent coordination and orchestration CLI commands have no MCP equivalents. Problem: Agents cannot manage sessions, spawn sub-agents, or monitor orchestration via MCP. Solution: Add agent_session, agent_session_end, agent_log_issue, agent_issues_query, orchestrate_initiative, orchestrate_init_status, orchestrate_monitor, spawn_list.'
+description: 'Context: Agent coordination and orchestration CLI commands have no MCP equivalents.
+  Problem: Agents cannot manage sessions, spawn sub-agents, or monitor orchestration via MCP.
+  Solution: Add agent_session, agent_session_end, agent_log_issue, agent_issues_query,
+  orchestrate_initiative, orchestrate_init_status, orchestrate_monitor, spawn_list.'
 acceptance:
   - All 4 agent tools implemented
   - All 3 orchestration tools implemented
