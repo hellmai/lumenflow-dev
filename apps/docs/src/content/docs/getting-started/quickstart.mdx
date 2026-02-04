@@ -1,13 +1,13 @@
 ---
 title: Quickstart (Agents)
-description: Canonical setup guide for AI agents. Session 0 = LumenFlow only.
+description: Canonical setup guide for AI agents. Setup phase = LumenFlow only.
 ---
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 ## Read this first: Your purpose
 
-You are here to set up LumenFlow. That is your **only** job in Session 0.
+You are here to set up LumenFlow. That is your **only** job in the setup phase.
 
 - ✅ Initialize LumenFlow in this repo
 - ✅ Create an Initiative if the user provided a vision doc or multi-phase plan
@@ -16,17 +16,17 @@ You are here to set up LumenFlow. That is your **only** job in Session 0.
 - ❌ Do not implement features
 - ❌ Do not write schemas/models/components
 - ❌ Do not refactor or optimize code
-- ❌ Do not proceed past Session 0 without explicit user approval
+- ❌ Do not proceed past setup without explicit user approval
 
-<Aside type="danger" title="Session 0 ends after setup">
-  Do not write feature code. Implementation begins only after a Work Unit is claimed in Session 1.
+<Aside type="danger" title="Setup ends after LumenFlow init">
+  Do not write feature code. Implementation begins only after a Work Unit is claimed.
 </Aside>
 
 <Aside type="tip" title="Running setup yourself?">
   Use the [Manual Quickstart (Humans)](/guides/manual-quickstart/) if you are not an AI agent.
 </Aside>
 
-## Session 0 Exit Criteria (Must be true)
+## Setup Exit Criteria (Must be true)
 
 1. LumenFlow installed and activated. CLI installed; `pnpm exec lumenflow --full --client <client>` completed; `pnpm wu:create --help` works.
 2. LumenFlow enforced. Run `pnpm exec lumenflow-doctor`; errors are blockers. Work happens only in claimed WUs; no edits on main; gates run before `wu:done`.
@@ -59,8 +59,8 @@ chmod +x scripts/safe-git
 
 Re-run `pnpm exec lumenflow-doctor`. If errors remain, stop and ask for direction.
 
-Lane overlap warnings are not fixed in Session 0. Create a follow-up WU later. Do not edit
-`.lumenflow.config.yaml` in Session 0.
+Lane overlap warnings are not fixed during setup. Create a follow-up WU later. Do not edit
+`.lumenflow.config.yaml` during setup.
 
 ## Decide the next step (with the user)
 
@@ -85,9 +85,9 @@ pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: MVP"
 pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core"
 ```
 
-## Allowed commands (Session 0 only)
+## Allowed commands (setup only)
 
-If a command is not listed here, do not run it in Session 0.
+If a command is not listed here, do not run it during setup.
 
 | Command                                                        | Purpose                                     |
 | -------------------------------------------------------------- | ------------------------------------------- |
@@ -115,7 +115,7 @@ If a command is not listed here, do not run it in Session 0.
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 
-## Session 0: New project
+## Setup: New project
 
 <Steps>
 1. **Verify toolchain**
@@ -213,7 +213,7 @@ git --version    # Requires 2.0.0+
 
 </Steps>
 
-## Session 0: Existing project
+## Setup: Existing project
 
 <Steps>
 1. **Verify toolchain**
@@ -278,12 +278,12 @@ git --version    # Requires 2.0.0+
 
 </Steps>
 
-## Session 0 handoff template
+## Setup handoff template
 
 Copy this template and fill in the values:
 
 ```markdown
-## Session 0 Complete - Handoff
+## Setup Complete - Handoff
 
 ### Current State
 
@@ -310,8 +310,8 @@ Copy this template and fill in the values:
 - ALWAYS run `wu:done` to complete work
 ```
 
-<Aside type="danger" title="Session 0 stops here">
-  Do not write feature code in Session 0. Wait for explicit approval before claiming a WU.
+<Aside type="danger" title="Setup stops here">
+  Do not write feature code during setup. Wait for explicit approval before claiming a WU.
 </Aside>
 
 ---
@@ -337,11 +337,11 @@ These actions will break the workflow.
 | Scaffold a Node stack for non-Node repo  | Only scaffold the framework the user asked for |
 | Scaffold tech stack after LumenFlow init | Scaffold before init, or skip                  |
 | Write feature code before a WU exists    | Create a WU first                              |
-| Continue after Session 0                 | Stop, hand off, and wait                       |
+| Continue after setup                     | Stop, hand off, and wait                       |
 
 ---
 
-## After Session 0
+## After setup
 
 All work flows through WUs and Initiatives only:
 
