@@ -729,6 +729,7 @@
 {"type":"release","wuId":"WU-1406","timestamp":"2026-02-04T11:14:28.012Z","reason":"cleanup orphan claim"}
 {"type":"claim","wuId":"WU-1406","timestamp":"2026-02-04T11:14:47.582Z","lane":"Content: Documentation","title":"Forbid template-selection questions during setup"}
 {"type":"complete","wuId":"WU-1406","timestamp":"2026-02-04T11:56:49.890Z"}
-{"type":"claim","wuId":"WU-1409","lane":"Content: Documentation","title":"Require --help before unknown commands","timestamp":"2026-02-04T12:44:35.086Z"}
-{"type":"claim","wuId":"WU-1407","lane":"Content: Documentation","title":"Mandate design-first before implementation","timestamp":"2026-02-04T12:48:10.685Z"}
-{"type":"release","wuId":"WU-1409","reason":"claim timed out; resetting worktree","timestamp":"2026-02-04T12:49:17.698Z"}
+{"type":"claim","wuId":"WU-1409","timestamp":"2026-02-04T12:44:35.086Z","lane":"Content: Documentation","title":"Require --help before unknown commands"}
+{"type":"claim","wuId":"WU-1407","timestamp":"2026-02-04T12:48:10.685Z","lane":"Content: Documentation","title":"Mandate design-first before implementation"}
+{"type":"release","wuId":"WU-1409","timestamp":"2026-02-04T12:49:17.698Z","reason":"claim timed out; resetting worktree"}
+{"type":"complete","wuId":"WU-1407","timestamp":"2026-02-04T12:53:43.654Z"}
