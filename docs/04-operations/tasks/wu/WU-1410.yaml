@@ -2,7 +2,7 @@ id: WU-1410
 title: Improve forbidden commands docs and safe alternatives
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -34,3 +34,11 @@ acceptance:
     -D
   - AGENTS.md has new Safe Alternatives section with wu:recover, wu:release, wu:prune
   - 'LUMENFLOW.md reinforces that all worktree management must use wu: commands'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1410
+claimed_at: 2026-02-04T13:43:52.670Z
+baseline_main_sha: 28910587a241bd860e5fb0350ae066b506567733
+session_id: ce17c6b7-bae2-4c67-8fde-4979dbf5eb26
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T13:43:52.674Z

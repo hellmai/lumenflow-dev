@@ -737,3 +737,4 @@
 {"type":"complete","wuId":"WU-1409","timestamp":"2026-02-04T13:09:25.104Z"}
 {"type":"claim","wuId":"WU-1408","timestamp":"2026-02-04T13:09:38.462Z","lane":"Framework: CLI","title":"Bundle safe-git and generate sane pre-commit hook"}
 {"type":"complete","wuId":"WU-1408","timestamp":"2026-02-04T13:31:40.190Z"}
+{"type":"claim","wuId":"WU-1410","lane":"Content: Documentation","title":"Improve forbidden commands docs and safe alternatives","timestamp":"2026-02-04T13:43:52.701Z"}
