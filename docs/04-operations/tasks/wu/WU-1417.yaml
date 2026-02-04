@@ -10,9 +10,7 @@ code_paths:
   - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
   - packages/@lumenflow/cli/README.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
   - apps/docs/src/content/docs/guides/initiatives.mdx
-  - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
   - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
   manual:
@@ -21,7 +19,6 @@ tests:
     - Verify no '--unread' flag appears in any orchestration output
     - Verify mem:inbox guidance uses '--since 10m' format
   unit:
-    - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
     - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
   e2e: []
 artifacts:
