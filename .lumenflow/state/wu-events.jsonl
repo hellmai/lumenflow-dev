@@ -764,3 +764,4 @@
 {"type":"complete","wuId":"WU-1421","timestamp":"2026-02-04T16:36:00.707Z"}
 {"type":"claim","wuId":"WU-1423","timestamp":"2026-02-04T17:00:06.323Z","lane":"Framework: Core","title":"Complete beacon→lumenflow migration: rename config schema and all references"}
 {"type":"complete","wuId":"WU-1423","timestamp":"2026-02-04T17:14:07.699Z"}
+{"type":"claim","wuId":"WU-1428","lane":"Framework: Core","title":"Remove all beacon references: delete migration utility and purge codebase","timestamp":"2026-02-04T17:19:16.361Z"}
