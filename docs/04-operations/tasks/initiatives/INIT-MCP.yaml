@@ -1,10 +1,20 @@
 id: INIT-MCP
 slug: mcp-server
 title: LumenFlow MCP Server MVP
-description: ''
+description: MCP server MVP for LumenFlow to expose WU lifecycle tools over stdio, with core helper
+  and init/docs scaffolding. VS Code plugin explicitly out of scope.
 status: draft
 priority: P2
 created: 2026-02-04
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'Phase 1: Core helper + MCP server MVP'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Init scaffolding + docs + dogfood'
+    status: pending
+success_metrics:
+  - MCP server usable via stdio in Claude Code/Cursor
+  - lumenflow_wu_list returns merged state + YAML metadata
+  - lumenflow init --client claude|all writes .mcp.json
 labels: []
