@@ -717,3 +717,4 @@
 {"type":"complete","wuId":"WU-1400","timestamp":"2026-02-04T00:11:16.903Z"}
 {"type":"claim","wuId":"WU-1401","timestamp":"2026-02-04T00:19:46.521Z","lane":"Content: Documentation","title":"Enforce Husky/safe-git and initiative decision rules in agent quickstart"}
 {"type":"complete","wuId":"WU-1401","timestamp":"2026-02-04T00:24:14.495Z"}
+{"type":"claim","wuId":"WU-1402","lane":"Content: Documentation","title":"Remove Session 0 terminology from agent quickstart","timestamp":"2026-02-04T00:27:11.009Z"}
