@@ -34,10 +34,6 @@ acceptance:
   - 'Quickstart includes rule: run --help if unsure before any command'
   - LUMENFLOW.md includes same rule in core workflow guidance
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1409
-claimed_at: 2026-02-04T12:44:35.069Z
-baseline_main_sha: 27aed55ac78f15aaf15848d0602c32a1db1e7c42
-session_id: 9ff91a49-1d80-441c-a9a4-7332eabf47f8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T12:44:35.075Z
