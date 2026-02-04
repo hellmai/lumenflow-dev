@@ -1,7 +1,7 @@
 id: WU-1429
 title: 'wu:create: tighten spec_refs + add notes flag + contextual warnings'
 lane: 'Framework: CLI'
-type: feature
+type: bug
 status: ready
 priority: P2
 created: 2026-02-04
