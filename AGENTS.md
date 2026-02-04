@@ -109,10 +109,36 @@ Do NOT run `wu:done` from a worktree (it will error). See [LUMENFLOW.md](LUMENFL
 
 ## Forbidden Commands
 
+**Destructive Git Operations** (never use directly):
+
 - `git reset --hard`
 - `git push --force`
+- `git clean -fd` or `git clean -f`
+- `git checkout .` (discards all changes)
 - `git stash` (on main)
 - `--no-verify`
+
+**Worktree Management** (use `wu:` commands instead):
+
+- `git worktree remove` (use `wu:done` or `wu:prune`)
+- `git worktree prune` (use `wu:prune`)
+- `git branch -D` on lane branches (use `wu:done`)
+
+---
+
+## Safe Alternatives
+
+When you need to recover from problems, use these `wu:` commands instead of raw git:
+
+| Instead of...                | Use...                            |
+| ---------------------------- | --------------------------------- |
+| `git worktree remove`        | `pnpm wu:done` or `pnpm wu:prune` |
+| `git branch -D lane/...`     | `pnpm wu:done --id WU-XXX`        |
+| Manually fixing WU state     | `pnpm wu:recover --id WU-XXX`     |
+| Abandoning an in-progress WU | `pnpm wu:release --id WU-XXX`     |
+| Cleaning stale worktrees     | `pnpm wu:prune`                   |
+
+These commands handle the full cleanup safely (worktree removal, branch deletion, state updates).
 
 ---
 

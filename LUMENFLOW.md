@@ -137,6 +137,16 @@ LumenFlow enforces safety at the repository level so protections apply to all ag
   - `.beacon/safety-blocks.log`
   - `.beacon/force-bypasses.log`
 
+**IMPORTANT**: All worktree management MUST use `wu:` commands (not raw git):
+
+- Create/claim worktrees: `pnpm wu:claim`
+- Complete and remove: `pnpm wu:done`
+- Clean stale worktrees: `pnpm wu:prune`
+- Fix inconsistent state: `pnpm wu:recover`
+- Release abandoned WUs: `pnpm wu:release`
+
+Never run `git worktree remove`, `git worktree prune`, or `git branch -D` on lane branches directly.
+
 ---
 
 ## Global State
