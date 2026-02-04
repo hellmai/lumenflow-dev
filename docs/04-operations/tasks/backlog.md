@@ -22,13 +22,13 @@ sections:
 
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
-- [WU-1434 — Update MCP docs with final tools](wu/WU-1434.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1434 — Update MCP docs with final tools](wu/WU-1434.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

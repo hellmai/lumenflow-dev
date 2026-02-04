@@ -791,3 +791,4 @@
 {"type":"complete","wuId":"WU-1426","timestamp":"2026-02-04T22:14:05.554Z"}
 {"type":"claim","wuId":"WU-1432","timestamp":"2026-02-04T22:18:43.244Z","lane":"Framework: CLI","title":"Define public CLI surface + align MCP parity"}
 {"type":"complete","wuId":"WU-1432","timestamp":"2026-02-04T22:29:51.573Z"}
+{"type":"claim","wuId":"WU-1434","lane":"Content: Documentation","title":"Update MCP docs with final tools","timestamp":"2026-02-04T22:32:51.229Z"}
