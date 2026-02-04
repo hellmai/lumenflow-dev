@@ -1,0 +1,35 @@
+id: WU-1421
+title: Rename .beacon to .lumenflow (complete ExampleApp migration)
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-04
+code_paths:
+  - packages/@lumenflow/core/src/spawn-monitor.ts
+  - packages/@lumenflow/core/src/spawn-recovery.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/.beacon
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/spawn-monitor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1421.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: .beacon/ directory is a legacy artifact from migrating LumenFlow out of ExampleApp. Problem: Confusing naming - '.beacon' has no meaning in LumenFlow context. spawn-monitor.ts uses .beacon/locks/ while lane-lock.ts uses .lumenflow/locks/, creating inconsistency. Solution: Rename all .beacon references to .lumenflow, consolidate lock directories, update all code paths."
+acceptance:
+  - .beacon directory renamed to .lumenflow or consolidated into existing .lumenflow
+  - spawn-monitor.ts uses .lumenflow/locks/ (same as lane-lock.ts)
+  - No references to 'beacon' remain in codebase (except git history)
