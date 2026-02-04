@@ -1129,6 +1129,37 @@ function generateReadmeMd(commands: CommandMetadata[]): string {
   lines.push('- `@lumenflow/initiatives` - Initiative tracking');
   lines.push('');
 
+  // MCP Server Setup section (WU-1413)
+  lines.push('## MCP Server Setup (Claude Code)');
+  lines.push('');
+  lines.push(
+    'LumenFlow provides an MCP (Model Context Protocol) server for deep integration with Claude Code.',
+  );
+  lines.push('');
+  lines.push(
+    'When you run `lumenflow init --client claude`, a `.mcp.json` is automatically created:',
+  );
+  lines.push('');
+  lines.push('```json');
+  lines.push('{');
+  lines.push('  "mcpServers": {');
+  lines.push('    "lumenflow": {');
+  lines.push('      "command": "npx",');
+  lines.push('      "args": ["@lumenflow/mcp"]');
+  lines.push('    }');
+  lines.push('  }');
+  lines.push('}');
+  lines.push('```');
+  lines.push('');
+  lines.push(
+    'The `@lumenflow/mcp` server provides tools for WU lifecycle, memory coordination, and lane management directly within Claude Code.',
+  );
+  lines.push('');
+  lines.push(
+    'See [AI Integrations](https://lumenflow.dev/guides/ai-integrations) for full MCP documentation.',
+  );
+  lines.push('');
+
   // Documentation section
   lines.push('## Documentation');
   lines.push('');

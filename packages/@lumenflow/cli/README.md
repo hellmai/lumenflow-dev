@@ -244,6 +244,27 @@ The CLI integrates with other LumenFlow packages:
 - `@lumenflow/agent` - Agent session management
 - `@lumenflow/initiatives` - Initiative tracking
 
+## MCP Server Setup (Claude Code)
+
+LumenFlow provides an MCP (Model Context Protocol) server for deep integration with Claude Code.
+
+When you run `lumenflow init --client claude`, a `.mcp.json` is automatically created:
+
+```json
+{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"]
+    }
+  }
+}
+```
+
+The `@lumenflow/mcp` server provides tools for WU lifecycle, memory coordination, and lane management directly within Claude Code.
+
+See [AI Integrations](https://lumenflow.dev/guides/ai-integrations) for full MCP documentation.
+
 ## Documentation
 
 For complete documentation, see [lumenflow.dev](https://lumenflow.dev/reference/cli).

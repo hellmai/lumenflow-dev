@@ -55,6 +55,13 @@ Claude Code is Anthropic's official CLI for Claude. It has the deepest integrati
 - `.claude/settings.json` - Permission configuration
 - `.claude/agents/` - Agent definitions
 - `.claude/skills/` - Skill definitions
+- `.mcp.json` - MCP server configuration (WU-1413)
+
+**MCP Integration:** Claude Code supports MCP (Model Context Protocol) servers. When initializing with `--client claude`, LumenFlow automatically configures the `@lumenflow/mcp` server which provides:
+
+- WU lifecycle tools (status, claim, gates)
+- Memory coordination tools (checkpoint, signal, inbox)
+- Lane management tools (health, suggest)
 
 **Auto-detection:** Environment variables `CLAUDE_PROJECT_DIR` or `CLAUDE_CODE`
 
@@ -191,6 +198,72 @@ lumenflow init --client all
 ```
 
 This creates all vendor-specific configuration files alongside the universal entry points.
+
+---
+
+## MCP Server Integration
+
+LumenFlow provides an MCP (Model Context Protocol) server package for deeper AI integration.
+
+### What is MCP?
+
+MCP is a protocol that allows AI assistants to access tools and context from external servers. LumenFlow's MCP server (`@lumenflow/mcp`) exposes workflow tools directly to compatible AI assistants.
+
+### Supported Assistants
+
+| Assistant     | MCP Support | Configuration   |
+| ------------- | ----------- | --------------- |
+| Claude Code   | Yes         | `.mcp.json`     |
+| Antigravity   | Yes         | TBD             |
+| Cursor        | No          | Uses rules file |
+| Windsurf      | No          | Uses rules file |
+
+### Setup (Claude Code)
+
+When you run `lumenflow init --client claude`, a `.mcp.json` is automatically created:
+
+```json
+{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"]
+    }
+  }
+}
+```
+
+### Manual Setup
+
+If you already have LumenFlow but need to add MCP support:
+
+```bash
+# Option 1: Re-run init with force to regenerate all files
+lumenflow init --client claude --force
+
+# Option 2: Manually create .mcp.json
+echo '{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"]
+    }
+  }
+}' > .mcp.json
+```
+
+### Available MCP Tools
+
+The `@lumenflow/mcp` server provides these tools to AI assistants:
+
+| Tool           | Description                          |
+| -------------- | ------------------------------------ |
+| `wu_status`    | Get current WU status and location   |
+| `wu_claim`     | Claim a WU and create worktree       |
+| `gates`        | Run quality gates                    |
+| `mem_checkpoint` | Save progress checkpoint           |
+| `mem_inbox`    | Check coordination signals           |
+| `lane_health`  | Check lane configuration health      |
 
 ---
 

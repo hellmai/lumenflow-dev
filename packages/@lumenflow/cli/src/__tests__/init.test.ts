@@ -1080,4 +1080,157 @@ describe('lumenflow init', () => {
       });
     });
   });
+
+  // WU-1413: MCP server configuration scaffolding
+  describe('WU-1413: .mcp.json scaffolding', () => {
+    const MCP_JSON_FILE = '.mcp.json';
+
+    describe('.mcp.json creation with --client claude', () => {
+      it('should scaffold .mcp.json when --client claude is used', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        expect(fs.existsSync(mcpJsonPath)).toBe(true);
+      });
+
+      it('should include lumenflow MCP server configuration', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        const content = fs.readFileSync(mcpJsonPath, 'utf-8');
+        const mcpConfig = JSON.parse(content);
+
+        // Should have mcpServers key
+        expect(mcpConfig.mcpServers).toBeDefined();
+        // Should have lumenflow server entry
+        expect(mcpConfig.mcpServers.lumenflow).toBeDefined();
+        // Should use npx command
+        expect(mcpConfig.mcpServers.lumenflow.command).toBe('npx');
+        // Should reference @lumenflow/mcp package
+        expect(mcpConfig.mcpServers.lumenflow.args).toContain('@lumenflow/mcp');
+      });
+
+      it('should be valid JSON', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        const content = fs.readFileSync(mcpJsonPath, 'utf-8');
+
+        // Should parse without error
+        expect(() => JSON.parse(content)).not.toThrow();
+      });
+    });
+
+    describe('.mcp.json creation with --client all', () => {
+      it('should scaffold .mcp.json when --client all is used', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'all',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        expect(fs.existsSync(mcpJsonPath)).toBe(true);
+      });
+    });
+
+    describe('.mcp.json NOT created with other clients', () => {
+      it('should NOT scaffold .mcp.json when --client none is used', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'none',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        expect(fs.existsSync(mcpJsonPath)).toBe(false);
+      });
+
+      it('should NOT scaffold .mcp.json when --client cursor is used', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'cursor',
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        expect(fs.existsSync(mcpJsonPath)).toBe(false);
+      });
+
+      it('should NOT scaffold .mcp.json when no client is specified', async () => {
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        await scaffoldProject(tempDir, options);
+
+        const mcpJsonPath = path.join(tempDir, MCP_JSON_FILE);
+        expect(fs.existsSync(mcpJsonPath)).toBe(false);
+      });
+    });
+
+    describe('.mcp.json file modes', () => {
+      it('should skip .mcp.json if it already exists (skip mode)', async () => {
+        // Create existing .mcp.json
+        const existingContent = '{"mcpServers":{"custom":{}}}';
+        fs.writeFileSync(path.join(tempDir, MCP_JSON_FILE), existingContent);
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+          client: 'claude',
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        expect(result.skipped).toContain(MCP_JSON_FILE);
+        // Content should not be changed
+        const content = fs.readFileSync(path.join(tempDir, MCP_JSON_FILE), 'utf-8');
+        expect(content).toBe(existingContent);
+      });
+
+      it('should overwrite .mcp.json in force mode', async () => {
+        // Create existing .mcp.json
+        fs.writeFileSync(path.join(tempDir, MCP_JSON_FILE), '{"custom":true}');
+
+        const options: ScaffoldOptions = {
+          force: true,
+          full: false,
+          client: 'claude',
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+
+        expect(result.created).toContain(MCP_JSON_FILE);
+        const content = fs.readFileSync(path.join(tempDir, MCP_JSON_FILE), 'utf-8');
+        const mcpConfig = JSON.parse(content);
+        expect(mcpConfig.mcpServers.lumenflow).toBeDefined();
+      });
+    });
+  });
 });

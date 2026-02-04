@@ -864,6 +864,17 @@ pnpm wu:done --id WU-XXX
 // Template for .aider.conf.yml
 const AIDER_CONF_TEMPLATE = `# Aider Configuration for LumenFlow Projects\n# See LUMENFLOW.md for workflow documentation\n\nmodel: gpt-4-turbo\nauto-commits: false\ndirty-commits: false\n\nread:\n  - LUMENFLOW.md\n  - .lumenflow/constraints.md\n`;
 
+// WU-1413: Template for .mcp.json (MCP server configuration for Claude Code)
+const MCP_JSON_TEMPLATE = `{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"]
+    }
+  }
+}
+`;
+
 // Template for docs/04-operations/tasks/backlog.md
 const BACKLOG_TEMPLATE = `---\nsections:\n  ready:\n    heading: '## 🚀 Ready (pull from here)'\n    insertion: after_heading_blank_line\n  in_progress:\n    heading: '## 🔧 In progress'\n    insertion: after_heading_blank_line\n  blocked:\n    heading: '## ⛔ Blocked'\n    insertion: after_heading_blank_line\n  done:\n    heading: '## ✅ Done'\n    insertion: after_heading_blank_line\n---\n\n# Backlog (single source of truth)\n\n## 🚀 Ready (pull from here)\n\n(No items ready)\n\n## 🔧 In progress\n\n(No items in progress)\n\n## ⛔ Blocked\n\n(No items blocked)\n\n## ✅ Done\n\n(No items completed yet)\n`;
 
@@ -3279,6 +3290,21 @@ async function scaffoldClientFiles(
       path.join(targetDir, CLAUDE_DIR, 'settings.json'),
       settingsContent,
       options.force ? 'force' : 'skip',
+      result,
+      targetDir,
+    );
+
+    // WU-1413: Scaffold .mcp.json for MCP server integration
+    let mcpJsonContent: string;
+    try {
+      mcpJsonContent = loadTemplate('core/.mcp.json.template');
+    } catch {
+      mcpJsonContent = MCP_JSON_TEMPLATE;
+    }
+    await createFile(
+      path.join(targetDir, '.mcp.json'),
+      mcpJsonContent,
+      fileMode,
       result,
       targetDir,
     );
