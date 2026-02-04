@@ -10,7 +10,8 @@ code_paths:
   - pnpm-lock.yaml
   - docs/04-operations/tasks/wu/WU-1435.yaml
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --filter @lumenflow/core -- --run src/__tests__/wu-list.test.ts
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
   e2e: []
@@ -20,7 +21,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1436-plan.md
 risks: []
-notes: ''
+notes: Added memfs devDependency for @lumenflow/core; verified wu-list test passes.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
