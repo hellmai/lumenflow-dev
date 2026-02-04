@@ -30,3 +30,5 @@ acceptance:
   - Quickstart instructs to run pnpm exec lumenflow-doctor (not lumenflow doctor) and treat errors as blockers
   - Quickstart includes explicit fix commands for Husky and safe-git, gated by user approval
   - Quickstart requires initiative creation when user indicates multi-phase or vision
+spec_refs:
+  - lumenflow://plans/WU-1401-plan.md
