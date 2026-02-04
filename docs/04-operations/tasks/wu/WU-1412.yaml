@@ -11,6 +11,9 @@ code_paths:
 tests:
   manual:
     - Verify MCP server responds to stdio handshake
+    - 'Run npx @lumenflow/mcp from project root and verify it starts without errors'
+    - 'Verify SIGINT (Ctrl+C) gracefully shuts down the server'
+    - 'Configure in .mcp.json and verify Claude Code can discover tools'
   unit:
     - packages/@lumenflow/mcp/src/__tests__/cli-runner.test.ts
     - packages/@lumenflow/mcp/src/__tests__/stdio-handshake.test.ts
@@ -24,7 +27,11 @@ phase: 1
 spec_refs:
   - lumenflow://plans/WU-1412-plan.md
 risks: []
-notes: Creates @lumenflow/mcp package for AI-native interface to WU operations
+notes: |
+  Architecture: Read operations use @lumenflow/core directly (context_get) while all write
+  operations shell out to CLI via cli-runner.ts for consistency and safety. The wu_done
+  tool includes fail-fast validation requiring main checkout. Server uses StdioServerTransport
+  from @modelcontextprotocol/sdk. Resources provide read access via URI patterns.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

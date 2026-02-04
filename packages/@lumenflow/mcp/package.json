@@ -1,0 +1,76 @@
+{
+  "name": "@lumenflow/mcp",
+  "version": "2.10.0",
+  "description": "MCP stdio server for LumenFlow workflow framework",
+  "keywords": [
+    "lumenflow",
+    "mcp",
+    "model-context-protocol",
+    "workflow",
+    "wu",
+    "work-unit"
+  ],
+  "homepage": "https://github.com/hellmai/os",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/os.git",
+    "directory": "packages/@lumenflow/mcp"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "import": "./dist/tools.js"
+    },
+    "./cli-runner": {
+      "types": "./dist/cli-runner.d.ts",
+      "import": "./dist/cli-runner.js"
+    }
+  },
+  "bin": {
+    "lumenflow-mcp": "./dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@lumenflow/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

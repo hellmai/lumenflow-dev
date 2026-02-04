@@ -3,12 +3,13 @@
 # Defines sub-lane taxonomy with code_paths patterns and keywords for automated inference.
 # Used by @lumenflow/core lane-inference.ts to suggest sub-lanes during WU creation.
 #
-# Taxonomy: 10 sub-lanes across 3 parent lanes
-# - Framework: 7 sub-lanes (Core, CLI, Memory, Agent, Metrics, Initiatives, Shims)
+# Taxonomy: 11 sub-lanes across 3 parent lanes
+# - Framework: 8 sub-lanes (Core, CLI, MCP, Memory, Agent, Metrics, Initiatives, Shims)
 # - Operations: 2 sub-lanes (Infrastructure, CI/CD)
 # - Content: 1 sub-lane (Documentation)
 #
 # Created: WU-1019
+# Updated: WU-1412 (added MCP sub-lane)
 # Based on: ExampleApp .lumenflow.lane-inference.yaml pattern
 
 # Framework Lane: @lumenflow packages
@@ -42,6 +43,21 @@ Framework:
       - 'argument parsing'
       - 'commander'
       - 'bin script'
+
+  MCP:
+    description: 'MCP stdio server: Model Context Protocol server for AI agents'
+    code_paths:
+      - 'packages/@lumenflow/mcp/**'
+      - 'packages/@lumenflow/mcp/src/**'
+    keywords:
+      - 'mcp'
+      - 'model context protocol'
+      - 'stdio'
+      - 'server'
+      - 'tools'
+      - 'resources'
+      - 'agent protocol'
+      - 'npx @lumenflow/mcp'
 
   Memory:
     description: 'Memory layer: checkpoints, summarization, context management'
