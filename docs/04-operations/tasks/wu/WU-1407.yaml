@@ -8,11 +8,6 @@ created: 2026-02-04
 code_paths:
   - CLAUDE.md
   - LUMENFLOW.md
-  - CLAUDE.md
-  - LUMENFLOW.md
-  - docs/templates/wu-template.yaml
-  - CLAUDE.md
-  - LUMENFLOW.md
   - docs/templates/wu-template.yaml
 tests:
   manual:
@@ -37,11 +32,6 @@ description: "Context: design-first skill catches over-engineering (saved 20+ li
   wu-template.yaml. Scope: mandatory for feature/refactor WUs, optional for chores/ops/docs. No
   hooks, no automation—just docs."
 acceptance:
-  - CLAUDE.md Core Principles includes design-first mandate
-  - LUMENFLOW.md workflow shows design-first before TDD
-  - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
-  - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
-  - wu-template.yaml includes reminder to load design-first for feature/refactor types
   - CLAUDE.md Core Principles includes design-first mandate for feature/refactor WUs
   - LUMENFLOW.md workflow shows design-first before TDD for feature/refactor WUs
   - wu-template.yaml includes reminder to load design-first for feature/refactor types
