@@ -28,9 +28,13 @@ You are here to set up LumenFlow. That is your **only** job in the setup phase.
 
 ## Setup Exit Criteria (Must be true)
 
-1. LumenFlow installed and activated. CLI installed; `pnpm exec lumenflow --full --client <client>` completed; `pnpm wu:create --help` works.
+1. LumenFlow installed and activated. CLI installed; `pnpm exec lumenflow --client <client>` completed; `pnpm wu:create --help` works.
 2. LumenFlow enforced. Run `pnpm exec lumenflow-doctor`; errors are blockers. Work happens only in claimed WUs; no edits on main; gates run before `wu:done`.
 3. Next step chosen with the user. Create one of: Discovery WU, concrete task WU, or Initiative for multi-phase vision. Stop after selection.
+
+**Supported clients:** `claude`, `cursor`, `windsurf`, `codex`, `cline`, `aider`, `all`, `none`
+
+If you don't know the user's client, ask before running init. If their client isn't listed, use `--client none` for generic files only.
 
 <Aside type="danger" title="Enforcement warnings are blockers">
   If init or `lumenflow-doctor` reports errors (e.g., Husky hooks not installed, safe-git missing),
@@ -89,29 +93,31 @@ pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core"
 
 If a command is not listed here, do not run it during setup.
 
-| Command                                                        | Purpose                                     |
-| -------------------------------------------------------------- | ------------------------------------------- |
-| `node --version`                                               | Verify toolchain                            |
-| `pnpm --version`                                               | Verify toolchain                            |
-| `git --version`                                                | Verify toolchain                            |
-| `git init`                                                     | New project only                            |
-| `pnpm init -y`                                                 | Only if no `package.json` and user approved |
-| `pnpm add -D @lumenflow/cli`                                   | Install LumenFlow CLI                       |
-| `pnpm exec lumenflow --full --client <client>`                 | Initialize LumenFlow (new repos)            |
-| `pnpm exec lumenflow --full --client <client> --merge`         | Initialize LumenFlow (existing repos)       |
-| `pnpm exec lumenflow-doctor`                                   | Verify enforcement (errors block)           |
-| `pnpm wu:create --help`                                        | Verify scripts were injected                |
-| `pnpm add -D husky`                                            | Fix enforcement (only with approval)        |
-| `pnpm exec husky init`                                         | Fix enforcement (only with approval)        |
-| `mkdir -p scripts`                                             | Fix enforcement (only with approval)        |
-| `cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git` | Fix enforcement (only with approval)        |
-| `chmod +x scripts/safe-git`                                    | Fix enforcement (only with approval)        |
-| `pnpm initiative:create ...`                                   | Create an initiative                        |
-| `pnpm initiative:edit ...`                                     | Add initiative phases                       |
-| `pnpm wu:create ...`                                           | Create first WU                             |
-| `pnpm wu:status --id WU-XXX`                                   | Confirm WU status                           |
-| `pnpm wu:claim --id WU-XXX --lane "..."`                       | Only if user explicitly says "proceed"      |
-| `git add -A && git commit -m "..."`                            | Commit scaffold/LumenFlow setup only        |
+| Command                                                        | Purpose                                      |
+| -------------------------------------------------------------- | -------------------------------------------- |
+| `node --version`                                               | Verify toolchain (require ≥22)               |
+| `pnpm --version`                                               | Verify toolchain (require ≥9)                |
+| `git --version`                                                | Verify toolchain (require ≥2)                |
+| `git init`                                                     | New project only                             |
+| `pnpm init -y`                                                 | Only if no `package.json` and user approved  |
+| `pnpm add -D @lumenflow/cli`                                   | Install LumenFlow CLI                        |
+| `pnpm exec lumenflow --client <client>`                        | Initialize LumenFlow (new repos)             |
+| `pnpm exec lumenflow --client <client> --merge`                | Initialize LumenFlow (existing repos)        |
+| `pnpm exec lumenflow-doctor`                                   | Verify enforcement (errors block)            |
+| `pnpm exec lumenflow-doctor --deep`                            | Optional: extended WU validation             |
+| `pnpm wu:create --help`                                        | Verify scripts were injected                 |
+| `pnpm add -D husky`                                            | Fix enforcement (only with approval)         |
+| `pnpm exec husky init`                                         | Fix enforcement (only with approval)         |
+| `mkdir -p scripts`                                             | Fix enforcement (only with approval)         |
+| `cp node_modules/@lumenflow/cli/bin/safe-git scripts/safe-git` | Fix enforcement (only with approval)         |
+| `chmod +x scripts/safe-git`                                    | Fix enforcement (only with approval)         |
+| `pnpm exec lumenflow-integrate --client claude-code`           | Claude Code only: generate enforcement hooks |
+| `pnpm initiative:create ...`                                   | Create an initiative                         |
+| `pnpm initiative:edit ...`                                     | Add initiative phases                        |
+| `pnpm wu:create ...`                                           | Create first WU                              |
+| `pnpm wu:status --id WU-XXX`                                   | Confirm WU status                            |
+| `pnpm wu:claim --id WU-XXX --lane "..."`                       | Only if user explicitly says "proceed"       |
+| `git add -A && git commit -m "..."`                            | Commit scaffold/LumenFlow setup only         |
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 
@@ -121,95 +127,111 @@ Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 1. **Verify toolchain**
 
 ```bash
-node --version   # Requires 22.0.0+
-pnpm --version   # Requires 9.0.0+
-git --version    # Requires 2.0.0+
+node --version   # Requires ≥22
+pnpm --version   # Requires ≥9
+git --version    # Requires ≥2
 ```
 
-2. **Initialize the repo** (only if empty)
+If any version is below minimum, stop and inform the user.
 
-   ```bash
-   git init
-   ```
+2.  **Initialize the repo** (only if empty)
 
-   <Aside type="caution" title="Non-Node projects still need a package.json">
-     For .NET, Go, Python, etc., LumenFlow uses `package.json` only to install the CLI and scripts.
-     If there is no `package.json`, ask permission to run `pnpm init -y`. Do not scaffold a Node
-     stack or change the project's framework.
-   </Aside>
+    ```bash
+    git init
+    ```
 
-3. **Scaffold a tech stack only if the user explicitly asked**
+    <Aside type="caution" title="Non-Node projects still need a package.json">
+      For .NET, Go, Python, etc., LumenFlow uses `package.json` only to install the CLI and scripts.
+      If there is no `package.json`, ask permission to run `pnpm init -y`. Do not scaffold a Node
+      stack or change the project's framework.
+    </Aside>
 
-   Keep this minimal. Do not add feature code.
+3.  **Scaffold a tech stack only if the user explicitly asked**
 
-   ```bash
-   pnpm create next-app@latest . --typescript --tailwind --eslint --app --yes
-   # or: pnpm create vite@latest . --template react-ts
-   # or: pnpm create astro@latest . --template minimal
-   ```
+    Keep this minimal. Do not add feature code.
 
-   If you scaffolded, commit the baseline:
+    ```bash
+    pnpm create next-app@latest . --typescript --tailwind --eslint --app --yes
+    # or: pnpm create vite@latest . --template react-ts
+    # or: pnpm create astro@latest . --template minimal
+    ```
 
-   ```bash
-   git add -A && git commit -m "chore: initial scaffold"
-   ```
+    If you scaffolded, commit the baseline:
 
-4. **Install LumenFlow**
+    ```bash
+    git add -A && git commit -m "chore: initial scaffold"
+    ```
 
-   ```bash
-   pnpm add -D @lumenflow/cli
-   ```
+4.  **Install LumenFlow**
 
-5. **Initialize LumenFlow**
+    ```bash
+    pnpm add -D @lumenflow/cli
+    ```
 
-   ```bash
-   pnpm exec lumenflow --full --client claude
-   # or: pnpm exec lumenflow --full --client codex
-   # or: pnpm exec lumenflow --full --client cursor
-   # or: pnpm exec lumenflow --full --client windsurf
-   # or: pnpm exec lumenflow --full --client cline
-   ```
+5.  **Initialize LumenFlow**
 
-6. **Verify scripts were injected**
+    ```bash
+    pnpm exec lumenflow --client claude
+    # or: pnpm exec lumenflow --client codex
+    # or: pnpm exec lumenflow --client cursor
+    # or: pnpm exec lumenflow --client windsurf
+    # or: pnpm exec lumenflow --client cline
+    # or: pnpm exec lumenflow --client aider
+    # or: pnpm exec lumenflow --client none  # generic files only
+    ```
 
-   ```bash
-   pnpm wu:create --help
-   ```
+        <Aside type="tip" title="Claude Code enforcement hooks (optional)">
 
-7. **Commit LumenFlow setup**
+    If the user is on Claude Code and wants enforcement hooks that block edits outside worktrees:
 
-   ```bash
-   git add -A && git commit -m "chore: add lumenflow"
-   ```
+    ```bash
+    pnpm exec lumenflow-integrate --client claude-code
+    ```
 
-8. **Create initiative (only if a vision doc exists)**
+    This generates `.claude/hooks/*` and updates `settings.json`. Other clients don't support this yet.
 
-   ```bash
-   pnpm initiative:create \
-     --id INIT-001 \
-     --slug "project-name" \
-     --title "Project Name" \
-     --owner "team@example.com"
+        </Aside>
 
-   pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: Foundation"
-   pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core Features"
-   ```
+6.  **Verify scripts were injected**
 
-9. **Create the first WU (do not implement)**
+    ```bash
+    pnpm wu:create --help
+    ```
 
-   ```bash
-   pnpm wu:create \
-     --lane "<Lane from .lumenflow.config.yaml>" \
-     --title "<Short task title>" \
-     --type feature \
-     --exposure backend-only \
-     --description "<What this task accomplishes>" \
-     --acceptance "<Measurable success criterion>"
-   ```
+7.  **Commit LumenFlow setup**
 
-   If you created an initiative, add: `--initiative INIT-001`.
+    ```bash
+    git add -A && git commit -m "chore: add lumenflow"
+    ```
 
-   Do **not** claim or implement unless the user explicitly says "proceed".
+8.  **Create initiative (only if a vision doc exists)**
+
+    ```bash
+    pnpm initiative:create \
+      --id INIT-001 \
+      --slug "project-name" \
+      --title "Project Name" \
+      --owner "team@example.com"
+
+    pnpm initiative:edit --id INIT-001 --add-phase "Phase 1: Foundation"
+    pnpm initiative:edit --id INIT-001 --add-phase "Phase 2: Core Features"
+    ```
+
+9.  **Create the first WU (do not implement)**
+
+    ```bash
+    pnpm wu:create \
+      --lane "<Lane from .lumenflow.config.yaml>" \
+      --title "<Short task title>" \
+      --type feature \
+      --exposure backend-only \
+      --description "<What this task accomplishes>" \
+      --acceptance "<Measurable success criterion>"
+    ```
+
+    If you created an initiative, add: `--initiative INIT-001`.
+
+    Do **not** claim or implement unless the user explicitly says "proceed".
 
 </Steps>
 
@@ -219,62 +241,75 @@ git --version    # Requires 2.0.0+
 1. **Verify toolchain**
 
 ```bash
-node --version   # Requires 22.0.0+
-pnpm --version   # Requires 9.0.0+
-git --version    # Requires 2.0.0+
+node --version   # Requires ≥22
+pnpm --version   # Requires ≥9
+git --version    # Requires ≥2
 ```
 
-2. **Install LumenFlow**
+If any version is below minimum, stop and inform the user.
 
-   ```bash
-   pnpm add -D @lumenflow/cli
-   ```
+2.  **Install LumenFlow**
 
-3. **Initialize with merge mode**
+    ```bash
+    pnpm add -D @lumenflow/cli
+    ```
 
-   ```bash
-   pnpm exec lumenflow --full --client claude --merge
-   ```
+3.  **Initialize with merge mode**
 
-4. **Verify scripts were injected**
+    ```bash
+    pnpm exec lumenflow --client claude --merge
+    # Supported: claude, cursor, windsurf, codex, cline, aider, none
+    ```
 
-   ```bash
-   pnpm wu:create --help
-   ```
+        <Aside type="tip" title="Claude Code enforcement hooks (optional)">
 
-5. **Commit LumenFlow setup**
+    If the user is on Claude Code and wants enforcement hooks:
 
-   ```bash
-   git add -A && git commit -m "chore: add lumenflow"
-   ```
+    ```bash
+    pnpm exec lumenflow-integrate --client claude-code
+    ```
 
-6. **Create initiative (optional)**
+        </Aside>
 
-   If the user provided a vision doc or multi-phase plan:
+4.  **Verify scripts were injected**
 
-   ```bash
-   pnpm initiative:create \
-     --id INIT-001 \
-     --slug "project-name" \
-     --title "Project Name" \
-     --owner "team@example.com"
-   ```
+    ```bash
+    pnpm wu:create --help
+    ```
 
-7. **Create the first WU (do not implement)**
+5.  **Commit LumenFlow setup**
 
-   ```bash
-   pnpm wu:create \
-     --lane "<Lane from .lumenflow.config.yaml>" \
-     --title "<Short task title>" \
-     --type feature \
-     --exposure backend-only \
-     --description "<What this task accomplishes>" \
-     --acceptance "<Measurable success criterion>"
-   ```
+    ```bash
+    git add -A && git commit -m "chore: add lumenflow"
+    ```
 
-   If you created an initiative, add: `--initiative INIT-001`.
+6.  **Create initiative (optional)**
 
-   Do **not** claim or implement unless the user explicitly says "proceed".
+    If the user provided a vision doc or multi-phase plan:
+
+    ```bash
+    pnpm initiative:create \
+      --id INIT-001 \
+      --slug "project-name" \
+      --title "Project Name" \
+      --owner "team@example.com"
+    ```
+
+7.  **Create the first WU (do not implement)**
+
+    ```bash
+    pnpm wu:create \
+      --lane "<Lane from .lumenflow.config.yaml>" \
+      --title "<Short task title>" \
+      --type feature \
+      --exposure backend-only \
+      --description "<What this task accomplishes>" \
+      --acceptance "<Measurable success criterion>"
+    ```
+
+    If you created an initiative, add: `--initiative INIT-001`.
+
+    Do **not** claim or implement unless the user explicitly says "proceed".
 
 </Steps>
 

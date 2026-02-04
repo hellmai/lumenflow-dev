@@ -18,7 +18,15 @@ dependencies: []
 spec_refs:
   - /home/tom/.claude/plans/peaceful-discovering-sky.md
 risks: []
-notes: ''
+notes: |
+  Plan: /home/tom/.claude/plans/peaceful-discovering-sky.md
+
+  Updated apps/docs/src/content/docs/getting-started/quickstart.mdx:
+  - Removed --full from init commands (it's default)
+  - Added lumenflow-integrate for Claude Code users
+  - Listed supported client types with --client none fallback
+  - Added version requirements (Node ≥22, pnpm ≥9, Git ≥2)
+  - Added doctor --deep optional command
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
