@@ -127,13 +127,38 @@ pnpm exec lumenflow --client all      # All clients
 
 ## State Management
 
-| Command                | Description                 |
-| ---------------------- | --------------------------- |
-| `pnpm state:doctor`    | Diagnose state store issues |
-| `pnpm state:cleanup`   | Clean up stale state data   |
-| `pnpm signal:cleanup`  | Clean up stale signals      |
-| `pnpm state:bootstrap` | Bootstrap state store       |
-| `pnpm backlog:prune`   | Clean stale backlog entries |
+| Command                       | Description                            |
+| ----------------------------- | -------------------------------------- |
+| `pnpm state:doctor`           | Diagnose state store issues            |
+| `pnpm state:doctor --fix`     | Auto-repair safe issues                |
+| `pnpm state:doctor --dry-run` | Preview repairs without making changes |
+| `pnpm state:doctor --json`    | Output as JSON                         |
+| `pnpm state:cleanup`          | Clean up stale state data              |
+| `pnpm signal:cleanup`         | Clean up stale signals                 |
+| `pnpm state:bootstrap`        | Bootstrap state store                  |
+| `pnpm backlog:prune`          | Clean stale backlog entries            |
+
+### state:doctor Issue Types (WU-1420)
+
+The `state:doctor` command detects and can auto-fix these issues:
+
+| Issue Type      | Description                                            | Auto-Fix Action        |
+| --------------- | ------------------------------------------------------ | ---------------------- |
+| Orphaned WU     | WU YAML status is 'done' but no stamp file exists      | Creates stamp file     |
+| Dangling Signal | Signal references a WU that doesn't exist              | Removes signal         |
+| Broken Event    | Events exist for a WU that doesn't exist               | Removes events         |
+| Status Mismatch | WU YAML status differs from state store derived status | Emits corrective event |
+
+**Status Mismatch Detection (WU-1420):**
+
+When WU YAML says 'ready' but the state store (derived from events) says 'in_progress',
+`wu:claim` fails with 'already in_progress'. The `state:doctor --fix` command will emit
+a `release` event to reconcile the state.
+
+Supported mismatch fixes:
+
+- YAML=ready, state=in_progress: Emits `release` event
+- YAML=done, state=in_progress: Emits `complete` event
 
 ---
 
