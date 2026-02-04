@@ -7,6 +7,7 @@ priority: P2
 created: 2026-02-04
 code_paths:
   - docs/**
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
   manual:
     - Test prompt with fresh repo to verify command sequence works
@@ -18,20 +19,19 @@ dependencies: []
 spec_refs:
   - /home/tom/.claude/plans/peaceful-discovering-sky.md
 risks: []
-notes: |
-  Plan: /home/tom/.claude/plans/peaceful-discovering-sky.md
-
-  Updated apps/docs/src/content/docs/getting-started/quickstart.mdx:
-  - Removed --full from init commands (it's default)
-  - Added lumenflow-integrate for Claude Code users
-  - Listed supported client types with --client none fallback
-  - Added version requirements (Node ≥22, pnpm ≥9, Git ≥2)
-  - Added doctor --deep optional command
+notes: ''
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-04T10:18:18.287Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1403
+session_id: 8b9101c7-f8d1-44b2-9026-04d130bc083e
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T10:18:18.291Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +44,3 @@ acceptance:
   - 'Version requirements specified: Node ≥22, pnpm ≥9, Git ≥2'
   - Prompt uses XML tags for structure (CTCO pattern)
   - Client types enumerated to prevent guessing
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1403
-claimed_at: 2026-02-04T10:18:18.287Z
-baseline_main_sha: df7966c9f409d451a61a3438bafd7476384cba49
-session_id: 8b9101c7-f8d1-44b2-9026-04d130bc083e
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-04T10:18:18.291Z
