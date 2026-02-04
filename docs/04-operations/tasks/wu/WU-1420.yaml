@@ -11,7 +11,10 @@ code_paths:
   - packages/@lumenflow/cli/src/state-doctor-fix.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
-  manual: []
+  manual:
+    - Run state:doctor on a repo with YAML=ready but events show in_progress (no release), verify STATUS_MISMATCH detected
+    - Run state:doctor --fix and verify release event emitted to reconcile state
+    - Run wu:claim after fix and verify it succeeds
   unit:
     - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
   e2e: []
@@ -19,7 +22,11 @@ artifacts:
   - .lumenflow/stamps/WU-1420.done
 dependencies: []
 risks: []
-notes: ''
+notes: |
+  Implementation adds STATUS_MISMATCH issue type to state-doctor-core.ts.
+  Detection: Derives status from events (claim->in_progress, release->ready, complete->done)
+  and compares against YAML status field.
+  Fix: Emits corrective events (release or complete) via micro-worktree isolation.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -1,10 +1,11 @@
 /**
- * State Doctor Core (WU-1209)
+ * State Doctor Core (WU-1209, WU-1420)
  *
  * Integrity checker for LumenFlow state that detects:
  * - Orphaned WUs (done status but no stamp)
  * - Dangling signals (reference non-existent WUs)
  * - Broken memory relationships (events for missing WU specs)
+ * - Status mismatches between WU YAML and state store (WU-1420)
  *
  * Inspired by Beads bd doctor command.
  *
@@ -28,6 +29,8 @@ export const ISSUE_TYPES = {
   DANGLING_SIGNAL: 'dangling_signal',
   /** Event references a WU that doesn't exist */
   BROKEN_EVENT: 'broken_event',
+  /** WU YAML status differs from state store derived status (WU-1420) */
+  STATUS_MISMATCH: 'status_mismatch',
 } as const;
 
 /**
@@ -79,6 +82,27 @@ export interface MockEvent {
   wuId: string;
   type: string;
   timestamp?: string;
+  lane?: string;
+  title?: string;
+  reason?: string;
+}
+
+/**
+ * Event to emit for fixing status mismatches (WU-1420)
+ */
+export interface EmitEventPayload {
+  wuId: string;
+  type: 'release' | 'complete';
+  reason?: string;
+  timestamp?: string;
+}
+
+/**
+ * Status mismatch details for fixing (WU-1420)
+ */
+export interface StatusMismatchDetails {
+  yamlStatus: string;
+  derivedStatus: string;
 }
 
 /**
@@ -99,6 +123,8 @@ export interface StateDoctorDeps {
   removeEvent?: (wuId: string) => Promise<void>;
   /** Create a stamp for a WU (for --fix) */
   createStamp?: (wuId: string, title: string) => Promise<void>;
+  /** Emit an event to fix status mismatch (WU-1420) */
+  emitEvent?: (event: EmitEventPayload) => Promise<void>;
 }
 
 /**
@@ -119,6 +145,8 @@ export interface DiagnosisIssue {
   suggestion: string;
   /** Whether this issue can be auto-fixed */
   canAutoFix: boolean;
+  /** Status mismatch details for fixing (WU-1420) */
+  statusMismatch?: StatusMismatchDetails;
 }
 
 /**
@@ -145,6 +173,8 @@ export interface DiagnosisSummary {
   danglingSignals: number;
   /** Number of broken events */
   brokenEvents: number;
+  /** Number of status mismatches (WU-1420) */
+  statusMismatches: number;
   /** Total number of issues */
   totalIssues: number;
 }
@@ -177,6 +207,95 @@ export interface StateDiagnosis {
   dryRun?: boolean;
   /** Issues that would be fixed (in dry-run mode) */
   wouldFix?: DiagnosisIssue[];
+}
+
+/**
+ * Derive WU status from events (WU-1420)
+ *
+ * Replays events to determine the current derived status:
+ * - claim/create -> in_progress
+ * - release -> ready
+ * - complete -> done
+ * - block -> blocked
+ * - unblock -> in_progress
+ *
+ * @param events - All events for this WU
+ * @returns Derived status or undefined if no events
+ */
+function deriveStatusFromEvents(events: MockEvent[]): string | undefined {
+  if (events.length === 0) {
+    return undefined;
+  }
+
+  let status: string | undefined = undefined;
+
+  for (const event of events) {
+    switch (event.type) {
+      case 'claim':
+      case 'create':
+        status = 'in_progress';
+        break;
+      case 'release':
+        status = 'ready';
+        break;
+      case 'complete':
+        status = 'done';
+        break;
+      case 'block':
+        status = 'blocked';
+        break;
+      case 'unblock':
+        status = 'in_progress';
+        break;
+      // checkpoint doesn't change status
+    }
+  }
+
+  return status;
+}
+
+/**
+ * Detect status mismatches between WU YAML and state store (WU-1420)
+ *
+ * Compares the status field in WU YAML against the derived status from events.
+ * Only reports issues for WUs that have events in the state store.
+ */
+function detectStatusMismatches(wus: MockWU[], events: MockEvent[]): DiagnosisIssue[] {
+  const issues: DiagnosisIssue[] = [];
+
+  // Group events by WU ID
+  const eventsByWu = new Map<string, MockEvent[]>();
+  for (const event of events) {
+    const existing = eventsByWu.get(event.wuId) || [];
+    existing.push(event);
+    eventsByWu.set(event.wuId, existing);
+  }
+
+  for (const wu of wus) {
+    const wuEvents = eventsByWu.get(wu.id);
+    if (!wuEvents || wuEvents.length === 0) {
+      // No events for this WU - nothing to compare
+      continue;
+    }
+
+    const derivedStatus = deriveStatusFromEvents(wuEvents);
+    if (derivedStatus && derivedStatus !== wu.status) {
+      issues.push({
+        type: ISSUE_TYPES.STATUS_MISMATCH,
+        severity: ISSUE_SEVERITY.WARNING,
+        wuId: wu.id,
+        description: `WU ${wu.id} YAML status is '${wu.status}' but state store says '${derivedStatus}'`,
+        suggestion: `Emit corrective event using: pnpm state:doctor --fix`,
+        canAutoFix: true,
+        statusMismatch: {
+          yamlStatus: wu.status,
+          derivedStatus,
+        },
+      });
+    }
+  }
+
+  return issues;
 }
 
 /**
@@ -265,6 +384,7 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
   let orphanedWUs = 0;
   let danglingSignals = 0;
   let brokenEvents = 0;
+  let statusMismatches = 0;
 
   for (const issue of issues) {
     switch (issue.type) {
@@ -277,6 +397,9 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
       case ISSUE_TYPES.BROKEN_EVENT:
         brokenEvents++;
         break;
+      case ISSUE_TYPES.STATUS_MISMATCH:
+        statusMismatches++;
+        break;
     }
   }
 
@@ -284,8 +407,38 @@ function calculateSummary(issues: DiagnosisIssue[]): DiagnosisSummary {
     orphanedWUs,
     danglingSignals,
     brokenEvents,
+    statusMismatches,
     totalIssues: issues.length,
   };
+}
+
+/**
+ * Determine the corrective event type for a status mismatch (WU-1420)
+ *
+ * When YAML says X but state says Y, emit event to transition state to X:
+ * - YAML=ready, state=in_progress -> emit release
+ * - YAML=done, state=in_progress -> emit complete
+ * - YAML=in_progress, state=ready -> cannot fix (would need claim with lane/title)
+ * - YAML=in_progress, state=done -> cannot fix (cannot un-complete)
+ */
+function getCorrectiveEventType(
+  yamlStatus: string,
+  derivedStatus: string,
+): 'release' | 'complete' | null {
+  // Transition from in_progress to ready: emit release
+  if (yamlStatus === 'ready' && derivedStatus === 'in_progress') {
+    return 'release';
+  }
+
+  // Transition from in_progress to done: emit complete
+  if (yamlStatus === 'done' && derivedStatus === 'in_progress') {
+    return 'complete';
+  }
+
+  // Other transitions are not auto-fixable by emitting events
+  // - ready -> in_progress would need claim (requires lane/title context)
+  // - done -> in_progress would need to revert complete (not supported)
+  return null;
 }
 
 /**
@@ -319,6 +472,33 @@ async function fixIssue(
           return { fixed: true };
         }
         return { fixed: false, error: 'No createStamp function provided' };
+
+      case ISSUE_TYPES.STATUS_MISMATCH: {
+        if (!deps.emitEvent) {
+          return { fixed: false, error: 'No emitEvent function provided' };
+        }
+        if (!issue.wuId || !issue.statusMismatch) {
+          return { fixed: false, error: 'Missing WU ID or status mismatch details' };
+        }
+
+        const { yamlStatus, derivedStatus } = issue.statusMismatch;
+        const eventType = getCorrectiveEventType(yamlStatus, derivedStatus);
+
+        if (!eventType) {
+          return {
+            fixed: false,
+            error: `Cannot auto-fix: transition from '${derivedStatus}' to '${yamlStatus}' requires manual intervention`,
+          };
+        }
+
+        await deps.emitEvent({
+          wuId: issue.wuId,
+          type: eventType,
+          reason: `state:doctor --fix: reconciling state store with YAML status '${yamlStatus}'`,
+          timestamp: new Date().toISOString(),
+        });
+        return { fixed: true };
+      }
 
       default:
         return { fixed: false, error: `Unknown issue type: ${issue.type}` };
@@ -404,8 +584,14 @@ export async function diagnoseState(
   const orphanedWUissues = detectOrphanedWUs(wus, stampIds);
   const danglingSignalIssues = detectDanglingSignals(signals, wuIds);
   const brokenEventIssues = detectBrokenEvents(events, wuIds);
+  const statusMismatchIssues = detectStatusMismatches(wus, events);
 
-  const issues = [...orphanedWUissues, ...danglingSignalIssues, ...brokenEventIssues];
+  const issues = [
+    ...orphanedWUissues,
+    ...danglingSignalIssues,
+    ...brokenEventIssues,
+    ...statusMismatchIssues,
+  ];
   const summary = calculateSummary(issues);
 
   // Initialize result
