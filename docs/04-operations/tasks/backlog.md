@@ -25,7 +25,6 @@ sections:
 - [WU-1424 — MCP: Initiative + Memory tools (+21)](wu/WU-1424.yaml) — Framework: CLI
 - [WU-1425 — MCP: Agent + Orchestration + Spawn tools (+8)](wu/WU-1425.yaml) — Framework: CLI
 - [WU-1426 — MCP: Flow + Validation + Setup tools (+17)](wu/WU-1426.yaml) — Framework: CLI
-- [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — Content: Documentation
 - [WU-1431 — Create shared Zod schemas for CLI/MCP parity](wu/WU-1431.yaml) — Framework: Core
 
 ## 🔧 In progress
@@ -34,6 +33,7 @@ sections:
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
 - [WU-1422 — MCP: Complete WU tools (+17)](wu/WU-1422.yaml) — Framework: CLI
+- [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
