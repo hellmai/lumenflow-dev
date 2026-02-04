@@ -2,7 +2,7 @@ id: WU-1418
 title: wu:repair should bypass pre-push hook for admin fixes
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -53,3 +53,5 @@ session_id: 2c62c29c-8504-49e6-9ced-164a1283bda5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-04T15:42:59.566Z
+locked: true
+completed_at: 2026-02-04T15:51:03.624Z

@@ -750,5 +750,6 @@
 {"type":"complete","wuId":"WU-1415","timestamp":"2026-02-04T15:16:28.325Z"}
 {"type":"claim","wuId":"WU-1416","timestamp":"2026-02-04T15:27:44.531Z","lane":"Content: Documentation","title":"Document LumenFlow product strategy and MCP architecture"}
 {"type":"complete","wuId":"WU-1416","timestamp":"2026-02-04T15:32:05.023Z"}
-{"type":"claim","wuId":"WU-1417","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync","timestamp":"2026-02-04T15:39:41.919Z"}
-{"type":"claim","wuId":"WU-1418","lane":"Operations: Infrastructure","title":"wu:repair should bypass pre-push hook for admin fixes","timestamp":"2026-02-04T15:42:59.595Z"}
+{"type":"claim","wuId":"WU-1417","timestamp":"2026-02-04T15:39:41.919Z","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync"}
+{"type":"claim","wuId":"WU-1418","timestamp":"2026-02-04T15:42:59.595Z","lane":"Operations: Infrastructure","title":"wu:repair should bypass pre-push hook for admin fixes"}
+{"type":"complete","wuId":"WU-1418","timestamp":"2026-02-04T15:51:06.258Z"}
