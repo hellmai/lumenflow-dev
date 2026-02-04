@@ -27,7 +27,6 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
-- [WU-1401 — Enforce Husky/safe-git and initiative decision rules in agent quickstart](wu/WU-1401.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -381,3 +380,4 @@ sections:
 - [WU-1398 — Add Session 0 exit criteria to agent quickstart](wu/WU-1398.yaml)
 - [WU-1399 — Tighten agent quickstart enforcement and decision rules](wu/WU-1399.yaml)
 - [WU-1400 — Clarify non-Node framework setup rules in agent quickstart](wu/WU-1400.yaml)
+- [WU-1401 — Enforce Husky/safe-git and initiative decision rules in agent quickstart](wu/WU-1401.yaml)
