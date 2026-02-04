@@ -2,7 +2,7 @@ id: WU-1408
 title: Bundle safe-git and generate sane pre-commit hook
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Agents fail setup when safe-git is missing and husky creates broken pre-commit hooks. Problem: safe-git not bundled in @lumenflow/cli npm package; husky init creates hook running 'pnpm test' which fails on new projects. Solution: (1) Bundle safe-git in npm package or generate via lumenflow init, (2) lumenflow init writes a sane pre-commit hook that doesn't assume pnpm test exists."
+description: "Context: Agents fail setup when safe-git is missing and husky creates broken
+  pre-commit hooks. Problem: safe-git not bundled in @lumenflow/cli npm package; husky init creates
+  hook running 'pnpm test' which fails on new projects. Solution: (1) Bundle safe-git in npm package
+  or generate via lumenflow init, (2) lumenflow init writes a sane pre-commit hook that doesn't
+  assume pnpm test exists."
 acceptance:
   - safe-git available after pnpm add -D @lumenflow/cli (bundled or generated)
   - lumenflow init creates pre-commit hook that works on new projects
   - lumenflow-doctor passes on fresh project after lumenflow init
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1408
+claimed_at: 2026-02-04T13:09:38.428Z
+baseline_main_sha: a48c020534d6f6384d87b907e822ffbf262dcf50
+session_id: 106c1d52-61d7-43db-8d84-9ba4534e690a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-04T13:09:38.434Z
