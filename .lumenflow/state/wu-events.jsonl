@@ -787,3 +787,4 @@
 {"type":"complete","wuId":"WU-1424","timestamp":"2026-02-04T21:03:34.624Z"}
 {"type":"claim","wuId":"WU-1425","timestamp":"2026-02-04T21:52:44.441Z","lane":"Framework: CLI","title":"MCP: Agent + Orchestration + Spawn tools (+8)"}
 {"type":"complete","wuId":"WU-1425","timestamp":"2026-02-04T22:00:52.115Z"}
+{"type":"claim","wuId":"WU-1426","lane":"Framework: CLI","title":"MCP: Flow + Validation + Setup tools (+17)","timestamp":"2026-02-04T22:06:57.551Z"}
