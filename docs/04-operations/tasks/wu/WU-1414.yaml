@@ -2,7 +2,7 @@ id: WU-1414
 title: Update Starlight docs for auto-scaffolded safety scripts and remove GitHub App
 lane: 'Content: Documentation'
 type: tooling
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-04
 code_paths:
@@ -53,3 +53,5 @@ acceptance:
   - apps/github-app/ directory deleted
   - Internal product docs updated to CLI-only distribution (product-lines.md, DISTRIBUTION.md)
   - existing-projects.mdx and solo-workflow.mdx manual husky instructions removed or updated
+locked: true
+completed_at: 2026-02-04T14:27:03.301Z
