@@ -757,3 +757,4 @@
 {"type":"complete","wuId":"WU-1419","timestamp":"2026-02-04T16:06:08.482Z"}
 {"type":"release","wuId":"WU-1417","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-04T16:08:11.163Z"}
 {"type":"claim","wuId":"WU-1417","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync","timestamp":"2026-02-04T16:08:47.711Z"}
+{"type":"claim","wuId":"WU-1420","lane":"Framework: Core","title":"state:doctor should detect and fix YAML vs state store status mismatches","timestamp":"2026-02-04T16:14:40.483Z"}
