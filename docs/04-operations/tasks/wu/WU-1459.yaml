@@ -20,7 +20,12 @@ dependencies: []
 spec_refs:
   - ~/.claude/plans/declarative-churning-map.md
 risks: []
-notes: 'Sizing: Simple. Strategy: Single Session.'
+notes: >-
+  Sizing: Simple. Strategy: Single Session.
+
+
+  Robust fix: add operation-level push-retry override and improve retry exhaustion guidance (suggest
+  git.push_retry tuning). Maintain cleanup guarantees.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -29,11 +34,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   Context: initiative:add-wu uses micro-worktrees.
+
   Problem: If push-only fails, temp worktree/branch can be left orphaned and subsequent runs fail.
-  Solution: Ensure cleanup removes temp worktree/branch even when push fails and surface actionable recovery.
+
+  Solution: Ensure cleanup removes temp worktree/branch even when push fails and surface actionable
+  recovery.
 acceptance:
   - initiative:add-wu cleans temp worktree/branch on failure
+  - Retry exhaustion message includes guidance to increase git.push_retry or wait before retry
+  - initiative:add-wu can use an operation-level push retry override (higher retries/backoff)
   - Retrying initiative:add-wu after failure succeeds without manual git worktree remove
-  - Log includes clear recovery guidance when cleanup cannot complete
