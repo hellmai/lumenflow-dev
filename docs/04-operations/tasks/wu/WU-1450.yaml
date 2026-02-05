@@ -1,7 +1,7 @@
 id: WU-1450
 title: Remove remaining .beacon mentions from onboarding/public docs
 lane: 'Content: Documentation'
-type: documentation
+type: refactor
 status: in_progress
 priority: P1
 created: 2026-02-05
