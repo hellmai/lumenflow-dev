@@ -7,10 +7,8 @@ import astroD2 from 'astro-d2';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://lumenflow.dev',
-  markdown: {
-    remarkPlugins: [astroD2],
-  },
   integrations: [
+    astroD2(),
     starlight({
       plugins: [starlightThemeNova()],
       title: 'LumenFlow',
