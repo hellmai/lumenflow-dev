@@ -7,13 +7,14 @@ priority: P1
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/vitest.config.ts
-  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
+  - packages/@lumenflow/cli/__tests__/vitest-config.test.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/cli exec vitest run and verify e2e include patterns execute with
       passWithNoTests disabled.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
+    - packages/@lumenflow/cli/__tests__/vitest-config.test.ts
   e2e:
     - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
 artifacts:
@@ -26,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-05T22:56:43.265Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1465
+session_id: 0566af5c-90c2-4ba6-a3ec-d44ff787c9fc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T22:56:43.268Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +50,3 @@ acceptance:
   - passWithNoTests is false for CLI test configuration
   - CLI test runs fail when patterns match zero tests
   - Existing CLI test suites continue to run successfully after config updates
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1465
-claimed_at: 2026-02-05T22:56:43.265Z
-baseline_main_sha: 883dc2697987fd65057339046ea26bfd652a7555
-session_id: 0566af5c-90c2-4ba6-a3ec-d44ff787c9fc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-05T22:56:43.268Z
