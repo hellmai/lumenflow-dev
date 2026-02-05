@@ -179,6 +179,10 @@ Plans are markdown documents that capture goals, scope, approach, and success cr
 
 Plans are stored in the repo at `docs/04-operations/plans/` by default (configurable via `directories.plansDir` in `.lumenflow.config.yaml`).
 
+If the plan exists only in conversation, use `--plan` on `wu:create` to generate a lightweight
+stub in `$LUMENFLOW_HOME/plans/`, then summarize the conversation there and reference it via
+`spec_refs`. Feature WUs require `spec_refs`; notes do not replace the plan link.
+
 | Command                                               | Description                                 |
 | ----------------------------------------------------- | ------------------------------------------- |
 | `pnpm initiative:plan --initiative INIT-XXX`          | Link existing plan to initiative            |

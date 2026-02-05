@@ -616,6 +616,12 @@ pnpm wu:create --id WU-1234 --lane "Framework: Core" --title "..." --plan
 The `$LUMENFLOW_HOME` environment variable defaults to `~/.lumenflow/`. External spec_refs
 are validated but not version-controlled, making them ideal for verbose planning documents.
 
+**Plan-less conversations (feature WUs):**
+
+If the plan lives only in a chat or meeting, use `--plan` to generate a lightweight stub,
+then summarize the conversation there and reference it in `spec_refs`. Feature WUs require
+`spec_refs`; notes do not replace the plan link.
+
 ### 4.6 Encountering Other Agents' Work on Main
 
 **Scenario:** You run `git status` on main and see uncommitted changes you didn't create.
