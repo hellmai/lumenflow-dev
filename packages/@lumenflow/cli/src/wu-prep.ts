@@ -178,7 +178,7 @@ async function runSpecLinterJson(execOnCwd: ExecOnMainFn): Promise<{
   invalidIds: string[];
   error?: string;
 }> {
-  const result = await execOnCwd('pnpm wu:validate --all --json');
+  const result = await execOnCwd('pnpm --silent wu:validate --all --json');
   const report = parseSpecLinterReport(result.stdout);
 
   if (!report || !Array.isArray(report.invalid)) {
@@ -209,12 +209,15 @@ async function runSpecLinterJson(execOnCwd: ExecOnMainFn): Promise<{
 export async function checkPreExistingFailures(options: {
   mainCheckout: string;
   execOnMain?: ExecOnMainFn;
+  execOnWorktree?: ExecOnMainFn;
 }): Promise<PreExistingCheckResult> {
-  const { mainCheckout, execOnMain = defaultExecOnMain(mainCheckout) } = options;
+  const {
+    mainCheckout,
+    execOnMain = defaultExecOnMain(mainCheckout),
+    execOnWorktree = defaultExecOnMain(process.cwd()),
+  } = options;
 
   try {
-    const execOnWorktree = defaultExecOnMain(process.cwd());
-
     const worktreeResult = await runSpecLinterJson(execOnWorktree);
     const mainResult = await runSpecLinterJson(execOnMain);
 
