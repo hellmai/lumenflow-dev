@@ -14,7 +14,7 @@
 
 /* eslint-disable sonarjs/no-os-command-from-path, sonarjs/os-command */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll } from 'vitest';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -24,10 +24,55 @@ import { execSync } from 'child_process';
 const DOCS_GENERATE_CMD = 'pnpm docs:generate';
 const DOCS_VALIDATE_CMD = 'pnpm docs:validate';
 const CLI_MDX_PATH = 'apps/docs/src/content/docs/reference/cli.mdx';
+const CONFIG_MDX_PATH = 'apps/docs/src/content/docs/reference/config.mdx';
+const README_PATH = 'packages/@lumenflow/cli/README.md';
+const GENERATED_TRACKED_FILES = [CLI_MDX_PATH, CONFIG_MDX_PATH, README_PATH] as const;
+
+interface FileSnapshot {
+  existed: boolean;
+  content: string;
+}
 
 describe('docs:generate', () => {
   const ROOT = join(__dirname, '../../../..');
   let tempDir: string;
+  const fileSnapshots = new Map<string, FileSnapshot>();
+
+  function snapshotGeneratedFiles() {
+    for (const relPath of GENERATED_TRACKED_FILES) {
+      const absPath = join(ROOT, relPath);
+      if (existsSync(absPath)) {
+        fileSnapshots.set(relPath, {
+          existed: true,
+          content: readFileSync(absPath, 'utf-8'),
+        });
+      } else {
+        fileSnapshots.set(relPath, {
+          existed: false,
+          content: '',
+        });
+      }
+    }
+  }
+
+  function restoreGeneratedFiles() {
+    for (const relPath of GENERATED_TRACKED_FILES) {
+      const snapshot = fileSnapshots.get(relPath);
+      if (!snapshot) continue;
+
+      const absPath = join(ROOT, relPath);
+      if (snapshot.existed) {
+        writeFileSync(absPath, snapshot.content);
+      } else if (existsSync(absPath)) {
+        rmSync(absPath);
+      }
+    }
+  }
+
+  beforeAll(() => {
+    // Guard against docs generation tests leaving tracked files dirty in main checkout.
+    snapshotGeneratedFiles();
+  });
 
   beforeEach(() => {
     tempDir = join(tmpdir(), `docs-generate-test-${Date.now()}`);
@@ -35,9 +80,15 @@ describe('docs:generate', () => {
   });
 
   afterEach(() => {
+    restoreGeneratedFiles();
+
     if (existsSync(tempDir)) {
       rmSync(tempDir, { recursive: true, force: true });
     }
+  });
+
+  afterAll(() => {
+    restoreGeneratedFiles();
   });
 
   describe('CLI reference generation', () => {
@@ -360,8 +411,6 @@ describe('docs:generate', () => {
    * maintenance drift between README.md and cli.mdx.
    */
   describe('WU-1371: README.md generation', () => {
-    const README_PATH = 'packages/@lumenflow/cli/README.md';
-
     it('should generate README.md with auto-generated marker', { timeout: 60000 }, () => {
       // Run the generator
       execSync(DOCS_GENERATE_CMD, {

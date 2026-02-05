@@ -8,7 +8,8 @@ created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
 tests:
-  manual: []
+  manual:
+    - Run `pnpm --filter @lumenflow/cli exec vitest run __tests__/docs-generate.test.ts` and confirm generated tracked docs files remain unchanged after run.
   unit:
     - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
