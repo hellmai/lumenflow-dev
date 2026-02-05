@@ -921,7 +921,7 @@ describe('micro-worktree', () => {
 
       // Should fetch origin/main and rebase before retry
       expect(mockMainGit.fetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
-      expect(mockGitWorktree.rebase).toHaveBeenCalledWith(TEST_BRANCH);
+      expect(mockGitWorktree.rebase).toHaveBeenCalledWith(ORIGIN_MAIN_REF);
     });
 
     it('should respect configured retry count', async () => {

@@ -1061,9 +1061,12 @@ export async function pushRefspecWithRetry(
         console.log(`${logPrefix} Fetching ${remote}/${remoteRef}...`);
         await mainGit.fetch(remote, remoteRef);
 
-        // Rebase temp branch onto updated main
-        console.log(`${logPrefix} Rebasing temp branch onto ${remoteRef}...`);
-        await gitWorktree.rebase(remoteRef);
+        // Rebase temp branch onto updated remote-tracking ref.
+        // In pushOnly mode, local `main` is intentionally not updated (WU-1435),
+        // so rebasing onto `main` will not make progress after a successful push.
+        const remoteTrackingRef = `${remote}/${remoteRef}`;
+        console.log(`${logPrefix} Rebasing temp branch onto ${remoteTrackingRef}...`);
+        await gitWorktree.rebase(remoteTrackingRef);
 
         // Re-throw to trigger p-retry
         throw pushErr;

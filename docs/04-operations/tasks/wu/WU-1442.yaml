@@ -20,7 +20,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1442-plan.md
 risks: []
-notes: ''
+notes: 'Fixes push-only retry rebase to use origin/main (not local main) so state:doctor/wu:claim repairs can converge even when local main is intentionally stale.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
