@@ -6,6 +6,7 @@ _Last updated: 2026-02-05_
 
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
 - [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml)
+- [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml)
 
 ## Blocked
 
