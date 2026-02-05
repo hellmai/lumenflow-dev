@@ -1,11 +1,39 @@
 id: INIT-014
 slug: rollout-1
 title: ROLLOUT-1 Launch Readiness Hardening
-description: ''
-status: draft
+description: Cross-package launch hardening rollout for CI gate integrity, packaging reliability,
+  security remediation, test signal integrity, and type/documentation alignment.
+status: open
 priority: P0
 created: 2026-02-05
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'Phase 0: Restore CI gate integrity'
+    status: pending
+  - id: 2
+    title: 'Phase 1: Unblock packaging and release'
+    status: pending
+  - id: 3
+    title: 'Phase 2: Patch high-severity vulnerabilities'
+    status: pending
+  - id: 4
+    title: 'Phase 3: Make test signal trustworthy'
+    status: pending
+  - id: 5
+    title: 'Phase 4: Package hygiene and workflow consistency'
+    status: pending
+  - id: 6
+    title: 'Phase 5: Type system hardening'
+    status: pending
+  - id: 7
+    title: 'Phase 6: Documentation and policy alignment'
+    status: pending
+success_metrics:
+  - pnpm lint executes real lint tasks for all packages (no <NONEXISTENT>)
+  - pnpm typecheck executes real typecheck tasks for all packages
+  - pnpm pack:all succeeds across all publishable packages
+  - pnpm audit --audit-level=moderate reports zero high/critical vulnerabilities
+  - pnpm test is green at repo root
+  - CLI lifecycle subprocess e2e test exists for wu:create -> wu:claim -> wu:prep -> wu:done
 labels: []
 related_plan: lumenflow://plans/INIT-014-rollout-1-launch-readiness-har.md
