@@ -351,8 +351,7 @@ async function main(): Promise<void> {
     mainCheckout: location.mainCheckout,
   });
 
-  const hasPreExistingOnly =
-    preExistingCheck.hasPreExisting && !preExistingCheck.hasNewFailures;
+  const hasPreExistingOnly = preExistingCheck.hasPreExisting && !preExistingCheck.hasNewFailures;
 
   if (preExistingCheck.error) {
     console.log(

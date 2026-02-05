@@ -53,9 +53,7 @@ export function summarizeValidationResults(results: ValidationResult[]): Validat
   const totalInvalid = results.filter((r) => !r.valid).length;
   const totalWarnings = results.reduce((sum, r) => sum + (r.warnings?.length ?? 0), 0);
 
-  const invalid = results
-    .filter((r) => !r.valid)
-    .map((r) => ({ wuId: r.wuId, errors: r.errors }));
+  const invalid = results.filter((r) => !r.valid).map((r) => ({ wuId: r.wuId, errors: r.errors }));
 
   const warnings = results
     .filter((r) => r.warnings && r.warnings.length > 0)
