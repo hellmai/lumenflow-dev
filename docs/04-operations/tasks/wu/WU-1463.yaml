@@ -2,7 +2,7 @@ id: WU-1463
 title: Patch high-severity advisories and enforce audit in CI
 lane: 'Operations: CI/CD'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-05
 code_paths:
@@ -32,9 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: pnpm audit currently reports two HIGH vulnerabilities affecting @modelcontextprotocol/sdk and @isaacs/brace-expansion, and CI does not enforce audit checks. Problem: release readiness is blocked by unresolved security risk and missing supply-chain gate enforcement. Solution: upgrade or override vulnerable dependencies and add an audit step in CI with moderate threshold enforcement.'
+description: 'Context: pnpm audit currently reports two HIGH vulnerabilities affecting
+  @modelcontextprotocol/sdk and @isaacs/brace-expansion, and CI does not enforce audit checks.
+  Problem: release readiness is blocked by unresolved security risk and missing supply-chain gate
+  enforcement. Solution: upgrade or override vulnerable dependencies and add an audit step in CI
+  with moderate threshold enforcement.'
 acceptance:
   - pnpm audit --audit-level=moderate reports no high or critical vulnerabilities
   - '@modelcontextprotocol/sdk is upgraded to a patched version'
   - brace-expansion vulnerability is remediated via direct or transitive update
   - CI runs pnpm audit --audit-level=moderate as a required gate
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-ci-cd-wu-1463
+claimed_at: 2026-02-05T22:52:44.904Z
+baseline_main_sha: 9380275a5dd1971349c8d336acaecd8273847f09
+session_id: 749e5178-dff0-4ffe-89a8-4df47c88574f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T22:52:44.910Z
