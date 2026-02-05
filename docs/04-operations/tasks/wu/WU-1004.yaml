@@ -2,7 +2,7 @@ id: WU-1004
 title: Make gates script repo-agnostic (skip missing apps/web)
 lane: CLI
 type: feature
-status: cancelled
+status: done
 priority: P2
 created: 2026-01-18
 code_paths: []
@@ -17,7 +17,15 @@ dependencies: []
 spec_refs:
   - internal
 risks: []
-notes: Completed per acceptance criteria.
+notes: >-
+  Completed per acceptance criteria.
+
+
+  Admin: reconcile YAML status with state store complete event; treated as done for state-doctor
+  hygiene
+
+
+  [ADMIN-REPAIR 2026-02-05]: status changed from 'cancelled' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []
@@ -33,3 +41,4 @@ description: |
 acceptance:
   - Cancelled - no acceptance criteria defined
   - pnpm format, lint, typecheck → PASS
+locked: true
