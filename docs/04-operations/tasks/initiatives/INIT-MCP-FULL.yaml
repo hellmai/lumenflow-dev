@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: Agent + Orchestration tools (+8)
-    status: pending
+    status: done
   - id: 5
     title: Flow + Validation + Setup tools (+17)
     status: pending
