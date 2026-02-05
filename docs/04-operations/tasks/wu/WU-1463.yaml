@@ -2,7 +2,7 @@ id: WU-1463
 title: Patch high-severity advisories and enforce audit in CI
 lane: 'Operations: CI/CD'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-05
 code_paths:
@@ -50,3 +50,5 @@ session_id: 749e5178-dff0-4ffe-89a8-4df47c88574f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T22:52:44.910Z
+locked: true
+completed_at: 2026-02-05T22:58:23.692Z
