@@ -2,7 +2,7 @@ id: WU-1462
 title: Unblock MCP packaging and prevent CLI test artifacts in publish tarballs
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-05
 code_paths:
@@ -32,9 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: pack:all fails because @lumenflow/mcp build:dist references a missing tsconfig.build.json, and @lumenflow/cli tarballs currently include compiled test artifacts. Problem: release packaging is not trustworthy and blocks publish readiness. Solution: provide a valid MCP build tsconfig path and tighten CLI build/package excludes so test files are not published.'
+description: 'Context: pack:all fails because @lumenflow/mcp build:dist references a missing
+  tsconfig.build.json, and @lumenflow/cli tarballs currently include compiled test artifacts.
+  Problem: release packaging is not trustworthy and blocks publish readiness. Solution: provide a
+  valid MCP build tsconfig path and tighten CLI build/package excludes so test files are not
+  published.'
 acceptance:
   - pnpm pack:all succeeds without MCP build path errors
   - '@lumenflow/mcp build:dist uses an existing tsconfig file'
   - '@lumenflow/cli package tarball excludes dist test artifacts'
   - Packaging behavior is covered by repeatable verification steps in tests or docs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1462
+claimed_at: 2026-02-05T23:50:59.335Z
+baseline_main_sha: f1f995c800f626b5c4ec4ac9d84fb24b9f5e72fe
+session_id: 6b4f8efa-c6e8-42d7-8fc4-5f651cf35703
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T23:50:59.343Z
