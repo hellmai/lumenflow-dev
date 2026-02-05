@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "astro",
-  "installCommand": "npm install && curl -fsSL https://d2lang.com/install.sh | sh -s -- --dry-run=false",
+  "installCommand": "npm install && curl -fsSL https://d2lang.com/install.sh | sh -s --",
   "buildCommand": "PATH=\"$HOME/.local/bin:$PATH\" npm run build"
 }
