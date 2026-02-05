@@ -2,14 +2,15 @@ id: WU-1470
 title: Prevent docs-generate tests from leaving tracked files dirty
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
 tests:
   manual:
-    - Run `pnpm --filter @lumenflow/cli exec vitest run __tests__/docs-generate.test.ts` and confirm generated tracked docs files remain unchanged after run.
+    - Run `pnpm --filter @lumenflow/cli exec vitest run __tests__/docs-generate.test.ts` and confirm
+      generated tracked docs files remain unchanged after run.
   unit:
     - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   e2e: []
@@ -47,3 +48,5 @@ session_id: 749e5178-dff0-4ffe-89a8-4df47c88574f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T22:47:51.504Z
+locked: true
+completed_at: 2026-02-05T22:55:10.878Z

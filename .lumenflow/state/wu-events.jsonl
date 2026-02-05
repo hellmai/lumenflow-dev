@@ -840,6 +840,7 @@
 {"type":"complete","wuId":"WU-1459","timestamp":"2026-02-05T20:03:57.303Z"}
 {"type":"claim","wuId":"WU-1460","timestamp":"2026-02-05T20:04:29.182Z","lane":"Framework: CLI","title":"Batch initiative:add-wu to reduce push-only contention"}
 {"type":"complete","wuId":"WU-1460","timestamp":"2026-02-05T20:10:43.777Z"}
-{"type":"claim","wuId":"WU-1470","lane":"Framework: CLI","title":"Prevent docs-generate tests from leaving tracked files dirty","timestamp":"2026-02-05T22:47:51.531Z"}
-{"type":"claim","wuId":"WU-1464","lane":"Framework: Core","title":"Fix failing core tests for tslib resolution and consumer integration timeout","timestamp":"2026-02-05T22:52:04.276Z"}
-{"type":"claim","wuId":"WU-1463","lane":"Operations: CI/CD","title":"Patch high-severity advisories and enforce audit in CI","timestamp":"2026-02-05T22:52:44.923Z"}
+{"type":"claim","wuId":"WU-1470","timestamp":"2026-02-05T22:47:51.531Z","lane":"Framework: CLI","title":"Prevent docs-generate tests from leaving tracked files dirty"}
+{"type":"claim","wuId":"WU-1464","timestamp":"2026-02-05T22:52:04.276Z","lane":"Framework: Core","title":"Fix failing core tests for tslib resolution and consumer integration timeout"}
+{"type":"claim","wuId":"WU-1463","timestamp":"2026-02-05T22:52:44.923Z","lane":"Operations: CI/CD","title":"Patch high-severity advisories and enforce audit in CI"}
+{"type":"complete","wuId":"WU-1470","timestamp":"2026-02-05T22:55:13.267Z"}
