@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@lumenflow/core": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {
