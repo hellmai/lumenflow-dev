@@ -8,7 +8,7 @@ This document presents the findings from WU-1220, investigating improper LUMENFL
 
 ## Executive Summary
 
-Analysis of `.beacon/force-bypasses.log` reveals that LUMENFLOW_FORCE is used extensively, but almost exclusively by human operators (user "Tom") rather than AI agents. The vast majority of uses are for legitimate infrastructure operations such as:
+Analysis of `.lumenflow/force-bypasses.log` reveals that LUMENFLOW_FORCE is used extensively, but almost exclusively by human operators (user "Tom") rather than AI agents. The vast majority of uses are for legitimate infrastructure operations such as:
 
 - Release version pushes
 - Micro-worktree recovery operations
@@ -38,7 +38,7 @@ Analysis of 347 logged bypass events shows:
 **Legitimate human operations:**
 
 ```
-2026-01-25T14:08:55.172Z | pre-push | Tom | main | release v1.6.0 | /home/tom/source/hellmai/os
+2026-01-25T14:08:55.172Z | pre-push | Tom | main | release v1.6.0 | <cwd>
 2026-01-30T10:41:23.185Z | pre-push | Tom | main | Recovery: wu:done partially completed, merging remaining changes
 ```
 
@@ -76,11 +76,11 @@ Analysis of 347 logged bypass events shows:
 
 ### Technical Safeguards
 
-1. **Audit logging:** All bypasses logged to `.beacon/force-bypasses.log` with timestamp, hook, user, branch, reason, and working directory.
+1. **Audit logging:** All bypasses logged to `.lumenflow/force-bypasses.log` with timestamp, hook, user, branch, reason, and working directory.
 
 2. **Warning when no reason:** If LUMENFLOW_FORCE_REASON is not provided, a warning is printed.
 
-3. **Git-tracked audit log:** The `.beacon/force-bypasses.log` file is version controlled, providing historical accountability.
+3. **Git-tracked audit log:** The `.lumenflow/force-bypasses.log` file is version controlled, providing historical accountability.
 
 4. **Hook enforcement:** Pre-commit, commit-msg, pre-push, and prepare-commit-msg hooks all check for LUMENFLOW_FORCE before allowing bypass.
 
@@ -126,7 +126,7 @@ Where `SESSION_TYPE` could be: `human`, `claude-code`, `cursor`, `windsurf`, `un
 
 ### 2. Periodic Audit Review (Process)
 
-Establish a monthly review of `.beacon/force-bypasses.log` to identify:
+Establish a monthly review of `.lumenflow/force-bypasses.log` to identify:
 
 - High volume of "no reason provided" entries
 - Unexpected patterns in bypass usage
