@@ -2,7 +2,7 @@ id: WU-1447
 title: Purge .beacon legacy paths/docs; use .lumenflow only
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -61,3 +61,5 @@ session_id: c83292ee-69f9-4954-b8f8-bee48b96c84b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T13:10:56.503Z
+locked: true
+completed_at: 2026-02-05T13:28:12.003Z
