@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml)
 
 ## Blocked
 
