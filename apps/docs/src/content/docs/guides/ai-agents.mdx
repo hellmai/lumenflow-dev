@@ -160,14 +160,14 @@ These protections work for **all agents** regardless of IDE or AI provider:
 **Husky Pre-Commit Hooks**:
 
 - Secret scanning (AWS/GitHub/OpenAI keys)
-- Absolute path scanning (`/home/`, `/Users/`)
+- Absolute path scanning (common home-dir absolute paths; prefer `~` or relative paths)
 - Lockfile sync validation
 - Worktree discipline enforcement
 
 **Audit Logs**:
 
-- `.beacon/safety-blocks.log` – Blocked operations
-- `.beacon/force-bypasses.log` – Emergency bypasses
+- `.lumenflow/safety-blocks.log` – Blocked operations
+- `.lumenflow/force-bypasses.log` – Emergency bypasses
 
 <Aside type="tip">
   Configure agents to use `scripts/safe-git` as their git command for maximum protection.

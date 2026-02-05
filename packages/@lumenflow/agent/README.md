@@ -57,7 +57,7 @@ if (result.complete) {
 } else {
   console.log(debugSummary(result));
   // Verification failed:
-  // - Missing stamp .beacon/stamps/WU-123.done
+  // - Missing stamp .lumenflow/stamps/WU-123.done
   // - No commit on main touching WU YAML
 }
 ```

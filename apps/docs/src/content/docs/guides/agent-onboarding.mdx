@@ -220,7 +220,7 @@ Do NOT leave uncommitted changes in the worktree.
 ```typescript
 // Using absolute paths bypasses worktree isolation
 Write({
-  file_path: '/home/user/project/src/feature.ts', // WRONG!
+  file_path: '$HOME/project/src/feature.ts', // WRONG!
   content: '...',
 });
 ```
@@ -259,19 +259,19 @@ Use `scripts/safe-git` instead of system `git` to block destructive operations:
 
 These run for **everyone** on every commit:
 
-| Hook                   | What It Does                                      |
-| ---------------------- | ------------------------------------------------- |
-| Secret scanning        | Blocks commits containing AWS/GitHub/OpenAI keys  |
-| Absolute path scanning | Blocks `/home/`, `/Users/` paths in code          |
-| Lockfile sync          | Blocks dependency changes without lockfile update |
-| Worktree discipline    | Blocks main commits when worktrees exist          |
+| Hook                   | What It Does                                                              |
+| ---------------------- | ------------------------------------------------------------------------- |
+| Secret scanning        | Blocks commits containing AWS/GitHub/OpenAI keys                          |
+| Absolute path scanning | Blocks common home-dir absolute paths (use `~` or relative paths instead) |
+| Lockfile sync          | Blocks dependency changes without lockfile update                         |
+| Worktree discipline    | Blocks main commits when worktrees exist                                  |
 
 ### Audit Logs
 
 All blocked actions are logged for visibility:
 
-- `.beacon/safety-blocks.log` – Blocked safety violations
-- `.beacon/force-bypasses.log` – Emergency LUMENFLOW_FORCE bypasses
+- `.lumenflow/safety-blocks.log` – Blocked safety violations
+- `.lumenflow/force-bypasses.log` – Emergency LUMENFLOW_FORCE bypasses
 
 <Aside type="tip">
   These mechanisms work regardless of which AI agent or IDE you use. They're enforced at the
@@ -420,7 +420,7 @@ This is the ONLY way to complete a WU. Manual steps leave things inconsistent.
 
 <Aside type="caution">
   Emergency override bypasses safety mechanisms. AI agents MUST get explicit user approval before
-  using LUMENFLOW_FORCE. All bypasses are logged to `.beacon/force-bypasses.log`.
+  using LUMENFLOW_FORCE. All bypasses are logged to `.lumenflow/force-bypasses.log`.
 </Aside>
 
 ### When Override is Appropriate
@@ -522,7 +522,7 @@ ls -la .husky/
 
 # Verify bypass works with audit
 LUMENFLOW_FORCE_REASON="testing" LUMENFLOW_FORCE=1 ./scripts/safe-git --version
-# Should succeed and log to .beacon/force-bypasses.log
+# Should succeed and log to .lumenflow/force-bypasses.log
 ```
 
 ## Next Steps

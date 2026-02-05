@@ -68,8 +68,8 @@ These run for everyone:
 
 Audit logs:
 
-- `.beacon/safety-blocks.log` (blocked safety actions)
-- `.beacon/force-bypasses.log` (LUMENFLOW_FORCE bypasses)
+- `.lumenflow/safety-blocks.log` (blocked safety actions)
+- `.lumenflow/force-bypasses.log` (LUMENFLOW_FORCE bypasses)
 
 ---
 
@@ -162,7 +162,7 @@ Agents MUST stop and ask before using LUMENFLOW_FORCE. Present the situation to 
 
 ```
 I need to bypass the safety check for [reason].
-This will be logged to .beacon/force-bypasses.log.
+This will be logged to .lumenflow/force-bypasses.log.
 Do you approve? (yes/no)
 ```
 
@@ -191,7 +191,7 @@ notes: |
 
 ### Audit Log Format
 
-All bypasses are logged to `.beacon/force-bypasses.log`:
+All bypasses are logged to `.lumenflow/force-bypasses.log`:
 
 ```
 ISO_TIMESTAMP|BYPASSED|COMMAND_OR_HOOK|USER|BRANCH|REASON|CWD
@@ -200,7 +200,7 @@ ISO_TIMESTAMP|BYPASSED|COMMAND_OR_HOOK|USER|BRANCH|REASON|CWD
 Example:
 
 ```
-{{DATE}}T12:34:56Z|BYPASSED|git reset --hard HEAD|tom|lane/core/wu-1172|user-approved: recovering state|/home/tom/source/project
+{{DATE}}T12:34:56Z|BYPASSED|git reset --hard HEAD|tom|lane/core/wu-1172|user-approved: recovering state|<cwd>
 ```
 
 ### Warning When No Reason Provided
@@ -329,5 +329,5 @@ ls -la .husky/
 
 # Verify bypass works with audit
 LUMENFLOW_FORCE_REASON="testing" LUMENFLOW_FORCE=1 ./scripts/safe-git --version
-# Should succeed and log to .beacon/force-bypasses.log
+# Should succeed and log to .lumenflow/force-bypasses.log
 ```
