@@ -20,17 +20,16 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
-- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
+- [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
-(No items currently blocked)
+- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 
 ## ✅ Done
 
