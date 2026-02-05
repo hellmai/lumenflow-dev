@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-- [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -417,3 +417,4 @@ _Last updated: 2026-02-05_
 - [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml) — 2026-02-05
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — 2026-02-05
 - [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — 2026-02-05
+- [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — 2026-02-05
