@@ -16,7 +16,8 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1460.done
-dependencies: []
+dependencies:
+  - WU-1459
 initiative: INIT-MCP-FULL
 phase: 8
 spec_refs:
@@ -31,10 +32,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   Context: linking many WUs with initiative:add-wu causes repeated push-only writes to origin/main.
+
   Problem: high contention leads to retry exhaustion and operational overhead.
-  Solution: support repeatable --wu arguments and process all links in one micro-worktree transaction.
+
+  Solution: support repeatable --wu arguments and process all links in one micro-worktree
+  transaction.
 acceptance:
   - initiative:add-wu accepts repeatable --wu flags
   - all provided WU links are applied atomically in one micro-worktree commit
