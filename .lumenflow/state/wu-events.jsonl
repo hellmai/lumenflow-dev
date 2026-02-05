@@ -847,4 +847,5 @@
 {"type":"claim","wuId":"WU-1465","timestamp":"2026-02-05T22:56:43.284Z","lane":"Framework: CLI","title":"Enable reliable CLI e2e test execution in vitest config"}
 {"type":"complete","wuId":"WU-1463","timestamp":"2026-02-05T22:58:26.186Z"}
 {"type":"complete","wuId":"WU-1465","timestamp":"2026-02-05T23:04:25.969Z"}
-{"type":"claim","wuId":"WU-1466","lane":"Framework: CLI","title":"Add subprocess lifecycle e2e for wu create-claim-prep-done path","timestamp":"2026-02-05T23:05:18.834Z"}
+{"type":"claim","wuId":"WU-1466","timestamp":"2026-02-05T23:05:18.834Z","lane":"Framework: CLI","title":"Add subprocess lifecycle e2e for wu create-claim-prep-done path"}
+{"type":"complete","wuId":"WU-1464","timestamp":"2026-02-05T23:08:16.452Z"}
