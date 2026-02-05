@@ -63,6 +63,9 @@ importers:
       astro:
         specifier: ^5.16.13
         version: 5.16.13(@types/node@22.19.6)(rollup@4.55.1)(typescript@5.9.3)(yaml@2.8.2)
+      astro-d2:
+        specifier: ^0.8.1
+        version: 0.8.1(astro@5.16.13(@types/node@22.19.6)(rollup@4.55.1)(typescript@5.9.3)(yaml@2.8.2))
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -1710,6 +1713,12 @@ packages:
   astring@1.9.0:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
+
+  astro-d2@0.8.1:
+    resolution: {integrity: sha512-r2Y4KbRQ+hOFV+YR7i9dDBWbPFVh8hvz2aM4u+wc+uLwxQ03CvoC5VD6c2x+jKhMRYJH9KblKzydalaxXsgoBg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      astro: '>=5.0.0'
 
   astro-expressive-code@0.41.6:
     resolution: {integrity: sha512-l47tb1uhmVIebHUkw+HEPtU/av0G4O8Q34g2cbkPvC7/e9ZhANcjUUciKt9Hp6gSVDdIuXBBLwJQn2LkeGMOAw==}
@@ -5533,6 +5542,13 @@ snapshots:
       js-tokens: 9.0.1
 
   astring@1.9.0: {}
+
+  astro-d2@0.8.1(astro@5.16.13(@types/node@22.19.6)(rollup@4.55.1)(typescript@5.9.3)(yaml@2.8.2)):
+    dependencies:
+      astro: 5.16.13(@types/node@22.19.6)(rollup@4.55.1)(typescript@5.9.3)(yaml@2.8.2)
+      hast-util-from-html: 2.0.3
+      hast-util-to-html: 9.0.5
+      unist-util-visit: 5.0.0
 
   astro-expressive-code@0.41.6(astro@5.16.13(@types/node@22.19.6)(rollup@4.55.1)(typescript@5.9.3)(yaml@2.8.2)):
     dependencies:

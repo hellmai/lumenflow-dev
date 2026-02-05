@@ -11,27 +11,51 @@ This page provides visual mental models for the core LumenFlow concepts. Use the
 
 Work Units progress through 5 states with specific transitions.
 
-```mermaid
-stateDiagram-v2
-    [*] --> ready: create
+```d2
+direction: right
 
-    ready --> in_progress: claim
+start: {
+  shape: circle
+  style.fill: "#333"
+}
 
-    in_progress --> blocked: block (requires reason)
-    in_progress --> waiting: wait
-    in_progress --> done: complete
-    in_progress --> ready: release (orphan recovery)
+ready: {
+  style.fill: "#e3f2fd"
+}
 
-    blocked --> in_progress: unblock
-    blocked --> done: complete
+in_progress: {
+  style.fill: "#fff3e0"
+}
 
-    waiting --> in_progress: resume
-    waiting --> done: complete
+blocked: {
+  style.fill: "#ffebee"
+}
 
-    done --> [*]
+waiting: {
+  style.fill: "#f3e5f5"
+}
 
-    note right of done: Terminal state
-    note right of ready: Aliases: todo, backlog
+done: {
+  style.fill: "#c8e6c9"
+  style.stroke: "#2e7d32"
+}
+
+end: {
+  shape: circle
+  style.fill: "#333"
+}
+
+start -> ready: create
+ready -> in_progress: claim
+in_progress -> blocked: block\n(requires reason)
+in_progress -> waiting: wait
+in_progress -> done: complete
+in_progress -> ready: release\n(orphan recovery)
+blocked -> in_progress: unblock
+blocked -> done: complete
+waiting -> in_progress: resume
+waiting -> done: complete
+done -> end
 ```
 
 **Key points:**
@@ -46,27 +70,38 @@ stateDiagram-v2
 
 All work happens in isolated worktrees to prevent the "absolute path trap".
 
-```mermaid
-flowchart TD
-    subgraph main["Main Checkout"]
-        A[wu:create] --> B[wu:claim]
-        H[wu:done] --> I[Merged to main]
-    end
+```d2
+direction: down
 
-    subgraph worktree["Worktree (Isolated)"]
-        C[cd worktrees/lane-wu-xxxx]
-        D[Implement changes]
-        E[pnpm gates]
-        F[wu:prep]
-    end
+main: Main Checkout {
+  style.fill: "#e8e8f4"
+  style.stroke: "#2d2d5a"
 
-    B -->|Creates worktree| C
-    C --> D --> E --> F
-    F -->|Return to main| G[cd main]
-    G --> H
+  create: wu:create
+  claim: wu:claim
+  done: wu:done
+  merged: Merged to main
 
-    style worktree fill:#e8f4e8,stroke:#2d5a2d
-    style main fill:#e8e8f4,stroke:#2d2d5a
+  create -> claim
+  done -> merged
+}
+
+worktree: Worktree (Isolated) {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2d5a2d"
+
+  cd: cd worktrees/lane-wu-xxxx
+  impl: Implement changes
+  gates: pnpm gates
+  prep: wu:prep
+
+  cd -> impl -> gates -> prep
+}
+
+main.claim -> worktree.cd: Creates worktree
+worktree.prep -> return: Return to main
+return: cd main
+return -> main.done
 ```
 
 **Key points:**
@@ -81,31 +116,39 @@ flowchart TD
 
 LumenFlow uses a layered state model with YAML specs as the single source of truth.
 
-```mermaid
-flowchart TB
-    subgraph primary["Layer 1: Primary Source"]
-        YAML["WU-XXXX.yaml<br/>(Canonical State)"]
-    end
+```d2
+direction: down
 
-    subgraph auxiliary["Layer 2: Markers & Events"]
-        STAMP[".lumenflow/stamps/<br/>WU-XXXX.done"]
-        EVENTS["wu-events.jsonl<br/>(Event Log)"]
-    end
+primary: Layer 1 - Primary Source {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
 
-    subgraph derived["Layer 3: Derived Views"]
-        STATUS["status.md"]
-        BACKLOG["backlog.md"]
-    end
+  yaml: WU-XXXX.yaml\n(Canonical State)
+}
 
-    YAML -->|"wu:done creates"| STAMP
-    YAML -->|"wu:claim/done emits"| EVENTS
-    YAML -->|"Regenerated from"| STATUS
-    YAML -->|"Regenerated from"| BACKLOG
-    EVENTS -.->|"Historical input"| STATUS
+auxiliary: Layer 2 - Markers & Events {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
 
-    style primary fill:#fff3e0,stroke:#e65100
-    style auxiliary fill:#e3f2fd,stroke:#1565c0
-    style derived fill:#f5f5f5,stroke:#9e9e9e
+  stamp: .lumenflow/stamps/\nWU-XXXX.done
+  events: wu-events.jsonl\n(Event Log)
+}
+
+derived: Layer 3 - Derived Views {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  status: status.md
+  backlog: backlog.md
+}
+
+primary.yaml -> auxiliary.stamp: wu:done creates
+primary.yaml -> auxiliary.events: wu:claim/done emits
+primary.yaml -> derived.status: Regenerated from
+primary.yaml -> derived.backlog: Regenerated from
+auxiliary.events -> derived.status: Historical input {
+  style.stroke-dash: 3
+}
 ```
 
 **Key points:**
@@ -121,42 +164,52 @@ flowchart TB
 
 Fields are populated at different lifecycle stages.
 
-```mermaid
-flowchart LR
-    subgraph create["At wu:create"]
-        C1[id]
-        C2[title]
-        C3[lane]
-        C4[type]
-        C5[priority]
-        C6[description]
-        C7[acceptance]
-    end
+```d2
+direction: right
 
-    subgraph claim["At wu:claim"]
-        CL1[status: in_progress]
-        CL2[claimed_at]
-        CL3[assigned_to]
-        CL4[worktree_path]
-        CL5[session_id]
-    end
+create: At wu:create {
+  style.fill: "#e3f2fd"
 
-    subgraph done["At wu:done"]
-        D1[status: done]
-        D2[completed_at]
-        D3[locked: true]
-        D4[code_paths]
-    end
+  id
+  title
+  lane
+  type
+  priority
+  description
+  acceptance
+}
 
-    subgraph optional["Optional Fields"]
-        O1[dependencies]
-        O2[blocked_by]
-        O3[initiative]
-        O4[spec_refs]
-        O5[risks]
-    end
+claim: At wu:claim {
+  style.fill: "#fff3e0"
 
-    create --> claim --> done
+  status: "status: in_progress"
+  claimed_at
+  assigned_to
+  worktree_path
+  session_id
+}
+
+done: At wu:done {
+  style.fill: "#c8e6c9"
+
+  status: "status: done"
+  completed_at
+  locked: "locked: true"
+  code_paths
+}
+
+optional: Optional Fields {
+  style.fill: "#f5f5f5"
+  style.stroke-dash: 3
+
+  dependencies
+  blocked_by
+  initiative
+  spec_refs
+  risks
+}
+
+create -> claim -> done
 ```
 
 **Key points:**
@@ -171,27 +224,48 @@ flowchart LR
 
 Quality gates run in sequence before completion.
 
-```mermaid
-flowchart LR
-    subgraph gates["pnpm gates"]
-        FORMAT[Format<br/>prettier] --> LINT[Lint<br/>eslint]
-        LINT --> TYPE[Typecheck<br/>tsc]
-        TYPE --> TEST[Test<br/>vitest]
-    end
+```d2
+direction: right
 
-    FORMAT -->|Fail| FIX1[Auto-fix:<br/>pnpm format]
-    LINT -->|Fail| FIX2[Manual fix<br/>required]
-    TYPE -->|Fail| FIX3[Fix types<br/>before continuing]
-    TEST -->|Fail| FIX4[Fix tests<br/>or update snapshots]
+gates: pnpm gates {
+  style.fill: "#f5f5f5"
 
-    TEST -->|Pass| READY[Ready for<br/>wu:prep]
+  format: Format\n(prettier)
+  lint: Lint\n(eslint)
+  type: Typecheck\n(tsc)
+  test: Test\n(vitest)
 
-    FIX1 --> FORMAT
-    FIX2 --> LINT
-    FIX3 --> TYPE
-    FIX4 --> TEST
+  format -> lint -> type -> test
+}
 
-    style READY fill:#c8e6c9,stroke:#2e7d32
+fix1: Auto-fix:\npnpm format {
+  style.fill: "#ffebee"
+}
+fix2: Manual fix\nrequired {
+  style.fill: "#ffebee"
+}
+fix3: Fix types\nbefore continuing {
+  style.fill: "#ffebee"
+}
+fix4: Fix tests\nor update snapshots {
+  style.fill: "#ffebee"
+}
+
+ready: Ready for\nwu:prep {
+  style.fill: "#c8e6c9"
+  style.stroke: "#2e7d32"
+}
+
+gates.format -> fix1: Fail
+gates.lint -> fix2: Fail
+gates.type -> fix3: Fail
+gates.test -> fix4: Fail
+gates.test -> ready: Pass
+
+fix1 -> gates.format
+fix2 -> gates.lint
+fix3 -> gates.type
+fix4 -> gates.test
 ```
 
 **Key points:**
@@ -207,25 +281,39 @@ flowchart LR
 
 Lanes prevent parallel work conflicts with WIP limits.
 
-```mermaid
-flowchart TD
-    subgraph lanes["Lanes (WIP = 1 each)"]
-        subgraph core["Framework: Core"]
-            C1[WU-101<br/>in_progress]
-            C2[WU-102<br/>ready<br/>waiting]
-        end
+```d2
+direction: down
 
-        subgraph cli["Framework: CLI"]
-            CLI1[WU-201<br/>in_progress]
-        end
+lanes: Lanes (WIP = 1 each) {
+  core: "Framework: Core" {
+    style.fill: "#ffebee"
 
-        subgraph docs["Content: Docs"]
-            D1[WU-301<br/>ready<br/>claimable]
-        end
-    end
+    wu101: WU-101\nin_progress
+    wu102: WU-102\nready (waiting)
+  }
 
-    CLAIM[wu:claim WU-102] -->|Lane locked| C1
-    CLAIM2[wu:claim WU-301] -->|Lane available| D1
+  cli: "Framework: CLI" {
+    style.fill: "#fff3e0"
+
+    wu201: WU-201\nin_progress
+  }
+
+  docs: "Content: Docs" {
+    style.fill: "#e8f4e8"
+
+    wu301: WU-301\nready (claimable)
+  }
+}
+
+claim1: wu:claim WU-102
+claim2: wu:claim WU-301
+
+claim1 -> lanes.core.wu101: Lane locked {
+  style.stroke: "#d32f2f"
+}
+claim2 -> lanes.docs.wu301: Lane available {
+  style.stroke: "#2e7d32"
+}
 ```
 
 **Key points:**
@@ -241,27 +329,38 @@ flowchart TD
 
 Agents communicate via signals, checkpoints, and recovery.
 
-```mermaid
-sequenceDiagram
-    participant A as Agent A
-    participant M as Memory Layer
-    participant B as Agent B
+```d2
+direction: down
 
-    Note over A,B: Starting Work
-    A->>M: mem:start --wu WU-123
-    A->>M: mem:signal "Starting core impl"
+agents: {
+  A: Agent A
+  M: Memory Layer {
+    style.fill: "#e3f2fd"
+  }
+  B: Agent B
+}
 
-    Note over A,B: Coordination
-    B->>M: mem:inbox --since 30m
-    M-->>B: Signal: "Starting core impl"
-    B->>M: mem:signal "CLI ready for integration"
+flow: {
+  style.fill: transparent
+  style.stroke: transparent
 
-    Note over A,B: Before /clear or Handoff
-    A->>M: mem:checkpoint "Tests passing"
+  step1: "1. Agent A starts work"
+  step2: "2. Agent A signals progress"
+  step3: "3. Agent B checks inbox"
+  step4: "4. Agent B responds"
+  step5: "5. Agent A checkpoints before /clear"
+  step6: "6. Agent A recovers after compaction"
 
-    Note over A,B: After Compaction/Resume
-    A->>M: mem:recover --wu WU-123
-    M-->>A: Recovery context + last checkpoint
+  step1 -> step2 -> step3 -> step4 -> step5 -> step6
+}
+
+agents.A -> agents.M: mem:start --wu WU-123\nmem:signal "Starting core impl"
+agents.B -> agents.M: mem:inbox --since 30m
+agents.M -> agents.B: Signal received
+agents.B -> agents.M: mem:signal "CLI ready"
+agents.A -> agents.M: mem:checkpoint "Tests passing"
+agents.A -> agents.M: mem:recover --wu WU-123
+agents.M -> agents.A: Recovery context
 ```
 
 **Key points:**
@@ -282,32 +381,38 @@ sequenceDiagram
 
 WUs are organized into parallel execution waves based on dependencies.
 
-```mermaid
-flowchart TD
-    subgraph init["Initiative INIT-001"]
-        direction LR
-        subgraph wave0["Wave 0 (Parallel)"]
-            W0A[WU-1<br/>Core]
-            W0B[WU-3<br/>CLI]
-        end
+```d2
+direction: right
 
-        subgraph wave1["Wave 1 (Parallel)"]
-            W1A[WU-2<br/>Core]
-            W1B[WU-4<br/>CLI]
-        end
+init: Initiative INIT-001 {
+  wave0: Wave 0 (Parallel) {
+    style.fill: "#e3f2fd"
 
-        subgraph wave2["Wave 2"]
-            W2A[WU-5<br/>Metrics]
-        end
-    end
+    w0a: WU-1\nCore
+    w0b: WU-3\nCLI
+  }
 
-    W0A --> W1A
-    W0B --> W1B
-    W1A --> W2A
-    W1B --> W2A
+  wave1: Wave 1 (Parallel) {
+    style.fill: "#fff3e0"
 
-    wave0 -->|All complete| wave1
-    wave1 -->|All complete| wave2
+    w1a: WU-2\nCore
+    w1b: WU-4\nCLI
+  }
+
+  wave2: Wave 2 {
+    style.fill: "#c8e6c9"
+
+    w2a: WU-5\nMetrics
+  }
+
+  wave0 -> wave1: All complete
+  wave1 -> wave2: All complete
+}
+
+init.wave0.w0a -> init.wave1.w1a
+init.wave0.w0b -> init.wave1.w1b
+init.wave1.w1a -> init.wave2.w2a
+init.wave1.w1b -> init.wave2.w2a
 ```
 
 **Key points:**
