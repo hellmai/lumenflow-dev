@@ -1,0 +1,36 @@
+id: WU-1448
+title: Add D2 diagram support and convert Mermaid diagrams
+lane: 'Content: Documentation'
+type: chore
+status: ready
+priority: P2
+created: 2026-02-05
+code_paths:
+  - apps/docs/package.json
+  - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/concepts/visual-overview.mdx
+tests:
+  manual:
+    - Run pnpm dev in apps/docs and verify all 8 diagrams render as SVGs
+    - Toggle dark mode and verify diagrams adapt
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1448.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Install astro-d2 for build-time diagram rendering. Convert 8 Mermaid diagrams in visual-overview.mdx to D2 syntax. Use skipGeneration mode to pre-render SVGs locally and commit them, avoiding D2 CLI dependency in CI.
+acceptance:
+  - astro-d2 installed and configured in apps/docs
+  - All 8 diagrams converted from Mermaid to D2 syntax
+  - SVGs pre-generated and committed to public/d2/
+  - Diagrams render correctly in pnpm dev preview with dark mode support
