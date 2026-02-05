@@ -2,7 +2,7 @@ id: WU-1449
 title: Fix flaky orchestrate-initiative-wu1251 test timeout
 lane: 'Framework: Initiatives'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - Test uses static imports or beforeAll pattern instead of per-test dynamic imports
   - Test passes consistently in both main and worktree environments
   - No timeout failures during wu:done in worktree (run 5x to verify)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-initiatives-wu-1449
+claimed_at: 2026-02-05T13:31:06.943Z
+baseline_main_sha: beb77eba00e7a1f1e991318396eb95d72d1f0779
+session_id: 91f16e72-b8c0-44f4-a23e-efde4ff2230d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T13:31:06.947Z
