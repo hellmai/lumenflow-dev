@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml)
 
 ## Blocked
 
