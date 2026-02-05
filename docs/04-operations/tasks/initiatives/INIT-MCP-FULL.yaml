@@ -32,7 +32,7 @@ phases:
     status: done
   - id: 8
     title: MCP parity audit + regression tests
-    status: pending
+    status: in_progress
 success_metrics:
   - 90 MCP tools available (100% public CLI parity per public-manifest.ts)
   - All tools documented on lumenflow.dev/reference/mcp
