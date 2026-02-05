@@ -8,6 +8,8 @@
 /* eslint-disable sonarjs/no-duplicate-string -- Test files commonly repeat string literals for clarity */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import path from 'node:path';
 import {
   buildPrettierWriteCommand,
   formatFormatCheckGuidance,
@@ -415,5 +417,55 @@ describe('docs-only mode package filtering (WU-1299)', () => {
       const codePaths = loadCurrentWUCodePaths({ cwd: '/nonexistent/path' });
       expect(Array.isArray(codePaths)).toBe(true);
     });
+  });
+});
+
+describe('workspace lint/typecheck script coverage (WU-1461)', () => {
+  const repoRoot = path.resolve(import.meta.dirname, '../../../..');
+
+  function listWorkspacePackageJsonFiles(): string[] {
+    const packageJsonFiles: string[] = [];
+    const workspaceRoots = ['packages/@lumenflow', 'apps'];
+
+    for (const root of workspaceRoots) {
+      const absoluteRoot = path.join(repoRoot, root);
+      if (!existsSync(absoluteRoot)) {
+        continue;
+      }
+
+      for (const entry of readdirSync(absoluteRoot, { withFileTypes: true })) {
+        if (!entry.isDirectory()) {
+          continue;
+        }
+        const relativePath = path.join(root, entry.name, 'package.json');
+        if (existsSync(path.join(repoRoot, relativePath))) {
+          packageJsonFiles.push(relativePath);
+        }
+      }
+    }
+
+    return packageJsonFiles.sort();
+  }
+
+  it('requires all in-scope packages to define lint and typecheck scripts', () => {
+    const inScopePackageJsonFiles = listWorkspacePackageJsonFiles();
+    const missingScripts: string[] = [];
+
+    for (const relativePath of inScopePackageJsonFiles) {
+      const packageJsonPath = path.join(repoRoot, relativePath);
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as {
+        scripts?: Record<string, string>;
+      };
+      const scripts = packageJson.scripts ?? {};
+
+      if (!scripts.lint) {
+        missingScripts.push(`${relativePath}: missing scripts.lint`);
+      }
+      if (!scripts.typecheck) {
+        missingScripts.push(`${relativePath}: missing scripts.typecheck`);
+      }
+    }
+
+    expect(missingScripts).toEqual([]);
   });
 });
