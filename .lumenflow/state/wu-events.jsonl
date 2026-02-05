@@ -807,3 +807,4 @@
 {"type":"complete","wuId":"WU-1437","timestamp":"2026-02-04T23:28:01.544Z"}
 {"type":"claim","wuId":"WU-1439","timestamp":"2026-02-04T23:29:11.985Z","lane":"Framework: CLI","title":"Regenerate CLI docs after public manifest update"}
 {"type":"complete","wuId":"WU-1439","timestamp":"2026-02-04T23:36:39.450Z"}
+{"type":"claim","wuId":"WU-1440","lane":"Content: Documentation","title":"Harden WU template defaults + document plan-less flow","timestamp":"2026-02-05T09:16:13.078Z"}
