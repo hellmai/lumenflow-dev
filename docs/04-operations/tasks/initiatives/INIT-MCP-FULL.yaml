@@ -1,10 +1,10 @@
 id: INIT-MCP-FULL
 slug: mcp-full-coverage
 title: Full MCP CLI Parity
-description:
-  Implement MCP tools to achieve 100% public CLI parity (90 commands per public-manifest.ts).
-  Enables AI agents to use any public LumenFlow CLI command via MCP protocol. Internal/maintainer
-  commands (guards, validators, session internals) are excluded from parity scope.
+description: Implement MCP tools to achieve 100% public CLI parity (90 commands per
+  public-manifest.ts). Enables AI agents to use any public LumenFlow CLI command via MCP protocol.
+  Internal/maintainer commands (guards, validators, session internals) are excluded from parity
+  scope.
 status: in_progress
 priority: P2
 created: 2026-02-04
@@ -29,6 +29,9 @@ phases:
     status: pending
   - id: 7
     title: Final documentation update
+    status: pending
+  - id: 8
+    title: MCP parity audit + regression tests
     status: pending
 success_metrics:
   - 90 MCP tools available (100% public CLI parity per public-manifest.ts)
