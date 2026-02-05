@@ -1,0 +1,72 @@
+id: WU-1457
+title: 'Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn'
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P3
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/core/src/schemas/flow-schemas.ts
+  - packages/@lumenflow/core/src/schemas/validation-schemas.ts
+  - packages/@lumenflow/core/src/schemas/setup-schemas.ts
+  - packages/@lumenflow/core/src/schemas/index.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/cli/src/flow-bottlenecks.ts
+  - packages/@lumenflow/cli/src/flow-report.ts
+  - packages/@lumenflow/cli/src/metrics-cli.ts
+  - packages/@lumenflow/cli/src/metrics-snapshot.ts
+  - packages/@lumenflow/cli/src/validate.ts
+  - packages/@lumenflow/cli/src/validate-agent-skills.ts
+  - packages/@lumenflow/cli/src/validate-agent-sync.ts
+  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
+  - packages/@lumenflow/cli/src/validate-skills-spec.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/doctor.ts
+  - packages/@lumenflow/cli/src/integrate.ts
+  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
+  - packages/@lumenflow/cli/src/commands.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/sync-templates.ts
+  - packages/@lumenflow/cli/src/release.ts
+  - packages/@lumenflow/cli/src/agent-session.ts
+  - packages/@lumenflow/cli/src/agent-session-end.ts
+  - packages/@lumenflow/cli/src/agent-log-issue.ts
+  - packages/@lumenflow/cli/src/agent-issues-query.ts
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
+  - packages/@lumenflow/cli/src/orchestrate-init-status.ts
+  - packages/@lumenflow/cli/src/orchestrate-monitor.ts
+  - packages/@lumenflow/cli/src/spawn-list.ts
+  - packages/@lumenflow/cli/src/session-coordinator.ts
+  - packages/@lumenflow/cli/src/rotate-progress.ts
+tests:
+  manual:
+    - Run pnpm flow:report --help and MCP flow_report
+  unit:
+    - packages/@lumenflow/core/src/__tests__/schema-parity.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1457.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 8
+spec_refs:
+  - ~/.claude/plans/declarative-churning-map.md
+risks: []
+notes: 'Sizing: Medium. Strategy: Checkpoint-Resume.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: Multiple command families are hand-coded in MCP and CLI.
+  Problem: No parity guarantees for flags and schemas.
+  Solution: Add shared schemas and wire CLI/MCP for remaining families.
+acceptance:
+  - flow-schemas.ts, validation-schemas.ts, setup-schemas.ts exist
+  - Schemas include agent, orchestration, and spawn/coordination commands
+  - All related MCP tools consume shared schemas
+  - CLI commands use shared validators
