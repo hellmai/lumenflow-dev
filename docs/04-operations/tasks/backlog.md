@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
 - [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
