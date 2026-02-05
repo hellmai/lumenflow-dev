@@ -2,7 +2,7 @@ id: WU-1448
 title: Add D2 diagram support and convert Mermaid diagrams
 lane: 'Content: Documentation'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -44,3 +44,5 @@ session_id: c83292ee-69f9-4954-b8f8-bee48b96c84b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T13:15:41.382Z
+locked: true
+completed_at: 2026-02-05T13:23:24.608Z
