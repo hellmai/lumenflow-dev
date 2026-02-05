@@ -2,7 +2,7 @@ id: WU-1444
 title: Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -25,7 +25,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1444-plan.md
 risks: []
-notes: 'Refactor: replace CLI type/test string-literal policy with core helpers/constants; keep behavior unchanged.'
+notes: 'Refactor: replace CLI type/test string-literal policy with core helpers/constants; keep
+  behavior unchanged.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -53,3 +54,5 @@ session_id: 3f78c1be-5020-48d4-852e-26361ecbb5c9
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T11:44:05.375Z
+locked: true
+completed_at: 2026-02-05T11:53:00.457Z

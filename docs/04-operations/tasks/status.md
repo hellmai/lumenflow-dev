@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-- [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -402,3 +402,4 @@ _Last updated: 2026-02-05_
 - [WU-1442 — Fix push-only retry rebase onto origin/main](wu/WU-1442.yaml) — 2026-02-05
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — 2026-02-05
 - [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml) — 2026-02-05
+- [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml) — 2026-02-05

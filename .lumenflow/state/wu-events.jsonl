@@ -818,4 +818,5 @@
 {"type":"block","wuId":"WU-1007","timestamp":"2026-02-05T11:00:48.272Z","reason":"Reconcile: emit block event so state store matches blocked"}
 {"type":"claim","wuId":"WU-1443","timestamp":"2026-02-05T11:08:06.054Z","lane":"Framework: CLI","title":"Make wu:create and init templates resilient (default notes/tests + document planless flow)"}
 {"type":"complete","wuId":"WU-1443","timestamp":"2026-02-05T11:36:04.764Z"}
-{"type":"claim","wuId":"WU-1444","lane":"Framework: Core","title":"Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy","timestamp":"2026-02-05T11:44:05.411Z"}
+{"type":"claim","wuId":"WU-1444","timestamp":"2026-02-05T11:44:05.411Z","lane":"Framework: Core","title":"Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy"}
+{"type":"complete","wuId":"WU-1444","timestamp":"2026-02-05T11:53:03.033Z"}
