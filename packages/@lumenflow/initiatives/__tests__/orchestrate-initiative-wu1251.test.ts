@@ -10,6 +10,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  buildExecutionPlan,
+  buildExecutionPlanAsync,
+  formatExecutionPlan,
+} from '@lumenflow/initiatives';
 
 const STAMPS_DIR = '.lumenflow/stamps';
 const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
@@ -88,9 +93,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
   });
 
   describe('AC1: WUs with dependencies are placed in waves AFTER their dependencies', () => {
-    it('should place WU with dependencies in wave after dependency when using dependencies array', async () => {
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should place WU with dependencies in wave after dependency when using dependencies array', () => {
       // WU-A has no dependencies (Wave 0)
       // WU-B depends on WU-A via "dependencies" array (should be Wave 1)
       const wus = [
@@ -124,9 +127,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(wave1Ids).toContain(WU_TEST_B);
     });
 
-    it('should respect dependencies array even when blocked_by is empty', async () => {
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should respect dependencies array even when blocked_by is empty', () => {
       // This is the exact bug scenario: dependencies is set but blocked_by is empty
       const wus = [
         {
@@ -158,9 +159,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(wave1Ids).toContain(WU_TEST_1240);
     });
 
-    it('should support chained dependencies via dependencies array', async () => {
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should support chained dependencies via dependencies array', () => {
       // Chain: A -> B -> C (all via dependencies array, not blocked_by)
       const wus = [
         {
@@ -198,9 +197,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(plan.waves[2].map((wu) => wu.id)).toEqual([WU_TEST_CHAIN_C]);
     });
 
-    it('should combine blocked_by and dependencies arrays for dependency resolution', async () => {
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should combine blocked_by and dependencies arrays for dependency resolution', () => {
       // WU-C depends on WU-A via blocked_by AND WU-B via dependencies
       const wus = [
         {
@@ -238,9 +235,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
   });
 
   describe('AC2: orchestrate:initiative --dry-run shows correct wave structure', () => {
-    it('should show separate waves for WUs with dependencies in formatExecutionPlan output', async () => {
-      const { buildExecutionPlan, formatExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should show separate waves for WUs with dependencies in formatExecutionPlan output', () => {
       const wus = [
         {
           id: WU_TEST_FMT_A,
@@ -283,9 +278,7 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
   });
 
   describe('AC3: Dependency deferred handling with dependencies array', () => {
-    it('should defer WUs when their dependencies (via dependencies array) have external unstamped blockers', async () => {
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
-
+    it('should defer WUs when their dependencies (via dependencies array) have external unstamped blockers', () => {
       // WU-DEP depends on WU-EXT which is not in the initiative and has no stamp
       const wus = [
         {
@@ -306,11 +299,9 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
       expect(plan.deferred.map((d) => d.id)).toContain(WU_TEST_DEP);
     });
 
-    it('should schedule WU when dependency has a stamp', async () => {
+    it('should schedule WU when dependency has a stamp', () => {
       // Create stamp for external dependency
       createStamp(WU_TEST_STAMPED);
-
-      const { buildExecutionPlan } = await import('@lumenflow/initiatives');
 
       const wus = [
         {
@@ -334,8 +325,6 @@ describe('WU-1251: dependencies array support in wave calculation', () => {
 
   describe('Async version buildExecutionPlanAsync', () => {
     it('should also respect dependencies array in async version', async () => {
-      const { buildExecutionPlanAsync } = await import('@lumenflow/initiatives');
-
       const wus = [
         {
           id: WU_TEST_ASYNC_A,
