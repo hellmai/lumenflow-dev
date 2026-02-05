@@ -4,7 +4,6 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
 - [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml)
 
 ## Blocked
@@ -416,3 +415,4 @@ _Last updated: 2026-02-05_
 - [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml) — 2026-02-05
 - [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml) — 2026-02-05
 - [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml) — 2026-02-05
+- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — 2026-02-05
