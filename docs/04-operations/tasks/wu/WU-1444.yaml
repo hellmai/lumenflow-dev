@@ -10,8 +10,6 @@ code_paths:
   - packages/@lumenflow/core/src/wu-type-helpers.ts
   - packages/@lumenflow/core/src/__tests__/wu-type-helpers.test.ts
   - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
 tests:
   manual:
     - Run pnpm wu:create (no --notes, no test-paths) with non-code code_paths and confirm
