@@ -835,3 +835,4 @@
 {"type":"claim","wuId":"WU-1451","timestamp":"2026-02-05T17:57:03.435Z","lane":"Operations: Infrastructure","title":"Fix astro-d2 configuration for D2 diagram rendering"}
 {"type":"complete","wuId":"WU-1451","timestamp":"2026-02-05T17:59:39.938Z"}
 {"type":"claim","wuId":"WU-1459","lane":"Framework: CLI","title":"Fix initiative:add-wu orphaned temp worktree cleanup","timestamp":"2026-02-05T19:46:32.365Z"}
+{"type":"release","wuId":"WU-1459","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-05T19:47:19.230Z"}
