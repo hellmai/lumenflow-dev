@@ -825,3 +825,4 @@
 {"type":"complete","wuId":"WU-1445","timestamp":"2026-02-05T12:11:18.964Z"}
 {"type":"complete","wuId":"WU-1446","timestamp":"2026-02-05T12:24:47.764Z"}
 {"type":"claim","wuId":"WU-1447","lane":"Framework: CLI","title":"Purge .beacon legacy paths/docs; use .lumenflow only","timestamp":"2026-02-05T13:10:56.515Z"}
+{"type":"claim","wuId":"WU-1448","lane":"Content: Documentation","title":"Add D2 diagram support and convert Mermaid diagrams","timestamp":"2026-02-05T13:15:41.411Z"}
