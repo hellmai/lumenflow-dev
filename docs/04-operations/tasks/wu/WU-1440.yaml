@@ -2,7 +2,7 @@ id: WU-1440
 title: Harden WU template defaults + document plan-less flow
 lane: 'Content: Documentation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -45,3 +45,5 @@ session_id: 3325cb7e-29df-4be6-9a47-cb79c47233cb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T09:16:13.063Z
+locked: true
+completed_at: 2026-02-05T09:18:58.881Z
