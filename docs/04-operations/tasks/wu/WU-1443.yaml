@@ -2,7 +2,7 @@ id: WU-1443
 title: Make wu:create and init templates resilient (default notes/tests + document planless flow)
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -56,3 +56,5 @@ acceptance:
   - 'init-scaffolded wu-template.yaml (and embedded init.ts template) match: spec_refs uses
     lumenflow://plans/.., includes tests.manual stub, and notes is non-empty'
   - Docs were updated in WU-1440; this WU ensures CLI behavior matches those docs/templates.
+locked: true
+completed_at: 2026-02-05T11:36:02.249Z
