@@ -1,0 +1,5 @@
+# WU-1129 Done
+
+Title: Fix pre-existing prettier format failures in apps/docs/*.mdx
+Created by: state:doctor --fix
+Timestamp: 2026-02-05T11:04:27.819Z
