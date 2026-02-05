@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
 tests:
   manual:
     - Run lifecycle subprocess e2e and confirm wu:create -> wu:claim -> wu:prep -> wu:done completes
@@ -28,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-05T23:05:18.808Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1466
+session_id: a6a800f4-0ee2-4058-937f-21a0f0cfd73a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T23:05:18.814Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +51,3 @@ acceptance:
   - The test verifies expected WU status transitions and done stamp output
   - The test runs in CI without relying on manual YAML mutation shortcuts
   - Failure output is actionable for lifecycle regressions
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1466
-claimed_at: 2026-02-05T23:05:18.808Z
-baseline_main_sha: 393b585dfc94bb3e8bf4f51233a78c227dd651b6
-session_id: a6a800f4-0ee2-4058-937f-21a0f0cfd73a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-05T23:05:18.814Z
