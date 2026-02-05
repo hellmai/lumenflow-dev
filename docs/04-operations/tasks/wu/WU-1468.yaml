@@ -1,0 +1,44 @@
+id: WU-1468
+title: Roll out root tsconfig inheritance and strictNullChecks across non-strict packages
+lane: 'Framework: Core'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/core/tsconfig.json
+  - packages/@lumenflow/cli/tsconfig.json
+  - packages/@lumenflow/mcp/tsconfig.json
+  - packages/@lumenflow/memory/tsconfig.json
+  - packages/@lumenflow/agent/tsconfig.json
+  - packages/@lumenflow/initiatives/tsconfig.json
+tests:
+  manual:
+    - Run pnpm typecheck and package-level typecheck commands after tsconfig migration
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1468.done
+dependencies: []
+initiative: INIT-014
+phase: 6
+blocked_by:
+  - WU-1461
+spec_refs:
+  - docs/04-operations/plans/INIT-014-rollout-1-launch-readiness-har.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: six packages override root strict settings with strict:false, while metrics and shims already inherit strict config. Problem: type-safety guarantees are inconsistent and regressions can hide in non-strict package boundaries. Solution: migrate package tsconfigs to extend root configuration and enable strictNullChecks as the first hardening step, with package-level overrides only where necessary.'
+acceptance:
+  - core, cli, mcp, memory, agent, and initiatives tsconfig files extend root tsconfig
+  - strictNullChecks is enabled for migrated packages or explicitly justified with tracked follow-ups
+  - pnpm typecheck passes with migrated configuration
+  - Build tsconfig variants no longer silently bypass strictness policy without explicit rationale
