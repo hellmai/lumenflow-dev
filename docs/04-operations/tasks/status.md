@@ -5,6 +5,7 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
+- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml)
 
 ## Blocked
 
