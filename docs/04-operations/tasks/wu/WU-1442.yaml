@@ -2,14 +2,15 @@ id: WU-1442
 title: Fix push-only retry rebase onto origin/main
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual:
-    - Run pnpm state:doctor --fix twice in a row; WU-1222 mismatch should not reappear due to retry exhaustion
+    - Run pnpm state:doctor --fix twice in a row; WU-1222 mismatch should not reappear due to retry
+      exhaustion
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
@@ -28,7 +29,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: state:doctor and other push-only micro-worktree operations push directly to origin/main without updating local main (WU-1435). Problem: pushRefspecWithRetry fetches origin/main but rebases the temp branch onto local 'main' instead of 'origin/main', so if local main is behind remote (common in push-only mode), retries never make progress and the operation loops until retry exhaustion. Solution: rebase onto the remote-tracking ref (origin/main) after fetch, and adjust logs/tests accordingly."
+description: "Context: state:doctor and other push-only micro-worktree operations push directly to
+  origin/main without updating local main (WU-1435). Problem: pushRefspecWithRetry fetches
+  origin/main but rebases the temp branch onto local 'main' instead of 'origin/main', so if local
+  main is behind remote (common in push-only mode), retries never make progress and the operation
+  loops until retry exhaustion. Solution: rebase onto the remote-tracking ref (origin/main) after
+  fetch, and adjust logs/tests accordingly."
 acceptance:
   - pushRefspecWithRetry rebases onto origin/main (not local main) when retrying after push rejection
-  - state:doctor --fix can successfully emit corrective events even when local main is behind origin/main
+  - state:doctor --fix can successfully emit corrective events even when local main is behind
+    origin/main
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1442
+claimed_at: 2026-02-05T10:17:02.827Z
+baseline_main_sha: fd1316b200b4cda31693e9143da180192823c40c
+session_id: 5c9a7d24-64e6-4d35-ba8b-fdfab7b154e7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T10:17:02.836Z

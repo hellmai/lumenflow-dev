@@ -812,3 +812,4 @@
 {"type":"claim","wuId":"WU-1441","timestamp":"2026-02-05T09:23:26.505Z","lane":"Framework: Core","title":"Spec-linter: scoped-first + pre-existing failure detection"}
 {"type":"complete","wuId":"WU-1204","timestamp":"2026-02-05T09:51:42.631Z"}
 {"type":"complete","wuId":"WU-1441","timestamp":"2026-02-05T10:16:01.405Z"}
+{"type":"claim","wuId":"WU-1442","lane":"Framework: Core","title":"Fix push-only retry rebase onto origin/main","timestamp":"2026-02-05T10:17:02.871Z"}
