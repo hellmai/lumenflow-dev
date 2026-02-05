@@ -2,7 +2,7 @@ id: WU-1445
 title: Add Visual Overview page to Starlight and remove internal architecture docs
 lane: 'Content: Documentation'
 type: chore
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - apps/docs/src/content/docs/reference/api.mdx
 tests:
   manual:
-    - Run pnpm dev in apps/docs and verify all 8 Mermaid diagrams render correctly on /concepts/visual-overview
+    - Run pnpm dev in apps/docs and verify all 8 Mermaid diagrams render correctly on
+      /concepts/visual-overview
     - Verify Hexagonal Architecture and Port Interfaces pages return 404
     - Verify sidebar shows Visual Overview but not the removed pages
   unit: []
@@ -47,3 +48,5 @@ session_id: 46099f11-4f0e-45c4-9776-5f60412e6830
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T12:06:26.624Z
+locked: true
+completed_at: 2026-02-05T12:11:16.317Z
