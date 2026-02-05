@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1441 — Spec-linter: scoped-first + pre-existing failure detection](wu/WU-1441.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 
@@ -29,6 +28,7 @@ sections:
 - [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
 - [WU-1204 — Add signal TTL cleanup to prevent unbounded growth](wu/WU-1204.yaml) — Framework: Memory
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml) — Framework: Core
+- [WU-1441 — Spec-linter: scoped-first + pre-existing failure detection](wu/WU-1441.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
