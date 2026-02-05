@@ -849,3 +849,4 @@
 {"type":"complete","wuId":"WU-1465","timestamp":"2026-02-05T23:04:25.969Z"}
 {"type":"claim","wuId":"WU-1466","timestamp":"2026-02-05T23:05:18.834Z","lane":"Framework: CLI","title":"Add subprocess lifecycle e2e for wu create-claim-prep-done path"}
 {"type":"complete","wuId":"WU-1464","timestamp":"2026-02-05T23:08:16.452Z"}
+{"type":"complete","wuId":"WU-1466","timestamp":"2026-02-05T23:30:37.351Z"}

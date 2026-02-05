@@ -37,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -449,3 +449,4 @@ sections:
 - [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml)
 - [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml)
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
+- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml)
