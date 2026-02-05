@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# astro-d2 build artifacts (SVGs generated at build time)
+public/d2/
 
 # dependencies
 node_modules/
