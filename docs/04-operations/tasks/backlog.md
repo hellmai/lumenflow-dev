@@ -20,13 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml) — Framework: CLI
+- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

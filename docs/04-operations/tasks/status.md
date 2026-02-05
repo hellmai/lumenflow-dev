@@ -5,6 +5,7 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
+- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
 
 ## Blocked
 
