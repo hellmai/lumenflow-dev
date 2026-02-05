@@ -2,7 +2,7 @@ id: WU-1443
 title: Make wu:create and init templates resilient (default notes/tests + document planless flow)
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -13,8 +13,10 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run pnpm wu:create with minimal flags (--lane/--title/--description/--acceptance/--plan) and confirm created YAML passes pnpm wu:validate --id
-    - Run lumenflow init in a temp dir and confirm generated template content matches docs/templates/wu-template.yaml
+    - Run pnpm wu:create with minimal flags (--lane/--title/--description/--acceptance/--plan) and
+      confirm created YAML passes pnpm wu:validate --id
+    - Run lumenflow init in a temp dir and confirm generated template content matches
+      docs/templates/wu-template.yaml
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
@@ -34,9 +36,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Onboarding and day-1 usage frequently creates WUs from conversation without a pre-written plan file. Problem: spec linter failures (empty notes/tests/spec_refs) create friction and can block unrelated WUs via gates. Solution: make wu:create and init-scaffolded WU templates emit non-empty defaults (notes + manual test stub) and clearly document the planless flow (wu:create --plan) and feature spec_refs requirements.'
+description: 'Context: Onboarding and day-1 usage frequently creates WUs from conversation without a
+  pre-written plan file. Problem: spec linter failures (empty notes/tests/spec_refs) create friction
+  and can block unrelated WUs via gates. Solution: make wu:create and init-scaffolded WU templates
+  emit non-empty defaults (notes + manual test stub) and clearly document the planless flow
+  (wu:create --plan) and feature spec_refs requirements.'
 acceptance:
-  - wu:create without --notes produces non-empty notes that pass spec linter (and is clearly marked as placeholder)
-  - wu:create without any test-paths auto-inserts a manual test stub (with a warning) so spec validation passes
-  - 'init-scaffolded wu-template.yaml (and embedded init.ts template) match: spec_refs uses lumenflow://plans/.., includes tests.manual stub, and notes is non-empty'
-  - 'Docs updated: quick-ref/onboarding explains feature WUs require spec_refs and recommends --plan for planless conversations'
+  - wu:create without --notes produces non-empty notes that pass spec linter (and is clearly marked
+    as placeholder)
+  - wu:create without any test-paths auto-inserts a manual test stub (with a warning) so spec
+    validation passes
+  - 'init-scaffolded wu-template.yaml (and embedded init.ts template) match: spec_refs uses
+    lumenflow://plans/.., includes tests.manual stub, and notes is non-empty'
+  - 'Docs updated: quick-ref/onboarding explains feature WUs require spec_refs and recommends --plan
+    for planless conversations'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1443
+claimed_at: 2026-02-05T11:08:06.022Z
+baseline_main_sha: 44950fa98ddb0cb32392c260ce1fffa86850f716
+session_id: 95ad3e32-aa5e-4234-a123-2842379cc1d6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T11:08:06.030Z
