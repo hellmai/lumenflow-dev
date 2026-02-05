@@ -831,3 +831,4 @@
 {"type":"claim","wuId":"WU-1450","timestamp":"2026-02-05T13:29:42.283Z","lane":"Content: Documentation","title":"Remove remaining .beacon mentions from onboarding/public docs"}
 {"type":"claim","wuId":"WU-1449","timestamp":"2026-02-05T13:31:06.964Z","lane":"Framework: Initiatives","title":"Fix flaky orchestrate-initiative-wu1251 test timeout"}
 {"type":"complete","wuId":"WU-1449","timestamp":"2026-02-05T13:35:21.228Z"}
+{"type":"complete","wuId":"WU-1450","timestamp":"2026-02-05T13:36:32.011Z"}
