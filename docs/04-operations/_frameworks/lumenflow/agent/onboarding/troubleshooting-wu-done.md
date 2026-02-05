@@ -112,6 +112,17 @@ cd worktrees/<lane>-wu-xxx
 pnpm wu:prep --id WU-XXX
 ```
 
+### "spec:linter failed"
+
+`spec:linter` runs **scoped validation first** (current WU only), then **global validation**.
+
+- If scoped validation fails, fix your WU spec.
+- If global validation fails and the failures are **pre-existing on main**, `wu:prep` prints a
+  ready-to-copy `wu:done --skip-gates --fix-wu WU-XXXX` command.
+- If global validation introduces **new failures**, you must fix them before proceeding.
+
+Feature WUs **must** include `spec_refs` (use `pnpm wu:create --plan` if the plan exists only in conversation).
+
 ---
 
 ## Exposure Auto-Fill (WU-1041)

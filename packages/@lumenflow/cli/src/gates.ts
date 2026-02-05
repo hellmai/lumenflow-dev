@@ -709,6 +709,26 @@ function run(
   return { ok: result.status === EXIT_CODES.SUCCESS, duration: Date.now() - start };
 }
 
+async function runSpecLinterGate({ agentLog, useAgentMode }: GateLogContext) {
+  const start = Date.now();
+  const wuId = getCurrentWU();
+
+  if (wuId) {
+    const scopedCmd = pnpmCmd('wu:validate', '--id', wuId);
+    const scopedResult = run(scopedCmd, { agentLog });
+    if (!scopedResult.ok) {
+      return { ok: false, duration: Date.now() - start };
+    }
+  } else if (!useAgentMode) {
+    console.log('⚠️  Unable to detect current WU; skipping scoped validation.');
+  } else if (agentLog) {
+    writeSync(agentLog.logFd, '⚠️  Unable to detect current WU; skipping scoped validation.\n');
+  }
+
+  const globalResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog });
+  return { ok: globalResult.ok, duration: Date.now() - start };
+}
+
 type GateLogContext = {
   agentLog?: { logFd: number; logPath: string } | null;
   useAgentMode: boolean;
@@ -1460,7 +1480,7 @@ async function executeGates(opts: {
         // WU-2252: Invariants check runs first (non-bypassable)
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
         { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
-        { name: GATE_NAMES.SPEC_LINTER, cmd: pnpmRun(SCRIPTS.SPEC_LINTER) },
+        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
         {
           name: GATE_NAMES.PROMPTS_LINT,
           cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),
@@ -1512,7 +1532,7 @@ async function executeGates(opts: {
           cmd: isFullLint ? pnpmCmd(SCRIPTS.LINT) : GATE_COMMANDS.INCREMENTAL,
         },
         { name: GATE_NAMES.TYPECHECK, cmd: pnpmCmd(SCRIPTS.TYPECHECK) },
-        { name: GATE_NAMES.SPEC_LINTER, cmd: pnpmRun(SCRIPTS.SPEC_LINTER) },
+        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
         {
           name: GATE_NAMES.PROMPTS_LINT,
           cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),

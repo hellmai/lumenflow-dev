@@ -130,3 +130,41 @@ describe('wu:done worktree check (WU-1223)', () => {
     expect(expectedGuidance).toContain('wu:prep');
   });
 });
+
+describe('wu-prep spec-linter classification (WU-1441)', () => {
+  it('should detect pre-existing failures only', async () => {
+    const { classifySpecLinterFailures } = await import('../wu-prep.js');
+    const result = classifySpecLinterFailures({
+      mainInvalid: ['WU-1'],
+      worktreeInvalid: ['WU-1'],
+    });
+
+    expect(result.hasPreExisting).toBe(true);
+    expect(result.hasNewFailures).toBe(false);
+    expect(result.newFailures).toEqual([]);
+  });
+
+  it('should detect newly introduced failures', async () => {
+    const { classifySpecLinterFailures } = await import('../wu-prep.js');
+    const result = classifySpecLinterFailures({
+      mainInvalid: ['WU-1'],
+      worktreeInvalid: ['WU-1', 'WU-2'],
+    });
+
+    expect(result.hasPreExisting).toBe(true);
+    expect(result.hasNewFailures).toBe(true);
+    expect(result.newFailures).toEqual(['WU-2']);
+  });
+
+  it('should detect failures when main is clean', async () => {
+    const { classifySpecLinterFailures } = await import('../wu-prep.js');
+    const result = classifySpecLinterFailures({
+      mainInvalid: [],
+      worktreeInvalid: ['WU-3'],
+    });
+
+    expect(result.hasPreExisting).toBe(false);
+    expect(result.hasNewFailures).toBe(true);
+    expect(result.newFailures).toEqual(['WU-3']);
+  });
+});
