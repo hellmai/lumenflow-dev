@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — Framework: Core
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 - [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml) — Framework: Core
 - [WU-1454 — Shared Schemas: WU lifecycle commands](wu/WU-1454.yaml) — Framework: Core
