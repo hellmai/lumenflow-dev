@@ -20,17 +20,8 @@ AUDIT_LOG_DIR="${REPO_ROOT}/.lumenflow"
 AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
 BYPASS_LOG="${AUDIT_LOG_DIR}/force-bypasses.log"
 
-# Legacy log location (older docs/templates referenced .beacon).
-# Keep writing there when it already exists to avoid silently breaking internal audit workflows.
-LEGACY_AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
-LEGACY_AUDIT_LOG="${LEGACY_AUDIT_LOG_DIR}/safety-blocks.log"
-LEGACY_BYPASS_LOG="${LEGACY_AUDIT_LOG_DIR}/force-bypasses.log"
-
 # Setup audit logging
 mkdir -p "$AUDIT_LOG_DIR"
-if [ -d "$LEGACY_AUDIT_LOG_DIR" ]; then
-    mkdir -p "$LEGACY_AUDIT_LOG_DIR"
-fi
 
 log_audit() {
     local reason="$1"
@@ -38,9 +29,6 @@ log_audit() {
     local timestamp
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     echo "${timestamp}|BLOCKED|${reason}|${command}" >> "$AUDIT_LOG"
-    if [ -d "$LEGACY_AUDIT_LOG_DIR" ]; then
-        echo "${timestamp}|BLOCKED|${reason}|${command}" >> "$LEGACY_AUDIT_LOG"
-    fi
 }
 
 log_bypass() {
@@ -53,9 +41,6 @@ log_bypass() {
     user=$(whoami 2>/dev/null || echo "unknown")
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
     echo "${timestamp}|BYPASSED|${command}|${user}|${branch}|${reason}|${PWD}" >> "$BYPASS_LOG"
-    if [ -d "$LEGACY_AUDIT_LOG_DIR" ]; then
-        echo "${timestamp}|BYPASSED|${command}|${user}|${branch}|${reason}|${PWD}" >> "$LEGACY_BYPASS_LOG"
-    fi
 }
 
 warn_no_reason() {

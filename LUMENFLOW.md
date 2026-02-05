@@ -134,8 +134,8 @@ LumenFlow enforces safety at the repository level so protections apply to all ag
 - **Git wrapper**: `scripts/safe-git` blocks destructive operations (e.g. `worktree remove`, `reset --hard`, `clean -fd`, `push --force`).
 - **Husky hooks**: staged secret scanning, absolute-path scanning, lockfile sync, and worktree discipline.
 - **Audit logs**:
-  - `.beacon/safety-blocks.log`
-  - `.beacon/force-bypasses.log`
+  - `.lumenflow/safety-blocks.log`
+  - `.lumenflow/force-bypasses.log`
 
 **IMPORTANT**: All worktree management MUST use `wu:` commands (not raw git):
 

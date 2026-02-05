@@ -14,7 +14,7 @@ set -u
 
 # Configuration
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-AUDIT_LOG_DIR="${REPO_ROOT}/.beacon"
+AUDIT_LOG_DIR="${REPO_ROOT}/.lumenflow"
 AUDIT_LOG="${AUDIT_LOG_DIR}/safety-blocks.log"
 BYPASS_LOG="${AUDIT_LOG_DIR}/force-bypasses.log"
 
