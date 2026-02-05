@@ -2,7 +2,7 @@ id: WU-1066
 title: Add .NET/C# preset to lumenflow-gates GitHub Action
 lane: 'Operations: CI/CD'
 type: feature
-status: cancelled
+status: done
 priority: P2
 created: 2026-01-23
 code_paths:
@@ -20,8 +20,16 @@ dependencies: []
 spec_refs:
   - internal
 risks: []
-notes: 'SUPERSEDED: See WU-1067 which implements config-driven gates instead of hardcoded language
-  presets. This WU took the wrong approach by adding another hardcoded preset.'
+notes: >-
+  SUPERSEDED: See WU-1067 which implements config-driven gates instead of hardcoded language
+  presets. This WU took the wrong approach by adding another hardcoded preset.
+
+
+  Admin: reconcile YAML status with state store complete event; treated as done for state-doctor
+  hygiene
+
+
+  [ADMIN-REPAIR 2026-02-05]: status changed from 'cancelled' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -46,3 +54,4 @@ acceptance:
   - Test gate runs dotnet test --no-build --no-restore
   - All skip-* flags work with dotnet preset
   - docs/DISTRIBUTION.md updated to list dotnet in presets table
+locked: true
