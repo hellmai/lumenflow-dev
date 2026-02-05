@@ -31,7 +31,6 @@ sections:
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — Framework: Core
 - [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — Framework: CLI
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
-- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
 - [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
@@ -39,6 +38,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — Framework: Core
+- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
