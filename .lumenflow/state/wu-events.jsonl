@@ -809,5 +809,6 @@
 {"type":"complete","wuId":"WU-1439","timestamp":"2026-02-04T23:36:39.450Z"}
 {"type":"claim","wuId":"WU-1440","timestamp":"2026-02-05T09:16:13.078Z","lane":"Content: Documentation","title":"Harden WU template defaults + document plan-less flow"}
 {"type":"complete","wuId":"WU-1440","timestamp":"2026-02-05T09:19:01.369Z"}
-{"type":"claim","wuId":"WU-1441","lane":"Framework: Core","title":"Spec-linter: scoped-first + pre-existing failure detection","timestamp":"2026-02-05T09:23:26.505Z"}
-{"wuId":"WU-1204","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-05T09:51:42.631Z"}
+{"type":"claim","wuId":"WU-1441","timestamp":"2026-02-05T09:23:26.505Z","lane":"Framework: Core","title":"Spec-linter: scoped-first + pre-existing failure detection"}
+{"type":"complete","wuId":"WU-1204","timestamp":"2026-02-05T09:51:42.631Z"}
+{"type":"complete","wuId":"WU-1441","timestamp":"2026-02-05T10:16:01.405Z"}

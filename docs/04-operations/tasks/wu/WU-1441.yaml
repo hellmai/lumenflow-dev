@@ -2,7 +2,7 @@ id: WU-1441
 title: 'Spec-linter: scoped-first + pre-existing failure detection'
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -49,3 +49,5 @@ session_id: 3bdd3242-f508-4108-ad8b-18fbac4f06bc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T09:23:26.493Z
+locked: true
+completed_at: 2026-02-05T10:15:58.859Z
