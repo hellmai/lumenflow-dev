@@ -130,6 +130,11 @@ pnpm wu:create \
 The command prints the generated ID. The created WU goes into
 `docs/04-operations/tasks/wu/WU-XXX.yaml` with status `ready`.
 
+**Plan-less conversations:** If your plan lives in chat or a meeting, keep it lightweight:
+use `--plan` to generate a stub at `lumenflow://plans/WU-XXX-plan.md`, summarize the plan
+there, and reference it in `spec_refs`. Feature WUs require `spec_refs`; notes do not replace
+the plan link.
+
 ## Next Steps
 
 - [Lanes](/concepts/lanes) – Organizing work streams

@@ -44,17 +44,19 @@ acceptance:
   - Documentation updated
 
 # Required: References to plans/specs (required for type: feature)
+# Tip: use `pnpm wu:create --plan` to generate a plan stub at lumenflow://plans/WU-XXX-plan.md
 spec_refs:
-  - docs/04-operations/plans/WU-XXX-plan.md
+  - lumenflow://plans/WU-XXX-plan.md
 
 # Required: Code files changed or created (empty only for docs/process WUs)
+# Docs-only WUs should use docs/ or *.md paths to avoid docs-only gate failures.
 code_paths:
   - path/to/file.ts
 
 # Required: Test paths (at least one of manual/unit/e2e/integration for non-doc WUs)
 tests:
   manual:
-    - Manual test: Verify behavior
+    - Manual check: Verify behavior or docs output
   unit:
     - path/to/test.test.ts
   e2e: []
@@ -86,8 +88,8 @@ dependencies: []
 risks:
   - Risk 1
 
-# Optional: Notes
-notes: ''
+# Optional: Notes (required by spec linter)
+notes: 'Implementation notes, rollout context, or plan summary.'
 
 # Optional: Requires human review
 requires_review: false
