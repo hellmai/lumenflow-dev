@@ -97,6 +97,31 @@ describe('docs-structure', () => {
       expect(fs.existsSync(path.join(tempDir, 'docs', DOCS_04_OPERATIONS))).toBe(false);
     });
 
+    it('should scaffold WU template with resilient defaults (simple)', async () => {
+      const options: ScaffoldOptions = {
+        force: false,
+        full: true,
+        docsStructure: SIMPLE_DOCS_STRUCTURE,
+      };
+
+      await scaffoldProject(tempDir, options);
+
+      const templatePath = path.join(tempDir, 'docs', 'tasks', 'templates', 'wu-template.yaml');
+      expect(fs.existsSync(templatePath)).toBe(true);
+
+      const content = fs.readFileSync(templatePath, 'utf-8');
+
+      // Feature WUs should reference plan protocol by default (plan-less friendly).
+      expect(content).toContain('lumenflow://plans/WU-XXX-plan.md');
+
+      // Ensure non-empty notes to avoid strict spec-linter failures out of the box.
+      expect(content).not.toContain("notes: ''");
+      expect(content).toContain('notes:');
+
+      // Ensure manual test stub exists to prevent empty tests failures.
+      expect(content).toContain('Manual check:');
+    });
+
     it('should scaffold arc42 structure with --docs-structure arc42', async () => {
       const options: ScaffoldOptions = {
         force: false,
@@ -108,6 +133,33 @@ describe('docs-structure', () => {
 
       // Arc42 structure: docs/04-operations/tasks
       expect(fs.existsSync(path.join(tempDir, 'docs', DOCS_04_OPERATIONS, 'tasks'))).toBe(true);
+    });
+
+    it('should scaffold WU template with resilient defaults (arc42)', async () => {
+      const options: ScaffoldOptions = {
+        force: false,
+        full: true,
+        docsStructure: ARC42_DOCS_STRUCTURE,
+      };
+
+      await scaffoldProject(tempDir, options);
+
+      const templatePath = path.join(
+        tempDir,
+        'docs',
+        DOCS_04_OPERATIONS,
+        'tasks',
+        'templates',
+        'wu-template.yaml',
+      );
+      expect(fs.existsSync(templatePath)).toBe(true);
+
+      const content = fs.readFileSync(templatePath, 'utf-8');
+
+      expect(content).toContain('lumenflow://plans/WU-XXX-plan.md');
+      expect(content).not.toContain("notes: ''");
+      expect(content).toContain('notes:');
+      expect(content).toContain('Manual check:');
     });
 
     it('should auto-detect arc42 when docs/04-operations exists', async () => {

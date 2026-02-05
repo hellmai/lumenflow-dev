@@ -78,6 +78,7 @@ import {
   validateNoPlaceholders,
   buildPlaceholderErrorMessage,
 } from '@lumenflow/core/dist/wu-validator.js';
+import { isCodeFile } from '@lumenflow/core/dist/manual-test-validator.js';
 // WU-1211: Import initiative validation for phase check
 import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives/dist/index.js';
 
@@ -93,6 +94,12 @@ const DEFAULT_PRIORITY = 'P2';
 /** Default WU type */
 const DEFAULT_TYPE = 'feature';
 
+// WU-1443: Resilient defaults to avoid strict spec-linter failures from day-1.
+const DEFAULT_AUTO_NOTES =
+  '(auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.';
+const DEFAULT_AUTO_MANUAL_TEST =
+  '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.';
+
 /** Maximum title length before truncation */
 const MAX_TITLE_LENGTH = 60;
 
@@ -104,6 +111,15 @@ const TRUNCATED_TITLE_LENGTH = MAX_TITLE_LENGTH - TRUNCATION_SUFFIX.length;
 
 /** Minimum confidence threshold to show lane suggestion warning (WU-2438: lowered from 50 to 30) */
 const MIN_CONFIDENCE_FOR_WARNING = 30;
+
+function containsCodeFiles(codePaths: string[] | undefined): boolean {
+  if (!codePaths || codePaths.length === 0) return false;
+  return codePaths.some((p) => isCodeFile(p));
+}
+
+function hasAnyItems(value: unknown): boolean {
+  return Array.isArray(value) && value.length > 0;
+}
 
 /**
  * WU-2330: Check if a more specific sub-lane matches the provided inputs.
@@ -388,6 +404,19 @@ export function buildWUContent({
     e2e: testPathsE2e ?? [],
   };
 
+  // WU-1443: Auto-insert minimal manual test stub for plan-first specs when no tests are provided,
+  // as long as code_paths does not include actual code files (automated tests still required for code).
+  if (
+    type !== 'documentation' &&
+    type !== 'process' &&
+    tests.manual.length === 0 &&
+    tests.unit.length === 0 &&
+    tests.e2e.length === 0 &&
+    !containsCodeFiles(code_paths)
+  ) {
+    tests.manual = [DEFAULT_AUTO_MANUAL_TEST];
+  }
+
   return {
     id,
     title,
@@ -403,7 +432,8 @@ export function buildWUContent({
     artifacts: [`.lumenflow/stamps/${id}.done`],
     dependencies: [],
     risks: [],
-    notes: notes ?? '',
+    // WU-1443: Default notes to non-empty placeholder to avoid strict completeness failures.
+    notes: notes && notes.trim().length > 0 ? notes : DEFAULT_AUTO_NOTES,
     requires_review: false,
     ...(initiative && { initiative }),
     ...(phase && { phase: parseInt(phase, 10) }),
@@ -466,14 +496,22 @@ export function validateCreateSpec({
     errors.push('--exposure is required');
   }
 
-  const hasTestPaths = opts.testPathsManual || opts.testPathsUnit || opts.testPathsE2e;
+  const hasTestPaths =
+    hasAnyItems(opts.testPathsManual) ||
+    hasAnyItems(opts.testPathsUnit) ||
+    hasAnyItems(opts.testPathsE2e);
 
   if (effectiveType !== 'documentation' && effectiveType !== 'process') {
-    if (!opts.codePaths) {
+    const codePaths = opts.codePaths ?? [];
+    if (codePaths.length === 0) {
       errors.push('--code-paths is required for non-documentation WUs');
     }
 
-    if (!hasTestPaths) {
+    // WU-1443: Plan-first WUs may not know tests yet.
+    // Allow auto-manual stub ONLY when code_paths does not include code files.
+    const canAutoAddManualTests =
+      !hasTestPaths && codePaths.length > 0 && !containsCodeFiles(codePaths);
+    if (!hasTestPaths && !canAutoAddManualTests) {
       errors.push(
         'At least one test path flag is required (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
       );
@@ -846,18 +884,51 @@ async function main() {
   const planSpecRef = args.plan ? getPlanProtocolRef(wuId) : undefined;
   const mergedSpecRefs = mergeSpecRefs(args.specRefs, planSpecRef);
 
+  // WU-1443: Apply resilient defaults so a plan-first WU doesn't immediately fail strict validation.
+  const effectiveType = args.type || DEFAULT_TYPE;
+
+  const resolvedNotes =
+    typeof args.notes === 'string' && args.notes.trim().length > 0
+      ? args.notes
+      : DEFAULT_AUTO_NOTES;
+  if (resolvedNotes === DEFAULT_AUTO_NOTES) {
+    console.warn(
+      `${LOG_PREFIX} ⚠️  No --notes provided; using placeholder notes (edit before done).`,
+    );
+  }
+
+  const hasProvidedTests =
+    hasAnyItems(args.testPathsManual) ||
+    hasAnyItems(args.testPathsUnit) ||
+    hasAnyItems(args.testPathsE2e);
+  const canAutoAddManualTests =
+    !hasProvidedTests &&
+    effectiveType !== 'documentation' &&
+    effectiveType !== 'process' &&
+    !containsCodeFiles(args.codePaths);
+
+  const resolvedTestPathsManual = canAutoAddManualTests
+    ? [DEFAULT_AUTO_MANUAL_TEST]
+    : (args.testPathsManual as string[] | undefined);
+
+  if (canAutoAddManualTests) {
+    console.warn(
+      `${LOG_PREFIX} ⚠️  No test paths provided; inserting a minimal manual test stub (add automated tests before code changes).`,
+    );
+  }
+
   const createSpecValidation = validateCreateSpec({
     id: wuId,
     lane: args.lane,
     title: args.title,
     priority: args.priority || DEFAULT_PRIORITY,
-    type: args.type || DEFAULT_TYPE,
+    type: effectiveType,
     opts: {
       description: args.description,
       acceptance: args.acceptance,
-      notes: args.notes,
+      notes: resolvedNotes,
       codePaths: args.codePaths,
-      testPathsManual: args.testPathsManual,
+      testPathsManual: resolvedTestPathsManual,
       testPathsUnit: args.testPathsUnit,
       testPathsE2e: args.testPathsE2e,
       exposure: args.exposure,
@@ -920,7 +991,7 @@ async function main() {
   // Transaction: micro-worktree isolation (WU-1439)
   try {
     const priority = args.priority || DEFAULT_PRIORITY;
-    const type = args.type || DEFAULT_TYPE;
+    const type = effectiveType;
 
     const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
     process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
@@ -950,9 +1021,9 @@ async function main() {
               // WU-1364: Full spec inline options
               description: args.description,
               acceptance: args.acceptance,
-              notes: args.notes,
+              notes: resolvedNotes,
               codePaths: args.codePaths,
-              testPathsManual: args.testPathsManual,
+              testPathsManual: resolvedTestPathsManual,
               testPathsUnit: args.testPathsUnit,
               testPathsE2e: args.testPathsE2e,
               // WU-1998: Exposure field options
