@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1447 — Purge ._legacy legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
 
 ## Blocked
 
