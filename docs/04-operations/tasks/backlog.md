@@ -32,7 +32,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -439,3 +439,4 @@ sections:
 - [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml)
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml)
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml)
+- [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml)
