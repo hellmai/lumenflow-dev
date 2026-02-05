@@ -2,7 +2,7 @@ id: WU-1466
 title: Add subprocess lifecycle e2e for wu create-claim-prep-done path
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - The test verifies expected WU status transitions and done stamp output
   - The test runs in CI without relying on manual YAML mutation shortcuts
   - Failure output is actionable for lifecycle regressions
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1466
+claimed_at: 2026-02-05T23:05:18.808Z
+baseline_main_sha: 393b585dfc94bb3e8bf4f51233a78c227dd651b6
+session_id: a6a800f4-0ee2-4058-937f-21a0f0cfd73a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T23:05:18.814Z
