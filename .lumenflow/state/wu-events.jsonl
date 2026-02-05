@@ -823,3 +823,4 @@
 {"type":"claim","wuId":"WU-1445","timestamp":"2026-02-05T12:06:26.637Z","lane":"Content: Documentation","title":"Add Visual Overview page to Starlight and remove internal architecture docs"}
 {"type":"claim","wuId":"WU-1446","timestamp":"2026-02-05T12:06:56.684Z","lane":"Framework: CLI","title":"Refactor CLI WU type/test policy checks to core helpers (typed, DRY)"}
 {"type":"complete","wuId":"WU-1445","timestamp":"2026-02-05T12:11:18.964Z"}
+{"type":"complete","wuId":"WU-1446","timestamp":"2026-02-05T12:24:47.764Z"}

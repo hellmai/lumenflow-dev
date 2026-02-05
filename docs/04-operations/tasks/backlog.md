@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -425,3 +425,4 @@ sections:
 - [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml)
 - [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml)
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml)
+- [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
