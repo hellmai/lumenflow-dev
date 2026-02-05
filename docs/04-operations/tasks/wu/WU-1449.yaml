@@ -18,7 +18,8 @@ artifacts:
   - .lumenflow/stamps/WU-1449.done
 dependencies: []
 risks: []
-notes: Spec completeness fix (adds manual verification + context) to unblock strict spec:linter.
+notes: 'Fix: Replace await import() inside each test with static import at top of file. See Vitest
+  best practices.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,6 +28,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Test passes on main but times out intermittently in worktree environments during wu:done. WU-1437 was marked done but issue persists.
+description: 'Context: Test passes on main but times out (5000ms) intermittently in worktree
+  environments during wu:done. WU-1437 investigated but misdiagnosed as spec:linter issue. Root
+  cause: Test uses dynamic imports (await import) inside each test case rather than static imports
+  at module level. This causes module loading overhead per test and resource contention sensitivity
+  in worktrees. Solution: Convert to static imports or use beforeAll. Refs:
+  vitest.dev/guide/mocking.html, github.com/vitest-dev/vitest/issues/7361'
 acceptance:
-  - Test passes consistently in both main and worktree
+  - Test uses static imports or beforeAll pattern instead of per-test dynamic imports
+  - Test passes consistently in both main and worktree environments
+  - No timeout failures during wu:done in worktree (run 5x to verify)
