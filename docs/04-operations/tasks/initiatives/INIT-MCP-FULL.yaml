@@ -11,7 +11,7 @@ created: 2026-02-04
 phases:
   - id: 1
     title: Shared Zod schemas for CLI/MCP parity
-    status: pending
+    status: done
   - id: 2
     title: WU tools (+17)
     status: pending
