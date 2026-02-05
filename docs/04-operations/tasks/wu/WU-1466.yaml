@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
 tests:
-  manual: []
+  manual:
+    - Run lifecycle subprocess e2e and confirm wu:create -> wu:claim -> wu:prep -> wu:done completes
+      with expected state transitions.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
   e2e:
@@ -33,7 +35,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: integration tests simulate lifecycle behavior by writing YAML directly and do not execute the full CLI subprocess path for wu:create -> wu:claim -> wu:prep -> wu:done. Problem: launch-critical workflow can regress without being caught by end-to-end command execution tests. Solution: add a subprocess-driven lifecycle e2e that executes the real commands in sequence and asserts expected state transitions and artifacts.'
+description: 'Context: integration tests simulate lifecycle behavior by writing YAML directly and do
+  not execute the full CLI subprocess path for wu:create -> wu:claim -> wu:prep -> wu:done. Problem:
+  launch-critical workflow can regress without being caught by end-to-end command execution tests.
+  Solution: add a subprocess-driven lifecycle e2e that executes the real commands in sequence and
+  asserts expected state transitions and artifacts.'
 acceptance:
   - A subprocess e2e test executes wu:create -> wu:claim -> wu:prep -> wu:done end to end
   - The test verifies expected WU status transitions and done stamp output
