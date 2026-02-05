@@ -838,3 +838,4 @@
 {"type":"release","wuId":"WU-1459","timestamp":"2026-02-05T19:47:19.230Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-1459","timestamp":"2026-02-05T19:47:42.754Z","lane":"Framework: CLI","title":"Fix initiative:add-wu orphaned temp worktree cleanup"}
 {"type":"complete","wuId":"WU-1459","timestamp":"2026-02-05T20:03:57.303Z"}
+{"type":"claim","wuId":"WU-1460","lane":"Framework: CLI","title":"Batch initiative:add-wu to reduce push-only contention","timestamp":"2026-02-05T20:04:29.182Z"}

@@ -2,7 +2,7 @@ id: WU-1460
 title: Batch initiative:add-wu to reduce push-only contention
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - all provided WU links are applied atomically in one micro-worktree commit
   - existing single-WU behavior remains backward-compatible
   - tests cover batching, idempotency, and conflict validation
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1460
+claimed_at: 2026-02-05T20:04:29.139Z
+baseline_main_sha: 53c5e4d89de33291b84c3f8d94951178f9f1c54f
+session_id: 6b817d53-1023-478b-b8e5-f9ae2842fa49
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T20:04:29.147Z
