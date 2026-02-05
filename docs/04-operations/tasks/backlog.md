@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml) — Framework: CLI
@@ -32,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
