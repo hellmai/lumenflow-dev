@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1450 — Remove remaining ._legacy mentions from onboarding/public docs](wu/WU-1450.yaml)
 
 ## Blocked
 
