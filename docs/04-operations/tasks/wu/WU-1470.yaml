@@ -2,7 +2,7 @@ id: WU-1470
 title: Prevent docs-generate tests from leaving tracked files dirty
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -29,9 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: docs generation tests execute pnpm docs:generate against repo root and can mutate tracked docs files in the active checkout. Problem: test runs from main can leave dirty tracked files and violate workflow discipline. Solution: snapshot and restore generated tracked files in test lifecycle hooks so suites remain side-effect free.'
+description: 'Context: docs generation tests execute pnpm docs:generate against repo root and can
+  mutate tracked docs files in the active checkout. Problem: test runs from main can leave dirty
+  tracked files and violate workflow discipline. Solution: snapshot and restore generated tracked
+  files in test lifecycle hooks so suites remain side-effect free.'
 acceptance:
   - docs-generate test suite snapshots cli.mdx, config.mdx, and CLI README before mutations
   - afterEach/afterAll restore tracked files to pre-test state
   - running docs-generate tests does not leave tracked file diffs
   - targeted test suite passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1470
+claimed_at: 2026-02-05T22:47:51.499Z
+baseline_main_sha: 240566c1c0520ef67cb096e5a7f983e07910dc4d
+session_id: 749e5178-dff0-4ffe-89a8-4df47c88574f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T22:47:51.504Z

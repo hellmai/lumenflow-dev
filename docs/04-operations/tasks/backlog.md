@@ -20,16 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml) — Framework: CLI
-- [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
-- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
-- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
-- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
-- [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml) — Framework: CLI
-- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — Framework: Core
-- [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml) — Operations: CI/CD
-- [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
-- [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml) — Framework: CLI
@@ -39,10 +29,19 @@ sections:
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — Framework: Core
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — Framework: Core
+- [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — Framework: CLI
+- [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
+- [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml) — Operations: CI/CD
+- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — Framework: Core
+- [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml) — Framework: CLI
+- [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
+- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
+- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
+- [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
