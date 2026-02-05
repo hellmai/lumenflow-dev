@@ -1,0 +1,39 @@
+id: WU-1465
+title: Enable reliable CLI e2e test execution in vitest config
+lane: 'Framework: CLI'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/cli/vitest.config.ts
+  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
+  e2e:
+    - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
+artifacts:
+  - .lumenflow/stamps/WU-1465.done
+dependencies: []
+initiative: INIT-014
+phase: 4
+spec_refs:
+  - docs/04-operations/plans/INIT-014-rollout-1-launch-readiness-har.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: CLI has e2e tests on disk but vitest include patterns do not execute e2e/**, and passWithNoTests is currently true. Problem: critical end-to-end checks can be silently skipped, reducing confidence in lifecycle behavior. Solution: update CLI vitest configuration to include e2e suites and fail if no tests are discovered.'
+acceptance:
+  - packages/@lumenflow/cli/vitest.config.ts includes e2e test paths in include patterns
+  - passWithNoTests is false for CLI test configuration
+  - CLI test runs fail when patterns match zero tests
+  - Existing CLI test suites continue to run successfully after config updates
