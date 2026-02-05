@@ -10,7 +10,8 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vite
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { stringifyYAML, readWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 
 // Test constants to avoid lint warnings about duplicate strings
 const TEST_WU_ID = 'WU-123';
@@ -23,6 +24,7 @@ const TEST_INIT_TITLE = 'Test Initiative';
 const TEST_INIT_STATUS = 'open';
 const TEST_DATE = '2026-01-25';
 const MIN_DESCRIPTION_LENGTH = 50;
+const TEST_WU_ID_2 = 'WU-124';
 
 // Valid WU document template
 const createValidWUDoc = (overrides: Record<string, unknown> = {}): Record<string, unknown> => ({
@@ -423,6 +425,67 @@ describe('initiative:add-wu WU validation (WU-1330)', () => {
     });
   });
 
+  describe('batch linking (WU-1460)', () => {
+    it('should normalize repeatable --wu values with dedupe and order preservation', async () => {
+      const { normalizeWuIds } = await import('../initiative-add-wu.js');
+
+      expect(normalizeWuIds(TEST_WU_ID)).toEqual([TEST_WU_ID]);
+      expect(normalizeWuIds([TEST_WU_ID, TEST_WU_ID_2, TEST_WU_ID])).toEqual([
+        TEST_WU_ID,
+        TEST_WU_ID_2,
+      ]);
+    });
+
+    it('should update multiple WUs and initiative in one execute call', async () => {
+      const { buildAddWuMicroWorktreeOptions } = await import('../initiative-add-wu.js');
+
+      // Setup valid WUs and initiative
+      const wuDir = join(tempDir, WU_REL_PATH);
+      const initDir = join(tempDir, INIT_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      mkdirSync(initDir, { recursive: true });
+
+      const wuPath1 = join(wuDir, `${TEST_WU_ID}.yaml`);
+      const wuPath2 = join(wuDir, `${TEST_WU_ID_2}.yaml`);
+      const initPath = join(initDir, `${TEST_INIT_ID}.yaml`);
+
+      writeFileSync(wuPath1, stringifyYAML(createValidWUDoc({ id: TEST_WU_ID })));
+      writeFileSync(wuPath2, stringifyYAML(createValidWUDoc({ id: TEST_WU_ID_2 })));
+      writeFileSync(initPath, stringifyYAML(createValidInitDoc()));
+
+      process.chdir(tempDir);
+      const options = buildAddWuMicroWorktreeOptions([TEST_WU_ID, TEST_WU_ID_2], TEST_INIT_ID);
+      const result = await options.execute({ worktreePath: tempDir });
+
+      expect(result.files).toContain(`${WU_REL_PATH}/${TEST_WU_ID}.yaml`);
+      expect(result.files).toContain(`${WU_REL_PATH}/${TEST_WU_ID_2}.yaml`);
+      expect(result.files).toContain(`${INIT_REL_PATH}/${TEST_INIT_ID}.yaml`);
+
+      const updatedWu1 = readWU(wuPath1, TEST_WU_ID);
+      const updatedWu2 = readWU(wuPath2, TEST_WU_ID_2);
+      const updatedInit = readInitiative(initPath, TEST_INIT_ID);
+
+      expect(updatedWu1.initiative).toBe(TEST_INIT_ID);
+      expect(updatedWu2.initiative).toBe(TEST_INIT_ID);
+      expect(updatedInit.wus).toContain(TEST_WU_ID);
+      expect(updatedInit.wus).toContain(TEST_WU_ID_2);
+    });
+
+    it('should validate conflicting links across multiple WUs', async () => {
+      const { validateNoConflictingLinks } = await import('../initiative-add-wu.js');
+
+      expect(() =>
+        validateNoConflictingLinks(
+          [
+            { id: TEST_WU_ID, initiative: TEST_INIT_ID },
+            { id: TEST_WU_ID_2, initiative: 'INIT-999' },
+          ],
+          TEST_INIT_ID,
+        ),
+      ).toThrow();
+    });
+  });
+
   describe('error formatting', () => {
     it('should format errors in human-readable format', async () => {
       const { formatValidationErrors } = await import('../initiative-add-wu.js');
@@ -478,6 +541,12 @@ describe('initiative:add-wu WU validation (WU-1330)', () => {
       const options = mod.buildAddWuMicroWorktreeOptions(TEST_WU_ID, TEST_INIT_ID);
       expect(options.pushOnly).toBe(true);
       expect(options.pushRetryOverride).toEqual(mod.INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE);
+    });
+
+    it('should export batch helpers (WU-1460)', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(typeof mod.normalizeWuIds).toBe('function');
+      expect(typeof mod.validateNoConflictingLinks).toBe('function');
     });
   });
 });

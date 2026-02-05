@@ -11,6 +11,7 @@
  *
  * Usage:
  *   pnpm initiative:add-wu --initiative INIT-001 --wu WU-123
+ *   pnpm initiative:add-wu --initiative INIT-001 --wu WU-123 --wu WU-124
  *
  * Features:
  * - Validates both WU and initiative exist before modifying
@@ -62,6 +63,18 @@ export const INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE = {
   retries: 8,
   min_delay_ms: 300,
   max_delay_ms: 4000,
+};
+
+/**
+ * Command-local repeatable --wu option for batch linking (WU-1460).
+ *
+ * We intentionally do not mutate global WU_OPTIONS.wu because many commands
+ * depend on single-value semantics.
+ */
+const REPEATABLE_WU_OPTION = {
+  ...WU_OPTIONS.wu,
+  description: 'Work Unit ID to link (repeatable, use multiple --wu flags)',
+  isRepeatable: true,
 };
 
 /**
@@ -137,8 +150,27 @@ export function isRetryExhaustionError(error: Error): boolean {
  * @returns {string} Formatted error message with next steps
  */
 export function formatRetryExhaustionError(error: Error, wuId: string, initId: string): string {
+  return formatRetryExhaustionErrorForMany(error, [wuId], initId);
+}
+
+/**
+ * Format retry exhaustion error with actionable next steps for one or more WUs.
+ *
+ * @param {Error} error - The retry exhaustion error
+ * @param {string[]|string} wuIds - WU IDs being linked
+ * @param {string} initId - Initiative ID being linked to
+ * @returns {string} Formatted error message with next steps
+ */
+export function formatRetryExhaustionErrorForMany(
+  error: Error,
+  wuIds: string[] | string,
+  initId: string,
+): string {
+  const normalizedWuIds = normalizeWuIds(wuIds);
+  const wuFlags = normalizedWuIds.map((id) => `--wu ${id}`).join(' ');
+
   return coreFormatRetryExhaustionError(error, {
-    command: `pnpm initiative:add-wu --wu ${wuId} --initiative ${initId}`,
+    command: `pnpm initiative:add-wu ${wuFlags} --initiative ${initId}`,
   });
 }
 
@@ -243,6 +275,42 @@ function checkConflictingLink(wuDoc, targetInitId) {
 }
 
 /**
+ * Normalize WU argument(s) into an ordered, de-duplicated list.
+ *
+ * @param {string|string[]|undefined} wuArg - Parsed --wu argument(s)
+ * @returns {string[]} Ordered unique WU IDs
+ */
+export function normalizeWuIds(wuArg: string | string[] | undefined): string[] {
+  if (!wuArg) return [];
+
+  const values = Array.isArray(wuArg) ? wuArg : [wuArg];
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    const trimmed = value.trim();
+    if (trimmed.length === 0 || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    normalized.push(trimmed);
+  }
+
+  return normalized;
+}
+
+/**
+ * Validate there are no conflicting initiative links across WUs.
+ *
+ * @param {Array<object>} wuDocs - WU docs to validate
+ * @param {string} targetInitId - Initiative being linked
+ */
+export function validateNoConflictingLinks(wuDocs, targetInitId): void {
+  for (const wuDoc of wuDocs) {
+    checkConflictingLink(wuDoc, targetInitId);
+  }
+}
+
+/**
  * Check if link already exists (idempotent check)
  * @param {object} wuDoc - WU document
  * @param {object} initDoc - Initiative document
@@ -289,7 +357,7 @@ function updateWUInWorktree(worktreePath, wuId, initId) {
  * @param {string} wuId - WU ID to add
  * @returns {boolean} True if changes were made
  */
-function updateInitiativeInWorktree(worktreePath, initId, wuId) {
+function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
   const initRelPath = INIT_PATHS.INITIATIVE(initId);
   const initAbsPath = join(worktreePath, initRelPath);
 
@@ -300,17 +368,22 @@ function updateInitiativeInWorktree(worktreePath, initId, wuId) {
     doc.wus = [];
   }
 
-  // Skip if already in list
-  if (doc.wus.includes(wuId)) {
-    return false;
+  const addedWuIds = [];
+  for (const wuId of wuIds) {
+    if (doc.wus.includes(wuId)) {
+      continue;
+    }
+    doc.wus.push(wuId);
+    addedWuIds.push(wuId);
   }
 
-  // Add WU to list
-  doc.wus.push(wuId);
-  writeInitiative(initAbsPath, doc);
+  if (addedWuIds.length === 0) {
+    return [];
+  }
 
-  console.log(`${LOG_PREFIX} ✅ Added ${wuId} to ${initId} wus list`);
-  return true;
+  writeInitiative(initAbsPath, doc);
+  console.log(`${LOG_PREFIX} ✅ Added ${addedWuIds.join(', ')} to ${initId} wus list`);
+  return addedWuIds;
 }
 
 /**
@@ -322,10 +395,17 @@ function updateInitiativeInWorktree(worktreePath, initId, wuId) {
  * @param {string} initId - Initiative ID
  * @returns {object} withMicroWorktree options
  */
-export function buildAddWuMicroWorktreeOptions(wuId, initId) {
+export function buildAddWuMicroWorktreeOptions(wuArg, initId) {
+  const wuIds = normalizeWuIds(wuArg);
+  if (wuIds.length === 0) {
+    die(`At least one --wu value is required.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123`);
+  }
+
+  const idPrefix = wuIds.length === 1 ? wuIds[0] : `${wuIds[0]}-${wuIds.length}wus`;
+
   return {
     operation: OPERATION_NAME,
-    id: `${wuId}-${initId}`.toLowerCase(),
+    id: `${idPrefix}-${initId}`.toLowerCase(),
     logPrefix: LOG_PREFIX,
     pushOnly: true,
     pushRetryOverride: INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE,
@@ -333,14 +413,16 @@ export function buildAddWuMicroWorktreeOptions(wuId, initId) {
       const files = [];
 
       // Update WU YAML
-      const wuChanged = updateWUInWorktree(worktreePath, wuId, initId);
-      if (wuChanged) {
-        files.push(WU_PATHS.WU(wuId));
+      for (const wuId of wuIds) {
+        const wuChanged = updateWUInWorktree(worktreePath, wuId, initId);
+        if (wuChanged) {
+          files.push(WU_PATHS.WU(wuId));
+        }
       }
 
       // Update Initiative YAML
-      const initChanged = updateInitiativeInWorktree(worktreePath, initId, wuId);
-      if (initChanged) {
+      const initChangedWuIds = updateInitiativeInWorktree(worktreePath, initId, wuIds);
+      if (initChangedWuIds.length > 0) {
         files.push(INIT_PATHS.INITIATIVE(initId));
       }
 
@@ -349,13 +431,19 @@ export function buildAddWuMicroWorktreeOptions(wuId, initId) {
         console.log(`${LOG_PREFIX} ⚠️  No changes detected (concurrent link operation)`);
         // Still need to return something for the commit
         return {
-          commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
-          files: [WU_PATHS.WU(wuId), INIT_PATHS.INITIATIVE(initId)],
+          commitMessage:
+            wuIds.length === 1
+              ? INIT_COMMIT_FORMATS.LINK_WU(wuIds[0], initId)
+              : `initiative(${initId}): link ${wuIds.length} WUs`,
+          files: [...wuIds.map((id) => WU_PATHS.WU(id)), INIT_PATHS.INITIATIVE(initId)],
         };
       }
 
       return {
-        commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
+        commitMessage:
+          wuIds.length === 1
+            ? INIT_COMMIT_FORMATS.LINK_WU(wuIds[0], initId)
+            : `initiative(${initId}): link ${wuIds.length} WUs`,
         files,
       };
     },
@@ -365,34 +453,42 @@ export function buildAddWuMicroWorktreeOptions(wuId, initId) {
 async function main() {
   const args = createWUParser({
     name: 'initiative-add-wu',
-    description: 'Link a WU to an initiative bidirectionally',
-    options: [WU_OPTIONS.initiative, WU_OPTIONS.wu],
-    required: ['initiative', 'wu'],
+    description: 'Link one or more WUs to an initiative bidirectionally',
+    options: [WU_OPTIONS.initiative, REPEATABLE_WU_OPTION],
+    required: ['initiative'],
     allowPositionalId: false,
   });
 
   // Normalize args
-  const wuId = args.wu;
+  const wuIds = normalizeWuIds(args.wu);
   const initId = args.initiative;
 
-  console.log(`${LOG_PREFIX} Linking ${wuId} to ${initId}...`);
+  if (wuIds.length === 0) {
+    die(`Missing required --wu.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123 [--wu WU-124 ...]`);
+  }
+
+  console.log(`${LOG_PREFIX} Linking ${wuIds.join(', ')} to ${initId}...`);
 
   // Pre-flight validation: ID formats
   validateInitIdFormat(initId);
-  validateWuIdFormat(wuId);
+  wuIds.forEach(validateWuIdFormat);
 
   // WU-1330: Validate WU spec before linking
   // This ensures only valid, complete WUs can be linked to initiatives
-  const wuDoc = checkWUExistsAndValidate(wuId);
+  const wuDocs = wuIds.map((wuId) => checkWUExistsAndValidate(wuId));
   const initDoc = checkInitiativeExists(initId);
 
   // Check for conflicting links
-  checkConflictingLink(wuDoc, initId);
+  validateNoConflictingLinks(wuDocs, initId);
 
   // Idempotent check
-  if (isAlreadyLinked(wuDoc, initDoc, wuId, initId)) {
+  const alreadyLinkedWuIds = wuDocs
+    .filter((wuDoc) => isAlreadyLinked(wuDoc, initDoc, wuDoc.id, initId))
+    .map((wuDoc) => wuDoc.id);
+
+  if (alreadyLinkedWuIds.length === wuIds.length) {
     console.log(`${LOG_PREFIX} ✅ Link already exists (idempotent - no changes needed)`);
-    console.log(`\n${LOG_PREFIX} ${wuId} is already linked to ${initId}`);
+    console.log(`\n${LOG_PREFIX} ${wuIds.join(', ')} already linked to ${initId}`);
     return;
   }
 
@@ -401,18 +497,21 @@ async function main() {
 
   // Transaction: micro-worktree isolation
   try {
-    await withMicroWorktree(buildAddWuMicroWorktreeOptions(wuId, initId));
+    await withMicroWorktree(buildAddWuMicroWorktreeOptions(wuIds, initId));
 
     console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
     console.log(`\nLink Created:`);
-    console.log(`  WU:         ${wuId}`);
+    console.log(`  WUs:        ${wuIds.join(', ')}`);
     console.log(`  Initiative: ${initId}`);
+    if (alreadyLinkedWuIds.length > 0) {
+      console.log(`  Skipped:    ${alreadyLinkedWuIds.join(', ')} (already linked)`);
+    }
     console.log(`\nNext steps:`);
     console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
-    console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
+    console.log(`  - View WUs under: ${WU_PATHS.WU('WU-XXXX').replace('WU-XXXX', '')}`);
   } catch (error) {
     if (error instanceof Error && isRetryExhaustionError(error)) {
-      die(formatRetryExhaustionError(error, wuId, initId));
+      die(formatRetryExhaustionErrorForMany(error, wuIds, initId));
     }
 
     const message = error instanceof Error ? error.message : String(error);
