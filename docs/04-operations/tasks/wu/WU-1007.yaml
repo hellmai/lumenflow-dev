@@ -2,7 +2,7 @@ id: WU-1007
 title: List LumenFlow GitHub App on Marketplace (Free tier)
 lane: Core
 type: feature
-status: in_progress
+status: blocked
 priority: P1
 created: 2026-01-18
 code_paths:
@@ -49,6 +49,8 @@ notes: >-
 
 
   [ADMIN-REPAIR 2026-02-05]: status changed from 'blocked' to 'in_progress'
+
+  Blocked (2026-02-05): Reconcile: emit block event so state store matches blocked
 requires_review: false
 assigned_to: tom@hellm.ai
 escalation_triggers: []

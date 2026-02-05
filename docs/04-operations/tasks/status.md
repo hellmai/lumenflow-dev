@@ -4,8 +4,11 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+
+## Blocked
+
+- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Reconcile: emit block event so state store matches blocked
 
 ## Completed
 
