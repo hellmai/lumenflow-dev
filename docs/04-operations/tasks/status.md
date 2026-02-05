@@ -5,6 +5,7 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml)
+- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
 
 ## Blocked
 
