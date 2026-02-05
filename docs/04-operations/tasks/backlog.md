@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -422,3 +422,4 @@ sections:
 - [WU-1441 — Spec-linter: scoped-first + pre-existing failure detection](wu/WU-1441.yaml)
 - [WU-1442 — Fix push-only retry rebase onto origin/main](wu/WU-1442.yaml)
 - [WU-1222 — Add PreToolUse hook to block grep/cat/find via Bash](wu/WU-1222.yaml)
+- [WU-1443 — Make wu:create and init templates resilient (default notes/tests + document planless flow)](wu/WU-1443.yaml)
