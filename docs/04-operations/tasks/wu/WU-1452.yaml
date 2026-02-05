@@ -1,0 +1,50 @@
+id: WU-1452
+title: 'MCP: Fix CLI/MCP JSON flag mismatches'
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/cli/src/wu-validate.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+  - docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml
+tests:
+  manual:
+    - 'MCP Inspector: call wu_list, initiative_list, initiative_status'
+    - 'MCP Inspector: call flow_bottlenecks, flow_report, metrics_snapshot'
+    - 'CLI: pnpm wu:validate --json --id WU-XXXX outputs JSON'
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1452.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 8
+spec_refs:
+  - ~/.claude/plans/declarative-churning-map.md
+risks: []
+notes: 'Sizing: Simple (<20 files, <50 tool calls). Strategy: Single Session. Lane note: Primary lane is CLI, MCP changes are flag corrections only.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: MCP tools shell out to CLI commands.
+  Problem: Several MCP tools pass JSON flags that CLI does not support.
+  Solution: Add --json to wu:validate, correct MCP flag usage, and reconcile INIT-MCP-FULL phase/WU list.
+acceptance:
+  - pnpm wu:validate --json outputs JSON
+  - initiative_list and initiative_status use --format json
+  - flow_bottlenecks and flow_report use --format json
+  - metrics_snapshot passes no JSON flag
+  - All 6 affected MCP tools work via MCP Inspector
+  - INIT-MCP-FULL updated with Phase 8 and WU list (including backfill)
