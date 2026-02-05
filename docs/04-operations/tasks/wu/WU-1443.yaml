@@ -7,10 +7,9 @@ priority: P1
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
   - packages/@lumenflow/cli/src/init.ts
-  - docs/templates/wu-template.yaml
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+  - packages/@lumenflow/cli/src/__tests__/init-docs-structure.test.ts
 tests:
   manual:
     - Run pnpm wu:create with minimal flags (--lane/--title/--description/--acceptance/--plan) and
@@ -19,7 +18,7 @@ tests:
       docs/templates/wu-template.yaml
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
-    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-docs-structure.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1443.done
@@ -56,5 +55,4 @@ acceptance:
     validation passes
   - 'init-scaffolded wu-template.yaml (and embedded init.ts template) match: spec_refs uses
     lumenflow://plans/.., includes tests.manual stub, and notes is non-empty'
-  - 'Docs updated: quick-ref/onboarding explains feature WUs require spec_refs and recommends --plan
-    for planless conversations'
+  - Docs were updated in WU-1440; this WU ensures CLI behavior matches those docs/templates.
