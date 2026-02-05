@@ -27,12 +27,20 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1443-plan.md
 risks: []
-notes: ''
+notes: "Follow-up to WU-1440 (docs/template): align CLI defaults + init-scaffolded wu-template so
+  new WUs don't trip strict completeness (notes/manual tests/spec_refs)."
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-05T11:08:06.022Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1443
+session_id: 95ad3e32-aa5e-4234-a123-2842379cc1d6
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T11:08:06.030Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -50,11 +58,3 @@ acceptance:
     lumenflow://plans/.., includes tests.manual stub, and notes is non-empty'
   - 'Docs updated: quick-ref/onboarding explains feature WUs require spec_refs and recommends --plan
     for planless conversations'
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1443
-claimed_at: 2026-02-05T11:08:06.022Z
-baseline_main_sha: 44950fa98ddb0cb32392c260ce1fffa86850f716
-session_id: 95ad3e32-aa5e-4234-a123-2842379cc1d6
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-05T11:08:06.030Z
