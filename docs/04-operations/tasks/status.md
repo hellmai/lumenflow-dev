@@ -5,6 +5,7 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml)
+- [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml)
 
 ## Blocked
 
