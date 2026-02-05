@@ -7,12 +7,13 @@ priority: P2
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/cli/src/initiative-add-wu.ts
-  - packages/@lumenflow/cli/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual:
     - Force push failure, confirm cleanup occurs and retry succeeds
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1459.done

@@ -79,6 +79,11 @@ interface WithMicroWorktreeOptions {
   logPrefix?: string;
   /** Skip local main merge, push directly to origin/main */
   pushOnly?: boolean;
+  /**
+   * Optional operation-specific push retry overrides (pushOnly mode).
+   * Values override global `git.push_retry` from config.
+   */
+  pushRetryOverride?: Partial<PushRetryConfig>;
   /** Async function to execute in micro-worktree */
   execute: (context: MicroWorktreeContext) => Promise<MicroWorktreeExecuteResult>;
 }
@@ -123,6 +128,25 @@ export const DEFAULT_PUSH_RETRY_CONFIG: PushRetryConfig = {
   max_delay_ms: 1000,
   jitter: true,
 };
+
+/**
+ * Resolve effective push retry config from defaults + global config + operation override.
+ *
+ * Priority (lowest to highest):
+ * 1. DEFAULT_PUSH_RETRY_CONFIG
+ * 2. Global config from `.lumenflow.config.yaml` (`git.push_retry`)
+ * 3. Operation-specific override from caller
+ */
+export function resolvePushRetryConfig(
+  globalConfig?: Partial<PushRetryConfig>,
+  operationOverride?: Partial<PushRetryConfig>,
+): PushRetryConfig {
+  return {
+    ...DEFAULT_PUSH_RETRY_CONFIG,
+    ...(globalConfig || {}),
+    ...(operationOverride || {}),
+  };
+}
 
 /**
  * Environment variable name for LUMENFLOW_FORCE bypass
@@ -1103,6 +1127,7 @@ export async function pushRefspecWithRetry(
  * @param {string} options.id - WU ID (e.g., 'WU-123')
  * @param {string} options.logPrefix - Log prefix for console output
  * @param {boolean} [options.pushOnly=false] - Skip local main merge, push directly to origin/main
+ * @param {Object} [options.pushRetryOverride] - Optional push retry overrides for this operation
  * @param {Function} options.execute - Async function to execute in micro-worktree
  *   Receives: { worktreePath: string, gitWorktree: GitAdapter }
  *   Should return: { commitMessage: string, files: string[] }
@@ -1112,7 +1137,14 @@ export async function pushRefspecWithRetry(
 export async function withMicroWorktree(
   options: WithMicroWorktreeOptions,
 ): Promise<WithMicroWorktreeResult> {
-  const { operation, id, logPrefix = `[${operation}]`, execute, pushOnly = false } = options;
+  const {
+    operation,
+    id,
+    logPrefix = `[${operation}]`,
+    execute,
+    pushOnly = false,
+    pushRetryOverride,
+  } = options;
 
   const mainGit = getGitForCwd();
 
@@ -1183,9 +1215,9 @@ export async function withMicroWorktree(
       // WU-1081: Use LUMENFLOW_FORCE to bypass pre-push hooks for micro-worktree pushes
       // WU-1337: Use pushRefspecWithRetry to handle race conditions with rebase
 
-      // Get push_retry config from LumenFlow config
+      // Resolve effective push_retry config from defaults + global + operation override
       const config = getConfig();
-      const pushRetryConfig = config.git.push_retry || DEFAULT_PUSH_RETRY_CONFIG;
+      const pushRetryConfig = resolvePushRetryConfig(config.git.push_retry, pushRetryOverride);
 
       await pushRefspecWithRetry(
         gitWorktree,

@@ -444,6 +444,36 @@ describe('micro-worktree', () => {
       expect(DEFAULT_PUSH_RETRY_CONFIG.jitter).toBe(true);
     });
 
+    it('should export resolvePushRetryConfig helper (WU-1459)', async () => {
+      const mod = await import('../micro-worktree.js');
+      expect(typeof mod.resolvePushRetryConfig).toBe('function');
+    });
+
+    it('should apply operation override over global push_retry config (WU-1459)', async () => {
+      const { resolvePushRetryConfig } = await import('../micro-worktree.js');
+
+      const globalConfig = {
+        enabled: true,
+        retries: 3,
+        min_delay_ms: 100,
+        max_delay_ms: 1000,
+        jitter: true,
+      };
+      const override = {
+        retries: 8,
+        min_delay_ms: 300,
+        max_delay_ms: 4000,
+      };
+
+      const resolved = resolvePushRetryConfig(globalConfig, override);
+
+      expect(resolved.enabled).toBe(true);
+      expect(resolved.jitter).toBe(true);
+      expect(resolved.retries).toBe(8);
+      expect(resolved.min_delay_ms).toBe(300);
+      expect(resolved.max_delay_ms).toBe(4000);
+    });
+
     it('should respect configured retry count', async () => {
       const { pushWithRetryConfig } = await import('../micro-worktree.js');
 

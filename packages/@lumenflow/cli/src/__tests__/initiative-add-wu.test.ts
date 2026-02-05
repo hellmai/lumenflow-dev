@@ -463,6 +463,22 @@ describe('initiative:add-wu WU validation (WU-1330)', () => {
       const mod = await import('../initiative-add-wu.js');
       expect(typeof mod.formatRetryExhaustionError).toBe('function');
     });
+
+    it('should export operation-level push retry override (WU-1459)', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(mod.INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE).toBeDefined();
+      expect(mod.INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE.retries).toBeGreaterThan(3);
+      expect(mod.INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE.min_delay_ms).toBeGreaterThan(100);
+    });
+
+    it('should export helper to build micro-worktree options (WU-1459)', async () => {
+      const mod = await import('../initiative-add-wu.js');
+      expect(typeof mod.buildAddWuMicroWorktreeOptions).toBe('function');
+
+      const options = mod.buildAddWuMicroWorktreeOptions(TEST_WU_ID, TEST_INIT_ID);
+      expect(options.pushOnly).toBe(true);
+      expect(options.pushRetryOverride).toEqual(mod.INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE);
+    });
   });
 });
 
@@ -545,6 +561,15 @@ describe('initiative:add-wu retry handling (WU-1333)', () => {
 
       // Should mention concurrent agents as possible cause
       expect(formatted).toMatch(/concurrent|agent|traffic/i);
+    });
+
+    it('should include git.push_retry tuning guidance', async () => {
+      const { formatRetryExhaustionError } = await import('../initiative-add-wu.js');
+
+      const retryError = new Error('Push failed after 3 attempts.');
+      const formatted = formatRetryExhaustionError(retryError, TEST_WU_ID, TEST_INIT_ID);
+
+      expect(formatted).toContain('git.push_retry.retries');
     });
   });
 });

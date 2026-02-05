@@ -51,6 +51,20 @@ const LOG_PREFIX = INIT_LOG_PREFIX.ADD_WU;
 const OPERATION_NAME = 'initiative-add-wu';
 
 /**
+ * WU-1459: operation-level push retry override for initiative:add-wu.
+ *
+ * Rationale:
+ * - initiative:add-wu often runs in bursts during orchestration.
+ * - pushOnly mode can hit short-term contention on origin/main.
+ * - A slightly larger retry/backoff window reduces transient failures.
+ */
+export const INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
+
+/**
  * Validation result interface for WU linking (WU-1330)
  */
 export interface WULinkValidationResult {
@@ -299,6 +313,55 @@ function updateInitiativeInWorktree(worktreePath, initId, wuId) {
   return true;
 }
 
+/**
+ * Build micro-worktree options for initiative:add-wu transaction.
+ *
+ * Exported for testability (WU-1459).
+ *
+ * @param {string} wuId - WU ID
+ * @param {string} initId - Initiative ID
+ * @returns {object} withMicroWorktree options
+ */
+export function buildAddWuMicroWorktreeOptions(wuId, initId) {
+  return {
+    operation: OPERATION_NAME,
+    id: `${wuId}-${initId}`.toLowerCase(),
+    logPrefix: LOG_PREFIX,
+    pushOnly: true,
+    pushRetryOverride: INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE,
+    execute: async ({ worktreePath }) => {
+      const files = [];
+
+      // Update WU YAML
+      const wuChanged = updateWUInWorktree(worktreePath, wuId, initId);
+      if (wuChanged) {
+        files.push(WU_PATHS.WU(wuId));
+      }
+
+      // Update Initiative YAML
+      const initChanged = updateInitiativeInWorktree(worktreePath, initId, wuId);
+      if (initChanged) {
+        files.push(INIT_PATHS.INITIATIVE(initId));
+      }
+
+      // If no changes, this is idempotent (race condition handling)
+      if (files.length === 0) {
+        console.log(`${LOG_PREFIX} ⚠️  No changes detected (concurrent link operation)`);
+        // Still need to return something for the commit
+        return {
+          commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
+          files: [WU_PATHS.WU(wuId), INIT_PATHS.INITIATIVE(initId)],
+        };
+      }
+
+      return {
+        commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
+        files,
+      };
+    },
+  };
+}
+
 async function main() {
   const args = createWUParser({
     name: 'initiative-add-wu',
@@ -338,42 +401,7 @@ async function main() {
 
   // Transaction: micro-worktree isolation
   try {
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: `${wuId}-${initId}`.toLowerCase(),
-      logPrefix: LOG_PREFIX,
-      pushOnly: true,
-      execute: async ({ worktreePath }) => {
-        const files = [];
-
-        // Update WU YAML
-        const wuChanged = updateWUInWorktree(worktreePath, wuId, initId);
-        if (wuChanged) {
-          files.push(WU_PATHS.WU(wuId));
-        }
-
-        // Update Initiative YAML
-        const initChanged = updateInitiativeInWorktree(worktreePath, initId, wuId);
-        if (initChanged) {
-          files.push(INIT_PATHS.INITIATIVE(initId));
-        }
-
-        // If no changes, this is idempotent (race condition handling)
-        if (files.length === 0) {
-          console.log(`${LOG_PREFIX} ⚠️  No changes detected (concurrent link operation)`);
-          // Still need to return something for the commit
-          return {
-            commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
-            files: [WU_PATHS.WU(wuId), INIT_PATHS.INITIATIVE(initId)],
-          };
-        }
-
-        return {
-          commitMessage: INIT_COMMIT_FORMATS.LINK_WU(wuId, initId),
-          files,
-        };
-      },
-    });
+    await withMicroWorktree(buildAddWuMicroWorktreeOptions(wuId, initId));
 
     console.log(`\n${LOG_PREFIX} ✅ Transaction complete!`);
     console.log(`\nLink Created:`);
@@ -383,8 +411,13 @@ async function main() {
     console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
     console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
   } catch (error) {
+    if (error instanceof Error && isRetryExhaustionError(error)) {
+      die(formatRetryExhaustionError(error, wuId, initId));
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
     die(
-      `Transaction failed: ${error.message}\n\n` +
+      `Transaction failed: ${message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +
         `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
     );
