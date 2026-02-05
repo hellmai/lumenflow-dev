@@ -19,7 +19,7 @@ artifacts:
   - .lumenflow/stamps/WU-1440.done
 dependencies: []
 risks: []
-notes: ''
+notes: Update template defaults + clarify plan-less workflow across internal and Starlight docs.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
