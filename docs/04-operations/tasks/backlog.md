@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
 - [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — Framework: CLI
 - [WU-1465 — Enable reliable CLI e2e test execution in vitest config](wu/WU-1465.yaml) — Framework: CLI
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — Framework: Core
