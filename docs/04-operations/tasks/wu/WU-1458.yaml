@@ -17,7 +17,11 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1458.done
-dependencies: []
+dependencies:
+  - WU-1454
+  - WU-1455
+  - WU-1456
+  - WU-1457
 initiative: INIT-MCP-FULL
 phase: 8
 spec_refs:
