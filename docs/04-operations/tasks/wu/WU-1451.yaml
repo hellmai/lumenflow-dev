@@ -16,12 +16,21 @@ artifacts:
   - .lumenflow/stamps/WU-1451.done
 dependencies: []
 risks: []
-notes: ''
+notes: 'Fix: Move astroD2 from markdown.remarkPlugins to integrations array. astro-d2 is an Astro
+  integration that requires being called as a function, not passed as a reference. See
+  https://astro-d2.vercel.app/getting-started/'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-05T17:57:03.417Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1451
+session_id: 92b16a64-2ebb-494d-82ee-82407b0b51a0
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T17:57:03.423Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -29,11 +38,3 @@ description: astro-d2 was configured as remarkPlugin instead of integration. D2 
   through to Shiki for syntax highlighting instead of being rendered as SVG diagrams.
 acceptance:
   - D2 diagrams render as SVGs on lumenflow.dev Visual Overview page
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-infrastructure-wu-1451
-claimed_at: 2026-02-05T17:57:03.417Z
-baseline_main_sha: 64a798970088d064c450e0a61fbbfff68dfd84e1
-session_id: 92b16a64-2ebb-494d-82ee-82407b0b51a0
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-05T17:57:03.423Z
