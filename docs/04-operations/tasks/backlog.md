@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml) — Framework: CLI
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
 - [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
