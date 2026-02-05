@@ -2,7 +2,7 @@ id: WU-1444
 title: Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
 tests:
   manual:
-    - Run pnpm wu:create (no --notes, no test-paths) with non-code code_paths and confirm placeholder notes + manual test stub are inserted
+    - Run pnpm wu:create (no --notes, no test-paths) with non-code code_paths and confirm
+      placeholder notes + manual test stub are inserted
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-type-helpers.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
@@ -36,8 +37,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: CLI (and eventually MCP) encode workflow policy via string literals (e.g. type !== 'documentation') and repeated structural checks (tests arrays). Problem: duplicated policy + magic strings create drift and make it harder to keep CLI/MCP parity. Solution: centralize WU type/test helper predicates and wu:create default placeholders in @lumenflow/core, then refactor CLI to consume them (keeping behavior identical)."
+description: "Context: CLI (and eventually MCP) encode workflow policy via string literals (e.g.
+  type !== 'documentation') and repeated structural checks (tests arrays). Problem: duplicated
+  policy + magic strings create drift and make it harder to keep CLI/MCP parity. Solution:
+  centralize WU type/test helper predicates and wu:create default placeholders in @lumenflow/core,
+  then refactor CLI to consume them (keeping behavior identical)."
 acceptance:
-  - "@lumenflow/core exports helpers/constants for WU type classification and 'has any tests' checks; CLI uses these instead of raw string comparisons and repeated length checks"
-  - wu:create default notes/manual-test placeholder strings live in @lumenflow/core and are imported by CLI (single source of truth)
+  - "@lumenflow/core exports helpers/constants for WU type classification and 'has any tests'
+    checks; CLI uses these instead of raw string comparisons and repeated length checks"
+  - wu:create default notes/manual-test placeholder strings live in @lumenflow/core and are imported
+    by CLI (single source of truth)
   - Unit tests added/updated to cover core helpers and ensure CLI behavior remains unchanged
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-wu-1444
+claimed_at: 2026-02-05T11:44:05.370Z
+baseline_main_sha: ef744291de0ee43f30173804626633533de74f3f
+session_id: 3f78c1be-5020-48d4-852e-26361ecbb5c9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T11:44:05.375Z
