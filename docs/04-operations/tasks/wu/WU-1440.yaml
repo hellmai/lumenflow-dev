@@ -2,7 +2,7 @@ id: WU-1440
 title: Harden WU template defaults + document plan-less flow
 lane: 'Content: Documentation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: missing notes/tests/spec_refs details cause spec-linter failures and confusion when plans exist only in conversation. Problem: template defaults are empty and plan workflow is easy to miss. Solution: update WU template defaults, clarify external plan references, and document plan-less WU flow in internal and Starlight docs.'
+description: 'Context: missing notes/tests/spec_refs details cause spec-linter failures and
+  confusion when plans exist only in conversation. Problem: template defaults are empty and plan
+  workflow is easy to miss. Solution: update WU template defaults, clarify external plan references,
+  and document plan-less WU flow in internal and Starlight docs.'
 acceptance:
-  - WU template uses lumenflow://plans in spec_refs and includes non-empty notes and tests.manual defaults
+  - WU template uses lumenflow://plans in spec_refs and includes non-empty notes and tests.manual
+    defaults
   - Internal playbook and quick-ref call out plan-less flow and spec_refs requirement
   - Starlight Work Units doc explains --plan and feature spec_refs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1440
+claimed_at: 2026-02-05T09:16:13.057Z
+baseline_main_sha: d7a26ff02a78f0fdd3cacc23576cfbb35c1bc35c
+session_id: 3325cb7e-29df-4be6-9a47-cb79c47233cb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T09:16:13.063Z
