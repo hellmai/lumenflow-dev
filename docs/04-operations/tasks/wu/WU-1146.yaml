@@ -2,7 +2,7 @@ id: WU-1146
 title: Regenerate backlog.md from wu-events.jsonl to fix sync
 lane: 'Operations: Infrastructure'
 type: bug
-status: cancelled
+status: done
 priority: P2
 created: 2026-01-27
 code_paths:
@@ -16,7 +16,15 @@ artifacts:
   - .lumenflow/stamps/WU-1146.done
 dependencies: []
 risks: []
-notes: 'Cancelled - backlog manually fixed and WU-1145 prevents future overwrites'
+notes: >-
+  Cancelled - backlog manually fixed and WU-1145 prevents future overwrites
+
+
+  Admin: reconcile YAML status with state store complete event; treated as done for state-doctor
+  hygiene
+
+
+  [ADMIN-REPAIR 2026-02-05]: status changed from 'cancelled' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -25,7 +33,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The backlog.md file is out of sync with wu-events.jsonl due to historical data loss from WU-1141. This WU regenerates backlog.md to bring it back in sync.
+description: The backlog.md file is out of sync with wu-events.jsonl due to historical data loss
+  from WU-1141. This WU regenerates backlog.md to bring it back in sync.
 acceptance:
   - backlog-sync gate passes
   - All WUs in wu-events.jsonl appear in backlog.md
+locked: true
