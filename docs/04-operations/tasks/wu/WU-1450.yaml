@@ -2,7 +2,7 @@ id: WU-1450
 title: Remove remaining .beacon mentions from onboarding/public docs
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -14,7 +14,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/no-beacon-references-docs.test.ts
 tests:
   manual:
-    - 'Run: rg -n "\.beacon" -S docs/04-operations/_frameworks apps/docs/src/content/docs and confirm no results'
+    - 'Run: rg -n "\.beacon" -S docs/04-operations/_frameworks apps/docs/src/content/docs and
+      confirm no results'
     - 'Run: pnpm test --filter @lumenflow/cli'
     - 'Run: pnpm gates'
   unit:
@@ -24,7 +25,8 @@ artifacts:
   - .lumenflow/stamps/WU-1450.done
 dependencies: []
 risks: []
-notes: We intentionally do not rewrite historical WU specs/backlog entries; scope is user-facing docs and onboarding guidance.
+notes: We intentionally do not rewrite historical WU specs/backlog entries; scope is user-facing
+  docs and onboarding guidance.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -33,9 +35,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow standardized on .lumenflow/ for state/audit logs. Problem: some onboarding and public docs still mention legacy .beacon paths, creating onboarding confusion and contradicting current tooling. Solution: update docs to reference .lumenflow only, remove legacy path mentions from guidance pages, and add a small guardrail test to prevent reintroduction in these docs.'
+description: 'Context: LumenFlow standardized on .lumenflow/ for state/audit logs. Problem: some
+  onboarding and public docs still mention legacy .beacon paths, creating onboarding confusion and
+  contradicting current tooling. Solution: update docs to reference .lumenflow only, remove legacy
+  path mentions from guidance pages, and add a small guardrail test to prevent reintroduction in
+  these docs.'
 acceptance:
   - Agent onboarding docs in docs/04-operations/_frameworks/... reference only .lumenflow paths
   - Public docs under apps/docs no longer mention .beacon
   - Guardrail test prevents .beacon reintroduction in those docs
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1450
+claimed_at: 2026-02-05T13:29:42.244Z
+baseline_main_sha: 999a5f4113f124ed9c8ac080d27c0a73b4202192
+session_id: 91f16e72-b8c0-44f4-a23e-efde4ff2230d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T13:29:42.252Z
