@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml)
 
 ## Blocked
 
