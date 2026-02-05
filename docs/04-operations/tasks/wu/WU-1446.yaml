@@ -2,7 +2,7 @@ id: WU-1446
 title: Refactor CLI WU type/test policy checks to core helpers (typed, DRY)
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -36,8 +36,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1444 centralized WU type/test helper predicates and wu:create placeholder defaults in @lumenflow/core. Problem: other CLI flows still use ad-hoc raw string comparisons and repeated array length checks to apply policy, increasing drift risk and reducing type-safety. Solution: refactor remaining CLI modules (wu:edit, wu:done, wu:validate) to use core helpers/constants (WU_TYPES, TEST_TYPES, isDocsOrProcessType, hasAnyTests, WU_CREATE_DEFAULTS where applicable), and update tests to prove behavior unchanged.'
+description: 'Context: WU-1444 centralized WU type/test helper predicates and wu:create placeholder
+  defaults in @lumenflow/core. Problem: other CLI flows still use ad-hoc raw string comparisons and
+  repeated array length checks to apply policy, increasing drift risk and reducing type-safety.
+  Solution: refactor remaining CLI modules (wu:edit, wu:done, wu:validate) to use core
+  helpers/constants (WU_TYPES, TEST_TYPES, isDocsOrProcessType, hasAnyTests, WU_CREATE_DEFAULTS
+  where applicable), and update tests to prove behavior unchanged.'
 acceptance:
-  - Modified CLI code no longer uses raw string comparisons for WU types where core constants/helpers exist
-  - Modified CLI code uses core helper(s) for 'has any tests' checks instead of repeated length comparisons
+  - Modified CLI code no longer uses raw string comparisons for WU types where core
+    constants/helpers exist
+  - Modified CLI code uses core helper(s) for 'has any tests' checks instead of repeated length
+    comparisons
   - Unit tests updated/added; pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1446
+claimed_at: 2026-02-05T12:06:56.651Z
+baseline_main_sha: d54ed1ce6419cc1b0c951e9ced09aa6e065e95ae
+session_id: 46099f11-4f0e-45c4-9776-5f60412e6830
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T12:06:56.656Z

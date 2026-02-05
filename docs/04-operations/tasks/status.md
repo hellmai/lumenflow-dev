@@ -5,6 +5,7 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml)
+- [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
 
 ## Blocked
 
