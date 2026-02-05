@@ -5,7 +5,6 @@ _Last updated: 2026-02-05_
 ## In Progress
 
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
-- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
 
 ## Blocked
 
@@ -406,3 +405,4 @@ _Last updated: 2026-02-05_
 - [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml) — 2026-02-05
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml) — 2026-02-05
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml) — 2026-02-05
+- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — 2026-02-05

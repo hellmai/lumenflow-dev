@@ -23,11 +23,11 @@ sections:
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml) — Framework: Initiatives
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
+- [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml) — Framework: Initiatives
 
 ## 🔧 In progress
 
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml) — Framework: CLI
-- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
@@ -428,3 +428,4 @@ sections:
 - [WU-1444 — Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy](wu/WU-1444.yaml)
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml)
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
+- [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
