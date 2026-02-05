@@ -398,7 +398,9 @@ function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
 export function buildAddWuMicroWorktreeOptions(wuArg, initId) {
   const wuIds = normalizeWuIds(wuArg);
   if (wuIds.length === 0) {
-    die(`At least one --wu value is required.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123`);
+    die(
+      `At least one --wu value is required.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123`,
+    );
   }
 
   const idPrefix = wuIds.length === 1 ? wuIds[0] : `${wuIds[0]}-${wuIds.length}wus`;
@@ -464,7 +466,9 @@ async function main() {
   const initId = args.initiative;
 
   if (wuIds.length === 0) {
-    die(`Missing required --wu.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123 [--wu WU-124 ...]`);
+    die(
+      `Missing required --wu.\n\nUsage: pnpm initiative:add-wu --initiative ${initId} --wu WU-123 [--wu WU-124 ...]`,
+    );
   }
 
   console.log(`${LOG_PREFIX} Linking ${wuIds.join(', ')} to ${initId}...`);
