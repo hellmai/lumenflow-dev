@@ -29,6 +29,48 @@ import { lintWUSpec } from '@lumenflow/core/dist/wu-lint.js';
 
 const LOG_PREFIX = '[wu:validate]';
 
+export type ValidationResult = {
+  wuId: string;
+  valid: boolean;
+  warnings: string[];
+  errors: string[];
+};
+
+export type ValidationSummary = {
+  valid: boolean;
+  totalValid: number;
+  totalInvalid: number;
+  totalWarnings: number;
+  invalid: { wuId: string; errors: string[] }[];
+  warnings: { wuId: string; warnings: string[] }[];
+};
+
+/**
+ * Summarize validation results for JSON output.
+ */
+export function summarizeValidationResults(results: ValidationResult[]): ValidationSummary {
+  const totalValid = results.filter((r) => r.valid).length;
+  const totalInvalid = results.filter((r) => !r.valid).length;
+  const totalWarnings = results.reduce((sum, r) => sum + (r.warnings?.length ?? 0), 0);
+
+  const invalid = results
+    .filter((r) => !r.valid)
+    .map((r) => ({ wuId: r.wuId, errors: r.errors }));
+
+  const warnings = results
+    .filter((r) => r.warnings && r.warnings.length > 0)
+    .map((r) => ({ wuId: r.wuId, warnings: r.warnings }));
+
+  return {
+    valid: totalInvalid === 0,
+    totalValid,
+    totalInvalid,
+    totalWarnings,
+    invalid,
+    warnings,
+  };
+}
+
 /**
  * Validate a single WU file
  *
@@ -93,7 +135,7 @@ function validateSingleWU(wuPath, { strict = true } = {}) {
  *
  * @param {object} options - Validation options
  * @param {boolean} options.strict - Treat warnings as errors (default: true)
- * @returns {{totalValid: number, totalInvalid: number, totalWarnings: number, results: object[]}}
+ * @returns {{totalValid: number, totalInvalid: number, totalWarnings: number, results: ValidationResult[]}}
  */
 function validateAllWUs({ strict = true } = {}) {
   const wuDir = WU_PATHS.WU_DIR();
@@ -144,12 +186,18 @@ async function main() {
       },
       // WU-1329: Change from --strict to --no-strict (strict is now default)
       WU_OPTIONS.noStrict,
+      {
+        name: 'json',
+        flags: '--json',
+        type: 'boolean',
+        description: 'Output JSON summary only',
+      },
     ],
     required: [],
     allowPositionalId: true,
   });
 
-  const { id, all, noStrict } = args;
+  const { id, all, noStrict, json } = args;
 
   // WU-1329: Strict mode is the default, --no-strict opts out
   const strict = !noStrict;
@@ -171,8 +219,16 @@ async function main() {
 
   if (all) {
     // Validate all WUs
-    console.log(`${LOG_PREFIX} Validating all WU files...`);
-    const { totalValid, totalInvalid, totalWarnings, results } = validateAllWUs({ strict });
+    if (!json) {
+      console.log(`${LOG_PREFIX} Validating all WU files...`);
+    }
+    const { results } = validateAllWUs({ strict });
+    const summary = summarizeValidationResults(results);
+
+    if (json) {
+      console.log(JSON.stringify(summary));
+      process.exit(summary.valid ? 0 : 1);
+    }
 
     // Print results
     for (const result of results) {
@@ -187,11 +243,11 @@ async function main() {
 
     console.log('');
     console.log(`${LOG_PREFIX} Summary:`);
-    console.log(`  ${EMOJI.SUCCESS} Valid: ${totalValid}`);
-    console.log(`  ${EMOJI.FAILURE} Invalid: ${totalInvalid}`);
-    console.log(`  ${EMOJI.WARNING} Warnings: ${totalWarnings}`);
+    console.log(`  ${EMOJI.SUCCESS} Valid: ${summary.totalValid}`);
+    console.log(`  ${EMOJI.FAILURE} Invalid: ${summary.totalInvalid}`);
+    console.log(`  ${EMOJI.WARNING} Warnings: ${summary.totalWarnings}`);
 
-    if (totalInvalid > 0) {
+    if (!summary.valid) {
       process.exit(1);
     }
   } else {
@@ -206,8 +262,16 @@ async function main() {
       die(`WU file not found: ${wuPath}`);
     }
 
-    console.log(`${LOG_PREFIX} Validating ${wuId}...`);
+    if (!json) {
+      console.log(`${LOG_PREFIX} Validating ${wuId}...`);
+    }
     const result = validateSingleWU(wuPath, { strict });
+    const summary = summarizeValidationResults([{ wuId, ...result }]);
+
+    if (json) {
+      console.log(JSON.stringify(summary));
+      process.exit(summary.valid ? 0 : 1);
+    }
 
     if (result.errors.length > 0) {
       console.log(`${EMOJI.FAILURE} Validation failed:`);

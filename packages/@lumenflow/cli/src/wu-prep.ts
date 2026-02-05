@@ -88,6 +88,9 @@ export function formatSkipGatesCommand(options: { wuId: string; mainCheckout: st
  */
 export type PreExistingCheckResult = {
   hasPreExisting: boolean;
+  hasNewFailures: boolean;
+  newFailures: string[];
+  preExistingFailures: string[];
   error?: string;
 };
 
@@ -126,6 +129,72 @@ function defaultExecOnMain(mainCheckout: string): ExecOnMainFn {
   };
 }
 
+function runScopedValidation({ wuId, cwd }: { wuId: string; cwd: string }): boolean {
+  const result = spawnSync('pnpm', ['wu:validate', '--id', wuId], {
+    cwd,
+    encoding: 'utf-8',
+    stdio: 'inherit',
+  });
+
+  return (result.status ?? 1) === EXIT_CODES.SUCCESS;
+}
+
+type SpecLinterReport = {
+  invalid?: { wuId: string }[];
+};
+
+function parseSpecLinterReport(output: string): SpecLinterReport | null {
+  try {
+    const parsed = JSON.parse(output.trim());
+    return parsed as SpecLinterReport;
+  } catch {
+    return null;
+  }
+}
+
+export function classifySpecLinterFailures(options: {
+  mainInvalid: string[];
+  worktreeInvalid: string[];
+}): {
+  hasPreExisting: boolean;
+  hasNewFailures: boolean;
+  newFailures: string[];
+  preExistingFailures: string[];
+} {
+  const mainSet = new Set(options.mainInvalid);
+  const worktreeSet = new Set(options.worktreeInvalid);
+  const preExistingFailures = [...worktreeSet].filter((id) => mainSet.has(id));
+  const newFailures = [...worktreeSet].filter((id) => !mainSet.has(id));
+
+  return {
+    hasPreExisting: preExistingFailures.length > 0,
+    hasNewFailures: newFailures.length > 0,
+    newFailures,
+    preExistingFailures,
+  };
+}
+
+async function runSpecLinterJson(execOnCwd: ExecOnMainFn): Promise<{
+  invalidIds: string[];
+  error?: string;
+}> {
+  const result = await execOnCwd('pnpm wu:validate --all --json');
+  const report = parseSpecLinterReport(result.stdout);
+
+  if (!report || !Array.isArray(report.invalid)) {
+    return {
+      invalidIds: [],
+      error: 'Failed to parse wu:validate JSON output.',
+    };
+  }
+
+  const invalidIds = report.invalid
+    .map((item) => item?.wuId)
+    .filter((id): id is string => typeof id === 'string');
+
+  return { invalidIds };
+}
+
 /**
  * WU-1344: Check if spec:linter failures are pre-existing on main branch.
  *
@@ -144,20 +213,38 @@ export async function checkPreExistingFailures(options: {
   const { mainCheckout, execOnMain = defaultExecOnMain(mainCheckout) } = options;
 
   try {
-    // Run spec:linter on main checkout
-    const result = await execOnMain('pnpm spec:linter');
+    const execOnWorktree = defaultExecOnMain(process.cwd());
 
-    // If spec:linter fails on main, the failures are pre-existing
-    if (result.exitCode !== 0) {
-      return { hasPreExisting: true };
+    const worktreeResult = await runSpecLinterJson(execOnWorktree);
+    const mainResult = await runSpecLinterJson(execOnMain);
+
+    if (worktreeResult.error || mainResult.error) {
+      return {
+        hasPreExisting: false,
+        hasNewFailures: false,
+        newFailures: [],
+        preExistingFailures: [],
+        error: worktreeResult.error || mainResult.error,
+      };
     }
 
-    return { hasPreExisting: false };
+    const classification = classifySpecLinterFailures({
+      mainInvalid: mainResult.invalidIds,
+      worktreeInvalid: worktreeResult.invalidIds,
+    });
+
+    return {
+      ...classification,
+      error: undefined,
+    };
   } catch (error) {
     // If we can't check main, assume failures are NOT pre-existing
     // (safer to require fixing rather than skipping)
     return {
       hasPreExisting: false,
+      hasNewFailures: false,
+      newFailures: [],
+      preExistingFailures: [],
       error: (error as Error).message,
     };
   }
@@ -246,6 +333,15 @@ async function main(): Promise<void> {
   console.log(`${PREP_PREFIX} Main checkout: ${location.mainCheckout}`);
   console.log('');
 
+  console.log(`${PREP_PREFIX} Running scoped validation for ${id}...`);
+  const scopedOk = runScopedValidation({ wuId: id, cwd: location.cwd });
+  if (!scopedOk) {
+    die(
+      `${EMOJI.FAILURE} Scoped validation failed for ${id}.\n\n` +
+        `Fix the WU spec issues and rerun wu:prep.`,
+    );
+  }
+
   // WU-1344: Check for pre-existing spec:linter failures on main BEFORE running gates.
   // We do this first because runGates() calls die() on failure, which exits the process
   // before we can check. By checking first, we can set up an exit handler to show
@@ -255,7 +351,14 @@ async function main(): Promise<void> {
     mainCheckout: location.mainCheckout,
   });
 
-  if (preExistingCheck.hasPreExisting) {
+  const hasPreExistingOnly =
+    preExistingCheck.hasPreExisting && !preExistingCheck.hasNewFailures;
+
+  if (preExistingCheck.error) {
+    console.log(
+      `${PREP_PREFIX} ${EMOJI.WARNING} Unable to compare spec:linter results: ${preExistingCheck.error}`,
+    );
+  } else if (hasPreExistingOnly) {
     console.log(`${PREP_PREFIX} ${EMOJI.WARNING} Pre-existing failures detected on main.`);
 
     // Set up an exit handler to print the skip-gates command when gates fail
@@ -275,6 +378,12 @@ async function main(): Promise<void> {
         console.log('');
       }
     });
+  } else if (preExistingCheck.hasNewFailures) {
+    console.log(
+      `${PREP_PREFIX} ${EMOJI.WARNING} New spec:linter failures detected in worktree: ${preExistingCheck.newFailures.join(
+        ', ',
+      )}`,
+    );
   } else {
     console.log(`${PREP_PREFIX} No pre-existing failures on main.`);
   }
@@ -292,7 +401,7 @@ async function main(): Promise<void> {
     // Gates failed - if pre-existing check was already done and showed failures,
     // the exit handler above will print the skip-gates command.
     // Otherwise, tell the user to fix the failures.
-    if (!preExistingCheck.hasPreExisting) {
+    if (!hasPreExistingOnly) {
       die(
         `${EMOJI.FAILURE} Gates failed in worktree.\n\n` +
           `Fix the gate failures and run wu:prep again.`,

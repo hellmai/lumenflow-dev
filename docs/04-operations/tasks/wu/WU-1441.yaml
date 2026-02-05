@@ -9,6 +9,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-validate.ts
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md
 tests:
   manual:
@@ -21,7 +23,7 @@ artifacts:
   - .lumenflow/stamps/WU-1441.done
 dependencies: []
 risks: []
-notes: ''
+notes: Add scoped-first validation and pre-existing detection for spec:linter.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
