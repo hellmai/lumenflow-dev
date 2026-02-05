@@ -2,7 +2,7 @@ id: WU-1461
 title: Restore real lint/typecheck execution across all packages
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-05
 code_paths:
@@ -36,9 +36,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Turbo lint/typecheck currently report success while seven packages have missing scripts and are scheduled as <NONEXISTENT>. Problem: CI gate health is overreported and regressions can merge undetected. Solution: add real lint/typecheck scripts to all missing packages and enforce a no-<NONEXISTENT> invariant in gate execution output.'
+description: 'Context: Turbo lint/typecheck currently report success while seven packages have
+  missing scripts and are scheduled as <NONEXISTENT>. Problem: CI gate health is overreported and
+  regressions can merge undetected. Solution: add real lint/typecheck scripts to all missing
+  packages and enforce a no-<NONEXISTENT> invariant in gate execution output.'
 acceptance:
   - All in-scope packages define lint and typecheck scripts with executable commands
   - pnpm lint runs real package tasks without <NONEXISTENT>
   - pnpm typecheck runs real package tasks without <NONEXISTENT>
   - Gate output and documentation clearly distinguish stub checks from enforced checks
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1461
+claimed_at: 2026-02-05T23:31:18.964Z
+baseline_main_sha: db1abbfa870585c2fa6e2537343cb0e5fed5b83b
+session_id: 00958c92-36a3-48bc-aebf-57725e8f7325
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T23:31:18.970Z
