@@ -840,3 +840,4 @@
 {"type":"complete","wuId":"WU-1459","timestamp":"2026-02-05T20:03:57.303Z"}
 {"type":"claim","wuId":"WU-1460","timestamp":"2026-02-05T20:04:29.182Z","lane":"Framework: CLI","title":"Batch initiative:add-wu to reduce push-only contention"}
 {"type":"complete","wuId":"WU-1460","timestamp":"2026-02-05T20:10:43.777Z"}
+{"type":"claim","wuId":"WU-1470","lane":"Framework: CLI","title":"Prevent docs-generate tests from leaving tracked files dirty","timestamp":"2026-02-05T22:47:51.531Z"}

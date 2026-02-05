@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml)
 
 ## Blocked
 
