@@ -17,13 +17,15 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1453.done
-dependencies: []
+dependencies:
+  - WU-1452
 initiative: INIT-MCP-FULL
 phase: 8
 spec_refs:
   - ~/.claude/plans/declarative-churning-map.md
 risks: []
-notes: 'Sizing: Simple (<20 files, <50 tool calls). Strategy: Single Session. Lane note: CLI lane used; tests live under @lumenflow/mcp.'
+notes: 'Sizing: Simple (<20 files, <50 tool calls). Strategy: Single Session. Lane note: CLI lane
+  used; tests live under @lumenflow/mcp.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -32,10 +34,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   Context: MCP tests currently mock cli-runner.js.
+
   Problem: Flag mismatches pass tests because CLI is never invoked.
-  Solution: Add integration tests that execute real CLI commands. CI gate integration is out of scope for this WU.
+
+  Solution: Add integration tests that execute real CLI commands. CI gate integration is out of
+  scope for this WU.
 acceptance:
   - New integration test file calls real CLI (no mock)
   - Tests verify CLI accepts flags MCP passes
