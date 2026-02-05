@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — Framework: Core
 - [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml) — Operations: CI/CD
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
 - [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — Framework: CLI

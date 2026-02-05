@@ -1,0 +1,39 @@
+id: WU-1464
+title: Fix failing core tests for tslib resolution and consumer integration timeout
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
+  - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-list.test.ts
+    - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1464.done
+dependencies: []
+initiative: INIT-014
+phase: 4
+spec_refs:
+  - docs/04-operations/plans/INIT-014-rollout-1-launch-readiness-har.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: root pnpm test currently fails in @lumenflow/core due to missing tslib at runtime in wu-list.test.ts and a beforeAll hook timeout in consumer-integration.test.ts. Problem: test signal is red and blocks reliable gate execution. Solution: correct dependency/runtime setup for memfs/tslib and stabilize or re-scope the long-running consumer integration test timeout behavior.'
+acceptance:
+  - pnpm --filter @lumenflow/core test passes without wu-list tslib module errors
+  - consumer-integration test setup no longer times out during default test runs
+  - Root pnpm test no longer fails due to @lumenflow/core suite
