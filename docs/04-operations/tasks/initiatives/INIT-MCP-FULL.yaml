@@ -26,7 +26,7 @@ phases:
     status: done
   - id: 6
     title: Documentation on lumenflow.dev
-    status: pending
+    status: done
   - id: 7
     title: Final documentation update
     status: pending
