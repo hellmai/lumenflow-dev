@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml) — Operations: Infrastructure
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -430,3 +430,4 @@ sections:
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml)
 - [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml)
+- [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml)
