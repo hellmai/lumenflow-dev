@@ -204,7 +204,6 @@ lanes:
 
 | Feature                 | Deprecated | Removal | Migration                    |
 | ----------------------- | ---------- | ------- | ---------------------------- |
-| `.beacon/` directory    | v2.0.0     | v3.0.0  | Use `.lumenflow/`            |
 | `isAgentBranchSync()`   | v2.0.0     | v3.0.0  | Use async `isAgentBranch()`  |
 | Single-word lanes       | v2.0.0     | v3.0.0  | Use "Parent: Sublane" format |
 | `wu:complete` command   | v1.5.0     | v2.0.0  | Use `wu:done`                |
@@ -216,7 +215,7 @@ lanes:
 
 1. Update config to `version: '2.0'`
 2. Rename lanes to "Parent: Sublane" format
-3. Move `.beacon/` to `.lumenflow/`
+3. Ensure your state directory is `.lumenflow/`
 4. Update package versions
 
 See [Migration Guide](/guides/migration) for detailed instructions.

@@ -124,8 +124,8 @@ See the [Upgrade Guide](/getting-started/upgrade) for detailed instructions.
 
 - **Config version bump**: `.lumenflow.config.yaml` now requires `version: '2.0'`
 - **Lane format**: Lanes now use "Parent: Sublane" format (e.g., `Framework: Core`)
-- **Stamp location**: Stamps moved from `.beacon/stamps/` to `.lumenflow/stamps/`
-- **State directory**: State files moved from `.beacon/` to `.lumenflow/`
+- **Stamp location**: `.lumenflow/stamps/`
+- **State directory**: `.lumenflow/`
 
 ### New Features
 
@@ -288,7 +288,7 @@ Current package versions as of v2.3.2:
 ### Deprecated in v2.0.0
 
 - `isAgentBranchSync()` - Use async `isAgentBranch()` instead
-- `.beacon/` directory - Migrated to `.lumenflow/`
+- `.lumenflow/` directory - Project state and audit logs
 - Single-word lane names - Use "Parent: Sublane" format
 
 ### Removed in v2.0.0
