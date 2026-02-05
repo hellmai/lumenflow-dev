@@ -2,7 +2,7 @@ id: WU-1449
 title: Fix flaky orchestrate-initiative-wu1251 test timeout
 lane: 'Framework: Initiatives'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -46,3 +46,5 @@ session_id: 91f16e72-b8c0-44f4-a23e-efde4ff2230d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T13:31:06.947Z
+locked: true
+completed_at: 2026-02-05T13:35:18.633Z
