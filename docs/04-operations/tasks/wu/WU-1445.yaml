@@ -1,0 +1,38 @@
+id: WU-1445
+title: Add Visual Overview page to Starlight and remove internal architecture docs
+lane: 'Content: Documentation'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-05
+code_paths:
+  - apps/docs/src/content/docs/concepts/visual-overview.mdx
+  - apps/docs/src/content/docs/concepts/architecture.mdx
+  - apps/docs/src/content/docs/reference/ports.mdx
+  - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/reference/api.mdx
+  - apps/docs/src/content/docs/reference/mcp.mdx
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1445.done
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Create a Visual Overview page in Starlight docs with 8 Mermaid diagrams covering consumer-facing LumenFlow concepts (WU lifecycle, worktree flow, state files, spec anatomy, gates, lanes, memory, waves). Remove internal hexagonal architecture documentation that exposes implementation details irrelevant to consumers.
+acceptance:
+  - Visual Overview page created with 8 working Mermaid diagrams
+  - architecture.mdx and ports.mdx deleted from Starlight docs
+  - 'Sidebar updated: Visual Overview added, Hexagonal Architecture and Port Interfaces removed'
+  - Cross-references in api.mdx and mcp.mdx cleaned up
+  - All diagrams render correctly in pnpm dev preview
