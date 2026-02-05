@@ -2,7 +2,7 @@ id: WU-1459
 title: Fix initiative:add-wu orphaned temp worktree cleanup
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - Retry exhaustion message includes guidance to increase git.push_retry or wait before retry
   - initiative:add-wu can use an operation-level push retry override (higher retries/backoff)
   - Retrying initiative:add-wu after failure succeeds without manual git worktree remove
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1459
+claimed_at: 2026-02-05T19:46:32.331Z
+baseline_main_sha: 7a6418fada4a9eec1be6401f4d4207bf769e1482
+session_id: 7a4ce36c-5996-4205-8e7e-05f93e2bc2ac
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T19:46:32.337Z
