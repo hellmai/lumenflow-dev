@@ -7,21 +7,19 @@
 
 import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
 
-export type WUTypeLike = unknown;
-
 function isNonEmptyArray(value: unknown): value is unknown[] {
   return Array.isArray(value) && value.length > 0;
 }
 
-export function isDocumentationType(type: WUTypeLike): boolean {
+export function isDocumentationType(type: unknown): boolean {
   return typeof type === 'string' && type === WU_TYPES.DOCUMENTATION;
 }
 
-export function isProcessType(type: WUTypeLike): boolean {
+export function isProcessType(type: unknown): boolean {
   return typeof type === 'string' && type === WU_TYPES.PROCESS;
 }
 
-export function isDocsOrProcessType(type: WUTypeLike): boolean {
+export function isDocsOrProcessType(type: unknown): boolean {
   return isDocumentationType(type) || isProcessType(type);
 }
 
