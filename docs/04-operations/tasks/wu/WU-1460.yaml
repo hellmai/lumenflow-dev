@@ -2,7 +2,7 @@ id: WU-1460
 title: Batch initiative:add-wu to reduce push-only contention
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -52,3 +52,5 @@ session_id: 6b817d53-1023-478b-b8e5-f9ae2842fa49
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T20:04:29.147Z
+locked: true
+completed_at: 2026-02-05T20:10:41.360Z
