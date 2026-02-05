@@ -8,7 +8,9 @@ created: 2026-02-05
 code_paths:
   - packages/@lumenflow/initiatives/__tests__/orchestrate-initiative-wu1251.test.ts
 tests:
-  manual: []
+  manual:
+    - 'Run: pnpm test --filter @lumenflow/initiatives and confirm orchestrate tests pass'
+    - 'Run: pnpm gates and confirm no orchestrate-related timeouts'
   unit:
     - packages/@lumenflow/initiatives/__tests__/orchestrate-initiative-wu1251.test.ts
   e2e: []
@@ -16,7 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1449.done
 dependencies: []
 risks: []
-notes: ''
+notes: Spec completeness fix (adds manual verification + context) to unblock strict spec:linter.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
