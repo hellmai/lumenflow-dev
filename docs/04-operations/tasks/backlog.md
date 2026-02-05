@@ -26,7 +26,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml) — Content: Documentation
-- [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml) — Framework: Initiatives
 
 ## ⛔ Blocked
 
@@ -429,3 +428,4 @@ sections:
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
 - [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
 - [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
+- [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml)
