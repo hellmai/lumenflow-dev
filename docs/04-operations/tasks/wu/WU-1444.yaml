@@ -6,7 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
-  - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-create-defaults.ts
   - packages/@lumenflow/core/src/wu-type-helpers.ts
   - packages/@lumenflow/core/src/__tests__/wu-type-helpers.test.ts
@@ -28,7 +27,7 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/WU-1444-plan.md
 risks: []
-notes: ''
+notes: 'Refactor: replace CLI type/test string-literal policy with core helpers/constants; keep behavior unchanged.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

@@ -55,6 +55,7 @@ import {
   FILE_SYSTEM,
   READINESS_UI,
   STRING_LITERALS,
+  WU_TYPES,
 } from '@lumenflow/core/dist/wu-constants.js';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
@@ -79,6 +80,8 @@ import {
   buildPlaceholderErrorMessage,
 } from '@lumenflow/core/dist/wu-validator.js';
 import { isCodeFile } from '@lumenflow/core/dist/manual-test-validator.js';
+import { WU_CREATE_DEFAULTS } from '@lumenflow/core/dist/wu-create-defaults.js';
+import { isDocsOrProcessType, hasAnyTests } from '@lumenflow/core/dist/wu-type-helpers.js';
 // WU-1211: Import initiative validation for phase check
 import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives/dist/index.js';
 
@@ -92,13 +95,7 @@ const OPERATION_NAME = 'wu-create';
 const DEFAULT_PRIORITY = 'P2';
 
 /** Default WU type */
-const DEFAULT_TYPE = 'feature';
-
-// WU-1443: Resilient defaults to avoid strict spec-linter failures from day-1.
-const DEFAULT_AUTO_NOTES =
-  '(auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.';
-const DEFAULT_AUTO_MANUAL_TEST =
-  '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.';
+const DEFAULT_TYPE = WU_TYPES.FEATURE;
 
 /** Maximum title length before truncation */
 const MAX_TITLE_LENGTH = 60;
@@ -406,15 +403,8 @@ export function buildWUContent({
 
   // WU-1443: Auto-insert minimal manual test stub for plan-first specs when no tests are provided,
   // as long as code_paths does not include actual code files (automated tests still required for code).
-  if (
-    type !== 'documentation' &&
-    type !== 'process' &&
-    tests.manual.length === 0 &&
-    tests.unit.length === 0 &&
-    tests.e2e.length === 0 &&
-    !containsCodeFiles(code_paths)
-  ) {
-    tests.manual = [DEFAULT_AUTO_MANUAL_TEST];
+  if (!isDocsOrProcessType(type) && !hasAnyTests(tests) && !containsCodeFiles(code_paths)) {
+    tests.manual = [WU_CREATE_DEFAULTS.AUTO_MANUAL_TEST_PLACEHOLDER];
   }
 
   return {
@@ -433,7 +423,10 @@ export function buildWUContent({
     dependencies: [],
     risks: [],
     // WU-1443: Default notes to non-empty placeholder to avoid strict completeness failures.
-    notes: notes && notes.trim().length > 0 ? notes : DEFAULT_AUTO_NOTES,
+    notes:
+      typeof notes === 'string' && notes.trim().length > 0
+        ? notes
+        : WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER,
     requires_review: false,
     ...(initiative && { initiative }),
     ...(phase && { phase: parseInt(phase, 10) }),
@@ -501,7 +494,7 @@ export function validateCreateSpec({
     hasAnyItems(opts.testPathsUnit) ||
     hasAnyItems(opts.testPathsE2e);
 
-  if (effectiveType !== 'documentation' && effectiveType !== 'process') {
+  if (!isDocsOrProcessType(effectiveType)) {
     const codePaths = opts.codePaths ?? [];
     if (codePaths.length === 0) {
       errors.push('--code-paths is required for non-documentation WUs');
@@ -518,7 +511,7 @@ export function validateCreateSpec({
     }
   }
 
-  if (effectiveType === 'feature' && !hasSpecRefs(opts.specRefs)) {
+  if (effectiveType === WU_TYPES.FEATURE && !hasSpecRefs(opts.specRefs)) {
     errors.push(
       '--spec-refs is required for type: feature WUs\n' +
         '    Tip: Create a plan first with: pnpm plan:create --id <WU-ID> --title "..."\n' +
@@ -890,8 +883,8 @@ async function main() {
   const resolvedNotes =
     typeof args.notes === 'string' && args.notes.trim().length > 0
       ? args.notes
-      : DEFAULT_AUTO_NOTES;
-  if (resolvedNotes === DEFAULT_AUTO_NOTES) {
+      : WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER;
+  if (resolvedNotes === WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER) {
     console.warn(
       `${LOG_PREFIX} ⚠️  No --notes provided; using placeholder notes (edit before done).`,
     );
@@ -902,13 +895,10 @@ async function main() {
     hasAnyItems(args.testPathsUnit) ||
     hasAnyItems(args.testPathsE2e);
   const canAutoAddManualTests =
-    !hasProvidedTests &&
-    effectiveType !== 'documentation' &&
-    effectiveType !== 'process' &&
-    !containsCodeFiles(args.codePaths);
+    !hasProvidedTests && !isDocsOrProcessType(effectiveType) && !containsCodeFiles(args.codePaths);
 
   const resolvedTestPathsManual = canAutoAddManualTests
-    ? [DEFAULT_AUTO_MANUAL_TEST]
+    ? [WU_CREATE_DEFAULTS.AUTO_MANUAL_TEST_PLACEHOLDER]
     : (args.testPathsManual as string[] | undefined);
 
   if (canAutoAddManualTests) {
