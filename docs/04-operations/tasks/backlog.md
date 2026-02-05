@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1454 — Shared Schemas: WU lifecycle commands](wu/WU-1454.yaml) — Framework: Core
 - [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml) — Framework: CLI
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml) — Framework: CLI
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
