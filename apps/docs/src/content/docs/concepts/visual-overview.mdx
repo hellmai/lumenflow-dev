@@ -1,0 +1,327 @@
+---
+title: Visual Overview
+description: Key LumenFlow concepts visualized through diagrams
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+This page provides visual mental models for the core LumenFlow concepts. Use these diagrams as quick references when working with the framework.
+
+## WU Lifecycle
+
+Work Units progress through 5 states with specific transitions.
+
+```mermaid
+stateDiagram-v2
+    [*] --> ready: create
+
+    ready --> in_progress: claim
+
+    in_progress --> blocked: block (requires reason)
+    in_progress --> waiting: wait
+    in_progress --> done: complete
+    in_progress --> ready: release (orphan recovery)
+
+    blocked --> in_progress: unblock
+    blocked --> done: complete
+
+    waiting --> in_progress: resume
+    waiting --> done: complete
+
+    done --> [*]
+
+    note right of done: Terminal state
+    note right of ready: Aliases: todo, backlog
+```
+
+**Key points:**
+
+- `done` is terminal (no outgoing transitions)
+- `block` requires a reason
+- `release` enables orphan recovery when agents are interrupted
+
+---
+
+## Worktree Discipline
+
+All work happens in isolated worktrees to prevent the "absolute path trap".
+
+```mermaid
+flowchart TD
+    subgraph main["Main Checkout"]
+        A[wu:create] --> B[wu:claim]
+        H[wu:done] --> I[Merged to main]
+    end
+
+    subgraph worktree["Worktree (Isolated)"]
+        C[cd worktrees/lane-wu-xxxx]
+        D[Implement changes]
+        E[pnpm gates]
+        F[wu:prep]
+    end
+
+    B -->|Creates worktree| C
+    C --> D --> E --> F
+    F -->|Return to main| G[cd main]
+    G --> H
+
+    style worktree fill:#e8f4e8,stroke:#2d5a2d
+    style main fill:#e8e8f4,stroke:#2d2d5a
+```
+
+**Key points:**
+
+- Work happens ONLY in worktree after `wu:claim`
+- `wu:prep` runs gates in the worktree
+- `wu:done` runs from main (merges + cleanup)
+
+---
+
+## State File Relationships
+
+LumenFlow uses a layered state model with YAML specs as the single source of truth.
+
+```mermaid
+flowchart TB
+    subgraph primary["Layer 1: Primary Source"]
+        YAML["WU-XXXX.yaml<br/>(Canonical State)"]
+    end
+
+    subgraph auxiliary["Layer 2: Markers & Events"]
+        STAMP[".lumenflow/stamps/<br/>WU-XXXX.done"]
+        EVENTS["wu-events.jsonl<br/>(Event Log)"]
+    end
+
+    subgraph derived["Layer 3: Derived Views"]
+        STATUS["status.md"]
+        BACKLOG["backlog.md"]
+    end
+
+    YAML -->|"wu:done creates"| STAMP
+    YAML -->|"wu:claim/done emits"| EVENTS
+    YAML -->|"Regenerated from"| STATUS
+    YAML -->|"Regenerated from"| BACKLOG
+    EVENTS -.->|"Historical input"| STATUS
+
+    style primary fill:#fff3e0,stroke:#e65100
+    style auxiliary fill:#e3f2fd,stroke:#1565c0
+    style derived fill:#f5f5f5,stroke:#9e9e9e
+```
+
+**Key points:**
+
+- YAML spec is the **single source of truth**
+- Stamps are existence proofs (empty marker files)
+- `status.md` and `backlog.md` are **always regenerable**
+- Events provide audit trail, not authority
+
+---
+
+## WU Spec Anatomy
+
+Fields are populated at different lifecycle stages.
+
+```mermaid
+flowchart LR
+    subgraph create["At wu:create"]
+        C1[id]
+        C2[title]
+        C3[lane]
+        C4[type]
+        C5[priority]
+        C6[description]
+        C7[acceptance]
+    end
+
+    subgraph claim["At wu:claim"]
+        CL1[status: in_progress]
+        CL2[claimed_at]
+        CL3[assigned_to]
+        CL4[worktree_path]
+        CL5[session_id]
+    end
+
+    subgraph done["At wu:done"]
+        D1[status: done]
+        D2[completed_at]
+        D3[locked: true]
+        D4[code_paths]
+    end
+
+    subgraph optional["Optional Fields"]
+        O1[dependencies]
+        O2[blocked_by]
+        O3[initiative]
+        O4[spec_refs]
+        O5[risks]
+    end
+
+    create --> claim --> done
+```
+
+**Key points:**
+
+- Required fields must exist at creation (no placeholders allowed)
+- Claim adds execution context (worktree, session)
+- Done locks the WU and records completion
+
+---
+
+## Gates Pipeline
+
+Quality gates run in sequence before completion.
+
+```mermaid
+flowchart LR
+    subgraph gates["pnpm gates"]
+        FORMAT[Format<br/>prettier] --> LINT[Lint<br/>eslint]
+        LINT --> TYPE[Typecheck<br/>tsc]
+        TYPE --> TEST[Test<br/>vitest]
+    end
+
+    FORMAT -->|Fail| FIX1[Auto-fix:<br/>pnpm format]
+    LINT -->|Fail| FIX2[Manual fix<br/>required]
+    TYPE -->|Fail| FIX3[Fix types<br/>before continuing]
+    TEST -->|Fail| FIX4[Fix tests<br/>or update snapshots]
+
+    TEST -->|Pass| READY[Ready for<br/>wu:prep]
+
+    FIX1 --> FORMAT
+    FIX2 --> LINT
+    FIX3 --> TYPE
+    FIX4 --> TEST
+
+    style READY fill:#c8e6c9,stroke:#2e7d32
+```
+
+**Key points:**
+
+- Gates run in sequence: format → lint → typecheck → test
+- Each gate must pass before the next runs
+- Format failures can auto-fix; others require manual intervention
+- All gates must pass before `wu:prep` / `wu:done`
+
+---
+
+## Lane WIP & Locking
+
+Lanes prevent parallel work conflicts with WIP limits.
+
+```mermaid
+flowchart TD
+    subgraph lanes["Lanes (WIP = 1 each)"]
+        subgraph core["Framework: Core"]
+            C1[WU-101<br/>in_progress]
+            C2[WU-102<br/>ready<br/>waiting]
+        end
+
+        subgraph cli["Framework: CLI"]
+            CLI1[WU-201<br/>in_progress]
+        end
+
+        subgraph docs["Content: Docs"]
+            D1[WU-301<br/>ready<br/>claimable]
+        end
+    end
+
+    CLAIM[wu:claim WU-102] -->|Lane locked| C1
+    CLAIM2[wu:claim WU-301] -->|Lane available| D1
+```
+
+**Key points:**
+
+- Each lane has WIP limit of 1 (configurable)
+- `wu:claim` checks lane availability before claiming
+- Lock policies: `all` (blocked holds lock) vs `active` (only in_progress)
+- Prevents merge conflicts from parallel work in same area
+
+---
+
+## Memory & Agent Coordination
+
+Agents communicate via signals, checkpoints, and recovery.
+
+```mermaid
+sequenceDiagram
+    participant A as Agent A
+    participant M as Memory Layer
+    participant B as Agent B
+
+    Note over A,B: Starting Work
+    A->>M: mem:start --wu WU-123
+    A->>M: mem:signal "Starting core impl"
+
+    Note over A,B: Coordination
+    B->>M: mem:inbox --since 30m
+    M-->>B: Signal: "Starting core impl"
+    B->>M: mem:signal "CLI ready for integration"
+
+    Note over A,B: Before /clear or Handoff
+    A->>M: mem:checkpoint "Tests passing"
+
+    Note over A,B: After Compaction/Resume
+    A->>M: mem:recover --wu WU-123
+    M-->>A: Recovery context + last checkpoint
+```
+
+**Key points:**
+
+- Signals enable agent-to-agent coordination
+- Checkpoints preserve progress before `/clear`
+- Recovery restores context after compaction
+- All stored in `.lumenflow/memory/`
+
+---
+
+## Initiative Wave Orchestration
+
+<Aside type="tip" title="Advanced">
+  This section covers initiative orchestration, which is used for coordinating multiple WUs across
+  lanes.
+</Aside>
+
+WUs are organized into parallel execution waves based on dependencies.
+
+```mermaid
+flowchart TD
+    subgraph init["Initiative INIT-001"]
+        direction LR
+        subgraph wave0["Wave 0 (Parallel)"]
+            W0A[WU-1<br/>Core]
+            W0B[WU-3<br/>CLI]
+        end
+
+        subgraph wave1["Wave 1 (Parallel)"]
+            W1A[WU-2<br/>Core]
+            W1B[WU-4<br/>CLI]
+        end
+
+        subgraph wave2["Wave 2"]
+            W2A[WU-5<br/>Metrics]
+        end
+    end
+
+    W0A --> W1A
+    W0B --> W1B
+    W1A --> W2A
+    W1B --> W2A
+
+    wave0 -->|All complete| wave1
+    wave1 -->|All complete| wave2
+```
+
+**Key points:**
+
+- WUs in same wave run in parallel
+- Max 1 WU per lane per wave (prevents contention)
+- Waves execute sequentially
+- Stamp files (`.lumenflow/stamps/WU-XXXX.done`) mark completion for dependency resolution
+
+---
+
+## Next Steps
+
+- [Work Units](/concepts/work-units) - Deep dive into WU structure
+- [Lanes](/concepts/lanes) - Lane configuration and policies
+- [Gates](/concepts/gates) - Quality gate configuration
+- [Memory Layer](/concepts/memory) - Memory and coordination details

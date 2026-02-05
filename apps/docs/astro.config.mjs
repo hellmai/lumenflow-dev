@@ -26,11 +26,11 @@ export default defineConfig({
         {
           label: 'Concepts',
           items: [
+            { label: 'Visual Overview', slug: 'concepts/visual-overview' },
             { label: 'Work Units (WUs)', slug: 'concepts/work-units' },
             { label: 'Lanes', slug: 'concepts/lanes' },
             { label: 'Gates', slug: 'concepts/gates' },
             { label: 'Memory Layer', slug: 'concepts/memory' },
-            { label: 'Hexagonal Architecture', slug: 'concepts/architecture' },
           ],
         },
         {
@@ -70,7 +70,6 @@ export default defineConfig({
             { label: 'Configuration', slug: 'reference/config' },
             { label: 'WU Schema', slug: 'reference/wu-schema' },
             { label: 'API Documentation', slug: 'reference/api' },
-            { label: 'Port Interfaces', slug: 'reference/ports' },
             { label: 'GitHub Action', slug: 'reference/github-action' },
             { label: 'Compatibility Matrix', slug: 'reference/compatibility' },
             { label: 'Changelog', slug: 'reference/changelog' },
