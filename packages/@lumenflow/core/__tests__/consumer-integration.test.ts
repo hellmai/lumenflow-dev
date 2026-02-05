@@ -43,6 +43,21 @@ function getProblematicPathLines(content: string): string[] {
     .filter((line: string) => !isCommentLine(line) && line.includes(PACKAGES_LUMENFLOW));
 }
 
+/**
+ * Timeout for the beforeAll hook that runs `npm install` from the npm registry.
+ * Network-dependent operations need a generous timeout to avoid flaky failures
+ * in CI or on slow connections. 30 seconds accommodates typical install times
+ * while still failing fast enough if the registry is truly unreachable.
+ */
+const SETUP_TIMEOUT_MS = 30_000;
+
+/**
+ * Timeout for individual test cases that spawn child processes (npx commands).
+ * These need more time than the default 5s because they execute real CLI tools
+ * in a temporary project directory.
+ */
+const COMMAND_TEST_TIMEOUT_MS = 15_000;
+
 describe('Consumer Integration Tests', () => {
   let tempProjectDir: string;
   const originalCwd = process.cwd();
@@ -70,7 +85,7 @@ describe('Consumer Integration Tests', () => {
         npm_config_workspaces: 'false',
       },
     });
-  });
+  }, SETUP_TIMEOUT_MS);
 
   afterAll(() => {
     // Clean up
@@ -112,64 +127,72 @@ describe('Consumer Integration Tests', () => {
   });
 
   describe('Command Execution', () => {
-    it('should run validate-backlog-sync command successfully', () => {
-      // Create a minimal LumenFlow project structure for testing
-      const docsDir = join(tempProjectDir, 'docs', '04-operations', 'tasks');
-      mkdirSync(docsDir, { recursive: true });
+    it(
+      'should run validate-backlog-sync command successfully',
+      { timeout: COMMAND_TEST_TIMEOUT_MS },
+      () => {
+        // Create a minimal LumenFlow project structure for testing
+        const docsDir = join(tempProjectDir, 'docs', '04-operations', 'tasks');
+        mkdirSync(docsDir, { recursive: true });
 
-      // Create a minimal backlog.md
-      const backlogPath = join(docsDir, 'backlog.md');
-      writeFileSync(backlogPath, '# Backlog\n\nNo WUs yet.\n');
+        // Create a minimal backlog.md
+        const backlogPath = join(docsDir, 'backlog.md');
+        writeFileSync(backlogPath, '# Backlog\n\nNo WUs yet.\n');
 
-      // Run validate-backlog-sync
-      try {
-        const output = execSync('npx validate-backlog-sync', {
-          cwd: tempProjectDir,
-          encoding: 'utf8',
-          stdio: 'pipe',
-        });
+        // Run validate-backlog-sync
+        try {
+          const output = execSync('npx validate-backlog-sync', {
+            cwd: tempProjectDir,
+            encoding: 'utf8',
+            stdio: 'pipe',
+          });
 
-        // Should not throw and should produce output
-        expect(typeof output).toBe('string');
-        expect(output.length).toBeGreaterThan(0);
-      } catch (error: any) {
-        // Command might fail due to missing LumenFlow structure,
-        // but it should not fail due to missing binaries or path resolution
-        const errorMessage = error.message || error.stdout || error.stderr;
-        expect(errorMessage).not.toContain('command not found');
-        expect(errorMessage).not.toContain('ENOENT');
-        expect(errorMessage).not.toContain('Cannot find module');
-      }
-    });
+          // Should not throw and should produce output
+          expect(typeof output).toBe('string');
+          expect(output.length).toBeGreaterThan(0);
+        } catch (error: any) {
+          // Command might fail due to missing LumenFlow structure,
+          // but it should not fail due to missing binaries or path resolution
+          const errorMessage = error.message || error.stdout || error.stderr;
+          expect(errorMessage).not.toContain('command not found');
+          expect(errorMessage).not.toContain('ENOENT');
+          expect(errorMessage).not.toContain('Cannot find module');
+        }
+      },
+    );
 
-    it('should run gates command and verify paths resolve', () => {
-      // Create minimal project structure for gates
-      const lumenflowDir = join(tempProjectDir, '.lumenflow');
-      mkdirSync(lumenflowDir, { recursive: true });
+    it(
+      'should run gates command and verify paths resolve',
+      { timeout: COMMAND_TEST_TIMEOUT_MS },
+      () => {
+        // Create minimal project structure for gates
+        const lumenflowDir = join(tempProjectDir, '.lumenflow');
+        mkdirSync(lumenflowDir, { recursive: true });
 
-      // Create minimal constraints file
-      const constraintsPath = join(lumenflowDir, 'constraints.md');
-      writeFileSync(constraintsPath, '# LumenFlow Constraints\n\nBasic constraints.\n');
+        // Create minimal constraints file
+        const constraintsPath = join(lumenflowDir, 'constraints.md');
+        writeFileSync(constraintsPath, '# LumenFlow Constraints\n\nBasic constraints.\n');
 
-      try {
-        const output = execSync('npx gates --help', {
-          cwd: tempProjectDir,
-          encoding: 'utf8',
-          stdio: 'pipe',
-        });
+        try {
+          const output = execSync('npx gates --help', {
+            cwd: tempProjectDir,
+            encoding: 'utf8',
+            stdio: 'pipe',
+          });
 
-        // Should show help without path resolution errors
-        expect(typeof output).toBe('string');
-        expect(output.length).toBeGreaterThan(0);
-        expect(output).toContain('Usage:'); // Help output should contain usage info
-      } catch (error: any) {
-        // Should not fail due to missing binaries or path resolution
-        const errorMessage = error.message || error.stdout || error.stderr;
-        expect(errorMessage).not.toContain('command not found');
-        expect(errorMessage).not.toContain('ENOENT');
-        expect(errorMessage).not.toContain('Cannot find module');
-      }
-    });
+          // Should show help without path resolution errors
+          expect(typeof output).toBe('string');
+          expect(output.length).toBeGreaterThan(0);
+          expect(output).toContain('Usage:'); // Help output should contain usage info
+        } catch (error: any) {
+          // Should not fail due to missing binaries or path resolution
+          const errorMessage = error.message || error.stdout || error.stderr;
+          expect(errorMessage).not.toContain('command not found');
+          expect(errorMessage).not.toContain('ENOENT');
+          expect(errorMessage).not.toContain('Cannot find module');
+        }
+      },
+    );
 
     it('should have all required CLI binaries properly resolved', () => {
       const nodeModulesBin = join(tempProjectDir, NODE_MODULES_BIN);
