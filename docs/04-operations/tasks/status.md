@@ -4,7 +4,6 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml)
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml)
 - [WU-1463 — Patch high-severity advisories and enforce audit in CI](wu/WU-1463.yaml)
 
@@ -414,3 +413,4 @@ _Last updated: 2026-02-05_
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml) — 2026-02-05
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml) — 2026-02-05
 - [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml) — 2026-02-05
+- [WU-1470 — Prevent docs-generate tests from leaving tracked files dirty](wu/WU-1470.yaml) — 2026-02-05
