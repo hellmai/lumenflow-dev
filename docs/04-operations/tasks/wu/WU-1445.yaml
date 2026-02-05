@@ -2,7 +2,7 @@ id: WU-1445
 title: Add Visual Overview page to Starlight and remove internal architecture docs
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -29,10 +29,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create a Visual Overview page in Starlight docs with 8 Mermaid diagrams covering consumer-facing LumenFlow concepts (WU lifecycle, worktree flow, state files, spec anatomy, gates, lanes, memory, waves). Remove internal hexagonal architecture documentation that exposes implementation details irrelevant to consumers.
+description: Create a Visual Overview page in Starlight docs with 8 Mermaid diagrams covering
+  consumer-facing LumenFlow concepts (WU lifecycle, worktree flow, state files, spec anatomy, gates,
+  lanes, memory, waves). Remove internal hexagonal architecture documentation that exposes
+  implementation details irrelevant to consumers.
 acceptance:
   - Visual Overview page created with 8 working Mermaid diagrams
   - architecture.mdx and ports.mdx deleted from Starlight docs
   - 'Sidebar updated: Visual Overview added, Hexagonal Architecture and Port Interfaces removed'
   - Cross-references in api.mdx and mcp.mdx cleaned up
   - All diagrams render correctly in pnpm dev preview
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1445
+claimed_at: 2026-02-05T12:06:26.618Z
+baseline_main_sha: 646f7f5a0545f5dbcfb39e718cb90aa42527b78c
+session_id: 46099f11-4f0e-45c4-9776-5f60412e6830
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T12:06:26.624Z

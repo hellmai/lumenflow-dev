@@ -820,3 +820,4 @@
 {"type":"complete","wuId":"WU-1443","timestamp":"2026-02-05T11:36:04.764Z"}
 {"type":"claim","wuId":"WU-1444","timestamp":"2026-02-05T11:44:05.411Z","lane":"Framework: Core","title":"Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy"}
 {"type":"complete","wuId":"WU-1444","timestamp":"2026-02-05T11:53:03.033Z"}
+{"type":"claim","wuId":"WU-1445","lane":"Content: Documentation","title":"Add Visual Overview page to Starlight and remove internal architecture docs","timestamp":"2026-02-05T12:06:26.637Z"}

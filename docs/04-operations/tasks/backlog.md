@@ -20,13 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml) — Content: Documentation
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
