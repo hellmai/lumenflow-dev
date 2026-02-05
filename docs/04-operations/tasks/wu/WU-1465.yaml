@@ -2,7 +2,7 @@ id: WU-1465
 title: Enable reliable CLI e2e test execution in vitest config
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - passWithNoTests is false for CLI test configuration
   - CLI test runs fail when patterns match zero tests
   - Existing CLI test suites continue to run successfully after config updates
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1465
+claimed_at: 2026-02-05T22:56:43.265Z
+baseline_main_sha: 883dc2697987fd65057339046ea26bfd652a7555
+session_id: 0566af5c-90c2-4ba6-a3ec-d44ff787c9fc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T22:56:43.268Z
