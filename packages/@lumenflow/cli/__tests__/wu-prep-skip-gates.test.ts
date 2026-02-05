@@ -61,31 +61,45 @@ describe('wu:prep skip-gates command output (WU-1344)', () => {
     });
 
     it('returns true when spec:linter fails on main branch', async () => {
-      // Mock the git checkout and spec:linter execution on main
       const mockExecOnMain = vi.fn().mockResolvedValue({
         exitCode: 1,
-        stdout: '',
-        stderr: 'spec:linter failed',
+        stdout: JSON.stringify({ invalid: [{ wuId: 'WU-1' }] }),
+        stderr: '',
       });
 
-      const result = await checkPreExistingFailures({
-        mainCheckout: MOCK_REPO_PATH,
-        execOnMain: mockExecOnMain,
-      });
-
-      expect(result.hasPreExisting).toBe(true);
-    });
-
-    it('returns false when spec:linter passes on main branch', async () => {
-      const mockExecOnMain = vi.fn().mockResolvedValue({
-        exitCode: 0,
-        stdout: 'All specs valid',
+      const mockExecOnWorktree = vi.fn().mockResolvedValue({
+        exitCode: 1,
+        stdout: JSON.stringify({ invalid: [{ wuId: 'WU-1' }] }),
         stderr: '',
       });
 
       const result = await checkPreExistingFailures({
         mainCheckout: MOCK_REPO_PATH,
         execOnMain: mockExecOnMain,
+        execOnWorktree: mockExecOnWorktree,
+      });
+
+      expect(result.hasPreExisting).toBe(true);
+      expect(result.hasNewFailures).toBe(false);
+    });
+
+    it('returns false when spec:linter passes on main branch', async () => {
+      const mockExecOnMain = vi.fn().mockResolvedValue({
+        exitCode: 0,
+        stdout: JSON.stringify({ invalid: [] }),
+        stderr: '',
+      });
+
+      const mockExecOnWorktree = vi.fn().mockResolvedValue({
+        exitCode: 0,
+        stdout: JSON.stringify({ invalid: [] }),
+        stderr: '',
+      });
+
+      const result = await checkPreExistingFailures({
+        mainCheckout: MOCK_REPO_PATH,
+        execOnMain: mockExecOnMain,
+        execOnWorktree: mockExecOnWorktree,
       });
 
       expect(result.hasPreExisting).toBe(false);
@@ -93,10 +107,16 @@ describe('wu:prep skip-gates command output (WU-1344)', () => {
 
     it('returns false when main branch check fails with error', async () => {
       const mockExecOnMain = vi.fn().mockRejectedValue(new Error('Git error'));
+      const mockExecOnWorktree = vi.fn().mockResolvedValue({
+        exitCode: 0,
+        stdout: JSON.stringify({ invalid: [] }),
+        stderr: '',
+      });
 
       const result = await checkPreExistingFailures({
         mainCheckout: MOCK_REPO_PATH,
         execOnMain: mockExecOnMain,
+        execOnWorktree: mockExecOnWorktree,
       });
 
       expect(result.hasPreExisting).toBe(false);
