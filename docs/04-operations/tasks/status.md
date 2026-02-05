@@ -4,7 +4,7 @@ _Last updated: 2026-02-05_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml)
 
 ## Blocked
 
