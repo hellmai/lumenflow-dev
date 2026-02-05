@@ -1,0 +1,42 @@
+id: WU-1460
+title: Batch initiative:add-wu to reduce push-only contention
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-05
+code_paths:
+  - packages/@lumenflow/cli/src/initiative-add-wu.ts
+  - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
+tests:
+  manual:
+    - Link multiple WUs in one command and verify initiative/wu YAML updates
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1460.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 8
+spec_refs:
+  - ~/.claude/plans/declarative-churning-map.md
+risks: []
+notes: 'Sizing: Medium. Strategy: Checkpoint-Resume.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  Context: linking many WUs with initiative:add-wu causes repeated push-only writes to origin/main.
+  Problem: high contention leads to retry exhaustion and operational overhead.
+  Solution: support repeatable --wu arguments and process all links in one micro-worktree transaction.
+acceptance:
+  - initiative:add-wu accepts repeatable --wu flags
+  - all provided WU links are applied atomically in one micro-worktree commit
+  - existing single-WU behavior remains backward-compatible
+  - tests cover batching, idempotency, and conflict validation
