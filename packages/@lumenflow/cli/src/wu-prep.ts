@@ -24,6 +24,9 @@
  */
 
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
@@ -109,6 +112,31 @@ export type ExecOnMainFn = (cmd: string) => Promise<{
  */
 function defaultExecOnMain(mainCheckout: string): ExecOnMainFn {
   return async (cmd: string) => {
+    // WU-1441: Compare main vs worktree using the *current* CLI build, even if
+    // the main checkout doesn't yet support `wu:validate --json`.
+    //
+    // When wu:prep is running from a worktree, running `pnpm wu:validate --json`
+    // inside the main checkout will execute the older CLI (and fail to parse).
+    // Instead, execute the sibling dist entrypoint directly and vary only `cwd`.
+    const distDir = path.dirname(fileURLToPath(import.meta.url));
+    const wuValidateDist = path.join(distDir, 'wu-validate.js');
+    const shouldUseDistWuValidate =
+      cmd.includes('wu:validate') && cmd.includes('--json') && existsSync(wuValidateDist);
+
+    if (shouldUseDistWuValidate) {
+      const result = spawnSync('node', [wuValidateDist, '--all', '--json'], {
+        cwd: mainCheckout,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+
+      return {
+        exitCode: result.status ?? 1,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+      };
+    }
+
     // Parse command to extract pnpm script name and args
     // Expected format: "pnpm spec:linter" or similar
     const parts = cmd.split(/\s+/);
