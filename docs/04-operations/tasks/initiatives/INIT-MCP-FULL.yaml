@@ -14,7 +14,7 @@ phases:
     status: done
   - id: 2
     title: WU tools (+17)
-    status: pending
+    status: done
   - id: 3
     title: Initiative + Memory tools (+21)
     status: pending
