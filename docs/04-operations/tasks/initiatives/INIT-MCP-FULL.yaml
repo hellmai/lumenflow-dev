@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: Flow + Validation + Setup tools (+17)
-    status: pending
+    status: done
   - id: 6
     title: Documentation on lumenflow.dev
     status: pending
