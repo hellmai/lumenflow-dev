@@ -2,7 +2,7 @@ id: WU-1441
 title: 'Spec-linter: scoped-first + pre-existing failure detection'
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -30,8 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: spec:linter runs global wu:validate --all and can block unrelated WUs. Problem: pre-existing spec failures in other WUs stop current WU progress. Solution: run scoped validation for current WU first, then run global validation with pre-existing detection; fail only on newly introduced spec errors, and require --fix-wu for pre-existing failures.'
+description: 'Context: spec:linter runs global wu:validate --all and can block unrelated WUs.
+  Problem: pre-existing spec failures in other WUs stop current WU progress. Solution: run scoped
+  validation for current WU first, then run global validation with pre-existing detection; fail only
+  on newly introduced spec errors, and require --fix-wu for pre-existing failures.'
 acceptance:
   - Scoped validation runs first and fails only on current WU spec issues
-  - Global validation distinguishes pre-existing vs newly introduced failures and enforces --fix-wu for pre-existing
+  - Global validation distinguishes pre-existing vs newly introduced failures and enforces --fix-wu
+    for pre-existing
   - Docs/error messaging updated to explain behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1441
+claimed_at: 2026-02-05T09:23:26.488Z
+baseline_main_sha: a5ea2b5740a47d637e941b665228f3c018cdca06
+session_id: 3bdd3242-f508-4108-ad8b-18fbac4f06bc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-05T09:23:26.493Z
