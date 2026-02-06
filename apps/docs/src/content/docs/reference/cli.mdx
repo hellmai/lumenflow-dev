@@ -244,28 +244,31 @@ pnpm initiative:status
 
 ### mem:checkpoint
 
-Create a checkpoint node for context snapshots
+Create a checkpoint node for context snapshots. Also invoked automatically by auto-checkpoint hooks when `memory.enforcement.auto_checkpoint.enabled` is true (INIT-015).
 
 ```bash
 pnpm mem:checkpoint
+pnpm mem:checkpoint "Auto: sub-agent completed" --wu WU-123 --trigger subagent-stop --quiet
 ```
 
 **Options:**
 
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)            | No       |
-| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)   | No       |
-| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)        | No       |
-| `-p, --progress &lt;text&gt;` | Progress summary                               | No       |
-| `--next-steps &lt;text&gt;`   | Next steps description                         | No       |
-| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff)    | No       |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-| `-q, --quiet`                 | Suppress output except errors                  | No       |
+| Flag                          | Description                                                   | Required |
+| ----------------------------- | ------------------------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                           | No       |
+| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)                  | No       |
+| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)                       | No       |
+| `-p, --progress &lt;text&gt;` | Progress summary                                              | No       |
+| `--next-steps &lt;text&gt;`   | Next steps description                                        | No       |
+| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff, subagent-stop)    | No       |
+| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                | No       |
+| `-q, --quiet`                 | Suppress output except errors                                 | No       |
+
+**Auto-checkpoint hooks (INIT-015):** When configured, PostToolUse and SubagentStop hooks call `mem:checkpoint` automatically. PostToolUse uses a counter-based interval (default: every 30 tool calls); SubagentStop always checkpoints. See [Configuration](/reference/config#memoryenforcement) for setup.
 
 ### mem:cleanup
 
-Prune closed memory nodes based on lifecycle policy and TTL
+Prune closed memory nodes based on lifecycle policy, TTL, or decay scoring
 
 ```bash
 pnpm mem:cleanup
@@ -278,9 +281,12 @@ pnpm mem:cleanup
 | `--dry-run`                   | Preview cleanup without making changes                                                | No       |
 | `--ttl &lt;duration&gt;`      | Remove nodes older than duration (e.g., 30d, 7d, 24h). Active sessions are protected. | No       |
 | `--session-id &lt;uuid&gt;`   | Session ID to consider closed (removes session lifecycle nodes)                       | No       |
+| `--decay`                     | Run decay-based archival (archive stale nodes below threshold). Uses config from `.lumenflow.config.yaml` or defaults. | No       |
 | `--json`                      | Output as JSON                                                                        | No       |
 | `-q, --quiet`                 | Suppress output except errors                                                         | No       |
 | `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                                        | No       |
+
+When `--decay` is used, the command reads `memory.decay.threshold` and `memory.decay.half_life_days` from config (defaults: 0.1 and 30 respectively) and archives nodes whose decay score falls below the threshold. Combine with `--dry-run` to preview what would be archived.
 
 ### mem:context
 
@@ -364,10 +370,12 @@ pnpm mem:export
 
 ### mem:inbox
 
-Read coordination signals from other agents
+Read coordination signals from other agents. Uses append-only receipts (INIT-015) to mark signals as read without rewriting `signals.jsonl`, preventing concurrent read-marking races between parallel agents.
 
 ```bash
 pnpm mem:inbox
+pnpm mem:inbox --no-mark   # Read without marking as read
+pnpm mem:inbox --since 1h  # Signals from the last hour
 ```
 
 **Options:**
@@ -379,8 +387,10 @@ pnpm mem:inbox
 | `-s, --since &lt;time&gt;` | Filter signals since time (e.g., "1h", "30m", "2025-12-09")      | No       |
 | `-w, --watch`              | Continuously monitor for new signals                             | No       |
 | `-q, --quiet`              | Suppress output except signal content                            | No       |
-| `--no-mark`                | Do not mark signals as read after display                        | No       |
+| `--no-mark`                | Do not mark signals as read after display (no receipt appended)  | No       |
 | `-c, --count`              | Output only signal count (lightweight polling for orchestrators) | No       |
+
+**Signal receipts (INIT-015):** Read-marking appends receipt entries instead of modifying original signals. This prevents concurrent agents from overwriting each other's read state. Use `--no-mark` to read signals without generating receipts.
 
 ### mem:init
 
@@ -413,6 +423,22 @@ pnpm mem:ready --wu <wuId>
 | `-f, --format &lt;format&gt;` | Output format (json, human). Default: human    | No       |
 | `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
 | `-q, --quiet`                 | Suppress header/footer output, only show nodes | No       |
+
+### mem:recover
+
+Generate recovery context for a WU (WU-1390). Outputs checkpoint data, recent signals, and session state to help a new agent resume work.
+
+```bash
+pnpm mem:recover --wu <wuId>
+```
+
+**Options:**
+
+| Flag                          | Description                                    | Required |
+| ----------------------------- | ---------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`           | Work Unit ID to recover (e.g., WU-123)         | Yes      |
+| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
+| `-q, --quiet`                 | Suppress output except recovery context        | No       |
 
 ### mem:signal
 
@@ -931,7 +957,7 @@ pnpm wu:block --id <wuId>
 
 ### wu:claim
 
-Claim a work unit by creating a worktree/branch and updating status
+Claim a work unit by creating a worktree/branch and updating status. On successful claim, surfaces any unread coordination signals from the memory layer so agents can see pending messages from other agents.
 
 ```bash
 pnpm wu:claim --id <wuId> --lane <lane>
@@ -1045,10 +1071,17 @@ pnpm wu:deps
 
 ### wu:done
 
-WU Done Helper
+Complete a WU: run gates, fast-forward merge, stamp, and cleanup. Must be run from the main checkout (not a worktree). Use `wu:prep` first from the worktree.
+
+With INIT-015 memory enforcement:
+
+- **Checkpoint gate**: Warns or blocks if no checkpoints exist (configurable via `memory.enforcement.require_checkpoint_for_done`)
+- **Decay archival**: Archives stale memory nodes when `memory.decay.enabled` and `trigger: on_done` (fail-open)
+- **Signal read-marking**: Marks completed-WU signals as read using append-only receipts
+- **Counter cleanup**: Removes auto-checkpoint counter files for the completed WU
 
 ```bash
-pnpm wu:done
+pnpm wu:done --id WU-123
 ```
 
 ### wu:edit
