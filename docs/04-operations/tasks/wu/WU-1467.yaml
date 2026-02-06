@@ -2,7 +2,7 @@ id: WU-1467
 title: Eliminate preflight/enforcement drift from tasks validate and stubbed gates
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
     flows
   - Gate and preflight output clearly indicate which checks are authoritative
   - Unit tests cover the updated preflight and gates command behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1467
+claimed_at: 2026-02-06T08:20:11.896Z
+baseline_main_sha: 3df6ff48a8f66a2dec0b7d3b06086e47103fa45e
+session_id: 6b4f8efa-c6e8-42d7-8fc4-5f651cf35703
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T08:20:11.900Z
