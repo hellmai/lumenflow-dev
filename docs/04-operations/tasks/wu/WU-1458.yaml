@@ -2,7 +2,7 @@ id: WU-1458
 title: MCP/CLI parity enforcement
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -52,3 +52,5 @@ session_id: a4492dd7-4ab8-456f-8ad9-c80175c78286
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T11:03:26.761Z
+locked: true
+completed_at: 2026-02-06T11:08:39.872Z
