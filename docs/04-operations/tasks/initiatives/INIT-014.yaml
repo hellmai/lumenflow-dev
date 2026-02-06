@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 6
     title: 'Phase 5: Type system hardening'
-    status: pending
+    status: done
   - id: 7
     title: 'Phase 6: Documentation and policy alignment'
     status: done
