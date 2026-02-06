@@ -1,10 +1,11 @@
 # Work Unit Status
 
-_Last updated: 2026-02-05_
+_Last updated: 2026-02-06_
 
 ## In Progress
 
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml)
+- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml)
 
 ## Blocked
 
