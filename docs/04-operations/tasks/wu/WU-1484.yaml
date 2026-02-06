@@ -2,7 +2,7 @@ id: WU-1484
 title: Complete CLI shared-validator wiring for schema-backed commands
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -62,3 +62,5 @@ session_id: 2d8789c8-643a-4932-a7b1-94e9c615d106
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T12:49:10.169Z
+locked: true
+completed_at: 2026-02-06T12:56:58.594Z

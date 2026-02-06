@@ -4,7 +4,6 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml)
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml)
 
 ## Blocked
@@ -442,3 +441,4 @@ _Last updated: 2026-02-06_
 - [WU-1485 — Remove LUMENFLOW_FORCE suggestions from hook error messages](wu/WU-1485.yaml) — 2026-02-06
 - [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml) — 2026-02-06
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — 2026-02-06
+- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — 2026-02-06
