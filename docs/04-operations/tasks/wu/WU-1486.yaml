@@ -2,7 +2,7 @@ id: WU-1486
 title: Sync MCP internal and Starlight docs with current tool surface
 lane: 'Content: Documentation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -55,3 +55,5 @@ session_id: c52718ee-ec1f-40e0-8109-b375ce97a79a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T13:42:22.399Z
+locked: true
+completed_at: 2026-02-06T13:46:05.286Z
