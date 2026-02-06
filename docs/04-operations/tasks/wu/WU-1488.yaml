@@ -1,0 +1,59 @@
+id: WU-1488
+title: Fix wu:done push race and harden git pull operations
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/wu-done-branch-only.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+tests:
+  manual:
+    - Reproduce non-fast-forward by advancing origin/main between merge and push, run wu:done, confirm pull --rebase recovers without LUMENFLOW_FORCE
+    - Inspect wu:done commit message for Worktree-Branch and Worktree-Path trailers
+    - Verify git log --grep Worktree-Branch finds wu:done commits
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1488.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/declarative-forging-pixel.md
+risks: []
+notes: |-
+  Plan: .claude/plans/declarative-forging-pixel.md
+  Root cause forensics: WU-1467 (reflogs, .beacon/force-bypasses.log:428)
+  Research: context7 simple-git docs confirm pull --rebase support, web confirms standard CI pattern.
+  Scope: 10 changes across 4 files (~23 lines total). Simple WU per sizing guide.
+  Related: WU-1467 (the incident), WU-1747/WU-1749 (mergeLaneBranch retry that stops before push)
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  ROOT CAUSE: WU-1467 forensics revealed a push race condition in wu:done. When origin/main advances between wu:done's merge and push steps (concurrent agent activity), the push fails with non-fast-forward. The agent then improvised recovery with LUMENFLOW_FORCE=1, creating ghost commits that appeared as direct-to-main edits.
+
+  CODEBASE AUDIT found the same pattern in both wu:done code paths, plus 3 merge-style .pull() calls that can create merge commits on main (violating linear history), and a silently swallowed merge error.
+
+  FIX: Add git pull --rebase before push (standard git pattern, confirmed via context7/simple-git docs and web research). Replace all merge-style .pull() with pull --rebase. Log swallowed errors. Add provenance trailers for forensics.
+
+  All fixes are vendor-agnostic (no Claude Code hooks), use existing GIT_COMMANDS/GIT_FLAGS constants, and let errors propagate (no try/catch swallowing).
+acceptance:
+  - 'Fix 1a: wu-done-worktree.ts push (L545) preceded by git pull --rebase using constants'
+  - 'Fix 1b: wu-done-branch-only.ts push (L218) preceded by git pull --rebase using constants'
+  - 'Fix 2: All 3 merge-style .pull() calls replaced with pull --rebase (branch-only L270, worktree L1297, L1307)'
+  - 'Fix 3: Swallowed merge error at wu-done-branch-only.ts L264 now logged with error message'
+  - 'Fix 4: generateCommitMessage() accepts optional provenance param, appends Worktree-Branch and Worktree-Path trailers'
+  - 'Fix 4 callers: wu-done-worktree.ts L449 and wu-done-branch-only.ts L212 pass provenance'
+  - 'Constants: GIT_COMMANDS.PULL and GIT_FLAGS.REBASE added to wu-constants.ts'
+  - 'No error swallowing: all pull --rebase calls let errors propagate (no try/catch around them)'
+  - No hardcoded string literals in any new or modified code
+  - All existing tests pass, new unit tests for provenance trailers
