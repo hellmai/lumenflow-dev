@@ -1,0 +1,39 @@
+id: WU-1478
+title: Restructure lane taxonomy for parallel CLI/Core work
+lane: 'Operations: Infrastructure'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - .lumenflow.config.yaml
+  - .lumenflow.lane-inference.yaml
+  - docs/04-operations/_frameworks/lumenflow/sub-lanes.md
+tests:
+  manual:
+    - pnpm lane:health
+    - pnpm wu:infer-lane --id WU-1478
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1478.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1478-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Framework: CLI and Framework: Core are broad single-lock lanes that serialize unrelated work. Problem: one in-progress WU blocks unrelated command/core work even when code_paths do not overlap. Solution: add finer-grained sub-lanes for high-contention domains, retain legacy compatibility lanes, align inference taxonomy, and remove known lane-overlap patterns.'
+acceptance:
+  - 'Lane definitions introduce narrower CLI/Core sub-lanes plus Framework: MCP, while preserving legacy Framework: CLI/Core lanes for backward compatibility.'
+  - Infrastructure/docs overlap is removed by narrowing Operations infrastructure paths away from docs app paths.
+  - Lane inference taxonomy is updated to recommend the new lanes and remains valid for wu:create suggestions.
+  - Lane health no longer reports the previous apps/** vs apps/docs/** overlap and demonstrates improved coverage.
+  - Sub-lane documentation is updated with migration guidance for existing WUs.
