@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-03
 code_paths:
   - packages/@lumenflow/core/src/wu-schema.ts
-  - packages/@lumenflow/cli/src/wu-validate.ts
 tests:
   manual:
     - Run `pnpm wu:validate --all` and confirm done/cancelled WUs with missing notes/tests/spec_refs
