@@ -107,11 +107,12 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
         exitCode: 0,
       });
 
-      await flowReportTool.execute({ since: '7d', until: 'now' });
+      // WU-1457: shared schema uses start/end (matching CLI flags, not the old since/until)
+      await flowReportTool.execute({ start: '7d', end: 'now' });
 
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'flow:report',
-        expect.arrayContaining(['--since', '7d', '--until', 'now']),
+        expect.arrayContaining(['--start', '7d', '--end', 'now']),
         expect.any(Object),
       );
     });
