@@ -20,6 +20,7 @@
  *          lumenflow_commands, lumenflow_docs_sync, lumenflow_release, lumenflow_sync_templates
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  * WU-1454: All 16 WU lifecycle commands now use shared schemas
+ * WU-1456: All 13 memory commands now use shared schemas
  *
  * Architecture:
  * - Read operations (context_get) use @lumenflow/core directly for context
@@ -66,6 +67,20 @@ import {
   initiativeRemoveWuSchema,
   initiativeBulkAssignSchema,
   initiativePlanSchema,
+  // WU-1456: Memory command schemas
+  memInitSchema,
+  memStartSchema,
+  memReadySchema,
+  memCheckpointSchema,
+  memCleanupSchema,
+  memContextSchema,
+  memCreateSchema,
+  memDeleteSchema,
+  memExportSchema,
+  memInboxSchema,
+  memSignalSchema,
+  memSummarizeSchema,
+  memTriageSchema,
 } from '@lumenflow/core';
 
 // Import core functions for context operations only (async to avoid circular deps)
@@ -1427,9 +1442,7 @@ const MemoryErrorMessages = {
 export const memInitTool: ToolDefinition = {
   name: 'mem_init',
   description: 'Initialize memory layer for a Work Unit',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to initialize memory for'),
-  }),
+  inputSchema: memInitSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1458,10 +1471,7 @@ export const memInitTool: ToolDefinition = {
 export const memStartTool: ToolDefinition = {
   name: 'mem_start',
   description: 'Start a memory session for a Work Unit',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to start session for'),
-    lane: z.string().optional().describe('Lane name'),
-  }),
+  inputSchema: memStartSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1491,9 +1501,7 @@ export const memStartTool: ToolDefinition = {
 export const memReadyTool: ToolDefinition = {
   name: 'mem_ready',
   description: 'Check pending memory nodes for a Work Unit',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to check'),
-  }),
+  inputSchema: memReadySchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1527,10 +1535,7 @@ export const memReadyTool: ToolDefinition = {
 export const memCheckpointTool: ToolDefinition = {
   name: 'mem_checkpoint',
   description: 'Save a progress checkpoint for a Work Unit',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to checkpoint'),
-    message: z.string().optional().describe('Checkpoint message'),
-  }),
+  inputSchema: memCheckpointSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1560,9 +1565,7 @@ export const memCheckpointTool: ToolDefinition = {
 export const memCleanupTool: ToolDefinition = {
   name: 'mem_cleanup',
   description: 'Clean up stale memory data',
-  inputSchema: z.object({
-    dry_run: z.boolean().optional().describe('Preview cleanup without making changes'),
-  }),
+  inputSchema: memCleanupSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -1588,10 +1591,7 @@ export const memCleanupTool: ToolDefinition = {
 export const memContextTool: ToolDefinition = {
   name: 'mem_context',
   description: 'Get memory context for a Work Unit, optionally filtered by lane',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to get context for'),
-    lane: z.string().optional().describe('Filter by lane'),
-  }),
+  inputSchema: memContextSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1626,12 +1626,7 @@ export const memContextTool: ToolDefinition = {
 export const memCreateTool: ToolDefinition = {
   name: 'mem_create',
   description: 'Create a memory node (e.g., for bug discovery)',
-  inputSchema: z.object({
-    message: z.string().describe('Memory node message'),
-    wu: z.string().describe('WU ID to associate with'),
-    type: z.string().optional().describe('Node type (e.g., "discovery")'),
-    tags: z.array(z.string()).optional().describe('Tags for the node'),
-  }),
+  inputSchema: memCreateSchema,
 
   async execute(input, options) {
     if (!input.message) {
@@ -1665,9 +1660,7 @@ export const memCreateTool: ToolDefinition = {
 export const memDeleteTool: ToolDefinition = {
   name: 'mem_delete',
   description: 'Delete or archive a memory node',
-  inputSchema: z.object({
-    id: z.string().describe('Memory node ID to delete'),
-  }),
+  inputSchema: memDeleteSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -1696,10 +1689,7 @@ export const memDeleteTool: ToolDefinition = {
 export const memExportTool: ToolDefinition = {
   name: 'mem_export',
   description: 'Export memory for a Work Unit as markdown or JSON',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to export'),
-    format: z.enum(['markdown', 'json']).optional().describe('Export format'),
-  }),
+  inputSchema: memExportSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1729,11 +1719,7 @@ export const memExportTool: ToolDefinition = {
 export const memInboxTool: ToolDefinition = {
   name: 'mem_inbox',
   description: 'Check coordination signals from other agents',
-  inputSchema: z.object({
-    since: z.string().optional().describe('Time filter (e.g., "30m", "1h")'),
-    wu: z.string().optional().describe('Filter by WU ID'),
-    lane: z.string().optional().describe('Filter by lane'),
-  }),
+  inputSchema: memInboxSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -1766,10 +1752,7 @@ export const memInboxTool: ToolDefinition = {
 export const memSignalTool: ToolDefinition = {
   name: 'mem_signal',
   description: 'Broadcast a coordination signal to other agents',
-  inputSchema: z.object({
-    message: z.string().describe('Signal message'),
-    wu: z.string().describe('WU ID to associate with'),
-  }),
+  inputSchema: memSignalSchema,
 
   async execute(input, options) {
     if (!input.message) {
@@ -1801,9 +1784,7 @@ export const memSignalTool: ToolDefinition = {
 export const memSummarizeTool: ToolDefinition = {
   name: 'mem_summarize',
   description: 'Summarize memory context for a Work Unit',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to summarize'),
-  }),
+  inputSchema: memSummarizeSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1832,11 +1813,7 @@ export const memSummarizeTool: ToolDefinition = {
 export const memTriageTool: ToolDefinition = {
   name: 'mem_triage',
   description: 'Triage discovered bugs for a Work Unit, optionally promoting to WU',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to triage discoveries for'),
-    promote: z.string().optional().describe('Memory node ID to promote to Bug WU'),
-    lane: z.string().optional().describe('Lane for promoted Bug WU'),
-  }),
+  inputSchema: memTriageSchema,
 
   async execute(input, options) {
     if (!input.wu) {

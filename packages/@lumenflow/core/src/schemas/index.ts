@@ -1,11 +1,12 @@
 /**
  * @file schemas/index.ts
- * @description Shared command schemas and utilities for CLI/MCP parity (WU-1431, WU-1454, WU-1455)
+ * @description Shared command schemas and utilities for CLI/MCP parity (WU-1431, WU-1454, WU-1455, WU-1456)
  *
  * This module exports:
  * - Zod schemas for all commands (wu:create, wu:claim, wu:status, wu:done, gates) (WU-1431)
  * - Zod schemas for 16 WU lifecycle commands (WU-1454)
  * - Zod schemas for 8 initiative commands (WU-1455)
+ * - Zod schemas for 13 memory commands (WU-1456)
  * - MCP inputSchema generation utilities
  * - CLI option generation utilities
  * - CLI argument validators
@@ -167,3 +168,55 @@ export {
   validateInitiativeBulkAssignArgs,
   validateInitiativePlanArgs,
 } from './initiative-arg-validators.js';
+
+// Memory schemas (WU-1456: 13 memory commands)
+export {
+  // Schemas
+  memInitSchema,
+  memStartSchema,
+  memReadySchema,
+  memCheckpointSchema,
+  memCleanupSchema,
+  memContextSchema,
+  memCreateSchema,
+  memDeleteSchema,
+  memExportSchema,
+  memInboxSchema,
+  memSignalSchema,
+  memSummarizeSchema,
+  memTriageSchema,
+  // Types
+  type MemInitInput,
+  type MemStartInput,
+  type MemReadyInput,
+  type MemCheckpointInput,
+  type MemCleanupInput,
+  type MemContextInput,
+  type MemCreateInput,
+  type MemDeleteInput,
+  type MemExportInput,
+  type MemInboxInput,
+  type MemSignalInput,
+  type MemSummarizeInput,
+  type MemTriageInput,
+  // Registry
+  memoryCommandSchemas,
+  type MemoryCommandName,
+} from './memory-schemas.js';
+
+// Memory argument validators (WU-1456: 13 memory commands)
+export {
+  validateMemInitArgs,
+  validateMemStartArgs,
+  validateMemReadyArgs,
+  validateMemCheckpointArgs,
+  validateMemCleanupArgs,
+  validateMemContextArgs,
+  validateMemCreateArgs,
+  validateMemDeleteArgs,
+  validateMemExportArgs,
+  validateMemInboxArgs,
+  validateMemSignalArgs,
+  validateMemSummarizeArgs,
+  validateMemTriageArgs,
+} from './memory-arg-validators.js';

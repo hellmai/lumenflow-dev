@@ -1,6 +1,6 @@
 /**
  * @file schema-parity.test.ts
- * @description Tests for CLI/MCP schema parity (WU-1431, WU-1455)
+ * @description Tests for CLI/MCP schema parity (WU-1431, WU-1455, WU-1456)
  *
  * These tests verify that:
  * 1. Shared command schemas exist for wu:create, wu:claim, wu:status, wu:done, gates
@@ -10,6 +10,8 @@
  * 5. Parity is maintained between CLI and MCP
  * 6. Initiative schemas cover all 8 initiative commands (WU-1455)
  * 7. Initiative schemas can be used for MCP and CLI (WU-1455)
+ * 8. Memory schemas cover all 13 memory commands (WU-1456)
+ * 9. Memory schemas can be used for MCP and CLI (WU-1456)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -62,6 +64,53 @@ import {
   validateInitiativeBulkAssignArgs,
   validateInitiativePlanArgs,
 } from '../schemas/initiative-arg-validators.js';
+
+// Import memory schemas (WU-1456)
+import {
+  memInitSchema,
+  memStartSchema,
+  memReadySchema,
+  memCheckpointSchema,
+  memCleanupSchema,
+  memContextSchema,
+  memCreateSchema,
+  memDeleteSchema,
+  memExportSchema,
+  memInboxSchema,
+  memSignalSchema,
+  memSummarizeSchema,
+  memTriageSchema,
+  memoryCommandSchemas,
+  type MemInitInput,
+  type MemStartInput,
+  type MemCheckpointInput,
+  type MemContextInput,
+  type MemCreateInput,
+  type MemDeleteInput,
+  type MemExportInput,
+  type MemInboxInput,
+  type MemSignalInput,
+  type MemSummarizeInput,
+  type MemTriageInput,
+  type MemoryCommandName,
+} from '../schemas/memory-schemas.js';
+
+// Import memory arg validators (WU-1456)
+import {
+  validateMemInitArgs,
+  validateMemStartArgs,
+  validateMemReadyArgs,
+  validateMemCheckpointArgs,
+  validateMemCleanupArgs,
+  validateMemContextArgs,
+  validateMemCreateArgs,
+  validateMemDeleteArgs,
+  validateMemExportArgs,
+  validateMemInboxArgs,
+  validateMemSignalArgs,
+  validateMemSummarizeArgs,
+  validateMemTriageArgs,
+} from '../schemas/memory-arg-validators.js';
 
 // Import schema utilities
 import {
@@ -650,6 +699,377 @@ describe('Initiative Command Schemas (WU-1455)', () => {
     it('should reject invalid initiative:plan args', () => {
       const result = validateInitiativePlanArgs({});
       expect(result.valid).toBe(false);
+    });
+  });
+});
+
+// =============================================================================
+// Memory Schemas (WU-1456)
+// =============================================================================
+
+describe('Memory Command Schemas (WU-1456)', () => {
+  describe('Schema Registry', () => {
+    it('should export a registry with all 13 memory command schemas', () => {
+      expect(memoryCommandSchemas).toBeDefined();
+      const commandNames = Object.keys(memoryCommandSchemas);
+      expect(commandNames).toHaveLength(13);
+      expect(commandNames).toContain('mem:init');
+      expect(commandNames).toContain('mem:start');
+      expect(commandNames).toContain('mem:ready');
+      expect(commandNames).toContain('mem:checkpoint');
+      expect(commandNames).toContain('mem:cleanup');
+      expect(commandNames).toContain('mem:context');
+      expect(commandNames).toContain('mem:create');
+      expect(commandNames).toContain('mem:delete');
+      expect(commandNames).toContain('mem:export');
+      expect(commandNames).toContain('mem:inbox');
+      expect(commandNames).toContain('mem:signal');
+      expect(commandNames).toContain('mem:summarize');
+      expect(commandNames).toContain('mem:triage');
+    });
+
+    it('should have all registry values be Zod schemas', () => {
+      for (const [name, schema] of Object.entries(memoryCommandSchemas)) {
+        expect(schema, `${name} should be a ZodType`).toBeInstanceOf(z.ZodType);
+      }
+    });
+  });
+
+  describe('memInitSchema', () => {
+    it('should be a Zod schema', () => {
+      expect(memInitSchema).toBeInstanceOf(z.ZodType);
+    });
+
+    it('should accept empty input (no required fields)', () => {
+      const result = memInitSchema.safeParse({});
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memStartSchema', () => {
+    it('should be a Zod schema', () => {
+      expect(memStartSchema).toBeInstanceOf(z.ZodType);
+    });
+
+    it('should require wu', () => {
+      const result = memStartSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const input: MemStartInput = { wu: 'WU-1234' };
+      const result = memStartSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept optional lane and agent_type', () => {
+      const input: MemStartInput = {
+        wu: 'WU-1234',
+        lane: 'Framework: Core',
+        agent_type: 'general-purpose',
+      };
+      const result = memStartSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memReadySchema', () => {
+    it('should require wu', () => {
+      const result = memReadySchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const result = memReadySchema.safeParse({ wu: 'WU-1234' });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memCheckpointSchema', () => {
+    it('should require wu', () => {
+      const result = memCheckpointSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input with optional fields', () => {
+      const input: MemCheckpointInput = {
+        wu: 'WU-1234',
+        message: 'Progress at 50%',
+      };
+      const result = memCheckpointSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memCleanupSchema', () => {
+    it('should accept empty input (no required fields)', () => {
+      const result = memCleanupSchema.safeParse({});
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept dry_run flag', () => {
+      const result = memCleanupSchema.safeParse({ dry_run: true });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memContextSchema', () => {
+    it('should require wu', () => {
+      const result = memContextSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input with optional lane', () => {
+      const input: MemContextInput = {
+        wu: 'WU-1234',
+        lane: 'Framework: Core',
+      };
+      const result = memContextSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memCreateSchema', () => {
+    it('should require message', () => {
+      const result = memCreateSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const input: MemCreateInput = {
+        message: 'Bug: found issue in validator',
+        wu: 'WU-1234',
+      };
+      const result = memCreateSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept optional type and tags', () => {
+      const input: MemCreateInput = {
+        message: 'Bug: found issue',
+        wu: 'WU-1234',
+        type: 'discovery',
+        tags: ['bug', 'validator'],
+      };
+      const result = memCreateSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memDeleteSchema', () => {
+    it('should require id', () => {
+      const result = memDeleteSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const input: MemDeleteInput = { id: 'mem-abc123' };
+      const result = memDeleteSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memExportSchema', () => {
+    it('should require wu', () => {
+      const result = memExportSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input with optional format', () => {
+      const input: MemExportInput = {
+        wu: 'WU-1234',
+        format: 'json',
+      };
+      const result = memExportSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memInboxSchema', () => {
+    it('should accept empty input (no required fields)', () => {
+      const result = memInboxSchema.safeParse({});
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept optional since, wu, and lane', () => {
+      const input: MemInboxInput = {
+        since: '30m',
+        wu: 'WU-1234',
+        lane: 'Framework: Core',
+      };
+      const result = memInboxSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memSignalSchema', () => {
+    it('should require message and wu', () => {
+      const result = memSignalSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const input: MemSignalInput = {
+        message: 'Completed phase 1',
+        wu: 'WU-1234',
+      };
+      const result = memSignalSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memSummarizeSchema', () => {
+    it('should require wu', () => {
+      const result = memSummarizeSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept valid input', () => {
+      const input: MemSummarizeInput = { wu: 'WU-1234' };
+      const result = memSummarizeSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('memTriageSchema', () => {
+    it('should accept empty input (no required fields)', () => {
+      const result = memTriageSchema.safeParse({});
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept valid input with wu filter', () => {
+      const input: MemTriageInput = {
+        wu: 'WU-1234',
+        promote: 'mem-abc123',
+        lane: 'Framework: Core',
+      };
+      const result = memTriageSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('MCP inputSchema derivation', () => {
+    it('should derive valid MCP schemas from all 13 memory schemas', () => {
+      for (const [name, schema] of Object.entries(memoryCommandSchemas)) {
+        const mcpSchema = zodToMcpInputSchema(schema);
+        expect(mcpSchema, `${name} MCP schema should be defined`).toBeDefined();
+        expect(mcpSchema.type, `${name} MCP schema type should be object`).toBe('object');
+        expect(mcpSchema.properties, `${name} MCP schema should have properties`).toBeDefined();
+      }
+    });
+
+    it('should mark required fields for memCreateSchema', () => {
+      const mcpSchema = zodToMcpInputSchema(memCreateSchema);
+      expect(mcpSchema.required).toContain('message');
+    });
+
+    it('should mark required fields for memSignalSchema', () => {
+      const mcpSchema = zodToMcpInputSchema(memSignalSchema);
+      expect(mcpSchema.required).toContain('message');
+      expect(mcpSchema.required).toContain('wu');
+    });
+  });
+
+  describe('CLI/MCP parity', () => {
+    it('should pass parity check for all 13 memory schemas', () => {
+      for (const [name, schema] of Object.entries(memoryCommandSchemas)) {
+        const result = validateCliMcpParity(name, schema);
+        expect(result.valid, `${name} parity check should pass: ${result.errors.join(', ')}`).toBe(
+          true,
+        );
+      }
+    });
+  });
+
+  describe('CLI argument validators', () => {
+    it('should validate mem:init args', () => {
+      const result = validateMemInitArgs({});
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:start args', () => {
+      const result = validateMemStartArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject invalid mem:start args', () => {
+      const result = validateMemStartArgs({});
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate mem:ready args', () => {
+      const result = validateMemReadyArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:checkpoint args', () => {
+      const result = validateMemCheckpointArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:cleanup args', () => {
+      const result = validateMemCleanupArgs({});
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:context args', () => {
+      const result = validateMemContextArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject invalid mem:context args', () => {
+      const result = validateMemContextArgs({});
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate mem:create args', () => {
+      const result = validateMemCreateArgs({ message: 'test', wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject invalid mem:create args', () => {
+      const result = validateMemCreateArgs({});
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate mem:delete args', () => {
+      const result = validateMemDeleteArgs({ id: 'mem-abc123' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject invalid mem:delete args', () => {
+      const result = validateMemDeleteArgs({});
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate mem:export args', () => {
+      const result = validateMemExportArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:inbox args', () => {
+      const result = validateMemInboxArgs({});
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:signal args', () => {
+      const result = validateMemSignalArgs({ message: 'test', wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject invalid mem:signal args', () => {
+      const result = validateMemSignalArgs({});
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate mem:summarize args', () => {
+      const result = validateMemSummarizeArgs({ wu: 'WU-1234' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate mem:triage args', () => {
+      const result = validateMemTriageArgs({});
+      expect(result.valid).toBe(true);
     });
   });
 });
