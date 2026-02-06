@@ -4,7 +4,7 @@
  * WU-1781: Provides utilities to detect and handle legacy WUs with stamp-status mismatches.
  *
  * The problem: WUs with .done stamps but non-done status (e.g., cancelled, ready) cause
- * tasks:validate to fail, which blocks husky pre-push and prevents wu:done from completing.
+ * wu:validate to fail, which blocks husky pre-push and prevents wu:done from completing.
  *
  * The solution: Detect these legacy artifacts and exempt them from validation to prevent
  * deadlocks, while still enforcing validation on new/active WUs.

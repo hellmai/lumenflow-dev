@@ -19,7 +19,7 @@
  * - Fails if any table is missing documentation
  *
  * For type:documentation WUs:
- * - ✅ Run: format:check, spec:linter, prompts:lint, backlog-sync
+ * - ✅ Run: format:check, spec:linter, backlog-sync
  * - ❌ Skip: lint, typecheck, supabase-docs:linter, tests, coverage (no code changed)
  *
  * WU-1920: Incremental test execution
@@ -109,7 +109,7 @@ export const GATES_OPTIONS = {
   docsOnly: {
     name: 'docsOnly',
     flags: '--docs-only',
-    description: 'Run docs-only gates (format, spec-linter, prompts-lint, backlog-sync)',
+    description: 'Run docs-only gates (format, spec-linter, backlog-sync)',
   },
   fullLint: {
     name: 'fullLint',
@@ -1481,10 +1481,7 @@ async function executeGates(opts: {
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
         { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
         { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
-        {
-          name: GATE_NAMES.PROMPTS_LINT,
-          cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),
-        },
+        // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
         { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
         // WU-2315: System map validation (warn-only until orphan docs are indexed)
         {
@@ -1533,10 +1530,7 @@ async function executeGates(opts: {
         },
         { name: GATE_NAMES.TYPECHECK, cmd: pnpmCmd(SCRIPTS.TYPECHECK) },
         { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
-        {
-          name: GATE_NAMES.PROMPTS_LINT,
-          cmd: pnpmRun(SCRIPTS.PROMPTS_LINT, CLI_MODES.LOCAL, '--quiet'),
-        },
+        // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
         { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
         { name: GATE_NAMES.SUPABASE_DOCS_LINTER, run: runSupabaseDocsGate },
         // WU-2315: System map validation (warn-only until orphan docs are indexed)

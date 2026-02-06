@@ -443,7 +443,7 @@ export const MICRO_WORKTREE_OPERATIONS = {
  */
 export const TELEMETRY_STEPS = {
   GATES: 'gates',
-  COS_GATES: 'cos-gates',
+  /** WU-1467: COS_GATES removed -- was a stub (exit 0), not an authoritative step */
   PARALLEL_DETECTION: 'parallel_detection',
   PARALLEL_AUTO_REBASE: 'parallel_auto_rebase',
 };
@@ -1099,11 +1099,15 @@ export const SCRIPTS = {
   TYPECHECK: 'typecheck',
   DEV: 'dev',
   SPEC_LINTER: 'spec:linter',
+  /** WU-1467: Stub script -- not an enforced gate. Retained for script surface only. */
   PROMPTS_LINT: 'prompts:lint',
   RUN: 'run',
   GATES: 'gates',
+  /** WU-1467: Stub script -- not an enforced gate. Retained for script surface only. */
   COS_GATES: 'cos:gates',
   PRETTIER: 'prettier',
+  /** WU-1467: Root script surface for tasks:validate (delegates to wu:validate --all) */
+  TASKS_VALIDATE: 'tasks:validate',
 };
 
 /**
@@ -1116,7 +1120,7 @@ export const GATE_NAMES = {
   INVARIANTS: 'invariants',
   FORMAT_CHECK: 'format:check',
   SPEC_LINTER: 'spec:linter',
-  PROMPTS_LINT: 'prompts:lint',
+  /** WU-1467: PROMPTS_LINT removed -- was a stub (exit 0), not an authoritative gate */
   BACKLOG_SYNC: 'backlog-sync',
   SUPABASE_DOCS_LINTER: 'supabase-docs:linter',
   LINT: 'lint',
