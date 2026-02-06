@@ -6,8 +6,6 @@ _Last updated: 2026-02-06_
 
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml)
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml)
-- [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml)
-- [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml)
 
 ## Blocked
 
@@ -437,3 +435,4 @@ _Last updated: 2026-02-06_
 - [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml) — 2026-02-06
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml) — 2026-02-06
 - [WU-1478 — Restructure lane taxonomy for parallel CLI/Core work](wu/WU-1478.yaml) — 2026-02-06
+- [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml) — 2026-02-06
