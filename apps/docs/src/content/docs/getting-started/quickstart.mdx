@@ -128,13 +128,20 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
     git init
     ```
 
+3.  **Ensure `package.json` exists**
+
+    If there is no `package.json`, create one. LumenFlow needs it to install the CLI and register scripts.
+
+    ```bash
+    pnpm init
+    ```
+
     <Aside type="caution" title="Non-Node projects still need a package.json">
       For .NET, Go, Python, etc., LumenFlow uses `package.json` only to install the CLI and scripts.
-      If there is no `package.json`, ask permission to run `pnpm init`. Do not scaffold a Node stack
-      or change the project's framework.
+      Do not scaffold a Node stack or change the project's framework.
     </Aside>
 
-3.  **Scaffold a tech stack only if the user explicitly asked**
+4.  **Scaffold a tech stack only if the user explicitly asked**
 
     Keep this minimal. Do not add feature code.
 
@@ -150,13 +157,13 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
     git add -A && git commit -m "chore: initial scaffold"
     ```
 
-4.  **Install LumenFlow**
+5.  **Install LumenFlow**
 
     ```bash
     pnpm add -D @lumenflow/cli
     ```
 
-5.  **Initialize LumenFlow**
+6.  **Initialize LumenFlow**
 
     ```bash
     pnpm exec lumenflow --client claude
@@ -180,19 +187,19 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
 
         </Aside>
 
-6.  **Verify scripts were injected**
+7.  **Verify scripts were injected**
 
     ```bash
     pnpm wu:create --help
     ```
 
-7.  **Commit LumenFlow setup**
+8.  **Commit LumenFlow setup**
 
     ```bash
     git add -A && git commit -m "chore: add lumenflow"
     ```
 
-8.  **Create initiative (only if a vision doc exists)**
+9.  **Create initiative (only if a vision doc exists)**
 
     ```bash
     pnpm exec initiative-create \
@@ -205,7 +212,7 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
     pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 2: Core Features"
     ```
 
-9.  **Create the first WU (do not implement)**
+10. **Create the first WU (do not implement)**
 
     ```bash
     pnpm wu:create \
@@ -216,6 +223,8 @@ If a script command is not found, use the binary via `pnpm exec` (e.g.,
       --description "<What this task accomplishes>" \
       --acceptance "<Measurable success criterion>"
     ```
+
+    `--spec-refs` is optional; add it when a plan file exists (e.g., `--spec-refs "lumenflow://plans/my-plan.md"`).
 
     If you created an initiative, add: `--initiative INIT-001`.
 

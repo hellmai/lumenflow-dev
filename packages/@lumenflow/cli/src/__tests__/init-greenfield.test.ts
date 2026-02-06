@@ -116,6 +116,82 @@ describe('greenfield onboarding (WU-1364)', () => {
     });
   });
 
+  describe('AC: Init renames master branch to main (WU-1497)', () => {
+    it('should rename master to main when git init defaults to master', async () => {
+      // Simulate git init with master as default branch
+      execFileSync('git', ['init', '--initial-branch=master'], { cwd: tempDir, stdio: 'pipe' });
+      execFileSync('git', ['config', 'user.email', 'test@example.com'], {
+        cwd: tempDir,
+        stdio: 'pipe',
+      });
+      execFileSync('git', ['config', 'user.name', 'Test User'], {
+        cwd: tempDir,
+        stdio: 'pipe',
+      });
+
+      // Verify we are on master
+      const branchBefore = execFileSync('git', ['branch', '--show-current'], {
+        cwd: tempDir,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }).trim();
+      expect(branchBefore).toBe('master');
+
+      await scaffoldProject(tempDir, getArc42Options());
+
+      // After scaffolding, branch should be renamed to main
+      const branchAfter = execFileSync('git', ['branch', '--show-current'], {
+        cwd: tempDir,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }).trim();
+      expect(branchAfter).toBe('main');
+    });
+
+    it('should not rename when already on main', async () => {
+      initEmptyGitRepo();
+
+      // Verify we are on main (modern git default)
+      const branchBefore = execFileSync('git', ['branch', '--show-current'], {
+        cwd: tempDir,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }).trim();
+
+      // If git defaults to main, this test verifies no error on rename
+      // If git defaults to master, the previous test covers that
+      if (branchBefore === 'main') {
+        await scaffoldProject(tempDir, getArc42Options());
+
+        const branchAfter = execFileSync('git', ['branch', '--show-current'], {
+          cwd: tempDir,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }).trim();
+        expect(branchAfter).toBe('main');
+      }
+    });
+
+    it('should not rename non-master branches', async () => {
+      initGitRepoWithCommit();
+      // Create and switch to a feature branch
+      execFileSync('git', ['checkout', '-b', 'feature-branch'], {
+        cwd: tempDir,
+        stdio: 'pipe',
+      });
+
+      await scaffoldProject(tempDir, getArc42Options());
+
+      // Should still be on feature-branch (not renamed)
+      const branchAfter = execFileSync('git', ['branch', '--show-current'], {
+        cwd: tempDir,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }).trim();
+      expect(branchAfter).toBe('feature-branch');
+    });
+  });
+
   describe('AC: Init auto-creates initial commit when git repo has no commits', () => {
     it('should create initial commit in empty git repo', async () => {
       initEmptyGitRepo();
