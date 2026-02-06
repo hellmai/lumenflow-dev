@@ -10,7 +10,12 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/mem-cleanup.ts
 tests:
-  manual: []
+  manual:
+    - Set memory.decay.enabled=true with trigger=on_done
+    - complete a WU
+    - and confirm stale memory entries are archived without blocking wu:done.
+    - Run cleanup in preview mode and confirm decay behavior is reported without mutating active
+      entries.
   unit:
     - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
     - packages/@lumenflow/memory/__tests__/archival.test.ts
@@ -34,9 +39,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: decay/archival exists but is not consistently triggered from lifecycle flows. Problem: stale memory accumulates without policy-driven execution. Solution: add configurable memory.decay policy and invoke decay archival during completion lifecycle when configured, while preserving manual cleanup controls.'
+description: 'Context: decay/archival exists but is not consistently triggered from lifecycle flows.
+  Problem: stale memory accumulates without policy-driven execution. Solution: add configurable
+  memory.decay policy and invoke decay archival during completion lifecycle when configured, while
+  preserving manual cleanup controls.'
 acceptance:
   - Config schema supports memory.decay fields (enabled, threshold, half_life_days, trigger).
-  - wu:done invokes decay archival when memory.decay.enabled=true and trigger=on_done, with fail-open behavior.
+  - wu:done invokes decay archival when memory.decay.enabled=true and trigger=on_done, with
+    fail-open behavior.
   - When decay is disabled, existing wu:done behavior is unchanged.
   - Manual cleanup command remains available and supports preview behavior.
