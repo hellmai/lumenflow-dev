@@ -26,4 +26,8 @@ success_metrics:
   - INIT-015 recovery context includes recent checkpoint data for active WUs
   - Decay archival reduces stale memory accumulation when enabled
 labels: []
-related_plan: lumenflow://plans/parsed-whistling-blanket.md
+wus:
+  - WU-1471
+  - WU-1472
+  - WU-1473
+  - WU-1474
