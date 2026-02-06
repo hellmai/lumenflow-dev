@@ -47,13 +47,10 @@ import {
   INIT_LOG_PREFIX,
   INIT_COMMIT_FORMATS,
 } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import {
-  EXIT_CODES,
-  FILE_SYSTEM,
-  MICRO_WORKTREE_OPERATIONS,
-} from '@lumenflow/core/dist/wu-constants.js';
+import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-constants.js';
 import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = INIT_LOG_PREFIX.EDIT;
 
@@ -121,6 +118,12 @@ const EDIT_OPTIONS = {
     description: 'Append to success_metrics array, avoiding duplicates (repeatable)',
     isRepeatable: true,
   },
+  removeSuccessMetric: {
+    name: 'removeSuccessMetric',
+    flags: '--remove-success-metric <text>',
+    description: 'Remove exact match from success_metrics array (repeatable)',
+    isRepeatable: true,
+  },
   // WU-1836: Phase status update options
   phaseId: {
     name: 'phaseId',
@@ -160,6 +163,7 @@ function parseArgs() {
       EDIT_OPTIONS.description,
       EDIT_OPTIONS.addPhase,
       EDIT_OPTIONS.addSuccessMetric,
+      EDIT_OPTIONS.removeSuccessMetric,
       // WU-1836: Phase status update options
       EDIT_OPTIONS.phaseId,
       EDIT_OPTIONS.phaseStatus,
@@ -311,7 +315,7 @@ function applyBlockingEdits(updated, opts) {
  * Apply lane edits (add and remove)
  * Adds first, then removes (WU-2276)
  */
-function applyLaneEdits(updated, opts) {
+export function applyLaneEdits(updated, opts) {
   if (opts.addLane && opts.addLane.length > 0) {
     updated.lanes = updated.lanes || [];
     for (const lane of opts.addLane) {
@@ -329,7 +333,7 @@ function applyLaneEdits(updated, opts) {
 /**
  * Apply array append edits (notes, success metrics)
  */
-function applyArrayEdits(updated, opts) {
+export function applyArrayEdits(updated, opts) {
   applyLaneEdits(updated, opts);
   if (opts.notes) {
     updated.notes = updated.notes || [];
@@ -342,6 +346,12 @@ function applyArrayEdits(updated, opts) {
         updated.success_metrics.push(metric);
       }
     }
+  }
+  if (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) {
+    updated.success_metrics = updated.success_metrics || [];
+    updated.success_metrics = updated.success_metrics.filter(
+      (metric) => !opts.removeSuccessMetric.includes(metric),
+    );
   }
 }
 
@@ -379,7 +389,7 @@ function applyPhaseStatusEdit(updated, phaseId, phaseStatus) {
  * Apply edits to Initiative YAML
  * Returns the updated Initiative object
  */
-function applyEdits(initiative, opts) {
+export function applyEdits(initiative, opts) {
   const updated = { ...initiative };
 
   if (opts.status) {
@@ -408,6 +418,48 @@ function applyEdits(initiative, opts) {
   }
 
   return updated;
+}
+
+/**
+ * Check if the command has at least one edit operation
+ */
+export function hasAnyEdits(opts) {
+  return (
+    opts.status ||
+    opts.blockedBy ||
+    opts.unblock ||
+    (opts.addLane && opts.addLane.length > 0) ||
+    (opts.removeLane && opts.removeLane.length > 0) ||
+    opts.notes ||
+    opts.description ||
+    (opts.addPhase && opts.addPhase.length > 0) ||
+    (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
+    (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
+    (opts.phaseId && opts.phaseStatus) ||
+    opts.created
+  );
+}
+
+/**
+ * Build help message shown when no edits are provided
+ */
+export function buildNoEditsMessage() {
+  return (
+    'No edits specified.\n\n' +
+    'Provide one of:\n' +
+    '  --status <status>           Update initiative status\n' +
+    '  --blocked-by <INIT-ID>      Set blocking initiative (requires --blocked-reason)\n' +
+    '  --unblock                   Remove blocked_by and blocked_reason\n' +
+    '  --add-lane <lane>           Add lane (repeatable)\n' +
+    '  --remove-lane <lane>        Remove lane (repeatable)\n' +
+    '  --notes <text>              Append note\n' +
+    '  --description <text>        Replace description field\n' +
+    '  --add-phase <title>         Add phase with auto-incremented id (repeatable)\n' +
+    '  --add-success-metric <text> Add success metric (repeatable, deduplicated)\n' +
+    '  --remove-success-metric <text> Remove success metric (repeatable, exact match)\n' +
+    '  --phase-id <id> --phase-status <status>  Update specific phase status\n' +
+    '  --created <YYYY-MM-DD>      Set created date'
+  );
 }
 
 /**
@@ -444,35 +496,10 @@ async function main() {
   }
 
   // Check we have something to edit
-  const hasEdits =
-    opts.status ||
-    opts.blockedBy ||
-    opts.unblock ||
-    (opts.addLane && opts.addLane.length > 0) ||
-    (opts.removeLane && opts.removeLane.length > 0) ||
-    opts.notes ||
-    opts.description ||
-    (opts.addPhase && opts.addPhase.length > 0) ||
-    (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
-    (opts.phaseId && opts.phaseStatus) ||
-    opts.created;
+  const hasEdits = hasAnyEdits(opts);
 
   if (!hasEdits) {
-    die(
-      'No edits specified.\n\n' +
-        'Provide one of:\n' +
-        '  --status <status>           Update initiative status\n' +
-        '  --blocked-by <INIT-ID>      Set blocking initiative (requires --blocked-reason)\n' +
-        '  --unblock                   Remove blocked_by and blocked_reason\n' +
-        '  --add-lane <lane>           Add lane (repeatable)\n' +
-        '  --remove-lane <lane>        Remove lane (repeatable)\n' +
-        '  --notes <text>              Append note\n' +
-        '  --description <text>        Replace description field\n' +
-        '  --add-phase <title>         Add phase with auto-incremented id (repeatable)\n' +
-        '  --add-success-metric <text> Add success metric (repeatable, deduplicated)\n' +
-        '  --phase-id <id> --phase-status <status>  Update specific phase status\n' +
-        '  --created <YYYY-MM-DD>      Set created date',
-    );
+    die(buildNoEditsMessage());
   }
 
   // Apply edits to get updated Initiative
@@ -521,7 +548,7 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(`${PREFIX} ${err.message}`);
-  process.exit(EXIT_CODES.ERROR);
-});
+// WU-1476: Use standard CLI entry-point guard to avoid side effects during test imports
+if (import.meta.main) {
+  void runCLI(main);
+}
