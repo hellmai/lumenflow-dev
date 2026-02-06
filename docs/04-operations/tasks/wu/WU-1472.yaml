@@ -2,7 +2,7 @@ id: WU-1472
 title: Append-only signal read receipts for concurrent-safe consumption
 lane: 'Framework: Memory'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: signal creation is append-only but read-marking rewrites the full file. Problem: concurrent agents can overwrite read-state updates. Solution: add append-only signal receipts and merge semantics in load/read/cleanup paths while preserving backward compatibility for inline read flags.'
+description: 'Context: signal creation is append-only but read-marking rewrites the full file.
+  Problem: concurrent agents can overwrite read-state updates. Solution: add append-only signal
+  receipts and merge semantics in load/read/cleanup paths while preserving backward compatibility
+  for inline read flags.'
 acceptance:
   - markSignalsAsRead appends receipts instead of rewriting signals.jsonl.
   - loadSignals derives effective read state from inline read:true and appended receipts.
   - signal cleanup remains correct and receipt-aware under mixed legacy/new data.
   - Concurrent read-marking tests demonstrate no lost updates.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1472
+claimed_at: 2026-02-06T11:30:22.650Z
+baseline_main_sha: 111ed9e750ff9bb46865f31938ba113404eb3f34
+session_id: be97fe19-1536-4855-b8dd-563a5da44419
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:30:22.656Z
