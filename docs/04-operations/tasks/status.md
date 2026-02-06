@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml)
+- [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml)
 
 ## Blocked
 
