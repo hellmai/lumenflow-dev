@@ -21,10 +21,7 @@ import {
   generateAutoCheckpointScript,
   type EnforcementConfig,
 } from '../hooks/enforcement-generator.js';
-import {
-  checkAutoCheckpointWarning,
-  cleanupHookCounters,
-} from '../hooks/auto-checkpoint-utils.js';
+import { checkAutoCheckpointWarning, cleanupHookCounters } from '../hooks/auto-checkpoint-utils.js';
 
 // Test constants
 const TEST_WU_ID = 'WU-9910';
