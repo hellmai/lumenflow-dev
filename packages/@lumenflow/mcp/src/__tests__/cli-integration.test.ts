@@ -41,10 +41,7 @@ function expectSuccess(result: CliRunnerResult, context: string): void {
   expect(result.success, `${context}: expected success but got stderr="${result.stderr}"`).toBe(
     true,
   );
-  expect(
-    result.exitCode,
-    `${context}: expected exit code 0 but got ${result.exitCode}`,
-  ).toBe(0);
+  expect(result.exitCode, `${context}: expected exit code 0 but got ${result.exitCode}`).toBe(0);
 }
 
 /**
@@ -76,11 +73,10 @@ describe('CLI integration (no mocks)', () => {
     it('should accept --id and --json flags (as MCP wuStatusTool passes them)', async () => {
       // MCP tools.ts builds: ['--id', wuId, '--json']
       // Use a known WU that exists in the repo
-      const result = await runCliCommand(
-        'wu:status',
-        ['--id', 'WU-1453', '--json'],
-        { projectRoot: PROJECT_ROOT, timeout: READ_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:status', ['--id', 'WU-1453', '--json'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: READ_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:status --id WU-1453 --json');
       // The output should contain parseable JSON (after stripping pnpm header)
@@ -89,11 +85,10 @@ describe('CLI integration (no mocks)', () => {
     });
 
     it('should accept --help flag', async () => {
-      const result = await runCliCommand(
-        'wu:status',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:status', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:status --help');
       expect(result.stdout).toContain('--id');
@@ -103,11 +98,10 @@ describe('CLI integration (no mocks)', () => {
 
   describe('wu:create flag validation', () => {
     it('should accept --help and list all flags MCP uses', async () => {
-      const result = await runCliCommand(
-        'wu:create',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:create', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:create --help');
 
@@ -123,21 +117,17 @@ describe('CLI integration (no mocks)', () => {
       ];
 
       for (const flag of flagsUsedByMcp) {
-        expect(
-          result.stdout,
-          `wu:create --help should list flag "${flag}"`,
-        ).toContain(flag);
+        expect(result.stdout, `wu:create --help should list flag "${flag}"`).toContain(flag);
       }
     });
   });
 
   describe('wu:claim flag validation', () => {
     it('should accept --help and list --id and --lane flags', async () => {
-      const result = await runCliCommand(
-        'wu:claim',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:claim', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:claim --help');
       // MCP wuClaimTool passes: ['--id', wuId, '--lane', lane]
@@ -148,11 +138,10 @@ describe('CLI integration (no mocks)', () => {
 
   describe('wu:done flag validation', () => {
     it('should accept --help and list --id, --skip-gates, --reason, --fix-wu flags', async () => {
-      const result = await runCliCommand(
-        'wu:done',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:done', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:done --help');
 
@@ -160,21 +149,17 @@ describe('CLI integration (no mocks)', () => {
       const flagsUsedByMcp = ['--id', '--skip-gates', '--reason', '--fix-wu'];
 
       for (const flag of flagsUsedByMcp) {
-        expect(
-          result.stdout,
-          `wu:done --help should list flag "${flag}"`,
-        ).toContain(flag);
+        expect(result.stdout, `wu:done --help should list flag "${flag}"`).toContain(flag);
       }
     });
   });
 
   describe('gates flag validation', () => {
     it('should accept --help and list --docs-only flag', async () => {
-      const result = await runCliCommand(
-        'gates',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('gates', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'gates --help');
       // MCP gatesRunTool passes: ['--docs-only'] when docs_only is set
@@ -184,31 +169,26 @@ describe('CLI integration (no mocks)', () => {
 
   describe('wu:block flag validation', () => {
     it('should accept --help and list --id, --reason, --remove-worktree flags', async () => {
-      const result = await runCliCommand(
-        'wu:block',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:block', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:block --help');
 
       const flagsUsedByMcp = ['--id', '--reason', '--remove-worktree'];
       for (const flag of flagsUsedByMcp) {
-        expect(
-          result.stdout,
-          `wu:block --help should list flag "${flag}"`,
-        ).toContain(flag);
+        expect(result.stdout, `wu:block --help should list flag "${flag}"`).toContain(flag);
       }
     });
   });
 
   describe('wu:edit flag validation', () => {
     it('should accept --help and list all flags MCP uses', async () => {
-      const result = await runCliCommand(
-        'wu:edit',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:edit', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:edit --help');
 
@@ -227,21 +207,17 @@ describe('CLI integration (no mocks)', () => {
       ];
 
       for (const flag of flagsUsedByMcp) {
-        expect(
-          result.stdout,
-          `wu:edit --help should list flag "${flag}"`,
-        ).toContain(flag);
+        expect(result.stdout, `wu:edit --help should list flag "${flag}"`).toContain(flag);
       }
     });
   });
 
   describe('wu:prep flag validation', () => {
     it('should accept --help and list --id and --docs-only flags', async () => {
-      const result = await runCliCommand(
-        'wu:prep',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:prep', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:prep --help');
       expect(result.stdout).toContain('--id');
@@ -251,20 +227,16 @@ describe('CLI integration (no mocks)', () => {
 
   describe('wu:recover flag validation', () => {
     it('should accept --help and list --id, --action, --force, --json flags', async () => {
-      const result = await runCliCommand(
-        'wu:recover',
-        ['--help'],
-        { projectRoot: PROJECT_ROOT, timeout: HELP_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:recover', ['--help'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: HELP_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:recover --help');
 
       const flagsUsedByMcp = ['--id', '--action', '--force', '--json'];
       for (const flag of flagsUsedByMcp) {
-        expect(
-          result.stdout,
-          `wu:recover --help should list flag "${flag}"`,
-        ).toContain(flag);
+        expect(result.stdout, `wu:recover --help should list flag "${flag}"`).toContain(flag);
       }
     });
   });
@@ -272,11 +244,10 @@ describe('CLI integration (no mocks)', () => {
   describe('real CLI invocation with live data', () => {
     it('should execute wu:status for a known WU and return structured output', async () => {
       // This is the key test: calling real CLI with the exact flags MCP passes
-      const result = await runCliCommand(
-        'wu:status',
-        ['--id', 'WU-1453', '--json'],
-        { projectRoot: PROJECT_ROOT, timeout: READ_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:status', ['--id', 'WU-1453', '--json'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: READ_TIMEOUT_MS,
+      });
 
       expectSuccess(result, 'wu:status --id WU-1453 --json');
 
@@ -292,11 +263,10 @@ describe('CLI integration (no mocks)', () => {
       // This test proves that the CLI actually rejects invalid flags.
       // If MCP were passing --format json to wu:status (which uses --json),
       // this test pattern would catch it.
-      const result = await runCliCommand(
-        'wu:status',
-        ['--id', 'WU-1453', '--nonexistent-flag'],
-        { projectRoot: PROJECT_ROOT, timeout: READ_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:status', ['--id', 'WU-1453', '--nonexistent-flag'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: READ_TIMEOUT_MS,
+      });
 
       expectFailure(result, 'wu:status with invalid flag');
     });
@@ -304,11 +274,10 @@ describe('CLI integration (no mocks)', () => {
     it('should fail if --format json is passed to wu:status instead of --json', async () => {
       // Regression test: wu:status uses --json, not --format json.
       // This is the exact kind of mismatch WU-1453 was created to catch.
-      const result = await runCliCommand(
-        'wu:status',
-        ['--id', 'WU-1453', '--format', 'json'],
-        { projectRoot: PROJECT_ROOT, timeout: READ_TIMEOUT_MS },
-      );
+      const result = await runCliCommand('wu:status', ['--id', 'WU-1453', '--format', 'json'], {
+        projectRoot: PROJECT_ROOT,
+        timeout: READ_TIMEOUT_MS,
+      });
 
       // wu:status does NOT accept --format, so this should fail
       expectFailure(result, 'wu:status with --format json (wrong flag)');
