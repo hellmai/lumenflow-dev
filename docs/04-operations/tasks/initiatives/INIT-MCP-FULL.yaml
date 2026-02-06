@@ -35,7 +35,7 @@ phases:
     status: done
   - id: 9
     title: MCP parity remediation and closure
-    status: pending
+    status: in_progress
 success_metrics:
   - 90 MCP tools available (100% public CLI parity per public-manifest.ts)
   - All tools documented on lumenflow.dev/reference/mcp
