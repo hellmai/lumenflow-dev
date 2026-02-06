@@ -4,7 +4,6 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml)
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml)
 
 ## Blocked
@@ -419,3 +418,4 @@ _Last updated: 2026-02-06_
 - [WU-1464 — Fix failing core tests for tslib resolution and consumer integration timeout](wu/WU-1464.yaml) — 2026-02-05
 - [WU-1466 — Add subprocess lifecycle e2e for wu create-claim-prep-done path](wu/WU-1466.yaml) — 2026-02-05
 - [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml) — 2026-02-05
+- [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — 2026-02-06

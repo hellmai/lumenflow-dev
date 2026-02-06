@@ -852,5 +852,6 @@
 {"type":"complete","wuId":"WU-1466","timestamp":"2026-02-05T23:30:37.351Z"}
 {"type":"claim","wuId":"WU-1461","timestamp":"2026-02-05T23:31:18.981Z","lane":"Framework: CLI","title":"Restore real lint/typecheck execution across all packages"}
 {"type":"complete","wuId":"WU-1461","timestamp":"2026-02-05T23:50:18.163Z"}
-{"type":"claim","wuId":"WU-1462","lane":"Framework: CLI","title":"Unblock MCP packaging and prevent CLI test artifacts in publish tarballs","timestamp":"2026-02-05T23:50:59.366Z"}
-{"type":"claim","wuId":"WU-1467","lane":"Framework: Core","title":"Eliminate preflight/enforcement drift from tasks validate and stubbed gates","timestamp":"2026-02-06T08:20:11.912Z"}
+{"type":"claim","wuId":"WU-1462","timestamp":"2026-02-05T23:50:59.366Z","lane":"Framework: CLI","title":"Unblock MCP packaging and prevent CLI test artifacts in publish tarballs"}
+{"type":"claim","wuId":"WU-1467","timestamp":"2026-02-06T08:20:11.912Z","lane":"Framework: Core","title":"Eliminate preflight/enforcement drift from tasks validate and stubbed gates"}
+{"type":"complete","wuId":"WU-1462","timestamp":"2026-02-06T08:32:39.534Z"}
