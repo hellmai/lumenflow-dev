@@ -884,4 +884,5 @@
 {"type":"claim","wuId":"WU-1479","timestamp":"2026-02-06T11:36:46.851Z","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers"}
 {"type":"complete","wuId":"WU-1472","timestamp":"2026-02-06T11:38:08.798Z"}
 {"type":"complete","wuId":"WU-1471","timestamp":"2026-02-06T11:43:52.877Z"}
-{"type":"claim","wuId":"WU-1473","lane":"Framework: CLI","title":"CLI wiring for orchestrator recovery and signal consumption","timestamp":"2026-02-06T11:49:01.874Z"}
+{"type":"claim","wuId":"WU-1473","timestamp":"2026-02-06T11:49:01.874Z","lane":"Framework: CLI","title":"CLI wiring for orchestrator recovery and signal consumption"}
+{"type":"complete","wuId":"WU-1478","timestamp":"2026-02-06T11:49:35.895Z"}

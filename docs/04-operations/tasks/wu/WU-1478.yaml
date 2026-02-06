@@ -2,7 +2,7 @@ id: WU-1478
 title: Restructure lane taxonomy for parallel CLI/Core work
 lane: 'Operations: Infrastructure'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -53,3 +53,5 @@ session_id: be97fe19-1536-4855-b8dd-563a5da44419
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T11:36:12.699Z
+locked: true
+completed_at: 2026-02-06T11:49:33.400Z
