@@ -47,6 +47,16 @@ describe('release command', () => {
       expect(existsSync(join(repoRoot, 'packages/@lumenflow/mcp', tsconfigPath!))).toBe(true);
     });
 
+    it('mcp tsconfig excludes spec-style test files from dist output', () => {
+      const mcpTsconfigPath = join(repoRoot, 'packages/@lumenflow/mcp/tsconfig.json');
+      const mcpTsconfig = JSON.parse(readFileSync(mcpTsconfigPath, 'utf-8')) as {
+        exclude?: string[];
+      };
+      const exclude = mcpTsconfig.exclude ?? [];
+
+      expect(exclude).toContain('src/**/*.spec.ts');
+    });
+
     it('cli build:dist cleans dist before compilation to prevent stale test artifacts', () => {
       const cliPackageJsonPath = join(repoRoot, 'packages/@lumenflow/cli/package.json');
       const cliPackageJson = JSON.parse(readFileSync(cliPackageJsonPath, 'utf-8')) as {
