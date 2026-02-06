@@ -2,7 +2,7 @@ id: WU-1467
 title: Eliminate preflight/enforcement drift from tasks validate and stubbed gates
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -54,3 +54,5 @@ session_id: 6b4f8efa-c6e8-42d7-8fc4-5f651cf35703
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T08:20:11.900Z
+locked: true
+completed_at: 2026-02-06T08:36:50.485Z
