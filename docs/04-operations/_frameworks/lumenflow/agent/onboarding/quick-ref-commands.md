@@ -56,19 +56,20 @@ pnpm exec lumenflow --client all      # All clients
 
 ## WU Lifecycle
 
-| Command                                       | Description                                    |
-| --------------------------------------------- | ---------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec (see required fields below) |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                   |
-| `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done        |
-| `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main  |
-| `pnpm wu:edit --id WU-XXX --field value`      | Edit WU spec fields                            |
-| `pnpm wu:block --id WU-XXX --reason "..."`    | Block WU with reason                           |
-| `pnpm wu:unblock --id WU-XXX`                 | Unblock WU                                     |
-| `pnpm wu:release --id WU-XXX`                 | Release orphaned WU (in_progress to ready)     |
-| `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands       |
-| `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt                |
-| `pnpm wu:spawn --id WU-XXX --no-context`      | Spawn prompt without memory context injection  |
+| Command                                        | Description                                    |
+| ---------------------------------------------- | ---------------------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below) |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)         |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree) |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                    |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)      |
+| `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                            |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                           |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                     |
+| `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)     |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands       |
+| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate sub-agent spawn prompt                |
+| `pnpm wu:spawn --id WU-XXX --no-context`       | Spawn prompt without memory context injection  |
 
 ### WU Maintenance
 
@@ -514,6 +515,47 @@ pnpm mem:inbox --since 30m       # Check for signals (NOT TaskOutput)
 ```bash
 # Capture bug, don't fix out-of-scope
 pnpm mem:create 'Bug: description' --type discovery --tags bug --wu WU-XXX
+```
+
+### Cloud Lifecycle (Branch-PR Mode)
+
+For cloud agents that cannot use local worktrees:
+
+```bash
+# 1. Claim in cloud mode
+pnpm wu:claim --id WU-XXX --lane "<Lane>" --cloud
+# Or: LUMENFLOW_CLOUD=1 pnpm wu:claim --id WU-XXX --lane "<Lane>"
+
+# 2. Work on lane branch, push commits
+
+# 3. Prep (validates branch, runs gates in-place)
+pnpm wu:prep --id WU-XXX
+
+# 4. Complete (creates PR, does NOT merge to main)
+pnpm wu:done --id WU-XXX
+
+# 5. After PR is reviewed and merged, run cleanup
+pnpm wu:cleanup --id WU-XXX
+```
+
+**Post-merge cleanup (`wu:cleanup`):**
+
+- Creates `.lumenflow/stamps/WU-XXX.done`
+- Updates WU YAML to `status: done`
+- Regenerates backlog.md and status.md
+- Deletes the lane branch (local and remote)
+
+**Cloud auto-detection (opt-in):**
+
+```yaml
+# .lumenflow.config.yaml
+cloud:
+  auto_detect: true # default: false
+  env_signals:
+    - name: CI
+    - name: CODEX
+    - name: GITHUB_ACTIONS
+      equals: 'true'
 ```
 
 ### Enforcement Hooks (WU-1367)

@@ -301,7 +301,8 @@ $ pnpm wu:prune
 | Situation                                                                       | Recommendation                                                                   |
 | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | **Any claimed WU** (code, docs, YAML, tooling, prompts)                         | Use the lane worktree only. Main checkout is read-only once the WU is claimed.   |
-| **Quick non-WU hygiene** (typo spotted while reviewing)                         | Main checkout allowed – document the reason in the commit and keep it surgical.  |
+| **Cloud agent (Codex, Claude web, CI bot)**                                     | Use `wu:claim --cloud` for branch-pr mode. No worktree needed.                   |
+| **Quick non-WU hygiene** (typo spotted while reviewing)                         | Main checkout allowed -- document the reason in the commit and keep it surgical. |
 | **Multiple humans/agents active in parallel lanes**                             | One worktree + branch per WU so installs, caches, and dev servers stay isolated. |
 | **External sub-agent (e.g., Claude) assisting on the same WU**                  | Keep everyone in the same worktree/branch to avoid diverging states.             |
 | **CI or tooling needs clean environments (large `node_modules`, heavy caches)** | Prefer worktrees so each lane manages its own dependencies without churn.        |
@@ -481,8 +482,8 @@ Git hooks (via Husky) enforce worktree discipline automatically. All hooks skip 
 **pre-commit:**
 
 - **Blocks direct commits to `main`/`master`** (use `pnpm wu:claim` workflow)
-- Respects Branch-Only mode: checks `claimed_mode: branch-only` in WU YAML
-- Blocks lane branch work in main checkout unless Branch-Only mode is active
+- Respects Branch-Only and Branch-PR modes: checks `claimed_mode` in WU YAML
+- Blocks lane branch work in main checkout unless Branch-Only or Branch-PR mode is active
 
 **commit-msg:**
 
@@ -764,21 +765,69 @@ This bypasses worktree checks for automation that manages its own isolation.
 
 ---
 
-#### Cloud Agent Workflow (Claude/Codex Web)
+#### Cloud Agent Workflow (Branch-PR Mode)
 
-Cloud agents work on hosted branches, not local worktrees. To stay compliant:
+Cloud agents (Claude web, Codex, CI bots) work on hosted branches, not local
+worktrees. The **branch-pr** mode is the first-class cloud lifecycle.
 
-Choose one of the first two modes below, then continue with steps 4-7.
+**Activation:** Use `--cloud` flag or set `LUMENFLOW_CLOUD=1` in the environment.
+Config-driven auto-detection is also available (see below).
 
-1. **Create the WU** on main with `pnpm wu:create` (or confirm it already exists).
-2. **Branch-only mode (when allowed)**: `pnpm wu:claim -- --id WU-XXXX --lane "<Lane>" --branch-only`
-3. **Agent-branch bypass mode**: keep the WU claimed locally in a worktree.
-4. **Agent works in cloud branch** (e.g., `claude/<topic>` or `codex/<topic>`) and pushes commits.
-5. **Integrator cherry-picks** agent commits into the lane worktree.
-6. **Run gates in worktree**: `pnpm wu:prep --id WU-XXXX`
-7. **Merge via tooling**: from main, run `pnpm wu:done --id WU-XXXX`
+```bash
+# 1. Create the WU (if it does not exist)
+pnpm wu:create --id WU-XXXX --lane "<Lane>" --title "..."
 
-**Rule:** Cloud agents never merge to `main`. Only `wu:done` completes a WU.
+# 2. Claim in cloud mode (sets claimed_mode: branch-pr, no worktree)
+pnpm wu:claim --id WU-XXXX --lane "<Lane>" --cloud
+
+# 3. Work on the lane branch in the cloud environment
+#    Push commits to lane/<lane>/wu-xxxx
+
+# 4. Run gates on the lane branch
+pnpm wu:prep --id WU-XXXX
+
+# 5. Complete (creates a PR; does NOT merge to main)
+pnpm wu:done --id WU-XXXX
+
+# 6. After PR is reviewed and merged, run cleanup
+pnpm wu:cleanup --id WU-XXXX
+```
+
+**Key behaviours:**
+
+- `wu:claim --cloud` resolves to `claimed_mode: branch-pr`. Lane WIP limits
+  and lane locks are still enforced; only worktree creation is skipped.
+- `wu:prep` in branch-pr mode validates the current branch matches the lane
+  branch and runs gates in-place (no worktree requirement).
+- `wu:done` stays on the lane branch, commits metadata, pushes, and creates a
+  PR. It never checks out or merges to main.
+- `wu:cleanup` is the post-merge counterpart: it creates the `.done` stamp,
+  updates state, and cleans up the lane branch.
+
+**Config-driven auto-detection (opt-in):**
+
+```yaml
+# .lumenflow.config.yaml
+cloud:
+  auto_detect: true # default: false
+  env_signals:
+    - name: CI
+    - name: CODEX
+    - name: GITHUB_ACTIONS
+      equals: 'true'
+```
+
+When `cloud.auto_detect` is `true`, `wu:claim` checks configured environment
+signals and activates cloud mode automatically. Explicit activation
+(`--cloud` or `LUMENFLOW_CLOUD=1`) always takes precedence over auto-detection.
+
+**Rule:** Cloud agents never merge to `main`. Only `wu:done` (worktree mode)
+or `wu:cleanup` (branch-pr mode, post-merge) completes a WU.
+
+**Legacy cherry-pick pattern:** If an agent works on its own branch (e.g.,
+`claude/<topic>`) outside the lane branch, an integrator can cherry-pick
+commits into the lane worktree. This is a fallback, not the recommended path.
+Prefer `--cloud` for new cloud work.
 
 ---
 
@@ -1192,9 +1241,10 @@ open coverage/index.html
 
 **Choose your workflow mode:**
 
-- **Docs-only WU?** → Use `pnpm wu:claim -- --id WU-123 --lane Operations --branch-only` + `pnpm wu:done -- --id WU-123` (automatically detects docs-only type)
-- **Code/Infrastructure WU (standard)?** → Use Worktree mode (default): `pnpm wu:claim` creates isolated workspace
-- **Worktrees unavailable (Codespaces/constraints)?** → Use Branch-Only mode (requires WU-510 completion): `pnpm wu:claim -- --branch-only`
+- **Local development (default)?** → Use Worktree mode: `pnpm wu:claim --id WU-123 --lane <Lane>` creates an isolated workspace
+- **Docs-only WU?** → Use `pnpm wu:claim --id WU-123 --lane <Lane> --branch-only` + `pnpm wu:done --id WU-123` (automatically detects docs-only type)
+- **Cloud agent (Codex, Claude web, CI)?** → Use `pnpm wu:claim --id WU-123 --lane <Lane> --cloud` for branch-pr mode (no worktree, PR-based completion)
+- **Worktrees unavailable (Codespaces/constraints)?** → Use Branch-Only mode: `pnpm wu:claim --id WU-123 --lane <Lane> --branch-only`
 
 ### 10.1 WU Lifecycle Commands
 
