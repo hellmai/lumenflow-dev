@@ -2,7 +2,7 @@ id: WU-1483
 title: MCP parity remediation wave 2 (file/git/plan/signal commands)
 lane: 'Framework: MCP'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -60,3 +60,5 @@ session_id: b14541c5-6a47-4a59-8ae6-3765b2896bf2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T12:37:28.095Z
+locked: true
+completed_at: 2026-02-06T12:48:40.111Z
