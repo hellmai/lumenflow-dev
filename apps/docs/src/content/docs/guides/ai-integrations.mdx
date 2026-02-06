@@ -99,6 +99,77 @@ Claude Code has the deepest integration with LumenFlow.
 - Hooks for automated workflows
 - Memory layer integration
 
+#### Enforcement Hooks
+
+LumenFlow generates Claude Code hooks in `.claude/settings.json` to enforce workflow compliance at the tool level. Configure enforcement in `.lumenflow.config.yaml`:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      enforcement:
+        hooks: true                        # Master switch for all hooks
+        block_outside_worktree: true       # Block Write/Edit to main
+        require_wu_for_edits: true         # Require claimed WU
+        warn_on_stop_without_wu_done: true # Warn on incomplete session
+```
+
+After configuration, generate the hooks:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+#### Hook Types
+
+LumenFlow generates hooks for the following Claude Code hook events:
+
+| Hook Event      | When It Fires                    | What LumenFlow Does                                        |
+| --------------- | -------------------------------- | ---------------------------------------------------------- |
+| PreToolUse      | Before Write/Edit operations     | Blocks edits outside worktree or without claimed WU        |
+| PostToolUse     | After every tool call            | Auto-checkpoints at configured interval (counter-based)    |
+| SubagentStop    | When a sub-agent finishes        | Always creates a checkpoint (sub-agent completed work)     |
+| Stop            | When session ends                | Warns about active worktrees without wu:done               |
+| PreCompact      | Before context compaction        | Saves checkpoint + writes durable recovery file            |
+| SessionStart    | After compact/resume/clear       | Reads recovery file, surfaces unread coordination signals  |
+
+#### PostToolUse and SubagentStop Hook Wiring
+
+When `memory.enforcement.auto_checkpoint.enabled: true`, the enforcement generator creates hooks for automatic checkpointing:
+
+```yaml
+memory:
+  enforcement:
+    auto_checkpoint:
+      enabled: true
+      interval_tool_calls: 30
+```
+
+**PostToolUse** fires after every tool call. The generated hook script:
+
+1. Detects the active WU from the worktree path
+2. Increments a per-WU counter stored at `.lumenflow/state/hook-counters/<WU_ID>.json`
+3. When the counter reaches `interval_tool_calls`, creates a checkpoint in a background subshell and resets the counter
+4. Returns immediately (exit 0) so the agent is never blocked
+
+**SubagentStop** fires when a spawned sub-agent completes. The generated hook script:
+
+1. Detects the active WU from the worktree path
+2. Always creates a checkpoint (no counter -- sub-agent completion is a natural milestone)
+3. Checkpoint writes are backgrounded to avoid blocking
+
+Both hooks use the same generated script (`auto-checkpoint.sh`) and branch on the `hook_event_name` environment variable set by Claude Code.
+
+<Aside type="caution">
+Auto-checkpoint hooks require the enforcement master switch (`agents.clients.claude-code.enforcement.hooks: true`). When `auto_checkpoint.enabled` is true but the master switch is off, LumenFlow emits a warning and remains advisory-only.
+</Aside>
+
+#### PreCompact and SessionStart Recovery
+
+The PreCompact hook saves a checkpoint and writes a durable recovery file before context compaction. The SessionStart hook reads recovery files after compaction, resume, or clear events, restoring context for the agent.
+
+For non-worktree orchestrators (agents running on main), these hooks surface unread coordination signals via `mem:inbox` so agents retain coordination awareness after compaction.
+
 ### Cursor
 
 **Config Files:**
