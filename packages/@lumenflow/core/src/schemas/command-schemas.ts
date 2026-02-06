@@ -72,10 +72,23 @@ export type WuCreateInput = z.infer<typeof wuCreateSchema>;
  * Schema for wu:claim command
  *
  * Required: id, lane
+ * Optional: cloud, branch_only, pr_mode (WU-1491: mode selection flags)
  */
 export const wuClaimSchema = z.object({
   id: z.string().describe('WU ID to claim (e.g., WU-1234)'),
   lane: z.string().describe('Lane for the WU'),
+  cloud: z
+    .boolean()
+    .optional()
+    .describe('Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents)'),
+  branch_only: z
+    .boolean()
+    .optional()
+    .describe('Use branch-only mode (no worktree, direct branch work)'),
+  pr_mode: z
+    .boolean()
+    .optional()
+    .describe('Use PR mode (create PR instead of auto-merge)'),
 });
 
 export type WuClaimInput = z.infer<typeof wuClaimSchema>;
