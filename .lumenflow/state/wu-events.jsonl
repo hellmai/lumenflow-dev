@@ -868,4 +868,5 @@
 {"type":"complete","wuId":"WU-1454","timestamp":"2026-02-06T09:53:10.127Z"}
 {"type":"claim","wuId":"WU-1455","timestamp":"2026-02-06T09:56:59.030Z","lane":"Framework: Core","title":"Shared Schemas: Initiative commands"}
 {"type":"complete","wuId":"WU-1455","timestamp":"2026-02-06T10:16:18.441Z"}
-{"type":"claim","wuId":"WU-1456","lane":"Framework: Core","title":"Shared Schemas: Memory commands","timestamp":"2026-02-06T10:19:24.622Z"}
+{"type":"claim","wuId":"WU-1456","timestamp":"2026-02-06T10:19:24.622Z","lane":"Framework: Core","title":"Shared Schemas: Memory commands"}
+{"type":"complete","wuId":"WU-1456","timestamp":"2026-02-06T10:34:48.535Z"}
