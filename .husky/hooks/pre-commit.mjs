@@ -70,10 +70,12 @@ const MAIN_BRANCH_BLOCK_MESSAGES = {
       '• Run:  pnpm wu:help',
     ],
   },
-  BYPASS: {
-    HEADER: 'EMERGENCY BYPASS (last resort, logged)',
-    WARNING: 'Bypasses are audit-logged. Only use for genuine emergencies.',
-    COMMAND: 'LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="<reason>" git commit ...',
+  RECOVERY: {
+    HEADER: 'STUCK?',
+    LINES: [
+      'If you need to fix workflow state:',
+      '  pnpm wu:recover --id WU-XXXX',
+    ],
   },
 };
 
@@ -90,7 +92,7 @@ const MAIN_BRANCH_BLOCK_MESSAGES = {
  * @returns {string} Formatted multi-line message
  */
 export function formatMainBranchBlockMessage(branch) {
-  const { BOX, WHY, ACTIONS, HELP, BYPASS } = MAIN_BRANCH_BLOCK_MESSAGES;
+  const { BOX, WHY, ACTIONS, HELP, RECOVERY } = MAIN_BRANCH_BLOCK_MESSAGES;
   const lines = [];
 
   // Title with box
@@ -144,12 +146,13 @@ export function formatMainBranchBlockMessage(branch) {
   }
   lines.push('');
 
-  // BYPASS section (last, with clear warning)
+  // RECOVERY section (workflow-correct guidance)
   lines.push(BOX.DIVIDER);
-  lines.push(BYPASS.HEADER);
+  lines.push(RECOVERY.HEADER);
   lines.push(BOX.DIVIDER);
-  lines.push(BYPASS.WARNING);
-  lines.push(`  ${BYPASS.COMMAND}`);
+  for (const line of RECOVERY.LINES) {
+    lines.push(line);
+  }
   lines.push(BOX.DIVIDER);
   lines.push('');
 
@@ -164,7 +167,7 @@ function logForceBypass(hookName, projectRoot) {
   if (!reason) {
     console.warn(
       `[${hookName}] Warning: LUMENFLOW_FORCE_REASON not set. ` +
-        'Consider: LUMENFLOW_FORCE_REASON="reason" LUMENFLOW_FORCE=1 git ...',
+        'Please provide a reason for the audit trail.',
     );
   }
 
@@ -438,8 +441,8 @@ export async function main() {
             console.error('Option 2: Reclaim with --branch-only:');
             console.error(`  pnpm wu:claim --id ${wuId} --lane <Lane> --branch-only`);
             console.error('');
-            console.error('To bypass (emergency only):');
-            console.error('  LUMENFLOW_FORCE=1 git commit ...');
+            console.error('Option 3: Fix workflow state:');
+            console.error(`  pnpm wu:recover --id ${wuId}`);
             console.error('');
             process.exit(1);
           } catch {}

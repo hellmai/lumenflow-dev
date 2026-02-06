@@ -44,9 +44,8 @@ log_bypass() {
 warn_no_reason() {
     echo "" >&2
     echo "=== LUMENFLOW FORCE WARNING ===" >&2
-    echo "LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON." >&2
-    echo "Please provide a reason for audit trail:" >&2
-    echo "  LUMENFLOW_FORCE_REASON=\"your reason\" LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "Hook bypass used without a reason." >&2
+    echo "Please provide a reason for the audit trail." >&2
     echo "===============================" >&2
 }
 
