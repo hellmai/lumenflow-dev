@@ -19,17 +19,19 @@
  *          Setup tools: lumenflow_init, lumenflow_doctor, lumenflow_integrate, lumenflow_upgrade,
  *          lumenflow_commands, lumenflow_docs_sync, lumenflow_release, lumenflow_sync_templates
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
+ * WU-1454: All 16 WU lifecycle commands now use shared schemas
  *
  * Architecture:
  * - Read operations (context_get) use @lumenflow/core directly for context
  * - All other operations shell out to CLI for consistency and safety
- * - Input schemas are derived from shared schemas in @lumenflow/core (WU-1431)
+ * - Input schemas are derived from shared schemas in @lumenflow/core (WU-1431, WU-1454)
  */
 
 import { z } from 'zod';
 import { runCliCommand, type CliRunnerOptions } from './cli-runner.js';
 
 // WU-1431: Import shared command schemas for CLI/MCP parity
+// WU-1454: Import WU lifecycle schemas for full coverage
 // These are the single source of truth for command validation
 import {
   wuCreateSchema,
@@ -38,6 +40,23 @@ import {
   wuDoneSchema,
   gatesSchema,
   wuStatusEnum,
+  // WU-1454: Lifecycle command schemas
+  wuBlockSchema,
+  wuUnblockSchema,
+  wuEditSchema,
+  wuReleaseSchema,
+  wuRecoverSchema,
+  wuRepairSchema,
+  wuDepsSchema,
+  wuPrepSchema,
+  wuPreflightSchema,
+  wuPruneSchema,
+  wuDeleteSchema,
+  wuCleanupSchema,
+  wuSpawnSchema,
+  wuValidateSchema,
+  wuInferLaneSchema,
+  wuUnlockLaneSchema,
 } from '@lumenflow/core';
 
 // Import core functions for context operations only (async to avoid circular deps)
@@ -486,11 +505,8 @@ export const gatesRunTool: ToolDefinition = {
 export const wuBlockTool: ToolDefinition = {
   name: 'wu_block',
   description: 'Block a Work Unit and move it from in_progress to blocked status',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to block'),
-    reason: z.string().describe('Reason for blocking'),
-    remove_worktree: z.boolean().optional().describe('Remove worktree when blocking'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuBlockSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -525,11 +541,8 @@ export const wuBlockTool: ToolDefinition = {
 export const wuUnblockTool: ToolDefinition = {
   name: 'wu_unblock',
   description: 'Unblock a Work Unit and move it from blocked to in_progress status',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to unblock'),
-    reason: z.string().optional().describe('Reason for unblocking'),
-    create_worktree: z.boolean().optional().describe('Create worktree when unblocking'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuUnblockSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -560,18 +573,8 @@ export const wuUnblockTool: ToolDefinition = {
 export const wuEditTool: ToolDefinition = {
   name: 'wu_edit',
   description: 'Edit Work Unit spec fields with micro-worktree isolation',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to edit'),
-    description: z.string().optional().describe('New description text'),
-    acceptance: z.array(z.string()).optional().describe('Acceptance criteria to add'),
-    notes: z.string().optional().describe('Notes text to add'),
-    code_paths: z.array(z.string()).optional().describe('Code paths to add'),
-    lane: z.string().optional().describe('New lane assignment'),
-    priority: z.enum(['P0', 'P1', 'P2', 'P3']).optional().describe('New priority'),
-    initiative: z.string().optional().describe(SchemaDescriptions.INITIATIVE_ID),
-    phase: z.number().optional().describe(SchemaDescriptions.PHASE_NUMBER),
-    no_strict: z.boolean().optional().describe('Bypass strict validation'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuEditSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -617,10 +620,8 @@ export const wuEditTool: ToolDefinition = {
 export const wuReleaseTool: ToolDefinition = {
   name: 'wu_release',
   description: 'Release an orphaned WU from in_progress back to ready state for reclaiming',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to release'),
-    reason: z.string().optional().describe('Reason for releasing'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuReleaseSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -650,15 +651,8 @@ export const wuReleaseTool: ToolDefinition = {
 export const wuRecoverTool: ToolDefinition = {
   name: 'wu_recover',
   description: 'Analyze and fix WU state inconsistencies',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to recover'),
-    action: z
-      .enum(['resume', 'reset', 'nuke', 'cleanup'])
-      .optional()
-      .describe('Recovery action to take'),
-    force: z.boolean().optional().describe('Required for destructive actions like nuke'),
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuRecoverSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -695,14 +689,8 @@ export const wuRecoverTool: ToolDefinition = {
 export const wuRepairTool: ToolDefinition = {
   name: 'wu_repair',
   description: 'Unified WU repair tool - detect and fix WU state issues',
-  inputSchema: z.object({
-    id: z.string().optional().describe('WU ID to check/repair'),
-    check: z.boolean().optional().describe('Audit only, no changes'),
-    all: z.boolean().optional().describe('Check/repair all WUs'),
-    claim: z.boolean().optional().describe('Claim repair mode'),
-    admin: z.boolean().optional().describe('Admin repair mode'),
-    repair_state: z.boolean().optional().describe('State repair mode'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuRepairSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -733,12 +721,8 @@ export const wuRepairTool: ToolDefinition = {
 export const wuDepsTool: ToolDefinition = {
   name: 'wu_deps',
   description: 'Visualize WU dependency graph',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to analyze'),
-    format: z.enum(['table', 'json', 'ascii', 'mermaid']).optional().describe('Output format'),
-    depth: z.number().optional().describe('Maximum traversal depth'),
-    direction: z.enum(['up', 'down', 'both']).optional().describe('Graph direction'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuDepsSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -775,10 +759,8 @@ export const wuDepsTool: ToolDefinition = {
 export const wuPrepTool: ToolDefinition = {
   name: 'wu_prep',
   description: 'Prepare WU for completion by running gates in worktree',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to prepare'),
-    docs_only: z.boolean().optional().describe('Run docs-only gates'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuPrepSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -812,10 +794,8 @@ export const wuPreflightTool: ToolDefinition = {
   name: 'wu_preflight',
   description:
     'Fast validation of code_paths and test paths before gates run (under 5 seconds vs 2+ minutes)',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to preflight'),
-    worktree: z.string().optional().describe('Override worktree path'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuPreflightSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -845,9 +825,8 @@ export const wuPreflightTool: ToolDefinition = {
 export const wuPruneTool: ToolDefinition = {
   name: 'wu_prune',
   description: 'Clean stale worktrees (dry-run by default)',
-  inputSchema: z.object({
-    execute: z.boolean().optional().describe('Execute cleanup (default is dry-run)'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuPruneSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -873,11 +852,8 @@ export const wuPruneTool: ToolDefinition = {
 export const wuDeleteTool: ToolDefinition = {
   name: 'wu_delete',
   description: 'Safely delete WU YAML files with micro-worktree isolation',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to delete'),
-    dry_run: z.boolean().optional().describe('Show what would be deleted without making changes'),
-    batch: z.string().optional().describe('Delete multiple WUs (comma-separated)'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuDeleteSchema,
 
   async execute(input, options) {
     if (!input.id && !input.batch) {
@@ -909,10 +885,8 @@ export const wuDeleteTool: ToolDefinition = {
 export const wuCleanupTool: ToolDefinition = {
   name: 'wu_cleanup',
   description: 'Clean up worktree and branch after PR merge (PR-based completion workflow)',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to cleanup'),
-    artifacts: z.boolean().optional().describe('Remove build artifacts'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuCleanupSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -942,14 +916,8 @@ export const wuCleanupTool: ToolDefinition = {
 export const wuSpawnTool: ToolDefinition = {
   name: 'wu_spawn',
   description: 'Generate sub-agent spawn prompt for WU execution',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to spawn'),
-    client: z.string().optional().describe('Client name (claude-code, gemini-cli, etc)'),
-    thinking: z.boolean().optional().describe('Enable extended thinking'),
-    budget: z.number().optional().describe('Token budget for extended thinking'),
-    parent_wu: z.string().optional().describe('Parent WU ID for orchestrator context'),
-    no_context: z.boolean().optional().describe('Skip memory context injection'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuSpawnSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -983,10 +951,8 @@ export const wuSpawnTool: ToolDefinition = {
 export const wuValidateTool: ToolDefinition = {
   name: 'wu_validate',
   description: 'Validate WU YAML files against schema (strict mode by default)',
-  inputSchema: z.object({
-    id: z.string().describe('WU ID to validate'),
-    no_strict: z.boolean().optional().describe('Bypass strict validation'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuValidateSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -1016,11 +982,8 @@ export const wuValidateTool: ToolDefinition = {
 export const wuInferLaneTool: ToolDefinition = {
   name: 'wu_infer_lane',
   description: 'Suggest lane for a WU based on code paths and description',
-  inputSchema: z.object({
-    id: z.string().optional().describe('WU ID to analyze (reads YAML)'),
-    paths: z.array(z.string()).optional().describe('Code paths to analyze'),
-    desc: z.string().optional().describe('WU description/title text'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuInferLaneSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -1052,13 +1015,8 @@ export const wuInferLaneTool: ToolDefinition = {
 export const wuUnlockLaneTool: ToolDefinition = {
   name: 'wu_unlock_lane',
   description: 'Safely unlock a lane lock with audit logging',
-  inputSchema: z.object({
-    lane: z.string().optional().describe('Lane name to unlock'),
-    reason: z.string().optional().describe('Reason for unlocking'),
-    force: z.boolean().optional().describe('Force operation'),
-    list: z.boolean().optional().describe('List all current lane locks'),
-    status: z.boolean().optional().describe('Show detailed status for the lane'),
-  }),
+  // WU-1454: Use shared schema
+  inputSchema: wuUnlockLaneSchema,
 
   async execute(input, options) {
     // If list mode, no lane required
