@@ -1,0 +1,42 @@
+id: WU-1474
+title: Activate decay policy in completion lifecycle
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/mem-cleanup.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
+    - packages/@lumenflow/memory/__tests__/archival.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1474.done
+dependencies: []
+initiative: INIT-015
+phase: 4
+blocked_by:
+  - WU-1471
+spec_refs:
+  - lumenflow://plans/parsed-whistling-blanket.md
+risks: []
+notes: Implements WU-C from INIT-015 plan; depends on WU-1471 due shared config schema touchpoints.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: decay/archival exists but is not consistently triggered from lifecycle flows. Problem: stale memory accumulates without policy-driven execution. Solution: add configurable memory.decay policy and invoke decay archival during completion lifecycle when configured, while preserving manual cleanup controls.'
+acceptance:
+  - Config schema supports memory.decay fields (enabled, threshold, half_life_days, trigger).
+  - wu:done invokes decay archival when memory.decay.enabled=true and trigger=on_done, with fail-open behavior.
+  - When decay is disabled, existing wu:done behavior is unchanged.
+  - Manual cleanup command remains available and supports preview behavior.
