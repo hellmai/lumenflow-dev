@@ -895,4 +895,5 @@
 {"type":"claim","wuId":"WU-1482","timestamp":"2026-02-06T12:20:08.537Z","lane":"Framework: MCP","title":"MCP parity remediation wave 1 (state/lane/gates/setup commands)"}
 {"type":"claim","wuId":"WU-1485","timestamp":"2026-02-06T12:25:22.959Z","lane":"Operations: Infrastructure","title":"Remove LUMENFLOW_FORCE suggestions from hook error messages"}
 {"type":"complete","wuId":"WU-1482","timestamp":"2026-02-06T12:36:54.867Z"}
-{"type":"claim","wuId":"WU-1483","lane":"Framework: MCP","title":"MCP parity remediation wave 2 (file/git/plan/signal commands)","timestamp":"2026-02-06T12:37:28.120Z"}
+{"type":"claim","wuId":"WU-1483","timestamp":"2026-02-06T12:37:28.120Z","lane":"Framework: MCP","title":"MCP parity remediation wave 2 (file/git/plan/signal commands)"}
+{"type":"complete","wuId":"WU-1473","timestamp":"2026-02-06T12:45:29.993Z"}
