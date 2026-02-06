@@ -2,7 +2,7 @@ id: WU-1469
 title: Align MCP and publish docs with current tool count and auth model
 lane: 'Content: Documentation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -51,3 +51,5 @@ acceptance:
   - public docs and framework docs agree on MCP tool count and usage patterns
   - publish workflow docs accurately reflect NPM_TOKEN based auth model
   - Documentation links and references resolve to current files
+locked: true
+completed_at: 2026-02-06T08:44:21.529Z
