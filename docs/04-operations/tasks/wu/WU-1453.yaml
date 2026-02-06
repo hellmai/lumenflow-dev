@@ -7,8 +7,6 @@ priority: P2
 created: 2026-02-05
 code_paths:
   - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
-  - packages/@lumenflow/mcp/vitest.config.ts
-  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
 tests:
   manual:
     - Run pnpm test --filter @lumenflow/mcp and confirm integration tests execute
