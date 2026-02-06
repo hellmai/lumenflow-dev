@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml) — Framework: Core
 - [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml) — Framework: CLI
 - [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml) — Framework: Core
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
