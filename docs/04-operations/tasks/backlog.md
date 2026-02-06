@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1499 — Neutralize lane default bias in init WU template](wu/WU-1499.yaml) — Framework: CLI
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — Framework: Core
 - [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
