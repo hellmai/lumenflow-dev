@@ -7,6 +7,7 @@ _Last updated: 2026-02-06_
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml)
 - [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml)
 - [WU-1478 — Restructure lane taxonomy for parallel CLI/Core work](wu/WU-1478.yaml)
+- [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml)
 
 ## Blocked
 
