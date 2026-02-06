@@ -31,7 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -475,3 +475,4 @@ sections:
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml)
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml)
 - [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml)
+- [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml)

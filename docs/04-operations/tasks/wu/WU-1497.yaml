@@ -2,7 +2,7 @@ id: WU-1497
 title: 'Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -11,10 +11,11 @@ code_paths:
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
   manual:
-    - 'Run lumenflow init in a fresh repo with git init --initial-branch=master and verify branch is renamed to main'
-    - 'Run initiative:edit with requireRemote:false config and verify no origin fetch attempt'
-    - 'Verify quickstart.mdx step 3 is pnpm init'
-    - 'Verify quickstart.mdx wu:create example mentions --spec-refs as optional'
+    - Run lumenflow init in a fresh repo with git init --initial-branch=master and verify branch is
+      renamed to main
+    - Run initiative:edit with requireRemote:false config and verify no origin fetch attempt
+    - Verify quickstart.mdx step 3 is pnpm init
+    - Verify quickstart.mdx wu:create example mentions --spec-refs as optional
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
@@ -52,3 +53,5 @@ acceptance:
   - lumenflow-init handles master branch by renaming to main automatically
   - Quickstart has pnpm init as explicit numbered step
   - Quickstart wu:create example includes --spec-refs or spec-refs is optional for non-plan WUs
+locked: true
+completed_at: 2026-02-06T18:08:44.584Z
