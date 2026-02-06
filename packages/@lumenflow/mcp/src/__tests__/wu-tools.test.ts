@@ -876,7 +876,12 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
     expect(missing.success).toBe(false);
     expect(missing.error?.message).toContain('path');
 
-    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'content', stderr: '', exitCode: 0 });
+    mockRunCliCommand.mockResolvedValue({
+      success: true,
+      stdout: 'content',
+      stderr: '',
+      exitCode: 0,
+    });
     const result = await fileReadTool.execute({
       path: 'README.md',
       encoding: 'utf-8',
