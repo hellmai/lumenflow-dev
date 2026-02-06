@@ -63,6 +63,9 @@ pnpm wu:claim --id WU-XXXX --lane "Lane Name"
 # 3. IMMEDIATELY cd to worktree (CRITICAL!)
 cd worktrees/<lane>-wu-xxxx
 
+# 3b. Bootstrap (builds CLI + deps for dist-backed commands)
+pnpm bootstrap
+
 # 4. Do your work here (not in main!)
 
 # 5. Run gates before completion

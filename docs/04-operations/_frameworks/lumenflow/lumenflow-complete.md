@@ -357,7 +357,18 @@ git:
 - One worktree per active lane WU keeps installs, node_modules, caches, and git history isolated while respecting WIP=1.
 - Hooks now fail any WU commit attempted from the main checkout and any lane branch pushed from the main directory.
 
-**Why this is not “too restrictive”:**
+**Dependency-closure bootstrap for worktrees (WU-1480):**
+
+Fresh worktrees don't have built `dist/` directories. Dist-backed CLI commands (e.g., `lane:health`, `gates`) require `@lumenflow/cli` and its workspace dependencies to be built. Run `pnpm bootstrap` after claiming a worktree to build the CLI plus its full dependency closure (core, memory, metrics, initiatives, agent) in one command:
+
+```bash
+pnpm wu:claim --id WU-XXX --lane "Lane"
+cd worktrees/<lane>-wu-xxx
+pnpm bootstrap    # Builds @lumenflow/cli + dependency closure via turbo --filter
+pnpm lane:health  # Now works
+```
+
+**Why this is not "too restrictive":**
 
 1. **Worktrees are cheap** – `pnpm wu:claim` provisions them in seconds.
 2. **Isolation is safety** – Your WU cannot break someone else’s, and theirs cannot bleed into yours.

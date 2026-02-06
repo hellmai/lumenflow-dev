@@ -34,6 +34,9 @@ pnpm wu:create --lane <Lane> --title "Title"
 pnpm wu:claim --id WU-XXXX --lane <Lane>
 cd worktrees/<lane>-wu-xxxx
 
+# 3b. Bootstrap CLI for dist-backed commands (WU-1480)
+pnpm bootstrap
+
 # 4. Implement in worktree
 
 # 5. Run wu:prep (gates + docs in worktree) - WU-1223 NEW
@@ -79,18 +82,19 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 
 ## Commands Reference
 
-| Command               | Description                              |
-| --------------------- | ---------------------------------------- |
-| `pnpm setup`          | Install deps and build CLI               |
-| `pnpm wu:create`      | Create new WU spec                       |
-| `pnpm wu:claim`       | Claim WU and create worktree             |
-| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done  |
-| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)      |
-| `pnpm wu:status`      | Show WU status, location, valid commands |
-| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies |
-| `pnpm gates`          | Run quality gates                        |
-| `pnpm mem:init`       | Initialize memory layer                  |
-| `pnpm mem:checkpoint` | Save memory checkpoint                   |
+| Command               | Description                                       |
+| --------------------- | ------------------------------------------------- |
+| `pnpm setup`          | Install deps and build CLI                        |
+| `pnpm bootstrap`      | Build CLI with dependency closure (worktree-safe) |
+| `pnpm wu:create`      | Create new WU spec                                |
+| `pnpm wu:claim`       | Claim WU and create worktree                      |
+| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done           |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)               |
+| `pnpm wu:status`      | Show WU status, location, valid commands          |
+| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies          |
+| `pnpm gates`          | Run quality gates                                 |
+| `pnpm mem:init`       | Initialize memory layer                           |
+| `pnpm mem:checkpoint` | Save memory checkpoint                            |
 
 > **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
@@ -151,7 +155,7 @@ operations are allowed to prevent blocking legitimate work.
 
 ## Known Bootstrap Issues
 
-1. **Worktree CLI**: Worktrees don't have CLI built. Use `--skip-gates` with `--reason` for bootstrap WUs, or run gates from main with `--docs-only`.
+1. **Worktree CLI**: Fresh worktrees don't have CLI built. Run `pnpm bootstrap` after `wu:claim` to build `@lumenflow/cli` with its full dependency closure (core, memory, metrics, initiatives, agent). This enables dist-backed commands like `lane:health` and `gates`. For bootstrap WUs where even `pnpm bootstrap` cannot run, use `--skip-gates` with `--reason`.
 
 2. **Missing tool scripts**: Some gates expect ExampleApp-specific tools. Stubs exist in `tools/` and `packages/linters/`.
 

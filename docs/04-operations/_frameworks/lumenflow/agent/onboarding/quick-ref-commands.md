@@ -20,21 +20,22 @@ Complete reference for all CLI commands. Organized by category for quick discove
 
 **For this monorepo (development):**
 
-| Command                    | Description                             |
-| -------------------------- | --------------------------------------- |
-| `pnpm setup`               | Install deps and build CLI (first time) |
-| `pnpm build`               | Build all packages                      |
-| `pnpm build:dist`          | Build distribution packages             |
-| `pnpm dev`                 | Start development mode                  |
-| `pnpm clean`               | Clean build artifacts and caches        |
-| `pnpm pack:all`            | Pack all packages for distribution      |
-| `pnpm lumenflow:init`      | Scaffold LumenFlow in a project         |
-| `pnpm docs:sync`           | Sync agent docs (for upgrades)          |
-| `pnpm sync:templates`      | Sync templates to project               |
-| `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages              |
-| `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration        |
-| `pnpm lumenflow:integrate` | Generate enforcement hooks for client   |
-| `pnpm lumenflow commands`  | List all available CLI commands         |
+| Command                    | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| `pnpm setup`               | Install deps and build CLI (first time)           |
+| `pnpm bootstrap`           | Build CLI with dependency closure (worktree-safe) |
+| `pnpm build`               | Build all packages                                |
+| `pnpm build:dist`          | Build distribution packages                       |
+| `pnpm dev`                 | Start development mode                            |
+| `pnpm clean`               | Clean build artifacts and caches                  |
+| `pnpm pack:all`            | Pack all packages for distribution                |
+| `pnpm lumenflow:init`      | Scaffold LumenFlow in a project                   |
+| `pnpm docs:sync`           | Sync agent docs (for upgrades)                    |
+| `pnpm sync:templates`      | Sync templates to project                         |
+| `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages                        |
+| `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration                  |
+| `pnpm lumenflow:integrate` | Generate enforcement hooks for client             |
+| `pnpm lumenflow commands`  | List all available CLI commands                   |
 
 **For external projects (end users):**
 
@@ -284,6 +285,39 @@ Plans use the `lumenflow://plans/` URI scheme for references:
 
 ---
 
+## Worktree Bootstrap (Dependency-Closure Build)
+
+Fresh worktrees don't have built `dist/` directories. Dist-backed CLI commands
+(e.g., `lane:health`, `gates`, `wu:status`) require `@lumenflow/cli` and its
+workspace dependencies to be built first.
+
+**`pnpm bootstrap`** builds `@lumenflow/cli` plus its full dependency closure
+(core, memory, metrics, initiatives, agent) in one command using turbo's
+`--filter` with topological dependency resolution.
+
+```bash
+# After wu:claim and cd into worktree:
+pnpm bootstrap          # Builds CLI + all workspace deps
+pnpm lane:health        # Now works
+pnpm gates              # Now works
+```
+
+**When to use:**
+
+- After `wu:claim` in a fresh worktree before running dist-backed commands
+- After `pnpm install` if dist directories were cleaned
+- As a lighter alternative to `pnpm build` (builds only CLI closure, not all packages)
+
+**How it differs from other build commands:**
+
+| Command          | Scope                                  | Use case           |
+| ---------------- | -------------------------------------- | ------------------ |
+| `pnpm setup`     | Install + build CLI + integrate hooks  | First-time setup   |
+| `pnpm bootstrap` | Build CLI with dependency closure only | Worktree preflight |
+| `pnpm build`     | Build all packages                     | Full rebuild       |
+
+---
+
 ## Workflow Sequence (Quick Reference)
 
 ```bash
@@ -299,6 +333,9 @@ pnpm wu:create --id WU-XXX --lane "Framework: Core" --title "Add feature" \
 # 2. Claim (creates worktree)
 pnpm wu:claim --id WU-XXX --lane "Framework: Core"
 cd worktrees/framework-core-wu-xxx
+
+# 2b. Bootstrap (build CLI for dist-backed commands)
+pnpm bootstrap
 
 # 3. Implement (TDD)
 # ... write tests first, then code ...
