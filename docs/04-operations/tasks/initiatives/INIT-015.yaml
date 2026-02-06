@@ -20,6 +20,9 @@ phases:
   - id: 4
     title: 'WU-C: Decay activation in completion lifecycle'
     status: pending
+  - id: 5
+    title: 'WU-E: Document memory enforcement features (internal + Starlight)'
+    status: pending
 success_metrics:
   - Checkpoint entries are created automatically in active WU sessions when enforcement is enabled
   - Signal read-marking remains correct under concurrent agents (no lost updates)
