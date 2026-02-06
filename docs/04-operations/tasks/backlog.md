@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — Framework: CLI
 - [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — Framework: Core
 - [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — Framework: Core

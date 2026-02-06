@@ -1,0 +1,38 @@
+id: WU-1497
+title: 'Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps'
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/cli/src/initiative-edit.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1497.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/sprightly-dancing-catmull.md
+risks: []
+notes: Discovered during Haven onboarding test 5. See plan file for full friction analysis.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: v2.12.0 onboarding test 5 (Haven project) revealed 7 friction points in a 7-minute session. Problem: (1) initiative-edit ignores requireRemote:false unlike initiative-create, blocking local-only users. (2) git init defaults to master but CLI demands main, forcing manual branch rename. (3) Quickstart has pnpm init buried in an aside instead of an explicit step. (4) wu:create example missing --spec-refs. Solution: Fix both CLI bugs and patch quickstart docs.'
+acceptance:
+  - initiative-edit works with requireRemote:false (no origin fetch attempt)
+  - lumenflow-init handles master branch by renaming to main automatically
+  - Quickstart has pnpm init as explicit numbered step
+  - Quickstart wu:create example includes --spec-refs or spec-refs is optional for non-plan WUs
