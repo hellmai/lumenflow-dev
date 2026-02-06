@@ -47,3 +47,15 @@ export {
   validateWuInferLaneArgs,
   validateWuUnlockLaneArgs,
 } from '@lumenflow/core';
+
+// WU-1455: 8 initiative command validators
+export {
+  validateInitiativeCreateArgs,
+  validateInitiativeEditArgs,
+  validateInitiativeListArgs,
+  validateInitiativeStatusArgs,
+  validateInitiativeAddWuArgs,
+  validateInitiativeRemoveWuArgs,
+  validateInitiativeBulkAssignArgs,
+  validateInitiativePlanArgs,
+} from '@lumenflow/core';
