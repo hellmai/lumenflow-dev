@@ -228,16 +228,6 @@ const CliArgs = {
 } as const;
 
 /**
- * Schema description constants for commonly used descriptions
- */
-const SchemaDescriptions = {
-  INITIATIVE_ID: 'Initiative ID',
-  INITIATIVE_ID_EXAMPLE: 'Initiative ID (e.g., INIT-001)',
-  OUTPUT_AS_JSON: 'Output as JSON',
-  PHASE_NUMBER: 'Phase number within initiative',
-} as const;
-
-/**
  * Shared error messages to avoid duplication across different tool categories
  */
 const SharedErrorMessages = {
