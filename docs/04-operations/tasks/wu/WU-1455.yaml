@@ -2,7 +2,7 @@ id: WU-1455
 title: 'Shared Schemas: Initiative commands'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -50,3 +50,5 @@ session_id: 5dd2a03a-4285-474a-88b8-168da042a7c2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T09:56:59.013Z
+locked: true
+completed_at: 2026-02-06T10:16:15.915Z
