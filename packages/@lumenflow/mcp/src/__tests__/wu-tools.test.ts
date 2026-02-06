@@ -40,13 +40,26 @@ import {
   stateCleanupTool,
   stateDoctorTool,
   syncTemplatesTool,
+  fileReadTool,
+  fileWriteTool,
+  fileEditTool,
+  fileDeleteTool,
+  gitStatusTool,
+  gitDiffTool,
+  gitLogTool,
+  gitBranchTool,
+  initPlanTool,
+  planCreateTool,
+  planEditTool,
+  planLinkTool,
+  planPromoteTool,
+  signalCleanupTool,
+  wuProtoTool,
   allTools,
   buildMcpManifestParityReport,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 import { PUBLIC_MANIFEST } from '../../../cli/src/public-manifest.js';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 
 // Mock cli-runner for all operations
 vi.mock('../cli-runner.js', () => ({
@@ -847,24 +860,252 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
   });
 });
 
+describe('Wave-2 parity MCP tools (WU-1483)', () => {
+  const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should validate file_read required path and map args', async () => {
+    const missing = await fileReadTool.execute({});
+    expect(missing.success).toBe(false);
+    expect(missing.error?.message).toContain('path');
+
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'content', stderr: '', exitCode: 0 });
+    const result = await fileReadTool.execute({
+      path: 'README.md',
+      encoding: 'utf-8',
+      start_line: 10,
+      end_line: 20,
+      max_size: 4096,
+    });
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'file:read',
+      expect.arrayContaining([
+        '--path',
+        'README.md',
+        '--encoding',
+        'utf-8',
+        '--start-line',
+        '10',
+        '--end-line',
+        '20',
+        '--max-size',
+        '4096',
+      ]),
+      expect.any(Object),
+    );
+  });
+
+  it('should map file write/edit/delete command args', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await fileWriteTool.execute({
+      path: 'tmp/file.txt',
+      content: 'hello',
+      no_create_dirs: true,
+      scan_phi: true,
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'file:write',
+      expect.arrayContaining([
+        '--path',
+        'tmp/file.txt',
+        '--content',
+        'hello',
+        '--no-create-dirs',
+        '--scan-phi',
+      ]),
+      expect.any(Object),
+    );
+
+    await fileEditTool.execute({
+      path: 'tmp/file.txt',
+      old_string: 'hello',
+      new_string: 'world',
+      replace_all: true,
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'file:edit',
+      expect.arrayContaining([
+        '--path',
+        'tmp/file.txt',
+        '--old-string',
+        'hello',
+        '--new-string',
+        'world',
+        '--replace-all',
+      ]),
+      expect.any(Object),
+    );
+
+    await fileDeleteTool.execute({ path: 'tmp/file.txt', recursive: true, force: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'file:delete',
+      expect.arrayContaining(['--path', 'tmp/file.txt', '--recursive', '--force']),
+      expect.any(Object),
+    );
+  });
+
+  it('should map git command args', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await gitStatusTool.execute({ base_dir: '.', path: 'src', porcelain: true, short: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'git:status',
+      expect.arrayContaining(['--base-dir', '.', '--porcelain', '--short', 'src']),
+      expect.any(Object),
+    );
+
+    await gitDiffTool.execute({
+      ref: 'HEAD~1',
+      staged: true,
+      name_only: true,
+      stat: true,
+      path: 'packages/@lumenflow/mcp/src/tools.ts',
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'git:diff',
+      expect.arrayContaining([
+        '--staged',
+        '--name-only',
+        '--stat',
+        'HEAD~1',
+        '--',
+        'packages/@lumenflow/mcp/src/tools.ts',
+      ]),
+      expect.any(Object),
+    );
+
+    await gitLogTool.execute({ oneline: true, max_count: 5, since: '7 days ago', author: 'tom' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'git:log',
+      expect.arrayContaining(['--oneline', '-n', '5', '--since', '7 days ago', '--author', 'tom']),
+      expect.any(Object),
+    );
+
+    await gitBranchTool.execute({ all: true, remotes: true, show_current: true, contains: 'HEAD' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'git:branch',
+      expect.arrayContaining(['--all', '--remotes', '--show-current', '--contains', 'HEAD']),
+      expect.any(Object),
+    );
+  });
+
+  it('should validate and map init_plan + plan command args', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    const missingInit = await initPlanTool.execute({ initiative: 'INIT-MCP-FULL' });
+    expect(missingInit.success).toBe(false);
+    expect(missingInit.error?.message).toContain('plan');
+
+    await initPlanTool.execute({ initiative: 'INIT-MCP-FULL', create: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'init:plan',
+      expect.arrayContaining(['--initiative', 'INIT-MCP-FULL', '--create']),
+      expect.any(Object),
+    );
+
+    await planCreateTool.execute({ id: 'WU-1483', title: 'MCP wave-2 plan' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'plan:create',
+      expect.arrayContaining(['--id', 'WU-1483', '--title', 'MCP wave-2 plan']),
+      expect.any(Object),
+    );
+
+    await planEditTool.execute({ id: 'WU-1483', section: 'Goal', append: 'line' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'plan:edit',
+      expect.arrayContaining(['--id', 'WU-1483', '--section', 'Goal', '--append', 'line']),
+      expect.any(Object),
+    );
+
+    await planLinkTool.execute({ id: 'WU-1483', plan: 'lumenflow://plans/WU-1483-plan.md' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'plan:link',
+      expect.arrayContaining(['--id', 'WU-1483', '--plan', 'lumenflow://plans/WU-1483-plan.md']),
+      expect.any(Object),
+    );
+
+    await planPromoteTool.execute({ id: 'WU-1483', force: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'plan:promote',
+      expect.arrayContaining(['--id', 'WU-1483', '--force']),
+      expect.any(Object),
+    );
+  });
+
+  it('should map signal_cleanup and wu_proto args with required validation', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await signalCleanupTool.execute({
+      dry_run: true,
+      ttl: '7d',
+      unread_ttl: '30d',
+      max_entries: 100,
+      json: true,
+      quiet: true,
+      base_dir: '.',
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'signal:cleanup',
+      expect.arrayContaining([
+        '--dry-run',
+        '--ttl',
+        '7d',
+        '--unread-ttl',
+        '30d',
+        '--max-entries',
+        '100',
+        '--json',
+        '--quiet',
+        '--base-dir',
+        '.',
+      ]),
+      expect.any(Object),
+    );
+
+    const missingProto = await wuProtoTool.execute({ title: 'proto' });
+    expect(missingProto.success).toBe(false);
+    expect(missingProto.error?.message).toContain('lane');
+
+    await wuProtoTool.execute({
+      lane: 'Framework: MCP',
+      title: 'Prototype',
+      description: 'desc',
+      code_paths: ['packages/@lumenflow/mcp/src/tools.ts'],
+      labels: ['proto', 'mcp'],
+      assigned_to: 'tom@hellm.ai',
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'wu:proto',
+      expect.arrayContaining([
+        '--lane',
+        'Framework: MCP',
+        '--title',
+        'Prototype',
+        '--description',
+        'desc',
+        '--code-paths',
+        'packages/@lumenflow/mcp/src/tools.ts',
+        '--labels',
+        'proto,mcp',
+        '--assigned-to',
+        'tom@hellm.ai',
+      ]),
+      expect.any(Object),
+    );
+  });
+});
+
 describe('Manifest parity truth gate (WU-1481)', () => {
-  const EXPECTED_MISSING_COMMANDS = [
-    'file_delete',
-    'file_edit',
-    'file_read',
-    'file_write',
-    'git_branch',
-    'git_diff',
-    'git_log',
-    'git_status',
-    'init_plan',
-    'plan_create',
-    'plan_edit',
-    'plan_link',
-    'plan_promote',
-    'signal_cleanup',
-    'wu_proto',
-  ];
+  const EXPECTED_MISSING_COMMANDS: string[] = [];
 
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
@@ -877,15 +1118,6 @@ describe('Manifest parity truth gate (WU-1481)', () => {
     'wu_list',
   ];
 
-  function initiativeIsDone(): boolean {
-    const initiativePath = resolve(
-      import.meta.dirname,
-      '../../../../../docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml',
-    );
-    const initiativeYaml = readFileSync(initiativePath, 'utf8');
-    return /^status:\s*done\s*$/m.test(initiativeYaml);
-  }
-
   it('reports deterministic missing and extra command lists', () => {
     const report = buildMcpManifestParityReport(
       PUBLIC_MANIFEST.map((command) => command.name),
@@ -897,21 +1129,17 @@ describe('Manifest parity truth gate (WU-1481)', () => {
     expect(report.unexpectedExtra).toEqual([]);
   });
 
-  it('blocks marking INIT-MCP-FULL done while parity gaps remain', () => {
+  it('requires full normalized parity for initiative closure', () => {
     const report = buildMcpManifestParityReport(
       PUBLIC_MANIFEST.map((command) => command.name),
       allTools.map((tool) => tool.name),
     );
 
-    if (initiativeIsDone()) {
-      const details =
-        `Missing tools: ${report.missing.join(', ') || '(none)'}\n` +
-        `Unexpected tools: ${report.unexpectedExtra.join(', ') || '(none)'}`;
+    const details =
+      `Missing tools: ${report.missing.join(', ') || '(none)'}\n` +
+      `Unexpected tools: ${report.unexpectedExtra.join(', ') || '(none)'}`;
 
-      expect(report.missing, details).toEqual([]);
-      expect(report.unexpectedExtra, details).toEqual([]);
-    } else {
-      expect(report.missing.length).toBeGreaterThan(0);
-    }
+    expect(report.missing, details).toEqual([]);
+    expect(report.unexpectedExtra, details).toEqual([]);
   });
 });
