@@ -2,7 +2,7 @@ id: WU-1492
 title: Add wu:done branch-pr completion path
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -63,3 +63,5 @@ acceptance:
   - Existing worktree/worktree-pr/branch-only flows remain unchanged.
   - Claimed-mode-sensitive CLI behavior (including wu:edit handling) does not misclassify branch-pr
     as worktree-only.
+locked: true
+completed_at: 2026-02-06T19:00:55.789Z
