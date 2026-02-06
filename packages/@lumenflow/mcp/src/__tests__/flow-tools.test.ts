@@ -6,7 +6,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { flowBottlenecksTool, flowReportTool, metricsSnapshotTool } from '../tools.js';
+import {
+  flowBottlenecksTool,
+  flowReportTool,
+  metricsSnapshotTool,
+  metricsTool,
+  lumenflowMetricsTool,
+} from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 
 // Mock cli-runner for all operations
@@ -199,6 +205,52 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('failed');
+    });
+  });
+
+  describe('metrics aliases (WU-1482)', () => {
+    it('should run metrics command with subcommand and flags', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Metrics generated',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await metricsTool.execute({
+        subcommand: 'flow',
+        days: 14,
+        format: 'json',
+        dry_run: true,
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'metrics',
+        expect.arrayContaining(['flow', '--days', '14', '--format', 'json', '--dry-run']),
+        expect.any(Object),
+      );
+    });
+
+    it('should run lumenflow_metrics alias', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Alias metrics generated',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await lumenflowMetricsTool.execute({
+        subcommand: 'dora',
+        format: 'table',
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'metrics',
+        expect.arrayContaining(['dora', '--format', 'table']),
+        expect.any(Object),
+      );
     });
   });
 });
