@@ -2,7 +2,7 @@ id: WU-1494
 title: Fix --pr-draft parser/help parity for wu:done
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -25,7 +25,8 @@ phase: 5
 spec_refs:
   - lumenflow://plans/memoized-baking-sutton.md
 risks: []
-notes: 'WU-E from branch-pr cloud initiative plan. wu-done-inputs.ts removed from code_paths: help text already showed --pr-draft, only parser needed fixing.'
+notes: 'WU-E from branch-pr cloud initiative plan. wu-done-inputs.ts removed from code_paths: help
+  text already showed --pr-draft, only parser needed fixing.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -49,3 +50,5 @@ session_id: 7c4ec118-e3ac-4453-859a-2c3736b1cee3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T19:04:55.473Z
+locked: true
+completed_at: 2026-02-06T19:27:54.300Z
