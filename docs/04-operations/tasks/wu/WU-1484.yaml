@@ -2,7 +2,7 @@ id: WU-1484
 title: Complete CLI shared-validator wiring for schema-backed commands
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-proto.ts
 tests:
   manual:
-    - Run targeted CLI commands with invalid flags/values and confirm consistent schema-derived errors.
+    - Run targeted CLI commands with invalid flags/values and confirm consistent schema-derived
+      errors.
     - Run pnpm --filter @lumenflow/cli test and verify validator wiring tests pass.
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
@@ -29,7 +30,8 @@ blocked_by:
 spec_refs:
   - lumenflow://plans/INIT-MCP-FULL-remediation.md
 risks: []
-notes: 'Sizing: Medium. Keep scope to schema-backed command families with highest MCP parity impact; split follow-up WU if file count or tool calls exceed thresholds.'
+notes: 'Sizing: Medium. Keep scope to schema-backed command families with highest MCP parity impact;
+  split follow-up WU if file count or tool calls exceed thresholds.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,9 +40,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: @lumenflow/core exports shared argument validators for schema-backed commands, but CLI entrypoints still have uneven adoption and custom argument handling. Problem: this leaves CLI/MCP parity vulnerable to drift even when schemas exist. Solution: wire targeted CLI command families to shared validators and add regression tests proving invalid/valid argument behavior remains consistent.'
+description: 'Context: @lumenflow/core exports shared argument validators for schema-backed
+  commands, but CLI entrypoints still have uneven adoption and custom argument handling. Problem:
+  this leaves CLI/MCP parity vulnerable to drift even when schemas exist. Solution: wire targeted
+  CLI command families to shared validators and add regression tests proving invalid/valid argument
+  behavior remains consistent.'
 acceptance:
-  - CLI entrypoints for targeted schema-backed command families call shared validators from packages/@lumenflow/cli/src/shared-validators.ts (or direct core validator exports) instead of bespoke parsing.
-  - Validation behavior is consistent with shared schemas for required fields, enum values, and optional flags.
+  - CLI entrypoints for targeted schema-backed command families call shared validators from
+    packages/@lumenflow/cli/src/shared-validators.ts (or direct core validator exports) instead of
+    bespoke parsing.
+  - Validation behavior is consistent with shared schemas for required fields, enum values, and
+    optional flags.
   - Unit tests cover at least one positive and one negative validation case per wired command family.
-  - Parity-focused MCP WUs can rely on shared validator behavior without re-implementing flag validation rules in tools.ts.
+  - Parity-focused MCP WUs can rely on shared validator behavior without re-implementing flag
+    validation rules in tools.ts.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1484
+claimed_at: 2026-02-06T12:49:10.162Z
+baseline_main_sha: b10e34d0ec29345029b6a16236c2508aa779c733
+session_id: 2d8789c8-643a-4932-a7b1-94e9c615d106
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:49:10.169Z

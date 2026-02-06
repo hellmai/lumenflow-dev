@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml)
+- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml)
 
 ## Blocked
 

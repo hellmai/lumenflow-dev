@@ -24,11 +24,11 @@ sections:
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — Content: Documentation
-- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — Framework: CLI
+- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
