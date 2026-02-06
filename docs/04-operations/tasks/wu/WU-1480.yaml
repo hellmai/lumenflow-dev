@@ -2,7 +2,7 @@ id: WU-1480
 title: Add dependency-closure bootstrap for dist-backed CLI commands
 lane: 'Operations: Tooling'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -54,3 +54,5 @@ acceptance:
   - On a fresh worktree, running bootstrap then lane:health succeeds without manual
     package-by-package builds.
   - Internal docs describe the pattern, rationale, and recommended command sequence for agents.
+locked: true
+completed_at: 2026-02-06T12:12:58.473Z
