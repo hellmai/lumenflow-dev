@@ -1,0 +1,42 @@
+id: WU-1481
+title: MCP parity truth gate against public CLI manifest
+lane: 'Framework: MCP'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+tests:
+  manual:
+    - Run pnpm --filter @lumenflow/mcp test and verify manifest parity test executes and passes.
+    - Introduce a temporary fake command in public-manifest fixture and verify parity test fails with actionable diff.
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1481.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 9
+spec_refs:
+  - lumenflow://plans/INIT-MCP-FULL-remediation.md
+risks: []
+notes: 'Sizing: Simple-to-Medium (<20 files, <60 tool calls). Establish this gate before further remediation work.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-MCP-FULL currently reports full completion while public CLI manifest and MCP tool coverage diverge (90 vs 68). Problem: there is no hard failing manifest-vs-tool registry parity gate. Solution: add deterministic parity tests that diff normalized command names and fail with actionable missing/extra lists.'
+acceptance:
+  - Automated test compares public CLI manifest commands to MCP tool registry using documented normalization rules.
+  - Test output includes explicit missing and extra command lists for rapid remediation.
+  - Parity test runs in default MCP test flow (pnpm --filter @lumenflow/mcp test) without custom test globs.
+  - INIT-MCP-FULL can no longer be marked complete while manifest parity test is failing.
