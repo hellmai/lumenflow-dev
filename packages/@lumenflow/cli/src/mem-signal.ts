@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
- * Memory Signal CLI (WU-1473)
+ * Memory Signal CLI (WU-1473, WU-1456)
  *
  * Send coordination signals between parallel agents for sub-100ms
  * multi-agent swarm coordination without git sync latency.
+ *
+ * WU-1456: Uses shared schema from @lumenflow/core for CLI/MCP parity.
  *
  * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
@@ -19,6 +21,8 @@ import path from 'node:path';
 import { createSignal } from '@lumenflow/memory/dist/mem-signal-core.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+// WU-1456: Import shared validator for CLI/MCP parity
+import { validateMemSignalArgs } from '@lumenflow/core/dist/schemas/memory-arg-validators.js';
 
 /**
  * Log prefix for mem:signal output
@@ -166,6 +170,13 @@ async function main() {
     console.error('  --wu <id>      WU ID to scope signal to (e.g., WU-1473)');
     console.error('  --lane <name>  Lane to target signal to (e.g., "Operations: Tooling")');
     console.error('  --quiet        Suppress output except errors');
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  // WU-1456: Validate args using shared schema for CLI/MCP parity
+  const validation = validateMemSignalArgs({ message, wu: args.wu });
+  if (!validation.valid) {
+    console.error(`${LOG_PREFIX} Validation error: ${validation.errors.join(', ')}`);
     process.exit(EXIT_CODES.ERROR);
   }
 
