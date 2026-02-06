@@ -1,0 +1,44 @@
+id: WU-1483
+title: MCP parity remediation wave 2 (file/git/plan/signal commands)
+lane: 'Framework: MCP'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+tests:
+  manual:
+    - Run pnpm --filter @lumenflow/mcp test and verify wave-2 tool coverage passes.
+    - Smoke test representative wave-2 tools in MCP Inspector (file_read, git_status, plan_create, signal_cleanup).
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1483.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 9
+blocked_by:
+  - WU-1482
+spec_refs:
+  - lumenflow://plans/INIT-MCP-FULL-remediation.md
+risks: []
+notes: 'Sizing: Medium. Keep command-family checkpoints in WU notes to avoid context drift and maintain mapping accuracy.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wave 1 addresses ops/setup command families, but parity still requires coverage for file, git, planning, and protocol commands. Problem: these public commands remain inaccessible via MCP, preventing true 100% parity. Solution: implement wave-2 MCP tools with correct flag mapping and regression tests for each family.'
+acceptance:
+  - 'MCP tools are added for: file:read, file:write, file:edit, file:delete, git:status, git:diff, git:log, git:branch, init:plan, plan:create, plan:edit, plan:link, plan:promote, signal:cleanup, wu:proto.'
+  - Tool implementations preserve public CLI semantics, including required args, optional args, and output format behavior.
+  - MCP tests cover success and failure paths for each command family and validate argument translation.
+  - After wave-2 changes, manifest parity gate from WU-1481 reports zero missing public commands (or explicit documented exclusions).
