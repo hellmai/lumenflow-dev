@@ -8,6 +8,7 @@ created: 2026-02-05
 code_paths:
   - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   - packages/@lumenflow/mcp/vitest.config.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
 tests:
   manual:
     - Run pnpm test --filter @lumenflow/mcp and confirm integration tests execute
@@ -27,10 +28,17 @@ risks: []
 notes: 'Sizing: Simple (<20 files, <50 tool calls). Strategy: Single Session. Lane note: CLI lane
   used; tests live under @lumenflow/mcp.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T09:27:40.707Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1453
+session_id: 3dbf548d-2e6f-4e2f-a8ff-e73d15c7c2c2
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T09:27:40.715Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +53,3 @@ acceptance:
   - New integration test file calls real CLI (no mock)
   - Tests verify CLI accepts flags MCP passes
   - Tests would fail on original --json mismatches
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1453
-claimed_at: 2026-02-06T09:27:40.707Z
-baseline_main_sha: 5c479556c6ba983c1e051c2aabb098da78afcdf2
-session_id: 3dbf548d-2e6f-4e2f-a8ff-e73d15c7c2c2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T09:27:40.715Z
