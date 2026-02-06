@@ -12,8 +12,8 @@
  * WU-1074: Add release command for npm publishing
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 
 // Import functions under test
@@ -27,6 +27,50 @@ import {
 } from '../release.js';
 
 describe('release command', () => {
+  describe('WU-1462 packaging config invariants', () => {
+    const repoRoot = resolve(import.meta.dirname, '../../../../../');
+
+    it('mcp build:dist references an existing tsconfig file', () => {
+      const mcpPackageJsonPath = join(repoRoot, 'packages/@lumenflow/mcp/package.json');
+      const mcpPackageJson = JSON.parse(readFileSync(mcpPackageJsonPath, 'utf-8')) as {
+        scripts?: Record<string, string>;
+      };
+      const buildDistScript = mcpPackageJson.scripts?.['build:dist'];
+
+      expect(buildDistScript).toBeTruthy();
+      expect(buildDistScript).toContain('-p');
+
+      const match = buildDistScript?.match(/-p\s+([^\s]+)/);
+      const tsconfigPath = match?.[1];
+
+      expect(tsconfigPath).toBeTruthy();
+      expect(existsSync(join(repoRoot, 'packages/@lumenflow/mcp', tsconfigPath!))).toBe(true);
+    });
+
+    it('cli build:dist cleans dist before compilation to prevent stale test artifacts', () => {
+      const cliPackageJsonPath = join(repoRoot, 'packages/@lumenflow/cli/package.json');
+      const cliPackageJson = JSON.parse(readFileSync(cliPackageJsonPath, 'utf-8')) as {
+        scripts?: Record<string, string>;
+      };
+      const buildDistScript = cliPackageJson.scripts?.['build:dist'];
+
+      expect(buildDistScript).toBeTruthy();
+      expect(buildDistScript).toContain('rm -rf dist');
+      expect(buildDistScript).toContain('tsc -p tsconfig.build.json');
+    });
+
+    it('cli tsconfig excludes src test artifacts from regular dist output', () => {
+      const cliTsconfigPath = join(repoRoot, 'packages/@lumenflow/cli/tsconfig.json');
+      const cliTsconfig = JSON.parse(readFileSync(cliTsconfigPath, 'utf-8')) as {
+        exclude?: string[];
+      };
+      const exclude = cliTsconfig.exclude ?? [];
+
+      expect(exclude).toContain('src/**/__tests__');
+      expect(exclude).toContain('src/**/*.test.ts');
+    });
+  });
+
   describe('validateSemver', () => {
     it('should accept valid semver versions', () => {
       expect(validateSemver('1.0.0')).toBe(true);

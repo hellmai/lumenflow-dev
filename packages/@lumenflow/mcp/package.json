@@ -52,7 +52,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build:dist": "tsc -p tsconfig.build.json",
+    "build:dist": "tsc -p tsconfig.json",
     "pack:dist": "pnpm pack",
     "clean": "rm -rf dist *.tgz",
     "test": "vitest run",
