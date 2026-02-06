@@ -6,7 +6,6 @@ status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
-  - packages/@lumenflow/memory/src/paths.ts
   - packages/@lumenflow/memory/src/mem-signal-core.ts
   - packages/@lumenflow/memory/src/signal-cleanup-core.ts
 tests:
