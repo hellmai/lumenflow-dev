@@ -6,13 +6,13 @@ status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
+  - package.json
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-prep.ts
-  - packages/@lumenflow/cli/src/mem-checkpoint.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - packages/@lumenflow/cli/src/wu-claim-repair-guidance.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-claim-repair-guidance.test.ts
+  - packages/@lumenflow/cli/__tests__/spec-linter-worktree.test.ts
+  - tools/cli-entry.mjs
+  - tools/__tests__/cli-entry.test.ts
 tests:
   manual:
     - In a freshly claimed worktree without built dist closure, run pnpm wu:prep --id WU-1487 and
@@ -33,10 +33,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T14:14:56.746Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1487
+session_id: ae69ba7d-1604-4ea3-bde7-d1ef923689c2
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T14:14:56.751Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -56,11 +63,3 @@ acceptance:
     single invocation; otherwise clear deterministic exit with exact next step.
   - Unit tests cover the updated guidance and missing-dist bootstrap diagnostics.
   - Internal docs/quick-ref are updated to match the final behavior.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1487
-claimed_at: 2026-02-06T14:14:56.746Z
-baseline_main_sha: 7886745accbc08f8fbf8a9cb0d4260105e9e6a68
-session_id: ae69ba7d-1604-4ea3-bde7-d1ef923689c2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T14:14:56.751Z
