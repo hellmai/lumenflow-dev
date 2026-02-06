@@ -1,0 +1,46 @@
+id: WU-1484
+title: Complete CLI shared-validator wiring for schema-backed commands
+lane: 'Framework: CLI'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/cli/src/shared-validators.ts
+  - packages/@lumenflow/cli/src/initiative-edit.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
+  - packages/@lumenflow/cli/src/wu-proto.ts
+tests:
+  manual:
+    - Run targeted CLI commands with invalid flags/values and confirm consistent schema-derived errors.
+    - Run pnpm --filter @lumenflow/cli test and verify validator wiring tests pass.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-proto.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1484.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 9
+blocked_by:
+  - WU-1481
+spec_refs:
+  - lumenflow://plans/INIT-MCP-FULL-remediation.md
+risks: []
+notes: 'Sizing: Medium. Keep scope to schema-backed command families with highest MCP parity impact; split follow-up WU if file count or tool calls exceed thresholds.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: @lumenflow/core exports shared argument validators for schema-backed commands, but CLI entrypoints still have uneven adoption and custom argument handling. Problem: this leaves CLI/MCP parity vulnerable to drift even when schemas exist. Solution: wire targeted CLI command families to shared validators and add regression tests proving invalid/valid argument behavior remains consistent.'
+acceptance:
+  - CLI entrypoints for targeted schema-backed command families call shared validators from packages/@lumenflow/cli/src/shared-validators.ts (or direct core validator exports) instead of bespoke parsing.
+  - Validation behavior is consistent with shared schemas for required fields, enum values, and optional flags.
+  - Unit tests cover at least one positive and one negative validation case per wired command family.
+  - Parity-focused MCP WUs can rely on shared validator behavior without re-implementing flag validation rules in tools.ts.
