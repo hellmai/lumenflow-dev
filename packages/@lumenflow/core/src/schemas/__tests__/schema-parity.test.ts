@@ -129,10 +129,9 @@ describe('Comprehensive Schema Parity (WU-1458)', () => {
       for (const [name, schema] of Object.entries(registry)) {
         it(`${label} > ${name} should pass parity validation`, () => {
           const result = validateCliMcpParity(name, schema as z.ZodObject<z.ZodRawShape>);
-          expect(
-            result.valid,
-            `${name} parity check failed: ${result.errors.join(', ')}`,
-          ).toBe(true);
+          expect(result.valid, `${name} parity check failed: ${result.errors.join(', ')}`).toBe(
+            true,
+          );
           expect(result.errors).toHaveLength(0);
         });
       }
@@ -155,10 +154,7 @@ describe('Comprehensive Schema Parity (WU-1458)', () => {
       // Create a schema with an extra field that does not exist in CLI
       const extendedSchema = z.object({
         id: z.string().describe('WU ID'),
-        fake_unsupported_flag: z
-          .string()
-          .optional()
-          .describe('This flag does not exist in CLI'),
+        fake_unsupported_flag: z.string().optional().describe('This flag does not exist in CLI'),
       });
 
       // Parity should still pass (both MCP and CLI derive from same schema)
