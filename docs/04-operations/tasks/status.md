@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -444,3 +444,4 @@ _Last updated: 2026-02-06_
 - [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — 2026-02-06
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — 2026-02-06
 - [WU-1486 — Sync MCP internal and Starlight docs with current tool surface](wu/WU-1486.yaml) — 2026-02-06
+- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — 2026-02-06
