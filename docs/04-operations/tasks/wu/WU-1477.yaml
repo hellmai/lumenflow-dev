@@ -13,7 +13,8 @@ code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/guides/ai-integrations.mdx
 tests:
-  manual: []
+  manual:
+    - Verify all six documentation files are updated with INIT-015 memory enforcement content
   unit: []
   e2e: []
 artifacts:
