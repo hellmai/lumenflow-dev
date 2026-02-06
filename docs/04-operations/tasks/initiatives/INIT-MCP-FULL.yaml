@@ -5,7 +5,7 @@ description: Implement MCP tools to achieve 100% public CLI parity (90 commands 
   public-manifest.ts). Enables AI agents to use any public LumenFlow CLI command via MCP protocol.
   Internal/maintainer commands (guards, validators, session internals) are excluded from parity
   scope.
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-04
 phases:
@@ -35,7 +35,7 @@ phases:
     status: done
   - id: 9
     title: MCP parity remediation and closure
-    status: in_progress
+    status: done
 success_metrics:
   - 90 MCP tools available (100% public CLI parity per public-manifest.ts)
   - All tools documented on lumenflow.dev/reference/mcp
@@ -67,3 +67,5 @@ wus:
 lanes:
   - 'Framework: MCP'
   - 'Framework: CLI'
+notes:
+  - Completed at 20/20 WUs after WU-1484 merge on 2026-02-06
