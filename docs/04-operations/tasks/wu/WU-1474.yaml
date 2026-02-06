@@ -2,7 +2,7 @@ id: WU-1474
 title: Activate decay policy in completion lifecycle
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -57,3 +57,5 @@ session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T12:00:29.801Z
+locked: true
+completed_at: 2026-02-06T12:51:22.436Z
