@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1488 — Fix wu:done push race and harden git pull operations](wu/WU-1488.yaml) — Framework: Core
 - [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml) — Framework: CLI
   (No items ready)
 
