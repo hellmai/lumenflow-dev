@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -451,3 +451,4 @@ _Last updated: 2026-02-06_
 - [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — 2026-02-06
 - [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml) — 2026-02-06
 - [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml) — 2026-02-06
+- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml) — 2026-02-06
