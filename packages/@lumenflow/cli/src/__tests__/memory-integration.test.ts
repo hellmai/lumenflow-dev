@@ -1,17 +1,19 @@
 /**
- * Memory Layer Integration Tests (WU-1363)
+ * Memory Layer Integration Tests (WU-1363, WU-1474)
  *
  * Integration tests for memory layer operations:
  * - AC3: mem:checkpoint, mem:signal, mem:inbox
+ * - WU-1474: Decay policy activation in completion lifecycle
  *
  * These tests validate the memory layer's ability to:
  * - Create checkpoints for context preservation
  * - Send and receive signals for agent coordination
  * - Filter and query signals from inbox
+ * - Invoke decay archival during wu:done when configured (WU-1474)
  *
  * TDD: Tests written BEFORE implementation verification.
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -26,6 +28,12 @@ import {
   type EnforcementConfig,
 } from '../hooks/enforcement-generator.js';
 import { checkAutoCheckpointWarning, cleanupHookCounters } from '../hooks/auto-checkpoint-utils.js';
+// WU-1474: Import decay config schema and wu-done decay runner
+import {
+  MemoryDecayConfigSchema,
+  type MemoryDecayConfig,
+} from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import { runDecayOnDone } from '../wu-done-decay.js';
 
 // Test constants
 const TEST_WU_ID = 'WU-9910';
@@ -749,6 +757,229 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
         // Verify memory store has all data (memory store uses memory.jsonl)
         const memoryFile = join(tempDir, '.lumenflow/memory/memory.jsonl');
         expect(existsSync(memoryFile)).toBe(true);
+      });
+    });
+  });
+
+  describe('WU-1474: Decay policy activation in completion lifecycle', () => {
+    describe('AC1: Config schema supports memory.decay fields', () => {
+      it('should parse memory.decay with all fields', () => {
+        const config = MemoryDecayConfigSchema.parse({
+          enabled: true,
+          threshold: 0.2,
+          half_life_days: 14,
+          trigger: 'on_done',
+        });
+
+        expect(config.enabled).toBe(true);
+        expect(config.threshold).toBe(0.2);
+        expect(config.half_life_days).toBe(14);
+        expect(config.trigger).toBe('on_done');
+      });
+
+      it('should apply sensible defaults when fields are omitted', () => {
+        const config = MemoryDecayConfigSchema.parse({});
+
+        expect(config.enabled).toBe(false);
+        expect(config.threshold).toBe(0.1);
+        expect(config.half_life_days).toBe(30);
+        expect(config.trigger).toBe('on_done');
+      });
+
+      it('should reject invalid trigger values', () => {
+        expect(() =>
+          MemoryDecayConfigSchema.parse({
+            trigger: 'invalid_trigger',
+          }),
+        ).toThrow();
+      });
+
+      it('should reject negative threshold', () => {
+        expect(() =>
+          MemoryDecayConfigSchema.parse({
+            threshold: -0.5,
+          }),
+        ).toThrow();
+      });
+
+      it('should reject threshold above 1', () => {
+        expect(() =>
+          MemoryDecayConfigSchema.parse({
+            threshold: 1.5,
+          }),
+        ).toThrow();
+      });
+
+      it('should reject non-positive half_life_days', () => {
+        expect(() =>
+          MemoryDecayConfigSchema.parse({
+            half_life_days: 0,
+          }),
+        ).toThrow();
+      });
+    });
+
+    describe('AC2: wu:done invokes decay archival when enabled with trigger=on_done', () => {
+      it('should invoke archiveByDecay when decay.enabled=true and trigger=on_done', async () => {
+        // Arrange: create memory dir with an old node
+        process.chdir(tempDir);
+        const memoryDir = join(tempDir, '.lumenflow/memory');
+        mkdirSync(memoryDir, { recursive: true });
+
+        // Create old memory node (90+ days old)
+        const ninetyDaysAgo = Date.now() - 91 * 24 * 60 * 60 * 1000;
+        const oldNode = {
+          id: 'mem-st01',
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Old stale content',
+          created_at: new Date(ninetyDaysAgo).toISOString(),
+        };
+        writeFileSync(join(memoryDir, 'memory.jsonl'), JSON.stringify(oldNode) + '\n');
+
+        const decayConfig: MemoryDecayConfig = {
+          enabled: true,
+          threshold: 0.1,
+          half_life_days: 30,
+          trigger: 'on_done',
+        };
+
+        // Act
+        const result = await runDecayOnDone(tempDir, decayConfig);
+
+        // Assert: decay was invoked and archived the stale node
+        expect(result.ran).toBe(true);
+        expect(result.archivedCount).toBeGreaterThan(0);
+      });
+
+      it('should use fail-open behavior - never throw on archival errors', async () => {
+        // Arrange: write corrupted content to memory file to trigger a parse error
+        process.chdir(tempDir);
+        const memoryDir = join(tempDir, '.lumenflow/memory');
+        mkdirSync(memoryDir, { recursive: true });
+        writeFileSync(join(memoryDir, 'memory.jsonl'), 'NOT VALID JSON\n');
+
+        const decayConfig: MemoryDecayConfig = {
+          enabled: true,
+          threshold: 0.1,
+          half_life_days: 30,
+          trigger: 'on_done',
+        };
+
+        // Act: should NOT throw even with corrupted memory file
+        const result = await runDecayOnDone(tempDir, decayConfig);
+
+        // Assert: fail-open - ran=false, error captured
+        expect(result.ran).toBe(false);
+        expect(result.error).toBeDefined();
+      });
+
+      it('should pass threshold and half_life_days from config to archiveByDecay', async () => {
+        // Arrange: create memory dir with a node at 2 half-lives (custom)
+        process.chdir(tempDir);
+        const memoryDir = join(tempDir, '.lumenflow/memory');
+        mkdirSync(memoryDir, { recursive: true });
+
+        // Node is 15 days old, with half_life_days=5 it should be archived
+        // Score: exp(-15/5) = exp(-3) ~ 0.050 which is below threshold 0.1
+        const fifteenDaysAgo = Date.now() - 15 * 24 * 60 * 60 * 1000;
+        const node = {
+          id: 'mem-cu01',
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Custom decay test',
+          created_at: new Date(fifteenDaysAgo).toISOString(),
+        };
+        writeFileSync(join(memoryDir, 'memory.jsonl'), JSON.stringify(node) + '\n');
+
+        const decayConfig: MemoryDecayConfig = {
+          enabled: true,
+          threshold: 0.1,
+          half_life_days: 5,
+          trigger: 'on_done',
+        };
+
+        // Act
+        const result = await runDecayOnDone(tempDir, decayConfig);
+
+        // Assert: node should be archived with custom half-life
+        expect(result.ran).toBe(true);
+        expect(result.archivedCount).toBe(1);
+      });
+    });
+
+    describe('AC3: When decay is disabled, existing wu:done behavior is unchanged', () => {
+      it('should not invoke archival when decay.enabled=false', async () => {
+        const decayConfig: MemoryDecayConfig = {
+          enabled: false,
+          threshold: 0.1,
+          half_life_days: 30,
+          trigger: 'on_done',
+        };
+
+        const result = await runDecayOnDone(tempDir, decayConfig);
+
+        expect(result.ran).toBe(false);
+        expect(result.skippedReason).toBe('disabled');
+      });
+
+      it('should not invoke archival when trigger is not on_done', async () => {
+        const decayConfig: MemoryDecayConfig = {
+          enabled: true,
+          threshold: 0.1,
+          half_life_days: 30,
+          trigger: 'manual',
+        };
+
+        const result = await runDecayOnDone(tempDir, decayConfig);
+
+        expect(result.ran).toBe(false);
+        expect(result.skippedReason).toBe('trigger_mismatch');
+      });
+
+      it('should not invoke archival when decay config is undefined', async () => {
+        const result = await runDecayOnDone(tempDir, undefined);
+
+        expect(result.ran).toBe(false);
+        expect(result.skippedReason).toBe('no_config');
+      });
+    });
+
+    describe('AC4: Manual cleanup command remains available with preview', () => {
+      it('should support dry-run mode via archiveByDecay', async () => {
+        // This tests that the existing archiveByDecay dry-run still works
+        // The mem-cleanup CLI already calls archiveByDecay; we verify the
+        // underlying function supports preview behavior.
+        const { archiveByDecay } = await import('@lumenflow/memory/dist/decay/archival.js');
+
+        process.chdir(tempDir);
+        const memoryDir = join(tempDir, '.lumenflow/memory');
+        mkdirSync(memoryDir, { recursive: true });
+
+        const ninetyDaysAgo = Date.now() - 91 * 24 * 60 * 60 * 1000;
+        const node = {
+          id: 'mem-pv01',
+          type: 'checkpoint',
+          lifecycle: 'wu',
+          content: 'Preview test content',
+          created_at: new Date(ninetyDaysAgo).toISOString(),
+        };
+        writeFileSync(join(memoryDir, 'memory.jsonl'), JSON.stringify(node) + '\n');
+
+        // Act: dry-run should NOT modify the file
+        const result = await archiveByDecay(join(tempDir, '.lumenflow/memory'), {
+          threshold: 0.1,
+          dryRun: true,
+        });
+
+        // Assert: preview reports what would be archived without mutation
+        expect(result.dryRun).toBe(true);
+        expect(result.archivedIds).toContain('mem-pv01');
+
+        // Verify file was NOT modified
+        const content = readFileSync(join(memoryDir, 'memory.jsonl'), 'utf-8');
+        const parsed = JSON.parse(content.trim());
+        expect(parsed.metadata?.status).not.toBe('archived');
       });
     });
   });

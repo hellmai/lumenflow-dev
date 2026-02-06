@@ -651,6 +651,61 @@ export const MemoryEnforcementConfigSchema = z.object({
 export type MemoryEnforcementConfig = z.infer<typeof MemoryEnforcementConfigSchema>;
 
 /**
+ * WU-1474: Memory decay policy configuration
+ *
+ * Controls automated archival of stale memory nodes during lifecycle events.
+ * When enabled with trigger=on_done, wu:done will invoke decay archival
+ * using the configured threshold and half-life parameters.
+ *
+ * Fail-open: archival errors never block wu:done completion.
+ *
+ * @example
+ * ```yaml
+ * memory:
+ *   decay:
+ *     enabled: true
+ *     threshold: 0.1
+ *     half_life_days: 30
+ *     trigger: on_done
+ * ```
+ */
+export const MemoryDecayConfigSchema = z.object({
+  /**
+   * Enable decay-based archival.
+   * When false, no automatic archival is triggered.
+   * @default false
+   */
+  enabled: z.boolean().default(false),
+
+  /**
+   * Decay score threshold below which nodes are archived.
+   * Nodes with a decay score below this value are marked as archived.
+   * Must be between 0 and 1 inclusive.
+   * @default 0.1
+   */
+  threshold: z.number().min(0).max(1).default(0.1),
+
+  /**
+   * Half-life for decay scoring in days.
+   * Controls how quickly nodes lose relevance over time.
+   * Must be a positive integer.
+   * @default 30
+   */
+  half_life_days: z.number().int().positive().default(30),
+
+  /**
+   * When to trigger decay archival.
+   * - 'on_done': Run during wu:done completion lifecycle
+   * - 'manual': Only run via pnpm mem:cleanup
+   * @default 'on_done'
+   */
+  trigger: z.enum(['on_done', 'manual']).default('on_done'),
+});
+
+/** WU-1474: TypeScript type for memory decay config */
+export type MemoryDecayConfig = z.infer<typeof MemoryDecayConfigSchema>;
+
+/**
  * Memory layer configuration
  */
 export const MemoryConfigSchema = z.object({
@@ -700,6 +755,13 @@ export const MemoryConfigSchema = z.object({
    * Optional - when not provided, existing WU-1943 warn behavior applies.
    */
   enforcement: MemoryEnforcementConfigSchema.optional(),
+
+  /**
+   * WU-1474: Decay policy configuration.
+   * Controls automated archival of stale memory nodes during lifecycle events.
+   * Optional - when not provided, no automatic decay archival runs.
+   */
+  decay: MemoryDecayConfigSchema.optional(),
 });
 
 /**
