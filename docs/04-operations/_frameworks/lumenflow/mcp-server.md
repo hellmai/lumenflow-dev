@@ -1,6 +1,6 @@
 # @lumenflow/mcp Server
 
-**Purpose:** Document the architecture and usage of the LumenFlow MCP server, which exposes WU lifecycle operations as native tools for AI coding assistants.
+**Purpose:** Document the architecture and usage of the LumenFlow MCP server, which exposes LumenFlow workflow operations as native tools/resources for AI coding assistants.
 
 ## Overview
 
@@ -53,97 +53,26 @@ claude mcp list
 # - lumenflow (connected)
 ```
 
-## Tools Reference
+## Tools Model
 
-### lumenflow_context_get
+The MCP server currently exposes 68 tools organized into 10 categories.
+The source of truth is `packages/@lumenflow/mcp/src/tools.ts` (`allTools` export).
 
-Get current execution context: location, git state, active WU, valid commands.
+| Category                 | Count | Purpose                                          |
+| ------------------------ | ----- | ------------------------------------------------ |
+| Core WU Operations       | 7     | Context + primary WU lifecycle commands          |
+| Additional WU Operations | 16    | Extended WU management and recovery operations   |
+| Initiative Operations    | 8     | Initiative creation/planning/assignment commands |
+| Memory Operations        | 13    | Session memory, checkpoints, inbox/signals       |
+| Agent Operations         | 4     | Agent session + issue logging                    |
+| Orchestration Operations | 3     | Initiative orchestration/monitoring              |
+| Spawn Operations         | 1     | Spawn registry listing                           |
+| Flow/Metrics Operations  | 3     | Bottlenecks, reports, metrics snapshot           |
+| Validation Operations    | 5     | Skills/backlog/agent validation commands         |
+| Setup Operations         | 8     | Init/doctor/integrate/release/template sync      |
 
-| Parameter | Type   | Required | Description                    |
-| --------- | ------ | -------- | ------------------------------ |
-| `cwd`     | string | No       | Override working directory     |
-| `wu_id`   | string | No       | Specific WU to get context for |
-
-**Returns:** `WuContext` with location, git state, WU info, valid commands.
-
-### lumenflow_wu_list
-
-List Work Units by status, lane, or filter.
-
-| Parameter | Type   | Required | Description                                         |
-| --------- | ------ | -------- | --------------------------------------------------- |
-| `cwd`     | string | No       | Project root override                               |
-| `status`  | enum   | No       | Filter by status: ready, in_progress, blocked, done |
-| `lane`    | string | No       | Filter by lane name                                 |
-| `limit`   | number | No       | Max results (default: 20)                           |
-
-**Returns:** Array of `{ id, status, lane, title, completedAt? }`
-
-### lumenflow_wu_status
-
-Get detailed status for a specific WU.
-
-| Parameter | Type   | Required | Description             |
-| --------- | ------ | -------- | ----------------------- |
-| `wu_id`   | string | Yes      | WU ID (e.g., "WU-1234") |
-| `cwd`     | string | No       | Project root override   |
-
-**Returns:** YAML-derived status with consistency validation.
-
-### lumenflow_wu_create
-
-Create a new WU spec.
-
-| Parameter     | Type     | Required | Description                             |
-| ------------- | -------- | -------- | --------------------------------------- |
-| `lane`        | string   | Yes      | Lane name                               |
-| `title`       | string   | Yes      | WU title                                |
-| `description` | string   | Yes      | Context/problem/solution                |
-| `acceptance`  | string[] | Yes      | Acceptance criteria                     |
-| `code_paths`  | string[] | No       | Files to modify                         |
-| `exposure`    | enum     | Yes      | ui, api, backend-only, documentation    |
-| `id`          | string   | No       | Explicit ID (auto-generates if omitted) |
-
-**Returns:** CLI output with created WU ID.
-
-### lumenflow_wu_claim
-
-Claim a WU and create worktree.
-
-| Parameter | Type    | Required | Description                     |
-| --------- | ------- | -------- | ------------------------------- |
-| `wu_id`   | string  | Yes      | WU ID to claim                  |
-| `lane`    | string  | Yes      | Lane name                       |
-| `cwd`     | string  | No       | Project root override           |
-| `force`   | boolean | No       | Force claim even if lane locked |
-
-**Returns:** CLI output with worktree path.
-
-### lumenflow_wu_done
-
-Complete a WU (runs gates, merges, stamps).
-
-| Parameter | Type   | Required | Description           |
-| --------- | ------ | -------- | --------------------- |
-| `wu_id`   | string | Yes      | WU ID to complete     |
-| `cwd`     | string | No       | Project root override |
-
-**Returns:** CLI output with completion summary.
-
-**Note:** Must be run from main checkout, not worktree. The server validates this.
-
-### lumenflow_gates_run
-
-Run quality gates.
-
-| Parameter    | Type    | Required | Description                           |
-| ------------ | ------- | -------- | ------------------------------------- |
-| `cwd`        | string  | No       | Working directory (worktree ok)       |
-| `docs_only`  | boolean | No       | Skip code gates for docs-only changes |
-| `full_tests` | boolean | No       | Run all tests, not just affected      |
-| `full_lint`  | boolean | No       | Lint all files, not just changed      |
-
-**Returns:** CLI output with gate results.
+For full per-tool parameter and response reference, see:
+`apps/docs/src/content/docs/reference/mcp.mdx`.
 
 ## Resources Reference
 
@@ -209,6 +138,16 @@ The MCP server runs locally with same permissions as the user. No additional aut
 - `skip_gates` is **not exposed** via MCP (enforcement is non-negotiable)
 - Lane locks and state validation enforced by underlying CLI
 
+### Publish Authentication (`lumenflow_release`)
+
+The MCP `lumenflow_release` tool delegates to CLI `release`, which uses this auth model:
+
+1. Preferred for CI/automation: `NPM_TOKEN`
+2. Also supported: `NODE_AUTH_TOKEN`
+3. Local fallback: `_authToken=` entry in `~/.npmrc`
+
+This keeps MCP release behavior aligned with direct CLI release behavior.
+
 ### MCP Protocol Security
 
 Per MCP specification, hosts must obtain user consent before tool invocation. Claude Code and other MCP clients handle this at the protocol level.
@@ -229,7 +168,7 @@ Per MCP specification, hosts must obtain user consent before tool invocation. Cl
   "mcpServers": {
     "lumenflow": {
       "command": "npx",
-      "args": ["-y", "@lumenflow/mcp@1.2.3"]
+      "args": ["-y", "@lumenflow/mcp@2.11.0"]
     }
   }
 }
@@ -250,20 +189,13 @@ Per MCP specification, hosts must obtain user consent before tool invocation. Cl
 ```
 packages/@lumenflow/mcp/
 ├── src/
-│   ├── index.ts              # CLI entrypoint (bin)
-│   ├── server.ts             # MCP server bootstrap
-│   ├── tools/
-│   │   ├── context.ts        # lumenflow_context_get
-│   │   ├── wu.ts             # wu_list, wu_status, wu_create, wu_claim, wu_done
-│   │   └── gates.ts          # lumenflow_gates_run
-│   ├── resources/
-│   │   ├── context.ts        # lumenflow://context
-│   │   ├── wu.ts             # lumenflow://wu/{id}
-│   │   └── backlog.ts        # lumenflow://backlog
-│   └── lib/
-│       ├── cli-runner.ts     # Spawn CLI, capture output
-│       ├── paths.ts          # Project root resolution
-│       └── schema.ts         # Zod to JSON Schema mapping
+│   ├── bin.ts                # stdio entrypoint
+│   ├── index.ts              # package exports
+│   ├── server.ts             # MCP server factory/handlers
+│   ├── tools.ts              # all 68 tool definitions + allTools registry
+│   ├── resources.ts          # 3 MCP resources + templates
+│   ├── cli-runner.ts         # CLI shell-out adapter for write operations
+│   └── __tests__/            # tool/resource/server integration tests
 └── package.json
 ```
 
@@ -271,6 +203,10 @@ packages/@lumenflow/mcp/
 
 ## Version History
 
+### v2.11 (February 2026) - Launch-Readiness Alignment
+
+Documented current 68-tool / 10-category model, publish auth behavior, and consolidated source layout.
+
 ### v1.0 (February 2026) - Initial Architecture
 
-Documented MCP server design with 7 MVP tools, 3 resources, hybrid execution model (core reads, CLI writes), and stdio transport.
+Initial MCP rollout with the first tool/resource set, hybrid execution model (core reads, CLI writes), and stdio transport.
