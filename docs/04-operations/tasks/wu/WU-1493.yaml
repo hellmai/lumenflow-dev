@@ -2,7 +2,7 @@ id: WU-1493
 title: Add wu:prep support for branch-pr mode
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
 tests:
   manual:
-    - Run wu:prep for branch-pr on correct and wrong branches; verify pass/fail and next-step messaging.
+    - Run wu:prep for branch-pr on correct and wrong branches; verify pass/fail and next-step
+      messaging.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
   e2e: []
@@ -33,9 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:prep currently hard-fails unless run from a worktree. Problem: branch-pr mode is intentionally no-worktree, so prep cannot run for cloud/branch flows. Solution: teach wu:prep to read claimed_mode before location rejection, allow branch-pr execution from main checkout on the lane branch, and output PR-based next steps.'
+description: 'Context: wu:prep currently hard-fails unless run from a worktree. Problem: branch-pr
+  mode is intentionally no-worktree, so prep cannot run for cloud/branch flows. Solution: teach
+  wu:prep to read claimed_mode before location rejection, allow branch-pr execution from main
+  checkout on the lane branch, and output PR-based next steps.'
 acceptance:
   - wu:prep reads claimed_mode before hard worktree rejection.
   - For branch-pr WUs, wu:prep runs from main checkout on the correct lane branch.
   - wu:prep validates current branch matches the WU lane branch in branch-pr mode.
   - Success output for branch-pr shows PR-based completion next step.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1493
+claimed_at: 2026-02-06T19:01:46.395Z
+baseline_main_sha: bbe77c690430dd98cdc104dc075c1b7f9f0d323c
+session_id: 7c4ec118-e3ac-4453-859a-2c3736b1cee3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T19:01:46.398Z
