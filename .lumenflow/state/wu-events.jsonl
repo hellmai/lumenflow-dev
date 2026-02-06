@@ -873,3 +873,4 @@
 {"type":"claim","wuId":"WU-1457","timestamp":"2026-02-06T10:38:34.214Z","lane":"Framework: Core","title":"Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn"}
 {"type":"complete","wuId":"WU-1457","timestamp":"2026-02-06T10:58:54.298Z"}
 {"type":"claim","wuId":"WU-1458","lane":"Framework: CLI","title":"MCP/CLI parity enforcement","timestamp":"2026-02-06T11:03:26.773Z"}
+{"type":"claim","wuId":"WU-1475","lane":"Framework: CLI","title":"Preserve initiative related_plan in initiative:add-wu","timestamp":"2026-02-06T11:06:03.275Z"}

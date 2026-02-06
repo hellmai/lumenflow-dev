@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml)
+- [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml)
 
 ## Blocked
 
