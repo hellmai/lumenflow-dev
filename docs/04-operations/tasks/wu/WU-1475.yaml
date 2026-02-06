@@ -2,7 +2,7 @@ id: WU-1475
 title: Preserve initiative related_plan in initiative:add-wu
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
 tests:
   manual:
-    - Run `pnpm initiative:add-wu --initiative INIT-015 --wu WU-1471` and verify `related_plan` remains present in `docs/04-operations/tasks/initiatives/INIT-015.yaml`.
+    - Run `pnpm initiative:add-wu --initiative INIT-015 --wu WU-1471` and verify `related_plan`
+      remains present in `docs/04-operations/tasks/initiatives/INIT-015.yaml`.
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
   e2e: []
@@ -44,3 +45,5 @@ session_id: a4492dd7-4ab8-456f-8ad9-c80175c78286
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T11:06:03.258Z
+locked: true
+completed_at: 2026-02-06T11:10:35.622Z
