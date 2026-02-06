@@ -352,9 +352,7 @@ export async function executeBranchPRCompletion(context) {
 
   // Push lane branch to origin
   await gitAdapter.push(REMOTES.ORIGIN, laneBranch);
-  console.log(
-    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pushed to ${REMOTES.ORIGIN}/${laneBranch}`,
-  );
+  console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pushed to ${REMOTES.ORIGIN}/${laneBranch}`);
 
   // Create PR from lane branch to main
   const prResult = await createPR({

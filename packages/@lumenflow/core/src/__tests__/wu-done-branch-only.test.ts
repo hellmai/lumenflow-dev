@@ -81,7 +81,11 @@ describe('executeBranchPRCompletion', () => {
 
   it('never checks out main branch', async () => {
     const mockCreatePR = vi.mocked(createPR);
-    mockCreatePR.mockResolvedValue({ success: true, prUrl: 'https://github.com/pr/1', ghAvailable: true });
+    mockCreatePR.mockResolvedValue({
+      success: true,
+      prUrl: 'https://github.com/pr/1',
+      ghAvailable: true,
+    });
     mockGit.push.mockResolvedValue(undefined);
     mockGit.commit.mockResolvedValue(undefined);
     mockGit.add.mockResolvedValue(undefined);
@@ -112,7 +116,11 @@ describe('executeBranchPRCompletion', () => {
 
   it('pushes lane branch and creates PR', async () => {
     const mockCreatePR = vi.mocked(createPR);
-    mockCreatePR.mockResolvedValue({ success: true, prUrl: 'https://github.com/pr/2', ghAvailable: true });
+    mockCreatePR.mockResolvedValue({
+      success: true,
+      prUrl: 'https://github.com/pr/2',
+      ghAvailable: true,
+    });
     mockGit.push.mockResolvedValue(undefined);
     mockGit.commit.mockResolvedValue(undefined);
     mockGit.add.mockResolvedValue(undefined);
@@ -149,7 +157,11 @@ describe('executeBranchPRCompletion', () => {
 
   it('returns success with prUrl in result', async () => {
     const mockCreatePR = vi.mocked(createPR);
-    mockCreatePR.mockResolvedValue({ success: true, prUrl: 'https://github.com/pr/3', ghAvailable: true });
+    mockCreatePR.mockResolvedValue({
+      success: true,
+      prUrl: 'https://github.com/pr/3',
+      ghAvailable: true,
+    });
     mockGit.push.mockResolvedValue(undefined);
     mockGit.commit.mockResolvedValue(undefined);
     mockGit.add.mockResolvedValue(undefined);
