@@ -878,7 +878,8 @@
 {"type":"complete","wuId":"WU-1475","timestamp":"2026-02-06T11:10:38.173Z"}
 {"type":"claim","wuId":"WU-1476","timestamp":"2026-02-06T11:13:33.364Z","lane":"Framework: CLI","title":"Add remove-success-metric support to initiative:edit"}
 {"type":"complete","wuId":"WU-1476","timestamp":"2026-02-06T11:18:24.664Z"}
-{"type":"claim","wuId":"WU-1471","lane":"Framework: CLI","title":"Auto-checkpoint enforcement hooks + wu:done checkpoint gate","timestamp":"2026-02-06T11:29:32.717Z"}
-{"type":"claim","wuId":"WU-1472","lane":"Framework: Memory","title":"Append-only signal read receipts for concurrent-safe consumption","timestamp":"2026-02-06T11:30:22.673Z"}
-{"type":"claim","wuId":"WU-1478","lane":"Operations: Infrastructure","title":"Restructure lane taxonomy for parallel CLI/Core work","timestamp":"2026-02-06T11:36:12.714Z"}
-{"type":"claim","wuId":"WU-1479","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers","timestamp":"2026-02-06T11:36:46.851Z"}
+{"type":"claim","wuId":"WU-1471","timestamp":"2026-02-06T11:29:32.717Z","lane":"Framework: CLI","title":"Auto-checkpoint enforcement hooks + wu:done checkpoint gate"}
+{"type":"claim","wuId":"WU-1472","timestamp":"2026-02-06T11:30:22.673Z","lane":"Framework: Memory","title":"Append-only signal read receipts for concurrent-safe consumption"}
+{"type":"claim","wuId":"WU-1478","timestamp":"2026-02-06T11:36:12.714Z","lane":"Operations: Infrastructure","title":"Restructure lane taxonomy for parallel CLI/Core work"}
+{"type":"claim","wuId":"WU-1479","timestamp":"2026-02-06T11:36:46.851Z","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers"}
+{"type":"complete","wuId":"WU-1472","timestamp":"2026-02-06T11:38:08.798Z"}
