@@ -46,7 +46,8 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
       );
     });
 
-    it('should pass json flag when requested', async () => {
+    // WU-1452: flow_bottlenecks must use --format json, not --json
+    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: '{}',
@@ -56,11 +57,12 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
 
       await flowBottlenecksTool.execute({ json: true });
 
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'flow:bottlenecks',
-        expect.arrayContaining(['--json']),
-        expect.any(Object),
-      );
+      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      // Must use --format json
+      expect(calledArgs).toContain('--format');
+      expect(calledArgs).toContain('json');
+      // Must NOT use --json (CLI does not support it)
+      expect(calledArgs).not.toContain('--json');
     });
 
     it('should return error on failure', async () => {
@@ -114,7 +116,8 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
       );
     });
 
-    it('should pass json flag when requested', async () => {
+    // WU-1452: flow_report must use --format json, not --json
+    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: '{}',
@@ -124,11 +127,12 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
 
       await flowReportTool.execute({ json: true });
 
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'flow:report',
-        expect.arrayContaining(['--json']),
-        expect.any(Object),
-      );
+      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      // Must use --format json
+      expect(calledArgs).toContain('--format');
+      expect(calledArgs).toContain('json');
+      // Must NOT use --json (CLI does not support it)
+      expect(calledArgs).not.toContain('--json');
     });
 
     it('should return error on failure', async () => {
@@ -165,7 +169,8 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
       );
     });
 
-    it('should pass json flag when requested', async () => {
+    // WU-1452: metrics_snapshot must NOT pass --json (CLI has no such flag)
+    it('should not pass any json flag to CLI (WU-1452)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: '{}',
@@ -175,11 +180,10 @@ describe('Flow/Metrics MCP tools (WU-1426)', () => {
 
       await metricsSnapshotTool.execute({ json: true });
 
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'metrics:snapshot',
-        expect.arrayContaining(['--json']),
-        expect.any(Object),
-      );
+      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      // Must NOT pass --json or --format (CLI always outputs JSON, no flag needed)
+      expect(calledArgs).not.toContain('--json');
+      expect(calledArgs).not.toContain('--format');
     });
 
     it('should return error on failure', async () => {

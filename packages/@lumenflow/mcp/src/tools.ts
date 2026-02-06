@@ -144,6 +144,8 @@ const CliArgs = {
   INITIATIVE: '--initiative',
   PHASE: '--phase',
   JSON: '--json',
+  // WU-1452: Commands using --format json (initiative:*, flow:*, metrics)
+  FORMAT_JSON: ['--format', 'json'] as const,
   DRY_RUN: '--dry-run',
   THRESHOLD: '--threshold',
   RECOVER: '--recover',
@@ -1130,7 +1132,8 @@ export const initiativeListTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.status) args.push('--status', input.status as string);
-    if (input.json) args.push(CliArgs.JSON);
+    // WU-1452: initiative:list uses --format json, not --json
+    if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:list', args, cliOptions);
@@ -1168,7 +1171,8 @@ export const initiativeStatusTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string];
-    if (input.json) args.push(CliArgs.JSON);
+    // WU-1452: initiative:status uses --format json, not --json
+    if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:status', args, cliOptions);
@@ -2293,7 +2297,8 @@ export const flowBottlenecksTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.json) args.push(CliArgs.JSON);
+    // WU-1452: flow:bottlenecks uses --format json, not --json
+    if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('flow:bottlenecks', args, cliOptions);
@@ -2330,7 +2335,8 @@ export const flowReportTool: ToolDefinition = {
     const args: string[] = [];
     if (input.since) args.push('--since', input.since as string);
     if (input.until) args.push('--until', input.until as string);
-    if (input.json) args.push(CliArgs.JSON);
+    // WU-1452: flow:report uses --format json, not --json
+    if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('flow:report', args, cliOptions);
@@ -2362,8 +2368,8 @@ export const metricsSnapshotTool: ToolDefinition = {
   }),
 
   async execute(input, options) {
+    // WU-1452: metrics:snapshot always outputs JSON (writes to file); no --json flag exists
     const args: string[] = [];
-    if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('metrics:snapshot', args, cliOptions);

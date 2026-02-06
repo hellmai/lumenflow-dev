@@ -90,6 +90,25 @@ describe('Initiative MCP tools (WU-1424)', () => {
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('Failed to list initiatives');
     });
+
+    // WU-1452: initiative_list must use --format json, not --json
+    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: JSON.stringify([]),
+        stderr: '',
+        exitCode: 0,
+      });
+
+      await initiativeListTool.execute({ json: true });
+
+      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      // Must use --format json
+      expect(calledArgs).toContain('--format');
+      expect(calledArgs).toContain('json');
+      // Must NOT use --json (CLI does not support it)
+      expect(calledArgs).not.toContain('--json');
+    });
   });
 
   describe('initiative_status', () => {
@@ -124,6 +143,25 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('id');
+    });
+
+    // WU-1452: initiative_status must use --format json, not --json
+    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: JSON.stringify({ id: 'INIT-001' }),
+        stderr: '',
+        exitCode: 0,
+      });
+
+      await initiativeStatusTool.execute({ id: 'INIT-001', json: true });
+
+      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      // Must use --format json
+      expect(calledArgs).toContain('--format');
+      expect(calledArgs).toContain('json');
+      // Must NOT use --json (CLI does not support it)
+      expect(calledArgs).not.toContain('--json');
     });
   });
 
