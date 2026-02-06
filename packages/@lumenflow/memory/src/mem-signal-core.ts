@@ -25,6 +25,25 @@ import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 export const SIGNAL_FILE_NAME = 'signals.jsonl';
 
 /**
+ * Signal receipts file name constant (WU-1472)
+ *
+ * Append-only file that stores read receipts for signals.
+ * This avoids rewriting signals.jsonl when marking signals as read,
+ * enabling concurrent-safe consumption by multiple agents.
+ */
+export const SIGNAL_RECEIPTS_FILE_NAME = 'signal-receipts.jsonl';
+
+/**
+ * A read receipt for a signal (WU-1472)
+ */
+export interface SignalReceipt {
+  /** ID of the signal that was read */
+  signal_id: string;
+  /** ISO 8601 timestamp when the signal was read */
+  read_at: string;
+}
+
+/**
  * WU ID validation pattern (from memory-schema.ts)
  */
 const WU_ID_PATTERN = /^WU-\d+$/;
@@ -151,6 +170,47 @@ function getSignalsPath(baseDir: string): string {
 }
 
 /**
+ * Gets the signal receipts file path for a project (WU-1472).
+ *
+ * @param baseDir - Project base directory
+ * @returns Full path to signal-receipts.jsonl
+ */
+function getReceiptsPath(baseDir: string): string {
+  return path.join(getMemoryDir(baseDir), SIGNAL_RECEIPTS_FILE_NAME);
+}
+
+/**
+ * Loads read receipts from the receipts file (WU-1472).
+ *
+ * Returns a Set of signal IDs that have been marked as read via receipts.
+ * If the file does not exist, returns an empty Set.
+ *
+ * @param baseDir - Project base directory
+ * @returns Set of signal IDs with read receipts
+ */
+async function loadReceiptIds(baseDir: string): Promise<Set<string>> {
+  const receiptsPath = getReceiptsPath(baseDir);
+  let content: string;
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known path
+    content = await fs.readFile(receiptsPath, { encoding: 'utf-8' as BufferEncoding });
+  } catch (err) {
+    const error = err as NodeFsError;
+    if (error.code === 'ENOENT') {
+      return new Set();
+    }
+    throw error;
+  }
+  const lines = content.split('\n').filter((line) => line.trim());
+  const ids = new Set<string>();
+  for (const line of lines) {
+    const receipt = JSON.parse(line) as SignalReceipt;
+    ids.add(receipt.signal_id);
+  }
+  return ids;
+}
+
+/**
  * Validates a WU ID format.
  *
  * @param wuId - WU ID to validate
@@ -271,7 +331,15 @@ export async function loadSignals(
 
   // Parse JSONL content
   const lines = content.split('\n').filter((line) => line.trim());
-  const signals = lines.map((line) => JSON.parse(line));
+  const signals: Signal[] = lines.map((line) => JSON.parse(line));
+
+  // Merge receipt-based read state (WU-1472)
+  const receiptIds = await loadReceiptIds(baseDir);
+  for (const signal of signals) {
+    if (!signal.read && receiptIds.has(signal.id)) {
+      signal.read = true;
+    }
+  }
 
   // Apply filters
   let filtered = signals;
@@ -298,10 +366,14 @@ export async function loadSignals(
 }
 
 /**
- * Marks signals as read by updating the signals file.
+ * Marks signals as read by appending receipts to signal-receipts.jsonl (WU-1472).
  *
- * Reads the entire file, updates the read status for matching IDs,
- * and writes back. Only signals that were previously unread are counted.
+ * Instead of rewriting signals.jsonl (which causes lost updates under
+ * concurrency), this appends receipt records to a separate append-only file.
+ * The loadSignals function merges these receipts to derive effective read state.
+ *
+ * Only signals that are currently unread (no inline read:true AND no existing
+ * receipt) are counted in markedCount.
  *
  * @param baseDir - Project base directory
  * @param signalIds - Array of signal IDs to mark as read
@@ -317,13 +389,12 @@ export async function markSignalsAsRead(
 ): Promise<MarkAsReadResult> {
   const signalsPath = getSignalsPath(baseDir);
   const idSet = new Set<string>(signalIds);
-  let markedCount = 0;
 
-  // Read file content
-  let content: string;
+  // Read signals file to determine which IDs exist and their inline read state
+  let signalContent: string;
   try {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads signals file
-    content = await fs.readFile(signalsPath, { encoding: 'utf-8' as BufferEncoding });
+    signalContent = await fs.readFile(signalsPath, { encoding: 'utf-8' as BufferEncoding });
   } catch (err) {
     const error = err as NodeFsError;
     if (error.code === 'ENOENT') {
@@ -333,22 +404,41 @@ export async function markSignalsAsRead(
     throw error;
   }
 
-  // Parse JSONL content
-  const lines = content.split('\n').filter((line) => line.trim());
-  const updatedLines = lines.map((line) => {
-    const signal = JSON.parse(line);
-    if (idSet.has(signal.id) && signal.read === false) {
-      signal.read = true;
-      markedCount++;
+  // Build map of existing signal read states
+  const lines = signalContent.split('\n').filter((line) => line.trim());
+  const inlineReadIds = new Set<string>();
+  const existingIds = new Set<string>();
+  for (const line of lines) {
+    const signal = JSON.parse(line) as Signal;
+    existingIds.add(signal.id);
+    if (signal.read) {
+      inlineReadIds.add(signal.id);
     }
-    return JSON.stringify(signal);
-  });
+  }
 
-  // Write back updated content
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes signals file
-  await fs.writeFile(signalsPath, `${updatedLines.join('\n')}\n`, {
-    encoding: 'utf-8' as BufferEncoding,
-  });
+  // Load existing receipts to check for duplicates
+  const existingReceiptIds = await loadReceiptIds(baseDir);
 
-  return { markedCount };
+  // Determine which signals need new receipts
+  const now = new Date().toISOString();
+  const newReceipts: SignalReceipt[] = [];
+  for (const id of idSet) {
+    // Only create receipt if: signal exists, not already inline read, no existing receipt
+    if (existingIds.has(id) && !inlineReadIds.has(id) && !existingReceiptIds.has(id)) {
+      newReceipts.push({ signal_id: id, read_at: now });
+    }
+  }
+
+  // Append receipts (append-only for concurrent safety)
+  if (newReceipts.length > 0) {
+    const memoryDir = getMemoryDir(baseDir);
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool creates known directory
+    await fs.mkdir(memoryDir, { recursive: true });
+    const receiptsPath = getReceiptsPath(baseDir);
+    const receiptLines = newReceipts.map((r) => JSON.stringify(r)).join('\n') + '\n';
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes receipts file
+    await fs.appendFile(receiptsPath, receiptLines, 'utf-8');
+  }
+
+  return { markedCount: newReceipts.length };
 }

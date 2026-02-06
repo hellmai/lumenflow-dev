@@ -20,7 +20,12 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const ms = require('ms') as (value: string) => number;
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
-import { SIGNAL_FILE_NAME, type Signal } from './mem-signal-core.js';
+import {
+  SIGNAL_FILE_NAME,
+  SIGNAL_RECEIPTS_FILE_NAME,
+  type Signal,
+  type SignalReceipt,
+} from './mem-signal-core.js';
 
 /**
  * Default TTL values in milliseconds
@@ -260,6 +265,52 @@ function getSignalsPath(baseDir: string): string {
 }
 
 /**
+ * Gets the signal receipts file path for a project (WU-1472).
+ *
+ * @param baseDir - Project base directory
+ * @returns Full path to signal-receipts.jsonl
+ */
+function getReceiptsPath(baseDir: string): string {
+  return path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR, SIGNAL_RECEIPTS_FILE_NAME);
+}
+
+/**
+ * Load all receipts from the receipts file (WU-1472).
+ *
+ * @param baseDir - Project base directory
+ * @returns Array of all receipts
+ */
+async function loadAllReceipts(baseDir: string): Promise<SignalReceipt[]> {
+  const receiptsPath = getReceiptsPath(baseDir);
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool reads known path
+    const content = await fs.readFile(receiptsPath, { encoding: 'utf-8' as BufferEncoding });
+    const lines = content.split('\n').filter((line) => line.trim());
+    return lines.map((line) => JSON.parse(line) as SignalReceipt);
+  } catch (err) {
+    const error = err as NodeFsError;
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+/**
+ * Write retained receipts back to file (WU-1472).
+ *
+ * @param baseDir - Project base directory
+ * @param receipts - Receipts to write
+ */
+async function writeReceipts(baseDir: string, receipts: SignalReceipt[]): Promise<void> {
+  const receiptsPath = getReceiptsPath(baseDir);
+  const content =
+    receipts.map((r) => JSON.stringify(r)).join('\n') + (receipts.length > 0 ? '\n' : '');
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- CLI tool writes known path
+  await fs.writeFile(receiptsPath, content, { encoding: 'utf-8' as BufferEncoding });
+}
+
+/**
  * Load signals directly from file (for cleanup, to avoid loadSignals filter limitations).
  *
  * @param baseDir - Project base directory
@@ -489,6 +540,15 @@ export async function cleanupSignals(
   const signals = await loadAllSignals(baseDir);
   const activeWuIds = await getActiveWuIds();
 
+  // Load receipts and merge effective read state (WU-1472)
+  const receipts = await loadAllReceipts(baseDir);
+  const receiptSignalIds = new Set(receipts.map((r) => r.signal_id));
+  for (const signal of signals) {
+    if (!signal.read && receiptSignalIds.has(signal.id)) {
+      signal.read = true;
+    }
+  }
+
   const state = processSignalsForTtl(signals, config, { now, activeWuIds });
   applyCountPruning(state, config.maxEntries);
 
@@ -508,6 +568,11 @@ export async function cleanupSignals(
 
   if (state.removedIds.length > 0) {
     await writeSignals(baseDir, state.retainedSignals);
+
+    // Clean up orphaned receipts (WU-1472)
+    const retainedIdSet = new Set(state.retainedIds);
+    const retainedReceipts = receipts.filter((r) => retainedIdSet.has(r.signal_id));
+    await writeReceipts(baseDir, retainedReceipts);
   }
 
   return baseResult;
