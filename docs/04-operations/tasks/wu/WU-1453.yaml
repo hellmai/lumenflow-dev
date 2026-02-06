@@ -2,7 +2,7 @@ id: WU-1453
 title: 'MCP: Add real CLI integration tests'
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -51,3 +51,5 @@ acceptance:
   - New integration test file calls real CLI (no mock)
   - Tests verify CLI accepts flags MCP passes
   - Tests would fail on original --json mismatches
+locked: true
+completed_at: 2026-02-06T09:38:25.641Z

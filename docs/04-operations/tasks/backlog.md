@@ -30,7 +30,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -449,3 +449,4 @@ sections:
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml)
 - [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml)
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml)
+- [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml)
