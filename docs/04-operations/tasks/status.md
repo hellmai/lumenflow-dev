@@ -445,3 +445,4 @@ _Last updated: 2026-02-06_
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — 2026-02-06
 - [WU-1486 — Sync MCP internal and Starlight docs with current tool surface](wu/WU-1486.yaml) — 2026-02-06
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — 2026-02-06
+- [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — 2026-02-06

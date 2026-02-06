@@ -2,7 +2,7 @@ id: WU-1479
 title: Fix wu:done push race condition and add provenance trailers
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -56,3 +56,5 @@ acceptance:
   - No hardcoded string literals - uses GIT_COMMANDS/GIT_FLAGS constants
   - All existing tests pass
   - Unit tests cover provenance trailer generation and pass
+locked: true
+completed_at: 2026-02-06T14:10:04.714Z
