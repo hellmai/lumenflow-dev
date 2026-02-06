@@ -3,7 +3,7 @@ slug: memory-enforcement-rollout
 title: Enforceable Memory Layer Rollout
 description: Rollout configurable, enforceable memory behavior across checkpointing, signal
   integrity, recovery, and decay, with vendor-agnostic policy and client-specific hook wiring.
-status: open
+status: in_progress
 priority: P1
 owner: workflow
 created: 2026-02-06
@@ -32,4 +32,3 @@ wus:
   - WU-1472
   - WU-1473
   - WU-1474
-related_plan: lumenflow://plans/parsed-whistling-blanket.md
