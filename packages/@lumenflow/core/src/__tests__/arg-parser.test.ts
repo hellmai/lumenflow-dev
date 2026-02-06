@@ -314,6 +314,26 @@ describe('arg-parser', () => {
       });
     });
 
+    describe('cloud mode options (WU-1491)', () => {
+      it('should define cloud option', () => {
+        expect(WU_OPTIONS.cloud.name).toBe('cloud');
+        expect(WU_OPTIONS.cloud.flags).toBe('--cloud');
+        expect(WU_OPTIONS.cloud.description).toContain('cloud');
+      });
+
+      it('should parse --cloud flag', () => {
+        process.argv = ['node', 'test.js', '--cloud'];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.cloud],
+        });
+
+        expect(opts.cloud).toBe(true);
+      });
+    });
+
     describe('safety options', () => {
       it('should define resume option', () => {
         expect(WU_OPTIONS.resume.name).toBe('resume');

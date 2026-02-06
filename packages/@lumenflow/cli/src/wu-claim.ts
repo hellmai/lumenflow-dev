@@ -50,6 +50,8 @@ import { detectConflicts } from '@lumenflow/core/dist/code-paths-overlap.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+// WU-1491: Mode resolution for --cloud and flag combinations
+import { resolveClaimMode } from './wu-claim-mode.js';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/dist/wu-paths.js';
 import {
   BRANCHES,
@@ -1519,6 +1521,7 @@ async function main() {
       WU_OPTIONS.fix,
       WU_OPTIONS.reason,
       WU_OPTIONS.allowIncomplete,
+      WU_OPTIONS.cloud, // WU-1491: Cloud/branch-pr mode for cloud agents
       WU_OPTIONS.resume, // WU-2411: Agent handoff flag
       WU_OPTIONS.skipSetup, // WU-1023: Skip auto-setup for fast claims
       WU_OPTIONS.noPush, // Skip pushing claim state/branch (air-gapped)
@@ -1674,16 +1677,20 @@ async function main() {
     const title = (await readWUTitle(id)) || '';
     const branch = args.branch || `lane/${laneK}/${idK}`;
     const worktree = args.worktree || `worktrees/${laneK}-${idK}`;
-    // Determine claimed mode based on flags (no nested ternaries for sonarjs compliance)
-    let claimedMode = CLAIMED_MODES.WORKTREE;
-    if (args.branchOnly) {
-      claimedMode = CLAIMED_MODES.BRANCH_ONLY;
-    } else if (args.prMode) {
-      claimedMode = CLAIMED_MODES.WORKTREE_PR;
+    // WU-1491: Resolve claimed mode from flag combination
+    const modeResult = resolveClaimMode({
+      branchOnly: args.branchOnly,
+      prMode: args.prMode,
+      cloud: args.cloud,
+    });
+    if (modeResult.error) {
+      die(modeResult.error);
     }
+    const claimedMode = modeResult.mode;
 
-    // Branch-Only mode validation
-    if (args.branchOnly) {
+    // Branch-Only singleton guard: only for pure branch-only mode (not branch-pr)
+    // branch-pr skips this guard because it supports parallel agents via PR isolation
+    if (!modeResult.skipBranchOnlySingletonGuard) {
       await validateBranchOnlyMode(STATUS_PATH, id);
     }
 
@@ -1778,7 +1785,9 @@ async function main() {
       sessionId,
       updatedTitle,
     };
-    if (args.branchOnly) {
+    // WU-1491: Route to correct mode handler
+    // branch-pr uses branch-only workflow (no worktree) but with branch-pr claimed_mode
+    if (claimedMode === CLAIMED_MODES.BRANCH_ONLY || claimedMode === CLAIMED_MODES.BRANCH_PR) {
       await claimBranchOnlyMode(ctx);
     } else {
       await claimWorktreeMode(ctx);
