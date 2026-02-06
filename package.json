@@ -7,6 +7,7 @@
   "scripts": {
     "prepare": "husky",
     "setup": "pnpm install && turbo build --filter=@lumenflow/cli && node packages/@lumenflow/cli/dist/commands/integrate.js --client claude-code 2>/dev/null || true",
+    "bootstrap": "turbo build --filter=@lumenflow/cli",
     "build": "turbo build",
     "build:dist": "turbo build:dist",
     "dev": "turbo dev",

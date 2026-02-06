@@ -70,15 +70,18 @@ DEPS_CHANGED=0
 if echo "$STAGED_FILES" | grep -q "package.json"; then
     HAS_PACKAGE_JSON=1
 
-    # Check if dependency fields actually changed (not just metadata)
-    # Look for additions/modifications to dependency sections
-    DEPS_CHANGED=$(git diff --cached -U0 -- "package.json" | grep -E '^\+.*"(dependencies|devDependencies|peerDependencies|optionalDependencies)"' | wc -l)
-
-    # Also check for dependency value changes within existing sections
-    if [ "$DEPS_CHANGED" -eq 0 ]; then
-        # Look for lines that add/modify dependencies within sections
-        DEPS_CHANGED=$(git diff --cached -- "package.json" | grep -E '^\+.*"[a-zA-Z0-9@/_-]+":\s*"[^"]*"' | wc -l)
-    fi
+    # Use Node.js JSON.parse to compare dependency fields structurally.
+    # Replaces brittle regex that false-positived on script additions (WU-1480).
+    DEPS_CHANGED=$(node -e "
+      const { execFileSync } = require('child_process');
+      const DEP_FIELDS = ['dependencies','devDependencies','peerDependencies','optionalDependencies'];
+      try {
+        const head = JSON.parse(execFileSync('git', ['show', 'HEAD:package.json'], { encoding: 'utf8' }));
+        const staged = JSON.parse(execFileSync('git', ['show', ':package.json'], { encoding: 'utf8' }));
+        const changed = DEP_FIELDS.some(f => JSON.stringify(head[f]) !== JSON.stringify(staged[f]));
+        process.stdout.write(changed ? '1' : '0');
+      } catch { process.stdout.write('0'); }
+    ")
 fi
 
 if echo "$STAGED_FILES" | grep -q "pnpm-lock.yaml"; then
