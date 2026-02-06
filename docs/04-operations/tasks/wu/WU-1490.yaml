@@ -2,7 +2,7 @@ id: WU-1490
 title: Add branch-pr claimed mode primitives
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -35,9 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: cloud agents need a no-worktree PR completion mode. Problem: claimed_mode currently lacks branch-pr, so mode routing cannot represent no-worktree+PR flow. Solution: add branch-pr primitives in constants/schema/path detection and tests.'
+description: 'Context: cloud agents need a no-worktree PR completion mode. Problem: claimed_mode
+  currently lacks branch-pr, so mode routing cannot represent no-worktree+PR flow. Solution: add
+  branch-pr primitives in constants/schema/path detection and tests.'
 acceptance:
   - CLAIMED_MODES.BRANCH_PR is added and exported.
   - 'WU schema accepts claimed_mode: branch-pr.'
   - detectWorkspaceMode() treats branch-pr as non-worktree mode.
   - Unit tests cover new claimed mode constants and workspace-mode detection.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1490
+claimed_at: 2026-02-06T18:41:01.947Z
+baseline_main_sha: 1d99ae5248e7d01a45380e292bf548bc4a0cdb75
+session_id: 13561cc8-745f-4658-ba4e-c67f160f27de
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T18:41:01.954Z
