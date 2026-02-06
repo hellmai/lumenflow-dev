@@ -2,7 +2,7 @@ id: WU-1486
 title: Sync MCP internal and Starlight docs with current tool surface
 lane: 'Content: Documentation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -12,7 +12,9 @@ code_paths:
 tests:
   manual:
     - pnpm gates --docs-only
-    - rg -n "98 tools|90 normalized|file_read|wu_proto" docs/04-operations/_frameworks/lumenflow/mcp-server.md apps/docs/src/content/docs/reference/mcp.mdx
+    - rg -n "98 tools|90 normalized|file_read|wu_proto"
+      docs/04-operations/_frameworks/lumenflow/mcp-server.md
+      apps/docs/src/content/docs/reference/mcp.mdx
   unit: []
   e2e: []
 artifacts:
@@ -30,9 +32,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: MCP tool surface increased with wave-1/wave-2 parity additions, but docs still report the old 68-tool model. Problem: internal and public docs are inconsistent with code, causing operator and agent confusion. Solution: update internal MCP architecture doc and Starlight MCP reference/setup to reflect current total tools, parity scope, and newly available tool families.'
+description: 'Context: MCP tool surface increased with wave-1/wave-2 parity additions, but docs
+  still report the old 68-tool model. Problem: internal and public docs are inconsistent with code,
+  causing operator and agent confusion. Solution: update internal MCP architecture doc and Starlight
+  MCP reference/setup to reflect current total tools, parity scope, and newly available tool
+  families.'
 acceptance:
-  - docs/04-operations/_frameworks/lumenflow/mcp-server.md reflects current MCP total tool count and category breakdown from packages/@lumenflow/mcp/src/tools.ts.
-  - apps/docs/src/content/docs/reference/mcp.mdx reflects current MCP total tool count and includes the wave-1/wave-2 parity tool families (file/git/plan/signal/wu-proto + ops/setup parity commands).
-  - apps/docs/src/content/docs/guides/mcp-setup.mdx examples remain valid and note expanded MCP tool surface in line with reference docs.
-  - Doc references clearly distinguish public CLI parity target (90 normalized commands) from total MCP tools (including allowed MCP-only extras).
+  - docs/04-operations/_frameworks/lumenflow/mcp-server.md reflects current MCP total tool count and
+    category breakdown from packages/@lumenflow/mcp/src/tools.ts.
+  - apps/docs/src/content/docs/reference/mcp.mdx reflects current MCP total tool count and includes
+    the wave-1/wave-2 parity tool families (file/git/plan/signal/wu-proto + ops/setup parity
+    commands).
+  - apps/docs/src/content/docs/guides/mcp-setup.mdx examples remain valid and note expanded MCP tool
+    surface in line with reference docs.
+  - Doc references clearly distinguish public CLI parity target (90 normalized commands) from total
+    MCP tools (including allowed MCP-only extras).
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1486
+claimed_at: 2026-02-06T13:42:22.395Z
+baseline_main_sha: d73a85524fcf651e4c4ab81be262660c043514b0
+session_id: c52718ee-ec1f-40e0-8109-b375ce97a79a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T13:42:22.399Z
