@@ -14,7 +14,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run pnpm gates --docs-only and validate cloud workflow docs are consistent across updated pages.
+    - Run pnpm gates --docs-only and validate cloud workflow docs are consistent across updated
+      pages.
   unit: []
   e2e: []
 artifacts:
@@ -28,10 +29,16 @@ blocked_by:
   - WU-1493
   - WU-1494
   - WU-1495
+  - WU-1499
 spec_refs:
   - lumenflow://plans/memoized-baking-sutton.md
 risks: []
-notes: WU-F2 from branch-pr cloud initiative plan.
+notes: >-
+  WU-F2 from branch-pr cloud initiative plan.
+
+
+  WU-1498 split follow-up: this WU owns lane-fit reasoning guidance in onboarding + constraints
+  docs.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -40,10 +47,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: cloud workflow docs still emphasize worktree/cherry-pick patterns and miss branch-pr semantics. Problem: operator and agent guidance diverges from intended first-class cloud lifecycle. Solution: update AGENTS/playbook/onboarding/vendor/quick-ref/constraints documentation to reflect explicit cloud activation, branch-pr lifecycle, and post-merge cleanup guidance.'
+description: 'Context: cloud workflow docs still emphasize worktree/cherry-pick patterns and miss
+  branch-pr semantics. Problem: operator and agent guidance diverges from intended first-class cloud
+  lifecycle. Solution: update AGENTS/playbook/onboarding/vendor/quick-ref/constraints documentation
+  to reflect explicit cloud activation, branch-pr lifecycle, and post-merge cleanup guidance.'
 acceptance:
-  - Cloud guidance in AGENTS.md and playbook uses branch-pr as first-class path, not cherry-pick-centric fallback.
-  - starting-prompt.md and vendor-support.md document explicit cloud activation and config-driven auto-detect behavior.
+  - Cloud guidance in AGENTS.md and playbook uses branch-pr as first-class path, not
+    cherry-pick-centric fallback.
+  - starting-prompt.md and vendor-support.md document explicit cloud activation and config-driven
+    auto-detect behavior.
   - quick-ref-commands.md includes cloud lifecycle command flow and post-merge cleanup guidance.
   - .lumenflow/constraints.md includes valid branch-pr exception language for worktree discipline.
   - Documentation remains consistent with shipped command behavior and config keys.
+  - starting-prompt.md and .lumenflow/constraints.md explicitly instruct agents to evaluate lane
+    fitness during WU/initiative scoping and propose lane changes when boundaries no longer fit
+    scope
