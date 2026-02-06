@@ -892,3 +892,4 @@
 {"type":"complete","wuId":"WU-1480","timestamp":"2026-02-06T12:13:01.142Z"}
 {"type":"claim","wuId":"WU-1481","timestamp":"2026-02-06T12:18:11.391Z","lane":"Framework: MCP","title":"MCP parity truth gate against public CLI manifest"}
 {"type":"complete","wuId":"WU-1481","timestamp":"2026-02-06T12:19:43.107Z"}
+{"type":"claim","wuId":"WU-1482","lane":"Framework: MCP","title":"MCP parity remediation wave 1 (state/lane/gates/setup commands)","timestamp":"2026-02-06T12:20:08.537Z"}
