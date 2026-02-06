@@ -10,15 +10,12 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - apps/docs/src/content/docs/getting-started/quickstart.mdx
 tests:
-  manual:
-    - Run lumenflow init in a fresh repo with git init --initial-branch=master and verify branch is
-      renamed to main
-    - Run initiative:edit with requireRemote:false config and verify no origin fetch attempt
-    - Verify quickstart.mdx step 3 is pnpm init
-    - Verify quickstart.mdx wu:create example mentions --spec-refs as optional
+  manual: []
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/init.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1497.done
