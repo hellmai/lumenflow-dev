@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml)
 
 ## Blocked
 
