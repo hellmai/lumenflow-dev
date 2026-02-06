@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml) — Framework: CLI
 - [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — Framework: Core

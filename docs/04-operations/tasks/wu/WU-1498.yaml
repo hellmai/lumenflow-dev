@@ -1,0 +1,41 @@
+id: WU-1498
+title: Add passive lane-signal telemetry and agent lane-fit reasoning
+lane: 'Framework: Core'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-branch-only.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - .lumenflow/constraints.md
+tests:
+  manual:
+    - Verify lane-signals.ndjson is written after wu:done success and not written on failure
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-signal-emitter.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1498.done
+dependencies: []
+spec_refs:
+  - lumenflow://conversation/lane-evolution-design
+risks: []
+notes: Designed collaboratively across Claude and Codex. Signal capture is passive telemetry only. Lane reasoning is agent-driven via prompts, not CLI commands.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Lane evolution is currently a social convention with no data feedback loop. Problem: Agents default to broad lanes (e.g. Framework: CLI), lane validation is advisory-only, and there is no accumulated signal about lane purity or cross-lane drift. The init template hardcodes lane: Framework: CLI as the example. Solution: (1) Emit passive lane-signal NDJSON at wu:done success with actual changed files vs declared lane, using a shared helper for worktree/branch-only/branch-pr paths. (2) Neutralize the template bias in init.ts. (3) Add lane-fit reasoning guidance to agent workflow docs so the LLM agent reasons about lane fitness during WU/initiative scoping.'
+acceptance:
+  - wu:done emits one NDJSON line to .lumenflow/telemetry/lane-signals.ndjson with wuId, lane, actualFiles, timestamp on success
+  - 'Signal emission is fail-open: errors are caught and logged, never block wu:done'
+  - Signal emission works for worktree, branch-only, and branch-pr completion paths via shared helper
+  - 'WU template in init.ts no longer hardcodes Framework: CLI as default lane'
+  - Agent starting-prompt or constraints include lane-fit reasoning instruction for WU/initiative scoping
