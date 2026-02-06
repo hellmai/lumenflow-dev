@@ -403,8 +403,8 @@ const sharedFields = {
     .optional()
     .transform((val) => normalizeISODateTime(val)),
 
-  /** Claimed mode (worktree/branch-only/pr) */
-  claimed_mode: z.enum(['worktree', 'branch-only', 'worktree-pr']).optional(),
+  /** Claimed mode (worktree/branch-only/worktree-pr/branch-pr) */
+  claimed_mode: z.enum(['worktree', 'branch-only', 'worktree-pr', 'branch-pr']).optional(),
 
   /** Assigned agent email */
   assigned_to: z.string().email().optional(),

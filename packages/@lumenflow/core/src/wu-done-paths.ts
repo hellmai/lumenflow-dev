@@ -168,11 +168,12 @@ export async function defaultWorktreeFrom(doc) {
 /**
  * Detect workspace mode from WU YAML
  * @param {object} doc - WU YAML document
- * @returns {'worktree' | 'branch-only'}
+ * @returns {'worktree' | 'branch-only' | 'branch-pr'}
  */
 export function detectWorkspaceMode(doc) {
   // Explicit mode field takes precedence
   if (doc.claimed_mode === CLAIMED_MODES.BRANCH_ONLY) return CLAIMED_MODES.BRANCH_ONLY;
+  if (doc.claimed_mode === CLAIMED_MODES.BRANCH_PR) return CLAIMED_MODES.BRANCH_PR;
   if (doc.claimed_mode === CLAIMED_MODES.WORKTREE) return CLAIMED_MODES.WORKTREE;
 
   // Backward compatibility: if claimed_mode is missing, assume worktree mode
