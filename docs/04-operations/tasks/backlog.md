@@ -20,21 +20,18 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — Framework: CLI
-- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
-- [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — Framework: Core
-- [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — Framework: Core
-- [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml) — Framework: CLI
-- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml) — Framework: Core
-- [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml) — Framework: CLI
+- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml) — Framework: Core
-- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
-
-- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
+- [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml) — Framework: CLI
+- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml) — Framework: Core
+- [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml) — Framework: CLI
+- [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — Framework: Core
+- [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — Framework: Core
+- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 

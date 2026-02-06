@@ -914,3 +914,4 @@
 {"type":"complete","wuId":"WU-1384","timestamp":"2026-02-06T14:13:14.498Z"}
 {"type":"claim","wuId":"WU-1487","timestamp":"2026-02-06T14:14:56.784Z","lane":"Framework: CLI","title":"Harden worktree command UX for dist bootstrap and claim repair guidance"}
 {"type":"complete","wuId":"WU-1487","timestamp":"2026-02-06T14:23:08.473Z"}
+{"type":"claim","wuId":"WU-1497","lane":"Framework: CLI","title":"Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps","timestamp":"2026-02-06T17:56:34.078Z"}
