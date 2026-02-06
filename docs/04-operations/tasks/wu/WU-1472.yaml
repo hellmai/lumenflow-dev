@@ -10,8 +10,13 @@ code_paths:
   - packages/@lumenflow/memory/src/mem-signal-core.ts
   - packages/@lumenflow/memory/src/signal-cleanup-core.ts
 tests:
-  manual: []
+  manual:
+    - Verify markSignalsAsRead does not modify signals.jsonl
+    - Verify loadSignals merges receipt-based read state with inline read:true
+    - Verify cleanup removes orphaned receipts for cleaned-up signals
+    - Verify concurrent markSignalsAsRead calls do not lose updates
   unit:
+    - packages/@lumenflow/memory/__tests__/signal-receipts.test.ts
     - packages/@lumenflow/memory/__tests__/signal-cleanup-core.test.ts
     - packages/@lumenflow/memory/__tests__/memory-store.test.ts
   e2e: []
