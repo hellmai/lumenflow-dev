@@ -3,12 +3,50 @@ import { ensureCleanWorktree } from '../wu-done-check.js';
 import { computeBranchOnlyFallback } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
+import { validateInputs } from '@lumenflow/core/dist/wu-done-inputs.js';
 
 // Mock dependencies
 vi.mock('@lumenflow/core/git-adapter');
 vi.mock('@lumenflow/core/error-handler');
 
 describe('wu-done', () => {
+  // WU-1494: Verify --pr-draft is accepted by wu:done arg parser
+  describe('--pr-draft parser/help parity (WU-1494)', () => {
+    let originalArgv: string[];
+    let originalExit: typeof process.exit;
+
+    beforeEach(() => {
+      originalArgv = process.argv;
+      originalExit = process.exit;
+      process.exit = vi.fn() as never;
+    });
+
+    afterEach(() => {
+      process.argv = originalArgv;
+      process.exit = originalExit;
+    });
+
+    it('should accept --pr-draft with --create-pr via validateInputs', () => {
+      const argv = ['node', 'wu-done.js', '--id', 'WU-100', '--create-pr', '--pr-draft'];
+
+      const { args, id } = validateInputs(argv);
+
+      expect(id).toBe('WU-100');
+      expect(args.createPr).toBe(true);
+      expect(args.prDraft).toBe(true);
+    });
+
+    it('should accept --create-pr without --pr-draft via validateInputs', () => {
+      const argv = ['node', 'wu-done.js', '--id', 'WU-200', '--create-pr'];
+
+      const { args, id } = validateInputs(argv);
+
+      expect(id).toBe('WU-200');
+      expect(args.createPr).toBe(true);
+      expect(args.prDraft).toBeUndefined();
+    });
+  });
+
   describe('ensureCleanWorktree', () => {
     let mockGit: any;
 
