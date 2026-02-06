@@ -43,6 +43,7 @@ import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
 import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
+import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 // WU-1223: Location detection for worktree check
@@ -185,7 +186,7 @@ const WU_EVENTS_PATH = '.lumenflow/state/wu-events.jsonl';
  * 1. Worktree YAML status must be 'in_progress'
  * 2. State store must show WU as 'in_progress'
  *
- * If either fails, exits before gates with actionable guidance to run wu:repair-claim.
+ * If either fails, exits before gates with actionable guidance to repair claim metadata.
  * This prevents burning tokens on gates that will ultimately fail.
  *
  * @param {string} id - WU ID
@@ -222,7 +223,8 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
     return;
   }
 
-  // Build actionable error message with wu:repair-claim guidance
+  // Build actionable error message with canonical wu:repair --claim guidance
+  const repairCommand = buildClaimRepairCommand(id);
   die(
     `❌ CLAIM METADATA VALIDATION FAILED (WU-1804)\n\n` +
       `Cannot proceed with wu:done - the WU is not properly claimed.\n\n` +
@@ -232,7 +234,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
       `  • The claim transaction was partially completed\n` +
       `  • Another process modified the WU state\n\n` +
       `Next step:\n` +
-      `  pnpm wu:repair-claim --id ${id}\n\n` +
+      `  ${repairCommand}\n\n` +
       `After repair, retry:\n` +
       `  pnpm wu:done --id ${id}\n\n` +
       `See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery options.`,
@@ -1985,7 +1987,7 @@ async function executePreFlightChecks({
 
     // WU-1804: Fail fast before gates with comprehensive claim metadata check.
     // Validates both YAML status AND state store BEFORE gates, not just one of them.
-    // Provides actionable guidance to run wu:repair-claim if validation fails.
+    // Provides actionable guidance to run wu:repair --claim if validation fails.
     if (derivedWorktree) {
       await validateClaimMetadataBeforeGates(id, derivedWorktree, docForValidation.status);
     }
