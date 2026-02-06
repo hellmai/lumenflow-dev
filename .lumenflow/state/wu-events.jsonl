@@ -890,4 +890,5 @@
 {"type":"claim","wuId":"WU-1474","timestamp":"2026-02-06T12:00:29.816Z","lane":"Framework: CLI","title":"Activate decay policy in completion lifecycle"}
 {"type":"claim","wuId":"WU-1480","timestamp":"2026-02-06T12:01:54.128Z","lane":"Operations: Tooling","title":"Add dependency-closure bootstrap for dist-backed CLI commands"}
 {"type":"complete","wuId":"WU-1480","timestamp":"2026-02-06T12:13:01.142Z"}
-{"type":"claim","wuId":"WU-1481","lane":"Framework: MCP","title":"MCP parity truth gate against public CLI manifest","timestamp":"2026-02-06T12:18:11.391Z"}
+{"type":"claim","wuId":"WU-1481","timestamp":"2026-02-06T12:18:11.391Z","lane":"Framework: MCP","title":"MCP parity truth gate against public CLI manifest"}
+{"type":"complete","wuId":"WU-1481","timestamp":"2026-02-06T12:19:43.107Z"}

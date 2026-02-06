@@ -2,7 +2,7 @@ id: WU-1481
 title: MCP parity truth gate against public CLI manifest
 lane: 'Framework: MCP'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -55,3 +55,5 @@ session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T12:13:02.971Z
+locked: true
+completed_at: 2026-02-06T12:19:40.488Z

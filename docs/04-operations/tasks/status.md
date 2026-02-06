@@ -436,3 +436,4 @@ _Last updated: 2026-02-06_
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml) — 2026-02-06
 - [WU-1478 — Restructure lane taxonomy for parallel CLI/Core work](wu/WU-1478.yaml) — 2026-02-06
 - [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml) — 2026-02-06
+- [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — 2026-02-06
