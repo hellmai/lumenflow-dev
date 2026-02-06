@@ -16,7 +16,7 @@ export function buildPreflightErrorMessage(id, errors) {
   let message = `
 ❌ PREFLIGHT VALIDATION FAILED
 
-tasks:validate found errors that would block pre-push hooks.
+wu:validate found errors that would block pre-push hooks.
 Aborting wu:done BEFORE any merge operations to prevent deadlocks.
 
 Errors:
@@ -36,7 +36,7 @@ Fix options:
 
   message += `
   General fixes:
-  1. Run: pnpm tasks:validate to see full errors
+  1. Run: pnpm wu:validate to see full errors
   2. Fix the validation errors
   3. Retry: pnpm wu:done --id ${id}
 
@@ -166,16 +166,16 @@ See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery 
 }
 
 /**
- * WU-1781: Run tasks:validate as preflight check before any git operations
+ * WU-1781: Run wu:validate as preflight check before any git operations
  */
 export function runPreflightTasksValidation(id) {
-  console.log(`\n${LOG_PREFIX.DONE} 🔍 Preflight: running tasks:validate...`);
+  console.log(`\n${LOG_PREFIX.DONE} 🔍 Preflight: running wu:validate...`);
 
   const wuPath = WU_PATHS.WU(id);
   const result = validateSingleWU(wuPath, { strict: false });
 
   if (result.valid) {
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Preflight tasks:validate passed`);
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Preflight wu:validate passed`);
     return {
       valid: true,
       errors: [],
@@ -185,7 +185,7 @@ export function runPreflightTasksValidation(id) {
     };
   }
 
-  console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Preflight tasks:validate failed`);
+  console.error(`\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Preflight wu:validate failed`);
 
   return {
     valid: false,

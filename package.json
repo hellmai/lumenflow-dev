@@ -44,7 +44,7 @@
     "spec:linter": "node tools/cli-entry.mjs wu-validate --all",
     "prompts:lint": "echo 'prompts:lint: informational stub (non-blocking, not an enforced quality gate)' && exit 0",
     "cos:gates": "echo 'cos:gates: informational stub (non-blocking, not an enforced quality gate)' && exit 0",
-    "tasks:validate": "echo 'tasks:validate: informational stub (non-blocking, not an enforced quality gate)' && exit 0",
+    "tasks:validate": "node tools/cli-entry.mjs wu-validate --all",
     "mem:init": "node packages/@lumenflow/cli/dist/mem-init.js",
     "mem:checkpoint": "node packages/@lumenflow/cli/dist/mem-checkpoint.js",
     "mem:start": "node packages/@lumenflow/cli/dist/mem-start.js",

@@ -19,6 +19,7 @@ vi.mock('../wu-paths.js', () => ({
 
 import {
   buildPreflightCodePathErrorMessage,
+  buildPreflightErrorMessage,
   executePreflightCodePathValidation,
   runPreflightTasksValidation,
   validateAllPreCommitHooks,
@@ -121,6 +122,51 @@ describe('buildPreflightCodePathErrorMessage (WU-1154)', () => {
     expect(message).toContain('For "packages/__tests__/missing.test.ts":');
     expect(message).toContain('packages/src/__tests__/missing.test.ts');
     expect(message).toContain('packages/test/missing.spec.ts');
+  });
+});
+
+describe('WU-1467: Preflight output uses authoritative command names', () => {
+  it('runPreflightTasksValidation logs "wu:validate" not "tasks:validate"', async () => {
+    const { validateSingleWU } = await import('../validators/wu-tasks.js');
+    validateSingleWU.mockReturnValue({ valid: true, warnings: [], errors: [] });
+
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    runPreflightTasksValidation('WU-TEST');
+
+    const allOutput = logSpy.mock.calls.map((c) => c.join(' ')).join(' ');
+    expect(allOutput).toContain('wu:validate');
+    expect(allOutput).not.toContain('tasks:validate');
+    logSpy.mockRestore();
+  });
+
+  it('runPreflightTasksValidation failure logs "wu:validate" not "tasks:validate"', async () => {
+    const { validateSingleWU } = await import('../validators/wu-tasks.js');
+    validateSingleWU.mockReturnValue({ valid: false, warnings: [], errors: ['bad yaml'] });
+
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    runPreflightTasksValidation('WU-TEST');
+
+    const allOutput = [...logSpy.mock.calls, ...errorSpy.mock.calls]
+      .map((c) => c.join(' '))
+      .join(' ');
+    expect(allOutput).toContain('wu:validate');
+    expect(allOutput).not.toContain('tasks:validate');
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it('buildPreflightErrorMessage references "wu:validate" not "tasks:validate"', () => {
+    const message = buildPreflightErrorMessage('WU-TEST', ['some error']);
+    expect(message).toContain('wu:validate');
+    expect(message).not.toContain('tasks:validate');
+  });
+
+  it('buildPreflightErrorMessage clearly indicates authoritative checks', () => {
+    const message = buildPreflightErrorMessage('WU-TEST', ['some error']);
+    // Should indicate which check is authoritative
+    expect(message).toContain('wu:validate');
+    expect(message).toContain('WU-TEST');
   });
 });
 
