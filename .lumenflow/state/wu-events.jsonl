@@ -904,4 +904,5 @@
 {"type":"claim","wuId":"WU-1477","timestamp":"2026-02-06T12:55:41.720Z","lane":"Content: Documentation","title":"Document INIT-015 memory enforcement features (internal + Starlight)"}
 {"type":"complete","wuId":"WU-1484","timestamp":"2026-02-06T12:57:01.202Z"}
 {"type":"complete","wuId":"WU-1477","timestamp":"2026-02-06T13:04:35.771Z"}
-{"type":"claim","wuId":"WU-1486","lane":"Content: Documentation","title":"Sync MCP internal and Starlight docs with current tool surface","timestamp":"2026-02-06T13:42:22.425Z"}
+{"type":"claim","wuId":"WU-1486","timestamp":"2026-02-06T13:42:22.425Z","lane":"Content: Documentation","title":"Sync MCP internal and Starlight docs with current tool surface"}
+{"type":"complete","wuId":"WU-1486","timestamp":"2026-02-06T13:46:08.022Z"}
