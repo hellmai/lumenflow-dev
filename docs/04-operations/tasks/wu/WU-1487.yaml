@@ -2,7 +2,7 @@ id: WU-1487
 title: Harden worktree command UX for dist bootstrap and claim repair guidance
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -15,9 +15,12 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:
   manual:
-    - In a freshly claimed worktree without built dist closure, run pnpm wu:prep --id WU-1487 and verify actionable bootstrap guidance (or successful auto-bootstrap retry).
-    - In a freshly claimed worktree, run pnpm mem:checkpoint --wu WU-1487 and verify actionable bootstrap guidance (or successful auto-bootstrap retry).
-    - Trigger claim metadata validation failure path in wu:done and confirm remediation text uses wu:repair --claim.
+    - In a freshly claimed worktree without built dist closure, run pnpm wu:prep --id WU-1487 and
+      verify actionable bootstrap guidance (or successful auto-bootstrap retry).
+    - In a freshly claimed worktree, run pnpm mem:checkpoint --wu WU-1487 and verify actionable
+      bootstrap guidance (or successful auto-bootstrap retry).
+    - Trigger claim metadata validation failure path in wu:done and confirm remediation text uses
+      wu:repair --claim.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
@@ -37,10 +40,27 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: We still hit workflow friction when worktree-scoped commands run without built dist artifacts and when wu:done emits outdated repair guidance. Problem: agents get MODULE_NOT_FOUND failures and stale remediation instructions, which slows completion and causes avoidable recovery loops. Solution: (1) replace stale wu:done repair guidance with the canonical wu:repair --claim command; (2) add bootstrap-aware fallback/diagnostics in worktree command paths (wu:prep, mem:checkpoint) so failures are actionable and optionally auto-bootstrap-safe; (3) sync internal docs/help text to the actual workflow.'
+description: 'Context: We still hit workflow friction when worktree-scoped commands run without
+  built dist artifacts and when wu:done emits outdated repair guidance. Problem: agents get
+  MODULE_NOT_FOUND failures and stale remediation instructions, which slows completion and causes
+  avoidable recovery loops. Solution: (1) replace stale wu:done repair guidance with the canonical
+  wu:repair --claim command; (2) add bootstrap-aware fallback/diagnostics in worktree command paths
+  (wu:prep, mem:checkpoint) so failures are actionable and optionally auto-bootstrap-safe; (3) sync
+  internal docs/help text to the actual workflow.'
 acceptance:
-  - wu:done claim-metadata failure guidance points to pnpm wu:repair --claim --id WU-XXX (no deprecated wu:repair-claim references).
-  - From a fresh worktree with missing dist closure, wu:prep and mem:checkpoint fail with explicit bootstrap guidance (pnpm bootstrap) instead of raw MODULE_NOT_FOUND noise.
-  - If bootstrap fallback/auto-retry path is implemented, command succeeds after bootstrap in a single invocation; otherwise clear deterministic exit with exact next step.
+  - wu:done claim-metadata failure guidance points to pnpm wu:repair --claim --id WU-XXX (no
+    deprecated wu:repair-claim references).
+  - From a fresh worktree with missing dist closure, wu:prep and mem:checkpoint fail with explicit
+    bootstrap guidance (pnpm bootstrap) instead of raw MODULE_NOT_FOUND noise.
+  - If bootstrap fallback/auto-retry path is implemented, command succeeds after bootstrap in a
+    single invocation; otherwise clear deterministic exit with exact next step.
   - Unit tests cover the updated guidance and missing-dist bootstrap diagnostics.
   - Internal docs/quick-ref are updated to match the final behavior.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1487
+claimed_at: 2026-02-06T14:14:56.746Z
+baseline_main_sha: 7886745accbc08f8fbf8a9cb0d4260105e9e6a68
+session_id: ae69ba7d-1604-4ea3-bde7-d1ef923689c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T14:14:56.751Z
