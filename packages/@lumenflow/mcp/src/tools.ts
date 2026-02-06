@@ -256,6 +256,9 @@ const CliArgs = {
   PHASE: '--phase',
   JSON: '--json',
   DOCS_ONLY: '--docs-only',
+  CODE_PATHS: '--code-paths',
+  BASE_DIR: '--base-dir',
+  ENCODING: '--encoding',
   // WU-1452: Commands using --format json (initiative:*, flow:*, metrics)
   FORMAT_JSON: ['--format', 'json'] as const,
   DRY_RUN: '--dry-run',
@@ -632,7 +635,7 @@ export const wuCreateTool: ToolDefinition = {
     }
     if (input.code_paths) {
       for (const p of input.code_paths as string[]) {
-        args.push('--code-paths', p);
+        args.push(CliArgs.CODE_PATHS, p);
       }
     }
     if (input.exposure) args.push('--exposure', input.exposure as string);
@@ -1131,7 +1134,7 @@ export const stateCleanupTool: ToolDefinition = {
     if (input.events_only) args.push('--events-only');
     if (input.json) args.push('--json');
     if (input.quiet) args.push('--quiet');
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('state:cleanup', args, cliOptions);
@@ -1160,7 +1163,7 @@ export const stateDoctorTool: ToolDefinition = {
     if (input.dry_run) args.push('--dry-run');
     if (input.json) args.push('--json');
     if (input.quiet) args.push('--quiet');
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('state:doctor', args, cliOptions);
@@ -1220,7 +1223,7 @@ export const fileReadTool: ToolDefinition = {
     }
 
     const args: string[] = ['--path', input.path as string];
-    if (input.encoding) args.push('--encoding', input.encoding as string);
+    if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.start_line !== undefined) args.push('--start-line', String(input.start_line));
     if (input.end_line !== undefined) args.push('--end-line', String(input.end_line));
     if (input.max_size !== undefined) args.push('--max-size', String(input.max_size));
@@ -1255,7 +1258,7 @@ export const fileWriteTool: ToolDefinition = {
     }
 
     const args: string[] = ['--path', input.path as string, '--content', input.content as string];
-    if (input.encoding) args.push('--encoding', input.encoding as string);
+    if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.no_create_dirs) args.push('--no-create-dirs');
     if (input.scan_phi) args.push('--scan-phi');
 
@@ -1299,7 +1302,7 @@ export const fileEditTool: ToolDefinition = {
       '--new-string',
       input.new_string as string,
     ];
-    if (input.encoding) args.push('--encoding', input.encoding as string);
+    if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.replace_all) args.push('--replace-all');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -1355,7 +1358,7 @@ export const gitStatusTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
     if (input.porcelain) args.push('--porcelain');
     if (input.short) args.push('--short');
     if (input.path) args.push(input.path as string);
@@ -1383,7 +1386,7 @@ export const gitDiffTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
     if (input.staged) args.push('--staged');
     if (input.name_only) args.push('--name-only');
     if (input.stat) args.push('--stat');
@@ -1413,7 +1416,7 @@ export const gitLogTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
     if (input.oneline) args.push('--oneline');
     if (input.max_count !== undefined) args.push('-n', String(input.max_count));
     if (input.format) args.push('--format', input.format as string);
@@ -1444,7 +1447,7 @@ export const gitBranchTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
     if (input.list) args.push('--list');
     if (input.all) args.push('--all');
     if (input.remotes) args.push('--remotes');
@@ -1638,7 +1641,7 @@ export const signalCleanupTool: ToolDefinition = {
     if (input.max_entries !== undefined) args.push('--max-entries', String(input.max_entries));
     if (input.json) args.push('--json');
     if (input.quiet) args.push('--quiet');
-    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('signal:cleanup', args, cliOptions);
@@ -1670,10 +1673,10 @@ export const wuProtoTool: ToolDefinition = {
     }
 
     const args = ['--lane', input.lane as string, '--title', input.title as string];
-    if (input.description) args.push('--description', input.description as string);
+    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (Array.isArray(input.code_paths)) {
       for (const codePath of input.code_paths) {
-        args.push('--code-paths', String(codePath));
+        args.push(CliArgs.CODE_PATHS, String(codePath));
       }
     }
     if (Array.isArray(input.labels) && input.labels.length > 0) {
@@ -1790,7 +1793,7 @@ export const wuEditTool: ToolDefinition = {
     if (input.notes) args.push('--notes', input.notes as string);
     if (input.code_paths) {
       for (const p of input.code_paths as string[]) {
-        args.push('--code-paths', p);
+        args.push(CliArgs.CODE_PATHS, p);
       }
     }
     if (input.lane) args.push('--lane', input.lane as string);
@@ -3134,7 +3137,7 @@ export const agentLogIssueTool: ToolDefinition = {
       input.severity as string,
       '--title',
       input.title as string,
-      '--description',
+      CliArgs.DESCRIPTION,
       input.description as string,
     ];
     if (input.resolution) args.push('--resolution', input.resolution as string);
