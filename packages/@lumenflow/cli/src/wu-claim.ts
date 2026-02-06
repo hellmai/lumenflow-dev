@@ -52,6 +52,8 @@ import { die } from '@lumenflow/core/dist/error-handler.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
+// WU-1495: Cloud auto-detection from config-driven env signals
+import { detectCloudMode } from '@lumenflow/core/dist/cloud-detect.js';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/dist/wu-paths.js';
 import {
   BRANCHES,
@@ -1677,11 +1679,26 @@ async function main() {
     const title = (await readWUTitle(id)) || '';
     const branch = args.branch || `lane/${laneK}/${idK}`;
     const worktree = args.worktree || `worktrees/${laneK}-${idK}`;
+    // WU-1495: Cloud auto-detection from config-driven env signals
+    // Detection precedence: --cloud flag > LUMENFLOW_CLOUD=1 > env_signals (opt-in)
+    const config = getConfig();
+    const cloudDetection = detectCloudMode({
+      cloudFlag: Boolean(args.cloud),
+      env: process.env as Record<string, string | undefined>,
+      config: config.cloud,
+    });
+    const effectiveCloud = cloudDetection.isCloud;
+    if (cloudDetection.isCloud && !args.cloud) {
+      console.log(
+        `${PREFIX} Cloud mode auto-detected (source: ${cloudDetection.source}${cloudDetection.matchedSignal ? `, signal: ${cloudDetection.matchedSignal}` : ''})`,
+      );
+    }
+
     // WU-1491: Resolve claimed mode from flag combination
     const modeResult = resolveClaimMode({
       branchOnly: args.branchOnly,
       prMode: args.prMode,
-      cloud: args.cloud,
+      cloud: effectiveCloud,
     });
     if (modeResult.error) {
       die(modeResult.error);
