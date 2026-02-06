@@ -866,4 +866,5 @@
 {"type":"complete","wuId":"WU-1453","timestamp":"2026-02-06T09:38:28.391Z"}
 {"type":"claim","wuId":"WU-1454","timestamp":"2026-02-06T09:41:08.345Z","lane":"Framework: Core","title":"Shared Schemas: WU lifecycle commands"}
 {"type":"complete","wuId":"WU-1454","timestamp":"2026-02-06T09:53:10.127Z"}
-{"type":"claim","wuId":"WU-1455","lane":"Framework: Core","title":"Shared Schemas: Initiative commands","timestamp":"2026-02-06T09:56:59.030Z"}
+{"type":"claim","wuId":"WU-1455","timestamp":"2026-02-06T09:56:59.030Z","lane":"Framework: Core","title":"Shared Schemas: Initiative commands"}
+{"type":"complete","wuId":"WU-1455","timestamp":"2026-02-06T10:16:18.441Z"}

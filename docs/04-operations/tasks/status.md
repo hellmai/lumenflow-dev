@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -425,3 +425,4 @@ _Last updated: 2026-02-06_
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml) — 2026-02-06
 - [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml) — 2026-02-06
 - [WU-1454 — Shared Schemas: WU lifecycle commands](wu/WU-1454.yaml) — 2026-02-06
+- [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml) — 2026-02-06

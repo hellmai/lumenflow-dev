@@ -28,7 +28,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml) — Framework: Core
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -449,3 +449,4 @@ sections:
 - [WU-1452 — MCP: Fix CLI/MCP JSON flag mismatches](wu/WU-1452.yaml)
 - [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml)
 - [WU-1454 — Shared Schemas: WU lifecycle commands](wu/WU-1454.yaml)
+- [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml)
