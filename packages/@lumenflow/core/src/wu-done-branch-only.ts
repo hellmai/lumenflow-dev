@@ -272,9 +272,7 @@ async function mergeLaneBranch(laneBranch) {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed: ${mergeErr.message}`,
     );
-    console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempting pull --rebase + retry...`,
-    );
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempting pull --rebase + retry...`);
     try {
       await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
       await gitAdapter.merge(laneBranch, { ffOnly: true });
