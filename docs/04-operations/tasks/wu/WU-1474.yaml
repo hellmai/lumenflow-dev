@@ -2,7 +2,7 @@ id: WU-1474
 title: Activate decay policy in completion lifecycle
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -49,3 +49,11 @@ acceptance:
     fail-open behavior.
   - When decay is disabled, existing wu:done behavior is unchanged.
   - Manual cleanup command remains available and supports preview behavior.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1474
+claimed_at: 2026-02-06T12:00:29.795Z
+baseline_main_sha: 88fdb2cd097bdf49cf9012f3bcc1c7f8d06675ec
+session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:00:29.801Z

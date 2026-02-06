@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml)
+- [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml)
 
 ## Blocked
 
