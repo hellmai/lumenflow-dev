@@ -1302,7 +1302,12 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
           );
           // Fall back to pull --rebase for consistent linear-history sync
           try {
-            await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
+            await gitAdapter.raw([
+              GIT_COMMANDS.PULL,
+              GIT_FLAGS.REBASE,
+              REMOTES.ORIGIN,
+              BRANCHES.MAIN,
+            ]);
             console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
           } catch (pullErr) {
             console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull also failed: ${pullErr.message}`);
@@ -1310,9 +1315,16 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
         }
       } else {
         // No worktree path - pull --rebase before retry
-        console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Pulling latest main with --rebase before retry...`);
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Pulling latest main with --rebase before retry...`,
+        );
         try {
-          await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
+          await gitAdapter.raw([
+            GIT_COMMANDS.PULL,
+            GIT_FLAGS.REBASE,
+            REMOTES.ORIGIN,
+            BRANCHES.MAIN,
+          ]);
           console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
         } catch (pullErr) {
           console.log(
