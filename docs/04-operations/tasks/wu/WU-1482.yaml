@@ -1,0 +1,46 @@
+id: WU-1482
+title: MCP parity remediation wave 1 (state/lane/gates/setup commands)
+lane: 'Framework: MCP'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+tests:
+  manual:
+    - Run pnpm --filter @lumenflow/mcp test and verify wave-1 tools execute with expected CLI mappings.
+    - Run MCP Inspector for representative wave-1 tools (e.g., lane_health, state_doctor, gates, docs_sync).
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1482.done
+dependencies: []
+initiative: INIT-MCP-FULL
+phase: 9
+blocked_by:
+  - WU-1481
+spec_refs:
+  - lumenflow://plans/INIT-MCP-FULL-remediation.md
+risks: []
+notes: 'Sizing: Medium (single lane, command-family batch). Keep tool/flag mapping table in WU notes during implementation.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: after parity gating, 30 public manifest commands still lack MCP tool coverage. Problem: core ops command families (state/lane/gates/setup/backlog/docs/metrics) are unavailable to MCP clients. Solution: add wave-1 MCP tool definitions, CLI arg mapping, and tests for these command families.'
+acceptance:
+  - 'MCP tools are added for: backlog:prune, docs:sync, gates, gates:docs, lane:health, lane:suggest, lumenflow, lumenflow-gates, lumenflow-validate, lumenflow:metrics, metrics, state:bootstrap, state:cleanup, state:doctor, sync:templates.'
+  - Each added tool shells out to the correct public CLI command with validated argument mapping and JSON/format flags aligned with CLI behavior.
+  - MCP test coverage verifies each new tool executes and returns structured output or actionable errors.
+  - Manifest parity gate from WU-1481 shows a reduced missing-command set after wave-1 implementation.

@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1482 — MCP parity remediation wave 1 (state/lane/gates/setup commands)](wu/WU-1482.yaml) — Framework: MCP
 - [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — Framework: MCP
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
