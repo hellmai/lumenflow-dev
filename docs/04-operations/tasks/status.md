@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -421,3 +421,4 @@ _Last updated: 2026-02-06_
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — 2026-02-06
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — 2026-02-06
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — 2026-02-06
+- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — 2026-02-06
