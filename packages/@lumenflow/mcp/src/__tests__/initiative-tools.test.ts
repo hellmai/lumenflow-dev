@@ -16,6 +16,9 @@ import {
   initiativeRemoveWuTool,
   initiatiBulkAssignTool,
   initiativePlanTool,
+  backlogPruneTool,
+  docsSyncTool,
+  stateDoctorTool,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 
@@ -278,6 +281,73 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('id');
+    });
+  });
+
+  describe('wave-1 ops parity mappings (WU-1482)', () => {
+    it('should run backlog_prune with thresholds', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Backlog pruning complete',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await backlogPruneTool.execute({
+        stale_days_in_progress: 7,
+        stale_days_ready: 30,
+        archive_days: 90,
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'backlog:prune',
+        expect.arrayContaining([
+          '--stale-days-in-progress',
+          '7',
+          '--stale-days-ready',
+          '30',
+          '--archive-days',
+          '90',
+        ]),
+        expect.any(Object),
+      );
+    });
+
+    it('should run docs_sync with force/vendor flags', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Docs synced',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await docsSyncTool.execute({ force: true, vendor: 'claude' });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'docs:sync',
+        expect.arrayContaining(['--vendor', 'claude', '--force']),
+        expect.any(Object),
+      );
+    });
+
+    it('should run state_doctor with fix/dry-run flags', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'State doctor complete',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await stateDoctorTool.execute({ fix: true, dry_run: true });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'state:doctor',
+        expect.arrayContaining(['--fix', '--dry-run']),
+        expect.any(Object),
+      );
     });
   });
 
