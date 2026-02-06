@@ -1,6 +1,6 @@
 # Universal Agent Instructions
 
-**Last updated:** 2026-01-30
+**Last updated:** 2026-02-06
 
 > **Works with any AI coding assistant.** This file provides instructions that work regardless of which AI tool you're using—Claude Code, Cursor, Windsurf, Cline, Codex, Aider, or any other. Just read this file and follow the workflow.
 
@@ -8,7 +8,7 @@ This project uses LumenFlow workflow. For complete documentation, see [LUMENFLOW
 
 ---
 
-## Quick Start
+## Quick Start (Local Worktree -- Default)
 
 ```bash
 # 1. Claim a WU
@@ -25,6 +25,34 @@ pnpm wu:prep --id WU-XXXX
 cd <project-root> && pnpm wu:done --id WU-XXXX
 ```
 
+## Quick Start (Cloud / Branch-PR)
+
+Cloud agents (Codex, Claude web, CI bots) that cannot use local worktrees use the **branch-pr** mode. This is a first-class lifecycle, not a workaround.
+
+```bash
+# 1. Claim in cloud mode (creates lane branch, no worktree)
+pnpm wu:claim --id WU-XXXX --lane <Lane> --cloud
+# Or: LUMENFLOW_CLOUD=1 pnpm wu:claim --id WU-XXXX --lane <Lane>
+
+# 2. Work on the lane branch in your cloud environment
+
+# 3. Prep (validates branch, runs gates)
+pnpm wu:prep --id WU-XXXX
+
+# 4. Complete (creates PR instead of merging to main)
+pnpm wu:done --id WU-XXXX
+# Output: PR created. After merge, run: pnpm wu:cleanup --id WU-XXXX
+
+# 5. Post-merge cleanup (after PR is merged)
+pnpm wu:cleanup --id WU-XXXX
+```
+
+**Key differences from worktree mode:**
+
+- `wu:claim --cloud` sets `claimed_mode: branch-pr` (no worktree created)
+- `wu:done` creates a PR instead of fast-forward merging to main
+- `wu:cleanup` handles post-merge stamp creation and state updates
+
 > **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
 ---
@@ -33,17 +61,19 @@ cd <project-root> && pnpm wu:done --id WU-XXXX
 
 ### WU Lifecycle
 
-| Command                                       | Description                                   |
-| --------------------------------------------- | --------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..` | Create new WU spec                            |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`     | Claim WU and create worktree                  |
-| `pnpm wu:prep --id WU-XXX`                    | Run gates in worktree, prep for wu:done       |
-| `pnpm wu:done --id WU-XXX`                    | Complete WU (merge, stamp, cleanup) from main |
-| `pnpm wu:status --id WU-XXX`                  | Show WU status, location, valid commands      |
-| `pnpm wu:block --id WU-XXX --reason "..."`    | Block WU with reason                          |
-| `pnpm wu:unblock --id WU-XXX`                 | Unblock WU                                    |
-| `pnpm wu:spawn --id WU-XXX --client <client>` | Generate sub-agent spawn prompt               |
-| `pnpm wu:recover --id WU-XXX`                 | Analyze and fix WU state inconsistencies      |
+| Command                                        | Description                                    |
+| ---------------------------------------------- | ---------------------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                             |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)         |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree) |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                    |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)      |
+| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)            |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands       |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                           |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                     |
+| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate sub-agent spawn prompt                |
+| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies       |
 
 ### Gates & Quality
 
@@ -155,6 +185,8 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 ## Workflow Summary
 
+### Local (Worktree Mode -- Default)
+
 | Step         | Location | Command                                                                                                                                                                                |
 | ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
@@ -162,6 +194,17 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 | 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                                                                                                                                                           |
 | 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                                |
 | 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                   |
+
+### Cloud (Branch-PR Mode)
+
+| Step         | Location    | Command                                                   |
+| ------------ | ----------- | --------------------------------------------------------- |
+| 1. Create WU | main        | `pnpm wu:create --id WU-XXX --lane <Lane> ...`            |
+| 2. Claim     | main        | `pnpm wu:claim --id WU-XXX --lane <Lane> --cloud`         |
+| 3. Work      | lane branch | Work on `lane/<lane>/wu-xxx` in cloud environment         |
+| 4. Prep      | lane branch | `pnpm wu:prep --id WU-XXX` (validates branch, runs gates) |
+| 5. Complete  | lane branch | `pnpm wu:done --id WU-XXX` (creates PR)                   |
+| 6. Cleanup   | after merge | `pnpm wu:cleanup --id WU-XXX` (post-merge stamps)         |
 
 ---
 
