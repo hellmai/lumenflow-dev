@@ -906,6 +906,7 @@
 {"type":"complete","wuId":"WU-1477","timestamp":"2026-02-06T13:04:35.771Z"}
 {"type":"claim","wuId":"WU-1486","timestamp":"2026-02-06T13:42:22.425Z","lane":"Content: Documentation","title":"Sync MCP internal and Starlight docs with current tool surface"}
 {"type":"complete","wuId":"WU-1486","timestamp":"2026-02-06T13:46:08.022Z"}
-{"type":"claim","wuId":"WU-1433","timestamp":"2026-02-06T13:50:42.298Z","lane":"Framework: CLI","title":"Init onboarding parity for scripts and docs paths"}
+{"type":"claim","wuId":"WU-1433","lane":"Framework: CLI","title":"Init onboarding parity for scripts and docs paths","timestamp":"2026-02-06T13:50:42.298Z"}
+{"type":"claim","wuId":"WU-1479","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers","timestamp":"2026-02-06T14:09:56.365Z"}
 {"type":"complete","wuId":"WU-1433","timestamp":"2026-02-06T14:03:36.580Z"}
 {"type":"claim","wuId":"WU-1384","lane":"Framework: Core","title":"Relax spec completeness checks for done/cancelled WUs","timestamp":"2026-02-06T14:07:19.616Z"}
