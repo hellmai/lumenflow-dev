@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
 - [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml) — Framework: MCP
 - [WU-1482 — MCP parity remediation wave 1 (state/lane/gates/setup commands)](wu/WU-1482.yaml) — Framework: MCP
 - [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — Framework: MCP
