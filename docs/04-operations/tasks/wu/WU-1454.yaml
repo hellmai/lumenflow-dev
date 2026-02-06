@@ -2,7 +2,7 @@ id: WU-1454
 title: 'Shared Schemas: WU lifecycle commands'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -51,3 +51,5 @@ session_id: c2b64aac-12cf-4dae-979b-bee9ea83b716
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T09:41:08.329Z
+locked: true
+completed_at: 2026-02-06T09:53:07.545Z
