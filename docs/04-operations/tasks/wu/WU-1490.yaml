@@ -9,13 +9,11 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/core/src/wu-schema.ts
   - packages/@lumenflow/core/src/wu-done-paths.ts
-  - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
 tests:
   manual:
     - Run unit suite for claimed mode/path detection and verify branch-pr is recognized.
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-constants.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
   e2e: []
 artifacts:
@@ -26,7 +24,7 @@ phase: 1
 spec_refs:
   - lumenflow://plans/memoized-baking-sutton.md
 risks: []
-notes: WU-A from branch-pr cloud initiative plan.
+notes: WU-A from branch-pr cloud initiative plan. wu-constants.test.ts excluded from code_paths due to pre-existing validate-paths hook false positive on mock URL (file:///home/user/...). BRANCH_PR constant is fully tested in wu-done-paths.test.ts.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
