@@ -27,13 +27,7 @@ import { z } from 'zod';
 /**
  * Initiative status values (matches INIT_STATUSES from initiative-constants.ts)
  */
-export const initiativeStatusEnum = z.enum([
-  'draft',
-  'open',
-  'in_progress',
-  'done',
-  'archived',
-]);
+export const initiativeStatusEnum = z.enum(['draft', 'open', 'in_progress', 'done', 'archived']);
 export type InitiativeStatus = z.infer<typeof initiativeStatusEnum>;
 
 /**
@@ -185,10 +179,7 @@ export type InitiativeRemoveWuInput = z.infer<typeof initiativeRemoveWuSchema>;
 export const initiativeBulkAssignSchema = z.object({
   config: z.string().optional().describe('Path to lane bucket configuration file'),
   apply: z.boolean().optional().describe('Apply changes (default is dry-run)'),
-  sync_from_initiative: z
-    .string()
-    .optional()
-    .describe('Reconcile WUs from a specific initiative'),
+  sync_from_initiative: z.string().optional().describe('Reconcile WUs from a specific initiative'),
 });
 
 export type InitiativeBulkAssignInput = z.infer<typeof initiativeBulkAssignSchema>;

@@ -1174,7 +1174,14 @@ export const initiativeCreateTool: ToolDefinition = {
     }
 
     // WU-1455: Map shared schema fields to CLI flags
-    const args = ['--id', input.id as string, '--slug', input.slug as string, '--title', input.title as string];
+    const args = [
+      '--id',
+      input.id as string,
+      '--slug',
+      input.slug as string,
+      '--title',
+      input.title as string,
+    ];
     if (input.priority) args.push('--priority', input.priority as string);
     if (input.owner) args.push('--owner', input.owner as string);
     if (input.target_date) args.push('--target-date', input.target_date as string);
@@ -1334,7 +1341,8 @@ export const initiatiBulkAssignTool: ToolDefinition = {
     const args: string[] = [];
     if (input.config) args.push('--config', input.config as string);
     if (input.apply) args.push('--apply');
-    if (input.sync_from_initiative) args.push('--reconcile-initiative', input.sync_from_initiative as string);
+    if (input.sync_from_initiative)
+      args.push('--reconcile-initiative', input.sync_from_initiative as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:bulk-assign', args, cliOptions);

@@ -552,10 +552,7 @@ describe('Initiative Command Schemas (WU-1455)', () => {
         const mcpSchema = zodToMcpInputSchema(schema);
         expect(mcpSchema, `${name} MCP schema should be defined`).toBeDefined();
         expect(mcpSchema.type, `${name} MCP schema type should be object`).toBe('object');
-        expect(
-          mcpSchema.properties,
-          `${name} MCP schema should have properties`,
-        ).toBeDefined();
+        expect(mcpSchema.properties, `${name} MCP schema should have properties`).toBeDefined();
       }
     });
 
