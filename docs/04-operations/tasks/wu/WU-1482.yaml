@@ -10,6 +10,7 @@ code_paths:
   - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
   - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
   - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/mcp test and verify wave-1 tools execute with expected CLI
@@ -20,6 +21,7 @@ tests:
     - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1482.done
@@ -31,13 +33,25 @@ blocked_by:
 spec_refs:
   - lumenflow://plans/INIT-MCP-FULL-remediation.md
 risks: []
-notes: 'Sizing: Medium (single lane, command-family batch). Keep tool/flag mapping table in WU notes
-  during implementation.'
+notes: >-
+  Sizing: Medium (single lane, command-family batch). Keep tool/flag mapping table in WU notes
+  during implementation.
+
+
+  Added cli-integration parity assertion path to keep WU-1481 truth-gate compatible with wave-1
+  reductions.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T12:20:08.499Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1482
+session_id: eefbe86f-e740-425f-875d-c88ab838ba71
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:20:08.507Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,11 +69,3 @@ acceptance:
     errors.
   - Manifest parity gate from WU-1481 shows a reduced missing-command set after wave-1
     implementation.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1482
-claimed_at: 2026-02-06T12:20:08.499Z
-baseline_main_sha: d056380b57b9f4f970f1588571ba309d87241aed
-session_id: eefbe86f-e740-425f-875d-c88ab838ba71
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T12:20:08.507Z
