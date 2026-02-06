@@ -10,6 +10,12 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - package.json
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - scripts/hooks/check-lockfile.sh
+  - CLAUDE.md
 tests:
   manual:
     - From a fresh worktree, run the bootstrap command then pnpm lane:health and verify success.
@@ -25,10 +31,17 @@ risks: []
 notes: Created after WU-1478 to reduce worktree friction for dist-backed CLI commands; targets
   one-command dependency-closure bootstrap + docs update.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T12:01:54.091Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1480
+session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:01:54.098Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +54,3 @@ acceptance:
   - On a fresh worktree, running bootstrap then lane:health succeeds without manual
     package-by-package builds.
   - Internal docs describe the pattern, rationale, and recommended command sequence for agents.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1480
-claimed_at: 2026-02-06T12:01:54.091Z
-baseline_main_sha: 5fe763d34e0bfc5a5e6620a54109ed6158d3f700
-session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T12:01:54.098Z
