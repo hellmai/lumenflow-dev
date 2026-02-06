@@ -53,7 +53,11 @@ function extractShellStderrMessages(filePath: string): string[] {
     // Skip comments
     if (trimmed.startsWith('#')) continue;
     // Skip variable checks (the mechanism itself)
-    if (trimmed.includes('LUMENFLOW_FORCE:-') || trimmed.includes('LUMENFLOW_FORCE=') && !trimmed.includes('echo')) continue;
+    if (
+      trimmed.includes('LUMENFLOW_FORCE:-') ||
+      (trimmed.includes('LUMENFLOW_FORCE=') && !trimmed.includes('echo'))
+    )
+      continue;
     // Include lines that print to stderr
     if (trimmed.includes('>&2')) {
       stderrLines.push(trimmed);
@@ -65,12 +69,7 @@ function extractShellStderrMessages(filePath: string): string[] {
 
 describe('WU-1485: No LUMENFLOW_FORCE suggestions in hook error messages', () => {
   describe('.husky/hooks/ MJS hooks', () => {
-    const mjsHooks = [
-      'pre-commit.mjs',
-      'commit-msg.mjs',
-      'pre-push.mjs',
-      'prepare-commit-msg.mjs',
-    ];
+    const mjsHooks = ['pre-commit.mjs', 'commit-msg.mjs', 'pre-push.mjs', 'prepare-commit-msg.mjs'];
 
     for (const hookFile of mjsHooks) {
       it(`${hookFile} error messages do not suggest LUMENFLOW_FORCE`, () => {
@@ -97,11 +96,7 @@ describe('WU-1485: No LUMENFLOW_FORCE suggestions in hook error messages', () =>
   });
 
   describe('scripts/hooks/ shell hooks', () => {
-    const shellHooks = [
-      'check-lockfile.sh',
-      'scan-secrets.sh',
-      'validate-paths.sh',
-    ];
+    const shellHooks = ['check-lockfile.sh', 'scan-secrets.sh', 'validate-paths.sh'];
 
     for (const hookFile of shellHooks) {
       it(`${hookFile} error messages do not suggest LUMENFLOW_FORCE`, () => {
