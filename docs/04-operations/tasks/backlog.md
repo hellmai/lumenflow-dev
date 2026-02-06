@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml) — Framework: Core
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -476,3 +476,4 @@ sections:
 - [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml)
 - [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml)
 - [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml)
+- [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml)
