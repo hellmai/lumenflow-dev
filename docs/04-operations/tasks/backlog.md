@@ -29,13 +29,13 @@ sections:
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — Framework: Core
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — Framework: Core
-- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
 - [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml) — Framework: CLI
+- [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
