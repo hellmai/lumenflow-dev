@@ -193,7 +193,9 @@ describe('signal-receipts (WU-1472)', () => {
     it('should not count signals that already have a receipt', async () => {
       const sig1 = createTestSignal({ id: 'sig-aaaaaaaa' });
       await writeSignalsFile(testDir, [sig1]);
-      await writeReceipts(testDir, [{ signal_id: 'sig-aaaaaaaa', read_at: new Date().toISOString() }]);
+      await writeReceipts(testDir, [
+        { signal_id: 'sig-aaaaaaaa', read_at: new Date().toISOString() },
+      ]);
 
       const result = await markSignalsAsRead(testDir, ['sig-aaaaaaaa']);
       expect(result.markedCount).toBe(0);
@@ -441,9 +443,7 @@ describe('signal-receipts (WU-1472)', () => {
     it('should not lose updates under rapid sequential marks', async () => {
       const signals: Signal[] = [];
       for (let i = 0; i < 20; i++) {
-        signals.push(
-          createTestSignal({ id: `sig-${i.toString(16).padStart(8, '0')}` }),
-        );
+        signals.push(createTestSignal({ id: `sig-${i.toString(16).padStart(8, '0')}` }));
       }
       await writeSignalsFile(testDir, signals);
 
