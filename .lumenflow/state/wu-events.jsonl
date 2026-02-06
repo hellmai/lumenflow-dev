@@ -862,3 +862,4 @@
 {"type":"complete","wuId":"WU-1468","timestamp":"2026-02-06T09:02:53.994Z"}
 {"type":"claim","wuId":"WU-1452","timestamp":"2026-02-06T09:11:41.307Z","lane":"Framework: CLI","title":"MCP: Fix CLI/MCP JSON flag mismatches"}
 {"type":"complete","wuId":"WU-1452","timestamp":"2026-02-06T09:18:09.800Z"}
+{"type":"claim","wuId":"WU-1453","lane":"Framework: CLI","title":"MCP: Add real CLI integration tests","timestamp":"2026-02-06T09:27:40.739Z"}
