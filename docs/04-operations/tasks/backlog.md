@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1488 — Fix wu:done push race and harden git pull operations](wu/WU-1488.yaml) — Framework: Core
 
 ## 🔧 In progress
