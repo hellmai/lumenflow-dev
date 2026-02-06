@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml)
 
 ## Blocked
 

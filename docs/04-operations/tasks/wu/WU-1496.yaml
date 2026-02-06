@@ -2,7 +2,7 @@ id: WU-1496
 title: Align docs and constraints for first-class branch-pr cloud flow
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -62,3 +62,11 @@ acceptance:
   - starting-prompt.md and .lumenflow/constraints.md explicitly instruct agents to evaluate lane
     fitness during WU/initiative scoping and propose lane changes when boundaries no longer fit
     scope
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1496
+claimed_at: 2026-02-06T19:43:41.231Z
+baseline_main_sha: b3a379b3059db5ebd59cd20e444f25970efa8e15
+session_id: 964d13a6-5a0a-4fc8-ba2a-f993bbd61b12
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T19:43:41.236Z
