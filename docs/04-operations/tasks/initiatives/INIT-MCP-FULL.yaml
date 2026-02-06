@@ -32,7 +32,7 @@ phases:
     status: done
   - id: 8
     title: MCP parity audit + regression tests
-    status: in_progress
+    status: done
   - id: 9
     title: MCP parity remediation and closure
     status: pending
