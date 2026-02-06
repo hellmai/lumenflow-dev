@@ -122,6 +122,14 @@ In Claude Code, the LumenFlow tools should appear in the available tools list:
 - `wu_claim`
 - `wu_done`
 - `gates_run`
+- `file_read`
+- `git_status`
+- `plan_create`
+- `signal_cleanup`
+- `wu_proto`
+
+The full MCP surface is documented in [/reference/mcp](/reference/mcp) and currently includes
+98 tools (90 normalized public-CLI parity tools + 8 MCP-only extras).
 
 </TabItem>
 
@@ -170,6 +178,12 @@ For any MCP-compatible client, configure:
 ## Using MCP Tools
 
 Once configured, your AI assistant can use LumenFlow tools directly.
+
+<Aside type="tip">
+  If you are validating parity coverage specifically, spot-check at least one tool from each added
+  wave-2 family (for example: `file_read`, `git_status`, `plan_create`, `signal_cleanup`,
+  `wu_proto`).
+</Aside>
 
 ### Example Workflow
 
