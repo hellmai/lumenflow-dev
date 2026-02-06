@@ -1248,6 +1248,8 @@ export const CLAUDE_HOOKS = {
     WARN_INCOMPLETE: 'warn-incomplete.sh',
     PRE_COMPACT_CHECKPOINT: 'pre-compact-checkpoint.sh',
     SESSION_START_RECOVERY: 'session-start-recovery.sh',
+    /** WU-1471: Auto-checkpoint hook for PostToolUse and SubagentStop events */
+    AUTO_CHECKPOINT: 'auto-checkpoint.sh',
   },
 
   /** Hook command path prefix (uses Claude Code's $CLAUDE_PROJECT_DIR variable) */
@@ -1260,6 +1262,8 @@ export const CLAUDE_HOOKS = {
     COMPACT: 'compact',
     RESUME: 'resume',
     CLEAR: 'clear',
+    /** WU-1471: Matcher for SubagentStop hook event */
+    SUBAGENT_STOP: '.*',
   },
 
   /** Template paths (relative to templates directory) */
@@ -1610,6 +1614,9 @@ export const LUMENFLOW_PATHS = {
 
   /** Checkpoints directory (WU-1430) */
   CHECKPOINTS_DIR: '.lumenflow/checkpoints',
+
+  /** WU-1471: Hook counters directory for auto-checkpoint interval tracking */
+  HOOK_COUNTERS_DIR: '.lumenflow/state/hook-counters',
 
   /** Cache directory under user home (WU-1430) */
   HOME_CACHE: 'cache',

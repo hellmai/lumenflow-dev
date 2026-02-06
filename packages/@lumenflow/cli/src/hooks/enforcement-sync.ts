@@ -20,9 +20,11 @@ import {
   generateWarnIncompleteScript,
   generatePreCompactCheckpointScript,
   generateSessionStartRecoveryScript,
+  generateAutoCheckpointScript,
   HOOK_SCRIPTS,
   type GeneratedHooks,
 } from './enforcement-generator.js';
+import { checkAutoCheckpointWarning } from './auto-checkpoint-utils.js';
 
 /**
  * Hook entry structure for Claude Code settings.json
@@ -47,9 +49,11 @@ interface ClaudeSettings {
   };
   hooks?: {
     PreToolUse?: HookEntry[];
+    PostToolUse?: HookEntry[];
     Stop?: HookEntry[];
     PreCompact?: HookEntry[];
     SessionStart?: HookEntry[];
+    SubagentStop?: HookEntry[];
   };
 }
 
@@ -67,6 +71,16 @@ interface LumenFlowConfig {
           warn_on_stop_without_wu_done?: boolean;
         };
       };
+    };
+  };
+  /** WU-1471: Memory enforcement configuration */
+  memory?: {
+    enforcement?: {
+      auto_checkpoint?: {
+        enabled?: boolean;
+        interval_tool_calls?: number;
+      };
+      require_checkpoint_for_done?: string;
     };
   };
 }
@@ -103,6 +117,11 @@ function getEnforcementConfig(config: LumenFlowConfig | null): {
   block_outside_worktree: boolean;
   require_wu_for_edits: boolean;
   warn_on_stop_without_wu_done: boolean;
+  /** WU-1471: Auto-checkpoint config from memory.enforcement */
+  auto_checkpoint?: {
+    enabled: boolean;
+    interval_tool_calls: number;
+  };
 } | null {
   const enforcement = config?.agents?.clients?.['claude-code']?.enforcement;
 
@@ -110,11 +129,21 @@ function getEnforcementConfig(config: LumenFlowConfig | null): {
     return null;
   }
 
+  // WU-1471: Extract auto-checkpoint config from memory.enforcement
+  const memoryEnforcement = config?.memory?.enforcement;
+  const autoCheckpoint = memoryEnforcement?.auto_checkpoint;
+
   return {
     hooks: enforcement.hooks ?? false,
     block_outside_worktree: enforcement.block_outside_worktree ?? false,
     require_wu_for_edits: enforcement.require_wu_for_edits ?? false,
     warn_on_stop_without_wu_done: enforcement.warn_on_stop_without_wu_done ?? false,
+    auto_checkpoint: autoCheckpoint?.enabled
+      ? {
+          enabled: true,
+          interval_tool_calls: autoCheckpoint.interval_tool_calls ?? 30,
+        }
+      : undefined,
   };
 }
 
@@ -296,6 +325,56 @@ function mergeHooksIntoSettings(
     }
   }
 
+  // WU-1471: Merge PostToolUse hooks (auto-checkpoint)
+  if (generated.postToolUse) {
+    if (!result.hooks.PostToolUse) {
+      result.hooks.PostToolUse = [];
+    }
+
+    for (const newHook of generated.postToolUse) {
+      const existingIndex = result.hooks.PostToolUse.findIndex(
+        (h) => h.matcher === newHook.matcher,
+      );
+
+      if (existingIndex >= 0) {
+        const existing = result.hooks.PostToolUse[existingIndex];
+        for (const hook of newHook.hooks) {
+          const isDuplicate = existing.hooks.some((h) => h.command === hook.command);
+          if (!isDuplicate) {
+            existing.hooks.push(hook);
+          }
+        }
+      } else {
+        result.hooks.PostToolUse.push(newHook);
+      }
+    }
+  }
+
+  // WU-1471: Merge SubagentStop hooks (auto-checkpoint on sub-agent finish)
+  if (generated.subagentStop) {
+    if (!result.hooks.SubagentStop) {
+      result.hooks.SubagentStop = [];
+    }
+
+    for (const newHook of generated.subagentStop) {
+      const existingIndex = result.hooks.SubagentStop.findIndex(
+        (h) => h.matcher === newHook.matcher,
+      );
+
+      if (existingIndex >= 0) {
+        const existing = result.hooks.SubagentStop[existingIndex];
+        for (const hook of newHook.hooks) {
+          const isDuplicate = existing.hooks.some((h) => h.command === hook.command);
+          if (!isDuplicate) {
+            existing.hooks.push(hook);
+          }
+        }
+      } else {
+        result.hooks.SubagentStop.push(newHook);
+      }
+    }
+  }
+
   return result;
 }
 
@@ -321,11 +400,26 @@ export async function syncEnforcementHooks(projectDir: string): Promise<boolean>
     return false;
   }
 
+  // WU-1471: Check for auto-checkpoint mismatch warning (AC5)
+  // Also check memory config independently for the case where hooks=true but
+  // auto_checkpoint config comes from memory.enforcement section
+  const memoryEnforcement = config?.memory?.enforcement;
+  const autoCheckpointEnabled = memoryEnforcement?.auto_checkpoint?.enabled ?? false;
+
+  const warningResult = checkAutoCheckpointWarning({
+    hooksEnabled: enforcement.hooks,
+    autoCheckpointEnabled,
+  });
+  if (warningResult.warning && warningResult.message) {
+    console.warn(`[enforcement-sync] ${warningResult.message}`);
+  }
+
   // Generate hooks based on config
   const generatedHooks = generateEnforcementHooks({
     block_outside_worktree: enforcement.block_outside_worktree,
     require_wu_for_edits: enforcement.require_wu_for_edits,
     warn_on_stop_without_wu_done: enforcement.warn_on_stop_without_wu_done,
+    auto_checkpoint: enforcement.auto_checkpoint,
   });
 
   // Write hook scripts
@@ -339,6 +433,15 @@ export async function syncEnforcementHooks(projectDir: string): Promise<boolean>
 
   if (enforcement.warn_on_stop_without_wu_done) {
     writeHookScript(projectDir, HOOK_SCRIPTS.WARN_INCOMPLETE, generateWarnIncompleteScript());
+  }
+
+  // WU-1471: Write auto-checkpoint hook script when enabled
+  if (enforcement.auto_checkpoint?.enabled) {
+    writeHookScript(
+      projectDir,
+      HOOK_SCRIPTS.AUTO_CHECKPOINT,
+      generateAutoCheckpointScript(enforcement.auto_checkpoint.interval_tool_calls),
+    );
   }
 
   // Always write recovery hook scripts when enforcement.hooks is enabled (WU-1394)
@@ -396,6 +499,30 @@ export async function removeEnforcementHooks(projectDir: string): Promise<void> 
 
     if (settings.hooks.Stop.length === 0) {
       delete settings.hooks.Stop;
+    }
+  }
+
+  // WU-1471: Remove PostToolUse hooks
+  if (settings.hooks.PostToolUse) {
+    settings.hooks.PostToolUse = settings.hooks.PostToolUse.map((entry) => ({
+      ...entry,
+      hooks: entry.hooks.filter((h) => !enforcementCommands.some((cmd) => h.command.includes(cmd))),
+    })).filter((entry) => entry.hooks.length > 0);
+
+    if (settings.hooks.PostToolUse.length === 0) {
+      delete settings.hooks.PostToolUse;
+    }
+  }
+
+  // WU-1471: Remove SubagentStop hooks
+  if (settings.hooks.SubagentStop) {
+    settings.hooks.SubagentStop = settings.hooks.SubagentStop.map((entry) => ({
+      ...entry,
+      hooks: entry.hooks.filter((h) => !enforcementCommands.some((cmd) => h.command.includes(cmd))),
+    })).filter((entry) => entry.hooks.length > 0);
+
+    if (settings.hooks.SubagentStop.length === 0) {
+      delete settings.hooks.SubagentStop;
     }
   }
 

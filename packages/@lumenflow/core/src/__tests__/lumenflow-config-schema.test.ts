@@ -21,11 +21,15 @@ import {
   getDefaultConfig,
   LockPolicySchema,
   LaneDefinitionSchema,
+  AutoCheckpointConfigSchema,
+  MemoryEnforcementConfigSchema,
   type ProgressSignalsConfig,
   type EventArchivalConfig,
   type MemoryConfig,
   type LockPolicy,
   type LaneDefinition,
+  type AutoCheckpointConfig,
+  type MemoryEnforcementConfig,
 } from '../lumenflow-config-schema.js';
 
 // Test constants for progress signals
@@ -898,6 +902,220 @@ describe('WU-1345: Lanes field in LumenFlowConfigSchema', () => {
         expect(result.data.lanes?.definitions).toHaveLength(1);
         expect(result.data.memory.directory).toBe(TEST_CUSTOM_MEMORY_DIR);
       }
+    });
+  });
+});
+
+/**
+ * WU-1471: Auto-checkpoint enforcement + wu:done checkpoint gate
+ *
+ * Acceptance Criteria:
+ * AC1: Integrate generates PostToolUse and async SubagentStop hooks when
+ *       memory.enforcement.auto_checkpoint.enabled=true and hooks=true.
+ * AC3: wu:done supports memory.enforcement.require_checkpoint_for_done
+ *       (warn by default, block when enabled).
+ * AC5: When auto-checkpoint policy is enabled but hooks master switch is
+ *       disabled, tooling emits a warning and remains advisory-only.
+ */
+describe('WU-1471: Auto-checkpoint enforcement config schema', () => {
+  describe('AC1: AutoCheckpointConfigSchema', () => {
+    it('should default enabled to false', () => {
+      const result = AutoCheckpointConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.enabled).toBe(false);
+      }
+    });
+
+    it('should default interval_tool_calls to 30', () => {
+      const result = AutoCheckpointConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.interval_tool_calls).toBe(30);
+      }
+    });
+
+    it('should accept custom configuration', () => {
+      const customConfig = {
+        enabled: true,
+        interval_tool_calls: 50,
+      };
+
+      const result = AutoCheckpointConfigSchema.safeParse(customConfig);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.enabled).toBe(true);
+        expect(result.data.interval_tool_calls).toBe(50);
+      }
+    });
+
+    it('should reject non-positive interval_tool_calls', () => {
+      const result = AutoCheckpointConfigSchema.safeParse({ interval_tool_calls: 0 });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject non-integer interval_tool_calls', () => {
+      const result = AutoCheckpointConfigSchema.safeParse({ interval_tool_calls: 10.5 });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('AC3: MemoryEnforcementConfigSchema with require_checkpoint_for_done', () => {
+    it('should default require_checkpoint_for_done to warn', () => {
+      const result = MemoryEnforcementConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.require_checkpoint_for_done).toBe('warn');
+      }
+    });
+
+    it('should accept block mode', () => {
+      const result = MemoryEnforcementConfigSchema.safeParse({
+        require_checkpoint_for_done: 'block',
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.require_checkpoint_for_done).toBe('block');
+      }
+    });
+
+    it('should accept off mode', () => {
+      const result = MemoryEnforcementConfigSchema.safeParse({
+        require_checkpoint_for_done: 'off',
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.require_checkpoint_for_done).toBe('off');
+      }
+    });
+
+    it('should reject invalid mode', () => {
+      const result = MemoryEnforcementConfigSchema.safeParse({
+        require_checkpoint_for_done: 'error',
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('should include auto_checkpoint sub-schema', () => {
+      const result = MemoryEnforcementConfigSchema.safeParse({
+        auto_checkpoint: {
+          enabled: true,
+          interval_tool_calls: 25,
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.auto_checkpoint.enabled).toBe(true);
+        expect(result.data.auto_checkpoint.interval_tool_calls).toBe(25);
+      }
+    });
+  });
+
+  describe('MemoryConfigSchema with enforcement', () => {
+    it('should accept memory config without enforcement (optional)', () => {
+      const result = MemoryConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.enforcement).toBeUndefined();
+      }
+    });
+
+    it('should accept memory config with enforcement', () => {
+      const result = MemoryConfigSchema.safeParse({
+        enforcement: {
+          auto_checkpoint: { enabled: true },
+          require_checkpoint_for_done: 'block',
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.enforcement).toBeDefined();
+        expect(result.data.enforcement?.auto_checkpoint.enabled).toBe(true);
+        expect(result.data.enforcement?.require_checkpoint_for_done).toBe('block');
+      }
+    });
+
+    it('should preserve existing memory fields alongside enforcement', () => {
+      const result = MemoryConfigSchema.safeParse({
+        directory: TEST_CUSTOM_MEMORY_DIR,
+        enforcement: {
+          require_checkpoint_for_done: 'warn',
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.directory).toBe(TEST_CUSTOM_MEMORY_DIR);
+        expect(result.data.enforcement?.require_checkpoint_for_done).toBe('warn');
+      }
+    });
+  });
+
+  describe('LumenFlowConfigSchema integration', () => {
+    it('should include enforcement in full config parsing', () => {
+      const config = {
+        memory: {
+          enforcement: {
+            auto_checkpoint: { enabled: true, interval_tool_calls: 20 },
+            require_checkpoint_for_done: 'block',
+          },
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.memory.enforcement).toBeDefined();
+        expect(result.data.memory.enforcement?.auto_checkpoint.enabled).toBe(true);
+        expect(result.data.memory.enforcement?.auto_checkpoint.interval_tool_calls).toBe(20);
+        expect(result.data.memory.enforcement?.require_checkpoint_for_done).toBe('block');
+      }
+    });
+
+    it('should work with parseConfig helper', () => {
+      const config = parseConfig({
+        memory: {
+          enforcement: {
+            auto_checkpoint: { enabled: true },
+          },
+        },
+      });
+
+      expect(config.memory.enforcement).toBeDefined();
+      expect(config.memory.enforcement?.auto_checkpoint.enabled).toBe(true);
+    });
+
+    it('should have undefined enforcement in getDefaultConfig', () => {
+      const config = getDefaultConfig();
+      expect(config.memory.enforcement).toBeUndefined();
+    });
+  });
+
+  describe(DESCRIBE_TYPE_SAFETY, () => {
+    it('should infer correct AutoCheckpointConfig type', () => {
+      const _config: AutoCheckpointConfig = {
+        enabled: true,
+        interval_tool_calls: 30,
+      };
+      expect(_config.enabled).toBe(true);
+    });
+
+    it('should infer correct MemoryEnforcementConfig type', () => {
+      const _config: MemoryEnforcementConfig = {
+        auto_checkpoint: { enabled: false, interval_tool_calls: 30 },
+        require_checkpoint_for_done: 'warn',
+      };
+      expect(_config.require_checkpoint_for_done).toBe('warn');
     });
   });
 });

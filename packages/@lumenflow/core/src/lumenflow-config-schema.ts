@@ -577,6 +577,80 @@ export const SignalCleanupConfigSchema = z.object({
 });
 
 /**
+ * WU-1471: Auto-checkpoint configuration
+ *
+ * Controls automatic checkpointing behavior via Claude Code hooks.
+ * When enabled and hooks are active, PostToolUse and SubagentStop hooks
+ * create checkpoints at configurable intervals.
+ *
+ * @example
+ * ```yaml
+ * memory:
+ *   enforcement:
+ *     auto_checkpoint:
+ *       enabled: true
+ *       interval_tool_calls: 30
+ * ```
+ */
+export const AutoCheckpointConfigSchema = z.object({
+  /**
+   * Enable auto-checkpoint hooks.
+   * When true (and hooks master switch is enabled), generates PostToolUse
+   * and SubagentStop hooks that create checkpoints automatically.
+   * @default false
+   */
+  enabled: z.boolean().default(false),
+
+  /**
+   * Number of tool calls between automatic checkpoints.
+   * The hook script tracks a per-WU counter and checkpoints
+   * when the counter reaches this interval.
+   * @default 30
+   */
+  interval_tool_calls: z.number().int().positive().default(30),
+});
+
+/** WU-1471: TypeScript type for auto-checkpoint config */
+export type AutoCheckpointConfig = z.infer<typeof AutoCheckpointConfigSchema>;
+
+/**
+ * WU-1471: Memory enforcement configuration
+ *
+ * Controls enforcement of memory layer practices:
+ * - Auto-checkpointing via hooks
+ * - Checkpoint gate on wu:done
+ *
+ * @example
+ * ```yaml
+ * memory:
+ *   enforcement:
+ *     auto_checkpoint:
+ *       enabled: true
+ *       interval_tool_calls: 30
+ *     require_checkpoint_for_done: warn
+ * ```
+ */
+export const MemoryEnforcementConfigSchema = z.object({
+  /**
+   * Auto-checkpoint configuration.
+   * Controls automatic checkpointing via hooks.
+   */
+  auto_checkpoint: AutoCheckpointConfigSchema.default(() => AutoCheckpointConfigSchema.parse({})),
+
+  /**
+   * Checkpoint requirement for wu:done.
+   * - 'off': No checkpoint check during wu:done
+   * - 'warn': Warn if no checkpoints exist (default, fail-open)
+   * - 'block': Block wu:done if no checkpoints exist
+   * @default 'warn'
+   */
+  require_checkpoint_for_done: z.enum(['off', 'warn', 'block']).default('warn'),
+});
+
+/** WU-1471: TypeScript type for memory enforcement config */
+export type MemoryEnforcementConfig = z.infer<typeof MemoryEnforcementConfigSchema>;
+
+/**
  * Memory layer configuration
  */
 export const MemoryConfigSchema = z.object({
@@ -619,6 +693,13 @@ export const MemoryConfigSchema = z.object({
    * @default 4096 (4KB)
    */
   spawn_context_max_size: z.number().int().positive().default(4096),
+
+  /**
+   * WU-1471: Memory enforcement configuration.
+   * Controls auto-checkpointing and checkpoint requirements for wu:done.
+   * Optional - when not provided, existing WU-1943 warn behavior applies.
+   */
+  enforcement: MemoryEnforcementConfigSchema.optional(),
 });
 
 /**

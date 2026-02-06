@@ -159,6 +159,8 @@ import {
 import { ensureCleanWorktree } from './wu-done-check.js';
 // WU-1366: Auto cleanup after wu:done success
 import { runAutoCleanupAfterDone } from './wu-done-auto-cleanup.js';
+// WU-1471 AC4: Hook counter cleanup on wu:done completion
+import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -2505,23 +2507,46 @@ async function main() {
   // Step 0: Run gates (WU-1215: extracted to executeGates function)
   const worktreePath = effectiveWorktreePath;
 
-  // WU-1943: Check if any checkpoints exist for this WU session
-  // Warn (don't block) if no checkpoints - agent should have been checkpointing periodically
+  // WU-1471 AC3: Config-driven checkpoint gate (replaces WU-1943 hardcoded warn)
+  // Reads memory.enforcement.require_checkpoint_for_done from config:
+  //   'off'  - skip checkpoint check entirely
+  //   'warn' - warn but allow wu:done (default, fail-open)
+  //   'block' - fail wu:done if no checkpoints found
   try {
-    const wuNodes = await queryByWu(worktreePath || mainCheckoutPath, id);
-    if (!hasSessionCheckpoints(id, wuNodes)) {
-      console.log(
-        `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: No checkpoints found for ${id} session.`,
-      );
-      console.log(
-        `${LOG_PREFIX.DONE} Consider using 'pnpm mem:checkpoint --wu ${id}' periodically for crash recovery.`,
-      );
-      console.log(
-        `${LOG_PREFIX.DONE} Checkpoint triggers: after each acceptance criterion, before gates, every 30 tool calls.\n`,
-      );
+    const checkpointGateConfig = getConfig();
+    const requireCheckpoint =
+      checkpointGateConfig.memory?.enforcement?.require_checkpoint_for_done ?? 'warn';
+
+    if (requireCheckpoint !== 'off') {
+      const wuNodes = await queryByWu(worktreePath || mainCheckoutPath, id);
+      if (!hasSessionCheckpoints(id, wuNodes)) {
+        if (requireCheckpoint === 'block') {
+          die(
+            `\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} No checkpoints found for ${id} session.\n` +
+              `${LOG_PREFIX.DONE} memory.enforcement.require_checkpoint_for_done is set to 'block'.\n` +
+              `${LOG_PREFIX.DONE} Create a checkpoint before completing: pnpm mem:checkpoint --wu ${id}\n`,
+          );
+        } else {
+          // 'warn' mode (default)
+          console.log(
+            `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: No checkpoints found for ${id} session.`,
+          );
+          console.log(
+            `${LOG_PREFIX.DONE} Consider using 'pnpm mem:checkpoint --wu ${id}' periodically for crash recovery.`,
+          );
+          console.log(
+            `${LOG_PREFIX.DONE} Checkpoint triggers: after each acceptance criterion, before gates, every 30 tool calls.\n`,
+          );
+        }
+      }
     }
-  } catch {
-    // Non-blocking: checkpoint check failure should not block wu:done
+  } catch (checkpointErr) {
+    // Non-blocking in 'warn' mode: checkpoint check failure should not block wu:done
+    // In 'block' mode, die() already exited, so this only catches non-die errors
+    if (checkpointErr instanceof Error && checkpointErr.message?.includes('No checkpoints found')) {
+      throw checkpointErr; // Re-throw die() errors
+    }
+    // Otherwise silently allow - fail-open
   }
 
   await executeGates({ id, args, isBranchOnly: effectiveBranchOnly, isDocsOnly, worktreePath });
@@ -2707,6 +2732,10 @@ async function main() {
   // WU-1747: Clear checkpoint on successful completion
   // Checkpoint is no longer needed once WU is fully complete
   clearCheckpoint(id);
+
+  // WU-1471 AC4: Remove per-WU hook counter file on completion
+  // Fail-safe: cleanupHookCounters never throws
+  cleanupHookCounters(mainCheckoutPath, id);
 
   console.log(
     `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - all steps succeeded (WU-755)`,

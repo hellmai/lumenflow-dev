@@ -16,6 +16,15 @@ import { existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createCheckpoint, createSignal, loadSignals, markSignalsAsRead } from '@lumenflow/memory';
+import {
+  generateEnforcementHooks,
+  generateAutoCheckpointScript,
+  type EnforcementConfig,
+} from '../hooks/enforcement-generator.js';
+import {
+  checkAutoCheckpointWarning,
+  cleanupHookCounters,
+} from '../hooks/auto-checkpoint-utils.js';
 
 // Test constants
 const TEST_WU_ID = 'WU-9910';
@@ -347,6 +356,166 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
 
         // Assert
         expect(secondMarkResult.markedCount).toBe(0);
+      });
+    });
+
+    describe('WU-1471: Auto-checkpoint enforcement hooks', () => {
+      describe('AC1: generateEnforcementHooks generates PostToolUse and SubagentStop hooks', () => {
+        it('should generate postToolUse hook when auto_checkpoint enabled and hooks=true', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: false,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+            auto_checkpoint: { enabled: true, interval_tool_calls: 30 },
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          // Should have postToolUse with auto-checkpoint
+          expect(hooks.postToolUse).toBeDefined();
+          expect(hooks.postToolUse).toHaveLength(1);
+          expect(hooks.postToolUse?.[0].hooks[0].command).toContain('auto-checkpoint.sh');
+        });
+
+        it('should generate subagentStop hook when auto_checkpoint enabled', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: false,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+            auto_checkpoint: { enabled: true, interval_tool_calls: 30 },
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          // Should have subagentStop with auto-checkpoint
+          expect(hooks.subagentStop).toBeDefined();
+          expect(hooks.subagentStop).toHaveLength(1);
+          expect(hooks.subagentStop?.[0].hooks[0].command).toContain('auto-checkpoint.sh');
+        });
+
+        it('should NOT generate auto-checkpoint hooks when auto_checkpoint disabled', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: true,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+            auto_checkpoint: { enabled: false, interval_tool_calls: 30 },
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          expect(hooks.postToolUse).toBeUndefined();
+          expect(hooks.subagentStop).toBeUndefined();
+        });
+
+        it('should NOT generate auto-checkpoint hooks when auto_checkpoint not provided', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: false,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          // preToolUse should be absent (no write/edit hooks requested either)
+          expect(hooks.postToolUse).toBeUndefined();
+          expect(hooks.subagentStop).toBeUndefined();
+        });
+      });
+
+      describe('AC2: auto-checkpoint script branches on hook_event_name', () => {
+        it('should generate a bash script', () => {
+          const script = generateAutoCheckpointScript(30);
+
+          expect(script).toContain('#!/bin/bash');
+        });
+
+        it('should reference hook_event_name for branching', () => {
+          const script = generateAutoCheckpointScript(30);
+
+          expect(script).toContain('hook_event_name');
+        });
+
+        it('should use defensive subshell for backgrounding', () => {
+          const script = generateAutoCheckpointScript(30);
+
+          // Should background checkpoint writes
+          expect(script).toContain('&');
+        });
+
+        it('should embed the interval_tool_calls value', () => {
+          const script = generateAutoCheckpointScript(50);
+
+          expect(script).toContain('50');
+        });
+
+        it('should reference hook-counters directory', () => {
+          const script = generateAutoCheckpointScript(30);
+
+          expect(script).toContain('hook-counters');
+        });
+      });
+
+      describe('AC4: cleanupHookCounters removes counter file for completed WU', () => {
+        it('should remove counter file when it exists', () => {
+          // Arrange
+          const countersDir = join(tempDir, '.lumenflow/state/hook-counters');
+          mkdirSync(countersDir, { recursive: true });
+          const counterFile = join(countersDir, `${TEST_WU_ID}.json`);
+          writeFileSync(counterFile, JSON.stringify({ count: 15 }));
+
+          // Act
+          cleanupHookCounters(tempDir, TEST_WU_ID);
+
+          // Assert
+          expect(existsSync(counterFile)).toBe(false);
+        });
+
+        it('should not throw when counter file does not exist', () => {
+          // Act & Assert - should not throw
+          expect(() => cleanupHookCounters(tempDir, TEST_WU_ID)).not.toThrow();
+        });
+
+        it('should not throw when counters directory does not exist', () => {
+          // Use a clean temp dir without hook-counters
+          const cleanDir = join(tmpdir(), `clean-${Date.now()}`);
+          mkdirSync(cleanDir, { recursive: true });
+
+          // Act & Assert - should not throw
+          expect(() => cleanupHookCounters(cleanDir, TEST_WU_ID)).not.toThrow();
+
+          // Cleanup
+          rmSync(cleanDir, { recursive: true, force: true });
+        });
+      });
+
+      describe('AC5: checkAutoCheckpointWarning when hooks disabled but policy enabled', () => {
+        it('should return warning when auto_checkpoint enabled but hooks master switch disabled', () => {
+          const result = checkAutoCheckpointWarning({
+            hooksEnabled: false,
+            autoCheckpointEnabled: true,
+          });
+
+          expect(result.warning).toBe(true);
+          expect(result.message).toContain('advisory');
+        });
+
+        it('should return no warning when both hooks and auto_checkpoint enabled', () => {
+          const result = checkAutoCheckpointWarning({
+            hooksEnabled: true,
+            autoCheckpointEnabled: true,
+          });
+
+          expect(result.warning).toBe(false);
+        });
+
+        it('should return no warning when auto_checkpoint disabled', () => {
+          const result = checkAutoCheckpointWarning({
+            hooksEnabled: false,
+            autoCheckpointEnabled: false,
+          });
+
+          expect(result.warning).toBe(false);
+        });
       });
     });
 
