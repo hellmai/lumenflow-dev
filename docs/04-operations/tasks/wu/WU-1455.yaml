@@ -2,7 +2,7 @@ id: WU-1455
 title: 'Shared Schemas: Initiative commands'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - initiative-schemas.ts covers 8 initiative commands
   - MCP tools consume shared schemas
   - CLI commands use shared validators
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1455
+claimed_at: 2026-02-06T09:56:59.009Z
+baseline_main_sha: b9b210bcfff6ba6d278ac4e6059595608ae0dd95
+session_id: 5dd2a03a-4285-474a-88b8-168da042a7c2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T09:56:59.013Z
