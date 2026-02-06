@@ -24,7 +24,7 @@
 
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
@@ -41,8 +41,8 @@ import {
   isRetryExhaustionError as coreIsRetryExhaustionError,
   formatRetryExhaustionError as coreFormatRetryExhaustionError,
 } from '@lumenflow/core/dist/micro-worktree.js';
-import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+import { parseYAML, readWU, stringifyYAML, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 import { validateSingleWU } from '@lumenflow/core/dist/validators/wu-tasks.js';
 
 /** Log prefix for console output */
@@ -361,7 +361,12 @@ function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
   const initRelPath = INIT_PATHS.INITIATIVE(initId);
   const initAbsPath = join(worktreePath, initRelPath);
 
-  const doc = readInitiative(initAbsPath, initId);
+  // Read raw YAML so we preserve unknown fields like related_plan.
+  const rawText = readFileSync(initAbsPath, { encoding: 'utf-8' });
+  const doc = parseYAML(rawText);
+  if (!doc || typeof doc !== 'object' || doc.id !== initId) {
+    die(`Initiative YAML id mismatch. Expected ${initId}, found ${doc?.id}`);
+  }
 
   // Initialize wus array if not present
   if (!Array.isArray(doc.wus)) {
@@ -381,7 +386,8 @@ function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
     return [];
   }
 
-  writeInitiative(initAbsPath, doc);
+  const out = stringifyYAML(doc);
+  writeFileSync(initAbsPath, out, { encoding: 'utf-8' });
   console.log(`${LOG_PREFIX} ✅ Added ${addedWuIds.join(', ')} to ${initId} wus list`);
   return addedWuIds;
 }

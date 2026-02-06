@@ -7,10 +7,10 @@
  * TDD: These tests are written BEFORE the implementation.
  */
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { stringifyYAML, readWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/dist/wu-yaml.js';
 import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 
 // Test constants to avoid lint warnings about duplicate strings
@@ -469,6 +469,30 @@ describe('initiative:add-wu WU validation (WU-1330)', () => {
       expect(updatedWu2.initiative).toBe(TEST_INIT_ID);
       expect(updatedInit.wus).toContain(TEST_WU_ID);
       expect(updatedInit.wus).toContain(TEST_WU_ID_2);
+    });
+
+    it('should preserve related_plan when updating initiative wus list', async () => {
+      const { buildAddWuMicroWorktreeOptions } = await import('../initiative-add-wu.js');
+
+      const wuDir = join(tempDir, WU_REL_PATH);
+      const initDir = join(tempDir, INIT_REL_PATH);
+      mkdirSync(wuDir, { recursive: true });
+      mkdirSync(initDir, { recursive: true });
+
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      const initPath = join(initDir, `${TEST_INIT_ID}.yaml`);
+      const relatedPlan = 'lumenflow://plans/test-plan.md';
+
+      writeFileSync(wuPath, stringifyYAML(createValidWUDoc({ id: TEST_WU_ID })));
+      writeFileSync(initPath, stringifyYAML(createValidInitDoc({ related_plan: relatedPlan })));
+
+      process.chdir(tempDir);
+      const options = buildAddWuMicroWorktreeOptions(TEST_WU_ID, TEST_INIT_ID);
+      await options.execute({ worktreePath: tempDir });
+
+      // Read raw YAML to ensure unknown fields were preserved.
+      const rawInitiative = parseYAML(readFileSync(initPath, 'utf-8')) as Record<string, unknown>;
+      expect(rawInitiative.related_plan).toBe(relatedPlan);
     });
 
     it('should validate conflicting links across multiple WUs', async () => {
