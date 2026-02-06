@@ -10,7 +10,11 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
-  manual: []
+  manual:
+    - 'Verify wu:claim surfaces unread signals without blocking the claim workflow'
+    - 'Verify wu:done marks completed-WU signals as read and prints count'
+    - 'Verify pre-compact hook outputs orchestrator inbox when no WU is active'
+    - 'Verify session-start hook surfaces unread signals for non-worktree context'
   unit:
     - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
