@@ -586,6 +586,98 @@ These patterns were discovered during [WU-218](../tasks/wu/WU-218.yaml) when an 
 
 ---
 
+## 5. Memory Enforcement (INIT-015)
+
+LumenFlow's memory layer supports configurable enforcement of checkpointing, signal integrity, and decay-based archival. All enforcement features are opt-in, fail-open by default, and configured under `memory.enforcement` and `memory.decay` in `.lumenflow.config.yaml`.
+
+### 5.1 Auto-Checkpoint Enforcement (WU-1471)
+
+When enabled, auto-checkpoint hooks create checkpoints automatically during agent work without requiring manual `mem:checkpoint` calls.
+
+```yaml
+memory:
+  enforcement:
+    auto_checkpoint:
+      enabled: true # Generate PostToolUse + SubagentStop hooks
+      interval_tool_calls: 30 # Checkpoint every N tool calls (default: 30)
+    require_checkpoint_for_done: warn # 'off' | 'warn' | 'block'
+```
+
+**Hook behavior:**
+
+- **PostToolUse**: Fires after every tool call. A per-WU counter increments and triggers a checkpoint when `interval_tool_calls` is reached. Checkpoint writes are backgrounded in a defensive subshell to avoid blocking the agent.
+- **SubagentStop**: Fires when a sub-agent finishes. Always creates a checkpoint (no counter required).
+
+**wu:done checkpoint gate:**
+
+| `require_checkpoint_for_done` | Behavior                                        |
+| ----------------------------- | ----------------------------------------------- |
+| `off`                         | No checkpoint check during wu:done              |
+| `warn` (default)              | Warn if no checkpoints exist for the WU         |
+| `block`                       | Block wu:done if no checkpoints exist for the WU |
+
+On completion, wu:done cleans up hook counter files at `.lumenflow/state/hook-counters/<WU_ID>.json`.
+
+**Prerequisites:** Auto-checkpoint hooks require the `agents.clients.claude-code.enforcement.hooks` master switch to be `true`. When the auto-checkpoint policy is enabled but the hooks master switch is disabled, tooling emits a warning and remains advisory-only.
+
+Generate hooks after configuration:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+### 5.2 Signal Receipts (WU-1472)
+
+Signal read-marking uses append-only receipts instead of rewriting `signals.jsonl`. This prevents concurrent agents from overwriting each other's read-state updates.
+
+**How it works:**
+
+- `mem:inbox` marks signals as read by appending receipt entries (not modifying the original signal)
+- `loadSignals` merges effective read state from both inline `read: true` (legacy) and appended receipts
+- Signal cleanup (`signal:cleanup`) is receipt-aware and removes orphaned receipts for cleaned-up signals
+- Use `--no-mark` with `mem:inbox` to read signals without generating receipts
+
+**Backward compatibility:** Existing inline `read: true` flags are honored. New read-marking always uses receipts.
+
+### 5.3 Orchestrator Recovery (WU-1473)
+
+CLI lifecycle commands surface unread signals and consume them at appropriate touchpoints:
+
+- **wu:claim / mem:start**: Surfaces unread signal summary so agents can consume pending coordination messages at session start
+- **wu:done**: Marks completed-WU signals as read using receipt-aware behavior and prints the count
+- **PreCompact / SessionStart hooks**: Support non-worktree orchestrator context (e.g., inbox check) without breaking existing worktree behavior
+
+All CLI integrations remain fail-open and do not block primary WU lifecycle commands on memory errors.
+
+### 5.4 Decay Policy (WU-1474)
+
+Decay-based archival removes stale memory nodes during lifecycle events, preventing unbounded memory accumulation.
+
+```yaml
+memory:
+  decay:
+    enabled: true # Enable decay-based archival (default: false)
+    threshold: 0.1 # Score below which nodes are archived (0-1, default: 0.1)
+    half_life_days: 30 # How quickly nodes lose relevance (default: 30)
+    trigger: on_done # 'on_done' | 'manual' (default: on_done)
+```
+
+| Field            | Type    | Default   | Description                                    |
+| ---------------- | ------- | --------- | ---------------------------------------------- |
+| `enabled`        | boolean | `false`   | Enable automated decay archival                |
+| `threshold`      | number  | `0.1`     | Score below which nodes are archived (0 to 1)  |
+| `half_life_days` | integer | `30`      | Days until node relevance halves               |
+| `trigger`        | enum    | `on_done` | When to run: `on_done` or `manual`             |
+
+**Trigger modes:**
+
+- **`on_done`**: wu:done invokes decay archival after gates pass. Errors never block completion (fail-open).
+- **`manual`**: Decay only runs via `pnpm mem:cleanup`. Useful for teams that prefer explicit control.
+
+When decay is disabled, existing wu:done behavior is unchanged. Manual cleanup (`pnpm mem:cleanup`) remains available regardless of the decay configuration and supports `--dry-run` preview.
+
+---
+
 ## 6. Definition of Done & Validation
 
 ### 6.4 Validation (Definition of Done)

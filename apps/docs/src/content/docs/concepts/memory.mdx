@@ -428,6 +428,139 @@ memory:
 - **Long-running tasks**: For complex WUs, signals provide progress visibility
 - **Orchestrator patterns**: Parent agents can monitor child progress without context overhead
 
+## Auto-Checkpoint Enforcement
+
+<Aside type="note">
+  Auto-checkpoint enforcement was introduced in INIT-015. All enforcement features are opt-in and
+  fail-open by default.
+</Aside>
+
+When configured, LumenFlow can create checkpoints automatically via Claude Code hooks, removing the need for manual `mem:checkpoint` calls during active work.
+
+### How Auto-Checkpoints Work
+
+```
+PostToolUse hook fires
+     |
+Counter increments (per-WU)
+     |
+Counter reaches interval?
+     ├─ YES → Create checkpoint (backgrounded)
+     └─ NO  → Continue
+```
+
+```
+SubagentStop hook fires
+     |
+Always create checkpoint (sub-agent completed work)
+```
+
+The PostToolUse hook tracks a per-WU counter in `.lumenflow/state/hook-counters/<WU_ID>.json` and creates a checkpoint when the counter reaches the configured interval (default: 30 tool calls). The SubagentStop hook always checkpoints because a sub-agent finishing represents a natural milestone.
+
+Both checkpoint writes are backgrounded in a defensive subshell so the hook returns quickly and does not block the agent.
+
+### Checkpoint Gate on wu:done
+
+`wu:done` can optionally verify that at least one checkpoint exists for the WU:
+
+| Mode    | Behavior                                         |
+| ------- | ------------------------------------------------ |
+| `off`   | No checkpoint check                              |
+| `warn`  | Print a warning if no checkpoints (default)      |
+| `block` | Block wu:done until a checkpoint exists           |
+
+On completion, wu:done cleans up the per-WU hook counter file.
+
+### Configuration
+
+```yaml
+# .lumenflow.config.yaml
+memory:
+  enforcement:
+    auto_checkpoint:
+      enabled: true          # Generate PostToolUse + SubagentStop hooks
+      interval_tool_calls: 30 # Checkpoint every N tool calls
+    require_checkpoint_for_done: warn  # off | warn | block
+```
+
+<Aside type="caution">
+  Auto-checkpoint hooks require the enforcement hooks master switch
+  (`agents.clients.claude-code.enforcement.hooks: true`). When auto-checkpoint is enabled but the
+  master switch is off, LumenFlow emits a warning and remains advisory-only.
+</Aside>
+
+After changing configuration, regenerate hooks:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+## Signal Receipts
+
+<Aside type="note">
+  Append-only signal receipts were introduced in INIT-015 (WU-1472) to fix concurrent read-marking
+  races between parallel agents.
+</Aside>
+
+Previously, marking a signal as read required rewriting the entire `signals.jsonl` file. When multiple agents ran concurrently, this caused lost updates (one agent's read-mark overwritten by another).
+
+Signal receipts solve this by using append-only writes:
+
+- **Reading signals** (`mem:inbox`): Appends receipt entries instead of modifying the original signal
+- **Loading signals** (`loadSignals`): Merges effective read state from inline `read: true` (legacy) and appended receipts
+- **Cleanup** (`signal:cleanup`): Receipt-aware; removes orphaned receipts for deleted signals
+- **No-mark mode** (`mem:inbox --no-mark`): Read signals without generating receipts
+
+### Backward Compatibility
+
+Existing inline `read: true` flags in `signals.jsonl` are honored. All new read-marking uses the receipt mechanism. No migration is required.
+
+## Decay Lifecycle
+
+Memory nodes accumulate over time. Without cleanup, stale nodes consume storage and slow context loading. The decay lifecycle provides automated archival based on a time-based relevance score.
+
+### How Decay Works
+
+Each memory node receives a decay score based on its age and the configured half-life:
+
+```
+score = 2^(-age_in_days / half_life_days)
+```
+
+- A node created today has score 1.0
+- After `half_life_days` (default: 30), score drops to 0.5
+- After two half-lives (60 days), score drops to 0.25
+
+Nodes with a score below the `threshold` (default: 0.1) are archived.
+
+### Trigger Modes
+
+| Trigger   | When decay runs                                        |
+| --------- | ------------------------------------------------------ |
+| `on_done` | Automatically during wu:done (after gates pass)        |
+| `manual`  | Only via `pnpm mem:cleanup` (explicit operator control) |
+
+When `trigger: on_done`, decay archival runs as part of the wu:done lifecycle. Errors never block completion (fail-open). When decay is disabled, existing wu:done behavior is unchanged.
+
+### Configuration
+
+```yaml
+# .lumenflow.config.yaml
+memory:
+  decay:
+    enabled: true        # Enable decay-based archival
+    threshold: 0.1       # Archive nodes below this score (0-1)
+    half_life_days: 30   # Days until relevance halves
+    trigger: on_done     # on_done | manual
+```
+
+Manual cleanup remains available regardless of configuration:
+
+```bash
+pnpm mem:cleanup              # Run cleanup
+pnpm mem:cleanup --dry-run    # Preview without changes
+```
+
 ## Best Practices
 
 ### For Humans
@@ -483,9 +616,15 @@ Do NOT use discoveries for:
 
 **Active** (during WU work)
 
-- Checkpoints created frequently
-- Signals sent on milestones
+- Checkpoints created automatically (if enforcement enabled) or manually
+- Signals sent on milestones with append-only receipts
 - Decisions logged as made
+
+**Decay** (after WU completion, if `memory.decay.enabled`)
+
+- Decay scores computed from node age and half-life
+- Nodes below threshold are archived automatically
+- Triggered by wu:done (fail-open) or manual cleanup
 
 **Archive** (after WU completion)
 
@@ -495,8 +634,9 @@ Do NOT use discoveries for:
 
 **Cleanup** (periodic maintenance)
 
-- Old checkpoints pruned
+- Old checkpoints pruned via TTL
 - Archived sessions cleaned
+- Orphaned signal receipts removed
 - Summary nodes preserved
 
 </Card>
