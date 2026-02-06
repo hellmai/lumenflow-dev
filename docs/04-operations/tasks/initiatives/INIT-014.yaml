@@ -21,7 +21,7 @@ phases:
     status: done
   - id: 5
     title: 'Phase 4: Package hygiene and workflow consistency'
-    status: in_progress
+    status: done
   - id: 6
     title: 'Phase 5: Type system hardening'
     status: pending
