@@ -50,3 +50,11 @@ lanes:
   - 'Content: Documentation'
 notes:
   - 'WU dependency graph follows plan ordering: A -> {B,C,D,F1}, E parallel, F2 last.'
+wus:
+  - WU-1490
+  - WU-1491
+  - WU-1492
+  - WU-1493
+  - WU-1494
+  - WU-1495
+  - WU-1496
