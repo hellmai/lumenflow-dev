@@ -217,6 +217,11 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     flags: '--create-pr',
     description: 'Create PR instead of auto-merge',
   },
+  prDraft: {
+    name: 'prDraft',
+    flags: '--pr-draft',
+    description: 'Create PR as draft (use with --create-pr)',
+  },
   overrideOwner: {
     name: 'overrideOwner',
     flags: '--override-owner',
@@ -789,6 +794,7 @@ export function parseWUArgs(argv: string[]): OptionValues {
     WU_OPTIONS.skipAccessibilityCheck,
     WU_OPTIONS.forceOverlap,
     WU_OPTIONS.createPr,
+    WU_OPTIONS.prDraft,
     WU_OPTIONS.overrideOwner,
     WU_OPTIONS.noAutoRebase,
 

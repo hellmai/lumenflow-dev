@@ -334,6 +334,16 @@ describe('arg-parser', () => {
       });
     });
 
+    // WU-1494: --pr-draft parser/help parity
+    describe('PR draft option (WU-1494)', () => {
+      it('should define prDraft option', () => {
+        expect(WU_OPTIONS.prDraft).toBeDefined();
+        expect(WU_OPTIONS.prDraft.name).toBe('prDraft');
+        expect(WU_OPTIONS.prDraft.flags).toBe('--pr-draft');
+        expect(WU_OPTIONS.prDraft.description).toContain('draft');
+      });
+    });
+
     describe('safety options', () => {
       it('should define resume option', () => {
         expect(WU_OPTIONS.resume.name).toBe('resume');
@@ -615,6 +625,35 @@ describe('arg-parser', () => {
       });
     });
 
+    // WU-1494: --pr-draft parsing via createWUParser
+    describe('--pr-draft parsing (WU-1494)', () => {
+      it('should parse --pr-draft flag', () => {
+        process.argv = [...TEST_ARGV_PREFIX, '--create-pr', '--pr-draft'];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.createPr, WU_OPTIONS.prDraft],
+        });
+
+        expect(opts.createPr).toBe(true);
+        expect(opts.prDraft).toBe(true);
+      });
+
+      it('should not set prDraft when --pr-draft is not provided', () => {
+        process.argv = [...TEST_ARGV_PREFIX, '--create-pr'];
+
+        const opts = createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.createPr, WU_OPTIONS.prDraft],
+        });
+
+        expect(opts.createPr).toBe(true);
+        expect(opts.prDraft).toBeUndefined();
+      });
+    });
+
     // WU-1300: CLI aliases for convenience
     describe('CLI aliases (WU-1300)', () => {
       it('should accept --code-path as alias for --code-paths', () => {
@@ -726,6 +765,25 @@ describe('arg-parser', () => {
 
       expect(opts.force).toBe(true);
       expect(opts.branchOnly).toBe(true);
+    });
+
+    // WU-1494: --pr-draft accepted by parseWUArgs (used by wu:done)
+    it('should parse --pr-draft flag via parseWUArgs', () => {
+      const argv = ['node', 'test.js', '--id', 'WU-100', '--create-pr', '--pr-draft'];
+
+      const opts = parseWUArgs(argv);
+
+      expect(opts.createPr).toBe(true);
+      expect(opts.prDraft).toBe(true);
+    });
+
+    it('should parse --create-pr without --pr-draft via parseWUArgs', () => {
+      const argv = ['node', 'test.js', '--id', 'WU-100', '--create-pr'];
+
+      const opts = parseWUArgs(argv);
+
+      expect(opts.createPr).toBe(true);
+      expect(opts.prDraft).toBeUndefined();
     });
   });
 });
