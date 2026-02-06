@@ -27,7 +27,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml) — Framework: CLI
 - [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -476,3 +475,4 @@ sections:
 - [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml)
 - [WU-1491 — Add wu:claim cloud mode and branch-pr mode resolution](wu/WU-1491.yaml)
 - [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml)
+- [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml)

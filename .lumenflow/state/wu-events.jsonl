@@ -922,5 +922,6 @@
 {"type":"claim","wuId":"WU-1492","timestamp":"2026-02-06T18:50:27.167Z","lane":"Framework: Core","title":"Add wu:done branch-pr completion path"}
 {"type":"complete","wuId":"WU-1491","timestamp":"2026-02-06T18:58:32.240Z"}
 {"type":"complete","wuId":"WU-1492","timestamp":"2026-02-06T19:00:58.378Z"}
-{"type":"claim","wuId":"WU-1493","lane":"Framework: CLI","title":"Add wu:prep support for branch-pr mode","timestamp":"2026-02-06T19:01:46.415Z"}
-{"type":"claim","wuId":"WU-1494","lane":"Framework: Core","title":"Fix --pr-draft parser/help parity for wu:done","timestamp":"2026-02-06T19:04:55.486Z"}
+{"type":"claim","wuId":"WU-1493","timestamp":"2026-02-06T19:01:46.415Z","lane":"Framework: CLI","title":"Add wu:prep support for branch-pr mode"}
+{"type":"claim","wuId":"WU-1494","timestamp":"2026-02-06T19:04:55.486Z","lane":"Framework: Core","title":"Fix --pr-draft parser/help parity for wu:done"}
+{"type":"complete","wuId":"WU-1493","timestamp":"2026-02-06T19:07:11.679Z"}
