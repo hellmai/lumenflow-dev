@@ -2,7 +2,7 @@ id: WU-1475
 title: Preserve initiative related_plan in initiative:add-wu
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -26,8 +26,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: initiative:add-wu updates initiative.wus by reading and writing initiative YAML through strict schema helpers. Problem: unknown fields like related_plan are dropped during write, breaking plan traceability. Solution: make initiative:add-wu preserve non-schema fields when updating wus, and add regression tests.'
+description: 'Context: initiative:add-wu updates initiative.wus by reading and writing initiative
+  YAML through strict schema helpers. Problem: unknown fields like related_plan are dropped during
+  write, breaking plan traceability. Solution: make initiative:add-wu preserve non-schema fields
+  when updating wus, and add regression tests.'
 acceptance:
   - Adding WUs to an initiative preserves existing related_plan field in initiative YAML.
-  - initiative:add-wu remains idempotent and still updates both WU.initiative and initiative.wus arrays.
+  - initiative:add-wu remains idempotent and still updates both WU.initiative and initiative.wus
+    arrays.
   - Regression tests fail before fix and pass after fix for related_plan preservation.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1475
+claimed_at: 2026-02-06T11:06:03.255Z
+baseline_main_sha: ca4a03d3cd7396e7eadc2a3767a20a3a660edf16
+session_id: a4492dd7-4ab8-456f-8ad9-c80175c78286
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:06:03.258Z
