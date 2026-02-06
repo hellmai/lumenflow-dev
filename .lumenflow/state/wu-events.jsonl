@@ -857,3 +857,4 @@
 {"type":"complete","wuId":"WU-1462","timestamp":"2026-02-06T08:32:39.534Z"}
 {"type":"claim","wuId":"WU-1469","timestamp":"2026-02-06T08:35:27.537Z","lane":"Content: Documentation","title":"Align MCP and publish docs with current tool count and auth model"}
 {"type":"complete","wuId":"WU-1467","timestamp":"2026-02-06T08:36:52.907Z"}
+{"type":"claim","wuId":"WU-1468","lane":"Framework: Core","title":"Roll out root tsconfig inheritance and strictNullChecks across non-strict packages","timestamp":"2026-02-06T08:43:08.871Z"}

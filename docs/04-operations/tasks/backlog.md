@@ -29,11 +29,11 @@ sections:
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — Framework: Core
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — Framework: Core
-- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 
 ## 🔧 In progress
 
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
+- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

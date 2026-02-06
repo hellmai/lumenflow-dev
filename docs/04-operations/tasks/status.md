@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml)
+- [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml)
 
 ## Blocked
 
