@@ -2,7 +2,7 @@ id: WU-1471
 title: Auto-checkpoint enforcement hooks + wu:done checkpoint gate
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -14,8 +14,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
   manual:
-    - Verify pnpm lumenflow:integrate generates auto-checkpoint.sh in .claude/hooks/ when memory.enforcement.auto_checkpoint.enabled=true
-    - Verify wu:done warns (not blocks) when require_checkpoint_for_done=warn and no checkpoints exist
+    - Verify pnpm lumenflow:integrate generates auto-checkpoint.sh in .claude/hooks/ when
+      memory.enforcement.auto_checkpoint.enabled=true
+    - Verify wu:done warns (not blocks) when require_checkpoint_for_done=warn and no checkpoints
+      exist
     - Verify wu:done blocks when require_checkpoint_for_done=block and no checkpoints exist
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
@@ -60,3 +62,5 @@ session_id: be97fe19-1536-4855-b8dd-563a5da44419
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T11:29:32.685Z
+locked: true
+completed_at: 2026-02-06T11:43:50.171Z

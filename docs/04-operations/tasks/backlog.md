@@ -28,7 +28,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml) — Framework: CLI
 - [WU-1478 — Restructure lane taxonomy for parallel CLI/Core work](wu/WU-1478.yaml) — Operations: Infrastructure
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — Framework: Core
 
@@ -458,3 +457,4 @@ sections:
 - [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml)
 - [WU-1476 — Add remove-success-metric support to initiative:edit](wu/WU-1476.yaml)
 - [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml)
+- [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml)
