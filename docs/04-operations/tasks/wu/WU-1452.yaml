@@ -6,9 +6,9 @@ status: in_progress
 priority: P1
 created: 2026-02-05
 code_paths:
-  - packages/@lumenflow/cli/src/wu-validate.ts
   - packages/@lumenflow/mcp/src/tools.ts
-  - docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml
+  - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
 tests:
   manual:
     - 'MCP Inspector: call wu_list, initiative_list, initiative_status'
