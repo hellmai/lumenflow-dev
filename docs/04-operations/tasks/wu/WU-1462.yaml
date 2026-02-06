@@ -2,7 +2,7 @@ id: WU-1462
 title: Unblock MCP packaging and prevent CLI test artifacts in publish tarballs
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-05
 code_paths:
@@ -50,3 +50,5 @@ session_id: 6b4f8efa-c6e8-42d7-8fc4-5f651cf35703
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-05T23:50:59.343Z
+locked: true
+completed_at: 2026-02-06T08:32:36.886Z
