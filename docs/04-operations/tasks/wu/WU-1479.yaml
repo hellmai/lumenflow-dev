@@ -2,7 +2,7 @@ id: WU-1479
 title: Fix wu:done push race condition and add provenance trailers
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -21,7 +21,8 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/declarative-forging-pixel.md
 risks: []
-notes: 'Root cause: WU-1467 push race condition. Plan: declarative-forging-pixel.md. New test file needed for generateCommitMessage provenance.'
+notes: 'Root cause: WU-1467 push race condition. Plan: declarative-forging-pixel.md. New test file
+  needed for generateCommitMessage provenance.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -30,10 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:done push step has no retry/sync logic. When origin/main advances between merge and push (concurrent agents), push fails with non-fast-forward. Agents improvise recovery with LUMENFLOW_FORCE, creating ghost commits. Fix: git pull --rebase before push (standard git pattern). Add provenance trailers for forensics.'
+description: 'wu:done push step has no retry/sync logic. When origin/main advances between merge and
+  push (concurrent agents), push fails with non-fast-forward. Agents improvise recovery with
+  LUMENFLOW_FORCE, creating ghost commits. Fix: git pull --rebase before push (standard git
+  pattern). Add provenance trailers for forensics.'
 acceptance:
   - wu:done push succeeds when origin/main advances between merge and push
   - No error swallowing - rebase conflicts propagate clearly
   - Provenance trailers (Worktree-Branch, Worktree-Path) in wu:done commits
   - No hardcoded string literals - uses GIT_COMMANDS/GIT_FLAGS constants
   - All existing tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1479
+claimed_at: 2026-02-06T11:36:46.835Z
+baseline_main_sha: 5192032c9acec0f6b4ea9c908f5ef23336625da8
+session_id: be97fe19-1536-4855-b8dd-563a5da44419
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:36:46.839Z
