@@ -1,0 +1,38 @@
+id: WU-1486
+title: Sync MCP internal and Starlight docs with current tool surface
+lane: 'Content: Documentation'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/mcp-server.md
+  - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/guides/mcp-setup.mdx
+tests:
+  manual:
+    - pnpm gates --docs-only
+    - rg -n "98 tools|90 normalized|file_read|wu_proto" docs/04-operations/_frameworks/lumenflow/mcp-server.md apps/docs/src/content/docs/reference/mcp.mdx
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1486.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/INIT-MCP-FULL-remediation.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: MCP tool surface increased with wave-1/wave-2 parity additions, but docs still report the old 68-tool model. Problem: internal and public docs are inconsistent with code, causing operator and agent confusion. Solution: update internal MCP architecture doc and Starlight MCP reference/setup to reflect current total tools, parity scope, and newly available tool families.'
+acceptance:
+  - docs/04-operations/_frameworks/lumenflow/mcp-server.md reflects current MCP total tool count and category breakdown from packages/@lumenflow/mcp/src/tools.ts.
+  - apps/docs/src/content/docs/reference/mcp.mdx reflects current MCP total tool count and includes the wave-1/wave-2 parity tool families (file/git/plan/signal/wu-proto + ops/setup parity commands).
+  - apps/docs/src/content/docs/guides/mcp-setup.mdx examples remain valid and note expanded MCP tool surface in line with reference docs.
+  - Doc references clearly distinguish public CLI parity target (90 normalized commands) from total MCP tools (including allowed MCP-only extras).
