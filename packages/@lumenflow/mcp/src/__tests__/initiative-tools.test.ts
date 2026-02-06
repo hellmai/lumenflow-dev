@@ -91,8 +91,8 @@ describe('Initiative MCP tools (WU-1424)', () => {
       expect(result.error?.message).toContain('Failed to list initiatives');
     });
 
-    // WU-1452: initiative_list must use --format json, not --json
-    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
+    // WU-1455: initiative_list uses format field from shared schema
+    it('should use --format json flag for CLI parity (WU-1455)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: JSON.stringify([]),
@@ -100,7 +100,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
         exitCode: 0,
       });
 
-      await initiativeListTool.execute({ json: true });
+      await initiativeListTool.execute({ format: 'json' });
 
       const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
       // Must use --format json
@@ -145,8 +145,8 @@ describe('Initiative MCP tools (WU-1424)', () => {
       expect(result.error?.message).toContain('id');
     });
 
-    // WU-1452: initiative_status must use --format json, not --json
-    it('should use --format json flag (not --json) for CLI parity (WU-1452)', async () => {
+    // WU-1455: initiative_status uses format field from shared schema
+    it('should use --format json flag for CLI parity (WU-1455)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: JSON.stringify({ id: 'INIT-001' }),
@@ -154,7 +154,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
         exitCode: 0,
       });
 
-      await initiativeStatusTool.execute({ id: 'INIT-001', json: true });
+      await initiativeStatusTool.execute({ id: 'INIT-001', format: 'json' });
 
       const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
       // Must use --format json
@@ -174,35 +174,49 @@ describe('Initiative MCP tools (WU-1424)', () => {
         exitCode: 0,
       });
 
+      // WU-1455: shared schema requires id, slug, title
       const result = await initiativeCreateTool.execute({
         id: 'INIT-003',
+        slug: 'new-initiative',
         title: 'New Initiative',
-        description: 'Test description',
       });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'initiative:create',
-        expect.arrayContaining(['--id', 'INIT-003', '--title', 'New Initiative']),
+        expect.arrayContaining([
+          '--id',
+          'INIT-003',
+          '--slug',
+          'new-initiative',
+          '--title',
+          'New Initiative',
+        ]),
         expect.any(Object),
       );
     });
 
     it('should require id parameter', async () => {
-      const result = await initiativeCreateTool.execute({ title: 'Missing ID' });
+      const result = await initiativeCreateTool.execute({
+        slug: 'missing-id',
+        title: 'Missing ID',
+      });
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('id');
     });
 
     it('should require title parameter', async () => {
-      const result = await initiativeCreateTool.execute({ id: 'INIT-003' });
+      const result = await initiativeCreateTool.execute({
+        id: 'INIT-003',
+        slug: 'missing-title',
+      });
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('title');
     });
 
-    it('should support phases parameter', async () => {
+    it('should support optional fields', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: 'Created INIT-003',
@@ -210,16 +224,19 @@ describe('Initiative MCP tools (WU-1424)', () => {
         exitCode: 0,
       });
 
+      // WU-1455: shared schema supports priority, owner, target_date
       const result = await initiativeCreateTool.execute({
         id: 'INIT-003',
+        slug: 'new-initiative',
         title: 'New Initiative',
-        phases: ['Phase 1: MVP', 'Phase 2: Polish'],
+        priority: 'P1',
+        owner: 'tom@hellm.ai',
       });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'initiative:create',
-        expect.arrayContaining(['--phase', 'Phase 1: MVP', '--phase', 'Phase 2: Polish']),
+        expect.arrayContaining(['--priority', 'P1', '--owner', 'tom@hellm.ai']),
         expect.any(Object),
       );
     });
@@ -234,22 +251,30 @@ describe('Initiative MCP tools (WU-1424)', () => {
         exitCode: 0,
       });
 
+      // WU-1455: shared schema matches CLI fields (status, description, etc.)
       const result = await initiativeEditTool.execute({
         id: 'INIT-001',
-        title: 'Updated Title',
         description: 'Updated description',
+        status: 'in_progress',
       });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'initiative:edit',
-        expect.arrayContaining(['--id', 'INIT-001', '--title', 'Updated Title']),
+        expect.arrayContaining([
+          '--id',
+          'INIT-001',
+          '--description',
+          'Updated description',
+          '--status',
+          'in_progress',
+        ]),
         expect.any(Object),
       );
     });
 
     it('should require id parameter', async () => {
-      const result = await initiativeEditTool.execute({ title: 'New title' });
+      const result = await initiativeEditTool.execute({ description: 'New desc' });
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('id');
@@ -353,50 +378,63 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_bulk_assign', () => {
-    it('should bulk assign WUs to initiative via CLI shell-out', async () => {
+    it('should bulk assign WUs to initiative via CLI shell-out (dry-run)', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
-        stdout: '3 WUs assigned to initiative',
+        stdout: '3 WUs would be assigned',
         stderr: '',
         exitCode: 0,
       });
 
-      const result = await initiatiBulkAssignTool.execute({
-        id: 'INIT-001',
-      });
+      // WU-1455: shared schema has no required fields (defaults to dry-run)
+      const result = await initiatiBulkAssignTool.execute({});
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'initiative:bulk-assign',
-        expect.arrayContaining(['--id', 'INIT-001']),
+        expect.any(Array),
         expect.any(Object),
       );
     });
 
-    it('should require id parameter', async () => {
-      const result = await initiatiBulkAssignTool.execute({});
-
-      expect(result.success).toBe(false);
-      expect(result.error?.message).toContain('id');
-    });
-
-    it('should support pattern parameter', async () => {
+    it('should support config and apply parameters', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
-        stdout: '5 WUs assigned matching pattern',
+        stdout: '5 WUs assigned',
         stderr: '',
         exitCode: 0,
       });
 
+      // WU-1455: shared schema uses config, apply, sync_from_initiative
       const result = await initiatiBulkAssignTool.execute({
-        id: 'INIT-001',
-        pattern: 'MCP:*',
+        config: 'tools/config/custom.yaml',
+        apply: true,
       });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'initiative:bulk-assign',
-        expect.arrayContaining(['--id', 'INIT-001', '--pattern', 'MCP:*']),
+        expect.arrayContaining(['--config', 'tools/config/custom.yaml', '--apply']),
+        expect.any(Object),
+      );
+    });
+
+    it('should support sync_from_initiative parameter', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Reconciled WUs',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await initiatiBulkAssignTool.execute({
+        sync_from_initiative: 'INIT-001',
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'initiative:bulk-assign',
+        expect.arrayContaining(['--reconcile-initiative', 'INIT-001']),
         expect.any(Object),
       );
     });
