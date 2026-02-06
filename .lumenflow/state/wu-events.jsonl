@@ -897,3 +897,4 @@
 {"type":"complete","wuId":"WU-1482","timestamp":"2026-02-06T12:36:54.867Z"}
 {"type":"claim","wuId":"WU-1483","timestamp":"2026-02-06T12:37:28.120Z","lane":"Framework: MCP","title":"MCP parity remediation wave 2 (file/git/plan/signal commands)"}
 {"type":"complete","wuId":"WU-1473","timestamp":"2026-02-06T12:45:29.993Z"}
+{"type":"complete","wuId":"WU-1485","timestamp":"2026-02-06T12:47:21.307Z"}
