@@ -2,7 +2,7 @@ id: WU-1468
 title: Roll out root tsconfig inheritance and strictNullChecks across non-strict packages
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -54,3 +54,5 @@ session_id: 9d137490-803c-4f7e-a7e5-d967b7f0fd23
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T08:43:08.837Z
+locked: true
+completed_at: 2026-02-06T09:02:51.454Z
