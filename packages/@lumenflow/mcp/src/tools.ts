@@ -57,6 +57,15 @@ import {
   wuValidateSchema,
   wuInferLaneSchema,
   wuUnlockLaneSchema,
+  // WU-1455: Initiative command schemas
+  initiativeCreateSchema,
+  initiativeEditSchema,
+  initiativeListSchema,
+  initiativeStatusSchema,
+  initiativeAddWuSchema,
+  initiativeRemoveWuSchema,
+  initiativeBulkAssignSchema,
+  initiativePlanSchema,
 } from '@lumenflow/core';
 
 // Import core functions for context operations only (async to avoid circular deps)
@@ -1082,16 +1091,14 @@ const InitiativeErrorMessages = {
 export const initiativeListTool: ToolDefinition = {
   name: 'initiative_list',
   description: 'List all initiatives with optional status filter',
-  inputSchema: z.object({
-    status: z.enum(['active', 'completed', 'paused']).optional().describe('Filter by status'),
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeListSchema,
 
   async execute(input, options) {
     const args: string[] = [];
     if (input.status) args.push('--status', input.status as string);
-    // WU-1452: initiative:list uses --format json, not --json
-    if (input.json) args.push(...CliArgs.FORMAT_JSON);
+    // WU-1455: Use format field from shared schema
+    if (input.format) args.push('--format', input.format as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:list', args, cliOptions);
@@ -1118,10 +1125,8 @@ export const initiativeListTool: ToolDefinition = {
 export const initiativeStatusTool: ToolDefinition = {
   name: 'initiative_status',
   description: 'Get detailed status of a specific initiative including WUs and progress',
-  inputSchema: z.object({
-    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeStatusSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -1129,8 +1134,8 @@ export const initiativeStatusTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string];
-    // WU-1452: initiative:status uses --format json, not --json
-    if (input.json) args.push(...CliArgs.FORMAT_JSON);
+    // WU-1455: Use format field from shared schema
+    if (input.format) args.push('--format', input.format as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:status', args, cliOptions);
@@ -1157,12 +1162,8 @@ export const initiativeStatusTool: ToolDefinition = {
 export const initiativeCreateTool: ToolDefinition = {
   name: 'initiative_create',
   description: 'Create a new initiative for multi-phase project orchestration',
-  inputSchema: z.object({
-    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
-    title: z.string().describe('Initiative title'),
-    description: z.string().optional().describe('Initiative description'),
-    phases: z.array(z.string()).optional().describe('Phase names (e.g., "Phase 1: MVP")'),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeCreateSchema,
 
   async execute(input, options) {
     if (!input.id) {
@@ -1172,13 +1173,11 @@ export const initiativeCreateTool: ToolDefinition = {
       return error(ErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--title', input.title as string];
-    if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
-    if (input.phases) {
-      for (const phase of input.phases as string[]) {
-        args.push(CliArgs.PHASE, phase);
-      }
-    }
+    // WU-1455: Map shared schema fields to CLI flags
+    const args = ['--id', input.id as string, '--slug', input.slug as string, '--title', input.title as string];
+    if (input.priority) args.push('--priority', input.priority as string);
+    if (input.owner) args.push('--owner', input.owner as string);
+    if (input.target_date) args.push('--target-date', input.target_date as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:create', args, cliOptions);
@@ -1200,22 +1199,45 @@ export const initiativeCreateTool: ToolDefinition = {
 export const initiativeEditTool: ToolDefinition = {
   name: 'initiative_edit',
   description: 'Edit initiative fields',
-  inputSchema: z.object({
-    id: z.string().describe('Initiative ID to edit'),
-    title: z.string().optional().describe('New title'),
-    description: z.string().optional().describe('New description'),
-    status: z.enum(['active', 'completed', 'paused']).optional().describe('New status'),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeEditSchema,
 
   async execute(input, options) {
     if (!input.id) {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
+    // WU-1455: Map shared schema fields to CLI flags
     const args = ['--id', input.id as string];
-    if (input.title) args.push('--title', input.title as string);
     if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.status) args.push('--status', input.status as string);
+    if (input.blocked_by) args.push('--blocked-by', input.blocked_by as string);
+    if (input.blocked_reason) args.push('--blocked-reason', input.blocked_reason as string);
+    if (input.unblock) args.push('--unblock');
+    if (input.notes) args.push('--notes', input.notes as string);
+    if (input.phase_id) args.push('--phase-id', input.phase_id as string);
+    if (input.phase_status) args.push('--phase-status', input.phase_status as string);
+    if (input.created) args.push('--created', input.created as string);
+    if (input.add_lane) {
+      for (const lane of input.add_lane as string[]) {
+        args.push('--add-lane', lane);
+      }
+    }
+    if (input.remove_lane) {
+      for (const lane of input.remove_lane as string[]) {
+        args.push('--remove-lane', lane);
+      }
+    }
+    if (input.add_phase) {
+      for (const phase of input.add_phase as string[]) {
+        args.push('--add-phase', phase);
+      }
+    }
+    if (input.add_success_metric) {
+      for (const metric of input.add_success_metric as string[]) {
+        args.push('--add-success-metric', metric);
+      }
+    }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:edit', args, cliOptions);
@@ -1237,11 +1259,8 @@ export const initiativeEditTool: ToolDefinition = {
 export const initiativeAddWuTool: ToolDefinition = {
   name: 'initiative_add_wu',
   description: 'Add a Work Unit to an initiative, optionally assigning to a phase',
-  inputSchema: z.object({
-    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
-    wu: z.string().describe('WU ID to add'),
-    phase: z.number().optional().describe('Phase number to assign (1-based)'),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeAddWuSchema,
 
   async execute(input, options) {
     if (!input.initiative) {
@@ -1274,10 +1293,8 @@ export const initiativeAddWuTool: ToolDefinition = {
 export const initiativeRemoveWuTool: ToolDefinition = {
   name: 'initiative_remove_wu',
   description: 'Remove a Work Unit from an initiative',
-  inputSchema: z.object({
-    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
-    wu: z.string().describe('WU ID to remove'),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeRemoveWuSchema,
 
   async execute(input, options) {
     if (!input.initiative) {
@@ -1308,21 +1325,16 @@ export const initiativeRemoveWuTool: ToolDefinition = {
  */
 export const initiatiBulkAssignTool: ToolDefinition = {
   name: 'initiative_bulk_assign',
-  description: 'Bulk assign WUs to an initiative based on pattern matching',
-  inputSchema: z.object({
-    id: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
-    pattern: z.string().optional().describe('Pattern to match WU titles (e.g., "MCP:*")'),
-    phase: z.number().optional().describe('Phase to assign matched WUs'),
-  }),
+  description: 'Bulk assign WUs to an initiative based on lane prefix rules',
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativeBulkAssignSchema,
 
   async execute(input, options) {
-    if (!input.id) {
-      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
-    }
-
-    const args = ['--id', input.id as string];
-    if (input.pattern) args.push('--pattern', input.pattern as string);
-    if (input.phase !== undefined) args.push(CliArgs.PHASE, String(input.phase));
+    // WU-1455: Map shared schema fields to CLI flags
+    const args: string[] = [];
+    if (input.config) args.push('--config', input.config as string);
+    if (input.apply) args.push('--apply');
+    if (input.sync_from_initiative) args.push('--reconcile-initiative', input.sync_from_initiative as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('initiative:bulk-assign', args, cliOptions);
@@ -1344,11 +1356,8 @@ export const initiatiBulkAssignTool: ToolDefinition = {
 export const initiativePlanTool: ToolDefinition = {
   name: 'initiative_plan',
   description: 'Link an existing plan or create a new plan template for an initiative',
-  inputSchema: z.object({
-    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID),
-    plan: z.string().optional().describe('Path to existing plan file'),
-    create: z.boolean().optional().describe('Create a new plan template'),
-  }),
+  // WU-1455: Use shared schema from @lumenflow/core
+  inputSchema: initiativePlanSchema,
 
   async execute(input, options) {
     if (!input.initiative) {

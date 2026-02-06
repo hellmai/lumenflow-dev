@@ -1,10 +1,11 @@
 /**
  * @file schemas/index.ts
- * @description Shared command schemas and utilities for CLI/MCP parity (WU-1431, WU-1454)
+ * @description Shared command schemas and utilities for CLI/MCP parity (WU-1431, WU-1454, WU-1455)
  *
  * This module exports:
  * - Zod schemas for all commands (wu:create, wu:claim, wu:status, wu:done, gates) (WU-1431)
  * - Zod schemas for 16 WU lifecycle commands (WU-1454)
+ * - Zod schemas for 8 initiative commands (WU-1455)
  * - MCP inputSchema generation utilities
  * - CLI option generation utilities
  * - CLI argument validators
@@ -123,3 +124,46 @@ export {
   validateWuInferLaneArgs,
   validateWuUnlockLaneArgs,
 } from './wu-lifecycle-arg-validators.js';
+
+// Initiative schemas (WU-1455: 8 initiative commands)
+export {
+  // Schemas
+  initiativeCreateSchema,
+  initiativeEditSchema,
+  initiativeListSchema,
+  initiativeStatusSchema,
+  initiativeAddWuSchema,
+  initiativeRemoveWuSchema,
+  initiativeBulkAssignSchema,
+  initiativePlanSchema,
+  // Enums
+  initiativeStatusEnum,
+  phaseStatusEnum,
+  outputFormatEnum,
+  // Types
+  type InitiativeCreateInput,
+  type InitiativeEditInput,
+  type InitiativeListInput,
+  type InitiativeStatusInput,
+  type InitiativeAddWuInput,
+  type InitiativeRemoveWuInput,
+  type InitiativeBulkAssignInput,
+  type InitiativePlanInput,
+  type InitiativeStatus,
+  type PhaseStatus,
+  // Registry
+  initiativeCommandSchemas,
+  type InitiativeCommandName,
+} from './initiative-schemas.js';
+
+// Initiative argument validators (WU-1455: 8 initiative commands)
+export {
+  validateInitiativeCreateArgs,
+  validateInitiativeEditArgs,
+  validateInitiativeListArgs,
+  validateInitiativeStatusArgs,
+  validateInitiativeAddWuArgs,
+  validateInitiativeRemoveWuArgs,
+  validateInitiativeBulkAssignArgs,
+  validateInitiativePlanArgs,
+} from './initiative-arg-validators.js';
