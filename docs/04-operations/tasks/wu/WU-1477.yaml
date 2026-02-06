@@ -20,6 +20,9 @@ artifacts:
   - .lumenflow/stamps/WU-1477.done
 dependencies: []
 initiative: INIT-015
+blocked_by:
+  - WU-1473
+  - WU-1474
 risks: []
 notes: Blocked by WU-1471, WU-1472, WU-1473, WU-1474. Execute after all feature WUs land.
 requires_review: false
@@ -30,11 +33,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-015 adds auto-checkpoint enforcement, signal receipts, decay activation, and orchestrator recovery. Problem: no documentation covers the new config surface, CLI behavior changes, or hook wiring for consumers. Solution: update internal agent docs and Starlight consumer-facing docs after all feature WUs land.'
+description: 'Context: INIT-015 adds auto-checkpoint enforcement, signal receipts, decay activation,
+  and orchestrator recovery. Problem: no documentation covers the new config surface, CLI behavior
+  changes, or hook wiring for consumers. Solution: update internal agent docs and Starlight
+  consumer-facing docs after all feature WUs land.'
 acceptance:
   - quick-ref-commands.md updated with new and changed mem commands
   - lumenflow-complete.md updated with memory.enforcement config section
-  - apps/docs/src/content/docs/concepts/memory.mdx updated with checkpoints, signal receipts, and decay lifecycle
-  - apps/docs/src/content/docs/reference/config.mdx updated with memory.enforcement and memory.decay config keys
+  - apps/docs/src/content/docs/concepts/memory.mdx updated with checkpoints, signal receipts, and
+    decay lifecycle
+  - apps/docs/src/content/docs/reference/config.mdx updated with memory.enforcement and memory.decay
+    config keys
   - apps/docs/src/content/docs/reference/cli.mdx updated with new and changed CLI commands
-  - apps/docs/src/content/docs/guides/ai-integrations.mdx updated with PostToolUse and SubagentStop hook wiring
+  - apps/docs/src/content/docs/guides/ai-integrations.mdx updated with PostToolUse and SubagentStop
+    hook wiring
