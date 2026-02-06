@@ -23,6 +23,8 @@ import {
   LaneDefinitionSchema,
   AutoCheckpointConfigSchema,
   MemoryEnforcementConfigSchema,
+  CloudEnvSignalSchema,
+  CloudConfigSchema,
   type ProgressSignalsConfig,
   type EventArchivalConfig,
   type MemoryConfig,
@@ -30,6 +32,8 @@ import {
   type LaneDefinition,
   type AutoCheckpointConfig,
   type MemoryEnforcementConfig,
+  type CloudEnvSignal,
+  type CloudConfig,
 } from '../lumenflow-config-schema.js';
 
 // Test constants for progress signals
@@ -1116,6 +1120,183 @@ describe('WU-1471: Auto-checkpoint enforcement config schema', () => {
         require_checkpoint_for_done: 'warn',
       };
       expect(_config.require_checkpoint_for_done).toBe('warn');
+    });
+  });
+});
+
+/**
+ * WU-1495: Cloud auto-detection config schema
+ *
+ * Acceptance Criteria:
+ * AC1: Config schema includes cloud.auto_detect (default false) and cloud.env_signals ({name, equals?}[]).
+ */
+describe('WU-1495: Cloud Config Schema', () => {
+  describe('AC1: CloudEnvSignalSchema', () => {
+    it('should accept signal with name only (presence check)', () => {
+      const result = CloudEnvSignalSchema.safeParse({ name: 'CI' });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.name).toBe('CI');
+        expect(result.data.equals).toBeUndefined();
+      }
+    });
+
+    it('should accept signal with name and equals constraint', () => {
+      const result = CloudEnvSignalSchema.safeParse({ name: 'CI', equals: 'true' });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.name).toBe('CI');
+        expect(result.data.equals).toBe('true');
+      }
+    });
+
+    it('should reject signal without name', () => {
+      const result = CloudEnvSignalSchema.safeParse({ equals: 'true' });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject non-string name', () => {
+      const result = CloudEnvSignalSchema.safeParse({ name: 123 });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject empty name', () => {
+      const result = CloudEnvSignalSchema.safeParse({ name: '' });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('AC1: CloudConfigSchema defaults', () => {
+    it('should default auto_detect to false', () => {
+      const result = CloudConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.auto_detect).toBe(false);
+      }
+    });
+
+    it('should default env_signals to empty array', () => {
+      const result = CloudConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.env_signals).toEqual([]);
+      }
+    });
+
+    it('should accept custom auto_detect value', () => {
+      const result = CloudConfigSchema.safeParse({ auto_detect: true });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.auto_detect).toBe(true);
+      }
+    });
+
+    it('should accept custom env_signals array', () => {
+      const signals = [{ name: 'CI' }, { name: 'GITHUB_ACTIONS', equals: 'true' }];
+      const result = CloudConfigSchema.safeParse({
+        auto_detect: true,
+        env_signals: signals,
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.env_signals).toHaveLength(2);
+        expect(result.data.env_signals[0].name).toBe('CI');
+        expect(result.data.env_signals[1].equals).toBe('true');
+      }
+    });
+
+    it('should reject non-boolean auto_detect', () => {
+      const result = CloudConfigSchema.safeParse({ auto_detect: 'true' });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid env_signals entries', () => {
+      const result = CloudConfigSchema.safeParse({
+        env_signals: [{ invalid: 'entry' }],
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('LumenFlowConfigSchema integration', () => {
+    it('should accept config with cloud section', () => {
+      const config = {
+        cloud: {
+          auto_detect: true,
+          env_signals: [{ name: 'CI' }],
+        },
+      };
+
+      const result = LumenFlowConfigSchema.safeParse(config);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.cloud).toBeDefined();
+        expect(result.data.cloud.auto_detect).toBe(true);
+        expect(result.data.cloud.env_signals).toHaveLength(1);
+      }
+    });
+
+    it('should provide defaults when cloud section is omitted', () => {
+      const result = LumenFlowConfigSchema.safeParse({});
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.cloud).toBeDefined();
+        expect(result.data.cloud.auto_detect).toBe(false);
+        expect(result.data.cloud.env_signals).toEqual([]);
+      }
+    });
+
+    it('should work with parseConfig helper', () => {
+      const config = parseConfig({
+        cloud: {
+          auto_detect: true,
+          env_signals: [{ name: 'CODEX', equals: '1' }],
+        },
+      });
+
+      expect(config.cloud.auto_detect).toBe(true);
+      expect(config.cloud.env_signals[0].name).toBe('CODEX');
+    });
+
+    it('should include cloud defaults in getDefaultConfig', () => {
+      const config = getDefaultConfig();
+
+      expect(config.cloud).toBeDefined();
+      expect(config.cloud.auto_detect).toBe(false);
+      expect(config.cloud.env_signals).toEqual([]);
+    });
+  });
+
+  describe(DESCRIBE_TYPE_SAFETY, () => {
+    it('should infer correct CloudEnvSignal type', () => {
+      const _signal: CloudEnvSignal = {
+        name: 'CI',
+        equals: 'true',
+      };
+      expect(_signal.name).toBe('CI');
+    });
+
+    it('should allow optional equals on CloudEnvSignal type', () => {
+      const _signal: CloudEnvSignal = {
+        name: 'CI',
+      };
+      expect(_signal.equals).toBeUndefined();
+    });
+
+    it('should infer correct CloudConfig type', () => {
+      const _config: CloudConfig = {
+        auto_detect: true,
+        env_signals: [{ name: 'CI' }],
+      };
+      expect(_config.auto_detect).toBe(true);
     });
   });
 });

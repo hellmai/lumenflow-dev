@@ -377,3 +377,14 @@ export { listWUs, type WUListEntry, type ListWUsOptions } from './wu-list.js';
 
 // WU-1431: Shared CLI/MCP command schemas for parity
 export * from './schemas/index.js';
+
+// WU-1495: Cloud auto-detection core
+export {
+  detectCloudMode,
+  CLOUD_ACTIVATION_SOURCE,
+  type CloudDetectInput,
+  type CloudDetectResult,
+  type CloudDetectConfig,
+  type CloudEnvSignalConfig,
+  type CloudActivationSource,
+} from './cloud-detect.js';

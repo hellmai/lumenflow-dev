@@ -3,6 +3,7 @@
  * @description Tests for wu:claim cloud mode and branch-pr mode resolution
  *
  * WU-1491: Add wu:claim cloud mode and branch-pr mode resolution
+ * WU-1495: Cloud auto-detection integration tests
  *
  * Tests the mode resolution matrix:
  * - default (no flags) -> worktree
@@ -87,6 +88,57 @@ describe('wu-claim mode resolution (WU-1491)', () => {
       expect(result.skipBranchOnlySingletonGuard).toBe(true);
       expect(result.requireLaneLock).toBe(true);
       expect(result.requireLaneWipCheck).toBe(true);
+    });
+  });
+});
+
+/**
+ * WU-1495: Cloud auto-detection integration with wu:claim
+ *
+ * Tests that resolveClaimMode correctly handles cloud=true from any detection source.
+ * AC5: wu:claim --cloud with LUMENFLOW_CLOUD=1 already set does not conflict or double-apply.
+ *
+ * Note: Full detectCloudMode integration tests are in core/cloud-detect.test.ts.
+ * These tests verify that resolveClaimMode accepts the boolean output correctly.
+ */
+describe('wu-claim cloud auto-detection integration (WU-1495)', () => {
+  describe('AC5: resolveClaimMode handles cloud detection output', () => {
+    it('should resolve to branch-pr when cloud detection returns true (flag source)', () => {
+      // Simulates: detectCloudMode returned isCloud=true from --cloud flag
+      const mode = resolveClaimMode({ cloud: true });
+      expect(mode.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(mode.error).toBeUndefined();
+    });
+
+    it('should resolve to branch-pr when cloud detection returns true (env var source)', () => {
+      // Simulates: detectCloudMode returned isCloud=true from LUMENFLOW_CLOUD=1
+      // resolveClaimMode receives cloud=true regardless of source
+      const mode = resolveClaimMode({ cloud: true });
+      expect(mode.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(mode.error).toBeUndefined();
+    });
+
+    it('should resolve to branch-pr when cloud detection returns true (env signal source)', () => {
+      // Simulates: detectCloudMode returned isCloud=true from env_signal auto-detect
+      // resolveClaimMode receives cloud=true regardless of source
+      const mode = resolveClaimMode({ cloud: true });
+      expect(mode.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(mode.error).toBeUndefined();
+    });
+
+    it('should resolve to default worktree when cloud detection returns false', () => {
+      // Simulates: detectCloudMode returned isCloud=false
+      const mode = resolveClaimMode({ cloud: false });
+      expect(mode.mode).toBe(CLAIMED_MODES.WORKTREE);
+      expect(mode.error).toBeUndefined();
+    });
+
+    it('should not conflict when cloud=true and branchOnly is not set', () => {
+      // AC5: --cloud with LUMENFLOW_CLOUD=1 -> cloud=true, no branchOnly conflict
+      const mode = resolveClaimMode({ cloud: true });
+      expect(mode.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(mode.error).toBeUndefined();
+      expect(mode.skipBranchOnlySingletonGuard).toBe(true);
     });
   });
 });
