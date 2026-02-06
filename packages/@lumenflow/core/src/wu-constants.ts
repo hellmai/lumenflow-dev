@@ -692,6 +692,9 @@ export const GIT_FLAGS = {
   /** Fast-forward only merge */
   FF_ONLY: '--ff-only',
 
+  /** Rebase local commits on top of fetched branch */
+  REBASE: '--rebase',
+
   /** Check ancestry without output (merge-base) */
   IS_ANCESTOR: '--is-ancestor',
 
@@ -756,6 +759,9 @@ export const GIT_COMMANDS = {
 
   /** Push command */
   PUSH: 'push',
+
+  /** Pull command */
+  PULL: 'pull',
 
   /** Git diff command */
   DIFF: 'diff',
