@@ -11,7 +11,11 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-branch-only.ts
   - packages/@lumenflow/core/src/wu-constants.ts
 tests:
-  manual: []
+  manual:
+    - Reproduce a non-fast-forward scenario by advancing origin/main between merge and push
+    - then run wu:done and confirm it rebases/retries instead of failing.
+    - Inspect the resulting wu:done commit and verify Worktree-Branch and Worktree-Path provenance
+      trailers are present.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
   e2e: []
@@ -27,10 +31,17 @@ notes: >-
 
   Released (2026-02-06): accidental claim
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T11:36:46.835Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1479
+session_id: be97fe19-1536-4855-b8dd-563a5da44419
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:36:46.839Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +55,3 @@ acceptance:
   - Provenance trailers (Worktree-Branch, Worktree-Path) in wu:done commits
   - No hardcoded string literals - uses GIT_COMMANDS/GIT_FLAGS constants
   - All existing tests pass
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1479
-claimed_at: 2026-02-06T11:36:46.835Z
-baseline_main_sha: 5192032c9acec0f6b4ea9c908f5ef23336625da8
-session_id: be97fe19-1536-4855-b8dd-563a5da44419
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T11:36:46.839Z
