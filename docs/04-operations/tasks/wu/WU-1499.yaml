@@ -2,7 +2,7 @@ id: WU-1499
 title: Neutralize lane default bias in init WU template
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/init-config-lanes.test.ts
 tests:
   manual:
-    - 'Run lumenflow init and verify generated WU template lane is neutral placeholder, not Framework: CLI'
+    - 'Run lumenflow init and verify generated WU template lane is neutral placeholder, not
+      Framework: CLI'
   unit:
     - packages/@lumenflow/cli/src/__tests__/init-config-lanes.test.ts
   e2e: []
@@ -30,8 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU template generation in init currently nudges authors toward a default CLI lane. Problem: this creates systematic lane-selection bias and undermines lane-fit reasoning during scoping. Solution: update init template output to use a neutral placeholder lane value that forces explicit lane choice, and update init tests accordingly.'
+description: 'Context: WU template generation in init currently nudges authors toward a default CLI
+  lane. Problem: this creates systematic lane-selection bias and undermines lane-fit reasoning
+  during scoping. Solution: update init template output to use a neutral placeholder lane value that
+  forces explicit lane choice, and update init tests accordingly.'
 acceptance:
   - "init template output no longer hardcodes 'Framework: CLI' as the default lane value"
-  - Template uses a neutral placeholder lane value that requires explicit lane selection during authoring
+  - Template uses a neutral placeholder lane value that requires explicit lane selection during
+    authoring
   - CLI init tests assert the placeholder/default behavior and prevent regression to CLI default bias
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1499
+claimed_at: 2026-02-06T19:31:43.586Z
+baseline_main_sha: dc8de4162ea4a472f1597754cc39b2c5cd416cfe
+session_id: cbf65a81-b588-456d-b19a-f424a9e1ebef
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T19:31:43.593Z
