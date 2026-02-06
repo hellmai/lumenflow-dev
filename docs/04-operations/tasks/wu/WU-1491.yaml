@@ -2,7 +2,7 @@ id: WU-1491
 title: Add wu:claim cloud mode and branch-pr mode resolution
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -59,3 +59,5 @@ session_id: c99fca2f-dd59-4f52-bc9d-cee7afa8f1fd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T18:49:18.110Z
+locked: true
+completed_at: 2026-02-06T18:58:29.821Z
