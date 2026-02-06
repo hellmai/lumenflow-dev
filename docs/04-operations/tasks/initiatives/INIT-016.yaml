@@ -50,6 +50,7 @@ lanes:
   - 'Content: Documentation'
 notes:
   - 'WU dependency graph follows plan ordering: A -> {B,C,D,F1}, E parallel, F2 last.'
+  - Plan source copied to ~/.lumenflow/plans/memoized-baking-sutton.md.
 wus:
   - WU-1490
   - WU-1491
