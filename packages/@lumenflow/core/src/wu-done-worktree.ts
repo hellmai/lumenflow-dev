@@ -445,8 +445,13 @@ export async function executeWorktreeCompletion(context) {
       }
     }
 
+    const laneBranch = await defaultBranchFrom(docForUpdate);
+
     // Generate commit message and commit
-    const msg = generateCommitMessage(id, title, maxCommitLength);
+    const msg = generateCommitMessage(id, title, maxCommitLength, {
+      branch: laneBranch ?? undefined,
+      worktreePath,
+    });
     // WU-1943: Capture pre-commit SHA for rollback on merge failure
     preCommitSha = await gitCwd.getCommitHash('HEAD');
     await gitCwd.commit(msg);
@@ -463,7 +468,6 @@ export async function executeWorktreeCompletion(context) {
 
     if (!args.noMerge) {
       // Use docForUpdate (from worktree) for branch calculation - docMain may be incomplete (ref: WU-1280)
-      const laneBranch = await defaultBranchFrom(docForUpdate);
       if (laneBranch && (await branchExists(laneBranch))) {
         if (prModeEnabled) {
           // PR mode: Create PR instead of auto-merge
@@ -541,8 +545,12 @@ export async function executeWorktreeCompletion(context) {
             merged = true;
           }
 
+          // Sync/rebase before push (handles concurrent main advancement)
+          const gitMain = getGitForCwd();
+          await gitMain.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
+
           // Push from main
-          await getGitForCwd().push(REMOTES.ORIGIN, BRANCHES.MAIN);
+          await gitMain.push(REMOTES.ORIGIN, BRANCHES.MAIN);
           console.log(MERGE.PUSHED(REMOTES.ORIGIN, BRANCHES.MAIN));
         }
       } else {
@@ -1292,19 +1300,19 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
           console.log(
             `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Auto-rebase failed: ${rebaseResult.error}`,
           );
-          // Fall back to pulling main (won't help ff-only but maintains old behaviour)
+          // Fall back to pull --rebase for consistent linear-history sync
           try {
-            await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
+            await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
             console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
           } catch (pullErr) {
             console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Pull also failed: ${pullErr.message}`);
           }
         }
       } else {
-        // No worktree path - fall back to old behaviour (pull only)
-        console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Pulling latest main before retry...`);
+        // No worktree path - pull --rebase before retry
+        console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Pulling latest main with --rebase before retry...`);
         try {
-          await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
+          await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
           console.log(MERGE.UPDATED_MAIN(REMOTES.ORIGIN));
         } catch (pullErr) {
           console.log(

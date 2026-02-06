@@ -34,6 +34,11 @@ import { writeWU } from './wu-yaml.js';
 
 const execAsync = promisify(execCallback);
 
+interface CommitProvenance {
+  branch?: string;
+  worktreePath?: string;
+}
+
 /**
  * Generate commit message for WU completion
  * Extracted from wu-done.ts (WU-1215 Phase 2 Extraction #1 Helper)
@@ -43,7 +48,12 @@ const execAsync = promisify(execCallback);
  * @returns {string} Formatted commit message
  * @throws {Error} If generated message exceeds maxLength
  */
-export function generateCommitMessage(id, title, maxLength = DEFAULTS.MAX_COMMIT_SUBJECT) {
+export function generateCommitMessage(
+  id,
+  title,
+  maxLength = DEFAULTS.MAX_COMMIT_SUBJECT,
+  provenance: CommitProvenance = {},
+) {
   const prefix = `wu(${id.toLowerCase()}): done - `;
   const safe = String(title).trim().toLowerCase().replace(/\s+/g, ' ');
   const room = Math.max(0, maxLength - prefix.length);
@@ -68,7 +78,19 @@ export function generateCommitMessage(id, title, maxLength = DEFAULTS.MAX_COMMIT
     throw error;
   }
 
-  return msg;
+  const trailers: string[] = [];
+  if (provenance.branch) {
+    trailers.push(`Worktree-Branch: ${provenance.branch}`);
+  }
+  if (provenance.worktreePath) {
+    trailers.push(`Worktree-Path: ${provenance.worktreePath}`);
+  }
+
+  if (trailers.length === 0) {
+    return msg;
+  }
+
+  return `${msg}\n\n${trailers.join('\n')}`;
 }
 
 /**

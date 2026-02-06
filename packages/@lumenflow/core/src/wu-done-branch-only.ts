@@ -32,6 +32,8 @@ import {
   EMOJI,
   STRING_LITERALS,
   LUMENFLOW_PATHS,
+  GIT_COMMANDS,
+  GIT_FLAGS,
 } from './wu-constants.js';
 import { RECOVERY } from './wu-done-messages.js';
 import { die, createError, ErrorCodes } from './error-handler.js';
@@ -83,11 +85,11 @@ export async function executeBranchOnlyCompletion(context) {
   } = context;
 
   let merged = false;
+  const laneBranch = await defaultBranchFrom(docMain);
 
   // Step 1: Switch to main and optionally merge lane branch
   const gitAdapter = getGitForCwd();
   if (!args.noMerge) {
-    const laneBranch = await defaultBranchFrom(docMain);
     if (laneBranch && (await branchExists(laneBranch))) {
       console.log(`\n${LOG_PREFIX.DONE} Switching to ${BRANCHES.MAIN} for merge...`);
       await gitAdapter.checkout(BRANCHES.MAIN);
@@ -209,12 +211,16 @@ export async function executeBranchOnlyCompletion(context) {
     await validateStagedFiles(id, isDocsOnly);
 
     // Step 8: Commit on main
-    const msg = generateCommitMessage(id, title, maxCommitLength);
+    const msg = generateCommitMessage(id, title, maxCommitLength, {
+      branch: laneBranch ?? undefined,
+    });
     const gitCwd = getGitForCwd();
     await gitCwd.commit(msg);
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed on main`);
 
-    // Step 9: Push to origin
+    // Step 9: Sync/rebase before push (handles concurrent main advancement)
+    await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
+    // Step 10: Push to origin
     await gitAdapter.push(REMOTES.ORIGIN, BRANCHES.MAIN);
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
 
@@ -261,15 +267,18 @@ async function mergeLaneBranch(laneBranch) {
     // First attempt: fast-forward only
     await gitAdapter.merge(laneBranch, { ffOnly: true });
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch merged to main`);
-  } catch {
-    // Retry with pull if ff-only fails (main may have advanced)
+  } catch (mergeErr) {
+    // Retry with pull --rebase if ff-only fails (main may have advanced)
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed, attempting pull + retry...`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Fast-forward merge failed: ${mergeErr.message}`,
+    );
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempting pull --rebase + retry...`,
     );
     try {
-      await gitAdapter.pull(REMOTES.ORIGIN, BRANCHES.MAIN);
+      await gitAdapter.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
       await gitAdapter.merge(laneBranch, { ffOnly: true });
-      console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch merged after pull`);
+      console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane branch merged after pull --rebase`);
     } catch (retryErr) {
       throw createError(
         ErrorCodes.GIT_ERROR,
