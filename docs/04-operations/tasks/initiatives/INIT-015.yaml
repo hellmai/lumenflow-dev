@@ -25,6 +25,7 @@ success_metrics:
   - Signal read-marking remains correct under concurrent agents (no lost updates)
   - INIT-015 recovery context includes recent checkpoint data for active WUs
   - Decay archival reduces stale memory accumulation when enabled
+  - Recovery context includes recent checkpoint data for active WUs
 labels: []
 wus:
   - WU-1471
