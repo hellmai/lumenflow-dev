@@ -21,6 +21,7 @@
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  * WU-1454: All 16 WU lifecycle commands now use shared schemas
  * WU-1456: All 13 memory commands now use shared schemas
+ * WU-1457: All remaining commands (flow, validation, setup, agent, orchestration, spawn) use shared schemas
  *
  * Architecture:
  * - Read operations (context_get) use @lumenflow/core directly for context
@@ -33,6 +34,7 @@ import { runCliCommand, type CliRunnerOptions } from './cli-runner.js';
 
 // WU-1431: Import shared command schemas for CLI/MCP parity
 // WU-1454: Import WU lifecycle schemas for full coverage
+// WU-1457: Import flow, validation, setup, agent, orchestration, spawn schemas
 // These are the single source of truth for command validation
 import {
   wuCreateSchema,
@@ -81,6 +83,36 @@ import {
   memSignalSchema,
   memSummarizeSchema,
   memTriageSchema,
+  // WU-1457: Flow/Metrics command schemas
+  flowBottlenecksSchema,
+  flowReportSchema,
+  metricsSnapshotSchema,
+  // WU-1457: Validation command schemas
+  validateSchema,
+  validateAgentSkillsSchema,
+  validateAgentSyncSchema,
+  validateBacklogSyncSchema,
+  validateSkillsSpecSchema,
+  // WU-1457: Setup command schemas
+  lumenflowInitSchema,
+  lumenflowDoctorSchema,
+  lumenflowIntegrateSchema,
+  lumenflowUpgradeSchema,
+  lumenflowCommandsSchema,
+  docsSyncSchema,
+  releaseSchema,
+  syncTemplatesSchema,
+  // WU-1457: Agent command schemas
+  agentSessionSchema,
+  agentSessionEndSchema,
+  agentLogIssueSchema,
+  agentIssuesQuerySchema,
+  // WU-1457: Orchestration command schemas
+  orchestrateInitiativeSchema,
+  orchestrateInitStatusSchema,
+  orchestrateMonitorSchema,
+  // WU-1457: Spawn command schemas
+  spawnListSchema,
 } from '@lumenflow/core';
 
 // Import core functions for context operations only (async to avoid circular deps)
@@ -1875,11 +1907,7 @@ const AgentErrorMessages = {
 export const agentSessionTool: ToolDefinition = {
   name: 'agent_session',
   description: 'Start an agent session for tracking WU execution',
-  inputSchema: z.object({
-    wu: z.string().describe('WU ID to work on (e.g., WU-1234)'),
-    tier: z.number().min(1).max(3).describe('Context tier (1, 2, or 3)'),
-    agent_type: z.string().optional().describe('Agent type (default: claude-code)'),
-  }),
+  inputSchema: agentSessionSchema,
 
   async execute(input, options) {
     if (!input.wu) {
@@ -1912,7 +1940,7 @@ export const agentSessionTool: ToolDefinition = {
 export const agentSessionEndTool: ToolDefinition = {
   name: 'agent_session_end',
   description: 'End the current agent session and return summary',
-  inputSchema: z.object({}),
+  inputSchema: agentSessionEndSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -1940,18 +1968,7 @@ export const agentSessionEndTool: ToolDefinition = {
 export const agentLogIssueTool: ToolDefinition = {
   name: 'agent_log_issue',
   description: 'Log a workflow issue or incident during agent execution',
-  inputSchema: z.object({
-    category: z
-      .enum(['workflow', 'tooling', 'confusion', 'violation', 'error'])
-      .describe('Issue category'),
-    severity: z.enum(['blocker', 'major', 'minor', 'info']).describe('Severity level'),
-    title: z.string().describe('Short description (5-100 chars)'),
-    description: z.string().describe('Detailed context (10-2000 chars)'),
-    resolution: z.string().optional().describe('How the issue was resolved'),
-    tags: z.array(z.string()).optional().describe('Tags for categorization'),
-    step: z.string().optional().describe('Current workflow step (e.g., wu:done, gates)'),
-    files: z.array(z.string()).optional().describe('Related file paths'),
-  }),
+  inputSchema: agentLogIssueSchema,
 
   async execute(input, options) {
     if (!input.category) {
@@ -2010,14 +2027,7 @@ export const agentLogIssueTool: ToolDefinition = {
 export const agentIssuesQueryTool: ToolDefinition = {
   name: 'agent_issues_query',
   description: 'Query and display logged agent incidents/issues summary',
-  inputSchema: z.object({
-    since: z.number().optional().describe('Days to include (default: 7)'),
-    category: z.string().optional().describe('Filter by category'),
-    severity: z
-      .enum(['blocker', 'major', 'minor', 'trivial'])
-      .optional()
-      .describe('Filter by severity'),
-  }),
+  inputSchema: agentIssuesQuerySchema,
 
   async execute(input, options) {
     const args = ['summary'];
@@ -2065,12 +2075,7 @@ const OrchestrationErrorMessages = {
 export const orchestrateInitiativeTool: ToolDefinition = {
   name: 'orchestrate_initiative',
   description: 'Orchestrate initiative execution with parallel agent spawning',
-  inputSchema: z.object({
-    initiative: z.string().describe('Initiative ID to orchestrate (e.g., INIT-001)'),
-    dry_run: z.boolean().optional().describe('Show execution plan without spawning agents'),
-    progress: z.boolean().optional().describe('Show current progress only'),
-    checkpoint_per_wave: z.boolean().optional().describe('Spawn next wave then exit (no polling)'),
-  }),
+  inputSchema: orchestrateInitiativeSchema,
 
   async execute(input, options) {
     if (!input.initiative) {
@@ -2105,9 +2110,7 @@ export const orchestrateInitiativeTool: ToolDefinition = {
 export const orchestrateInitStatusTool: ToolDefinition = {
   name: 'orchestrate_init_status',
   description: 'Show compact initiative progress status including WUs and lane availability',
-  inputSchema: z.object({
-    initiative: z.string().describe(SchemaDescriptions.INITIATIVE_ID_EXAMPLE),
-  }),
+  inputSchema: orchestrateInitStatusSchema,
 
   async execute(input, options) {
     if (!input.initiative) {
@@ -2136,14 +2139,7 @@ export const orchestrateInitStatusTool: ToolDefinition = {
 export const orchestrateMonitorTool: ToolDefinition = {
   name: 'orchestrate_monitor',
   description: 'Monitor spawned agent progress and spawn health (stuck detection, zombie locks)',
-  inputSchema: z.object({
-    threshold: z.number().optional().describe('Stuck detection threshold in minutes (default: 30)'),
-    recover: z.boolean().optional().describe('Run recovery actions for stuck spawns'),
-    dry_run: z.boolean().optional().describe('Show what would be done without taking action'),
-    since: z.string().optional().describe('Show signals since (e.g., 30m, 1h)'),
-    wu: z.string().optional().describe('Filter by WU ID'),
-    signals_only: z.boolean().optional().describe('Only show signals (skip spawn analysis)'),
-  }),
+  inputSchema: orchestrateMonitorSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -2195,14 +2191,7 @@ const SpawnErrorMessages = {
 export const spawnListTool: ToolDefinition = {
   name: 'spawn_list',
   description: 'Display spawn trees for WUs or initiatives',
-  inputSchema: z.object({
-    wu: z.string().optional().describe('WU ID to show spawns for (e.g., WU-1234)'),
-    initiative: z
-      .string()
-      .optional()
-      .describe('Initiative ID to show all spawns for (e.g., INIT-001)'),
-    json: z.boolean().optional().describe('Output as JSON'),
-  }),
+  inputSchema: spawnListSchema,
 
   async execute(input, options) {
     if (!input.wu && !input.initiative) {
@@ -2243,12 +2232,13 @@ export const spawnListTool: ToolDefinition = {
 export const flowBottlenecksTool: ToolDefinition = {
   name: 'flow_bottlenecks',
   description: 'Identify flow bottlenecks in the workflow (WIP violations, stuck WUs, etc.)',
-  inputSchema: z.object({
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  inputSchema: flowBottlenecksSchema,
 
   async execute(input, options) {
     const args: string[] = [];
+    // WU-1457: Use shared schema fields (limit, format match CLI flags)
+    if (input.limit) args.push('--limit', String(input.limit));
+    if (input.format) args.push('--format', input.format as string);
     // WU-1452: flow:bottlenecks uses --format json, not --json
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
@@ -2277,17 +2267,16 @@ export const flowBottlenecksTool: ToolDefinition = {
 export const flowReportTool: ToolDefinition = {
   name: 'flow_report',
   description: 'Generate flow metrics report with cycle time, throughput, and other DORA metrics',
-  inputSchema: z.object({
-    since: z.string().optional().describe('Start date or duration (e.g., "7d", "2025-01-01")'),
-    until: z.string().optional().describe('End date (e.g., "now", "2025-01-31")'),
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  inputSchema: flowReportSchema,
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.since) args.push('--since', input.since as string);
-    if (input.until) args.push('--until', input.until as string);
-    // WU-1452: flow:report uses --format json, not --json
+    // WU-1457: Use shared schema field names (start/end match CLI flags)
+    if (input.start) args.push('--start', input.start as string);
+    if (input.end) args.push('--end', input.end as string);
+    if (input.days) args.push('--days', String(input.days));
+    // WU-1452: flow:report uses --format, not --json
+    if (input.format) args.push('--format', input.format as string);
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2315,9 +2304,7 @@ export const flowReportTool: ToolDefinition = {
 export const metricsSnapshotTool: ToolDefinition = {
   name: 'metrics_snapshot',
   description: 'Capture a snapshot of current LumenFlow metrics',
-  inputSchema: z.object({
-    json: z.boolean().optional().describe(SchemaDescriptions.OUTPUT_AS_JSON),
-  }),
+  inputSchema: metricsSnapshotSchema,
 
   async execute(input, options) {
     // WU-1452: metrics:snapshot always outputs JSON (writes to file); no --json flag exists
@@ -2352,11 +2339,7 @@ export const metricsSnapshotTool: ToolDefinition = {
 export const validateTool: ToolDefinition = {
   name: 'validate',
   description: 'Validate WU YAML files and status consistency',
-  inputSchema: z.object({
-    id: z.string().optional().describe('Specific WU ID to validate'),
-    strict: z.boolean().optional().describe('Fail on warnings too'),
-    done_only: z.boolean().optional().describe('Only validate done WUs'),
-  }),
+  inputSchema: validateSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -2384,9 +2367,7 @@ export const validateTool: ToolDefinition = {
 export const validateAgentSkillsTool: ToolDefinition = {
   name: 'validate_agent_skills',
   description: 'Validate agent skill definitions in .claude/skills/',
-  inputSchema: z.object({
-    skill: z.string().optional().describe('Specific skill to validate (e.g., "wu-lifecycle")'),
-  }),
+  inputSchema: validateAgentSkillsSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -2412,7 +2393,7 @@ export const validateAgentSkillsTool: ToolDefinition = {
 export const validateAgentSyncTool: ToolDefinition = {
   name: 'validate_agent_sync',
   description: 'Validate agent synchronization state',
-  inputSchema: z.object({}),
+  inputSchema: validateAgentSyncSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2435,7 +2416,7 @@ export const validateAgentSyncTool: ToolDefinition = {
 export const validateBacklogSyncTool: ToolDefinition = {
   name: 'validate_backlog_sync',
   description: 'Validate backlog synchronization between WU YAMLs and backlog.md',
-  inputSchema: z.object({}),
+  inputSchema: validateBacklogSyncSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2458,7 +2439,7 @@ export const validateBacklogSyncTool: ToolDefinition = {
 export const validateSkillsSpecTool: ToolDefinition = {
   name: 'validate_skills_spec',
   description: 'Validate skills specification files',
-  inputSchema: z.object({}),
+  inputSchema: validateSkillsSpecSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2485,10 +2466,7 @@ export const validateSkillsSpecTool: ToolDefinition = {
 export const lumenflowInitTool: ToolDefinition = {
   name: 'lumenflow_init',
   description: 'Initialize LumenFlow workflow framework in a project',
-  inputSchema: z.object({
-    client: z.string().optional().describe('Client type (claude, cursor, windsurf, all)'),
-    merge: z.boolean().optional().describe('Merge into existing files using bounded markers'),
-  }),
+  inputSchema: lumenflowInitSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -2515,7 +2493,7 @@ export const lumenflowInitTool: ToolDefinition = {
 export const lumenflowDoctorTool: ToolDefinition = {
   name: 'lumenflow_doctor',
   description: 'Diagnose LumenFlow configuration and safety components',
-  inputSchema: z.object({}),
+  inputSchema: lumenflowDoctorSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2538,9 +2516,7 @@ export const lumenflowDoctorTool: ToolDefinition = {
 export const lumenflowIntegrateTool: ToolDefinition = {
   name: 'lumenflow_integrate',
   description: 'Generate enforcement hooks for a specific client (e.g., claude-code)',
-  inputSchema: z.object({
-    client: z.string().describe('Client name (claude-code, cursor, etc.)'),
-  }),
+  inputSchema: lumenflowIntegrateSchema,
 
   async execute(input, options) {
     if (!input.client) {
@@ -2569,7 +2545,7 @@ export const lumenflowIntegrateTool: ToolDefinition = {
 export const lumenflowUpgradeTool: ToolDefinition = {
   name: 'lumenflow_upgrade',
   description: 'Upgrade LumenFlow packages to latest versions',
-  inputSchema: z.object({}),
+  inputSchema: lumenflowUpgradeSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2592,7 +2568,7 @@ export const lumenflowUpgradeTool: ToolDefinition = {
 export const lumenflowCommandsTool: ToolDefinition = {
   name: 'lumenflow_commands',
   description: 'List all available LumenFlow CLI commands',
-  inputSchema: z.object({}),
+  inputSchema: lumenflowCommandsSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2615,7 +2591,7 @@ export const lumenflowCommandsTool: ToolDefinition = {
 export const lumenflowDocsSyncTool: ToolDefinition = {
   name: 'lumenflow_docs_sync',
   description: 'Sync agent documentation after upgrading LumenFlow packages',
-  inputSchema: z.object({}),
+  inputSchema: docsSyncSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
@@ -2638,9 +2614,7 @@ export const lumenflowDocsSyncTool: ToolDefinition = {
 export const lumenflowReleaseTool: ToolDefinition = {
   name: 'lumenflow_release',
   description: 'Run LumenFlow release workflow (versioning, npm publish)',
-  inputSchema: z.object({
-    dry_run: z.boolean().optional().describe('Preview release without publishing'),
-  }),
+  inputSchema: releaseSchema,
 
   async execute(input, options) {
     const args: string[] = [];
@@ -2666,7 +2640,7 @@ export const lumenflowReleaseTool: ToolDefinition = {
 export const lumenflowSyncTemplatesTool: ToolDefinition = {
   name: 'lumenflow_sync_templates',
   description: 'Sync LumenFlow templates to the project',
-  inputSchema: z.object({}),
+  inputSchema: syncTemplatesSchema,
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
