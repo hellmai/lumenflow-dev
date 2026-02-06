@@ -72,10 +72,7 @@ const MAIN_BRANCH_BLOCK_MESSAGES = {
   },
   RECOVERY: {
     HEADER: 'STUCK?',
-    LINES: [
-      'If you need to fix workflow state:',
-      '  pnpm wu:recover --id WU-XXXX',
-    ],
+    LINES: ['If you need to fix workflow state:', '  pnpm wu:recover --id WU-XXXX'],
   },
 };
 
