@@ -2,7 +2,7 @@ id: WU-1456
 title: 'Shared Schemas: Memory commands'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -50,3 +50,5 @@ session_id: bc4bd132-9878-4e0c-a1f6-867920bbed6c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T10:19:24.602Z
+locked: true
+completed_at: 2026-02-06T10:34:45.832Z
