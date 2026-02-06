@@ -2,7 +2,7 @@ id: WU-1480
 title: Add dependency-closure bootstrap for dist-backed CLI commands
 lane: 'Operations: Tooling'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - On a fresh worktree, running bootstrap then lane:health succeeds without manual
     package-by-package builds.
   - Internal docs describe the pattern, rationale, and recommended command sequence for agents.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1480
+claimed_at: 2026-02-06T12:01:54.091Z
+baseline_main_sha: 5fe763d34e0bfc5a5e6620a54109ed6158d3f700
+session_id: 2b52b8e3-b872-4289-8dec-d3f991740113
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:01:54.098Z

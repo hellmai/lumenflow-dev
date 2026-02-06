@@ -24,12 +24,12 @@ sections:
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — Content: Documentation
-- [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml) — Framework: CLI
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — Framework: CLI
+- [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
