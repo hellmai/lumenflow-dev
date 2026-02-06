@@ -19,6 +19,10 @@ import { createCheckpoint, createSignal, loadSignals, markSignalsAsRead } from '
 import {
   generateEnforcementHooks,
   generateAutoCheckpointScript,
+  generatePreCompactCheckpointScript,
+  generateSessionStartRecoveryScript,
+  surfaceUnreadSignals,
+  markCompletedWUSignalsAsRead,
   type EnforcementConfig,
 } from '../hooks/enforcement-generator.js';
 import { checkAutoCheckpointWarning, cleanupHookCounters } from '../hooks/auto-checkpoint-utils.js';
@@ -512,6 +516,179 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
           });
 
           expect(result.warning).toBe(false);
+        });
+      });
+    });
+
+    describe('WU-1473: CLI wiring for orchestrator recovery and signal consumption', () => {
+      describe('AC1: Non-worktree orchestrator recovery in enforcement hooks', () => {
+        it('should generate session-start recovery hook that handles non-worktree context', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: false,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          // Session-start hooks should always be generated (WU-1394)
+          expect(hooks.sessionStart).toBeDefined();
+          expect(hooks.sessionStart!.length).toBeGreaterThan(0);
+
+          // Should include non-worktree recovery matcher
+          // The session-start recovery should work for non-worktree orchestrators too
+          const matchers = hooks.sessionStart!.map((h) => h.matcher);
+          expect(matchers).toContain('compact');
+          expect(matchers).toContain('resume');
+          expect(matchers).toContain('clear');
+        });
+
+        it('should generate pre-compact hook that works without worktree WU context', () => {
+          const config: EnforcementConfig = {
+            block_outside_worktree: false,
+            require_wu_for_edits: false,
+            warn_on_stop_without_wu_done: false,
+          };
+
+          const hooks = generateEnforcementHooks(config);
+
+          // Pre-compact should always be generated
+          expect(hooks.preCompact).toBeDefined();
+          expect(hooks.preCompact!.length).toBeGreaterThan(0);
+
+          // The generated pre-compact script should handle missing WU_ID gracefully
+          const script = generatePreCompactCheckpointScript();
+          // Should check for WU_ID and exit gracefully if missing
+          expect(script).toContain('WU_ID');
+          // Should include orchestrator inbox check for non-worktree recovery
+          expect(script).toContain('mem:inbox');
+        });
+
+        it('should generate session-start script that surfaces orchestrator signals without worktree', () => {
+          const script = generateSessionStartRecoveryScript();
+
+          // Should handle recovery files (existing behavior)
+          expect(script).toContain('recovery-pending');
+          // Should include unread signal summary for orchestrator context
+          expect(script).toContain('mem:inbox');
+        });
+      });
+
+      describe('AC2: Claim surfaces unread signal summary', () => {
+        it('should surface unread signals on claim via surfaceUnreadSignals', async () => {
+          // Arrange
+          process.chdir(tempDir);
+          // Create some unread signals from other agents
+          await createSignal(tempDir, {
+            message: 'WU-9999 completed: feature X landed',
+            wuId: 'WU-9999',
+            lane: TEST_LANE,
+          });
+          await createSignal(tempDir, {
+            message: 'Blocking issue on WU-8888',
+            wuId: 'WU-8888',
+          });
+
+          // Act
+          const result = await surfaceUnreadSignals(tempDir);
+
+          // Assert
+          expect(result.count).toBe(2);
+          expect(result.signals).toHaveLength(2);
+          expect(result.signals[0].message).toContain('WU-9999');
+        });
+
+        it('should return empty result when no unread signals exist', async () => {
+          process.chdir(tempDir);
+
+          const result = await surfaceUnreadSignals(tempDir);
+
+          expect(result.count).toBe(0);
+          expect(result.signals).toHaveLength(0);
+        });
+
+        it('should not throw when memory layer is unavailable (fail-open)', async () => {
+          // Use a non-existent directory
+          const badDir = join(tempDir, 'does-not-exist');
+
+          const result = await surfaceUnreadSignals(badDir);
+
+          expect(result.count).toBe(0);
+          expect(result.signals).toHaveLength(0);
+        });
+      });
+
+      describe('AC3: wu:done marks completed-WU signals as read', () => {
+        it('should mark signals for completed WU as read using receipts', async () => {
+          // Arrange
+          process.chdir(tempDir);
+          const completedWuId = 'WU-7777';
+          // Create signals for the WU being completed
+          await createSignal(tempDir, {
+            message: 'AC1 done on WU-7777',
+            wuId: completedWuId,
+          });
+          await createSignal(tempDir, {
+            message: 'AC2 done on WU-7777',
+            wuId: completedWuId,
+          });
+          // Create a signal for a different WU (should NOT be marked)
+          await createSignal(tempDir, {
+            message: 'Different WU signal',
+            wuId: 'WU-5555',
+          });
+
+          // Act
+          const result = await markCompletedWUSignalsAsRead(tempDir, completedWuId);
+
+          // Assert
+          expect(result.markedCount).toBe(2);
+
+          // Verify only the completed WU's signals were marked
+          const unreadForCompleted = await loadSignals(tempDir, {
+            wuId: completedWuId,
+            unreadOnly: true,
+          });
+          expect(unreadForCompleted).toHaveLength(0);
+
+          const unreadForOther = await loadSignals(tempDir, {
+            wuId: 'WU-5555',
+            unreadOnly: true,
+          });
+          expect(unreadForOther).toHaveLength(1);
+        });
+
+        it('should return zero count when no signals exist for the WU', async () => {
+          process.chdir(tempDir);
+
+          const result = await markCompletedWUSignalsAsRead(tempDir, 'WU-0000');
+
+          expect(result.markedCount).toBe(0);
+        });
+
+        it('should not throw on memory layer errors (fail-open)', async () => {
+          const badDir = join(tempDir, 'does-not-exist');
+
+          const result = await markCompletedWUSignalsAsRead(badDir, 'WU-0000');
+
+          expect(result.markedCount).toBe(0);
+        });
+      });
+
+      describe('AC4: CLI integrations remain fail-open', () => {
+        it('surfaceUnreadSignals never throws, returns empty on error', async () => {
+          // Pass invalid baseDir - should not throw
+          await expect(surfaceUnreadSignals('/nonexistent/path')).resolves.toEqual({
+            count: 0,
+            signals: [],
+          });
+        });
+
+        it('markCompletedWUSignalsAsRead never throws, returns zero on error', async () => {
+          // Pass invalid baseDir - should not throw
+          await expect(
+            markCompletedWUSignalsAsRead('/nonexistent/path', 'WU-9999'),
+          ).resolves.toEqual({ markedCount: 0 });
         });
       });
     });

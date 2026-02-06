@@ -161,6 +161,8 @@ import { ensureCleanWorktree } from './wu-done-check.js';
 import { runAutoCleanupAfterDone } from './wu-done-auto-cleanup.js';
 // WU-1471 AC4: Hook counter cleanup on wu:done completion
 import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
+// WU-1473: Mark completed-WU signals as read using receipt-aware behavior
+import { markCompletedWUSignalsAsRead } from './hooks/enforcement-generator.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -2723,6 +2725,15 @@ async function main() {
   // WU-1588: Broadcast completion signal after session end
   // Non-blocking: failures handled internally by broadcastCompletionSignal
   await broadcastCompletionSignal(id, title);
+
+  // WU-1473: Mark completed-WU signals as read using receipt-aware behavior
+  // Non-blocking: markCompletedWUSignalsAsRead is fail-open (AC4)
+  const markResult = await markCompletedWUSignalsAsRead(mainCheckoutPath, id);
+  if (markResult.markedCount > 0) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Marked ${markResult.markedCount} signal(s) as read for ${id}`,
+    );
+  }
 
   // WU-1946: Update spawn registry to mark WU as completed
   // Non-blocking: failures handled internally by updateSpawnRegistryOnCompletion

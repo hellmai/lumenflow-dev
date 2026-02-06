@@ -78,6 +78,8 @@ import {
 import { emitMandatoryAgentAdvisory } from '@lumenflow/core/dist/orchestration-advisory-loader.js';
 import { validateWU, generateAutoApproval } from '@lumenflow/core/dist/wu-schema.js';
 import { startSessionForWU } from '@lumenflow/agent/dist/auto-session-integration.js';
+// WU-1473: Surface unread signals on claim for agent awareness
+import { surfaceUnreadSignals } from './hooks/enforcement-generator.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import {
   detectFixableIssues,
@@ -111,6 +113,34 @@ import {
 } from '@lumenflow/initiatives/dist/index.js';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
+
+/**
+ * WU-1473: Surface unread coordination signals and display them.
+ * Fail-open: any error is logged as a warning, never blocks claim.
+ *
+ * @param baseDir - Project base directory for memory layer
+ */
+async function surfaceUnreadSignalsForDisplay(baseDir: string): Promise<void> {
+  try {
+    const result = await surfaceUnreadSignals(baseDir);
+    if (result.count > 0) {
+      const MAX_DISPLAY = 5;
+      console.log(`\n${PREFIX} Unread coordination signals (${result.count}):`);
+      for (const signal of result.signals.slice(0, MAX_DISPLAY)) {
+        const timestamp = new Date(signal.created_at).toLocaleTimeString();
+        const scope = signal.wu_id ? ` [${signal.wu_id}]` : '';
+        console.log(`  - [${timestamp}]${scope} ${signal.message}`);
+      }
+      if (result.count > MAX_DISPLAY) {
+        console.log(`  ... and ${result.count - MAX_DISPLAY} more`);
+      }
+      console.log(`  Run 'pnpm mem:inbox' for full list`);
+    }
+  } catch (err) {
+    // WU-1473 AC4: Fail-open - never block claim on memory errors
+    console.warn(`${PREFIX} Warning: Could not surface unread signals: ${err.message}`);
+  }
+}
 
 async function ensureCleanOrClaimOnlyWhenNoAuto() {
   // Require staged claim edits only if running with --no-auto
@@ -1077,6 +1107,10 @@ async function claimBranchOnlyMode(ctx) {
 
   // WU-1763: Print lifecycle nudge with tips for tool adoption
   printLifecycleNudge(id);
+
+  // WU-1473: Surface unread coordination signals so agents see pending messages
+  // Fail-open: surfaceUnreadSignals never throws
+  await surfaceUnreadSignalsForDisplay(process.cwd());
 }
 
 /**
@@ -1300,6 +1334,10 @@ async function claimWorktreeMode(ctx) {
 
   // WU-1763: Print lifecycle nudge with tips for tool adoption
   printLifecycleNudge(id);
+
+  // WU-1473: Surface unread coordination signals so agents see pending messages
+  // Fail-open: surfaceUnreadSignals never throws
+  await surfaceUnreadSignalsForDisplay(originalCwd);
 }
 
 /**

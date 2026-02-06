@@ -7,6 +7,7 @@
  */
 
 import { CLAUDE_HOOKS, getHookCommand } from '@lumenflow/core';
+import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/dist/mem-signal-core.js';
 
 // Re-export for backwards compatibility (WU-1394)
 export const HOOK_SCRIPTS = CLAUDE_HOOKS.SCRIPTS;
@@ -570,7 +571,7 @@ except:
     print('')
 " 2>/dev/null || echo "")
 
-# Only proceed if we have a WU ID (working in a worktree)
+# Proceed with worktree-based recovery if we have a WU ID
 if [[ -n "\$WU_ID" ]]; then
   # Save checkpoint with pre-compact trigger
   # Note: This may fail if CLI not built, but that's OK - recovery file is more important
@@ -604,6 +605,16 @@ EOF
   echo "⚠️  COMPACTION: Checkpoint saved for \${WU_ID}" >&2
   echo "Recovery context: \${RECOVERY_FILE}" >&2
   echo "Next: pnpm wu:spawn --id \${WU_ID}" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+else
+  # WU-1473: Non-worktree orchestrator context recovery
+  # When not in a worktree (e.g., orchestrator on main), surface unread inbox
+  # so agents have coordination context after compaction
+  echo "" >&2
+  echo "═══════════════════════════════════════════════════════" >&2
+  echo "⚠️  COMPACTION: No active WU detected (non-worktree context)" >&2
+  echo "Surfacing recent coordination signals via mem:inbox..." >&2
+  pnpm mem:inbox --since 1h --quiet 2>/dev/null >&2 || true
   echo "═══════════════════════════════════════════════════════" >&2
 fi
 
@@ -698,6 +709,11 @@ if [[ "\$FOUND_RECOVERY" == "true" ]]; then
   echo "" >&2
 fi
 
+# WU-1473: Surface unread coordination signals for non-worktree orchestrators
+# Even without recovery files, agents benefit from seeing recent inbox activity
+# This supports orchestrators running from main checkout (not in a worktree)
+pnpm mem:inbox --since 1h --unread-only --quiet 2>/dev/null >&2 || true
+
 exit 0
 `;
   /* eslint-enable no-useless-escape */
@@ -717,6 +733,76 @@ exit 0
  * @param intervalToolCalls - Number of tool calls between auto-checkpoints
  * @returns Shell script content
  */
+/**
+ * WU-1473: Lightweight signal shape for display purposes.
+ * Mirrors the Signal interface from @lumenflow/memory without direct type import.
+ */
+export interface DisplaySignal {
+  id: string;
+  message: string;
+  created_at: string;
+  read: boolean;
+  wu_id?: string;
+  lane?: string;
+}
+
+/**
+ * WU-1473: Result of surfacing unread signals for agent consumption.
+ */
+export interface UnreadSignalSummary {
+  /** Number of unread signals found */
+  count: number;
+  /** The unread signals (up to a reasonable display limit) */
+  signals: DisplaySignal[];
+}
+
+/**
+ * WU-1473: Surface unread signals for agent consumption during claim/start.
+ *
+ * Loads all unread signals from the memory layer and returns them for display.
+ * Implements fail-open: any error returns an empty result without throwing.
+ *
+ * @param baseDir - Project base directory
+ * @returns Unread signal summary (never throws)
+ */
+export async function surfaceUnreadSignals(baseDir: string): Promise<UnreadSignalSummary> {
+  try {
+    const signals = await loadSignals(baseDir, { unreadOnly: true });
+    return { count: signals.length, signals };
+  } catch {
+    // WU-1473 AC4: Fail-open - memory errors never block lifecycle commands
+    return { count: 0, signals: [] };
+  }
+}
+
+/**
+ * WU-1473: Mark all signals for a completed WU as read using receipt-aware behavior.
+ *
+ * Loads signals scoped to the given WU ID and marks any unread ones as read
+ * by appending receipts (WU-1472 pattern). Does not rewrite signals.jsonl.
+ * Implements fail-open: any error returns zero count without throwing.
+ *
+ * @param baseDir - Project base directory
+ * @param wuId - WU ID whose signals should be marked as read
+ * @returns Result with count of signals marked (never throws)
+ */
+export async function markCompletedWUSignalsAsRead(
+  baseDir: string,
+  wuId: string,
+): Promise<{ markedCount: number }> {
+  try {
+    const signals = await loadSignals(baseDir, { wuId, unreadOnly: true });
+    if (signals.length === 0) {
+      return { markedCount: 0 };
+    }
+    const signalIds = signals.map((sig) => sig.id);
+    return await markSignalsAsRead(baseDir, signalIds);
+  } catch {
+    // WU-1473 AC4: Fail-open - memory errors never block lifecycle commands
+    return { markedCount: 0 };
+  }
+}
+
 export function generateAutoCheckpointScript(intervalToolCalls: number): string {
   // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
   /* eslint-disable no-useless-escape */
