@@ -66,6 +66,121 @@ vi.mock('../cli-runner.js', () => ({
   runCliCommand: vi.fn(),
 }));
 
+describe('wu_claim cloud mode passthrough (WU-1491)', () => {
+  const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  // Import wuClaimTool dynamically to ensure it picks up schema changes
+  let wuClaimTool;
+  beforeEach(async () => {
+    const tools = await import('../tools.js');
+    wuClaimTool = tools.wuClaimTool;
+  });
+
+  it('should pass --cloud flag to CLI', async () => {
+    mockRunCliCommand.mockResolvedValue({
+      success: true,
+      stdout: 'WU claimed in cloud mode',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await wuClaimTool.execute({
+      id: 'WU-1491',
+      lane: 'Framework: CLI',
+      cloud: true,
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'wu:claim',
+      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--cloud']),
+      expect.any(Object),
+    );
+  });
+
+  it('should pass --branch-only flag to CLI', async () => {
+    mockRunCliCommand.mockResolvedValue({
+      success: true,
+      stdout: 'WU claimed in branch-only mode',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await wuClaimTool.execute({
+      id: 'WU-1491',
+      lane: 'Framework: CLI',
+      branch_only: true,
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'wu:claim',
+      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--branch-only']),
+      expect.any(Object),
+    );
+  });
+
+  it('should pass --pr-mode flag to CLI', async () => {
+    mockRunCliCommand.mockResolvedValue({
+      success: true,
+      stdout: 'WU claimed in PR mode',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await wuClaimTool.execute({
+      id: 'WU-1491',
+      lane: 'Framework: CLI',
+      pr_mode: true,
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'wu:claim',
+      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--pr-mode']),
+      expect.any(Object),
+    );
+  });
+
+  it('should pass combined --branch-only --pr-mode flags to CLI', async () => {
+    mockRunCliCommand.mockResolvedValue({
+      success: true,
+      stdout: 'WU claimed in branch-pr mode',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await wuClaimTool.execute({
+      id: 'WU-1491',
+      lane: 'Framework: CLI',
+      branch_only: true,
+      pr_mode: true,
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'wu:claim',
+      expect.arrayContaining([
+        '--id',
+        'WU-1491',
+        '--lane',
+        'Framework: CLI',
+        '--branch-only',
+        '--pr-mode',
+      ]),
+      expect.any(Object),
+    );
+  });
+});
+
 describe('WU MCP tools (WU-1422)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
 

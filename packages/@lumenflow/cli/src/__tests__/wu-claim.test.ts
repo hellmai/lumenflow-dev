@@ -1,0 +1,92 @@
+/**
+ * @file wu-claim.test.ts
+ * @description Tests for wu:claim cloud mode and branch-pr mode resolution
+ *
+ * WU-1491: Add wu:claim cloud mode and branch-pr mode resolution
+ *
+ * Tests the mode resolution matrix:
+ * - default (no flags) -> worktree
+ * - --branch-only -> branch-only
+ * - --pr-mode -> worktree-pr
+ * - --cloud -> branch-pr
+ * - --branch-only --pr-mode -> branch-pr
+ * - --cloud --branch-only (conflict) -> error
+ */
+
+import { describe, it, expect } from 'vitest';
+import { resolveClaimMode } from '../wu-claim-mode.js';
+import { CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
+
+describe('wu-claim mode resolution (WU-1491)', () => {
+  describe('resolveClaimMode', () => {
+    it('should resolve default (no flags) to worktree mode', () => {
+      const result = resolveClaimMode({});
+      expect(result.mode).toBe(CLAIMED_MODES.WORKTREE);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should resolve --branch-only to branch-only mode', () => {
+      const result = resolveClaimMode({ branchOnly: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_ONLY);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should resolve --pr-mode to worktree-pr mode', () => {
+      const result = resolveClaimMode({ prMode: true });
+      expect(result.mode).toBe(CLAIMED_MODES.WORKTREE_PR);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should resolve --cloud to branch-pr mode', () => {
+      const result = resolveClaimMode({ cloud: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should resolve --branch-only --pr-mode to branch-pr mode', () => {
+      const result = resolveClaimMode({ branchOnly: true, prMode: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should return error for --cloud --branch-only (conflicting flags)', () => {
+      const result = resolveClaimMode({ cloud: true, branchOnly: true });
+      expect(result.mode).toBeUndefined();
+      expect(result.error).toBeDefined();
+      expect(result.error).toContain('cloud');
+      expect(result.error).toContain('branch-only');
+    });
+
+    it('should resolve --cloud with --pr-mode (cloud takes precedence, pr-mode is redundant)', () => {
+      const result = resolveClaimMode({ cloud: true, prMode: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(result.error).toBeUndefined();
+    });
+  });
+
+  describe('branch-pr path guards', () => {
+    it('should mark branch-pr as requiring lane lock check', () => {
+      const result = resolveClaimMode({ cloud: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_PR);
+      expect(result.skipBranchOnlySingletonGuard).toBe(true);
+      expect(result.requireLaneLock).toBe(true);
+      expect(result.requireLaneWipCheck).toBe(true);
+    });
+
+    it('should mark branch-only as requiring singleton guard', () => {
+      const result = resolveClaimMode({ branchOnly: true });
+      expect(result.mode).toBe(CLAIMED_MODES.BRANCH_ONLY);
+      expect(result.skipBranchOnlySingletonGuard).toBe(false);
+      expect(result.requireLaneLock).toBe(true);
+      expect(result.requireLaneWipCheck).toBe(true);
+    });
+
+    it('should mark worktree as not requiring singleton guard', () => {
+      const result = resolveClaimMode({});
+      expect(result.mode).toBe(CLAIMED_MODES.WORKTREE);
+      expect(result.skipBranchOnlySingletonGuard).toBe(true);
+      expect(result.requireLaneLock).toBe(true);
+      expect(result.requireLaneWipCheck).toBe(true);
+    });
+  });
+});
