@@ -127,8 +127,9 @@ export const validateInitiativeRemoveWuArgs =
   createValidator<InitiativeRemoveWuInput>(initiativeRemoveWuSchema);
 
 /** Validate initiative:bulk-assign arguments */
-export const validateInitiativeBulkAssignArgs =
-  createValidator<InitiativeBulkAssignInput>(initiativeBulkAssignSchema);
+export const validateInitiativeBulkAssignArgs = createValidator<InitiativeBulkAssignInput>(
+  initiativeBulkAssignSchema,
+);
 
 /** Validate initiative:plan arguments */
 export const validateInitiativePlanArgs =
