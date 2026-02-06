@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -456,3 +456,4 @@ _Last updated: 2026-02-06_
 - [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml) — 2026-02-06
 - [WU-1499 — Neutralize lane default bias in init WU template](wu/WU-1499.yaml) — 2026-02-06
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — 2026-02-06
+- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — 2026-02-06
