@@ -2,7 +2,7 @@ id: WU-1496
 title: Align docs and constraints for first-class branch-pr cloud flow
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -70,3 +70,5 @@ session_id: 964d13a6-5a0a-4fc8-ba2a-f993bbd61b12
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T19:43:41.236Z
+locked: true
+completed_at: 2026-02-06T19:50:35.591Z

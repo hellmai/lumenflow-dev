@@ -930,4 +930,5 @@
 {"type":"claim","wuId":"WU-1499","timestamp":"2026-02-06T19:31:43.627Z","lane":"Framework: CLI","title":"Neutralize lane default bias in init WU template"}
 {"type":"complete","wuId":"WU-1499","timestamp":"2026-02-06T19:34:30.684Z"}
 {"type":"complete","wuId":"WU-1495","timestamp":"2026-02-06T19:41:20.094Z"}
-{"type":"claim","wuId":"WU-1496","lane":"Content: Documentation","title":"Align docs and constraints for first-class branch-pr cloud flow","timestamp":"2026-02-06T19:43:41.272Z"}
+{"type":"claim","wuId":"WU-1496","timestamp":"2026-02-06T19:43:41.272Z","lane":"Content: Documentation","title":"Align docs and constraints for first-class branch-pr cloud flow"}
+{"type":"complete","wuId":"WU-1496","timestamp":"2026-02-06T19:50:38.191Z"}
