@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml)
 
 ## Blocked
 

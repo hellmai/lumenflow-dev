@@ -2,7 +2,7 @@ id: WU-1433
 title: Init onboarding parity for scripts and docs paths
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-04
 code_paths:
@@ -56,3 +56,11 @@ acceptance:
     paths.
   - Arc42 docs structure yields config + templates referencing docs/04-operations paths.
   - Init scaffolding tests cover scripts + docs structure and pass.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1433
+claimed_at: 2026-02-06T13:50:42.279Z
+baseline_main_sha: 0a25fef89acce01646ffdb1b4566311003e6da89
+session_id: f0cb0d85-d037-4517-9d1c-5ca8d721e824
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T13:50:42.285Z
