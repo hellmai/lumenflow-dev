@@ -1,0 +1,11 @@
+id: INIT-016
+slug: cloud-branch-pr
+title: First-Class Cloud Support via branch-pr
+description: ''
+status: draft
+priority: P1
+owner: workflow
+created: 2026-02-06
+phases: []
+success_metrics: []
+labels: []
