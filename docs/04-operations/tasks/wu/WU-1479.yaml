@@ -2,7 +2,7 @@ id: WU-1479
 title: Fix wu:done push race condition and add provenance trailers
 lane: 'Framework: Core'
 type: bug
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -21,8 +21,11 @@ dependencies: []
 spec_refs:
   - lumenflow://plans/declarative-forging-pixel.md
 risks: []
-notes: 'Root cause: WU-1467 push race condition. Plan: declarative-forging-pixel.md. New test file
-  needed for generateCommitMessage provenance.'
+notes: >-
+  Root cause: WU-1467 push race condition. Plan: declarative-forging-pixel.md. New test file needed
+  for generateCommitMessage provenance.
+
+  Released (2026-02-06): accidental claim
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

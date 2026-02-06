@@ -4,7 +4,6 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml)
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml)
 
 ## Blocked
