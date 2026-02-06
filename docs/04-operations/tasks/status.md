@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1476 — Add remove-success-metric support to initiative:edit](wu/WU-1476.yaml)
 
 ## Blocked
 

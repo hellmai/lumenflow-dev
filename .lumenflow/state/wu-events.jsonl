@@ -876,3 +876,4 @@
 {"type":"claim","wuId":"WU-1475","timestamp":"2026-02-06T11:06:03.275Z","lane":"Framework: CLI","title":"Preserve initiative related_plan in initiative:add-wu"}
 {"type":"complete","wuId":"WU-1458","timestamp":"2026-02-06T11:08:42.691Z"}
 {"type":"complete","wuId":"WU-1475","timestamp":"2026-02-06T11:10:38.173Z"}
+{"type":"claim","wuId":"WU-1476","lane":"Framework: CLI","title":"Add remove-success-metric support to initiative:edit","timestamp":"2026-02-06T11:13:33.364Z"}
