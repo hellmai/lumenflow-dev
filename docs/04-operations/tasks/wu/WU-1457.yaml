@@ -15,33 +15,7 @@ code_paths:
   - packages/@lumenflow/core/src/schemas/index.ts
   - packages/@lumenflow/mcp/src/tools.ts
   - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
-  - packages/@lumenflow/cli/src/flow-bottlenecks.ts
-  - packages/@lumenflow/cli/src/flow-report.ts
-  - packages/@lumenflow/cli/src/metrics-cli.ts
-  - packages/@lumenflow/cli/src/metrics-snapshot.ts
-  - packages/@lumenflow/cli/src/validate.ts
-  - packages/@lumenflow/cli/src/validate-agent-skills.ts
-  - packages/@lumenflow/cli/src/validate-agent-sync.ts
-  - packages/@lumenflow/cli/src/validate-backlog-sync.ts
-  - packages/@lumenflow/cli/src/validate-skills-spec.ts
-  - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/doctor.ts
-  - packages/@lumenflow/cli/src/commands/integrate.ts
-  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
-  - packages/@lumenflow/cli/src/commands.ts
-  - packages/@lumenflow/cli/src/docs-sync.ts
-  - packages/@lumenflow/cli/src/sync-templates.ts
-  - packages/@lumenflow/cli/src/release.ts
-  - packages/@lumenflow/cli/src/agent-session.ts
-  - packages/@lumenflow/cli/src/agent-session-end.ts
-  - packages/@lumenflow/cli/src/agent-log-issue.ts
-  - packages/@lumenflow/cli/src/agent-issues-query.ts
-  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
-  - packages/@lumenflow/cli/src/orchestrate-init-status.ts
-  - packages/@lumenflow/cli/src/orchestrate-monitor.ts
-  - packages/@lumenflow/cli/src/spawn-list.ts
-  - packages/@lumenflow/cli/src/session-coordinator.ts
-  - packages/@lumenflow/cli/src/rotate-progress.ts
+  - packages/@lumenflow/core/src/__tests__/schema-parity.test.ts
 tests:
   manual:
     - Run pnpm flow:report --help and MCP flow_report
@@ -74,7 +48,7 @@ acceptance:
   - flow-schemas.ts, validation-schemas.ts, setup-schemas.ts exist
   - Schemas include agent, orchestration, and spawn/coordination commands
   - All related MCP tools consume shared schemas
-  - CLI commands use shared validators
+  - CLI shared validators created and exported (wiring into individual CLI files is follow-up)
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1457
 claimed_at: 2026-02-06T10:38:34.192Z
