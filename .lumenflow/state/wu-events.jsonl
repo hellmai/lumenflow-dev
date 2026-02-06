@@ -864,3 +864,4 @@
 {"type":"complete","wuId":"WU-1452","timestamp":"2026-02-06T09:18:09.800Z"}
 {"type":"claim","wuId":"WU-1453","timestamp":"2026-02-06T09:27:40.739Z","lane":"Framework: CLI","title":"MCP: Add real CLI integration tests"}
 {"type":"complete","wuId":"WU-1453","timestamp":"2026-02-06T09:38:28.391Z"}
+{"type":"claim","wuId":"WU-1454","lane":"Framework: Core","title":"Shared Schemas: WU lifecycle commands","timestamp":"2026-02-06T09:41:08.345Z"}

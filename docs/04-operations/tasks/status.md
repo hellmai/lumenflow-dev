@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1454 — Shared Schemas: WU lifecycle commands](wu/WU-1454.yaml)
 
 ## Blocked
 

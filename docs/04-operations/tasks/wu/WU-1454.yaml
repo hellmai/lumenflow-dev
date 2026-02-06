@@ -2,7 +2,7 @@ id: WU-1454
 title: 'Shared Schemas: WU lifecycle commands'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - wu-lifecycle-schemas.ts includes 16 WU lifecycle commands
   - MCP tools consume shared schemas
   - CLI commands use shared validators
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1454
+claimed_at: 2026-02-06T09:41:08.325Z
+baseline_main_sha: 2e9d1c3478bc1b099e195418352c3788ead993c6
+session_id: c2b64aac-12cf-4dae-979b-bee9ea83b716
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T09:41:08.329Z
