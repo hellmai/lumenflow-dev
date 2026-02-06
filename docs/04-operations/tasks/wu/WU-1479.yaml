@@ -2,7 +2,7 @@ id: WU-1479
 title: Fix wu:done push race condition and add provenance trailers
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
