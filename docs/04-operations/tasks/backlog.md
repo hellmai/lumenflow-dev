@@ -20,20 +20,20 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
-- [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml) — Framework: MCP
-- [WU-1482 — MCP parity remediation wave 1 (state/lane/gates/setup commands)](wu/WU-1482.yaml) — Framework: MCP
-- [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — Framework: MCP
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — Content: Documentation
+- [WU-1482 — MCP parity remediation wave 1 (state/lane/gates/setup commands)](wu/WU-1482.yaml) — Framework: MCP
+- [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml) — Framework: MCP
+- [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml) — Framework: CLI
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — Framework: CLI
 - [WU-1480 — Add dependency-closure bootstrap for dist-backed CLI commands](wu/WU-1480.yaml) — Operations: Tooling
+- [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 
