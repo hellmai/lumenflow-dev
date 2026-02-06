@@ -26,6 +26,7 @@ import { validateWU, validateWUCompleteness } from '@lumenflow/core/dist/wu-sche
 import { FILE_SYSTEM, EMOJI, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
 import { lintWUSpec } from '@lumenflow/core/dist/wu-lint.js';
+import { validateWuValidateCliArgs } from './shared-validators.js';
 
 const LOG_PREFIX = '[wu:validate]';
 
@@ -44,6 +45,10 @@ export type ValidationSummary = {
   invalid: { wuId: string; errors: string[] }[];
   warnings: { wuId: string; warnings: string[] }[];
 };
+
+export function validateWuValidateOptions(id: string | undefined, noStrict: boolean | undefined) {
+  return validateWuValidateCliArgs({ id, noStrict });
+}
 
 /**
  * Summarize validation results for JSON output.
@@ -249,6 +254,11 @@ async function main() {
       process.exit(1);
     }
   } else {
+    const validation = validateWuValidateOptions(id, noStrict);
+    if (!validation.valid) {
+      die(`Invalid wu:validate arguments:\n  - ${validation.errors.join('\n  - ')}`);
+    }
+
     // Validate single WU
     const wuId = id.toUpperCase();
     if (!PATTERNS.WU_ID.test(wuId)) {
