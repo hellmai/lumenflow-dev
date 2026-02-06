@@ -2468,6 +2468,41 @@ function createInitialCommitIfNeeded(targetDir: string): boolean {
 }
 
 /**
+ * WU-1497: Rename master branch to main if git init defaulted to master.
+ *
+ * Many git installations still default to "master" as the initial branch name.
+ * LumenFlow requires "main" for consistency. This renames the branch automatically
+ * so users do not need to run `git branch -m master main` manually.
+ *
+ * Safe to call at any point: only renames when current branch is exactly "master".
+ */
+export function renameMasterToMainIfNeeded(targetDir: string): boolean {
+  if (!isGitRepo(targetDir)) {
+    return false;
+  }
+
+  try {
+    const currentBranch = execFileSync('git', ['branch', '--show-current'], {
+      cwd: targetDir,
+      encoding: 'utf-8',
+      stdio: 'pipe',
+    }).trim();
+
+    if (currentBranch !== 'master') {
+      return false;
+    }
+
+    execFileSync('git', ['branch', '-m', 'master', 'main'], {
+      cwd: targetDir,
+      stdio: 'pipe',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * WU-1364: Detect git state and return config overrides
  * Returns requireRemote: false if no origin remote is configured
  */
@@ -2671,6 +2706,13 @@ export async function scaffoldProject(
   const createdInitialCommit = createInitialCommitIfNeeded(targetDir);
   if (createdInitialCommit) {
     result.created.push('Initial git commit');
+  }
+
+  // WU-1497: Rename master branch to main if git init defaulted to master
+  // Must run after initial commit so the branch ref exists for rename
+  const renamedBranch = renameMasterToMainIfNeeded(targetDir);
+  if (renamedBranch) {
+    result.created.push('Renamed branch master -> main');
   }
 
   return result;
