@@ -1,0 +1,41 @@
+id: WU-1493
+title: Add wu:prep support for branch-pr mode
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/cli/src/wu-prep.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+tests:
+  manual:
+    - Run wu:prep for branch-pr on correct and wrong branches; verify pass/fail and next-step messaging.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1493.done
+dependencies: []
+initiative: INIT-016
+phase: 4
+blocked_by:
+  - WU-1490
+spec_refs:
+  - lumenflow://plans/memoized-baking-sutton.md
+risks: []
+notes: WU-D from branch-pr cloud initiative plan.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:prep currently hard-fails unless run from a worktree. Problem: branch-pr mode is intentionally no-worktree, so prep cannot run for cloud/branch flows. Solution: teach wu:prep to read claimed_mode before location rejection, allow branch-pr execution from main checkout on the lane branch, and output PR-based next steps.'
+acceptance:
+  - wu:prep reads claimed_mode before hard worktree rejection.
+  - For branch-pr WUs, wu:prep runs from main checkout on the correct lane branch.
+  - wu:prep validates current branch matches the WU lane branch in branch-pr mode.
+  - Success output for branch-pr shows PR-based completion next step.
