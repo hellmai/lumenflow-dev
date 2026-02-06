@@ -2,7 +2,7 @@ id: WU-1495
 title: Add config-driven cloud auto-detection core
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -60,3 +60,5 @@ session_id: cbf65a81-b588-456d-b19a-f424a9e1ebef
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T19:30:51.422Z
+locked: true
+completed_at: 2026-02-06T19:41:17.512Z
