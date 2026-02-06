@@ -2,7 +2,7 @@ id: WU-1384
 title: Relax spec completeness checks for done/cancelled WUs
 lane: 'Framework: Core'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - wu:validate ignores completeness warnings for WUs with status done or cancelled.
   - Completeness warnings still fail validation for ready/in_progress/blocked WUs in strict mode.
   - Unit test updated to cover done/cancelled status behavior.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1384
+claimed_at: 2026-02-06T14:07:19.578Z
+baseline_main_sha: 6bfb70849aaa1ea1a052c59201fe642eed114e22
+session_id: d884ca41-30bb-4de0-9d0b-c61bb266ffe1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T14:07:19.583Z

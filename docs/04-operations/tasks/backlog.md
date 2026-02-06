@@ -21,11 +21,10 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — Framework: Core
-- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 
 ## ⛔ Blocked
 

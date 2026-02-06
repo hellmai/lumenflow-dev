@@ -908,3 +908,4 @@
 {"type":"complete","wuId":"WU-1486","timestamp":"2026-02-06T13:46:08.022Z"}
 {"type":"claim","wuId":"WU-1433","timestamp":"2026-02-06T13:50:42.298Z","lane":"Framework: CLI","title":"Init onboarding parity for scripts and docs paths"}
 {"type":"complete","wuId":"WU-1433","timestamp":"2026-02-06T14:03:36.580Z"}
+{"type":"claim","wuId":"WU-1384","lane":"Framework: Core","title":"Relax spec completeness checks for done/cancelled WUs","timestamp":"2026-02-06T14:07:19.616Z"}

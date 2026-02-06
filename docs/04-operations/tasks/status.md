@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml)
 
 ## Blocked
 
