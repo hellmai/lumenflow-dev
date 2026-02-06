@@ -293,8 +293,8 @@ describe('CLI integration (no mocks)', () => {
         allTools.map((tool) => tool.name),
       );
 
-      expect(report.missing).toContain('lane_health');
-      expect(report.missing).toContain('state_doctor');
+      expect(report.missing).toContain('file_read');
+      expect(report.missing).toContain('wu_proto');
       expect(report.unexpectedExtra).toEqual([]);
     });
   });

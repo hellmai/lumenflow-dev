@@ -25,6 +25,21 @@ import {
   wuValidateTool,
   wuInferLaneTool,
   wuUnlockLaneTool,
+  backlogPruneTool,
+  docsSyncTool,
+  gatesTool,
+  gatesDocsTool,
+  laneHealthTool,
+  laneSuggestTool,
+  lumenflowTool,
+  lumenflowGatesTool,
+  lumenflowValidateTool,
+  lumenflowMetricsTool,
+  metricsTool,
+  stateBootstrapTool,
+  stateCleanupTool,
+  stateDoctorTool,
+  syncTemplatesTool,
   allTools,
   buildMcpManifestParityReport,
 } from '../tools.js';
@@ -636,37 +651,214 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 });
 
+describe('Wave-1 parity MCP tools (WU-1482)', () => {
+  const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should run backlog:prune with mapped flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    const result = await backlogPruneTool.execute({
+      execute: true,
+      stale_days_in_progress: 5,
+      stale_days_ready: 20,
+      archive_days: 60,
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'backlog:prune',
+      expect.arrayContaining([
+        '--execute',
+        '--stale-days-in-progress',
+        '5',
+        '--stale-days-ready',
+        '20',
+        '--archive-days',
+        '60',
+      ]),
+      expect.any(Object),
+    );
+  });
+
+  it('should run docs:sync with vendor and force flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    const result = await docsSyncTool.execute({ vendor: 'all', force: true });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'docs:sync',
+      expect.arrayContaining(['--vendor', 'all', '--force']),
+      expect.any(Object),
+    );
+  });
+
+  it('should run gates and gates:docs aliases', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await gatesTool.execute({ docs_only: false, full_lint: true, coverage_mode: 'block' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'gates',
+      expect.arrayContaining(['--full-lint', '--coverage-mode', 'block']),
+      expect.any(Object),
+    );
+
+    await gatesDocsTool.execute({});
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'gates',
+      expect.arrayContaining(['--docs-only']),
+      expect.any(Object),
+    );
+  });
+
+  it('should run lane tools with mapped flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await laneHealthTool.execute({ json: true, verbose: true, no_coverage: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'lane:health',
+      expect.arrayContaining(['--json', '--verbose', '--no-coverage']),
+      expect.any(Object),
+    );
+
+    await laneSuggestTool.execute({
+      dry_run: true,
+      interactive: true,
+      output: 'lanes.yaml',
+      json: true,
+      no_llm: true,
+      include_git: true,
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'lane:suggest',
+      expect.arrayContaining([
+        '--dry-run',
+        '--interactive',
+        '--output',
+        'lanes.yaml',
+        '--json',
+        '--no-llm',
+        '--include-git',
+      ]),
+      expect.any(Object),
+    );
+  });
+
+  it('should run lumenflow aliases and metrics tool with mapped flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await lumenflowTool.execute({ client: 'codex', merge: true, full: true, framework: 'arc42' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'lumenflow:init',
+      expect.arrayContaining(['--client', 'codex', '--merge', '--full', '--framework', 'arc42']),
+      expect.any(Object),
+    );
+
+    await lumenflowGatesTool.execute({ docs_only: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'gates',
+      expect.arrayContaining(['--docs-only']),
+      expect.any(Object),
+    );
+
+    await lumenflowValidateTool.execute({});
+    expect(mockRunCliCommand).toHaveBeenCalledWith('validate', [], expect.any(Object));
+
+    await lumenflowMetricsTool.execute({ subcommand: 'flow', days: 14, format: 'json' });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'metrics',
+      expect.arrayContaining(['flow', '--days', '14', '--format', 'json']),
+      expect.any(Object),
+    );
+
+    await metricsTool.execute({ subcommand: 'dora', dry_run: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'metrics',
+      expect.arrayContaining(['dora', '--dry-run']),
+      expect.any(Object),
+    );
+  });
+
+  it('should run state tools with mapped flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    await stateBootstrapTool.execute({
+      execute: true,
+      force: true,
+      wu_dir: 'docs/04-operations/tasks/wu',
+      state_dir: '.lumenflow/state',
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'state:bootstrap',
+      expect.arrayContaining([
+        '--execute',
+        '--force',
+        '--wu-dir',
+        'docs/04-operations/tasks/wu',
+        '--state-dir',
+        '.lumenflow/state',
+      ]),
+      expect.any(Object),
+    );
+
+    await stateCleanupTool.execute({
+      dry_run: true,
+      signals_only: true,
+      json: true,
+      base_dir: '.',
+    });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'state:cleanup',
+      expect.arrayContaining(['--dry-run', '--signals-only', '--json', '--base-dir', '.']),
+      expect.any(Object),
+    );
+
+    await stateDoctorTool.execute({ fix: true, dry_run: true, quiet: true });
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'state:doctor',
+      expect.arrayContaining(['--fix', '--dry-run', '--quiet']),
+      expect.any(Object),
+    );
+  });
+
+  it('should run sync:templates with mapped flags', async () => {
+    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+
+    const result = await syncTemplatesTool.execute({ dry_run: true, verbose: true, check_drift: true });
+
+    expect(result.success).toBe(true);
+    expect(mockRunCliCommand).toHaveBeenCalledWith(
+      'sync:templates',
+      expect.arrayContaining(['--dry-run', '--verbose', '--check-drift']),
+      expect.any(Object),
+    );
+  });
+});
+
 describe('Manifest parity truth gate (WU-1481)', () => {
   const EXPECTED_MISSING_COMMANDS = [
-    'backlog_prune',
-    'docs_sync',
     'file_delete',
     'file_edit',
     'file_read',
     'file_write',
-    'gates',
-    'gates_docs',
     'git_branch',
     'git_diff',
     'git_log',
     'git_status',
     'init_plan',
-    'lane_health',
-    'lane_suggest',
-    'lumenflow',
-    'lumenflow_gates',
-    'lumenflow_metrics',
-    'lumenflow_validate',
-    'metrics',
     'plan_create',
     'plan_edit',
     'plan_link',
     'plan_promote',
     'signal_cleanup',
-    'state_bootstrap',
-    'state_cleanup',
-    'state_doctor',
-    'sync_templates',
     'wu_proto',
   ];
 
