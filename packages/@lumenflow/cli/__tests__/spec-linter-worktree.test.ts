@@ -89,4 +89,21 @@ describe('spec:linter worktree fallback (WU-1218)', () => {
     expect(gatesScript).toContain(CLI_ENTRY_SCRIPT);
     expect(specLinterScript).toContain(CLI_ENTRY_SCRIPT);
   });
+
+  it('wu:validate, wu:prep, and mem:checkpoint scripts should use cli-entry.mjs', () => {
+    const packageJsonPath = path.resolve(__dirname, '../../../../package.json');
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+
+    const wuValidateScript = packageJson.scripts?.['wu:validate'];
+    const wuPrepScript = packageJson.scripts?.['wu:prep'];
+    const memCheckpointScript = packageJson.scripts?.['mem:checkpoint'];
+
+    expect(wuValidateScript).toBeDefined();
+    expect(wuPrepScript).toBeDefined();
+    expect(memCheckpointScript).toBeDefined();
+
+    expect(wuValidateScript).toContain(CLI_ENTRY_SCRIPT);
+    expect(wuPrepScript).toContain(CLI_ENTRY_SCRIPT);
+    expect(memCheckpointScript).toContain(CLI_ENTRY_SCRIPT);
+  });
 });

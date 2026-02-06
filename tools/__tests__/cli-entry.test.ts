@@ -18,6 +18,7 @@ import {
   resolveCliDistEntry,
   resolveMainRepoFromWorktree,
   ensureCliDist,
+  runCliEntry,
   parseSimpleConfig,
   getBuildCommand,
 } from '../cli-entry.mjs';
@@ -186,6 +187,31 @@ describe('cli-entry.mjs fallback behavior (WU-1366)', () => {
 
       expect(result.path).toBeNull();
       expect(result.source).toBe('none');
+    });
+  });
+
+  describe('runCliEntry', () => {
+    it('should print bootstrap guidance when CLI dist cannot be located', () => {
+      const spawn = vi
+        .fn()
+        // build attempt fails
+        .mockReturnValueOnce({ status: 1 });
+      const exit = vi.fn();
+      const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() };
+
+      runCliEntry({
+        entry: 'wu-prep',
+        args: ['--id', 'WU-1487'],
+        cwd: '/repo/worktrees/framework-cli-wu-1487',
+        spawn,
+        exit,
+        logger,
+      });
+
+      const output = logger.error.mock.calls.map((call) => call.join(' ')).join('\n');
+      expect(output).toContain('Unable to locate CLI dist for wu-prep');
+      expect(output).toContain('pnpm bootstrap');
+      expect(exit).toHaveBeenCalled();
     });
   });
 

@@ -205,6 +205,9 @@ export function runCliEntry({
 
   if (!result.path) {
     logger.error(`[cli-entry] Unable to locate CLI dist for ${entry}.`);
+    logger.error(
+      `[cli-entry] Run 'pnpm bootstrap' from the repository root, then retry the command.`,
+    );
     exit(EXIT_CODES.ERROR);
     return;
   }
