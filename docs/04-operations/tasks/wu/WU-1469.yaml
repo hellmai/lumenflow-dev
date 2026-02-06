@@ -2,7 +2,7 @@ id: WU-1469
 title: Align MCP and publish docs with current tool count and auth model
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-05
 code_paths:
@@ -34,9 +34,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: internal MCP framework docs still describe the legacy 7-tool model while product docs describe 68 tools, and publish auth guidance has drifted from current NPM_TOKEN usage. Problem: operators and contributors receive inconsistent documentation for launch-critical behavior. Solution: update docs to the current MCP surface area and publish authentication model, with cross-references that match implemented workflows.'
+description: 'Context: internal MCP framework docs still describe the legacy 7-tool model while
+  product docs describe 68 tools, and publish auth guidance has drifted from current NPM_TOKEN
+  usage. Problem: operators and contributors receive inconsistent documentation for launch-critical
+  behavior. Solution: update docs to the current MCP surface area and publish authentication model,
+  with cross-references that match implemented workflows.'
 acceptance:
   - mcp-server documentation reflects the current MCP tool model and architecture
   - public docs and framework docs agree on MCP tool count and usage patterns
   - publish workflow docs accurately reflect NPM_TOKEN based auth model
   - Documentation links and references resolve to current files
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1469
+claimed_at: 2026-02-06T08:35:27.520Z
+baseline_main_sha: 9a7a9839b943c67c3f499ccf8f59e894fe42fc5c
+session_id: 9d137490-803c-4f7e-a7e5-d967b7f0fd23
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T08:35:27.524Z
