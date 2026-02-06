@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -449,3 +449,4 @@ _Last updated: 2026-02-06_
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — 2026-02-06
 - [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml) — 2026-02-06
 - [WU-1497 — Fix onboarding friction: initiative-edit remote bug, master-main, quickstart gaps](wu/WU-1497.yaml) — 2026-02-06
+- [WU-1490 — Add branch-pr claimed mode primitives](wu/WU-1490.yaml) — 2026-02-06
