@@ -87,6 +87,7 @@ import {
   flowBottlenecksSchema,
   flowReportSchema,
   metricsSnapshotSchema,
+  metricsSchema,
   // WU-1457: Validation command schemas
   validateSchema,
   validateAgentSkillsSchema,
@@ -179,6 +180,20 @@ const ErrorCodes = {
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
   WU_INFER_LANE_ERROR: 'WU_INFER_LANE_ERROR',
   WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
+  BACKLOG_PRUNE_ERROR: 'BACKLOG_PRUNE_ERROR',
+  DOCS_SYNC_ERROR: 'DOCS_SYNC_ERROR',
+  GATES_ALIAS_ERROR: 'GATES_ALIAS_ERROR',
+  LANE_HEALTH_ERROR: 'LANE_HEALTH_ERROR',
+  LANE_SUGGEST_ERROR: 'LANE_SUGGEST_ERROR',
+  LUMENFLOW_ALIAS_ERROR: 'LUMENFLOW_ALIAS_ERROR',
+  LUMENFLOW_GATES_ERROR: 'LUMENFLOW_GATES_ERROR',
+  LUMENFLOW_VALIDATE_ERROR: 'LUMENFLOW_VALIDATE_ERROR',
+  LUMENFLOW_METRICS_ERROR: 'LUMENFLOW_METRICS_ERROR',
+  METRICS_ERROR: 'METRICS_ERROR',
+  STATE_BOOTSTRAP_ERROR: 'STATE_BOOTSTRAP_ERROR',
+  STATE_CLEANUP_ERROR: 'STATE_CLEANUP_ERROR',
+  STATE_DOCTOR_ERROR: 'STATE_DOCTOR_ERROR',
+  SYNC_TEMPLATES_ALIAS_ERROR: 'SYNC_TEMPLATES_ALIAS_ERROR',
   // WU-1426: Flow/Metrics error codes
   FLOW_BOTTLENECKS_ERROR: 'FLOW_BOTTLENECKS_ERROR',
   FLOW_REPORT_ERROR: 'FLOW_REPORT_ERROR',
@@ -219,6 +234,7 @@ const CliArgs = {
   INITIATIVE: '--initiative',
   PHASE: '--phase',
   JSON: '--json',
+  DOCS_ONLY: '--docs-only',
   // WU-1452: Commands using --format json (initiative:*, flow:*, metrics)
   FORMAT_JSON: ['--format', 'json'] as const,
   DRY_RUN: '--dry-run',
@@ -234,6 +250,95 @@ const SharedErrorMessages = {
   WU_REQUIRED: 'wu is required',
   INITIATIVE_REQUIRED: 'initiative is required',
 } as const;
+
+const SuccessMessages = {
+  ALL_GATES_PASSED: 'All gates passed',
+} as const;
+
+// WU-1482: Schemas for wave-1 parity commands not yet modeled in @lumenflow/core
+const backlogPruneSchema = z.object({
+  execute: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  stale_days_in_progress: z.number().optional(),
+  stale_days_ready: z.number().optional(),
+  archive_days: z.number().optional(),
+});
+
+const docsSyncMcpSchema = z.object({
+  vendor: z.enum(['claude', 'cursor', 'aider', 'all', 'none']).optional(),
+  force: z.boolean().optional(),
+});
+
+const laneHealthSchema = z.object({
+  json: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  no_coverage: z.boolean().optional(),
+});
+
+const laneSuggestSchema = z.object({
+  dry_run: z.boolean().optional(),
+  interactive: z.boolean().optional(),
+  output: z.string().optional(),
+  json: z.boolean().optional(),
+  no_llm: z.boolean().optional(),
+  include_git: z.boolean().optional(),
+});
+
+const stateBootstrapSchema = z.object({
+  execute: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  force: z.boolean().optional(),
+  wu_dir: z.string().optional(),
+  state_dir: z.string().optional(),
+});
+
+const stateCleanupSchema = z.object({
+  dry_run: z.boolean().optional(),
+  signals_only: z.boolean().optional(),
+  memory_only: z.boolean().optional(),
+  events_only: z.boolean().optional(),
+  json: z.boolean().optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
+});
+
+const stateDoctorSchema = z.object({
+  fix: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  json: z.boolean().optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
+});
+
+const syncTemplatesMcpSchema = z.object({
+  dry_run: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  check_drift: z.boolean().optional(),
+});
+
+function buildGatesArgs(
+  input: Record<string, unknown>,
+  options: { forceDocsOnly?: boolean } = {},
+): string[] {
+  const args: string[] = [];
+  if (options.forceDocsOnly || input.docs_only) args.push(CliArgs.DOCS_ONLY);
+  if (input.full_lint) args.push('--full-lint');
+  if (input.full_tests) args.push('--full-tests');
+  if (input.full_coverage) args.push('--full-coverage');
+  if (input.coverage_mode) args.push('--coverage-mode', input.coverage_mode as string);
+  if (input.verbose) args.push('--verbose');
+  return args;
+}
+
+function buildMetricsArgs(input: Record<string, unknown>): string[] {
+  const args: string[] = [];
+  if (input.subcommand) args.push(input.subcommand as string);
+  if (input.days !== undefined) args.push('--days', String(input.days));
+  if (input.format) args.push('--format', input.format as string);
+  if (input.output) args.push('--output', input.output as string);
+  if (input.dry_run) args.push('--dry-run');
+  return args;
+}
 
 /**
  * Create a successful tool result
@@ -521,7 +626,7 @@ export const gatesRunTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.docs_only) {
-      args.push('--docs-only');
+      args.push(CliArgs.DOCS_ONLY);
     }
 
     const cliOptions: CliRunnerOptions = {
@@ -531,13 +636,438 @@ export const gatesRunTool: ToolDefinition = {
     const result = await runCliCommand('gates', args, cliOptions);
 
     if (result.success) {
-      return success({ message: result.stdout || 'All gates passed' });
+      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
     } else {
       return error(
         result.stderr || result.error?.message || 'Gates failed',
         ErrorCodes.GATES_ERROR,
       );
     }
+  },
+};
+
+// ============================================================================
+// Wave-1 Public Parity Operations (WU-1482)
+// ============================================================================
+
+/**
+ * backlog_prune - Clean stale backlog entries
+ */
+export const backlogPruneTool: ToolDefinition = {
+  name: 'backlog_prune',
+  description: 'Clean stale backlog entries and archive old completed WUs',
+  inputSchema: backlogPruneSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.execute) args.push('--execute');
+    if (input.dry_run) args.push('--dry-run');
+    if (input.stale_days_in_progress !== undefined) {
+      args.push('--stale-days-in-progress', String(input.stale_days_in_progress));
+    }
+    if (input.stale_days_ready !== undefined) {
+      args.push('--stale-days-ready', String(input.stale_days_ready));
+    }
+    if (input.archive_days !== undefined) {
+      args.push('--archive-days', String(input.archive_days));
+    }
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('backlog:prune', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Backlog prune complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'backlog:prune failed',
+      ErrorCodes.BACKLOG_PRUNE_ERROR,
+    );
+  },
+};
+
+/**
+ * docs_sync - Sync agent docs to existing project
+ */
+export const docsSyncTool: ToolDefinition = {
+  name: 'docs_sync',
+  description: 'Sync agent onboarding docs and skills to existing projects',
+  inputSchema: docsSyncMcpSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.vendor) args.push('--vendor', input.vendor as string);
+    if (input.force) args.push('--force');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('docs:sync', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Docs sync complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'docs:sync failed',
+      ErrorCodes.DOCS_SYNC_ERROR,
+    );
+  },
+};
+
+/**
+ * gates - Public gates command
+ */
+export const gatesTool: ToolDefinition = {
+  name: 'gates',
+  description: 'Run LumenFlow quality gates',
+  inputSchema: gatesSchema,
+
+  async execute(input, options) {
+    const args = buildGatesArgs(input);
+    const cliOptions: CliRunnerOptions = {
+      projectRoot: options?.projectRoot,
+      timeout: 600000,
+    };
+    const result = await runCliCommand('gates', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
+    }
+    return error(
+      result.stderr || result.error?.message || 'gates failed',
+      ErrorCodes.GATES_ALIAS_ERROR,
+    );
+  },
+};
+
+/**
+ * gates_docs - Public docs-only gates alias
+ */
+export const gatesDocsTool: ToolDefinition = {
+  name: 'gates_docs',
+  description: 'Run docs-only quality gates',
+  inputSchema: gatesSchema,
+
+  async execute(input, options) {
+    const args = buildGatesArgs(input, { forceDocsOnly: true });
+    const cliOptions: CliRunnerOptions = {
+      projectRoot: options?.projectRoot,
+      timeout: 600000,
+    };
+    const result = await runCliCommand('gates', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Docs-only gates passed' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'gates:docs failed',
+      ErrorCodes.GATES_ALIAS_ERROR,
+    );
+  },
+};
+
+/**
+ * lane_health - Diagnose lane configuration issues
+ */
+export const laneHealthTool: ToolDefinition = {
+  name: 'lane_health',
+  description: 'Check lane configuration health (overlaps and coverage gaps)',
+  inputSchema: laneHealthSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.json) args.push('--json');
+    if (input.verbose) args.push('--verbose');
+    if (input.no_coverage) args.push('--no-coverage');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lane:health', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Lane health check complete' });
+      }
+    }
+    return error(
+      result.stderr || result.error?.message || 'lane:health failed',
+      ErrorCodes.LANE_HEALTH_ERROR,
+    );
+  },
+};
+
+/**
+ * lane_suggest - Suggest lane definitions from project context
+ */
+export const laneSuggestTool: ToolDefinition = {
+  name: 'lane_suggest',
+  description: 'Generate lane suggestions from codebase context',
+  inputSchema: laneSuggestSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.dry_run) args.push('--dry-run');
+    if (input.interactive) args.push('--interactive');
+    if (input.output) args.push('--output', input.output as string);
+    if (input.json) args.push('--json');
+    if (input.no_llm) args.push('--no-llm');
+    if (input.include_git) args.push('--include-git');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lane:suggest', args, cliOptions);
+
+    if (result.success) {
+      try {
+        const data = JSON.parse(result.stdout);
+        return success(data);
+      } catch {
+        return success({ message: result.stdout || 'Lane suggestions generated' });
+      }
+    }
+    return error(
+      result.stderr || result.error?.message || 'lane:suggest failed',
+      ErrorCodes.LANE_SUGGEST_ERROR,
+    );
+  },
+};
+
+/**
+ * lumenflow - Public initializer command
+ */
+export const lumenflowTool: ToolDefinition = {
+  name: 'lumenflow',
+  description: 'Initialize LumenFlow in a project',
+  inputSchema: lumenflowInitSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.client) args.push('--client', input.client as string);
+    if (input.merge) args.push('--merge');
+    if (input.full) args.push('--full');
+    if (input.minimal) args.push('--minimal');
+    if (input.framework) args.push('--framework', input.framework as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('lumenflow:init', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'LumenFlow initialized' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'lumenflow failed',
+      ErrorCodes.LUMENFLOW_ALIAS_ERROR,
+    );
+  },
+};
+
+/**
+ * lumenflow_gates - Public gates alias
+ */
+export const lumenflowGatesTool: ToolDefinition = {
+  name: 'lumenflow_gates',
+  description: 'Run quality gates (lumenflow-gates alias)',
+  inputSchema: gatesSchema,
+
+  async execute(input, options) {
+    const args = buildGatesArgs(input);
+    const cliOptions: CliRunnerOptions = {
+      projectRoot: options?.projectRoot,
+      timeout: 600000,
+    };
+    const result = await runCliCommand('gates', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
+    }
+    return error(
+      result.stderr || result.error?.message || 'lumenflow-gates failed',
+      ErrorCodes.LUMENFLOW_GATES_ERROR,
+    );
+  },
+};
+
+/**
+ * lumenflow_validate - Public validate alias
+ */
+export const lumenflowValidateTool: ToolDefinition = {
+  name: 'lumenflow_validate',
+  description: 'Run validation checks (lumenflow-validate alias)',
+  inputSchema: validateSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.id) args.push('--id', input.id as string);
+    if (input.strict) args.push('--strict');
+    if (input.done_only) args.push('--done-only');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('validate', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Validation passed' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'lumenflow-validate failed',
+      ErrorCodes.LUMENFLOW_VALIDATE_ERROR,
+    );
+  },
+};
+
+/**
+ * lumenflow_metrics - Public metrics alias
+ */
+export const lumenflowMetricsTool: ToolDefinition = {
+  name: 'lumenflow_metrics',
+  description: 'View workflow metrics (lumenflow:metrics alias)',
+  inputSchema: metricsSchema,
+
+  async execute(input, options) {
+    const args = buildMetricsArgs(input);
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('metrics', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Metrics generated' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'lumenflow:metrics failed',
+      ErrorCodes.LUMENFLOW_METRICS_ERROR,
+    );
+  },
+};
+
+/**
+ * metrics - Unified workflow metrics command
+ */
+export const metricsTool: ToolDefinition = {
+  name: 'metrics',
+  description: 'View workflow metrics (lanes, dora, flow, all)',
+  inputSchema: metricsSchema,
+
+  async execute(input, options) {
+    const args = buildMetricsArgs(input);
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('metrics', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Metrics generated' });
+    }
+    return error(result.stderr || result.error?.message || 'metrics failed', ErrorCodes.METRICS_ERROR);
+  },
+};
+
+/**
+ * state_bootstrap - Bootstrap event store from WU YAMLs
+ */
+export const stateBootstrapTool: ToolDefinition = {
+  name: 'state_bootstrap',
+  description: 'Bootstrap state store from existing WU YAML files',
+  inputSchema: stateBootstrapSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.execute) args.push('--execute');
+    if (input.dry_run) args.push('--dry-run');
+    if (input.force) args.push('--force');
+    if (input.wu_dir) args.push('--wu-dir', input.wu_dir as string);
+    if (input.state_dir) args.push('--state-dir', input.state_dir as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('state:bootstrap', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'State bootstrap complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'state:bootstrap failed',
+      ErrorCodes.STATE_BOOTSTRAP_ERROR,
+    );
+  },
+};
+
+/**
+ * state_cleanup - Run unified state cleanup
+ */
+export const stateCleanupTool: ToolDefinition = {
+  name: 'state_cleanup',
+  description: 'Clean stale state, memory, and signal data',
+  inputSchema: stateCleanupSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.dry_run) args.push('--dry-run');
+    if (input.signals_only) args.push('--signals-only');
+    if (input.memory_only) args.push('--memory-only');
+    if (input.events_only) args.push('--events-only');
+    if (input.json) args.push('--json');
+    if (input.quiet) args.push('--quiet');
+    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('state:cleanup', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'State cleanup complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'state:cleanup failed',
+      ErrorCodes.STATE_CLEANUP_ERROR,
+    );
+  },
+};
+
+/**
+ * state_doctor - Diagnose and repair state issues
+ */
+export const stateDoctorTool: ToolDefinition = {
+  name: 'state_doctor',
+  description: 'Diagnose state store integrity issues',
+  inputSchema: stateDoctorSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.fix) args.push('--fix');
+    if (input.dry_run) args.push('--dry-run');
+    if (input.json) args.push('--json');
+    if (input.quiet) args.push('--quiet');
+    if (input.base_dir) args.push('--base-dir', input.base_dir as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('state:doctor', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'State doctor complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'state:doctor failed',
+      ErrorCodes.STATE_DOCTOR_ERROR,
+    );
+  },
+};
+
+/**
+ * sync_templates - Sync templates from source docs
+ */
+export const syncTemplatesTool: ToolDefinition = {
+  name: 'sync_templates',
+  description: 'Sync internal docs to CLI templates',
+  inputSchema: syncTemplatesMcpSchema,
+
+  async execute(input, options) {
+    const args: string[] = [];
+    if (input.dry_run) args.push('--dry-run');
+    if (input.verbose) args.push('--verbose');
+    if (input.check_drift) args.push('--check-drift');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('sync:templates', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Template sync complete' });
+    }
+    return error(
+      result.stderr || result.error?.message || 'sync:templates failed',
+      ErrorCodes.SYNC_TEMPLATES_ALIAS_ERROR,
+    );
   },
 };
 
@@ -814,7 +1344,7 @@ export const wuPrepTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string];
-    if (input.docs_only) args.push('--docs-only');
+    if (input.docs_only) args.push(CliArgs.DOCS_ONLY);
 
     const cliOptions: CliRunnerOptions = {
       projectRoot: options?.projectRoot,
@@ -2716,6 +3246,22 @@ export const allTools: ToolDefinition[] = [
   wuClaimTool,
   wuDoneTool,
   gatesRunTool,
+  // WU-1482: Wave-1 public parity tools
+  backlogPruneTool,
+  docsSyncTool,
+  gatesTool,
+  gatesDocsTool,
+  laneHealthTool,
+  laneSuggestTool,
+  lumenflowTool,
+  lumenflowGatesTool,
+  lumenflowValidateTool,
+  lumenflowMetricsTool,
+  metricsTool,
+  stateBootstrapTool,
+  stateCleanupTool,
+  stateDoctorTool,
+  syncTemplatesTool,
   // WU-1422: Additional WU tools
   wuBlockTool,
   wuUnblockTool,
