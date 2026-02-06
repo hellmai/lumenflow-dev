@@ -870,4 +870,5 @@
 {"type":"complete","wuId":"WU-1455","timestamp":"2026-02-06T10:16:18.441Z"}
 {"type":"claim","wuId":"WU-1456","timestamp":"2026-02-06T10:19:24.622Z","lane":"Framework: Core","title":"Shared Schemas: Memory commands"}
 {"type":"complete","wuId":"WU-1456","timestamp":"2026-02-06T10:34:48.535Z"}
-{"type":"claim","wuId":"WU-1457","lane":"Framework: Core","title":"Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn","timestamp":"2026-02-06T10:38:34.214Z"}
+{"type":"claim","wuId":"WU-1457","timestamp":"2026-02-06T10:38:34.214Z","lane":"Framework: Core","title":"Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn"}
+{"type":"complete","wuId":"WU-1457","timestamp":"2026-02-06T10:58:54.298Z"}

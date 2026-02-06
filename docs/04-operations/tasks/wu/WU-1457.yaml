@@ -2,7 +2,7 @@ id: WU-1457
 title: 'Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn'
 lane: 'Framework: Core'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -57,3 +57,5 @@ session_id: 535ed418-6f6a-4d95-a881-ea3a71f92548
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T10:38:34.197Z
+locked: true
+completed_at: 2026-02-06T10:58:51.772Z
