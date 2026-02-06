@@ -1,6 +1,6 @@
 # AI Coding Assistant Integrations
 
-**Last updated:** 2026-01-29
+**Last updated:** 2026-02-06
 
 ---
 
@@ -167,6 +167,68 @@ For projects using Antigravity:
 1. Ensure `AGENTS.md` is present (created by default with `lumenflow init`)
 2. The universal instructions in AGENTS.md should work out of the box
 3. Report any issues for future vendor-specific support
+
+---
+
+## Cloud Workflow Mode (Branch-PR)
+
+Cloud-hosted agents (Codex, Claude web, GitHub Actions, CI bots) cannot create local
+worktrees. LumenFlow provides a first-class **branch-pr** mode for these environments.
+
+### Explicit Activation
+
+Cloud mode is always available via explicit activation:
+
+```bash
+# Flag-based
+pnpm wu:claim --id WU-XXX --lane "<Lane>" --cloud
+
+# Environment variable
+LUMENFLOW_CLOUD=1 pnpm wu:claim --id WU-XXX --lane "<Lane>"
+```
+
+Explicit activation (`--cloud` or `LUMENFLOW_CLOUD=1`) always takes precedence over
+auto-detection.
+
+### Config-Driven Auto-Detection (Opt-In)
+
+For environments where agents should automatically enter cloud mode, enable
+auto-detection in `.lumenflow.config.yaml`:
+
+```yaml
+cloud:
+  auto_detect: true # default: false
+  env_signals:
+    - name: CI # presence check (any non-empty value)
+    - name: CODEX
+    - name: GITHUB_ACTIONS
+      equals: 'true' # exact match required
+```
+
+**Key design decisions:**
+
+- `auto_detect` defaults to `false` (opt-in, not opt-out)
+- No vendor-specific signals are hardcoded; all signals are user-configured
+- Each signal supports either presence checks (`name` only) or exact-value
+  matches (`name` + `equals`)
+- Explicit activation always wins over auto-detection
+
+### Cloud Lifecycle
+
+| Step     | Command                                   | What happens                                                     |
+| -------- | ----------------------------------------- | ---------------------------------------------------------------- |
+| Claim    | `wu:claim --id WU-XXX --lane <L> --cloud` | Sets `claimed_mode: branch-pr`, creates lane branch, no worktree |
+| Work     | (agent works on lane branch)              | Push commits to `lane/<lane>/wu-xxx`                             |
+| Prep     | `wu:prep --id WU-XXX`                     | Validates branch, runs gates in-place                            |
+| Complete | `wu:done --id WU-XXX`                     | Creates PR, commits metadata on lane branch                      |
+| Cleanup  | `wu:cleanup --id WU-XXX`                  | Post-merge: creates stamp, updates state, deletes branch         |
+
+### Vendor-Specific Notes
+
+- **Codex**: Set `LUMENFLOW_CLOUD=1` in the environment or configure auto-detection with `name: CODEX`
+- **Claude web**: Use `--cloud` flag explicitly or configure `name: CLAUDE_CODE` in env_signals
+- **GitHub Actions**: Configure `name: GITHUB_ACTIONS, equals: 'true'` in env_signals
+- **Antigravity**: Expected to work with explicit `--cloud` flag; auto-detection signals TBD
 
 ---
 

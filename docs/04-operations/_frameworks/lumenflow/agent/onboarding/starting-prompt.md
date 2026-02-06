@@ -1,6 +1,6 @@
 # LumenFlow Agent Starting Prompt
 
-**Last updated:** 2026-02-02
+**Last updated:** 2026-02-06
 
 This is the complete onboarding document for AI agents working with LumenFlow. Read this entire document before starting any work.
 
@@ -49,9 +49,18 @@ Only skip initiatives for:
 
 If work spans multiple WUs or multiple days, create an initiative first.
 
+### Lane-Fit Reasoning
+
+When creating WUs or scoping initiatives, always evaluate whether the assigned lane fits the actual work:
+
+- **Check code_paths alignment**: Compare the WU's `code_paths` against lane definitions in `.lumenflow.config.yaml`. If the majority of paths belong to a different lane, propose a lane change.
+- **Use lane:suggest**: Run `pnpm lane:suggest --paths "src/file.ts"` to get a recommendation.
+- **Propose changes proactively**: If scope expansion during implementation pushes a WU beyond its lane's boundaries, flag the mismatch to the user and suggest either a lane change or a WU split.
+- **Initiative-level review**: When planning an initiative with multiple WUs, ensure each WU is assigned to the lane whose `code_paths` best cover the work. Systematic mismatches signal that lane taxonomy may need updating.
+
 ---
 
-## Quick Start (Copy This)
+## Quick Start -- Local (Copy This)
 
 ```bash
 # 1. Check your assigned WU
@@ -77,6 +86,53 @@ cd /path/to/main/checkout
 pnpm wu:done --id WU-XXXX
 ```
 
+## Quick Start -- Cloud / Branch-PR (Copy This)
+
+For cloud agents (Codex, Claude web, CI bots) that cannot create local worktrees:
+
+```bash
+# 1. Check your assigned WU
+cat docs/04-operations/tasks/wu/WU-XXXX.yaml
+
+# 2. Claim in cloud mode (no worktree, sets claimed_mode: branch-pr)
+pnpm wu:claim --id WU-XXXX --lane "Lane Name" --cloud
+# Or: LUMENFLOW_CLOUD=1 pnpm wu:claim --id WU-XXXX --lane "Lane Name"
+
+# 3. Work on the lane branch (lane/<lane>/wu-xxxx)
+
+# 4. Run gates
+pnpm wu:prep --id WU-XXXX
+
+# 5. Complete (creates PR, does NOT merge to main)
+pnpm wu:done --id WU-XXXX
+
+# 6. After PR is merged, run cleanup
+pnpm wu:cleanup --id WU-XXXX
+```
+
+**Cloud activation methods (in precedence order):**
+
+1. `--cloud` flag on `wu:claim` (explicit, always wins)
+2. `LUMENFLOW_CLOUD=1` environment variable (explicit, always wins)
+3. Config-driven auto-detection when `cloud.auto_detect: true` in `.lumenflow.config.yaml`
+
+**Auto-detection configuration:**
+
+```yaml
+# .lumenflow.config.yaml
+cloud:
+  auto_detect: true # default: false (opt-in)
+  env_signals: # checked only when auto_detect is true
+    - name: CI # presence check (any non-empty value)
+    - name: CODEX
+    - name: GITHUB_ACTIONS
+      equals: 'true' # exact match required
+```
+
+When `auto_detect` is enabled, `wu:claim` checks the listed environment signals
+and activates cloud mode if any match. No vendor-specific signals are hardcoded;
+all signals are user-configured.
+
 ---
 
 ## Before Creating WUs
@@ -93,22 +149,26 @@ before running `wu:create`. `wu:claim` supports `--no-push` for local-only work.
 
 ## The 5 Rules You Must Follow
 
-### Rule 1: ALWAYS Work in Worktrees
+### Rule 1: ALWAYS Work in Worktrees (or Branch-PR Mode)
 
-After `pnpm wu:claim`, you MUST immediately `cd` to the worktree. **Never edit files in the main checkout.**
+After `pnpm wu:claim`, you MUST immediately `cd` to the worktree. **Never edit files in the main checkout** unless you are in branch-pr mode.
 
 ```bash
-# WRONG - editing in main
+# WRONG - editing in main (worktree mode)
 pnpm wu:claim --id WU-123 --lane "Framework: CLI"
 vim packages/cli/src/index.ts  # BLOCKED BY HOOKS!
 
-# RIGHT - editing in worktree
+# RIGHT - editing in worktree (worktree mode)
 pnpm wu:claim --id WU-123 --lane "Framework: CLI"
 cd worktrees/framework-cli-wu-123  # IMMEDIATELY!
 vim packages/cli/src/index.ts  # Safe here
+
+# ALSO RIGHT - cloud/branch-pr mode (no worktree)
+pnpm wu:claim --id WU-123 --lane "Framework: CLI" --cloud
+# Work on lane branch directly (claimed_mode: branch-pr)
 ```
 
-**Why:** Worktrees isolate your changes. Main checkout is protected by git hooks.
+**Why:** Worktrees isolate your changes. Main checkout is protected by git hooks. Branch-PR mode is the valid exception for cloud agents that cannot create local worktrees.
 
 ### Rule 2: ALWAYS Run wu:done
 
@@ -298,16 +358,18 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 
 ## WU Lifecycle Commands
 
-| Command                                   | Description                       | When to Use           |
-| ----------------------------------------- | --------------------------------- | --------------------- |
-| `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
-| `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
-| `pnpm wu:edit --id WU-XXX --field value`  | Edit WU spec fields               | Update notes/desc     |
-| `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
-| `pnpm gates`                              | Run quality gates                 | Before wu:done        |
-| `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |
-| `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup       | After gates pass      |
-| `pnpm wu:recover --id WU-XXX`             | Fix inconsistent WU state         | When state is broken  |
+| Command                                        | Description                              | When to Use                 |
+| ---------------------------------------------- | ---------------------------------------- | --------------------------- |
+| `pnpm wu:status --id WU-XXX`                   | Show WU state and valid commands         | Check current state         |
+| `pnpm wu:claim --id WU-XXX --lane "Lane"`      | Claim WU and create worktree (default)   | Start working (local)       |
+| `pnpm wu:claim --id WU-XXX --lane "L" --cloud` | Claim WU in branch-pr mode (no worktree) | Start working (cloud)       |
+| `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                      | Update notes/desc           |
+| `pnpm wu:spawn --id WU-XXX --client X`         | Spawn sub-agent for parallel work        | Complex WUs                 |
+| `pnpm gates`                                   | Run quality gates                        | Before wu:done              |
+| `pnpm gates --docs-only`                       | Run docs-only gates                      | For documentation WUs       |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, cleanup)       | After gates pass            |
+| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr)           | After PR merge (cloud only) |
+| `pnpm wu:recover --id WU-XXX`                  | Fix inconsistent WU state                | When state is broken        |
 
 ---
 
@@ -468,7 +530,7 @@ rm -rf /tmp/nextjs-scaffold
 
 - [LUMENFLOW.md](../../../../../LUMENFLOW.md) - Main workflow documentation
 - [AGENTS.md](../../../../../AGENTS.md) - Universal agent entry point
-- [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 6 non-negotiable rules
+- [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 8 non-negotiable rules
 - [troubleshooting-wu-done.md](troubleshooting-wu-done.md) - Why agents forget wu:done
 - [first-wu-mistakes.md](first-wu-mistakes.md) - Common mistakes to avoid
 - [quick-ref-commands.md](quick-ref-commands.md) - Command reference
