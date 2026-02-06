@@ -911,3 +911,4 @@
 {"type":"claim","wuId":"WU-1384","timestamp":"2026-02-06T14:07:19.616Z","lane":"Framework: Core","title":"Relax spec completeness checks for done/cancelled WUs"}
 {"type":"claim","wuId":"WU-1479","timestamp":"2026-02-06T14:09:56.365Z","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers"}
 {"type":"complete","wuId":"WU-1479","timestamp":"2026-02-06T14:10:07.296Z"}
+{"type":"complete","wuId":"WU-1384","timestamp":"2026-02-06T14:13:14.498Z"}

@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -466,3 +466,4 @@ sections:
 - [WU-1486 — Sync MCP internal and Starlight docs with current tool surface](wu/WU-1486.yaml)
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml)
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml)
+- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml)
