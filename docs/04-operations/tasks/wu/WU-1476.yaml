@@ -1,0 +1,37 @@
+id: WU-1476
+title: Add remove-success-metric support to initiative:edit
+lane: 'Framework: CLI'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/cli/src/initiative-edit.ts
+  - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1476.done
+dependencies: []
+initiative: INIT-015
+spec_refs:
+  - lumenflow://plans/parsed-whistling-blanket.md
+risks: []
+notes: Addresses friction reported during INIT-015 maintenance where duplicate metric could not be removed via CLI.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: initiative:edit supports --add-success-metric but no remove counterpart. Problem: agents cannot correct mistaken or superseded metrics without manual file edits, creating workflow friction and policy violations. Solution: add --remove-success-metric (repeatable) with idempotent behavior and tests covering add/remove interplay.'
+acceptance:
+  - initiative:edit accepts --remove-success-metric <text> as repeatable option.
+  - Removing a metric deletes exact matches from success_metrics and is idempotent when metric is absent.
+  - Combined add/remove in one invocation yields deterministic results (remove applied after add).
+  - Help/usage output documents the new option.
