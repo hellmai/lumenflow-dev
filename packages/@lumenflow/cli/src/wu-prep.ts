@@ -10,12 +10,19 @@
  * (not caused by the current WU), prints a ready-to-copy wu:done --skip-gates
  * command with reason and fix-wu placeholders.
  *
+ * WU-1493: Adds branch-pr mode support. When a WU has claimed_mode: branch-pr,
+ * wu:prep reads the mode before rejecting non-worktree locations, validates that
+ * the current branch matches the expected lane branch, and outputs PR-based
+ * completion next steps on success.
+ *
  * Workflow:
- * 1. Verify we're in a worktree (error if in main checkout)
- * 2. Run gates in the worktree
- * 3. If gates fail, check if failures are pre-existing on main
- * 4. If pre-existing, print skip-gates command; otherwise, print fix guidance
- * 5. On success, print copy-paste instruction for wu:done from main
+ * 1. Read WU YAML to check claimed_mode
+ * 2. For worktree mode: verify we're in a worktree (error if in main checkout)
+ *    For branch-pr mode: verify we're on the correct lane branch
+ * 3. Run gates
+ * 4. If gates fail, check if failures are pre-existing on main
+ * 5. If pre-existing, print skip-gates command; otherwise, print fix guidance
+ * 6. On success, print mode-appropriate next steps
  *
  * Usage:
  *   pnpm wu:prep --id WU-XXX [--docs-only]
@@ -38,7 +45,10 @@ import {
   EXIT_CODES,
   WU_STATUS,
   EMOJI,
+  CLAIMED_MODES,
 } from '@lumenflow/core/dist/wu-constants.js';
+import { defaultBranchFrom } from '@lumenflow/core/dist/wu-done-paths.js';
+import { getCurrentBranch } from '@lumenflow/core/dist/wu-helpers.js';
 import { runGates } from './gates.js';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
@@ -282,6 +292,69 @@ export async function checkPreExistingFailures(options: {
 }
 
 /**
+ * WU-1493: Check if a WU doc uses branch-pr claimed mode.
+ *
+ * @param doc - Partial WU YAML document (needs claimed_mode field)
+ * @returns true if claimed_mode is 'branch-pr'
+ */
+export function isBranchPrMode(doc: { claimed_mode?: string }): boolean {
+  return doc.claimed_mode === CLAIMED_MODES.BRANCH_PR;
+}
+
+/**
+ * WU-1493: Validate that the current git branch matches the expected lane branch
+ * for branch-pr mode.
+ *
+ * @param options - Branch comparison options
+ * @param options.currentBranch - The currently checked-out branch
+ * @param options.expectedBranch - The expected lane branch (e.g., lane/framework-cli/wu-1493)
+ * @returns Validation result with valid flag and optional error message
+ */
+export function validateBranchPrBranch(options: {
+  currentBranch: string;
+  expectedBranch: string;
+}): { valid: boolean; error?: string } {
+  const { currentBranch, expectedBranch } = options;
+  if (currentBranch === expectedBranch) {
+    return { valid: true };
+  }
+  return {
+    valid: false,
+    error:
+      `Current branch '${currentBranch}' does not match expected lane branch '${expectedBranch}'.\n\n` +
+      `Switch to the lane branch first:\n` +
+      `  git checkout ${expectedBranch}`,
+  };
+}
+
+/**
+ * WU-1493: Format success message for branch-pr mode.
+ * Shows PR-based completion next steps instead of wu:done.
+ *
+ * @param options - Message options
+ * @param options.wuId - The WU ID
+ * @param options.laneBranch - The lane branch name
+ * @returns Formatted success message string
+ */
+export function formatBranchPrSuccessMessage(options: {
+  wuId: string;
+  laneBranch: string;
+}): string {
+  const { wuId, laneBranch } = options;
+  return (
+    `${PREP_PREFIX} ${EMOJI.SUCCESS} ${wuId}: Prep completed successfully!\n` +
+    `\n` +
+    `${PREP_PREFIX} Gates passed on branch ${laneBranch}.\n` +
+    `\n` +
+    `${PREP_PREFIX} Next steps for branch-pr mode:\n` +
+    `\n` +
+    `  1. Push the branch:  git push origin ${laneBranch}\n` +
+    `  2. Create a PR:      gh pr create --base main --head ${laneBranch}\n` +
+    `  3. After PR merge:   pnpm wu:cleanup --id ${wuId}\n`
+  );
+}
+
+/**
  * Print success message with copy-paste instruction.
  */
 function printSuccessMessage(wuId: string, mainCheckout: string): void {
@@ -317,27 +390,8 @@ async function main(): Promise<void> {
   // Detect location
   const location = await resolveLocation();
 
-  // WU-1223: wu:prep MUST be run from worktree, not main
-  if (location.type !== LOCATION_TYPES.WORKTREE) {
-    die(
-      `${EMOJI.FAILURE} wu:prep must be run from a worktree, not ${location.type}.\n\n` +
-        `Current location: ${location.cwd}\n\n` +
-        `If you have a worktree for ${id}, navigate to it first:\n` +
-        `  cd worktrees/<lane>-${id.toLowerCase()}\n\n` +
-        `If you don't have a worktree yet, claim the WU first:\n` +
-        `  pnpm wu:claim --id ${id} --lane "<lane>"`,
-    );
-  }
-
-  // Verify the worktree is for the correct WU
-  if (location.worktreeWuId && location.worktreeWuId !== id) {
-    console.warn(
-      `${PREP_PREFIX} ${EMOJI.WARNING} Worktree is for ${location.worktreeWuId}, but you specified ${id}.`,
-    );
-    console.warn(`${PREP_PREFIX} Proceeding with ${id} as specified.`);
-  }
-
-  // Read WU YAML to validate it exists and check status
+  // WU-1493: Read WU YAML early to check claimed_mode BEFORE location rejection.
+  // This allows branch-pr WUs to run from main checkout on the lane branch.
   const wuPath = WU_PATHS.WU(id);
   let doc;
   try {
@@ -349,6 +403,62 @@ async function main(): Promise<void> {
         `  1. Check if WU file exists: ls -la ${wuPath}\n` +
         `  2. Validate YAML syntax: pnpm wu:validate --id ${id}`,
     );
+  }
+
+  const branchPr = isBranchPrMode(doc);
+
+  // WU-1223 + WU-1493: Location validation
+  // For branch-pr mode: allow running from main checkout on the correct lane branch
+  // For worktree mode: must be in a worktree (original behavior)
+  if (branchPr) {
+    // WU-1493: branch-pr mode - validate we're on the correct lane branch
+    const expectedBranch = defaultBranchFrom(doc);
+    const currentBranch = getCurrentBranch();
+
+    if (!expectedBranch) {
+      die(
+        `${EMOJI.FAILURE} Cannot determine lane branch for ${id}.\n\n` +
+          `Check that the WU has a valid lane and id in its YAML spec.`,
+      );
+    }
+
+    if (!currentBranch) {
+      die(
+        `${EMOJI.FAILURE} Cannot determine current git branch.\n\n` +
+          `Ensure you are in a git repository.`,
+      );
+    }
+
+    const branchCheck = validateBranchPrBranch({
+      currentBranch,
+      expectedBranch,
+    });
+
+    if (!branchCheck.valid) {
+      die(`${EMOJI.FAILURE} ${branchCheck.error}`);
+    }
+
+    console.log(`${PREP_PREFIX} branch-pr mode detected for ${id}`);
+  } else {
+    // Original worktree-only behavior
+    if (location.type !== LOCATION_TYPES.WORKTREE) {
+      die(
+        `${EMOJI.FAILURE} wu:prep must be run from a worktree, not ${location.type}.\n\n` +
+          `Current location: ${location.cwd}\n\n` +
+          `If you have a worktree for ${id}, navigate to it first:\n` +
+          `  cd worktrees/<lane>-${id.toLowerCase()}\n\n` +
+          `If you don't have a worktree yet, claim the WU first:\n` +
+          `  pnpm wu:claim --id ${id} --lane "<lane>"`,
+      );
+    }
+
+    // Verify the worktree is for the correct WU
+    if (location.worktreeWuId && location.worktreeWuId !== id) {
+      console.warn(
+        `${PREP_PREFIX} ${EMOJI.WARNING} Worktree is for ${location.worktreeWuId}, but you specified ${id}.`,
+      );
+      console.warn(`${PREP_PREFIX} Proceeding with ${id} as specified.`);
+    }
   }
 
   // Validate WU status is in_progress
@@ -420,8 +530,8 @@ async function main(): Promise<void> {
 
   console.log('');
 
-  // Run gates in the worktree
-  console.log(`${PREP_PREFIX} Running gates in worktree...`);
+  // Run gates
+  console.log(`${PREP_PREFIX} Running gates...`);
   const gatesResult = await runGates({
     cwd: location.cwd,
     docsOnly: args.docsOnly,
@@ -432,17 +542,21 @@ async function main(): Promise<void> {
     // the exit handler above will print the skip-gates command.
     // Otherwise, tell the user to fix the failures.
     if (!hasPreExistingOnly) {
-      die(
-        `${EMOJI.FAILURE} Gates failed in worktree.\n\n` +
-          `Fix the gate failures and run wu:prep again.`,
-      );
+      die(`${EMOJI.FAILURE} Gates failed.\n\n` + `Fix the gate failures and run wu:prep again.`);
     }
     // Pre-existing failures - exit with error, handler will print skip-gates command
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // Success - print copy-paste instruction
-  printSuccessMessage(id, location.mainCheckout);
+  // WU-1493: Success - print mode-appropriate message
+  if (branchPr) {
+    const laneBranch = defaultBranchFrom(doc) ?? '';
+    const message = formatBranchPrSuccessMessage({ wuId: id, laneBranch });
+    console.log('');
+    console.log(message);
+  } else {
+    printSuccessMessage(id, location.mainCheckout);
+  }
 }
 
 // WU-1181: Use import.meta.main instead of process.argv[1] comparison

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as locationResolver from '@lumenflow/core/dist/context/location-resolver.js';
 import * as errorHandler from '@lumenflow/core/dist/error-handler.js';
 import * as wuYaml from '@lumenflow/core/dist/wu-yaml.js';
-import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+import { CONTEXT_VALIDATION, WU_STATUS, CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
 
@@ -166,5 +166,106 @@ describe('wu-prep spec-linter classification (WU-1441)', () => {
     expect(result.hasPreExisting).toBe(false);
     expect(result.hasNewFailures).toBe(true);
     expect(result.newFailures).toEqual(['WU-3']);
+  });
+});
+
+/**
+ * WU-1493: Tests for branch-pr mode support in wu:prep
+ *
+ * Acceptance criteria:
+ * - wu:prep reads claimed_mode before hard worktree rejection
+ * - For branch-pr WUs, wu:prep runs from main checkout on the correct lane branch
+ * - wu:prep validates current branch matches the WU lane branch in branch-pr mode
+ * - Success output for branch-pr shows PR-based completion next step
+ */
+describe('wu-prep branch-pr mode (WU-1493)', () => {
+  describe('isBranchPrMode', () => {
+    it('should return true for claimed_mode: branch-pr', async () => {
+      const { isBranchPrMode } = await import('../wu-prep.js');
+      const doc = { claimed_mode: CLAIMED_MODES.BRANCH_PR };
+      expect(isBranchPrMode(doc)).toBe(true);
+    });
+
+    it('should return false for claimed_mode: worktree', async () => {
+      const { isBranchPrMode } = await import('../wu-prep.js');
+      const doc = { claimed_mode: CLAIMED_MODES.WORKTREE };
+      expect(isBranchPrMode(doc)).toBe(false);
+    });
+
+    it('should return false when claimed_mode is missing', async () => {
+      const { isBranchPrMode } = await import('../wu-prep.js');
+      const doc = {};
+      expect(isBranchPrMode(doc)).toBe(false);
+    });
+
+    it('should return false for claimed_mode: branch-only', async () => {
+      const { isBranchPrMode } = await import('../wu-prep.js');
+      const doc = { claimed_mode: CLAIMED_MODES.BRANCH_ONLY };
+      expect(isBranchPrMode(doc)).toBe(false);
+    });
+  });
+
+  describe('validateBranchPrBranch', () => {
+    it('should return valid when current branch matches expected lane branch', async () => {
+      const { validateBranchPrBranch } = await import('../wu-prep.js');
+      const result = validateBranchPrBranch({
+        currentBranch: 'lane/framework-cli/wu-1493',
+        expectedBranch: 'lane/framework-cli/wu-1493',
+      });
+      expect(result.valid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should return invalid when current branch does not match expected', async () => {
+      const { validateBranchPrBranch } = await import('../wu-prep.js');
+      const result = validateBranchPrBranch({
+        currentBranch: 'main',
+        expectedBranch: 'lane/framework-cli/wu-1493',
+      });
+      expect(result.valid).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(result.error).toContain('lane/framework-cli/wu-1493');
+    });
+
+    it('should include the current branch name in error message', async () => {
+      const { validateBranchPrBranch } = await import('../wu-prep.js');
+      const result = validateBranchPrBranch({
+        currentBranch: 'some-other-branch',
+        expectedBranch: 'lane/framework-cli/wu-1493',
+      });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('some-other-branch');
+    });
+  });
+
+  describe('formatBranchPrSuccessMessage', () => {
+    it('should include PR-based next step in success output', async () => {
+      const { formatBranchPrSuccessMessage } = await import('../wu-prep.js');
+      const message = formatBranchPrSuccessMessage({
+        wuId: 'WU-1493',
+        laneBranch: 'lane/framework-cli/wu-1493',
+      });
+      // Should mention creating a PR
+      expect(message).toContain('PR');
+      expect(message).toContain('WU-1493');
+    });
+
+    it('should include the lane branch name', async () => {
+      const { formatBranchPrSuccessMessage } = await import('../wu-prep.js');
+      const message = formatBranchPrSuccessMessage({
+        wuId: 'WU-1493',
+        laneBranch: 'lane/framework-cli/wu-1493',
+      });
+      expect(message).toContain('lane/framework-cli/wu-1493');
+    });
+
+    it('should include wu:cleanup as the post-merge step', async () => {
+      const { formatBranchPrSuccessMessage } = await import('../wu-prep.js');
+      const message = formatBranchPrSuccessMessage({
+        wuId: 'WU-1493',
+        laneBranch: 'lane/framework-cli/wu-1493',
+      });
+      expect(message).toContain('wu:cleanup');
+    });
   });
 });
