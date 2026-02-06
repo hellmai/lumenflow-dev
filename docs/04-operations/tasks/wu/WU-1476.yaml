@@ -2,7 +2,7 @@ id: WU-1476
 title: Add remove-success-metric support to initiative:edit
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -10,9 +10,13 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
 tests:
   manual:
-    - Run `pnpm initiative:edit --id INIT-015 --remove-success-metric "Recovery context includes recent checkpoint data for active WUs"` and verify the matching metric is removed.
-    - Run the same command a second time and verify command succeeds with no additional changes (idempotent).
-    - Run `pnpm initiative:edit --id INIT-015 --add-success-metric "temp metric" --remove-success-metric "temp metric"` and verify final `success_metrics` has no `temp metric` entry.
+    - Run `pnpm initiative:edit --id INIT-015 --remove-success-metric "Recovery context includes
+      recent checkpoint data for active WUs"` and verify the matching metric is removed.
+    - Run the same command a second time and verify command succeeds with no additional changes
+      (idempotent).
+    - Run `pnpm initiative:edit --id INIT-015 --add-success-metric "temp metric"
+      --remove-success-metric "temp metric"` and verify final `success_metrics` has no `temp metric`
+      entry.
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
   e2e: []
@@ -51,3 +55,5 @@ session_id: 4452fad7-6a7d-4831-81bc-adf6787c1cf8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T11:13:33.337Z
+locked: true
+completed_at: 2026-02-06T11:18:22.135Z
