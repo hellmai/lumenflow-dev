@@ -20,10 +20,10 @@ artifacts:
   - .lumenflow/stamps/WU-1480.done
 dependencies: []
 spec_refs:
-  - lumenflow://plans/WU-XXXX-plan.md
   - lumenflow://plans/WU-1480-plan.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: Created after WU-1478 to reduce worktree friction for dist-backed CLI commands; targets
+  one-command dependency-closure bootstrap + docs update.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -32,8 +32,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: dist-backed CLI commands like lane:health fail in fresh worktrees when only @lumenflow/cli is built. Problem: agents hit missing dist dependencies and lose flow. Solution: add a one-command bootstrap path that builds @lumenflow/cli with dependency closure and document it as the standard preflight for dist-backed commands.'
+description: 'Context: dist-backed CLI commands like lane:health fail in fresh worktrees when only
+  @lumenflow/cli is built. Problem: agents hit missing dist dependencies and lose flow. Solution:
+  add a one-command bootstrap path that builds @lumenflow/cli with dependency closure and document
+  it as the standard preflight for dist-backed commands.'
 acceptance:
   - Root script exists to build @lumenflow/cli plus dependency closure in one command.
-  - On a fresh worktree, running bootstrap then lane:health succeeds without manual package-by-package builds.
+  - On a fresh worktree, running bootstrap then lane:health succeeds without manual
+    package-by-package builds.
   - Internal docs describe the pattern, rationale, and recommended command sequence for agents.
