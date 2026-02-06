@@ -1,7 +1,7 @@
 id: WU-1469
 title: Align MCP and publish docs with current tool count and auth model
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-05
@@ -27,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T08:35:27.520Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1469
+session_id: 9d137490-803c-4f7e-a7e5-d967b7f0fd23
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T08:35:27.524Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +51,3 @@ acceptance:
   - public docs and framework docs agree on MCP tool count and usage patterns
   - publish workflow docs accurately reflect NPM_TOKEN based auth model
   - Documentation links and references resolve to current files
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1469
-claimed_at: 2026-02-06T08:35:27.520Z
-baseline_main_sha: 9a7a9839b943c67c3f499ccf8f59e894fe42fc5c
-session_id: 9d137490-803c-4f7e-a7e5-d967b7f0fd23
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T08:35:27.524Z
