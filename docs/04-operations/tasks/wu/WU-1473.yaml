@@ -2,7 +2,7 @@ id: WU-1473
 title: CLI wiring for orchestrator recovery and signal consumption
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -35,9 +35,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: memory enforcement needs CLI lifecycle touchpoints after core hook and signal integrity work lands. Problem: orchestrator recovery and signal consumption are inconsistent across non-worktree and completion paths. Solution: wire unread signal surfacing and read-marking into claim/done flows and extend orchestrator recovery behavior in CLI hook generation.'
+description: 'Context: memory enforcement needs CLI lifecycle touchpoints after core hook and signal
+  integrity work lands. Problem: orchestrator recovery and signal consumption are inconsistent
+  across non-worktree and completion paths. Solution: wire unread signal surfacing and read-marking
+  into claim/done flows and extend orchestrator recovery behavior in CLI hook generation.'
 acceptance:
-  - Pre-compact/session-start recovery supports non-worktree orchestrator context without breaking existing worktree behavior.
+  - Pre-compact/session-start recovery supports non-worktree orchestrator context without breaking
+    existing worktree behavior.
   - Claim/start surfaces unread signal summary so agents can consume pending coordination messages.
   - wu:done marks completed-WU signals as read using receipt-aware behavior from WU-1472.
-  - CLI integrations remain fail-open and do not block primary WU lifecycle commands on memory errors.
+  - CLI integrations remain fail-open and do not block primary WU lifecycle commands on memory
+    errors.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1473
+claimed_at: 2026-02-06T11:49:01.837Z
+baseline_main_sha: 4f7abad874b56c09afde1d36f4ad4afc11d282b2
+session_id: 7ca96176-0172-4b64-be1a-3745e338be6e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:49:01.843Z
