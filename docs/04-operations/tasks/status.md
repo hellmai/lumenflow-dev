@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml)
+- [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml)
 
 ## Blocked
 
