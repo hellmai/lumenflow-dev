@@ -10,9 +10,13 @@ code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
+  - packages/@lumenflow/cli/src/hooks/auto-checkpoint-utils.ts
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
-  manual: []
+  manual:
+    - Verify pnpm lumenflow:integrate generates auto-checkpoint.sh in .claude/hooks/ when memory.enforcement.auto_checkpoint.enabled=true
+    - Verify wu:done warns (not blocks) when require_checkpoint_for_done=warn and no checkpoints exist
+    - Verify wu:done blocks when require_checkpoint_for_done=block and no checkpoints exist
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
     - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
