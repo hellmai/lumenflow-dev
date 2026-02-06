@@ -38,6 +38,7 @@ import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { generateWuIdWithRetry } from '@lumenflow/core/dist/wu-id-generator.js';
 import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
 import { execFileSync } from 'node:child_process';
+import { validateWuProtoCliArgs } from './shared-validators.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:proto]';
@@ -81,19 +82,18 @@ export function validateProtoSpec({
   title: string;
   opts?: ProtoWUOptions;
 }): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!lane || lane.trim() === '') {
-    errors.push('--lane is required');
-  }
-
-  if (!title || title.trim() === '') {
-    errors.push('--title is required');
-  }
+  const validation = validateWuProtoCliArgs({
+    lane,
+    title,
+    description: _opts.description,
+    codePaths: _opts.codePaths,
+    labels: _opts.labels,
+    assignedTo: _opts.assignedTo,
+  });
 
   return {
-    valid: errors.length === 0,
-    errors,
+    valid: validation.valid,
+    errors: validation.errors,
   };
 }
 

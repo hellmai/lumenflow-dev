@@ -51,6 +51,7 @@ import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-
 import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { runCLI } from './cli-entry-point.js';
+import { validateInitiativeEditCliArgs } from './shared-validators.js';
 
 const PREFIX = INIT_LOG_PREFIX.EDIT;
 
@@ -185,6 +186,10 @@ function parseArgs() {
   }
 
   return opts;
+}
+
+export function validateEditArgs(opts) {
+  return validateInitiativeEditCliArgs(opts);
 }
 
 /**
@@ -470,6 +475,11 @@ async function main() {
   const { id } = opts;
 
   console.log(`${PREFIX} Starting Initiative edit for ${id}`);
+
+  const validation = validateEditArgs(opts);
+  if (!validation.valid) {
+    die(`Invalid initiative:edit arguments:\n  - ${validation.errors.join('\n  - ')}`);
+  }
 
   // Validate inputs
   validateInitIdFormat(id);
