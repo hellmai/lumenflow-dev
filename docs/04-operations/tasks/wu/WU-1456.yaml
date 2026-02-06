@@ -2,7 +2,7 @@ id: WU-1456
 title: 'Shared Schemas: Memory commands'
 lane: 'Framework: Core'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - memory-schemas.ts covers 13 memory commands
   - MCP tools consume shared schemas
   - CLI commands use shared validators
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1456
+claimed_at: 2026-02-06T10:19:24.598Z
+baseline_main_sha: 5226c2ac35a65c439522a6b374a1f050d433bda3
+session_id: bc4bd132-9878-4e0c-a1f6-867920bbed6c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T10:19:24.602Z

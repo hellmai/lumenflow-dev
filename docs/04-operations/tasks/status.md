@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml)
 
 ## Blocked
 

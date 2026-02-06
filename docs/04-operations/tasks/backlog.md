@@ -22,13 +22,12 @@ sections:
 
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
-- [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — Framework: Core
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — Framework: Core
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
