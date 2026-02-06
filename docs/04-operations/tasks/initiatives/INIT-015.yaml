@@ -23,7 +23,6 @@ phases:
 success_metrics:
   - Checkpoint entries are created automatically in active WU sessions when enforcement is enabled
   - Signal read-marking remains correct under concurrent agents (no lost updates)
-  - INIT-015 recovery context includes recent checkpoint data for active WUs
   - Decay archival reduces stale memory accumulation when enabled
   - Recovery context includes recent checkpoint data for active WUs
 labels: []
