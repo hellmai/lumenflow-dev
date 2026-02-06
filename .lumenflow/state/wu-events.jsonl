@@ -927,3 +927,4 @@
 {"type":"complete","wuId":"WU-1493","timestamp":"2026-02-06T19:07:11.679Z"}
 {"type":"complete","wuId":"WU-1494","timestamp":"2026-02-06T19:27:57.173Z"}
 {"type":"claim","wuId":"WU-1495","lane":"Framework: Core","title":"Add config-driven cloud auto-detection core","timestamp":"2026-02-06T19:30:51.459Z"}
+{"type":"claim","wuId":"WU-1499","lane":"Framework: CLI","title":"Neutralize lane default bias in init WU template","timestamp":"2026-02-06T19:31:43.627Z"}

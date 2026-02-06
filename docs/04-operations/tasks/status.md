@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml)
+- [WU-1499 — Neutralize lane default bias in init WU template](wu/WU-1499.yaml)
 
 ## Blocked
 
