@@ -71,14 +71,10 @@ describe('tsconfig inheritance policy', () => {
 
       it('has strictNullChecks enabled or is in deferred list with follow-up', () => {
         const config = readTsconfig(tsconfigPath);
-        const compilerOptions = (config['compilerOptions'] ?? {}) as Record<
-          string,
-          unknown
-        >;
+        const compilerOptions = (config['compilerOptions'] ?? {}) as Record<string, unknown>;
 
         const isDeferred = pkg in STRICT_NULL_DEFERRED;
-        const hasStrictNullChecksDisabled =
-          compilerOptions['strictNullChecks'] === false;
+        const hasStrictNullChecksDisabled = compilerOptions['strictNullChecks'] === false;
 
         if (hasStrictNullChecksDisabled) {
           // If strictNullChecks is explicitly false, it must be in the deferred list
@@ -97,10 +93,7 @@ describe('tsconfig inheritance policy', () => {
 
       it('does not silently disable strictness without explicit override', () => {
         const config = readTsconfig(tsconfigPath);
-        const compilerOptions = (config['compilerOptions'] ?? {}) as Record<
-          string,
-          unknown
-        >;
+        const compilerOptions = (config['compilerOptions'] ?? {}) as Record<string, unknown>;
 
         // If strict is explicitly false, strictNullChecks must be explicitly set
         // (either true or false with deferred justification) -- not left undefined
