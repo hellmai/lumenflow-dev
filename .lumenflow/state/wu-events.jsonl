@@ -921,3 +921,4 @@
 {"type":"claim","wuId":"WU-1491","timestamp":"2026-02-06T18:49:18.134Z","lane":"Framework: CLI","title":"Add wu:claim cloud mode and branch-pr mode resolution"}
 {"type":"claim","wuId":"WU-1492","timestamp":"2026-02-06T18:50:27.167Z","lane":"Framework: Core","title":"Add wu:done branch-pr completion path"}
 {"type":"complete","wuId":"WU-1491","timestamp":"2026-02-06T18:58:32.240Z"}
+{"type":"complete","wuId":"WU-1492","timestamp":"2026-02-06T19:00:58.378Z"}
