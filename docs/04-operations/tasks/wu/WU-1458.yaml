@@ -1,8 +1,8 @@
 id: WU-1458
 title: MCP/CLI parity enforcement
-lane: 'Framework: Core'
+lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-05
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - schema-parity.test.ts covers all shared schema modules
   - New test verifies MCP flags exist in CLI help output
   - Adding unsupported flag to MCP fails tests
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1458
+claimed_at: 2026-02-06T11:03:26.756Z
+baseline_main_sha: ee60a1b9f7da0bb37ff77230ec2ce80dfe8b03ec
+session_id: a4492dd7-4ab8-456f-8ad9-c80175c78286
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T11:03:26.761Z
