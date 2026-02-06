@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml)
 
 ## Blocked
 
