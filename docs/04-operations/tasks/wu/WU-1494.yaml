@@ -2,7 +2,7 @@ id: WU-1494
 title: Fix --pr-draft parser/help parity for wu:done
 lane: 'Framework: Core'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-06
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
 tests:
   manual:
-    - Run pnpm wu:done --id WU-XXXX --create-pr --pr-draft and verify option is accepted and draft PR path is used.
+    - Run pnpm wu:done --id WU-XXXX --create-pr --pr-draft and verify option is accepted and draft
+      PR path is used.
   unit:
     - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
@@ -34,8 +35,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done help advertises --pr-draft but parser currently rejects it. Problem: PR draft mode is documented but unusable via CLI parser. Solution: add --pr-draft parsing and tests so behavior matches help text when used with --create-pr.'
+description: 'Context: wu:done help advertises --pr-draft but parser currently rejects it. Problem:
+  PR draft mode is documented but unusable via CLI parser. Solution: add --pr-draft parsing and
+  tests so behavior matches help text when used with --create-pr.'
 acceptance:
   - --pr-draft is accepted by arg parser for wu:done.
   - --pr-draft is honored when creating PRs with --create-pr.
   - wu:done help text and parser behavior are aligned.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1494
+claimed_at: 2026-02-06T19:04:55.467Z
+baseline_main_sha: 7b12760430a232cabd07f08a77255af079999020
+session_id: 7c4ec118-e3ac-4453-859a-2c3736b1cee3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T19:04:55.473Z
