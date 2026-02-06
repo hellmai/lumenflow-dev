@@ -1,12 +1,29 @@
 id: INIT-015
 slug: memory-enforcement-rollout
 title: Enforceable Memory Layer Rollout
-description: ''
-status: draft
+description: Rollout configurable, enforceable memory behavior across checkpointing, signal
+  integrity, recovery, and decay, with vendor-agnostic policy and client-specific hook wiring.
+status: open
 priority: P1
 owner: workflow
 created: 2026-02-06
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'WU-A: Auto-checkpoint enforcement + wu:done gate'
+    status: pending
+  - id: 2
+    title: 'WU-B: Append-only signal receipts and race fix'
+    status: pending
+  - id: 3
+    title: 'WU-D: Orchestrator recovery + signal consumption touchpoints'
+    status: pending
+  - id: 4
+    title: 'WU-C: Decay activation in completion lifecycle'
+    status: pending
+success_metrics:
+  - Checkpoint entries are created automatically in active WU sessions when enforcement is enabled
+  - Signal read-marking remains correct under concurrent agents (no lost updates)
+  - INIT-015 recovery context includes recent checkpoint data for active WUs
+  - Decay archival reduces stale memory accumulation when enabled
 labels: []
 related_plan: lumenflow://plans/parsed-whistling-blanket.md
