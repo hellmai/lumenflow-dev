@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import * as fs from 'node:fs';
 
 import {
   applyArrayEdits,
@@ -10,6 +11,31 @@ import {
 const METRIC_ONE = 'Metric one';
 const METRIC_TWO = 'Metric two';
 const NEW_METRIC = 'New metric';
+
+describe('initiative:edit requireRemote:false support (WU-1497)', () => {
+  it('should not call ensureMainUpToDate directly (micro-worktree handles origin sync)', () => {
+    // Read the source file to verify it does not call ensureMainUpToDate
+    // This is a structural test: initiative-edit must not perform its own origin fetch
+    // because withMicroWorktree already handles requireRemote-aware origin sync
+    const sourceFile = fs.readFileSync(new URL('../initiative-edit.ts', import.meta.url), 'utf-8');
+
+    // The source should NOT contain a function call to ensureMainUpToDate
+    // (comments mentioning it are fine; only actual await/call invocations are the bug)
+    const mainFunctionMatch = sourceFile.match(/async function main\(\)[\s\S]*?^}/m);
+    expect(mainFunctionMatch).not.toBeNull();
+    const mainBody = mainFunctionMatch![0];
+
+    // Match actual function calls: await ensureMainUpToDate( or ensureMainUpToDate(
+    expect(mainBody).not.toMatch(/(?:await\s+)?ensureMainUpToDate\s*\(/);
+  });
+
+  it('should not import ensureMainUpToDate from wu-helpers', () => {
+    const sourceFile = fs.readFileSync(new URL('../initiative-edit.ts', import.meta.url), 'utf-8');
+
+    // Should not import ensureMainUpToDate at all (clean imports)
+    expect(sourceFile).not.toMatch(/import.*ensureMainUpToDate.*from/);
+  });
+});
 
 describe('initiative:edit success metric editing', () => {
   it('removes exact success metric matches', () => {

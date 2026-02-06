@@ -48,7 +48,7 @@ import {
   INIT_COMMIT_FORMATS,
 } from '@lumenflow/initiatives/dist/initiative-constants.js';
 import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
+import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { runCLI } from './cli-entry-point.js';
 import { validateInitiativeEditCliArgs } from './shared-validators.js';
@@ -516,9 +516,10 @@ async function main() {
   const updatedInit = applyEdits(originalInit, opts);
 
   // Pre-flight checks for micro-worktree mode
+  // WU-1497: Removed ensureMainUpToDate - withMicroWorktree already handles
+  // origin sync and respects git.requireRemote=false (local-only mode)
   await ensureOnMain(getGitForCwd());
   await ensureCleanWorkingTree();
-  await ensureMainUpToDate(getGitForCwd(), 'initiative:edit');
 
   console.log(`${PREFIX} Applying edits via micro-worktree...`);
 
