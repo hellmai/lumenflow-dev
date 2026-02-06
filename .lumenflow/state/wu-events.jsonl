@@ -883,3 +883,4 @@
 {"type":"claim","wuId":"WU-1478","timestamp":"2026-02-06T11:36:12.714Z","lane":"Operations: Infrastructure","title":"Restructure lane taxonomy for parallel CLI/Core work"}
 {"type":"claim","wuId":"WU-1479","timestamp":"2026-02-06T11:36:46.851Z","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers"}
 {"type":"complete","wuId":"WU-1472","timestamp":"2026-02-06T11:38:08.798Z"}
+{"type":"complete","wuId":"WU-1471","timestamp":"2026-02-06T11:43:52.877Z"}
