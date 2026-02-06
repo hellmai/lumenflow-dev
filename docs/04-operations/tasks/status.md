@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml)
+- [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml)
 
 ## Blocked
 

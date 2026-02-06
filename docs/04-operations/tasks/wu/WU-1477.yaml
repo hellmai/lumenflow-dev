@@ -2,7 +2,7 @@ id: WU-1477
 title: Document INIT-015 memory enforcement features (internal + Starlight)
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - apps/docs/src/content/docs/reference/cli.mdx updated with new and changed CLI commands
   - apps/docs/src/content/docs/guides/ai-integrations.mdx updated with PostToolUse and SubagentStop
     hook wiring
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1477
+claimed_at: 2026-02-06T12:55:41.699Z
+baseline_main_sha: 2f7747a39080138629d2a6ed6da7e3d1182b0469
+session_id: 6a9b9b5c-07c4-426d-b912-f74538682efc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:55:41.704Z

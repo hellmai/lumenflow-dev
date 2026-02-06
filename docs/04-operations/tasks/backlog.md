@@ -23,11 +23,11 @@ sections:
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — Framework: Core
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — Framework: Core
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
-- [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — Content: Documentation
 
 ## 🔧 In progress
 
 - [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — Framework: CLI
+- [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
