@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — Framework: CLI
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml) — Framework: CLI
 - [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml) — Framework: Memory
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml) — Framework: CLI
