@@ -33,11 +33,15 @@ phases:
   - id: 8
     title: MCP parity audit + regression tests
     status: in_progress
+  - id: 9
+    title: MCP parity remediation and closure
+    status: pending
 success_metrics:
   - 90 MCP tools available (100% public CLI parity per public-manifest.ts)
   - All tools documented on lumenflow.dev/reference/mcp
   - MCP setup guide published
   - Public CLI manifest (packages/@lumenflow/cli/src/public-manifest.ts) is source of truth
+  - Manifest-to-MCP normalized command parity remains at 100% under automated tests
 labels: []
 wus:
   - WU-1434
@@ -56,3 +60,6 @@ wus:
   - WU-1457
   - WU-1458
   - WU-1460
+lanes:
+  - 'Framework: MCP'
+  - 'Framework: CLI'
