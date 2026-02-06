@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -446,3 +446,4 @@ _Last updated: 2026-02-06_
 - [WU-1486 — Sync MCP internal and Starlight docs with current tool surface](wu/WU-1486.yaml) — 2026-02-06
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — 2026-02-06
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml) — 2026-02-06
+- [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml) — 2026-02-06

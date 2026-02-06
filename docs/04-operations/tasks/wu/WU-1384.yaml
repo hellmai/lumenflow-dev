@@ -2,7 +2,7 @@ id: WU-1384
 title: Relax spec completeness checks for done/cancelled WUs
 lane: 'Framework: Core'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-03
 code_paths:
@@ -48,3 +48,5 @@ session_id: d884ca41-30bb-4de0-9d0b-c61bb266ffe1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T14:07:19.583Z
+locked: true
+completed_at: 2026-02-06T14:13:11.928Z
