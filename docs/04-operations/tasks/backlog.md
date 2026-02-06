@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -454,3 +454,4 @@ sections:
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml)
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml)
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml)
+- [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml)
