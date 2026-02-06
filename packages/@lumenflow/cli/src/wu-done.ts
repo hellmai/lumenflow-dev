@@ -163,6 +163,8 @@ import { runAutoCleanupAfterDone } from './wu-done-auto-cleanup.js';
 import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
 // WU-1473: Mark completed-WU signals as read using receipt-aware behavior
 import { markCompletedWUSignalsAsRead } from './hooks/enforcement-generator.js';
+// WU-1474: Decay policy invocation during completion lifecycle
+import { runDecayOnDone } from './wu-done-decay.js';
 
 // WU-1588: Memory layer constants
 const MEMORY_SIGNAL_TYPES = {
@@ -2747,6 +2749,27 @@ async function main() {
   // WU-1471 AC4: Remove per-WU hook counter file on completion
   // Fail-safe: cleanupHookCounters never throws
   cleanupHookCounters(mainCheckoutPath, id);
+
+  // WU-1474: Invoke decay archival when memory.decay policy is configured
+  // Non-blocking: errors are captured but never block wu:done completion (fail-open)
+  try {
+    const decayConfig = getConfig().memory?.decay;
+    const decayResult = await runDecayOnDone(mainCheckoutPath, decayConfig);
+    if (decayResult.ran && decayResult.archivedCount > 0) {
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Decay archival: ${decayResult.archivedCount} stale memory node(s) archived`,
+      );
+    } else if (decayResult.error) {
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Decay archival skipped (fail-open): ${decayResult.error}`,
+      );
+    }
+  } catch (err) {
+    // Double fail-open: even if runDecayOnDone itself throws unexpectedly, never block wu:done
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Decay archival error (fail-open): ${err.message}`,
+    );
+  }
 
   console.log(
     `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction COMMIT - all steps succeeded (WU-755)`,

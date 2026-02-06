@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Memory Cleanup CLI (WU-1472, WU-1554)
+ * Memory Cleanup CLI (WU-1472, WU-1554, WU-1474)
  *
  * Prune closed memory nodes based on lifecycle policy and TTL.
  * Implements compaction to prevent memory bloat.
@@ -14,6 +14,7 @@
  * - Report compaction metrics (ratio, bytes freed)
  * - WU-1554: TTL-based expiration (e.g., --ttl 30d)
  * - WU-1554: Active session protection (never removed)
+ * - WU-1474: Decay-based archival (archive nodes below decay threshold)
  *
  * Usage:
  *   pnpm mem:cleanup                          # Cleanup based on lifecycle policy
@@ -21,6 +22,8 @@
  *   pnpm mem:cleanup --ttl 30d                # Remove nodes older than 30 days
  *   pnpm mem:cleanup --ttl 7d --dry-run       # Preview TTL cleanup
  *   pnpm mem:cleanup --session-id <uuid>      # Close specific session
+ *   pnpm mem:cleanup --decay                  # Run decay-based archival
+ *   pnpm mem:cleanup --decay --dry-run        # Preview decay archival
  *   pnpm mem:cleanup --json                   # Output as JSON
  *
  * @see {@link packages/@lumenflow/cli/src/lib/mem-cleanup-core.ts} - Core logic
@@ -30,6 +33,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
+// WU-1474: Import decay archival for manual --decay mode
+import { archiveByDecay } from '@lumenflow/memory/dist/decay/archival.js';
+import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
 
@@ -82,6 +88,12 @@ const CLI_OPTIONS = {
     name: 'baseDir',
     flags: '-b, --base-dir <path>',
     description: 'Base directory (defaults to current directory)',
+  },
+  decay: {
+    name: 'decay',
+    flags: '--decay',
+    description:
+      'Run decay-based archival (archive stale nodes below threshold). Uses config from .lumenflow.config.yaml or defaults.',
   },
 };
 
@@ -146,6 +158,7 @@ function parseArguments() {
       CLI_OPTIONS.json,
       CLI_OPTIONS.quiet,
       CLI_OPTIONS.baseDir,
+      CLI_OPTIONS.decay,
     ],
     required: [],
     allowPositionalId: false,
@@ -219,11 +232,130 @@ function printResult(result, quiet, ttl) {
 }
 
 /**
+ * WU-1474: Milliseconds per day for converting half_life_days to halfLifeMs
+ */
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * WU-1474: Memory directory path relative to base
+ */
+const MEMORY_DIR = '.lumenflow/memory';
+
+/**
+ * WU-1474: Print decay archival result to console
+ *
+ * @param {object} decayResult - Result from archiveByDecay
+ * @param {boolean} quiet - Suppress verbose output
+ */
+function printDecayResult(decayResult, quiet) {
+  if (decayResult.dryRun) {
+    console.log(
+      `${LOG_PREFIX} Dry-run: Would archive ${decayResult.archivedIds.length} node(s) by decay`,
+    );
+  } else {
+    console.log(`${LOG_PREFIX} Decay archival complete`);
+  }
+
+  if (quiet) {
+    console.log(
+      `${decayResult.archivedIds.length} archived, ${decayResult.retainedIds.length} retained, ${decayResult.skippedIds.length} skipped`,
+    );
+    return;
+  }
+
+  console.log('');
+  console.log('Decay Summary:');
+  console.log(`  Archived:         ${decayResult.archivedIds.length} node(s)`);
+  console.log(`  Retained:         ${decayResult.retainedIds.length} node(s)`);
+  console.log(`  Skipped:          ${decayResult.skippedIds.length} node(s)`);
+  console.log(`  Total Processed:  ${decayResult.totalProcessed} node(s)`);
+
+  if (decayResult.dryRun) {
+    console.log('');
+    console.log('To execute, run without --dry-run');
+  }
+}
+
+/**
+ * WU-1474: Run decay-based archival mode
+ *
+ * @param {string} baseDir - Base directory
+ * @param {boolean} dryRun - Preview without changes
+ * @param {boolean} json - Output as JSON
+ * @param {boolean} quiet - Suppress verbose output
+ */
+async function runDecayMode(baseDir, dryRun, json, quiet) {
+  const startedAt = new Date().toISOString();
+  const startTime = Date.now();
+
+  let decayResult = null;
+  let error = null;
+
+  try {
+    // Read config for threshold and half_life_days; fall back to defaults
+    const config = getConfig();
+    const decayConfig = config.memory?.decay;
+    const threshold = decayConfig?.threshold ?? 0.1;
+    const halfLifeDays = decayConfig?.half_life_days ?? 30;
+    const halfLifeMs = halfLifeDays * MS_PER_DAY;
+
+    const memoryDir = path.join(baseDir, MEMORY_DIR);
+    decayResult = await archiveByDecay(memoryDir, {
+      threshold,
+      halfLifeMs,
+      dryRun: dryRun || false,
+    });
+  } catch (err) {
+    error = err.message;
+  }
+
+  const durationMs = Date.now() - startTime;
+
+  await writeAuditLog(baseDir, {
+    tool: TOOL_NAME,
+    status: error ? 'failed' : 'success',
+    startedAt,
+    completedAt: new Date().toISOString(),
+    durationMs,
+    input: { baseDir, dryRun, mode: 'decay' },
+    output: decayResult
+      ? {
+          archivedCount: decayResult.archivedIds.length,
+          retainedCount: decayResult.retainedIds.length,
+          skippedCount: decayResult.skippedIds.length,
+          totalProcessed: decayResult.totalProcessed,
+          dryRun: decayResult.dryRun,
+        }
+      : null,
+    error: error ? { message: error } : null,
+  });
+
+  if (error) {
+    console.error(`${LOG_PREFIX} Error: ${error}`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  if (json) {
+    console.log(JSON.stringify(decayResult, null, 2));
+    process.exit(EXIT_CODES.SUCCESS);
+  }
+
+  printDecayResult(decayResult, quiet);
+}
+
+/**
  * Main CLI entry point
  */
 async function main() {
   const args = parseArguments();
   const baseDir = args.baseDir || process.cwd();
+
+  // WU-1474: Decay mode - separate execution path
+  if (args.decay) {
+    await runDecayMode(baseDir, args.dryRun, args.json, args.quiet);
+    return;
+  }
+
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 
