@@ -2,7 +2,7 @@ id: WU-1499
 title: Neutralize lane default bias in init WU template
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -48,3 +48,5 @@ session_id: cbf65a81-b588-456d-b19a-f424a9e1ebef
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T19:31:43.593Z
+locked: true
+completed_at: 2026-02-06T19:34:28.056Z

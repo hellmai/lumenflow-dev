@@ -27,7 +27,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — Framework: Core
-- [WU-1499 — Neutralize lane default bias in init WU template](wu/WU-1499.yaml) — Framework: CLI
 
 ## ⛔ Blocked
 
@@ -477,3 +476,4 @@ sections:
 - [WU-1492 — Add wu:done branch-pr completion path](wu/WU-1492.yaml)
 - [WU-1493 — Add wu:prep support for branch-pr mode](wu/WU-1493.yaml)
 - [WU-1494 — Fix --pr-draft parser/help parity for wu:done](wu/WU-1494.yaml)
+- [WU-1499 — Neutralize lane default bias in init WU template](wu/WU-1499.yaml)

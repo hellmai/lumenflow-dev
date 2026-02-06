@@ -926,5 +926,6 @@
 {"type":"claim","wuId":"WU-1494","timestamp":"2026-02-06T19:04:55.486Z","lane":"Framework: Core","title":"Fix --pr-draft parser/help parity for wu:done"}
 {"type":"complete","wuId":"WU-1493","timestamp":"2026-02-06T19:07:11.679Z"}
 {"type":"complete","wuId":"WU-1494","timestamp":"2026-02-06T19:27:57.173Z"}
-{"type":"claim","wuId":"WU-1495","lane":"Framework: Core","title":"Add config-driven cloud auto-detection core","timestamp":"2026-02-06T19:30:51.459Z"}
-{"type":"claim","wuId":"WU-1499","lane":"Framework: CLI","title":"Neutralize lane default bias in init WU template","timestamp":"2026-02-06T19:31:43.627Z"}
+{"type":"claim","wuId":"WU-1495","timestamp":"2026-02-06T19:30:51.459Z","lane":"Framework: Core","title":"Add config-driven cloud auto-detection core"}
+{"type":"claim","wuId":"WU-1499","timestamp":"2026-02-06T19:31:43.627Z","lane":"Framework: CLI","title":"Neutralize lane default bias in init WU template"}
+{"type":"complete","wuId":"WU-1499","timestamp":"2026-02-06T19:34:30.684Z"}
