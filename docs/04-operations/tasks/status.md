@@ -4,7 +4,7 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1453 — MCP: Add real CLI integration tests](wu/WU-1453.yaml)
 
 ## Blocked
 
