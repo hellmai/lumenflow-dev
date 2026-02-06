@@ -2,7 +2,7 @@ id: WU-1452
 title: 'MCP: Fix CLI/MCP JSON flag mismatches'
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-05
 code_paths:
@@ -60,3 +60,5 @@ session_id: 4a7a402e-27b1-4358-ab69-43028cd75260
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-06T09:11:41.295Z
+locked: true
+completed_at: 2026-02-06T09:18:07.156Z
