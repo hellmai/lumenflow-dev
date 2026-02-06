@@ -4,7 +4,6 @@ _Last updated: 2026-02-06_
 
 ## In Progress
 
-- [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml)
 - [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml)
 
 ## Blocked
@@ -429,3 +428,4 @@ _Last updated: 2026-02-06_
 - [WU-1455 — Shared Schemas: Initiative commands](wu/WU-1455.yaml) — 2026-02-06
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — 2026-02-06
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — 2026-02-06
+- [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — 2026-02-06
