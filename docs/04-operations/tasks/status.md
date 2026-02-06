@@ -5,6 +5,7 @@ _Last updated: 2026-02-06_
 ## In Progress
 
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml)
+- [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml)
 
 ## Blocked
 
