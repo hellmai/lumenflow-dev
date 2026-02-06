@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { applyArrayEdits, buildNoEditsMessage, hasAnyEdits } from '../initiative-edit.js';
+import {
+  applyArrayEdits,
+  buildNoEditsMessage,
+  hasAnyEdits,
+  validateEditArgs,
+} from '../initiative-edit.js';
 
 const METRIC_ONE = 'Metric one';
 const METRIC_TWO = 'Metric two';
@@ -50,5 +55,27 @@ describe('initiative:edit success metric editing', () => {
 
   it('documents remove-success-metric in no-edits help output', () => {
     expect(buildNoEditsMessage()).toContain('--remove-success-metric <text>');
+  });
+
+  it('accepts schema-valid initiative:edit options', () => {
+    const result = validateEditArgs({
+      id: 'INIT-015',
+      status: 'in_progress',
+      addLane: ['Framework: CLI'],
+      removeSuccessMetric: [METRIC_ONE],
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('rejects invalid status via shared schema validator', () => {
+    const result = validateEditArgs({
+      id: 'INIT-015',
+      status: 'not-a-real-status',
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((error) => error.includes('status'))).toBe(true);
   });
 });

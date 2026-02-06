@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { summarizeValidationResults } from '../wu-validate.js';
+import { summarizeValidationResults, validateWuValidateOptions } from '../wu-validate.js';
 
 describe('wu:validate JSON summary (WU-1441)', () => {
   it('should summarize invalid WUs with totals', () => {
@@ -38,5 +38,19 @@ describe('wu:validate JSON summary (WU-1441)', () => {
         warnings: ['Warn'],
       },
     ]);
+  });
+
+  it('accepts shared-schema valid wu:validate options', () => {
+    const result = validateWuValidateOptions('WU-1484', false);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('rejects missing id via shared schema validator', () => {
+    const result = validateWuValidateOptions(undefined, false);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((error) => error.includes('id'))).toBe(true);
   });
 });
