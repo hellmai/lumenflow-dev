@@ -1,7 +1,7 @@
 id: WU-1477
 title: Document INIT-015 memory enforcement features (internal + Starlight)
 lane: 'Content: Documentation'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-06
@@ -26,10 +26,17 @@ blocked_by:
 risks: []
 notes: Blocked by WU-1471, WU-1472, WU-1473, WU-1474. Execute after all feature WUs land.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-06T12:55:41.699Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1477
+session_id: 6a9b9b5c-07c4-426d-b912-f74538682efc
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-06T12:55:41.704Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +54,3 @@ acceptance:
   - apps/docs/src/content/docs/reference/cli.mdx updated with new and changed CLI commands
   - apps/docs/src/content/docs/guides/ai-integrations.mdx updated with PostToolUse and SubagentStop
     hook wiring
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-documentation-wu-1477
-claimed_at: 2026-02-06T12:55:41.699Z
-baseline_main_sha: 2f7747a39080138629d2a6ed6da7e3d1182b0469
-session_id: 6a9b9b5c-07c4-426d-b912-f74538682efc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-06T12:55:41.704Z
