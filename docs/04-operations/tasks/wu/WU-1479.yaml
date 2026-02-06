@@ -55,3 +55,4 @@ acceptance:
   - Provenance trailers (Worktree-Branch, Worktree-Path) in wu:done commits
   - No hardcoded string literals - uses GIT_COMMANDS/GIT_FLAGS constants
   - All existing tests pass
+  - Unit tests cover provenance trailer generation and pass
