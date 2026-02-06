@@ -60,6 +60,10 @@ wus:
   - WU-1457
   - WU-1458
   - WU-1460
+  - WU-1481
+  - WU-1482
+  - WU-1483
+  - WU-1484
 lanes:
   - 'Framework: MCP'
   - 'Framework: CLI'
