@@ -860,4 +860,5 @@
 {"type":"claim","wuId":"WU-1468","timestamp":"2026-02-06T08:43:08.871Z","lane":"Framework: Core","title":"Roll out root tsconfig inheritance and strictNullChecks across non-strict packages"}
 {"type":"complete","wuId":"WU-1469","timestamp":"2026-02-06T08:44:24.178Z"}
 {"type":"complete","wuId":"WU-1468","timestamp":"2026-02-06T09:02:53.994Z"}
-{"type":"claim","wuId":"WU-1452","lane":"Framework: CLI","title":"MCP: Fix CLI/MCP JSON flag mismatches","timestamp":"2026-02-06T09:11:41.307Z"}
+{"type":"claim","wuId":"WU-1452","timestamp":"2026-02-06T09:11:41.307Z","lane":"Framework: CLI","title":"MCP: Fix CLI/MCP JSON flag mismatches"}
+{"type":"complete","wuId":"WU-1452","timestamp":"2026-02-06T09:18:09.800Z"}
