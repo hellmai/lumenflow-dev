@@ -21,12 +21,11 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
-- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 
