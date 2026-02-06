@@ -2648,6 +2648,64 @@ export const lumenflowSyncTemplatesTool: ToolDefinition = {
 };
 
 /**
+ * MCP parity exclusions for tools that are intentionally MCP-only or maintainer-only.
+ *
+ * These names are excluded from strict public CLI parity comparison because
+ * they have no public command in packages/@lumenflow/cli/src/public-manifest.ts.
+ */
+export const MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS = [
+  'context_get',
+  'gates_run',
+  'initiative_remove_wu',
+  'validate_agent_skills',
+  'validate_agent_sync',
+  'validate_backlog_sync',
+  'validate_skills_spec',
+  'wu_list',
+] as const;
+
+export interface McpManifestParityReport {
+  missing: string[];
+  allowedExtra: string[];
+  unexpectedExtra: string[];
+}
+
+/**
+ * Normalize public CLI command names to MCP tool naming.
+ *
+ * Example:
+ * - "wu:create" -> "wu_create"
+ * - "plan:promote" -> "plan_promote"
+ */
+export function normalizePublicManifestCommandName(commandName: string): string {
+  return commandName.replace(/[:-]/g, '_');
+}
+
+/**
+ * Compare public CLI manifest command names against MCP tool names.
+ */
+export function buildMcpManifestParityReport(
+  manifestCommandNames: readonly string[],
+  mcpToolNames: readonly string[],
+): McpManifestParityReport {
+  const normalizedManifest = new Set(
+    manifestCommandNames.map((commandName) => normalizePublicManifestCommandName(commandName)),
+  );
+  const mcpToolSet = new Set(mcpToolNames);
+  const allowedExtraSet = new Set<string>(MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS);
+
+  const missing = [...normalizedManifest].filter((name) => !mcpToolSet.has(name)).sort();
+  const allowedExtra = [...mcpToolSet]
+    .filter((name) => !normalizedManifest.has(name) && allowedExtraSet.has(name))
+    .sort();
+  const unexpectedExtra = [...mcpToolSet]
+    .filter((name) => !normalizedManifest.has(name) && !allowedExtraSet.has(name))
+    .sort();
+
+  return { missing, allowedExtra, unexpectedExtra };
+}
+
+/**
  * All available tools
  */
 export const allTools: ToolDefinition[] = [

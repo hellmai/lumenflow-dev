@@ -25,8 +25,13 @@ import {
   wuValidateTool,
   wuInferLaneTool,
   wuUnlockLaneTool,
+  allTools,
+  buildMcpManifestParityReport,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
+import { PUBLIC_MANIFEST } from '../../../cli/src/public-manifest.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // Mock cli-runner for all operations
 vi.mock('../cli-runner.js', () => ({
@@ -628,5 +633,89 @@ describe('WU MCP tools (WU-1422)', () => {
         expect.any(Object),
       );
     });
+  });
+});
+
+describe('Manifest parity truth gate (WU-1481)', () => {
+  const EXPECTED_MISSING_COMMANDS = [
+    'backlog_prune',
+    'docs_sync',
+    'file_delete',
+    'file_edit',
+    'file_read',
+    'file_write',
+    'gates',
+    'gates_docs',
+    'git_branch',
+    'git_diff',
+    'git_log',
+    'git_status',
+    'init_plan',
+    'lane_health',
+    'lane_suggest',
+    'lumenflow',
+    'lumenflow_gates',
+    'lumenflow_metrics',
+    'lumenflow_validate',
+    'metrics',
+    'plan_create',
+    'plan_edit',
+    'plan_link',
+    'plan_promote',
+    'signal_cleanup',
+    'state_bootstrap',
+    'state_cleanup',
+    'state_doctor',
+    'sync_templates',
+    'wu_proto',
+  ];
+
+  const EXPECTED_ALLOWED_EXTRAS = [
+    'context_get',
+    'gates_run',
+    'initiative_remove_wu',
+    'validate_agent_skills',
+    'validate_agent_sync',
+    'validate_backlog_sync',
+    'validate_skills_spec',
+    'wu_list',
+  ];
+
+  function initiativeIsDone(): boolean {
+    const initiativePath = resolve(
+      import.meta.dirname,
+      '../../../../../docs/04-operations/tasks/initiatives/INIT-MCP-FULL.yaml',
+    );
+    const initiativeYaml = readFileSync(initiativePath, 'utf8');
+    return /^status:\s*done\s*$/m.test(initiativeYaml);
+  }
+
+  it('reports deterministic missing and extra command lists', () => {
+    const report = buildMcpManifestParityReport(
+      PUBLIC_MANIFEST.map((command) => command.name),
+      allTools.map((tool) => tool.name),
+    );
+
+    expect(report.missing).toEqual(EXPECTED_MISSING_COMMANDS);
+    expect(report.allowedExtra).toEqual(EXPECTED_ALLOWED_EXTRAS);
+    expect(report.unexpectedExtra).toEqual([]);
+  });
+
+  it('blocks marking INIT-MCP-FULL done while parity gaps remain', () => {
+    const report = buildMcpManifestParityReport(
+      PUBLIC_MANIFEST.map((command) => command.name),
+      allTools.map((tool) => tool.name),
+    );
+
+    if (initiativeIsDone()) {
+      const details =
+        `Missing tools: ${report.missing.join(', ') || '(none)'}\n` +
+        `Unexpected tools: ${report.unexpectedExtra.join(', ') || '(none)'}`;
+
+      expect(report.missing, details).toEqual([]);
+      expect(report.unexpectedExtra, details).toEqual([]);
+    } else {
+      expect(report.missing.length).toBeGreaterThan(0);
+    }
   });
 });
