@@ -32,7 +32,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml) — Content: Documentation
 - [WU-1468 — Roll out root tsconfig inheritance and strictNullChecks across non-strict packages](wu/WU-1468.yaml) — Framework: Core
 
 ## ⛔ Blocked
@@ -449,3 +448,4 @@ sections:
 - [WU-1461 — Restore real lint/typecheck execution across all packages](wu/WU-1461.yaml)
 - [WU-1462 — Unblock MCP packaging and prevent CLI test artifacts in publish tarballs](wu/WU-1462.yaml)
 - [WU-1467 — Eliminate preflight/enforcement drift from tasks validate and stubbed gates](wu/WU-1467.yaml)
+- [WU-1469 — Align MCP and publish docs with current tool count and auth model](wu/WU-1469.yaml)
