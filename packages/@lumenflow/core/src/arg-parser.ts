@@ -483,6 +483,14 @@ export const WU_OPTIONS: Record<string, WUOption> = {
       'Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist.',
   },
 
+  // WU-1491: Cloud mode for cloud agents and MCP callers
+  cloud: {
+    name: 'cloud',
+    flags: '--cloud',
+    description:
+      'Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents and MCP callers)',
+  },
+
   // WU-1023: Skip auto-setup for fast claims
   skipSetup: {
     name: 'skipSetup',

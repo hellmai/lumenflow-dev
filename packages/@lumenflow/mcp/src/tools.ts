@@ -658,6 +658,7 @@ export const wuCreateTool: ToolDefinition = {
  * wu_claim - Claim a WU and create worktree
  *
  * WU-1431: Uses shared wuClaimSchema for CLI/MCP parity
+ * WU-1491: Supports --cloud, --branch-only, and --pr-mode passthrough
  */
 export const wuClaimTool: ToolDefinition = {
   name: 'wu_claim',
@@ -674,6 +675,11 @@ export const wuClaimTool: ToolDefinition = {
     }
 
     const args = ['--id', input.id as string, '--lane', input.lane as string];
+    // WU-1491: Pass mode flags through to CLI
+    if (input.cloud) args.push('--cloud');
+    if (input.branch_only) args.push('--branch-only');
+    if (input.pr_mode) args.push('--pr-mode');
+
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('wu:claim', args, cliOptions);
 
