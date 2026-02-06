@@ -1,7 +1,7 @@
 id: WU-1477
 title: Document INIT-015 memory enforcement features (internal + Starlight)
 lane: 'Content: Documentation'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-02-06
