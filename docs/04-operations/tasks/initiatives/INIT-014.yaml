@@ -9,25 +9,25 @@ created: 2026-02-05
 phases:
   - id: 1
     title: 'Phase 0: Restore CI gate integrity'
-    status: pending
+    status: done
   - id: 2
     title: 'Phase 1: Unblock packaging and release'
-    status: pending
+    status: done
   - id: 3
     title: 'Phase 2: Patch high-severity vulnerabilities'
-    status: pending
+    status: done
   - id: 4
     title: 'Phase 3: Make test signal trustworthy'
-    status: pending
+    status: done
   - id: 5
     title: 'Phase 4: Package hygiene and workflow consistency'
-    status: pending
+    status: in_progress
   - id: 6
     title: 'Phase 5: Type system hardening'
     status: pending
   - id: 7
     title: 'Phase 6: Documentation and policy alignment'
-    status: pending
+    status: done
 success_metrics:
   - pnpm lint executes real lint tasks for all packages (no <NONEXISTENT>)
   - pnpm typecheck executes real typecheck tasks for all packages

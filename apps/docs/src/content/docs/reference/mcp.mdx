@@ -56,6 +56,8 @@ The MCP server exposes **68 tools** organized into 10 categories:
 | Validation Operations    | 5     | WU and configuration validation               |
 | Setup Operations         | 8     | LumenFlow initialization and configuration    |
 
+Tool inventory source of truth: `packages/@lumenflow/mcp/src/tools.ts` (`allTools`).
+
 ---
 
 ## Core WU Operations
@@ -816,6 +818,12 @@ Run LumenFlow release workflow (versioning, npm publish).
 | Parameter | Type | Required | Description |
 | --------- | ------- | -------- | ------------------------------------ |
 | `dry_run` | boolean | No | Preview release without publishing |
+
+<Aside type="note">
+  Publish auth for `lumenflow_release` follows CLI `release` behavior: prefer `NPM_TOKEN` in
+  automation, with support for `NODE_AUTH_TOKEN` or a `_authToken=` entry in `~/.npmrc` for local
+  environments.
+</Aside>
 
 ### lumenflow_sync_templates
 
