@@ -15,6 +15,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { runCliCommand, type CliRunnerResult } from '../cli-runner.js';
+import { allTools, buildMcpManifestParityReport } from '../tools.js';
+import { PUBLIC_MANIFEST } from '../../../cli/src/public-manifest.js';
 import { resolve } from 'node:path';
 
 /**
@@ -281,6 +283,19 @@ describe('CLI integration (no mocks)', () => {
 
       // wu:status does NOT accept --format, so this should fail
       expectFailure(result, 'wu:status with --format json (wrong flag)');
+    });
+  });
+
+  describe('manifest parity remediation visibility (WU-1481)', () => {
+    it('should expose actionable parity diffs for remediation waves', () => {
+      const report = buildMcpManifestParityReport(
+        PUBLIC_MANIFEST.map((command) => command.name),
+        allTools.map((tool) => tool.name),
+      );
+
+      expect(report.missing).toContain('lane_health');
+      expect(report.missing).toContain('state_doctor');
+      expect(report.unexpectedExtra).toEqual([]);
     });
   });
 });
