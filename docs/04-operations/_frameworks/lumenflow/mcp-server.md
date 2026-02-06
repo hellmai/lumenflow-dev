@@ -55,21 +55,34 @@ claude mcp list
 
 ## Tools Model
 
-The MCP server currently exposes 68 tools organized into 10 categories.
+The MCP server currently exposes 98 tools organized into 12 categories.
 The source of truth is `packages/@lumenflow/mcp/src/tools.ts` (`allTools` export).
 
-| Category                 | Count | Purpose                                          |
-| ------------------------ | ----- | ------------------------------------------------ |
-| Core WU Operations       | 7     | Context + primary WU lifecycle commands          |
-| Additional WU Operations | 16    | Extended WU management and recovery operations   |
-| Initiative Operations    | 8     | Initiative creation/planning/assignment commands |
-| Memory Operations        | 13    | Session memory, checkpoints, inbox/signals       |
-| Agent Operations         | 4     | Agent session + issue logging                    |
-| Orchestration Operations | 3     | Initiative orchestration/monitoring              |
-| Spawn Operations         | 1     | Spawn registry listing                           |
-| Flow/Metrics Operations  | 3     | Bottlenecks, reports, metrics snapshot           |
-| Validation Operations    | 5     | Skills/backlog/agent validation commands         |
-| Setup Operations         | 8     | Init/doctor/integrate/release/template sync      |
+| Category                      | Count | Purpose                                          |
+| ----------------------------- | ----- | ------------------------------------------------ |
+| Core WU Operations            | 7     | Context + primary WU lifecycle commands          |
+| Public Parity Operations (W1) | 15    | Ops/setup parity commands from public CLI        |
+| Public Parity Operations (W2) | 15    | File/git/plan/signal parity commands             |
+| Additional WU Operations      | 16    | Extended WU management and recovery operations   |
+| Initiative Operations         | 8     | Initiative creation/planning/assignment commands |
+| Memory Operations             | 13    | Session memory, checkpoints, inbox/signals       |
+| Agent Operations              | 4     | Agent session + issue logging                    |
+| Orchestration Operations      | 3     | Initiative orchestration/monitoring              |
+| Spawn Operations              | 1     | Spawn registry listing                           |
+| Flow/Metrics Operations       | 3     | Bottlenecks, reports, metrics snapshot           |
+| Validation Operations         | 5     | Skills/backlog/agent validation commands         |
+| Setup Operations              | 8     | Init/doctor/integrate/release/template sync      |
+
+Public CLI parity uses normalized command names (`:`/`-` -> `_`) and targets
+90 public CLI commands. Total MCP tool count is higher (98) because 8 tools are
+intentionally MCP-only extras:
+`context_get`, `gates_run`, `initiative_remove_wu`, `validate_agent_skills`,
+`validate_agent_sync`, `validate_backlog_sync`, `validate_skills_spec`, `wu_list`.
+
+Wave-2 parity families now available in MCP include:
+`file_read`, `file_write`, `file_edit`, `file_delete`, `git_status`, `git_diff`,
+`git_log`, `git_branch`, `init_plan`, `plan_create`, `plan_edit`, `plan_link`,
+`plan_promote`, `signal_cleanup`, and `wu_proto`.
 
 For full per-tool parameter and response reference, see:
 `apps/docs/src/content/docs/reference/mcp.mdx`.
@@ -192,7 +205,7 @@ packages/@lumenflow/mcp/
 │   ├── bin.ts                # stdio entrypoint
 │   ├── index.ts              # package exports
 │   ├── server.ts             # MCP server factory/handlers
-│   ├── tools.ts              # all 68 tool definitions + allTools registry
+│   ├── tools.ts              # all 98 tool definitions + allTools registry
 │   ├── resources.ts          # 3 MCP resources + templates
 │   ├── cli-runner.ts         # CLI shell-out adapter for write operations
 │   └── __tests__/            # tool/resource/server integration tests
@@ -205,7 +218,9 @@ packages/@lumenflow/mcp/
 
 ### v2.11 (February 2026) - Launch-Readiness Alignment
 
-Documented current 68-tool / 10-category model, publish auth behavior, and consolidated source layout.
+Updated documentation for the current 98-tool / 12-category model, including
+wave-1/wave-2 public parity additions and parity accounting (90 normalized
+public commands + 8 MCP-only extras).
 
 ### v1.0 (February 2026) - Initial Architecture
 

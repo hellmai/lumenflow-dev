@@ -41,22 +41,29 @@ lumenflow-mcp
 
 ## Tools Overview
 
-The MCP server exposes **68 tools** organized into 10 categories:
+The MCP server exposes **98 tools** organized into 12 categories:
 
-| Category                 | Count | Description                                |
-| ------------------------ | ----- | ------------------------------------------ |
-| Core WU Operations       | 7     | Basic WU lifecycle and context             |
-| Additional WU Operations | 16    | Extended WU management                     |
-| Initiative Operations    | 8     | Multi-phase project orchestration          |
-| Memory Operations        | 13    | Session tracking and agent coordination    |
-| Agent Operations         | 4     | Agent session management and issue logging |
-| Orchestration Operations | 3     | Initiative execution and monitoring        |
-| Spawn Operations         | 1     | Sub-agent spawn tree management            |
-| Flow/Metrics Operations  | 3     | DORA metrics and flow analysis             |
-| Validation Operations    | 5     | WU and configuration validation            |
-| Setup Operations         | 8     | LumenFlow initialization and configuration |
+| Category                      | Count | Description                                |
+| ----------------------------- | ----- | ------------------------------------------ |
+| Core WU Operations            | 7     | Basic WU lifecycle and context             |
+| Public Parity Operations (W1) | 15    | Ops/setup parity families from public CLI  |
+| Public Parity Operations (W2) | 15    | File/git/plan/signal parity families       |
+| Additional WU Operations      | 16    | Extended WU management                     |
+| Initiative Operations         | 8     | Multi-phase project orchestration          |
+| Memory Operations             | 13    | Session tracking and agent coordination    |
+| Agent Operations              | 4     | Agent session management and issue logging |
+| Orchestration Operations      | 3     | Initiative execution and monitoring        |
+| Spawn Operations              | 1     | Sub-agent spawn tree management            |
+| Flow/Metrics Operations       | 3     | DORA metrics and flow analysis             |
+| Validation Operations         | 5     | WU and configuration validation            |
+| Setup Operations              | 8     | LumenFlow initialization and configuration |
 
 Tool inventory source of truth: `packages/@lumenflow/mcp/src/tools.ts` (`allTools`).
+
+Public CLI parity target is **90 normalized public commands** (`:` and `-` converted to `_`).
+Total MCP tool count is 98 because 8 tools are intentionally MCP-only extras:
+`context_get`, `gates_run`, `initiative_remove_wu`, `validate_agent_skills`,
+`validate_agent_sync`, `validate_backlog_sync`, `validate_skills_spec`, and `wu_list`.
 
 ---
 
@@ -169,6 +176,52 @@ Run LumenFlow quality gates (lint, typecheck, tests).
 | `docs_only` | boolean | No | Run docs-only gates (skip lint/typecheck/tests) |
 
 **Output:** Gate results or error details.
+
+---
+
+## Public CLI Parity Operations (Wave 1)
+
+These tools were added to close ops/setup parity gaps against the public CLI manifest.
+
+| MCP Tool             | CLI Command          | Purpose                         |
+| -------------------- | -------------------- | ------------------------------- |
+| `backlog_prune`      | `backlog:prune`      | Prune stale backlog entries     |
+| `docs_sync`          | `docs:sync`          | Sync onboarding docs/templates  |
+| `gates`              | `gates`              | Run quality gates               |
+| `gates_docs`         | `gates --docs-only`  | Run docs-only gates             |
+| `lane_health`        | `lane:health`        | Report lane overlap/health      |
+| `lane_suggest`       | `lane:suggest`       | Suggest lane from scope/context |
+| `lumenflow`          | `lumenflow`          | Main CLI entrypoint             |
+| `lumenflow_gates`    | `lumenflow:gates`    | Framework gates wrapper         |
+| `lumenflow_validate` | `lumenflow:validate` | Framework validation wrapper    |
+| `lumenflow_metrics`  | `lumenflow:metrics`  | Framework metrics wrapper       |
+| `metrics`            | `metrics`            | Metrics CLI                     |
+| `state_bootstrap`    | `state:bootstrap`    | Bootstrap state store           |
+| `state_cleanup`      | `state:cleanup`      | Cleanup state artifacts         |
+| `state_doctor`       | `state:doctor`       | Diagnose/repair state issues    |
+| `sync_templates`     | `sync:templates`     | Sync framework templates        |
+
+## Public CLI Parity Operations (Wave 2)
+
+These tools were added to close file/git/plan/signal/proto parity gaps.
+
+| MCP Tool         | CLI Command      | Purpose                                |
+| ---------------- | ---------------- | -------------------------------------- |
+| `file_read`      | `file:read`      | Read files with line/size controls     |
+| `file_write`     | `file:write`     | Write files with optional safety flags |
+| `file_edit`      | `file:edit`      | Exact string replacement editing       |
+| `file_delete`    | `file:delete`    | Delete files/directories               |
+| `git_status`     | `git:status`     | Git status reporting                   |
+| `git_diff`       | `git:diff`       | Git diff inspection                    |
+| `git_log`        | `git:log`        | Commit history inspection              |
+| `git_branch`     | `git:branch`     | Branch listing/inspection              |
+| `init_plan`      | `init:plan`      | Initiative plan linking/creation       |
+| `plan_create`    | `plan:create`    | Create plan files                      |
+| `plan_edit`      | `plan:edit`      | Edit plan sections                     |
+| `plan_link`      | `plan:link`      | Link plan URIs to WUs/initiatives      |
+| `plan_promote`   | `plan:promote`   | Promote plan status                    |
+| `signal_cleanup` | `signal:cleanup` | Cleanup stale coordination signals     |
+| `wu_proto`       | `wu:proto`       | Create+claim relaxed prototype WUs     |
 
 ---
 
