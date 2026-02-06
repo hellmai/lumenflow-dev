@@ -888,3 +888,4 @@
 {"type":"complete","wuId":"WU-1478","timestamp":"2026-02-06T11:49:35.895Z"}
 {"type":"release","wuId":"WU-1479","reason":"accidental claim","timestamp":"2026-02-06T11:54:27.844Z"}
 {"type":"claim","wuId":"WU-1474","lane":"Framework: CLI","title":"Activate decay policy in completion lifecycle","timestamp":"2026-02-06T12:00:29.816Z"}
+{"type":"claim","wuId":"WU-1480","lane":"Operations: Tooling","title":"Add dependency-closure bootstrap for dist-backed CLI commands","timestamp":"2026-02-06T12:01:54.128Z"}
