@@ -9,3 +9,4 @@ created: 2026-02-06
 phases: []
 success_metrics: []
 labels: []
+related_plan: lumenflow://plans/memoized-baking-sutton.md
