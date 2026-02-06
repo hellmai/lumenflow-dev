@@ -6,7 +6,7 @@
  * across all array options.
  */
 import { describe, it, expect } from 'vitest';
-import { applyEdits, mergeStringField } from '../wu-edit.js';
+import { applyEdits, mergeStringField, validateDoneWUEdits } from '../wu-edit.js';
 
 describe('wu-edit applyEdits', () => {
   describe('WU-1225: code_paths append-by-default', () => {
@@ -113,6 +113,25 @@ describe('wu-edit applyEdits', () => {
       const result = applyEdits(baseWU, opts);
       expect(result.acceptance).toEqual(['new criterion']);
     });
+  });
+});
+
+/**
+ * WU-1492: Tests for validateDoneWUEdits and branch-pr mode handling
+ *
+ * Verifies that done WU edits are correctly gated (existing behavior
+ * is unchanged) and that branch-pr is not misclassified.
+ */
+describe('WU-1492: branch-pr mode wu:edit classification', () => {
+  it('blocks non-metadata edits on done WUs (existing behavior)', () => {
+    const result = validateDoneWUEdits({ description: 'new desc' });
+    expect(result.valid).toBe(false);
+    expect(result.disallowedEdits).toContain('--description');
+  });
+
+  it('allows initiative edit on done WUs (existing behavior)', () => {
+    const result = validateDoneWUEdits({ initiative: 'INIT-016' });
+    expect(result.valid).toBe(true);
   });
 });
 

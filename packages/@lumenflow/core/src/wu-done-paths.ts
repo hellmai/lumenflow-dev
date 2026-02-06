@@ -219,6 +219,9 @@ export async function detectModeAndPaths(id, args) {
   const docMain = readWU(WU_PATH, id);
   const workspaceMode = detectWorkspaceMode(docMain);
   const isBranchOnly = workspaceMode === CLAIMED_MODES.BRANCH_ONLY;
+  // WU-1492: branch-pr mode has no worktree (like branch-only) but creates PR instead of merging
+  const isBranchPR = workspaceMode === CLAIMED_MODES.BRANCH_PR;
+  const isNoWorktreeMode = isBranchOnly || isBranchPR;
 
   console.log(`\n${LOG_PREFIX.DONE} Detected workspace mode: ${workspaceMode}`);
 
@@ -228,19 +231,19 @@ export async function detectModeAndPaths(id, args) {
   const worktreePathGuess = args.worktree || null;
 
   // For Worktree mode: prefer auto-detected worktree, then explicit arg, then calculated path
-  // For Branch-Only mode: use main checkout version (no worktree exists)
-  const derivedWorktree = isBranchOnly
+  // For Branch-Only / Branch-PR mode: use main checkout version (no worktree exists)
+  const derivedWorktree = isNoWorktreeMode
     ? null
     : detectedWorktree || worktreePathGuess || (await defaultWorktreeFrom(docMain));
 
-  if (!isBranchOnly && derivedWorktree && !detectedWorktree) {
+  if (!isNoWorktreeMode && derivedWorktree && !detectedWorktree) {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.FOLDER} Calculated worktree path from YAML: ${derivedWorktree}`,
     );
   }
 
   // Read the actual WU YAML for validation (prefer worktree version over main)
-  const docForValidation = isBranchOnly
+  const docForValidation = isNoWorktreeMode
     ? docMain
     : readWUPreferWorktree(id, derivedWorktree, WU_PATH);
 
@@ -264,6 +267,8 @@ export async function detectModeAndPaths(id, args) {
     docMain,
     workspaceMode,
     isBranchOnly,
+    // WU-1492: Expose branch-pr flag for routing in wu-done CLI
+    isBranchPR,
     derivedWorktree,
     docForValidation,
     isDocsOnly,

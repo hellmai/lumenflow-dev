@@ -121,7 +121,11 @@ import {
   validateApprovalGates,
 } from '@lumenflow/core/dist/wu-schema.js';
 import { validateBacklogSync } from '@lumenflow/core/dist/backlog-sync-validator.js';
-import { executeBranchOnlyCompletion } from '@lumenflow/core/dist/wu-done-branch-only.js';
+import {
+  executeBranchOnlyCompletion,
+  // WU-1492: Import branch-pr completion path
+  executeBranchPRCompletion,
+} from '@lumenflow/core/dist/wu-done-branch-only.js';
 import {
   executeWorktreeCompletion,
   autoRebaseBranch,
@@ -2457,6 +2461,8 @@ async function main() {
     STAMPS_DIR,
     docMain,
     isBranchOnly,
+    // WU-1492: Detect branch-pr mode for separate completion path
+    isBranchPR,
     derivedWorktree,
     docForValidation: initialDocForValidation,
     isDocsOnly,
@@ -2622,7 +2628,16 @@ async function main() {
     };
 
     try {
-      if (effectiveBranchOnly) {
+      if (isBranchPR) {
+        // WU-1492: Branch-PR mode: commit metadata on lane branch, push, create PR
+        // Never checks out or merges to main
+        const laneBranch = defaultBranchFrom(docMain);
+        const branchPRContext = {
+          ...baseContext,
+          laneBranch,
+        };
+        completionResult = await executeBranchPRCompletion(branchPRContext);
+      } else if (effectiveBranchOnly) {
         // Branch-Only mode: merge first, then update metadata on main
         // NOTE: Branch-only still uses old rollback mechanism
         const branchOnlyContext = {

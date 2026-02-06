@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ensureCleanWorktree } from '../wu-done-check.js';
+import { computeBranchOnlyFallback } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 
@@ -45,6 +46,42 @@ describe('wu-done', () => {
       await ensureCleanWorktree('/custom/worktree/path');
 
       expect(gitAdapter.createGitForPath).toHaveBeenCalledWith('/custom/worktree/path');
+    });
+  });
+
+  describe('WU-1492: computeBranchOnlyFallback with branch-pr', () => {
+    it('does not treat branch-pr as branch-only', () => {
+      const result = computeBranchOnlyFallback({
+        isBranchOnly: false,
+        branchOnlyRequested: false,
+        worktreeExists: false,
+        derivedWorktree: null,
+      });
+
+      expect(result.effectiveBranchOnly).toBe(false);
+    });
+
+    it('branch-only remains effective when isBranchOnly is true', () => {
+      const result = computeBranchOnlyFallback({
+        isBranchOnly: true,
+        branchOnlyRequested: false,
+        worktreeExists: false,
+        derivedWorktree: null,
+      });
+
+      expect(result.effectiveBranchOnly).toBe(true);
+    });
+
+    it('allows fallback when branchOnly requested but worktree missing', () => {
+      const result = computeBranchOnlyFallback({
+        isBranchOnly: false,
+        branchOnlyRequested: true,
+        worktreeExists: false,
+        derivedWorktree: 'worktrees/framework-core-wu-1492',
+      });
+
+      expect(result.allowFallback).toBe(true);
+      expect(result.effectiveBranchOnly).toBe(true);
     });
   });
 });

@@ -54,8 +54,12 @@ async function runCleanupInternal(docMain, args, worktreePath) {
   // Skip removal in PR mode (worktree needed for cleanup after PR merge)
   const claimedMode = docMain.claimed_mode || CLAIMED_MODES.WORKTREE;
   const requiresReview = docMain.requires_review === true;
+  // WU-1492: Include branch-pr in PR-mode check (preserves worktree for post-merge cleanup)
   const prModeEnabled =
-    claimedMode === CLAIMED_MODES.WORKTREE_PR || args.createPR || requiresReview;
+    claimedMode === CLAIMED_MODES.WORKTREE_PR ||
+    claimedMode === CLAIMED_MODES.BRANCH_PR ||
+    args.createPR ||
+    requiresReview;
 
   // WU-2241: Track branch for cleanup after worktree removal
   const laneBranch = await defaultBranchFrom(docMain);

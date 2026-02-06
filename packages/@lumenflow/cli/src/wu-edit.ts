@@ -558,11 +558,12 @@ function validateWUEditable(id) {
   if (wu.status === WU_STATUS.IN_PROGRESS) {
     const claimedMode = wu.claimed_mode || CLAIMED_MODES.WORKTREE; // Default to worktree for legacy WUs
 
-    // Block branch-only WUs with actionable guidance
-    if (claimedMode === CLAIMED_MODES.BRANCH_ONLY) {
+    // Block branch-only and branch-pr WUs with actionable guidance
+    // WU-1492: branch-pr WUs have no worktree, same as branch-only
+    if (claimedMode === CLAIMED_MODES.BRANCH_ONLY || claimedMode === CLAIMED_MODES.BRANCH_PR) {
       die(
-        `Cannot edit branch-only WU ${id} via wu:edit.\n\n` +
-          `WUs claimed with claimed_mode='${CLAIMED_MODES.BRANCH_ONLY}' cannot be edited via wu:edit.\n` +
+        `Cannot edit ${claimedMode} WU ${id} via wu:edit.\n\n` +
+          `WUs claimed with claimed_mode='${claimedMode}' cannot be edited via wu:edit.\n` +
           `To modify the spec, edit the file directly on the lane branch and commit.`,
       );
     }

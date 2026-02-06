@@ -42,6 +42,8 @@ import { assertTransition } from './state-machine.js';
 import { detectZombieState, recoverZombieState } from './wu-recovery.js';
 // WU-1061: Import docs regeneration utilities
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
+// WU-1492: Import PR creation utilities for branch-pr mode
+import { createPR, printPRCreatedMessage } from './wu-done-pr.js';
 
 /**
  * @typedef {Object} BranchOnlyContext
@@ -250,6 +252,126 @@ export async function executeBranchOnlyCompletion(context) {
 
     throw err;
   }
+}
+
+/**
+ * @typedef {Object} BranchPRContext
+ * @property {string} id - WU ID (e.g., "WU-1492")
+ * @property {Object} args - Parsed CLI arguments
+ * @property {Object} docMain - WU YAML document
+ * @property {string} title - WU title for PR title
+ * @property {string} laneBranch - Lane branch name
+ * @property {boolean} isDocsOnly - Whether this is a docs-only WU
+ * @property {number} maxCommitLength - Max commit header length
+ * @property {function} validateStagedFiles - Staged files validator
+ * @property {function} updateMetadata - Metadata update function
+ * @property {function} stageMetadata - Metadata staging function
+ */
+
+/**
+ * @typedef {Object} BranchPRResult
+ * @property {boolean} success - Whether completion succeeded
+ * @property {boolean} committed - Whether changes were committed
+ * @property {boolean} pushed - Whether changes were pushed
+ * @property {boolean} merged - Always false (branch-pr never merges to main)
+ * @property {string|null} prUrl - URL of created PR
+ */
+
+/**
+ * WU-1492: Execute branch-pr mode completion
+ *
+ * Branch-PR mode stays on the lane branch, commits metadata, pushes,
+ * and creates a PR. It NEVER checks out main or merges.
+ *
+ * @param {BranchPRContext} context - Branch-PR mode context
+ * @returns {Promise<BranchPRResult>} Completion result
+ * @throws {Error} On validation or git operation failure
+ */
+export async function executeBranchPRCompletion(context) {
+  const { id, args, docMain, title, laneBranch, isDocsOnly, maxCommitLength, validateStagedFiles } =
+    context;
+
+  console.log(`\n${LOG_PREFIX.DONE} Branch-PR mode: staying on ${laneBranch}`);
+  console.log(`${LOG_PREFIX.DONE} Metadata will be committed on lane branch and PR created`);
+
+  // Calculate paths relative to current checkout (lane branch)
+  const metadataBasePath = '.';
+  const metadataWUPath = path.join(
+    metadataBasePath,
+    'docs',
+    '04-operations',
+    'tasks',
+    'wu',
+    `${id}.yaml`,
+  );
+  const metadataStatusPath = path.join(
+    metadataBasePath,
+    'docs',
+    '04-operations',
+    'tasks',
+    'status.md',
+  );
+  const metadataBacklogPath = path.join(
+    metadataBasePath,
+    'docs',
+    '04-operations',
+    'tasks',
+    'backlog.md',
+  );
+  const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
+
+  // Update metadata files on lane branch
+  await updateMetadataFiles({
+    id,
+    title,
+    doc: docMain,
+    wuPath: metadataWUPath,
+    statusPath: metadataStatusPath,
+    backlogPath: metadataBacklogPath,
+  });
+
+  // Stage and format metadata
+  await stageAndFormatMetadata({
+    id,
+    wuPath: metadataWUPath,
+    statusPath: metadataStatusPath,
+    backlogPath: metadataBacklogPath,
+    stampsDir: metadataStampsDir,
+  });
+
+  // Validate staged files
+  await validateStagedFiles(id, isDocsOnly);
+
+  // Commit on lane branch (NOT main)
+  const msg = generateCommitMessage(id, title, maxCommitLength, {
+    branch: laneBranch,
+  });
+  const gitAdapter = getGitForCwd();
+  await gitAdapter.commit(msg);
+  console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed on lane branch`);
+
+  // Push lane branch to origin
+  await gitAdapter.push(REMOTES.ORIGIN, laneBranch);
+  console.log(
+    `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pushed to ${REMOTES.ORIGIN}/${laneBranch}`,
+  );
+
+  // Create PR from lane branch to main
+  const prResult = await createPR({
+    branch: laneBranch,
+    id,
+    title,
+    doc: docMain,
+    draft: args.prDraft,
+  });
+
+  let prUrl = null;
+  if (prResult.success && prResult.prUrl) {
+    printPRCreatedMessage(prResult.prUrl, id);
+    prUrl = prResult.prUrl;
+  }
+
+  return { success: true, committed: true, pushed: true, merged: false, prUrl };
 }
 
 /**
