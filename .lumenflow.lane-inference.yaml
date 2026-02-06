@@ -3,13 +3,13 @@
 # Defines sub-lane taxonomy with code_paths patterns and keywords for automated inference.
 # Used by @lumenflow/core lane-inference.ts to suggest sub-lanes during WU creation.
 #
-# Taxonomy: 11 sub-lanes across 3 parent lanes
+# Taxonomy: 12 sub-lanes across 3 parent lanes
 # - Framework: 8 sub-lanes (Core, CLI, MCP, Memory, Agent, Metrics, Initiatives, Shims)
-# - Operations: 2 sub-lanes (Infrastructure, CI/CD)
+# - Operations: 3 sub-lanes (Infrastructure, Tooling, CI/CD)
 # - Content: 1 sub-lane (Documentation)
 #
 # Created: WU-1019
-# Updated: WU-1412 (added MCP sub-lane)
+# Updated: WU-1478 (lane concurrency and tooling coverage sweep)
 # Based on: ExampleApp .lumenflow.lane-inference.yaml pattern
 
 # Framework Lane: @lumenflow packages
@@ -134,25 +134,46 @@ Framework:
       - 'node'
       - 'cross-platform'
 
-# Operations Lane: Infrastructure and CI/CD
+# Operations Lane: Infrastructure, Tooling, and CI/CD
 Operations:
   Infrastructure:
-    description: 'Apps, actions, deployment, hosting configuration'
+    description: 'Runtime app infrastructure and deployment actions'
     code_paths:
-      - 'apps/**'
+      - 'apps/github-app/**'
       - 'actions/**'
-      - 'turbo.json'
-      - 'pnpm-workspace.yaml'
-      - '.husky/**'
     keywords:
       - 'infrastructure'
       - 'deployment'
       - 'hosting'
-      - 'app'
+      - 'github app'
       - 'action'
-      - 'turbo'
-      - 'monorepo'
+      - 'runtime'
+
+  Tooling:
+    description: 'Repository tooling, scripts, root config, and local automation'
+    code_paths:
+      - 'tools/**'
+      - 'scripts/**'
+      - '.husky/**'
+      - 'packages/linters/**'
+      - 'benchmark.js'
+      - 'eslint.config.mjs'
+      - 'prettier.config.mjs'
+      - 'vitest.config.ts'
+      - 'vitest.config.ts.timestamp-*.mjs'
+      - 'tsconfig.json'
+      - 'tsconfig.build.json'
+      - 'turbo.json'
+      - 'pnpm-workspace.yaml'
+    keywords:
+      - 'tooling'
+      - 'script'
+      - 'lint'
+      - 'format'
+      - 'vitest'
       - 'workspace'
+      - 'turbo'
+      - 'repo config'
 
   CI/CD:
     description: 'GitHub Actions, workflows, build pipelines'

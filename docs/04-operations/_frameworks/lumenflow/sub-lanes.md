@@ -1,15 +1,41 @@
 # LumenFlow Sub-Lanes
 
-**Status:** Active (WU-906, expanded WU-1565)
-**Last updated:** 2025-12-10
+**Status:** Active (WU-906, lane sweep WU-1478)
+**Last updated:** 2026-02-06
 
 ## Overview
 
 Sub-lanes enable fine-grained parallelism within parent lanes by organizing work into focused domains. This allows multiple agents to work in parallel without violating WIP=1 constraints.
 
-**Key principle:** WIP=1 applies at the **sub-lane level**, not parent lane level.
+**Key principle:** WIP defaults to 1 at the **sub-lane level** (not parent lane), and can be raised per lane with explicit justification.
+
+## LumenFlow OS Snapshot
+
+Current taxonomy source of truth is `.lumenflow.lane-inference.yaml`.
+
+- `Framework` sub-lanes: `Core`, `CLI`, `MCP`, `Memory`, `Agent`, `Metrics`, `Initiatives`, `Shims`
+- `Operations` sub-lanes: `Infrastructure`, `Tooling`, `CI/CD`
+- `Content` sub-lanes: `Documentation`
+
+Lane policy update from WU-1478:
+
+- `Framework: CLI` and `Framework: Core` use `lock_policy: none` to avoid serializing unrelated work.
+- Safety is preserved by concrete `code_paths` overlap checks at claim time.
+- `Operations: Infrastructure` is narrowed to `apps/github-app/**` + `actions/**`.
+- Repository scripts and root tooling files belong in `Operations: Tooling`.
+
+### Migration Guidance
+
+When creating or editing WUs:
+
+1. Keep `code_paths` specific (file paths or tight globs) so overlap checks can safely parallelize work.
+2. Use `Operations: Tooling` for `tools/**`, `scripts/**`, and root config changes.
+3. Use `Operations: Infrastructure` for runtime app infra (`apps/github-app/**`) and `actions/**`.
+4. Keep documentation work in `Content: Documentation`.
 
 ### Taxonomy
+
+The taxonomy below is a reference example from ExampleApp and is not the active lane map for this repository.
 
 ExampleApp uses an 8-tier taxonomy with 33 sub-lanes across all parent lanes:
 

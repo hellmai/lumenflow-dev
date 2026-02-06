@@ -14,14 +14,25 @@ lanes:
   # These map to the taxonomy in .lumenflow.lane-inference.yaml
   definitions:
     - name: 'Framework: Core'
-      wip_limit: 1
+      wip_limit: 3
+      # Core work often spans disjoint modules; concrete overlap checks remain the conflict guard
+      wip_justification: 'Parallel core work is safe when code_paths are specific and non-overlapping'
+      lock_policy: 'none'
       code_paths:
         - 'packages/@lumenflow/core/**'
 
     - name: 'Framework: CLI'
-      wip_limit: 1
+      wip_limit: 4
+      # CLI has many independent command families; avoid serializing unrelated WUs
+      wip_justification: 'Parallel CLI work is safe when code_paths are specific and non-overlapping'
+      lock_policy: 'none'
       code_paths:
         - 'packages/@lumenflow/cli/**'
+
+    - name: 'Framework: MCP'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/mcp/**'
 
     - name: 'Framework: Memory'
       wip_limit: 1
@@ -51,8 +62,25 @@ lanes:
     - name: 'Operations: Infrastructure'
       wip_limit: 1
       code_paths:
-        - 'apps/**'
+        - 'apps/github-app/**'
         - 'actions/**'
+
+    - name: 'Operations: Tooling'
+      wip_limit: 1
+      code_paths:
+        - 'tools/**'
+        - 'scripts/**'
+        - '.husky/**'
+        - 'packages/linters/**'
+        - 'benchmark.js'
+        - 'eslint.config.mjs'
+        - 'prettier.config.mjs'
+        - 'vitest.config.ts'
+        - 'vitest.config.ts.timestamp-*.mjs'
+        - 'tsconfig.json'
+        - 'tsconfig.build.json'
+        - 'turbo.json'
+        - 'pnpm-workspace.yaml'
 
     - name: 'Operations: CI/CD'
       wip_limit: 1
@@ -63,9 +91,8 @@ lanes:
       wip_limit: 4
       # WU-1187: wip_justification required when wip_limit > 1
       wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
-      # WU-1322: lock_policy controls how lane branches are locked during WU execution
-      # Values: 'all' (default) | 'active' (overlap-based) | 'none' (no locking)
-      # lock_policy: 'none'  # Uncomment to allow parallel doc work without lane locking
+      # Enable actual parallel docs work (coverage + overlap checks remain active safeguards)
+      lock_policy: 'none'
       code_paths:
         - 'docs/**'
         - 'apps/docs/**'
@@ -110,9 +137,14 @@ agents:
           'Framework: CLI':
             - tdd-workflow
             - lumenflow-gates
+          'Framework: MCP':
+            - tdd-workflow
+            - lumenflow-gates
           'Content: Documentation':
             - worktree-discipline
           'Operations: Infrastructure':
+            - orchestration
+          'Operations: Tooling':
             - orchestration
       blocks:
         - title: 'Claude Code Best Practices'
