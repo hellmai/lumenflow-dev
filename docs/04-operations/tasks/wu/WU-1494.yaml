@@ -1,0 +1,41 @@
+id: WU-1494
+title: Fix --pr-draft parser/help parity for wu:done
+lane: 'Framework: Core'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-06
+code_paths:
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/wu-done-inputs.ts
+  - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+tests:
+  manual:
+    - Run pnpm wu:done --id WU-XXXX --create-pr --pr-draft and verify option is accepted and draft PR path is used.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1494.done
+dependencies: []
+initiative: INIT-016
+phase: 5
+spec_refs:
+  - lumenflow://plans/memoized-baking-sutton.md
+risks: []
+notes: WU-E from branch-pr cloud initiative plan.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:done help advertises --pr-draft but parser currently rejects it. Problem: PR draft mode is documented but unusable via CLI parser. Solution: add --pr-draft parsing and tests so behavior matches help text when used with --create-pr.'
+acceptance:
+  - --pr-draft is accepted by arg parser for wu:done.
+  - --pr-draft is honored when creating PRs with --create-pr.
+  - wu:done help text and parser behavior are aligned.
