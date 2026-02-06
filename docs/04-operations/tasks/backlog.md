@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml) — Framework: CLI
+  (No items ready)
 
 ## 🔧 In progress
 
