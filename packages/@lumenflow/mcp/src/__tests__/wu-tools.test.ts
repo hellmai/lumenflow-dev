@@ -832,7 +832,11 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
   it('should run sync:templates with mapped flags', async () => {
     mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
 
-    const result = await syncTemplatesTool.execute({ dry_run: true, verbose: true, check_drift: true });
+    const result = await syncTemplatesTool.execute({
+      dry_run: true,
+      verbose: true,
+      check_drift: true,
+    });
 
     expect(result.success).toBe(true);
     expect(mockRunCliCommand).toHaveBeenCalledWith(

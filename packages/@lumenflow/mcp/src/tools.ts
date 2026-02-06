@@ -951,7 +951,10 @@ export const metricsTool: ToolDefinition = {
     if (result.success) {
       return success({ message: result.stdout || 'Metrics generated' });
     }
-    return error(result.stderr || result.error?.message || 'metrics failed', ErrorCodes.METRICS_ERROR);
+    return error(
+      result.stderr || result.error?.message || 'metrics failed',
+      ErrorCodes.METRICS_ERROR,
+    );
   },
 };
 
