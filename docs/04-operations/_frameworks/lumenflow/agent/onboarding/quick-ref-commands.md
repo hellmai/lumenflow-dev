@@ -106,26 +106,26 @@ pnpm exec lumenflow --client all      # All clients
 
 ## Memory & Sessions
 
-| Command                             | Description                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------ |
-| `pnpm mem:init --wu WU-XXX`         | Initialize memory for WU                                                 |
-| `pnpm mem:start --wu WU-XXX`        | Start a memory session (surfaces unread signals, INIT-015)               |
-| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint (also created by auto-checkpoint hooks)         |
-| `pnpm mem:recover --wu WU-XXX`      | Generate recovery context (WU-1390)                                      |
-| `pnpm mem:ready --wu WU-XXX`        | Check pending nodes                                                      |
-| `pnpm mem:export --wu WU-XXX`       | Export memory as markdown                                                |
-| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery)                                       |
-| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal (append-only receipts, INIT-015)           |
-| `pnpm mem:inbox --wu WU-XXX`        | Check coordination signals (receipt-aware read state, INIT-015)          |
-| `pnpm mem:inbox --no-mark`          | Read signals without marking as read                                     |
-| `pnpm mem:summarize --wu WU-XXX`    | Summarize memory context                                                 |
-| `pnpm mem:triage --wu WU-XXX`       | Triage discovered bugs                                                   |
-| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU                                          |
-| `pnpm mem:context ... --lane <L>`   | Filter context by lane (WU-1292)                                         |
-| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node                                             |
-| `pnpm mem:cleanup`                  | Clean up stale memory data (respects `memory.decay` policy when enabled) |
-| `pnpm mem:cleanup --decay`          | Run decay-based archival (archive stale nodes below threshold)           |
-| `pnpm mem:cleanup --decay --dry-run`| Preview decay archival without changes                                   |
+| Command                              | Description                                                              |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `pnpm mem:init --wu WU-XXX`          | Initialize memory for WU                                                 |
+| `pnpm mem:start --wu WU-XXX`         | Start a memory session (surfaces unread signals, INIT-015)               |
+| `pnpm mem:checkpoint --wu WU-XXX`    | Save progress checkpoint (also created by auto-checkpoint hooks)         |
+| `pnpm mem:recover --wu WU-XXX`       | Generate recovery context (WU-1390)                                      |
+| `pnpm mem:ready --wu WU-XXX`         | Check pending nodes                                                      |
+| `pnpm mem:export --wu WU-XXX`        | Export memory as markdown                                                |
+| `pnpm mem:create "msg" --wu WU-XXX`  | Create memory node (bug discovery)                                       |
+| `pnpm mem:signal "msg" --wu WU-XXX`  | Broadcast coordination signal (append-only receipts, INIT-015)           |
+| `pnpm mem:inbox --wu WU-XXX`         | Check coordination signals (receipt-aware read state, INIT-015)          |
+| `pnpm mem:inbox --no-mark`           | Read signals without marking as read                                     |
+| `pnpm mem:summarize --wu WU-XXX`     | Summarize memory context                                                 |
+| `pnpm mem:triage --wu WU-XXX`        | Triage discovered bugs                                                   |
+| `pnpm mem:context --wu WU-XXX`       | Get context for current lane/WU                                          |
+| `pnpm mem:context ... --lane <L>`    | Filter context by lane (WU-1292)                                         |
+| `pnpm mem:delete --id <node-id>`     | Delete/archive a memory node                                             |
+| `pnpm mem:cleanup`                   | Clean up stale memory data (respects `memory.decay` policy when enabled) |
+| `pnpm mem:cleanup --decay`           | Run decay-based archival (archive stale nodes below threshold)           |
+| `pnpm mem:cleanup --decay --dry-run` | Preview decay archival without changes                                   |
 
 ### Memory Enforcement (INIT-015)
 

@@ -253,16 +253,16 @@ pnpm mem:checkpoint "Auto: sub-agent completed" --wu WU-123 --trigger subagent-s
 
 **Options:**
 
-| Flag                          | Description                                                   | Required |
-| ----------------------------- | ------------------------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                           | No       |
-| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)                  | No       |
-| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)                       | No       |
-| `-p, --progress &lt;text&gt;` | Progress summary                                              | No       |
-| `--next-steps &lt;text&gt;`   | Next steps description                                        | No       |
-| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff, subagent-stop)    | No       |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                | No       |
-| `-q, --quiet`                 | Suppress output except errors                                 | No       |
+| Flag                          | Description                                                | Required |
+| ----------------------------- | ---------------------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                        | No       |
+| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)               | No       |
+| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)                    | No       |
+| `-p, --progress &lt;text&gt;` | Progress summary                                           | No       |
+| `--next-steps &lt;text&gt;`   | Next steps description                                     | No       |
+| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff, subagent-stop) | No       |
+| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)             | No       |
+| `-q, --quiet`                 | Suppress output except errors                              | No       |
 
 **Auto-checkpoint hooks (INIT-015):** When configured, PostToolUse and SubagentStop hooks call `mem:checkpoint` automatically. PostToolUse uses a counter-based interval (default: every 30 tool calls); SubagentStop always checkpoints. See [Configuration](/reference/config#memoryenforcement) for setup.
 
@@ -276,15 +276,15 @@ pnpm mem:cleanup
 
 **Options:**
 
-| Flag                          | Description                                                                           | Required |
-| ----------------------------- | ------------------------------------------------------------------------------------- | -------- |
-| `--dry-run`                   | Preview cleanup without making changes                                                | No       |
-| `--ttl &lt;duration&gt;`      | Remove nodes older than duration (e.g., 30d, 7d, 24h). Active sessions are protected. | No       |
-| `--session-id &lt;uuid&gt;`   | Session ID to consider closed (removes session lifecycle nodes)                       | No       |
+| Flag                          | Description                                                                                                            | Required |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------- |
+| `--dry-run`                   | Preview cleanup without making changes                                                                                 | No       |
+| `--ttl &lt;duration&gt;`      | Remove nodes older than duration (e.g., 30d, 7d, 24h). Active sessions are protected.                                  | No       |
+| `--session-id &lt;uuid&gt;`   | Session ID to consider closed (removes session lifecycle nodes)                                                        | No       |
 | `--decay`                     | Run decay-based archival (archive stale nodes below threshold). Uses config from `.lumenflow.config.yaml` or defaults. | No       |
-| `--json`                      | Output as JSON                                                                        | No       |
-| `-q, --quiet`                 | Suppress output except errors                                                         | No       |
-| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                                        | No       |
+| `--json`                      | Output as JSON                                                                                                         | No       |
+| `-q, --quiet`                 | Suppress output except errors                                                                                          | No       |
+| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                                                                         | No       |
 
 When `--decay` is used, the command reads `memory.decay.threshold` and `memory.decay.half_life_days` from config (defaults: 0.1 and 30 respectively) and archives nodes whose decay score falls below the threshold. Combine with `--dry-run` to preview what would be archived.
 

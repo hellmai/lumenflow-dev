@@ -463,11 +463,11 @@ Both checkpoint writes are backgrounded in a defensive subshell so the hook retu
 
 `wu:done` can optionally verify that at least one checkpoint exists for the WU:
 
-| Mode    | Behavior                                         |
-| ------- | ------------------------------------------------ |
-| `off`   | No checkpoint check                              |
-| `warn`  | Print a warning if no checkpoints (default)      |
-| `block` | Block wu:done until a checkpoint exists           |
+| Mode    | Behavior                                    |
+| ------- | ------------------------------------------- |
+| `off`   | No checkpoint check                         |
+| `warn`  | Print a warning if no checkpoints (default) |
+| `block` | Block wu:done until a checkpoint exists     |
 
 On completion, wu:done cleans up the per-WU hook counter file.
 
@@ -478,9 +478,9 @@ On completion, wu:done cleans up the per-WU hook counter file.
 memory:
   enforcement:
     auto_checkpoint:
-      enabled: true          # Generate PostToolUse + SubagentStop hooks
+      enabled: true # Generate PostToolUse + SubagentStop hooks
       interval_tool_calls: 30 # Checkpoint every N tool calls
-    require_checkpoint_for_done: warn  # off | warn | block
+    require_checkpoint_for_done: warn # off | warn | block
 ```
 
 <Aside type="caution">
@@ -535,9 +535,9 @@ Nodes with a score below the `threshold` (default: 0.1) are archived.
 
 ### Trigger Modes
 
-| Trigger   | When decay runs                                        |
-| --------- | ------------------------------------------------------ |
-| `on_done` | Automatically during wu:done (after gates pass)        |
+| Trigger   | When decay runs                                         |
+| --------- | ------------------------------------------------------- |
+| `on_done` | Automatically during wu:done (after gates pass)         |
 | `manual`  | Only via `pnpm mem:cleanup` (explicit operator control) |
 
 When `trigger: on_done`, decay archival runs as part of the wu:done lifecycle. Errors never block completion (fail-open). When decay is disabled, existing wu:done behavior is unchanged.
@@ -548,10 +548,10 @@ When `trigger: on_done`, decay archival runs as part of the wu:done lifecycle. E
 # .lumenflow.config.yaml
 memory:
   decay:
-    enabled: true        # Enable decay-based archival
-    threshold: 0.1       # Archive nodes below this score (0-1)
-    half_life_days: 30   # Days until relevance halves
-    trigger: on_done     # on_done | manual
+    enabled: true # Enable decay-based archival
+    threshold: 0.1 # Archive nodes below this score (0-1)
+    half_life_days: 30 # Days until relevance halves
+    trigger: on_done # on_done | manual
 ```
 
 Manual cleanup remains available regardless of configuration:

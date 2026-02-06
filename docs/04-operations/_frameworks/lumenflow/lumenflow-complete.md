@@ -610,10 +610,10 @@ memory:
 
 **wu:done checkpoint gate:**
 
-| `require_checkpoint_for_done` | Behavior                                        |
-| ----------------------------- | ----------------------------------------------- |
-| `off`                         | No checkpoint check during wu:done              |
-| `warn` (default)              | Warn if no checkpoints exist for the WU         |
+| `require_checkpoint_for_done` | Behavior                                         |
+| ----------------------------- | ------------------------------------------------ |
+| `off`                         | No checkpoint check during wu:done               |
+| `warn` (default)              | Warn if no checkpoints exist for the WU          |
 | `block`                       | Block wu:done if no checkpoints exist for the WU |
 
 On completion, wu:done cleans up hook counter files at `.lumenflow/state/hook-counters/<WU_ID>.json`.
@@ -662,12 +662,12 @@ memory:
     trigger: on_done # 'on_done' | 'manual' (default: on_done)
 ```
 
-| Field            | Type    | Default   | Description                                    |
-| ---------------- | ------- | --------- | ---------------------------------------------- |
-| `enabled`        | boolean | `false`   | Enable automated decay archival                |
-| `threshold`      | number  | `0.1`     | Score below which nodes are archived (0 to 1)  |
-| `half_life_days` | integer | `30`      | Days until node relevance halves               |
-| `trigger`        | enum    | `on_done` | When to run: `on_done` or `manual`             |
+| Field            | Type    | Default   | Description                                   |
+| ---------------- | ------- | --------- | --------------------------------------------- |
+| `enabled`        | boolean | `false`   | Enable automated decay archival               |
+| `threshold`      | number  | `0.1`     | Score below which nodes are archived (0 to 1) |
+| `half_life_days` | integer | `30`      | Days until node relevance halves              |
+| `trigger`        | enum    | `on_done` | When to run: `on_done` or `manual`            |
 
 **Trigger modes:**
 
