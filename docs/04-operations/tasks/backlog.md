@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -465,3 +465,4 @@ sections:
 - [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml)
 - [WU-1477 — Document INIT-015 memory enforcement features (internal + Starlight)](wu/WU-1477.yaml)
 - [WU-1486 — Sync MCP internal and Starlight docs with current tool surface](wu/WU-1486.yaml)
+- [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml)
