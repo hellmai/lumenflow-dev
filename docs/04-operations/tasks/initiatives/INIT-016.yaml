@@ -1,12 +1,52 @@
 id: INIT-016
 slug: cloud-branch-pr
 title: First-Class Cloud Support via branch-pr
-description: ''
-status: draft
+description: Deliver the missing no-worktree + PR completion path (branch-pr) so cloud agents can
+  run LumenFlow lifecycle commands with parity to local flows. Scope includes mode primitives,
+  claim/done/prep behavior, parser parity, config-driven cloud auto-detection, MCP claim
+  passthrough, and docs/constraints alignment.
+status: in_progress
 priority: P1
 owner: workflow
 created: 2026-02-06
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'WU-A: Add branch-pr mode primitives'
+    status: pending
+  - id: 2
+    title: 'WU-B: Add wu:claim cloud mode + mode-resolution matrix'
+    status: pending
+  - id: 3
+    title: 'WU-C: Add wu:done branch-pr completion path'
+    status: pending
+  - id: 4
+    title: 'WU-D: Add wu:prep branch-pr support'
+    status: pending
+  - id: 5
+    title: 'WU-E: Fix --pr-draft parser/help parity'
+    status: pending
+  - id: 6
+    title: 'WU-F1: Add config-driven cloud auto-detection core'
+    status: pending
+  - id: 7
+    title: 'WU-F2: Align docs, constraints, and quick-ref for branch-pr cloud flow'
+    status: pending
+success_metrics:
+  - branch-pr claimed_mode exists and is selectable via --branch-only --pr-mode or --cloud
+  - wu:claim, wu:prep, wu:done support branch-pr without requiring worktrees
+  - --cloud and LUMENFLOW_CLOUD=1 always activate explicit cloud mode independent of config
+  - cloud.auto_detect + cloud.env_signals are schema-backed and config-driven with no core vendor
+    hardcoding
+  - PR cleanup semantics remain via wu:cleanup and existing worktree/worktree-pr/branch-only flows
+    stay backward compatible
+  - AGENTS/playbook/starting-prompt/vendor-support/quick-ref/constraints document first-class cloud
+    flow
 labels: []
 related_plan: lumenflow://plans/memoized-baking-sutton.md
+lanes:
+  - 'Framework: Core'
+  - 'Framework: CLI'
+  - 'Framework: MCP'
+  - 'Content: Documentation'
+notes:
+  - 'WU dependency graph follows plan ordering: A -> {B,C,D,F1}, E parallel, F2 last.'
