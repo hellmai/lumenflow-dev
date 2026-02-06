@@ -117,6 +117,9 @@ export const CLAIMED_MODES = {
 
   /** Worktree PR mode (worktree with manual PR workflow) */
   WORKTREE_PR: 'worktree-pr',
+
+  /** Branch PR mode (no worktree, PR-based completion for cloud agents) */
+  BRANCH_PR: 'branch-pr',
 };
 
 /**
