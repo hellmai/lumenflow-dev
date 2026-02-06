@@ -22,10 +22,11 @@ sections:
 
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1488 — Fix wu:done push race and harden git pull operations](wu/WU-1488.yaml) — Framework: Core
+- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 
 ## 🔧 In progress
 
-- [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -468,3 +469,4 @@ sections:
 - [WU-1433 — Init onboarding parity for scripts and docs paths](wu/WU-1433.yaml)
 - [WU-1479 — Fix wu:done push race condition and add provenance trailers](wu/WU-1479.yaml)
 - [WU-1384 — Relax spec completeness checks for done/cancelled WUs](wu/WU-1384.yaml)
+- [WU-1487 — Harden worktree command UX for dist bootstrap and claim repair guidance](wu/WU-1487.yaml)

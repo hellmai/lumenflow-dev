@@ -912,4 +912,5 @@
 {"type":"claim","wuId":"WU-1479","timestamp":"2026-02-06T14:09:56.365Z","lane":"Framework: Core","title":"Fix wu:done push race condition and add provenance trailers"}
 {"type":"complete","wuId":"WU-1479","timestamp":"2026-02-06T14:10:07.296Z"}
 {"type":"complete","wuId":"WU-1384","timestamp":"2026-02-06T14:13:14.498Z"}
-{"type":"claim","wuId":"WU-1487","lane":"Framework: CLI","title":"Harden worktree command UX for dist bootstrap and claim repair guidance","timestamp":"2026-02-06T14:14:56.784Z"}
+{"type":"claim","wuId":"WU-1487","timestamp":"2026-02-06T14:14:56.784Z","lane":"Framework: CLI","title":"Harden worktree command UX for dist bootstrap and claim repair guidance"}
+{"type":"complete","wuId":"WU-1487","timestamp":"2026-02-06T14:23:08.473Z"}

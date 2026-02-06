@@ -2,7 +2,7 @@ id: WU-1487
 title: Harden worktree command UX for dist bootstrap and claim repair guidance
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -63,3 +63,5 @@ acceptance:
     single invocation; otherwise clear deterministic exit with exact next step.
   - Unit tests cover the updated guidance and missing-dist bootstrap diagnostics.
   - Internal docs/quick-ref are updated to match the final behavior.
+locked: true
+completed_at: 2026-02-06T14:23:05.913Z
