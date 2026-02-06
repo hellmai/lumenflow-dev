@@ -85,10 +85,7 @@ export const wuClaimSchema = z.object({
     .boolean()
     .optional()
     .describe('Use branch-only mode (no worktree, direct branch work)'),
-  pr_mode: z
-    .boolean()
-    .optional()
-    .describe('Use PR mode (create PR instead of auto-merge)'),
+  pr_mode: z.boolean().optional().describe('Use PR mode (create PR instead of auto-merge)'),
 });
 
 export type WuClaimInput = z.infer<typeof wuClaimSchema>;
