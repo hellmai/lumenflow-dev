@@ -24,7 +24,7 @@ function logForceBypass(hookName, projectRoot) {
   if (!reason) {
     console.warn(
       `[${hookName}] Warning: LUMENFLOW_FORCE_REASON not set. ` +
-        'Consider: LUMENFLOW_FORCE_REASON="reason" LUMENFLOW_FORCE=1 git ...',
+        'Please provide a reason for the audit trail.',
     );
   }
 
@@ -172,8 +172,8 @@ if (MAIN_BRANCHES.includes(branch)) {
     console.error('');
     console.error('Use pnpm wu:* commands to create properly formatted commits.');
     console.error('');
-    console.error('To bypass (emergency only):');
-    console.error('  LUMENFLOW_FORCE=1 git commit ...');
+    console.error('To fix workflow state:');
+    console.error('  pnpm wu:recover --id WU-XXXX');
     console.error('');
     process.exit(1);
   }
@@ -203,8 +203,8 @@ if (branch.startsWith(LANE_PREFIX)) {
       console.error('Or include the WU ID anywhere:');
       console.error(`  feat: add feature for ${wuId.toUpperCase()}`);
       console.error('');
-      console.error('To bypass (emergency only):');
-      console.error('  LUMENFLOW_FORCE=1 git commit ...');
+      console.error('To fix workflow state:');
+      console.error(`  pnpm wu:recover --id ${wuId.toUpperCase()}`);
       console.error('');
       process.exit(1);
     }

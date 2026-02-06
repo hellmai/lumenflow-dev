@@ -44,9 +44,8 @@ log_bypass() {
 warn_no_reason() {
     echo "" >&2
     echo "=== LUMENFLOW FORCE WARNING ===" >&2
-    echo "LUMENFLOW_FORCE used without LUMENFLOW_FORCE_REASON." >&2
-    echo "Please provide a reason for audit trail:" >&2
-    echo "  LUMENFLOW_FORCE_REASON=\"your reason\" LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "Hook bypass used without a reason." >&2
+    echo "Please provide a reason for the audit trail." >&2
     echo "===============================" >&2
 }
 
@@ -99,7 +98,7 @@ if [ ${#FAILURES[@]} -gt 0 ]; then
         echo "  - $fail" >&2
     done
     echo "" >&2
-    echo "If this is a false positive, use: LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "If this is a false positive, use: pnpm wu:recover --id WU-XXXX" >&2
     echo "==============================" >&2
     exit 1
 fi

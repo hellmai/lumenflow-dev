@@ -30,8 +30,8 @@ case "$BRANCH" in tmp/*) exit 0 ;; esac
 if [ "$LUMENFLOW_FORCE" = "1" ]; then
   if [ -z "$LUMENFLOW_FORCE_REASON" ]; then
     echo "" >&2
-    echo "[pre-commit] Warning: LUMENFLOW_FORCE_REASON not set." >&2
-    echo "Consider: LUMENFLOW_FORCE_REASON=\"reason\" LUMENFLOW_FORCE=1 git commit ..." >&2
+    echo "[pre-commit] Warning: Hook bypass used without a reason." >&2
+    echo "Please provide a reason for the audit trail." >&2
     echo "" >&2
   fi
   # Log bypass to .beacon/ for audit trail
@@ -79,10 +79,10 @@ case "$BRANCH" in
     echo "  - Run:  pnpm wu:help" >&2
     echo "" >&2
     echo "------------------------------------------------------------------" >&2
-    echo "EMERGENCY BYPASS (last resort, logged)" >&2
+    echo "STUCK?" >&2
     echo "------------------------------------------------------------------" >&2
-    echo "Bypasses are audit-logged. Only use for genuine emergencies." >&2
-    echo "  LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON=\"<reason>\" git commit ..." >&2
+    echo "If you need to fix workflow state:" >&2
+    echo "  pnpm wu:recover --id WU-XXXX" >&2
     echo "------------------------------------------------------------------" >&2
     echo "" >&2
     exit 1

@@ -25,7 +25,7 @@ function logForceBypass(hookName, projectRoot) {
   if (!reason) {
     console.warn(
       `[${hookName}] Warning: LUMENFLOW_FORCE_REASON not set. ` +
-        'Consider: LUMENFLOW_FORCE_REASON="reason" LUMENFLOW_FORCE=1 git ...',
+        'Please provide a reason for the audit trail.',
     );
   }
 

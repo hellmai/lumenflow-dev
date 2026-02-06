@@ -150,22 +150,14 @@ describe('pre-commit hook (WU-1164)', () => {
       expect(message).toContain('LUMENFLOW.md');
     });
 
-    it('puts emergency bypass at the bottom with warning', () => {
+    it('suggests workflow-correct recovery instead of LUMENFLOW_FORCE (WU-1485)', () => {
       const message = formatMainBranchBlockMessage('main');
-      const lines = message.split('\n');
 
-      // Find positions
-      const bypassIndex = lines.findIndex((l) => l.includes('LUMENFLOW_FORCE'));
-      const claimIndex = lines.findIndex((l) => l.includes('wu:claim'));
-      const whyIndex = lines.findIndex((l) => l.includes('WHY'));
+      // Must NOT contain LUMENFLOW_FORCE in error output
+      expect(message).not.toContain('LUMENFLOW_FORCE');
 
-      // Bypass should come after the main content
-      expect(bypassIndex).toBeGreaterThan(claimIndex);
-      expect(bypassIndex).toBeGreaterThan(whyIndex);
-
-      // Should have warning language near bypass
-      const bypassSection = lines.slice(bypassIndex - 3, bypassIndex + 3).join('\n');
-      expect(bypassSection).toMatch(/emergency|last resort|logged|sparingly/i);
+      // Must suggest proper workflow commands instead
+      expect(message).toMatch(/wu:done|wu:recover/);
     });
 
     it('uses consistent box characters from constants', () => {

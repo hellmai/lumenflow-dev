@@ -27,7 +27,7 @@ function logForceBypass(hookName, projectRoot) {
   if (!reason) {
     console.warn(
       `[${hookName}] Warning: LUMENFLOW_FORCE_REASON not set. ` +
-        'Consider: LUMENFLOW_FORCE_REASON="reason" LUMENFLOW_FORCE=1 git ...',
+        'Please provide a reason for the audit trail.',
     );
   }
 
@@ -140,8 +140,8 @@ for (const line of stdin.split('\n')) {
     console.error('  cd /path/to/repo');
     console.error('  pnpm wu:done --id WU-XXXX');
     console.error('');
-    console.error('To bypass (emergency only):');
-    console.error('  LUMENFLOW_FORCE=1 git push ...');
+    console.error('To fix workflow state:');
+    console.error('  pnpm wu:recover --id WU-XXXX');
     console.error('');
     process.exit(1);
   }
