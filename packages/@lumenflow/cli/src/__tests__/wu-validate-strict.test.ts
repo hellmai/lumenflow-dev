@@ -1,17 +1,22 @@
 /**
  * @file wu-validate-strict.test.ts
  * Test suite for wu:validate strict validation behavior (WU-1329)
+ * Extended by WU-1384: Skip completeness checks for done/cancelled WUs
  *
  * WU-1329: Make wu:validate treat warnings as errors by default
+ * WU-1384: Relax spec completeness checks for done/cancelled WUs
  *
  * Tests:
  * - Default strict mode behavior (warnings treated as errors)
  * - --no-strict flag restores original behavior (warnings advisory)
  * - Help text documents strict default
+ * - Done/cancelled WUs skip completeness warnings
+ * - Active WUs (ready/in_progress/blocked) still get completeness warnings
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { WU_OPTIONS, NEGATED_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { validateWUCompleteness } from '@lumenflow/core/dist/wu-schema.js';
 
 describe('wu:validate strict validation (WU-1329)', () => {
   describe('WU_OPTIONS.noStrict configuration', () => {
@@ -134,6 +139,72 @@ describe('wu:validate strict validation (WU-1329)', () => {
     it('should document that --no-strict bypasses strict validation', () => {
       const expectedDescription = 'Bypass strict validation';
       expect(WU_OPTIONS.noStrict.description).toContain(expectedDescription);
+    });
+  });
+
+  // WU-1384: Completeness checks skipped for done/cancelled WUs
+  describe('done/cancelled WU completeness bypass (WU-1384)', () => {
+    // Minimal WU fixture missing notes/tests/spec_refs (would trigger warnings on active WUs)
+    const makeWU = (status: string, type = 'feature') => ({
+      id: 'WU-9999',
+      title: 'Test WU',
+      lane: 'Framework: Core',
+      type,
+      status,
+      priority: 'P2',
+      created: '2026-01-01',
+      code_paths: ['packages/test/src/index.ts'],
+      acceptance: ['Some criterion'],
+      description: 'A sufficiently long description that passes the minimum length check easily.',
+      // Intentionally missing: notes, tests.manual, spec_refs
+    });
+
+    it('should return no warnings for done WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('done');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('should return no warnings for cancelled WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('cancelled');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('should return no warnings for completed WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('completed');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('should return no warnings for abandoned WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('abandoned');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('should return no warnings for superseded WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('superseded');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('should still warn for ready WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('ready');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings.length).toBeGreaterThan(0);
+    });
+
+    it('should still warn for in_progress WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('in_progress');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings.length).toBeGreaterThan(0);
+    });
+
+    it('should still warn for blocked WUs missing notes/tests/spec_refs', () => {
+      const wu = makeWU('blocked');
+      const result = validateWUCompleteness(wu);
+      expect(result.warnings.length).toBeGreaterThan(0);
     });
   });
 });

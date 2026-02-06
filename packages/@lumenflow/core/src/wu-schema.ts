@@ -21,7 +21,13 @@
  */
 
 import { z } from 'zod';
-import { WU_STATUS, WU_DEFAULTS, STRING_LITERALS, WU_EXPOSURE_VALUES } from './wu-constants.js';
+import {
+  WU_STATUS,
+  WU_STATUS_GROUPS,
+  WU_DEFAULTS,
+  STRING_LITERALS,
+  WU_EXPOSURE_VALUES,
+} from './wu-constants.js';
 import { normalizeISODateTime } from './date-utils.js';
 
 /**
@@ -931,6 +937,14 @@ export function validateAndNormalizeWUYAML(data) {
  */
 export function validateWUCompleteness(wu) {
   const warnings = [];
+
+  // WU-1384: Skip completeness checks for terminal WUs (done, cancelled, etc.)
+  // These are immutable historical records - enforcing completeness is pointless
+  const isTerminal = WU_STATUS_GROUPS.TERMINAL.includes(wu.status);
+  if (isTerminal) {
+    return { warnings };
+  }
+
   const type = wu.type || 'feature';
 
   // Only check feature and bug WUs - docs/chore/process don't need these
