@@ -7,6 +7,7 @@ _Last updated: 2026-02-06_
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml)
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml)
 - [WU-1485 — Remove LUMENFLOW_FORCE suggestions from hook error messages](wu/WU-1485.yaml)
+- [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml)
 
 ## Blocked
 
