@@ -24,3 +24,12 @@ success_metrics:
   - Zero manual fixes needed between init and first wu:done
   - Haven re-test passes end-to-end without intervention
 labels: []
+wus:
+  - WU-1517
+  - WU-1518
+  - WU-1519
+  - WU-1520
+  - WU-1521
+  - WU-1522
+  - WU-1523
+  - WU-1524
