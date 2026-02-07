@@ -7,8 +7,7 @@ priority: P1
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/initiative-remove-wu.ts
-  - packages/@lumenflow/cli/src/__tests__/
+  - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
 tests:
   manual:
     - Run `pnpm wu:delete --id <test-wu>` and verify no stale references remain in
