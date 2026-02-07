@@ -9,7 +9,8 @@
  * WU-1424: Initiative tools: initiative_list, initiative_status, initiative_create, initiative_edit,
  *          initiative_add_wu, initiative_remove_wu, initiative_bulk_assign, initiative_plan
  *          Memory tools: mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup, mem_context,
- *          mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage
+ *          mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage,
+ *          mem_recover
  * WU-1425: Agent tools: agent_session, agent_session_end, agent_log_issue, agent_issues_query
  *          Orchestration tools: orchestrate_initiative, orchestrate_init_status, orchestrate_monitor
  *          Spawn tools: spawn_list
@@ -20,7 +21,7 @@
  *          lumenflow_commands, lumenflow_docs_sync, lumenflow_release, lumenflow_sync_templates
  * WU-1431: Uses shared Zod schemas from @lumenflow/core for CLI/MCP parity
  * WU-1454: All 16 WU lifecycle commands now use shared schemas
- * WU-1456: All 13 memory commands now use shared schemas
+ * WU-1456: Memory commands use shared schemas where available
  * WU-1457: All remaining commands (flow, validation, setup, agent, orchestration, spawn) use shared schemas
  *
  * Architecture:
@@ -338,6 +339,15 @@ const syncTemplatesMcpSchema = z.object({
   dry_run: z.boolean().optional(),
   verbose: z.boolean().optional(),
   check_drift: z.boolean().optional(),
+});
+
+// mem:recover public parity schema (not yet modeled in @lumenflow/core memory schemas)
+const memRecoverSchema = z.object({
+  wu: z.string().optional(),
+  max_size: z.number().optional(),
+  format: z.enum(['json', 'human']).optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
 });
 
 // WU-1483: Schemas for wave-2 parity commands not yet modeled in @lumenflow/core
@@ -984,7 +994,7 @@ export const lumenflowTool: ToolDefinition = {
     if (input.framework) args.push('--framework', input.framework as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:init', args, cliOptions);
+    const result = await runCliCommand('lumenflow', args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow initialized' });
@@ -2610,6 +2620,7 @@ const MemoryErrorCodes = {
   MEM_SIGNAL_ERROR: 'MEM_SIGNAL_ERROR',
   MEM_SUMMARIZE_ERROR: 'MEM_SUMMARIZE_ERROR',
   MEM_TRIAGE_ERROR: 'MEM_TRIAGE_ERROR',
+  MEM_RECOVER_ERROR: 'MEM_RECOVER_ERROR',
 } as const;
 
 /**
@@ -3027,6 +3038,47 @@ export const memTriageTool: ToolDefinition = {
   },
 };
 
+/**
+ * mem_recover - Generate post-compaction recovery context for a Work Unit
+ */
+export const memRecoverTool: ToolDefinition = {
+  name: 'mem_recover',
+  description: 'Generate recovery context after compaction for a Work Unit',
+  inputSchema: memRecoverSchema,
+
+  async execute(input, options) {
+    if (!input.wu) {
+      return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--wu', input.wu as string];
+    if (input.max_size !== undefined) args.push('--max-size', String(input.max_size));
+    if (input.format) args.push('--format', input.format as string);
+    if (input.quiet) args.push('--quiet');
+    if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('mem:recover', args, cliOptions);
+
+    if (result.success) {
+      if (input.format === 'json') {
+        try {
+          const data = JSON.parse(result.stdout);
+          return success(data);
+        } catch {
+          return success({ message: result.stdout || 'Recovery context generated' });
+        }
+      }
+      return success({ message: result.stdout || 'Recovery context generated' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'mem:recover failed',
+        MemoryErrorCodes.MEM_RECOVER_ERROR,
+      );
+    }
+  },
+};
+
 // ============================================================================
 // Agent Operations (WU-1425)
 // ============================================================================
@@ -3096,7 +3148,7 @@ export const agentSessionEndTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('agent:session:end', [], cliOptions);
+    const result = await runCliCommand('agent:session-end', [], cliOptions);
 
     if (result.success) {
       try {
@@ -3107,7 +3159,7 @@ export const agentSessionEndTool: ToolDefinition = {
       }
     } else {
       return error(
-        result.stderr || result.error?.message || 'agent:session:end failed',
+        result.stderr || result.error?.message || 'agent:session-end failed',
         AgentErrorCodes.AGENT_SESSION_END_ERROR,
       );
     }
@@ -3626,13 +3678,13 @@ export const lumenflowInitTool: ToolDefinition = {
     if (input.merge) args.push('--merge');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:init', args, cliOptions);
+    const result = await runCliCommand('lumenflow', args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow initialized' });
     } else {
       return error(
-        result.stderr || result.error?.message || 'lumenflow:init failed',
+        result.stderr || result.error?.message || 'lumenflow failed',
         ErrorCodes.LUMENFLOW_INIT_ERROR,
       );
     }
@@ -3773,7 +3825,7 @@ export const lumenflowReleaseTool: ToolDefinition = {
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('release', args, cliOptions);
+    const result = await runCliCommand('lumenflow:release', args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Release complete' });
@@ -3950,6 +4002,7 @@ export const allTools: ToolDefinition[] = [
   memSignalTool,
   memSummarizeTool,
   memTriageTool,
+  memRecoverTool,
   // WU-1425: Agent tools
   agentSessionTool,
   agentSessionEndTool,

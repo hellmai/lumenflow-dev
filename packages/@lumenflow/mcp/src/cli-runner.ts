@@ -54,22 +54,52 @@ export interface CliRunnerResult {
 const DEFAULT_TIMEOUT_MS = 120000;
 
 /**
- * Execute a LumenFlow CLI command
+ * Canonical-first command fallback matrix.
  *
- * @param command - CLI command to execute (e.g., 'wu:status', 'wu:claim', 'gates')
- * @param args - Command arguments
- * @param options - Execution options
- * @returns Command execution result
- *
- * @example
- * // Get WU status
- * const result = await runCliCommand('wu:status', ['--id', 'WU-1412', '--json']);
- *
- * @example
- * // Run gates
- * const result = await runCliCommand('gates', ['--docs-only']);
+ * When a canonical command is unavailable in a target project (missing script),
+ * retry with compatibility aliases to preserve low-cost backwards compatibility.
  */
-export async function runCliCommand(
+const COMMAND_FALLBACKS: Record<string, string[]> = {
+  'agent:session-end': ['agent:session:end'],
+  'initiative:bulk-assign': ['initiative:bulk-assign-wus'],
+  lumenflow: ['lumenflow:init', 'lumenflow-init'],
+  gates: ['lumenflow:gates', 'lumenflow-gates'],
+  validate: ['lumenflow:validate', 'lumenflow-validate'],
+  'lumenflow:release': ['release'],
+  'docs:sync': ['lumenflow:docs-sync', 'lumenflow-docs-sync'],
+  'sync:templates': ['lumenflow:sync-templates', 'lumenflow-sync-templates'],
+};
+
+/**
+ * Build ordered command candidates (canonical first, then compatibility aliases).
+ */
+export function getCommandCandidates(command: string): string[] {
+  const seen = new Set<string>();
+  const ordered = [command, ...(COMMAND_FALLBACKS[command] || [])];
+  return ordered.filter((candidate) => {
+    if (seen.has(candidate)) return false;
+    seen.add(candidate);
+    return true;
+  });
+}
+
+/**
+ * Returns true when the command failed because the script/command wasn't found.
+ */
+function isMissingCommandFailure(result: CliRunnerResult): boolean {
+  const detail = `${result.stderr}\n${result.error?.message || ''}`;
+  return (
+    /ERR_PNPM_NO_SCRIPT/i.test(detail) ||
+    /Command\s+["'][^"']+["']\s+not\s+found/i.test(detail) ||
+    /Unknown command/i.test(detail) ||
+    /No matching command found/i.test(detail)
+  );
+}
+
+/**
+ * Execute a single pnpm command without fallback behavior.
+ */
+async function runSingleCommand(
   command: string,
   args: string[] = [],
   options: CliRunnerOptions = {},
@@ -121,6 +151,56 @@ export async function runCliCommand(
       },
     };
   }
+}
+
+/**
+ * Execute a LumenFlow CLI command
+ *
+ * @param command - CLI command to execute (e.g., 'wu:status', 'wu:claim', 'gates')
+ * @param args - Command arguments
+ * @param options - Execution options
+ * @returns Command execution result
+ *
+ * @example
+ * // Get WU status
+ * const result = await runCliCommand('wu:status', ['--id', 'WU-1412', '--json']);
+ *
+ * @example
+ * // Run gates
+ * const result = await runCliCommand('gates', ['--docs-only']);
+ */
+export async function runCliCommand(
+  command: string,
+  args: string[] = [],
+  options: CliRunnerOptions = {},
+): Promise<CliRunnerResult> {
+  const candidates = getCommandCandidates(command);
+  let lastFailure: CliRunnerResult | null = null;
+
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    const result = await runSingleCommand(candidate, args, options);
+
+    if (result.success) {
+      return result;
+    }
+
+    lastFailure = result;
+    const hasFallbackRemaining = i < candidates.length - 1;
+    if (!hasFallbackRemaining || !isMissingCommandFailure(result)) {
+      return result;
+    }
+  }
+
+  return (
+    lastFailure || {
+      success: false,
+      stdout: '',
+      stderr: 'Command execution failed',
+      exitCode: 1,
+      error: { message: 'Command execution failed' },
+    }
+  );
 }
 
 /**

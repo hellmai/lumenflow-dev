@@ -308,8 +308,10 @@ function extractCommandMetadata(): CommandMetadata[] {
 
   const binEntries = cliPackageJson.bin as Record<string, string>;
   const commands: CommandMetadata[] = [];
-  const commandsByBin = new Map<string, CommandMetadata>();
-  const pnpmCommands = new Set<string>();
+  const extractedByBin = new Map<
+    string,
+    { options: WUOption[]; required: string[]; category: string; sourceDescription: string }
+  >();
 
   // Command categories based on prefix
   const categories: Record<string, string> = {
@@ -328,26 +330,6 @@ function extractCommandMetadata(): CommandMetadata[] {
   const manifestCategoryOverrides: Record<string, string> = {
     'Gates & Quality': 'Quality Gates',
     'Setup & Development': 'Setup',
-  };
-
-  // Manual descriptions for commands - these are authoritative
-  const manualDescriptions: Record<string, string> = {
-    gates: 'Run quality gates (format, lint, typecheck, test)',
-    'lumenflow-init': 'Initialize LumenFlow in a project',
-    lumenflow: 'Initialize LumenFlow in a project',
-    'agent-session': 'Start an agent session for a WU',
-    'agent-session-end': 'End an agent session',
-    'agent-log-issue': 'Log an issue encountered during agent work',
-    'agent-issues-query': 'Query logged issues from agent sessions',
-    'flow-report': 'Generate DORA metrics flow report',
-    'flow-bottlenecks': 'Identify workflow bottlenecks and critical path',
-    'metrics-snapshot': 'Capture current metrics snapshot for dashboards',
-    'spawn-list': 'List spawned sub-agents and their status',
-    'orchestrate-initiative': 'Orchestrate initiative execution with agents',
-    'orchestrate-init-status': 'Show initiative orchestration status',
-    'orchestrate-monitor': 'Monitor spawned agent progress and signals',
-    'lumenflow-docs-sync':
-      'Sync agent onboarding docs to existing projects (skips existing files by default, use --force to overwrite)',
   };
 
   // Manual options for commands that do not use createWUParser (Commander-only)
@@ -418,25 +400,20 @@ function extractCommandMetadata(): CommandMetadata[] {
     'agent-log-issue': ['category', 'severity', 'title', 'description'],
   };
 
-  for (const [binName, binPath] of Object.entries(binEntries)) {
-    // Skip aliases
-    if (binName === 'lumenflow-gates') continue;
+  function extractFromBin(binName: string, binPath: string) {
+    const cached = extractedByBin.get(binName);
+    if (cached) return cached;
 
-    // Derive source file path
+    // Derive source file path from bin path
     const srcFileName = binPath.replace('./dist/', '').replace('.js', '.ts');
     const srcPath = join(ROOT, 'packages/@lumenflow/cli/src', srcFileName);
 
-    // Determine category
     const prefix = binName.split('-')[0];
     const category = categories[prefix] || 'Other';
 
-    // Convert bin name to pnpm command (wu-claim -> wu:claim, agent-issues-query -> agent:issues-query)
-    const pnpmCommand = binName.replace('-', ':');
-
-    // Try to extract options from source file
     let options: WUOption[] = [];
     let required: string[] = [];
-    let description = manualDescriptions[binName] || `Run ${pnpmCommand}`;
+    let sourceDescription = `Run ${binName}`;
 
     if (existsSync(srcPath)) {
       const srcContent = readFileSync(srcPath, 'utf-8');
@@ -446,12 +423,12 @@ function extractCommandMetadata(): CommandMetadata[] {
         /createWUParser\s*\(\s*\{[\s\S]*?description:\s*['"`]([^'"`]+)['"`]/,
       );
       if (descMatch) {
-        description = descMatch[1];
-      } else if (!manualDescriptions[binName]) {
+        sourceDescription = descMatch[1];
+      } else {
         // Fall back to JSDoc at top of file
         const jsdocMatch = srcContent.match(/\/\*\*\s*\n\s*\*\s*([^\n*@]+)/);
         if (jsdocMatch) {
-          description = jsdocMatch[1].trim();
+          sourceDescription = jsdocMatch[1].trim();
         }
       }
 
@@ -491,41 +468,40 @@ function extractCommandMetadata(): CommandMetadata[] {
       required = manualRequired[binName] || required;
     }
 
-    const command: CommandMetadata = {
-      name: binName,
-      binName,
-      pnpmCommand,
-      category,
-      description,
+    const extracted = {
       options,
       required,
+      category,
+      sourceDescription,
     };
-
-    commands.push(command);
-    commandsByBin.set(binName, command);
-    pnpmCommands.add(pnpmCommand);
+    extractedByBin.set(binName, extracted);
+    return extracted;
   }
 
-  // Include public manifest aliases (e.g., docs:sync, gates:docs) not captured by bin entries
   for (const manifestCommand of PUBLIC_MANIFEST) {
-    if (!manifestCommand.name.includes(':')) continue;
-    if (pnpmCommands.has(manifestCommand.name)) continue;
-
-    const baseCommand = commandsByBin.get(manifestCommand.binName);
+    const binPath = binEntries[manifestCommand.binName] ?? manifestCommand.binPath;
+    const extracted = extractFromBin(manifestCommand.binName, binPath);
     const category =
       manifestCategoryOverrides[manifestCommand.category] ||
       categories[manifestCommand.name.split(':')[0]] ||
-      'Other';
+      extracted.category;
 
     commands.push({
-      name: manifestCommand.binName,
+      name: manifestCommand.name,
       binName: manifestCommand.binName,
       pnpmCommand: manifestCommand.name,
       category,
-      description: manifestCommand.description,
-      options: baseCommand?.options ?? [],
-      required: baseCommand?.required ?? [],
+      description: manifestCommand.description || extracted.sourceDescription,
+      options: extracted.options,
+      required: extracted.required,
     });
+
+    // Commander-only commands require explicit option metadata.
+    if (manualOptions[manifestCommand.binName]) {
+      commands[commands.length - 1].options = manualOptions[manifestCommand.binName];
+      commands[commands.length - 1].required =
+        manualRequired[manifestCommand.binName] || extracted.required;
+    }
   }
 
   return commands.sort((a, b) => {
@@ -533,7 +509,7 @@ function extractCommandMetadata(): CommandMetadata[] {
     if (a.category !== b.category) {
       return a.category.localeCompare(b.category);
     }
-    return a.name.localeCompare(b.name);
+    return a.pnpmCommand.localeCompare(b.pnpmCommand);
   });
 }
 

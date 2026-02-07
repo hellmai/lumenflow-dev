@@ -69,6 +69,7 @@
     "mem-summarize": "./dist/mem-summarize.js",
     "mem-triage": "./dist/mem-triage.js",
     "mem-delete": "./dist/mem-delete.js",
+    "mem-recover": "./dist/mem-recover.js",
     "initiative-create": "./dist/initiative-create.js",
     "initiative-edit": "./dist/initiative-edit.js",
     "initiative-list": "./dist/initiative-list.js",

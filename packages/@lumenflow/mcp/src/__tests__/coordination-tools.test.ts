@@ -111,7 +111,7 @@ describe('Agent MCP tools (WU-1425)', () => {
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'agent:session:end',
+        'agent:session-end',
         expect.any(Array),
         expect.any(Object),
       );

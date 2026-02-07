@@ -2,8 +2,9 @@
  * @file memory-tools.test.ts
  * @description Tests for Memory MCP tool implementations
  *
- * WU-1424: 13 memory tools: mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup,
- * mem_context, mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage
+ * WU-1424: 14 memory tools: mem_init, mem_start, mem_ready, mem_checkpoint, mem_cleanup,
+ * mem_context, mem_create, mem_delete, mem_export, mem_inbox, mem_signal, mem_summarize, mem_triage,
+ * mem_recover
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -21,6 +22,7 @@ import {
   memSignalTool,
   memSummarizeTool,
   memTriageTool,
+  memRecoverTool,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 
@@ -590,6 +592,67 @@ describe('Memory MCP tools (WU-1424)', () => {
           'node-123',
           '--lane',
           'Framework: Core',
+        ]),
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('mem_recover', () => {
+    it('should generate recovery context via CLI shell-out', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Recovery context generated',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await memRecoverTool.execute({ wu: 'WU-1424' });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'mem:recover',
+        expect.arrayContaining(['--wu', 'WU-1424']),
+        expect.any(Object),
+      );
+    });
+
+    it('should require wu parameter', async () => {
+      const result = await memRecoverTool.execute({});
+
+      expect(result.success).toBe(false);
+      expect(result.error?.message).toContain('wu');
+    });
+
+    it('should map optional flags', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: JSON.stringify({ wuId: 'WU-1424', context: '...', size: 512, truncated: false }),
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await memRecoverTool.execute({
+        wu: 'WU-1424',
+        max_size: 512,
+        format: 'json',
+        quiet: true,
+        base_dir: '/tmp/project',
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'mem:recover',
+        expect.arrayContaining([
+          '--wu',
+          'WU-1424',
+          '--max-size',
+          '512',
+          '--format',
+          'json',
+          '--quiet',
+          '--base-dir',
+          '/tmp/project',
         ]),
         expect.any(Object),
       );
