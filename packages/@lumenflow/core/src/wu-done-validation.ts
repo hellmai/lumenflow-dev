@@ -570,6 +570,9 @@ export const METADATA_ALLOWLIST_PATTERNS: string[] = [
   'docs/04-operations/tasks/status.md',
   'docs/04-operations/tasks/backlog.md',
   '.lumenflow/state/wu-events.jsonl',
+  '.lumenflow/flow.log',
+  '.lumenflow/skip-gates-audit.log',
+  '.lumenflow/skip-cos-gates-audit.log',
   // WU YAML and stamps are matched dynamically by WU ID (see isMetadataAllowlisted)
 ];
 
