@@ -547,7 +547,13 @@ export async function executeWorktreeCompletion(context) {
 
           // Sync/rebase before push (handles concurrent main advancement)
           const gitMain = getGitForCwd();
-          await gitMain.raw([GIT_COMMANDS.PULL, GIT_FLAGS.REBASE, REMOTES.ORIGIN, BRANCHES.MAIN]);
+          await gitMain.raw([
+            GIT_COMMANDS.PULL,
+            GIT_FLAGS.REBASE,
+            '--autostash',
+            REMOTES.ORIGIN,
+            BRANCHES.MAIN,
+          ]);
 
           // Push from main
           await gitMain.push(REMOTES.ORIGIN, BRANCHES.MAIN);
@@ -1305,6 +1311,7 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
             await gitAdapter.raw([
               GIT_COMMANDS.PULL,
               GIT_FLAGS.REBASE,
+              '--autostash',
               REMOTES.ORIGIN,
               BRANCHES.MAIN,
             ]);
@@ -1322,6 +1329,7 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
           await gitAdapter.raw([
             GIT_COMMANDS.PULL,
             GIT_FLAGS.REBASE,
+            '--autostash',
             REMOTES.ORIGIN,
             BRANCHES.MAIN,
           ]);

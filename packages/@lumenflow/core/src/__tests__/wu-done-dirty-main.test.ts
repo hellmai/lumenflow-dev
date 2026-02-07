@@ -85,6 +85,21 @@ describe('validateDirtyMain (WU-1503)', () => {
       const result = validateDirtyMain(status, wuId, codePaths);
       expect(result.valid).toBe(true);
     });
+
+    it('allows metadata allowlist files (flow.log)', () => {
+      const status = ' M .lumenflow/flow.log\n';
+      const result = validateDirtyMain(status, wuId, codePaths);
+      expect(result.valid).toBe(true);
+    });
+
+    it('allows metadata allowlist files (skip-gates audit logs)', () => {
+      const status = [
+        ' M .lumenflow/skip-gates-audit.log',
+        ' M .lumenflow/skip-cos-gates-audit.log',
+      ].join('\n');
+      const result = validateDirtyMain(status, wuId, codePaths);
+      expect(result.valid).toBe(true);
+    });
   });
 
   describe('unrelated dirty files (should block)', () => {
@@ -198,6 +213,25 @@ describe('validateDirtyMain (WU-1503)', () => {
       expect(
         METADATA_ALLOWLIST_PATTERNS.some(
           (p) => typeof p === 'string' && p.includes('wu-events.jsonl'),
+        ),
+      ).toBe(true);
+    });
+
+    it('allowlist includes flow.log', () => {
+      expect(
+        METADATA_ALLOWLIST_PATTERNS.some((p) => typeof p === 'string' && p.includes('flow.log')),
+      ).toBe(true);
+    });
+
+    it('allowlist includes skip-gates audit logs', () => {
+      expect(
+        METADATA_ALLOWLIST_PATTERNS.some(
+          (p) => typeof p === 'string' && p.includes('skip-gates-audit.log'),
+        ),
+      ).toBe(true);
+      expect(
+        METADATA_ALLOWLIST_PATTERNS.some(
+          (p) => typeof p === 'string' && p.includes('skip-cos-gates-audit.log'),
         ),
       ).toBe(true);
     });
