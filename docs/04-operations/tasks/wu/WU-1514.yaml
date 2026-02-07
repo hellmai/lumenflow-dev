@@ -7,10 +7,7 @@ priority: P2
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/state-doctor.ts
-  - packages/@lumenflow/cli/src/state-doctor-fix.ts
   - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
-  - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
 tests:
   manual:
     - Seed .lumenflow/state/wu-events.jsonl with one deleted-WU event and one valid WU event, run
@@ -20,7 +17,6 @@ tests:
       deleted WU.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
-    - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1514.done
