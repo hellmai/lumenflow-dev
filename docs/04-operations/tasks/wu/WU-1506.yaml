@@ -2,7 +2,7 @@ id: WU-1506
 title: 'Medium article: LumenFlow introduction'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -39,3 +39,5 @@ session_id: 66b5ebcd-6c9e-44f7-bf47-a797dcf0dbc3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T10:37:22.836Z
+locked: true
+completed_at: 2026-02-07T10:43:11.828Z

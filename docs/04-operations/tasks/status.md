@@ -4,7 +4,6 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-- [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml)
 - [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml)
 
 ## Blocked
@@ -459,3 +458,4 @@ _Last updated: 2026-02-07_
 - [WU-1495 — Add config-driven cloud auto-detection core](wu/WU-1495.yaml) — 2026-02-06
 - [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml) — 2026-02-06
 - [WU-1500 — Commit leftover mem:recover parity and regenerated docs](wu/WU-1500.yaml) — 2026-02-07
+- [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml) — 2026-02-07
