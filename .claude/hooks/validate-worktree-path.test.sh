@@ -114,6 +114,53 @@ echo "--- Regression: Valid operations allowed ---"
 # parsing logic separately from the path validation
 
 # ============================================
+# WU-1501 AC1: Fail-closed when no worktrees exist
+# Write/Edit should be blocked on main when no worktrees directory exists
+# (previously this was fail-open, allowing unguarded writes)
+# ============================================
+echo ""
+echo "--- WU-1501 AC1: Fail-closed when no worktrees exist ---"
+
+# Create a temp directory to simulate a repo with no worktrees
+TEMP_REPO=$(mktemp -d)
+mkdir -p "$TEMP_REPO/.lumenflow"
+# Deliberately do NOT create $TEMP_REPO/worktrees
+
+# Write to a code file path (non-allowlisted) should be blocked
+expect_block "Write to code file blocked when no worktrees" \
+  "{\"tool_name\": \"Write\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/packages/cli/src/file.ts\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+expect_block "Edit to code file blocked when no worktrees" \
+  "{\"tool_name\": \"Edit\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/packages/core/src/index.ts\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+# ============================================
+# WU-1501 AC2: Allowlist paths are permitted even without worktrees
+# ============================================
+echo ""
+echo "--- WU-1501 AC2: Allowlist paths allowed on main ---"
+
+expect_allow "Write to WU YAML allowed" \
+  "{\"tool_name\": \"Write\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/docs/04-operations/tasks/wu/WU-1501.yaml\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+expect_allow "Write to .lumenflow/ allowed" \
+  "{\"tool_name\": \"Write\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/.lumenflow/state/wu-events.jsonl\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+expect_allow "Write to .claude/ allowed" \
+  "{\"tool_name\": \"Write\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/.claude/settings.json\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+expect_allow "Write to plan/ scaffold allowed" \
+  "{\"tool_name\": \"Write\", \"tool_input\": {\"file_path\": \"$TEMP_REPO/plan/WU-1501-plan.md\"}}" \
+  "CLAUDE_PROJECT_DIR=$TEMP_REPO"
+
+# Clean up temp repo
+rm -rf "$TEMP_REPO"
+
+# ============================================
 # Acceptance Criteria 5: Audit logging
 # ============================================
 echo ""

@@ -188,19 +188,24 @@ export function generateEnforcementHooks(config: EnforcementConfig): GeneratedHo
 /**
  * Generate the enforce-worktree.sh hook script content.
  *
- * This hook blocks Write/Edit operations when not in a worktree.
- * Implements graceful degradation: allows operations if LumenFlow
- * state cannot be determined.
+ * WU-1501: Fail-closed on main. Blocks Write/Edit when no active claim context.
+ * Graceful degradation only when LumenFlow is NOT configured.
+ * Allowlist: docs/04-operations/tasks/wu/, .lumenflow/, .claude/, plan/
+ * Branch-PR claimed_mode remains writable from main checkout.
  */
 export function generateEnforceWorktreeScript(): string {
   // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
   /* eslint-disable no-useless-escape */
   return `#!/bin/bash
 #
-# enforce-worktree.sh (WU-1367)
+# enforce-worktree.sh (WU-1367, WU-1501)
 #
-# PreToolUse hook that blocks Write/Edit when not in a worktree.
-# Graceful degradation: allows operations if state cannot be determined.
+# PreToolUse hook that blocks Write/Edit on main checkout.
+# WU-1501: Fail-closed - blocks even when no worktrees exist.
+# Graceful degradation only when LumenFlow is NOT configured.
+#
+# Allowlist: docs/04-operations/tasks/wu/, .lumenflow/, .claude/, plan/
+# Branch-PR claimed_mode permits writes from main checkout.
 #
 # Exit codes:
 #   0 = Allow operation
@@ -214,8 +219,6 @@ SCRIPT_DIR="$(cd "$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
 # Graceful degradation: if we can't determine state, allow the operation
 graceful_allow() {
   local reason="\$1"
-  # Optionally log for debugging
-  # echo "[enforce-worktree] Graceful allow: \$reason" >&2
   exit 0
 }
 
@@ -284,26 +287,27 @@ if [[ -z "\$FILE_PATH" ]]; then
   graceful_allow "No file_path in input"
 fi
 
-# Check if any worktrees exist
-if [[ ! -d "\$WORKTREES_DIR" ]]; then
-  exit 0  # No worktrees = no enforcement needed
-fi
-
-WORKTREE_COUNT=\$(find "\$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-if [[ "\$WORKTREE_COUNT" -eq 0 ]]; then
-  exit 0  # No active worktrees
-fi
-
 # Resolve the file path
 RESOLVED_PATH=\$(realpath -m "\$FILE_PATH" 2>/dev/null || echo "\$FILE_PATH")
+
+# Allow if path is outside repo entirely
+if [[ "\$RESOLVED_PATH" != "\${MAIN_REPO_PATH}/"* && "\$RESOLVED_PATH" != "\${MAIN_REPO_PATH}" ]]; then
+  exit 0
+fi
 
 # Allow if path is inside a worktree
 if [[ "\$RESOLVED_PATH" == "\${WORKTREES_DIR}/"* ]]; then
   exit 0
 fi
 
-# Block if path is in main repo while worktrees exist
-if [[ "\$RESOLVED_PATH" == "\${MAIN_REPO_PATH}/"* || "\$RESOLVED_PATH" == "\${MAIN_REPO_PATH}" ]]; then
+# Check if any active worktrees exist
+WORKTREE_COUNT=0
+if [[ -d "\$WORKTREES_DIR" ]]; then
+  WORKTREE_COUNT=\$(find "\$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+fi
+
+# If worktrees exist, block writes to main repo (original behavior)
+if [[ "\$WORKTREE_COUNT" -gt 0 ]]; then
   ACTIVE_WORKTREES=\$(find "\$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' 2>/dev/null | head -5 | tr '\\n' ', ' | sed 's/,\$//')
 
   echo "" >&2
@@ -322,8 +326,43 @@ if [[ "\$RESOLVED_PATH" == "\${MAIN_REPO_PATH}/"* || "\$RESOLVED_PATH" == "\${MA
   exit 2
 fi
 
-# Path is outside repo entirely - allow
-exit 0
+# WU-1501: Fail-closed on main when no active worktrees exist
+# Check allowlist: paths that are always safe to write on main
+RELATIVE_PATH="\${RESOLVED_PATH#\${MAIN_REPO_PATH}/}"
+
+case "\$RELATIVE_PATH" in
+  docs/04-operations/tasks/wu/*)  exit 0 ;;  # WU YAML specs
+  .lumenflow/*)                   exit 0 ;;  # LumenFlow state/config
+  .claude/*)                      exit 0 ;;  # Claude Code config
+  plan/*)                         exit 0 ;;  # Plan/spec scaffolds
+esac
+
+# Check for branch-pr claimed_mode (allows main writes without worktree)
+STATE_FILE="\${LUMENFLOW_DIR}/state/wu-events.jsonl"
+if [[ -f "\$STATE_FILE" ]]; then
+  if grep -q '"claimed_mode":"branch-pr"' "\$STATE_FILE" 2>/dev/null; then
+    if grep -q '"status":"in_progress"' "\$STATE_FILE" 2>/dev/null; then
+      exit 0  # Branch-PR WU active - allow main writes
+    fi
+  fi
+fi
+
+# WU-1501: Fail-closed - no active claim context, block the write
+echo "" >&2
+echo "=== Worktree Enforcement ===" >&2
+echo "" >&2
+echo "BLOCKED: \$TOOL_NAME on main (no active WU claim)" >&2
+echo "" >&2
+echo "No worktrees exist and no branch-pr WU is in progress." >&2
+echo "" >&2
+echo "WHAT TO DO:" >&2
+echo "  1. Claim a WU: pnpm wu:claim --id WU-XXXX --lane \\"<Lane>\\"" >&2
+echo "  2. cd worktrees/<lane>-wu-xxxx" >&2
+echo "  3. Make your edits in the worktree" >&2
+echo "" >&2
+echo "See: LUMENFLOW.md for worktree discipline" >&2
+echo "==============================" >&2
+exit 2
 `;
   /* eslint-enable no-useless-escape */
 }
