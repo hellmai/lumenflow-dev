@@ -932,3 +932,4 @@
 {"type":"complete","wuId":"WU-1495","timestamp":"2026-02-06T19:41:20.094Z"}
 {"type":"claim","wuId":"WU-1496","timestamp":"2026-02-06T19:43:41.272Z","lane":"Content: Documentation","title":"Align docs and constraints for first-class branch-pr cloud flow"}
 {"type":"complete","wuId":"WU-1496","timestamp":"2026-02-06T19:50:38.191Z"}
+{"type":"claim","wuId":"WU-1500","lane":"Framework: CLI","title":"Commit leftover mem:recover parity and regenerated docs","timestamp":"2026-02-07T10:04:47.790Z"}
