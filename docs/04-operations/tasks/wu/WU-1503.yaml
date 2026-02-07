@@ -1,6 +1,6 @@
 id: WU-1503
 title: Add dirty-main pre-merge guard in wu:done
-lane: 'Framework: CLI'
+lane: 'Framework: CLI WU Commands'
 type: bug
 status: ready
 priority: P1
