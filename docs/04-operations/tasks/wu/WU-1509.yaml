@@ -2,7 +2,7 @@ id: WU-1509
 title: Refine lane taxonomy and inference for CLI/Core/Content/Ops
 lane: 'Framework: Core'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -29,9 +29,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lane suggestion and enforcement configs still rely on generic buckets (especially Framework: CLI and Framework: Core). Problem: lane inference remains too coarse and increases contention. Solution: split lane taxonomy into explicit sublanes in .lumenflow.lane-inference.yaml and mirror exact definitions in .lumenflow.config.yaml with path-based boundaries and WIP limits.'
+description: 'Context: lane suggestion and enforcement configs still rely on generic buckets
+  (especially Framework: CLI and Framework: Core). Problem: lane inference remains too coarse and
+  increases contention. Solution: split lane taxonomy into explicit sublanes in
+  .lumenflow.lane-inference.yaml and mirror exact definitions in .lumenflow.config.yaml with
+  path-based boundaries and WIP limits.'
 acceptance:
   - 'Generic Framework: CLI and Framework: Core inference entries replaced with explicit sublanes'
   - lanes.definitions in .lumenflow.config.yaml mirrors taxonomy names exactly
   - Each new lane has scoped code_paths and explicit WIP policy
   - lane:suggest/lane:health run without taxonomy mismatch errors
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-wu-1509
+claimed_at: 2026-02-07T11:10:58.642Z
+baseline_main_sha: 06fb7b01ed165d9b3372a0fd967300d69156e25a
+session_id: 5c579ad4-b114-439b-aa36-3fea6a64b7b1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T11:10:58.647Z

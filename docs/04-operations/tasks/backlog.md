@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml) — Framework: Core
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
 - [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI
@@ -30,6 +29,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
+- [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
