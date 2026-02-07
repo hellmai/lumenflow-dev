@@ -109,6 +109,61 @@ describe('wu-paths', () => {
 
       expect(result).toBe('/home/user/projects/myrepo/.lumenflow/state');
     });
+
+    // WU-1523: Test that custom/simple docs structures resolve correctly
+    it('should resolve state dir correctly for simple docs structure (docs/tasks/backlog.md)', async () => {
+      // Override mock to return simple structure config
+      const { getConfig } = vi.mocked(await import('../lumenflow-config.js'));
+      getConfig.mockReturnValueOnce({
+        directories: {
+          wuDir: 'docs/tasks/wu',
+          statusPath: 'docs/tasks/status.md',
+          backlogPath: 'docs/tasks/backlog.md',
+          initiativesDir: 'docs/tasks/initiatives',
+          worktrees: 'worktrees',
+          plansDir: 'docs/plans',
+          templatesDir: '.lumenflow/templates',
+          onboardingDir: 'docs/_frameworks/lumenflow/agent/onboarding',
+        },
+        state: {
+          stampsDir: '.lumenflow/stamps',
+          stateDir: '.lumenflow/state',
+        },
+      } as ReturnType<typeof getConfig>);
+
+      const backlogPath = '/project/docs/tasks/backlog.md';
+      const result = getStateStoreDirFromBacklog(backlogPath);
+
+      // With simple structure (3 levels deep), should still resolve to /project
+      expect(result).toBe('/project/.lumenflow/state');
+    });
+
+    it('should resolve state dir correctly for flat backlog path (tasks/backlog.md)', async () => {
+      // Override mock to return flat structure config
+      const { getConfig } = vi.mocked(await import('../lumenflow-config.js'));
+      getConfig.mockReturnValueOnce({
+        directories: {
+          wuDir: 'tasks/wu',
+          statusPath: 'tasks/status.md',
+          backlogPath: 'tasks/backlog.md',
+          initiativesDir: 'tasks/initiatives',
+          worktrees: 'worktrees',
+          plansDir: 'plans',
+          templatesDir: '.lumenflow/templates',
+          onboardingDir: '_frameworks/lumenflow/agent/onboarding',
+        },
+        state: {
+          stampsDir: '.lumenflow/stamps',
+          stateDir: '.lumenflow/state',
+        },
+      } as ReturnType<typeof getConfig>);
+
+      const backlogPath = '/project/tasks/backlog.md';
+      const result = getStateStoreDirFromBacklog(backlogPath);
+
+      // With flat structure (2 levels deep), should still resolve to /project
+      expect(result).toBe('/project/.lumenflow/state');
+    });
   });
 
   describe('createWuPaths', () => {

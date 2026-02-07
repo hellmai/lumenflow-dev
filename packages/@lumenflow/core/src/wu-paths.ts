@@ -41,14 +41,36 @@ export function resolveRepoRoot(absolutePath: string, depth: number): string {
 }
 
 /**
+ * Compute the directory depth of a relative path (number of path segments).
+ *
+ * WU-1523: Used to dynamically determine backlog depth from config
+ * instead of using hardcoded PATH_DEPTHS constants. This ensures
+ * getStateStoreDirFromBacklog works correctly for all docs structures
+ * (arc42: docs/04-operations/tasks/backlog.md, simple: docs/tasks/backlog.md, etc.)
+ *
+ * @param relativePath - Relative file path (e.g., 'docs/tasks/backlog.md')
+ * @returns Number of path segments (e.g., 3 for 'docs/tasks/backlog.md')
+ */
+function computePathDepth(relativePath: string): number {
+  // Normalize separators and split on path separator
+  const normalized = relativePath.replace(/\\/g, '/');
+  return normalized.split('/').filter(Boolean).length;
+}
+
+/**
  * Get the state store directory path from backlog.md path.
+ *
+ * WU-1523: Now computes depth dynamically from configured backlog path
+ * instead of using a hardcoded depth constant. This fixes empty backlog.md
+ * and status.md rendering in scaffolded projects with non-default docs structures.
  *
  * @param backlogPath - Absolute path to backlog.md
  * @returns Absolute path to state store directory
  */
 export function getStateStoreDirFromBacklog(backlogPath: string): string {
   const config = getConfig();
-  const repoRoot = resolveRepoRoot(backlogPath, PATH_DEPTHS.BACKLOG);
+  const depth = computePathDepth(config.directories.backlogPath);
+  const repoRoot = resolveRepoRoot(backlogPath, depth);
   return path.join(repoRoot, config.state.stateDir);
 }
 
