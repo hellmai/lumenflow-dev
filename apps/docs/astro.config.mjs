@@ -77,6 +77,14 @@ export default defineConfig({
             { label: 'Changelog', slug: 'reference/changelog' },
           ],
         },
+        {
+          label: 'Legal',
+          items: [
+            { label: 'Licensing & Access', slug: 'legal/licensing' },
+            { label: 'Terms of Use', slug: 'legal/terms' },
+            { label: 'Privacy', slug: 'legal/privacy' },
+          ],
+        },
       ],
     }),
   ],

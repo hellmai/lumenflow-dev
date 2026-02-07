@@ -109,6 +109,12 @@ Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 If a script command is not found, use the binary via `pnpm exec` (e.g.,
 `pnpm exec initiative-create`, `pnpm exec initiative-edit`, `pnpm exec wu-create`).
 
+<Aside type="note" title="Private package access required">
+  `@lumenflow/cli` is distributed through private package channels. Ensure your registry auth is
+  configured before running `pnpm add -D @lumenflow/cli`. See [Licensing &
+  Access](/legal/licensing/).
+</Aside>
+
 ## Setup: New project
 
 <Steps>
