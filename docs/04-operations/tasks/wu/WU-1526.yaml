@@ -2,7 +2,7 @@ id: WU-1526
 title: Expand Medium article with CLI examples and usage guide
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -50,3 +50,5 @@ session_id: 1b7fa1fa-6bd8-4b3c-bd6b-d558b0857573
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T16:41:03.677Z
+locked: true
+completed_at: 2026-02-07T18:27:39.719Z

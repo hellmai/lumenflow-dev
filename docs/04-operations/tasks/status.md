@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-- [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -483,3 +483,4 @@ _Last updated: 2026-02-07_
 - [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml) — 2026-02-07
 - [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — 2026-02-07
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — 2026-02-07
+- [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — 2026-02-07
