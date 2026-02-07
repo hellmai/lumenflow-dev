@@ -8,9 +8,8 @@ created: 2026-02-07
 code_paths:
   - .claude/hooks/validate-worktree-path.sh
   - .claude/hooks/validate-worktree-path.test.sh
-  - .claude/settings.json
+  - packages/@lumenflow/cli/src/hooks/enforcement-checks.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
-  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/templates/
 tests:
   manual:
