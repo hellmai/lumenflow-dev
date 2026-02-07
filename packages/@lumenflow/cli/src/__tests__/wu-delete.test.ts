@@ -54,7 +54,6 @@ vi.mock('@lumenflow/core/dist/backlog-generator.js', () => ({
 
 vi.mock('@lumenflow/core/dist/wu-state-store.js', () => ({
   WUStateStore: class {
-    constructor(_path: string) {}
     async load(): Promise<void> {
       return;
     }
@@ -77,7 +76,14 @@ vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
 }));
 
 vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
-  withMicroWorktree: async ({ execute }: { execute: Function }) => {
+  withMicroWorktree: async ({
+    execute,
+  }: {
+    execute: (ctx: {
+      worktreePath: string;
+      gitWorktree: { add: () => Promise<void> };
+    }) => Promise<void>;
+  }) => {
     await execute({ worktreePath: process.cwd(), gitWorktree: { add: async () => undefined } });
   },
 }));

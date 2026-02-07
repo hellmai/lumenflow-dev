@@ -10,9 +10,11 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
   - packages/@lumenflow/cli/src/__tests__/
 tests:
-  manual: []
+  manual:
+    - Run `pnpm wu:delete --id <test-wu>` and verify no stale references remain in
+      docs/04-operations/tasks/{backlog,status}.md and linked initiatives.
   unit:
-    - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1511.done
