@@ -7,17 +7,12 @@ priority: P2
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/core/src/wu-lint.ts
-  - packages/@lumenflow/cli/src/wu-validate.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/cli/package.json
-  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Run wu:validate on crafted WU fixture with missing registrations and confirm warning text
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-validate-strict.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
-    - packages/@lumenflow/core/src/__tests__/wu-lifecycle-schemas.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1504.done
