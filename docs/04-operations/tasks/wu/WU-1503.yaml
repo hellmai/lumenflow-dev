@@ -2,7 +2,7 @@ id: WU-1503
 title: Add dirty-main pre-merge guard in wu:done
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -54,3 +54,5 @@ session_id: 44412f2b-0702-4d11-b11b-72c5b807df25
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T11:36:10.049Z
+locked: true
+completed_at: 2026-02-07T11:46:09.120Z
