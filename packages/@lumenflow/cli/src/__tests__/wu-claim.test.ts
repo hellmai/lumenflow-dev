@@ -4,6 +4,7 @@
  *
  * WU-1491: Add wu:claim cloud mode and branch-pr mode resolution
  * WU-1495: Cloud auto-detection integration tests
+ * WU-1521: Transaction safety - rollback YAML on partial failure
  *
  * Tests the mode resolution matrix:
  * - default (no flags) -> worktree
@@ -16,8 +17,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveClaimMode } from '../wu-claim-mode.js';
-import { validateManualTestsForClaim } from '../wu-claim.js';
-import { CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
+import { validateManualTestsForClaim, buildRollbackYamlDoc } from '../wu-claim.js';
+import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
   describe('resolveClaimMode', () => {
@@ -180,5 +181,141 @@ describe('wu-claim manual test requirement policy (WU-1508)', () => {
       'WU-1508',
     );
     expect(result.valid).toBe(true);
+  });
+});
+
+/**
+ * WU-1521: Transaction safety - rollback YAML on partial failure
+ *
+ * Tests that buildRollbackYamlDoc correctly strips claim metadata from a
+ * WU YAML doc and resets status to 'ready', enabling clean retry after
+ * a failed wu:claim.
+ */
+describe('wu-claim transaction safety (WU-1521)', () => {
+  describe('buildRollbackYamlDoc', () => {
+    it('should reset status from in_progress back to ready', () => {
+      const claimedDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        lane: 'Framework: CLI',
+        status: WU_STATUS.IN_PROGRESS,
+        type: 'feature',
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'worktree',
+        claimed_at: '2026-01-01T00:00:00Z',
+        worktree_path: '/tmp/worktree',
+        baseline_main_sha: 'abc123',
+        session_id: 'sess-123',
+        approved_by: 'agent@test.com',
+        approved_at: '2026-01-01T00:00:00Z',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(claimedDoc);
+      expect(rolledBack.status).toBe(WU_STATUS.READY);
+    });
+
+    it('should remove claim-specific metadata fields', () => {
+      const claimedDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        lane: 'Framework: CLI',
+        status: WU_STATUS.IN_PROGRESS,
+        type: 'feature',
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'worktree',
+        claimed_at: '2026-01-01T00:00:00Z',
+        worktree_path: '/tmp/worktree',
+        baseline_main_sha: 'abc123',
+        session_id: 'sess-123',
+        approved_by: 'agent@test.com',
+        approved_at: '2026-01-01T00:00:00Z',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(claimedDoc);
+
+      // These claim-specific fields should be removed
+      expect(rolledBack.claimed_mode).toBeUndefined();
+      expect(rolledBack.claimed_at).toBeUndefined();
+      expect(rolledBack.worktree_path).toBeUndefined();
+      expect(rolledBack.baseline_main_sha).toBeUndefined();
+      expect(rolledBack.session_id).toBeUndefined();
+    });
+
+    it('should preserve non-claim fields like id, title, lane, type', () => {
+      const claimedDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        lane: 'Framework: CLI',
+        status: WU_STATUS.IN_PROGRESS,
+        type: 'feature',
+        priority: 'P2',
+        description: 'Test description',
+        acceptance: ['Criterion 1'],
+        code_paths: ['src/file.ts'],
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'worktree',
+        claimed_at: '2026-01-01T00:00:00Z',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(claimedDoc);
+
+      expect(rolledBack.id).toBe('WU-1521');
+      expect(rolledBack.title).toBe('Test WU');
+      expect(rolledBack.lane).toBe('Framework: CLI');
+      expect(rolledBack.type).toBe('feature');
+      expect(rolledBack.priority).toBe('P2');
+      expect(rolledBack.description).toBe('Test description');
+      expect(rolledBack.acceptance).toEqual(['Criterion 1']);
+      expect(rolledBack.code_paths).toEqual(['src/file.ts']);
+    });
+
+    it('should clear assigned_to so claim is retryable', () => {
+      const claimedDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        status: WU_STATUS.IN_PROGRESS,
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'worktree',
+        claimed_at: '2026-01-01T00:00:00Z',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(claimedDoc);
+
+      // assigned_to should be cleared so re-claim works
+      expect(rolledBack.assigned_to).toBeUndefined();
+    });
+
+    it('should handle doc that is already in ready status (no-op)', () => {
+      const readyDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        status: WU_STATUS.READY,
+        type: 'feature',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(readyDoc);
+
+      expect(rolledBack.status).toBe(WU_STATUS.READY);
+      expect(rolledBack.id).toBe('WU-1521');
+    });
+
+    it('should not mutate the original document', () => {
+      const claimedDoc = {
+        id: 'WU-1521',
+        title: 'Test WU',
+        status: WU_STATUS.IN_PROGRESS,
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'worktree',
+        claimed_at: '2026-01-01T00:00:00Z',
+      };
+
+      const originalStatus = claimedDoc.status;
+      buildRollbackYamlDoc(claimedDoc);
+
+      // Original doc should not be mutated
+      expect(claimedDoc.status).toBe(originalStatus);
+      expect(claimedDoc.assigned_to).toBe('agent@test.com');
+      expect(claimedDoc.claimed_mode).toBe('worktree');
+    });
   });
 });
