@@ -2,7 +2,7 @@ id: WU-1522
 title: Auto-commit or untrack flow.log in wu:claim lifecycle
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -48,3 +48,5 @@ session_id: 8a0dab23-a02a-4ec9-8964-f73a0325a2c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T17:26:48.011Z
+locked: true
+completed_at: 2026-02-07T17:40:01.061Z
