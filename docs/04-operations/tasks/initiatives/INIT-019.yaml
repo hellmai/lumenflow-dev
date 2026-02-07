@@ -11,7 +11,7 @@ target_date: 2026-02-14
 phases:
   - id: 1
     title: Delete and state-store consistency
-    status: pending
+    status: done
   - id: 2
     title: wu:done completion-path reliability
     status: pending
