@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-- [WU-1510 — Rewrite Medium article: voice overhaul, origin story, de-slop](wu/WU-1510.yaml)
+(No items currently in progress)
 
 ## Blocked
 
@@ -464,3 +464,4 @@ _Last updated: 2026-02-07_
 - [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml) — 2026-02-07
 - [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml) — 2026-02-07
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — 2026-02-07
+- [WU-1510 — Rewrite Medium article: voice overhaul, origin story, de-slop](wu/WU-1510.yaml) — 2026-02-07

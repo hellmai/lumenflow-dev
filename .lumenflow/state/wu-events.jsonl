@@ -946,4 +946,5 @@
 {"type":"claim","wuId":"WU-1509","timestamp":"2026-02-07T11:10:58.662Z","lane":"Framework: Core","title":"Refine lane taxonomy and inference for CLI/Core/Content/Ops"}
 {"type":"complete","wuId":"WU-1509","timestamp":"2026-02-07T11:16:59.308Z"}
 {"type":"complete","wuId":"WU-1501","timestamp":"2026-02-07T11:22:51.234Z"}
-{"type":"claim","wuId":"WU-1510","lane":"Content: Site Comms","title":"Rewrite Medium article: voice overhaul, origin story, de-slop","timestamp":"2026-02-07T11:26:33.516Z"}
+{"type":"claim","wuId":"WU-1510","timestamp":"2026-02-07T11:26:33.516Z","lane":"Content: Site Comms","title":"Rewrite Medium article: voice overhaul, origin story, de-slop"}
+{"type":"complete","wuId":"WU-1510","timestamp":"2026-02-07T11:33:41.328Z"}
