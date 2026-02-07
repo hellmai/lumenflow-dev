@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml) — Framework: CLI
 - [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI
 - [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI
 - [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI
