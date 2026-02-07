@@ -9,13 +9,15 @@ code_paths:
   - .claude/settings.json
   - .claude/hooks/warn-dirty-main.sh
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
-  - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/templates/
+  - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - scripts/hooks/validate-paths.sh
 tests:
   manual:
     - Run a Bash command that writes files on main and verify warning includes modified paths
   unit:
     - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+    - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1502.done
