@@ -1,0 +1,38 @@
+id: WU-1521
+title: wu:claim transaction safety - rollback YAML on partial failure
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-07
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+tests:
+  manual:
+    - Simulate gitignore conflict mid-claim, verify clean rollback and successful retry
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1521.done
+dependencies: []
+initiative: INIT-018
+phase: 2
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-018.yaml
+risks: []
+notes: 'Haven test: 3 failed wu:claim attempts left YAML in broken state requiring wu:repair --claim.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:claim micro-worktree isolation should be fully atomic. Problem: when wu:claim fails partway (e.g. gitignore conflict on state files), WU YAML status can be left at ready instead of in_progress, requiring manual wu:repair --claim. Solution: add rollback/cleanup for all failure paths in wu:claim.'
+acceptance:
+  - If wu:claim fails after YAML modification but before commit, YAML is rolled back
+  - If wu:claim fails after micro-worktree commit but before merge, temp branch is cleaned up
+  - State store only gets a claim event on full success
+  - After a failed wu:claim, re-running wu:claim succeeds without needing wu:repair
