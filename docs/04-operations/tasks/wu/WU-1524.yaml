@@ -2,7 +2,7 @@ id: WU-1524
 title: 'Haven re-test: end-to-end verification of all launch-1 fixes'
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths: []
@@ -28,7 +28,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-018 fixes all scaffolding gaps found in Haven pre-launch test. Problem: need to verify all fixes work together in a fresh greenfield project end-to-end. Solution: fresh lumenflow init, complete 2 WUs across different lanes with gates green and zero manual intervention.'
+description: 'Context: INIT-018 fixes all scaffolding gaps found in Haven pre-launch test. Problem:
+  need to verify all fixes work together in a fresh greenfield project end-to-end. Solution: fresh
+  lumenflow init, complete 2 WUs across different lanes with gates green and zero manual
+  intervention.'
 acceptance:
   - Fresh lumenflow init project created
   - First WU claimed, implemented, gates pass with no skip, wu:done succeeds on first attempt
@@ -37,3 +40,11 @@ acceptance:
   - flow.log does not block wu:done
   - backlog.md and status.md reflect completed work
   - Any remaining issues documented as new WUs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1524
+claimed_at: 2026-02-07T18:09:40.253Z
+baseline_main_sha: 06618e784c51a3346514238a97585c052fe503af
+session_id: 8a5fa0d5-363f-4341-80d4-10637523bf19
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T18:09:40.260Z
