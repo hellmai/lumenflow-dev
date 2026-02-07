@@ -934,5 +934,6 @@
 {"type":"complete","wuId":"WU-1496","timestamp":"2026-02-06T19:50:38.191Z"}
 {"type":"claim","wuId":"WU-1500","timestamp":"2026-02-07T10:04:47.790Z","lane":"Framework: CLI","title":"Commit leftover mem:recover parity and regenerated docs"}
 {"type":"complete","wuId":"WU-1500","timestamp":"2026-02-07T10:07:37.082Z"}
-{"type":"claim","wuId":"WU-1506","lane":"Content: Documentation","title":"Medium article: LumenFlow introduction","timestamp":"2026-02-07T10:37:22.850Z"}
-{"type":"claim","wuId":"WU-1505","lane":"Framework: CLI","title":"Add SessionStart dirty-main early-warning across clients","timestamp":"2026-02-07T10:37:57.122Z"}
+{"type":"claim","wuId":"WU-1506","timestamp":"2026-02-07T10:37:22.850Z","lane":"Content: Documentation","title":"Medium article: LumenFlow introduction"}
+{"type":"claim","wuId":"WU-1505","timestamp":"2026-02-07T10:37:57.122Z","lane":"Framework: CLI","title":"Add SessionStart dirty-main early-warning across clients"}
+{"type":"complete","wuId":"WU-1506","timestamp":"2026-02-07T10:43:14.588Z"}
