@@ -8,6 +8,10 @@ created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/templates/
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/__tests__/init-prettier.test.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Run lumenflow init in fresh dir, verify prettier in devDeps and format:check passes
@@ -25,10 +29,17 @@ risks: []
 notes: 'Haven test: agent had to manually install prettier, create .prettierignore, and add scripts
   before gates could run.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-07T13:42:14.784Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1517
+session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:42:14.787Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +52,3 @@ acceptance:
   - lumenflow init scaffolds .prettierignore with sane defaults
   - lumenflow init adds format and format:check scripts to package.json
   - pnpm format:check passes immediately after init with no unformatted files
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1517
-claimed_at: 2026-02-07T13:42:14.784Z
-baseline_main_sha: fda7658a71589c98154fb227e42be2e08e74f6fc
-session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-07T13:42:14.787Z
