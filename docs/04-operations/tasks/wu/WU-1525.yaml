@@ -2,14 +2,15 @@ id: WU-1525
 title: Rewrite article to showcase full LumenFlow breadth
 lane: 'Content: Site Comms'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
   - docs/05-business/content/medium-lumenflow-introduction.md
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -25,8 +26,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Article uses toy code snippets that undersell the system. Replace with content showing the full 97-command CLI, 8 packages, MCP server, orchestration, memory, metrics — the real scale.
+description: Article uses toy code snippets that undersell the system. Replace with content showing
+  the full 97-command CLI, 8 packages, MCP server, orchestration, memory, metrics — the real scale.
 acceptance:
   - No toy code snippets
   - Full system breadth conveyed
   - lumenflow.dev linked
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1525
+claimed_at: 2026-02-07T13:45:18.358Z
+baseline_main_sha: 29c011a948013c1b15fa00392031c2b3c5cd7daf
+session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:45:18.364Z

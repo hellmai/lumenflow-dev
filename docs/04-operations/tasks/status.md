@@ -7,6 +7,7 @@ _Last updated: 2026-02-07_
 - [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml)
 - [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml)
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml)
+- [WU-1525 — Rewrite article to showcase full LumenFlow breadth](wu/WU-1525.yaml)
 
 ## Blocked
 
