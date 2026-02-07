@@ -191,6 +191,65 @@ describe('validateRegistrationParity (WU-1504)', () => {
     });
   });
 
+  describe('terminal status skip (WU-1384 pattern)', () => {
+    const cliCommandWu = (status: string) => ({
+      id: 'WU-9999',
+      code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+      status,
+    });
+
+    it('should skip parity check for done WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('done'));
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('should skip parity check for cancelled WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('cancelled'));
+      expect(result.valid).toBe(true);
+    });
+
+    it('should skip parity check for completed WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('completed'));
+      expect(result.valid).toBe(true);
+    });
+
+    it('should skip parity check for abandoned WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('abandoned'));
+      expect(result.valid).toBe(true);
+    });
+
+    it('should skip parity check for superseded WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('superseded'));
+      expect(result.valid).toBe(true);
+    });
+
+    it('should still flag parity for ready WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('ready'));
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it('should still flag parity for in_progress WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('in_progress'));
+      expect(result.valid).toBe(false);
+    });
+
+    it('should still flag parity for blocked WUs', () => {
+      const result = validateRegistrationParity(cliCommandWu('blocked'));
+      expect(result.valid).toBe(false);
+    });
+
+    it('should still flag parity when status is undefined', () => {
+      const wu = {
+        id: 'WU-9999',
+        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+      };
+      const result = validateRegistrationParity(wu);
+      expect(result.valid).toBe(false);
+    });
+  });
+
   describe('exported constants', () => {
     it('should export REGISTRATION_SURFACES with expected paths', () => {
       expect(REGISTRATION_SURFACES.PUBLIC_MANIFEST).toBe(

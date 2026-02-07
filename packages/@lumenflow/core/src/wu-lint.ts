@@ -253,21 +253,39 @@ function isCliCommandPath(codePath: string): boolean {
 }
 
 /**
+ * WU-1504: Terminal WU statuses that should skip parity validation.
+ * Matches the same set used by WU-1384 for completeness check skipping.
+ */
+const TERMINAL_STATUSES = new Set(['done', 'cancelled', 'completed', 'abandoned', 'superseded']);
+
+/**
  * WU-1504: Validate CLI command registration parity.
  *
  * When WU code_paths include new/changed CLI command implementations or
  * package.json bin entries, registration surfaces (public-manifest.ts and
  * MCP tools.ts) must also be present in code_paths.
  *
- * @param wu - WU spec object with id and code_paths
+ * Skips validation for terminal WU statuses (done, cancelled, etc.) since
+ * those specs are historical and should not be retroactively flagged.
+ *
+ * @param wu - WU spec object with id, code_paths, and optional status
  * @returns Validation result with errors for missing registration surfaces
  */
-export function validateRegistrationParity(wu: { id: string; code_paths?: string[] }): {
+export function validateRegistrationParity(wu: {
+  id: string;
+  code_paths?: string[];
+  status?: string;
+}): {
   valid: boolean;
   errors: Array<{ type: string; wuId: string; message: string; suggestion: string }>;
 } {
-  const { id, code_paths = [] } = wu;
+  const { id, code_paths = [], status } = wu;
   const errors: Array<{ type: string; wuId: string; message: string; suggestion: string }> = [];
+
+  // Skip parity check for terminal WU statuses (WU-1384 pattern)
+  if (status && TERMINAL_STATUSES.has(status)) {
+    return { valid: true, errors };
+  }
 
   // Check if any code_path triggers the parity heuristic
   const hasCliCommandPath = code_paths.some((p) => isCliCommandPath(p));
