@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
 - [WU-1519 — Stop gitignoring .lumenflow/state/ in scaffold template](wu/WU-1519.yaml) — Framework: CLI WU Commands
 - [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — Framework: CLI WU Commands
 - [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
