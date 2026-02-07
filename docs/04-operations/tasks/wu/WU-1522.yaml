@@ -1,0 +1,38 @@
+id: WU-1522
+title: Auto-commit or untrack flow.log in wu:claim lifecycle
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-07
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual:
+    - Run wu:claim then wu:done - flow.log should not block completion
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1522.done
+dependencies: []
+initiative: INIT-018
+phase: 2
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-018.yaml
+risks: []
+notes: 'Haven test: agent had to manually commit flow.log 3+ times during WU-1 cycle. Recommendation: untrack flow.log (Option B).'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:claim appends to .lumenflow/flow.log on main but doesnt commit it. Problem: wu:done then refuses because main is dirty. This happened 3+ times during Haven WU-1 alone. Solution: either auto-commit flow.log as part of wu:claim, add it to .gitignore (recommended - its telemetry not state), or add to wu:done dirty-main allowlist.'
+acceptance:
+  - flow.log changes do not block wu:done after wu:claim
+  - wu-events.jsonl remains the canonical tracked state
+  - Chosen approach is consistent across wu:claim and wu:done
