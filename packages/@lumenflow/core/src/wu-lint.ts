@@ -262,10 +262,10 @@ function isCliCommandPath(codePath: string): boolean {
  * @param wu - WU spec object with id and code_paths
  * @returns Validation result with errors for missing registration surfaces
  */
-export function validateRegistrationParity(wu: {
-  id: string;
-  code_paths?: string[];
-}): { valid: boolean; errors: Array<{ type: string; wuId: string; message: string; suggestion: string }> } {
+export function validateRegistrationParity(wu: { id: string; code_paths?: string[] }): {
+  valid: boolean;
+  errors: Array<{ type: string; wuId: string; message: string; suggestion: string }>;
+} {
   const { id, code_paths = [] } = wu;
   const errors: Array<{ type: string; wuId: string; message: string; suggestion: string }> = [];
 

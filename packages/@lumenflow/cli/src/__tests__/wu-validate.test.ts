@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { summarizeValidationResults, validateWuValidateOptions } from '../wu-validate.js';
-import {
-  validateRegistrationParity,
-  REGISTRATION_SURFACES,
-} from '@lumenflow/core/dist/wu-lint.js';
+import { validateRegistrationParity, REGISTRATION_SURFACES } from '@lumenflow/core/dist/wu-lint.js';
 
 describe('wu:validate JSON summary (WU-1441)', () => {
   it('should summarize invalid WUs with totals', () => {
