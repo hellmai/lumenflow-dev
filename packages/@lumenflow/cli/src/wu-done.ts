@@ -778,6 +778,23 @@ async function ensureCleanWorkingTree() {
   }
 }
 
+const INTERNAL_LIFECYCLE_DIRTY_FILES = new Set([
+  '.lumenflow/flow.log',
+  '.lumenflow/skip-gates-audit.log',
+  '.lumenflow/skip-cos-gates-audit.log',
+]);
+
+function parsePorcelainPath(line: string): string | null {
+  if (line.length < 4) return null;
+  const pathPart = line.slice(3).trim();
+  if (!pathPart) return null;
+  const renameIndex = pathPart.indexOf(' -> ');
+  if (renameIndex !== -1) {
+    return pathPart.slice(renameIndex + 4);
+  }
+  return pathPart;
+}
+
 /**
  * WU-1084: Check for uncommitted changes on main after merge completes.
  *
@@ -792,11 +809,28 @@ async function ensureCleanWorkingTree() {
 export function checkPostMergeDirtyState(
   gitStatus: string,
   wuId: string,
-): { isDirty: boolean; error?: string } {
+): {
+  isDirty: boolean;
+  internalOnlyFiles: string[];
+  unrelatedFiles: string[];
+  error?: string;
+} {
   const trimmedStatus = gitStatus.trim();
 
   if (!trimmedStatus) {
-    return { isDirty: false };
+    return { isDirty: false, internalOnlyFiles: [], unrelatedFiles: [] };
+  }
+
+  const dirtyFiles = trimmedStatus
+    .split('\n')
+    .map((line) => parsePorcelainPath(line))
+    .filter((value): value is string => Boolean(value));
+
+  const internalOnlyFiles = dirtyFiles.filter((file) => INTERNAL_LIFECYCLE_DIRTY_FILES.has(file));
+  const unrelatedFiles = dirtyFiles.filter((file) => !INTERNAL_LIFECYCLE_DIRTY_FILES.has(file));
+
+  if (unrelatedFiles.length === 0) {
+    return { isDirty: false, internalOnlyFiles, unrelatedFiles: [] };
   }
 
   const error =
@@ -809,7 +843,7 @@ export function checkPostMergeDirtyState(
     `  2. Discard if unwanted: git checkout -- .\n` +
     `  3. Then re-run: pnpm wu:done --id ${wuId} --skip-worktree-completion`;
 
-  return { isDirty: true, error };
+  return { isDirty: true, internalOnlyFiles, unrelatedFiles, error };
 }
 
 /**
@@ -1103,7 +1137,8 @@ export function emitTelemetry(event) {
 }
 
 async function auditSkipGates(id, reason, fixWU, worktreePath) {
-  const auditPath = path.join('.lumenflow', 'skip-gates-audit.log');
+  const auditBaseDir = worktreePath || process.cwd();
+  const auditPath = path.join(auditBaseDir, '.lumenflow', 'skip-gates-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const gitAdapter = getGitForCwd();
@@ -1121,14 +1156,17 @@ async function auditSkipGates(id, reason, fixWU, worktreePath) {
   };
   const line = JSON.stringify(entry);
   appendFileSync(auditPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
-  console.log(`${LOG_PREFIX.DONE} ${EMOJI.MEMO} Skip-gates event logged to ${auditPath}`);
+  console.log(
+    `${LOG_PREFIX.DONE} ${EMOJI.MEMO} Skip-gates event logged to ${path.relative(process.cwd(), auditPath) || auditPath}`,
+  );
 }
 
 /**
  * Audit trail for --skip-cos-gates (COS v1.3 §7)
  */
-async function auditSkipCosGates(id, reason) {
-  const auditPath = path.join('.lumenflow', 'skip-cos-gates-audit.log');
+async function auditSkipCosGates(id, reason, worktreePath) {
+  const auditBaseDir = worktreePath || process.cwd();
+  const auditPath = path.join(auditBaseDir, '.lumenflow', 'skip-cos-gates-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
   const gitAdapter = getGitForCwd();
@@ -2401,7 +2439,7 @@ async function executeGates({
   } else {
     console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Skipping COS governance gates as requested`);
     console.log(`${LOG_PREFIX.DONE} Reason: ${args.reason || DEFAULT_NO_REASON}`);
-    await auditSkipCosGates(id, args.reason);
+    await auditSkipCosGates(id, args.reason, worktreePath);
     emitTelemetry({
       script: 'wu-done',
       wu_id: id,
@@ -2727,6 +2765,19 @@ async function main() {
   // This catches cases where pnpm format touched files outside code_paths
   const postMergeStatus = await getGitForCwd().getStatus();
   const dirtyCheck = checkPostMergeDirtyState(postMergeStatus, id);
+  if (dirtyCheck.internalOnlyFiles.length > 0) {
+    const gitMain = getGitForCwd();
+    try {
+      await gitMain.raw(['restore', '--', ...dirtyCheck.internalOnlyFiles]);
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Restored internal lifecycle log files: ${dirtyCheck.internalOnlyFiles.join(', ')}`,
+      );
+    } catch (restoreErr) {
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-restore internal lifecycle files: ${restoreErr.message}`,
+      );
+    }
+  }
   if (dirtyCheck.isDirty) {
     die(dirtyCheck.error);
   }
