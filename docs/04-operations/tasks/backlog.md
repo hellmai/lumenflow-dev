@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml) — Content: Documentation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -486,3 +486,4 @@ sections:
 - [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml)
 - [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml)
 - [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml)
+- [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
