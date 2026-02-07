@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1519 — Stop gitignoring .lumenflow/state/ in scaffold template](wu/WU-1519.yaml)
 
 ## Blocked
 

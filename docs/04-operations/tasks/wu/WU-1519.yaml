@@ -2,7 +2,7 @@ id: WU-1519
 title: Stop gitignoring .lumenflow/state/ in scaffold template
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -21,7 +21,8 @@ phase: 1
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-018.yaml
 risks: []
-notes: 'Haven test: wu:claim failed because .lumenflow/state/ was gitignored. Had to manually edit .gitignore.'
+notes: 'Haven test: wu:claim failed because .lumenflow/state/ was gitignored. Had to manually edit
+  .gitignore.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -30,8 +31,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lumenflow init scaffolds .gitignore with .lumenflow/state/ ignored. Problem: wu:claim must commit state events to .lumenflow/state/ - first claim fails with ignored by .gitignore. Solution: remove .lumenflow/state/ from scaffold .gitignore.'
+description: 'Context: lumenflow init scaffolds .gitignore with .lumenflow/state/ ignored. Problem:
+  wu:claim must commit state events to .lumenflow/state/ - first claim fails with ignored by
+  .gitignore. Solution: remove .lumenflow/state/ from scaffold .gitignore.'
 acceptance:
   - .lumenflow/state/ is NOT in the scaffolded .gitignore
   - .lumenflow/telemetry/ remains ignored
   - wu:claim succeeds on first attempt in a fresh project with no gitignore conflict
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1519
+claimed_at: 2026-02-07T17:03:34.541Z
+baseline_main_sha: 9a0714bd71b1af1739ce2966b2cfe4cc33582d70
+session_id: 2d7b1b4b-9e11-4aaf-a6fc-bbb83a0d17d3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T17:03:34.548Z

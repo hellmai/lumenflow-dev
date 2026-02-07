@@ -976,3 +976,4 @@
 {"type":"claim","wuId":"WU-1526","timestamp":"2026-02-07T16:41:03.706Z","lane":"Content: Site Comms","title":"Expand Medium article with CLI examples and usage guide"}
 {"type":"claim","wuId":"WU-1518","timestamp":"2026-02-07T16:50:30.606Z","lane":"Framework: CLI WU Commands","title":"Scaffold spec:linter and remaining gate scripts in lumenflow init"}
 {"type":"complete","wuId":"WU-1518","timestamp":"2026-02-07T17:01:09.295Z"}
+{"type":"claim","wuId":"WU-1519","lane":"Framework: CLI WU Commands","title":"Stop gitignoring .lumenflow/state/ in scaffold template","timestamp":"2026-02-07T17:03:34.583Z"}
