@@ -1,6 +1,6 @@
 id: WU-1504
 title: Add wu:validate lint for CLI command registration parity
-lane: 'Framework: CLI'
+lane: 'Framework: CLI Enforcement'
 type: feature
 status: ready
 priority: P2
