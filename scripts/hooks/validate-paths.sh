@@ -70,7 +70,8 @@ FILES=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep -v "apps/docs/" \
   | grep -v "\.md$" \
   | grep -v "\.mdx$" \
-  | grep -v "consumer-integration\.test\.ts$")
+  | grep -v "consumer-integration\.test\.ts$" \
+  | grep -v "^\.claude/settings\.json$")
 
 if [ -z "$FILES" ]; then
   exit 0
