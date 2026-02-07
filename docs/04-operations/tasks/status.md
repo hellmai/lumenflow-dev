@@ -5,7 +5,6 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
-- [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml)
 
 ## Blocked
 
@@ -478,3 +477,4 @@ _Last updated: 2026-02-07_
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — 2026-02-07
 - [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — 2026-02-07
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — 2026-02-07
+- [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — 2026-02-07
