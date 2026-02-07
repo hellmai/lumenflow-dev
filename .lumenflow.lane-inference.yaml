@@ -3,46 +3,162 @@
 # Defines sub-lane taxonomy with code_paths patterns and keywords for automated inference.
 # Used by @lumenflow/core lane-inference.ts to suggest sub-lanes during WU creation.
 #
-# Taxonomy: 12 sub-lanes across 3 parent lanes
-# - Framework: 8 sub-lanes (Core, CLI, MCP, Memory, Agent, Metrics, Initiatives, Shims)
-# - Operations: 3 sub-lanes (Infrastructure, Tooling, CI/CD)
-# - Content: 1 sub-lane (Documentation)
+# Taxonomy: 19 sub-lanes across 3 parent lanes
+# - Framework: 13 sub-lanes (Core Lifecycle/Validation/State Recovery, CLI WU/Memory/Orchestration/Enforcement, MCP, Memory, Agent, Metrics, Initiatives, Shims)
+# - Operations: 3 sub-lanes (Runtime, Tooling, Automation)
+# - Content: 3 sub-lanes (Specs Governance, Framework Docs, Site Comms)
 #
 # Created: WU-1019
-# Updated: WU-1478 (lane concurrency and tooling coverage sweep)
-# Based on:  .lumenflow.lane-inference.yaml pattern
+# Updated: WU-1509 (project-wide lane granularity refactor)
 
 # Framework Lane: @lumenflow packages
 Framework:
-  Core:
-    description: 'Core library: WU lifecycle, git adapter, dependency graph, lane inference'
+  Core Lifecycle:
+    description: 'Core lifecycle orchestration: WU flow, lane/worktree orchestration, backlog wiring'
     code_paths:
-      - 'packages/@lumenflow/core/**'
-      - 'packages/@lumenflow/core/src/**'
+      - 'packages/@lumenflow/core/src/wu-*.ts'
+      - 'packages/@lumenflow/core/src/lane-*.ts'
+      - 'packages/@lumenflow/core/src/worktree-*.ts'
+      - 'packages/@lumenflow/core/src/backlog-*.ts'
+      - 'packages/@lumenflow/core/src/dependency-*.ts'
+      - 'packages/@lumenflow/core/src/git-*.ts'
     keywords:
-      - 'core library'
       - 'wu lifecycle'
-      - 'git adapter'
+      - 'claim done prep'
+      - 'worktree flow'
+      - 'lane lock'
       - 'dependency graph'
-      - 'lane inference'
-      - 'file operations'
-      - 'wu parser'
-      - 'worktree'
+      - 'backlog sync'
+      - 'git orchestration'
+      - 'lifecycle engine'
 
-  CLI:
-    description: 'CLI commands: wu-*, mem-*, initiative-*, agent-*, gates'
+  Core Validation:
+    description: 'Core validation and quality gates: validators, schemas, invariants, linting guards'
     code_paths:
-      - 'packages/@lumenflow/cli/**'
-      - 'packages/@lumenflow/cli/src/**'
+      - 'packages/@lumenflow/core/src/validation/**'
+      - 'packages/@lumenflow/core/src/validators/**'
+      - 'packages/@lumenflow/core/src/schemas/**'
+      - 'packages/@lumenflow/core/src/invariants/**'
+      - 'packages/@lumenflow/core/src/wu-validator.ts'
+      - 'packages/@lumenflow/core/src/wu-validation*.ts'
+      - 'packages/@lumenflow/core/src/manual-test-validator.ts'
+      - 'packages/@lumenflow/core/src/prompt-linter.ts'
+      - 'packages/@lumenflow/core/src/code-path-validator.ts'
+      - 'packages/@lumenflow/core/src/system-map-validator.ts'
+      - 'packages/@lumenflow/core/src/coverage-gate.ts'
     keywords:
-      - 'cli command'
+      - 'validation'
+      - 'schema'
+      - 'strict checks'
+      - 'invariants'
+      - 'lint rules'
+      - 'manual tests'
+      - 'policy enforcement'
+      - 'validator'
+
+  Core State Recovery:
+    description: 'Core state and recovery: state store, transactions, rollback, repair, cleanup'
+    code_paths:
+      - 'packages/@lumenflow/core/src/state-*.ts'
+      - 'packages/@lumenflow/core/src/wu-state-*.ts'
+      - 'packages/@lumenflow/core/src/*recover*.ts'
+      - 'packages/@lumenflow/core/src/rollback-*.ts'
+      - 'packages/@lumenflow/core/src/cleanup-*.ts'
+      - 'packages/@lumenflow/core/src/merge-lock.ts'
+      - 'packages/@lumenflow/core/src/cleanup-lock.ts'
+      - 'packages/@lumenflow/core/src/wu-transaction*.ts'
+      - 'packages/@lumenflow/core/src/stamp-*.ts'
+      - 'packages/@lumenflow/core/src/orphan-detector.ts'
+    keywords:
+      - 'state store'
+      - 'repair'
+      - 'recover'
+      - 'rollback'
+      - 'transaction'
+      - 'cleanup'
+      - 'stamps'
+      - 'orphan worktree'
+
+  CLI WU Commands:
+    description: 'CLI WU command surface: wu-* command behavior and WU CLI UX'
+    code_paths:
+      - 'packages/@lumenflow/cli/src/wu-*.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/wu-*.test.ts'
+    keywords:
+      - 'wu command'
+      - 'wu:create'
       - 'wu:claim'
       - 'wu:done'
-      - 'wu:create'
-      - 'command line'
-      - 'argument parsing'
-      - 'commander'
-      - 'bin script'
+      - 'wu:prep'
+      - 'wu:validate'
+      - 'wu cli'
+      - 'work unit commands'
+
+  CLI Memory State:
+    description: 'CLI memory and state commands: mem-*, state-*, signal-* command behavior'
+    code_paths:
+      - 'packages/@lumenflow/cli/src/mem-*.ts'
+      - 'packages/@lumenflow/cli/src/state-*.ts'
+      - 'packages/@lumenflow/cli/src/signal-*.ts'
+      - 'packages/@lumenflow/cli/src/backlog-prune.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/mem-*.test.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/state-*.test.ts'
+    keywords:
+      - 'memory commands'
+      - 'mem:init'
+      - 'mem:checkpoint'
+      - 'state doctor'
+      - 'state cleanup'
+      - 'signals'
+      - 'checkpointing'
+      - 'context memory'
+
+  CLI Orchestration:
+    description: 'CLI orchestration commands: initiative, spawn, orchestration, agent workflows'
+    code_paths:
+      - 'packages/@lumenflow/cli/src/initiative-*.ts'
+      - 'packages/@lumenflow/cli/src/orchestrate-*.ts'
+      - 'packages/@lumenflow/cli/src/spawn-*.ts'
+      - 'packages/@lumenflow/cli/src/agent-*.ts'
+      - 'packages/@lumenflow/cli/src/flow-*.ts'
+      - 'packages/@lumenflow/cli/src/metrics-*.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/initiative-*.test.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/orchestrate-*.test.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/spawn-*.test.ts'
+    keywords:
+      - 'initiative'
+      - 'orchestrate'
+      - 'spawn'
+      - 'agent workflow'
+      - 'bulk assign'
+      - 'flow report'
+      - 'metrics snapshot'
+      - 'coordination'
+
+  CLI Enforcement:
+    description: 'CLI enforcement/integration surface: hooks, gates, lane checks, install/bootstrap'
+    code_paths:
+      - 'packages/@lumenflow/cli/src/hooks/**'
+      - 'packages/@lumenflow/cli/src/gates.ts'
+      - 'packages/@lumenflow/cli/src/validate.ts'
+      - 'packages/@lumenflow/cli/src/lane-*.ts'
+      - 'packages/@lumenflow/cli/src/init.ts'
+      - 'packages/@lumenflow/cli/src/doctor.ts'
+      - 'packages/@lumenflow/cli/src/release.ts'
+      - 'packages/@lumenflow/cli/src/docs-sync.ts'
+      - 'packages/@lumenflow/cli/src/sync-templates.ts'
+      - 'packages/@lumenflow/cli/src/public-manifest.ts'
+      - 'packages/@lumenflow/cli/src/commands/integrate.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/hooks/**'
+    keywords:
+      - 'enforcement hooks'
+      - 'gates'
+      - 'lane health'
+      - 'lane suggest'
+      - 'bootstrap'
+      - 'integration'
+      - 'public manifest'
+      - 'cli policy'
 
   MCP:
     description: 'MCP stdio server: Model Context Protocol server for AI agents'
@@ -134,20 +250,18 @@ Framework:
       - 'node'
       - 'cross-platform'
 
-# Operations Lane: Infrastructure, Tooling, and CI/CD
+# Operations Lane: Runtime, Tooling, and Automation
 Operations:
-  Infrastructure:
-    description: 'Runtime app infrastructure and deployment actions'
+  Runtime:
+    description: 'Runtime app infrastructure and service code'
     code_paths:
       - 'apps/github-app/**'
-      - 'actions/**'
     keywords:
-      - 'infrastructure'
-      - 'deployment'
-      - 'hosting'
-      - 'github app'
-      - 'action'
       - 'runtime'
+      - 'service'
+      - 'github app runtime'
+      - 'deployment target'
+      - 'infra app'
 
   Tooling:
     description: 'Repository tooling, scripts, root config, and local automation'
@@ -175,12 +289,11 @@ Operations:
       - 'turbo'
       - 'repo config'
 
-  CI/CD:
-    description: 'GitHub Actions, workflows, build pipelines'
+  Automation:
+    description: 'GitHub Actions and pipeline automation'
     code_paths:
-      - '.github/workflows/**'
-      - '.github/actions/**'
       - '.github/**'
+      - 'actions/**'
     keywords:
       - 'ci'
       - 'cd'
@@ -191,22 +304,52 @@ Operations:
       - 'release'
       - 'automation'
 
-# Content Lane: Documentation
+# Content Lane: Specifications, Framework docs, and site/comms
 Content:
-  Documentation:
-    description: 'All documentation: guides, references, playbooks, WU specs'
+  Specs Governance:
+    description: 'Governance specs, WU artifacts, and LumenFlow state/config docs'
     code_paths:
-      - 'docs/**'
-      - 'docs/lumenflow/**'
       - 'docs/04-operations/**'
-      - 'CLAUDE.md'
-      - 'README.md'
+      - '.lumenflow.config.yaml'
+      - '.lumenflow.lane-inference.yaml'
+      - '.lumenflow/**'
     keywords:
-      - 'documentation'
-      - 'docs'
-      - 'guide'
+      - 'wu spec'
+      - 'backlog'
+      - 'status board'
+      - 'governance'
+      - 'workflow policy'
+      - 'lumenflow config'
+      - 'lane taxonomy'
+      - 'operations docs'
+
+  Framework Docs:
+    description: 'Framework guidance and operating playbooks for contributors'
+    code_paths:
+      - 'docs/_frameworks/**'
+      - 'LUMENFLOW.md'
+      - 'START-HERE.md'
+      - 'CLAUDE.md'
+      - 'AGENTS.md'
+    keywords:
+      - 'framework docs'
+      - 'onboarding'
       - 'playbook'
-      - 'reference'
+      - 'operating guide'
+      - 'agent guidance'
+      - 'workflow docs'
+
+  Site Comms:
+    description: 'Published docs site and outward-facing communication content'
+    code_paths:
+      - 'apps/docs/**'
+      - 'docs/posts/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+    keywords:
+      - 'docs site'
+      - 'starlight'
+      - 'posts'
+      - 'release notes'
       - 'readme'
-      - 'mdx'
-      - 'markdown'
+      - 'external communication'

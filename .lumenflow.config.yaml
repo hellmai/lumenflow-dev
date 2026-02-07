@@ -13,22 +13,110 @@ lanes:
   # Lane definitions with full "Parent: Sublane" format
   # These map to the taxonomy in .lumenflow.lane-inference.yaml
   definitions:
-    - name: 'Framework: Core'
-      wip_limit: 3
-      # Core work often spans disjoint modules; concrete overlap checks remain the conflict guard
-      wip_justification: 'Parallel core work is safe when code_paths are specific and non-overlapping'
+    # ------------------------------------------------------------------------
+    # Framework lanes (granular)
+    # ------------------------------------------------------------------------
+    - name: 'Framework: Core Lifecycle'
+      wip_limit: 2
+      wip_justification: 'Lifecycle work can parallelize when code_paths are disjoint and non-overlapping'
       lock_policy: 'none'
       code_paths:
-        - 'packages/@lumenflow/core/**'
+        - 'packages/@lumenflow/core/src/wu-claim-*.ts'
+        - 'packages/@lumenflow/core/src/wu-done-*.ts'
+        - 'packages/@lumenflow/core/src/wu-create-*.ts'
+        - 'packages/@lumenflow/core/src/wu-preflight-*.ts'
+        - 'packages/@lumenflow/core/src/wu-helpers.ts'
+        - 'packages/@lumenflow/core/src/wu-list.ts'
+        - 'packages/@lumenflow/core/src/wu-paths.ts'
+        - 'packages/@lumenflow/core/src/lane-*.ts'
+        - 'packages/@lumenflow/core/src/worktree-*.ts'
+        - 'packages/@lumenflow/core/src/backlog-*.ts'
+        - 'packages/@lumenflow/core/src/dependency-*.ts'
+        - 'packages/@lumenflow/core/src/git-*.ts'
 
-    - name: 'Framework: CLI'
-      wip_limit: 4
-      # CLI has many independent command families; avoid serializing unrelated WUs
-      wip_justification: 'Parallel CLI work is safe when code_paths are specific and non-overlapping'
+    - name: 'Framework: Core Validation'
+      wip_limit: 2
+      wip_justification: 'Validation/schema work can parallelize across separate validator families'
       lock_policy: 'none'
       code_paths:
-        - 'packages/@lumenflow/cli/**'
+        - 'packages/@lumenflow/core/src/validation/**'
+        - 'packages/@lumenflow/core/src/validators/**'
+        - 'packages/@lumenflow/core/src/schemas/**'
+        - 'packages/@lumenflow/core/src/invariants/**'
+        - 'packages/@lumenflow/core/src/wu-validator.ts'
+        - 'packages/@lumenflow/core/src/wu-validation*.ts'
+        - 'packages/@lumenflow/core/src/manual-test-validator.ts'
+        - 'packages/@lumenflow/core/src/prompt-linter.ts'
+        - 'packages/@lumenflow/core/src/code-path-validator.ts'
+        - 'packages/@lumenflow/core/src/system-map-validator.ts'
+        - 'packages/@lumenflow/core/src/coverage-gate.ts'
 
+    - name: 'Framework: Core State Recovery'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/src/state-*.ts'
+        - 'packages/@lumenflow/core/src/wu-state-*.ts'
+        - 'packages/@lumenflow/core/src/*recover*.ts'
+        - 'packages/@lumenflow/core/src/rollback-*.ts'
+        - 'packages/@lumenflow/core/src/cleanup-*.ts'
+        - 'packages/@lumenflow/core/src/merge-lock.ts'
+        - 'packages/@lumenflow/core/src/cleanup-lock.ts'
+        - 'packages/@lumenflow/core/src/wu-transaction*.ts'
+        - 'packages/@lumenflow/core/src/stamp-*.ts'
+        - 'packages/@lumenflow/core/src/orphan-detector.ts'
+
+    - name: 'Framework: CLI WU Commands'
+      wip_limit: 2
+      wip_justification: 'WU CLI command families can parallelize on specific command files'
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/cli/src/wu-*.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/wu-*.test.ts'
+
+    - name: 'Framework: CLI Memory State'
+      wip_limit: 2
+      wip_justification: 'Memory/state command families can parallelize with narrow code_paths'
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/cli/src/mem-*.ts'
+        - 'packages/@lumenflow/cli/src/state-*.ts'
+        - 'packages/@lumenflow/cli/src/signal-*.ts'
+        - 'packages/@lumenflow/cli/src/backlog-prune.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/mem-*.test.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/state-*.test.ts'
+
+    - name: 'Framework: CLI Orchestration'
+      wip_limit: 2
+      wip_justification: 'Initiative/spawn/orchestration commands can run in parallel with disjoint files'
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/cli/src/initiative-*.ts'
+        - 'packages/@lumenflow/cli/src/orchestrate-*.ts'
+        - 'packages/@lumenflow/cli/src/spawn-*.ts'
+        - 'packages/@lumenflow/cli/src/agent-*.ts'
+        - 'packages/@lumenflow/cli/src/flow-*.ts'
+        - 'packages/@lumenflow/cli/src/metrics-*.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/initiative-*.test.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/orchestrate-*.test.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/spawn-*.test.ts'
+
+    - name: 'Framework: CLI Enforcement'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/src/hooks/**'
+        - 'packages/@lumenflow/cli/src/gates.ts'
+        - 'packages/@lumenflow/cli/src/validate.ts'
+        - 'packages/@lumenflow/cli/src/lane-*.ts'
+        - 'packages/@lumenflow/cli/src/init.ts'
+        - 'packages/@lumenflow/cli/src/doctor.ts'
+        - 'packages/@lumenflow/cli/src/release.ts'
+        - 'packages/@lumenflow/cli/src/docs-sync.ts'
+        - 'packages/@lumenflow/cli/src/sync-templates.ts'
+        - 'packages/@lumenflow/cli/src/public-manifest.ts'
+        - 'packages/@lumenflow/cli/src/commands/integrate.ts'
+        - 'packages/@lumenflow/cli/src/__tests__/hooks/**'
+
+    # Existing package-focused framework lanes
     - name: 'Framework: MCP'
       wip_limit: 1
       code_paths:
@@ -59,11 +147,13 @@ lanes:
       code_paths:
         - 'packages/@lumenflow/shims/**'
 
-    - name: 'Operations: Infrastructure'
+    # ------------------------------------------------------------------------
+    # Operations lanes
+    # ------------------------------------------------------------------------
+    - name: 'Operations: Runtime'
       wip_limit: 1
       code_paths:
         - 'apps/github-app/**'
-        - 'actions/**'
 
     - name: 'Operations: Tooling'
       wip_limit: 1
@@ -82,17 +172,72 @@ lanes:
         - 'turbo.json'
         - 'pnpm-workspace.yaml'
 
+    - name: 'Operations: Automation'
+      wip_limit: 1
+      code_paths:
+        - '.github/**'
+        - 'actions/**'
+
+    # ------------------------------------------------------------------------
+    # Content lanes
+    # ------------------------------------------------------------------------
+    - name: 'Content: Specs Governance'
+      wip_limit: 2
+      wip_justification: 'Spec/governance work can parallelize when targeting different docs and config files'
+      lock_policy: 'none'
+      code_paths:
+        - 'docs/04-operations/**'
+        - '.lumenflow.config.yaml'
+        - '.lumenflow.lane-inference.yaml'
+        - '.lumenflow/**'
+
+    - name: 'Content: Framework Docs'
+      wip_limit: 2
+      wip_justification: 'Framework docs are generally low-conflict and can run in parallel'
+      lock_policy: 'none'
+      code_paths:
+        - 'docs/_frameworks/**'
+        - 'LUMENFLOW.md'
+        - 'START-HERE.md'
+        - 'CLAUDE.md'
+        - 'AGENTS.md'
+
+    - name: 'Content: Site Comms'
+      wip_limit: 2
+      wip_justification: 'Docs site and comms content can usually parallelize by section'
+      lock_policy: 'none'
+      code_paths:
+        - 'apps/docs/**'
+        - 'docs/posts/**'
+        - 'README.md'
+        - 'CHANGELOG.md'
+
+    # ------------------------------------------------------------------------
+    # Legacy compatibility lanes (retain while existing WUs still reference these)
+    # ------------------------------------------------------------------------
+    - name: 'Framework: Core'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/core/**'
+
+    - name: 'Framework: CLI'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/cli/**'
+
+    - name: 'Operations: Infrastructure'
+      wip_limit: 1
+      code_paths:
+        - 'apps/github-app/**'
+        - 'actions/**'
+
     - name: 'Operations: CI/CD'
       wip_limit: 1
       code_paths:
         - '.github/**'
 
     - name: 'Content: Documentation'
-      wip_limit: 4
-      # WU-1187: wip_justification required when wip_limit > 1
-      wip_justification: 'Docs WUs are low-conflict parallel work targeting different pages'
-      # Enable actual parallel docs work (coverage + overlap checks remain active safeguards)
-      lock_policy: 'none'
+      wip_limit: 1
       code_paths:
         - 'docs/**'
         - 'apps/docs/**'
@@ -131,20 +276,51 @@ agents:
           - wu-lifecycle
           - worktree-discipline
         byLane:
+          'Framework: Core Lifecycle':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: Core Validation':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: Core State Recovery':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: CLI WU Commands':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: CLI Memory State':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: CLI Orchestration':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: CLI Enforcement':
+            - tdd-workflow
+            - lumenflow-gates
+          'Framework: MCP':
+            - tdd-workflow
+            - lumenflow-gates
           'Framework: Core':
             - tdd-workflow
             - lumenflow-gates
           'Framework: CLI':
             - tdd-workflow
             - lumenflow-gates
-          'Framework: MCP':
-            - tdd-workflow
-            - lumenflow-gates
+          'Content: Specs Governance':
+            - worktree-discipline
+          'Content: Framework Docs':
+            - worktree-discipline
+          'Content: Site Comms':
+            - worktree-discipline
           'Content: Documentation':
             - worktree-discipline
-          'Operations: Infrastructure':
+          'Operations: Runtime':
             - orchestration
           'Operations: Tooling':
+            - orchestration
+          'Operations: Automation':
+            - orchestration
+          'Operations: Infrastructure':
             - orchestration
       blocks:
         - title: 'Claude Code Best Practices'
