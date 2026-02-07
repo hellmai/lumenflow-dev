@@ -184,17 +184,13 @@ describe('validateDirtyMain (WU-1503)', () => {
 
     it('allowlist includes status.md', () => {
       expect(
-        METADATA_ALLOWLIST_PATTERNS.some(
-          (p) => typeof p === 'string' && p.includes('status.md'),
-        ),
+        METADATA_ALLOWLIST_PATTERNS.some((p) => typeof p === 'string' && p.includes('status.md')),
       ).toBe(true);
     });
 
     it('allowlist includes backlog.md', () => {
       expect(
-        METADATA_ALLOWLIST_PATTERNS.some(
-          (p) => typeof p === 'string' && p.includes('backlog.md'),
-        ),
+        METADATA_ALLOWLIST_PATTERNS.some((p) => typeof p === 'string' && p.includes('backlog.md')),
       ).toBe(true);
     });
 
