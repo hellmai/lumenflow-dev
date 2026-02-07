@@ -100,6 +100,16 @@ import {
   PRETTIER_ARGS,
   PRETTIER_FLAGS,
 } from '@lumenflow/core/dist/wu-constants.js';
+// WU-1520: Gates graceful degradation for missing optional scripts
+import {
+  checkScriptExists,
+  buildMissingScriptWarning,
+  loadPackageJsonScripts,
+  resolveGateAction,
+  formatGateSummary,
+  type GateResult,
+  SKIPPABLE_GATE_SCRIPTS,
+} from './gates-graceful-degradation.js';
 
 /**
  * WU-1087: Gates-specific option definitions for createWUParser.
@@ -137,6 +147,12 @@ export const GATES_OPTIONS = {
     flags: '--verbose',
     description: 'Stream output in agent mode instead of logging to file',
   },
+  // WU-1520: --strict flag makes missing scripts a hard failure for CI
+  strict: {
+    name: 'strict',
+    flags: '--strict',
+    description: 'Fail on missing gate scripts instead of skipping (for CI enforcement)',
+  },
 };
 
 /**
@@ -152,6 +168,7 @@ export function parseGatesOptions(): {
   fullCoverage?: boolean;
   coverageMode: string;
   verbose?: boolean;
+  strict?: boolean;
 } {
   // WU-2465: Pre-filter argv to handle pnpm's `--` separator
   // When invoked via `pnpm gates -- --docs-only`, pnpm passes ["--", "--docs-only"]
@@ -184,6 +201,7 @@ export function parseGatesOptions(): {
       fullCoverage: opts.fullCoverage,
       coverageMode: opts.coverageMode ?? 'block',
       verbose: opts.verbose,
+      strict: opts.strict,
     };
   } finally {
     // Restore original process.argv
@@ -1362,6 +1380,7 @@ export async function runGates(
     fullCoverage?: boolean;
     coverageMode?: string;
     verbose?: boolean;
+    strict?: boolean;
     argv?: string[];
   } = {},
 ): Promise<boolean> {
@@ -1395,6 +1414,7 @@ async function executeGates(opts: {
   fullCoverage?: boolean;
   coverageMode?: string;
   verbose?: boolean;
+  strict?: boolean;
   argv?: string[];
 }): Promise<boolean> {
   const argv = opts.argv ?? process.argv.slice(2);
@@ -1425,6 +1445,11 @@ async function executeGates(opts: {
   const laneHealthMode = loadLaneHealthConfig(process.cwd());
   // WU-1356: Resolve configured gates commands for test execution
   const configuredGatesCommands = resolveGatesCommands(process.cwd());
+  // WU-1520: Strict mode and script existence checking for graceful degradation
+  const isStrict = opts.strict || false;
+  const packageJsonScripts = loadPackageJsonScripts(process.cwd());
+  // WU-1520: Track gate results for summary
+  const gateResults: GateResult[] = [];
 
   if (useAgentMode) {
     console.log(
@@ -1475,12 +1500,17 @@ async function executeGates(opts: {
 
   // Determine which gates to run
   // WU-2252: Invariants gate runs FIRST and is included in both docs-only and regular modes
+  // WU-1520: scriptName field maps gates to their package.json script for existence checking
   const gates = effectiveDocsOnly
     ? [
         // WU-2252: Invariants check runs first (non-bypassable)
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
-        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
+        {
+          name: GATE_NAMES.FORMAT_CHECK,
+          run: runFormatCheckGate,
+          scriptName: SCRIPTS.FORMAT_CHECK,
+        },
+        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate, scriptName: SCRIPTS.SPEC_LINTER },
         // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
         { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
         // WU-2315: System map validation (warn-only until orphan docs are indexed)
@@ -1523,13 +1553,22 @@ async function executeGates(opts: {
     : [
         // WU-2252: Invariants check runs first (non-bypassable)
         { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        { name: GATE_NAMES.FORMAT_CHECK, run: runFormatCheckGate },
+        {
+          name: GATE_NAMES.FORMAT_CHECK,
+          run: runFormatCheckGate,
+          scriptName: SCRIPTS.FORMAT_CHECK,
+        },
         {
           name: GATE_NAMES.LINT,
           cmd: isFullLint ? pnpmCmd(SCRIPTS.LINT) : GATE_COMMANDS.INCREMENTAL,
+          scriptName: SCRIPTS.LINT,
         },
-        { name: GATE_NAMES.TYPECHECK, cmd: pnpmCmd(SCRIPTS.TYPECHECK) },
-        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate },
+        {
+          name: GATE_NAMES.TYPECHECK,
+          cmd: pnpmCmd(SCRIPTS.TYPECHECK),
+          scriptName: SCRIPTS.TYPECHECK,
+        },
+        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate, scriptName: SCRIPTS.SPEC_LINTER },
         // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
         { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
         { name: GATE_NAMES.SUPABASE_DOCS_LINTER, run: runSupabaseDocsGate },
@@ -1606,6 +1645,37 @@ async function executeGates(opts: {
   for (const gate of gates) {
     let result: { ok: boolean; duration: number; filesChecked?: string[] };
 
+    // WU-1520: Check if the gate's underlying script exists in package.json
+    const gateScriptName = (gate as { scriptName?: string }).scriptName ?? null;
+    const gateAction = resolveGateAction(gate.name, gateScriptName, packageJsonScripts, isStrict);
+
+    if (gateAction === 'skip') {
+      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      const warningMsg = buildMissingScriptWarning(gateScriptName!);
+      logLine(`\n${warningMsg}\n`);
+      gateResults.push({
+        name: gate.name,
+        status: 'skipped',
+        durationMs: 0,
+        reason: 'script not found in package.json',
+      });
+      continue;
+    }
+
+    if (gateAction === 'fail') {
+      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      logLine(`\n❌ "${gateScriptName}" script not found in package.json (--strict mode)\n`);
+      gateResults.push({
+        name: gate.name,
+        status: 'failed',
+        durationMs: 0,
+        reason: 'script not found in package.json (strict mode)',
+      });
+      die(
+        `${gate.name} failed: missing script "${gateScriptName}" in package.json (--strict mode requires all gate scripts)`,
+      );
+    }
+
     if (gate.run) {
       result = await gate.run({ agentLog, useAgentMode });
       if (gate.name === GATE_NAMES.FORMAT_CHECK) {
@@ -1652,6 +1722,13 @@ async function executeGates(opts: {
         } else {
           writeSync(agentLog.logFd, `\n${msg}\n\n`);
         }
+        // WU-1520: Track skipped coverage gate in summary
+        gateResults.push({
+          name: gate.name,
+          status: 'skipped',
+          durationMs: 0,
+          reason: 'changed tests - coverage is partial',
+        });
         continue;
       }
 
@@ -1712,12 +1789,29 @@ async function executeGates(opts: {
         } else {
           writeSync(agentLog.logFd, `\n${warnMsg}\n\n`);
         }
+        // WU-1520: Track warned gates in summary
+        gateResults.push({
+          name: gate.name,
+          status: 'warned',
+          durationMs: result.duration,
+        });
         continue;
       }
 
       if (gate.name === GATE_NAMES.FORMAT_CHECK) {
         emitFormatCheckGuidance({ agentLog, useAgentMode, files: lastFormatCheckFiles });
       }
+
+      // WU-1520: Track failed gate before dying
+      gateResults.push({
+        name: gate.name,
+        status: 'failed',
+        durationMs: result.duration,
+      });
+
+      // WU-1520: Print summary before failing
+      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      logLine(`\n${formatGateSummary(gateResults)}\n`);
 
       if (useAgentMode) {
         const tail = readLogTail(agentLog.logPath);
@@ -1728,12 +1822,23 @@ async function executeGates(opts: {
       }
       die(`${gate.name} failed`);
     }
+
+    // WU-1520: Track passed gate
+    gateResults.push({
+      name: gate.name,
+      status: 'passed',
+      durationMs: result.duration,
+    });
   }
 
   // WU-2064: Create/update gates-latest.log symlink for easy agent access
   if (agentLog) {
     updateGatesLatestSymlink({ logPath: agentLog.logPath, cwd: process.cwd(), env: process.env });
   }
+
+  // WU-1520: Print gate summary showing passed/skipped/failed/warned
+  const summaryLogLine = makeGateLogger({ agentLog, useAgentMode });
+  summaryLogLine(`\n${formatGateSummary(gateResults)}`);
 
   if (!useAgentMode) {
     console.log('\n✅ All gates passed!\n');
