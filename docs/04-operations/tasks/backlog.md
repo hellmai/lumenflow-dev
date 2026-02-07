@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
-- [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml) — Framework: Core
 
 ## ⛔ Blocked
 
@@ -487,3 +486,4 @@ sections:
 - [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml)
 - [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml)
 - [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
+- [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml)

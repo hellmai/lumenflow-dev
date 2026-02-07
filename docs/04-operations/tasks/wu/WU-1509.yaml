@@ -2,7 +2,7 @@ id: WU-1509
 title: Refine lane taxonomy and inference for CLI/Core/Content/Ops
 lane: 'Framework: Core'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -47,3 +47,5 @@ session_id: 5c579ad4-b114-439b-aa36-3fea6a64b7b1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T11:10:58.647Z
+locked: true
+completed_at: 2026-02-07T11:16:56.829Z
