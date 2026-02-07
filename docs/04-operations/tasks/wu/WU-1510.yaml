@@ -2,7 +2,7 @@ id: WU-1510
 title: 'Rewrite Medium article: voice overhaul, origin story, de-slop'
 lane: 'Content: Site Comms'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -45,3 +45,5 @@ session_id: 26657ecd-c07e-4366-89da-7b3c24fc6b42
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T11:26:33.487Z
+locked: true
+completed_at: 2026-02-07T11:33:38.810Z
