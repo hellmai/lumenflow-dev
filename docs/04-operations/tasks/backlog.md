@@ -31,7 +31,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
@@ -503,3 +502,4 @@ sections:
 - [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml)
 - [WU-1525 — Rewrite article to showcase full LumenFlow breadth](wu/WU-1525.yaml)
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml)
+- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml)
