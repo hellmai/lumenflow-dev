@@ -2,7 +2,7 @@ id: WU-1523
 title: Render backlog.md and status.md from state events in scaffolded projects
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-07
 code_paths:
@@ -50,3 +50,5 @@ session_id: 9dc98dde-09e8-4621-bbbe-430445d52988
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T17:48:56.454Z
+locked: true
+completed_at: 2026-02-07T18:05:42.113Z

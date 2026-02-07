@@ -982,4 +982,5 @@
 {"type":"complete","wuId":"WU-1521","timestamp":"2026-02-07T17:21:30.164Z"}
 {"type":"claim","wuId":"WU-1522","timestamp":"2026-02-07T17:26:48.027Z","lane":"Framework: CLI WU Commands","title":"Auto-commit or untrack flow.log in wu:claim lifecycle"}
 {"type":"complete","wuId":"WU-1522","timestamp":"2026-02-07T17:40:03.709Z"}
-{"type":"claim","wuId":"WU-1523","lane":"Framework: CLI WU Commands","title":"Render backlog.md and status.md from state events in scaffolded projects","timestamp":"2026-02-07T17:48:56.485Z"}
+{"type":"claim","wuId":"WU-1523","timestamp":"2026-02-07T17:48:56.485Z","lane":"Framework: CLI WU Commands","title":"Render backlog.md and status.md from state events in scaffolded projects"}
+{"type":"complete","wuId":"WU-1523","timestamp":"2026-02-07T18:05:44.729Z"}
