@@ -8,12 +8,12 @@ created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/wu-done-validators.ts
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-validation.ts
 tests:
   manual:
     - Attempt wu:done with dirty main and verify guarded failure + guidance
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
   e2e: []
 artifacts:

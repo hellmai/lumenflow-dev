@@ -30,6 +30,7 @@ export function validateInputs(argv) {
         '  --fix-wu WU-{id}    Required with --skip-gates: WU ID that will fix the failures\n' +
         '  --allow-todo        Allow TODO comments in code (requires justification in WU notes)\n' +
         '  --override-owner    Override ownership check (requires --reason, audited)\n' +
+        '  --force, -f         Bypass dirty-main pre-merge guard (audited, WU-1503)\n' +
         '  --no-auto-rebase    Disable auto-rebase on branch divergence (WU-1303)\n' +
         '  --require-agents    Block completion if mandatory agents not invoked (WU-1542)\n' +
         '  --help, -h          Show this help\n\n' +
