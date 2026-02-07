@@ -7,11 +7,14 @@ priority: P2
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/gates-graceful-degradation.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Delete format:check script from package.json, run pnpm gates - should warn and skip, not fail
   unit:
-    - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-graceful-degradation.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1520.done
