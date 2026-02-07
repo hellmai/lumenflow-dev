@@ -3,13 +3,14 @@ title: Add Bash PostToolUse dirty-main warning hook
 lane: 'Framework: CLI'
 type: feature
 status: ready
-priority: P2
+priority: P1
 created: 2026-02-07
 code_paths:
   - .claude/settings.json
-  - .claude/hooks/block-bash-file-commands.sh
+  - .claude/hooks/warn-dirty-main.sh
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/
 tests:
   manual:
     - Run a Bash command that writes files on main and verify warning includes modified paths
@@ -18,11 +19,19 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1502.done
-dependencies: []
+dependencies:
+  - WU-1501
+initiative: INIT-017
+phase: 2
 spec_refs:
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
 risks: []
-notes: 'Implements Claude finding #2: catch script-generated writes that bypass Write/Edit hooks.'
+notes: >-
+  Implements Claude finding #2: catch script-generated writes that bypass Write/Edit hooks.
+
+
+  Depends on WU-1501. Implement as shared detector plus vendor-specific wrappers, not Claude-only
+  logic.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,8 +40,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Write/Edit hooks do not see files modified indirectly by Bash-invoked scripts. Problem: generated file writes on main can bypass tool-level enforcement and remain orphaned. Solution: add a lightweight PostToolUse Bash hook that detects file modifications on main and emits a high-signal warning with changed paths.'
+description: 'Context: Write/Edit hooks do not see files modified indirectly by Bash-invoked
+  scripts. Problem: generated file writes on main can bypass tool-level enforcement and remain
+  orphaned. Solution: add a lightweight PostToolUse Bash hook that detects file modifications on
+  main and emits a high-signal warning with changed paths.'
 acceptance:
-  - PostToolUse hook runs for Bash tool calls and checks for working tree modifications on main
-  - Warning output lists modified files and guidance to create/claim a WU or discard changes
-  - Hook is non-blocking and performance overhead remains minimal
+  - Add vendor-agnostic dirty-main detector in CLI/core; vendor hooks are generated thin wrappers
+    that call shared logic
+  - PostToolUse warning is emitted only on main checkout; no-op inside worktrees
+  - Warning lists modified paths and guidance to create/claim a WU or discard changes
+  - Clean working tree overhead remains under 50ms per Bash invocation

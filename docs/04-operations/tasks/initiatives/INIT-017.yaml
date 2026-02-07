@@ -28,3 +28,4 @@ success_metrics:
 labels: []
 wus:
   - WU-1501
+  - WU-1502
