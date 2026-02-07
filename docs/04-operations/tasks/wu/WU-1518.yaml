@@ -8,6 +8,8 @@ created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/templates/
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/core/src/wu-lint.ts
 tests:
   manual:
     - Run lumenflow init in fresh dir, run pnpm gates --docs-only on first WU
@@ -24,10 +26,17 @@ spec_refs:
 risks: []
 notes: 'Haven test: gates crashed with ERR_PNPM_NO_SCRIPT for spec:linter, lint, typecheck.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-07T16:50:30.568Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1518
+session_id: 1b7fa1fa-6bd8-4b3c-bd6b-d558b0857573
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T16:50:30.574Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +49,3 @@ acceptance:
   - lumenflow init adds typecheck script
   - pnpm gates --docs-only passes on a fresh docs-only WU without manual script additions
   - Scripts that are stubs log a clear message indicating how to enable them
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1518
-claimed_at: 2026-02-07T16:50:30.568Z
-baseline_main_sha: d07a8c483ef9ca08f167b886471d01f422e5e9a6
-session_id: 1b7fa1fa-6bd8-4b3c-bd6b-d558b0857573
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-07T16:50:30.574Z
