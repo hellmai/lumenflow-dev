@@ -968,4 +968,5 @@
 {"type":"claim","wuId":"WU-1520","timestamp":"2026-02-07T13:43:27.471Z","lane":"Framework: CLI Enforcement","title":"Gates graceful degradation for missing optional scripts"}
 {"type":"claim","wuId":"WU-1525","timestamp":"2026-02-07T13:45:18.379Z","lane":"Content: Site Comms","title":"Rewrite article to showcase full LumenFlow breadth"}
 {"type":"complete","wuId":"WU-1515","timestamp":"2026-02-07T13:46:56.173Z"}
-{"type":"claim","wuId":"WU-1516","lane":"Framework: Core Lifecycle","title":"Add lifecycle regression harness for create/done/delete state consistency","timestamp":"2026-02-07T13:47:31.304Z"}
+{"type":"claim","wuId":"WU-1516","timestamp":"2026-02-07T13:47:31.304Z","lane":"Framework: Core Lifecycle","title":"Add lifecycle regression harness for create/done/delete state consistency"}
+{"type":"complete","wuId":"WU-1525","timestamp":"2026-02-07T13:50:55.385Z"}
