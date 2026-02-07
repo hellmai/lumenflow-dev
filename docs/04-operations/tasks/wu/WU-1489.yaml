@@ -8,7 +8,9 @@ created: 2026-02-06
 code_paths:
   - packages/@lumenflow/core/src/lane-lock.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm --filter @lumenflow/core exec vitest run src/__tests__/lane-lock.test.ts and verify
+      lane-lock regressions are resolved on main
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
   e2e: []
