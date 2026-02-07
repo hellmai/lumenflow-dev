@@ -963,7 +963,8 @@
 {"type":"complete","wuId":"WU-1504","timestamp":"2026-02-07T13:20:10.401Z"}
 {"type":"claim","wuId":"WU-1514","timestamp":"2026-02-07T13:33:40.366Z","lane":"Framework: CLI WU Commands","title":"Purge deleted-WU events from state to prevent Broken Event drift"}
 {"type":"complete","wuId":"WU-1514","timestamp":"2026-02-07T13:37:39.069Z"}
-{"type":"claim","wuId":"WU-1515","lane":"Framework: CLI WU Commands","title":"Eliminate post-merge dirty-state loops in wu:done","timestamp":"2026-02-07T13:38:05.089Z"}
-{"type":"claim","wuId":"WU-1517","lane":"Framework: CLI WU Commands","title":"Scaffold prettier + format infrastructure in lumenflow init","timestamp":"2026-02-07T13:42:14.802Z"}
-{"type":"claim","wuId":"WU-1520","lane":"Framework: CLI Enforcement","title":"Gates graceful degradation for missing optional scripts","timestamp":"2026-02-07T13:43:27.471Z"}
-{"type":"claim","wuId":"WU-1525","lane":"Content: Site Comms","title":"Rewrite article to showcase full LumenFlow breadth","timestamp":"2026-02-07T13:45:18.379Z"}
+{"type":"claim","wuId":"WU-1515","timestamp":"2026-02-07T13:38:05.089Z","lane":"Framework: CLI WU Commands","title":"Eliminate post-merge dirty-state loops in wu:done"}
+{"type":"claim","wuId":"WU-1517","timestamp":"2026-02-07T13:42:14.802Z","lane":"Framework: CLI WU Commands","title":"Scaffold prettier + format infrastructure in lumenflow init"}
+{"type":"claim","wuId":"WU-1520","timestamp":"2026-02-07T13:43:27.471Z","lane":"Framework: CLI Enforcement","title":"Gates graceful degradation for missing optional scripts"}
+{"type":"claim","wuId":"WU-1525","timestamp":"2026-02-07T13:45:18.379Z","lane":"Content: Site Comms","title":"Rewrite article to showcase full LumenFlow breadth"}
+{"type":"complete","wuId":"WU-1515","timestamp":"2026-02-07T13:46:56.173Z"}
