@@ -1,6 +1,6 @@
 id: WU-1489
 title: Fix pre-existing lane-lock test regressions blocking gates
-lane: 'Framework: Core'
+lane: 'Framework: Core Lifecycle'
 type: feature
 status: ready
 priority: P2
@@ -27,6 +27,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Restore failing lane-lock unit tests on main caused by lock_policy behavior drift so global gates run cleanly without skip-gates.
+description: Restore failing lane-lock unit tests on main caused by lock_policy behavior drift so
+  global gates run cleanly without skip-gates.
 acceptance:
-  - Targeted @lumenflow/core lane-lock test suite passes on main; global gates no longer fail because of lane-lock regressions
+  - Targeted @lumenflow/core lane-lock test suite passes on main; global gates no longer fail
+    because of lane-lock regressions
