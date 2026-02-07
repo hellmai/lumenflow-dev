@@ -2,7 +2,7 @@ id: WU-1505
 title: Add SessionStart dirty-main early-warning across clients
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - Warning is informational (non-blocking) and lists modified/untracked paths with remediation
     guidance
   - No warning when running inside a worktree checkout
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-1505
+claimed_at: 2026-02-07T10:37:57.098Z
+baseline_main_sha: 3ce142c20de6226fa343c570c415d3bf5f3de472
+session_id: 66b5ebcd-6c9e-44f7-bf47-a797dcf0dbc3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T10:37:57.104Z
