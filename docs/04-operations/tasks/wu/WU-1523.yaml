@@ -2,7 +2,7 @@ id: WU-1523
 title: Render backlog.md and status.md from state events in scaffolded projects
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-07
 code_paths:
@@ -22,7 +22,8 @@ phase: 3
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-018.yaml
 risks: []
-notes: 'Haven test: all rendered markdown files were empty despite 3 completed WUs with proper state events.'
+notes: 'Haven test: all rendered markdown files were empty despite 3 completed WUs with proper state
+  events.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,8 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: after completing 3 WUs in Haven test, both backlog.md and status.md show empty sections. Problem: state events exist in wu-events.jsonl but arent reflected in rendered markdown. May be a local-only mode path issue or a rendering bug in wu:done/wu:claim. Solution: fix markdown regeneration to reflect actual state.'
+description: 'Context: after completing 3 WUs in Haven test, both backlog.md and status.md show
+  empty sections. Problem: state events exist in wu-events.jsonl but arent reflected in rendered
+  markdown. May be a local-only mode path issue or a rendering bug in wu:done/wu:claim. Solution:
+  fix markdown regeneration to reflect actual state.'
 acceptance:
   - After wu:done, backlog.md shows the completed WU in the Done section
   - After wu:claim, status.md shows the claimed WU in the In Progress section
   - Both files render correctly from wu-events.jsonl in local-only mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1523
+claimed_at: 2026-02-07T17:48:56.448Z
+baseline_main_sha: e6ae000ff2141bb22376a579bf56c3fcf2a6a7cb
+session_id: 9dc98dde-09e8-4621-bbbe-430445d52988
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T17:48:56.454Z
