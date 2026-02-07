@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -484,3 +484,4 @@ sections:
 - [WU-1496 — Align docs and constraints for first-class branch-pr cloud flow](wu/WU-1496.yaml)
 - [WU-1500 — Commit leftover mem:recover parity and regenerated docs](wu/WU-1500.yaml)
 - [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml)
+- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml)
