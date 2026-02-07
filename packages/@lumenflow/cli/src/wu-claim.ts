@@ -198,6 +198,36 @@ export function validateManualTestsForClaim(doc, id) {
 }
 
 /**
+ * WU-1521: Build a rolled-back version of a WU YAML doc by stripping claim metadata.
+ *
+ * When wu:claim fails after pushing YAML changes to origin/main but before
+ * worktree creation succeeds, this function produces a clean doc that can be
+ * written back to reset the WU to 'ready' state, enabling a clean retry.
+ *
+ * Pure function: does not mutate the input doc.
+ *
+ * @param doc - The claimed WU YAML document to roll back
+ * @returns A new document with status=ready and claim metadata removed
+ */
+export function buildRollbackYamlDoc(doc) {
+  // Shallow-copy to avoid mutating the original
+  const rolled = { ...doc };
+
+  // Reset status back to ready
+  rolled.status = WU_STATUS.READY;
+
+  // Remove claim-specific metadata fields
+  delete rolled.claimed_mode;
+  delete rolled.claimed_at;
+  delete rolled.worktree_path;
+  delete rolled.baseline_main_sha;
+  delete rolled.session_id;
+  delete rolled.assigned_to;
+
+  return rolled;
+}
+
+/**
  * Pre-flight validation: Check WU file exists and is valid BEFORE any git operations
  * Prevents zombie worktrees when WU YAML is missing or malformed
  */
@@ -721,6 +751,86 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
 
   console.log(`${PREFIX} Canonical claim state updated on origin/main`);
   return updatedTitle;
+}
+
+/**
+ * WU-1521: Rollback canonical claim state on origin/main after partial failure.
+ *
+ * When wu:claim pushes YAML changes to origin/main (via applyCanonicalClaimUpdate)
+ * but then fails to create the worktree or branch, this function reverses the claim
+ * by writing the WU YAML back to 'ready' status and emitting a 'release' event
+ * to the state store. This ensures re-running wu:claim succeeds without wu:repair.
+ *
+ * Uses a push-only micro-worktree to atomically update origin/main.
+ *
+ * @param id - WU ID (e.g., 'WU-1521')
+ * @param lane - Lane name for the release event
+ * @param title - WU title for the release event
+ */
+async function rollbackCanonicalClaim(id: string, lane: string, title: string): Promise<void> {
+  console.log(`${PREFIX} Rolling back canonical claim for ${id}...`);
+
+  try {
+    await withMicroWorktree({
+      operation: MICRO_WORKTREE_OPERATIONS.WU_CLAIM,
+      id,
+      logPrefix: PREFIX,
+      pushOnly: true,
+      execute: async ({ worktreePath }) => {
+        const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
+
+        // Read the current (claimed) YAML from the micro-worktree
+        const text = await readFile(microWUPath, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+        const doc = parseYAML(text);
+
+        // Build the rolled-back doc and write it
+        const rolledBackDoc = buildRollbackYamlDoc(doc);
+        const out = stringifyYAML(rolledBackDoc);
+        await writeFile(microWUPath, out, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+
+        // Emit a release event to the state store so the claim event is reversed
+        const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
+        const stateDir = getStateStoreDirFromBacklog(microBacklogPath);
+        const store = new WUStateStore(stateDir);
+        await store.load();
+        await store.release(id, `Rollback: wu:claim failed after canonical update`);
+
+        // Regenerate backlog.md and status.md from the corrected state
+        const backlogContent = await generateBacklog(store);
+        await writeFile(microBacklogPath, backlogContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+        const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
+        const statusContent = await generateStatus(store);
+        await writeFile(microStatusPath, statusContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+
+        return {
+          commitMessage: `wu(${id.toLowerCase()}): rollback claim after partial failure`,
+          files: [
+            WU_PATHS.WU(id),
+            WU_PATHS.STATUS(),
+            WU_PATHS.BACKLOG(),
+            LUMENFLOW_PATHS.WU_EVENTS,
+          ],
+        };
+      },
+    });
+
+    console.log(`${PREFIX} Canonical claim rolled back for ${id}`);
+  } catch (rollbackErr) {
+    // Rollback failure should not mask the original error.
+    // Log the rollback failure but let the original error propagate.
+    console.error(
+      `${PREFIX} WARNING: Failed to rollback canonical claim for ${id}: ${rollbackErr.message}`,
+    );
+    console.error(`${PREFIX} Manual recovery required: pnpm wu:repair --id ${id} --claim`);
+  }
 }
 
 async function readWUTitle(id) {
@@ -1695,6 +1805,9 @@ async function main() {
   // WU-1808: Wrap claim execution in try/finally to ensure lock release on failure
   // If claim fails after lock acquisition, the lane would be blocked without this cleanup
   let claimSucceeded = false;
+  // WU-1521: Track canonical claim push state for rollback in finally block
+  let canonicalClaimPushed = false;
+  let claimTitle = '';
   try {
     // Code paths overlap detection (WU-901)
     handleCodePathOverlap(WU_PATH, STATUS_PATH, id, args);
@@ -1817,8 +1930,13 @@ async function main() {
       stagedChanges,
     };
     let updatedTitle = title;
+    claimTitle = title;
     if (!args.noPush) {
       updatedTitle = (await applyCanonicalClaimUpdate(baseCtx, sessionId)) || updatedTitle;
+      // WU-1521: Mark that canonical claim was pushed to origin/main
+      // If claim fails after this point, the finally block will rollback
+      canonicalClaimPushed = true;
+      claimTitle = updatedTitle || title;
 
       // Refresh origin/main after push-only update so worktrees start from canonical state
       await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
@@ -1842,6 +1960,12 @@ async function main() {
     // WU-1808: Release lane lock if claim did not complete successfully
     // This prevents orphan locks from blocking the lane when claim crashes or fails
     if (!claimSucceeded) {
+      // WU-1521: Rollback canonical claim state if it was pushed to origin/main
+      // This ensures re-running wu:claim succeeds without needing wu:repair
+      if (canonicalClaimPushed) {
+        await rollbackCanonicalClaim(id, args.lane, claimTitle);
+      }
+
       console.log(`${PREFIX} Claim did not complete - releasing lane lock...`);
       const releaseResult = releaseLaneLock(args.lane, { wuId: id });
       if (releaseResult.released && !releaseResult.notFound) {
