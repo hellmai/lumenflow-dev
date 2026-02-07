@@ -2,7 +2,7 @@ id: WU-1507
 title: 'Expand Medium article: fix code snippets, add numbers/CTA/vendor sections'
 lane: 'Content: Documentation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -44,3 +44,5 @@ session_id: 2957d5c3-ef8b-49e1-aa41-d622af1272b1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T10:49:54.755Z
+locked: true
+completed_at: 2026-02-07T11:09:02.028Z
