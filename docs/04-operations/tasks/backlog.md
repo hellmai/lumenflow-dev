@@ -20,18 +20,17 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml) — Content: Documentation
-- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml) — Framework: CLI
-- [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI
-- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI
-- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI
-- [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
+- [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
+- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI
+- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI
+- [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI
+- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml) — Framework: CLI
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

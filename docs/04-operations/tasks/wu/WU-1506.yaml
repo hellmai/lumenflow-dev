@@ -2,7 +2,7 @@ id: WU-1506
 title: 'Medium article: LumenFlow introduction'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -24,8 +24,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow needs a public-facing introduction article for Medium. Problem: no content exists explaining why LumenFlow was built or what it solves. Solution: write a story-first article grounded in real codebase examples from ExampleApp development.'
+description: 'Context: LumenFlow needs a public-facing introduction article for Medium. Problem: no
+  content exists explaining why LumenFlow was built or what it solves. Solution: write a story-first
+  article grounded in real codebase examples from ExampleApp development.'
 acceptance:
   - Article written at docs/05-business/content/
   - All data points verified against current repo state
   - Article uses story-first structure with real code snippets
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1506
+claimed_at: 2026-02-07T10:37:22.830Z
+baseline_main_sha: a75255f2379454ce62795a190c8c00acb243966b
+session_id: 66b5ebcd-6c9e-44f7-bf47-a797dcf0dbc3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T10:37:22.836Z
