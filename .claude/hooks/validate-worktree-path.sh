@@ -189,26 +189,27 @@ if [[ -z "$FILE_PATH" ]]; then
     "file_path is required for ${TOOL_NAME} operations but was empty or missing."
 fi
 
-# Check if any worktrees exist
-if [[ ! -d "$WORKTREES_DIR" ]]; then
-  exit 0
-fi
-
-WORKTREE_COUNT=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-if [[ "$WORKTREE_COUNT" -eq 0 ]]; then
-  exit 0
-fi
-
-# Worktrees exist - check if the file path is within a worktree
+# Resolve the file path
 RESOLVED_PATH=$(realpath -m "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
+
+# Allow if path is outside the repo entirely
+if [[ "$RESOLVED_PATH" != "${MAIN_REPO_PATH}/"* && "$RESOLVED_PATH" != "${MAIN_REPO_PATH}" ]]; then
+  exit 0
+fi
 
 # Allow if path is inside a worktree
 if [[ "$RESOLVED_PATH" == "${WORKTREES_DIR}/"* ]]; then
   exit 0
 fi
 
-# Block if path is in main repo while worktrees exist
-if [[ "$RESOLVED_PATH" == "${MAIN_REPO_PATH}/"* || "$RESOLVED_PATH" == "${MAIN_REPO_PATH}" ]]; then
+# Check if any active worktrees exist
+WORKTREE_COUNT=0
+if [[ -d "$WORKTREES_DIR" ]]; then
+  WORKTREE_COUNT=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+fi
+
+# If worktrees exist, block writes to main repo (original behavior)
+if [[ "$WORKTREE_COUNT" -gt 0 ]]; then
   ACTIVE_WORKTREES=$(find "$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -5 | tr '\n' ', ' | sed 's/,$//')
 
   block_with_audit "main_repo_write_blocked" "$TOOL_NAME" "$FILE_PATH" \
@@ -220,5 +221,36 @@ USE INSTEAD:
   2. Make your edits in the worktree"
 fi
 
-# Path is outside repo entirely - allow
-exit 0
+# WU-1501: Fail-closed on main when no active worktrees exist
+# Check allowlist: paths that are always safe to write on main
+RELATIVE_PATH="${RESOLVED_PATH#${MAIN_REPO_PATH}/}"
+
+# Allowlist: WU specs, .lumenflow state, .claude config, plan/spec scaffolds
+case "$RELATIVE_PATH" in
+  docs/04-operations/tasks/wu/*)  exit 0 ;;  # WU YAML specs
+  .lumenflow/*)                   exit 0 ;;  # LumenFlow state/config
+  .claude/*)                      exit 0 ;;  # Claude Code config
+  plan/*)                         exit 0 ;;  # Plan/spec scaffolds
+esac
+
+# Check for branch-pr claimed_mode (allows main writes without worktree)
+STATE_FILE="${MAIN_REPO_PATH}/.lumenflow/state/wu-events.jsonl"
+if [[ -f "$STATE_FILE" ]]; then
+  if grep -q '"claimed_mode":"branch-pr"' "$STATE_FILE" 2>/dev/null; then
+    if grep -q '"status":"in_progress"' "$STATE_FILE" 2>/dev/null; then
+      exit 0  # Branch-PR WU active - allow main writes
+    fi
+  fi
+fi
+
+# WU-1501: Fail-closed - no active claim context, block the write
+block_with_audit "no_active_claim" "$TOOL_NAME" "$FILE_PATH" \
+  "No active WU claim context on main (fail-closed).
+No worktrees exist and no branch-pr WU is in progress.
+
+WHAT TO DO:
+  1. Claim a WU: pnpm wu:claim --id WU-XXXX --lane \"<Lane>\"
+  2. cd worktrees/<lane>-wu-xxxx
+  3. Make your edits in the worktree
+
+Or for cloud agents: pnpm wu:claim --id WU-XXXX --lane \"<Lane>\" --cloud"
