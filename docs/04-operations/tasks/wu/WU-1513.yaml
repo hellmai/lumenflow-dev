@@ -2,14 +2,15 @@ id: WU-1513
 title: Add lumenflow.dev link to Medium article
 lane: 'Content: Site Comms'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
   - docs/05-business/content/medium-lumenflow-introduction.md
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -28,3 +29,11 @@ requires_design_approval: false
 description: Article has no link to the actual product site. Add lumenflow.dev reference in the CTA.
 acceptance:
   - lumenflow.dev linked in article
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1513
+claimed_at: 2026-02-07T13:14:56.329Z
+baseline_main_sha: 23eee31c25edd16fb9c62e1b58e3d7a0ca015aff
+session_id: 2f46c931-5183-4120-b42a-5eeec22aad52
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:14:56.332Z

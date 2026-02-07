@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1513 — Add lumenflow.dev link to Medium article](wu/WU-1513.yaml) — Content: Site Comms
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 
@@ -28,6 +27,7 @@ sections:
 
 - [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI Enforcement
 - [WU-1511 — Fix wu:delete to fully clean projections and initiative links](wu/WU-1511.yaml) — Framework: CLI WU Commands
+- [WU-1513 — Add lumenflow.dev link to Medium article](wu/WU-1513.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
