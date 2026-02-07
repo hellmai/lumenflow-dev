@@ -1,6 +1,6 @@
 id: WU-1498
 title: Add passive lane-signal telemetry and agent lane-fit reasoning
-lane: 'Framework: Core'
+lane: 'Framework: Core Lifecycle'
 type: feature
 status: ready
 priority: P2
