@@ -954,3 +954,4 @@
 {"type":"complete","wuId":"WU-1502","timestamp":"2026-02-07T11:57:46.669Z"}
 {"type":"claim","wuId":"WU-1504","lane":"Framework: CLI Enforcement","title":"Add wu:validate lint for CLI command registration parity","timestamp":"2026-02-07T12:59:48.031Z"}
 {"type":"claim","wuId":"WU-1511","lane":"Framework: CLI WU Commands","title":"Fix wu:delete to fully clean projections and initiative links","timestamp":"2026-02-07T13:04:57.145Z"}
+{"type":"claim","wuId":"WU-1512","lane":"Content: Site Comms","title":"Fix deflating article closing — energise the CTA","timestamp":"2026-02-07T13:08:16.870Z"}

@@ -2,14 +2,15 @@ id: WU-1512
 title: Fix deflating article closing — energise the CTA
 lane: 'Content: Site Comms'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
   - docs/05-business/content/medium-lumenflow-introduction.md
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -25,7 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The closing section of the Medium article opens negatively and pushes readers away before inviting them. Rewrite to end on forward momentum.
+description: The closing section of the Medium article opens negatively and pushes readers away
+  before inviting them. Rewrite to end on forward momentum.
 acceptance:
   - Closing no longer opens with exclusion
   - CTA ends on energy not passivity
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1512
+claimed_at: 2026-02-07T13:08:16.850Z
+baseline_main_sha: c910a4d54ac19065603af858c8e88af1f480b86b
+session_id: 20c5804d-6db9-420e-bf71-1344e7e2c43b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:08:16.856Z
