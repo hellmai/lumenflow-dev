@@ -7,12 +7,6 @@ priority: P1
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/templates/
-  - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/__tests__/init-prettier.test.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
-  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/__tests__/init-prettier.test.ts
 tests:
   manual:
