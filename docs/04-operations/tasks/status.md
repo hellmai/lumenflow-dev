@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml)
 
 ## Blocked
 

@@ -2,7 +2,7 @@ id: WU-1502
 title: Add Bash PostToolUse dirty-main warning hook
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - PostToolUse warning is emitted only on main checkout; no-op inside worktrees
   - Warning lists modified paths and guidance to create/claim a WU or discard changes
   - Clean working tree overhead remains under 50ms per Bash invocation
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1502
+claimed_at: 2026-02-07T11:34:58.876Z
+baseline_main_sha: d9572bd8a4ca4552b937b142b994f87808dc1567
+session_id: 44412f2b-0702-4d11-b11b-72c5b807df25
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T11:34:58.880Z
