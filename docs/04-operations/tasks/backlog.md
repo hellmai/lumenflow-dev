@@ -20,15 +20,15 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
-- [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
-- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI
-- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI
-- [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI
+- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
+- [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
+- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI Enforcement
+- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI WU Commands
+- [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
-- [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -487,3 +487,4 @@ sections:
 - [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml)
 - [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
 - [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml)
+- [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml)

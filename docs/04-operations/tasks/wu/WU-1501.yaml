@@ -2,7 +2,7 @@ id: WU-1501
 title: Close fail-open gap in validate-worktree-path hook
 lane: 'Framework: CLI'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -57,3 +57,5 @@ session_id: 5c579ad4-b114-439b-aa36-3fea6a64b7b1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T11:10:33.216Z
+locked: true
+completed_at: 2026-02-07T11:22:48.639Z
