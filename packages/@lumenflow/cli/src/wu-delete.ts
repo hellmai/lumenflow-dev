@@ -159,6 +159,65 @@ function removeEventsForDeletedWUs(eventsPath: string, ids: Set<string>): boolea
   return true;
 }
 
+function getExistingWuIds(worktreePath: string): Set<string> {
+  const wuIds = new Set<string>();
+  const wuDir = join(worktreePath, WU_PATHS.WU_DIR());
+
+  if (!existsSync(wuDir)) {
+    return wuIds;
+  }
+
+  for (const file of readdirSync(wuDir)) {
+    if (!file.endsWith('.yaml')) {
+      continue;
+    }
+    const id = file.slice(0, -'.yaml'.length).toUpperCase();
+    if (id.startsWith('WU-')) {
+      wuIds.add(id);
+    }
+  }
+
+  return wuIds;
+}
+
+function removeOrphanedEvents(eventsPath: string, existingWuIds: Set<string>): number {
+  if (!existsSync(eventsPath)) {
+    return 0;
+  }
+
+  const content = readFileSync(eventsPath, FILE_SYSTEM.ENCODING as BufferEncoding);
+  const lines = content.split('\n');
+
+  let removed = 0;
+  const retained: string[] = [];
+
+  for (const line of lines) {
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      const event = JSON.parse(line) as { wuId?: string };
+      if (event.wuId && !existingWuIds.has(event.wuId.toUpperCase())) {
+        removed++;
+        continue;
+      }
+      retained.push(line);
+    } catch {
+      // Preserve malformed lines to avoid destructive cleanup of unrelated data
+      retained.push(line);
+    }
+  }
+
+  if (removed === 0) {
+    return 0;
+  }
+
+  const next = retained.length > 0 ? `${retained.join('\n')}\n` : '';
+  writeFileSync(eventsPath, next, FILE_SYSTEM.ENCODING as BufferEncoding);
+  return removed;
+}
+
 function removeDeletedWUsFromInitiatives(worktreePath: string, ids: Set<string>): string[] {
   const modified: string[] = [];
   const initiativesDir = join(worktreePath, INIT_PATHS.INITIATIVES_DIR());
@@ -231,6 +290,13 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
     console.log(
       `${PREFIX} ✅ Removed ${normalizedIds.size} WU event stream(s) from wu-events.jsonl`,
     );
+  }
+
+  const existingWuIds = getExistingWuIds(worktreePath);
+  const orphanedRemoved = removeOrphanedEvents(eventsAbsPath, existingWuIds);
+  if (orphanedRemoved > 0) {
+    modified.add(eventsRelPath);
+    console.log(`${PREFIX} ✅ Removed ${orphanedRemoved} orphaned event(s) for missing WU specs`);
   }
 
   const initiativeFiles = removeDeletedWUsFromInitiatives(worktreePath, normalizedIds);
