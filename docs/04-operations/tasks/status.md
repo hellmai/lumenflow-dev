@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml)
 
 ## Blocked
 
