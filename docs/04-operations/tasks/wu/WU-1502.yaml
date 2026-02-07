@@ -1,6 +1,6 @@
 id: WU-1502
 title: Add Bash PostToolUse dirty-main warning hook
-lane: 'Framework: CLI'
+lane: 'Framework: CLI Enforcement'
 type: feature
 status: ready
 priority: P1
