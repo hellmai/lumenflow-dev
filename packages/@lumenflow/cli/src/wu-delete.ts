@@ -9,13 +9,13 @@
  * 2) Ensure main is clean and up-to-date with origin
  * 3) Create temp branch WITHOUT switching (main checkout stays on main)
  * 4) Create micro-worktree in /tmp pointing to temp branch
- * 5) Delete WU file and update backlog.md in micro-worktree
+ * 5) Delete WU artifacts and clean references in micro-worktree
  * 6) Commit, ff-only merge, push
  * 7) Cleanup temp branch and micro-worktree
  *
  * Usage:
- *   pnpm wu:delete --id WU-123           # Single WU deletion
- *   pnpm wu:delete --id WU-123 --dry-run # Dry run
+ *   pnpm wu:delete --id WU-123            # Single WU deletion
+ *   pnpm wu:delete --id WU-123 --dry-run  # Dry run
  *   pnpm wu:delete --batch WU-1,WU-2,WU-3 # Batch deletion
  */
 
@@ -23,15 +23,18 @@ import { existsSync, readFileSync, writeFileSync, unlinkSync, readdirSync } from
 import { join } from 'node:path';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
+import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
 import {
   FILE_SYSTEM,
   EXIT_CODES,
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   WU_STATUS,
+  LUMENFLOW_PATHS,
 } from '@lumenflow/core/dist/wu-constants.js';
 import {
   ensureOnMain,
@@ -39,6 +42,9 @@ import {
   validateWUIDFormat,
 } from '@lumenflow/core/dist/wu-helpers.js';
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
+import { INIT_PATTERNS } from '@lumenflow/initiatives/dist/initiative-constants.js';
+import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
 
 const PREFIX = LOG_PREFIX.DELETE || '[wu:delete]';
 
@@ -54,6 +60,11 @@ const DELETE_OPTIONS = {
     description: 'Delete multiple WUs atomically (comma-separated: WU-1,WU-2,WU-3)',
   },
 };
+
+export interface CleanupDeletedWUsArgs {
+  worktreePath: string;
+  ids: string[];
+}
 
 function parseArgs() {
   return createWUParser({
@@ -110,25 +121,148 @@ function stampExists(id: string): boolean {
   return existsSync(getStampPath(id));
 }
 
-function removeFromBacklog(backlogPath: string, id: string): boolean {
-  if (!existsSync(backlogPath)) {
+function removeEventsForDeletedWUs(eventsPath: string, ids: Set<string>): boolean {
+  if (!existsSync(eventsPath)) {
     return false;
   }
 
-  const content = readFileSync(backlogPath, FILE_SYSTEM.ENCODING as BufferEncoding);
-  const wuLinkPattern = new RegExp(`^.*\\[${id}[^\\]]*\\].*$`, 'gmi');
-  const wuSimplePattern = new RegExp(`^.*${id}.*\\.yaml.*$`, 'gmi');
+  const content = readFileSync(eventsPath, FILE_SYSTEM.ENCODING as BufferEncoding);
+  const lines = content.split('\n');
 
-  let updated = content.replace(wuLinkPattern, '');
-  updated = updated.replace(wuSimplePattern, '');
-  updated = updated.replace(/\n{3,}/g, '\n\n');
+  let changed = false;
+  const retained: string[] = [];
 
-  if (updated !== content) {
-    writeFileSync(backlogPath, updated, FILE_SYSTEM.ENCODING as BufferEncoding);
-    return true;
+  for (const line of lines) {
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      const event = JSON.parse(line) as { wuId?: string };
+      if (event.wuId && ids.has(event.wuId.toUpperCase())) {
+        changed = true;
+        continue;
+      }
+      retained.push(line);
+    } catch {
+      // Preserve malformed lines to avoid destructive cleanup of unrelated data
+      retained.push(line);
+    }
   }
 
-  return false;
+  if (!changed) {
+    return false;
+  }
+
+  const next = retained.length > 0 ? `${retained.join('\n')}\n` : '';
+  writeFileSync(eventsPath, next, FILE_SYSTEM.ENCODING as BufferEncoding);
+  return true;
+}
+
+function removeDeletedWUsFromInitiatives(worktreePath: string, ids: Set<string>): string[] {
+  const modified: string[] = [];
+  const initiativesDir = join(worktreePath, INIT_PATHS.INITIATIVES_DIR());
+
+  if (!existsSync(initiativesDir)) {
+    return modified;
+  }
+
+  const initiativeFiles = readdirSync(initiativesDir).filter((file) => file.endsWith('.yaml'));
+
+  for (const fileName of initiativeFiles) {
+    const initId = fileName.replace(/\.yaml$/, '');
+    if (!INIT_PATTERNS.INIT_ID.test(initId)) {
+      continue;
+    }
+
+    const initiativePath = join(initiativesDir, fileName);
+
+    try {
+      const initDoc = readInitiative(initiativePath, initId) as { wus?: string[] };
+      if (!Array.isArray(initDoc.wus)) {
+        continue;
+      }
+
+      const before = initDoc.wus.length;
+      initDoc.wus = initDoc.wus.filter((wuId) => !ids.has(String(wuId).toUpperCase()));
+      if (initDoc.wus.length === before) {
+        continue;
+      }
+
+      writeInitiative(initiativePath, initDoc);
+      modified.push(INIT_PATHS.INITIATIVE(initId));
+    } catch (err) {
+      // Non-blocking: malformed initiative files should not block WU delete operation
+      console.warn(
+        `${PREFIX} ⚠️  Could not update initiative ${initId}: ${(err as Error).message}`,
+      );
+    }
+  }
+
+  return modified;
+}
+
+export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: CleanupDeletedWUsArgs) {
+  const normalizedIds = new Set(ids.map((id) => id.toUpperCase()));
+  const modified = new Set<string>();
+
+  for (const id of normalizedIds) {
+    const wuRelPath = WU_PATHS.WU(id);
+    const wuAbsPath = join(worktreePath, wuRelPath);
+    if (existsSync(wuAbsPath)) {
+      unlinkSync(wuAbsPath);
+      modified.add(wuRelPath);
+      console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
+    }
+
+    const stampRelPath = getStampPath(id);
+    const stampAbsPath = join(worktreePath, stampRelPath);
+    if (existsSync(stampAbsPath)) {
+      unlinkSync(stampAbsPath);
+      modified.add(stampRelPath);
+      console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
+    }
+  }
+
+  const eventsRelPath = LUMENFLOW_PATHS.WU_EVENTS;
+  const eventsAbsPath = join(worktreePath, eventsRelPath);
+  if (removeEventsForDeletedWUs(eventsAbsPath, normalizedIds)) {
+    modified.add(eventsRelPath);
+    console.log(
+      `${PREFIX} ✅ Removed ${normalizedIds.size} WU event stream(s) from wu-events.jsonl`,
+    );
+  }
+
+  const initiativeFiles = removeDeletedWUsFromInitiatives(worktreePath, normalizedIds);
+  for (const file of initiativeFiles) {
+    modified.add(file);
+  }
+  if (initiativeFiles.length > 0) {
+    console.log(
+      `${PREFIX} ✅ Removed deleted WU references from ${initiativeFiles.length} initiative file(s)`,
+    );
+  }
+
+  const stateDir = join(worktreePath, '.lumenflow', 'state');
+  const store = new WUStateStore(stateDir);
+  await store.load();
+
+  const backlogRelPath = WU_PATHS.BACKLOG();
+  const statusRelPath = WU_PATHS.STATUS();
+  const backlogAbsPath = join(worktreePath, backlogRelPath);
+  const statusAbsPath = join(worktreePath, statusRelPath);
+
+  const backlogContent = await generateBacklog(store);
+  writeFileSync(backlogAbsPath, backlogContent, FILE_SYSTEM.ENCODING as BufferEncoding);
+  modified.add(backlogRelPath);
+
+  const statusContent = await generateStatus(store);
+  writeFileSync(statusAbsPath, statusContent, FILE_SYSTEM.ENCODING as BufferEncoding);
+  modified.add(statusRelPath);
+
+  console.log(`${PREFIX} ✅ Regenerated backlog.md and status.md from state store`);
+
+  return Array.from(modified);
 }
 
 async function deleteSingleWU(id: string, dryRun: boolean) {
@@ -146,7 +280,10 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
   if (dryRun) {
     console.log(`\n${PREFIX} 🔍 DRY RUN: Would delete ${id}`);
     console.log(`${PREFIX}   - Delete file: ${wuPath}`);
-    console.log(`${PREFIX}   - Update: ${WU_PATHS.BACKLOG()}`);
+    console.log(`${PREFIX}   - Delete events from: ${LUMENFLOW_PATHS.WU_EVENTS}`);
+    console.log(`${PREFIX}   - Regenerate: ${WU_PATHS.BACKLOG()}`);
+    console.log(`${PREFIX}   - Regenerate: ${WU_PATHS.STATUS()}`);
+    console.log(`${PREFIX}   - Remove initiative links from: ${INIT_PATHS.INITIATIVES_DIR()}`);
     if (stampExists(id)) {
       console.log(`${PREFIX}   - Delete stamp: ${getStampPath(id)}`);
     }
@@ -169,31 +306,14 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
       id: id,
       logPrefix: PREFIX,
       execute: async ({ worktreePath, gitWorktree }) => {
-        const wuFilePath = join(worktreePath, wuPath);
-        const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
-
-        unlinkSync(wuFilePath);
-        console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
-
-        const stampPath = join(worktreePath, getStampPath(id));
-        if (existsSync(stampPath)) {
-          unlinkSync(stampPath);
-          console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
-        }
-
-        const removedFromBacklog = removeFromBacklog(backlogFilePath, id);
-        if (removedFromBacklog) {
-          console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
-        } else {
-          console.log(`${PREFIX} ℹ️  ${id} was not found in backlog.md`);
-        }
+        const files = await cleanupDeletedWUsInWorktree({ worktreePath, ids: [id] });
 
         await gitWorktree.add('.');
 
         const commitMessage = `docs: delete ${id.toLowerCase()}`;
         return {
           commitMessage,
-          files: [],
+          files,
         };
       },
     });
@@ -233,6 +353,13 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
 
   if (dryRun) {
     console.log(`\n${PREFIX} 🔍 DRY RUN: Would delete ${ids.length} WU(s)`);
+    console.log(`${PREFIX}   - Delete events from: ${LUMENFLOW_PATHS.WU_EVENTS}`);
+    console.log(`${PREFIX}   - Regenerate: ${WU_PATHS.BACKLOG()}`);
+    console.log(`${PREFIX}   - Regenerate: ${WU_PATHS.STATUS()}`);
+    console.log(`${PREFIX}   - Remove initiative links from: ${INIT_PATHS.INITIATIVES_DIR()}`);
+    if (stampsToDelete.length > 0) {
+      console.log(`${PREFIX}   - Delete ${stampsToDelete.length} stamp(s)`);
+    }
     console.log(`${PREFIX} No changes made.`);
     process.exit(EXIT_CODES.SUCCESS);
   }
@@ -252,28 +379,7 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
       id: `batch-${ids.length}`,
       logPrefix: PREFIX,
       execute: async ({ worktreePath, gitWorktree }) => {
-        const backlogFilePath = join(worktreePath, WU_PATHS.BACKLOG());
-
-        for (const { id, wuPath } of wusToDelete) {
-          const wuFilePath = join(worktreePath, wuPath);
-          unlinkSync(wuFilePath);
-          console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
-        }
-
-        for (const id of stampsToDelete) {
-          const stampPath = join(worktreePath, getStampPath(id));
-          if (existsSync(stampPath)) {
-            unlinkSync(stampPath);
-            console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
-          }
-        }
-
-        for (const { id } of wusToDelete) {
-          const removed = removeFromBacklog(backlogFilePath, id);
-          if (removed) {
-            console.log(`${PREFIX} ✅ Removed ${id} from backlog.md`);
-          }
-        }
+        const files = await cleanupDeletedWUsInWorktree({ worktreePath, ids });
 
         await gitWorktree.add('.');
 
@@ -281,7 +387,7 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
         const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
         return {
           commitMessage,
-          files: [],
+          files,
         };
       },
     });
@@ -298,7 +404,7 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
   console.log(`${PREFIX} Changes pushed to origin/main`);
 }
 
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const { id, dryRun, batch } = opts;
 
@@ -321,7 +427,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(`${PREFIX} ❌ ${err.message}`);
-  process.exit(EXIT_CODES.ERROR);
-});
+if (import.meta.main) {
+  void main().catch((err) => {
+    console.error(`${PREFIX} ❌ ${err.message}`);
+    process.exit(EXIT_CODES.ERROR);
+  });
+}
