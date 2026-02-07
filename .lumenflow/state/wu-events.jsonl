@@ -984,4 +984,5 @@
 {"type":"complete","wuId":"WU-1522","timestamp":"2026-02-07T17:40:03.709Z"}
 {"type":"claim","wuId":"WU-1523","timestamp":"2026-02-07T17:48:56.485Z","lane":"Framework: CLI WU Commands","title":"Render backlog.md and status.md from state events in scaffolded projects"}
 {"type":"complete","wuId":"WU-1523","timestamp":"2026-02-07T18:05:44.729Z"}
-{"type":"claim","wuId":"WU-1524","lane":"Content: Framework Docs","title":"Haven re-test: end-to-end verification of all launch-1 fixes","timestamp":"2026-02-07T18:09:40.290Z"}
+{"type":"claim","wuId":"WU-1524","timestamp":"2026-02-07T18:09:40.290Z","lane":"Content: Framework Docs","title":"Haven re-test: end-to-end verification of all launch-1 fixes"}
+{"type":"complete","wuId":"WU-1524","timestamp":"2026-02-07T18:26:39.525Z"}

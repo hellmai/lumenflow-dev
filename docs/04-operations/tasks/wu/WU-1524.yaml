@@ -2,7 +2,7 @@ id: WU-1524
 title: 'Haven re-test: end-to-end verification of all launch-1 fixes'
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths: []
@@ -48,3 +48,5 @@ session_id: 8a5fa0d5-363f-4341-80d4-10637523bf19
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T18:09:40.260Z
+locked: true
+completed_at: 2026-02-07T18:26:36.703Z
