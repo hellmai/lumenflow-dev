@@ -22,15 +22,15 @@
 
 All 7 INIT-018 prerequisite WUs verified as `done`:
 
-| WU | Title | Status |
-|---|---|---|
-| WU-1517 | Scaffold prettier + format infrastructure | done |
-| WU-1518 | Scaffold spec:linter and remaining gate scripts | done |
-| WU-1519 | Stop gitignoring .lumenflow/state/ in scaffold template | done |
-| WU-1520 | Gates graceful degradation for missing optional scripts | done |
-| WU-1521 | wu:claim transaction safety - rollback YAML on partial failure | done |
-| WU-1522 | Auto-commit or untrack flow.log in wu:claim lifecycle | done |
-| WU-1523 | Render backlog.md and status.md from state events | done |
+| WU      | Title                                                          | Status |
+| ------- | -------------------------------------------------------------- | ------ |
+| WU-1517 | Scaffold prettier + format infrastructure                      | done   |
+| WU-1518 | Scaffold spec:linter and remaining gate scripts                | done   |
+| WU-1519 | Stop gitignoring .lumenflow/state/ in scaffold template        | done   |
+| WU-1520 | Gates graceful degradation for missing optional scripts        | done   |
+| WU-1521 | wu:claim transaction safety - rollback YAML on partial failure | done   |
+| WU-1522 | Auto-commit or untrack flow.log in wu:claim lifecycle          | done   |
+| WU-1523 | Render backlog.md and status.md from state events              | done   |
 
 ---
 
@@ -172,15 +172,15 @@ WU-2 (second lane) was not tested because WU-1 could not complete cleanly.
 
 ## Acceptance Criteria Assessment
 
-| Criterion | Result | Notes |
-|---|---|---|
-| Fresh lumenflow init project created | PASS | Init runs and scaffolds files |
-| First WU claimed, gates pass with no skip, wu:done succeeds on first attempt | FAIL | Required 6 manual fixes before wu:done could even reach COS gates stage |
-| Second WU in different lane - same result | NOT TESTED | Blocked by WU-1 failures |
-| No manual fixes applied at any point | FAIL | At least 6 manual fixes required |
-| flow.log does not block wu:done | FAIL | flow.log causes dirty-tree blocks (H2) |
-| backlog.md and status.md reflect completed work | NOT VERIFIED | wu:done never completed |
-| Any remaining issues documented as new WUs | PASS | See below |
+| Criterion                                                                    | Result       | Notes                                                                   |
+| ---------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
+| Fresh lumenflow init project created                                         | PASS         | Init runs and scaffolds files                                           |
+| First WU claimed, gates pass with no skip, wu:done succeeds on first attempt | FAIL         | Required 6 manual fixes before wu:done could even reach COS gates stage |
+| Second WU in different lane - same result                                    | NOT TESTED   | Blocked by WU-1 failures                                                |
+| No manual fixes applied at any point                                         | FAIL         | At least 6 manual fixes required                                        |
+| flow.log does not block wu:done                                              | FAIL         | flow.log causes dirty-tree blocks (H2)                                  |
+| backlog.md and status.md reflect completed work                              | NOT VERIFIED | wu:done never completed                                                 |
+| Any remaining issues documented as new WUs                                   | PASS         | See below                                                               |
 
 ---
 
