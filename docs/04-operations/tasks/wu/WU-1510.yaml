@@ -2,7 +2,7 @@ id: WU-1510
 title: 'Rewrite Medium article: voice overhaul, origin story, de-slop'
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -24,11 +24,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Medium article (WU-1506, WU-1507) reads as AI slop despite editorial improvements. Problems: staccato copywriter cadence, no origin story, product appears fully formed, private repo name exposed, jargon before definition, every section identical beat. Solution: full rewrite with British vernacular (Fry/Dawkins voice research), ExampleApp evolution narrative, varied structure, real uncertainty.'
+description: 'Context: Medium article (WU-1506, WU-1507) reads as AI slop despite editorial
+  improvements. Problems: staccato copywriter cadence, no origin story, product appears fully
+  formed, private repo name exposed, jargon before definition, every section identical beat.
+  Solution: full rewrite with British vernacular (Fry/Dawkins voice research), ExampleApp evolution
+  narrative, varied structure, real uncertainty.'
 acceptance:
   - Article uses British English vernacular throughout
   - LumenFlow origin story shows evolution from ExampleApp guardrails, not a designed product
   - No private repo name (hellmai/os) exposed
-  - 'No AI slop patterns: staccato negation, mirror sentences, rhetorical barrages, Here is what transitions'
+  - 'No AI slop patterns: staccato negation, mirror sentences, rhetorical barrages, Here is what
+    transitions'
   - Work Unit terminology introduced after concept is explained, not before
   - Code snippets remain real source (not regressed from WU-1507 fixes)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1510
+claimed_at: 2026-02-07T11:26:33.482Z
+baseline_main_sha: 25f025efe081b028ac03a3c1f29a1cf4eb9fe9c7
+session_id: 26657ecd-c07e-4366-89da-7b3c24fc6b42
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T11:26:33.487Z
