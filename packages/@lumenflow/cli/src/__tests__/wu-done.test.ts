@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ensureCleanWorktree } from '../wu-done-check.js';
-import { computeBranchOnlyFallback } from '../wu-done.js';
+import { checkPostMergeDirtyState, computeBranchOnlyFallback } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import { validateInputs } from '@lumenflow/core/dist/wu-done-inputs.js';
@@ -120,6 +120,28 @@ describe('wu-done', () => {
 
       expect(result.allowFallback).toBe(true);
       expect(result.effectiveBranchOnly).toBe(true);
+    });
+  });
+
+  describe('WU-1515: checkPostMergeDirtyState internal churn handling', () => {
+    it('does not block when only internal lifecycle files are dirty', () => {
+      const status = [' M .lumenflow/flow.log', ' M .lumenflow/skip-gates-audit.log'].join('\n');
+      const result = checkPostMergeDirtyState(status, 'WU-1515');
+      expect(result.isDirty).toBe(false);
+      expect(result.internalOnlyFiles).toEqual([
+        '.lumenflow/flow.log',
+        '.lumenflow/skip-gates-audit.log',
+      ]);
+      expect(result.unrelatedFiles).toEqual([]);
+    });
+
+    it('blocks when unrelated files are dirty, even if internal files are also dirty', () => {
+      const status = [' M .lumenflow/flow.log', ' M packages/@lumenflow/cli/src/wu-done.ts'].join(
+        '\n',
+      );
+      const result = checkPostMergeDirtyState(status, 'WU-1515');
+      expect(result.isDirty).toBe(true);
+      expect(result.unrelatedFiles).toEqual(['packages/@lumenflow/cli/src/wu-done.ts']);
     });
   });
 });
