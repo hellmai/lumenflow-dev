@@ -2,7 +2,7 @@ id: WU-1515
 title: Eliminate post-merge dirty-state loops in wu:done
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -33,8 +33,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done can still end in partial-state recovery paths when tool-generated state changes (flow/audit files) appear during completion, forcing repeated retries and manual repair. Problem: post-merge dirty-state handling is brittle. Solution: make wu:done completion resilient to internal state-file churn and fail deterministically with a single actionable path when true external dirtiness exists.'
+description: 'Context: wu:done can still end in partial-state recovery paths when tool-generated
+  state changes (flow/audit files) appear during completion, forcing repeated retries and manual
+  repair. Problem: post-merge dirty-state handling is brittle. Solution: make wu:done completion
+  resilient to internal state-file churn and fail deterministically with a single actionable path
+  when true external dirtiness exists.'
 acceptance:
-  - wu:done does not fail due to internally generated state-file modifications during its own completion path
+  - wu:done does not fail due to internally generated state-file modifications during its own
+    completion path
   - Dirty-main checks distinguish internal lifecycle writes from unrelated user dirtiness
   - Regression tests cover re-entrant wu:done execution without requiring manual stash/repair loops
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1515
+claimed_at: 2026-02-07T13:38:05.069Z
+baseline_main_sha: 9afa462dc11c5f0db8919f10b6ba08b0c9249410
+session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:38:05.072Z

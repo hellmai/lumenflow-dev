@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml)
 
 ## Blocked
 
