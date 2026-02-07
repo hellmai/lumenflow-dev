@@ -92,6 +92,29 @@ describe('wu:create required field aggregation (WU-1366)', () => {
       expect(result.errors.some((e) => e.includes('--spec-refs'))).toBe(true);
     });
 
+    it('should require --test-paths-manual for non-documentation WUs', () => {
+      const result = validateCreateSpec({
+        id: TEST_WU_ID,
+        lane: TEST_LANE,
+        title: 'Test WU',
+        priority: 'P2',
+        type: 'feature',
+        opts: {
+          description: VALID_DESCRIPTION,
+          acceptance: TEST_ACCEPTANCE,
+          exposure: 'backend-only',
+          codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+          // unit test provided, but no manual test
+          testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
+          specRefs: ['docs/04-operations/tasks/initiatives/INIT-017.yaml'],
+          strict: false,
+        },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('--test-paths-manual'))).toBe(true);
+    });
+
     it('should treat empty spec-refs array as missing for feature WUs', () => {
       const result = validateCreateSpec({
         id: TEST_WU_ID,

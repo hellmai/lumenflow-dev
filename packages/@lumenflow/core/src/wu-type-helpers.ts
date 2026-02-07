@@ -47,3 +47,13 @@ export function hasAnyTests(tests: TestsLike): boolean {
     isNonEmptyArray(t[TEST_TYPES.INTEGRATION])
   );
 }
+
+/**
+ * True when tests.manual has at least one item.
+ * Used for early lifecycle enforcement where manual verification is mandatory.
+ */
+export function hasManualTests(tests: TestsLike): boolean {
+  if (!tests || typeof tests !== 'object') return false;
+  const t = tests as Record<string, unknown>;
+  return isNonEmptyArray(t[TEST_TYPES.MANUAL]);
+}

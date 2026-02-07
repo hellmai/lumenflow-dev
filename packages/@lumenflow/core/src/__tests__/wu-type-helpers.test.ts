@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { hasAnyTests, isDocsOrProcessType } from '../wu-type-helpers.js';
+import { hasAnyTests, hasManualTests, isDocsOrProcessType } from '../wu-type-helpers.js';
 
 describe('wu-type-helpers (WU-1444)', () => {
   describe('isDocsOrProcessType', () => {
@@ -40,6 +40,21 @@ describe('wu-type-helpers (WU-1444)', () => {
       expect(hasAnyTests({ manual: [], unit: ['a.test.ts'], e2e: [] })).toBe(true);
       expect(hasAnyTests({ manual: [], unit: [], e2e: ['spec'] })).toBe(true);
       expect(hasAnyTests({ integration: ['it'] })).toBe(true);
+    });
+  });
+
+  describe('hasManualTests', () => {
+    it('should return false when no tests object provided', () => {
+      expect(hasManualTests(undefined)).toBe(false);
+    });
+
+    it('should return false when manual tests are missing or empty', () => {
+      expect(hasManualTests({ unit: ['a.test.ts'] })).toBe(false);
+      expect(hasManualTests({ manual: [] })).toBe(false);
+    });
+
+    it('should return true when manual tests has at least one item', () => {
+      expect(hasManualTests({ manual: ['Navigate to /x and verify output'] })).toBe(true);
     });
   });
 });
