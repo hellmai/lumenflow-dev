@@ -17,7 +17,7 @@ phases:
     status: done
   - id: 3
     title: Regression harness and operator visibility
-    status: pending
+    status: done
 success_metrics:
   - state:doctor reports zero broken-event inconsistencies after delete operations
   - wu:delete never leaves stale references in projections, initiatives, or state event streams
