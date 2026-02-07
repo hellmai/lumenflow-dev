@@ -4,7 +4,6 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-- [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml)
 - [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml)
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml)
 - [WU-1525 — Rewrite article to showcase full LumenFlow breadth](wu/WU-1525.yaml)
@@ -475,3 +474,4 @@ _Last updated: 2026-02-07_
 - [WU-1513 — Add lumenflow.dev link to Medium article](wu/WU-1513.yaml) — 2026-02-07
 - [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — 2026-02-07
 - [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml) — 2026-02-07
+- [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — 2026-02-07

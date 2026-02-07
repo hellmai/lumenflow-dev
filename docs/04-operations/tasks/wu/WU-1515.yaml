@@ -2,7 +2,7 @@ id: WU-1515
 title: Eliminate post-merge dirty-state loops in wu:done
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -13,11 +13,11 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
 tests:
   manual:
-    - From a clean main checkout, run `pnpm wu:done --id WU-1515 --skip-gates --reason "test" --fix-wu WU-1516`
-      with only `.lumenflow/flow.log` or skip-gates audit logs dirty; verify wu:done no longer fails on
-      post-merge dirty-state handling for those internal files.
-    - Repeat with an unrelated dirty file (for example `README.md`) and verify wu:done still blocks with a
-      clear dirty-main error.
+    - From a clean main checkout, run `pnpm wu:done --id WU-1515 --skip-gates --reason "test"
+      --fix-wu WU-1516` with only `.lumenflow/flow.log` or skip-gates audit logs dirty; verify
+      wu:done no longer fails on post-merge dirty-state handling for those internal files.
+    - Repeat with an unrelated dirty file (for example `README.md`) and verify wu:done still blocks
+      with a clear dirty-main error.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
@@ -57,3 +57,5 @@ session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T13:38:05.072Z
+locked: true
+completed_at: 2026-02-07T13:46:53.639Z
