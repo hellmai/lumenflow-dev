@@ -1,11 +1,30 @@
 id: INIT-017
 slug: main-checkout-enforcement-hardening
 title: Main Checkout Enforcement Hardening
-description: ''
-status: draft
+description: Harden main-checkout enforcement to prevent orphaned writes and command-registration
+  parity misses. Scope covers Write/Edit fail-closed behavior, Bash post-command dirty-main
+  warnings, wu:done dirty-main merge guard, SessionStart early warning, and wu:validate parity
+  heuristics for CLI/MCP registrations.
+status: open
 priority: P1
 owner: workflow
 created: 2026-02-07
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Fail-closed write discipline and session-start detection
+    status: pending
+  - id: 2
+    title: Bash and wu:done dirty-main safeguards
+    status: pending
+  - id: 3
+    title: Validator parity heuristics
+    status: pending
+success_metrics:
+  - Write/Edit on main without active claim context is blocked by default
+  - Bash-generated dirty-main changes are surfaced immediately with actionable warnings
+  - wu:done blocks dirty-main merge attempts unless explicitly force-audited
+  - SessionStart warns immediately when main is already dirty
+  - wu:validate flags likely CLI command registration parity misses
 labels: []
+lanes:
+  - 'Framework: CLI'
