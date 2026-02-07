@@ -980,3 +980,4 @@
 {"type":"complete","wuId":"WU-1519","timestamp":"2026-02-07T17:07:44.439Z"}
 {"type":"claim","wuId":"WU-1521","timestamp":"2026-02-07T17:10:13.207Z","lane":"Framework: CLI WU Commands","title":"wu:claim transaction safety - rollback YAML on partial failure"}
 {"type":"complete","wuId":"WU-1521","timestamp":"2026-02-07T17:21:30.164Z"}
+{"type":"claim","wuId":"WU-1522","lane":"Framework: CLI WU Commands","title":"Auto-commit or untrack flow.log in wu:claim lifecycle","timestamp":"2026-02-07T17:26:48.027Z"}

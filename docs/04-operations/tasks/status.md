@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml)
 
 ## Blocked
 
