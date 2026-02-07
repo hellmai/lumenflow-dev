@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
 
 ## Blocked
 
