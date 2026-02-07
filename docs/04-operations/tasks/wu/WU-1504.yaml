@@ -2,7 +2,7 @@ id: WU-1504
 title: Add wu:validate lint for CLI command registration parity
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -55,3 +55,11 @@ acceptance:
   - Parity lint participates in normal wu:prep/gates path via wu:validate strict flow, not
     ad-hoc-only invocation
   - Strict mode treats parity warning as blocking; non-strict remains advisory
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1504
+claimed_at: 2026-02-07T12:59:47.995Z
+baseline_main_sha: 2bc3b7de352fafc694304ade4ba1ecd66af6891f
+session_id: 20c5804d-6db9-420e-bf71-1344e7e2c43b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T12:59:48.000Z

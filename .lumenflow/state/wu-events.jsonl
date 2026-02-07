@@ -952,3 +952,4 @@
 {"type":"claim","wuId":"WU-1503","timestamp":"2026-02-07T11:36:10.066Z","lane":"Framework: CLI WU Commands","title":"Add dirty-main pre-merge guard in wu:done"}
 {"type":"complete","wuId":"WU-1503","timestamp":"2026-02-07T11:46:11.780Z"}
 {"type":"complete","wuId":"WU-1502","timestamp":"2026-02-07T11:57:46.669Z"}
+{"type":"claim","wuId":"WU-1504","lane":"Framework: CLI Enforcement","title":"Add wu:validate lint for CLI command registration parity","timestamp":"2026-02-07T12:59:48.031Z"}
