@@ -6,18 +6,14 @@ status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
-  - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
-  - packages/@lumenflow/cli/src/state-doctor.ts
-  - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/lifecycle-regression-harness.ts
+  - packages/@lumenflow/cli/src/__tests__/lifecycle-regression-harness.test.ts
 tests:
-  manual: []
+  manual:
+    - 'Run `pnpm --filter @lumenflow/core build` then `pnpm --filter @lumenflow/cli exec vitest run src/__tests__/lifecycle-regression-harness.test.ts` and verify the green path passes with no Broken Event in final diagnosis.'
+    - 'In the same test suite, verify the red-path case (`skipDoctorFix: true`) fails with stage-tagged error context (`stage: "doctor"`), confirming fast stage-level diagnosis.'
   unit:
-    - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
-    - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
-    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/lifecycle-regression-harness.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1516.done
