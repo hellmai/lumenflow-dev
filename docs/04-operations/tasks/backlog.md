@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI Enforcement
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -488,3 +488,4 @@ sections:
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml)
 - [WU-1510 — Rewrite Medium article: voice overhaul, origin story, de-slop](wu/WU-1510.yaml)
 - [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml)
+- [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml)

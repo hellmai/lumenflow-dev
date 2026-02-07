@@ -951,3 +951,4 @@
 {"type":"claim","wuId":"WU-1502","timestamp":"2026-02-07T11:34:58.894Z","lane":"Framework: CLI Enforcement","title":"Add Bash PostToolUse dirty-main warning hook"}
 {"type":"claim","wuId":"WU-1503","timestamp":"2026-02-07T11:36:10.066Z","lane":"Framework: CLI WU Commands","title":"Add dirty-main pre-merge guard in wu:done"}
 {"type":"complete","wuId":"WU-1503","timestamp":"2026-02-07T11:46:11.780Z"}
+{"type":"complete","wuId":"WU-1502","timestamp":"2026-02-07T11:57:46.669Z"}
