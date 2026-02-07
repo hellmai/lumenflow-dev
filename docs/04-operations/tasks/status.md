@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-06_
+_Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1500 — Commit leftover mem:recover parity and regenerated docs](wu/WU-1500.yaml)
 
 ## Blocked
 

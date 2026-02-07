@@ -2,7 +2,7 @@ id: WU-1500
 title: Commit leftover mem:recover parity and regenerated docs
 lane: 'Framework: CLI'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -29,8 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: After WU-1496 completed, related CLI/MCP parity and regenerated documentation changes remained unstaged on main. Problem: valuable changes are untracked and at risk. Solution: capture and complete these exact leftover changes in a dedicated cleanup WU.'
+description: 'Context: After WU-1496 completed, related CLI/MCP parity and regenerated documentation
+  changes remained unstaged on main. Problem: valuable changes are untracked and at risk. Solution:
+  capture and complete these exact leftover changes in a dedicated cleanup WU.'
 acceptance:
   - CLI public manifest and package metadata include mem:recover parity updates
   - MCP tools/runner and related tests reflect mem:recover support and CLI invocation fixes
   - Generated docs and CLI README are committed consistently with source changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1500
+claimed_at: 2026-02-07T10:04:47.758Z
+baseline_main_sha: 721283c1ae0f17674e7145d28912e3de9fabfdcf
+session_id: 27de3f26-70a9-47a0-8a5b-5971aeced87c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T10:04:47.762Z
