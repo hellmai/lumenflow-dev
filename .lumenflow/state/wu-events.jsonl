@@ -938,5 +938,6 @@
 {"type":"claim","wuId":"WU-1505","timestamp":"2026-02-07T10:37:57.122Z","lane":"Framework: CLI","title":"Add SessionStart dirty-main early-warning across clients"}
 {"type":"complete","wuId":"WU-1506","timestamp":"2026-02-07T10:43:14.588Z"}
 {"type":"complete","wuId":"WU-1505","timestamp":"2026-02-07T10:47:16.788Z"}
-{"type":"claim","wuId":"WU-1507","lane":"Content: Documentation","title":"Expand Medium article: fix code snippets, add numbers/CTA/vendor sections","timestamp":"2026-02-07T10:49:54.767Z"}
-{"type":"claim","wuId":"WU-1508","lane":"Framework: CLI","title":"Require tests.manual for non-doc WUs at create/claim","timestamp":"2026-02-07T10:56:09.330Z"}
+{"type":"claim","wuId":"WU-1507","timestamp":"2026-02-07T10:49:54.767Z","lane":"Content: Documentation","title":"Expand Medium article: fix code snippets, add numbers/CTA/vendor sections"}
+{"type":"claim","wuId":"WU-1508","timestamp":"2026-02-07T10:56:09.330Z","lane":"Framework: CLI","title":"Require tests.manual for non-doc WUs at create/claim"}
+{"type":"complete","wuId":"WU-1508","timestamp":"2026-02-07T11:01:03.823Z"}

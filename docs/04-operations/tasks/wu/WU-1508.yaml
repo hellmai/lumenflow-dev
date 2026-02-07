@@ -2,7 +2,7 @@ id: WU-1508
 title: Require tests.manual for non-doc WUs at create/claim
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -11,9 +11,12 @@ code_paths:
   - packages/@lumenflow/core/src/wu-type-helpers.ts
 tests:
   manual:
-    - From repo root, run `pnpm wu:create` for a non-documentation WU without `--test-paths-manual`; verify it fails with a clear `tests.manual` requirement.
-    - From repo root, run `pnpm wu:claim` on a non-documentation WU that has no `tests.manual`; verify claim is blocked with actionable guidance.
-    - Verify documentation/process WUs without manual tests are not blocked by the new create/claim checks.
+    - From repo root, run `pnpm wu:create` for a non-documentation WU without `--test-paths-manual`;
+      verify it fails with a clear `tests.manual` requirement.
+    - From repo root, run `pnpm wu:claim` on a non-documentation WU that has no `tests.manual`;
+      verify claim is blocked with actionable guidance.
+    - Verify documentation/process WUs without manual tests are not blocked by the new create/claim
+      checks.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
@@ -51,3 +54,5 @@ session_id: 2957d5c3-ef8b-49e1-aa41-d622af1272b1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T10:56:09.316Z
+locked: true
+completed_at: 2026-02-07T11:01:01.147Z

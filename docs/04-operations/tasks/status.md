@@ -5,7 +5,6 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
-- [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml)
 
 ## Blocked
 
@@ -461,3 +460,4 @@ _Last updated: 2026-02-07_
 - [WU-1500 — Commit leftover mem:recover parity and regenerated docs](wu/WU-1500.yaml) — 2026-02-07
 - [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml) — 2026-02-07
 - [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml) — 2026-02-07
+- [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml) — 2026-02-07
