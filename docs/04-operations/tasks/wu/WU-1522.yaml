@@ -6,13 +6,13 @@ status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
-  - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
   manual:
     - Run wu:claim then wu:done - flow.log should not block completion
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1522.done

@@ -815,14 +815,17 @@ export function checkPostMergeDirtyState(
   unrelatedFiles: string[];
   error?: string;
 } {
-  const trimmedStatus = gitStatus.trim();
+  // WU-1522: Split before trimming to preserve leading spaces in porcelain format.
+  // Porcelain lines like ' M .lumenflow/flow.log' use the leading space as a status
+  // indicator (working tree vs staging area). Trimming the whole string first strips
+  // the leading space from the first line, corrupting parsePorcelainPath output.
+  const lines = gitStatus.split('\n').filter((line) => line.length >= 4);
 
-  if (!trimmedStatus) {
+  if (lines.length === 0) {
     return { isDirty: false, internalOnlyFiles: [], unrelatedFiles: [] };
   }
 
-  const dirtyFiles = trimmedStatus
-    .split('\n')
+  const dirtyFiles = lines
     .map((line) => parsePorcelainPath(line))
     .filter((value): value is string => Boolean(value));
 
@@ -833,8 +836,9 @@ export function checkPostMergeDirtyState(
     return { isDirty: false, internalOnlyFiles, unrelatedFiles: [] };
   }
 
+  const displayStatus = gitStatus.trim();
   const error =
-    `Main branch has uncommitted changes after merge:\n\n${trimmedStatus}\n\n` +
+    `Main branch has uncommitted changes after merge:\n\n${displayStatus}\n\n` +
     `This indicates files were modified outside the WU's code_paths.\n` +
     `Common cause: pnpm format touched files outside the WU scope.\n\n` +
     `The worktree has NOT been removed to allow investigation.\n\n` +
