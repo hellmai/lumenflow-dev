@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — Content: Site Comms
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 - [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — Framework: CLI WU Commands
