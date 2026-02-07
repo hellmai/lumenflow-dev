@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml)
+- [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml)
 
 ## Blocked
 
