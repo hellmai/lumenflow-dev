@@ -2,7 +2,7 @@ id: WU-1517
 title: Scaffold prettier + format infrastructure in lumenflow init
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -22,7 +22,8 @@ phase: 1
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-018.yaml
 risks: []
-notes: 'Haven test: agent had to manually install prettier, create .prettierignore, and add scripts before gates could run.'
+notes: 'Haven test: agent had to manually install prettier, create .prettierignore, and add scripts
+  before gates could run.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lumenflow init creates a project that immediately fails format:check gate. Problem: prettier not in devDependencies, no .prettierignore, no format/format:check scripts. Agents must manually fix all three. Solution: scaffold prettier dep, .prettierignore, and format scripts.'
+description: 'Context: lumenflow init creates a project that immediately fails format:check gate.
+  Problem: prettier not in devDependencies, no .prettierignore, no format/format:check scripts.
+  Agents must manually fix all three. Solution: scaffold prettier dep, .prettierignore, and format
+  scripts.'
 acceptance:
   - lumenflow init adds prettier to devDependencies
   - lumenflow init scaffolds .prettierignore with sane defaults
   - lumenflow init adds format and format:check scripts to package.json
   - pnpm format:check passes immediately after init with no unformatted files
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1517
+claimed_at: 2026-02-07T13:42:14.784Z
+baseline_main_sha: fda7658a71589c98154fb227e42be2e08e74f6fc
+session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:42:14.787Z
