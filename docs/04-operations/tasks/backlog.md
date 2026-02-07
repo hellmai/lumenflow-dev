@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — Framework: CLI WU Commands
 - [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml) — Framework: CLI WU Commands
 - [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml) — Framework: CLI WU Commands
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
