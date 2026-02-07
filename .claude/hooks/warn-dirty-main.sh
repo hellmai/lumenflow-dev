@@ -9,6 +9,9 @@
 # No-op inside worktrees. Always exits 0 (warning only, never blocks).
 # Clean working tree overhead: <50ms (single git status call).
 #
+# Performance: fast-path checks (worktree, branch) run before stdin
+# reading to avoid Python overhead in the common no-op case.
+#
 # Exit codes:
 #   0 = Always (warnings only, never blocks)
 #
@@ -30,6 +33,22 @@ if [[ ! -d "$LUMENFLOW_DIR" ]]; then
   exit 0
 fi
 
+# Fast-path: no-op inside worktrees (avoids stdin/Python overhead)
+CWD=$(pwd 2>/dev/null || echo "")
+if [[ "$CWD" == "${WORKTREES_DIR}/"* ]]; then
+  # Drain stdin to prevent broken pipe
+  cat > /dev/null 2>/dev/null || true
+  exit 0
+fi
+
+# Fast-path: only warn on main branch (avoids stdin/Python overhead)
+CURRENT_BRANCH=$(git -C "$REPO_PATH" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+if [[ "$CURRENT_BRANCH" != "main" ]]; then
+  # Drain stdin to prevent broken pipe
+  cat > /dev/null 2>/dev/null || true
+  exit 0
+fi
+
 # Read JSON input from stdin (PostToolUse provides tool_name + tool_input)
 INPUT=$(cat 2>/dev/null || true)
 
@@ -47,18 +66,6 @@ except:
   if [[ "$TOOL_NAME" != "Bash" ]]; then
     exit 0
   fi
-fi
-
-# No-op inside worktrees
-CWD=$(pwd 2>/dev/null || echo "")
-if [[ "$CWD" == "${WORKTREES_DIR}/"* ]]; then
-  exit 0
-fi
-
-# Only warn on main branch
-CURRENT_BRANCH=$(git -C "$REPO_PATH" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
-if [[ "$CURRENT_BRANCH" != "main" ]]; then
-  exit 0
 fi
 
 # Check for dirty working tree (modified/untracked files)
