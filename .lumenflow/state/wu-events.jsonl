@@ -949,3 +949,4 @@
 {"type":"claim","wuId":"WU-1510","timestamp":"2026-02-07T11:26:33.516Z","lane":"Content: Site Comms","title":"Rewrite Medium article: voice overhaul, origin story, de-slop"}
 {"type":"complete","wuId":"WU-1510","timestamp":"2026-02-07T11:33:41.328Z"}
 {"type":"claim","wuId":"WU-1502","lane":"Framework: CLI Enforcement","title":"Add Bash PostToolUse dirty-main warning hook","timestamp":"2026-02-07T11:34:58.894Z"}
+{"type":"claim","wuId":"WU-1503","lane":"Framework: CLI WU Commands","title":"Add dirty-main pre-merge guard in wu:done","timestamp":"2026-02-07T11:36:10.066Z"}
