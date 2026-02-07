@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — Framework: Core Lifecycle
 - [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — Framework: CLI WU Commands
 - [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml) — Framework: CLI WU Commands

@@ -1,0 +1,39 @@
+id: WU-1517
+title: Scaffold prettier + format infrastructure in lumenflow init
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-07
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/
+tests:
+  manual:
+    - Run lumenflow init in fresh dir, verify prettier in devDeps and format:check passes
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1517.done
+dependencies: []
+initiative: INIT-018
+phase: 1
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-018.yaml
+risks: []
+notes: 'Haven test: agent had to manually install prettier, create .prettierignore, and add scripts before gates could run.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: lumenflow init creates a project that immediately fails format:check gate. Problem: prettier not in devDependencies, no .prettierignore, no format/format:check scripts. Agents must manually fix all three. Solution: scaffold prettier dep, .prettierignore, and format scripts.'
+acceptance:
+  - lumenflow init adds prettier to devDependencies
+  - lumenflow init scaffolds .prettierignore with sane defaults
+  - lumenflow init adds format and format:check scripts to package.json
+  - pnpm format:check passes immediately after init with no unformatted files
