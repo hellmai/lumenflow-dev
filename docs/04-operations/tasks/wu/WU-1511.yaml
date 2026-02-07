@@ -2,7 +2,7 @@ id: WU-1511
 title: Fix wu:delete to fully clean projections and initiative links
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -47,3 +47,5 @@ session_id: 20c5804d-6db9-420e-bf71-1344e7e2c43b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T13:04:57.114Z
+locked: true
+completed_at: 2026-02-07T13:15:14.078Z
