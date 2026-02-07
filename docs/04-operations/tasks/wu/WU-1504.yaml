@@ -1,0 +1,40 @@
+id: WU-1504
+title: Add wu:validate lint for CLI command registration parity
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-07
+code_paths:
+  - packages/@lumenflow/core/src/wu-lint.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+tests:
+  manual:
+    - Run wu:validate on crafted WU fixture with missing registrations and confirm warning text
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-validate-strict.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-lifecycle-schemas.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1504.done
+dependencies: []
+spec_refs:
+  - packages/@lumenflow/core/src/wu-lint.ts
+risks: []
+notes: Implements structural prevention for the mem:recover-style parity miss.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: command implementations can land without being registered in public-manifest and MCP tool mapping, causing silent partial integrations. Problem: code_paths and spec linting do not currently catch this class of omissions. Solution: extend WU lint/validate checks to warn when WU changes imply a new CLI command but registration surfaces are missing from scope.'
+acceptance:
+  - wu:validate/lint emits actionable warning when command implementation is added without public-manifest coverage
+  - Warning includes MCP parity hint when relevant registration points are missing
+  - Strict mode surfaces the warning as blocking, with tests for both warning and clean cases
