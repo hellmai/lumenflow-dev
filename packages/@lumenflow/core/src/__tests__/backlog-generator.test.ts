@@ -108,14 +108,50 @@ describe('WU-1523: Render backlog and status from state events', () => {
   it('AC1: after wu:done, backlog.md shows the completed WU in the Done section', async () => {
     // Simulate 3 WUs completed via events (mirrors Haven test scenario)
     const events = [
-      { type: 'create', wuId: 'WU-1', timestamp: '2026-02-01T10:00:00.000Z', lane: 'Framework: Core', title: 'First WU' },
-      { type: 'claim', wuId: 'WU-1', timestamp: '2026-02-01T10:01:00.000Z', lane: 'Framework: Core', title: 'First WU' },
+      {
+        type: 'create',
+        wuId: 'WU-1',
+        timestamp: '2026-02-01T10:00:00.000Z',
+        lane: 'Framework: Core',
+        title: 'First WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-1',
+        timestamp: '2026-02-01T10:01:00.000Z',
+        lane: 'Framework: Core',
+        title: 'First WU',
+      },
       { type: 'complete', wuId: 'WU-1', timestamp: '2026-02-01T11:00:00.000Z' },
-      { type: 'create', wuId: 'WU-2', timestamp: '2026-02-01T12:00:00.000Z', lane: 'Framework: CLI', title: 'Second WU' },
-      { type: 'claim', wuId: 'WU-2', timestamp: '2026-02-01T12:01:00.000Z', lane: 'Framework: CLI', title: 'Second WU' },
+      {
+        type: 'create',
+        wuId: 'WU-2',
+        timestamp: '2026-02-01T12:00:00.000Z',
+        lane: 'Framework: CLI',
+        title: 'Second WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-2',
+        timestamp: '2026-02-01T12:01:00.000Z',
+        lane: 'Framework: CLI',
+        title: 'Second WU',
+      },
       { type: 'complete', wuId: 'WU-2', timestamp: '2026-02-01T13:00:00.000Z' },
-      { type: 'create', wuId: 'WU-3', timestamp: '2026-02-01T14:00:00.000Z', lane: 'Framework: Memory', title: 'Third WU' },
-      { type: 'claim', wuId: 'WU-3', timestamp: '2026-02-01T14:01:00.000Z', lane: 'Framework: Memory', title: 'Third WU' },
+      {
+        type: 'create',
+        wuId: 'WU-3',
+        timestamp: '2026-02-01T14:00:00.000Z',
+        lane: 'Framework: Memory',
+        title: 'Third WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-3',
+        timestamp: '2026-02-01T14:01:00.000Z',
+        lane: 'Framework: Memory',
+        title: 'Third WU',
+      },
       { type: 'complete', wuId: 'WU-3', timestamp: '2026-02-01T15:00:00.000Z' },
     ];
 
@@ -145,8 +181,20 @@ describe('WU-1523: Render backlog and status from state events', () => {
   it('AC2: after wu:claim, status.md shows the claimed WU in the In Progress section', async () => {
     // Simulate a single claim event
     const events = [
-      { type: 'create', wuId: 'WU-42', timestamp: '2026-02-01T10:00:00.000Z', lane: 'Framework: Core', title: 'Claimed WU' },
-      { type: 'claim', wuId: 'WU-42', timestamp: '2026-02-01T10:01:00.000Z', lane: 'Framework: Core', title: 'Claimed WU' },
+      {
+        type: 'create',
+        wuId: 'WU-42',
+        timestamp: '2026-02-01T10:00:00.000Z',
+        lane: 'Framework: Core',
+        title: 'Claimed WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-42',
+        timestamp: '2026-02-01T10:01:00.000Z',
+        lane: 'Framework: Core',
+        title: 'Claimed WU',
+      },
     ];
 
     writeFileSync(
@@ -168,10 +216,34 @@ describe('WU-1523: Render backlog and status from state events', () => {
   it('AC3: both files render correctly from wu-events.jsonl in local-only mode', async () => {
     // Simulate a mix of states: 1 in_progress, 1 done
     const events = [
-      { type: 'create', wuId: 'WU-10', timestamp: '2026-02-01T10:00:00.000Z', lane: 'Framework: Core', title: 'Active WU' },
-      { type: 'claim', wuId: 'WU-10', timestamp: '2026-02-01T10:01:00.000Z', lane: 'Framework: Core', title: 'Active WU' },
-      { type: 'create', wuId: 'WU-20', timestamp: '2026-02-01T11:00:00.000Z', lane: 'Framework: CLI', title: 'Done WU' },
-      { type: 'claim', wuId: 'WU-20', timestamp: '2026-02-01T11:01:00.000Z', lane: 'Framework: CLI', title: 'Done WU' },
+      {
+        type: 'create',
+        wuId: 'WU-10',
+        timestamp: '2026-02-01T10:00:00.000Z',
+        lane: 'Framework: Core',
+        title: 'Active WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-10',
+        timestamp: '2026-02-01T10:01:00.000Z',
+        lane: 'Framework: Core',
+        title: 'Active WU',
+      },
+      {
+        type: 'create',
+        wuId: 'WU-20',
+        timestamp: '2026-02-01T11:00:00.000Z',
+        lane: 'Framework: CLI',
+        title: 'Done WU',
+      },
+      {
+        type: 'claim',
+        wuId: 'WU-20',
+        timestamp: '2026-02-01T11:01:00.000Z',
+        lane: 'Framework: CLI',
+        title: 'Done WU',
+      },
       { type: 'complete', wuId: 'WU-20', timestamp: '2026-02-01T12:00:00.000Z' },
     ];
 
