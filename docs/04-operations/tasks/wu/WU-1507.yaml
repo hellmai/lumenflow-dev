@@ -2,7 +2,7 @@ id: WU-1507
 title: 'Expand Medium article: fix code snippets, add numbers/CTA/vendor sections'
 lane: 'Content: Documentation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -24,9 +24,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Medium article (WU-1506) uses simplified code snippets with string literals instead of real typed code from the codebase. Numbers section is thin, CTA lacks activation detail, vendor-agnostic angle is underrepresented. Problem: code examples don't represent best-practice code quality; article is 1,767 words (lean for launch announcement). Solution: replace all code snippets with real source code, expand Numbers with WU-1493 cycle time, add init walkthrough to CTA, add vendor-agnostic paragraph."
+description: "Context: Medium article (WU-1506) uses simplified code snippets with string literals
+  instead of real typed code from the codebase. Numbers section is thin, CTA lacks activation
+  detail, vendor-agnostic angle is underrepresented. Problem: code examples don't represent
+  best-practice code quality; article is 1,767 words (lean for launch announcement). Solution:
+  replace all code snippets with real source code, expand Numbers with WU-1493 cycle time, add init
+  walkthrough to CTA, add vendor-agnostic paragraph."
 acceptance:
-  - 'Code snippets match actual source: state-machine.ts with WU-1080 comment, safe-git block_command with 3 params, decay scoring with full typed function signature'
+  - 'Code snippets match actual source: state-machine.ts with WU-1080 comment, safe-git
+    block_command with 3 params, decay scoring with full typed function signature'
   - Numbers section includes concrete WU-1493 cycle time example (5m23s)
   - CTA section includes brief npx lumenflow init walkthrough
   - Vendor-agnostic paragraph explains Claude/Cursor/Windsurf/MCP interchangeability
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-documentation-wu-1507
+claimed_at: 2026-02-07T10:49:54.749Z
+baseline_main_sha: 669c28572b6619026de70a1d153ae9575d2358ba
+session_id: 2957d5c3-ef8b-49e1-aa41-d622af1272b1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T10:49:54.755Z

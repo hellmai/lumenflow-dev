@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml) — Content: Documentation
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml) — Framework: CLI
@@ -30,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml) — Content: Documentation
 
 ## ⛔ Blocked
 

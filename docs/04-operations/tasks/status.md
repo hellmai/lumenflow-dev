@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
 
 ## Blocked
 
