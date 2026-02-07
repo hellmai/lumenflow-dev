@@ -153,7 +153,8 @@ describe('WU-1367: Hook Generation', () => {
 
   describe('WU-1505: SessionStart dirty-main warning', () => {
     it('should include dirty-main detection using git status --porcelain', async () => {
-      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateSessionStartRecoveryScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateSessionStartRecoveryScript();
 
       expect(script).toContain('status --porcelain');
@@ -161,7 +162,8 @@ describe('WU-1367: Hook Generation', () => {
     });
 
     it('should include main-checkout-only guard', async () => {
-      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateSessionStartRecoveryScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateSessionStartRecoveryScript();
 
       expect(script).toContain('CURRENT_BRANCH=');
@@ -169,7 +171,8 @@ describe('WU-1367: Hook Generation', () => {
     });
 
     it('should skip warning when running inside a worktree checkout', async () => {
-      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateSessionStartRecoveryScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateSessionStartRecoveryScript();
 
       expect(script).toContain('WORKTREES_DIR=');
