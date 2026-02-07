@@ -40,6 +40,7 @@ vi.mock('@lumenflow/core/dist/arg-parser.js', () => ({
 vi.mock('@lumenflow/core/dist/wu-paths.js', () => ({
   WU_PATHS: {
     WU: (id: string) => `docs/04-operations/tasks/wu/${id}.yaml`,
+    WU_DIR: () => 'docs/04-operations/tasks/wu',
     STATUS: () => 'docs/04-operations/tasks/status.md',
     BACKLOG: () => 'docs/04-operations/tasks/backlog.md',
     STAMPS_DIR: () => '.lumenflow/stamps',
@@ -229,5 +230,44 @@ describe('wu-delete consistency cleanup', () => {
     expect(existsSync(join(tempDir, 'docs/04-operations/tasks/wu/WU-1007.yaml'))).toBe(false);
     expect(existsSync(join(tempDir, '.lumenflow/stamps/WU-1007.done'))).toBe(false);
     expect(existsSync(join(tempDir, 'docs/04-operations/tasks/wu/WU-2000.yaml'))).toBe(true);
+  });
+
+  it('purges pre-existing orphaned event streams while deleting a WU', async () => {
+    // Add an orphaned event for a WU spec that does not exist in the repo
+    writeFileSync(
+      join(tempDir, '.lumenflow/state/wu-events.jsonl'),
+      [
+        JSON.stringify({
+          type: 'claim',
+          wuId: WU_ID_DELETE,
+          lane: 'Framework: CLI WU Commands',
+          title: 'Delete me',
+          timestamp: '2026-02-07T00:00:00.000Z',
+        }),
+        JSON.stringify({
+          type: 'claim',
+          wuId: WU_ID_KEEP,
+          lane: 'Framework: CLI WU Commands',
+          title: 'Keep me',
+          timestamp: '2026-02-07T00:00:01.000Z',
+        }),
+        JSON.stringify({
+          type: 'claim',
+          wuId: 'WU-9999',
+          lane: 'Framework: CLI WU Commands',
+          title: 'Orphaned',
+          timestamp: '2026-02-07T00:00:02.000Z',
+        }),
+      ].join('\n') + '\n',
+      'utf-8',
+    );
+
+    const { cleanupDeletedWUsInWorktree } = await import('../wu-delete.js');
+    await cleanupDeletedWUsInWorktree({ worktreePath: tempDir, ids: [WU_ID_DELETE] });
+
+    const events = readFileSync(join(tempDir, '.lumenflow/state/wu-events.jsonl'), 'utf-8');
+    expect(events).not.toContain('"wuId":"WU-1007"');
+    expect(events).not.toContain('"wuId":"WU-9999"');
+    expect(events).toContain('"wuId":"WU-2000"');
   });
 });
