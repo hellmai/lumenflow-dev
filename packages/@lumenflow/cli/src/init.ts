@@ -2681,6 +2681,9 @@ export async function scaffoldProject(
   // WU-1342: Create .gitignore with required exclusions
   await scaffoldGitignore(targetDir, options, result);
 
+  // WU-1517: Create .prettierignore so format:check passes immediately after init
+  await scaffoldPrettierignore(targetDir, options, result);
+
   // WU-1408: Scaffold safe-git wrapper and pre-commit hook
   // These are core safety components needed for all projects
   await scaffoldSafetyScripts(targetDir, options, result);
@@ -2802,6 +2805,57 @@ ${linesToAdd.join('\n')}
 
   // Skip or force mode
   await createFile(gitignorePath, GITIGNORE_TEMPLATE, fileMode, result, targetDir);
+}
+
+/**
+ * WU-1517: .prettierignore template with sane defaults
+ * Ensures format:check passes immediately after init by excluding
+ * generated files, build artifacts, and lockfiles.
+ */
+const PRETTIERIGNORE_TEMPLATE = `# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
+
+# LumenFlow state (local only)
+.lumenflow/state/
+
+# Worktrees
+worktrees/
+
+# Lockfiles (auto-generated)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.*.local
+`;
+
+/** Prettierignore file name constant to avoid duplicate string lint error */
+const PRETTIERIGNORE_FILE_NAME = '.prettierignore';
+
+/**
+ * WU-1517: Scaffold .prettierignore file with sane defaults
+ * This is a core file scaffolded in all modes (full and minimal)
+ * because it's required for format:check gate to pass.
+ */
+async function scaffoldPrettierignore(
+  targetDir: string,
+  options: ScaffoldOptions,
+  result: ScaffoldResult,
+): Promise<void> {
+  const prettierignorePath = path.join(targetDir, PRETTIERIGNORE_FILE_NAME);
+  const fileMode = getFileMode(options);
+
+  await createFile(prettierignorePath, PRETTIERIGNORE_TEMPLATE, fileMode, result, targetDir);
 }
 
 /**
@@ -2962,10 +3016,30 @@ exit 0
 `;
 
 /**
+ * WU-1517: Prettier version to add to devDependencies.
+ * Uses caret range to allow minor/patch updates.
+ */
+const PRETTIER_VERSION = '^3.8.0';
+
+/** WU-1517: Prettier package name constant */
+const PRETTIER_PACKAGE_NAME = 'prettier';
+
+/** WU-1517: Format script names */
+const FORMAT_SCRIPT_NAME = 'format';
+const FORMAT_CHECK_SCRIPT_NAME = 'format:check';
+
+/** WU-1517: Format script commands using prettier */
+const FORMAT_SCRIPT_COMMAND = 'prettier --write .';
+const FORMAT_CHECK_SCRIPT_COMMAND = 'prettier --check .';
+
+/**
  * WU-1300: Inject LumenFlow scripts into package.json
+ * WU-1517: Also adds prettier devDependency and format/format:check scripts
  * - Creates package.json if it doesn't exist
  * - Preserves existing scripts (doesn't overwrite unless --force)
  * - Adds missing LumenFlow scripts
+ * - Adds prettier to devDependencies
+ * - Adds format and format:check scripts
  */
 async function injectPackageJsonScripts(
   targetDir: string,
@@ -3004,6 +3078,32 @@ async function injectPackageJsonScripts(
         scripts[scriptName] = scriptCommand;
         modified = true;
       }
+    }
+  }
+
+  // WU-1517: Add format and format:check scripts
+  const formatScripts: Record<string, string> = {
+    [FORMAT_SCRIPT_NAME]: FORMAT_SCRIPT_COMMAND,
+    [FORMAT_CHECK_SCRIPT_NAME]: FORMAT_CHECK_SCRIPT_COMMAND,
+  };
+  for (const [scriptName, scriptCommand] of Object.entries(formatScripts)) {
+    if (options.force || !(scriptName in scripts)) {
+      if (!(scriptName in scripts)) {
+        scripts[scriptName] = scriptCommand;
+        modified = true;
+      }
+    }
+  }
+
+  // WU-1517: Add prettier to devDependencies
+  if (!packageJson.devDependencies || typeof packageJson.devDependencies !== 'object') {
+    packageJson.devDependencies = {};
+  }
+  const devDeps = packageJson.devDependencies as Record<string, string>;
+  if (options.force || !(PRETTIER_PACKAGE_NAME in devDeps)) {
+    if (!(PRETTIER_PACKAGE_NAME in devDeps)) {
+      devDeps[PRETTIER_PACKAGE_NAME] = PRETTIER_VERSION;
+      modified = true;
     }
   }
 
