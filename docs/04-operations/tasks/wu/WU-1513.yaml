@@ -2,7 +2,7 @@ id: WU-1513
 title: Add lumenflow.dev link to Medium article
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -37,3 +37,5 @@ session_id: 2f46c931-5183-4120-b42a-5eeec22aad52
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T13:14:56.332Z
+locked: true
+completed_at: 2026-02-07T13:17:54.620Z
