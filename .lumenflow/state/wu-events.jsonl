@@ -960,3 +960,4 @@
 {"type":"claim","wuId":"WU-1513","timestamp":"2026-02-07T13:14:56.348Z","lane":"Content: Site Comms","title":"Add lumenflow.dev link to Medium article"}
 {"type":"complete","wuId":"WU-1511","timestamp":"2026-02-07T13:15:16.581Z"}
 {"type":"complete","wuId":"WU-1513","timestamp":"2026-02-07T13:17:57.104Z"}
+{"type":"complete","wuId":"WU-1504","timestamp":"2026-02-07T13:20:10.401Z"}
