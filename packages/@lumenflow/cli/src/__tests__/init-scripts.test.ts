@@ -270,6 +270,110 @@ describe('init .claude directory creation (WU-1342)', () => {
 });
 
 // ============================================================================
+// WU-1518: Gate stub scripts scaffolded by lumenflow init
+// ============================================================================
+describe('init gate stub scripts (WU-1518)', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-init-gate-stubs-'));
+  });
+
+  afterEach(() => {
+    if (tempDir && fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  function readPackageJsonScripts(): Record<string, string> {
+    const pkgPath = path.join(tempDir, PACKAGE_JSON_FILE_NAME);
+    const content = fs.readFileSync(pkgPath, 'utf-8');
+    const pkg = JSON.parse(content) as PackageJson;
+    return pkg.scripts ?? {};
+  }
+
+  it('should add spec:linter stub script', async () => {
+    await scaffoldProject(tempDir, { force: true, full: true });
+    const scripts = readPackageJsonScripts();
+
+    expect(scripts['spec:linter'], 'Missing spec:linter script').toBeDefined();
+  });
+
+  it('should add lint stub script', async () => {
+    await scaffoldProject(tempDir, { force: true, full: true });
+    const scripts = readPackageJsonScripts();
+
+    expect(scripts['lint'], 'Missing lint script').toBeDefined();
+  });
+
+  it('should add typecheck stub script', async () => {
+    await scaffoldProject(tempDir, { force: true, full: true });
+    const scripts = readPackageJsonScripts();
+
+    expect(scripts['typecheck'], 'Missing typecheck script').toBeDefined();
+  });
+
+  it('should use stub commands that log a clear enablement message', async () => {
+    await scaffoldProject(tempDir, { force: true, full: true });
+    const scripts = readPackageJsonScripts();
+
+    // Each stub should contain an echo with guidance text
+    for (const scriptName of ['spec:linter', 'lint', 'typecheck']) {
+      const value = scripts[scriptName];
+      expect(value, `${scriptName} should be defined`).toBeDefined();
+      // Stub scripts should include a message about enabling (echo + exit 0 pattern)
+      expect(value, `${scriptName} stub should log a message`).toContain('echo');
+    }
+  });
+
+  it('should not overwrite existing lint/typecheck scripts', async () => {
+    // Arrange: pre-existing real scripts
+    const pkgPath = path.join(tempDir, PACKAGE_JSON_FILE_NAME);
+    const existingPkg = {
+      name: 'test-project',
+      version: '1.0.0',
+      scripts: {
+        lint: 'eslint .',
+        typecheck: 'tsc --noEmit',
+        'spec:linter': 'node tools/spec-linter.js',
+      },
+    };
+    fs.writeFileSync(pkgPath, JSON.stringify(existingPkg, null, 2));
+
+    // Act
+    await scaffoldProject(tempDir, { force: false, full: true });
+
+    // Assert: existing scripts preserved
+    const scripts = readPackageJsonScripts();
+    expect(scripts['lint']).toBe('eslint .');
+    expect(scripts['typecheck']).toBe('tsc --noEmit');
+    expect(scripts['spec:linter']).toBe('node tools/spec-linter.js');
+  });
+
+  it('should overwrite stub scripts when --force is used', async () => {
+    // Arrange: pre-existing scripts
+    const pkgPath = path.join(tempDir, PACKAGE_JSON_FILE_NAME);
+    const existingPkg = {
+      name: 'test-project',
+      version: '1.0.0',
+      scripts: {
+        lint: 'old-lint-command',
+        typecheck: 'old-typecheck-command',
+      },
+    };
+    fs.writeFileSync(pkgPath, JSON.stringify(existingPkg, null, 2));
+
+    // Act
+    await scaffoldProject(tempDir, { force: true, full: true });
+
+    // Assert: scripts should be overwritten with stubs
+    const scripts = readPackageJsonScripts();
+    expect(scripts['lint']).not.toBe('old-lint-command');
+    expect(scripts['typecheck']).not.toBe('old-typecheck-command');
+  });
+});
+
+// ============================================================================
 // WU-1433: Scripts generated from public CLI manifest
 // ============================================================================
 describe('init scripts from public manifest (WU-1433)', () => {

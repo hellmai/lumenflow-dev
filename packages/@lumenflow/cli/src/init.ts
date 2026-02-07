@@ -3033,13 +3033,28 @@ const FORMAT_SCRIPT_COMMAND = 'prettier --write .';
 const FORMAT_CHECK_SCRIPT_COMMAND = 'prettier --check .';
 
 /**
+ * WU-1518: Gate stub scripts for projects that don't have their own lint/typecheck/spec-linter.
+ * These stubs log a clear message and exit 0 so `pnpm gates` passes on a fresh project.
+ * Projects should replace them with real tooling when ready.
+ */
+const GATE_STUB_SCRIPTS: Record<string, string> = {
+  'spec:linter':
+    'echo "[lumenflow] spec:linter stub -- install a WU spec linter or replace this script" && exit 0',
+  lint: 'echo "[lumenflow] lint stub -- add ESLint or your preferred linter to enable this gate (e.g. eslint .)" && exit 0',
+  typecheck:
+    'echo "[lumenflow] typecheck stub -- add TypeScript or your type checker to enable this gate (e.g. tsc --noEmit)" && exit 0',
+};
+
+/**
  * WU-1300: Inject LumenFlow scripts into package.json
  * WU-1517: Also adds prettier devDependency and format/format:check scripts
+ * WU-1518: Also adds gate stub scripts (spec:linter, lint, typecheck)
  * - Creates package.json if it doesn't exist
  * - Preserves existing scripts (doesn't overwrite unless --force)
  * - Adds missing LumenFlow scripts
  * - Adds prettier to devDependencies
  * - Adds format and format:check scripts
+ * - Adds gate stub scripts for spec:linter, lint, typecheck
  */
 async function injectPackageJsonScripts(
   targetDir: string,
@@ -3092,6 +3107,19 @@ async function injectPackageJsonScripts(
         scripts[scriptName] = scriptCommand;
         modified = true;
       }
+    }
+  }
+
+  // WU-1518: Add gate stub scripts (spec:linter, lint, typecheck)
+  // These stubs let `pnpm gates` pass on a fresh project without manual script additions.
+  // Projects replace them with real tooling when ready.
+  for (const [scriptName, scriptCommand] of Object.entries(GATE_STUB_SCRIPTS)) {
+    if (options.force) {
+      scripts[scriptName] = scriptCommand;
+      modified = true;
+    } else if (!(scriptName in scripts)) {
+      scripts[scriptName] = scriptCommand;
+      modified = true;
     }
   }
 
