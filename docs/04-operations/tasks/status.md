@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml)
 
 ## Blocked
 
