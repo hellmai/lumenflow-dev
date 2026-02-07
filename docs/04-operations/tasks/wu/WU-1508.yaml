@@ -10,7 +10,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/core/src/wu-type-helpers.ts
 tests:
-  manual: []
+  manual:
+    - From repo root, run `pnpm wu:create` for a non-documentation WU without `--test-paths-manual`; verify it fails with a clear `tests.manual` requirement.
+    - From repo root, run `pnpm wu:claim` on a non-documentation WU that has no `tests.manual`; verify claim is blocked with actionable guidance.
+    - Verify documentation/process WUs without manual tests are not blocked by the new create/claim checks.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
