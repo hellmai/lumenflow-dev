@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1507 — Expand Medium article: fix code snippets, add numbers/CTA/vendor sections](wu/WU-1507.yaml)
+- [WU-1508 — Require tests.manual for non-doc WUs at create/claim](wu/WU-1508.yaml)
 
 ## Blocked
 
