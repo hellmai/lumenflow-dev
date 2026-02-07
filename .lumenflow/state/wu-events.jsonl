@@ -978,3 +978,4 @@
 {"type":"complete","wuId":"WU-1518","timestamp":"2026-02-07T17:01:09.295Z"}
 {"type":"claim","wuId":"WU-1519","timestamp":"2026-02-07T17:03:34.583Z","lane":"Framework: CLI WU Commands","title":"Stop gitignoring .lumenflow/state/ in scaffold template"}
 {"type":"complete","wuId":"WU-1519","timestamp":"2026-02-07T17:07:44.439Z"}
+{"type":"claim","wuId":"WU-1521","lane":"Framework: CLI WU Commands","title":"wu:claim transaction safety - rollback YAML on partial failure","timestamp":"2026-02-07T17:10:13.207Z"}

@@ -22,7 +22,6 @@ sections:
 
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
-- [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml) — Framework: CLI WU Commands
 - [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml) — Framework: CLI WU Commands
 - [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — Framework: CLI WU Commands
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — Content: Framework Docs
@@ -30,6 +29,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — Content: Site Comms
+- [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
