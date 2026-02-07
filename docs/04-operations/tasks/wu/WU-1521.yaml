@@ -2,7 +2,7 @@ id: WU-1521
 title: wu:claim transaction safety - rollback YAML on partial failure
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -47,3 +47,5 @@ session_id: 8bda0438-e468-421e-8090-0715e62624be
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T17:10:13.176Z
+locked: true
+completed_at: 2026-02-07T17:21:27.688Z
