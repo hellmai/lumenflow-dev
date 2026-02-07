@@ -2,7 +2,7 @@ id: WU-1508
 title: Require tests.manual for non-doc WUs at create/claim
 lane: 'Framework: CLI'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -31,9 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict wu:validate currently fails late when tests.manual is missing, which causes unrelated gate friction. Problem: this requirement is not enforced early enough in lifecycle. Solution: enforce tests.manual at wu:create and wu:claim for non-documentation/process WUs using shared helper logic, with clear errors.'
+description: 'Context: strict wu:validate currently fails late when tests.manual is missing, which
+  causes unrelated gate friction. Problem: this requirement is not enforced early enough in
+  lifecycle. Solution: enforce tests.manual at wu:create and wu:claim for non-documentation/process
+  WUs using shared helper logic, with clear errors.'
 acceptance:
   - wu:create fails non-doc WUs missing tests.manual unless auto-manual policy applies
   - wu:claim blocks non-doc WUs missing tests.manual even if other tests exist
   - Shared helper used by create and claim paths (library-first)
   - Unit tests cover passing/failing cases for create and claim checks
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1508
+claimed_at: 2026-02-07T10:56:09.308Z
+baseline_main_sha: 983c148fd36a67d3a3e7f36385752354fafd4444
+session_id: 2957d5c3-ef8b-49e1-aa41-d622af1272b1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T10:56:09.316Z
