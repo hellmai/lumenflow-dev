@@ -2,7 +2,7 @@ id: WU-1505
 title: Add SessionStart dirty-main early-warning across clients
 lane: 'Framework: CLI'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -54,3 +54,5 @@ session_id: 66b5ebcd-6c9e-44f7-bf47-a797dcf0dbc3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T10:37:57.104Z
+locked: true
+completed_at: 2026-02-07T10:47:14.249Z
