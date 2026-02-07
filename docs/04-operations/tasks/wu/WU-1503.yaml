@@ -2,7 +2,7 @@ id: WU-1503
 title: Add dirty-main pre-merge guard in wu:done
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
     metadata allowlist
   - If unrelated dirty files exist, wu:done blocks with actionable remediation guidance
   - Only audited --force bypass is supported; --stash-dirty is not introduced
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1503
+claimed_at: 2026-02-07T11:36:10.045Z
+baseline_main_sha: fec7bb168a31e2ad61994e53cec783c212ea3c03
+session_id: 44412f2b-0702-4d11-b11b-72c5b807df25
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T11:36:10.049Z
