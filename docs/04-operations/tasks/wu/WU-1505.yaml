@@ -19,7 +19,8 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1505.done
-dependencies: []
+dependencies:
+  - WU-1501
 initiative: INIT-017
 phase: 1
 blocked_by:
@@ -36,9 +37,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: dirty main check currently happens too late in workflow and can be missed until wu:done or manual status checks. Problem: agents can start work in a polluted main checkout without immediate visibility. Solution: add SessionStart dirty-main warning using shared vendor-agnostic detection logic, with vendor hooks generated as thin wrappers.'
+description: 'Context: dirty main check currently happens too late in workflow and can be missed
+  until wu:done or manual status checks. Problem: agents can start work in a polluted main checkout
+  without immediate visibility. Solution: add SessionStart dirty-main warning using shared
+  vendor-agnostic detection logic, with vendor hooks generated as thin wrappers.'
 acceptance:
   - SessionStart emits warning when main checkout is dirty before any work begins
   - Detection logic is shared in CLI/core and reused by generated vendor hooks
-  - Warning is informational (non-blocking) and lists modified/untracked paths with remediation guidance
+  - Warning is informational (non-blocking) and lists modified/untracked paths with remediation
+    guidance
   - No warning when running inside a worktree checkout
