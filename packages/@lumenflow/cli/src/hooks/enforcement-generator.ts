@@ -666,6 +666,36 @@ else
   fi
 fi
 
+# WU-1505: Early warning for dirty main checkout at SessionStart.
+# Informational only (never blocks), helps agents catch polluted main state
+# before any work begins.
+CWD=\$(pwd)
+WORKTREES_DIR="\${REPO_PATH}/worktrees"
+CURRENT_BRANCH=\$(git -C "\$REPO_PATH" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# No-op in worktrees and non-main branches.
+if [[ "\$CWD" != "\${WORKTREES_DIR}/"* ]] && [[ "\$CURRENT_BRANCH" == "main" ]]; then
+  DIRTY_LINES=\$(git -C "\$REPO_PATH" status --porcelain --untracked-files=all 2>/dev/null || true)
+  if [[ -n "\$DIRTY_LINES" ]]; then
+    echo "" >&2
+    echo "═══════════════════════════════════════════════════════" >&2
+    echo "⚠️  DIRTY MAIN CHECKOUT DETECTED" >&2
+    echo "═══════════════════════════════════════════════════════" >&2
+    echo "" >&2
+    echo "Uncommitted files in main checkout:" >&2
+    echo "\$DIRTY_LINES" | head -20 | sed 's/^/  /' >&2
+    if [[ \$(echo "\$DIRTY_LINES" | wc -l | tr -d ' ') -gt 20 ]]; then
+      echo "  ... (truncated)" >&2
+    fi
+    echo "" >&2
+    echo "Recommended next steps:" >&2
+    echo "  1. Inspect: git status --short" >&2
+    echo "  2. Move changes into a WU worktree or commit/discard intentionally" >&2
+    echo "  3. Keep main clean before starting new work" >&2
+    echo "" >&2
+  fi
+fi
+
 RECOVERY_DIR="\${REPO_PATH}/.lumenflow/state"
 
 # Check if recovery directory exists

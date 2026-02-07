@@ -150,6 +150,32 @@ describe('WU-1367: Hook Generation', () => {
       expect(hooks.stop).toBeUndefined();
     });
   });
+
+  describe('WU-1505: SessionStart dirty-main warning', () => {
+    it('should include dirty-main detection using git status --porcelain', async () => {
+      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const script = generateSessionStartRecoveryScript();
+
+      expect(script).toContain('status --porcelain');
+      expect(script).toContain('DIRTY_LINES=');
+    });
+
+    it('should include main-checkout-only guard', async () => {
+      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const script = generateSessionStartRecoveryScript();
+
+      expect(script).toContain('CURRENT_BRANCH=');
+      expect(script).toContain('[[ "$CURRENT_BRANCH" == "main" ]]');
+    });
+
+    it('should skip warning when running inside a worktree checkout', async () => {
+      const { generateSessionStartRecoveryScript } = await import('../../hooks/enforcement-generator.js');
+      const script = generateSessionStartRecoveryScript();
+
+      expect(script).toContain('WORKTREES_DIR=');
+      expect(script).toContain('[[ "$CWD" != "${WORKTREES_DIR}/"* ]]');
+    });
+  });
 });
 
 describe('WU-1367: Integrate Command', () => {
