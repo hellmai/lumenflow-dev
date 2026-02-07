@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml)
 
 ## Blocked
 
