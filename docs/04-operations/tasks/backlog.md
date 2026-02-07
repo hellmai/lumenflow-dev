@@ -27,7 +27,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml) — Framework: CLI Enforcement
-- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -488,3 +487,4 @@ sections:
 - [WU-1509 — Refine lane taxonomy and inference for CLI/Core/Content/Ops](wu/WU-1509.yaml)
 - [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml)
 - [WU-1510 — Rewrite Medium article: voice overhaul, origin story, de-slop](wu/WU-1510.yaml)
+- [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml)
