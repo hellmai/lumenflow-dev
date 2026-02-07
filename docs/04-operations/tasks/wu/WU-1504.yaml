@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/core/src/wu-lint.ts
   - packages/@lumenflow/cli/src/wu-validate.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
@@ -20,11 +21,20 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1504.done
-dependencies: []
+dependencies:
+  - WU-1502
+  - WU-1503
+initiative: INIT-017
+phase: 3
 spec_refs:
   - packages/@lumenflow/core/src/wu-lint.ts
 risks: []
-notes: Implements structural prevention for the mem:recover-style parity miss.
+notes: >-
+  Implements structural prevention for the mem:recover-style parity miss.
+
+
+  Clarifies detection signal and integration point; parity files are validation inputs, not mutation
+  targets.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -33,8 +43,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: command implementations can land without being registered in public-manifest and MCP tool mapping, causing silent partial integrations. Problem: code_paths and spec linting do not currently catch this class of omissions. Solution: extend WU lint/validate checks to warn when WU changes imply a new CLI command but registration surfaces are missing from scope.'
+description: 'Context: command implementations can land without being registered in public-manifest
+  and MCP tool mapping, causing silent partial integrations. Problem: code_paths and spec linting do
+  not currently catch this class of omissions. Solution: extend WU lint/validate checks to warn when
+  WU changes imply a new CLI command but registration surfaces are missing from scope.'
 acceptance:
-  - wu:validate/lint emits actionable warning when command implementation is added without public-manifest coverage
-  - Warning includes MCP parity hint when relevant registration points are missing
-  - Strict mode surfaces the warning as blocking, with tests for both warning and clean cases
+  - 'Define concrete parity heuristic: when WU code_paths include new/changed CLI command
+    implementation or package.json bin entry, registration surfaces must be present'
+  - Validator checks public-manifest and MCP tools parity as read-only signals and emits actionable
+    guidance
+  - Parity lint participates in normal wu:prep/gates path via wu:validate strict flow, not
+    ad-hoc-only invocation
+  - Strict mode treats parity warning as blocking; non-strict remains advisory
