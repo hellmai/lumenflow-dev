@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1525 — Rewrite article to showcase full LumenFlow breadth](wu/WU-1525.yaml) — Content: Site Comms
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — Framework: Core Lifecycle
