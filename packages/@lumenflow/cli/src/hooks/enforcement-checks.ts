@@ -82,7 +82,9 @@ function hasBranchPrClaim(mainRepoPath: string): boolean {
 
   try {
     const content = fs.readFileSync(stateFile, 'utf-8');
-    return content.includes('"claimed_mode":"branch-pr"') && content.includes('"status":"in_progress"');
+    return (
+      content.includes('"claimed_mode":"branch-pr"') && content.includes('"status":"in_progress"')
+    );
   } catch {
     return false;
   }

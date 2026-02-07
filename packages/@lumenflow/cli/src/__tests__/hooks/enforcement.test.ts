@@ -508,19 +508,19 @@ describe('WU-1501: Fail-closed default on main', () => {
 
   describe('AC4: Generated enforce-worktree.sh uses fail-closed wrappers', () => {
     it('should NOT exit 0 when no worktrees exist in generated script', async () => {
-      const { generateEnforceWorktreeScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateEnforceWorktreeScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateEnforceWorktreeScript();
 
       // The generated script must not have an early exit 0 for empty worktree count
       // Previously: if worktree count == 0 -> exit 0 (fail-open)
       // Now: continue to allowlist/blocking logic (fail-closed)
-      expect(script).not.toMatch(
-        /if \[\[ "\$WORKTREE_COUNT" -eq 0 \]\];\s*then\s*\n\s*exit 0/,
-      );
+      expect(script).not.toMatch(/if \[\[ "\$WORKTREE_COUNT" -eq 0 \]\];\s*then\s*\n\s*exit 0/);
     });
 
     it('should include allowlist patterns in generated script', async () => {
-      const { generateEnforceWorktreeScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateEnforceWorktreeScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateEnforceWorktreeScript();
 
       // Should contain allowlist checking
@@ -530,7 +530,8 @@ describe('WU-1501: Fail-closed default on main', () => {
     });
 
     it('should check for branch-pr claimed_mode in generated script', async () => {
-      const { generateEnforceWorktreeScript } = await import('../../hooks/enforcement-generator.js');
+      const { generateEnforceWorktreeScript } =
+        await import('../../hooks/enforcement-generator.js');
       const script = generateEnforceWorktreeScript();
 
       expect(script).toContain('branch-pr');
