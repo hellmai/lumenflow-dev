@@ -26,7 +26,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — Content: Site Comms
-- [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
@@ -504,3 +503,4 @@ sections:
 - [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml)
 - [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml)
 - [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml)
+- [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
