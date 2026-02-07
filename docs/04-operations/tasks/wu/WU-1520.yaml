@@ -8,8 +8,6 @@ created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/gates-graceful-degradation.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Delete format:check script from package.json, run pnpm gates - should warn and skip, not fail
