@@ -2,7 +2,7 @@ id: WU-1516
 title: Add lifecycle regression harness for create/done/delete state consistency
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -36,8 +36,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lifecycle defects have escaped repeatedly across wu:create, wu:done, wu:delete, and state:doctor interactions. Problem: targeted unit tests miss cross-command consistency regressions. Solution: add a deterministic lifecycle regression harness that exercises create→claim→done/delete consistency invariants and verifies projections/state-store remain clean.'
+description: 'Context: lifecycle defects have escaped repeatedly across wu:create, wu:done,
+  wu:delete, and state:doctor interactions. Problem: targeted unit tests miss cross-command
+  consistency regressions. Solution: add a deterministic lifecycle regression harness that exercises
+  create→claim→done/delete consistency invariants and verifies projections/state-store remain
+  clean.'
 acceptance:
-  - Test harness reproduces end-to-end lifecycle transitions and asserts clean status/backlog/state projections
+  - Test harness reproduces end-to-end lifecycle transitions and asserts clean status/backlog/state
+    projections
   - Harness asserts no Broken Event remains for deleted WUs
-  - Failures point directly to violating command stage (create/claim/done/delete/doctor) for fast diagnosis
+  - Failures point directly to violating command stage (create/claim/done/delete/doctor) for fast
+    diagnosis
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1516
+claimed_at: 2026-02-07T13:47:31.267Z
+baseline_main_sha: fdff93769534cf639c4e9dbdcaa76ce5ec9a1fd5
+session_id: 83cafaf6-7583-48bd-8e45-84d80344a7b0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:47:31.275Z
