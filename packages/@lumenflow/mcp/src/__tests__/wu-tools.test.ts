@@ -885,7 +885,7 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
 
     await lumenflowTool.execute({ client: 'codex', merge: true, full: true, framework: 'arc42' });
     expect(mockRunCliCommand).toHaveBeenCalledWith(
-      'lumenflow:init',
+      'lumenflow',
       expect.arrayContaining(['--client', 'codex', '--merge', '--full', '--framework', 'arc42']),
       expect.any(Object),
     );

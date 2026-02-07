@@ -359,6 +359,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.MEMORY_SESSIONS,
   },
   {
+    name: 'mem:recover',
+    binName: 'mem-recover',
+    binPath: './dist/mem-recover.js',
+    description: 'Generate recovery context after compaction',
+    category: COMMAND_CATEGORIES.MEMORY_SESSIONS,
+  },
+  {
     name: 'signal:cleanup',
     binName: 'signal-cleanup',
     binPath: './dist/signal-cleanup.js',

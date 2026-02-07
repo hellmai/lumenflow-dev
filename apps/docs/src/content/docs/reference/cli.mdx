@@ -15,25 +15,25 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 ## Commands Overview
 
-| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                          |
-| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                      |
-| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Other           | [`backlog:prune`](#backlogprune), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`init:plan`](#initplan), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor), [`sync:templates`](#synctemplates), [`validate`](#validate) |
-| Quality Gates   | [`gates`](#gates), [`gates:docs`](#gatesdocs)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Setup           | [`lumenflow`](#lumenflow), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`docs:sync`](#docssync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:init`](#lumenflowinit), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`lumenflow:validate`](#lumenflowvalidate)                                                                                                                                                               |
-| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                              |
+| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                                                                         |
+| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Other           | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Quality Gates   | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Setup           | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
+| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                                               |
 
 ## Agent Lifecycle
 
 ### agent:issues-query
 
-Query logged issues from agent sessions
+Query GitHub issues for agent work
 
 ```bash
 pnpm agent:issues-query
@@ -41,7 +41,7 @@ pnpm agent:issues-query
 
 ### agent:log-issue
 
-Log an issue encountered during agent work
+Log issue during agent session
 
 ```bash
 pnpm agent:log-issue --category <cat> --severity <sev> --title <title> --description <desc>
@@ -62,7 +62,7 @@ pnpm agent:log-issue --category <cat> --severity <sev> --title <title> --descrip
 
 ### agent:session
 
-Start an agent session for a WU
+Start agent session
 
 ```bash
 pnpm agent:session --wu <wuId> --tier <tier>
@@ -78,7 +78,7 @@ pnpm agent:session --wu <wuId> --tier <tier>
 
 ### agent:session-end
 
-End an agent session
+End agent session
 
 ```bash
 pnpm agent:session-end
@@ -88,7 +88,7 @@ pnpm agent:session-end
 
 ### flow:bottlenecks
 
-Identify workflow bottlenecks and critical path
+Identify flow bottlenecks
 
 ```bash
 pnpm flow:bottlenecks
@@ -96,7 +96,7 @@ pnpm flow:bottlenecks
 
 ### flow:report
 
-Generate DORA metrics flow report
+Generate flow metrics report
 
 ```bash
 pnpm flow:report
@@ -106,7 +106,7 @@ pnpm flow:report
 
 ### initiative:add-wu
 
-Link one or more WUs to an initiative bidirectionally
+Add WU to initiative
 
 ```bash
 pnpm initiative:add-wu --initiative <ref>
@@ -117,22 +117,6 @@ pnpm initiative:add-wu --initiative <ref>
 | Flag                       | Description                          | Required |
 | -------------------------- | ------------------------------------ | -------- |
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
-
-### initiative:bulk-assign-wus
-
-Bulk-assign orphaned WUs to initiatives based on lane prefix rules
-
-```bash
-pnpm initiative:bulk-assign-wus
-```
-
-**Options:**
-
-| Flag                     | Description                                                     | Required |
-| ------------------------ | --------------------------------------------------------------- | -------- |
-| `--config &lt;path&gt;`  | Path to config file (tool-specific)                             | No       |
-| `--apply`                | Apply changes (default is dry-run)                              | No       |
-| `--sync-from-initiative` | Ensure WU initiative fields exist for WUs listed in initiatives | No       |
 
 ### initiative:bulk-assign
 
@@ -152,7 +136,7 @@ pnpm initiative:bulk-assign
 
 ### initiative:create
 
-Create a new Initiative with micro-worktree isolation (race-safe)
+Create new initiative
 
 ```bash
 pnpm initiative:create --id <wuId> --slug <slug> --title <title>
@@ -171,7 +155,7 @@ pnpm initiative:create --id <wuId> --slug <slug> --title <title>
 
 ### initiative:edit
 
-Edit Initiative YAML files with micro-worktree isolation
+Edit initiative fields
 
 ```bash
 pnpm initiative:edit
@@ -179,24 +163,25 @@ pnpm initiative:edit
 
 **Options:**
 
-| Flag                                | Description                                                                 | Required |
-| ----------------------------------- | --------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;initId&gt;`           | Initiative ID (e.g., INIT-001)                                              | No       |
-| `--blocked-by &lt;initId&gt;`       | Initiative ID that blocks this initiative                                   | No       |
-| `--blocked-reason &lt;text&gt;`     | Reason for blocking (required with --blocked-by)                            | No       |
-| `--unblock`                         | Remove blocked_by and blocked_reason fields                                 | No       |
-| `--add-lane &lt;lane&gt;`           | Lane to add (repeatable)                                                    | No       |
-| `--remove-lane &lt;lane&gt;`        | Lane to remove (repeatable)                                                 | No       |
-| `--notes &lt;text&gt;`              | Note to append to notes array                                               | No       |
-| `--description &lt;text&gt;`        | Replace the initiative description field                                    | No       |
-| `--add-phase &lt;title&gt;`         | Append a new phase with auto-incremented id and pending status (repeatable) | No       |
-| `--add-success-metric &lt;text&gt;` | Append to success_metrics array, avoiding duplicates (repeatable)           | No       |
-| `--phase-id &lt;id&gt;`             | Phase ID to update (use with --phase-status)                                | No       |
-| `--created &lt;date&gt;`            | Set created date (YYYY-MM-DD format)                                        | No       |
+| Flag                                   | Description                                                                 | Required |
+| -------------------------------------- | --------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;initId&gt;`              | Initiative ID (e.g., INIT-001)                                              | No       |
+| `--blocked-by &lt;initId&gt;`          | Initiative ID that blocks this initiative                                   | No       |
+| `--blocked-reason &lt;text&gt;`        | Reason for blocking (required with --blocked-by)                            | No       |
+| `--unblock`                            | Remove blocked_by and blocked_reason fields                                 | No       |
+| `--add-lane &lt;lane&gt;`              | Lane to add (repeatable)                                                    | No       |
+| `--remove-lane &lt;lane&gt;`           | Lane to remove (repeatable)                                                 | No       |
+| `--notes &lt;text&gt;`                 | Note to append to notes array                                               | No       |
+| `--description &lt;text&gt;`           | Replace the initiative description field                                    | No       |
+| `--add-phase &lt;title&gt;`            | Append a new phase with auto-incremented id and pending status (repeatable) | No       |
+| `--add-success-metric &lt;text&gt;`    | Append to success_metrics array, avoiding duplicates (repeatable)           | No       |
+| `--remove-success-metric &lt;text&gt;` | Remove exact match from success_metrics array (repeatable)                  | No       |
+| `--phase-id &lt;id&gt;`                | Phase ID to update (use with --phase-status)                                | No       |
+| `--created &lt;date&gt;`               | Set created date (YYYY-MM-DD format)                                        | No       |
 
 ### initiative:list
 
-List all initiatives with progress percentages
+List all initiatives
 
 ```bash
 pnpm initiative:list
@@ -212,7 +197,7 @@ pnpm initiative:list
 
 ### initiative:plan
 
-Link a plan file to an initiative
+Link plan to initiative
 
 ```bash
 pnpm initiative:plan --initiative <ref>
@@ -226,7 +211,7 @@ pnpm initiative:plan --initiative <ref>
 
 ### initiative:status
 
-Show detailed initiative view with phases and WUs
+Show initiative status
 
 ```bash
 pnpm initiative:status
@@ -244,31 +229,28 @@ pnpm initiative:status
 
 ### mem:checkpoint
 
-Create a checkpoint node for context snapshots. Also invoked automatically by auto-checkpoint hooks when `memory.enforcement.auto_checkpoint.enabled` is true (INIT-015).
+Save progress checkpoint
 
 ```bash
 pnpm mem:checkpoint
-pnpm mem:checkpoint "Auto: sub-agent completed" --wu WU-123 --trigger subagent-stop --quiet
 ```
 
 **Options:**
 
-| Flag                          | Description                                                | Required |
-| ----------------------------- | ---------------------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                        | No       |
-| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)               | No       |
-| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)                    | No       |
-| `-p, --progress &lt;text&gt;` | Progress summary                                           | No       |
-| `--next-steps &lt;text&gt;`   | Next steps description                                     | No       |
-| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff, subagent-stop) | No       |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)             | No       |
-| `-q, --quiet`                 | Suppress output except errors                              | No       |
-
-**Auto-checkpoint hooks (INIT-015):** When configured, PostToolUse and SubagentStop hooks call `mem:checkpoint` automatically. PostToolUse uses a counter-based interval (default: every 30 tool calls); SubagentStop always checkpoints. See [Configuration](/reference/config#memoryenforcement) for setup.
+| Flag                          | Description                                    | Required |
+| ----------------------------- | ---------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)            | No       |
+| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)   | No       |
+| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)        | No       |
+| `-p, --progress &lt;text&gt;` | Progress summary                               | No       |
+| `--next-steps &lt;text&gt;`   | Next steps description                         | No       |
+| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff)    | No       |
+| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
+| `-q, --quiet`                 | Suppress output except errors                  | No       |
 
 ### mem:cleanup
 
-Prune closed memory nodes based on lifecycle policy, TTL, or decay scoring
+Clean up stale memory data
 
 ```bash
 pnpm mem:cleanup
@@ -276,21 +258,19 @@ pnpm mem:cleanup
 
 **Options:**
 
-| Flag                          | Description                                                                                                            | Required |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------- |
-| `--dry-run`                   | Preview cleanup without making changes                                                                                 | No       |
-| `--ttl &lt;duration&gt;`      | Remove nodes older than duration (e.g., 30d, 7d, 24h). Active sessions are protected.                                  | No       |
-| `--session-id &lt;uuid&gt;`   | Session ID to consider closed (removes session lifecycle nodes)                                                        | No       |
-| `--decay`                     | Run decay-based archival (archive stale nodes below threshold). Uses config from `.lumenflow.config.yaml` or defaults. | No       |
-| `--json`                      | Output as JSON                                                                                                         | No       |
-| `-q, --quiet`                 | Suppress output except errors                                                                                          | No       |
-| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                                                                         | No       |
-
-When `--decay` is used, the command reads `memory.decay.threshold` and `memory.decay.half_life_days` from config (defaults: 0.1 and 30 respectively) and archives nodes whose decay score falls below the threshold. Combine with `--dry-run` to preview what would be archived.
+| Flag                          | Description                                                                                                          | Required |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------- |
+| `--dry-run`                   | Preview cleanup without making changes                                                                               | No       |
+| `--ttl &lt;duration&gt;`      | Remove nodes older than duration (e.g., 30d, 7d, 24h). Active sessions are protected.                                | No       |
+| `--session-id &lt;uuid&gt;`   | Session ID to consider closed (removes session lifecycle nodes)                                                      | No       |
+| `--json`                      | Output as JSON                                                                                                       | No       |
+| `-q, --quiet`                 | Suppress output except errors                                                                                        | No       |
+| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory)                                                                       | No       |
+| `--decay`                     | Run decay-based archival (archive stale nodes below threshold). Uses config from .lumenflow.config.yaml or defaults. | No       |
 
 ### mem:context
 
-Generate context injection block for wu:spawn prompts
+Get context for current lane/WU
 
 ```bash
 pnpm mem:context --wu <wuId>
@@ -312,7 +292,7 @@ pnpm mem:context --wu <wuId>
 
 ### mem:create
 
-Create a memory node with optional provenance tracking
+Create memory node (bug discovery)
 
 ```bash
 pnpm mem:create
@@ -333,7 +313,7 @@ pnpm mem:create
 
 ### mem:delete
 
-Delete memory nodes (soft delete via metadata.status=deleted)
+Delete/archive a memory node
 
 ```bash
 pnpm mem:delete
@@ -352,7 +332,7 @@ pnpm mem:delete
 
 ### mem:export
 
-Export memory nodes as markdown or JSON
+Export memory as markdown
 
 ```bash
 pnpm mem:export
@@ -370,12 +350,10 @@ pnpm mem:export
 
 ### mem:inbox
 
-Read coordination signals from other agents. Uses append-only receipts (INIT-015) to mark signals as read without rewriting `signals.jsonl`, preventing concurrent read-marking races between parallel agents.
+Check coordination signals
 
 ```bash
 pnpm mem:inbox
-pnpm mem:inbox --no-mark   # Read without marking as read
-pnpm mem:inbox --since 1h  # Signals from the last hour
 ```
 
 **Options:**
@@ -387,14 +365,12 @@ pnpm mem:inbox --since 1h  # Signals from the last hour
 | `-s, --since &lt;time&gt;` | Filter signals since time (e.g., "1h", "30m", "2025-12-09")      | No       |
 | `-w, --watch`              | Continuously monitor for new signals                             | No       |
 | `-q, --quiet`              | Suppress output except signal content                            | No       |
-| `--no-mark`                | Do not mark signals as read after display (no receipt appended)  | No       |
+| `--no-mark`                | Do not mark signals as read after display                        | No       |
 | `-c, --count`              | Output only signal count (lightweight polling for orchestrators) | No       |
-
-**Signal receipts (INIT-015):** Read-marking appends receipt entries instead of modifying original signals. This prevents concurrent agents from overwriting each other's read state. Use `--no-mark` to read signals without generating receipts.
 
 ### mem:init
 
-Initialize memory layer in repository
+Initialize memory for WU
 
 ```bash
 pnpm mem:init
@@ -409,7 +385,7 @@ pnpm mem:init
 
 ### mem:ready
 
-Query ready nodes for a WU (deterministic ordering)
+Check pending memory nodes
 
 ```bash
 pnpm mem:ready --wu <wuId>
@@ -426,7 +402,7 @@ pnpm mem:ready --wu <wuId>
 
 ### mem:recover
 
-Generate recovery context for a WU (WU-1390). Outputs checkpoint data, recent signals, and session state to help a new agent resume work.
+Generate recovery context after compaction
 
 ```bash
 pnpm mem:recover --wu <wuId>
@@ -434,15 +410,17 @@ pnpm mem:recover --wu <wuId>
 
 **Options:**
 
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to recover (e.g., WU-123)         | Yes      |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-| `-q, --quiet`                 | Suppress output except recovery context        | No       |
+| Flag                           | Description                                               | Required |
+| ------------------------------ | --------------------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`            | Work Unit ID to link (e.g., WU-123)                       | Yes      |
+| `-m, --max-size &lt;bytes&gt;` | Maximum output size in bytes (default: 2048)              | No       |
+| `-f, --format &lt;format&gt;`  | Output format: json or human (default: human)             | No       |
+| `-d, --base-dir &lt;path&gt;`  | Base directory (defaults to current directory)            | No       |
+| `-q, --quiet`                  | Suppress header/footer output, only show recovery context | No       |
 
 ### mem:signal
 
-Send a coordination signal to other agents
+Broadcast coordination signal
 
 ```bash
 pnpm mem:signal
@@ -459,7 +437,7 @@ pnpm mem:signal
 
 ### mem:start
 
-Create a session node linked to a WU
+Start a memory session
 
 ```bash
 pnpm mem:start --wu <wuId>
@@ -477,7 +455,7 @@ pnpm mem:start --wu <wuId>
 
 ### mem:summarize
 
-Rollup older memory nodes into summary nodes for compaction
+Summarize memory context
 
 ```bash
 pnpm mem:summarize --wu <id>
@@ -495,7 +473,7 @@ pnpm mem:summarize --wu <id>
 
 ### mem:triage
 
-Review discovery nodes and promote to WUs or archive
+Triage discovered bugs
 
 ```bash
 pnpm mem:triage
@@ -522,7 +500,7 @@ pnpm mem:triage
 
 ### metrics
 
-Unified Metrics CLI with subcommands (WU-1110)
+View workflow metrics
 
 ```bash
 pnpm metrics
@@ -530,7 +508,7 @@ pnpm metrics
 
 ### metrics:snapshot
 
-Capture current metrics snapshot for dashboards
+Capture metrics snapshot
 
 ```bash
 pnpm metrics:snapshot
@@ -540,7 +518,7 @@ pnpm metrics:snapshot
 
 ### orchestrate:init-status
 
-Show initiative orchestration status
+Compact initiative progress view
 
 ```bash
 pnpm orchestrate:init-status
@@ -548,7 +526,7 @@ pnpm orchestrate:init-status
 
 ### orchestrate:initiative
 
-Orchestrate initiative execution with agents
+Orchestrate initiative execution
 
 ```bash
 pnpm orchestrate:initiative
@@ -556,7 +534,7 @@ pnpm orchestrate:initiative
 
 ### orchestrate:monitor
 
-Monitor spawned agent progress and signals
+Monitor spawn/agent activity
 
 ```bash
 pnpm orchestrate:monitor
@@ -564,81 +542,9 @@ pnpm orchestrate:monitor
 
 ## Other
 
-### backlog:prune
-
-Backlog Prune Command
-
-```bash
-pnpm backlog:prune
-```
-
-### file:delete
-
-File Delete CLI Tool
-
-```bash
-pnpm file:delete
-```
-
-### file:edit
-
-File Edit CLI Tool
-
-```bash
-pnpm file:edit
-```
-
-### file:read
-
-File Read CLI Tool
-
-```bash
-pnpm file:read
-```
-
-### file:write
-
-File Write CLI Tool
-
-```bash
-pnpm file:write
-```
-
-### git:branch
-
-Git Branch CLI Tool
-
-```bash
-pnpm git:branch
-```
-
-### git:diff
-
-Git Diff CLI Tool
-
-```bash
-pnpm git:diff
-```
-
-### git:log
-
-Git Log CLI Tool
-
-```bash
-pnpm git:log
-```
-
-### git:status
-
-Git Status CLI Tool
-
-```bash
-pnpm git:status
-```
-
 ### init:plan
 
-Link a plan file to an initiative
+Link plan to initiative (alias)
 
 ```bash
 pnpm init:plan --initiative <ref>
@@ -650,25 +556,9 @@ pnpm init:plan --initiative <ref>
 | -------------------------- | ------------------------------------ | -------- |
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
-### lane:health
-
-Check lane configuration health (WU-1188)
-
-```bash
-pnpm lane:health
-```
-
-### lane:suggest
-
-Suggest lane definitions based on codebase context
-
-```bash
-pnpm lane:suggest
-```
-
 ### plan:create
 
-Create a new plan file in repo plansDir
+Create a new plan
 
 ```bash
 pnpm plan:create --id <wuId> --title <title>
@@ -683,7 +573,7 @@ pnpm plan:create --id <wuId> --title <title>
 
 ### plan:edit
 
-Edit a section in a plan file
+Edit plan content
 
 ```bash
 pnpm plan:edit --id <wuId>
@@ -697,7 +587,7 @@ pnpm plan:edit --id <wuId>
 
 ### plan:link
 
-Link a plan file to a WU or initiative
+Link plan to WU or initiative
 
 ```bash
 pnpm plan:link --id <wuId>
@@ -711,7 +601,7 @@ pnpm plan:link --id <wuId>
 
 ### plan:promote
 
-Promote a plan to approved status
+Promote plan to WU
 
 ```bash
 pnpm plan:promote --id <wuId>
@@ -725,7 +615,7 @@ pnpm plan:promote --id <wuId>
 
 ### signal:cleanup
 
-Prune old signals based on TTL policy to prevent unbounded growth
+Clean up stale signals
 
 ```bash
 pnpm signal:cleanup
@@ -745,7 +635,7 @@ pnpm signal:cleanup
 
 ### state:bootstrap
 
-State Bootstrap Command
+Bootstrap state store
 
 ```bash
 pnpm state:bootstrap
@@ -753,7 +643,7 @@ pnpm state:bootstrap
 
 ### state:cleanup
 
-Orchestrate all state cleanup: signals, memory, events
+Clean up stale state data
 
 ```bash
 pnpm state:cleanup
@@ -773,7 +663,7 @@ pnpm state:cleanup
 
 ### state:doctor
 
-Check state integrity and optionally repair issues
+Diagnose state store issues
 
 ```bash
 pnpm state:doctor
@@ -789,25 +679,11 @@ pnpm state:doctor
 | `-q, --quiet`                 | Suppress output except errors and summary      | No       |
 | `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
 
-### sync:templates
-
-Sync internal docs to CLI templates for release-cycle maintenance
-
-```bash
-pnpm sync:templates
-```
-
-### validate
-
-```bash
-pnpm validate
-```
-
 ## Quality Gates
 
 ### gates
 
-Run quality gates with support for docs-only mode, incremental linting, and tiered testing
+Run all quality gates
 
 ```bash
 pnpm gates
@@ -821,30 +697,54 @@ Run docs-only quality gates (alias)
 pnpm gates:docs
 ```
 
+### lane:health
+
+Check lane config health
+
+```bash
+pnpm lane:health
+```
+
+### lane:suggest
+
+Suggest lane for code paths
+
+```bash
+pnpm lane:suggest
+```
+
+### lumenflow-gates
+
+Run all quality gates (alias)
+
+```bash
+pnpm lumenflow-gates
+```
+
+### lumenflow-validate
+
+Run validation checks (alias)
+
+```bash
+pnpm lumenflow-validate
+```
+
+### validate
+
+Run validation checks
+
+```bash
+pnpm validate
+```
+
 ## Setup
 
-### lumenflow
+### backlog:prune
 
-Initialize LumenFlow in a project\n\n
-
-```bash
-pnpm lumenflow
-```
-
-### lumenflow:commands
-
-List all available LumenFlow CLI commands
+Clean stale backlog entries
 
 ```bash
-pnpm lumenflow:commands
-```
-
-### lumenflow:docs-sync
-
-Sync agent onboarding docs to existing projects (skips existing files by default)
-
-```bash
-pnpm lumenflow:docs-sync
+pnpm backlog:prune
 ```
 
 ### docs:sync
@@ -855,25 +755,113 @@ Sync agent docs (for upgrades) (alias)
 pnpm docs:sync
 ```
 
+### file:delete
+
+Delete file with audit trail
+
+```bash
+pnpm file:delete
+```
+
+### file:edit
+
+Edit file with audit trail
+
+```bash
+pnpm file:edit
+```
+
+### file:read
+
+Read file with audit trail
+
+```bash
+pnpm file:read
+```
+
+### file:write
+
+Write file with audit trail
+
+```bash
+pnpm file:write
+```
+
+### git:branch
+
+Show git branch with audit trail
+
+```bash
+pnpm git:branch
+```
+
+### git:diff
+
+Show git diff with audit trail
+
+```bash
+pnpm git:diff
+```
+
+### git:log
+
+Show git log with audit trail
+
+```bash
+pnpm git:log
+```
+
+### git:status
+
+Show git status with audit trail
+
+```bash
+pnpm git:status
+```
+
+### lumenflow
+
+Initialize LumenFlow in a project
+
+```bash
+pnpm lumenflow
+```
+
+### lumenflow-init
+
+Initialize LumenFlow in a project (alias)
+
+```bash
+pnpm lumenflow-init
+```
+
+### lumenflow:commands
+
+List all available CLI commands
+
+```bash
+pnpm lumenflow:commands
+```
+
+### lumenflow:docs-sync
+
+Sync agent docs (for upgrades)
+
+```bash
+pnpm lumenflow:docs-sync
+```
+
 ### lumenflow:doctor
 
-Check LumenFlow safety components and configuration
+Diagnose LumenFlow configuration
 
 ```bash
 pnpm lumenflow:doctor
 ```
 
-### lumenflow:init
-
-Initialize LumenFlow in a project\n\n
-
-```bash
-pnpm lumenflow:init
-```
-
 ### lumenflow:integrate
 
-Integrate LumenFlow enforcement with AI client tools
+Generate enforcement hooks for client
 
 ```bash
 pnpm lumenflow:integrate
@@ -881,7 +869,7 @@ pnpm lumenflow:integrate
 
 ### lumenflow:metrics
 
-Unified Metrics CLI with subcommands (WU-1110)
+View workflow metrics (alias)
 
 ```bash
 pnpm lumenflow:metrics
@@ -889,7 +877,7 @@ pnpm lumenflow:metrics
 
 ### lumenflow:release
 
-Release Command
+Run release workflow
 
 ```bash
 pnpm lumenflow:release
@@ -897,7 +885,7 @@ pnpm lumenflow:release
 
 ### lumenflow:sync-templates
 
-Sync internal docs to CLI templates for release-cycle maintenance
+Sync templates to project
 
 ```bash
 pnpm lumenflow:sync-templates
@@ -905,23 +893,25 @@ pnpm lumenflow:sync-templates
 
 ### lumenflow:upgrade
 
-LumenFlow Upgrade CLI Command
+Upgrade LumenFlow packages
 
 ```bash
 pnpm lumenflow:upgrade
 ```
 
-### lumenflow:validate
+### sync:templates
+
+Sync templates to project (alias)
 
 ```bash
-pnpm lumenflow:validate
+pnpm sync:templates
 ```
 
 ## Sub-Agents
 
 ### spawn:list
 
-Display spawn trees for WUs or initiatives
+List active spawned agents
 
 ```bash
 pnpm spawn:list
@@ -939,7 +929,7 @@ pnpm spawn:list
 
 ### wu:block
 
-Block a work unit and move it from in-progress to blocked status
+Block WU with reason
 
 ```bash
 pnpm wu:block --id <wuId>
@@ -957,7 +947,7 @@ pnpm wu:block --id <wuId>
 
 ### wu:claim
 
-Claim a work unit by creating a worktree/branch and updating status. On successful claim, surfaces any unread coordination signals from the memory layer so agents can see pending messages from other agents.
+Claim WU and create worktree
 
 ```bash
 pnpm wu:claim --id <wuId> --lane <lane>
@@ -979,13 +969,14 @@ pnpm wu:claim --id <wuId> --lane <lane>
 | `--fix`                       | Auto-fix common YAML validation issues (WU-1359)                                                                                                                                                       | No       |
 | `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                                                                                                                                       | No       |
 | `--allow-incomplete`          | Allow claiming with incomplete spec (bypasses spec completeness, NOT schema errors)                                                                                                                    | No       |
+| `--cloud`                     | Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents and MCP callers)                                                                                                           | No       |
 | `--resume`                    | Resume a WU from a crashed/killed agent (handoff) by taking over the existing worktree and updating the lock with new PID. Fails if original PID is still running (safety) or worktree does not exist. | No       |
 | `--skip-setup`                | Skip automatic pnpm install in worktree after creation (faster claims when deps already built)                                                                                                         | No       |
 | `--no-push`                   | Skip pushing claim branch or canonical updates (air-gapped/offline)                                                                                                                                    | No       |
 
 ### wu:cleanup
 
-Clean up worktree and branch after PR merge (PR-based completion workflow)
+Cleanup after PR merge
 
 ```bash
 pnpm wu:cleanup
@@ -1000,7 +991,7 @@ pnpm wu:cleanup
 
 ### wu:create
 
-Create a new Work Unit with micro-worktree isolation (race-safe)
+Create new WU spec
 
 ```bash
 pnpm wu:create --lane <lane> --title <title>
@@ -1038,7 +1029,7 @@ pnpm wu:create --lane <lane> --title <title>
 
 ### wu:delete
 
-Safely delete WU YAML files with micro-worktree isolation
+Delete WU spec and cleanup
 
 ```bash
 pnpm wu:delete
@@ -1054,7 +1045,7 @@ pnpm wu:delete
 
 ### wu:deps
 
-Visualize WU dependency graph
+Show WU dependencies
 
 ```bash
 pnpm wu:deps
@@ -1071,22 +1062,15 @@ pnpm wu:deps
 
 ### wu:done
 
-Complete a WU: run gates, fast-forward merge, stamp, and cleanup. Must be run from the main checkout (not a worktree). Use `wu:prep` first from the worktree.
-
-With INIT-015 memory enforcement:
-
-- **Checkpoint gate**: Warns or blocks if no checkpoints exist (configurable via `memory.enforcement.require_checkpoint_for_done`)
-- **Decay archival**: Archives stale memory nodes when `memory.decay.enabled` and `trigger: on_done` (fail-open)
-- **Signal read-marking**: Marks completed-WU signals as read using append-only receipts
-- **Counter cleanup**: Removes auto-checkpoint counter files for the completed WU
+Complete WU (merge, stamp, cleanup) from main
 
 ```bash
-pnpm wu:done --id WU-123
+pnpm wu:done
 ```
 
 ### wu:edit
 
-Edit WU spec files with micro-worktree isolation
+Edit WU spec fields
 
 ```bash
 pnpm wu:edit --id <wuId>
@@ -1125,7 +1109,7 @@ pnpm wu:edit --id <wuId>
 
 ### wu:infer-lane
 
-WU Lane Inference CLI (WU-908)
+Infer lane from code paths/description
 
 ```bash
 pnpm wu:infer-lane
@@ -1133,7 +1117,7 @@ pnpm wu:infer-lane
 
 ### wu:preflight
 
-Fast validation of code_paths and test paths before gates run.
+Pre-flight checks before wu:done
 
 ```bash
 pnpm wu:preflight --id <wuId>
@@ -1148,7 +1132,7 @@ pnpm wu:preflight --id <wuId>
 
 ### wu:prep
 
-Prepare WU for completion (run gates in worktree)
+Run gates in worktree, prep for wu:done
 
 ```bash
 pnpm wu:prep --id <wuId>
@@ -1163,7 +1147,7 @@ pnpm wu:prep --id <wuId>
 
 ### wu:proto
 
-Create and claim a prototype WU with relaxed validation (rapid prototyping)
+Create WU prototype
 
 ```bash
 pnpm wu:proto --lane <lane> --title <title>
@@ -1182,7 +1166,7 @@ pnpm wu:proto --lane <lane> --title <title>
 
 ### wu:prune
 
-WU Prune Utility
+Clean stale worktrees
 
 ```bash
 pnpm wu:prune
@@ -1190,7 +1174,7 @@ pnpm wu:prune
 
 ### wu:recover
 
-Analyze and fix WU state inconsistencies (WU-1090)
+Analyze and fix WU state inconsistencies
 
 ```bash
 pnpm wu:recover --id <wuId>
@@ -1204,7 +1188,7 @@ pnpm wu:recover --id <wuId>
 
 ### wu:release
 
-Release an orphaned WU from in_progress back to ready state for reclaiming
+Release orphaned WU (in_progress to ready)
 
 ```bash
 pnpm wu:release --id <wuId> --reason <reason>
@@ -1219,7 +1203,7 @@ pnpm wu:release --id <wuId> --reason <reason>
 
 ### wu:repair
 
-WU State Repair Tool (Unified - WU-1826, WU-2240)
+Repair WU state issues
 
 ```bash
 pnpm wu:repair
@@ -1227,7 +1211,7 @@ pnpm wu:repair
 
 ### wu:spawn
 
-Generate Task tool invocation for sub-agent WU execution
+Generate sub-agent spawn prompt
 
 ```bash
 pnpm wu:spawn --id <wuId>
@@ -1249,7 +1233,7 @@ pnpm wu:spawn --id <wuId>
 
 ### wu:status
 
-Show WU status, location, and valid commands (WU-1090)
+Show WU status, location, valid commands
 
 ```bash
 pnpm wu:status
@@ -1257,7 +1241,7 @@ pnpm wu:status
 
 ### wu:unblock
 
-Unblock a work unit and move it from blocked to in-progress status
+Unblock WU
 
 ```bash
 pnpm wu:unblock --id <wuId>
@@ -1277,7 +1261,7 @@ pnpm wu:unblock --id <wuId>
 
 ### wu:unlock-lane
 
-Safely unlock a lane lock with audit logging
+Unlock stuck lane
 
 ```bash
 pnpm wu:unlock-lane
@@ -1293,7 +1277,7 @@ pnpm wu:unlock-lane
 
 ### wu:validate
 
-Validate WU YAML files against schema (strict mode by default, WU-1329)
+Validate WU spec
 
 ```bash
 pnpm wu:validate

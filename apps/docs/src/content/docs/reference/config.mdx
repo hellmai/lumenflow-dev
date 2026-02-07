@@ -123,64 +123,31 @@ Quality gates configuration
 
 Memory layer configuration
 
-| Field                    | Type    | Default           | Description                                             |
-| ------------------------ | ------- | ----------------- | ------------------------------------------------------- |
-| `directory`              | string  | `"memory-bank/"`  | Memory storage directory                                |
-| `sessionTtl`             | integer | `604800000`       | Session TTL in milliseconds (default: 7 days)           |
-| `checkpointTtl`          | integer | `2592000000`      | Checkpoint TTL in milliseconds (default: 30 days)       |
-| `enableAutoCleanup`      | boolean | `true`            | Enable automatic cleanup of expired nodes               |
-| `progress_signals`       | object  | `-`               | Progress signals configuration (optional)               |
-| `signalCleanup`          | object  | `[object Object]` | Signal cleanup TTL and retention policy                 |
-| `spawn_context_max_size` | integer | `4096`            | Max size in bytes for spawn memory context              |
-| `enforcement`            | object  | `-`               | Memory enforcement configuration (INIT-015, optional)   |
-| `decay`                  | object  | `-`               | Decay-based archival configuration (INIT-015, optional) |
+| Field                    | Type    | Default           | Description |
+| ------------------------ | ------- | ----------------- | ----------- |
+| `directory`              | string  | `"memory-bank/"`  |             |
+| `sessionTtl`             | integer | `604800000`       |             |
+| `checkpointTtl`          | integer | `2592000000`      |             |
+| `enableAutoCleanup`      | boolean | `true`            |             |
+| `progress_signals`       | object  | `-`               |             |
+| `signalCleanup`          | object  | `[object Object]` |             |
+| `spawn_context_max_size` | integer | `4096`            |             |
+| `enforcement`            | object  | `-`               |             |
+| `decay`                  | object  | `-`               |             |
 
 ### memory.progress_signals
 
 Progress signals configuration for sub-agent coordination (WU-1203)
 
-| Field             | Type    | Default | Description                                        |
-| ----------------- | ------- | ------- | -------------------------------------------------- |
-| `enabled`         | boolean | `false` | When true, signals are required at trigger points  |
-| `frequency`       | integer | `0`     | Tool calls between auto-signals (0 = no frequency) |
-| `on_milestone`    | boolean | `true`  | Signal after completing each acceptance criterion  |
-| `on_tests_pass`   | boolean | `true`  | Signal when tests first pass                       |
-| `before_gates`    | boolean | `true`  | Signal before running quality gates                |
-| `on_blocked`      | boolean | `true`  | Signal when blocked or waiting on dependencies     |
-| `auto_checkpoint` | boolean | `false` | Automatically create checkpoint with each signal   |
-
-### memory.enforcement
-
-Memory enforcement configuration (INIT-015, WU-1471). Controls auto-checkpointing and checkpoint requirements for wu:done. Optional -- when not provided, existing warn behavior applies.
-
-| Field                         | Type   | Default   | Description                                                 |
-| ----------------------------- | ------ | --------- | ----------------------------------------------------------- |
-| `auto_checkpoint`             | object | see below | Auto-checkpoint hook configuration                          |
-| `require_checkpoint_for_done` | enum   | `"warn"`  | Checkpoint gate on wu:done: `"off"`, `"warn"`, or `"block"` |
-
-### memory.enforcement.auto_checkpoint
-
-Controls automatic checkpointing via PostToolUse and SubagentStop Claude Code hooks.
-
-| Field                 | Type    | Default | Description                                                           |
-| --------------------- | ------- | ------- | --------------------------------------------------------------------- |
-| `enabled`             | boolean | `false` | Generate PostToolUse + SubagentStop hooks for automatic checkpointing |
-| `interval_tool_calls` | integer | `30`    | Number of tool calls between automatic checkpoints                    |
-
-When `enabled: true` and the enforcement hooks master switch is active, `pnpm lumenflow:integrate --client claude-code` generates hook scripts that background checkpoint writes in a defensive subshell. PostToolUse checkpoints are counter-based (per-WU); SubagentStop always checkpoints.
-
-### memory.decay
-
-Memory decay policy configuration (INIT-015, WU-1474). Controls automated archival of stale memory nodes during lifecycle events. Optional -- when not provided, no automatic decay archival runs.
-
-| Field            | Type    | Default     | Description                                                 |
-| ---------------- | ------- | ----------- | ----------------------------------------------------------- |
-| `enabled`        | boolean | `false`     | Enable decay-based archival                                 |
-| `threshold`      | number  | `0.1`       | Decay score below which nodes are archived (0 to 1)         |
-| `half_life_days` | integer | `30`        | Half-life for decay scoring in days (positive integer)      |
-| `trigger`        | enum    | `"on_done"` | When to trigger: `"on_done"` (during wu:done) or `"manual"` |
-
-When `trigger: "on_done"`, wu:done invokes decay archival after gates pass. Errors never block wu:done completion (fail-open). When `trigger: "manual"`, decay only runs via `pnpm mem:cleanup`.
+| Field             | Type    | Default | Description |
+| ----------------- | ------- | ------- | ----------- |
+| `enabled`         | boolean | `false` |             |
+| `frequency`       | integer | `0`     |             |
+| `on_milestone`    | boolean | `true`  |             |
+| `on_tests_pass`   | boolean | `true`  |             |
+| `before_gates`    | boolean | `true`  |             |
+| `on_blocked`      | boolean | `true`  |             |
+| `auto_checkpoint` | boolean | `false` |             |
 
 ### ui
 
