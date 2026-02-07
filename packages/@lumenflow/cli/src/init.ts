@@ -22,6 +22,8 @@ import { updateMergeBlock } from './merge-block.js';
 import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
 // WU-1386: Import doctor for auto-run after init
 import { runDoctorForInit } from './doctor.js';
+// WU-1505: Use shared SessionStart hook generator (vendor wrappers stay thin)
+import { generateSessionStartRecoveryScript } from './hooks/enforcement-generator.js';
 // WU-1433: Import public manifest to derive scripts (no hardcoded subset)
 import { getPublicManifest } from './public-manifest.js';
 
@@ -3367,19 +3369,15 @@ async function scaffoldClientFiles(
       // Template not found - hook won't be scaffolded
     }
 
-    // Load and write session-start-recovery.sh
-    try {
-      const sessionStartScript = loadTemplate(CLAUDE_HOOKS.TEMPLATES.SESSION_START);
-      await createExecutableScript(
-        path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.SESSION_START_RECOVERY),
-        sessionStartScript,
-        options.force ? 'force' : 'skip',
-        result,
-        targetDir,
-      );
-    } catch {
-      // Template not found - hook won't be scaffolded
-    }
+    // WU-1505: Generate session-start script from shared logic source.
+    const sessionStartScript = generateSessionStartRecoveryScript();
+    await createExecutableScript(
+      path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.SESSION_START_RECOVERY),
+      sessionStartScript,
+      options.force ? 'force' : 'skip',
+      result,
+      targetDir,
+    );
 
     // WU-1083: Scaffold Claude skills
     await scaffoldClaudeSkills(targetDir, options, result, tokens);
