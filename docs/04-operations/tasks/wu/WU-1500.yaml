@@ -2,7 +2,7 @@ id: WU-1500
 title: Commit leftover mem:recover parity and regenerated docs
 lane: 'Framework: CLI'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -44,3 +44,5 @@ session_id: 27de3f26-70a9-47a0-8a5b-5971aeced87c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T10:04:47.762Z
+locked: true
+completed_at: 2026-02-07T10:07:34.523Z
