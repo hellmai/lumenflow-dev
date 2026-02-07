@@ -238,6 +238,68 @@ describe('validateDirtyMain (WU-1503)', () => {
   });
 });
 
+describe('WU-1522: flow.log does not block wu:done after wu:claim', () => {
+  const wuId = 'WU-1522';
+  const codePaths = [
+    'packages/@lumenflow/cli/src/wu-claim.ts',
+    'packages/@lumenflow/cli/src/wu-done.ts',
+  ];
+
+  describe('pre-merge guard (validateDirtyMain)', () => {
+    it('allows flow.log as the sole dirty file (modified)', () => {
+      const status = ' M .lumenflow/flow.log\n';
+      const result = validateDirtyMain(status, wuId, codePaths);
+      expect(result.valid).toBe(true);
+      expect(result.unrelatedFiles).toEqual([]);
+      expect(result.relatedFiles).toContain('.lumenflow/flow.log');
+    });
+
+    it('allows flow.log as the sole dirty file (untracked)', () => {
+      const status = '?? .lumenflow/flow.log\n';
+      const result = validateDirtyMain(status, wuId, codePaths);
+      expect(result.valid).toBe(true);
+      expect(result.unrelatedFiles).toEqual([]);
+      expect(result.relatedFiles).toContain('.lumenflow/flow.log');
+    });
+
+    it('allows flow.log combined with other allowlisted files', () => {
+      const status = [
+        ' M .lumenflow/flow.log',
+        ' M .lumenflow/state/wu-events.jsonl',
+        ' M docs/04-operations/tasks/status.md',
+      ].join('\n');
+      const result = validateDirtyMain(status, wuId, codePaths);
+      expect(result.valid).toBe(true);
+      expect(result.unrelatedFiles).toEqual([]);
+    });
+  });
+
+  describe('METADATA_ALLOWLIST_PATTERNS contains exact flow.log path', () => {
+    it('contains the exact path .lumenflow/flow.log', () => {
+      expect(METADATA_ALLOWLIST_PATTERNS).toContain('.lumenflow/flow.log');
+    });
+  });
+
+  describe('wu-events.jsonl remains canonical tracked state', () => {
+    it('wu-events.jsonl is in METADATA_ALLOWLIST_PATTERNS', () => {
+      expect(METADATA_ALLOWLIST_PATTERNS).toContain('.lumenflow/state/wu-events.jsonl');
+    });
+
+    it('flow.log is NOT the canonical state store', () => {
+      // flow.log is telemetry, wu-events.jsonl is state.
+      // Both are allowlisted but for different reasons.
+      const flowLogEntry = METADATA_ALLOWLIST_PATTERNS.find((p) => p === '.lumenflow/flow.log');
+      const eventsEntry = METADATA_ALLOWLIST_PATTERNS.find(
+        (p) => p === '.lumenflow/state/wu-events.jsonl',
+      );
+      expect(flowLogEntry).toBeDefined();
+      expect(eventsEntry).toBeDefined();
+      // They are distinct entries (not a wildcard)
+      expect(flowLogEntry).not.toBe(eventsEntry);
+    });
+  });
+});
+
 describe('buildDirtyMainErrorMessage (WU-1503)', () => {
   it('includes WU ID in error message', () => {
     const message = buildDirtyMainErrorMessage('WU-1503', ['random.txt']);

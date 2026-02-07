@@ -51,6 +51,8 @@ coverage/
 /.lumenflow/skip-gates-audit.log
 /.lumenflow/checkpoints/
 /.lumenflow/force-bypasses.log
+# WU-1522: flow.log is telemetry, not state - explicitly untracked
+/.lumenflow/flow.log
 # LumenFlow runtime dirs anywhere (prevents worktree/nested package dirt)
 **/.lumenflow/locks/
 **/.lumenflow/memory/

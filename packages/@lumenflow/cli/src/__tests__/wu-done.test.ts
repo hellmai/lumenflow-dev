@@ -144,4 +144,40 @@ describe('wu-done', () => {
       expect(result.unrelatedFiles).toEqual(['packages/@lumenflow/cli/src/wu-done.ts']);
     });
   });
+
+  describe('WU-1522: flow.log does not block wu:done post-merge', () => {
+    it('does not block when only flow.log is dirty after merge', () => {
+      const status = ' M .lumenflow/flow.log\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1522');
+      expect(result.isDirty).toBe(false);
+      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
+    });
+
+    it('does not block when flow.log is untracked after merge', () => {
+      const status = '?? .lumenflow/flow.log\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1522');
+      expect(result.isDirty).toBe(false);
+      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
+    });
+
+    it('handles flow.log with skip-cos-gates-audit.log together', () => {
+      const status = [' M .lumenflow/flow.log', ' M .lumenflow/skip-cos-gates-audit.log'].join(
+        '\n',
+      );
+      const result = checkPostMergeDirtyState(status, 'WU-1522');
+      expect(result.isDirty).toBe(false);
+      expect(result.internalOnlyFiles).toHaveLength(2);
+    });
+
+    it('is consistent between pre-merge and post-merge handling', () => {
+      // Both validateDirtyMain (pre-merge) and checkPostMergeDirtyState (post-merge)
+      // must allow flow.log. This test validates the post-merge side.
+      // The pre-merge side is tested in wu-done-dirty-main.test.ts WU-1522 section.
+      const status = ' M .lumenflow/flow.log\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1522');
+      expect(result.isDirty).toBe(false);
+      // flow.log should be classified as internal, not unrelated
+      expect(result.unrelatedFiles).not.toContain('.lumenflow/flow.log');
+    });
+  });
 });
