@@ -52,6 +52,8 @@ const CLI_COMMAND_EXCLUDE_PATTERNS: string[] = [
   '/lib/',
   '/shared/',
   '/commands/',
+  // WU-1518: init.ts is scaffolding logic, not a CLI command registration
+  '/init.ts',
   REGISTRATION_SURFACES.PUBLIC_MANIFEST,
   REGISTRATION_SURFACES.MCP_TOOLS,
 ];
