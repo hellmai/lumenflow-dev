@@ -964,3 +964,4 @@
 {"type":"claim","wuId":"WU-1514","timestamp":"2026-02-07T13:33:40.366Z","lane":"Framework: CLI WU Commands","title":"Purge deleted-WU events from state to prevent Broken Event drift"}
 {"type":"complete","wuId":"WU-1514","timestamp":"2026-02-07T13:37:39.069Z"}
 {"type":"claim","wuId":"WU-1515","lane":"Framework: CLI WU Commands","title":"Eliminate post-merge dirty-state loops in wu:done","timestamp":"2026-02-07T13:38:05.089Z"}
+{"type":"claim","wuId":"WU-1517","lane":"Framework: CLI WU Commands","title":"Scaffold prettier + format infrastructure in lumenflow init","timestamp":"2026-02-07T13:42:14.802Z"}

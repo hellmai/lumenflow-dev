@@ -23,7 +23,6 @@ sections:
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — Framework: Core Lifecycle
-- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
 - [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — Framework: CLI WU Commands
 - [WU-1519 — Stop gitignoring .lumenflow/state/ in scaffold template](wu/WU-1519.yaml) — Framework: CLI WU Commands
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
@@ -35,6 +34,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — Framework: CLI WU Commands
+- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
