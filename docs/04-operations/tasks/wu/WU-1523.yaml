@@ -6,13 +6,15 @@ status: in_progress
 priority: P3
 created: 2026-02-07
 code_paths:
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+  - packages/@lumenflow/core/src/__tests__/backlog-generator.test.ts
 tests:
   manual:
     - Complete a WU in local-only project, verify backlog.md and status.md are populated
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+    - packages/@lumenflow/core/src/__tests__/backlog-generator.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1523.done
