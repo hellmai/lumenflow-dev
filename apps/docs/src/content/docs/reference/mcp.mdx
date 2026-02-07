@@ -41,7 +41,7 @@ lumenflow-mcp
 
 ## Tools Overview
 
-The MCP server exposes **98 tools** organized into 12 categories:
+The MCP server exposes **99 tools** organized into 12 categories:
 
 | Category                      | Count | Description                                |
 | ----------------------------- | ----- | ------------------------------------------ |
@@ -50,7 +50,7 @@ The MCP server exposes **98 tools** organized into 12 categories:
 | Public Parity Operations (W2) | 15    | File/git/plan/signal parity families       |
 | Additional WU Operations      | 16    | Extended WU management                     |
 | Initiative Operations         | 8     | Multi-phase project orchestration          |
-| Memory Operations             | 13    | Session tracking and agent coordination    |
+| Memory Operations             | 14    | Session tracking and agent coordination    |
 | Agent Operations              | 4     | Agent session management and issue logging |
 | Orchestration Operations      | 3     | Initiative execution and monitoring        |
 | Spawn Operations              | 1     | Sub-agent spawn tree management            |
@@ -60,8 +60,8 @@ The MCP server exposes **98 tools** organized into 12 categories:
 
 Tool inventory source of truth: `packages/@lumenflow/mcp/src/tools.ts` (`allTools`).
 
-Public CLI parity target is **90 normalized public commands** (`:` and `-` converted to `_`).
-Total MCP tool count is 98 because 8 tools are intentionally MCP-only extras:
+Public CLI parity target is **91 normalized public commands** (`:` and `-` converted to `_`).
+Total MCP tool count is 99 because 8 tools are intentionally MCP-only extras:
 `context_get`, `gates_run`, `initiative_remove_wu`, `validate_agent_skills`,
 `validate_agent_sync`, `validate_backlog_sync`, `validate_skills_spec`, and `wu_list`.
 
@@ -192,14 +192,20 @@ These tools were added to close ops/setup parity gaps against the public CLI man
 | `lane_health`        | `lane:health`        | Report lane overlap/health      |
 | `lane_suggest`       | `lane:suggest`       | Suggest lane from scope/context |
 | `lumenflow`          | `lumenflow`          | Main CLI entrypoint             |
-| `lumenflow_gates`    | `lumenflow:gates`    | Framework gates wrapper         |
-| `lumenflow_validate` | `lumenflow:validate` | Framework validation wrapper    |
+| `lumenflow_gates`    | `gates`              | Framework gates wrapper         |
+| `lumenflow_validate` | `validate`           | Framework validation wrapper    |
 | `lumenflow_metrics`  | `lumenflow:metrics`  | Framework metrics wrapper       |
 | `metrics`            | `metrics`            | Metrics CLI                     |
 | `state_bootstrap`    | `state:bootstrap`    | Bootstrap state store           |
 | `state_cleanup`      | `state:cleanup`      | Cleanup state artifacts         |
 | `state_doctor`       | `state:doctor`       | Diagnose/repair state issues    |
 | `sync_templates`     | `sync:templates`     | Sync framework templates        |
+
+<Aside type="note">
+  MCP command execution is canonical-first with compatibility fallback aliases where needed (for
+  example: `lumenflow:init`, `lumenflow:validate`, `lumenflow:gates`, `agent:session:end`,
+  `initiative:bulk-assign-wus`, and `release`).
+</Aside>
 
 ## Public CLI Parity Operations (Wave 2)
 
@@ -635,6 +641,19 @@ Triage discovered issues and bugs for a Work Unit.
 | --------- | ------ | -------- | ---------------- |
 | `wu` | string | Yes | WU ID to triage |
 
+### mem_recover
+
+Generate post-compaction recovery context for a Work Unit.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| --------- | ------ | -------- | ------------------------------------------- |
+| `wu` | string | Yes | WU ID to recover context for |
+| `max_size` | number | No | Maximum output size in bytes |
+| `format` | string | No | Output format (`json` or `human`) |
+| `quiet` | boolean | No | Suppress header/footer output |
+| `base_dir` | string | No | Base directory override |
+
 ---
 
 ## Agent Operations
@@ -871,7 +890,8 @@ Run LumenFlow release workflow (versioning, npm publish).
 | `dry_run` | boolean | No | Preview release without publishing |
 
 <Aside type="note">
-  Publish auth for `lumenflow_release` follows CLI `release` behavior: prefer `NPM_TOKEN` in
+  Publish auth for `lumenflow_release` follows CLI `lumenflow:release` behavior: prefer
+  `NPM_TOKEN` in
   automation, with support for `NODE_AUTH_TOKEN` or a `_authToken=` entry in `~/.npmrc` for local
   environments.
 </Aside>
@@ -1062,6 +1082,7 @@ interface ToolResult {
 | `MEM_SIGNAL_ERROR`               | Failed to send signal                |
 | `MEM_SUMMARIZE_ERROR`            | Failed to summarize memory           |
 | `MEM_TRIAGE_ERROR`               | Failed to triage issues              |
+| `MEM_RECOVER_ERROR`              | Failed to recover memory context     |
 | `AGENT_SESSION_ERROR`            | Failed to start agent session        |
 | `AGENT_SESSION_END_ERROR`        | Failed to end agent session          |
 | `AGENT_LOG_ISSUE_ERROR`          | Failed to log issue                  |
@@ -1136,7 +1157,7 @@ MCP Server (@lumenflow/mcp)
 │   │   ├── initiative_bulk_assign → CLI: initiative:bulk-assign
 │   │   └── initiative_plan → CLI: initiative:plan
 │   │
-│   ├── Memory Operations (13)
+│   ├── Memory Operations (14)
 │   │   ├── mem_init → CLI: mem:init
 │   │   ├── mem_start → CLI: mem:start
 │   │   ├── mem_ready → CLI: mem:ready
@@ -1149,11 +1170,12 @@ MCP Server (@lumenflow/mcp)
 │   │   ├── mem_inbox → CLI: mem:inbox
 │   │   ├── mem_signal → CLI: mem:signal
 │   │   ├── mem_summarize → CLI: mem:summarize
-│   │   └── mem_triage → CLI: mem:triage
+│   │   ├── mem_triage → CLI: mem:triage
+│   │   └── mem_recover → CLI: mem:recover
 │   │
 │   ├── Agent Operations (4)
 │   │   ├── agent_session → CLI: agent:session
-│   │   ├── agent_session_end → CLI: agent:session:end
+│   │   ├── agent_session_end → CLI: agent:session-end
 │   │   ├── agent_log_issue → CLI: agent:log-issue
 │   │   └── agent_issues_query → CLI: agent:issues-query
 │   │
@@ -1178,13 +1200,13 @@ MCP Server (@lumenflow/mcp)
 │   │   └── validate_skills_spec → CLI: validate:skills-spec
 │   │
 │   └── Setup Operations (8)
-│       ├── lumenflow_init → CLI: lumenflow:init
+│       ├── lumenflow_init → CLI: lumenflow
 │       ├── lumenflow_doctor → CLI: lumenflow:doctor
 │       ├── lumenflow_integrate → CLI: lumenflow:integrate
 │       ├── lumenflow_upgrade → CLI: lumenflow:upgrade
-│       ├── lumenflow_commands → CLI: lumenflow commands
+│       ├── lumenflow_commands → CLI: lumenflow:commands
 │       ├── lumenflow_docs_sync → CLI: docs:sync
-│       ├── lumenflow_release → CLI: release
+│       ├── lumenflow_release → CLI: lumenflow:release
 │       └── lumenflow_sync_templates → CLI: sync:templates
 │
 └── Resources (3)

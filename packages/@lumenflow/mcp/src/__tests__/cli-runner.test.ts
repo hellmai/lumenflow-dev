@@ -11,9 +11,26 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseJsonOutput, type CliRunnerResult } from '../cli-runner.js';
+import { getCommandCandidates, parseJsonOutput, type CliRunnerResult } from '../cli-runner.js';
 
 describe('cli-runner', () => {
+  describe('getCommandCandidates', () => {
+    it('should return canonical command first', () => {
+      const candidates = getCommandCandidates('lumenflow');
+      expect(candidates[0]).toBe('lumenflow');
+    });
+
+    it('should include compatibility aliases for mapped commands', () => {
+      const candidates = getCommandCandidates('agent:session-end');
+      expect(candidates).toEqual(['agent:session-end', 'agent:session:end']);
+    });
+
+    it('should return the original command when no fallback exists', () => {
+      const candidates = getCommandCandidates('wu:status');
+      expect(candidates).toEqual(['wu:status']);
+    });
+  });
+
   describe('parseJsonOutput', () => {
     it('should parse JSON from successful result', () => {
       const result: CliRunnerResult = {

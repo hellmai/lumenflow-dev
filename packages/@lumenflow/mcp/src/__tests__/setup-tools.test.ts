@@ -2,7 +2,7 @@
  * @file setup-tools.test.ts
  * @description Tests for setup/LumenFlow MCP tool implementations
  *
- * WU-1426: MCP tools for lumenflow:init, lumenflow:doctor, lumenflow:integrate,
+ * WU-1426: MCP tools for lumenflow, lumenflow:doctor, lumenflow:integrate,
  * lumenflow:upgrade, docs:sync, sync:templates, release, lumenflow commands
  */
 
@@ -48,7 +48,7 @@ describe('Setup/LumenFlow MCP tools (WU-1426)', () => {
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'lumenflow:init',
+        'lumenflow',
         expect.any(Array),
         expect.any(Object),
       );
@@ -65,7 +65,7 @@ describe('Setup/LumenFlow MCP tools (WU-1426)', () => {
       await lumenflowInitTool.execute({ client: 'claude' });
 
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'lumenflow:init',
+        'lumenflow',
         expect.arrayContaining(['--client', 'claude']),
         expect.any(Object),
       );
@@ -82,7 +82,7 @@ describe('Setup/LumenFlow MCP tools (WU-1426)', () => {
       await lumenflowInitTool.execute({ merge: true });
 
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'lumenflow:init',
+        'lumenflow',
         expect.arrayContaining(['--merge']),
         expect.any(Object),
       );
@@ -293,7 +293,7 @@ describe('Setup/LumenFlow MCP tools (WU-1426)', () => {
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'release',
+        'lumenflow:release',
         expect.any(Array),
         expect.any(Object),
       );
@@ -310,7 +310,7 @@ describe('Setup/LumenFlow MCP tools (WU-1426)', () => {
       await lumenflowReleaseTool.execute({ dry_run: true });
 
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'release',
+        'lumenflow:release',
         expect.arrayContaining(['--dry-run']),
         expect.any(Object),
       );
