@@ -1,0 +1,39 @@
+id: WU-1508
+title: Require tests.manual for non-doc WUs at create/claim
+lane: 'Framework: CLI'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-07
+code_paths:
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/core/src/wu-type-helpers.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-type-helpers.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1508.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-017.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict wu:validate currently fails late when tests.manual is missing, which causes unrelated gate friction. Problem: this requirement is not enforced early enough in lifecycle. Solution: enforce tests.manual at wu:create and wu:claim for non-documentation/process WUs using shared helper logic, with clear errors.'
+acceptance:
+  - wu:create fails non-doc WUs missing tests.manual unless auto-manual policy applies
+  - wu:claim blocks non-doc WUs missing tests.manual even if other tests exist
+  - Shared helper used by create and claim paths (library-first)
+  - Unit tests cover passing/failing cases for create and claim checks
