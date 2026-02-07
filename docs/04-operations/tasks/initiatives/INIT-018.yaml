@@ -5,7 +5,7 @@ description: Fix all scaffolding gaps discovered during Haven pre-launch testing
   init project must be able to complete its first WU with gates passing and zero manual
   intervention. Covers prettier/format scaffold, gitignore fixes, gates degradation, wu:claim
   atomicity, flow.log lifecycle, and state rendering.
-status: open
+status: in_progress
 priority: P0
 owner: workflow
 created: 2026-02-07
