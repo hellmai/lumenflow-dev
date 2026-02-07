@@ -2,7 +2,7 @@ id: WU-1516
 title: Add lifecycle regression harness for create/done/delete state consistency
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -10,8 +10,11 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/lifecycle-regression-harness.test.ts
 tests:
   manual:
-    - 'Run `pnpm --filter @lumenflow/core build` then `pnpm --filter @lumenflow/cli exec vitest run src/__tests__/lifecycle-regression-harness.test.ts` and verify the green path passes with no Broken Event in final diagnosis.'
-    - 'In the same test suite, verify the red-path case (`skipDoctorFix: true`) fails with stage-tagged error context (`stage: "doctor"`), confirming fast stage-level diagnosis.'
+    - Run `pnpm --filter @lumenflow/core build` then `pnpm --filter @lumenflow/cli exec vitest run
+      src/__tests__/lifecycle-regression-harness.test.ts` and verify the green path passes with no
+      Broken Event in final diagnosis.
+    - 'In the same test suite, verify the red-path case (`skipDoctorFix: true`) fails with
+      stage-tagged error context (`stage: "doctor"`), confirming fast stage-level diagnosis.'
   unit:
     - packages/@lumenflow/cli/src/__tests__/lifecycle-regression-harness.test.ts
   e2e: []
@@ -51,3 +54,5 @@ session_id: 83cafaf6-7583-48bd-8e45-84d80344a7b0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T13:47:31.275Z
+locked: true
+completed_at: 2026-02-07T13:53:36.229Z
