@@ -31,6 +31,10 @@ export {
   validateTestPathsRequired,
   validateTypeVsCodePathsPreflight,
   buildTypeVsCodePathsErrorMessage,
+  // WU-1503: Dirty-main pre-merge guard
+  validateDirtyMain,
+  buildDirtyMainErrorMessage,
+  METADATA_ALLOWLIST_PATTERNS,
 } from './wu-done-validation.js';
 export {
   buildPreflightErrorMessage,
@@ -44,6 +48,7 @@ export { validateAutomatedTestRequirement } from './manual-test-validator.js';
 
 // Type exports
 export type { ValidateCodePathsExistOptions } from './wu-done-validation.js';
+export type { DirtyMainResult } from './wu-done-validation.js';
 export type {
   ExecutePreflightCodePathValidationOptions,
   ValidateAllPreCommitHooksOptions,
