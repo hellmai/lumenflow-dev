@@ -2,7 +2,7 @@ id: WU-1514
 title: Purge deleted-WU events from state to prevent Broken Event drift
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -34,8 +34,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: state:doctor still reports Broken Event entries for deleted WUs (currently WU-1007). Problem: wu:delete/projection cleanup leaves orphaned event history that fails consistency checks. Solution: harden delete and/or doctor-fix paths so deleted WUs no longer leave broken events in wu-events.jsonl or equivalent archival representation.'
+description: 'Context: state:doctor still reports Broken Event entries for deleted WUs (currently
+  WU-1007). Problem: wu:delete/projection cleanup leaves orphaned event history that fails
+  consistency checks. Solution: harden delete and/or doctor-fix paths so deleted WUs no longer leave
+  broken events in wu-events.jsonl or equivalent archival representation.'
 acceptance:
   - After deleting a WU, pnpm state:doctor reports no Broken Event for that WU
   - wu:delete cleanup covers event-store consistency, not just file/projection links
   - Regression tests reproduce the pre-fix failure and pass post-fix
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1514
+claimed_at: 2026-02-07T13:33:40.328Z
+baseline_main_sha: b08d49b29da005c200df947e875c2a405c7fd762
+session_id: c1930d50-412d-4593-9a75-98568a851168
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T13:33:40.336Z

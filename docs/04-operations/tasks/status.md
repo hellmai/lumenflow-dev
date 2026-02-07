@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml)
 
 ## Blocked
 

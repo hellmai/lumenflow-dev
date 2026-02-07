@@ -20,23 +20,22 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — Content: Framework Docs
-- [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — Framework: CLI WU Commands
-- [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml) — Framework: CLI WU Commands
-- [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml) — Framework: CLI WU Commands
-- [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
-- [WU-1519 — Stop gitignoring .lumenflow/state/ in scaffold template](wu/WU-1519.yaml) — Framework: CLI WU Commands
-- [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — Framework: CLI WU Commands
-- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
-- [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — Framework: Core Lifecycle
-- [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — Framework: CLI WU Commands
-- [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml) — Framework: CLI WU Commands
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
+- [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — Framework: CLI WU Commands
+- [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — Framework: Core Lifecycle
+- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — Framework: CLI WU Commands
+- [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml) — Framework: CLI WU Commands
+- [WU-1519 — Stop gitignoring .lumenflow/state/ in scaffold template](wu/WU-1519.yaml) — Framework: CLI WU Commands
+- [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml) — Framework: CLI Enforcement
+- [WU-1521 — wu:claim transaction safety - rollback YAML on partial failure](wu/WU-1521.yaml) — Framework: CLI WU Commands
+- [WU-1522 — Auto-commit or untrack flow.log in wu:claim lifecycle](wu/WU-1522.yaml) — Framework: CLI WU Commands
+- [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — Framework: CLI WU Commands
+- [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — Content: Framework Docs
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
