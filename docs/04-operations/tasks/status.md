@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1506 — Medium article: LumenFlow introduction](wu/WU-1506.yaml)
+- [WU-1505 — Add SessionStart dirty-main early-warning across clients](wu/WU-1505.yaml)
 
 ## Blocked
 

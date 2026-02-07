@@ -5,7 +5,7 @@ description: Harden main-checkout enforcement to prevent orphaned writes and com
   parity misses. Scope covers Write/Edit fail-closed behavior, Bash post-command dirty-main
   warnings, wu:done dirty-main merge guard, SessionStart early warning, and wu:validate parity
   heuristics for CLI/MCP registrations.
-status: open
+status: in_progress
 priority: P1
 owner: workflow
 created: 2026-02-07
