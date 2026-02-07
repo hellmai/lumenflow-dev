@@ -2,7 +2,7 @@ id: WU-1522
 title: Auto-commit or untrack flow.log in wu:claim lifecycle
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -22,7 +22,8 @@ phase: 2
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-018.yaml
 risks: []
-notes: 'Haven test: agent had to manually commit flow.log 3+ times during WU-1 cycle. Recommendation: untrack flow.log (Option B).'
+notes: 'Haven test: agent had to manually commit flow.log 3+ times during WU-1 cycle.
+  Recommendation: untrack flow.log (Option B).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,8 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:claim appends to .lumenflow/flow.log on main but doesnt commit it. Problem: wu:done then refuses because main is dirty. This happened 3+ times during Haven WU-1 alone. Solution: either auto-commit flow.log as part of wu:claim, add it to .gitignore (recommended - its telemetry not state), or add to wu:done dirty-main allowlist.'
+description: 'Context: wu:claim appends to .lumenflow/flow.log on main but doesnt commit it.
+  Problem: wu:done then refuses because main is dirty. This happened 3+ times during Haven WU-1
+  alone. Solution: either auto-commit flow.log as part of wu:claim, add it to .gitignore
+  (recommended - its telemetry not state), or add to wu:done dirty-main allowlist.'
 acceptance:
   - flow.log changes do not block wu:done after wu:claim
   - wu-events.jsonl remains the canonical tracked state
   - Chosen approach is consistent across wu:claim and wu:done
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1522
+claimed_at: 2026-02-07T17:26:48.005Z
+baseline_main_sha: fc1d88dcac9f4e8e9d4c09599ea7f1bf75ac36c3
+session_id: 8a0dab23-a02a-4ec9-8964-f73a0325a2c1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T17:26:48.011Z
