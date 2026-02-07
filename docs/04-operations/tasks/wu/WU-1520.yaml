@@ -2,7 +2,7 @@ id: WU-1520
 title: Gates graceful degradation for missing optional scripts
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-07
 code_paths:
@@ -50,3 +50,5 @@ session_id: a50e673c-0efa-49cb-9b97-96990c8ddcd3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T13:43:27.457Z
+locked: true
+completed_at: 2026-02-07T14:00:17.406Z
