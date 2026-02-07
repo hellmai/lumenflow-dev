@@ -7,8 +7,6 @@ priority: P1
 created: 2026-02-07
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/templates/
-  - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/core/src/wu-lint.ts
 tests:
   manual:
