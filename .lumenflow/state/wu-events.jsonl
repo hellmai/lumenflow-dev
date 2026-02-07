@@ -942,3 +942,4 @@
 {"type":"claim","wuId":"WU-1508","timestamp":"2026-02-07T10:56:09.330Z","lane":"Framework: CLI","title":"Require tests.manual for non-doc WUs at create/claim"}
 {"type":"complete","wuId":"WU-1508","timestamp":"2026-02-07T11:01:03.823Z"}
 {"type":"complete","wuId":"WU-1507","timestamp":"2026-02-07T11:09:04.505Z"}
+{"type":"claim","wuId":"WU-1501","lane":"Framework: CLI","title":"Close fail-open gap in validate-worktree-path hook","timestamp":"2026-02-07T11:10:33.240Z"}
