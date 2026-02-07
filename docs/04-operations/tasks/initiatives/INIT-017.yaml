@@ -1,0 +1,11 @@
+id: INIT-017
+slug: main-checkout-enforcement-hardening
+title: Main Checkout Enforcement Hardening
+description: ''
+status: draft
+priority: P1
+owner: workflow
+created: 2026-02-07
+phases: []
+success_metrics: []
+labels: []
