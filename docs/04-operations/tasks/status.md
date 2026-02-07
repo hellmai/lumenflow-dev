@@ -4,7 +4,6 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml)
 - [WU-1520 — Gates graceful degradation for missing optional scripts](wu/WU-1520.yaml)
 
 ## Blocked
@@ -476,3 +475,4 @@ _Last updated: 2026-02-07_
 - [WU-1515 — Eliminate post-merge dirty-state loops in wu:done](wu/WU-1515.yaml) — 2026-02-07
 - [WU-1525 — Rewrite article to showcase full LumenFlow breadth](wu/WU-1525.yaml) — 2026-02-07
 - [WU-1516 — Add lifecycle regression harness for create/done/delete state consistency](wu/WU-1516.yaml) — 2026-02-07
+- [WU-1517 — Scaffold prettier + format infrastructure in lumenflow init](wu/WU-1517.yaml) — 2026-02-07

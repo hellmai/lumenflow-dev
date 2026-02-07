@@ -2,7 +2,7 @@ id: WU-1517
 title: Scaffold prettier + format infrastructure in lumenflow init
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -48,3 +48,5 @@ acceptance:
   - lumenflow init scaffolds .prettierignore with sane defaults
   - lumenflow init adds format and format:check scripts to package.json
   - pnpm format:check passes immediately after init with no unformatted files
+locked: true
+completed_at: 2026-02-07T13:53:51.501Z
