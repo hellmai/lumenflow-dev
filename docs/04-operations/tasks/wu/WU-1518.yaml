@@ -2,7 +2,7 @@ id: WU-1518
 title: Scaffold spec:linter and remaining gate scripts in lumenflow init
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -31,10 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: gates invoke spec:linter, lint, typecheck scripts that dont exist in scaffolded projects. Problem: gates hard-fail with ERR_PNPM_NO_SCRIPT. Solution: scaffold these scripts in lumenflow init as real commands or clearly-messaged stubs.'
+description: 'Context: gates invoke spec:linter, lint, typecheck scripts that dont exist in
+  scaffolded projects. Problem: gates hard-fail with ERR_PNPM_NO_SCRIPT. Solution: scaffold these
+  scripts in lumenflow init as real commands or clearly-messaged stubs.'
 acceptance:
   - lumenflow init adds spec:linter script
   - lumenflow init adds lint script
   - lumenflow init adds typecheck script
   - pnpm gates --docs-only passes on a fresh docs-only WU without manual script additions
   - Scripts that are stubs log a clear message indicating how to enable them
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1518
+claimed_at: 2026-02-07T16:50:30.568Z
+baseline_main_sha: d07a8c483ef9ca08f167b886471d01f422e5e9a6
+session_id: 1b7fa1fa-6bd8-4b3c-bd6b-d558b0857573
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T16:50:30.574Z

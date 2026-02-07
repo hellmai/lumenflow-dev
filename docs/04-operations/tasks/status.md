@@ -5,6 +5,7 @@ _Last updated: 2026-02-07_
 ## In Progress
 
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1518 — Scaffold spec:linter and remaining gate scripts in lumenflow init](wu/WU-1518.yaml)
 
 ## Blocked
 

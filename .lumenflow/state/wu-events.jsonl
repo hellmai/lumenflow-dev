@@ -974,3 +974,4 @@
 {"type":"complete","wuId":"WU-1517","timestamp":"2026-02-07T13:53:53.951Z"}
 {"type":"complete","wuId":"WU-1520","timestamp":"2026-02-07T14:00:20.038Z"}
 {"type":"claim","wuId":"WU-1526","lane":"Content: Site Comms","title":"Expand Medium article with CLI examples and usage guide","timestamp":"2026-02-07T16:41:03.706Z"}
+{"type":"claim","wuId":"WU-1518","lane":"Framework: CLI WU Commands","title":"Scaffold spec:linter and remaining gate scripts in lumenflow init","timestamp":"2026-02-07T16:50:30.606Z"}
