@@ -2,7 +2,7 @@ id: WU-1519
 title: Stop gitignoring .lumenflow/state/ in scaffold template
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -46,3 +46,5 @@ session_id: 2d7b1b4b-9e11-4aaf-a6fc-bbb83a0d17d3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-07T17:03:34.548Z
+locked: true
+completed_at: 2026-02-07T17:07:41.879Z
