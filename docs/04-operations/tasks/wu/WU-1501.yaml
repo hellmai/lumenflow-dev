@@ -3,13 +3,15 @@ title: Close fail-open gap in validate-worktree-path hook
 lane: 'Framework: CLI'
 type: bug
 status: ready
-priority: P2
+priority: P1
 created: 2026-02-07
 code_paths:
   - .claude/hooks/validate-worktree-path.sh
   - .claude/hooks/validate-worktree-path.test.sh
+  - .claude/settings.json
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/templates/
 tests:
   manual:
     - Run hook script with simulated no-worktree state and verify Write/Edit blocked on main
@@ -19,8 +21,15 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1501.done
 dependencies: []
+initiative: INIT-017
+phase: 1
 risks: []
-notes: 'Implements Claude finding #1: fail-open window after worktree deletion.'
+notes: >-
+  Implements Claude finding #1: fail-open window after worktree deletion.
+
+
+  Vendor-agnostic behavior required: shared detection logic in CLI/core, wrappers generated per
+  client.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -29,8 +38,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: validate-worktree-path currently allows Write/Edit when no worktrees exist, leaving main effectively unguarded after wu:done cleanup. Problem: this fail-open behavior permits untracked main writes outside active WUs. Solution: fail closed on main unless explicit safe exceptions are matched and/or an active claimed WU context permits the write.'
+description: 'Context: validate-worktree-path currently allows Write/Edit when no worktrees exist,
+  leaving main effectively unguarded after wu:done cleanup. Problem: this fail-open behavior permits
+  untracked main writes outside active WUs. Solution: fail closed on main unless explicit safe
+  exceptions are matched and/or an active claimed WU context permits the write.'
 acceptance:
-  - Hook blocks Write/Edit on main by default when no active claim context exists
-  - Safe exception list is explicit and test-covered (e.g. wu:create/wu:claim scaffolding paths)
-  - Regression tests cover no-worktree and post-wu-done scenarios
+  - 'Fail-closed default on main: Write/Edit blocked when no active claim context exists, even if no
+    worktrees are present'
+  - 'Explicit allowlist is enforced and test-covered: docs/04-operations/tasks/wu/, .lumenflow/,
+    .claude/, and plan/spec scaffold paths'
+  - Branch-PR claimed_mode remains writable from main checkout and is covered by regression tests
+  - Enforcement generator produces equivalent fail-closed wrappers for all supported clients; vendor
+    hooks are thin wrappers over shared logic

@@ -26,5 +26,5 @@ success_metrics:
   - SessionStart warns immediately when main is already dirty
   - wu:validate flags likely CLI command registration parity misses
 labels: []
-lanes:
-  - 'Framework: CLI'
+wus:
+  - WU-1501
