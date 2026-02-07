@@ -92,6 +92,7 @@ import {
   formatIssues,
 } from '@lumenflow/core/dist/wu-yaml-fixer.js';
 import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
+import { hasManualTests, isDocsOrProcessType } from '@lumenflow/core/dist/wu-type-helpers.js';
 import { getAssignedEmail } from '@lumenflow/core/dist/wu-claim-helpers.js';
 import {
   symlinkNodeModules,
@@ -174,6 +175,27 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
 }
 
 const PREFIX = LOG_PREFIX.CLAIM;
+
+/**
+ * WU-1508: Enforce tests.manual at claim time for non-doc/process WUs.
+ * This is non-bypassable (independent of --allow-incomplete) to fail early.
+ */
+export function validateManualTestsForClaim(doc, id) {
+  if (isDocsOrProcessType(doc?.type)) {
+    return { valid: true };
+  }
+
+  if (hasManualTests(doc?.tests)) {
+    return { valid: true };
+  }
+
+  return {
+    valid: false,
+    error:
+      `${id}: Missing required tests.manual for non-documentation WU.\n` +
+      `Add at least one manual verification step under tests.manual before claiming.`,
+  };
+}
 
 /**
  * Pre-flight validation: Check WU file exists and is valid BEFORE any git operations
@@ -1579,6 +1601,10 @@ async function main() {
 
   // PRE-FLIGHT VALIDATION (on post-pull data)
   const doc = preflightValidateWU(WU_PATH, id);
+  const manualTestsCheck = validateManualTestsForClaim(doc, id);
+  if (!manualTestsCheck.valid) {
+    die(manualTestsCheck.error);
+  }
   await handleOrphanCheck(args.lane, id);
   validateLaneFormatWithError(args.lane);
 

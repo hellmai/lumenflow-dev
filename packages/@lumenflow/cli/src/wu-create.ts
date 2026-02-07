@@ -81,7 +81,11 @@ import {
 } from '@lumenflow/core/dist/wu-validator.js';
 import { isCodeFile } from '@lumenflow/core/dist/manual-test-validator.js';
 import { WU_CREATE_DEFAULTS } from '@lumenflow/core/dist/wu-create-defaults.js';
-import { isDocsOrProcessType, hasAnyTests } from '@lumenflow/core/dist/wu-type-helpers.js';
+import {
+  isDocsOrProcessType,
+  hasAnyTests,
+  hasManualTests,
+} from '@lumenflow/core/dist/wu-type-helpers.js';
 // WU-1211: Import initiative validation for phase check
 import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives/dist/index.js';
 
@@ -493,6 +497,7 @@ export function validateCreateSpec({
     hasAnyItems(opts.testPathsManual) ||
     hasAnyItems(opts.testPathsUnit) ||
     hasAnyItems(opts.testPathsE2e);
+  const hasManualTestPaths = hasManualTests({ manual: opts.testPathsManual });
 
   if (!isDocsOrProcessType(effectiveType)) {
     const codePaths = opts.codePaths ?? [];
@@ -508,6 +513,10 @@ export function validateCreateSpec({
       errors.push(
         'At least one test path flag is required (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
       );
+    }
+
+    if (!hasManualTestPaths && !canAutoAddManualTests) {
+      errors.push('--test-paths-manual is required for non-documentation WUs');
     }
   }
 

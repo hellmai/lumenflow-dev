@@ -16,6 +16,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveClaimMode } from '../wu-claim-mode.js';
+import { validateManualTestsForClaim } from '../wu-claim.js';
 import { CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
@@ -140,5 +141,44 @@ describe('wu-claim cloud auto-detection integration (WU-1495)', () => {
       expect(mode.error).toBeUndefined();
       expect(mode.skipBranchOnlySingletonGuard).toBe(true);
     });
+  });
+});
+
+describe('wu-claim manual test requirement policy (WU-1508)', () => {
+  it('should allow documentation WUs without tests.manual', () => {
+    const result = validateManualTestsForClaim(
+      {
+        id: 'WU-1508',
+        type: 'documentation',
+        tests: { unit: [], e2e: [] },
+      },
+      'WU-1508',
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it('should block non-doc WUs missing tests.manual even when unit tests exist', () => {
+    const result = validateManualTestsForClaim(
+      {
+        id: 'WU-1508',
+        type: 'feature',
+        tests: { unit: ['packages/x.test.ts'], manual: [] },
+      },
+      'WU-1508',
+    );
+    expect(result.valid).toBe(false);
+    expect(result.error).toContain('tests.manual');
+  });
+
+  it('should allow non-doc WUs when tests.manual is present', () => {
+    const result = validateManualTestsForClaim(
+      {
+        id: 'WU-1508',
+        type: 'feature',
+        tests: { manual: ['Navigate to /settings and verify'] },
+      },
+      'WU-1508',
+    );
+    expect(result.valid).toBe(true);
   });
 });
