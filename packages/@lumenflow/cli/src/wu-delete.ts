@@ -178,7 +178,7 @@ function removeDeletedWUsFromInitiatives(worktreePath: string, ids: Set<string>)
     const initiativePath = join(initiativesDir, fileName);
 
     try {
-      const initDoc = readInitiative(initiativePath, initId) as { wus?: string[] };
+      const initDoc = readInitiative(initiativePath, initId) as { id?: string; wus?: string[] };
       if (!Array.isArray(initDoc.wus)) {
         continue;
       }
@@ -189,7 +189,7 @@ function removeDeletedWUsFromInitiatives(worktreePath: string, ids: Set<string>)
         continue;
       }
 
-      writeInitiative(initiativePath, initDoc);
+      writeInitiative(initiativePath, { ...initDoc, id: initDoc.id || initId });
       modified.push(INIT_PATHS.INITIATIVE(initId));
     } catch (err) {
       // Non-blocking: malformed initiative files should not block WU delete operation
