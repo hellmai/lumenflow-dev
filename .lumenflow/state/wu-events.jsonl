@@ -961,4 +961,5 @@
 {"type":"complete","wuId":"WU-1511","timestamp":"2026-02-07T13:15:16.581Z"}
 {"type":"complete","wuId":"WU-1513","timestamp":"2026-02-07T13:17:57.104Z"}
 {"type":"complete","wuId":"WU-1504","timestamp":"2026-02-07T13:20:10.401Z"}
-{"type":"claim","wuId":"WU-1514","lane":"Framework: CLI WU Commands","title":"Purge deleted-WU events from state to prevent Broken Event drift","timestamp":"2026-02-07T13:33:40.366Z"}
+{"type":"claim","wuId":"WU-1514","timestamp":"2026-02-07T13:33:40.366Z","lane":"Framework: CLI WU Commands","title":"Purge deleted-WU events from state to prevent Broken Event drift"}
+{"type":"complete","wuId":"WU-1514","timestamp":"2026-02-07T13:37:39.069Z"}

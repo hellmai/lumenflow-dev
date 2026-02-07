@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -502,3 +502,4 @@ sections:
 - [WU-1511 — Fix wu:delete to fully clean projections and initiative links](wu/WU-1511.yaml)
 - [WU-1513 — Add lumenflow.dev link to Medium article](wu/WU-1513.yaml)
 - [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml)
+- [WU-1514 — Purge deleted-WU events from state to prevent Broken Event drift](wu/WU-1514.yaml)
