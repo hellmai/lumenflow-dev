@@ -2,7 +2,7 @@ id: WU-1501
 title: Close fail-open gap in validate-worktree-path hook
 lane: 'Framework: CLI'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-07
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - Branch-PR claimed_mode remains writable from main checkout and is covered by regression tests
   - Enforcement generator produces equivalent fail-closed wrappers for all supported clients; vendor
     hooks are thin wrappers over shared logic
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-1501
+claimed_at: 2026-02-07T11:10:33.210Z
+baseline_main_sha: 120b0210aa1344819d8bc392593b3f0444adaebf
+session_id: 5c579ad4-b114-439b-aa36-3fea6a64b7b1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-07T11:10:33.216Z

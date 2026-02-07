@@ -4,7 +4,7 @@ _Last updated: 2026-02-07_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1501 — Close fail-open gap in validate-worktree-path hook](wu/WU-1501.yaml)
 
 ## Blocked
 
