@@ -27,7 +27,6 @@ sections:
 
 - [WU-1504 — Add wu:validate lint for CLI command registration parity](wu/WU-1504.yaml) — Framework: CLI Enforcement
 - [WU-1511 — Fix wu:delete to fully clean projections and initiative links](wu/WU-1511.yaml) — Framework: CLI WU Commands
-- [WU-1512 — Fix deflating article closing — energise the CTA](wu/WU-1512.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
@@ -490,3 +489,4 @@ sections:
 - [WU-1510 — Rewrite Medium article: voice overhaul, origin story, de-slop](wu/WU-1510.yaml)
 - [WU-1503 — Add dirty-main pre-merge guard in wu:done](wu/WU-1503.yaml)
 - [WU-1502 — Add Bash PostToolUse dirty-main warning hook](wu/WU-1502.yaml)
+- [WU-1512 — Fix deflating article closing — energise the CTA](wu/WU-1512.yaml)
