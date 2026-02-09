@@ -44,6 +44,8 @@ coverage/
 
 # LumenFlow runtime state (allow state/wu-events.jsonl for completion tracking)
 /.lumenflow/state/*.backup*
+# WU-1533: Archive files are created by auto-cleanup, not tracked
+/.lumenflow/archive/
 /.lumenflow/memory/
 /.lumenflow/locks/
 /.lumenflow/sessions/
