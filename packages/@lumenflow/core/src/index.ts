@@ -201,6 +201,9 @@ export { CLAUDE_HOOKS, getHookCommand } from './wu-constants.js';
 export { LocationType } from './domain/context.schemas.js';
 export { RecoveryIssueCode, RecoveryActionType } from './domain/recovery.schemas.js';
 
+// WU-1549: Slim IToolExecutor for gate consumers (ISP) + full IToolRunner
+export type { IToolExecutor, IToolRunner } from './ports/core-tools.ports.js';
+
 // WU-1093: Port interfaces for context-aware validation (external injection points)
 export type { ILocationResolver, IGitStateReader, IWuStateReader } from './ports/context.ports.js';
 export type { ICommandRegistry } from './ports/validation.ports.js';
