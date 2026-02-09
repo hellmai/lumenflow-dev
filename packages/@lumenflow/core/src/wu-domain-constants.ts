@@ -243,7 +243,12 @@ export const WU_DEFAULTS = {
   code_paths: [] as string[],
 
   /** Default test structure (includes all test types) */
-  tests: { manual: [] as string[], unit: [] as string[], integration: [] as string[], e2e: [] as string[] },
+  tests: {
+    manual: [] as string[],
+    unit: [] as string[],
+    integration: [] as string[],
+    e2e: [] as string[],
+  },
 
   /** Default artifacts (empty - wu:done adds stamp) */
   artifacts: [] as string[],
