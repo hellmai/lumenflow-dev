@@ -371,7 +371,7 @@ export async function createMemoryNode(
   } = options;
 
   // Validate required fields
-  if (title === undefined || title === null) {
+  if (title == null) {
     throw new Error(ERROR_MESSAGES.TITLE_REQUIRED);
   }
 

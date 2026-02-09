@@ -3510,7 +3510,7 @@ export const metricsSnapshotTool: ToolDefinition = {
   description: 'Capture a snapshot of current LumenFlow metrics',
   inputSchema: metricsSnapshotSchema,
 
-  async execute(input, options) {
+  async execute(_input, options) {
     // WU-1452: metrics:snapshot always outputs JSON (writes to file); no --json flag exists
     const args: string[] = [];
 
