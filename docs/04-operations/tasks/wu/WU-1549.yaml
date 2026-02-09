@@ -7,9 +7,16 @@ priority: P2
 created: 2026-02-09
 code_paths:
   - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/wu-statuses.ts
+  - packages/@lumenflow/core/src/wu-git-constants.ts
+  - packages/@lumenflow/core/src/wu-paths-constants.ts
+  - packages/@lumenflow/core/src/wu-cli-constants.ts
+  - packages/@lumenflow/core/src/wu-ui-constants.ts
+  - packages/@lumenflow/core/src/wu-domain-constants.ts
+  - packages/@lumenflow/core/src/wu-context-constants.ts
   - packages/@lumenflow/core/src/index.ts
   - packages/@lumenflow/core/src/ports/core-tools.ports.ts
-  - packages/@lumenflow/core/src/adapters/terminal-renderer.adapter.ts
+  - packages/@lumenflow/core/src/adapters/mock-dashboard-renderer.adapter.ts
 tests:
   manual:
     - Verify wc -l on split constant files shows no single file exceeding 500 lines.
