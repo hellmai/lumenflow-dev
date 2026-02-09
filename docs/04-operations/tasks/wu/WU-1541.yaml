@@ -8,8 +8,9 @@ created: 2026-02-09
 code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/cli/src/gates.ts
-  - packages/@lumenflow/core/src/git-adapter.ts
-  - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/core/src/__tests__/no-process-chdir.test.ts
 tests:
   manual:
     - Run wu:done and gates flows from non-root invocation contexts and verify stable behavior
@@ -27,10 +28,17 @@ spec_refs:
 risks: []
 notes: Track F from enterprise hardening initiative.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T17:59:49.920Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1541
+session_id: c452b8a3-4f59-453c-a0b2-cbc4817928d2
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T17:59:49.928Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +51,3 @@ acceptance:
   - Git and file operations receive explicit cwd/baseDir parameters through helper layers.
   - Regression tests cover multi-path execution and confirm behavior without cwd mutation side
     effects.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1541
-claimed_at: 2026-02-09T17:59:49.920Z
-baseline_main_sha: 02cd8cab1147e078a9764301ceb6b34886a44946
-session_id: c452b8a3-4f59-453c-a0b2-cbc4817928d2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T17:59:49.928Z
