@@ -47,3 +47,4 @@ success_metrics:
   - Status semantics are explicit via PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES with tests.
   - pnpm build, pnpm typecheck, pnpm test, and pnpm gates pass after migration.
 labels: []
+related_plan: lumenflow://plans/polished-frolicking-whale.md
