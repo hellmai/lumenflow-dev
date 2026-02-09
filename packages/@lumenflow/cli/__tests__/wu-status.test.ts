@@ -6,13 +6,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
-import type { WuContext } from '@lumenflow/core/dist/validation/types.js';
+import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/wu-constants';
+import type { WuContext } from '@lumenflow/core/validation/types';
 
 const { LOCATION_TYPES, COMMANDS } = CONTEXT_VALIDATION;
 
 // Mock the context module - tests will import from dist after build
-vi.mock('@lumenflow/core/dist/context/index.js', () => ({
+vi.mock('@lumenflow/core/context/index', () => ({
   computeContext: vi.fn(),
 }));
 
