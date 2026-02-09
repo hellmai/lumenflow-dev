@@ -2,7 +2,7 @@ id: WU-1536
 title: Add subpath exports and codemod dist imports
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: done
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -32,8 +32,13 @@ phase: 3
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: 'Track C1 from enterprise hardening initiative. Split from original scope per
-  wu-sizing-guide.md. See WU-1547 (C2: lock down + verify) which depends on this completing first.'
+notes: >-
+  Track C1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md.
+  See WU-1547 (C2: lock down + verify) which depends on this completing first.
+
+
+  [ADMIN-REPAIR 2026-02-09]: status changed from 'done' to 'in_progress'; locked changed from true
+  to false
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -58,5 +63,5 @@ session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T22:47:10.705Z
-locked: true
+locked: false
 completed: 2026-02-09
