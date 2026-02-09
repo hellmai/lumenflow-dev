@@ -67,9 +67,7 @@ describe('context-validation-integration throws instead of process.exit (WU-1538
     );
     // The function applyContextValidation should NOT contain process.exit
     // It should throw ProcessExitError instead
-    const applyFnMatch = content.match(
-      /export async function applyContextValidation[\s\S]*?^}/m,
-    );
+    const applyFnMatch = content.match(/export async function applyContextValidation[\s\S]*?^}/m);
     if (applyFnMatch) {
       expect(applyFnMatch[0]).not.toContain('process.exit');
     }

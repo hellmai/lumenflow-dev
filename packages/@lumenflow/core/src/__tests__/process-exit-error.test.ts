@@ -10,11 +10,7 @@
  * - ProcessExitError preserves existing error messages from die()
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  ProcessExitError,
-  die,
-  ErrorCodes,
-} from '../error-handler.js';
+import { ProcessExitError, die, ErrorCodes } from '../error-handler.js';
 
 describe('ProcessExitError (WU-1538)', () => {
   describe('class', () => {
