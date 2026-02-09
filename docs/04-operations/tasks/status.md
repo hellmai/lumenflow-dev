@@ -8,6 +8,7 @@ _Last updated: 2026-02-09_
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml)
+- [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
 
 ## Completed
 
@@ -497,3 +498,4 @@ _Last updated: 2026-02-09_
 - [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — 2026-02-09
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — 2026-02-09
+- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09

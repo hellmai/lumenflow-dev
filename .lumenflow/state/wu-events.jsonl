@@ -1030,3 +1030,4 @@
 {"type":"complete","wuId":"WU-1538","timestamp":"2026-02-09T23:35:05.132Z"}
 {"type":"claim","wuId":"WU-1543","lane":"Operations: Tooling","title":"Re-enable security lint rules","timestamp":"2026-02-09T23:37:24.925Z"}
 {"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:38:09.868Z"}
+{"type":"claim","wuId":"WU-1548","lane":"Framework: Core Lifecycle","title":"Centralize status and remaining duplicated literals","timestamp":"2026-02-09T23:38:44.960Z"}
