@@ -1,5 +1,5 @@
 id: WU-1536
-title: Execute hard sweep for dist import boundaries
+title: Add subpath exports and codemod dist imports
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
@@ -32,7 +32,7 @@ phase: 3
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track C hard-mode boundary migration.
+notes: 'Track C1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md. See WU-1547 (C2: lock down + verify) which depends on this completing first.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -41,8 +41,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: dist-path imports bypass package API contracts and wildcard exports allow unrestricted internal coupling. Problem: internal module layout is exposed as a de facto public API and large-scale refactors become brittle. Solution: perform a hard one-sweep migration to explicit subpath exports plus consumer codemods, then enforce zero dist imports.'
+description: 'Context: dist-path imports bypass package API contracts and wildcard exports allow unrestricted internal coupling. Problem: internal module layout is exposed as de facto public API. Solution: add explicit subpath exports to 4 packages (additive, while wildcards still exist), then codemod all 569 dist import lines to use new public subpaths.'
 acceptance:
-  - All consumer imports migrate from @lumenflow/*/dist/* to supported public subpaths.
-  - Wildcard dist exports are removed from core, memory, initiatives, and agent package manifests.
-  - Repository-wide verification confirms zero dist-path imports in packages, apps, tools, and actions.
+  - Explicit subpath exports added to core, memory, initiatives, and agent package.json files.
+  - All consumer imports migrated from @lumenflow/*/dist/* to supported public subpaths.
+  - pnpm build, pnpm typecheck, and pnpm test pass after codemod.

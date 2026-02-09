@@ -1,5 +1,5 @@
 id: WU-1539
-title: Centralize duplicated workflow path constants
+title: Centralize duplicated stamp and events path literals
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
@@ -29,7 +29,7 @@ phase: 6
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track E from enterprise hardening initiative.
+notes: 'Track E1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md. See WU-1548 (E2: status + remaining literals) which can run in parallel.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,8 +38,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: stamp, state, and docs paths are duplicated as hardcoded literals across CLI and core files. Problem: duplicated literals drift and increase semantic and maintenance risk. Solution: centralize constants in shared modules and replace duplicated path literals with imports from canonical constants.'
+description: 'Context: 28 hardcoded .lumenflow/stamps/ paths and 33 wu-events.jsonl paths are duplicated across 15+ files despite LUMENFLOW_PATHS.* and WU_PATHS.* constants existing. Problem: duplicated path literals drift and increase maintenance risk. Solution: replace hardcoded stamp and events paths with centralized constants.'
 acceptance:
-  - Hardcoded stamp and wu-events path literals are replaced with centralized constants where available.
-  - Duplicated local constants are removed in favor of shared constants.
+  - Hardcoded .lumenflow/stamps/ path literals replaced with LUMENFLOW_PATHS.STAMPS_DIR / WU_PATHS.STAMP(id).
+  - Hardcoded wu-events.jsonl paths replaced with LUMENFLOW_PATHS.WU_EVENTS.
+  - Duplicated local path constants (WU_EVENTS_PATH, WU_EVENTS_FILE, SIGNALS_FILE) removed in favor of shared constants.
   - Path-literal regression tests validate no reintroduction of banned literals.
