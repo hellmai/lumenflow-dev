@@ -7,6 +7,7 @@
  * what code was changed as part of each WU.
  *
  * WU-1112: INIT-003 Phase 6 - Migrate remaining Tier 1 tools
+ * WU-1534: Harden CLI command execution surfaces - argv-based git invocations
  *
  * Usage:
  *   pnpm trace:gen --wu WU-1112
@@ -16,7 +17,7 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { EXIT_CODES, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
 import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
@@ -24,6 +25,12 @@ import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[trace:gen]';
+
+/**
+ * Regex for validating WU IDs.
+ * Valid format: WU-<digits> (e.g., WU-1112, WU-1, WU-99999)
+ */
+const WU_ID_PATTERN = /^WU-\d+$/;
 
 /**
  * Output formats for trace report
@@ -83,6 +90,47 @@ export interface TraceEntry {
   lastCommit?: string;
   commits?: CommitInfo[];
   files?: string[];
+}
+
+/**
+ * Validate a WU ID to ensure it matches the expected format.
+ *
+ * WU-1534: Input validation layer (defense-in-depth alongside argv-based execution).
+ *
+ * @param wuId - WU ID to validate
+ * @returns true if the WU ID matches the WU-<digits> pattern
+ */
+export function validateWuId(wuId: string): boolean {
+  if (!wuId) {
+    return false;
+  }
+  return WU_ID_PATTERN.test(wuId);
+}
+
+/**
+ * Build argv array for git log commit lookup.
+ *
+ * WU-1534: Returns an argv array for use with execFileSync (no shell).
+ * The WU ID is passed as a literal --grep= value, not interpolated into a shell string.
+ *
+ * @param wuId - WU ID to search for in commit messages
+ * @returns Argv array for execFileSync('git', args)
+ */
+export function buildGitLogArgs(wuId: string): string[] {
+  return ['log', '--all', '--oneline', '--date=iso-strict', '--format=%H|%ad|%s', `--grep=${wuId}`];
+}
+
+/**
+ * Build argv array for git log file listing.
+ *
+ * WU-1534: Returns an argv array for use with execFileSync (no shell).
+ * Replaces the previous shell pipe `| sort -u` with in-process dedup.
+ *
+ * @param wuId - WU ID to search for in commit messages
+ * @returns Argv array for execFileSync('git', args)
+ */
+export function buildGitFilesArgs(wuId: string): string[] {
+  return ['log', '--all', '--name-only', '--format=', `--grep=${wuId}`];
 }
 
 /**
@@ -151,14 +199,16 @@ export function buildTraceEntry(input: TraceInput): TraceEntry {
 }
 
 /**
- * Get commits for a WU by searching git log
+ * Get commits for a WU by searching git log.
+ *
+ * WU-1534: Uses execFileSync with argv array (no shell interpolation).
  */
 function getWuCommits(wuId: string): CommitInfo[] {
   try {
-    const output = execSync(
-      `git log --all --oneline --date=iso-strict --format="%H|%ad|%s" --grep="${wuId}"`,
-      { encoding: FILE_SYSTEM.ENCODING as BufferEncoding },
-    );
+    const gitArgs = buildGitLogArgs(wuId);
+    const output = execFileSync('git', gitArgs, {
+      encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+    });
 
     const commits: CommitInfo[] = [];
     for (const line of output.trim().split('\n')) {
@@ -178,18 +228,24 @@ function getWuCommits(wuId: string): CommitInfo[] {
 }
 
 /**
- * Get files changed by a WU
+ * Get files changed by a WU.
+ *
+ * WU-1534: Uses execFileSync with argv array (no shell interpolation).
+ * Dedup/sort done in-process instead of shell pipe `| sort -u`.
  */
 function getWuFiles(wuId: string): string[] {
   try {
-    const output = execSync(`git log --all --name-only --format="" --grep="${wuId}" | sort -u`, {
+    const gitArgs = buildGitFilesArgs(wuId);
+    const output = execFileSync('git', gitArgs, {
       encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
     });
 
-    return output
+    // In-process dedup and sort (replaces shell `| sort -u`)
+    const files = output
       .trim()
       .split('\n')
       .filter((f) => f.length > 0);
+    return [...new Set(files)].sort();
   } catch {
     return [];
   }
@@ -334,6 +390,13 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
+  // WU-1534: Validate WU ID if provided
+  if (args.wuId && !validateWuId(args.wuId)) {
+    console.error(`${LOG_PREFIX} Error: Invalid WU ID format: ${args.wuId}`);
+    console.error(`${LOG_PREFIX} Expected format: WU-<number> (e.g., WU-1112)`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
   const format = (args.format as TraceFormat) || TraceFormat.JSON;
   const entries: TraceEntry[] = [];
 
@@ -422,7 +485,7 @@ async function main(): Promise<void> {
   // Write output
   if (args.output) {
     writeFileSync(args.output, output, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-    console.error(`${LOG_PREFIX} ✅ Report written to ${args.output}`);
+    console.error(`${LOG_PREFIX} Report written to ${args.output}`);
   } else {
     console.log(output);
   }

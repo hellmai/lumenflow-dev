@@ -6,6 +6,7 @@
  * Dependencies can only be removed from within a worktree, not from main checkout.
  *
  * WU-1112: INIT-003 Phase 6 - Migrate remaining Tier 1 tools
+ * WU-1534: Harden CLI command execution surfaces - argv-based execution
  *
  * Usage:
  *   pnpm deps:remove lodash
@@ -14,12 +15,13 @@
  * @see dependency-guard.ts for blocking logic
  */
 
-import { execSync } from 'node:child_process';
-import { STDIO_MODES, EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { execFileSync } from 'node:child_process';
+import { STDIO_MODES, EXIT_CODES, PKG_MANAGER } from '@lumenflow/core/dist/wu-constants.js';
 import { runCLI } from './cli-entry-point.js';
 import {
   parseDepsRemoveArgs,
   validateWorktreeContext,
+  validatePackageName,
   buildPnpmRemoveCommand,
   type DepsRemoveArgs,
 } from './deps-add.js';
@@ -78,6 +80,14 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
+  // WU-1534: Validate package names before execution
+  for (const pkg of args.packages) {
+    if (!validatePackageName(pkg)) {
+      console.error(`${LOG_PREFIX} Error: Invalid package name: ${pkg}`);
+      process.exit(EXIT_CODES.ERROR);
+    }
+  }
+
   // Validate worktree context
   const validation = validateWorktreeContext(process.cwd());
   if (!validation.valid) {
@@ -86,18 +96,18 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // Build and execute pnpm remove command
-  const command = buildPnpmRemoveCommand(args);
-  console.log(`${LOG_PREFIX} Running: ${command}`);
+  // WU-1534: Build argv array and execute via execFileSync (no shell)
+  const argv = buildPnpmRemoveCommand(args);
+  console.log(`${LOG_PREFIX} Running: ${PKG_MANAGER} ${argv.join(' ')}`);
 
   try {
-    execSync(command, {
+    execFileSync(PKG_MANAGER, argv, {
       stdio: STDIO_MODES.INHERIT,
       cwd: process.cwd(),
     });
-    console.log(`${LOG_PREFIX} ✅ Dependencies removed successfully`);
-  } catch (error) {
-    console.error(`${LOG_PREFIX} ❌ Failed to remove dependencies`);
+    console.log(`${LOG_PREFIX} Dependencies removed successfully`);
+  } catch {
+    console.error(`${LOG_PREFIX} Failed to remove dependencies`);
     process.exit(EXIT_CODES.ERROR);
   }
 }
