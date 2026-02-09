@@ -2013,6 +2013,19 @@ async function executePreFlightChecks({
           console.log(
             `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1503: ${dirtyResult.relatedFiles.length} related dirty file(s) on main (allowed)`,
           );
+          // WU-1554: Auto-restore related dirty files so ff-only merge can proceed.
+          // These files will be overwritten by the merge commit anyway.
+          // Without this, git merge --ff-only refuses to overwrite dirty tracked files.
+          try {
+            await gitAdapter.raw(['checkout', '--', ...dirtyResult.relatedFiles]);
+            console.log(
+              `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1554: Auto-restored ${dirtyResult.relatedFiles.length} related file(s) for clean merge`,
+            );
+          } catch (restoreErr) {
+            console.warn(
+              `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1554: Could not auto-restore related files: ${restoreErr.message}`,
+            );
+          }
         }
       }
     }
