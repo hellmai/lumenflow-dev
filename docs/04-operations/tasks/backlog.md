@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml) — Framework: CLI WU Commands
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 
