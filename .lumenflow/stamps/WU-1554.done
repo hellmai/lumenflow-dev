@@ -1,0 +1,2 @@
+WU WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty
+Completed: 2026-02-09
