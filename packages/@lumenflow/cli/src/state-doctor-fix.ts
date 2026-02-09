@@ -22,6 +22,7 @@ import path from 'node:path';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import type { StateDoctorDeps, EmitEventPayload } from '@lumenflow/core/state-doctor-core';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 
 /**
  * Operation name for micro-worktree isolation
@@ -33,15 +34,7 @@ const OPERATION_NAME = 'state-doctor';
  */
 const LOG_PREFIX = '[state:doctor]';
 
-/**
- * Signals file path (relative to project root)
- */
-const SIGNALS_FILE = '.lumenflow/memory/signals.jsonl';
-
-/**
- * WU events file path (relative to project root)
- */
-const WU_EVENTS_FILE = '.lumenflow/state/wu-events.jsonl';
+// WU-1539: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
 
 /**
  * Backlog file path (WU-1301: uses config-based paths)
@@ -103,7 +96,7 @@ export function createStateDoctorFixDeps(
         logPrefix: LOG_PREFIX,
         pushOnly: true,
         execute: async ({ worktreePath }) => {
-          const signalsPath = path.join(worktreePath, SIGNALS_FILE);
+          const signalsPath = path.join(worktreePath, LUMENFLOW_PATHS.MEMORY_SIGNALS);
           const content = await readFileSafe(signalsPath);
 
           if (!content) {
@@ -124,7 +117,7 @@ export function createStateDoctorFixDeps(
 
           return {
             commitMessage: `fix(state-doctor): remove dangling signal ${id}`,
-            files: [SIGNALS_FILE],
+            files: [LUMENFLOW_PATHS.MEMORY_SIGNALS],
           };
         },
       });
@@ -147,7 +140,7 @@ export function createStateDoctorFixDeps(
           const modifiedFiles: string[] = [];
 
           // 1. Remove events for this WU
-          const eventsPath = path.join(worktreePath, WU_EVENTS_FILE);
+          const eventsPath = path.join(worktreePath, LUMENFLOW_PATHS.WU_EVENTS);
           const eventsContent = await readFileSafe(eventsPath);
 
           if (eventsContent) {
@@ -162,7 +155,7 @@ export function createStateDoctorFixDeps(
             });
 
             await fs.writeFile(eventsPath, lines.join('\n') + '\n', 'utf-8');
-            modifiedFiles.push(WU_EVENTS_FILE);
+            modifiedFiles.push(LUMENFLOW_PATHS.WU_EVENTS);
           }
 
           // 2. Remove stale WU references from backlog.md
@@ -217,7 +210,7 @@ export function createStateDoctorFixDeps(
 
           return {
             commitMessage: `fix(state-doctor): create missing stamp for ${wuId}`,
-            files: [`.lumenflow/stamps/${wuId}.done`],
+            files: [WU_PATHS.STAMP(wuId)],
           };
         },
       });
@@ -236,7 +229,7 @@ export function createStateDoctorFixDeps(
         logPrefix: LOG_PREFIX,
         pushOnly: true,
         execute: async ({ worktreePath }) => {
-          const eventsPath = path.join(worktreePath, WU_EVENTS_FILE);
+          const eventsPath = path.join(worktreePath, LUMENFLOW_PATHS.WU_EVENTS);
 
           // Build the event object
           const eventLine = JSON.stringify({
@@ -252,7 +245,7 @@ export function createStateDoctorFixDeps(
 
           return {
             commitMessage: `fix(state-doctor): emit ${event.type} event for ${event.wuId} to reconcile state`,
-            files: [WU_EVENTS_FILE],
+            files: [LUMENFLOW_PATHS.WU_EVENTS],
           };
         },
       });

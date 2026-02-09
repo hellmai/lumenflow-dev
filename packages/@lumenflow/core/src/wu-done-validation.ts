@@ -9,15 +9,18 @@ import { parseYAML } from './wu-yaml.js';
 import { die } from './error-handler.js';
 import {
   BRANCHES,
+  DIRECTORIES,
   EMOJI,
   FILE_SYSTEM,
   GIT_COMMANDS,
+  LUMENFLOW_PATHS,
   LOG_PREFIX,
   STRING_LITERALS,
   TEST_TYPES,
   VALIDATION,
   WU_TYPES,
 } from './wu-constants.js';
+import { WU_PATHS } from './wu-paths.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 import { resolveExposureDefault } from './wu-validation.js';
 import { validateAutomatedTestRequirement } from './manual-test-validator.js';
@@ -567,12 +570,12 @@ Context: WU-1153 prevents lost work from metadata rollbacks
  * itself may create or modify during the completion workflow.
  */
 export const METADATA_ALLOWLIST_PATTERNS: string[] = [
-  'docs/04-operations/tasks/status.md',
-  'docs/04-operations/tasks/backlog.md',
-  '.lumenflow/state/wu-events.jsonl',
-  '.lumenflow/flow.log',
-  '.lumenflow/skip-gates-audit.log',
-  '.lumenflow/skip-cos-gates-audit.log',
+  DIRECTORIES.STATUS_PATH,
+  DIRECTORIES.BACKLOG_PATH,
+  LUMENFLOW_PATHS.WU_EVENTS,
+  LUMENFLOW_PATHS.FLOW_LOG,
+  LUMENFLOW_PATHS.SKIP_GATES_AUDIT,
+  LUMENFLOW_PATHS.SKIP_COS_GATES_AUDIT,
   // WU YAML and stamps are matched dynamically by WU ID (see isMetadataAllowlisted)
 ];
 
@@ -594,13 +597,12 @@ function isMetadataAllowlisted(filePath: string, wuId: string): boolean {
   }
 
   // Dynamic WU-specific patterns
-  const wuYamlPattern = `docs/04-operations/tasks/wu/${wuId}.yaml`;
-  if (filePath === wuYamlPattern) {
+  if (filePath === WU_PATHS.WU(wuId)) {
     return true;
   }
 
   // Stamps directory (any stamp file is allowed during wu:done)
-  if (filePath.startsWith('.lumenflow/stamps/')) {
+  if (filePath.startsWith(`${LUMENFLOW_PATHS.STAMPS_DIR}/`)) {
     return true;
   }
 
