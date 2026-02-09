@@ -60,6 +60,43 @@ describe('cleanup.trigger config (WU-1366)', () => {
     });
   });
 
+  // WU-1542: Configurable commit message
+  describe('cleanup.commit_message (WU-1542)', () => {
+    it('should accept a custom commit_message', () => {
+      const result = CleanupConfigSchema.safeParse({
+        commit_message: 'chore(repair): auto state cleanup [skip ci]',
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.commit_message).toBe('chore(repair): auto state cleanup [skip ci]');
+      }
+    });
+
+    it('should default commit_message to universal format without scope', () => {
+      const result = CleanupConfigSchema.safeParse({});
+      expect(result.success).toBe(true);
+      if (result.success) {
+        // Must NOT use chore(lumenflow): - that breaks consumer main-branch guards
+        expect(result.data.commit_message).toBe('chore: lumenflow state cleanup [skip ci]');
+        expect(result.data.commit_message).not.toContain('chore(lumenflow)');
+      }
+    });
+
+    it('should include commit_message in full config schema', () => {
+      const config = parseConfig({
+        cleanup: {
+          commit_message: 'fix: state cleanup',
+        },
+      });
+      expect(config.cleanup.commit_message).toBe('fix: state cleanup');
+    });
+
+    it('should default commit_message in full config', () => {
+      const config = getDefaultConfig();
+      expect(config.cleanup.commit_message).toBe('chore: lumenflow state cleanup [skip ci]');
+    });
+  });
+
   describe('LumenFlowConfigSchema cleanup integration', () => {
     it('should include cleanup config in full config schema', () => {
       const config = parseConfig({

@@ -1045,6 +1045,21 @@ export const CleanupConfigSchema = z.object({
    * @default 'on_done'
    */
   trigger: CleanupTriggerSchema,
+
+  /**
+   * WU-1542: Commit message for auto-cleanup changes.
+   * Consumer repos with strict main-branch guards may reject the default.
+   * Configure this to match your repo's allowed commit message patterns.
+   *
+   * @default 'chore: lumenflow state cleanup [skip ci]'
+   *
+   * @example
+   * ```yaml
+   * cleanup:
+   *   commit_message: 'chore(repair): auto state cleanup [skip ci]'
+   * ```
+   */
+  commit_message: z.string().default('chore: lumenflow state cleanup [skip ci]'),
 });
 
 /** WU-1366: TypeScript type for cleanup config */
