@@ -25,6 +25,8 @@ import {
   STDIO_MODES,
   EXIT_CODES,
   PKG_MANAGER,
+  PKG_COMMANDS,
+  PKG_FLAGS,
   DEFAULTS,
   BRANCHES,
 } from '@lumenflow/core/dist/wu-constants.js';
@@ -135,11 +137,18 @@ export function buildUpgradeCommands(args: UpgradeArgs): UpgradeResult {
   // Build package list with version
   const packages = LUMENFLOW_PACKAGES.map((pkg) => `${pkg}@${versionSpec}`);
 
-  // Build pnpm add command
-  const addCommand = `${PKG_MANAGER} add --save-dev ${packages.join(' ')}`;
+  // Build pnpm add command using array pattern (matches deps-add.ts convention)
+  // WU-1527: -w required for pnpm monorepo workspace root installs
+  const parts: string[] = [
+    PKG_MANAGER,
+    PKG_COMMANDS.ADD,
+    PKG_FLAGS.SAVE_DEV,
+    PKG_FLAGS.WORKSPACE_ROOT,
+    ...packages,
+  ];
 
   return {
-    addCommand,
+    addCommand: parts.join(' '),
     versionSpec,
   };
 }
