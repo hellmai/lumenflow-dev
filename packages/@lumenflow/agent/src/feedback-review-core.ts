@@ -295,9 +295,7 @@ export function scorePattern(cluster: Cluster): number {
   const severitySum = cluster.nodes.reduce((sum, node) => {
     const severity = node.severity as keyof typeof SEVERITY_WEIGHTS | undefined;
     const defaultWeight = SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO] ?? 0;
-    const weight = severity
-      ? (SEVERITY_WEIGHTS[severity] ?? defaultWeight)
-      : defaultWeight;
+    const weight = severity ? (SEVERITY_WEIGHTS[severity] ?? defaultWeight) : defaultWeight;
     return sum + weight;
   }, 0);
   const avgSeverity = severitySum / cluster.nodes.length;
