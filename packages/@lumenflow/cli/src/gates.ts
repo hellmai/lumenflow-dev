@@ -111,6 +111,9 @@ import {
   SKIPPABLE_GATE_SCRIPTS,
 } from './gates-graceful-degradation.js';
 import { runCLI } from './cli-entry-point.js';
+// WU-1550: Gate registry for declarative gate registration
+import { GateRegistry, type GateDefinition } from './gate-registry.js';
+import { registerDocsOnlyGates, registerCodeGates } from './gate-defaults.js';
 
 /**
  * WU-1087: Gates-specific option definitions for createWUParser.
@@ -1505,130 +1508,62 @@ async function executeGates(opts: {
     docsOnlyTestPlan = resolveDocsOnlyTestPlan({ codePaths });
   }
 
-  // Determine which gates to run
+  // WU-1550: Build gate list via GateRegistry (declarative, Open-Closed Principle)
+  // New gates can be added by calling registry.register() without modifying this function.
   // WU-2252: Invariants gate runs FIRST and is included in both docs-only and regular modes
   // WU-1520: scriptName field maps gates to their package.json script for existence checking
-  const gates = effectiveDocsOnly
-    ? [
-        // WU-2252: Invariants check runs first (non-bypassable)
-        { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        {
-          name: GATE_NAMES.FORMAT_CHECK,
-          run: runFormatCheckGate,
-          scriptName: SCRIPTS.FORMAT_CHECK,
-        },
-        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate, scriptName: SCRIPTS.SPEC_LINTER },
-        // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
-        { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
-        // WU-2315: System map validation (warn-only until orphan docs are indexed)
-        {
-          name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-          run: runSystemMapGate,
-          warnOnly: true,
-        },
-        // WU-1191: Lane health check (configurable: warn/error/off)
-        {
-          name: GATE_NAMES.LANE_HEALTH,
-          run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
-          warnOnly: laneHealthMode !== 'error',
-        },
-        // WU-1315: Onboarding smoke test (init + wu:create validation)
-        {
-          name: GATE_NAMES.ONBOARDING_SMOKE_TEST,
-          cmd: GATE_COMMANDS.ONBOARDING_SMOKE_TEST,
-        },
-        // WU-1299: Filtered tests for packages in code_paths (if any)
-        // When docs-only mode has packages in code_paths, run tests only for those packages
-        // This prevents pre-existing failures in unrelated packages from blocking
-        ...(docsOnlyTestPlan && docsOnlyTestPlan.mode === 'filtered'
-          ? [
-              {
-                name: GATE_NAMES.TEST,
-                run: (ctx: GateLogContext) => {
-                  // Safe access: docsOnlyTestPlan is guaranteed non-null by the outer conditional
-                  const pkgs = docsOnlyTestPlan.packages;
-                  return runDocsOnlyFilteredTests({
-                    packages: pkgs,
-                    agentLog: ctx.agentLog,
-                  });
-                },
-                warnOnly: !testsRequired,
-              },
-            ]
-          : []),
-      ]
-    : [
-        // WU-2252: Invariants check runs first (non-bypassable)
-        { name: GATE_NAMES.INVARIANTS, cmd: GATE_COMMANDS.INVARIANTS },
-        {
-          name: GATE_NAMES.FORMAT_CHECK,
-          run: runFormatCheckGate,
-          scriptName: SCRIPTS.FORMAT_CHECK,
-        },
-        {
-          name: GATE_NAMES.LINT,
-          cmd: isFullLint ? pnpmCmd(SCRIPTS.LINT) : GATE_COMMANDS.INCREMENTAL,
-          scriptName: SCRIPTS.LINT,
-        },
-        {
-          name: GATE_NAMES.TYPECHECK,
-          cmd: pnpmCmd(SCRIPTS.TYPECHECK),
-          scriptName: SCRIPTS.TYPECHECK,
-        },
-        { name: GATE_NAMES.SPEC_LINTER, run: runSpecLinterGate, scriptName: SCRIPTS.SPEC_LINTER },
-        // WU-1467: prompts:lint removed -- was a stub (exit 0), not an authoritative gate
-        { name: GATE_NAMES.BACKLOG_SYNC, run: runBacklogSyncGate },
-        { name: GATE_NAMES.SUPABASE_DOCS_LINTER, run: runSupabaseDocsGate },
-        // WU-2315: System map validation (warn-only until orphan docs are indexed)
-        {
-          name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-          run: runSystemMapGate,
-          warnOnly: true,
-        },
-        // WU-1191: Lane health check (configurable: warn/error/off)
-        {
-          name: GATE_NAMES.LANE_HEALTH,
-          run: (ctx: GateLogContext) => runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
-          warnOnly: laneHealthMode !== 'error',
-        },
-        // WU-1315: Onboarding smoke test (init + wu:create validation)
-        {
-          name: GATE_NAMES.ONBOARDING_SMOKE_TEST,
-          cmd: GATE_COMMANDS.ONBOARDING_SMOKE_TEST,
-        },
-        // WU-2062: Safety-critical tests ALWAYS run
-        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
-        {
-          name: GATE_NAMES.SAFETY_CRITICAL_TEST,
-          cmd: GATE_COMMANDS.SAFETY_CRITICAL_TEST,
-          warnOnly: !testsRequired,
-        },
-        // WU-1920: Use changed tests by default, full suite with --full-tests
-        // WU-2244: --full-coverage implies --full-tests for accurate coverage
-        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
-        // WU-1356: Use configured test command instead of hard-coded turbo
-        {
-          name: GATE_NAMES.TEST,
-          cmd:
-            isFullTests || isFullCoverage
-              ? configuredGatesCommands.test_full
-              : GATE_COMMANDS.INCREMENTAL_TEST,
-          warnOnly: !testsRequired,
-        },
-        // WU-2062: Integration tests only for high-risk changes
-        // WU-1280: When tests_required=false (methodology.testing: none), failures only warn
-        ...(riskTier && riskTier.shouldRunIntegration
-          ? [
-              {
-                name: GATE_NAMES.INTEGRATION_TEST,
-                cmd: GATE_COMMANDS.TIERED_TEST,
-                warnOnly: !testsRequired,
-              },
-            ]
-          : []),
-        // WU-1433: Coverage gate with configurable mode (warn/block)
-        { name: GATE_NAMES.COVERAGE, cmd: GATE_COMMANDS.COVERAGE_GATE },
-      ];
+  const gateRegistry = new GateRegistry();
+
+  if (effectiveDocsOnly) {
+    registerDocsOnlyGates(gateRegistry, {
+      laneHealthMode,
+      testsRequired,
+      docsOnlyTestPlan,
+    });
+  } else {
+    registerCodeGates(gateRegistry, {
+      isFullLint,
+      isFullTests,
+      isFullCoverage,
+      laneHealthMode,
+      testsRequired,
+      shouldRunIntegration: !!(riskTier && riskTier.shouldRunIntegration),
+      configuredTestFullCmd: configuredGatesCommands.test_full,
+    });
+  }
+
+  // WU-1550: Inject run functions for gates that need them.
+  // The registry stores declarative metadata; run functions are bound here
+  // because they depend on local gate-runner functions in this module.
+  const gateRunFunctions: Record<string, GateDefinition['run']> = {
+    [GATE_NAMES.FORMAT_CHECK]: runFormatCheckGate,
+    [GATE_NAMES.SPEC_LINTER]: runSpecLinterGate,
+    [GATE_NAMES.BACKLOG_SYNC]: runBacklogSyncGate,
+    [GATE_NAMES.SUPABASE_DOCS_LINTER]: runSupabaseDocsGate,
+    [GATE_NAMES.SYSTEM_MAP_VALIDATE]: runSystemMapGate,
+    [GATE_NAMES.LANE_HEALTH]: (ctx: GateLogContext) =>
+      runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
+  };
+
+  // WU-1299: Docs-only filtered tests get a custom run function
+  if (docsOnlyTestPlan && docsOnlyTestPlan.mode === 'filtered') {
+    gateRunFunctions[GATE_NAMES.TEST] = (ctx: GateLogContext) => {
+      const pkgs = docsOnlyTestPlan.packages;
+      return runDocsOnlyFilteredTests({
+        packages: pkgs,
+        agentLog: ctx.agentLog,
+      });
+    };
+  }
+
+  // Apply run functions to registered gates
+  const gates = gateRegistry.getAll().map((gate) => {
+    const runFn = gateRunFunctions[gate.name];
+    if (runFn && !gate.run) {
+      return { ...gate, run: runFn };
+    }
+    return gate;
+  });
 
   if (effectiveDocsOnly) {
     // WU-1299: Show clear messaging about what's being skipped/run in docs-only mode
