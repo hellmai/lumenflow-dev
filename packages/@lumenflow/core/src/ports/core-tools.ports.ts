@@ -80,21 +80,21 @@ export interface IRunToolOptions {
 }
 
 /**
- * Tool Runner Port Interface
+ * Tool Executor Port Interface (Slim)
  *
- * Provides unified tool execution with validation, guards, and audit logging.
- * Integrates worktree context detection and scope validation.
+ * WU-1549: Segregated from IToolRunner following Interface Segregation Principle.
+ * Gate consumers and simple tool execution only need runTool and run methods,
+ * not the full registry (register, hasTool, listTools).
  *
  * @example
  * // Direct tool execution
- * const result = await runner.runTool(toolDefinition, { message: 'hello' });
+ * const result = await executor.runTool(toolDefinition, { message: 'hello' });
  *
  * @example
- * // Registry-based execution
- * runner.register(myTool);
- * const result = await runner.run('tool:name', { arg: 'value' });
+ * // Named tool execution
+ * const result = await executor.run('tool:name', { arg: 'value' });
  */
-export interface IToolRunner {
+export interface IToolExecutor {
   /**
    * Execute a tool with full validation and guards.
    *
@@ -105,6 +105,31 @@ export interface IToolRunner {
    */
   runTool(tool: IToolDefinition, input: unknown, options?: IRunToolOptions): Promise<ToolOutput>;
 
+  /**
+   * Run a registered tool by name.
+   *
+   * @param name - Tool name
+   * @param input - Tool input
+   * @param options - Execution options
+   * @returns Tool output
+   */
+  run(name: string, input: unknown, options?: IRunToolOptions): Promise<ToolOutput>;
+}
+
+/**
+ * Tool Runner Port Interface (Full)
+ *
+ * Extends IToolExecutor with tool registry management (register, hasTool, listTools).
+ * Use IToolExecutor for consumers that only need execution.
+ * Use IToolRunner for consumers that also manage the tool registry.
+ *
+ * @example
+ * // Full registry usage
+ * runner.register(myTool);
+ * const result = await runner.run('tool:name', { arg: 'value' });
+ * const tools = runner.listTools({ domain: 'file' });
+ */
+export interface IToolRunner extends IToolExecutor {
   /**
    * Register a tool definition.
    *
@@ -120,16 +145,6 @@ export interface IToolRunner {
    * @returns True if tool exists
    */
   hasTool(name: string): boolean;
-
-  /**
-   * Run a registered tool by name.
-   *
-   * @param name - Tool name
-   * @param input - Tool input
-   * @param options - Execution options
-   * @returns Tool output
-   */
-  run(name: string, input: unknown, options?: IRunToolOptions): Promise<ToolOutput>;
 
   /**
    * List all registered tools.
