@@ -412,7 +412,7 @@ export function buildWUContent({
     acceptance,
     code_paths,
     tests,
-    artifacts: [`.lumenflow/stamps/${id}.done`],
+    artifacts: [WU_PATHS.STAMP(id)],
     dependencies: [],
     risks: [],
     // WU-1443: Default notes to non-empty placeholder to avoid strict completeness failures.

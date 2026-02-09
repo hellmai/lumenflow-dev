@@ -965,7 +965,7 @@ async function handleOrphanCheck(lane, id) {
           files: [
             WU_PATHS.BACKLOG(),
             WU_PATHS.STATUS(),
-            `.lumenflow/stamps/${orphanId}.done`,
+            WU_PATHS.STAMP(orphanId),
             LUMENFLOW_PATHS.WU_EVENTS,
           ],
         };

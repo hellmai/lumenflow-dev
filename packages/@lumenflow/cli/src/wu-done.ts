@@ -105,6 +105,7 @@ import {
   TELEMETRY_STEPS,
   SKIP_GATES_REASONS,
   CHECKPOINT_MESSAGES,
+  LUMENFLOW_PATHS,
   // WU-1223: Location types for worktree detection
   CONTEXT_VALIDATION,
 } from '@lumenflow/core/wu-constants';
@@ -175,8 +176,7 @@ const MEMORY_CHECKPOINT_NOTES = {
 };
 const MEMORY_SIGNAL_WINDOW_MS = 60 * 60 * 1000; // 1 hour for recent signals
 
-// Path constant for wu-events.jsonl (used in multiple places)
-const WU_EVENTS_PATH = '.lumenflow/state/wu-events.jsonl';
+// WU-1539: Use centralized LUMENFLOW_PATHS.WU_EVENTS instead of local constant
 
 /**
  * WU-1804: Preflight validation for claim metadata before gates.
@@ -204,7 +204,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
   // Check 2: State store must show WU as in_progress
   const resolvedWorktreePath = path.resolve(worktreePath);
   const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
-  const eventsPath = path.join(resolvedWorktreePath, WU_EVENTS_PATH);
+  const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
 
   try {
     const store = new WUStateStore(stateDir);
@@ -440,7 +440,7 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
 async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   const resolvedWorktreePath = path.resolve(worktreePath);
   const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
-  const eventsPath = path.join(resolvedWorktreePath, WU_EVENTS_PATH);
+  const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
 
   const store = new WUStateStore(stateDir);
   try {
@@ -1369,7 +1369,7 @@ async function validateStagedFiles(id, isDocsOnly = false, gitAdapter?) {
     wuPath,
     config.directories.statusPath,
     config.directories.backlogPath,
-    WU_EVENTS_PATH,
+    LUMENFLOW_PATHS.WU_EVENTS,
   ];
 
   if (isDocsOnly) {
@@ -1387,8 +1387,8 @@ async function validateStagedFiles(id, isDocsOnly = false, gitAdapter?) {
   const unexpected = staged.filter((file) => {
     // Whitelist exact matches
     if (whitelist.includes(file)) return false;
-    // Whitelist .lumenflow/stamps/** pattern
-    if (file.startsWith('.lumenflow/stamps/')) return false;
+    // Whitelist stamps directory pattern
+    if (file.startsWith(`${LUMENFLOW_PATHS.STAMPS_DIR}/`)) return false;
     // WU-1072: Whitelist apps/docs/**/*.mdx for auto-generated docs from turbo docs:generate
     if (file.startsWith('apps/docs/') && file.endsWith('.mdx')) return false;
     return true;
@@ -2038,7 +2038,7 @@ async function executePreFlightChecks({
     // which causes the auto-rebase to fail with "You have unstaged changes"
     if (derivedWorktree) {
       try {
-        execSync(`git -C "${derivedWorktree}" restore "${WU_EVENTS_PATH}"`);
+        execSync(`git -C "${derivedWorktree}" restore "${LUMENFLOW_PATHS.WU_EVENTS}"`);
       } catch {
         // Non-fatal: file might not exist or already clean
       }
@@ -2341,7 +2341,7 @@ async function executeGates({
   // This restores the file to HEAD state - checkpoint data is preserved in memory store
   if (worktreePath) {
     try {
-      execSync(`git -C "${worktreePath}" restore "${WU_EVENTS_PATH}"`);
+      execSync(`git -C "${worktreePath}" restore "${LUMENFLOW_PATHS.WU_EVENTS}"`);
     } catch {
       // Non-fatal: file might not exist or already clean
     }

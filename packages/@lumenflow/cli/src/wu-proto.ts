@@ -135,7 +135,7 @@ function buildProtoWUContent({
       unit: [],
       e2e: [],
     },
-    artifacts: [`.lumenflow/stamps/${id}.done`],
+    artifacts: [WU_PATHS.STAMP(id)],
     dependencies: [],
     risks: [],
     notes: 'Prototype WU - relaxed validation applies',

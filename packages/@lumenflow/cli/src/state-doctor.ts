@@ -54,17 +54,7 @@ import { runCLI } from './cli-entry-point.js';
  */
 const LOG_PREFIX = '[state:doctor]';
 
-/**
- * Signals file path (relative to project root)
- * Located in memory subdirectory: .lumenflow/memory/signals.jsonl
- */
-const SIGNALS_FILE = '.lumenflow/memory/signals.jsonl';
-
-/**
- * WU events file path (relative to project root)
- * Located in state directory: .lumenflow/state/wu-events.jsonl
- */
-const WU_EVENTS_FILE = '.lumenflow/state/wu-events.jsonl';
+// WU-1539: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
 
 /**
  * Tool name for audit logging
@@ -225,7 +215,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     listSignals: async (): Promise<MockSignal[]> => {
       try {
-        const signalsPath = path.join(baseDir, SIGNALS_FILE);
+        const signalsPath = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_SIGNALS);
 
         const content = await fs.readFile(signalsPath, 'utf-8');
         const signals: MockSignal[] = [];
@@ -264,7 +254,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     listEvents: async (): Promise<MockEvent[]> => {
       try {
-        const eventsPath = path.join(baseDir, WU_EVENTS_FILE);
+        const eventsPath = path.join(baseDir, LUMENFLOW_PATHS.WU_EVENTS);
 
         const content = await fs.readFile(eventsPath, 'utf-8');
         const events: MockEvent[] = [];
@@ -300,7 +290,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      * Remove a signal by ID (rewrite signals file without the target)
      */
     removeSignal: async (id: string): Promise<void> => {
-      const signalsPath = path.join(baseDir, SIGNALS_FILE);
+      const signalsPath = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_SIGNALS);
 
       const content = await fs.readFile(signalsPath, 'utf-8');
       const lines = content.split('\n').filter((line) => {
@@ -320,7 +310,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      * Remove events for a WU (rewrite events file without the target WU)
      */
     removeEvent: async (wuId: string): Promise<void> => {
-      const eventsPath = path.join(baseDir, WU_EVENTS_FILE);
+      const eventsPath = path.join(baseDir, LUMENFLOW_PATHS.WU_EVENTS);
 
       const content = await fs.readFile(eventsPath, 'utf-8');
       const lines = content.split('\n').filter((line) => {
