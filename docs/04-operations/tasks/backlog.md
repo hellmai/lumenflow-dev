@@ -23,7 +23,6 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — Framework: Core Lifecycle
-- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml) — Operations: Tooling
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml) — Operations: Tooling
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
@@ -42,6 +41,7 @@ sections:
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
+- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
