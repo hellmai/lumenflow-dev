@@ -3,6 +3,7 @@
  * Tests for trace-gen CLI command
  *
  * WU-1112: INIT-003 Phase 6 - Migrate remaining Tier 1 tools
+ * WU-1534: Harden CLI command execution surfaces
  *
  * Trace generator creates traceability reports linking WUs to code changes,
  * useful for audit trails and compliance documentation.
@@ -17,6 +18,9 @@ import {
   TraceFormat,
   buildTraceEntry,
   TraceEntry,
+  validateWuId,
+  buildGitLogArgs,
+  buildGitFilesArgs,
 } from '../trace-gen.js';
 
 describe('trace-gen', () => {
@@ -137,6 +141,86 @@ describe('trace-gen', () => {
       expect(entry.commitCount).toBe(0);
       expect(entry.firstCommit).toBeUndefined();
       expect(entry.lastCommit).toBeUndefined();
+    });
+  });
+});
+
+describe('WU-1534: trace-gen injection prevention', () => {
+  describe('validateWuId', () => {
+    it('should accept valid WU IDs', () => {
+      expect(validateWuId('WU-1112')).toBe(true);
+      expect(validateWuId('WU-1')).toBe(true);
+      expect(validateWuId('WU-99999')).toBe(true);
+    });
+
+    it('should reject WU IDs with shell metacharacters', () => {
+      expect(validateWuId('WU-1112; rm -rf /')).toBe(false);
+      expect(validateWuId('WU-1112" --exec "rm -rf /')).toBe(false);
+      expect(validateWuId('$(whoami)')).toBe(false);
+      expect(validateWuId('`whoami`')).toBe(false);
+    });
+
+    it('should reject malformed WU IDs', () => {
+      expect(validateWuId('')).toBe(false);
+      expect(validateWuId('not-a-wu-id')).toBe(false);
+      expect(validateWuId('WU-')).toBe(false);
+      expect(validateWuId('WU-abc')).toBe(false);
+    });
+  });
+
+  describe('buildGitLogArgs', () => {
+    it('should return an argv array for git log', () => {
+      const args = buildGitLogArgs('WU-1112');
+      expect(Array.isArray(args)).toBe(true);
+    });
+
+    it('should include --grep with WU ID as a separate element', () => {
+      const args = buildGitLogArgs('WU-1112');
+      // The WU ID should be in a --grep=<value> argument, not interpolated into a shell string
+      const grepArg = args.find((a) => a.startsWith('--grep='));
+      expect(grepArg).toBeDefined();
+      expect(grepArg).toBe('--grep=WU-1112');
+    });
+
+    it('should not use shell pipe composition between commands', () => {
+      const args = buildGitLogArgs('WU-1112');
+      // Verify no argument is a standalone pipe operator (shell syntax)
+      expect(args).not.toContain('|');
+      // Verify the format arg uses | as a field delimiter within git's --format, not as shell pipe
+      const formatArg = args.find((a) => a.startsWith('--format='));
+      expect(formatArg).toBeDefined();
+    });
+  });
+
+  describe('buildGitFilesArgs', () => {
+    it('should return an argv array for git log --name-only', () => {
+      const args = buildGitFilesArgs('WU-1112');
+      expect(Array.isArray(args)).toBe(true);
+    });
+
+    it('should include --grep with WU ID as a separate element', () => {
+      const args = buildGitFilesArgs('WU-1112');
+      const grepArg = args.find((a) => a.startsWith('--grep='));
+      expect(grepArg).toBeDefined();
+      expect(grepArg).toBe('--grep=WU-1112');
+    });
+
+    it('should not contain shell pipe operators (no sort -u)', () => {
+      const args = buildGitFilesArgs('WU-1112');
+      for (const arg of args) {
+        expect(arg).not.toContain('|');
+        expect(arg).not.toContain('sort');
+      }
+    });
+
+    it('should keep injection attempts as literal argument values', () => {
+      // Even if validation is bypassed, the WU ID stays as a literal grep value
+      const args = buildGitFilesArgs('WU-1112; rm -rf /');
+      const grepArg = args.find((a) => a.startsWith('--grep='));
+      expect(grepArg).toBe('--grep=WU-1112; rm -rf /');
+      // No separate 'rm' or '-rf' elements
+      expect(args).not.toContain('rm');
+      expect(args).not.toContain('-rf');
     });
   });
 });

@@ -6,6 +6,7 @@
  * Dependencies can only be added from within a worktree, not from main checkout.
  *
  * WU-1112: INIT-003 Phase 6 - Migrate remaining Tier 1 tools
+ * WU-1534: Harden CLI command execution surfaces - argv-based execution
  *
  * Usage:
  *   pnpm deps:add react
@@ -15,7 +16,7 @@
  * @see dependency-guard.ts for blocking logic
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import {
   STDIO_MODES,
   EXIT_CODES,
@@ -26,6 +27,14 @@ import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[deps:add]';
+
+/**
+ * Regex for validating npm package names (with optional version specifier).
+ *
+ * Matches: react, react-dom, @scope/pkg, pkg@1.2.3, @scope/pkg@^1.0.0
+ * Rejects: anything containing shell metacharacters, spaces, newlines.
+ */
+const PACKAGE_NAME_PATTERN = /^(@[a-z0-9][\w.-]*\/)?[a-z0-9][\w.-]*(@[^\s;|&`$()<>'"\\]+)?$/i;
 
 /**
  * Arguments for deps-add command
@@ -65,6 +74,21 @@ export interface WorktreeValidationResult {
   error?: string;
   /** Fix command suggestion */
   fixCommand?: string;
+}
+
+/**
+ * Validate a package name to ensure it does not contain shell metacharacters.
+ *
+ * WU-1534: Input validation layer (defense-in-depth alongside argv-based execution).
+ *
+ * @param name - Package name to validate
+ * @returns true if the name is safe
+ */
+export function validatePackageName(name: string): boolean {
+  if (!name || !name.trim()) {
+    return false;
+  }
+  return PACKAGE_NAME_PATTERN.test(name);
 }
 
 /**
@@ -155,51 +179,57 @@ export function validateWorktreeContext(cwd: string): WorktreeValidationResult {
 }
 
 /**
- * Build pnpm add command string from arguments
+ * Build argv array for pnpm add command.
+ *
+ * WU-1534: Returns an argv array (not a shell string) for use with execFileSync.
+ * Each element is a separate argument, preventing shell injection.
  *
  * @param args - Parsed deps-add arguments
- * @returns Command string ready for execution
+ * @returns Argv array (excluding the executable) for execFileSync
  */
-export function buildPnpmAddCommand(args: DepsAddArgs): string {
-  const parts: string[] = [PKG_MANAGER, 'add'];
+export function buildPnpmAddCommand(args: DepsAddArgs): string[] {
+  const argv: string[] = ['add'];
 
   if (args.filter) {
-    parts.push('--filter', args.filter);
+    argv.push('--filter', args.filter);
   }
 
   if (args.dev) {
-    parts.push('--save-dev');
+    argv.push('--save-dev');
   }
 
   if (args.exact) {
-    parts.push('--save-exact');
+    argv.push('--save-exact');
   }
 
   if (args.packages && args.packages.length > 0) {
-    parts.push(...args.packages);
+    argv.push(...args.packages);
   }
 
-  return parts.join(' ');
+  return argv;
 }
 
 /**
- * Build pnpm remove command string from arguments
+ * Build argv array for pnpm remove command.
+ *
+ * WU-1534: Returns an argv array (not a shell string) for use with execFileSync.
+ * Each element is a separate argument, preventing shell injection.
  *
  * @param args - Parsed deps-remove arguments
- * @returns Command string ready for execution
+ * @returns Argv array (excluding the executable) for execFileSync
  */
-export function buildPnpmRemoveCommand(args: DepsRemoveArgs): string {
-  const parts: string[] = [PKG_MANAGER, 'remove'];
+export function buildPnpmRemoveCommand(args: DepsRemoveArgs): string[] {
+  const argv: string[] = ['remove'];
 
   if (args.filter) {
-    parts.push('--filter', args.filter);
+    argv.push('--filter', args.filter);
   }
 
   if (args.packages && args.packages.length > 0) {
-    parts.push(...args.packages);
+    argv.push(...args.packages);
   }
 
-  return parts.join(' ');
+  return argv;
 }
 
 /**
@@ -256,6 +286,14 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
+  // WU-1534: Validate package names before execution
+  for (const pkg of args.packages) {
+    if (!validatePackageName(pkg)) {
+      console.error(`${LOG_PREFIX} Error: Invalid package name: ${pkg}`);
+      process.exit(EXIT_CODES.ERROR);
+    }
+  }
+
   // Validate worktree context
   const validation = validateWorktreeContext(process.cwd());
   if (!validation.valid) {
@@ -264,18 +302,18 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // Build and execute pnpm add command
-  const command = buildPnpmAddCommand(args);
-  console.log(`${LOG_PREFIX} Running: ${command}`);
+  // WU-1534: Build argv array and execute via execFileSync (no shell)
+  const argv = buildPnpmAddCommand(args);
+  console.log(`${LOG_PREFIX} Running: ${PKG_MANAGER} ${argv.join(' ')}`);
 
   try {
-    execSync(command, {
+    execFileSync(PKG_MANAGER, argv, {
       stdio: STDIO_MODES.INHERIT,
       cwd: process.cwd(),
     });
-    console.log(`${LOG_PREFIX} ✅ Dependencies added successfully`);
-  } catch (error) {
-    console.error(`${LOG_PREFIX} ❌ Failed to add dependencies`);
+    console.log(`${LOG_PREFIX} Dependencies added successfully`);
+  } catch {
+    console.error(`${LOG_PREFIX} Failed to add dependencies`);
     process.exit(EXIT_CODES.ERROR);
   }
 }
