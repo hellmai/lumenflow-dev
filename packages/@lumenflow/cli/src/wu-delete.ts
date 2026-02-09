@@ -263,14 +263,16 @@ function removeDeletedWUsFromInitiatives(worktreePath: string, ids: Set<string>)
 
 export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: CleanupDeletedWUsArgs) {
   const normalizedIds = new Set(ids.map((id) => id.toUpperCase()));
-  const modified = new Set<string>();
+  // WU-1528: Track existing (modified/created) files separately from deleted files.
+  // Only existing files are safe for `git add -A -- <path>` staging; deleted file
+  // paths cause 'fatal: pathspec ... did not match any files' when passed individually.
+  const existing = new Set<string>();
 
   for (const id of normalizedIds) {
     const wuRelPath = WU_PATHS.WU(id);
     const wuAbsPath = join(worktreePath, wuRelPath);
     if (existsSync(wuAbsPath)) {
       unlinkSync(wuAbsPath);
-      modified.add(wuRelPath);
       console.log(`${PREFIX} ✅ Deleted ${id}.yaml`);
     }
 
@@ -278,7 +280,6 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
     const stampAbsPath = join(worktreePath, stampRelPath);
     if (existsSync(stampAbsPath)) {
       unlinkSync(stampAbsPath);
-      modified.add(stampRelPath);
       console.log(`${PREFIX} ✅ Deleted stamp ${id}.done`);
     }
   }
@@ -286,7 +287,7 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
   const eventsRelPath = LUMENFLOW_PATHS.WU_EVENTS;
   const eventsAbsPath = join(worktreePath, eventsRelPath);
   if (removeEventsForDeletedWUs(eventsAbsPath, normalizedIds)) {
-    modified.add(eventsRelPath);
+    existing.add(eventsRelPath);
     console.log(
       `${PREFIX} ✅ Removed ${normalizedIds.size} WU event stream(s) from wu-events.jsonl`,
     );
@@ -295,13 +296,13 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
   const existingWuIds = getExistingWuIds(worktreePath);
   const orphanedRemoved = removeOrphanedEvents(eventsAbsPath, existingWuIds);
   if (orphanedRemoved > 0) {
-    modified.add(eventsRelPath);
+    existing.add(eventsRelPath);
     console.log(`${PREFIX} ✅ Removed ${orphanedRemoved} orphaned event(s) for missing WU specs`);
   }
 
   const initiativeFiles = removeDeletedWUsFromInitiatives(worktreePath, normalizedIds);
   for (const file of initiativeFiles) {
-    modified.add(file);
+    existing.add(file);
   }
   if (initiativeFiles.length > 0) {
     console.log(
@@ -320,15 +321,15 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
 
   const backlogContent = await generateBacklog(store);
   writeFileSync(backlogAbsPath, backlogContent, FILE_SYSTEM.ENCODING as BufferEncoding);
-  modified.add(backlogRelPath);
+  existing.add(backlogRelPath);
 
   const statusContent = await generateStatus(store);
   writeFileSync(statusAbsPath, statusContent, FILE_SYSTEM.ENCODING as BufferEncoding);
-  modified.add(statusRelPath);
+  existing.add(statusRelPath);
 
   console.log(`${PREFIX} ✅ Regenerated backlog.md and status.md from state store`);
 
-  return Array.from(modified);
+  return Array.from(existing);
 }
 
 async function deleteSingleWU(id: string, dryRun: boolean) {
@@ -371,15 +372,17 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
       operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
       id: id,
       logPrefix: PREFIX,
-      execute: async ({ worktreePath, gitWorktree }) => {
-        const files = await cleanupDeletedWUsInWorktree({ worktreePath, ids: [id] });
+      execute: async ({ worktreePath }) => {
+        await cleanupDeletedWUsInWorktree({ worktreePath, ids: [id] });
 
-        await gitWorktree.add('.');
-
+        // WU-1528: Return empty files array so withMicroWorktree uses
+        // `git add -A .` to stage all changes atomically (deletions + modifications).
+        // Passing specific paths would fail for deleted files with
+        // 'fatal: pathspec ... did not match any files'.
         const commitMessage = `docs: delete ${id.toLowerCase()}`;
         return {
           commitMessage,
-          files,
+          files: [],
         };
       },
     });
@@ -444,16 +447,16 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
       operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
       id: `batch-${ids.length}`,
       logPrefix: PREFIX,
-      execute: async ({ worktreePath, gitWorktree }) => {
-        const files = await cleanupDeletedWUsInWorktree({ worktreePath, ids });
+      execute: async ({ worktreePath }) => {
+        await cleanupDeletedWUsInWorktree({ worktreePath, ids });
 
-        await gitWorktree.add('.');
-
+        // WU-1528: Return empty files array so withMicroWorktree uses
+        // `git add -A .` to stage all changes atomically (deletions + modifications).
         const idList = ids.map((id) => id.toLowerCase()).join(', ');
         const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
         return {
           commitMessage,
-          files,
+          files: [],
         };
       },
     });
