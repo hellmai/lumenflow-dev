@@ -544,6 +544,23 @@ export async function executeWorktreeCompletion(context) {
             // Backlog.md is always regenerated from wu-events.jsonl, not parsed/modified
 
             console.log(MERGE.STARTING(laneBranch));
+            // WU-1554: Restore any dirty tracked files on main before ff-only merge.
+            // wu:done's preflight checks (state merge, config reads) may leave metadata
+            // files dirty on main, which causes git merge --ff-only to abort.
+            {
+              const gitMainForClean = createGitForPath(originalCwd);
+              try {
+                const mainStatus = await gitMainForClean.raw(['status', '--porcelain']);
+                if (mainStatus && mainStatus.trim()) {
+                  await gitMainForClean.raw(['checkout', '--', '.']);
+                  console.log(
+                    `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1554: Restored dirty files on main for clean merge`,
+                  );
+                }
+              } catch {
+                // Non-fatal: if restore fails, the merge will catch it
+              }
+            }
             // WU-1747: Wrap merge with lock for atomic operation under concurrent load
             // WU-1749 Bug 2: Pass worktreePath and wuId for auto-rebase on retry
             await withMergeLock(id, async () => {
