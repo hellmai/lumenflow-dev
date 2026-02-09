@@ -1029,3 +1029,4 @@
 {"type":"claim","wuId":"WU-1536","timestamp":"2026-02-09T23:40:00.000Z","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports"}
 {"type":"complete","wuId":"WU-1538","timestamp":"2026-02-09T23:35:05.132Z"}
 {"type":"claim","wuId":"WU-1543","lane":"Operations: Tooling","title":"Re-enable security lint rules","timestamp":"2026-02-09T23:37:24.925Z"}
+{"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:38:09.868Z"}
