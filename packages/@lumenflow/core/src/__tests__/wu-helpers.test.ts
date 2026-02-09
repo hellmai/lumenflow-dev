@@ -274,19 +274,14 @@ describe('wu-helpers', () => {
   });
 
   describe('validateWUIDFormat', () => {
-    let exitSpy: ReturnType<typeof vi.spyOn>;
     let errorSpy: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
-      // Mock process.exit to prevent actually exiting (die() calls process.exit)
-      exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('process.exit called');
-      });
+      // WU-1538: die() now throws ProcessExitError instead of calling process.exit
       errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     });
 
     afterEach(() => {
-      exitSpy.mockRestore();
       errorSpy.mockRestore();
     });
 
@@ -294,27 +289,22 @@ describe('wu-helpers', () => {
       expect(() => validateWUIDFormat('WU-123')).not.toThrow();
       expect(() => validateWUIDFormat('WU-1')).not.toThrow();
       expect(() => validateWUIDFormat('WU-99999')).not.toThrow();
-      expect(exitSpy).not.toHaveBeenCalled();
     });
 
-    it('should call die() for lowercase wu id', () => {
+    it('should throw ProcessExitError for lowercase wu id', () => {
       expect(() => validateWUIDFormat('wu-123')).toThrow();
-      expect(exitSpy).toHaveBeenCalled();
     });
 
-    it('should call die() for wrong prefix', () => {
+    it('should throw ProcessExitError for wrong prefix', () => {
       expect(() => validateWUIDFormat('TICKET-123')).toThrow();
-      expect(exitSpy).toHaveBeenCalled();
     });
 
-    it('should call die() for missing number', () => {
+    it('should throw ProcessExitError for missing number', () => {
       expect(() => validateWUIDFormat('WU-')).toThrow();
-      expect(exitSpy).toHaveBeenCalled();
     });
 
-    it('should call die() for empty string', () => {
+    it('should throw ProcessExitError for empty string', () => {
       expect(() => validateWUIDFormat('')).toThrow();
-      expect(exitSpy).toHaveBeenCalled();
     });
   });
 
