@@ -198,12 +198,12 @@ export function createStateDoctorFixDeps(
         logPrefix: LOG_PREFIX,
         pushOnly: true,
         execute: async ({ worktreePath }) => {
-          const stampsDir = path.join(worktreePath, '.lumenflow/stamps');
+          const stampsDir = path.join(worktreePath, LUMENFLOW_PATHS.STAMPS_DIR);
 
           await fs.mkdir(stampsDir, { recursive: true });
 
           // Create stamp file in micro-worktree
-          const stampPath = path.join(stampsDir, `${wuId}.done`);
+          const stampPath = path.join(worktreePath, WU_PATHS.STAMP(wuId));
           const stampContent = `# ${wuId} Done\n\nTitle: ${title}\nCreated by: state:doctor --fix\nTimestamp: ${new Date().toISOString()}\n`;
 
           await fs.writeFile(stampPath, stampContent, 'utf-8');
