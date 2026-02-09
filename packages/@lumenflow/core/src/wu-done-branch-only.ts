@@ -40,10 +40,85 @@ import { die, createError, ErrorCodes } from './error-handler.js';
 import { validateWU, validateDoneWU } from './wu-schema.js';
 import { assertTransition } from './state-machine.js';
 import { detectZombieState, recoverZombieState } from './wu-recovery.js';
+import { emit } from './telemetry.js';
 // WU-1061: Import docs regeneration utilities
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 // WU-1492: Import PR creation utilities for branch-pr mode
 import { createPR, printPRCreatedMessage } from './wu-done-pr.js';
+
+export const LANE_SIGNALS_NDJSON = path.join(LUMENFLOW_PATHS.TELEMETRY, 'lane-signals.ndjson');
+
+/**
+ * Parse git diff --name-only output into actual file paths.
+ *
+ * @param {string} diffOutput - Raw diff output
+ * @returns {string[]} Parsed file paths
+ */
+export function parseActualFilesFromDiffOutput(diffOutput) {
+  return String(diffOutput)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Collect actual changed files for lane telemetry emission.
+ * Fail-open: returns [] if diff computation fails.
+ *
+ * @param {string|null|undefined} laneBranch - Lane branch name
+ * @param {object} [gitAdapter] - Optional git adapter (test injection)
+ * @returns {Promise<string[]>} List of changed files
+ */
+export async function collectActualFilesForLaneBranch(laneBranch, gitAdapter = getGitForCwd()) {
+  if (!laneBranch) return [];
+  try {
+    const diffOutput = await gitAdapter.raw([
+      GIT_COMMANDS.DIFF,
+      '--name-only',
+      `${BRANCHES.MAIN}...${laneBranch}`,
+    ]);
+    return parseActualFilesFromDiffOutput(diffOutput);
+  } catch (error) {
+    console.warn(
+      `${LOG_PREFIX.DONE} Could not compute lane-signal actualFiles for ${laneBranch}: ${error.message}`,
+    );
+    return [];
+  }
+}
+
+/**
+ * Emit one lane-signal telemetry event (passive, fail-open).
+ *
+ * @param {object} params - Emission params
+ * @param {string} params.wuId - WU ID
+ * @param {string} [params.lane] - WU lane
+ * @param {string|null} [params.laneBranch] - Lane branch
+ * @param {'worktree'|'branch-only'|'branch-pr'} params.completionMode - Completion path mode
+ * @param {object} [params.gitAdapter] - Optional git adapter (test injection)
+ * @param {function} [params.emitFn] - Optional emit function (test injection)
+ * @returns {Promise<void>}
+ */
+export async function emitLaneSignalForCompletion({
+  wuId,
+  lane,
+  laneBranch,
+  completionMode,
+  gitAdapter = getGitForCwd(),
+  emitFn = emit,
+}) {
+  try {
+    const actualFiles = await collectActualFilesForLaneBranch(laneBranch, gitAdapter);
+    emitFn(LANE_SIGNALS_NDJSON, {
+      timestamp: new Date().toISOString(),
+      wuId,
+      lane: lane ?? null,
+      actualFiles,
+      completionMode,
+    });
+  } catch (error) {
+    console.warn(`${LOG_PREFIX.DONE} Lane-signal emission failed (fail-open): ${error.message}`);
+  }
+}
 
 /**
  * @typedef {Object} BranchOnlyContext
@@ -226,6 +301,15 @@ export async function executeBranchOnlyCompletion(context) {
     await gitAdapter.push(REMOTES.ORIGIN, BRANCHES.MAIN);
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pushed to ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
 
+    // WU-1498: Passive lane telemetry (fail-open)
+    await emitLaneSignalForCompletion({
+      wuId: id,
+      lane: docForUpdate.lane,
+      laneBranch,
+      completionMode: 'branch-only',
+      gitAdapter,
+    });
+
     return { success: true, committed: true, pushed: true, merged };
   } catch (err) {
     // Atomic rollback on failure
@@ -368,6 +452,15 @@ export async function executeBranchPRCompletion(context) {
     printPRCreatedMessage(prResult.prUrl, id);
     prUrl = prResult.prUrl;
   }
+
+  // WU-1498: Passive lane telemetry (fail-open)
+  await emitLaneSignalForCompletion({
+    wuId: id,
+    lane: docMain.lane,
+    laneBranch,
+    completionMode: 'branch-pr',
+    gitAdapter,
+  });
 
   return { success: true, committed: true, pushed: true, merged: false, prUrl };
 }
