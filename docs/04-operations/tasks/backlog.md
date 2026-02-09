@@ -20,13 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — Framework: CLI Enforcement
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
