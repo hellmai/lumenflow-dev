@@ -31,16 +31,12 @@ describe('mem-inbox watch mode (WU-1551)', () => {
   describe('implementation uses chokidar instead of setInterval', () => {
     it('mem-inbox.ts source does not contain setInterval for watch polling', async () => {
       // Read the source file and verify no setInterval usage for polling
-      const sourcePath = path.resolve(
-        import.meta.dirname,
-        '..',
-        'mem-inbox.ts',
-      );
+      const sourcePath = path.resolve(import.meta.dirname, '..', 'mem-inbox.ts');
       const source = await fs.readFile(sourcePath, 'utf-8');
 
       // The source should NOT call setInterval() (replaced by chokidar)
       // Check for actual invocation pattern, not just the word in comments
-      expect(source).not.toMatch(/\bsetInterval\s*\(/)
+      expect(source).not.toMatch(/\bsetInterval\s*\(/);
       // The source should import or use chokidar
       expect(source).toContain('chokidar');
     });
