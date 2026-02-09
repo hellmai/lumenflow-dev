@@ -1002,3 +1002,4 @@
 {"type":"claim","wuId":"WU-1533","timestamp":"2026-02-09T12:25:27.544Z","lane":"Framework: CLI WU Commands","title":"BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)"}
 {"type":"complete","wuId":"WU-1533","timestamp":"2026-02-09T12:35:50.072Z"}
 {"type":"claim","wuId":"WU-1542","lane":"Framework: CLI WU Commands","title":"BUG: auto-cleanup commit message rejected by consumer main-branch guards","timestamp":"2026-02-09T17:58:58.316Z"}
+{"type":"claim","wuId":"WU-1541","lane":"Framework: Core Lifecycle","title":"Remove process.chdir global state mutations","timestamp":"2026-02-09T17:59:49.958Z"}
