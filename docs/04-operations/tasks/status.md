@@ -5,6 +5,7 @@ _Last updated: 2026-02-09_
 ## In Progress
 
 - [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml)
+- [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 
 ## Completed
 
