@@ -2,7 +2,7 @@ id: WU-1534
 title: Harden CLI command execution surfaces
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-09
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/trace-gen.test.ts
 tests:
   manual:
-    - Run targeted CLI calls with malformed package and WU ID inputs; verify no shell execution side effects.
+    - Run targeted CLI calls with malformed package and WU ID inputs; verify no shell execution side
+      effects.
   unit:
     - packages/@lumenflow/cli/src/__tests__/deps-operations.test.ts
     - packages/@lumenflow/cli/src/__tests__/trace-gen.test.ts
@@ -35,8 +36,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Several CLI commands currently construct shell command strings from CLI input. Problem: untrusted arguments can trigger command injection via shell interpretation. Solution: migrate affected commands to argv-based process execution and enforce strict input validation for package names and WU IDs.'
+description: 'Context: Several CLI commands currently construct shell command strings from CLI
+  input. Problem: untrusted arguments can trigger command injection via shell interpretation.
+  Solution: migrate affected commands to argv-based process execution and enforce strict input
+  validation for package names and WU IDs.'
 acceptance:
   - deps-add and deps-remove execute via argv-based process APIs without shell interpolation.
   - trace-gen uses argv-based git invocations and no shell pipe composition.
   - Injection-focused tests cover malicious argument cases and pass.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1534
+claimed_at: 2026-02-09T22:46:27.065Z
+baseline_main_sha: 7068bf8e0026f73cdb47e0651169b387f2c4247c
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:46:27.073Z

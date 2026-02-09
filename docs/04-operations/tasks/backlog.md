@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — Framework: Core Lifecycle
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
@@ -41,6 +40,7 @@ sections:
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
+- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 

@@ -1007,3 +1007,4 @@
 {"type":"complete","wuId":"WU-1541","timestamp":"2026-02-09T18:22:47.718Z"}
 {"type":"claim","wuId":"WU-1552","lane":"Content: Specs Governance","title":"Restructure INIT-020 to 15-WU plan per sizing guide","timestamp":"2026-02-09T19:19:03.875Z"}
 {"type":"claim","wuId":"WU-1553","lane":"Framework: CLI WU Commands","title":"Fix commitCleanupChanges to stage archive files alongside state files","timestamp":"2026-02-09T22:38:22.653Z"}
+{"type":"claim","wuId":"WU-1534","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces","timestamp":"2026-02-09T22:46:27.116Z"}
