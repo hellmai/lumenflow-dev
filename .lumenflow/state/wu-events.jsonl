@@ -999,3 +999,4 @@
 {"type":"complete","wuId":"WU-1530","timestamp":"2026-02-09T10:47:58.348Z"}
 {"type":"claim","wuId":"WU-1532","timestamp":"2026-02-09T10:51:52.522Z","lane":"Framework: CLI WU Commands","title":"Remove dead registration-parity residue after WU-1530"}
 {"type":"complete","wuId":"WU-1532","timestamp":"2026-02-09T10:56:19.124Z"}
+{"type":"claim","wuId":"WU-1533","lane":"Framework: CLI WU Commands","title":"BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)","timestamp":"2026-02-09T12:25:27.544Z"}

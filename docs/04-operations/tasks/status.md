@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml)
 
 ## Completed
 
