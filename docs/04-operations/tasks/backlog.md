@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — Framework: CLI WU Commands
+  (No items ready)
 
 ## 🔧 In progress
 
