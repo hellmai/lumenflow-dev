@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -489,3 +489,4 @@ _Last updated: 2026-02-09_
 - [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml) — 2026-02-09
 - [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — 2026-02-09
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml) — 2026-02-09
+- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — 2026-02-09

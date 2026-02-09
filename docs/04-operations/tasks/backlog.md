@@ -30,7 +30,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -519,4 +519,5 @@ sections:
 - [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml)
 - [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml)
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml)
+- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
