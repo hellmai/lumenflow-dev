@@ -6,11 +6,10 @@ status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
-  - packages/@lumenflow/cli/src
-  - packages/@lumenflow/cli/src/cli-entry-point.ts
+  - packages/@lumenflow/cli/src/
   - packages/@lumenflow/cli/src/commands/integrate.ts
   - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
-  - packages/@lumenflow/cli/__tests__/cli-epipe-resilience.test.ts
+  - packages/@lumenflow/cli/__tests__/init-entry-point.test.ts
 tests:
   manual:
     - Pipe representative commands through head and verify graceful exit without EPIPE crash.
@@ -28,10 +27,18 @@ spec_refs:
 risks: []
 notes: Track H prerequisite for core exit refactor.
 requires_review: false
+locked: true
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T23:25:18.916Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1537
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:25:18.922Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,13 +50,3 @@ acceptance:
   - All CLI commands use runCLI(main) with consistent EPIPE and error handling semantics.
   - Legacy import.meta.url entrypoint logic is removed from integrate command.
   - Entry-point tests validate behavior for direct invocation and piped output scenarios.
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T23:25:18.922Z
-locked: true
-completed: 2026-02-09
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1537
-claimed_at: 2026-02-09T23:25:18.916Z
-baseline_main_sha: 502d444ff664256093de0bc3f1fb69f950803d9d
-session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
