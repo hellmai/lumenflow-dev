@@ -1,5 +1,5 @@
 id: WU-1535
-title: Re-enable compiler and lint guardrails
+title: Enable strict TypeScript build configuration
 lane: 'Operations: Tooling'
 type: refactor
 status: ready
@@ -27,7 +27,7 @@ phase: 2
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track B from enterprise hardening initiative.
+notes: 'Track B1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md (Oversized -> MUST Split). See also WU-1543 (B2: security lint) and WU-1546 (B3: TS lint).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -36,8 +36,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Build and lint guardrails are broadly disabled across config layers. Problem: weak defaults allow unsafe and low-quality code paths to enter production artifacts. Solution: ratchet TypeScript and ESLint guardrails back on with explicit allowlists and staged enforcement.'
+description: 'Context: tsconfig.build.json has strict: false and noEmitOnError: false while IDE config has strict: true (split-brain). Problem: production builds accept code that fails strict checks. Solution: enable strict: true and noEmitOnError: true in tsconfig.build.json and per-package tsconfigs, fix resulting type errors.'
 acceptance:
-  - Build config enforces strict checking and noEmitOnError for production compilation.
-  - Per-package tsconfig files align with stricter baseline or explicit temporary exceptions.
-  - Security and type-safety lint rules are re-enabled with targeted suppressions only.
+  - 'tsconfig.build.json enforces strict: true and noEmitOnError: true.'
+  - Per-package tsconfig files align with strict baseline or have explicit temporary exceptions with justification.
+  - pnpm typecheck and pnpm build pass with strict mode enabled.

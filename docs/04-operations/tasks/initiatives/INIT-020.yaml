@@ -14,36 +14,62 @@ created: 2026-02-09
 target_date: 2026-03-31
 phases:
   - id: 1
-    title: Command execution hardening
+    title: 'A: Command execution hardening (WU-1534)'
     status: pending
   - id: 2
-    title: Guardrail baseline ratchet
+    title: 'B1: Enable strict TypeScript build (WU-1535)'
     status: pending
   - id: 3
-    title: Package boundary hard sweep
+    title: 'B2: Re-enable security lint rules (WU-1543)'
     status: pending
   - id: 4
-    title: CLI entry-point standardization
+    title: 'H: CLI entry-point standardization (WU-1537)'
     status: pending
   - id: 5
-    title: Core runtime boundary cleanup
+    title: 'D: Core runtime boundary cleanup (WU-1538)'
     status: pending
   - id: 6
-    title: DRY constants centralization
+    title: 'E1: Centralize stamp/events path literals (WU-1539)'
     status: pending
   - id: 7
-    title: Status semantics split
+    title: 'G: Status semantics split (WU-1540)'
     status: pending
   - id: 8
-    title: Process chdir isolation
+    title: 'F: Process chdir isolation (WU-1541)'
+    status: done
+  - id: 9
+    title: 'B3: Re-enable TypeScript lint rules (WU-1546)'
+    status: pending
+  - id: 10
+    title: 'C1: Add subpath exports + codemod imports (WU-1536)'
+    status: pending
+  - id: 11
+    title: 'C2: Lock down dist imports (WU-1547)'
+    status: pending
+  - id: 12
+    title: 'E2: Centralize status + remaining literals (WU-1548)'
+    status: pending
+  - id: 13
+    title: 'I: Decompose wu-constants + segregate interfaces (WU-1549)'
+    status: pending
+  - id: 14
+    title: 'J: Gate and validator registry patterns (WU-1550)'
+    status: pending
+  - id: 15
+    title: 'K: Fix floating promises + replace polling (WU-1551)'
     status: pending
 success_metrics:
   - No string-concatenated shell execution remains in deps-add, deps-remove, or trace-gen.
   - Build and package tsconfig files enforce strict type checking and noEmitOnError.
+  - Security and TypeScript lint rules re-enabled with targeted suppressions only.
   - Dist-path imports are reduced to zero across packages, apps, tools, and actions.
   - Wildcard dist exports are removed from core, memory, initiatives, and agent package manifests.
   - All CLI commands use runCLI(main) and legacy import.meta.url entrypoint is removed.
   - Core library modules no longer call process.exit directly; exits are centralized at CLI edge.
   - Status semantics are explicit via PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES with tests.
+  - No process.chdir() calls remain in production code paths.
+  - wu-constants.ts decomposed with no single file exceeding 500 lines.
+  - Gate and validator registries support extension without modifying existing code.
+  - No unguarded async callbacks in setInterval or setTimeout remain.
   - pnpm build, pnpm typecheck, pnpm test, and pnpm gates pass after migration.
 labels: []
