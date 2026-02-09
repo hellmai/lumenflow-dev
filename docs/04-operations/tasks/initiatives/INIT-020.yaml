@@ -1,12 +1,49 @@
 id: INIT-020
 slug: enterprise-hardening-sweep
 title: Enterprise Hardening Sweep
-description: ''
-status: draft
+description: 'Context: LumenFlow is a critical workflow runtime and currently has command-injection
+  surfaces, disabled build guardrails, dist wildcard boundary bypasses, and global-state coupling.
+  Problem: these gaps block enterprise-grade security, reliability, and maintainability guarantees.
+  Solution: execute a hard one-sweep remediation across command execution, compiler and lint
+  guardrails, package API boundaries, runtime exit handling, duplicated constants, and process state
+  isolation with full regression validation.'
+status: open
 priority: P0
 owner: platform
 created: 2026-02-09
 target_date: 2026-03-31
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Command execution hardening
+    status: pending
+  - id: 2
+    title: Guardrail baseline ratchet
+    status: pending
+  - id: 3
+    title: Package boundary hard sweep
+    status: pending
+  - id: 4
+    title: CLI entry-point standardization
+    status: pending
+  - id: 5
+    title: Core runtime boundary cleanup
+    status: pending
+  - id: 6
+    title: DRY constants centralization
+    status: pending
+  - id: 7
+    title: Status semantics split
+    status: pending
+  - id: 8
+    title: Process chdir isolation
+    status: pending
+success_metrics:
+  - No string-concatenated shell execution remains in deps-add, deps-remove, or trace-gen.
+  - Build and package tsconfig files enforce strict type checking and noEmitOnError.
+  - Dist-path imports are reduced to zero across packages, apps, tools, and actions.
+  - Wildcard dist exports are removed from core, memory, initiatives, and agent package manifests.
+  - All CLI commands use runCLI(main) and legacy import.meta.url entrypoint is removed.
+  - Core library modules no longer call process.exit directly; exits are centralized at CLI edge.
+  - Status semantics are explicit via PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES with tests.
+  - pnpm build, pnpm typecheck, pnpm test, and pnpm gates pass after migration.
 labels: []
