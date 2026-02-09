@@ -1,0 +1,42 @@
+id: WU-1537
+title: Standardize CLI entrypoints on runCLI wrapper
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/cli/src
+  - packages/@lumenflow/cli/src/cli-entry-point.ts
+  - packages/@lumenflow/cli/src/commands/integrate.ts
+  - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
+  - packages/@lumenflow/cli/__tests__/cli-epipe-resilience.test.ts
+tests:
+  manual:
+    - Pipe representative commands through head and verify graceful exit without EPIPE crash.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
+    - packages/@lumenflow/cli/__tests__/cli-epipe-resilience.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1537.done
+dependencies: []
+initiative: INIT-020
+phase: 4
+spec_refs:
+  - lumenflow://plans/polished-frolicking-whale.md
+risks: []
+notes: Track H prerequisite for core exit refactor.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: CLI commands currently use mixed entrypoint patterns including runCLI, main.catch, and one legacy import.meta.url path. Problem: inconsistent wrappers create uneven EPIPE handling and error lifecycle behavior. Solution: migrate all command entrypoints to runCLI(main) and remove the legacy pattern.'
+acceptance:
+  - All CLI commands use runCLI(main) with consistent EPIPE and error handling semantics.
+  - Legacy import.meta.url entrypoint logic is removed from integrate command.
+  - Entry-point tests validate behavior for direct invocation and piped output scenarios.
