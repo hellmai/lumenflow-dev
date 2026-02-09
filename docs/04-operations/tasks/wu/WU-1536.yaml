@@ -2,21 +2,20 @@ id: WU-1536
 title: Add subpath exports and codemod dist imports
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
   - packages/@lumenflow/core/package.json
   - packages/@lumenflow/memory/package.json
   - packages/@lumenflow/initiatives/package.json
-  - packages/@lumenflow/agent/package.json
   - packages/@lumenflow/cli/src
+  - packages/@lumenflow/cli/__tests__
+  - packages/@lumenflow/cli/e2e
   - packages/@lumenflow/core/src
-  - packages/@lumenflow/memory/src
   - packages/@lumenflow/initiatives/src
-  - packages/@lumenflow/agent/src
-  - tools/generate-cli-docs.ts
-  - actions
+  - packages/@lumenflow/agent/__tests__
+  - tools/__tests__
 tests:
   manual:
     - Run rg '@lumenflow/.+/dist/' packages/ apps/ tools/ actions/ and verify zero matches.
@@ -32,18 +31,20 @@ phase: 3
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: >-
-  Track C1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md.
-  See WU-1547 (C2: lock down + verify) which depends on this completing first.
-
-
-  [ADMIN-REPAIR 2026-02-09]: status changed from 'done' to 'in_progress'; locked changed from true
-  to false
+notes: 'Track C1 from enterprise hardening initiative. Split from original scope per
+  wu-sizing-guide.md. See WU-1547 (C2: lock down + verify) which depends on this completing first.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T22:47:10.698Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1536
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:47:10.705Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,13 +56,5 @@ acceptance:
   - Explicit subpath exports added to core, memory, initiatives, and agent package.json files.
   - All consumer imports migrated from @lumenflow/*/dist/* to supported public subpaths.
   - pnpm build, pnpm typecheck, and pnpm test pass after codemod.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1536
-claimed_at: 2026-02-09T22:47:10.698Z
-baseline_main_sha: 9ea880a3af63f7cabcc0023d4ff3c1929bcceea9
-session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T22:47:10.705Z
-locked: false
-completed: 2026-02-09
+locked: true
+completed_at: 2026-02-09T23:18:57.958Z

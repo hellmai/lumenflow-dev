@@ -5,7 +5,6 @@ _Last updated: 2026-02-09_
 ## In Progress
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml)
-- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml)
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml)
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml)
@@ -497,3 +496,4 @@ _Last updated: 2026-02-09_
 - [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — 2026-02-09
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml) — 2026-02-09
 - [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — 2026-02-09
+- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09

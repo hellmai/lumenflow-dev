@@ -1005,17 +1005,18 @@
 {"type":"claim","wuId":"WU-1541","timestamp":"2026-02-09T17:59:49.958Z","lane":"Framework: Core Lifecycle","title":"Remove process.chdir global state mutations"}
 {"type":"complete","wuId":"WU-1542","timestamp":"2026-02-09T18:04:50.731Z"}
 {"type":"complete","wuId":"WU-1541","timestamp":"2026-02-09T18:22:47.718Z"}
-{"type":"claim","wuId":"WU-1552","lane":"Content: Specs Governance","title":"Restructure INIT-020 to 15-WU plan per sizing guide","timestamp":"2026-02-09T19:19:03.875Z"}
-{"type":"claim","wuId":"WU-1553","lane":"Framework: CLI WU Commands","title":"Fix commitCleanupChanges to stage archive files alongside state files","timestamp":"2026-02-09T22:38:22.653Z"}
-{"type":"claim","wuId":"WU-1534","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces","timestamp":"2026-02-09T22:46:27.116Z"}
-{"type":"claim","wuId":"WU-1536","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports","timestamp":"2026-02-09T22:47:10.737Z"}
-{"type":"release","wuId":"WU-1553","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-09T22:47:37.963Z"}
-{"type":"release","wuId":"WU-1534","reason":"No implementation work, releasing to work on WU-1535","timestamp":"2026-02-09T22:48:06.411Z"}
-{"type":"claim","wuId":"WU-1554","lane":"Framework: CLI WU Commands","title":"Fix wu:done post-merge metadata double-write leaving main dirty","timestamp":"2026-02-09T22:48:33.925Z"}
-{"type":"claim","wuId":"WU-1537","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper","timestamp":"2026-02-09T22:49:49.855Z"}
-{"type":"claim","wuId":"WU-1535","lane":"Operations: Tooling","title":"Enable strict TypeScript build configuration","timestamp":"2026-02-09T22:50:11.864Z"}
-{"type":"claim","wuId":"WU-1534","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces","timestamp":"2026-02-09T22:51:56.752Z"}
-{"type":"claim","wuId":"WU-1538","lane":"Framework: Core Lifecycle","title":"Refactor core exit handling to throw typed errors","timestamp":"2026-02-09T23:08:08.007Z"}
-{"type":"release","wuId":"WU-1537","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-09T23:10:56.234Z"}
-{"type":"claim","wuId":"WU-1540","lane":"Framework: Core Validation","title":"Split protected and progressable status constants","timestamp":"2026-02-09T23:11:27.270Z"}
-{"type":"claim","wuId":"WU-1537","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper","timestamp":"2026-02-09T23:12:07.583Z"}
+{"type":"claim","wuId":"WU-1552","timestamp":"2026-02-09T19:19:03.875Z","lane":"Content: Specs Governance","title":"Restructure INIT-020 to 15-WU plan per sizing guide"}
+{"type":"claim","wuId":"WU-1553","timestamp":"2026-02-09T22:38:22.653Z","lane":"Framework: CLI WU Commands","title":"Fix commitCleanupChanges to stage archive files alongside state files"}
+{"type":"claim","wuId":"WU-1534","timestamp":"2026-02-09T22:46:27.116Z","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces"}
+{"type":"claim","wuId":"WU-1536","timestamp":"2026-02-09T22:47:10.737Z","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports"}
+{"type":"release","wuId":"WU-1553","timestamp":"2026-02-09T22:47:37.963Z","reason":"Reset via wu:recover --action reset"}
+{"type":"release","wuId":"WU-1534","timestamp":"2026-02-09T22:48:06.411Z","reason":"No implementation work, releasing to work on WU-1535"}
+{"type":"claim","wuId":"WU-1554","timestamp":"2026-02-09T22:48:33.925Z","lane":"Framework: CLI WU Commands","title":"Fix wu:done post-merge metadata double-write leaving main dirty"}
+{"type":"claim","wuId":"WU-1537","timestamp":"2026-02-09T22:49:49.855Z","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper"}
+{"type":"claim","wuId":"WU-1535","timestamp":"2026-02-09T22:50:11.864Z","lane":"Operations: Tooling","title":"Enable strict TypeScript build configuration"}
+{"type":"claim","wuId":"WU-1534","timestamp":"2026-02-09T22:51:56.752Z","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces"}
+{"type":"claim","wuId":"WU-1538","timestamp":"2026-02-09T23:08:08.007Z","lane":"Framework: Core Lifecycle","title":"Refactor core exit handling to throw typed errors"}
+{"type":"release","wuId":"WU-1537","timestamp":"2026-02-09T23:10:56.234Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1540","timestamp":"2026-02-09T23:11:27.270Z","lane":"Framework: Core Validation","title":"Split protected and progressable status constants"}
+{"type":"claim","wuId":"WU-1537","timestamp":"2026-02-09T23:12:07.583Z","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper"}
+{"type":"complete","wuId":"WU-1536","timestamp":"2026-02-09T23:19:00.546Z"}
