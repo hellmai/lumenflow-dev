@@ -157,9 +157,11 @@ if (isDirectExecution) {
   try {
     const result = verifyWUComplete(wuId);
     const message = debugSummary(result);
+    // eslint-disable-next-line no-console -- CLI direct execution output
     console.log(message);
     process.exit(result.complete ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
   } catch (error) {
+    // eslint-disable-next-line no-console -- CLI direct execution error output
     console.error(`Verification error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(EXIT_CODES.ERROR);
   }
