@@ -2,9 +2,10 @@
  * @file wu-lint-parity.test.ts
  * @description Tests for CLI command registration parity validation (WU-1504)
  *
- * Tests the heuristic: when WU code_paths include CLI command implementations
- * or package.json bin entries, registration surfaces (public-manifest.ts and
- * MCP tools.ts) must also be present in code_paths.
+ * WU-1530 + WU-1532 model: only CLI package.json (bin surface) triggers parity.
+ * CLI src implementation paths are internal and do not trigger parity by
+ * themselves. Registration surfaces (public-manifest.ts and MCP tools.ts) are
+ * required only when package.json indicates a command surface change.
  */
 
 import { describe, it, expect } from 'vitest';
