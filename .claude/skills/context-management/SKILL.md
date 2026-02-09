@@ -153,8 +153,8 @@ pnpm orchestrate:initiative -i INIT-009 -c
 **Key principles:**
 
 1. **Exit immediately after spawning** — No polling loops in the orchestrator
-2. **Wave manifests for idempotency** — `.beacon/artifacts/waves/INIT-XXX-wave-N.json`
-3. **Stamp-based completion** — Check `.beacon/stamps/WU-*.done` for progress
+2. **Wave manifests for idempotency** — `.lumenflow/artifacts/waves/INIT-XXX-wave-N.json`
+3. **Stamp-based completion** — Check `.lumenflow/stamps/WU-*.done` for progress
 4. **Compact output** — Keep orchestrator output under 20 lines
 
 See [orchestration skill](../orchestration/SKILL.md) for complete documentation.

@@ -9,6 +9,7 @@ code_paths:
   - .claude/agents/lumenflow-enforcer.md
   - .claude/agents/lumenflow-doc-sync.md
   - .claude/skills/context-management/SKILL.md
+  - .claude/skills/execution-memory/SKILL.md
   - .claude/skills/orchestration/SKILL.md
   - .lumenflow/constraints.md
   - .lumenflow/rules/wu-workflow.md
@@ -20,6 +21,7 @@ code_paths:
   - packages/@lumenflow/cli/templates/core/.lumenflow/constraints.md.template
   - packages/@lumenflow/cli/templates/core/.lumenflow/rules/wu-workflow.md.template
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/context-management/SKILL.md.template
+  - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/execution-memory/SKILL.md.template
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/orchestration/SKILL.md.template
   - packages/@lumenflow/cli/src/__tests__/no-beacon-references.test.ts
   - packages/@lumenflow/cli/src/__tests__/no-beacon-references-docs.test.ts

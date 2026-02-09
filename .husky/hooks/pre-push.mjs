@@ -12,7 +12,7 @@
  * - ALLOW all lane branch pushes (per WU-1255: protection at merge time)
  * - Parse stdin refs to catch bypasses like `git push origin HEAD:main`
  *
- * Escape hatch: LUMENFLOW_FORCE=1 (logged to .beacon/force-bypasses.log)
+ * Escape hatch: LUMENFLOW_FORCE=1 (logged to .lumenflow/force-bypasses.log)
  */
 
 import { readFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
@@ -43,11 +43,11 @@ function logForceBypass(hookName, projectRoot) {
     } catch {}
 
     const logLine = `${timestamp} | ${hookName} | ${user} | ${branch} | ${reason || '(no reason provided)'} | ${projectRoot}\n`;
-    const beaconDir = join(projectRoot, '.beacon');
-    const logPath = join(beaconDir, 'force-bypasses.log');
+    const lumenflowDir = join(projectRoot, '.lumenflow');
+    const logPath = join(lumenflowDir, 'force-bypasses.log');
 
-    if (!existsSync(beaconDir)) {
-      mkdirSync(beaconDir, { recursive: true });
+    if (!existsSync(lumenflowDir)) {
+      mkdirSync(lumenflowDir, { recursive: true });
     }
     appendFileSync(logPath, logLine);
   } catch (error) {

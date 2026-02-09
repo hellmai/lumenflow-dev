@@ -32,7 +32,7 @@ Before ANY Write/Edit/Read operation:
 
 2. **Verify relative paths only**:
    - ✅ `docs/...`, `packages/...`, `apps/...`, `./...`
-   - ❌ `/home/...`, `/Users/...`, or full repo paths
+   - ❌ absolute filesystem paths (for example home-directory paths)
 
 3. **Docs-only exception (documentation WUs)**:
    - You may run **read-only** commands from main (e.g., `pnpm gates --docs-only`).
@@ -203,7 +203,7 @@ git worktree prune
 
 **Enforcement:**
 
-- All LUMENFLOW_FORCE usage is logged to `.beacon/force-bypasses.log` (git-tracked)
+- All LUMENFLOW_FORCE usage is logged to `.lumenflow/force-bypasses.log` (git-tracked)
 - Log format: `ISO_TIMESTAMP | HOOK_NAME | USER | BRANCH | REASON | CWD`
 - Missing `LUMENFLOW_FORCE_REASON` triggers stderr warning
 

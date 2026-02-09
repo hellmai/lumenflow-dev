@@ -44,7 +44,7 @@ Before ANY Write/Edit/Read operation:
 - `docs/04-operations/tasks/wu/WU-*.yaml` — Individual WU specifications
 - `docs/04-operations/tasks/status.md` — Current work status board
 - `docs/04-operations/tasks/backlog.md` — Work queue and completed items
-- `.beacon/stamps/WU-*.done` — Completion stamps
+- `.lumenflow/stamps/WU-*.done` — Completion stamps
 
 ## Critical Sync Rules
 
@@ -68,7 +68,7 @@ code_paths: # ← MUST fill
 test_paths: # ← MUST fill
   - 'path/to/test.test.ts'
 artifacts: # ← MUST include stamp
-  - '.beacon/stamps/WU-XXX.done'
+  - '.lumenflow/stamps/WU-XXX.done'
 notes: # ← Document resolution
   - 'Implementation note 1'
   - 'Decision rationale'
@@ -134,7 +134,7 @@ Done (YYYY-MM-DD)
 
 ### ✅ Stamp Creation
 
-**Path:** `.beacon/stamps/WU-XXX.done`
+**Path:** `.lumenflow/stamps/WU-XXX.done`
 
 **When to create:**
 
@@ -157,7 +157,7 @@ Done (YYYY-MM-DD)
    completed: YYYY-MM-DD
    code_paths: [list of changed files]
    test_paths: [list of test files]
-   artifacts: ['.beacon/stamps/WU-XXX.done', ...]
+   artifacts: ['.lumenflow/stamps/WU-XXX.done', ...]
    notes: ['Resolution details', 'Decisions made']
    ```
 
@@ -173,8 +173,8 @@ Done (YYYY-MM-DD)
 4. **Create stamp:**
 
    ```bash
-   mkdir -p .beacon/stamps
-   touch .beacon/stamps/WU-XXX.done
+   mkdir -p .lumenflow/stamps
+   touch .lumenflow/stamps/WU-XXX.done
    ```
 
 5. **Validate cross-references:**
@@ -192,7 +192,7 @@ Before marking documentation sync complete:
 - [ ] status.md updated (WU removed from In Progress)
 - [ ] status.md last_updated timestamp current
 - [ ] backlog.md shows WU in Done section with date
-- [ ] `.beacon/stamps/WU-XXX.done` file exists
+- [ ] `.lumenflow/stamps/WU-XXX.done` file exists
 - [ ] All file paths in WU YAML exist
 - [ ] All links resolve correctly
 
@@ -214,7 +214,7 @@ Before marking documentation sync complete:
 pnpm validate --wu WU-XXX
 
 # Validate stamps exist for done WUs
-ls .beacon/stamps/*.done
+ls .lumenflow/stamps/*.done
 
 # Compare status.md vs backlog.md for consistency
 diff <(grep -o "WU-[0-9]*" docs/04-operations/tasks/status.md | sort) \

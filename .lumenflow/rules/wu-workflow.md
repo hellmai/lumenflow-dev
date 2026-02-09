@@ -110,7 +110,7 @@ pnpm wu:done --id WU-XXX
 
 1. Runs gates in the worktree
 2. Fast-forward merges to main
-3. Creates stamp (`.beacon/stamps/WU-XXX.done`)
+3. Creates stamp (`.lumenflow/stamps/WU-XXX.done`)
 4. Updates status and backlog docs
 5. Removes the worktree
 6. Pushes to origin
@@ -145,7 +145,7 @@ A WU is done when:
 - [ ] Acceptance criteria satisfied
 - [ ] Gates pass (`pnpm gates` or `pnpm gates --docs-only`)
 - [ ] WU YAML status = `done`
-- [ ] `.beacon/stamps/WU-<id>.done` exists
+- [ ] `.lumenflow/stamps/WU-<id>.done` exists
 - [ ] `pnpm wu:done` has been run (not just documented)
 
 ---
