@@ -2,7 +2,7 @@ id: WU-1527
 title: Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -19,7 +19,9 @@ artifacts:
   - .lumenflow/stamps/WU-1527.done
 dependencies: []
 risks: []
-notes: Added PKG_COMMANDS.ADD, PKG_FLAGS.SAVE_DEV, PKG_FLAGS.WORKSPACE_ROOT to wu-constants.ts. Refactored buildUpgradeCommands to use array-based parts pattern with centralized constants. Validated -w flag behavior against pnpm official docs via context7.
+notes: Added PKG_COMMANDS.ADD, PKG_FLAGS.SAVE_DEV, PKG_FLAGS.WORKSPACE_ROOT to wu-constants.ts.
+  Refactored buildUpgradeCommands to use array-based parts pattern with centralized constants.
+  Validated -w flag behavior against pnpm official docs via context7.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -44,3 +46,5 @@ session_id: 9ed0111f-aa6b-4751-a350-e03500b54f26
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T09:32:56.298Z
+locked: true
+completed_at: 2026-02-09T09:44:44.461Z

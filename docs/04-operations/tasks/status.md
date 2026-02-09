@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -480,3 +480,4 @@ _Last updated: 2026-02-09_
 - [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml) — 2026-02-07
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — 2026-02-07
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — 2026-02-07
+- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml) — 2026-02-09
