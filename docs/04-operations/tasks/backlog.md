@@ -20,13 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — Framework: CLI WU Commands
-- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml) — Framework: Core Lifecycle
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
+- [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -506,3 +505,5 @@ sections:
 - [WU-1523 — Render backlog.md and status.md from state events in scaffolded projects](wu/WU-1523.yaml)
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
+- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
+- [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
