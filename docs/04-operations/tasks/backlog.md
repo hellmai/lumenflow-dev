@@ -20,19 +20,18 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — Framework: Core Lifecycle
-- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
-- [WU-1539 — Centralize duplicated workflow path constants](wu/WU-1539.yaml) — Framework: Core Lifecycle
-- [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
-- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
-- [WU-1536 — Execute hard sweep for dist import boundaries](wu/WU-1536.yaml) — Framework: Core Lifecycle
-- [WU-1535 — Re-enable compiler and lint guardrails](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
-  (No items ready)
+- [WU-1535 — Re-enable compiler and lint guardrails](wu/WU-1535.yaml) — Operations: Tooling
+- [WU-1536 — Execute hard sweep for dist import boundaries](wu/WU-1536.yaml) — Framework: Core Lifecycle
+- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
+- [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
+- [WU-1539 — Centralize duplicated workflow path constants](wu/WU-1539.yaml) — Framework: Core Lifecycle
+- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
+- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -519,4 +518,5 @@ sections:
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)
 - [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml)
 - [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml)
+- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

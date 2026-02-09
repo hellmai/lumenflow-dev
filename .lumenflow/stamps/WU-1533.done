@@ -1,0 +1,2 @@
+WU WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)
+Completed: 2026-02-09

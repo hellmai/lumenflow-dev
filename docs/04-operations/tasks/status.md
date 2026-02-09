@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -487,3 +487,4 @@ _Last updated: 2026-02-09_
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml) — 2026-02-09
 - [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — 2026-02-09
 - [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml) — 2026-02-09
+- [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — 2026-02-09

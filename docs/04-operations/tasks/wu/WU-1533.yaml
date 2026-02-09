@@ -2,7 +2,7 @@ id: WU-1533
 title: 'BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -48,3 +48,5 @@ session_id: d7bb0ab0-f16a-42ad-98c0-87f45b407c3f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T12:25:27.528Z
+locked: true
+completed_at: 2026-02-09T12:35:47.384Z
