@@ -7,7 +7,6 @@ _Last updated: 2026-02-09_
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml)
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
-- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml)
 
 ## Completed
 
