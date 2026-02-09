@@ -6,6 +6,7 @@ _Last updated: 2026-02-09_
 
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml)
+- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml)
 
 ## Completed
 

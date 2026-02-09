@@ -20,13 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — Framework: CLI WU Commands
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — Framework: CLI WU Commands
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — Framework: Core Lifecycle
+- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
