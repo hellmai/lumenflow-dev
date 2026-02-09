@@ -1024,7 +1024,6 @@
 {"type":"claim","wuId":"WU-1537","timestamp":"2026-02-09T23:25:18.954Z","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper"}
 {"type":"complete","wuId":"WU-1534","timestamp":"2026-02-09T23:28:46.467Z"}
 {"type":"complete","wuId":"WU-1540","timestamp":"2026-02-09T23:30:11.703Z"}
-{"type":"complete","wuId":"WU-1535","timestamp":"2026-02-09T23:34:36.603Z"}
 {"type":"complete","wuId":"WU-1536","timestamp":"2026-02-09T23:35:00.988Z"}
 {"type":"claim","wuId":"WU-1536","timestamp":"2026-02-09T23:40:00.000Z","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports"}
 {"type":"complete","wuId":"WU-1538","timestamp":"2026-02-09T23:35:05.132Z"}
