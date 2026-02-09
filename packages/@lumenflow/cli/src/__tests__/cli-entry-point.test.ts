@@ -17,6 +17,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { runCLI } from '../cli-entry-point.js';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
+import { ProcessExitError } from '@lumenflow/core';
 
 describe('runCLI', () => {
   let mockExit: ReturnType<typeof vi.spyOn>;
@@ -68,6 +69,66 @@ describe('runCLI', () => {
     await runCLI(main);
 
     expect(mockConsoleError).toHaveBeenCalledWith('Unknown error');
+    expect(mockExit).toHaveBeenCalledWith(EXIT_CODES.ERROR);
+  });
+});
+
+/**
+ * WU-1538: runCLI catches ProcessExitError and maps to process.exit
+ */
+describe('runCLI ProcessExitError handling (WU-1538)', () => {
+  let mockExit: ReturnType<typeof vi.spyOn>;
+  let mockConsoleError: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    mockExit.mockRestore();
+    mockConsoleError.mockRestore();
+  });
+
+  it('should catch ProcessExitError and exit with its exitCode', async () => {
+    const main = async () => {
+      throw new ProcessExitError('Gates failed', 2);
+    };
+
+    await runCLI(main);
+
+    expect(mockExit).toHaveBeenCalledWith(2);
+  });
+
+  it('should catch ProcessExitError with exit code 0 (help display)', async () => {
+    const main = async () => {
+      throw new ProcessExitError('Help displayed', 0);
+    };
+
+    await runCLI(main);
+
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+
+  it('should not double-log ProcessExitError messages (die already logged)', async () => {
+    const main = async () => {
+      throw new ProcessExitError('[wu-done] Something failed', 1);
+    };
+
+    await runCLI(main);
+
+    // ProcessExitError was already logged by die(), so runCLI should not log it again
+    expect(mockConsoleError).not.toHaveBeenCalled();
+  });
+
+  it('should still log generic Error messages', async () => {
+    const main = async () => {
+      throw new Error('Unexpected failure');
+    };
+
+    await runCLI(main);
+
+    expect(mockConsoleError).toHaveBeenCalledWith('Unexpected failure');
     expect(mockExit).toHaveBeenCalledWith(EXIT_CODES.ERROR);
   });
 });

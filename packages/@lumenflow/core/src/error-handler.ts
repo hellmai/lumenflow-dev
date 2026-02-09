@@ -19,6 +19,35 @@
 import path from 'node:path';
 
 /**
+ * Typed error for process exit signals from library code.
+ * WU-1538: Core modules throw this instead of calling process.exit directly.
+ * CLI entry boundaries catch this and call process.exit with the exitCode.
+ *
+ * @class ProcessExitError
+ * @extends Error
+ */
+export class ProcessExitError extends Error {
+  /** Process exit code to use when caught at CLI boundary */
+  exitCode: number;
+
+  /**
+   * Create a process exit error
+   * @param {string} message - Error message (already formatted by die() or caller)
+   * @param {number} [exitCode=1] - Process exit code
+   */
+  constructor(message: string, exitCode = 1) {
+    super(message);
+    this.name = 'ProcessExitError';
+    this.exitCode = exitCode;
+
+    // Maintains proper stack trace for where error was thrown (V8 only)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ProcessExitError);
+    }
+  }
+}
+
+/**
  * Structured error class with error codes and details
  * @class WUError
  * @extends Error
@@ -53,21 +82,27 @@ export class WUError extends Error {
 }
 
 /**
- * Exit process with error message (replaces die() function)
+ * Throw typed error with formatted message (replaces process.exit calls)
  * Auto-detects script name from process.argv[1] - no string literals needed!
+ *
+ * WU-1538: Now throws ProcessExitError instead of calling process.exit directly.
+ * The CLI entry boundary (runCLI) catches ProcessExitError and maps to process.exit.
+ *
  * @param {string} message - Error message to log
  * @param {number} [exitCode=1] - Process exit code
+ * @throws {ProcessExitError} Always throws with the formatted message and exit code
  * @example
  * die('WU file not found');
  * die('Gates failed', 2);
  */
-export function die(message, exitCode = 1) {
+export function die(message, exitCode = 1): never {
   // Auto-detect script name from process.argv[1] (eliminates string literal duplication)
   // WU-1006: Use path.basename() instead of manual split (Library-First principle)
   const scriptPath = process.argv[1] || 'unknown';
   const scriptName = path.basename(scriptPath, '.js');
-  console.error(`[${scriptName}] ${message}`);
-  process.exit(exitCode);
+  const formattedMessage = `[${scriptName}] ${message}`;
+  console.error(formattedMessage);
+  throw new ProcessExitError(formattedMessage, exitCode);
 }
 
 /**
@@ -131,6 +166,7 @@ export function createAgentFriendlyError(code, message, options: AgentFriendlyEr
  * Common error codes for WU operations
  */
 export const ErrorCodes = {
+  PROCESS_EXIT: 'PROCESS_EXIT', // WU-1538: Typed exit signal from library code
   WU_NOT_FOUND: 'WU_NOT_FOUND',
   WU_ALREADY_CLAIMED: 'WU_ALREADY_CLAIMED',
   WU_NOT_CLAIMED: 'WU_NOT_CLAIMED',

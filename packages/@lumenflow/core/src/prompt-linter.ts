@@ -18,7 +18,8 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 import yaml from 'yaml';
-import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { ProcessExitError } from './error-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -389,12 +390,21 @@ async function main() {
     console.error(`   ✅ All prompts within budget`);
   }
 
-  process.exit(passed ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
+  throw new ProcessExitError(
+    passed ? 'All prompts within budget' : 'Prompt lint failed',
+    passed ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR,
+  );
 }
+
+// Export main for testability (WU-1538)
+export { main as lintMain };
 
 // Run CLI if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
+    if (error instanceof ProcessExitError) {
+      process.exit(error.exitCode);
+    }
     console.error('Prompt linter failed:', error);
     process.exit(EXIT_CODES.ERROR);
   });

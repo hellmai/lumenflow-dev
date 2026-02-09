@@ -3,7 +3,7 @@
  */
 
 import { parseWUArgs } from './arg-parser.js';
-import { die } from './error-handler.js';
+import { die, ProcessExitError } from './error-handler.js';
 import { EXIT_CODES, PATTERNS } from './wu-constants.js';
 
 /**
@@ -47,7 +47,10 @@ export function validateInputs(argv) {
         '    • Mock/Stub/Fake classes in production code (warning only)\n' +
         '  Use --allow-todo only for legitimate cases with justification in WU notes.\n',
     );
-    process.exit(args.help ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
+    throw new ProcessExitError(
+      args.help ? 'Help displayed' : 'Missing required --id flag',
+      args.help ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR,
+    );
   }
 
   const id = args.id.toUpperCase();

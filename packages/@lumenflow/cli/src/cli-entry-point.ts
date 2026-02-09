@@ -27,12 +27,13 @@
  * ```
  */
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
-import { initColorSupport, StreamErrorHandler } from '@lumenflow/core';
+import { initColorSupport, StreamErrorHandler, ProcessExitError } from '@lumenflow/core';
 
 /**
  * Wraps an async main function with proper error handling.
  * WU-1085: Also initializes color support based on NO_COLOR/FORCE_COLOR/--no-color
  * WU-1233: Attaches EPIPE handler for graceful pipe closure
+ * WU-1538: Catches ProcessExitError from core modules and maps to process.exit
  *
  * @param main - The async main function to execute
  * @returns Promise that resolves when main completes (or after error handling)
@@ -49,6 +50,14 @@ export async function runCLI(main: () => Promise<void>): Promise<void> {
   try {
     await main();
   } catch (err: unknown) {
+    // WU-1538: ProcessExitError carries the intended exit code from core modules.
+    // die() already logged the message, so we just exit with the correct code.
+    if (err instanceof ProcessExitError) {
+      process.exit(err.exitCode);
+      return;
+    }
+
+    // Generic errors: log message and exit with error code
     const message = getErrorMessage(err);
     console.error(message);
     process.exit(EXIT_CODES.ERROR);
