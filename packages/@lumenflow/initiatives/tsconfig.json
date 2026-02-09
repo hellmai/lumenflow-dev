@@ -5,16 +5,11 @@
     "rootDir": "./src",
     "noEmit": false,
     "declaration": true,
-    "strict": false,
-    "strictNullChecks": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
-    "noUncheckedIndexedAccess": false,
     "allowJs": true,
     "checkJs": false,
-    "noEmitOnError": false
+    "noEmitOnError": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "__tests__"]

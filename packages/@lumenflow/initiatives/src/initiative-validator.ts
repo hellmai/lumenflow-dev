@@ -151,7 +151,7 @@ export function validateInitiativeRefs(
 
     // Validate phase if specified
     const phase = wu?.phase;
-    if (phase !== undefined && phase !== null) {
+    if (phase !== undefined) {
       const phases = initiative.phases || [];
       const phaseExists = phases.some((p: { id: number }) => p.id === phase);
 

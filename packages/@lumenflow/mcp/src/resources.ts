@@ -92,7 +92,7 @@ export const wuResource: ResourceDefinition = {
       if (!match) {
         return { success: false, error: 'Invalid WU URI format' };
       }
-      const id = match[1];
+      const id = match[1] ?? '';
 
       // Use CLI to get WU status (includes full WU context)
       const result = await runCliCommand('wu:status', ['--id', id, '--json'], {

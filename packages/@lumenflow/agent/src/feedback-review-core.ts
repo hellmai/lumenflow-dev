@@ -65,11 +65,11 @@ function parseDuration(duration: string): number {
     throw new Error(`Invalid duration format: ${duration}. Use format like "7d", "1w", "24h"`);
   }
 
-  const value = Number.parseInt(match[1], 10);
-  const unit = match[2].toLowerCase();
+  const value = Number.parseInt(match[1] as string, 10);
+  const unit = (match[2] as string).toLowerCase();
 
   // eslint-disable-next-line security/detect-object-injection -- unit is validated by regex
-  return value * DURATION_MULTIPLIERS[unit];
+  return value * (DURATION_MULTIPLIERS[unit] as number);
 }
 
 /**
@@ -294,9 +294,10 @@ export function scorePattern(cluster: Cluster): number {
   // Average severity weight
   const severitySum = cluster.nodes.reduce((sum, node) => {
     const severity = node.severity as keyof typeof SEVERITY_WEIGHTS | undefined;
+    const defaultWeight = SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO] ?? 0;
     const weight = severity
-      ? (SEVERITY_WEIGHTS[severity] ?? SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO])
-      : SEVERITY_WEIGHTS[INCIDENT_SEVERITY.INFO];
+      ? (SEVERITY_WEIGHTS[severity] ?? defaultWeight)
+      : defaultWeight;
     return sum + weight;
   }, 0);
   const avgSeverity = severitySum / cluster.nodes.length;

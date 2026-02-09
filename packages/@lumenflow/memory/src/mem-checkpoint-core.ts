@@ -160,7 +160,7 @@ export async function createCheckpoint(
   const { note, sessionId, wuId, progress, nextSteps, trigger } = options;
 
   // Validate required fields
-  if (note === undefined || note === null) {
+  if (note == null) {
     throw new Error(ERROR_MESSAGES.NOTE_REQUIRED);
   }
 

@@ -1,6 +1,5 @@
 import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
 import {
@@ -154,14 +153,14 @@ const isDirectExecution = (() => {
 })();
 
 if (isDirectExecution) {
-  const wuId = process.argv[2];
+  const wuId = process.argv[2] ?? '';
   try {
     const result = verifyWUComplete(wuId);
     const message = debugSummary(result);
     console.log(message);
     process.exit(result.complete ? EXIT_CODES.SUCCESS : EXIT_CODES.ERROR);
   } catch (error) {
-    console.error(`Verification error: ${error.message}`);
+    console.error(`Verification error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(EXIT_CODES.ERROR);
   }
 }
