@@ -1,0 +1,43 @@
+id: WU-1530
+title: Single-pass wu:create validation and mandatory --help rule
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/core/src/wu-lint.ts
+  - CLAUDE.md
+  - .claude/CLAUDE.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+tests:
+  manual:
+    - Run pnpm wu:create with intentionally wrong fields and verify all errors appear in a single output
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1530.done
+dependencies: []
+risks: []
+notes: Root cause identified via Codex audit + manual transcript analysis. The validateCreateSpec early return at ~line 531 is the main code culprit. Spec lint runs inside createWUYamlInWorktree (after worktree creation) but could be extracted to run earlier with in-memory YAML. The --validate flag exists but is dead code - consider activating it as part of this fix.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Agents consistently fail wu:create 4-6 times before success because (1) validation is fail-fast across 3 sequential stages so errors trickle out one-at-a-time, (2) no --help rule exists in CLAUDE.md so agents guess flags, and (3) quick-ref-commands.md has wrong examples (wu:edit --field, pnpm lumenflow commands). Problem: Each wu:create attempt takes ~10s including micro-worktree setup, so 6 attempts wastes a minute and floods context. Solution: Collect all validation errors in a single pass (remove early returns in validateCreateSpec, run lint before worktree creation), add mandatory --help rule to both CLAUDE.md files, and fix incorrect quick-ref examples.'
+acceptance:
+  - validateCreateSpec collects all field, placeholder, schema, completeness, and path errors before returning
+  - Spec lint validation runs before micro-worktree creation using in-memory YAML check
+  - Both CLAUDE.md and .claude/CLAUDE.md include mandatory --help rule
+  - 'quick-ref-commands.md: wu:edit --field replaced with correct flags'
+  - 'quick-ref-commands.md: pnpm lumenflow commands replaced with working command'
+  - 'quick-ref-commands.md: Complete reference softened, workflow sequence includes --help step'
