@@ -1,0 +1,40 @@
+id: WU-1541
+title: Remove process.chdir global state mutations
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/core/src/git-adapter.ts
+  - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+tests:
+  manual:
+    - Run wu:done and gates flows from non-root invocation contexts and verify stable behavior without cwd mutation.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1541.done
+dependencies: []
+initiative: INIT-020
+phase: 8
+spec_refs:
+  - lumenflow://plans/polished-frolicking-whale.md
+risks: []
+notes: Track F from enterprise hardening initiative.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu-done-worktree and gates rely on process.chdir to switch execution context. Problem: global cwd mutation introduces hidden coupling and blocks safe parallelization. Solution: refactor affected flows to pass explicit cwd and path context through adapters and subprocess calls without mutating process-global state.'
+acceptance:
+  - wu-done-worktree and gates no longer rely on process.chdir for normal execution paths.
+  - Git and file operations receive explicit cwd/baseDir parameters through helper layers.
+  - Regression tests cover multi-path execution and confirm behavior without cwd mutation side effects.
