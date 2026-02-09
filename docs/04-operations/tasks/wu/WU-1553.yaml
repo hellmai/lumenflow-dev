@@ -1,0 +1,34 @@
+id: WU-1553
+title: Fix commitCleanupChanges to stage archive files alongside state files
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done-auto-cleanup.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done-auto-cleanup.test.ts
+tests:
+  manual:
+    - Run wu:done on a WU with archivable events; verify main is clean after completion
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done-auto-cleanup.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1553.done
+dependencies: []
+risks: []
+notes: 'Bug is on line ~205: filter uses STATE_FILE_PREFIX (.lumenflow/state/) but archive files are in .lumenflow/archive/. Fix: add ARCHIVE_FILE_PREFIX or use a broader LUMENFLOW_PREFIX (.lumenflow/) filter. ExampleApp workaround: cleanup.trigger: manual.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: commitCleanupChanges() in wu-done-auto-cleanup.ts only stages .lumenflow/state/* files via STATE_FILE_PREFIX filter. But archiveWuEvents() (WU-1430) also creates/modifies .lumenflow/archive/* files during cleanup. These archive files are never staged or committed, leaving main dirty after wu:done. Reported by ExampleApp consumer.
+acceptance:
+  - commitCleanupChanges stages both .lumenflow/state/* and .lumenflow/archive/* files
+  - Tests cover archive file staging in wu-done-auto-cleanup.test.ts
+  - Main checkout is clean after wu:done when archival runs
