@@ -10,8 +10,6 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/mcp/src/tools.ts
-  - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
 tests:
   manual:
     - Run pnpm wu:delete --id <temp-wu> and verify command exits 0 with no pathspec error
