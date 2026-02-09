@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml) — Operations: Tooling
