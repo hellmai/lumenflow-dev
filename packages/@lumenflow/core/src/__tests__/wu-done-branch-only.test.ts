@@ -16,6 +16,11 @@ vi.mock('../git-adapter.js', () => ({
 vi.mock('../wu-done-pr.js', () => ({
   createPR: vi.fn(),
   printPRCreatedMessage: vi.fn(),
+  WU_DONE_COMPLETION_MODES: {
+    WORKTREE: 'worktree',
+    BRANCH_ONLY: 'branch-only',
+    BRANCH_PR: 'branch-pr',
+  },
 }));
 
 vi.mock('../wu-done-validators.js', () => ({
