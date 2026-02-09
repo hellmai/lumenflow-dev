@@ -1,0 +1,30 @@
+id: WU-1552
+title: Restructure INIT-020 to 15-WU plan per sizing guide
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P1
+created: 2026-02-09
+code_paths: []
+tests:
+  manual:
+    - Verify INIT-020 lists all 15 WUs with correct IDs and phase 8 is marked done.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1552.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Architecture audit plan was sized per wu-sizing-guide.md, splitting 3 oversized WUs and adding 3 new tracks. Problem: Existing WU specs and INIT-020 phases need updating to match the approved 15-WU plan. Solution: narrow WU-1535/1536/1539 scope, update INIT-020 to 15 phases with WU ID mapping.'
+acceptance:
+  - WU-1535 narrowed to B1 (strict TS only), WU-1536 narrowed to C1 (codemod only), WU-1539 narrowed to E1 (path literals only).
+  - INIT-020 phases expanded to 15 with WU ID mapping and phase 8 marked done.
