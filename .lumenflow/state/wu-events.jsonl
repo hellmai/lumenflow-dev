@@ -1034,3 +1034,4 @@
 {"type":"claim","wuId":"WU-1539","lane":"Framework: Core Lifecycle","title":"Centralize duplicated stamp and events path literals","timestamp":"2026-02-09T23:36:22.783Z"}
 {"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:49:51.361Z"}
 {"wuId":"WU-1535","type":"complete","reason":"manual fix: wu:done completed successfully but rebase reordered metadata commit","timestamp":"2026-02-09T23:48:00.000Z"}
+{"type":"claim","wuId":"WU-1551","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling","timestamp":"2026-02-09T23:52:46.256Z"}

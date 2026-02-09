@@ -10,6 +10,8 @@ _Last updated: 2026-02-09_
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml)
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
+- [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml)
+- [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
 
 ## Completed
 
@@ -497,6 +499,6 @@ _Last updated: 2026-02-09_
 - [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — 2026-02-09
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — 2026-02-09
 - [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — 2026-02-09
-- [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — 2026-02-09
 - [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09
+- [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09

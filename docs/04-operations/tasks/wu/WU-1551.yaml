@@ -2,7 +2,7 @@ id: WU-1551
 title: Fix floating promises and replace setInterval polling
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/patrol-loop.ts
 tests:
   manual:
-    - Run rg setInterval.*async packages/@lumenflow/*/src/ --type ts and verify zero unguarded patterns.
+    - Run rg setInterval.*async packages/@lumenflow/*/src/ --type ts and verify zero unguarded
+      patterns.
   unit:
     - packages/@lumenflow/cli/src/__tests__/mem-inbox-watch.test.ts
   e2e: []
@@ -31,8 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: mem-inbox.ts uses async callback in setInterval (promise floats). patrol-loop.ts has promise chain in setTimeout without terminal .catch(). mem-inbox.ts polls instead of using chokidar (already installed). Problem: unhandled promise rejections and unnecessary CPU wakes. Solution: replace setInterval with chokidar.watch(), add .catch() to patrol-loop.ts.'
+description: 'Context: mem-inbox.ts uses async callback in setInterval (promise floats).
+  patrol-loop.ts has promise chain in setTimeout without terminal .catch(). mem-inbox.ts polls
+  instead of using chokidar (already installed). Problem: unhandled promise rejections and
+  unnecessary CPU wakes. Solution: replace setInterval with chokidar.watch(), add .catch() to
+  patrol-loop.ts.'
 acceptance:
   - mem-inbox.ts uses chokidar.watch() instead of setInterval polling for watch mode.
   - patrol-loop.ts promise chain has terminal .catch() error handler.
   - No unguarded async callbacks in setInterval or setTimeout patterns remain.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1551
+claimed_at: 2026-02-09T23:52:46.188Z
+baseline_main_sha: 0c2c890ec8b0addcab2ddae0986e42e461e778ad
+session_id: cc01dbf5-c705-46bb-a813-2b7f2d534251
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:52:46.206Z
