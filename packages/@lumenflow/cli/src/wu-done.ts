@@ -44,7 +44,7 @@ import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
 import { die } from '@lumenflow/core/dist/error-handler.js';
 // WU-1223: Location detection for worktree check
 import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
@@ -1106,9 +1106,10 @@ function runTripwireCheck() {
   process.exit(EXIT_CODES.ERROR);
 }
 
-async function listStaged() {
-  // WU-1235: Use getGitForCwd() to capture current directory (worktree after chdir)
-  const gitCwd = getGitForCwd();
+async function listStaged(gitAdapter?) {
+  // WU-1541: Use explicit gitAdapter if provided, otherwise fall back to getGitForCwd()
+  // WU-1235: getGitForCwd() captures current directory (legacy behavior)
+  const gitCwd = gitAdapter ?? getGitForCwd();
   const raw = await gitCwd.raw(['diff', '--cached', '--name-only']);
   return raw ? raw.split(/\r?\n/).filter(Boolean) : [];
 }
@@ -1321,8 +1322,9 @@ async function runGatesInWorktree(
   }
 }
 
-async function validateStagedFiles(id, isDocsOnly = false) {
-  const staged = await listStaged();
+async function validateStagedFiles(id, isDocsOnly = false, gitAdapter?) {
+  // WU-1541: Accept optional gitAdapter to avoid process.chdir dependency
+  const staged = await listStaged(gitAdapter);
 
   // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
   const config = getConfig();
@@ -2723,9 +2725,13 @@ async function main() {
       } else {
         // Worktree mode: update in worktree, commit, then merge or create PR
         // WU-1369: Uses atomic transaction pattern
+        // WU-1541: Create worktree-aware validateStagedFiles to avoid process.chdir dependency
+        const worktreeGitForValidation = createGitForPath(worktreePath);
         const worktreeContext = {
           ...baseContext,
           worktreePath,
+          validateStagedFiles: (wuId, docsOnly) =>
+            validateStagedFiles(wuId, docsOnly, worktreeGitForValidation),
         };
         completionResult = await executeWorktreeCompletion(worktreeContext);
       }
