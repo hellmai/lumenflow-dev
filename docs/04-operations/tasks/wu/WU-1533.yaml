@@ -2,7 +2,7 @@ id: WU-1533
 title: 'BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - .gitignore
 tests:
   manual:
-    - Run pnpm wu:done on a WU with archival candidates and verify git status is clean after completion
+    - Run pnpm wu:done on a WU with archival candidates and verify git status is clean after
+      completion
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done-auto-cleanup.test.ts
   e2e: []
@@ -19,7 +20,9 @@ artifacts:
   - .lumenflow/stamps/WU-1533.done
 dependencies: []
 risks: []
-notes: 'Root cause: (1) auto-cleanup modifies tracked wu-events.jsonl and creates untracked archive files after push. (2) Config cache from process start is stale after merge. Fix: re-read config after merge, gitignore archive dir, and auto-commit or skip cleanup on tracked files.'
+notes: 'Root cause: (1) auto-cleanup modifies tracked wu-events.jsonl and creates untracked archive
+  files after push. (2) Config cache from process start is stale after merge. Fix: re-read config
+  after merge, gitignore archive dir, and auto-commit or skip cleanup on tracked files.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -28,9 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'After wu:done, main can become dirty with .lumenflow/state/wu-events.jsonl modified and .lumenflow/archive/* created. Root cause: auto-cleanup modifies tracked wu-events.jsonl and creates untracked archive files after push completes. Config cache is also stale after merge so merged cleanup.trigger changes are not respected.'
+description: 'After wu:done, main can become dirty with .lumenflow/state/wu-events.jsonl modified
+  and .lumenflow/archive/* created. Root cause: auto-cleanup modifies tracked wu-events.jsonl and
+  creates untracked archive files after push completes. Config cache is also stale after merge so
+  merged cleanup.trigger changes are not respected.'
 acceptance:
   - Running wu:done leaves git status clean on main
   - No untracked .lumenflow/archive/* side effects unless explicitly requested
   - 'Regression test: wu:done with archival candidates present does not dirty main'
   - Config cache is re-read after merge so merged cleanup.trigger changes are respected
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1533
+claimed_at: 2026-02-09T12:25:27.522Z
+baseline_main_sha: 5a4b91dea6fcef64dc6011afadd7396f26d2d726
+session_id: d7bb0ab0-f16a-42ad-98c0-87f45b407c3f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T12:25:27.528Z
