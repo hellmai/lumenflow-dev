@@ -1371,6 +1371,12 @@ async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
   }
 }
 
+/**
+ * WU-1541: runGates still uses process.chdir as a contained, self-restoring pattern.
+ * The executeGates function and ~30 sub-functions use process.cwd() extensively.
+ * A full refactor to pass explicit cwd through all gate functions would be a separate WU.
+ * The try/finally pattern here is safe: chdir is always restored even on error.
+ */
 export async function runGates(
   options: {
     cwd?: string;

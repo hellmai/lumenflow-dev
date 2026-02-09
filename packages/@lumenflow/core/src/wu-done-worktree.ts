@@ -30,9 +30,9 @@ import {
   branchExists,
   validatePostMutation,
 } from './wu-done-validators.js';
-import { getGitForCwd } from './git-adapter.js';
+import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { readWU, writeWU } from './wu-yaml.js';
-import { WU_PATHS } from './wu-paths.js';
+import { WU_PATHS, createWuPaths } from './wu-paths.js';
 import {
   BRANCHES,
   REMOTES,
@@ -203,19 +203,14 @@ export async function executeWorktreeCompletion(context) {
     // WU-1749: Squash previous completion attempts before recovery
     // This prevents "rebase hell" where multiple completion commits accumulate
     // during failed retry attempts
+    // WU-1541: Use createGitForPath instead of process.chdir
     try {
-      const prevCwd = process.cwd();
-      try {
-        process.chdir(worktreePath);
-        const gitCwd = getGitForCwd();
-        const squashResult = await prepareRecoveryWithSquash(id, gitCwd);
-        if (squashResult.squashedCount > 0) {
-          console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${squashResult.squashedCount} previous completion attempt(s)`,
-          );
-        }
-      } finally {
-        process.chdir(prevCwd);
+      const gitWorktree = createGitForPath(worktreePath);
+      const squashResult = await prepareRecoveryWithSquash(id, gitWorktree);
+      if (squashResult.squashedCount > 0) {
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${squashResult.squashedCount} previous completion attempt(s)`,
+        );
       }
     } catch (squashError) {
       // Non-fatal: Log and continue with recovery
@@ -260,15 +255,16 @@ export async function executeWorktreeCompletion(context) {
   let transactionSnapshot = null;
 
   try {
-    // cd into worktree for metadata updates
+    // WU-1541: Use explicit worktree paths and git adapter instead of process.chdir
     console.log(`\n${LOG_PREFIX.DONE} Updating metadata in worktree: ${worktreePath}`);
-    process.chdir(worktreePath);
+    const worktreeGit = createGitForPath(worktreePath);
+    const worktreePaths = createWuPaths({ projectRoot: worktreePath });
 
-    // Recalculate paths relative to worktree (now current dir)
-    const workingWUPath = WU_PATHS.WU(id);
-    const workingStatusPath = WU_PATHS.STATUS();
-    const workingBacklogPath = WU_PATHS.BACKLOG();
-    const workingStampsDir = WU_PATHS.STAMPS_DIR();
+    // Calculate absolute paths within the worktree
+    const workingWUPath = worktreePaths.WU(id);
+    const workingStatusPath = worktreePaths.STATUS();
+    const workingBacklogPath = worktreePaths.BACKLOG();
+    const workingStampsDir = worktreePaths.STAMPS_DIR();
     const workingStampPath = path.join(workingStampsDir, `${id}.done`);
 
     // ======================================================================
@@ -312,10 +308,10 @@ export async function executeWorktreeCompletion(context) {
     // WU-1153: Validate code_paths are committed before metadata transaction
     // This prevents lost work from metadata rollbacks after code commits
     console.log(`${LOG_PREFIX.DONE} Checking code_paths commit status (WU-1153)...`);
-    const gitAdapter = getGitForCwd();
+    // WU-1541: Use worktreeGit (explicit baseDir) instead of getGitForCwd()
     const codePathsResult = await validateCodePathsCommittedBeforeDone(
       normalizeResult.normalized,
-      gitAdapter,
+      worktreeGit,
       { abortOnFailure: false }, // Don't abort here, throw validation error instead
     );
 
@@ -363,8 +359,12 @@ export async function executeWorktreeCompletion(context) {
 
     // WU-2310: Capture file state before transaction commit
     // This allows rollback if git commit fails AFTER files are written
-    // Note: We use the relative paths since we're already chdir'd into the worktree
-    const workingEventsPath = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+    // WU-1541: Use absolute path via worktreePaths instead of relative path after chdir
+    const workingEventsPath = path.join(
+      worktreePath,
+      LUMENFLOW_PATHS.STATE_DIR,
+      WU_EVENTS_FILE_NAME,
+    );
     const pathsToSnapshot = [
       workingWUPath,
       workingStatusPath,
@@ -421,12 +421,15 @@ export async function executeWorktreeCompletion(context) {
     });
 
     // Stage and format files
+    // WU-1541: Pass worktreeGit and worktreePath to avoid process.chdir dependency
     await stageAndFormatMetadata({
       id,
       wuPath: workingWUPath,
       statusPath: workingStatusPath,
       backlogPath: workingBacklogPath,
       stampsDir: workingStampsDir,
+      gitAdapter: worktreeGit,
+      repoRoot: worktreePath,
     });
 
     // Validate staged files
@@ -435,11 +438,15 @@ export async function executeWorktreeCompletion(context) {
     // ======================================================================
     // WU-1584 Fix #1: Squash previous completion attempts before new commit
     // This prevents N duplicate commits when wu:done is retried N times
+    // WU-1541: Use worktreeGit (explicit baseDir) instead of getGitForCwd()
     // ======================================================================
-    const gitCwd = getGitForCwd();
-    const previousAttempts = await countPreviousCompletionAttempts(id, gitCwd);
+    const previousAttempts = await countPreviousCompletionAttempts(id, worktreeGit);
     if (previousAttempts > 0) {
-      const squashResult = await squashPreviousCompletionAttempts(id, previousAttempts, gitCwd);
+      const squashResult = await squashPreviousCompletionAttempts(
+        id,
+        previousAttempts,
+        worktreeGit,
+      );
       if (squashResult.squashed) {
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1584: Squashed ${squashResult.count} previous attempt(s) - single commit will be created`,
@@ -455,15 +462,14 @@ export async function executeWorktreeCompletion(context) {
       worktreePath,
     });
     // WU-1943: Capture pre-commit SHA for rollback on merge failure
-    preCommitSha = await gitCwd.getCommitHash('HEAD');
-    await gitCwd.commit(msg);
+    preCommitSha = await worktreeGit.getCommitHash('HEAD');
+    await worktreeGit.commit(msg);
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed in worktree`);
 
     // WU-1943: Track that git commit was made (needed for rollback decision)
     gitCommitMade = true;
 
-    // Return to main checkout
-    process.chdir(originalCwd);
+    // WU-1541: No need to chdir back - we never changed directory
 
     // Determine if PR mode is enabled
     const prModeEnabled = isPRModeEnabled(docMain, args);
@@ -548,7 +554,8 @@ export async function executeWorktreeCompletion(context) {
           }
 
           // Sync/rebase before push (handles concurrent main advancement)
-          const gitMain = getGitForCwd();
+          // WU-1541: Use createGitForPath(originalCwd) for main checkout operations
+          const gitMain = createGitForPath(originalCwd);
           await gitMain.raw([
             GIT_COMMANDS.PULL,
             GIT_FLAGS.REBASE,
@@ -598,12 +605,7 @@ export async function executeWorktreeCompletion(context) {
       cleanupSafe: true,
     };
   } catch (err) {
-    // Restore original directory
-    try {
-      process.chdir(originalCwd);
-    } catch {
-      // Ignore chdir errors during cleanup
-    }
+    // WU-1541: No need to restore directory - we never changed it
 
     // WU-1369: Atomic transaction pattern
     // - If error occurred BEFORE transaction.commit() → no files were written
@@ -638,8 +640,8 @@ export async function executeWorktreeCompletion(context) {
           `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: Git commit failed after transaction - rolling back files...`,
         );
         try {
-          // cd into worktree for rollback
-          process.chdir(worktreePath);
+          // WU-1541: restoreFromSnapshot uses absolute paths from the snapshot,
+          // so no chdir needed - it writes to the correct worktree paths directly
           const rollbackResult = restoreFromSnapshot(transactionSnapshot);
           if (rollbackResult.errors.length === 0) {
             fileRollbackSuccess = true;
@@ -654,18 +656,11 @@ export async function executeWorktreeCompletion(context) {
               console.log(`${LOG_PREFIX.DONE}   ${EMOJI.FAILURE} ${e.path}: ${e.error}`);
             }
           }
-          // Return to main checkout
-          process.chdir(originalCwd);
         } catch (rollbackErr) {
           // Log but don't fail - rollback is best-effort
           console.log(
             `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2310: File rollback error: ${rollbackErr.message}`,
           );
-          try {
-            process.chdir(originalCwd);
-          } catch {
-            // Ignore chdir errors
-          }
         }
       }
 
@@ -676,20 +671,12 @@ export async function executeWorktreeCompletion(context) {
           `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge failed after git commit - attempting branch rollback...`,
         );
         try {
-          // cd into worktree for rollback
-          process.chdir(worktreePath);
-          const gitCwd = getGitForCwd();
-          await rollbackBranchOnMergeFailure(gitCwd, preCommitSha, id);
-          // Return to main checkout
-          process.chdir(originalCwd);
+          // WU-1541: Use createGitForPath instead of chdir + getGitForCwd
+          const gitWorktreeForRollback = createGitForPath(worktreePath);
+          await rollbackBranchOnMergeFailure(gitWorktreeForRollback, preCommitSha, id);
         } catch (rollbackErr) {
           // Log but don't fail - rollback is best-effort
           console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rollback error: ${rollbackErr.message}`);
-          try {
-            process.chdir(originalCwd);
-          } catch {
-            // Ignore chdir errors
-          }
         }
       }
 
@@ -913,29 +900,25 @@ async function autoResolveAppendOnlyConflicts(gitCwd) {
 export async function autoRebaseBranch(branch, worktreePath, wuId) {
   console.log(REBASE.STARTING(branch, BRANCHES.MAIN));
 
-  // Save original cwd
-  const originalCwd = process.cwd();
+  // WU-1541: Use explicit baseDir instead of process.chdir for git operations
+  const gitWorktree = createGitForPath(worktreePath);
   const previousEditor = process.env.GIT_EDITOR;
   process.env.GIT_EDITOR = 'true';
 
   try {
-    // cd into worktree for rebase
-    process.chdir(worktreePath);
-    const gitCwd = getGitForCwd();
-
-    // Fetch latest main
-    await gitCwd.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    // Fetch latest main (using worktree git context)
+    await gitWorktree.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
 
     // Attempt rebase
     try {
-      await gitCwd.rebase(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+      await gitWorktree.rebase(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
     } catch (rebaseError) {
       // WU-1749 Bug 3: Check if conflicts are in append-only files that can be auto-resolved
       console.log(
         `${LOG_PREFIX.DONE} ${EMOJI.INFO} Rebase hit conflicts, checking for auto-resolvable...`,
       );
 
-      const resolution = await autoResolveAppendOnlyConflicts(gitCwd);
+      const resolution = await autoResolveAppendOnlyConflicts(gitWorktree);
 
       if (resolution.resolved) {
         console.log(
@@ -944,13 +927,13 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
 
         // Continue the rebase after resolving conflicts
         try {
-          await gitCwd.raw(['rebase', '--continue']);
+          await gitWorktree.raw(['rebase', '--continue']);
         } catch (continueError) {
           // May need multiple rounds of conflict resolution
           // For simplicity, we'll try once more
-          const secondResolution = await autoResolveAppendOnlyConflicts(gitCwd);
+          const secondResolution = await autoResolveAppendOnlyConflicts(gitWorktree);
           if (secondResolution.resolved) {
-            await gitCwd.raw(['rebase', '--continue']);
+            await gitWorktree.raw(['rebase', '--continue']);
           } else {
             // Still have non-auto-resolvable conflicts
             throw continueError;
@@ -967,14 +950,14 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
     // were pulled into the worktree. These must be cleaned before continuing.
     // WU-1817: Now passes gitCwd to verify artifacts exist on origin/main
     if (wuId) {
-      const artifacts = await detectRebasedArtifacts(worktreePath, wuId, gitCwd);
+      const artifacts = await detectRebasedArtifacts(worktreePath, wuId, gitWorktree);
       if (artifacts.hasArtifacts) {
         console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Detected rebased completion artifacts`);
         const cleanup = await cleanupRebasedArtifacts(worktreePath, wuId);
         if (cleanup.cleaned) {
           // Stage and commit the cleanup
-          await gitCwd.add('.');
-          await gitCwd.commit(COMMIT_FORMATS.REBASE_ARTIFACT_CLEANUP(wuId));
+          await gitWorktree.add('.');
+          await gitWorktree.commit(COMMIT_FORMATS.REBASE_ARTIFACT_CLEANUP(wuId));
           console.log(
             `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Cleaned rebased artifacts and committed`,
           );
@@ -983,7 +966,7 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
     }
 
     // Force-push lane branch with lease (safe force push)
-    await gitCwd.raw(['push', '--force-with-lease', REMOTES.ORIGIN, branch]);
+    await gitWorktree.raw(['push', '--force-with-lease', REMOTES.ORIGIN, branch]);
 
     console.log(REBASE.SUCCESS);
     return { success: true };
@@ -993,8 +976,7 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
 
     try {
       // Abort the failed rebase to leave worktree clean
-      const gitCwd = getGitForCwd();
-      await gitCwd.raw(['rebase', '--abort']);
+      await gitWorktree.raw(['rebase', '--abort']);
       console.log(REBASE.ABORTED);
     } catch {
       // Ignore abort errors - may already be clean
@@ -1009,12 +991,6 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
       delete process.env.GIT_EDITOR;
     } else {
       process.env.GIT_EDITOR = previousEditor;
-    }
-    // Always return to original directory
-    try {
-      process.chdir(originalCwd);
-    } catch {
-      // Ignore chdir errors
     }
   }
 }
