@@ -1,0 +1,38 @@
+id: WU-1528
+title: Fix wu:delete pathspec failure in micro-worktree staging
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/cli/src/wu-delete.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+tests:
+  manual:
+    - Run pnpm wu:delete --id <temp-wu> and verify command exits 0 with no pathspec error
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1528.done
+dependencies: []
+spec_refs:
+  - lumenflow://conversation/wu-1489-delete-failure
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: wu:delete is the supported lifecycle command for removing obsolete WUs. Problem: deleting WU-1489 failed with 'fatal: pathspec ... did not match any files' after file deletion/regeneration, causing wu:delete to abort and forcing manual/admin workaround. Solution: make wu:delete staging robust when target WU YAML is already removed in the micro-worktree, and ensure command completes atomically (events + projections + commit/push)."
+acceptance:
+  - pnpm wu:delete --id <ready-wu> completes without fatal pathspec errors
+  - Deleted WU file, wu-events cleanup, and backlog/status regeneration are committed and pushed atomically
+  - Regression test reproduces the pathspec failure case and passes after fix
