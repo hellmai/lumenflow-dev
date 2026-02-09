@@ -11,7 +11,6 @@
  */
 
 import { existsSync } from 'node:fs';
-import path from 'node:path';
 import { minimatch } from 'minimatch';
 import { loadInvariants, INVARIANT_TYPES } from './invariants-runner.js';
 
@@ -42,32 +41,6 @@ export const REGISTRATION_SURFACES = {
  * registration surface updates.
  */
 export const CLI_COMMAND_PATTERNS: string[] = ['packages/@lumenflow/cli/package.json'];
-
-const CLI_SOURCE_ROOT = 'packages/@lumenflow/cli/src/';
-
-function pathExistsFromWorkspace(codePath: string): boolean {
-  if (path.isAbsolute(codePath)) {
-    return existsSync(codePath);
-  }
-
-  // WU-1531: wu:lint can run from workspace root or package subdirectories.
-  // Walk up a few levels to resolve repo-relative code_paths reliably.
-  let current = process.cwd();
-  for (let depth = 0; depth < 8; depth += 1) {
-    const candidate = path.resolve(current, codePath);
-    if (existsSync(candidate)) {
-      return true;
-    }
-
-    const parent = path.dirname(current);
-    if (parent === current) {
-      break;
-    }
-    current = parent;
-  }
-
-  return false;
-}
 
 /**
  * WU-1504: Patterns that exclude files from parity check trigger.
@@ -266,8 +239,8 @@ export function validateInvariantsCompliance(wu, invariants) {
 }
 
 /**
- * WU-1504: Check if a code_path indicates a CLI command implementation
- * that would require registration in public-manifest and MCP tools.
+ * WU-1504 + WU-1530: Check if a code_path indicates a CLI command surface
+ * change that would require registration in public-manifest and MCP tools.
  *
  * A path triggers parity checks if it:
  * 1. Matches any CLI_COMMAND_PATTERNS prefix
@@ -278,18 +251,7 @@ function isCliCommandPath(codePath: string): boolean {
   if (!matchesCommand) return false;
 
   const isExcluded = CLI_COMMAND_EXCLUDE_PATTERNS.some((pattern) => codePath.includes(pattern));
-  if (isExcluded) return false;
-
-  // WU-1531: Existing CLI command implementation files should not force
-  // public-manifest/tools parity. This parity check is reserved for new
-  // command-registration intent (new path under cli/src or package.json).
-  if (codePath.startsWith(CLI_SOURCE_ROOT)) {
-    if (pathExistsFromWorkspace(codePath)) {
-      return false;
-    }
-  }
-
-  return true;
+  return !isExcluded;
 }
 
 /**
@@ -301,9 +263,9 @@ const TERMINAL_STATUSES = new Set(['done', 'cancelled', 'completed', 'abandoned'
 /**
  * WU-1504: Validate CLI command registration parity.
  *
- * When WU code_paths include new/changed CLI command implementations or
- * package.json bin entries, registration surfaces (public-manifest.ts and
- * MCP tools.ts) must also be present in code_paths.
+ * When WU code_paths include package.json bin-entry changes, registration
+ * surfaces (public-manifest.ts and MCP tools.ts) must also be present in
+ * code_paths.
  *
  * Skips validation for terminal WU statuses (done, cancelled, etc.) since
  * those specs are historical and should not be retroactively flagged.
