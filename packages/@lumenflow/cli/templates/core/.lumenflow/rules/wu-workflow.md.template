@@ -44,5 +44,5 @@ pnpm wu:done --id WU-XXX
 - [ ] Acceptance criteria satisfied
 - [ ] Gates pass
 - [ ] WU YAML status = `done`
-- [ ] `.beacon/stamps/WU-<id>.done` exists
+- [ ] `.lumenflow/stamps/WU-<id>.done` exists
 - [ ] `pnpm wu:done` has been run

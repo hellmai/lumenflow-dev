@@ -36,7 +36,7 @@ All memory data is stored in `.lumenflow/memory/` as append-only JSONL:
 └── config.yaml         # Retention policy defaults
 ```
 
-Legacy docs may mention `.beacon/memory/`; the current source of truth is `.lumenflow/memory/`.
+The source of truth is `.lumenflow/memory/`.
 
 ## Automatic Integration
 

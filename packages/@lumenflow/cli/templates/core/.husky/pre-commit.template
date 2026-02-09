@@ -34,13 +34,13 @@ if [ "$LUMENFLOW_FORCE" = "1" ]; then
     echo "Please provide a reason for the audit trail." >&2
     echo "" >&2
   fi
-  # Log bypass to .beacon/ for audit trail
-  BEACON_DIR="$(git rev-parse --show-toplevel 2>/dev/null)/.beacon"
-  if [ -n "$BEACON_DIR" ]; then
-    mkdir -p "$BEACON_DIR"
+  # Log bypass to .lumenflow/ for audit trail
+  LUMENFLOW_DIR="$(git rev-parse --show-toplevel 2>/dev/null)/.lumenflow"
+  if [ -n "$LUMENFLOW_DIR" ]; then
+    mkdir -p "$LUMENFLOW_DIR"
     TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     USER=$(git config user.name 2>/dev/null || echo "unknown")
-    echo "${TIMESTAMP} | pre-commit | ${USER} | ${BRANCH} | ${LUMENFLOW_FORCE_REASON:-no reason} | $(pwd)" >> "${BEACON_DIR}/force-bypasses.log"
+    echo "${TIMESTAMP} | pre-commit | ${USER} | ${BRANCH} | ${LUMENFLOW_FORCE_REASON:-no reason} | $(pwd)" >> "${LUMENFLOW_DIR}/force-bypasses.log"
   fi
   exit 0
 fi

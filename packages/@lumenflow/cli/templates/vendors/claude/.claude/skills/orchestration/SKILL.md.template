@@ -191,7 +191,7 @@ pnpm orchestrate:initiative -i INIT-009        # Auto-detects
 **Checkpoint mode**:
 
 - Spawns one wave then exits (no polling)
-- Writes manifest to `.beacon/artifacts/waves/`
+- Writes manifest to `.lumenflow/artifacts/waves/`
 - Idempotent re-runs advance to next wave
 
 ## Recovery Suggestions
