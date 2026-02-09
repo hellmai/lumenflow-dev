@@ -32,6 +32,7 @@ describe('wu:create strict validation (WU-1329)', () => {
           'Context: test context.\nProblem: test problem.\nSolution: test solution that exceeds minimum length requirement.',
         acceptance: ['Acceptance criterion 1'],
         codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+        testPathsManual: ['Run pnpm wu:create with valid spec and verify success'],
         testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create-strict.test.ts'],
         exposure: 'backend-only',
         specRefs: ['lumenflow://plans/WU-9999-plan.md'],
