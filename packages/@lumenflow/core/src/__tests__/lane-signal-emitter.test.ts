@@ -9,7 +9,7 @@
  * - completion paths are wired to invoke the shared emitter helper
  */
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,8 +21,21 @@ import {
 } from '../wu-done-branch-only.js';
 
 function repoRootFromThisFile(): string {
-  const thisDir = path.dirname(fileURLToPath(import.meta.url));
-  return path.resolve(thisDir, '..', '..', '..', '..', '..');
+  let cursor = path.dirname(fileURLToPath(import.meta.url));
+
+  while (true) {
+    const hasWorkspace = existsSync(path.join(cursor, 'pnpm-workspace.yaml'));
+    const hasLumenflowGuide = existsSync(path.join(cursor, 'LUMENFLOW.md'));
+    if (hasWorkspace && hasLumenflowGuide) {
+      return cursor;
+    }
+
+    const parent = path.dirname(cursor);
+    if (parent === cursor) {
+      throw new Error('Could not resolve repository root from test file path');
+    }
+    cursor = parent;
+  }
 }
 
 describe('lane-signal emitter (WU-1498)', () => {
