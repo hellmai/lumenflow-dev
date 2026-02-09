@@ -214,12 +214,20 @@ describe('wu:done auto cleanup (WU-1366)', () => {
         }),
       }));
 
+      // WU-1542: Mock config to provide default commit message
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: vi.fn().mockReturnValue({
+          cleanup: { trigger: 'on_done' },
+        }),
+      }));
+
       const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
       await commitCleanupChanges();
 
       expect(mockAdd).toHaveBeenCalledWith(['.lumenflow/state/wu-events.jsonl']);
+      // WU-1542: Default commit message no longer uses chore(lumenflow): scope
       expect(mockCommit).toHaveBeenCalledWith(
-        expect.stringContaining('chore(lumenflow): auto state cleanup'),
+        expect.stringContaining('chore: lumenflow state cleanup'),
       );
       expect(mockPush).toHaveBeenCalled();
     });
@@ -266,6 +274,69 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       // Should not throw - commit failures are non-fatal
       await expect(commitCleanupChanges()).resolves.not.toThrow();
       expect(consoleWarnSpy).toHaveBeenCalled();
+    });
+
+    // WU-1542: Configurable commit message
+    it('should use configurable commit message from config', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue(' M .lumenflow/state/wu-events.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: vi.fn().mockReturnValue({
+          cleanup: {
+            trigger: 'on_done',
+            commit_message: 'chore(repair): auto state cleanup [skip ci]',
+          },
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      expect(mockCommit).toHaveBeenCalledWith('chore(repair): auto state cleanup [skip ci]');
+    });
+
+    it('should use default commit message when config does not specify one', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue(' M .lumenflow/state/wu-events.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: vi.fn().mockReturnValue({
+          cleanup: { trigger: 'on_done' },
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      // WU-1542: Default must NOT use chore(lumenflow): scope - breaks consumer guards
+      expect(mockCommit).toHaveBeenCalledWith('chore: lumenflow state cleanup [skip ci]');
     });
 
     it('should only commit .lumenflow/state/ files, not unrelated dirty files', async () => {
