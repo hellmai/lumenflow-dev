@@ -1010,3 +1010,4 @@
 {"type":"claim","wuId":"WU-1534","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces","timestamp":"2026-02-09T22:46:27.116Z"}
 {"type":"claim","wuId":"WU-1536","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports","timestamp":"2026-02-09T22:47:10.737Z"}
 {"type":"release","wuId":"WU-1553","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-09T22:47:37.963Z"}
+{"type":"release","wuId":"WU-1534","reason":"No implementation work, releasing to work on WU-1535","timestamp":"2026-02-09T22:48:06.411Z"}
