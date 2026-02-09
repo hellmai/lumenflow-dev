@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import { exec as execCallback } from 'node:child_process';
 import { promisify } from 'node:util';
 
-import { getGitForCwd } from './git-adapter.js';
+import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { updateStatusRemoveInProgress, addToStatusCompleted } from './wu-status-updater.js';
 import { moveWUToDoneBacklog } from './wu-backlog-updater.js';
 import { createStamp } from './stamp-utils.js';
@@ -238,21 +238,35 @@ export async function collectMetadataToTransaction({
 /**
  * Stage and format metadata files
  * Extracted from wu-done.ts (WU-1215 Phase 2 Extraction #1 Helper)
+ * WU-1541: Added optional gitAdapter and repoRoot params to avoid process.chdir dependency
  * @param {object} params - Parameters object
  * @param {string} params.id - WU ID (for error reporting)
  * @param {string} params.wuPath - Path to WU YAML file
  * @param {string} params.statusPath - Path to status.md file
  * @param {string} params.backlogPath - Path to backlog.md file
  * @param {string} params.stampsDir - Path to stamps directory
+ * @param {object} [params.gitAdapter] - Git adapter instance (WU-1541: explicit instead of getGitForCwd)
+ * @param {string} [params.repoRoot] - Absolute repo root path for resolving relative paths
  * @throws {Error} If formatting fails
  */
-export async function stageAndFormatMetadata({ id, wuPath, statusPath, backlogPath, stampsDir }) {
-  // WU-1235: Use getGitForCwd() to capture current directory (worktree after chdir)
-  // The singleton git adapter captures cwd at import time, which is wrong after process.chdir()
-  const gitCwd = getGitForCwd();
+export async function stageAndFormatMetadata({
+  id,
+  wuPath,
+  statusPath,
+  backlogPath,
+  stampsDir,
+  gitAdapter = null,
+  repoRoot = null,
+}) {
+  // WU-1541: Use explicit gitAdapter if provided, otherwise fall back to getGitForCwd()
+  // This eliminates the dependency on process.chdir() having been called beforehand
+  const gitCwd = gitAdapter ?? getGitForCwd();
 
-  // Stage files
-  const wuEventsPath = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+  // WU-1541: Use repoRoot for absolute path resolution if provided,
+  // otherwise fall back to relative path (legacy behavior for callers that still use chdir)
+  const wuEventsPath = repoRoot
+    ? path.join(repoRoot, LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME)
+    : path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
   const filesToStage = [wuPath, statusPath, backlogPath, stampsDir];
   if (existsSync(wuEventsPath)) {
     filesToStage.push(wuEventsPath);
