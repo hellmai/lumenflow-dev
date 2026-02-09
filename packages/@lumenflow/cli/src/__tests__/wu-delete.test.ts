@@ -1,5 +1,5 @@
 /**
- * Regression tests for wu:delete consistency cleanup (WU-1511)
+ * Regression tests for wu:delete consistency cleanup (WU-1511, WU-1528)
  */
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 
 const WU_ID_DELETE = 'WU-1007';
 const WU_ID_KEEP = 'WU-2000';
+const WU_ID_MISSING = 'WU-3000';
 
 function write(path: string, content: string): void {
   mkdirSync(join(path, '..'), { recursive: true });
@@ -83,7 +84,7 @@ vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
     execute: (ctx: {
       worktreePath: string;
       gitWorktree: { add: () => Promise<void> };
-    }) => Promise<void>;
+    }) => Promise<{ files: string[] }>;
   }) => {
     await execute({ worktreePath: process.cwd(), gitWorktree: { add: async () => undefined } });
   },
@@ -230,6 +231,83 @@ describe('wu-delete consistency cleanup', () => {
     expect(existsSync(join(tempDir, 'docs/04-operations/tasks/wu/WU-1007.yaml'))).toBe(false);
     expect(existsSync(join(tempDir, '.lumenflow/stamps/WU-1007.done'))).toBe(false);
     expect(existsSync(join(tempDir, 'docs/04-operations/tasks/wu/WU-2000.yaml'))).toBe(true);
+  });
+
+  it('completes without pathspec error when WU YAML is already removed (WU-1528)', async () => {
+    // Simulate the scenario: WU YAML was already removed from the worktree
+    // (e.g., due to a race condition where another agent deleted it)
+    // but events and projections still reference it.
+    const missingWuYamlPath = join(tempDir, 'docs/04-operations/tasks/wu/WU-3000.yaml');
+
+    // WU-3000 does NOT have a YAML file in the worktree, but events reference it
+    writeFileSync(
+      join(tempDir, '.lumenflow/state/wu-events.jsonl'),
+      [
+        JSON.stringify({
+          type: 'claim',
+          wuId: WU_ID_MISSING,
+          lane: 'Framework: CLI WU Commands',
+          title: 'Already removed',
+          timestamp: '2026-02-07T00:00:00.000Z',
+        }),
+        JSON.stringify({
+          type: 'claim',
+          wuId: WU_ID_KEEP,
+          lane: 'Framework: CLI WU Commands',
+          title: 'Keep me',
+          timestamp: '2026-02-07T00:00:01.000Z',
+        }),
+      ].join('\n') + '\n',
+      'utf-8',
+    );
+
+    expect(existsSync(missingWuYamlPath)).toBe(false);
+
+    const { cleanupDeletedWUsInWorktree } = await import('../wu-delete.js');
+    const files = await cleanupDeletedWUsInWorktree({
+      worktreePath: tempDir,
+      ids: [WU_ID_MISSING],
+    });
+
+    // Events for the missing WU should be cleaned up
+    const events = readFileSync(join(tempDir, '.lumenflow/state/wu-events.jsonl'), 'utf-8');
+    expect(events).not.toContain('"wuId":"WU-3000"');
+    expect(events).toContain('"wuId":"WU-2000"');
+
+    // Returned files must only contain paths that exist on disk
+    // (passing deleted paths to git add causes 'pathspec did not match any files')
+    for (const file of files) {
+      const absPath = join(tempDir, file);
+      expect(existsSync(absPath)).toBe(true);
+    }
+  });
+
+  it('returned files from cleanup do not include deleted paths (WU-1528 regression)', async () => {
+    // WU-1528: cleanupDeletedWUsInWorktree deletes the WU YAML, then returns
+    // the path in the files list. When withMicroWorktree passes these paths to
+    // stageChangesWithDeletions → git add -A -- <path>, git fails with
+    // 'fatal: pathspec ... did not match any files' because the deleted file
+    // is no longer on disk.
+    //
+    // This test verifies that every path in the returned files array points
+    // to a file that still exists on disk (safe for git add).
+    const { cleanupDeletedWUsInWorktree } = await import('../wu-delete.js');
+
+    const files = await cleanupDeletedWUsInWorktree({
+      worktreePath: tempDir,
+      ids: [WU_ID_DELETE],
+    });
+
+    // The WU YAML and stamp were deleted by cleanupDeletedWUsInWorktree
+    expect(existsSync(join(tempDir, 'docs/04-operations/tasks/wu/WU-1007.yaml'))).toBe(false);
+    expect(existsSync(join(tempDir, '.lumenflow/stamps/WU-1007.done'))).toBe(false);
+
+    // Every file in the returned list must still exist on disk
+    // (deleted paths would cause pathspec errors in git add)
+    for (const file of files) {
+      const absPath = join(tempDir, file);
+      expect(existsSync(absPath), `expected ${file} to exist on disk`).toBe(true);
+    }
   });
 
   it('purges pre-existing orphaned event streams while deleting a WU', async () => {
