@@ -1,6 +1,7 @@
 /**
  * @file no-beacon-references-docs.test.ts
- * Guardrail test: public + onboarding docs must not reference legacy `.beacon` paths (WU-1450).
+ * Guardrail test: public + onboarding docs must not reference legacy `.beacon` paths
+ * (WU-1450, WU-1529).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -14,13 +15,15 @@ function repoRootFromThisFile(): string {
   return path.resolve(thisDir, '..', '..', '..', '..', '..');
 }
 
-describe('no legacy .beacon references in docs (WU-1450)', () => {
+describe('no legacy .beacon references in docs (WU-1450, WU-1529)', () => {
   it('should not contain .beacon references in onboarding/public docs', () => {
     const repoRoot = repoRootFromThisFile();
 
     const files = [
       'docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md',
       'docs/04-operations/_frameworks/lumenflow/agent/onboarding/lumenflow-force-usage.md',
+      'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+      'CLAUDE.md',
       'apps/docs/src/content/docs/getting-started/upgrade.mdx',
       'apps/docs/src/content/docs/reference/changelog.mdx',
       'apps/docs/src/content/docs/reference/compatibility.mdx',
