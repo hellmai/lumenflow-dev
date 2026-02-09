@@ -2,7 +2,7 @@ id: WU-1535
 title: Enable strict TypeScript build configuration
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-09
 code_paths:
@@ -15,7 +15,8 @@ code_paths:
   - eslint.config.mjs
 tests:
   manual:
-    - Run pnpm typecheck and verify strict-mode errors are surfaced and resolved or explicitly tracked.
+    - Run pnpm typecheck and verify strict-mode errors are surfaced and resolved or explicitly
+      tracked.
     - Run pnpm lint and confirm re-enabled security/type rules execute in CI-equivalent mode.
   unit: []
   e2e: []
@@ -27,7 +28,9 @@ phase: 2
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: 'Track B1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md (Oversized -> MUST Split). See also WU-1543 (B2: security lint) and WU-1546 (B3: TS lint).'
+notes: 'Track B1 from enterprise hardening initiative. Split from original scope per
+  wu-sizing-guide.md (Oversized -> MUST Split). See also WU-1543 (B2: security lint) and WU-1546
+  (B3: TS lint).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -36,8 +39,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: tsconfig.build.json has strict: false and noEmitOnError: false while IDE config has strict: true (split-brain). Problem: production builds accept code that fails strict checks. Solution: enable strict: true and noEmitOnError: true in tsconfig.build.json and per-package tsconfigs, fix resulting type errors.'
+description: 'Context: tsconfig.build.json has strict: false and noEmitOnError: false while IDE
+  config has strict: true (split-brain). Problem: production builds accept code that fails strict
+  checks. Solution: enable strict: true and noEmitOnError: true in tsconfig.build.json and
+  per-package tsconfigs, fix resulting type errors.'
 acceptance:
   - 'tsconfig.build.json enforces strict: true and noEmitOnError: true.'
-  - Per-package tsconfig files align with strict baseline or have explicit temporary exceptions with justification.
+  - Per-package tsconfig files align with strict baseline or have explicit temporary exceptions with
+    justification.
   - pnpm typecheck and pnpm build pass with strict mode enabled.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1535
+claimed_at: 2026-02-09T22:50:11.824Z
+baseline_main_sha: e3ea995ea858471ca51a8368ee4ef9589dbb392f
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:50:11.832Z
