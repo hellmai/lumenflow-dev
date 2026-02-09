@@ -1,0 +1,12 @@
+id: INIT-020
+slug: enterprise-hardening-sweep
+title: Enterprise Hardening Sweep
+description: ''
+status: draft
+priority: P0
+owner: platform
+created: 2026-02-09
+target_date: 2026-03-31
+phases: []
+success_metrics: []
+labels: []
