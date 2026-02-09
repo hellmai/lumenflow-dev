@@ -35,13 +35,13 @@ export const REGISTRATION_SURFACES = {
 } as const;
 
 /**
- * WU-1504: Patterns that indicate a CLI command implementation file.
- * Files matching these patterns (but NOT excluded patterns) trigger parity checks.
+ * WU-1504 + WU-1530: Patterns that indicate a CLI command surface change.
+ *
+ * Only package.json triggers parity checks (indicates new bin entry).
+ * Existing CLI source files can have internal changes without needing
+ * registration surface updates.
  */
-export const CLI_COMMAND_PATTERNS: string[] = [
-  'packages/@lumenflow/cli/src/',
-  'packages/@lumenflow/cli/package.json',
-];
+export const CLI_COMMAND_PATTERNS: string[] = ['packages/@lumenflow/cli/package.json'];
 
 const CLI_SOURCE_ROOT = 'packages/@lumenflow/cli/src/';
 

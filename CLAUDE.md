@@ -53,14 +53,14 @@ cd /home/USER/source/hellmai/os && pnpm wu:done --id WU-XXXX
 
 1. **Always `--help` First**: Run `<command> --help` before first use of any unfamiliar CLI command
 2. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
-2. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
-3. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
-4. **Library-First**: Search context7 before custom code
-5. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
-6. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-7. **Gates Before Done**: All gates must pass before `wu:done`
-8. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-9. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
+3. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
+4. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
+5. **Library-First**: Search context7 before custom code
+6. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+7. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+8. **Gates Before Done**: All gates must pass before `wu:done`
+9. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+10. **ALWAYS wu:done**: Complete every WU by running `pnpm wu:done`
 
 ## Lanes
 

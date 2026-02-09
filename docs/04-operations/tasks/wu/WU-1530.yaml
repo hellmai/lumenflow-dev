@@ -8,18 +8,18 @@ created: 2026-02-09
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/core/src/wu-lint.ts
+  - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
   - CLAUDE.md
   - .claude/CLAUDE.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Run pnpm wu:create with intentionally wrong fields and verify all errors appear in a single
       output
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1530.done
@@ -53,6 +53,9 @@ acceptance:
   - 'quick-ref-commands.md: wu:edit --field replaced with correct flags'
   - 'quick-ref-commands.md: pnpm lumenflow commands replaced with working command'
   - 'quick-ref-commands.md: Complete reference softened, workflow sequence includes --help step'
+  - Parity heuristic in wu-lint.ts narrowed so existing CLI command files pass lint without requiring
+    public-manifest.ts or tools.ts
+  - Regression test confirms WU with code_paths including existing command file passes spec lint
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1530
 claimed_at: 2026-02-09T10:11:02.597Z
