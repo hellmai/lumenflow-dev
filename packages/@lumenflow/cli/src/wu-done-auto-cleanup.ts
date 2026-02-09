@@ -23,12 +23,7 @@ import fg from 'fast-glob';
 import { readFile } from 'node:fs/promises';
 import { parse as parseYaml } from 'yaml';
 import path from 'node:path';
-import { LOG_PREFIX, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
-
-/**
- * Active WU statuses that should protect signals
- */
-const ACTIVE_WU_STATUSES = ['in_progress', 'blocked'];
+import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES } from '@lumenflow/core/dist/wu-constants.js';
 
 /**
  * Get active WU IDs (in_progress or blocked) by scanning WU YAML files.
@@ -52,7 +47,7 @@ async function getActiveWuIds(baseDir: string): Promise<Set<string>> {
         const content = await readFile(filePath, 'utf-8');
         const wu = parseYaml(content) as { id?: string; status?: string };
 
-        if (wu.id && wu.status && ACTIVE_WU_STATUSES.includes(wu.status)) {
+        if (wu.id && wu.status && PROTECTED_WU_STATUSES.includes(wu.status)) {
           activeIds.add(wu.id);
         }
       } catch {

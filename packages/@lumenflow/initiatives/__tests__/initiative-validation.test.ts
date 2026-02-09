@@ -16,6 +16,11 @@ import {
   shouldProgressInitiativeStatus,
   findIncompleteInitiatives,
 } from '../src/initiative-validation.js';
+import {
+  PROTECTED_WU_STATUSES,
+  PROGRESSABLE_WU_STATUSES,
+  WU_STATUS,
+} from '@lumenflow/core/dist/wu-constants.js';
 
 // Constants for repeated test values
 const TEST_INIT_ID = 'INIT-001';
@@ -325,6 +330,69 @@ describe('initiative-validation', () => {
       expect(result[0].warnings.length).toBeGreaterThanOrEqual(2);
       expect(result[0].warnings.some((w) => w.includes('description'))).toBe(true);
       expect(result[0].warnings.some((w) => w.includes('phases'))).toBe(true);
+    });
+  });
+
+  describe('WU-1540: PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES constants', () => {
+    it('PROTECTED_WU_STATUSES should include blocked status', () => {
+      expect(PROTECTED_WU_STATUSES).toContain(WU_STATUS.BLOCKED);
+    });
+
+    it('PROTECTED_WU_STATUSES should include in_progress status', () => {
+      expect(PROTECTED_WU_STATUSES).toContain(WU_STATUS.IN_PROGRESS);
+    });
+
+    it('PROGRESSABLE_WU_STATUSES should include in_progress status', () => {
+      expect(PROGRESSABLE_WU_STATUSES).toContain(WU_STATUS.IN_PROGRESS);
+    });
+
+    it('PROGRESSABLE_WU_STATUSES should NOT include blocked status', () => {
+      expect(PROGRESSABLE_WU_STATUSES).not.toContain(WU_STATUS.BLOCKED);
+    });
+
+    it('PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES should be distinct arrays', () => {
+      expect(PROTECTED_WU_STATUSES).not.toEqual(PROGRESSABLE_WU_STATUSES);
+    });
+  });
+
+  describe('WU-1540: blocked WUs should not advance initiative status', () => {
+    it('should NOT progress when only blocked WUs exist', () => {
+      const initiative = {
+        id: TEST_INIT_ID,
+        status: 'draft',
+      };
+      const wus = [{ id: TEST_WU_ID, status: 'blocked', initiative: TEST_INIT_ID }];
+      const result = shouldProgressInitiativeStatus(initiative, wus);
+      expect(result.shouldProgress).toBe(false);
+      expect(result.newStatus).toBeNull();
+    });
+
+    it('should progress when in_progress WUs exist alongside blocked WUs', () => {
+      const initiative = {
+        id: TEST_INIT_ID,
+        status: 'draft',
+      };
+      const wus = [
+        { id: TEST_WU_ID, status: 'blocked', initiative: TEST_INIT_ID },
+        { id: TEST_WU_ID_2, status: 'in_progress', initiative: TEST_INIT_ID },
+      ];
+      const result = shouldProgressInitiativeStatus(initiative, wus);
+      expect(result.shouldProgress).toBe(true);
+      expect(result.newStatus).toBe('in_progress');
+    });
+
+    it('should NOT progress from open when all WUs are blocked', () => {
+      const initiative = {
+        id: TEST_INIT_ID,
+        status: 'open',
+      };
+      const wus = [
+        { id: TEST_WU_ID, status: 'blocked', initiative: TEST_INIT_ID },
+        { id: TEST_WU_ID_2, status: 'blocked', initiative: TEST_INIT_ID },
+      ];
+      const result = shouldProgressInitiativeStatus(initiative, wus);
+      expect(result.shouldProgress).toBe(false);
+      expect(result.newStatus).toBeNull();
     });
   });
 });
