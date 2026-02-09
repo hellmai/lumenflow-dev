@@ -151,9 +151,11 @@ export async function runAutoCleanupAfterDone(baseDir: string): Promise<void> {
 
 /**
  * WU-1533: State file path prefix that auto-cleanup may modify.
- * Only files under this prefix are auto-committed after cleanup.
+ * WU-1553: Archive prefix added — archiveWuEvents() writes to .lumenflow/archive/.
+ * Both prefixes are auto-committed after cleanup to prevent leaving main dirty.
  */
 const STATE_FILE_PREFIX = '.lumenflow/state/';
+const ARCHIVE_FILE_PREFIX = '.lumenflow/archive/';
 
 /**
  * WU-1542: Default commit message for auto-cleanup.
@@ -198,27 +200,31 @@ export async function commitCleanupChanges(): Promise<void> {
       return;
     }
 
-    // Parse porcelain status lines to find dirty state files
+    // Parse porcelain status lines to find dirty state/archive files
+    // WU-1553: Include .lumenflow/archive/ files created by archiveWuEvents()
     const lines = status.split('\n').filter((line) => line.length >= 4);
-    const stateFiles = lines
+    const cleanupFiles = lines
       .map((line) => line.slice(3).trim())
-      .filter((filePath) => filePath.startsWith(STATE_FILE_PREFIX));
+      .filter(
+        (filePath) =>
+          filePath.startsWith(STATE_FILE_PREFIX) || filePath.startsWith(ARCHIVE_FILE_PREFIX),
+      );
 
-    if (stateFiles.length === 0) {
+    if (cleanupFiles.length === 0) {
       return;
     }
 
     // WU-1542: Use configurable commit message
     const commitMessage = getCleanupCommitMessage();
 
-    // Stage only state files, commit, pull --rebase, push
-    await git.add(stateFiles);
+    // Stage only cleanup files, commit, pull --rebase, push
+    await git.add(cleanupFiles);
     await git.commit(commitMessage);
     await git.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
     await git.push('origin', 'main');
 
     console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed cleanup changes: ${stateFiles.join(', ')}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed cleanup changes: ${cleanupFiles.join(', ')}`,
     );
   } catch (err) {
     // Non-fatal: log warning but don't throw
