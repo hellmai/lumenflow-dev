@@ -1,12 +1,15 @@
 /**
  * @file wu-done-auto-cleanup.test.ts
- * Test suite for wu:done auto cleanup on success (WU-1366)
+ * Test suite for wu:done auto cleanup on success (WU-1366, WU-1533)
  *
  * WU-1366: State cleanup runs automatically after wu:done success (non-fatal)
+ * WU-1533: Fix auto-cleanup dirtying main checkout
  *
  * Tests:
  * - shouldRunAutoCleanup respects config.cleanup.trigger setting
+ * - shouldRunAutoCleanup re-reads config (reload: true) after merge (WU-1533)
  * - runAutoCleanupAfterDone is non-fatal (logs errors but doesn't throw)
+ * - commitCleanupChanges auto-commits dirty state files after cleanup (WU-1533)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -153,6 +156,143 @@ describe('wu:done auto cleanup (WU-1366)', () => {
 
       // Cleanup should not be called when trigger is manual
       expect(mockCleanupState).not.toHaveBeenCalled();
+    });
+  });
+
+  // WU-1533: Config re-read after merge
+  describe('shouldRunAutoCleanup config reload (WU-1533)', () => {
+    it('should call getConfig with reload: true to re-read config after merge', async () => {
+      const mockGetConfig = vi.fn().mockReturnValue({
+        cleanup: { trigger: 'on_done' },
+      });
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: mockGetConfig,
+      }));
+
+      const { shouldRunAutoCleanup } = await import('../wu-done-auto-cleanup.js');
+      shouldRunAutoCleanup();
+
+      // WU-1533: Must use reload: true so merged config changes are respected
+      expect(mockGetConfig).toHaveBeenCalledWith({ reload: true });
+    });
+
+    it('should respect cleanup.trigger: manual from freshly-merged config', async () => {
+      // Simulate: first call returns on_done (cached), but reload returns manual (merged)
+      const mockGetConfig = vi.fn().mockReturnValue({
+        cleanup: { trigger: 'manual' },
+      });
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: mockGetConfig,
+      }));
+
+      const { shouldRunAutoCleanup } = await import('../wu-done-auto-cleanup.js');
+      const result = shouldRunAutoCleanup();
+
+      expect(result).toBe(false);
+      expect(mockGetConfig).toHaveBeenCalledWith({ reload: true });
+    });
+  });
+
+  // WU-1533: Auto-commit cleanup changes to prevent dirty main
+  describe('commitCleanupChanges (WU-1533)', () => {
+    it('should commit and push when cleanup dirtied tracked state files', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue(' M .lumenflow/state/wu-events.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      expect(mockAdd).toHaveBeenCalledWith(['.lumenflow/state/wu-events.jsonl']);
+      expect(mockCommit).toHaveBeenCalledWith(
+        expect.stringContaining('chore(lumenflow): auto state cleanup'),
+      );
+      expect(mockPush).toHaveBeenCalled();
+    });
+
+    it('should be a no-op when main is clean after cleanup', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue('');
+      const mockAdd = vi.fn();
+      const mockCommit = vi.fn();
+      const mockPush = vi.fn();
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          push: mockPush,
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      // No dirty files = no commit
+      expect(mockAdd).not.toHaveBeenCalled();
+      expect(mockCommit).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('should not throw when commit or push fails (non-fatal)', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue(' M .lumenflow/state/wu-events.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockRejectedValue(new Error('commit failed'));
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+
+      // Should not throw - commit failures are non-fatal
+      await expect(commitCleanupChanges()).resolves.not.toThrow();
+      expect(consoleWarnSpy).toHaveBeenCalled();
+    });
+
+    it('should only commit .lumenflow/state/ files, not unrelated dirty files', async () => {
+      // Mixed dirty state: state file + unrelated file
+      const mockGetStatus = vi
+        .fn()
+        .mockResolvedValue(' M .lumenflow/state/wu-events.jsonl\n M src/unrelated.ts');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      // Should only add state files, not unrelated files
+      expect(mockAdd).toHaveBeenCalledWith(['.lumenflow/state/wu-events.jsonl']);
     });
   });
 });

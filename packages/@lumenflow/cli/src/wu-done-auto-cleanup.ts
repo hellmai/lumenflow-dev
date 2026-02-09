@@ -18,6 +18,7 @@ import { cleanupState, type StateCleanupResult } from '@lumenflow/core/dist/stat
 import { cleanupSignals } from '@lumenflow/memory/dist/signal-cleanup-core.js';
 import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
 import { archiveWuEvents } from '@lumenflow/core/dist/wu-events-cleanup.js';
+import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 import fg from 'fast-glob';
 import { readFile } from 'node:fs/promises';
 import { parse as parseYaml } from 'yaml';
@@ -69,11 +70,15 @@ async function getActiveWuIds(baseDir: string): Promise<Set<string>> {
 /**
  * Check if auto cleanup should run based on config.
  *
+ * WU-1533: Uses reload: true to re-read config from disk after merge.
+ * This ensures that a merged cleanup.trigger change (e.g., 'manual')
+ * is respected even though config was cached earlier in the process.
+ *
  * @returns true if cleanup.trigger is 'on_done' or not set (default)
  */
 export function shouldRunAutoCleanup(): boolean {
   try {
-    const config = getConfig();
+    const config = getConfig({ reload: true });
     const trigger = config.cleanup?.trigger;
 
     // Default to 'on_done' if not set
@@ -140,6 +145,58 @@ export async function runAutoCleanupAfterDone(baseDir: string): Promise<void> {
     const message = err instanceof Error ? err.message : String(err);
     console.warn(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not run auto state cleanup: ${message}`,
+    );
+  }
+}
+
+/**
+ * WU-1533: State file path prefix that auto-cleanup may modify.
+ * Only files under this prefix are auto-committed after cleanup.
+ */
+const STATE_FILE_PREFIX = '.lumenflow/state/';
+
+/**
+ * WU-1533: Commit and push any dirty state files left by auto-cleanup.
+ *
+ * After cleanup runs, tracked files like wu-events.jsonl may be modified.
+ * This function detects those changes, commits them with a housekeeping
+ * message, and pushes to prevent leaving main dirty.
+ *
+ * Non-fatal: errors are logged but never thrown.
+ */
+export async function commitCleanupChanges(): Promise<void> {
+  try {
+    const git = getGitForCwd();
+    const status = await git.getStatus();
+
+    if (!status) {
+      return;
+    }
+
+    // Parse porcelain status lines to find dirty state files
+    const lines = status.split('\n').filter((line) => line.length >= 4);
+    const stateFiles = lines
+      .map((line) => line.slice(3).trim())
+      .filter((filePath) => filePath.startsWith(STATE_FILE_PREFIX));
+
+    if (stateFiles.length === 0) {
+      return;
+    }
+
+    // Stage only state files, commit, pull --rebase, push
+    await git.add(stateFiles);
+    await git.commit('chore(lumenflow): auto state cleanup [skip ci]');
+    await git.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
+    await git.push('origin', 'main');
+
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed cleanup changes: ${stateFiles.join(', ')}`,
+    );
+  } catch (err) {
+    // Non-fatal: log warning but don't throw
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not commit cleanup changes: ${message}`,
     );
   }
 }

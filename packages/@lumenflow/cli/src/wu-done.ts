@@ -166,7 +166,8 @@ import {
 } from '@lumenflow/core/dist/wu-validation.js';
 import { ensureCleanWorktree } from './wu-done-check.js';
 // WU-1366: Auto cleanup after wu:done success
-import { runAutoCleanupAfterDone } from './wu-done-auto-cleanup.js';
+// WU-1533: commitCleanupChanges auto-commits dirty state files after cleanup
+import { runAutoCleanupAfterDone, commitCleanupChanges } from './wu-done-auto-cleanup.js';
 // WU-1471 AC4: Hook counter cleanup on wu:done completion
 import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
 // WU-1473: Mark completed-WU signals as read using receipt-aware behavior
@@ -2899,6 +2900,10 @@ async function main() {
   // WU-1366: Auto state cleanup after successful completion
   // Non-fatal: errors are logged but do not block completion
   await runAutoCleanupAfterDone(mainCheckoutPath);
+
+  // WU-1533: Auto-commit any dirty state files left by cleanup
+  // Prevents leaving main checkout dirty after wu:done
+  await commitCleanupChanges();
 }
 
 /**
