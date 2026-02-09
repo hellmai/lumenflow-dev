@@ -17,6 +17,7 @@ code_paths:
   - packages/@lumenflow/core/src/index.ts
   - packages/@lumenflow/core/src/ports/core-tools.ports.ts
   - packages/@lumenflow/core/src/adapters/mock-dashboard-renderer.adapter.ts
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
 tests:
   manual:
     - Verify wc -l on split constant files shows no single file exceeding 500 lines.
