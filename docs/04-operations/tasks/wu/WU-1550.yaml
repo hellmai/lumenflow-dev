@@ -7,8 +7,11 @@ priority: P2
 created: 2026-02-09
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/core/src/wu-done-validators.ts
+  - packages/@lumenflow/cli/src/gate-registry.ts
+  - packages/@lumenflow/cli/src/gate-defaults.ts
+  - packages/@lumenflow/cli/src/validator-registry.ts
+  - packages/@lumenflow/cli/src/validator-defaults.ts
+  - packages/@lumenflow/cli/src/gates-types.ts
 tests:
   manual:
     - Verify new gates can be added by creating a file and registering without modifying
@@ -26,10 +29,17 @@ spec_refs:
 risks: []
 notes: Track J from enterprise hardening initiative. Covers plan findings 27-28 (OCP violations).
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T23:41:28.426Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1550
+session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:41:28.432Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +52,3 @@ acceptance:
   - Validators use ValidatorRegistry for declarative registration.
   - New gates/validators added by creating a file and registering, not modifying executeGates() or
     wu-done.ts.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1550
-claimed_at: 2026-02-09T23:41:28.426Z
-baseline_main_sha: 1c7247c8899119429b9f7cfacf062377a1b31fdf
-session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T23:41:28.432Z
