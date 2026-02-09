@@ -18,6 +18,9 @@ import {
 describe('validateRegistrationParity (WU-1504)', () => {
   const PUBLIC_MANIFEST_PATH = REGISTRATION_SURFACES.PUBLIC_MANIFEST;
   const MCP_TOOLS_PATH = REGISTRATION_SURFACES.MCP_TOOLS;
+  const EXISTING_CLI_COMMAND_PATH = 'packages/@lumenflow/cli/src/wu-delete.ts';
+  const NON_EXISTENT_CLI_COMMAND_PATH =
+    'packages/@lumenflow/cli/src/wu-parity-nonexistent-command.ts';
 
   describe('heuristic detection: CLI command implementation in code_paths', () => {
     it('should return valid when no CLI command paths are in code_paths', () => {
@@ -34,7 +37,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should warn when CLI src file is present but public-manifest is missing', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -47,11 +50,33 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should warn when CLI src file is present but MCP tools is missing', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       };
 
       const result = validateRegistrationParity(wu);
       expect(result.errors.some((e) => e.message.includes('tools.ts'))).toBe(true);
+    });
+
+    it('should not trigger for existing CLI command implementation files', () => {
+      const wu = {
+        id: 'WU-9999',
+        code_paths: [EXISTING_CLI_COMMAND_PATH],
+      };
+
+      const result = validateRegistrationParity(wu);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('should trigger for non-existent CLI command paths (new command intent)', () => {
+      const wu = {
+        id: 'WU-9999',
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
+      };
+
+      const result = validateRegistrationParity(wu);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
     });
 
     it('should warn when package.json bin entry is present but registrations missing', () => {
@@ -70,11 +95,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should return valid when both public-manifest and MCP tools are in code_paths', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: [
-          'packages/@lumenflow/cli/src/wu-new-command.ts',
-          PUBLIC_MANIFEST_PATH,
-          MCP_TOOLS_PATH,
-        ],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH, PUBLIC_MANIFEST_PATH, MCP_TOOLS_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -85,7 +106,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should warn when only public-manifest is present (MCP tools missing)', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts', PUBLIC_MANIFEST_PATH],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH, PUBLIC_MANIFEST_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -97,7 +118,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should warn when only MCP tools is present (public-manifest missing)', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts', MCP_TOOLS_PATH],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH, MCP_TOOLS_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -172,7 +193,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should include wuId in error objects', () => {
       const wu = {
         id: 'WU-1234',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -182,7 +203,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should include actionable suggestion in error objects', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       };
 
       const result = validateRegistrationParity(wu);
@@ -194,7 +215,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
   describe('terminal status skip (WU-1384 pattern)', () => {
     const cliCommandWu = (status: string) => ({
       id: 'WU-9999',
-      code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+      code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       status,
     });
 
@@ -243,7 +264,7 @@ describe('validateRegistrationParity (WU-1504)', () => {
     it('should still flag parity when status is undefined', () => {
       const wu = {
         id: 'WU-9999',
-        code_paths: ['packages/@lumenflow/cli/src/wu-new-command.ts'],
+        code_paths: [NON_EXISTENT_CLI_COMMAND_PATH],
       };
       const result = validateRegistrationParity(wu);
       expect(result.valid).toBe(false);

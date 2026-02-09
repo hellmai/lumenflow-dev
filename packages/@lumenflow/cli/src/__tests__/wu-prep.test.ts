@@ -269,3 +269,96 @@ describe('wu-prep branch-pr mode (WU-1493)', () => {
     });
   });
 });
+
+describe('wu-prep code_paths coverage preflight (WU-1531)', () => {
+  describe('findMissingCodePathCoverage', () => {
+    it('should mark unmatched code_paths as missing', async () => {
+      const { findMissingCodePathCoverage } = await import('../wu-prep.js');
+      const missing = findMissingCodePathCoverage({
+        codePaths: [
+          'packages/@lumenflow/core/src/wu-lint.ts',
+          'packages/@lumenflow/cli/src/wu-prep.ts',
+        ],
+        changedFiles: ['packages/@lumenflow/core/src/wu-lint.ts'],
+      });
+
+      expect(missing).toEqual(['packages/@lumenflow/cli/src/wu-prep.ts']);
+    });
+
+    it('should treat directory code_paths as covered when files under them changed', async () => {
+      const { findMissingCodePathCoverage } = await import('../wu-prep.js');
+      const missing = findMissingCodePathCoverage({
+        codePaths: ['packages/@lumenflow/cli/src'],
+        changedFiles: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+      });
+
+      expect(missing).toEqual([]);
+    });
+
+    it('should support glob code_paths matching changed files', async () => {
+      const { findMissingCodePathCoverage } = await import('../wu-prep.js');
+      const missing = findMissingCodePathCoverage({
+        codePaths: ['packages/@lumenflow/cli/src/**/*.ts'],
+        changedFiles: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+      });
+
+      expect(missing).toEqual([]);
+    });
+  });
+
+  describe('checkCodePathCoverageBeforeGates', () => {
+    it('should return invalid when code_paths are not touched in branch diff', async () => {
+      const { checkCodePathCoverageBeforeGates } = await import('../wu-prep.js');
+      const spawnSyncFn = vi.fn().mockReturnValue({
+        status: 0,
+        stdout: 'packages/@lumenflow/core/src/wu-lint.ts\n',
+        stderr: '',
+      });
+
+      const result = checkCodePathCoverageBeforeGates({
+        wuId: 'WU-1531',
+        codePaths: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+        cwd: '/repo/worktree',
+        spawnSyncFn,
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.missingCodePaths).toEqual(['packages/@lumenflow/cli/src/wu-prep.ts']);
+      expect(result.changedFiles).toEqual(['packages/@lumenflow/core/src/wu-lint.ts']);
+    });
+
+    it('should return valid when all code_paths are covered by branch changes', async () => {
+      const { checkCodePathCoverageBeforeGates } = await import('../wu-prep.js');
+      const spawnSyncFn = vi.fn().mockReturnValue({
+        status: 0,
+        stdout: 'packages/@lumenflow/cli/src/wu-prep.ts\n',
+        stderr: '',
+      });
+
+      const result = checkCodePathCoverageBeforeGates({
+        wuId: 'WU-1531',
+        codePaths: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+        cwd: '/repo/worktree',
+        spawnSyncFn,
+      });
+
+      expect(result.valid).toBe(true);
+      expect(result.missingCodePaths).toEqual([]);
+    });
+  });
+
+  describe('formatCodePathCoverageFailure', () => {
+    it('should include missing paths, changed files, and wu:edit guidance', async () => {
+      const { formatCodePathCoverageFailure } = await import('../wu-prep.js');
+      const message = formatCodePathCoverageFailure({
+        wuId: 'WU-1531',
+        missingCodePaths: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+        changedFiles: ['packages/@lumenflow/core/src/wu-lint.ts'],
+      });
+
+      expect(message).toContain('packages/@lumenflow/cli/src/wu-prep.ts');
+      expect(message).toContain('packages/@lumenflow/core/src/wu-lint.ts');
+      expect(message).toContain('pnpm wu:edit --id WU-1531 --replace-code-paths');
+    });
+  });
+});
