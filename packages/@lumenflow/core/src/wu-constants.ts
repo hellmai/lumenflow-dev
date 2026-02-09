@@ -1077,6 +1077,10 @@ export const CLI_FLAGS = {
 export const PKG_FLAGS = {
   FILTER: '--filter',
   FROZEN_LOCKFILE: '--frozen-lockfile',
+  /** WU-1527: Required for pnpm add at workspace root in monorepos */
+  WORKSPACE_ROOT: '-w',
+  SAVE_DEV: '--save-dev',
+  SAVE_EXACT: '--save-exact',
 };
 
 /**
@@ -1202,6 +1206,9 @@ export const PKG_MANAGER = 'pnpm';
  */
 export const PKG_COMMANDS = {
   INSTALL: 'install',
+  /** WU-1527: Used by lumenflow-upgrade and deps-add */
+  ADD: 'add',
+  REMOVE: 'remove',
 };
 
 /**
