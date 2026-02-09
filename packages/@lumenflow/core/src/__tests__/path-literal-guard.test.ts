@@ -35,7 +35,8 @@ import path from 'node:path';
  * - This guard test file itself
  */
 const ALLOWED_FILES = [
-  'wu-constants.ts', // Primary constants source
+  'wu-constants.ts', // Primary constants barrel (re-exports domain modules)
+  'wu-paths-constants.ts', // WU-1549: Path constants source-of-truth (extracted from wu-constants.ts)
   'lumenflow-config-schema.ts', // Zod schema with defaults
   'lumenflow-config.ts', // Config file name constant
   'lumenflow-home.ts', // Home directory handling (uses LUMENFLOW_PATHS internally but has docstrings)
