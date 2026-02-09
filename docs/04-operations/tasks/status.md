@@ -4,7 +4,6 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml)
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 
 ## Completed
@@ -482,3 +481,4 @@ _Last updated: 2026-02-09_
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — 2026-02-07
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — 2026-02-07
 - [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml) — 2026-02-09
+- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — 2026-02-09

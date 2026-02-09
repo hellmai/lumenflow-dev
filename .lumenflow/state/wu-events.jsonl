@@ -987,5 +987,6 @@
 {"type":"complete","wuId":"WU-1526","timestamp":"2026-02-07T18:27:42.205Z"}
 {"type":"claim","wuId":"WU-1527","timestamp":"2026-02-09T09:32:56.331Z","lane":"Framework: CLI WU Commands","title":"Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces"}
 {"type":"complete","wuId":"WU-1527","timestamp":"2026-02-09T09:44:47.201Z"}
-{"type":"claim","wuId":"WU-1529","lane":"Framework: CLI Enforcement","title":"Purge remaining live .beacon references from hooks and agent overlays","timestamp":"2026-02-09T09:47:33.897Z"}
-{"type":"claim","wuId":"WU-1528","lane":"Framework: CLI WU Commands","title":"Fix wu:delete pathspec failure in micro-worktree staging","timestamp":"2026-02-09T09:55:34.046Z"}
+{"type":"claim","wuId":"WU-1529","timestamp":"2026-02-09T09:47:33.897Z","lane":"Framework: CLI Enforcement","title":"Purge remaining live .beacon references from hooks and agent overlays"}
+{"type":"claim","wuId":"WU-1528","timestamp":"2026-02-09T09:55:34.046Z","lane":"Framework: CLI WU Commands","title":"Fix wu:delete pathspec failure in micro-worktree staging"}
+{"type":"complete","wuId":"WU-1529","timestamp":"2026-02-09T09:58:10.679Z"}
