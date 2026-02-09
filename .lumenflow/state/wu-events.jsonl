@@ -1005,3 +1005,4 @@
 {"type":"claim","wuId":"WU-1541","timestamp":"2026-02-09T17:59:49.958Z","lane":"Framework: Core Lifecycle","title":"Remove process.chdir global state mutations"}
 {"type":"complete","wuId":"WU-1542","timestamp":"2026-02-09T18:04:50.731Z"}
 {"type":"complete","wuId":"WU-1541","timestamp":"2026-02-09T18:22:47.718Z"}
+{"type":"claim","wuId":"WU-1552","lane":"Content: Specs Governance","title":"Restructure INIT-020 to 15-WU plan per sizing guide","timestamp":"2026-02-09T19:19:03.875Z"}
