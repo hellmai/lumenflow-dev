@@ -36,6 +36,9 @@ vi.mock('node:child_process', async (importOriginal) => {
 import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
 import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
 
+// Import constants to validate command building uses centralized values
+import { PKG_MANAGER, PKG_COMMANDS, PKG_FLAGS } from '@lumenflow/core/dist/wu-constants.js';
+
 // Import functions under test after mocks are set up
 import {
   parseUpgradeArgs,
@@ -146,7 +149,23 @@ describe('lumenflow-upgrade', () => {
       const commands = buildUpgradeCommands(args);
 
       // LumenFlow packages are dev dependencies
-      expect(commands.addCommand).toContain('--save-dev');
+      expect(commands.addCommand).toContain(PKG_FLAGS.SAVE_DEV);
+    });
+
+    it('should include workspace-root flag for monorepo compatibility', () => {
+      const args: UpgradeArgs = { version: '1.5.0' };
+      const commands = buildUpgradeCommands(args);
+
+      // WU-1527: pnpm requires -w to add deps at workspace root
+      expect(commands.addCommand).toContain(PKG_FLAGS.WORKSPACE_ROOT);
+    });
+
+    it('should use centralized constants for command structure', () => {
+      const args: UpgradeArgs = { version: '1.5.0' };
+      const commands = buildUpgradeCommands(args);
+
+      // Command must start with PKG_MANAGER and PKG_COMMANDS.ADD
+      expect(commands.addCommand).toMatch(new RegExp(`^${PKG_MANAGER} ${PKG_COMMANDS.ADD} `));
     });
 
     it('should include all 7 packages in the command', () => {
