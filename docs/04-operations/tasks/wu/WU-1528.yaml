@@ -2,7 +2,7 @@ id: WU-1528
 title: Fix wu:delete pathspec failure in micro-worktree staging
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -46,3 +46,5 @@ acceptance:
   - Deleted WU file, wu-events cleanup, and backlog/status regeneration are committed and pushed
     atomically
   - Regression test reproduces the pathspec failure case and passes after fix
+locked: true
+completed_at: 2026-02-09T10:14:03.207Z
