@@ -1,0 +1,35 @@
+id: WU-1542
+title: 'BUG: auto-cleanup commit message rejected by consumer main-branch guards'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done-auto-cleanup.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+tests:
+  manual:
+    - Run wu:done in a consumer repo with strict commit guards and verify cleanup commit is accepted
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done-auto-cleanup.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1542.done
+dependencies: []
+risks: []
+notes: Discovered via ExampleApp integration testing. WU-1533 fixed the dirty-state root cause but the commit message format creates a new integration issue for any consumer with strict commit guards.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: commitCleanupChanges() in wu-done-auto-cleanup.ts auto-commits dirty state files after wu:done cleanup. Problem: The commit message 'chore(lumenflow): auto state cleanup [skip ci]' uses a format not recognized by consumer repos with strict main-branch guards (e.g., ExampleApp only allows wu(...), docs:, chore(repair):). Solution: Make the auto-cleanup commit message configurable via .lumenflow.config.yaml, or use a universally-accepted format."
+acceptance:
+  - Auto-cleanup commit message does not break consumer main-branch guards
+  - Commit message format is configurable in .lumenflow.config.yaml
+  - Default commit message uses a format compatible with standard commitlint configs
+  - Regression test verifies configurable commit message is used
