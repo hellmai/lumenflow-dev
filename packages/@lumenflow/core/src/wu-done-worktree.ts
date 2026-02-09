@@ -54,6 +54,7 @@ import { createRecoveryError, createValidationError } from './wu-done-errors.js'
 import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
 import { validateCodePathsCommittedBeforeDone } from './wu-done-validation.js';
 import { assertTransition } from './state-machine.js';
+import { emitLaneSignalForCompletion } from './wu-done-branch-only.js';
 import {
   detectZombieState,
   resetWorktreeYAMLForRecovery,
@@ -577,6 +578,14 @@ export async function executeWorktreeCompletion(context) {
 
     // WU-1335: Clear recovery attempts on successful completion
     clearRecoveryAttempts(id);
+
+    // WU-1498: Passive lane telemetry (fail-open)
+    await emitLaneSignalForCompletion({
+      wuId: id,
+      lane: docForUpdate.lane,
+      laneBranch,
+      completionMode: 'worktree',
+    });
 
     // WU-1811: All steps succeeded - worktree cleanup is safe
     return {
