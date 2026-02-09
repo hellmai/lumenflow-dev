@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
 - [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml) — Framework: Core Validation
