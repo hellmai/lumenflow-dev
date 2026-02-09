@@ -264,6 +264,7 @@ export async function loadDrafts(baseDir: string): Promise<DraftSpec[]> {
     } catch (err) {
       // Skip malformed files
       const errorMessage = err instanceof Error ? err.message : String(err);
+      // eslint-disable-next-line no-console -- CLI tool warning for malformed draft files
       console.warn(`Warning: Could not load draft ${file}: ${errorMessage}`);
     }
   }
@@ -354,6 +355,7 @@ export async function promoteDraft(
     } catch (err) {
       // Ignore errors if file doesn't exist
       if (err instanceof Error && 'code' in err && err.code !== 'ENOENT') {
+        // eslint-disable-next-line no-console -- CLI tool warning for draft removal failure
         console.warn(`Warning: Could not remove draft ${draft.filePath}: ${err.message}`);
       }
       result.draftRemoved = true; // Mark as removed even if it didn't exist
