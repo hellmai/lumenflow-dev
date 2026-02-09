@@ -9,6 +9,7 @@ _Last updated: 2026-02-09_
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml)
+- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml)
 
 ## Completed
 
