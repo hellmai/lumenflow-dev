@@ -1,0 +1,42 @@
+id: WU-1540
+title: Split protected and progressable status constants
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/initiatives/src/initiative-validation.ts
+  - packages/@lumenflow/cli/src/wu-done-auto-cleanup.ts
+  - packages/@lumenflow/cli/src/signal-cleanup.ts
+  - packages/@lumenflow/cli/src/state-cleanup.ts
+  - packages/@lumenflow/initiatives/__tests__/initiative-validation.test.ts
+tests:
+  manual:
+    - Run initiative status progression scenarios and confirm blocked WUs do not advance initiative status while cleanup protection remains active.
+  unit:
+    - packages/@lumenflow/initiatives/__tests__/initiative-validation.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1540.done
+dependencies: []
+initiative: INIT-020
+phase: 7
+spec_refs:
+  - lumenflow://plans/polished-frolicking-whale.md
+risks: []
+notes: Track G from enterprise hardening initiative.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: ACTIVE_WU_STATUSES currently means different things across cleanup and initiative progression paths. Problem: shared naming hides distinct semantics and invites future logic drift. Solution: introduce explicit PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES constants, migrate call sites, and add tests covering expected behavior.'
+acceptance:
+  - Cleanup and signal protection paths use PROTECTED_WU_STATUSES including blocked.
+  - Initiative progression paths use PROGRESSABLE_WU_STATUSES excluding blocked.
+  - Tests assert constant semantics and progression behavior for blocked and in_progress statuses.
