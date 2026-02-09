@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml) — Framework: Core Validation
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml) — Framework: Core Lifecycle
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
