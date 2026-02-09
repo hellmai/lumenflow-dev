@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1536 — Execute hard sweep for dist import boundaries](wu/WU-1536.yaml) — Framework: Core Lifecycle
 - [WU-1535 — Re-enable compiler and lint guardrails](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
   (No items ready)
