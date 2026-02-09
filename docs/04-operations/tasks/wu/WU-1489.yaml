@@ -2,7 +2,7 @@ id: WU-1489
 title: Fix pre-existing lane-lock test regressions blocking gates
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: cancelled
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -20,7 +20,15 @@ dependencies: []
 spec_refs:
   - lumenflow://docs/04-operations/tasks/wu/WU-1487.yaml
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Closed as obsolete/superseded: lane-lock regressions already resolved (WU-1323/WU-1325); lane-lock
+  unit suite currently passes on main.
+
+
+  [ADMIN-REPAIR 2026-02-09]: status changed from 'ready' to 'cancelled'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
