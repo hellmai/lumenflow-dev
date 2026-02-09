@@ -2,7 +2,7 @@ id: WU-1498
 title: Add passive lane-signal telemetry and agent lane-fit reasoning
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - 'Signal emission is fail-open: errors are caught/logged and never block wu:done'
   - Signal emission is invoked for worktree, branch-only, and branch-pr completion paths via shared
     helper
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1498
+claimed_at: 2026-02-09T10:02:26.702Z
+baseline_main_sha: 450e8415c6696f9d3c091b2d7e9d215ec3a33076
+session_id: fafff18e-ae4b-40e7-a366-91bba6fa0e9a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T10:02:26.710Z
