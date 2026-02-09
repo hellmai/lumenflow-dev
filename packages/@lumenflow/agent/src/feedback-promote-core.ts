@@ -121,9 +121,9 @@ function inferLane(category: string | undefined): string {
   // Safe lookup using Object.hasOwn to prevent prototype pollution
   if (Object.hasOwn(CATEGORY_TO_LANE, normalizedCategory)) {
     // eslint-disable-next-line security/detect-object-injection -- Safe: hasOwn validates key exists
-    return CATEGORY_TO_LANE[normalizedCategory];
+    return CATEGORY_TO_LANE[normalizedCategory] as string;
   }
-  return CATEGORY_TO_LANE.uncategorized;
+  return CATEGORY_TO_LANE.uncategorized as string;
 }
 
 /**

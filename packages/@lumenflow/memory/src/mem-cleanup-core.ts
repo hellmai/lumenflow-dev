@@ -180,7 +180,7 @@ export function parseTtl(ttlString: string): number {
   // Use ms package to parse the duration
   const result = ms(trimmed);
 
-  if (result === undefined || result <= 0) {
+  if (result == null || result <= 0) {
     throw new Error(`Invalid TTL format: "${ttlString}" is not a valid duration`);
   }
 

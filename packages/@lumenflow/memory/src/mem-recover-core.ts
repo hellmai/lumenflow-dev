@@ -129,7 +129,7 @@ export interface RecoverResult {
  * Validates WU ID format
  */
 function validateWuId(wuId: string): void {
-  if (wuId === undefined || wuId === null) {
+  if (wuId == null) {
     throw new Error(ERROR_MESSAGES.WU_ID_REQUIRED);
   }
   if (wuId === '') {
@@ -164,6 +164,7 @@ async function getLastCheckpoint(baseDir: string, wuId: string): Promise<Checkpo
     }
 
     const latest = checkpoints[0];
+    if (!latest) return null;
     return {
       content: latest.content,
       timestamp: latest.created_at,

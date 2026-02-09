@@ -155,7 +155,7 @@ export function parseSignalTtl(ttlString: string): number {
   // Use ms package to parse the duration
   const result = ms(trimmed);
 
-  if (result === undefined || result <= 0) {
+  if (result == null || result <= 0) {
     throw new Error(`Invalid TTL format: "${ttlString}" is not a valid duration`);
   }
 
@@ -493,6 +493,7 @@ function applyCountPruning(state: CleanupState, maxEntries: number): void {
   for (let i = 0; i < toRemove; i++) {
     // eslint-disable-next-line security/detect-object-injection -- Safe: i is a controlled loop index
     const signal = state.retainedSignals[i];
+    if (!signal) continue;
     const idIndex = state.retainedIds.indexOf(signal.id);
     if (idIndex !== -1) {
       state.retainedIds.splice(idIndex, 1);

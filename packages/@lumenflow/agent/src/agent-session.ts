@@ -66,7 +66,7 @@ export async function startSession(
     const branch = await git.revparse(['--abbrev-ref', 'HEAD']);
     // Parse lane from branch name: lane/<lane>/wu-xxx → <lane>
     const match = branch.match(/^lane\/([^/]+)\//);
-    if (match) {
+    if (match && match[1]) {
       lane = match[1]
         .split('-')
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))

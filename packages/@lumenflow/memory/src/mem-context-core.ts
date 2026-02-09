@@ -124,7 +124,7 @@ export interface GenerateContextResult {
  * @throws If WU ID is invalid
  */
 function validateWuId(wuId: string): void {
-  if (wuId === undefined || wuId === null) {
+  if (wuId == null) {
     throw new Error(ERROR_MESSAGES.WU_ID_REQUIRED);
   }
 

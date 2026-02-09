@@ -1,5 +1,6 @@
 {
   "extends": "../../../tsconfig.json",
+  "_strictException": "WU-1535: 498 implicit-any and property-access errors remain. Tracked for incremental fix in INIT-020 Phase 2.",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
@@ -15,7 +16,7 @@
     "noUncheckedIndexedAccess": false,
     "allowJs": true,
     "checkJs": false,
-    "noEmitOnError": false
+    "noEmitOnError": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "__tests__", "src/**/__tests__", "src/**/*.test.ts"]

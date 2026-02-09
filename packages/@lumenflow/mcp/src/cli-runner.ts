@@ -179,6 +179,7 @@ export async function runCliCommand(
 
   for (let i = 0; i < candidates.length; i++) {
     const candidate = candidates[i];
+    if (!candidate) continue;
     const result = await runSingleCommand(candidate, args, options);
 
     if (result.success) {
