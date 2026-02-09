@@ -73,3 +73,4 @@ success_metrics:
   - No unguarded async callbacks in setInterval or setTimeout remain.
   - pnpm build, pnpm typecheck, pnpm test, and pnpm gates pass after migration.
 labels: []
+related_plan: lumenflow://plans/polished-frolicking-whale.md
