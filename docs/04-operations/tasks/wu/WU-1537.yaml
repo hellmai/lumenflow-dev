@@ -2,7 +2,7 @@ id: WU-1537
 title: Standardize CLI entrypoints on runCLI wrapper
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
