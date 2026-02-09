@@ -2,7 +2,7 @@ id: WU-1553
 title: Fix commitCleanupChanges to stage archive files alongside state files
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -18,7 +18,9 @@ artifacts:
   - .lumenflow/stamps/WU-1553.done
 dependencies: []
 risks: []
-notes: 'Bug is on line ~205: filter uses STATE_FILE_PREFIX (.lumenflow/state/) but archive files are in .lumenflow/archive/. Fix: add ARCHIVE_FILE_PREFIX or use a broader LUMENFLOW_PREFIX (.lumenflow/) filter. ExampleApp workaround: cleanup.trigger: manual.'
+notes: 'Bug is on line ~205: filter uses STATE_FILE_PREFIX (.lumenflow/state/) but archive files are
+  in .lumenflow/archive/. Fix: add ARCHIVE_FILE_PREFIX or use a broader LUMENFLOW_PREFIX
+  (.lumenflow/) filter. ExampleApp workaround: cleanup.trigger: manual.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: commitCleanupChanges() in wu-done-auto-cleanup.ts only stages .lumenflow/state/* files via STATE_FILE_PREFIX filter. But archiveWuEvents() (WU-1430) also creates/modifies .lumenflow/archive/* files during cleanup. These archive files are never staged or committed, leaving main dirty after wu:done. Reported by ExampleApp consumer.
+description: commitCleanupChanges() in wu-done-auto-cleanup.ts only stages .lumenflow/state/* files
+  via STATE_FILE_PREFIX filter. But archiveWuEvents() (WU-1430) also creates/modifies
+  .lumenflow/archive/* files during cleanup. These archive files are never staged or committed,
+  leaving main dirty after wu:done. Reported by ExampleApp consumer.
 acceptance:
   - commitCleanupChanges stages both .lumenflow/state/* and .lumenflow/archive/* files
   - Tests cover archive file staging in wu-done-auto-cleanup.test.ts
   - Main checkout is clean after wu:done when archival runs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1553
+claimed_at: 2026-02-09T22:38:22.616Z
+baseline_main_sha: a12ff37f3dd86859139915904c97e0d426bfb7e4
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:38:22.621Z
