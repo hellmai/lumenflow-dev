@@ -5,7 +5,6 @@ _Last updated: 2026-02-09_
 ## In Progress
 
 - [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml)
-- [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)
 
 ## Completed
 
@@ -485,3 +484,4 @@ _Last updated: 2026-02-09_
 - [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — 2026-02-09
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — 2026-02-09
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — 2026-02-09
+- [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml) — 2026-02-09
