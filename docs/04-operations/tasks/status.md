@@ -1,12 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-07_
+_Last updated: 2026-02-09_
 
 ## In Progress
 
-(No items currently in progress)
-
-## Blocked
+- [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
 
 ## Completed
 

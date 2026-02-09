@@ -2,7 +2,7 @@ id: WU-1527
 title: Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -29,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: lumenflow-upgrade command fails with ERR_PNPM_ADDING_TO_ROOT in pnpm monorepo workspaces because buildUpgradeCommands() generates a pnpm add command without the -w (--workspace-root) flag. The micro-worktree checkout contains pnpm-workspace.yaml, so pnpm refuses to add deps to the root without -w. Blocks all monorepo consumers from upgrading.
+description: lumenflow-upgrade command fails with ERR_PNPM_ADDING_TO_ROOT in pnpm monorepo
+  workspaces because buildUpgradeCommands() generates a pnpm add command without the -w
+  (--workspace-root) flag. The micro-worktree checkout contains pnpm-workspace.yaml, so pnpm refuses
+  to add deps to the root without -w. Blocks all monorepo consumers from upgrading.
 acceptance:
   - buildUpgradeCommands() includes -w in the generated pnpm add command
   - Test asserts -w flag presence
   - pnpm lumenflow:upgrade --latest --dry-run shows command with -w
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1527
+claimed_at: 2026-02-09T09:32:56.291Z
+baseline_main_sha: cadcb66d9d88fba2d634a05434a211db877ebe9a
+session_id: 9ed0111f-aa6b-4751-a350-e03500b54f26
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T09:32:56.298Z
