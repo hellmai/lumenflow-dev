@@ -8,6 +8,7 @@ created: 2026-02-09
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
 tests:
   manual:
     - Run wu:done on any WU and verify main is clean after
@@ -18,10 +19,10 @@ artifacts:
   - .lumenflow/stamps/WU-1554.done
 dependencies: []
 risks: []
-notes: 'checkPostMergeDirtyState expanded to three-category classification: internal log files
-  (restore), metadata lifecycle files (auto-commit), unrelated files (die). Metadata prefixes:
-  .lumenflow/state/, .lumenflow/stamps/, .lumenflow/archive/, plus configurable task directory.
-  Caller auto-commits metadata files with chore message and push.'
+notes: 'Three-layer fix: (1) Pre-merge: auto-restore related dirty files in WU-1503 guard
+  so ff-only merge can proceed. (2) Pre-merge defensive: git checkout -- . right before
+  mergeLaneBranch in executeWorktreeCompletion. (3) Post-merge: checkPostMergeDirtyState
+  expanded to three-category classification with metadataFiles auto-committed.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
