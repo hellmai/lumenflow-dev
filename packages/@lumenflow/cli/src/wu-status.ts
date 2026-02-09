@@ -15,11 +15,11 @@
  *   pnpm wu:status --id WU-123  # Show status for specific WU
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { computeContext } from '@lumenflow/core/dist/context/index.js';
-import { getValidCommandsForContext } from '@lumenflow/core/dist/validation/command-registry.js';
-import { CONTEXT_VALIDATION, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
-import type { WuContext } from '@lumenflow/core/dist/validation/types.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { computeContext } from '@lumenflow/core/context/index';
+import { getValidCommandsForContext } from '@lumenflow/core/validation/command-registry';
+import { CONTEXT_VALIDATION, EMOJI } from '@lumenflow/core/wu-constants';
+import type { WuContext } from '@lumenflow/core/validation/types';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
 const LOG_PREFIX = '[wu:status]';

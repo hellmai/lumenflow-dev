@@ -31,17 +31,17 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { cleanupSignals } from '@lumenflow/memory/dist/signal-cleanup-core.js';
-import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
-import { archiveWuEvents } from '@lumenflow/core/dist/wu-events-cleanup.js';
-import { cleanupState, type StateCleanupResult } from '@lumenflow/core/dist/state-cleanup-core.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
+import { cleanupSignals } from '@lumenflow/memory/signal-cleanup-core';
+import { cleanupMemory } from '@lumenflow/memory/cleanup';
+import { archiveWuEvents } from '@lumenflow/core/wu-events-cleanup';
+import { cleanupState, type StateCleanupResult } from '@lumenflow/core/state-cleanup-core';
+import { createWUParser } from '@lumenflow/core/arg-parser';
 import {
   EXIT_CODES,
   LUMENFLOW_PATHS,
   PROTECTED_WU_STATUSES,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+} from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import fg from 'fast-glob';
 import { parse as parseYaml } from 'yaml';
 import { runCLI } from './cli-entry-point.js';

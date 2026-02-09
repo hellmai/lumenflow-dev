@@ -33,23 +33,23 @@
  * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
   INIT_STATUSES,
   PHASE_STATUSES,
   INIT_PATTERNS,
   INIT_LOG_PREFIX,
   INIT_COMMIT_FORMATS,
-} from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+} from '@lumenflow/initiatives/constants';
+import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/wu-constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
 import { validateInitiativeEditCliArgs } from './shared-validators.js';
 

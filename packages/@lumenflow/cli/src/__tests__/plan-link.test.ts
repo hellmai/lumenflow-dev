@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 
 /** Test constants - avoid sonarjs/no-duplicate-string */
 const TEST_WU_DIR = 'docs/04-operations/tasks/wu';
@@ -28,18 +28,18 @@ const TEST_STATUS_OPEN = 'open';
 const TEST_DATE = '2026-01-25';
 
 // Mock modules before importing
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     branch: vi.fn().mockResolvedValue({ current: 'main' }),
     status: vi.fn().mockResolvedValue({ isClean: () => true }),
   })),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(async ({ execute }) => {
     const tempDir = join(tmpdir(), `plan-link-test-${Date.now()}`);
     mkdirSync(tempDir, { recursive: true });

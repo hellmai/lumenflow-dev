@@ -48,13 +48,13 @@
 
 import { Command } from 'commander';
 import path from 'node:path';
-import { EXIT_CODES, LOG_PREFIX, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, LOG_PREFIX, PATTERNS } from '@lumenflow/core/wu-constants';
 import {
   runConsistencyRepairMode,
   runClaimRepairMode,
   runAdminRepairMode,
-} from '@lumenflow/core/dist/wu-repair-core.js';
-import { repairStateFile, WU_EVENTS_FILE_NAME } from '@lumenflow/core/dist/wu-state-store.js';
+} from '@lumenflow/core/wu-repair-core';
+import { repairStateFile, WU_EVENTS_FILE_NAME } from '@lumenflow/core/wu-state-store';
 
 const PREFIX = LOG_PREFIX.REPAIR;
 

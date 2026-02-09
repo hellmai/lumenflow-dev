@@ -3,7 +3,7 @@ import { ensureCleanWorktree } from '../wu-done-check.js';
 import { checkPostMergeDirtyState, computeBranchOnlyFallback } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
-import { validateInputs } from '@lumenflow/core/dist/wu-done-inputs.js';
+import { validateInputs } from '@lumenflow/core/wu-done-inputs';
 
 // Mock dependencies
 vi.mock('@lumenflow/core/git-adapter');

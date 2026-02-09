@@ -16,11 +16,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { execSync } from 'node:child_process';
 
 // Mock modules with inline factories (no external references)
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(),
 }));
 
@@ -33,11 +33,11 @@ vi.mock('node:child_process', async (importOriginal) => {
 });
 
 // Import mocked modules to access mock functions
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
 
 // Import constants to validate command building uses centralized values
-import { PKG_MANAGER, PKG_COMMANDS, PKG_FLAGS } from '@lumenflow/core/dist/wu-constants.js';
+import { PKG_MANAGER, PKG_COMMANDS, PKG_FLAGS } from '@lumenflow/core/wu-constants';
 
 // Import functions under test after mocks are set up
 import {

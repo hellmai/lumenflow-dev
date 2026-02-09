@@ -13,17 +13,17 @@
  * @see {@link packages/@lumenflow/core/src/lumenflow-config-schema.ts} - CleanupConfigSchema
  */
 
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { cleanupState, type StateCleanupResult } from '@lumenflow/core/dist/state-cleanup-core.js';
-import { cleanupSignals } from '@lumenflow/memory/dist/signal-cleanup-core.js';
-import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
-import { archiveWuEvents } from '@lumenflow/core/dist/wu-events-cleanup.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { getConfig } from '@lumenflow/core/config';
+import { cleanupState, type StateCleanupResult } from '@lumenflow/core/state-cleanup-core';
+import { cleanupSignals } from '@lumenflow/memory/signal-cleanup-core';
+import { cleanupMemory } from '@lumenflow/memory/cleanup';
+import { archiveWuEvents } from '@lumenflow/core/wu-events-cleanup';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import fg from 'fast-glob';
 import { readFile } from 'node:fs/promises';
 import { parse as parseYaml } from 'yaml';
 import path from 'node:path';
-import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES } from '@lumenflow/core/dist/wu-constants.js';
+import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES } from '@lumenflow/core/wu-constants';
 
 /**
  * Get active WU IDs (in_progress or blocked) by scanning WU YAML files.

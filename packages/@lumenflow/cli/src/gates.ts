@@ -44,28 +44,28 @@ import { execSync, spawnSync } from 'node:child_process';
 import { closeSync, mkdirSync, openSync, readSync, statSync, writeSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import path from 'node:path';
-import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/dist/telemetry.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/telemetry';
+import { die } from '@lumenflow/core/error-handler';
 // WU-1299: Import WU YAML reader to get code_paths for docs-only filtering
-import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';
-import { createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
-import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/dist/incremental-lint.js';
-import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/dist/incremental-test.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { runCoverageGate, COVERAGE_GATE_MODES } from '@lumenflow/core/dist/coverage-gate.js';
+import { readWURaw } from '@lumenflow/core/wu-yaml';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
+import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/incremental-lint';
+import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/incremental-test';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { runCoverageGate, COVERAGE_GATE_MODES } from '@lumenflow/core/coverage-gate';
 import {
   buildGatesLogPath,
   shouldUseGatesAgentMode,
   updateGatesLatestSymlink,
-} from '@lumenflow/core/dist/gates-agent-mode.js';
+} from '@lumenflow/core/gates-agent-mode';
 // WU-2062: Import risk detector for tiered test execution
-import { detectRiskTier, RISK_TIERS } from '@lumenflow/core/dist/risk-detector.js';
+import { detectRiskTier, RISK_TIERS } from '@lumenflow/core/risk-detector';
 // WU-2252: Import invariants runner for first-check validation
-import { runInvariants } from '@lumenflow/core/dist/invariants-runner.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { validateBacklogSync } from '@lumenflow/core/dist/validators/backlog-sync.js';
-import { runSupabaseDocsLinter } from '@lumenflow/core/dist/validators/supabase-docs-linter.js';
-import { runSystemMapValidation } from '@lumenflow/core/dist/system-map-validator.js';
+import { runInvariants } from '@lumenflow/core/invariants-runner';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { validateBacklogSync } from '@lumenflow/core/validators/backlog-sync';
+import { runSupabaseDocsLinter } from '@lumenflow/core/validators/supabase-docs-linter';
+import { runSystemMapValidation } from '@lumenflow/core/system-map-validator';
 // WU-1067: Config-driven gates support (partial implementation - unused imports removed)
 // WU-1191: Lane health gate configuration
 // WU-1262: Coverage config from methodology policy
@@ -77,7 +77,7 @@ import {
   resolveGatesCommands,
   resolveTestRunner,
   type LaneHealthMode,
-} from '@lumenflow/core/dist/gates-config.js';
+} from '@lumenflow/core/gates-config';
 // WU-1191: Lane health check
 import { runLaneHealthCheck } from './lane-health.js';
 // WU-1315: Onboarding smoke test
@@ -99,7 +99,7 @@ import {
   FILE_SYSTEM,
   PRETTIER_ARGS,
   PRETTIER_FLAGS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 // WU-1520: Gates graceful degradation for missing optional scripts
 import {
   checkScriptExists,

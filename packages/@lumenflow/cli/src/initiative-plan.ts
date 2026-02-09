@@ -20,19 +20,19 @@
  * Context: WU-1105 (INIT-003 Phase 3a), renamed from init:plan in WU-1193
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join, basename } from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
-import { INIT_PATTERNS } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/dist/wu-constants.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
+import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { readInitiative } from '@lumenflow/initiatives/yaml';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/wu-constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;

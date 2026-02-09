@@ -19,7 +19,7 @@ import {
   applyEdits,
   mergeStringField,
 } from '../dist/wu-edit.js';
-import { WU_EXPOSURE_VALUES } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_EXPOSURE_VALUES } from '@lumenflow/core/wu-constants';
 
 describe('wu:edit --exposure on done WUs (WU-1039)', () => {
   describe('validateDoneWUEdits', () => {

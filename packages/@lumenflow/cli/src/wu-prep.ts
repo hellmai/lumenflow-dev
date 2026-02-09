@@ -35,11 +35,11 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { minimatch } from 'minimatch';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
-import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
+import { resolveLocation } from '@lumenflow/core/context/location-resolver';
+import { readWU } from '@lumenflow/core/wu-yaml';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import {
   CONTEXT_VALIDATION,
   PATTERNS,
@@ -47,9 +47,9 @@ import {
   WU_STATUS,
   EMOJI,
   CLAIMED_MODES,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { defaultBranchFrom } from '@lumenflow/core/dist/wu-done-paths.js';
-import { getCurrentBranch } from '@lumenflow/core/dist/wu-helpers.js';
+} from '@lumenflow/core/wu-constants';
+import { defaultBranchFrom } from '@lumenflow/core/wu-done-paths';
+import { getCurrentBranch } from '@lumenflow/core/wu-helpers';
 import { runGates } from './gates.js';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;

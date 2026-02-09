@@ -18,8 +18,8 @@ import {
   generateSuggestions,
   formatMonitorOutput,
   DEFAULT_THRESHOLD_MINUTES,
-} from '@lumenflow/core/dist/spawn-monitor.js';
-import { SpawnStatus, type SpawnEvent } from '@lumenflow/core/dist/spawn-registry-schema.js';
+} from '@lumenflow/core/spawn-monitor';
+import { SpawnStatus, type SpawnEvent } from '@lumenflow/core/spawn-registry-schema';
 
 // Test constants to avoid duplicate string literals
 const TEST_LANE = 'Framework: CLI';

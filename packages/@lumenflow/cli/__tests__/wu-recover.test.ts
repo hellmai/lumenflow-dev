@@ -8,9 +8,9 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
-import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
-import type { WuContext } from '@lumenflow/core/dist/validation/types.js';
-import type { RecoveryAnalysis } from '@lumenflow/core/dist/recovery/recovery-analyzer.js';
+import { CONTEXT_VALIDATION, WU_STATUS } from '@lumenflow/core/wu-constants';
+import type { WuContext } from '@lumenflow/core/validation/types';
+import type { RecoveryAnalysis } from '@lumenflow/core/recovery/recovery-analyzer';
 
 const { LOCATION_TYPES, RECOVERY_ISSUES, RECOVERY_ACTIONS } = CONTEXT_VALIDATION;
 
@@ -20,7 +20,7 @@ const mockWorktreeRemove = vi.fn().mockResolvedValue(undefined);
 const mockDeleteBranch = vi.fn().mockResolvedValue(undefined);
 const mockRun = vi.fn();
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     worktreeRemove: mockWorktreeRemove,
     deleteBranch: mockDeleteBranch,

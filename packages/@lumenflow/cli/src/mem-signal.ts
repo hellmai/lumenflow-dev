@@ -18,11 +18,11 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { createSignal } from '@lumenflow/memory/dist/mem-signal-core.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { createSignal } from '@lumenflow/memory/signal';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 // WU-1456: Import shared validator for CLI/MCP parity
-import { validateMemSignalArgs } from '@lumenflow/core/dist/schemas/memory-arg-validators.js';
+import { validateMemSignalArgs } from '@lumenflow/core/schemas/memory-arg-validators';
 import { runCLI } from './cli-entry-point.js';
 
 /**

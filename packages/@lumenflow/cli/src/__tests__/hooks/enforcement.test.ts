@@ -21,8 +21,7 @@ describe('WU-1367: Enforcement Hooks Config Schema', () => {
   describe('ClientConfigSchema enforcement block', () => {
     it('should accept enforcement block under agents.clients.claude-code', async () => {
       // Import dynamically to allow mocking
-      const { ClientConfigSchema } =
-        await import('@lumenflow/core/dist/lumenflow-config-schema.js');
+      const { ClientConfigSchema } = await import('@lumenflow/core/config-schema');
 
       const config = {
         preamble: 'CLAUDE.md',
@@ -48,8 +47,7 @@ describe('WU-1367: Enforcement Hooks Config Schema', () => {
     });
 
     it('should default enforcement values to false when not specified', async () => {
-      const { ClientConfigSchema } =
-        await import('@lumenflow/core/dist/lumenflow-config-schema.js');
+      const { ClientConfigSchema } = await import('@lumenflow/core/config-schema');
 
       const config = {
         preamble: 'CLAUDE.md',
@@ -67,8 +65,7 @@ describe('WU-1367: Enforcement Hooks Config Schema', () => {
     });
 
     it('should allow enforcement to be undefined', async () => {
-      const { ClientConfigSchema } =
-        await import('@lumenflow/core/dist/lumenflow-config-schema.js');
+      const { ClientConfigSchema } = await import('@lumenflow/core/config-schema');
 
       const config = {
         preamble: 'CLAUDE.md',
@@ -734,12 +731,12 @@ describe('WU-1502: generateEnforcementHooks includes PostToolUse Bash hook', () 
 
 describe('WU-1502: CLAUDE_HOOKS constants include warn-dirty-main', () => {
   it('should have WARN_DIRTY_MAIN in SCRIPTS', async () => {
-    const { CLAUDE_HOOKS } = await import('@lumenflow/core/dist/wu-constants.js');
+    const { CLAUDE_HOOKS } = await import('@lumenflow/core/wu-constants');
     expect(CLAUDE_HOOKS.SCRIPTS.WARN_DIRTY_MAIN).toBe('warn-dirty-main.sh');
   });
 
   it('should have BASH matcher in MATCHERS', async () => {
-    const { CLAUDE_HOOKS } = await import('@lumenflow/core/dist/wu-constants.js');
+    const { CLAUDE_HOOKS } = await import('@lumenflow/core/wu-constants');
     expect(CLAUDE_HOOKS.MATCHERS.BASH).toBe('Bash');
   });
 });

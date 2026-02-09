@@ -22,21 +22,21 @@
  * Context: WU-1359 (enhance init output and add wu:proto command)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { todayISO } from '@lumenflow/core/dist/date-utils.js';
-import { validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { validateWU } from '@lumenflow/core/dist/wu-schema.js';
-import { COMMIT_FORMATS, FILE_SYSTEM, STRING_LITERALS } from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { generateWuIdWithRetry } from '@lumenflow/core/dist/wu-id-generator.js';
-import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
+import { stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { todayISO } from '@lumenflow/core/date-utils';
+import { validateLaneFormat } from '@lumenflow/core/lane-checker';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { validateWU } from '@lumenflow/core/wu-schema';
+import { COMMIT_FORMATS, FILE_SYSTEM, STRING_LITERALS } from '@lumenflow/core/wu-constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { generateWuIdWithRetry } from '@lumenflow/core/wu-id-generator';
+import { parseBacklogFrontmatter } from '@lumenflow/core/backlog-parser';
 import { execFileSync } from 'node:child_process';
 import { validateWuProtoCliArgs } from './shared-validators.js';
 

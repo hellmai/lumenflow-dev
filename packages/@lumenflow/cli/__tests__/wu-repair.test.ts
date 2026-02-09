@@ -42,15 +42,15 @@ const mockGitForWorktree = {
   rebase: vi.fn().mockResolvedValue(undefined),
 };
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => mockGitForCwd),
   createGitForPath: vi.fn(() => mockGitForWorktree),
 }));
 
 // Spy on withMicroWorktree to verify it's called
-vi.mock('@lumenflow/core/dist/micro-worktree.js', async () => {
-  const actual = await vi.importActual<typeof import('@lumenflow/core/dist/micro-worktree.js')>(
-    '@lumenflow/core/dist/micro-worktree.js',
+vi.mock('@lumenflow/core/micro-worktree', async () => {
+  const actual = await vi.importActual<typeof import('@lumenflow/core/micro-worktree')>(
+    '@lumenflow/core/micro-worktree',
   );
   return {
     ...actual,
@@ -140,9 +140,8 @@ acceptance:
     // within a micro-worktree context (e.g., handleOrphanCheck during wu:claim).
 
     it('should NOT use micro-worktree when projectRoot is provided (WU-1370)', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
-      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
+      const { repairWUInconsistency } = await import('@lumenflow/core/wu-consistency-checker');
+      const { withMicroWorktree } = await import('@lumenflow/core/micro-worktree');
 
       const report = {
         valid: false,
@@ -167,8 +166,7 @@ acceptance:
     });
 
     it('should create stamp file directly in projectRoot when provided', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
+      const { repairWUInconsistency } = await import('@lumenflow/core/wu-consistency-checker');
 
       const report = {
         valid: false,
@@ -197,9 +195,8 @@ acceptance:
     });
 
     it('should work directly for YAML_DONE_STATUS_IN_PROGRESS repair when projectRoot provided', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
-      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
+      const { repairWUInconsistency } = await import('@lumenflow/core/wu-consistency-checker');
+      const { withMicroWorktree } = await import('@lumenflow/core/micro-worktree');
 
       // Create status.md with WU-9999 in In Progress section
       writeFileSync(
@@ -227,9 +224,8 @@ acceptance:
     });
 
     it('should batch multiple repairs directly when projectRoot provided', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
-      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
+      const { repairWUInconsistency } = await import('@lumenflow/core/wu-consistency-checker');
+      const { withMicroWorktree } = await import('@lumenflow/core/micro-worktree');
 
       // Create multiple WUs needing repair
       for (const id of ['WU-9998', 'WU-9997']) {
@@ -295,9 +291,8 @@ acceptance: []
     // When no projectRoot is provided (CLI invocation), micro-worktree should be used
 
     it('should use micro-worktree isolation when no projectRoot provided', async () => {
-      const { repairWUInconsistency } =
-        await import('@lumenflow/core/dist/wu-consistency-checker.js');
-      const { withMicroWorktree } = await import('@lumenflow/core/dist/micro-worktree.js');
+      const { repairWUInconsistency } = await import('@lumenflow/core/wu-consistency-checker');
+      const { withMicroWorktree } = await import('@lumenflow/core/micro-worktree');
 
       // Mock process.cwd to return our test directory
       const originalCwd = process.cwd;

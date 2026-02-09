@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 /** Common mock path for lumenflow config module */
-const CONFIG_MODULE_PATH = '@lumenflow/core/dist/lumenflow-config.js';
+const CONFIG_MODULE_PATH = '@lumenflow/core/config';
 
 // Test the exported functions directly with minimal mocking
 describe('wu:done auto cleanup (WU-1366)', () => {
@@ -94,12 +94,12 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       }));
 
       // Mock cleanupState to throw
-      vi.doMock('@lumenflow/core/dist/state-cleanup-core.js', () => ({
+      vi.doMock('@lumenflow/core/state-cleanup-core', () => ({
         cleanupState: vi.fn().mockRejectedValue(new Error('Cleanup failed')),
       }));
 
       // Mock the memory functions to avoid actual file operations
-      vi.doMock('@lumenflow/memory/dist/signal-cleanup-core.js', () => ({
+      vi.doMock('@lumenflow/memory/signal-cleanup-core', () => ({
         cleanupSignals: vi.fn().mockResolvedValue({
           success: true,
           removedIds: [],
@@ -109,7 +109,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
           breakdown: {},
         }),
       }));
-      vi.doMock('@lumenflow/memory/dist/mem-cleanup-core.js', () => ({
+      vi.doMock('@lumenflow/memory/cleanup', () => ({
         cleanupMemory: vi.fn().mockResolvedValue({
           success: true,
           removedIds: [],
@@ -119,7 +119,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
           breakdown: {},
         }),
       }));
-      vi.doMock('@lumenflow/core/dist/wu-events-cleanup.js', () => ({
+      vi.doMock('@lumenflow/core/wu-events-cleanup', () => ({
         archiveWuEvents: vi.fn().mockResolvedValue({
           success: true,
           archivedWuIds: [],
@@ -148,7 +148,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       }));
 
       const mockCleanupState = vi.fn();
-      vi.doMock('@lumenflow/core/dist/state-cleanup-core.js', () => ({
+      vi.doMock('@lumenflow/core/state-cleanup-core', () => ({
         cleanupState: mockCleanupState,
       }));
 
@@ -205,7 +205,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -239,7 +239,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockCommit = vi.fn();
       const mockPush = vi.fn();
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -262,7 +262,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockAdd = vi.fn().mockResolvedValue(undefined);
       const mockCommit = vi.fn().mockRejectedValue(new Error('commit failed'));
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -285,7 +285,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -317,7 +317,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -354,7 +354,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -385,7 +385,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,
@@ -423,7 +423,7 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const mockRaw = vi.fn().mockResolvedValue('');
       const mockPush = vi.fn().mockResolvedValue(undefined);
 
-      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
         getGitForCwd: vi.fn().mockReturnValue({
           getStatus: mockGetStatus,
           add: mockAdd,

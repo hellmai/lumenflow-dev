@@ -15,9 +15,9 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { initMemory } from '@lumenflow/memory/dist/mem-init-core.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { initMemory } from '@lumenflow/memory/init';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /**

@@ -13,7 +13,7 @@ import {
   shouldUseGatesAgentMode,
   getGatesLogDir,
   buildGatesLogPath,
-} from '@lumenflow/core/dist/gates-agent-mode.js';
+} from '@lumenflow/core/gates-agent-mode';
 
 describe('shouldUseGatesAgentMode', () => {
   describe('TTY detection (primary mechanism)', () => {

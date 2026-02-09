@@ -19,9 +19,9 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { PATTERNS, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { PATTERNS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[guard-locked]';

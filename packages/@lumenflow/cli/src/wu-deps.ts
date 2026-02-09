@@ -11,18 +11,18 @@
  *   pnpm wu:deps WU-1247 --direction up     # Only upstream deps
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
 import {
   buildDependencyGraph,
   buildDependencyGraphAsync,
   renderASCII,
   renderMermaid,
   validateGraph,
-} from '@lumenflow/core/dist/dependency-graph.js';
-import { OUTPUT_FORMATS } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+} from '@lumenflow/core/dependency-graph';
+import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
+import { PATTERNS } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 
 async function main() {
   const args = createWUParser({

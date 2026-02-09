@@ -14,7 +14,7 @@
  */
 
 import { createGitForPath, getGitForCwd, isAgentBranch, getConfig } from '@lumenflow/core';
-import { isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
+import { isInWorktree } from '@lumenflow/core/core/worktree-guard';
 
 /**
  * Arguments for guard-main-branch operation

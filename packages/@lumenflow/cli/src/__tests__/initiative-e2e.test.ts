@@ -17,8 +17,8 @@ import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
 
 // Test constants
 const TEST_INIT_ID = 'INIT-901';

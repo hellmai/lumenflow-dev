@@ -22,15 +22,12 @@
  */
 
 import { existsSync } from 'node:fs';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import {
-  validatePreflight,
-  formatPreflightResult,
-} from '@lumenflow/core/dist/wu-preflight-validators.js';
-import { PATTERNS, EXIT_CODES, LOG_PREFIX, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
-import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { readWURaw } from '@lumenflow/core/dist/wu-yaml.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { validatePreflight, formatPreflightResult } from '@lumenflow/core/wu-preflight-validators';
+import { PATTERNS, EXIT_CODES, LOG_PREFIX, EMOJI } from '@lumenflow/core/wu-constants';
+import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/wu-paths';
+import { readWURaw } from '@lumenflow/core/wu-yaml';
+import { die } from '@lumenflow/core/error-handler';
 
 /**
  * Detect worktree path from WU YAML or calculate from lane

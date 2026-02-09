@@ -14,7 +14,7 @@ import {
   getGatesLatestSymlinkPath,
   updateGatesLatestSymlink,
   getGatesLogDir,
-} from '@lumenflow/core/dist/gates-agent-mode.js';
+} from '@lumenflow/core/gates-agent-mode';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEST_FIXTURE_DIR = path.join(__dirname, '.test-fixtures-symlink');

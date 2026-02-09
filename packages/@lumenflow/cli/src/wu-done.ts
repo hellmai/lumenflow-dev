@@ -44,26 +44,23 @@ import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
-import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
-import { resolveLocation } from '@lumenflow/core/dist/context/location-resolver.js';
+import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
 import path from 'node:path';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
-import { validateWUCodePaths } from '@lumenflow/core/dist/code-path-validator.js';
+import { validateWUCodePaths } from '@lumenflow/core/code-path-validator';
 // WU-1983: Migration deployment utilities
 import {
   discoverLocalMigrations,
   hasMigrationChanges,
   formatMigrationReport,
-} from '@lumenflow/core/dist/migration-deployer.js';
-import {
-  validateDocsOnly,
-  getAllowedPathsDescription,
-} from '@lumenflow/core/dist/docs-path-validator.js';
-import { scanLogForViolations, rotateLog } from '@lumenflow/core/dist/commands-logger.js';
-import { rollbackFiles } from '@lumenflow/core/dist/rollback-utils.js';
+} from '@lumenflow/core/migration-deployer';
+import { validateDocsOnly, getAllowedPathsDescription } from '@lumenflow/core/docs-path-validator';
+import { scanLogForViolations, rotateLog } from '@lumenflow/core/commands-logger';
+import { rollbackFiles } from '@lumenflow/core/rollback-utils';
 import {
   validateInputs,
   detectModeAndPaths,
@@ -83,9 +80,9 @@ import {
   // WU-1503: Dirty-main pre-merge guard
   validateDirtyMain,
   buildDirtyMainErrorMessage,
-} from '@lumenflow/core/dist/wu-done-validators.js';
+} from '@lumenflow/core/wu-done-validators';
 // WU-1825: validateCodePathsExist moved to unified code-path-validator
-import { validateCodePathsExist } from '@lumenflow/core/dist/code-path-validator.js';
+import { validateCodePathsExist } from '@lumenflow/core/code-path-validator';
 import {
   BRANCHES,
   REMOTES,
@@ -110,60 +107,54 @@ import {
   CHECKPOINT_MESSAGES,
   // WU-1223: Location types for worktree detection
   CONTEXT_VALIDATION,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { isDocumentationType } from '@lumenflow/core/dist/wu-type-helpers.js';
-import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/dist/wu-done-ui.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { WU_PATHS, createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { writeWU, appendNote, parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
+} from '@lumenflow/core/wu-constants';
+import { isDocumentationType } from '@lumenflow/core/wu-type-helpers';
+import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
+import { getConfig } from '@lumenflow/core/config';
+import { writeWU, appendNote, parseYAML } from '@lumenflow/core/wu-yaml';
 import {
   PLACEHOLDER_SENTINEL,
   validateWU,
   validateDoneWU,
   validateApprovalGates,
-} from '@lumenflow/core/dist/wu-schema.js';
-import { validateBacklogSync } from '@lumenflow/core/dist/backlog-sync-validator.js';
+} from '@lumenflow/core/wu-schema';
+import { validateBacklogSync } from '@lumenflow/core/backlog-sync-validator';
 import {
   executeBranchOnlyCompletion,
   // WU-1492: Import branch-pr completion path
   executeBranchPRCompletion,
-} from '@lumenflow/core/dist/wu-done-branch-only.js';
-import {
-  executeWorktreeCompletion,
-  autoRebaseBranch,
-} from '@lumenflow/core/dist/wu-done-worktree.js';
-import { checkWUConsistency } from '@lumenflow/core/dist/wu-consistency-checker.js';
+} from '@lumenflow/core/wu-done-branch-only';
+import { executeWorktreeCompletion, autoRebaseBranch } from '@lumenflow/core/wu-done-worktree';
+import { checkWUConsistency } from '@lumenflow/core/wu-consistency-checker';
 // WU-1542: Use blocking mode compliance check (replaces non-blocking checkMandatoryAgentsCompliance)
-import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/dist/orchestration-rules.js';
-import { endSessionForWU } from '@lumenflow/agent/dist/auto-session-integration.js';
-import { runBackgroundProcessCheck } from '@lumenflow/core/dist/process-detector.js';
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/orchestration-rules';
+import { endSessionForWU } from '@lumenflow/agent/auto-session';
+import { runBackgroundProcessCheck } from '@lumenflow/core/process-detector';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 // WU-1588: INIT-007 memory layer integration
-import { createCheckpoint } from '@lumenflow/memory/dist/mem-checkpoint-core.js';
-import { createSignal, loadSignals } from '@lumenflow/memory/dist/mem-signal-core.js';
+import { createCheckpoint } from '@lumenflow/memory/checkpoint';
+import { createSignal, loadSignals } from '@lumenflow/memory/signal';
 // WU-1763: Memory store for loading discoveries (lifecycle nudges)
-import { loadMemory, queryByWu } from '@lumenflow/memory/dist/memory-store.js';
+import { loadMemory, queryByWu } from '@lumenflow/memory/store';
 // WU-1943: Checkpoint warning helper
-import { hasSessionCheckpoints } from '@lumenflow/core/dist/wu-done-worktree.js';
+import { hasSessionCheckpoints } from '@lumenflow/core/wu-done-worktree';
 // WU-1603: Atomic lane locking - release lock on WU completion
-import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
+import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 // WU-1747: Checkpoint and lock for concurrent load resilience
 import {
   createPreGatesCheckpoint as createWU1747Checkpoint,
   markGatesPassed,
   canSkipGates,
   clearCheckpoint,
-} from '@lumenflow/core/dist/wu-checkpoint.js';
+} from '@lumenflow/core/wu-checkpoint';
 // WU-1946: Spawn registry for tracking sub-agent spawns
-import { SpawnRegistryStore } from '@lumenflow/core/dist/spawn-registry-store.js';
-import { SpawnStatus } from '@lumenflow/core/dist/spawn-registry-schema.js';
+import { SpawnRegistryStore } from '@lumenflow/core/spawn-registry-store';
+import { SpawnStatus } from '@lumenflow/core/spawn-registry-schema';
 // WU-1999: Exposure validation for UI pairing
 // WU-2022: Feature accessibility validation (blocking)
-import {
-  validateExposure,
-  validateFeatureAccessibility,
-} from '@lumenflow/core/dist/wu-validation.js';
+import { validateExposure, validateFeatureAccessibility } from '@lumenflow/core/wu-validation';
 import { ensureCleanWorktree } from './wu-done-check.js';
 // WU-1366: Auto cleanup after wu:done success
 // WU-1533: commitCleanupChanges auto-commits dirty state files after cleanup
@@ -681,7 +672,7 @@ export async function isBranchAlreadyMerged(branch) {
 // WU-1281: isDocsOnlyByPaths removed - use shouldSkipWebTests from path-classifiers.ts
 // The validators already use shouldSkipWebTests via detectDocsOnlyByPaths wrapper.
 // Keeping the export for backward compatibility but re-exporting the canonical function.
-export { shouldSkipWebTests as isDocsOnlyByPaths } from '@lumenflow/core/dist/path-classifiers.js';
+export { shouldSkipWebTests as isDocsOnlyByPaths } from '@lumenflow/core/path-classifiers';
 
 /**
  * WU-1234: Pre-flight check for backlog state consistency
@@ -2307,7 +2298,7 @@ async function executeGates({
   const invariantsBaseDir = worktreePath || process.cwd();
   console.log(`\n${LOG_PREFIX.DONE} Running invariants check (non-bypassable)...`);
   console.log(`${LOG_PREFIX.DONE} Checking invariants in: ${invariantsBaseDir}`);
-  const { runInvariants } = await import('@lumenflow/core/dist/invariants-runner.js');
+  const { runInvariants } = await import('@lumenflow/core/invariants-runner');
   const invariantsResult = runInvariants({ baseDir: invariantsBaseDir, silent: false, wuId: id });
   if (!invariantsResult.success) {
     emitTelemetry({

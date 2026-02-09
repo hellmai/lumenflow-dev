@@ -17,17 +17,17 @@
 
 import { existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { assertTransition } from '@lumenflow/core/dist/state-machine.js';
-import { checkLaneFree, getLockPolicyForLane } from '@lumenflow/core/dist/lane-checker.js';
+import { assertTransition } from '@lumenflow/core/state-machine';
+import { checkLaneFree, getLockPolicyForLane } from '@lumenflow/core/lane-checker';
 // WU-1325: Import lane lock functions for policy-based lock acquisition on unblock
-import { acquireLaneLock } from '@lumenflow/core/dist/lane-lock.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { todayISO } from '@lumenflow/core/dist/date-utils.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS, defaultWorktreeFrom } from '@lumenflow/core/dist/wu-paths.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { readWU, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
+import { acquireLaneLock } from '@lumenflow/core/lane-lock';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { todayISO } from '@lumenflow/core/date-utils';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS, defaultWorktreeFrom } from '@lumenflow/core/wu-paths';
+import { getConfig } from '@lumenflow/core/config';
+import { readWU, writeWU, appendNote } from '@lumenflow/core/wu-yaml';
 import {
   STATUS_SECTIONS,
   PATTERNS,
@@ -39,15 +39,15 @@ import {
   FILE_SYSTEM,
   EXIT_CODES,
   MICRO_WORKTREE_OPERATIONS,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { defaultBranchFrom } from '@lumenflow/core/dist/wu-done-validators.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { emitWUFlowEvent } from '@lumenflow/core/dist/telemetry.js';
-import { ensureStaged } from '@lumenflow/core/dist/git-staged-validator.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+} from '@lumenflow/core/wu-constants';
+import { defaultBranchFrom } from '@lumenflow/core/wu-done-validators';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
+import { ensureStaged } from '@lumenflow/core/git-staged-validator';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 // WU-1574: Import backlog generator to replace BacklogManager
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 import { runCLI } from './cli-entry-point.js';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)

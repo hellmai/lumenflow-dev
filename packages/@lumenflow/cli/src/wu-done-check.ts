@@ -1,6 +1,6 @@
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
-import { LOG_PREFIX } from '@lumenflow/core/dist/wu-constants.js';
+import { LOG_PREFIX } from '@lumenflow/core/wu-constants';
 
 /**
  * WU-1169: Ensure worktree is clean before wu:done operations.

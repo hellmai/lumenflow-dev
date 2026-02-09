@@ -10,12 +10,9 @@
  *   pnpm initiative:list --status open      # Filter by status
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import {
-  listInitiatives,
-  getInitiativeProgress,
-} from '@lumenflow/initiatives/dist/initiative-yaml.js';
-import { OUTPUT_FORMATS } from '@lumenflow/initiatives/dist/initiative-constants.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { listInitiatives, getInitiativeProgress } from '@lumenflow/initiatives/yaml';
+import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
 import Table from 'cli-table3';
 
 function renderTable(initiatives, useColor) {

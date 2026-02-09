@@ -9,23 +9,23 @@ import * as fs from 'node:fs';
 
 // Mock external dependencies before imports
 vi.mock('node:fs');
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     getCurrentBranch: vi.fn().mockResolvedValue('main'),
     getConfigValue: vi.fn().mockResolvedValue('test@example.com'),
   })),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-id-generator.js', () => ({
+vi.mock('@lumenflow/core/wu-id-generator', () => ({
   generateWuIdWithRetry: vi.fn(),
   getNextWuId: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-paths.js', () => ({
+vi.mock('@lumenflow/core/wu-paths', () => ({
   WU_PATHS: {
     WU_DIR: () => 'docs/04-operations/tasks/wu',
     WU: (id: string) => `docs/04-operations/tasks/wu/${id}.yaml`,
@@ -36,41 +36,41 @@ vi.mock('@lumenflow/core/dist/wu-paths.js', () => ({
   },
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
   validateWUIDFormat: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/lumenflow-home.js', () => ({
+vi.mock('@lumenflow/core/lumenflow-home', () => ({
   getPlanPath: vi.fn(),
   getPlanProtocolRef: vi.fn(),
   getPlansDir: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-done-validators.js', () => ({
+vi.mock('@lumenflow/core/wu-done-validators', () => ({
   validateSpecCompleteness: vi.fn().mockReturnValue({ valid: true, errors: [] }),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-schema.js', () => ({
+vi.mock('@lumenflow/core/wu-schema', () => ({
   validateWU: vi.fn().mockReturnValue({ success: true, data: {} }),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-lint.js', () => ({
+vi.mock('@lumenflow/core/wu-lint', () => ({
   lintWUSpec: vi.fn().mockReturnValue({ valid: true, errors: [] }),
   formatLintErrors: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-validator.js', () => ({
+vi.mock('@lumenflow/core/wu-validator', () => ({
   validateNoPlaceholders: vi.fn().mockReturnValue({ valid: true }),
   buildPlaceholderErrorMessage: vi.fn(),
 }));
 
-vi.mock('@lumenflow/initiatives/dist/index.js', () => ({
+vi.mock('@lumenflow/initiatives', () => ({
   checkInitiativePhases: vi.fn(),
   findInitiative: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-create-validators.js', () => ({
+vi.mock('@lumenflow/core/wu-create-validators', () => ({
   validateSpecRefs: vi.fn().mockReturnValue({ valid: true, errors: [], warnings: [] }),
 }));
 
@@ -89,7 +89,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
   describe('--id flag behavior', () => {
     it('should accept explicit --id when provided', async () => {
       // This test verifies that --id WU-999 still works as before
-      const { validateWUIDFormat } = await import('@lumenflow/core/dist/wu-helpers.js');
+      const { validateWUIDFormat } = await import('@lumenflow/core/wu-helpers');
 
       // Simulate providing --id WU-999
       const explicitId = 'WU-999';
@@ -99,7 +99,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
     });
 
     it('should auto-generate ID when --id not provided', async () => {
-      const { generateWuIdWithRetry } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { generateWuIdWithRetry } = await import('@lumenflow/core/wu-id-generator');
       vi.mocked(generateWuIdWithRetry).mockResolvedValue('WU-1247');
 
       // Simulate the flow when --id is not provided
@@ -110,7 +110,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
     });
 
     it('should print generated ID clearly in output', async () => {
-      const { generateWuIdWithRetry } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { generateWuIdWithRetry } = await import('@lumenflow/core/wu-id-generator');
       vi.mocked(generateWuIdWithRetry).mockResolvedValue('WU-1248');
 
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -127,7 +127,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
 
   describe('race condition handling', () => {
     it('should retry on conflict when concurrent create detects existing ID', async () => {
-      const { generateWuIdWithRetry } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { generateWuIdWithRetry } = await import('@lumenflow/core/wu-id-generator');
 
       // First call fails (conflict), second succeeds
       vi.mocked(generateWuIdWithRetry).mockResolvedValueOnce('WU-1249');
@@ -138,7 +138,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
     });
 
     it('should throw after max retries exceeded', async () => {
-      const { generateWuIdWithRetry } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { generateWuIdWithRetry } = await import('@lumenflow/core/wu-id-generator');
 
       vi.mocked(generateWuIdWithRetry).mockRejectedValue(
         new Error('Failed to generate unique WU ID after 5 attempts'),
@@ -152,7 +152,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
 
   describe('ID format validation', () => {
     it('should generate IDs in WU-NNNN format', async () => {
-      const { generateWuIdWithRetry } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { generateWuIdWithRetry } = await import('@lumenflow/core/wu-id-generator');
 
       vi.mocked(generateWuIdWithRetry).mockResolvedValue('WU-1250');
 
@@ -162,7 +162,7 @@ describe('wu:create auto-ID feature (WU-1246)', () => {
     });
 
     it('should generate sequential IDs based on highest existing', async () => {
-      const { getNextWuId } = await import('@lumenflow/core/dist/wu-id-generator.js');
+      const { getNextWuId } = await import('@lumenflow/core/wu-id-generator');
 
       // Simulate highest existing is WU-1246
       vi.mocked(getNextWuId).mockReturnValue('WU-1247');

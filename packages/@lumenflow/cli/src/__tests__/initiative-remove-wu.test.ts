@@ -13,7 +13,7 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vite
 import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 
 // Test constants to avoid lint warnings about duplicate strings
 const TEST_WU_ID = 'WU-123';
@@ -40,16 +40,16 @@ const mockGit = {
   status: vi.fn().mockResolvedValue({ isClean: () => true }),
 };
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => mockGit),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@lumenflow/core/dist/micro-worktree.js')>();
+vi.mock('@lumenflow/core/micro-worktree', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lumenflow/core/micro-worktree')>();
   return {
     ...actual,
     withMicroWorktree: vi.fn(async ({ execute }) => {
@@ -416,7 +416,7 @@ describe('initiative:remove-wu command', () => {
 describe('initiative:remove-wu CLI integration', () => {
   it('should require --initiative and --wu flags', async () => {
     // This test verifies that the CLI requires both flags
-    const { WU_OPTIONS } = await import('@lumenflow/core/dist/arg-parser.js');
+    const { WU_OPTIONS } = await import('@lumenflow/core/arg-parser');
     expect(WU_OPTIONS.initiative).toBeDefined();
     expect(WU_OPTIONS.initiative.flags).toContain('--initiative');
     expect(WU_OPTIONS.wu).toBeDefined();

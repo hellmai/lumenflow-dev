@@ -7,7 +7,7 @@
  */
 
 import { CLAUDE_HOOKS, getHookCommand } from '@lumenflow/core';
-import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/dist/mem-signal-core.js';
+import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/signal';
 
 // Re-export for backwards compatibility (WU-1394)
 export const HOOK_SCRIPTS = CLAUDE_HOOKS.SCRIPTS;

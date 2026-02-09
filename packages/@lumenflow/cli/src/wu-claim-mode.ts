@@ -14,7 +14,7 @@
  * - --cloud --pr-mode        -> branch-pr (pr-mode redundant with cloud)
  */
 
-import { CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
+import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';
 
 /**
  * Input flags for mode resolution

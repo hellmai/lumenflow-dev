@@ -14,14 +14,14 @@
  * Default: 3 retries with exponential backoff and jitter.
  *
  * @see {@link ./state-doctor.ts} - Main CLI that uses these deps
- * @see {@link @lumenflow/core/dist/micro-worktree.js} - Micro-worktree infrastructure with retry logic
+ * @see {@link @lumenflow/core/micro-worktree} - Micro-worktree infrastructure with retry logic
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import type { StateDoctorDeps, EmitEventPayload } from '@lumenflow/core/dist/state-doctor-core.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import type { StateDoctorDeps, EmitEventPayload } from '@lumenflow/core/state-doctor-core';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 
 /**
  * Operation name for micro-worktree isolation

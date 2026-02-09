@@ -18,7 +18,7 @@ import {
   getWorktreeCommitFiles,
   formatProjectDefaults,
 } from '../dist/wu-claim.js';
-import { WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { WU_OPTIONS } from '@lumenflow/core/arg-parser';
 
 describe('wu:claim --skip-setup flag (WU-1023)', () => {
   beforeEach(() => {
@@ -185,7 +185,7 @@ describe('fallback symlink behavior (WU-1029)', () => {
     const symlinkNestedNodeModules = vi.fn().mockReturnValue({ created: 1 });
 
     vi.resetModules();
-    vi.doMock('@lumenflow/core/dist/worktree-symlink.js', () => ({
+    vi.doMock('@lumenflow/core/worktree-symlink', () => ({
       symlinkNodeModules,
       symlinkNestedNodeModules,
     }));
@@ -204,7 +204,7 @@ describe('fallback symlink behavior (WU-1029)', () => {
     const symlinkNestedNodeModules = vi.fn().mockReturnValue({ created: 1 });
 
     vi.resetModules();
-    vi.doMock('@lumenflow/core/dist/worktree-symlink.js', () => ({
+    vi.doMock('@lumenflow/core/worktree-symlink', () => ({
       symlinkNodeModules,
       symlinkNestedNodeModules,
     }));

@@ -18,7 +18,7 @@
 import { describe, it, expect } from 'vitest';
 import { resolveClaimMode } from '../wu-claim-mode.js';
 import { validateManualTestsForClaim, buildRollbackYamlDoc } from '../wu-claim.js';
-import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
   describe('resolveClaimMode', () => {
