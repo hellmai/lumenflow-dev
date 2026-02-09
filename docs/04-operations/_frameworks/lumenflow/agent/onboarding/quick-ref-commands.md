@@ -2,10 +2,10 @@
 
 **Last updated:** 2026-02-06
 
-Complete reference for all CLI commands. Organized by category for quick discovery.
+Reference for CLI commands. Organized by category for quick discovery.
 
-> **Tip (WU-1358):** For complete option lists, always run `<package_manager> <command> --help`.
-> This shows all available flags including inline options that may not appear in generated docs.
+> **Rule (WU-1358, WU-1530):** Always run `<command> --help` before first use of any unfamiliar command.
+> This document may not include all available options or may contain outdated examples.
 >
 > ```bash
 > # Examples
@@ -35,7 +35,7 @@ Complete reference for all CLI commands. Organized by category for quick discove
 | `pnpm lumenflow:upgrade`   | Upgrade LumenFlow packages                        |
 | `pnpm lumenflow:doctor`    | Diagnose LumenFlow configuration                  |
 | `pnpm lumenflow:integrate` | Generate enforcement hooks for client             |
-| `pnpm lumenflow commands`  | List all available CLI commands                   |
+| `npx lumenflow commands`   | List all available CLI commands                   |
 
 **For external projects (end users):**
 
@@ -63,7 +63,7 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree) |
 | `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                    |
 | `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)      |
-| `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                            |
+| `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags) |
 | `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                           |
 | `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                     |
 | `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)     |
@@ -341,6 +341,9 @@ pnpm gates              # Now works
 ## Workflow Sequence (Quick Reference)
 
 ```bash
+# 0. Check available options (do this before first use of any command)
+pnpm wu:create --help
+
 # 1. Create WU
 pnpm wu:create --id WU-XXX --lane "Framework: Core" --title "Add feature" \
   --description "Context: ... Problem: ... Solution: ..." \

@@ -528,22 +528,24 @@ export function validateCreateSpec({
     );
   }
 
-  if (errors.length > 0) {
-    return { valid: false, errors };
+  // WU-1530: Single-pass validation — collect all errors before returning.
+  // Always build WU content and run all validation stages, even when early fields are missing.
+  // buildWUContent handles undefined gracefully; Zod catches missing required fields.
+
+  // Stage 2b: Placeholder check (only meaningful if fields exist)
+  if (opts.description && opts.acceptance && opts.acceptance.length > 0) {
+    const placeholderResult = validateNoPlaceholders({
+      description: opts.description,
+      acceptance: opts.acceptance,
+    });
+
+    if (!placeholderResult.valid) {
+      errors.push(buildPlaceholderErrorMessage('wu:create', placeholderResult));
+    }
   }
 
-  const placeholderResult = validateNoPlaceholders({
-    description: opts.description,
-    acceptance: opts.acceptance,
-  });
-
-  if (!placeholderResult.valid) {
-    return {
-      valid: false,
-      errors: [buildPlaceholderErrorMessage('wu:create', placeholderResult)],
-    };
-  }
-
+  // Stage 2c-2d: Schema + completeness — always run to catch enum/format errors
+  // even when required fields are missing (Zod reports both)
   const today = todayISO();
   const wuContent = buildWUContent({
     id,
@@ -557,22 +559,26 @@ export function validateCreateSpec({
 
   const schemaResult = validateWU(wuContent);
   if (!schemaResult.success) {
-    const schemaErrors = schemaResult.error.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`,
-    );
-    return { valid: false, errors: schemaErrors };
+    // Deduplicate: skip schema errors already covered by field-level checks above
+    const fieldErrorFields = new Set(['description', 'acceptance', 'code_paths', 'tests']);
+    const schemaErrors = schemaResult.error.issues
+      .filter((issue) => !fieldErrorFields.has(issue.path[0] as string) || errors.length === 0)
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`);
+    errors.push(...schemaErrors);
   }
 
-  const completeness = validateSpecCompleteness(wuContent, id);
-  if (!completeness.valid) {
-    return { valid: false, errors: completeness.errors };
+  // Only run completeness if schema passed (it depends on well-formed data)
+  if (schemaResult.success) {
+    const completeness = validateSpecCompleteness(wuContent, id);
+    if (!completeness.valid) {
+      errors.push(...completeness.errors);
+    }
   }
 
-  // WU-1329: Strict mode validates path existence
+  // Stage 2e: Strict mode validates path existence
   if (strict) {
     const rootDir = process.cwd();
 
-    // Validate code_paths exist
     if (opts.codePaths && opts.codePaths.length > 0) {
       const codePathsResult = validateCodePathsExistence(opts.codePaths, rootDir);
       if (!codePathsResult.valid) {
@@ -580,7 +586,6 @@ export function validateCreateSpec({
       }
     }
 
-    // Validate test_paths exist (unit, e2e - not manual)
     const testsObj = {
       unit: opts.testPathsUnit || [],
       e2e: opts.testPathsE2e || [],
@@ -589,10 +594,10 @@ export function validateCreateSpec({
     if (!testPathsResult.valid) {
       errors.push(...testPathsResult.errors);
     }
+  }
 
-    if (errors.length > 0) {
-      return { valid: false, errors };
-    }
+  if (errors.length > 0) {
+    return { valid: false, errors };
   }
 
   return { valid: true, errors: [] };
@@ -953,6 +958,46 @@ async function main() {
   }
 
   console.log(`${LOG_PREFIX} ✅ Spec validation passed`);
+
+  // WU-1530: Run spec lint BEFORE micro-worktree creation.
+  // Previously this ran inside createWUYamlInWorktree after worktree setup,
+  // meaning lint errors only appeared after a ~10s worktree creation.
+  const preflightWU = buildWUContent({
+    id: wuId,
+    lane: args.lane,
+    title: args.title,
+    priority: args.priority || DEFAULT_PRIORITY,
+    type: effectiveType,
+    created: todayISO(),
+    opts: {
+      description: args.description,
+      acceptance: args.acceptance,
+      notes: resolvedNotes,
+      codePaths: args.codePaths,
+      testPathsManual: resolvedTestPathsManual,
+      testPathsUnit: args.testPathsUnit,
+      testPathsE2e: args.testPathsE2e,
+      exposure: args.exposure,
+      userJourney: args.userJourney,
+      uiPairingWus: args.uiPairingWus,
+      specRefs: mergedSpecRefs,
+      initiative: args.initiative,
+      phase: args.phase,
+      blockedBy: args.blockedBy,
+      blocks: args.blocks,
+      labels: args.labels,
+      assignedTo,
+    },
+  });
+  const invariantsPath = join(process.cwd(), 'tools/invariants.yml');
+  const preflightLint = lintWUSpec(preflightWU, { invariantsPath });
+  if (!preflightLint.valid) {
+    const formatted = formatLintErrors(preflightLint.errors);
+    die(
+      `${LOG_PREFIX} ❌ WU SPEC LINT FAILED:\n\n${formatted}\n` +
+        `Fix the issues above before creating this WU.`,
+    );
+  }
 
   const specRefsList = mergedSpecRefs;
   const specRefsValidation = validateSpecRefs(specRefsList);

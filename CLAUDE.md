@@ -51,7 +51,8 @@ cd /home/tom/source/hellmai/os && pnpm wu:done --id WU-XXXX
 
 ## Core Principles
 
-1. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
+1. **Always `--help` First**: Run `<command> --help` before first use of any unfamiliar CLI command
+2. **Dogfood LumenFlow**: Use LumenFlow workflow for all changes
 2. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
 3. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
 4. **Library-First**: Search context7 before custom code
@@ -96,7 +97,7 @@ Use "Parent: Sublane" format (e.g., `Framework: CLI`). See `.lumenflow.config.ya
 | `pnpm mem:init`       | Initialize memory layer                           |
 | `pnpm mem:checkpoint` | Save memory checkpoint                            |
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md). Always run `<command> --help` for the authoritative option list.
 
 ### Context-Aware Validation (WU-1090)
 

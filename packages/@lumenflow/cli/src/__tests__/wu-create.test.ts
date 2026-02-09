@@ -142,3 +142,83 @@ describe('wu:create helpers (WU-1429)', () => {
     expect(warnings).toEqual([]);
   });
 });
+
+describe('WU-1530: single-pass validation', () => {
+  it('should report all missing field errors in a single pass', () => {
+    const result = validateCreateSpec({
+      id: 'WU-9990',
+      lane: 'Framework: CLI',
+      title: 'Test',
+      priority: 'P2',
+      type: 'bug',
+      opts: {
+        // All required fields intentionally omitted
+        description: undefined,
+        acceptance: [],
+        exposure: undefined,
+        codePaths: [],
+        strict: false,
+      },
+    });
+
+    expect(result.valid).toBe(false);
+    // Must report ALL errors at once, not just the first batch
+    expect(result.errors.length).toBeGreaterThanOrEqual(4);
+    const joined = result.errors.join('\n');
+    expect(joined).toContain('--description');
+    expect(joined).toContain('--acceptance');
+    expect(joined).toContain('--exposure');
+    expect(joined).toContain('--code-paths');
+  });
+
+  it('should report field errors AND schema errors together when both exist', () => {
+    // Missing description (field error) + invalid exposure (schema error)
+    // Current code: early return on field errors hides schema errors
+    // Fixed code: both should appear in single result
+    const result = validateCreateSpec({
+      id: 'WU-9991',
+      lane: 'Framework: CLI',
+      title: 'Test',
+      priority: 'P2',
+      type: 'bug',
+      opts: {
+        description: undefined, // field error: missing
+        acceptance: ['Criterion 1'],
+        exposure: 'invalid-exposure-value', // schema error: invalid enum
+        codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+        testPathsManual: ['Manual test step'],
+        strict: false,
+      },
+    });
+
+    expect(result.valid).toBe(false);
+    const joined = result.errors.join('\n');
+    // Field-level error
+    expect(joined).toContain('--description');
+    // Schema-level error (from Zod validation of exposure enum)
+    expect(joined).toContain('exposure');
+  });
+
+  it('should still pass when all fields are valid', () => {
+    const result = validateCreateSpec({
+      id: 'WU-9992',
+      lane: 'Framework: CLI',
+      title: 'Test',
+      priority: 'P2',
+      type: 'bug',
+      opts: {
+        description:
+          'Context: test context.\nProblem: test problem.\nSolution: test solution that exceeds minimum.',
+        acceptance: ['Criterion 1'],
+        exposure: 'backend-only',
+        codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+        testPathsManual: ['Manual test step'],
+        testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
+        strict: false,
+      },
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
+  });
+});
