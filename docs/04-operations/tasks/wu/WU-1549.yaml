@@ -1,0 +1,40 @@
+id: WU-1549
+title: Decompose wu-constants and segregate fat interfaces
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/core/src/ports/core-tools.ports.ts
+  - packages/@lumenflow/core/src/adapters/terminal-renderer.adapter.ts
+tests:
+  manual:
+    - Verify wc -l on split constant files shows no single file exceeding 500 lines.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/constants-decomposition.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1549.done
+dependencies: []
+initiative: INIT-020
+phase: 9
+spec_refs:
+  - lumenflow://plans/polished-frolicking-whale.md
+risks: []
+notes: Track I from enterprise hardening initiative. Benefits from Track E completing first. Covers plan findings 29-32.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu-constants.ts is 2,279 lines mixing 6 concerns. core/index.ts barrel is 390+ lines with rename gymnastics. IToolRunner has 5 methods but consumers use 1-2. Problem: kitchen-sink modules violate ISP and make imports unnecessarily heavy. Solution: split wu-constants.ts into domain modules, segregate IToolRunner, extract MockDashboardRenderer.'
+acceptance:
+  - wu-constants.ts split into domain-specific modules, no single file exceeding 500 lines.
+  - IToolRunner segregated into slim IToolExecutor interface for gate consumers.
+  - MockDashboardRenderer extracted from production TerminalDashboardRenderer class.
