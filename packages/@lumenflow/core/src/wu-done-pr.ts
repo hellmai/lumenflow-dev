@@ -18,6 +18,16 @@ import { LOG_PREFIX, EMOJI, REMOTES, FILE_SYSTEM, STDIO } from './wu-constants.j
 import { createWuPaths } from './wu-paths.js';
 
 /**
+ * Canonical completion mode labels used for wu:done telemetry events.
+ * Centralized here so all completion workflows share consistent values.
+ */
+export const WU_DONE_COMPLETION_MODES = Object.freeze({
+  WORKTREE: 'worktree',
+  BRANCH_ONLY: 'branch-only',
+  BRANCH_PR: 'branch-pr',
+});
+
+/**
  * @typedef {Object} PRContext
  * @property {string} branch - Lane branch name
  * @property {string} id - WU ID (e.g., "WU-1215")

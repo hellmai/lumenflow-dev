@@ -55,6 +55,7 @@ import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
 import { validateCodePathsCommittedBeforeDone } from './wu-done-validation.js';
 import { assertTransition } from './state-machine.js';
 import { emitLaneSignalForCompletion } from './wu-done-branch-only.js';
+import { WU_DONE_COMPLETION_MODES } from './wu-done-pr.js';
 import {
   detectZombieState,
   resetWorktreeYAMLForRecovery,
@@ -584,7 +585,7 @@ export async function executeWorktreeCompletion(context) {
       wuId: id,
       lane: docForUpdate.lane,
       laneBranch,
-      completionMode: 'worktree',
+      completionMode: WU_DONE_COMPLETION_MODES.WORKTREE,
     });
 
     // WU-1811: All steps succeeded - worktree cleanup is safe
