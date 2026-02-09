@@ -1013,3 +1013,4 @@
 {"type":"release","wuId":"WU-1534","reason":"No implementation work, releasing to work on WU-1535","timestamp":"2026-02-09T22:48:06.411Z"}
 {"type":"claim","wuId":"WU-1554","lane":"Framework: CLI WU Commands","title":"Fix wu:done post-merge metadata double-write leaving main dirty","timestamp":"2026-02-09T22:48:33.925Z"}
 {"type":"claim","wuId":"WU-1537","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper","timestamp":"2026-02-09T22:49:49.855Z"}
+{"type":"claim","wuId":"WU-1535","lane":"Operations: Tooling","title":"Enable strict TypeScript build configuration","timestamp":"2026-02-09T22:50:11.864Z"}
