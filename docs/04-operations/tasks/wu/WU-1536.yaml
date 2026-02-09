@@ -2,7 +2,7 @@ id: WU-1536
 title: Add subpath exports and codemod dist imports
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -65,6 +65,6 @@ acceptance:
   - Explicit subpath exports added to core, memory, initiatives, and agent package.json files.
   - All consumer imports migrated from @lumenflow/*/dist/* to supported public subpaths.
   - pnpm build, pnpm typecheck, and pnpm test pass after codemod.
-locked: false
-completed_at: 2026-02-09T23:18:57.958Z
+locked: true
+completed_at: 2026-02-09T23:34:58.426Z
 completed: 2026-02-09
