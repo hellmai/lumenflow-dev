@@ -14,6 +14,7 @@ import { validateCommand } from './validation/validate-command.js';
 import { getValidCommandsForContext } from './validation/command-registry.js';
 import { getConfig } from './lumenflow-config.js';
 import { EMOJI, CONTEXT_VALIDATION } from './wu-constants.js';
+import { ProcessExitError } from './error-handler.js';
 import type { WuContext, ValidationResult } from './validation/types.js';
 
 const { COMMANDS } = CONTEXT_VALIDATION;
@@ -175,7 +176,7 @@ export async function runContextValidation(
  * @param wuId - Optional WU ID for context
  * @param logPrefix - Log prefix for output
  * @returns The computed context if validation passes
- * @throws Exits process if mode is 'error' and validation fails
+ * @throws {ProcessExitError} if mode is 'error' and validation fails (WU-1538)
  */
 export async function applyContextValidation(
   commandName: string,
@@ -189,7 +190,7 @@ export async function applyContextValidation(
     if (result.mode === 'error' && !result.canProceed) {
       console.error(`${logPrefix} Context validation failed:`);
       console.error(result.output);
-      process.exit(1);
+      throw new ProcessExitError(`${logPrefix} Context validation failed`, 1);
     } else if (result.mode === 'warn') {
       console.warn(`${logPrefix} Context validation warnings:`);
       console.warn(result.output);

@@ -10,6 +10,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   WUError,
+  ProcessExitError,
   die,
   createError,
   createAgentFriendlyError,
@@ -178,57 +179,50 @@ describe('error-handler', () => {
 
   describe('die function', () => {
     let originalArgv: string[];
-    let exitSpy: ReturnType<typeof vi.spyOn>;
     let errorSpy: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
       originalArgv = [...process.argv];
-      exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('process.exit called');
-      });
       errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     });
 
     afterEach(() => {
       process.argv = originalArgv;
-      exitSpy.mockRestore();
       errorSpy.mockRestore();
     });
 
     it('should log error message with script name', () => {
-      process.argv = ['node', '/path/to/wu-claim.js', '--id', 'WU-123'];
+      process.argv = ['node', 'tools/wu-claim.js', '--id', 'WU-123'];
 
       try {
         die('WU file not found');
       } catch {
-        // Expected to throw due to mocked process.exit
+        // Expected ProcessExitError
       }
 
       expect(errorSpy).toHaveBeenCalledWith('[wu-claim] WU file not found');
     });
 
-    it('should exit with code 1 by default', () => {
-      process.argv = ['node', '/path/to/test.js'];
+    it('should throw ProcessExitError with code 1 by default', () => {
+      process.argv = ['node', 'tools/test.js'];
 
       try {
         die('Error message');
-      } catch {
-        // Expected
+      } catch (err) {
+        expect(err).toBeInstanceOf(ProcessExitError);
+        expect((err as ProcessExitError).exitCode).toBe(1);
       }
-
-      expect(exitSpy).toHaveBeenCalledWith(1);
     });
 
-    it('should exit with custom exit code', () => {
-      process.argv = ['node', '/path/to/test.js'];
+    it('should throw ProcessExitError with custom exit code', () => {
+      process.argv = ['node', 'tools/test.js'];
 
       try {
         die('Gates failed', 2);
-      } catch {
-        // Expected
+      } catch (err) {
+        expect(err).toBeInstanceOf(ProcessExitError);
+        expect((err as ProcessExitError).exitCode).toBe(2);
       }
-
-      expect(exitSpy).toHaveBeenCalledWith(2);
     });
 
     it('should handle missing script path', () => {
@@ -237,22 +231,36 @@ describe('error-handler', () => {
       try {
         die('Error message');
       } catch {
-        // Expected
+        // Expected ProcessExitError
       }
 
       expect(errorSpy).toHaveBeenCalledWith('[unknown] Error message');
     });
 
     it('should extract basename from full path', () => {
-      process.argv = ['node', '/home/user/project/tools/wu-done.js'];
+      process.argv = ['node', 'project/tools/wu-done.js'];
 
       try {
         die('Something went wrong');
       } catch {
-        // Expected
+        // Expected ProcessExitError
       }
 
       expect(errorSpy).toHaveBeenCalledWith('[wu-done] Something went wrong');
+    });
+
+    it('should NOT call process.exit directly (WU-1538)', () => {
+      process.argv = ['node', 'tools/test.js'];
+      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      try {
+        die('Error message');
+      } catch {
+        // Expected ProcessExitError
+      }
+
+      expect(exitSpy).not.toHaveBeenCalled();
+      exitSpy.mockRestore();
     });
   });
 });

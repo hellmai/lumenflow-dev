@@ -18,7 +18,8 @@ import { readFile, writeFile, mkdir, appendFile, access } from 'node:fs/promises
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
-import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { ProcessExitError } from './error-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -219,15 +220,23 @@ async function monitor() {
 
   if (totalAlerts > 0) {
     console.log(`\n⚠️  Review alerts above and investigate if changes were intentional\n`);
-    process.exit(EXIT_CODES.ERROR); // Exit with error to trigger GitHub Actions notification
+    throw new ProcessExitError('Prompt alerts detected', EXIT_CODES.ERROR);
   } else {
     console.log(`\n✅ All prompts within budget and stable\n`);
-    process.exit(EXIT_CODES.SUCCESS);
+    throw new ProcessExitError('Monitor complete', EXIT_CODES.SUCCESS);
   }
 }
 
-// Run monitor
-monitor().catch((error) => {
-  console.error('Nightly monitor failed:', error);
-  process.exit(EXIT_CODES.ERROR);
-});
+// Export monitor for testability (WU-1538)
+export { monitor };
+
+// Run monitor when executed directly
+if (import.meta.main) {
+  monitor().catch((error) => {
+    if (error instanceof ProcessExitError) {
+      process.exit(error.exitCode);
+    }
+    console.error('Nightly monitor failed:', error);
+    process.exit(EXIT_CODES.ERROR);
+  });
+}

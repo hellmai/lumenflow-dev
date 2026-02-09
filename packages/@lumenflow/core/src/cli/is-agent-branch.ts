@@ -12,16 +12,27 @@
  */
 
 import { isAgentBranch } from '../branch-check.js';
+import { ProcessExitError } from '../error-handler.js';
 
 async function main(): Promise<void> {
   const branch = process.argv[2] || null;
   const result = await isAgentBranch(branch);
 
   // Exit 0 = agent branch (truthy), Exit 1 = not agent branch
-  process.exit(result ? 0 : 1);
+  // WU-1538: Throw ProcessExitError instead of calling process.exit directly
+  throw new ProcessExitError(
+    result ? 'Agent branch detected' : 'Not an agent branch',
+    result ? 0 : 1,
+  );
 }
 
+// Export main for testability (WU-1538)
+export { main };
+
 main().catch((error) => {
+  if (error instanceof ProcessExitError) {
+    process.exit(error.exitCode);
+  }
   console.error('Error checking agent branch:', error.message);
   // Fail-closed: error = not allowed
   process.exit(1);
