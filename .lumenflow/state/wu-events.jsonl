@@ -1017,3 +1017,4 @@
 {"type":"claim","wuId":"WU-1534","lane":"Framework: CLI Enforcement","title":"Harden CLI command execution surfaces","timestamp":"2026-02-09T22:51:56.752Z"}
 {"type":"claim","wuId":"WU-1538","lane":"Framework: Core Lifecycle","title":"Refactor core exit handling to throw typed errors","timestamp":"2026-02-09T23:08:08.007Z"}
 {"type":"release","wuId":"WU-1537","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-09T23:10:56.234Z"}
+{"type":"claim","wuId":"WU-1540","lane":"Framework: Core Validation","title":"Split protected and progressable status constants","timestamp":"2026-02-09T23:11:27.270Z"}
