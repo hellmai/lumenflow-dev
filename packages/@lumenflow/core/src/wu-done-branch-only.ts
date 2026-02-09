@@ -44,11 +44,7 @@ import { emit } from './telemetry.js';
 // WU-1061: Import docs regeneration utilities
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 // WU-1492: Import PR creation utilities for branch-pr mode
-import {
-  createPR,
-  printPRCreatedMessage,
-  WU_DONE_COMPLETION_MODES,
-} from './wu-done-pr.js';
+import { createPR, printPRCreatedMessage, WU_DONE_COMPLETION_MODES } from './wu-done-pr.js';
 
 export const LANE_SIGNALS_NDJSON = path.join(LUMENFLOW_PATHS.TELEMETRY, 'lane-signals.ndjson');
 
