@@ -47,10 +47,6 @@ acceptance:
   - trace-gen uses argv-based git invocations and no shell pipe composition.
   - Injection-focused tests cover malicious argument cases and pass.
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1534
-claimed_at: 2026-02-09T22:46:27.065Z
-baseline_main_sha: 7068bf8e0026f73cdb47e0651169b387f2c4247c
-session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T22:46:27.073Z
