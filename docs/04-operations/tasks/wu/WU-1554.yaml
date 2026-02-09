@@ -2,7 +2,7 @@ id: WU-1554
 title: Fix wu:done post-merge metadata double-write leaving main dirty
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -26,8 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:done writes metadata (WU YAML, backlog, status, wu-events) in worktree, merges to main, pushes, then detects uncommitted changes on main. Something re-writes these files on main after the merge+push. Blocks all 4 agents.
+description: wu:done writes metadata (WU YAML, backlog, status, wu-events) in worktree, merges to
+  main, pushes, then detects uncommitted changes on main. Something re-writes these files on main
+  after the merge+push. Blocks all 4 agents.
 acceptance:
   - wu:done completes without leaving main dirty
   - Post-merge dirty check passes cleanly
   - Tests cover the post-merge clean state
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1554
+claimed_at: 2026-02-09T22:48:33.898Z
+baseline_main_sha: 55d674aa8552d3600c126bf18e960d45a9a9c10a
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:48:33.903Z
