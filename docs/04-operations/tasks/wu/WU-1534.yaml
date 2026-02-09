@@ -2,7 +2,7 @@ id: WU-1534
 title: Harden CLI command execution surfaces
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: ready
 priority: P0
 created: 2026-02-09
 code_paths:
@@ -27,7 +27,9 @@ phase: 1
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track A from enterprise hardening initiative.
+notes: |-
+  Track A from enterprise hardening initiative.
+  Released (2026-02-09): No implementation work, releasing to work on WU-1535
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
