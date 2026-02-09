@@ -2,7 +2,7 @@ id: WU-1541
 title: Remove process.chdir global state mutations
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
 tests:
   manual:
-    - Run wu:done and gates flows from non-root invocation contexts and verify stable behavior without cwd mutation.
+    - Run wu:done and gates flows from non-root invocation contexts and verify stable behavior
+      without cwd mutation.
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
@@ -33,8 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu-done-worktree and gates rely on process.chdir to switch execution context. Problem: global cwd mutation introduces hidden coupling and blocks safe parallelization. Solution: refactor affected flows to pass explicit cwd and path context through adapters and subprocess calls without mutating process-global state.'
+description: 'Context: wu-done-worktree and gates rely on process.chdir to switch execution context.
+  Problem: global cwd mutation introduces hidden coupling and blocks safe parallelization. Solution:
+  refactor affected flows to pass explicit cwd and path context through adapters and subprocess
+  calls without mutating process-global state.'
 acceptance:
   - wu-done-worktree and gates no longer rely on process.chdir for normal execution paths.
   - Git and file operations receive explicit cwd/baseDir parameters through helper layers.
-  - Regression tests cover multi-path execution and confirm behavior without cwd mutation side effects.
+  - Regression tests cover multi-path execution and confirm behavior without cwd mutation side
+    effects.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1541
+claimed_at: 2026-02-09T17:59:49.920Z
+baseline_main_sha: 02cd8cab1147e078a9764301ceb6b34886a44946
+session_id: c452b8a3-4f59-453c-a0b2-cbc4817928d2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T17:59:49.928Z

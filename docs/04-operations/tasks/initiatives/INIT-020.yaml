@@ -7,7 +7,7 @@ description: 'Context: LumenFlow is a critical workflow runtime and currently ha
   Solution: execute a hard one-sweep remediation across command execution, compiler and lint
   guardrails, package API boundaries, runtime exit handling, duplicated constants, and process state
   isolation with full regression validation.'
-status: open
+status: in_progress
 priority: P0
 owner: platform
 created: 2026-02-09
@@ -47,4 +47,3 @@ success_metrics:
   - Status semantics are explicit via PROTECTED_WU_STATUSES and PROGRESSABLE_WU_STATUSES with tests.
   - pnpm build, pnpm typecheck, pnpm test, and pnpm gates pass after migration.
 labels: []
-related_plan: lumenflow://plans/polished-frolicking-whale.md
