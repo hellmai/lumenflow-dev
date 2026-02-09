@@ -2,7 +2,7 @@ id: WU-1550
 title: Introduce gate and validator registry patterns
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-validators.ts
 tests:
   manual:
-    - Verify new gates can be added by creating a file and registering without modifying executeGates().
+    - Verify new gates can be added by creating a file and registering without modifying
+      executeGates().
   unit:
     - packages/@lumenflow/cli/src/__tests__/gate-registry.test.ts
   e2e: []
@@ -32,8 +33,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: gates are registered via hardcoded 30+ element arrays in gates.ts. Validators are a hardcoded import list in wu-done.ts. Problem: adding a new gate or validator requires modifying existing code (OCP violation). Solution: create GateRegistry and ValidatorRegistry with declarative registration.'
+description: 'Context: gates are registered via hardcoded 30+ element arrays in gates.ts. Validators
+  are a hardcoded import list in wu-done.ts. Problem: adding a new gate or validator requires
+  modifying existing code (OCP violation). Solution: create GateRegistry and ValidatorRegistry with
+  declarative registration.'
 acceptance:
   - Gates registered via GateRegistry pattern instead of hardcoded arrays.
   - Validators use ValidatorRegistry for declarative registration.
-  - New gates/validators added by creating a file and registering, not modifying executeGates() or wu-done.ts.
+  - New gates/validators added by creating a file and registering, not modifying executeGates() or
+    wu-done.ts.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1550
+claimed_at: 2026-02-09T23:41:28.426Z
+baseline_main_sha: 1c7247c8899119429b9f7cfacf062377a1b31fdf
+session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:41:28.432Z

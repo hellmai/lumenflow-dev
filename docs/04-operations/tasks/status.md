@@ -9,6 +9,7 @@ _Last updated: 2026-02-09_
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml)
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
+- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
 
 ## Completed
 

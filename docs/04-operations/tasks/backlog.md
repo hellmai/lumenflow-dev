@@ -21,13 +21,11 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
-- [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — Framework: Core Lifecycle
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml) — Operations: Tooling
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
 - [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml) — Framework: Core Validation
-- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
@@ -37,6 +35,8 @@ sections:
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml) — Operations: Tooling
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml) — Framework: Core Lifecycle
+- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
+- [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
