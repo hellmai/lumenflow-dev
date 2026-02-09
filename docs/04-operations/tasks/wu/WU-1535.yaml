@@ -25,7 +25,8 @@ tests:
     - Run pnpm typecheck and verify strict-mode errors are surfaced and resolved or explicitly
       tracked.
     - Run pnpm lint and confirm re-enabled security/type rules execute in CI-equivalent mode.
-  unit: []
+  unit:
+    - tools/__tests__/tsconfig-strict.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1535.done
