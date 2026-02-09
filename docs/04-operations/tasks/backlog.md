@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
