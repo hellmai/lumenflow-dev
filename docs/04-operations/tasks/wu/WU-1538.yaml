@@ -2,7 +2,7 @@ id: WU-1538
 title: Refactor core exit handling to throw typed errors
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -54,3 +54,5 @@ session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T23:08:07.979Z
+locked: true
+completed: 2026-02-09
