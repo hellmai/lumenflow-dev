@@ -13,8 +13,8 @@ code_paths:
   - packages/@lumenflow/cli/src/state-doctor.ts
   - packages/@lumenflow/cli/src/state-doctor-fix.ts
   - packages/@lumenflow/core/src/wu-done-validation.ts
-  - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
   - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
 tests:
   manual:
     - Run targeted grep checks for replaced literals and confirm zero unexpected remaining
