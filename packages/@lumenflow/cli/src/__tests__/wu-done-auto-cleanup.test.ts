@@ -10,6 +10,7 @@
  * - shouldRunAutoCleanup re-reads config (reload: true) after merge (WU-1533)
  * - runAutoCleanupAfterDone is non-fatal (logs errors but doesn't throw)
  * - commitCleanupChanges auto-commits dirty state files after cleanup (WU-1533)
+ * - commitCleanupChanges stages both .lumenflow/state/ and .lumenflow/archive/ files (WU-1553)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -339,11 +340,15 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       expect(mockCommit).toHaveBeenCalledWith('chore: lumenflow state cleanup [skip ci]');
     });
 
-    it('should only commit .lumenflow/state/ files, not unrelated dirty files', async () => {
-      // Mixed dirty state: state file + unrelated file
+    it('should only commit .lumenflow/ managed files, not unrelated dirty files', async () => {
+      // Mixed dirty state: state file + archive file + unrelated file
       const mockGetStatus = vi
         .fn()
-        .mockResolvedValue(' M .lumenflow/state/wu-events.jsonl\n M src/unrelated.ts');
+        .mockResolvedValue(
+          ' M .lumenflow/state/wu-events.jsonl\n' +
+            ' M .lumenflow/archive/wu-events-2026-01.jsonl\n' +
+            ' M src/unrelated.ts',
+        );
       const mockAdd = vi.fn().mockResolvedValue(undefined);
       const mockCommit = vi.fn().mockResolvedValue(undefined);
       const mockRaw = vi.fn().mockResolvedValue('');
@@ -362,8 +367,86 @@ describe('wu:done auto cleanup (WU-1366)', () => {
       const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
       await commitCleanupChanges();
 
-      // Should only add state files, not unrelated files
-      expect(mockAdd).toHaveBeenCalledWith(['.lumenflow/state/wu-events.jsonl']);
+      // Should add both state and archive files, but not unrelated files
+      expect(mockAdd).toHaveBeenCalledWith([
+        '.lumenflow/state/wu-events.jsonl',
+        '.lumenflow/archive/wu-events-2026-01.jsonl',
+      ]);
+    });
+
+    // WU-1553: Archive files must also be staged
+    it('should stage archive files created by archiveWuEvents (WU-1553)', async () => {
+      // Only archive files dirty (no state files changed)
+      const mockGetStatus = vi
+        .fn()
+        .mockResolvedValue('?? .lumenflow/archive/wu-events-2026-01.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: vi.fn().mockReturnValue({
+          cleanup: { trigger: 'on_done' },
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      expect(mockAdd).toHaveBeenCalledWith(['.lumenflow/archive/wu-events-2026-01.jsonl']);
+      expect(mockCommit).toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalled();
+    });
+
+    it('should stage both state and archive files together (WU-1553)', async () => {
+      // Both state and archive files dirty
+      const mockGetStatus = vi
+        .fn()
+        .mockResolvedValue(
+          ' M .lumenflow/state/wu-events.jsonl\n' +
+            '?? .lumenflow/archive/wu-events-2025-11.jsonl\n' +
+            ' M .lumenflow/archive/wu-events-2026-01.jsonl',
+        );
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/dist/git-adapter.js', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      vi.doMock(CONFIG_MODULE_PATH, () => ({
+        getConfig: vi.fn().mockReturnValue({
+          cleanup: { trigger: 'on_done' },
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges();
+
+      expect(mockAdd).toHaveBeenCalledWith([
+        '.lumenflow/state/wu-events.jsonl',
+        '.lumenflow/archive/wu-events-2025-11.jsonl',
+        '.lumenflow/archive/wu-events-2026-01.jsonl',
+      ]);
     });
   });
 });
