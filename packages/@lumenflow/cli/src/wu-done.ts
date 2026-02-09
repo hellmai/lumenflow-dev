@@ -776,6 +776,18 @@ const INTERNAL_LIFECYCLE_DIRTY_FILES = new Set([
   '.lumenflow/skip-cos-gates-audit.log',
 ]);
 
+/**
+ * WU-1554: Prefixes for metadata files that wu:done manages.
+ * These files may be dirty after merge+rebase when wu:claim used push-only mode
+ * or when concurrent agents advance origin/main. Instead of blocking wu:done,
+ * these are auto-committed by the caller.
+ */
+const METADATA_LIFECYCLE_PREFIXES = [
+  '.lumenflow/state/',
+  '.lumenflow/stamps/',
+  '.lumenflow/archive/',
+];
+
 function parsePorcelainPath(line: string): string | null {
   if (line.length < 4) return null;
   const pathPart = line.slice(3).trim();
@@ -788,22 +800,45 @@ function parsePorcelainPath(line: string): string | null {
 }
 
 /**
+ * WU-1554: Check if a file is a metadata lifecycle file.
+ * Metadata files are managed by wu:done (wu-events.jsonl, status.md, backlog.md,
+ * WU YAML, stamps, archives) and may be dirty after merge+rebase.
+ */
+function isMetadataLifecycleFile(filePath: string, metadataDir?: string): boolean {
+  if (METADATA_LIFECYCLE_PREFIXES.some((prefix) => filePath.startsWith(prefix))) {
+    return true;
+  }
+  if (metadataDir && filePath.startsWith(metadataDir + '/')) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * WU-1084: Check for uncommitted changes on main after merge completes.
  *
  * This catches cases where pnpm format (or other tooling) touched files
  * outside the WU's code_paths during worktree work. These changes survive
  * the merge and would be silently left behind when the worktree is removed.
  *
+ * WU-1554: Added metadataDir parameter and metadataFiles return field.
+ * Metadata files (wu-events.jsonl, status.md, backlog.md, WU YAML, stamps)
+ * may be dirty after merge+rebase when wu:claim used push-only mode.
+ * These are returned separately for auto-commit by the caller.
+ *
  * @param gitStatus - Output from git status (porcelain format)
  * @param wuId - The WU ID for error messaging
- * @returns Object with isDirty flag and optional error message
+ * @param metadataDir - Optional task directory prefix for metadata file detection
+ * @returns Object with isDirty flag, file categories, and optional error message
  */
 export function checkPostMergeDirtyState(
   gitStatus: string,
   wuId: string,
+  metadataDir?: string,
 ): {
   isDirty: boolean;
   internalOnlyFiles: string[];
+  metadataFiles: string[];
   unrelatedFiles: string[];
   error?: string;
 } {
@@ -814,18 +849,26 @@ export function checkPostMergeDirtyState(
   const lines = gitStatus.split('\n').filter((line) => line.length >= 4);
 
   if (lines.length === 0) {
-    return { isDirty: false, internalOnlyFiles: [], unrelatedFiles: [] };
+    return { isDirty: false, internalOnlyFiles: [], metadataFiles: [], unrelatedFiles: [] };
   }
 
   const dirtyFiles = lines
     .map((line) => parsePorcelainPath(line))
     .filter((value): value is string => Boolean(value));
 
+  // WU-1554: Three-category classification
   const internalOnlyFiles = dirtyFiles.filter((file) => INTERNAL_LIFECYCLE_DIRTY_FILES.has(file));
-  const unrelatedFiles = dirtyFiles.filter((file) => !INTERNAL_LIFECYCLE_DIRTY_FILES.has(file));
+  const metadataFiles = dirtyFiles.filter(
+    (file) =>
+      !INTERNAL_LIFECYCLE_DIRTY_FILES.has(file) && isMetadataLifecycleFile(file, metadataDir),
+  );
+  const unrelatedFiles = dirtyFiles.filter(
+    (file) =>
+      !INTERNAL_LIFECYCLE_DIRTY_FILES.has(file) && !isMetadataLifecycleFile(file, metadataDir),
+  );
 
   if (unrelatedFiles.length === 0) {
-    return { isDirty: false, internalOnlyFiles, unrelatedFiles: [] };
+    return { isDirty: false, internalOnlyFiles, metadataFiles, unrelatedFiles: [] };
   }
 
   const displayStatus = gitStatus.trim();
@@ -839,7 +882,7 @@ export function checkPostMergeDirtyState(
     `  2. Discard if unwanted: git checkout -- .\n` +
     `  3. Then re-run: pnpm wu:done --id ${wuId} --skip-worktree-completion`;
 
-  return { isDirty: true, internalOnlyFiles, unrelatedFiles, error };
+  return { isDirty: true, internalOnlyFiles, metadataFiles, unrelatedFiles, error };
 }
 
 /**
@@ -2764,9 +2807,10 @@ async function main() {
   }
 
   // WU-1084: Check for uncommitted changes on main after merge
-  // This catches cases where pnpm format touched files outside code_paths
+  // WU-1554: Pass metadataDir so metadata files are classified separately
+  const metadataDir = path.dirname(STATUS_PATH);
   const postMergeStatus = await getGitForCwd().getStatus();
-  const dirtyCheck = checkPostMergeDirtyState(postMergeStatus, id);
+  const dirtyCheck = checkPostMergeDirtyState(postMergeStatus, id, metadataDir);
   if (dirtyCheck.internalOnlyFiles.length > 0) {
     const gitMain = getGitForCwd();
     try {
@@ -2777,6 +2821,24 @@ async function main() {
     } catch (restoreErr) {
       console.warn(
         `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-restore internal lifecycle files: ${restoreErr.message}`,
+      );
+    }
+  }
+  // WU-1554: Auto-commit metadata files left dirty after merge+rebase
+  // This handles push-only claim mode and concurrent agent advancement
+  if (dirtyCheck.metadataFiles.length > 0) {
+    const gitMain = getGitForCwd();
+    try {
+      await gitMain.add(dirtyCheck.metadataFiles);
+      await gitMain.commit(`chore: post-merge metadata sync for ${id} [skip ci]`);
+      await gitMain.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
+      await gitMain.push('origin', 'main');
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-committed post-merge metadata: ${dirtyCheck.metadataFiles.join(', ')}`,
+      );
+    } catch (commitErr) {
+      console.warn(
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-commit metadata files: ${commitErr.message}`,
       );
     }
   }

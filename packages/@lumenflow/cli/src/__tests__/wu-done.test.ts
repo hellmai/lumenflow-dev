@@ -180,4 +180,85 @@ describe('wu-done', () => {
       expect(result.unrelatedFiles).not.toContain('.lumenflow/flow.log');
     });
   });
+
+  describe('WU-1554: metadata files do not block wu:done post-merge', () => {
+    const TASK_DIR = 'docs/04-operations/tasks';
+
+    it('classifies .lumenflow/state/ files as metadataFiles', () => {
+      const status = 'M  .lumenflow/state/wu-events.jsonl\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(false);
+      expect(result.metadataFiles).toEqual(['.lumenflow/state/wu-events.jsonl']);
+      expect(result.unrelatedFiles).toEqual([]);
+    });
+
+    it('classifies task directory files as metadataFiles', () => {
+      const status = [
+        ' M docs/04-operations/tasks/backlog.md',
+        ' M docs/04-operations/tasks/status.md',
+        ' M docs/04-operations/tasks/wu/WU-1554.yaml',
+      ].join('\n');
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(false);
+      expect(result.metadataFiles).toEqual([
+        'docs/04-operations/tasks/backlog.md',
+        'docs/04-operations/tasks/status.md',
+        'docs/04-operations/tasks/wu/WU-1554.yaml',
+      ]);
+      expect(result.unrelatedFiles).toEqual([]);
+    });
+
+    it('classifies .lumenflow/stamps/ files as metadataFiles', () => {
+      const status = ' M .lumenflow/stamps/WU-1554.done\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(false);
+      expect(result.metadataFiles).toContain('.lumenflow/stamps/WU-1554.done');
+    });
+
+    it('classifies .lumenflow/archive/ files as metadataFiles', () => {
+      const status = ' M .lumenflow/archive/wu-events-2026-02.jsonl\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(false);
+      expect(result.metadataFiles).toContain('.lumenflow/archive/wu-events-2026-02.jsonl');
+    });
+
+    it('does not block when mixed metadata and internal lifecycle files are dirty', () => {
+      const status = [
+        ' M .lumenflow/flow.log',
+        'M  .lumenflow/state/wu-events.jsonl',
+        ' M docs/04-operations/tasks/status.md',
+      ].join('\n');
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(false);
+      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
+      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
+      expect(result.metadataFiles).toContain('docs/04-operations/tasks/status.md');
+    });
+
+    it('still blocks when unrelated files are dirty alongside metadata files', () => {
+      const status = [
+        ' M .lumenflow/state/wu-events.jsonl',
+        ' M packages/@lumenflow/cli/src/some-file.ts',
+      ].join('\n');
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.isDirty).toBe(true);
+      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
+      expect(result.unrelatedFiles).toEqual(['packages/@lumenflow/cli/src/some-file.ts']);
+    });
+
+    it('backward-compatible: works without metadataDir parameter', () => {
+      // Without metadataDir, .lumenflow/ files still classified as metadata
+      // but task dir files are classified as unrelated (backward compat)
+      const status = 'M  .lumenflow/state/wu-events.jsonl\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1554');
+      expect(result.isDirty).toBe(false);
+      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
+    });
+
+    it('returns empty metadataFiles when no metadata files are dirty', () => {
+      const status = ' M .lumenflow/flow.log\n';
+      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
+      expect(result.metadataFiles).toEqual([]);
+    });
+  });
 });
