@@ -156,11 +156,36 @@ export async function runAutoCleanupAfterDone(baseDir: string): Promise<void> {
 const STATE_FILE_PREFIX = '.lumenflow/state/';
 
 /**
+ * WU-1542: Default commit message for auto-cleanup.
+ * Uses plain 'chore:' without scope to be compatible with consumer main-branch guards.
+ * The previous 'chore(lumenflow):' scope was rejected by repos that only allow
+ * specific scopes like wu(...), docs:, chore(repair):.
+ */
+const DEFAULT_CLEANUP_COMMIT_MESSAGE = 'chore: lumenflow state cleanup [skip ci]';
+
+/**
+ * WU-1542: Read the cleanup commit message from config, falling back to default.
+ *
+ * @returns Commit message string
+ */
+function getCleanupCommitMessage(): string {
+  try {
+    const config = getConfig({ reload: true });
+    return config.cleanup?.commit_message || DEFAULT_CLEANUP_COMMIT_MESSAGE;
+  } catch {
+    return DEFAULT_CLEANUP_COMMIT_MESSAGE;
+  }
+}
+
+/**
  * WU-1533: Commit and push any dirty state files left by auto-cleanup.
  *
  * After cleanup runs, tracked files like wu-events.jsonl may be modified.
  * This function detects those changes, commits them with a housekeeping
  * message, and pushes to prevent leaving main dirty.
+ *
+ * WU-1542: Commit message is configurable via cleanup.commit_message config.
+ * Default changed from 'chore(lumenflow):' to plain 'chore:' for consumer compatibility.
  *
  * Non-fatal: errors are logged but never thrown.
  */
@@ -183,9 +208,12 @@ export async function commitCleanupChanges(): Promise<void> {
       return;
     }
 
+    // WU-1542: Use configurable commit message
+    const commitMessage = getCleanupCommitMessage();
+
     // Stage only state files, commit, pull --rebase, push
     await git.add(stateFiles);
-    await git.commit('chore(lumenflow): auto state cleanup [skip ci]');
+    await git.commit(commitMessage);
     await git.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
     await git.push('origin', 'main');
 
