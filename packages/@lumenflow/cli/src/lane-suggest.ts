@@ -28,12 +28,12 @@ import {
   isValidLaneFormat,
   type LaneSuggestion,
   type ProjectContext,
-} from '@lumenflow/core/dist/lane-suggest-prompt.js';
+} from '@lumenflow/core/lane-suggest-prompt';
 import {
   extractGitContext,
   summarizeGitContext,
   type GitContext,
-} from '@lumenflow/core/dist/git-context-extractor.js';
+} from '@lumenflow/core/git-context-extractor';
 import { runCLI } from './cli-entry-point.js';
 
 /**

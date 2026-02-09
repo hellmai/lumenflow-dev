@@ -16,29 +16,29 @@ function write(path: string, content: string): void {
 }
 
 // Mock dist imports so source tests can run without building workspace dist outputs.
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: () => ({
     getStatus: async () => '',
     fetch: async () => undefined,
   }),
 }));
 
-vi.mock('@lumenflow/core/dist/error-handler.js', () => ({
+vi.mock('@lumenflow/core/error-handler', () => ({
   die: (msg: string) => {
     throw new Error(msg);
   },
 }));
 
-vi.mock('@lumenflow/core/dist/wu-yaml.js', () => ({
+vi.mock('@lumenflow/core/wu-yaml', () => ({
   parseYAML: (_text: string) => ({ status: 'ready' }),
 }));
 
-vi.mock('@lumenflow/core/dist/arg-parser.js', () => ({
+vi.mock('@lumenflow/core/arg-parser', () => ({
   createWUParser: () => ({}),
   WU_OPTIONS: { id: {}, batch: {} },
 }));
 
-vi.mock('@lumenflow/core/dist/wu-paths.js', () => ({
+vi.mock('@lumenflow/core/wu-paths', () => ({
   WU_PATHS: {
     WU: (id: string) => `docs/04-operations/tasks/wu/${id}.yaml`,
     WU_DIR: () => 'docs/04-operations/tasks/wu',
@@ -48,13 +48,13 @@ vi.mock('@lumenflow/core/dist/wu-paths.js', () => ({
   },
 }));
 
-vi.mock('@lumenflow/core/dist/backlog-generator.js', () => ({
+vi.mock('@lumenflow/core/backlog-generator', () => ({
   generateBacklog: async () => '# Backlog\n\n- [WU-2000 — Keep me](wu/WU-2000.yaml)\n',
   generateStatus: async () =>
     '# Work Unit Status\n\n## In Progress\n\n- [WU-2000 — Keep me](wu/WU-2000.yaml)\n',
 }));
 
-vi.mock('@lumenflow/core/dist/wu-state-store.js', () => ({
+vi.mock('@lumenflow/core/wu-state-store', () => ({
   WUStateStore: class {
     async load(): Promise<void> {
       return;
@@ -62,7 +62,7 @@ vi.mock('@lumenflow/core/dist/wu-state-store.js', () => ({
   },
 }));
 
-vi.mock('@lumenflow/core/dist/wu-constants.js', () => ({
+vi.mock('@lumenflow/core/wu-constants', () => ({
   FILE_SYSTEM: { ENCODING: 'utf-8' },
   EXIT_CODES: { SUCCESS: 0, ERROR: 1 },
   MICRO_WORKTREE_OPERATIONS: { WU_DELETE: 'wu-delete' },
@@ -71,13 +71,13 @@ vi.mock('@lumenflow/core/dist/wu-constants.js', () => ({
   LUMENFLOW_PATHS: { WU_EVENTS: '.lumenflow/state/wu-events.jsonl' },
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: async () => undefined,
   ensureMainUpToDate: async () => undefined,
   validateWUIDFormat: (_id: string) => undefined,
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: async ({
     execute,
   }: {
@@ -90,20 +90,20 @@ vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
   },
 }));
 
-vi.mock('@lumenflow/initiatives/dist/initiative-paths.js', () => ({
+vi.mock('@lumenflow/initiatives/paths', () => ({
   INIT_PATHS: {
     INITIATIVES_DIR: () => 'docs/04-operations/tasks/initiatives',
     INITIATIVE: (id: string) => `docs/04-operations/tasks/initiatives/${id}.yaml`,
   },
 }));
 
-vi.mock('@lumenflow/initiatives/dist/initiative-constants.js', () => ({
+vi.mock('@lumenflow/initiatives/constants', () => ({
   INIT_PATTERNS: {
     INIT_ID: /^INIT-[A-Z0-9-]+$/,
   },
 }));
 
-vi.mock('@lumenflow/initiatives/dist/initiative-yaml.js', () => ({
+vi.mock('@lumenflow/initiatives/yaml', () => ({
   readInitiative: (path: string, id: string) => {
     const text = readFileSync(path, 'utf-8');
     const lines = text.split('\n');

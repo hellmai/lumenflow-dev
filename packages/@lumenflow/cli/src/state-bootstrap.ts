@@ -16,13 +16,8 @@ import { readdirSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { readFileSync } from 'node:fs';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import {
-  CLI_FLAGS,
-  EXIT_CODES,
-  EMOJI,
-  STRING_LITERALS,
-} from '@lumenflow/core/dist/wu-constants.js';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { CLI_FLAGS, EXIT_CODES, EMOJI, STRING_LITERALS } from '@lumenflow/core/wu-constants';
 
 /** Log prefix for consistent output */
 const LOG_PREFIX = '[state-bootstrap]';

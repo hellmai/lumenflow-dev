@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vite
 import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 
 // Pre-import the module to ensure coverage tracking includes the module itself
 let initPlanModule: typeof import('../initiative-plan.js');
@@ -24,15 +24,15 @@ const mockGit = {
   status: vi.fn().mockResolvedValue({ isClean: () => true }),
 };
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => mockGit),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(async ({ execute }) => {
     // Simulate micro-worktree by executing in temp dir
     const tempDir = join(tmpdir(), `init-plan-test-${Date.now()}`);
@@ -345,7 +345,7 @@ describe('init:plan CLI integration', () => {
   it('should require --initiative flag', async () => {
     // This test verifies that the CLI requires the initiative flag
     // The actual CLI integration is tested via subprocess
-    const { WU_OPTIONS } = await import('@lumenflow/core/dist/arg-parser.js');
+    const { WU_OPTIONS } = await import('@lumenflow/core/arg-parser');
     expect(WU_OPTIONS.initiative).toBeDefined();
     expect(WU_OPTIONS.initiative.flags).toContain('--initiative');
   });

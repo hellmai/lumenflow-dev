@@ -18,14 +18,14 @@
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { validateWU, validateWUCompleteness } from '@lumenflow/core/dist/wu-schema.js';
-import { FILE_SYSTEM, EMOJI, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
+import { die } from '@lumenflow/core/error-handler';
+import { validateWU, validateWUCompleteness } from '@lumenflow/core/wu-schema';
+import { FILE_SYSTEM, EMOJI, PATTERNS } from '@lumenflow/core/wu-constants';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
-import { lintWUSpec } from '@lumenflow/core/dist/wu-lint.js';
+import { lintWUSpec } from '@lumenflow/core/wu-lint';
 import { validateWuValidateCliArgs } from './shared-validators.js';
 
 const LOG_PREFIX = '[wu:validate]';

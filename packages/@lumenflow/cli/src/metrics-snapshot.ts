@@ -31,9 +31,9 @@ import {
   type GitCommit,
   type SkipGatesEntry,
 } from '@lumenflow/metrics';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

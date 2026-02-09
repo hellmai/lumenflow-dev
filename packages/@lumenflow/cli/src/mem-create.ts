@@ -17,10 +17,10 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { createMemoryNode } from '@lumenflow/memory/dist/mem-create-core.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
-import { MEMORY_NODE_TYPES } from '@lumenflow/memory/dist/memory-schema.js';
+import { createMemoryNode } from '@lumenflow/memory/create';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { MEMORY_NODE_TYPES } from '@lumenflow/memory/schema';
 import { runCLI } from './cli-entry-point.js';
 
 /**

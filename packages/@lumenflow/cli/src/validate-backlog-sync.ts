@@ -19,8 +19,8 @@
 import {
   validateBacklogSync,
   type BacklogSyncResult,
-} from '@lumenflow/core/dist/validators/backlog-sync.js';
-import { EMOJI } from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/validators/backlog-sync';
+import { EMOJI } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[validate-backlog-sync]';

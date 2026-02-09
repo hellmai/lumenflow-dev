@@ -21,13 +21,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ms from 'ms';
-import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/dist/mem-signal-core.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/signal';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import {
   validateInboxDependencies,
   formatDependencyError,
-} from '@lumenflow/core/dist/dependency-validator.js';
+} from '@lumenflow/core/dependency-validator';
 import { runCLI } from './cli-entry-point.js';
 
 /**

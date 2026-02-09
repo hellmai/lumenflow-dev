@@ -31,43 +31,43 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
+import { die } from '@lumenflow/core/error-handler';
+import { WU_STATUS, PATTERNS, FILE_SYSTEM, EMOJI } from '@lumenflow/core/wu-constants';
 // WU-1603: Check lane lock status before spawning
 // WU-1325: Import lock policy getter for lane availability check
-import { checkLaneLock } from '@lumenflow/core/dist/lane-lock.js';
-import { getLockPolicyForLane, getWipLimitForLane } from '@lumenflow/core/dist/lane-checker.js';
+import { checkLaneLock } from '@lumenflow/core/lane-lock';
+import { getLockPolicyForLane, getWipLimitForLane } from '@lumenflow/core/lane-checker';
 import { minimatch } from 'minimatch';
 // WU-2252: Import invariants loader for spawn output injection
-import { loadInvariants, INVARIANT_TYPES } from '@lumenflow/core/dist/invariants-runner.js';
+import { loadInvariants, INVARIANT_TYPES } from '@lumenflow/core/invariants-runner';
 import {
   validateSpawnArgs,
   generateExecutionModeSection,
   generateThinkToolGuidance,
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
-} from '@lumenflow/core/dist/wu-spawn-helpers.js';
+} from '@lumenflow/core/wu-spawn-helpers';
 
-import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
-import type { SpawnStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import type { ClientConfig } from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
+import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
+import { getConfig } from '@lumenflow/core/config';
+import type { ClientConfig } from '@lumenflow/core/config-schema';
 import {
   generateClientSkillsGuidance,
   generateSkillsSelectionSection,
   resolveClientConfig,
-} from '@lumenflow/core/dist/wu-spawn-skills.js';
+} from '@lumenflow/core/wu-spawn-skills';
 // WU-1253: Template loader for extracted prompt templates
-import { loadTemplatesWithOverrides, replaceTokens } from '@lumenflow/core/dist/template-loader.js';
-import type { TemplateContext } from '@lumenflow/core/dist/template-loader.js';
+import { loadTemplatesWithOverrides, replaceTokens } from '@lumenflow/core/template-loader';
+import type { TemplateContext } from '@lumenflow/core/template-loader';
 
 import {
   validateSpawnDependencies,
   formatDependencyError,
-} from '@lumenflow/core/dist/dependency-validator.js';
+} from '@lumenflow/core/dependency-validator';
 
 // WU-1192: Import prompt generation from Core (single source of truth)
 // WU-1203: Import generateAgentCoordinationSection from core for config-driven progress signals
@@ -80,17 +80,17 @@ import {
   generatePolicyBasedTestGuidance,
   generateMandatoryStandards,
   generateEnforcementSummary,
-} from '@lumenflow/core/dist/wu-spawn.js';
+} from '@lumenflow/core/wu-spawn';
 
 // WU-1288: Import resolvePolicy for methodology policy resolution
-import { resolvePolicy } from '@lumenflow/core/dist/resolve-policy.js';
+import { resolvePolicy } from '@lumenflow/core/resolve-policy';
 
 // WU-1240: Import memory context integration for spawn prompts
 import {
   generateMemoryContextSection,
   checkMemoryLayerInitialized,
   getMemoryContextMaxSize,
-} from '@lumenflow/core/dist/wu-spawn-context.js';
+} from '@lumenflow/core/wu-spawn-context';
 
 // Re-export for backwards compatibility
 export {
@@ -402,7 +402,7 @@ function generateInvariantsPriorArtSection(codePaths: string[] | undefined): str
 }
 
 // WU-1192: generateTestGuidance and related constants moved to @lumenflow/core
-// See imports from '@lumenflow/core/dist/wu-spawn.js' above
+// See imports from '@lumenflow/core/wu-spawn' above
 
 /**
  * Generate the context loading preamble
@@ -1375,7 +1375,7 @@ ${SPAWN_END_SENTINEL}
  * WU-1325: Now considers lock_policy - lanes with policy=none are never occupied
  *
  * @param {string} lane - Lane name (e.g., "Operations: Tooling")
- * @returns {import('@lumenflow/core/dist/lane-lock.js').LockMetadata|null} Lock metadata if occupied, null otherwise
+ * @returns {import('@lumenflow/core/lane-lock').LockMetadata|null} Lock metadata if occupied, null otherwise
  */
 export function checkLaneOccupation(
   lane: string,
@@ -1396,7 +1396,7 @@ export function checkLaneOccupation(
 /**
  * WU-1603: Generate a warning message when lane is occupied
  *
- * @param {import('@lumenflow/core/dist/lane-lock.js').LockMetadata} lockMetadata - Lock metadata
+ * @param {import('@lumenflow/core/lane-lock').LockMetadata} lockMetadata - Lock metadata
  * @param {string} targetWuId - WU ID being spawned
  * @param {Object} [options={}] - Options
  * @param {boolean} [options.isStale] - Whether the lock is stale (>24h old)
@@ -1557,7 +1557,7 @@ async function checkAndWarnLaneOccupation(lane: string | undefined, id: string):
   const existingLock = checkLaneOccupation(lane);
   if (existingLock && existingLock.wuId !== id) {
     // Lane is occupied by a different WU
-    const { isLockStale } = await import('@lumenflow/core/dist/lane-lock.js');
+    const { isLockStale } = await import('@lumenflow/core/lane-lock');
     const isStale = isLockStale(existingLock);
     const warning = generateLaneOccupationWarning(existingLock, id, { isStale });
     console.warn(`${LOG_PREFIX} ${EMOJI.WARNING}\n${warning}\n`);

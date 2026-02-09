@@ -19,8 +19,8 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { die } from '@lumenflow/core/error-handler';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

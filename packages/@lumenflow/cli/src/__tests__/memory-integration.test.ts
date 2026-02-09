@@ -29,10 +29,7 @@ import {
 } from '../hooks/enforcement-generator.js';
 import { checkAutoCheckpointWarning, cleanupHookCounters } from '../hooks/auto-checkpoint-utils.js';
 // WU-1474: Import decay config schema and wu-done decay runner
-import {
-  MemoryDecayConfigSchema,
-  type MemoryDecayConfig,
-} from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import { MemoryDecayConfigSchema, type MemoryDecayConfig } from '@lumenflow/core/config-schema';
 import { runDecayOnDone } from '../wu-done-decay.js';
 
 // Test constants
@@ -960,7 +957,7 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
         // This tests that the existing archiveByDecay dry-run still works
         // The mem-cleanup CLI already calls archiveByDecay; we verify the
         // underlying function supports preview behavior.
-        const { archiveByDecay } = await import('@lumenflow/memory/dist/decay/archival.js');
+        const { archiveByDecay } = await import('@lumenflow/memory/decay/archival');
 
         process.chdir(tempDir);
         const memoryDir = join(tempDir, '.lumenflow/memory');

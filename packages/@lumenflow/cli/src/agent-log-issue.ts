@@ -15,11 +15,7 @@
 
 import { Command } from 'commander';
 import { logIncident, getCurrentSession } from '@lumenflow/agent';
-import {
-  EXIT_CODES,
-  INCIDENT_SEVERITY,
-  LUMENFLOW_PATHS,
-} from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES, INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import chalk from 'chalk';
 
 /**

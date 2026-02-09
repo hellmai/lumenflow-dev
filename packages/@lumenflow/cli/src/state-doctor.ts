@@ -40,12 +40,12 @@ import {
   type MockWU,
   type MockSignal,
   type MockEvent,
-} from '@lumenflow/core/dist/state-doctor-core.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig, getResolvedPaths } from '@lumenflow/core/dist/lumenflow-config.js';
+} from '@lumenflow/core/state-doctor-core';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { getConfig, getResolvedPaths } from '@lumenflow/core/config';
 import { existsSync } from 'node:fs';
-import { createStamp } from '@lumenflow/core/dist/stamp-utils.js';
+import { createStamp } from '@lumenflow/core/stamp-utils';
 import { createStateDoctorFixDeps } from './state-doctor-fix.js';
 import { runCLI } from './cli-entry-point.js';
 

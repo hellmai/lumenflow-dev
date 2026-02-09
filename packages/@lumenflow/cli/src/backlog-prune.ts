@@ -15,16 +15,16 @@
 
 import { readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { readWURaw, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { readWURaw, writeWU, appendNote } from '@lumenflow/core/wu-yaml';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { die } from '@lumenflow/core/error-handler';
 import {
   CLI_FLAGS,
   EXIT_CODES,
   EMOJI,
   WU_STATUS,
   STRING_LITERALS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 
 /** Log prefix for consistent output */
 const LOG_PREFIX = '[backlog-prune]';

@@ -27,15 +27,15 @@
  * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
-import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 // WU-1352: Use centralized YAML helper instead of raw js-yaml (Emergency fix Session 2)
 // WU-1620: Import readWU for readiness summary
-import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/wu-yaml';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import {
   FILE_SYSTEM,
   EXIT_CODES,
@@ -52,39 +52,35 @@ import {
   READINESS_UI,
   // WU-1039: Import exposure values for validation (Library-First, no magic strings)
   WU_EXPOSURE_VALUES,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
-import {
-  ensureOnMain,
-  ensureMainUpToDate,
-  validateWUIDFormat,
-} from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { validateLaneFormat } from '@lumenflow/core/dist/lane-checker.js';
+import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 // WU-1620: Import validateSpecCompleteness for readiness summary
 // WU-1806: Import detectCurrentWorktree for worktree path resolution
 import {
   defaultWorktreeFrom,
   validateSpecCompleteness,
   detectCurrentWorktree,
-} from '@lumenflow/core/dist/wu-done-validators.js';
-import { validateReadyWU } from '@lumenflow/core/dist/wu-schema.js';
+} from '@lumenflow/core/wu-done-validators';
+import { validateReadyWU } from '@lumenflow/core/wu-schema';
 import { execSync } from 'node:child_process';
 // WU-1442: Import date normalization to fix date corruption from js-yaml
-import { normalizeToDateString } from '@lumenflow/core/dist/date-utils.js';
+import { normalizeToDateString } from '@lumenflow/core/date-utils';
 // WU-1929: Import initiative-related modules for bidirectional initiative updates
-import { INIT_PATTERNS } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
+import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
 // WU-2004: Import schema normalization for legacy WU formats
-import { normalizeWUSchema } from '@lumenflow/core/dist/wu-schema-normalization.js';
+import { normalizeWUSchema } from '@lumenflow/core/wu-schema-normalization';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
-import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
+import { lintWUSpec, formatLintErrors } from '@lumenflow/core/wu-lint';
 // WU-1329: Import path existence validators for strict validation
 import {
   validateCodePathsExistence,
   validateTestPathsExistence,
-} from '@lumenflow/core/dist/wu-preflight-validators.js';
+} from '@lumenflow/core/wu-preflight-validators';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = LOG_PREFIX.EDIT;

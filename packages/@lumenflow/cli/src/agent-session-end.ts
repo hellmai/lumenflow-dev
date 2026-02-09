@@ -10,7 +10,7 @@
 
 import { Command } from 'commander';
 import { endSession, getCurrentSession } from '@lumenflow/agent';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import chalk from 'chalk';
 
 const program = new Command()

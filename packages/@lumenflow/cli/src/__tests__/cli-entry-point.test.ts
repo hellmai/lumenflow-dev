@@ -16,7 +16,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { runCLI } from '../cli-entry-point.js';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 
 describe('runCLI', () => {
   let mockExit: ReturnType<typeof vi.spyOn>;

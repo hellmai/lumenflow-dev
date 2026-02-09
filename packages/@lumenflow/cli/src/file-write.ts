@@ -181,7 +181,7 @@ export async function writeFileWithAudit(args: FileWriteArgs): Promise<FileWrite
     if (args.scanPHI) {
       try {
         // Dynamic import to avoid hard dependency
-        const { scanForPHI } = await import('@lumenflow/core/dist/validators/phi-scanner.js');
+        const { scanForPHI } = await import('@lumenflow/core/validators/phi-scanner');
         const scanResult = scanForPHI(content);
         if (scanResult.hasPHI) {
           warnings.push(

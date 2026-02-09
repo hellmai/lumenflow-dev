@@ -8,9 +8,9 @@
  * @see {@link packages/@lumenflow/core/src/lumenflow-config-schema.ts} - Config schema
  */
 
-import { archiveByDecay } from '@lumenflow/memory/dist/decay/archival.js';
-import { DEFAULT_HALF_LIFE_MS } from '@lumenflow/memory/dist/decay/scoring.js';
-import type { MemoryDecayConfig } from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import { archiveByDecay } from '@lumenflow/memory/decay/archival';
+import { DEFAULT_HALF_LIFE_MS } from '@lumenflow/memory/decay/scoring';
+import type { MemoryDecayConfig } from '@lumenflow/core/config-schema';
 import path from 'node:path';
 
 /**

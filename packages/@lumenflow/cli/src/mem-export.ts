@@ -10,10 +10,10 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { exportMemory } from '@lumenflow/memory/dist/mem-export-core.js';
-import { MEMORY_NODE_TYPES } from '@lumenflow/memory/dist/memory-schema.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { exportMemory } from '@lumenflow/memory/mem-export-core';
+import { MEMORY_NODE_TYPES } from '@lumenflow/memory/schema';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[mem:export]';

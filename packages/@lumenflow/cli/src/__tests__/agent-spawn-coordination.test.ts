@@ -17,8 +17,8 @@ import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { stringifyYAML, parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import {
   generateTaskInvocation,
   generateActionSection,
@@ -28,7 +28,7 @@ import {
   generateParallelToolCallGuidance,
   generateCompletionFormat,
 } from '../wu-spawn.js';
-import { SpawnStrategyFactory } from '@lumenflow/core/dist/spawn-strategy.js';
+import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 import { createSignal, loadSignals } from '@lumenflow/memory';
 
 // Test constants

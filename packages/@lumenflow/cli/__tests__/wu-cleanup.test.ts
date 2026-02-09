@@ -17,18 +17,18 @@ vi.mock('node:child_process', async (importOriginal) => {
 });
 
 // Mock gh CLI availability check
-vi.mock('@lumenflow/core/dist/wu-done-pr.js', () => ({
+vi.mock('@lumenflow/core/wu-done-pr', () => ({
   isGhCliAvailable: vi.fn(() => true),
 }));
 
 import { execSync } from 'node:child_process';
-import { WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import {
   CLEANUP_GUARD_REASONS,
   evaluateCleanupGuards,
   verifyPRMerged,
 } from '../dist/wu-cleanup.js';
-import { isGhCliAvailable } from '@lumenflow/core/dist/wu-done-pr.js';
+import { isGhCliAvailable } from '@lumenflow/core/wu-done-pr';
 
 // Cast mocks for TypeScript
 const mockExecSync = execSync as ReturnType<typeof vi.fn>;

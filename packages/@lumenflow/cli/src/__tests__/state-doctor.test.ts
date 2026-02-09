@@ -15,11 +15,11 @@ import { tmpdir } from 'node:os';
 /**
  * Mocked modules
  */
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(),
 }));
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     fetch: vi.fn(),
     merge: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
 /**
  * Import after mocks are set up
  */
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 
 /**
  * Constants for test paths

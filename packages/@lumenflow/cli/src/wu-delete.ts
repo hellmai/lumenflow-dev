@@ -21,13 +21,13 @@
 
 import { existsSync, readFileSync, writeFileSync, unlinkSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import {
   FILE_SYSTEM,
   EXIT_CODES,
@@ -35,16 +35,12 @@ import {
   LOG_PREFIX,
   WU_STATUS,
   LUMENFLOW_PATHS,
-} from '@lumenflow/core/dist/wu-constants.js';
-import {
-  ensureOnMain,
-  ensureMainUpToDate,
-  validateWUIDFormat,
-} from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
-import { INIT_PATTERNS } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+} from '@lumenflow/core/wu-constants';
+import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
+import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
+import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = LOG_PREFIX.DELETE || '[wu:delete]';

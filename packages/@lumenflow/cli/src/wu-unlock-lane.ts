@@ -17,16 +17,16 @@
  *   pnpm wu:unlock-lane --list  # List all current locks
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
 import {
   auditedUnlock,
   checkLaneLock,
   getAllLaneLocks,
   isLockStale,
   isZombieLock,
-} from '@lumenflow/core/dist/lane-lock.js';
-import { LOG_PREFIX, EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/lane-lock';
+import { LOG_PREFIX, EXIT_CODES } from '@lumenflow/core/wu-constants';
 
 const PREFIX = LOG_PREFIX.UNLOCK_LANE || '[wu-unlock-lane]';
 

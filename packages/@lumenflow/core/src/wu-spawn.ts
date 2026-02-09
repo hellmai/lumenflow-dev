@@ -1003,7 +1003,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
    - For ordinary errors: fix and retry autonomously (up to 3 attempts)
 
 4. VERIFY COMPLETION before reporting success
-   - Run: node packages/@lumenflow/agent/dist/agent-verification.js ${id} (from shared checkout)
+   - Run: node packages/@lumenflow/agent/verification ${id} (from shared checkout)
    - Exit 0 = passed, Exit 1 = INCOMPLETE
    - Never report "done" if verification fails
 
@@ -1047,7 +1047,7 @@ function generateCodexConstraints(id) {
 
 1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
 2. **Stop on errors**: if any command fails, report BLOCKED (never DONE) with the error
-3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
+3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/verification ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
 5. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
 6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
@@ -1879,7 +1879,7 @@ ${action}
 ## Verification
 
 - Run in worktree: \`pnpm gates\`
-- From shared checkout: \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\`
+- From shared checkout: \`node packages/@lumenflow/agent/verification ${id}\`
 
 ---
 

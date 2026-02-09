@@ -19,7 +19,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { FILE_SYSTEM, EMOJI } from '@lumenflow/core/dist/wu-constants.js';
+import { FILE_SYSTEM, EMOJI } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[validate-agent-skills]';

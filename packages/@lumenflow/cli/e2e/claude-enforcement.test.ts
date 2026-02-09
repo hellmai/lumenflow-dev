@@ -125,7 +125,7 @@ agents:
       );
 
       // Import and parse config
-      const { parseConfig } = await import('@lumenflow/core/dist/lumenflow-config-schema.js');
+      const { parseConfig } = await import('@lumenflow/core/config-schema');
       const yaml = await import('yaml');
 
       const content = fs.readFileSync(configPath, 'utf-8');

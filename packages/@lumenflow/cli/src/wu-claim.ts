@@ -23,38 +23,38 @@ import { VERSION as _LUMENFLOW_VERSION } from '@lumenflow/core';
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { access, readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { isOrphanWorktree } from '@lumenflow/core/dist/orphan-detector.js';
+import { isOrphanWorktree } from '@lumenflow/core/orphan-detector';
 // WU-1352: Use centralized YAML functions from wu-yaml.ts
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { assertTransition } from '@lumenflow/core/dist/state-machine.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { assertTransition } from '@lumenflow/core/state-machine';
 import {
   checkLaneFree,
   validateLaneFormat,
   checkWipJustification,
-} from '@lumenflow/core/dist/lane-checker.js';
+} from '@lumenflow/core/lane-checker';
 // WU-1603: Atomic lane locking to prevent TOCTOU race conditions
 import {
   acquireLaneLock,
   releaseLaneLock,
   checkLaneLock,
   forceRemoveStaleLock,
-} from '@lumenflow/core/dist/lane-lock.js';
+} from '@lumenflow/core/lane-lock';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
 // WU-1213: Using deprecated sync API - async validate() requires larger refactor (separate WU)
 import {
   validateLaneCodePaths,
   logLaneValidationWarnings,
-} from '@lumenflow/core/dist/code-path-validator.js';
+} from '@lumenflow/core/code-path-validator';
 // WU-1574: parseBacklogFrontmatter/getSectionHeadings removed - state store replaces backlog parsing
-import { detectConflicts } from '@lumenflow/core/dist/code-paths-overlap.js';
-import { getGitForCwd, createGitForPath } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { detectConflicts } from '@lumenflow/core/code-paths-overlap';
+import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
-import { detectCloudMode } from '@lumenflow/core/dist/cloud-detect.js';
-import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/dist/wu-paths.js';
+import { detectCloudMode } from '@lumenflow/core/cloud-detect';
+import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
 import {
   BRANCHES,
   REMOTES,
@@ -71,51 +71,48 @@ import {
   FILE_SYSTEM,
   STRING_LITERALS,
   LUMENFLOW_PATHS,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/dist/wu-helpers.js';
-import { emitWUFlowEvent } from '@lumenflow/core/dist/telemetry.js';
+} from '@lumenflow/core/wu-constants';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/wu-helpers';
+import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
 import {
   checkLaneForOrphanDoneWU,
   repairWUInconsistency,
-} from '@lumenflow/core/dist/wu-consistency-checker.js';
-import { emitMandatoryAgentAdvisory } from '@lumenflow/core/dist/orchestration-advisory-loader.js';
-import { validateWU, generateAutoApproval } from '@lumenflow/core/dist/wu-schema.js';
-import { startSessionForWU } from '@lumenflow/agent/dist/auto-session-integration.js';
+} from '@lumenflow/core/wu-consistency-checker';
+import { emitMandatoryAgentAdvisory } from '@lumenflow/core/orchestration-advisory-loader';
+import { validateWU, generateAutoApproval } from '@lumenflow/core/wu-schema';
+import { startSessionForWU } from '@lumenflow/agent/auto-session';
 // WU-1473: Surface unread signals on claim for agent awareness
 import { surfaceUnreadSignals } from './hooks/enforcement-generator.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { getConfig } from '@lumenflow/core/config';
 import {
   detectFixableIssues,
   applyFixes,
   autoFixWUYaml,
   formatIssues,
-} from '@lumenflow/core/dist/wu-yaml-fixer.js';
-import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
-import { hasManualTests, isDocsOrProcessType } from '@lumenflow/core/dist/wu-type-helpers.js';
-import { getAssignedEmail } from '@lumenflow/core/dist/wu-claim-helpers.js';
-import {
-  symlinkNodeModules,
-  symlinkNestedNodeModules,
-} from '@lumenflow/core/dist/worktree-symlink.js';
+} from '@lumenflow/core/wu-yaml-fixer';
+import { validateSpecCompleteness } from '@lumenflow/core/wu-done-validators';
+import { hasManualTests, isDocsOrProcessType } from '@lumenflow/core/wu-type-helpers';
+import { getAssignedEmail } from '@lumenflow/core/wu-claim-helpers';
+import { symlinkNodeModules, symlinkNestedNodeModules } from '@lumenflow/core/worktree-symlink';
 // WU-1572: Import WUStateStore for event-sourced state tracking
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 // WU-1574: Import backlog generator to replace BacklogManager
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 // WU-2411: Import resume helpers for agent handoff
 import {
   resumeClaimForHandoff,
   getWorktreeUncommittedChanges,
   formatUncommittedChanges,
   createHandoffCheckpoint,
-} from '@lumenflow/core/dist/wu-claim-resume.js';
+} from '@lumenflow/core/wu-claim-resume';
 // WU-1211: Import initiative validation for status auto-progression
 import {
   shouldProgressInitiativeStatus,
   findInitiative,
   writeInitiative,
   getInitiativeWUs,
-} from '@lumenflow/initiatives/dist/index.js';
+} from '@lumenflow/initiatives';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
 

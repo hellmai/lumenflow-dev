@@ -17,7 +17,7 @@
  * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - Worktree discipline
  */
 
-import { isInWorktree, isMainBranch } from '@lumenflow/core/dist/core/worktree-guard.js';
+import { isInWorktree, isMainBranch } from '@lumenflow/core/core/worktree-guard';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[guard-worktree-commit]';

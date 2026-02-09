@@ -14,10 +14,10 @@
  * @see {@link packages/@lumenflow/cli/src/__tests__/spawn-list.test.ts} - Tests
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { PATTERNS, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
+import { PATTERNS, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 
 /** Local EMOJI constants for spawn-list output */
 const EMOJI = {
@@ -46,8 +46,8 @@ import {
   getSpawnsByInitiative,
   treeToJSON,
   STATUS_INDICATORS,
-} from '@lumenflow/core/dist/spawn-tree.js';
-import { SpawnStatus } from '@lumenflow/core/dist/spawn-registry-schema.js';
+} from '@lumenflow/core/spawn-tree';
+import { SpawnStatus } from '@lumenflow/core/spawn-registry-schema';
 import { runCLI } from './cli-entry-point.js';
 
 /** SpawnEvent type for spawn records */

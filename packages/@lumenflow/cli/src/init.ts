@@ -15,11 +15,11 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { getDefaultConfig, createWUParser, WU_OPTIONS, CLAUDE_HOOKS } from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
-import { GATE_PRESETS } from '@lumenflow/core/dist/gates-config.js';
+import { GATE_PRESETS } from '@lumenflow/core/gates-config';
 // WU-1171: Import merge block utilities
 import { updateMergeBlock } from './merge-block.js';
 // WU-1362: Import worktree guard utilities for branch checking
-import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
+import { isMainBranch, isInWorktree } from '@lumenflow/core/core/worktree-guard';
 // WU-1386: Import doctor for auto-run after init
 import { runDoctorForInit } from './doctor.js';
 // WU-1505: Use shared SessionStart hook generator (vendor wrappers stay thin)

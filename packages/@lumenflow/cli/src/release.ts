@@ -36,10 +36,10 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { execSync } from 'node:child_process';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import {
   REMOTES,
   BRANCHES,
@@ -47,7 +47,7 @@ import {
   STDIO_MODES,
   EXIT_CODES,
   PKG_MANAGER,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

@@ -22,7 +22,7 @@ import {
   EXIT_CODES,
   PKG_MANAGER,
   DEFAULTS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

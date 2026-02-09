@@ -16,18 +16,18 @@ const TEST_PLANS_DIR = 'docs/04-operations/plans';
 const TEST_WU_ID = 'WU-1313';
 
 // Mock modules before importing
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     branch: vi.fn().mockResolvedValue({ current: 'main' }),
     status: vi.fn().mockResolvedValue({ isClean: () => true }),
   })),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: vi.fn(async ({ execute }) => {
     const tempDir = join(tmpdir(), `plan-promote-test-${Date.now()}`);
     mkdirSync(tempDir, { recursive: true });

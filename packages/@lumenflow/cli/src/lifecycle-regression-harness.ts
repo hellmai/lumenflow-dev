@@ -5,11 +5,11 @@ import {
   diagnoseState,
   type StateDiagnosis,
   type StateDoctorDeps,
-} from '@lumenflow/core/dist/state-doctor-core.js';
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
-import { WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
-import { WUStateStore, WU_EVENTS_FILE_NAME } from '@lumenflow/core/dist/wu-state-store.js';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+} from '@lumenflow/core/state-doctor-core';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { WUStateStore, WU_EVENTS_FILE_NAME } from '@lumenflow/core/wu-state-store';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 
 const PATHS = {
   wuDir: join('docs', '04-operations', 'tasks', 'wu'),

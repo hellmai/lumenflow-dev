@@ -22,9 +22,9 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { generateProfile, DEFAULT_PROFILE_LIMIT } from '@lumenflow/memory/dist/mem-profile-core.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { generateProfile, DEFAULT_PROFILE_LIMIT } from '@lumenflow/memory/mem-profile-core';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /**
