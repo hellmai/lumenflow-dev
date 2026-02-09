@@ -1,0 +1,48 @@
+id: WU-1536
+title: Execute hard sweep for dist import boundaries
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/cli/src
+  - packages/@lumenflow/core/src
+  - packages/@lumenflow/memory/src
+  - packages/@lumenflow/initiatives/src
+  - packages/@lumenflow/agent/src
+  - tools/generate-cli-docs.ts
+  - actions
+tests:
+  manual:
+    - Run rg '@lumenflow/.+/dist/' packages/ apps/ tools/ actions/ and verify zero matches.
+    - Run pnpm build, pnpm typecheck, pnpm test, and pnpm gates after codemod and export changes.
+  unit:
+    - tools/__tests__/cli-entry.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1536.done
+dependencies: []
+initiative: INIT-020
+phase: 3
+spec_refs:
+  - lumenflow://plans/polished-frolicking-whale.md
+risks: []
+notes: Track C hard-mode boundary migration.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: dist-path imports bypass package API contracts and wildcard exports allow unrestricted internal coupling. Problem: internal module layout is exposed as a de facto public API and large-scale refactors become brittle. Solution: perform a hard one-sweep migration to explicit subpath exports plus consumer codemods, then enforce zero dist imports.'
+acceptance:
+  - All consumer imports migrate from @lumenflow/*/dist/* to supported public subpaths.
+  - Wildcard dist exports are removed from core, memory, initiatives, and agent package manifests.
+  - Repository-wide verification confirms zero dist-path imports in packages, apps, tools, and actions.
