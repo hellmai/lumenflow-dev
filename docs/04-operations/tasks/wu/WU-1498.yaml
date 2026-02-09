@@ -2,7 +2,7 @@ id: WU-1498
 title: Add passive lane-signal telemetry and agent lane-fit reasoning
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-06
 code_paths:
@@ -59,3 +59,5 @@ session_id: fafff18e-ae4b-40e7-a366-91bba6fa0e9a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T10:02:26.710Z
+locked: true
+completed_at: 2026-02-09T10:14:14.028Z
