@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml)
 
 ## Completed
 

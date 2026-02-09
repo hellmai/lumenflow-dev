@@ -2,7 +2,7 @@ id: WU-1532
 title: Remove dead registration-parity residue after WU-1530
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -27,7 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1530 narrowed registration-parity trigger to package.json-only, but a dead cli/src existence branch remained after parallel merges. Problem: unreachable logic and stale comments in wu-lint.ts create confusion and maintenance risk. Solution: remove inert cli/src existence helper/branch, keep package.json-only trigger, and retain tests that enforce intended behavior.'
+description: 'Context: WU-1530 narrowed registration-parity trigger to package.json-only, but a dead
+  cli/src existence branch remained after parallel merges. Problem: unreachable logic and stale
+  comments in wu-lint.ts create confusion and maintenance risk. Solution: remove inert cli/src
+  existence helper/branch, keep package.json-only trigger, and retain tests that enforce intended
+  behavior.'
 acceptance:
   - validateRegistrationParity uses package.json-only trigger with no dead cli/src existence branch.
   - Parity test suite continues to enforce package.json-driven behavior and passes.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1532
+claimed_at: 2026-02-09T10:51:52.500Z
+baseline_main_sha: 9b701ac888ee71298056238f2526b71f20efd3d7
+session_id: e42975ba-5d4b-41c5-a9d5-175a8c14a25a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T10:51:52.504Z
