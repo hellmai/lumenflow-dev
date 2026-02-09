@@ -29,8 +29,6 @@ sections:
 
 ## ⛔ Blocked
 
-- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml) — Core
-
 ## ✅ Done
 
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml)

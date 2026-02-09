@@ -10,7 +10,6 @@
 {"type":"complete","wuId":"WU-1005","timestamp":"2026-01-18T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1006","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Refactor codebase to use well-known libraries (Library-First)"}
 {"type":"complete","wuId":"WU-1006","timestamp":"2026-01-18T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1007","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"List LumenFlow GitHub App on Marketplace (Free tier)"}
 {"type":"claim","wuId":"WU-1008","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Create lumenflow.dev docs site"}
 {"type":"complete","wuId":"WU-1008","timestamp":"2026-01-18T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1009","timestamp":"2026-01-18T00:00:00.000Z","lane":"Core","title":"Write quickstart guide"}
@@ -815,7 +814,6 @@
 {"type":"claim","wuId":"WU-1442","timestamp":"2026-02-05T10:17:02.871Z","lane":"Framework: Core","title":"Fix push-only retry rebase onto origin/main"}
 {"type":"complete","wuId":"WU-1442","timestamp":"2026-02-05T10:23:18.226Z"}
 {"type":"complete","wuId":"WU-1222","timestamp":"2026-02-05T10:23:43.090Z"}
-{"type":"block","wuId":"WU-1007","timestamp":"2026-02-05T11:00:48.272Z","reason":"Reconcile: emit block event so state store matches blocked"}
 {"type":"claim","wuId":"WU-1443","timestamp":"2026-02-05T11:08:06.054Z","lane":"Framework: CLI","title":"Make wu:create and init templates resilient (default notes/tests + document planless flow)"}
 {"type":"complete","wuId":"WU-1443","timestamp":"2026-02-05T11:36:04.764Z"}
 {"type":"claim","wuId":"WU-1444","timestamp":"2026-02-05T11:44:05.411Z","lane":"Framework: Core","title":"Centralize WU type/test helpers + defaults in core; remove CLI string-literal policy"}
