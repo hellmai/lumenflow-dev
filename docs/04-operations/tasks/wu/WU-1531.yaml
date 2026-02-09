@@ -1,0 +1,40 @@
+id: WU-1531
+title: Reduce code_paths false positives in parity + prep
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-09
+code_paths:
+  - packages/@lumenflow/core/src/wu-lint.ts
+  - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
+  - packages/@lumenflow/cli/src/wu-prep.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+tests:
+  manual:
+    - Run pnpm wu:prep --id <WU-ID> in a branch where one listed code_path is intentionally untouched; verify immediate actionable failure before gates.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1531.done
+dependencies: []
+risks: []
+notes: Reduces repeated agent retries by aligning early validation with wu:done expectations.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: agents frequently hit late wu:done failures because code_paths includes files forced by broad CLI parity heuristics and because mismatches are detected only near merge time. Problem: this creates avoidable retries, branch churn, and confusion around valid scope for internal CLI fixes. Solution: narrow registration-parity triggering to command-intent changes and add a pre-gates wu:prep code_paths coverage check that surfaces missing code_paths before long gate runs.'
+acceptance:
+  - Registration parity no longer triggers for edits to existing CLI command implementation files.
+  - Registration parity still triggers when command registration intent is present (new command path or CLI package.json/bin changes).
+  - wu:prep checks code_paths against branch changes before gates and fails fast with actionable missing-path output.
+  - Unit tests cover parity narrowing and wu:prep coverage preflight behavior.

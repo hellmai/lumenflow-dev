@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml) — Framework: CLI WU Commands
+  (No items ready)
 
 ## 🔧 In progress
 
