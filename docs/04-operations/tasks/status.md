@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml)
 
 ## Completed
 
