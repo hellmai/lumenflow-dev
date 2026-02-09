@@ -9,6 +9,8 @@ _Last updated: 2026-02-09_
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml)
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml)
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml)
+- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml)
+- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 
 ## Completed
 
