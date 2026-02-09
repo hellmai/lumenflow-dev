@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
+  (No items ready)
 
 ## 🔧 In progress
 
