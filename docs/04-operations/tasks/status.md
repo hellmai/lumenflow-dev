@@ -8,8 +8,6 @@ _Last updated: 2026-02-07_
 
 ## Blocked
 
-- [WU-1007 — List LumenFlow GitHub App on Marketplace (Free tier)](wu/WU-1007.yaml)
-
 ## Completed
 
 - [WU-1001 — Complete LumenFlow dogfooding setup](wu/WU-1001.yaml) — 2026-01-18
