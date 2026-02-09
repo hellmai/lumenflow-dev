@@ -2,7 +2,7 @@ id: WU-1532
 title: Remove dead registration-parity residue after WU-1530
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -43,3 +43,5 @@ session_id: e42975ba-5d4b-41c5-a9d5-175a8c14a25a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T10:51:52.504Z
+locked: true
+completed_at: 2026-02-09T10:56:16.259Z
