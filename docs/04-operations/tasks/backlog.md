@@ -36,11 +36,8 @@ sections:
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml) — Framework: CLI WU Commands
-- [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — Operations: Tooling
-- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
-- [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
-- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
+- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -530,5 +527,8 @@ sections:
 - [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml)
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml)
 - [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml)
-- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml)
+- [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml)
+- [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml)
+- [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml)
+- [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
