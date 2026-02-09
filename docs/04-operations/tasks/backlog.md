@@ -20,12 +20,11 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml) — Framework: CLI WU Commands
-  (No items ready)
+(No items ready)
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

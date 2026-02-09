@@ -997,3 +997,4 @@
 {"type":"claim","wuId":"WU-1531","timestamp":"2026-02-09T10:28:38.375Z","lane":"Framework: CLI WU Commands","title":"Reduce code_paths false positives in parity + prep"}
 {"type":"complete","wuId":"WU-1531","timestamp":"2026-02-09T10:40:10.735Z"}
 {"type":"complete","wuId":"WU-1530","timestamp":"2026-02-09T10:47:58.348Z"}
+{"type":"claim","wuId":"WU-1532","lane":"Framework: CLI WU Commands","title":"Remove dead registration-parity residue after WU-1530","timestamp":"2026-02-09T10:51:52.522Z"}
