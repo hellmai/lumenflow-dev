@@ -24,7 +24,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -509,4 +509,5 @@ sections:
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml)
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)
+- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

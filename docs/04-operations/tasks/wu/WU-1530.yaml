@@ -2,7 +2,7 @@ id: WU-1530
 title: Single-pass wu:create validation and mandatory --help rule
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -53,8 +53,8 @@ acceptance:
   - 'quick-ref-commands.md: wu:edit --field replaced with correct flags'
   - 'quick-ref-commands.md: pnpm lumenflow commands replaced with working command'
   - 'quick-ref-commands.md: Complete reference softened, workflow sequence includes --help step'
-  - Parity heuristic in wu-lint.ts narrowed so existing CLI command files pass lint without requiring
-    public-manifest.ts or tools.ts
+  - Parity heuristic in wu-lint.ts narrowed so existing CLI command files pass lint without
+    requiring public-manifest.ts or tools.ts
   - Regression test confirms WU with code_paths including existing command file passes spec lint
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1530
@@ -64,3 +64,5 @@ session_id: fafff18e-ae4b-40e7-a366-91bba6fa0e9a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T10:11:02.600Z
+locked: true
+completed_at: 2026-02-09T10:47:55.816Z
