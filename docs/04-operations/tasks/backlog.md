@@ -27,11 +27,11 @@ sections:
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
 - [WU-1539 — Centralize duplicated workflow path constants](wu/WU-1539.yaml) — Framework: Core Lifecycle
 - [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — Framework: Core Validation
-- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml) — Framework: CLI WU Commands
+- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

@@ -5,6 +5,7 @@ _Last updated: 2026-02-09_
 ## In Progress
 
 - [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml)
+- [WU-1541 — Remove process.chdir global state mutations](wu/WU-1541.yaml)
 
 ## Completed
 
