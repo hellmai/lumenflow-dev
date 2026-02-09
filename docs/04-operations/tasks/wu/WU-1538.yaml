@@ -2,7 +2,7 @@ id: WU-1538
 title: Refactor core exit handling to throw typed errors
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -16,7 +16,8 @@ code_paths:
   - packages/@lumenflow/cli/src/cli-entry-point.ts
 tests:
   manual:
-    - Run representative CLI commands that previously exited from core paths and verify consistent exit codes from CLI boundary.
+    - Run representative CLI commands that previously exited from core paths and verify consistent
+      exit codes from CLI boundary.
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
   e2e: []
@@ -37,8 +38,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: multiple core library modules call process.exit directly. Problem: library-level exits break composition, make behavior inconsistent, and reduce testability. Solution: replace exit calls with typed throws and centralize process exit behavior at CLI entry boundaries.'
+description: 'Context: multiple core library modules call process.exit directly. Problem:
+  library-level exits break composition, make behavior inconsistent, and reduce testability.
+  Solution: replace exit calls with typed throws and centralize process exit behavior at CLI entry
+  boundaries.'
 acceptance:
   - Core modules replace process.exit calls with typed errors and preserve existing error messages.
   - CLI entry wrappers remain the only process exit boundary and map typed errors to exit codes.
   - Regression tests cover known exit paths including initiative-remove-wu behavior.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1538
+claimed_at: 2026-02-09T23:08:07.968Z
+baseline_main_sha: 938f7621aa2ff1422b4f50fbbf82357e408aad24
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:08:07.979Z
