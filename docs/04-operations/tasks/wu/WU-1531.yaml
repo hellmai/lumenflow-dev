@@ -10,8 +10,6 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Run pnpm wu:prep --id <WU-ID> in a branch where one listed code_path is intentionally

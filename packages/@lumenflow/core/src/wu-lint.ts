@@ -11,6 +11,7 @@
  */
 
 import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { minimatch } from 'minimatch';
 import { loadInvariants, INVARIANT_TYPES } from './invariants-runner.js';
 
@@ -41,6 +42,32 @@ export const CLI_COMMAND_PATTERNS: string[] = [
   'packages/@lumenflow/cli/src/',
   'packages/@lumenflow/cli/package.json',
 ];
+
+const CLI_SOURCE_ROOT = 'packages/@lumenflow/cli/src/';
+
+function pathExistsFromWorkspace(codePath: string): boolean {
+  if (path.isAbsolute(codePath)) {
+    return existsSync(codePath);
+  }
+
+  // WU-1531: wu:lint can run from workspace root or package subdirectories.
+  // Walk up a few levels to resolve repo-relative code_paths reliably.
+  let current = process.cwd();
+  for (let depth = 0; depth < 8; depth += 1) {
+    const candidate = path.resolve(current, codePath);
+    if (existsSync(candidate)) {
+      return true;
+    }
+
+    const parent = path.dirname(current);
+    if (parent === current) {
+      break;
+    }
+    current = parent;
+  }
+
+  return false;
+}
 
 /**
  * WU-1504: Patterns that exclude files from parity check trigger.
@@ -251,7 +278,18 @@ function isCliCommandPath(codePath: string): boolean {
   if (!matchesCommand) return false;
 
   const isExcluded = CLI_COMMAND_EXCLUDE_PATTERNS.some((pattern) => codePath.includes(pattern));
-  return !isExcluded;
+  if (isExcluded) return false;
+
+  // WU-1531: Existing CLI command implementation files should not force
+  // public-manifest/tools parity. This parity check is reserved for new
+  // command-registration intent (new path under cli/src or package.json).
+  if (codePath.startsWith(CLI_SOURCE_ROOT)) {
+    if (pathExistsFromWorkspace(codePath)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**
