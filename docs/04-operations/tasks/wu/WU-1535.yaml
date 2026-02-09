@@ -12,7 +12,14 @@ code_paths:
   - packages/@lumenflow/memory/tsconfig.json
   - packages/@lumenflow/initiatives/tsconfig.json
   - packages/@lumenflow/agent/tsconfig.json
-  - eslint.config.mjs
+  - packages/@lumenflow/mcp/tsconfig.json
+  - packages/@lumenflow/metrics/tsconfig.json
+  - packages/@lumenflow/shims/tsconfig.json
+  - packages/@lumenflow/agent/src
+  - packages/@lumenflow/initiatives/src
+  - packages/@lumenflow/mcp/src
+  - packages/@lumenflow/memory/src
+  - tools/__tests__/tsconfig-strict.test.ts
 tests:
   manual:
     - Run pnpm typecheck and verify strict-mode errors are surfaced and resolved or explicitly
@@ -32,10 +39,17 @@ notes: 'Track B1 from enterprise hardening initiative. Split from original scope
   wu-sizing-guide.md (Oversized -> MUST Split). See also WU-1543 (B2: security lint) and WU-1546
   (B3: TS lint).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T22:50:11.824Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1535
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:50:11.832Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -48,7 +62,3 @@ acceptance:
   - Per-package tsconfig files align with strict baseline or have explicit temporary exceptions with
     justification.
   - pnpm typecheck and pnpm build pass with strict mode enabled.
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T22:50:11.832Z
