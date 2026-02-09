@@ -20,7 +20,8 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-(No items ready)
+- [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — Framework: CLI WU Commands
+  (No items ready)
 
 ## 🔧 In progress
 
