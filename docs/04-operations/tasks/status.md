@@ -4,7 +4,7 @@ _Last updated: 2026-02-09_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml)
 
 ## Completed
 

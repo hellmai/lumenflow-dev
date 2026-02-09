@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml) — Framework: CLI WU Commands
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — Framework: CLI Enforcement
 - [WU-1535 — Re-enable compiler and lint guardrails](wu/WU-1535.yaml) — Operations: Tooling
 - [WU-1536 — Execute hard sweep for dist import boundaries](wu/WU-1536.yaml) — Framework: Core Lifecycle
@@ -32,7 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1542 — BUG: auto-cleanup commit message rejected by consumer main-branch guards](wu/WU-1542.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
