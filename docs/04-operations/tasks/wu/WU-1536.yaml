@@ -2,7 +2,7 @@ id: WU-1536
 title: Add subpath exports and codemod dist imports
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -32,7 +32,8 @@ phase: 3
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: 'Track C1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md. See WU-1547 (C2: lock down + verify) which depends on this completing first.'
+notes: 'Track C1 from enterprise hardening initiative. Split from original scope per
+  wu-sizing-guide.md. See WU-1547 (C2: lock down + verify) which depends on this completing first.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -41,8 +42,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: dist-path imports bypass package API contracts and wildcard exports allow unrestricted internal coupling. Problem: internal module layout is exposed as de facto public API. Solution: add explicit subpath exports to 4 packages (additive, while wildcards still exist), then codemod all 569 dist import lines to use new public subpaths.'
+description: 'Context: dist-path imports bypass package API contracts and wildcard exports allow
+  unrestricted internal coupling. Problem: internal module layout is exposed as de facto public API.
+  Solution: add explicit subpath exports to 4 packages (additive, while wildcards still exist), then
+  codemod all 569 dist import lines to use new public subpaths.'
 acceptance:
   - Explicit subpath exports added to core, memory, initiatives, and agent package.json files.
   - All consumer imports migrated from @lumenflow/*/dist/* to supported public subpaths.
   - pnpm build, pnpm typecheck, and pnpm test pass after codemod.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1536
+claimed_at: 2026-02-09T22:47:10.698Z
+baseline_main_sha: 9ea880a3af63f7cabcc0023d4ff3c1929bcceea9
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:47:10.705Z
