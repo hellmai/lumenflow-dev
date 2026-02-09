@@ -1031,3 +1031,4 @@
 {"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:38:09.868Z"}
 {"type":"claim","wuId":"WU-1548","lane":"Framework: Core Lifecycle","title":"Centralize status and remaining duplicated literals","timestamp":"2026-02-09T23:38:44.960Z"}
 {"type":"claim","wuId":"WU-1550","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns","timestamp":"2026-02-09T23:41:28.448Z"}
+{"type":"claim","wuId":"WU-1539","lane":"Framework: Core Lifecycle","title":"Centralize duplicated stamp and events path literals","timestamp":"2026-02-09T23:36:22.783Z"}
